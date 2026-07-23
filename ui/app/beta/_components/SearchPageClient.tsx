@@ -16,8 +16,8 @@ import { useAutoRadius } from "../_hooks/useAutoRadius"
 import { useSearchResults } from "../_hooks/useSearchResults"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
-import type { FilterChange } from "../_utils/search.tracking.utils"
-import { diffFilterChanges, searchTypeOf } from "../_utils/search.tracking.utils"
+import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
+import { diffFilterChanges, diffSortChange, searchTypeOf } from "../_utils/search.tracking.utils"
 import { ExitNewSearchLink } from "./ExitNewSearchLink"
 import { SearchBar } from "./SearchBar"
 import { clearedFilters, SearchFilters } from "./SearchFilters"
@@ -70,6 +70,9 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // active_filters_count APRÈS application — on mémorise le diff au clic et on pousse les
   // événements quand les résultats de la nouvelle recherche sont affichés (effet ci-dessous).
   const pendingFilterChangesRef = useRef<{ searchKey: string; changes: FilterChange[] } | null>(null)
+  // Changement de tri en attente (même mécanique) : les tris date/candidatures/début de
+  // contrat excluent des documents → results_count post-application signifiant.
+  const pendingSortChangeRef = useRef<{ searchKey: string; change: SortChange } | null>(null)
 
   const searchKeyOf = (p: ISearchPageParams) => {
     const { page: _page, hitsPerPage: _hitsPerPage, q_source: _qSource, ...trackedParams } = p
@@ -101,6 +104,17 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
         })
       }
       pendingFilterChangesRef.current = null
+    }
+
+    // Flush du search_sort_changed de la recherche affichée.
+    if (pendingSortChangeRef.current?.searchKey === searchKey) {
+      pushMatomoEvent({
+        event: MATOMO_EVENTS.SEARCH_SORT_CHANGED,
+        ...pendingSortChangeRef.current.change,
+        results_count: result.data.pages.at(-1)?.nbHits ?? 0,
+        search_engine: SEARCH_ENGINES.BETA,
+      })
+      pendingSortChangeRef.current = null
     }
 
     if (lastTrackedSearchKeyRef.current === searchKey) return
@@ -185,6 +199,15 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       pendingFilterChangesRef.current = {
         searchKey: searchKeyOf(newParams),
         changes: [...(pendingFilterChangesRef.current?.changes ?? []), ...changes],
+      }
+    }
+    // Changement de tri (select desktop et modale mobile passent tous deux par ici) : en
+    // rafale, seul le dernier état compte — le previous_sort_value du premier diff est conservé.
+    const sortChange = diffSortChange(params, newParams)
+    if (sortChange) {
+      pendingSortChangeRef.current = {
+        searchKey: searchKeyOf(newParams),
+        change: { ...sortChange, previous_sort_value: pendingSortChangeRef.current?.change.previous_sort_value ?? sortChange.previous_sort_value },
       }
     }
     navigateSilent(newParams)

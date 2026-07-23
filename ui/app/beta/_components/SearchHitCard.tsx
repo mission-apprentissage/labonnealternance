@@ -20,6 +20,7 @@ import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES }
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { buildHitDetailUrl, buildSearchUrl } from "../_utils/search.params.utils"
+import { activeFilterNames, sortTrackingValueOf } from "../_utils/search.tracking.utils"
 
 type SearchResponse = IResponse<IGetRoutes["/v1/search"]>
 export type Hit = SearchResponse["hits"][number]
@@ -102,6 +103,11 @@ export function SearchHitCard({ hit, currentParams, position }: SearchHitCardPro
           has_contact: hit.smart_apply === true,
           search_job_name: currentParams.q || "non_renseigné",
           search_address: currentParams.lieu_label || "non_renseigné",
+          // Contexte de conversion : filtres actifs (vocabulaire de search_filter_applied)
+          // et tri — permet de relier filtres/tri aux consultations puis candidatures.
+          active_filters: activeFilterNames(currentParams).join(",") || "none",
+          active_filters_count: activeFilterNames(currentParams).length,
+          sort_value: sortTrackingValueOf(currentParams.sort),
           search_engine: SEARCH_ENGINES.BETA,
         })
       }

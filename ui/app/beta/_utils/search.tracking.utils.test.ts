@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { ISearchPageParams } from "./search.params.utils"
-import { diffFilterChanges, searchTypeOf } from "./search.tracking.utils"
+import { activeFilterNames, diffFilterChanges, diffSortChange, searchTypeOf } from "./search.tracking.utils"
 
 const base: ISearchPageParams = { mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 }
 
@@ -75,6 +75,37 @@ describe("diffFilterChanges", () => {
 
   it("ignore les changements hors filtres (q, lieu, tri, page)", () => {
     expect(diffFilterChanges(base, { ...base, q: "boulanger", lieu_label: "Paris", sort: "date", page: 3 })).toEqual([])
+  })
+})
+
+describe("diffSortChange", () => {
+  it("détecte le passage du tri par défaut à un tri explicite (et retour)", () => {
+    expect(diffSortChange(base, { ...base, sort: "date" })).toEqual({ sort_value: "date", previous_sort_value: "relevance" })
+    expect(diffSortChange({ ...base, sort: "date" }, base)).toEqual({ sort_value: "relevance", previous_sort_value: "date" })
+  })
+
+  it("null si le tri est inchangé (y compris défaut → défaut)", () => {
+    expect(diffSortChange(base, { ...base, contract_type: ["Apprentissage"] })).toBeNull()
+    expect(diffSortChange({ ...base, sort: "proximity" }, { ...base, sort: "proximity", urgent: true })).toBeNull()
+  })
+})
+
+describe("activeFilterNames", () => {
+  it("liste les filter_name actifs dans le vocabulaire de la spec", () => {
+    expect(activeFilterNames(base)).toEqual([])
+    expect(
+      activeFilterNames({
+        ...base,
+        is_algo_company: [true],
+        start_date: "2026-09-01",
+        level: ["Bac"],
+        contract_type: ["Apprentissage"],
+        handi: true,
+        urgent: true,
+        smart_apply: true,
+      })
+    ).toEqual(["job_offer_type", "contract_start_date", "education_level", "contract_type", "handi_friendly", "urgent_recruitment", "simplified_application"])
+    expect(activeFilterNames({ ...base, mode: "formations", type_filter_label: ["Formation à distance"] })).toEqual(["distance_learning"])
   })
 })
 

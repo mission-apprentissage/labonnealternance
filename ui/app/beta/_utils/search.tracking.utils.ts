@@ -65,6 +65,39 @@ export function diffFilterChanges(prev: ISearchPageParams, next: ISearchPagePara
   return changes
 }
 
+// Vocabulaire stable de l'événement search_sort_changed et du contexte de clic
+// (job_offer_clicked.sort_value) — le tri par défaut (absent de l'URL) = "relevance".
+export type SortTrackingValue = "relevance" | "proximity" | "date" | "applications" | "start_date"
+
+export const sortTrackingValueOf = (sort: ISearchPageParams["sort"]): SortTrackingValue => sort ?? "relevance"
+
+export type SortChange = { sort_value: SortTrackingValue; previous_sort_value: SortTrackingValue }
+
+/** Changement effectif de tri entre deux états (null si inchangé) — même mécanique de diff que les filtres. */
+export function diffSortChange(prev: ISearchPageParams, next: ISearchPageParams): SortChange | null {
+  const previous = sortTrackingValueOf(prev.sort)
+  const current = sortTrackingValueOf(next.sort)
+  if (previous === current) return null
+  return { sort_value: current, previous_sort_value: previous }
+}
+
+/**
+ * Noms des filtres actifs (vocabulaire filter_name de la spec tracking — cohérent avec
+ * search_filter_applied) : contexte de conversion du clic d'offre (job_offer_clicked).
+ */
+export function activeFilterNames(params: ISearchPageParams): string[] {
+  const names: string[] = []
+  if (params.is_algo_company?.length) names.push("job_offer_type")
+  if (params.start_date) names.push("contract_start_date")
+  if (params.level?.length) names.push("education_level")
+  if (params.contract_type?.length) names.push("contract_type")
+  if (params.handi) names.push("handi_friendly")
+  if (params.urgent) names.push("urgent_recruitment")
+  if (params.smart_apply) names.push("simplified_application")
+  if (params.type_filter_label?.includes(TYPE_FILTER_LABEL_DISTANCE)) names.push("distance_learning")
+  return names
+}
+
 /** Valeurs search_type de l'événement search_type_changed (spec §2.4). */
 export function searchTypeOf(mode: SearchMode): "jobs_only" | "trainings_only" | "jobs_and_trainings" {
   switch (mode) {

@@ -25,6 +25,7 @@ export const MATOMO_EVENTS = {
   SEARCH_FILTER_REMOVED: "search_filter_removed",
   SEARCH_FILTER_OPENED: "search_filter_opened",
   SEARCH_TYPE_CHANGED: "search_type_changed",
+  SEARCH_SORT_CHANGED: "search_sort_changed",
 }
 
 // Identifiants de moteur de recherche pour la télémétrie de bascule (dimension
