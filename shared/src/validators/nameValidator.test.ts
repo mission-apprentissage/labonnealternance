@@ -7,7 +7,7 @@ describe("validatePersonName", () => {
     expect(validatePersonName(name)).toBe(true)
   })
 
-  it.each(["", " ", ".", "1", "A", "A1", "A!", "-", "A-", "É ", "O'"])("should reject names without two valid letters: %s", (name) => {
+  it.each(["", " ", ".", "1", "A", "A1", "A!", "-", "A-", "É ", "O'", "A\nB", "A\tB"])("should reject names without two valid letters: %s", (name) => {
     expect(validatePersonName(name)).toBe(false)
   })
 })
