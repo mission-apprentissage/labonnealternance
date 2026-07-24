@@ -30,6 +30,11 @@ export const AllerPlusLoin = () => (
     <Divider sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }} />
     <Grid container spacing={2} mt={2}>
       <CardItem
+        title="Comprendre la rémunération en alternance"
+        description="Grille de salaire par âge et année de contrat, calcul brut/net et exonérations en 2026"
+        href={PAGES.static.guideAlternantComprendreLaRemuneration.getPath()}
+      />
+      <CardItem
         title="Découvrir les aides auxquelles j'ai droit"
         description="Avant de démarrer la simulation de vos aides, pensez à vous munir de vos ressources et de celles de votre entreprise"
         href="https://mes-aides.1jeune1solution.beta.gouv.fr/"
