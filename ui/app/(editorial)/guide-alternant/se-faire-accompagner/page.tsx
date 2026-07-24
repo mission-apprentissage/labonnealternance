@@ -134,6 +134,17 @@ const SeFaireAccompagnerPage = () => {
           le jeune peut débuter sa formation sans contrat d'apprentissage. Toutefois, il aura un délai de 3 mois pour trouver un employeur. Ce délai débute à la date du début de sa
           formation. Elles peuvent également intervenir pour aider les jeunes à trouver un nouvel employeur à la suite d'une rupture de contrat.
         </Paragraph>
+        <Paragraph>
+          <Typography fontWeight={"bold"} component="span">
+            Votre CFA rencontre des difficultés ?
+          </Typography>{" "}
+          Si votre centre de formation d'apprentis rencontre des difficultés ou cesse son activité, une cellule nationale dédiée peut intervenir rapidement pour vous accompagner.
+          Signalez votre situation à{" "}
+          <DsfrLink href="mailto:signalapprentissage@emploi.gouv.fr" aria-label="Envoyer un email à signalapprentissage@emploi.gouv.fr">
+            signalapprentissage@emploi.gouv.fr
+          </DsfrLink>
+          .
+        </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Comment les contacter ?
         </Paragraph>

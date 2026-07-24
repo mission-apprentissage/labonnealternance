@@ -145,7 +145,8 @@ const LaRuptureDeContratPage = () => {
       </Section>
       <Section title="Quels sont les droits d'un « alternant » après une rupture de contrat ?">
         <Paragraph>
-          Après la rupture d'un contrat d'apprentissage, l'alternant peut poursuivre sa formation au CFA et bénéficier{" "}
+          Après la rupture d'un contrat d'apprentissage, l'alternant a un délai de 6 mois pour retrouver un employeur. Pendant cette période, il conserve le statut de stagiaire de
+          la formation professionnelle. Il peut poursuivre sa formation au CFA et bénéficier{" "}
           <DsfrLink
             href="https://www.francetravail.fr/candidat/mes-droits-aux-aides-et-allocati/lessentiel-a-savoir-sur-lallocat/ai-je-droit-a-lallocation-chomag.html"
             aria-label="Consulter les droits aux allocations chômage sur le site France Travail"
@@ -154,7 +155,6 @@ const LaRuptureDeContratPage = () => {
           </DsfrLink>{" "}
           selon certaines conditions.
         </Paragraph>
-        <Paragraph>Le CFA doit aussi l’aider à trouver un nouvel employeur.</Paragraph>
         <Paragraph>Pensez à vous inscrire à France Travail dès que possible.</Paragraph>
         <Paragraph>
           Dans tous les cas, l’employeur doit obligatoirement vous remettre : le certificat de travail, l'attestation France Travail, le reçu pour solde de tout compte.
