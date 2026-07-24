@@ -228,8 +228,9 @@ export const PAGES = {
       title: "Comprendre la rémunération en alternance",
       index: true,
       getMetadata: () => ({
-        title: "Salaire alternant 2026 | Grilles et barèmes officiels",
-        description: "Barèmes de salaire en apprentissage et professionnalisation 2026. Grilles par âge, diplôme, calcul brut/net et exonérations fiscales.",
+        title: "Salaire en alternance 2026 : grille et barèmes officiels",
+        description:
+          "Grille de salaire en alternance 2026 : de 27 % à 100 % du SMIC selon l'âge et l'année de contrat. Apprentissage et professionnalisation, calcul brut/net et exonérations.",
       }),
     },
     guideAlternantCommentSignerUnContratEnAlternance: {
