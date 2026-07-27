@@ -184,19 +184,6 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
   return query.toString()
 }
 
-export function buildSearchTitle(rechercheParams: Partial<IRecherchePageParams> | null) {
-  let searchTitleContext = ""
-  if (rechercheParams?.job_name) {
-    searchTitleContext += ` - ${rechercheParams.job_name}`
-    if (rechercheParams?.geo?.address) {
-      searchTitleContext += ` à ${rechercheParams.geo.address}`
-    } else if (rechercheParams?.geo == null) {
-      searchTitleContext += ` sur la France entière `
-    }
-  }
-  return searchTitleContext
-}
-
 export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null, mode: IRechercheMode): IRecherchePageParams | null {
   if (search === null) {
     return null

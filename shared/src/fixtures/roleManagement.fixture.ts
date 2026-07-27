@@ -22,7 +22,6 @@ export const generateRoleManagementFixture = (props: Partial<IRoleManagement> = 
     authorized_type: AccessEntityType.ENTREPRISE,
     createdAt: now,
     updatedAt: now,
-    origin: "fixture",
     status: [generateRoleManagementStatusEventFixture()],
     user_id: new ObjectId(),
     ...props,

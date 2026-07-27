@@ -20,6 +20,8 @@ const config = {
   },
   slackWebhookUrl: env.get("LBA_SLACK_WEBHOOK_URL").asString(),
   jobSlackWebhook: env.get("LBA_JOB_SLACK_WEBHOOK").asString(),
+  // map pseudo -> member ID Slack (ex: {"kevin":"U04XXXXXXXX"}), utilisée par slackMention
+  slackTeamMemberIds: env.get("LBA_SLACK_TEAM_MEMBER_IDS").default("{}").asJsonObject() as Record<string, string>,
   mongodb: {
     uri: env.get("LBA_MONGODB_URI").required().asString(),
   },
@@ -43,6 +45,7 @@ const config = {
     brevoMarketingApiKey: env.get("LBA_BREVO_MARKETING_API_KEY").required().asString(),
     brevoMarketingContactListId: env.get("LBA_BREVO_MARKETING_CONTACT_LIST_ID").asString(),
     brevoRelanceCandidatsListId: env.get("LBA_BREVO_RELANCE_CANDIDATS_LIST_ID").asString(),
+    brevoNurturingEntreprisesListId: env.get("LBA_BREVO_NURTURING_ENTREPRISES_LIST_ID").asString(),
   },
   auth: {
     passwordHashRounds: env.get("LBA_AUTH_PASSWORD_HASH_ROUNDS").required().asInt(),

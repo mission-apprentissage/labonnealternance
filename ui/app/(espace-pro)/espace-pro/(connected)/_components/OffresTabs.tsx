@@ -73,11 +73,13 @@ export const OffresTabs = ({
   recruiter,
   showStats = false,
   buildOfferEditionUrl,
+  hideCfaShareAction = false,
 }: {
   caption: string
   recruiter: IRecruiterJson
   showStats?: boolean
   buildOfferEditionUrl: (offerId: string) => string
+  hideCfaShareAction?: boolean
 }) => {
   /* @ts-ignore TODO */
   const jobs: LocalJob[] = recruiter?.jobs ?? []
@@ -229,6 +231,7 @@ export const OffresTabs = ({
             openSuppression={openSuppression}
             buildOfferEditionUrl={buildOfferEditionUrl}
             row={row}
+            hideCfaShareAction={hideCfaShareAction}
             onOffreProlongationClick={() => {
               setCurrentOfferId(row._id)
               offreProlongationModalControls.onOpen()
