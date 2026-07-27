@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { buildRechercheMetadata } from "./recherche.metadata.utils"
+import { buildRecherchePageParams, IRechercheMode } from "./recherche.route.utils"
 
 const withJobAndCity = { job_name: "Data analyst", geo: { address: "Lyon", latitude: 45.75, longitude: 4.85 } }
 const withJobOnly = { job_name: "Data analyst", geo: null }
@@ -93,13 +94,14 @@ describe("buildRechercheMetadata", () => {
     })
 
     it("limite les romes à MAX_SEARCH_ROMES_PRIVATE pour être cohérent avec l'URL servie", () => {
-      // MAX_SEARCH_ROMES_PRIVATE = 20 ; on génère 21 codes fictifs et vérifie la troncature
-      const manyRomes = Array.from({ length: 21 }, (_, i) => `A${String(i).padStart(4, "0")}`)
+      const manyRomes = Array.from({ length: 200 }, (_, i) => `A${String(i).padStart(4, "0")}`)
       const params = { job_name: null, romes: manyRomes, geo: null }
       const canonical = buildRechercheMetadata(params, "default").alternates?.canonical as string
       const url = new URL(canonical, "https://example.com")
       const romesInCanonical = url.searchParams.get("romes")?.split(",") ?? []
-      expect(romesInCanonical).toHaveLength(20)
+      const searchParams = new URLSearchParams(buildRecherchePageParams(params, IRechercheMode.DEFAULT))
+      const romesInServedUrl = searchParams.get("romes")?.split(",") ?? []
+      expect(romesInCanonical).toHaveLength(romesInServedUrl.length)
     })
   })
 })
