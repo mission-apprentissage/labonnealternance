@@ -2,6 +2,7 @@ import { createHash } from "node:crypto"
 import { readFile } from "node:fs/promises"
 
 import { ObjectId } from "bson"
+import type { AnyBulkWriteOperation } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ISearchItem } from "shared/models/searchItems.model"
 
@@ -109,12 +110,15 @@ const CACHE_WRITE_BULK_SIZE = 1_000
 
 /** Applique le cache à un lot de documents ; retourne ceux restés sans réponse (cache miss). */
 const applyCacheToDocs = async (docs: KeywordsSourceDoc[]): Promise<{ misses: (KeywordsSourceDoc & { sourceHash: string; sourceText: string })[]; hits: number }> => {
+  // Écritures accumulées en un seul bulkWrite par lot : un updateOne unitaire par doc fait
+  // ~140 docs/s sur un gros backlog (drain post-rechargement dominical ≈ 45 min pour 400k).
+  const updates: AnyBulkWriteOperation<ISearchItem>[] = []
   const withHash: (KeywordsSourceDoc & { sourceHash: string; sourceText: string })[] = []
   for (const doc of docs) {
     const sourceText = buildKeywordsSourceText(doc)
     if (!sourceText) {
       // Sans texte source (doc vide) : rien à générer, on marque [] directement (le doc sort de la file).
-      await getDbCollection("search_items").updateOne({ _id: doc._id }, { $set: { keywords: [] } })
+      updates.push({ updateOne: { filter: { _id: doc._id }, update: { $set: { keywords: [] } } } })
       continue
     }
     withHash.push({ ...doc, sourceText, sourceHash: computeSourceHash(sourceText) })
@@ -127,12 +131,13 @@ const applyCacheToDocs = async (docs: KeywordsSourceDoc[]): Promise<{ misses: (K
   for (const doc of withHash) {
     const keywords = cached.get(doc.sourceHash)
     if (keywords) {
-      await getDbCollection("search_items").updateOne({ _id: doc._id }, { $set: { keywords } })
+      updates.push({ updateOne: { filter: { _id: doc._id }, update: { $set: { keywords } } } })
       hits++
     } else {
       misses.push(doc)
     }
   }
+  if (updates.length) await getDbCollection("search_items").bulkWrite(updates, { ordered: false })
   return { misses, hits }
 }
 
