@@ -107,7 +107,7 @@ GET /api/v1/search?q=web&page=2&hitsPerPage=10
 
 ## Notes d'intégration frontend
 
-- **Pagination** : utiliser `page` (0-based) et `nbPages` pour les contrôles. `nbHits` est renvoyé et sert au bouton mobile « Voir les N résultats », mais **n'est plus affiché en en-tête de la liste** (choix POC).
+- **Pagination** : utiliser `page` (0-based) et `nbPages` pour les contrôles. `nbHits` est renvoyé et sert au bouton mobile « Voir les N résultats », mais **n'est plus affiché en en-tête de la liste** (choix design).
 - **Facettes** : renvoyées par l'API et utilisées pour alimenter les options de filtre disponibles (accumulées en `stableFacets`). En revanche, **les compteurs par valeur ne sont plus affichés** dans les filtres (desktop et sections mobiles).
 - **contract_type** : peut être passé plusieurs fois dans la query string (`?contract_type=Apprentissage&contract_type=Contrat+pro`)
 - **Géo** : les paramètres `latitude`, `longitude` et `radius` sont indépendants du texte — entièrement combinables

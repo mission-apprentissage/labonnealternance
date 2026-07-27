@@ -15,16 +15,53 @@
 
     - include_tasks: ./tasks/files_copy.yml
 
-    - name: lancement preview system
+    - name: Créer le fichier mot de passe mongot
+      ansible.builtin.copy:
+        # trim : supprime un éventuel \n/espace de fin dans la valeur SOPS, sinon le mot de
+        # passe diverge de celui posé par createUser (qui le conserve via -e) → AuthenticationFailed.
+        content: "{{ MONGOT_PASSWORD | trim }}"
+        dest: "/opt/app/configs/mongot/mongot_password"
+        mode: "0400"
+
+    # MongoDB d'abord seul : au premier boot, mongot reste unhealthy tant que mongotUser
+    # n'existe pas → un `up --wait` global bloquerait sur son healthcheck.
+    - name: Démarrer MongoDB
       shell:
         chdir: /opt/app
-        cmd: docker compose -f docker-compose.preview-system.yml up -d --wait
+        cmd: docker compose -f docker-compose.preview-system.yml up -d --wait mongodb
 
     - name: Setup MongoDB ReplicaSet
       shell:
         chdir: /opt/app
         cmd: 'docker compose -f docker-compose.preview-system.yml exec -it mongodb mongosh "{{ LBA_MONGODB_URI }}" --eval "try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }" --quiet'
       when: env_type == 'preview'
+
+    # Lecture des octets exacts du fichier par Ansible (pas de $(cat) dans un scalaire shell) :
+    # toute réinterprétation shell/Jinja du mot de passe peut le corrompre → AuthenticationFailed.
+    - name: Lire le mot de passe mongot
+      ansible.builtin.slurp:
+        src: "/opt/app/configs/mongot/mongot_password"
+      register: mongot_password_file
+      no_log: true
+
+    - name: Créer mongotUser
+      no_log: true
+      shell:
+        # Le mot de passe est injecté via `environment:` (octets exacts du fichier, b64decode par
+        # Ansible) puis transmis tel quel par `docker exec -e MONGOT_SYNC_VALUE` (sans =valeur →
+        # passthrough) → identique aux octets que mongot lit dans le même fichier.
+        cmd: >
+          docker exec -e MONGOT_SYNC_VALUE lba_mongodb mongosh
+          "mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/admin?authSource=local&directConnection=true"
+          --quiet
+          --eval 'try { db.dropUser("mongotUser") } catch (e) {} db.runCommand({ createUser: "mongotUser", pwd: process.env.MONGOT_SYNC_VALUE, roles: [{ role: "searchCoordinator", db: "admin" }], mechanisms: ["SCRAM-SHA-256"] })'
+      environment:
+        MONGOT_SYNC_VALUE: "{{ mongot_password_file.content | b64decode }}"
+
+    - name: lancement preview system
+      shell:
+        chdir: /opt/app
+        cmd: docker compose -f docker-compose.preview-system.yml up -d --wait
 
     - name: Setup Metabase preview
       shell:

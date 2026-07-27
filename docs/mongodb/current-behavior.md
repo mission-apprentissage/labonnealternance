@@ -1,6 +1,6 @@
-# Comportement actuel — `/v1/search` & pages POC `/search/*`
+# Comportement du moteur de recherche — `/v1/search` & `/beta/recherche`
 
-> État du POC de recherche MongoDB Search (mongot) au-dessus de la collection `search_items`.
+> Moteur de recherche MongoDB Search (mongot) au-dessus de la collection `search_items`.
 > Couvre : le **tri** des résultats, le champ **distance**, la **géo**, et le fonctionnement de la page **`/beta/recherche`**.
 
 ---
@@ -56,7 +56,7 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 
 ---
 
-## 5. Pages POC `/search/*`
+## 5. Pages `/beta/recherche`
 
 ### Routes
 
@@ -132,14 +132,12 @@ Automatisée de bout en bout ([`searchItemsKeywords.service.ts`](../../server/sr
 - Le `radius` par défaut de l'API reste `30` ([`search.routes.ts`](../../shared/src/routes/search.routes.ts)) ; côté front les vues forcent `20` et l'auto-élargissement.
 - Données legacy : un document sans `location` (non régénéré par `fillSearchItemsCollection`) sort des recherches géo et a une `distance` nulle (plus de job de backfill).
 - **Local — mongot `AuthenticationFailed` après changement de `MONGOT_PASSWORD`** : le `createUser mongotUser` d'[`env-init.sh`](../../.bin/scripts/env-init.sh) ne synchronise pas le mot de passe si un `mongotUser` existe déjà dans le volume MongoDB persistant (le `dropUser` préalable peut échouer / l'ancien user survit). Symptôme : mongot en boucle de redémarrage. Correctif manuel : re-jouer le bloc `dropUser`/`createUser` d'env-init avec la valeur courante de `.infra/local/mongot_password`, puis `docker compose restart mongot`. Réinitialiser le volume (`yarn services:clean`) repart d'un état propre.
-- **Preview — mongot `AuthenticationFailed` après changement de `MONGOT_PASSWORD` au vault** : même cause côté serveur. Le `createUser` du playbook ([`preview_pr_mongodb82.yml`](../../.infra/ansible/tasks/preview_pr_mongodb82.yml)) est un resync idempotent qui lit **le même fichier** que mongot — sur un deploy complet et propre il ne peut pas diverger. Mais si un **redeploy réécrit le fichier mot de passe (nouvelle valeur) sans atteindre le `createUser`** (échec entre les deux tâches) **et que le volume mongo `*_mongodb82` survit** (le `down --volumes` de la tâche « Stop existing application » porte `ignore_errors: true`), la base garde l'ancien `mongotUser` alors que mongot lit la nouvelle valeur → boucle de redémarrage. Correctif manuel sur le serveur (PR `N`) :
+- **Preview — mongot `AuthenticationFailed` après changement de `MONGOT_PASSWORD` au vault** : même cause côté serveur. Le `createUser` du playbook ([`preview.yml`](../../.infra/ansible/preview.yml)) est un resync idempotent qui lit **le même fichier** que mongot — sur un deploy complet et propre il ne peut pas diverger. Mais si un **deploy réécrit le fichier mot de passe (nouvelle valeur) sans atteindre le `createUser`** (échec entre les deux tâches), la base garde l'ancien `mongotUser` alors que mongot lit la nouvelle valeur → boucle de redémarrage. Correctif : relancer un deploy preview (le resync est rejoué), ou à la main sur le serveur :
   ```bash
-  PR=N
-  KEYFILE="$(cat /opt/app/projects/$PR/mongo_keyfile)"
-  MV="$(cat /opt/app/projects/$PR/mongot_password)"
-  docker exec -e MV="$MV" lba_${PR}_mongodb mongosh \
+  KEYFILE="$(cat /opt/app/configs/mongodb/mongo_keyfile.txt)"
+  MV="$(cat /opt/app/configs/mongot/mongot_password)"
+  docker exec -e MV="$MV" lba_mongodb mongosh \
     "mongodb://__system:${KEYFILE}@127.0.0.1:27017/admin?authSource=local&directConnection=true" --quiet \
     --eval 'try{db.dropUser("mongotUser")}catch(e){}; db.createUser({user:"mongotUser",pwd:process.env.MV,roles:[{role:"searchCoordinator",db:"admin"}]})'
-  docker restart lba_${PR}_mongot
+  docker restart lba_mongot
   ```
-  Comme le mot de passe change rarement, on garde ce correctif manuel plutôt qu'un wipe de volume forcé dans le playbook. Pour fiabiliser si besoin un jour : supprimer explicitement les volumes `{{ pr_number }}_mongodb82` / `{{ pr_number }}_mongotdata` au (re)deploy, ou ajouter une tâche finale d'auto-réparation (resync + `restart mongot` si mongot n'est pas healthy).

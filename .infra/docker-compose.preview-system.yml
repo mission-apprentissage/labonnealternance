@@ -42,7 +42,8 @@ services:
 
   mongodb:
     <<: *default
-    image: mongo:7
+    # Version pinnée (le tag flottant 8.2-ubuntu2204 changeait au gré des deploys).
+    image: mongodb/mongodb-community-server:8.3.4-ubuntu2204
     hostname: mongodb
     container_name: lba_mongodb
     deploy:
@@ -55,9 +56,13 @@ services:
         hard: 64000
     ports:
       - "127.0.0.1:27017:27017"
-    command: ["-f", "/etc/mongod/mongod.conf"]
+    command: ["mongod", "--config", "/etc/mongod/mongod.conf"]
     volumes:
-      - /opt/app/data/mongodb/db:/data/db
+      # Volume nommé (et non plus /opt/app/data/mongodb/db) : l'image community-server
+      # tourne en uid 1000, et les données mongo:7 ne sont pas lisibles par un mongod 8.3 —
+      # le changement de volume force un départ à vide (les bases preview sont re-seedées
+      # au prochain deploy de chaque PR).
+      - mongodb_data:/data/db
       - /opt/app/configs/mongodb:/etc/mongod
     healthcheck:
       test: ["CMD", "mongosh", "--eval", '''db.runCommand("ping").ok''', "--quiet"]
@@ -67,6 +72,34 @@ services:
       start_period: 30s
     labels:
       - autoheal=true
+
+  # MongoDB Search (self-managed) partagé par toutes les previews : chaque base
+  # preview_<PR> déclare ses propres search indexes (yarn cli indexes:recreate).
+  mongot:
+    # ⚠️ mongot 1.x exige le nouveau format de config (scramAuth) — cf. configs/mongot/mongot.yml.
+    image: mongodb/mongodb-community-search:1.70.1
+    container_name: lba_mongot
+    network_mode: "service:mongodb"
+    restart: always
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx2g -Xms256m"
+    deploy:
+      resources:
+        limits:
+          memory: 3g
+    volumes:
+      - mongot_data:/var/lib/mongot
+      - /opt/app/configs/mongot/mongot.yml:/mongot-community/config.default.yml:ro
+      - /opt/app/configs/mongot/mongot_password:/etc/mongot/secrets/passwordFile:ro
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    depends_on:
+      mongodb:
+        condition: service_healthy
 
   # ClamAV désactivé en preview pour économiser 1.5Go de RAM
   # Le scan antivirus n'est pas nécessaire en preview (données de seed uniquement)
@@ -198,6 +231,8 @@ volumes:
   certs:
   acme:
   metabase:
+  mongodb_data:
+  mongot_data:
 
 networks:
   mna_network:

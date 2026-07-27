@@ -107,14 +107,23 @@ Résultat attendu : `{"status":"SERVING"}`
 
 ## Serveurs (preview/production)
 
+### Architecture preview
+
+Le stack partagé `docker-compose.preview-system.yml` porte un MongoDB 8.3 (`lba_mongodb`)
+et un mongot (`lba_mongot`, `network_mode: service:mongodb`) communs à **toutes** les
+previews. Chaque preview utilise sa base `preview_<PR>` et y crée ses propres search
+indexes via `yarn cli indexes:recreate` (task `preview_pr.yml`). Le playbook
+`preview.yml` provisionne le fichier mot de passe mongot et (re)crée `mongotUser`
+(rôle `searchCoordinator`) à chaque déploiement.
+
 ### Gestion des secrets
 
-Les secrets sont chiffrés dans `env.global.yml` via SOPS et déployés par Ansible :
+Les secrets sont chiffrés via SOPS (`env.global.yml` / `env.preview.yml`) et déployés par Ansible :
 
-| Template                                           | Variable SOPS           | Destination                                    |
-| -------------------------------------------------- | ----------------------- | ---------------------------------------------- |
-| `.infra/files/configs/mongodb/mongo_keyfile.txt`   | `{{ MONGODB_KEYFILE }}` | `/opt/app/configs/mongodb/mongo_keyfile.txt`   |
-| `.infra/files/configs/mongodb/mongot_password.txt` | `{{ MONGOT_PASSWORD }}` | `/opt/app/configs/mongodb/mongot_password.txt` |
+| Source                                            | Variable SOPS           | Destination                                  |
+| ------------------------------------------------- | ----------------------- | -------------------------------------------- |
+| `.infra/files/configs/mongodb/mongo_keyfile.txt`  | `{{ MONGODB_KEYFILE }}` | `/opt/app/configs/mongodb/mongo_keyfile.txt` |
+| Task « Créer le fichier mot de passe mongot » (`preview.yml`) | `{{ MONGOT_PASSWORD }}` | `/opt/app/configs/mongot/mongot_password`    |
 
 Les fichiers sont générés avec les permissions `400` (lecture seule par le propriétaire) lors du déploiement Ansible.
 

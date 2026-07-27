@@ -53,6 +53,9 @@ COPY --from=builder_server /app/server ./server
 COPY --from=builder_server /app/node_modules ./node_modules
 COPY --from=builder_server /app/server/node_modules ./server/node_modules
 COPY ./server/static /app/server/static
+# Seed des synonymes de recherche : lu à l'exécution par seedSearchSynonyms
+# (résolu depuis /app/server en ../docs/mongodb/search-synonyms.json).
+COPY ./docs/mongodb/search-synonyms.json /app/docs/mongodb/search-synonyms.json
 
 EXPOSE 5000
 WORKDIR /app/server

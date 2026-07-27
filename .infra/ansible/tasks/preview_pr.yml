@@ -114,6 +114,8 @@
         db_collections_count.rc != 0 or
         (db_collections_count.stdout | trim | int) == 0
 
+    # Crée aussi les MongoDB Search indexes de la base preview_<PR> via le driver
+    # (createSearchIndexes) et seed les synonymes — mongot tourne dans preview-system.
     - name: "[{{ pr_number }}] Create MongoDB indexes (before migrations)"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
