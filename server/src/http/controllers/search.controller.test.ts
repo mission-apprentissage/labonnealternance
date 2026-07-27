@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-describe.skip("search.controller", () => {
+describe("search.controller", () => {
   useMongo()
   const httpClient = useServer()
 
@@ -92,7 +92,9 @@ describe.skip("search.controller", () => {
       })
     })
 
-    describe("réponse sans mongot ($search retourne vide sans moteur de recherche)", () => {
+    // mongot tourne en CI (cf. ci.yml « start mongot service ») mais les bases de test
+    // n'ont pas de search index → $search répond vide, ce qui suffit à exercer le pipeline.
+    describe("réponse sans search index ($search répond vide)", () => {
       it("retourne des hits vides si la collection est vide", async () => {
         const response = await httpClient().inject({ method: "GET", path: "/api/v1/search" })
 

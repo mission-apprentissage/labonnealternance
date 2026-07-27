@@ -11,7 +11,7 @@ export const zSearchRoutes = {
       path: "/v1/search",
       querystring: z
         .object({
-          q: z.string().optional().describe("Texte libre de recherche (fuzzy, analyse française)"),
+          q: z.string().max(200).optional().describe("Texte libre de recherche (fuzzy, analyse française, 200 caractères max)"),
           type: z.string().optional().describe("Type de résultat : offre ou formation"),
           mode: z
             .enum(["emplois", "formations", "emplois_formation"])
@@ -33,7 +33,7 @@ export const zSearchRoutes = {
             .union([z.array(z.string()), z.string().transform((v) => [v])])
             .optional()
             .describe("Secteur d'activité (peut être passé plusieurs fois)"),
-          organization_name: z.string().optional().describe("Filtre par nom d'entreprise (exact)"),
+          organization_name: z.string().max(200).optional().describe("Filtre par nom d'entreprise (exact, 200 caractères max)"),
           is_disabled_elligible: z
             .enum(["true", "false"])
             .transform((v) => v === "true")
@@ -58,9 +58,11 @@ export const zSearchRoutes = {
             .enum(["proximity", "date", "applications", "start_date"])
             .optional()
             .describe("Tri : proximité (géo), date de publication, nb de candidatures (croissant), ou date de début de contrat (croissant). Par défaut : pertinence."),
-          latitude: ZLatitudeParam,
-          longitude: ZLongitudeParam,
-          radius: ZRadiusParam.default(30),
+          // Bornes locales à cette route (les Z*Param partagés du legacy n'en ont pas) : un
+          // radius énorme/négatif serait multiplié par 1000 dans geoWithin.circle.radius.
+          latitude: ZLatitudeParam.pipe(z.number().min(-90).max(90).optional()),
+          longitude: ZLongitudeParam.pipe(z.number().min(-180).max(180).optional()),
+          radius: ZRadiusParam.pipe(z.number().min(0).max(200).optional()).default(30),
           page: z.coerce.number().min(0).default(0).describe("Index de page (0-based)"),
           hitsPerPage: z.coerce.number().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
           source: z.enum(["suggestion", "free_text"]).optional().describe("Origine de la requête côté UI (télémétrie autocomplete, sans effet sur les résultats)"),
@@ -108,7 +110,7 @@ export const zSearchRoutes = {
       path: "/v1/search/suggest",
       querystring: z
         .object({
-          q: z.string().trim().min(3).describe("Texte de saisie (autocomplétion par préfixe, min 3 caractères après trim)"),
+          q: z.string().trim().min(3).max(200).describe("Texte de saisie (autocomplétion par préfixe, 3 à 200 caractères après trim)"),
           limit: z.coerce.number().min(1).max(20).default(8).describe("Nombre de suggestions (max 20)"),
         })
         .strict(),

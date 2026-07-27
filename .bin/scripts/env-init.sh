@@ -20,7 +20,8 @@ echo "NEXT_PUBLIC_API_PORT=5001" >> "${ROOT_DIR}/ui/.env"
 yarn
 
 # Mot de passe mongot : récupéré depuis server/.env (généré du vault via .env_server),
-# écrit dans le fichier que l'image mongot copie au build (Dockerfile.mongot), AVANT services:start.
+# écrit dans le fichier que docker-compose monte dans le conteneur mongot (jamais copié dans
+# l'image — layer extractible), AVANT services:start (un bind-mount absent créerait un répertoire).
 echo "Provisioning du mot de passe mongot..."
 MONGOT_VALUE=$(grep -E '^MONGOT_PASSWORD=' "${ROOT_DIR}/server/.env" | head -1 | cut -d= -f2-)
 if [ -z "$MONGOT_VALUE" ]; then
@@ -28,6 +29,8 @@ if [ -z "$MONGOT_VALUE" ]; then
   exit 1
 fi
 printf '%s' "$MONGOT_VALUE" > "${ROOT_DIR}/.infra/local/mongot_password"
+# mongot 1.x refuse un fichier de mot de passe lisible au-delà du propriétaire.
+chmod 600 "${ROOT_DIR}/.infra/local/mongot_password"
 
 yarn services:start
 yarn setup:mongodb

@@ -370,6 +370,8 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               size="small"
               fullWidth
               sx={fieldSx(Boolean(qError))}
+              // Aligné sur la borne API (q max 200) : sans lui, un collage long produit un 400.
+              slotProps={{ htmlInput: { ...params.inputProps, maxLength: 200 } }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit(inputValue, "free_text")
               }}

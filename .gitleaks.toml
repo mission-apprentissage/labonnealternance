@@ -60,5 +60,7 @@ paths = [
   '''\.infra/env.preview\.yml''',
   '''\.infra/env.local\.yml''',
   '''gitleaks-fingerprints-baseline.txt''',
-  '''docs/'''
+  # Uniquement le doc contenant des exemples de credentials factices — pas tout docs/
+  # (un vrai secret collé dans une doc future doit rester détectable).
+  '''docs/infrastructure/mongodb-local\.md'''
 ]

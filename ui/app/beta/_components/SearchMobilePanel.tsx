@@ -5,6 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import type { ReactNode } from "react"
 
+import { useDialogA11y } from "../_hooks/useDialogA11y"
 import { useLockBodyScroll } from "../_hooks/useLockBodyScroll"
 
 interface SearchMobilePanelProps {
@@ -23,9 +24,11 @@ interface SearchMobilePanelProps {
  */
 export function SearchMobilePanel({ title, ariaLabel, onClose, children, footer }: SearchMobilePanelProps) {
   useLockBodyScroll()
+  const dialogRef = useDialogA11y(onClose)
 
   return (
     <Box
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-label={title ?? ariaLabel}

@@ -47,6 +47,23 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     return vals.length ? vals : undefined
   }
 
+  // Parsing numérique gardé : une URL malformée (latitude=abc) produirait NaN, que tous les
+  // checks `!== undefined` traitent comme valide — le NaN serait re-sérialisé dans l'URL à
+  // chaque navigation sans jamais se réparer. Non fini → undefined / valeur par défaut.
+  function getFloat(key: string): number | undefined {
+    const raw = search.get(key)
+    if (!raw) return undefined
+    const value = parseFloat(raw)
+    return Number.isFinite(value) ? value : undefined
+  }
+
+  function getInt(key: string, fallback: number): number {
+    const raw = search.get(key)
+    if (!raw) return fallback
+    const value = parseInt(raw, 10)
+    return Number.isFinite(value) ? value : fallback
+  }
+
   function getBool(key: string): boolean | undefined {
     const val = search.get(key)
     if (val === "true") return true
@@ -58,6 +75,11 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     const vals = [...new Set(search.getAll(key).filter((v) => v === "true" || v === "false"))].map((v) => v === "true")
     return vals.length ? vals : undefined
   }
+
+  // Une coordonnée sans l'autre est inutilisable (hasGeo exige la paire) : on droppe les deux.
+  const latitude = getFloat("latitude")
+  const longitude = getFloat("longitude")
+  const hasGeoPair = latitude !== undefined && longitude !== undefined
 
   return {
     q: search.get("q") || undefined,
@@ -75,11 +97,11 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     smart_apply: getBool("smart_apply"),
     is_algo_company: getBoolMulti("is_algo_company"),
     sort: SORT_OPTIONS.includes(search.get("sort") as SortOption) ? (search.get("sort") as SortOption) : undefined,
-    latitude: search.get("latitude") ? parseFloat(search.get("latitude")!) : undefined,
-    longitude: search.get("longitude") ? parseFloat(search.get("longitude")!) : undefined,
-    radius: parseInt(search.get("radius") ?? "20", 10),
-    page: parseInt(search.get("page") ?? "0", 10),
-    hitsPerPage: parseInt(search.get("hitsPerPage") ?? "20", 10),
+    latitude: hasGeoPair ? latitude : undefined,
+    longitude: hasGeoPair ? longitude : undefined,
+    radius: getInt("radius", 20),
+    page: getInt("page", 0),
+    hitsPerPage: getInt("hitsPerPage", 20),
   }
 }
 

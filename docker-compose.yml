@@ -31,6 +31,9 @@ services:
         condition: service_healthy
     volumes:
       - lba_mongot_data:/var/lib/mongot
+      # Mot de passe monté à l'exécution (généré par env-init.sh, gitignoré) — jamais cuit
+      # dans une layer d'image (extractible via docker history), même pattern qu'en preview.
+      - ./.infra/local/mongot_password:/etc/mongot/secrets/passwordFile:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 10s

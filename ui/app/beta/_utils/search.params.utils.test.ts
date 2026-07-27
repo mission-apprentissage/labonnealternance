@@ -49,3 +49,41 @@ describe("buildSearchPageTitle", () => {
     expect(buildSearchPageTitle({ ...base, mode: "emplois_formation" })).toBe("Offres en alternance | La bonne alternance")
   })
 })
+
+describe("parsing numérique gardé (URL malformée)", () => {
+  it("coordonnées non numériques → undefined (pas de NaN propagé)", () => {
+    const params = parseSearchPageParams(new URLSearchParams("latitude=abc&longitude=def"))
+    expect(params.latitude).toBeUndefined()
+    expect(params.longitude).toBeUndefined()
+  })
+
+  it("une coordonnée invalide invalide la paire (hasGeo exige les deux)", () => {
+    const params = parseSearchPageParams(new URLSearchParams("latitude=48.86&longitude=xyz"))
+    expect(params.latitude).toBeUndefined()
+    expect(params.longitude).toBeUndefined()
+  })
+
+  it("radius/page/hitsPerPage malformés → valeurs par défaut", () => {
+    const params = parseSearchPageParams(new URLSearchParams("radius=zz&page=NaN&hitsPerPage="))
+    expect(params.radius).toBe(20)
+    expect(params.page).toBe(0)
+    expect(params.hitsPerPage).toBe(20)
+  })
+
+  it("valeurs numériques valides conservées", () => {
+    const params = parseSearchPageParams(new URLSearchParams("latitude=48.86&longitude=2.35&radius=60&page=2"))
+    expect(params.latitude).toBe(48.86)
+    expect(params.longitude).toBe(2.35)
+    expect(params.radius).toBe(60)
+    expect(params.page).toBe(2)
+  })
+
+  it("aller-retour parse → buildSearchUrl : une URL corrompue se répare (pas de NaN re-sérialisé)", () => {
+    const params = parseSearchPageParams(new URLSearchParams("q=boulanger&latitude=abc&longitude=2.35&radius=zz&page=NaN"))
+    const url = buildSearchUrl(params)
+    expect(url).not.toContain("NaN")
+    expect(url).not.toContain("latitude")
+    expect(url).not.toContain("radius")
+    expect(url).toContain("q=boulanger")
+  })
+})

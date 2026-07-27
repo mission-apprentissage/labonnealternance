@@ -8,11 +8,9 @@ import { searchItems, suggestSearchTerms } from "@/services/search/search.servic
 /**
  * Tests de pertinence du moteur de recherche MongoDB Search ($search).
  *
- * Source : recette manuelle de l'équipe (30/06 → 13/07/2026), tableau Notion
- * "Tests sur la pertinence des résultats" :
- * https://app.notion.com/p/mission-apprentissage/37a0c88032c8803781c4dc1ae569491b
- * + short-list de référence (vue "jeu de tests", statuts "OK/KO - jeu de test") :
- * https://app.notion.com/p/mission-apprentissage/39c0c88032c8802088cec07afde2518a
+ * Source : recette manuelle de l'équipe (30/06 → 13/07/2026), tableau interne
+ * "Tests sur la pertinence des résultats" + short-list de référence (vue "jeu de tests",
+ * statuts "OK/KO - jeu de test") — voir l'espace de travail Notion de l'équipe.
  *
  * Le fichier est découpé en deux sections :
  *  1. "non-régression" : comportements validés OK en recette → ils doivent RESTER verts
@@ -40,7 +38,7 @@ const PARIS = { latitude: 48.8566, longitude: 2.3522 }
 
 // Corpus contrôlé — url_id = clé stable utilisée dans les assertions.
 const CORPUS = [
-  // — maintenance : cible de la recherche avec faute "maintenace" (Marion, OK)
+  // — maintenance : cible de la recherche avec faute "maintenace" (recette, OK)
   generateSearchItemFixture({
     url_id: "offre-maintenance",
     title: "Technicien de maintenance industrielle",
@@ -49,7 +47,7 @@ const CORPUS = [
     rome_labels: ["Maintenance industrielle"],
     organization_name: "Industria",
   }),
-  // — multi-mots "product manager" (Marion, KO) : le doc full-match...
+  // — multi-mots "product manager" (recette, KO) : le doc full-match...
   generateSearchItemFixture({
     url_id: "offre-product-manager",
     title: "Product Manager",
@@ -76,7 +74,7 @@ const CORPUS = [
     organization_name: "HyperRetail",
     publication_date: new Date("2025-01-02T10:00:00.000Z"),
   }),
-  // — priorité titre > description : "commerce" (Marion, Mitigé — un poste de dev
+  // — priorité titre > description : "commerce" (recette, Mitigé — un poste de dev
   //   pour un site e-commerce remontait en 1er devant les postes de commerce)
   generateSearchItemFixture({
     url_id: "offre-conseiller-commerce",
@@ -94,7 +92,7 @@ const CORPUS = [
     rome_labels: ["Développement informatique"],
     organization_name: "WebAgency",
   }),
-  // — acronyme couvert par la collection de synonymes : "mco" (Marion, OK)
+  // — acronyme couvert par la collection de synonymes : "mco" (recette, OK)
   generateSearchItemFixture({
     url_id: "formation-mco",
     type: "formation",
@@ -105,7 +103,7 @@ const CORPUS = [
     rome_labels: ["Management relation clientèle"],
     organization_name: "CFA Commerce",
   }),
-  // — acronyme ambigu "esf" (Claire, KO — le fuzzy remontait des offres d'analyste ESG)
+  // — acronyme ambigu "esf" (recette, KO — le fuzzy remontait des offres d'analyste ESG)
   generateSearchItemFixture({
     url_id: "offre-esf",
     title: "Conseiller en économie sociale et familiale",
@@ -122,7 +120,7 @@ const CORPUS = [
     rome_labels: ["Analyse financière"],
     organization_name: "BigBank",
   }),
-  // — nom d'entreprise : "sncf" (Marion, OK) + piège mention en description
+  // — nom d'entreprise : "sncf" (recette, OK) + piège mention en description
   generateSearchItemFixture({
     url_id: "offre-sncf",
     title: "Technicien signalisation ferroviaire",
@@ -139,7 +137,7 @@ const CORPUS = [
     rome_labels: ["Développement commercial"],
     organization_name: "MobilityCo",
   }),
-  // — métier simple : "plombier" (Claire, OK) + piège hors-sujet (Aurélie voyait des
+  // — métier simple : "plombier" (recette, OK) + piège hors-sujet (la recette voyait des
   //   fleuristes remonter sur "plomberie au Mans")
   generateSearchItemFixture({
     url_id: "offre-plombier",
@@ -186,7 +184,7 @@ const CORPUS = [
     organization_name: "BoucherieDuCoin",
     publication_date: new Date("2025-06-01T10:00:00.000Z"),
   }),
-  // — mot incomplet / abréviation : "compta" (Marion, KO), "elec" (Aurélie, Mitigé)
+  // — mot incomplet / abréviation : "compta" (recette, KO), "elec" (recette, Mitigé)
   generateSearchItemFixture({
     url_id: "offre-comptable",
     title: "Assistant comptable",
@@ -196,7 +194,7 @@ const CORPUS = [
     organization_name: "FiduPlus",
     publication_date: new Date("2025-01-05T10:00:00.000Z"),
   }),
-  // — nom de poste hors libellés d'offres : "vigile" (Marion, KO en prod — le mécanisme
+  // — nom de poste hors libellés d'offres : "vigile" (recette, KO en prod — le mécanisme
   //   keywords doit permettre de le couvrir)
   generateSearchItemFixture({
     url_id: "offre-securite",
@@ -223,7 +221,7 @@ const CORPUS = [
     rome_labels: ["Électricité bâtiment"],
     organization_name: "ElecRéseaux",
   }),
-  // — multi-mots "chargé de déploiement" (Marion, KO — remontait "chargé de recrutement",
+  // — multi-mots "chargé de déploiement" (recette, KO — remontait "chargé de recrutement",
   //   "chargée de communication", "chargé d'accueil"...)
   generateSearchItemFixture({
     url_id: "offre-deploiement",
@@ -261,7 +259,7 @@ const CORPUS = [
     publication_date: new Date("2025-01-03T10:00:00.000Z"),
   }),
   // — sélection d'une suggestion d'autocomplete : intitulé ROME complet avec doublet
-  //   masculin/féminin (Aurélie, KO — "Cuisinier / Cuisinière à domicile" remontait des
+  //   masculin/féminin (recette, KO — "Cuisinier / Cuisinière à domicile" remontait des
   //   conducteurs PL ; même pattern : "Moniteur éducateur / Monitrice éducatrice",
   //   "Alternant Charpentier / Charpentière")
   generateSearchItemFixture({
@@ -291,7 +289,7 @@ const CORPUS = [
     organization_name: "CollectivRest",
     level: "",
   }),
-  // — géo : tri par proximité (Aurélie : offres IDF avant Paris) et rayon
+  // — géo : tri par proximité (recette : offres IDF avant Paris) et rayon
   generateSearchItemFixture({
     url_id: "offre-versailles",
     title: "Vendeur en boulangerie",
@@ -356,7 +354,7 @@ const CORPUS = [
     publication_date: new Date("2026-05-01T00:00:00.000Z"),
   }),
   // — recette #2 : la couverture par description suffisait à passer la porte → traîne
-  //   d'incohérents ["chargé de déploiement" remontait du cross-marketing, Marion].
+  //   d'incohérents ["chargé de déploiement" remontait du cross-marketing].
   generateSearchItemFixture({
     url_id: "offre-marketing-deploiement-desc",
     title: "Chargé de mission marketing",
@@ -419,7 +417,7 @@ const CORPUS = [
   }),
   // — recette #3 : pièges de la porte de pertinence.
   // "vigile" s'étend en "agent(e) de sécurité" : l'expansion doit matcher en SÉQUENCE —
-  //   l'agent commercial ne doit plus entrer via le token "agent" seul [Marion, KO].
+  //   l'agent commercial ne doit plus entrer via le token "agent" seul [recette, KO].
   generateSearchItemFixture({
     url_id: "recruteur-agent-commercial",
     type_filter_label: "Candidature spontanée",
@@ -431,7 +429,7 @@ const CORPUS = [
     organization_name: "FORCE DE VENTE SUD",
     is_algo_company: true,
   }),
-  // "vente" ne doit plus matcher "verte(s)" par fuzzy (paysagistes) [Aurélie, KO].
+  // "vente" ne doit plus matcher "verte(s)" par fuzzy (paysagistes) [recette, KO].
   generateSearchItemFixture({
     url_id: "offre-paysagiste",
     title: "Ouvrier paysagiste",
@@ -449,7 +447,7 @@ const CORPUS = [
     organization_name: "ModeStore",
   }),
   // "product manager" : la boucherie matchait "manager" (rayon) + "product" (edgeGram
-  //   production / fuzzy produits) [Marion, KO].
+  //   production / fuzzy produits) [recette, KO].
   generateSearchItemFixture({
     url_id: "recruteur-boucherie",
     type_filter_label: "Candidature spontanée",
@@ -461,7 +459,7 @@ const CORPUS = [
     organization_name: "BOUCHERIE DU MARCHE",
     is_algo_company: true,
   }),
-  // Mots de diplôme : "bac pro commerce" faisait entrer tout doc "Bac pro exigé" [Aurélie, KO].
+  // Mots de diplôme : "bac pro commerce" faisait entrer tout doc "Bac pro exigé" [recette, KO].
   generateSearchItemFixture({
     url_id: "offre-carrossier-bacpro",
     title: "Apprenti Carrossier H/F",
@@ -471,7 +469,7 @@ const CORPUS = [
     organization_name: "AutoRepar",
   }),
   // Keyword générique : une OFFRE portant "communication" en keyword ne doit plus entrer sur
-  //   la requête mono-terme "communication" [Aurélie, KO] ; un RECRUTEUR le peut toujours
+  //   la requête mono-terme "communication" [recette, KO] ; un RECRUTEUR le peut toujours
   //   (keywords = son seul texte riche avec rome_labels).
   generateSearchItemFixture({
     url_id: "offre-gestion-paie",
@@ -596,32 +594,32 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   // 1. NON-RÉGRESSION — validés OK en recette, doivent rester verts.
   // ──────────────────────────────────────────────────────────────────────────
   describe("non-régression (OK en recette)", () => {
-    it("corrige une faute d'orthographe : 'maintenace' → offres de maintenance [Marion]", async () => {
+    it("corrige une faute d'orthographe : 'maintenace' → offres de maintenance", async () => {
       const result = await search({ q: "maintenace" })
 
       expect(rankOf(result, "offre-maintenance")).toBe(0)
     })
 
-    it("trouve un métier simple sans bruit hors-sujet : 'plombier' [Claire / Aurélie]", async () => {
+    it("trouve un métier simple sans bruit hors-sujet : 'plombier'", async () => {
       const result = await search({ q: "plombier" })
 
       expect(rankOf(result, "offre-plombier")).toBe(0)
       expect(ids(result)).not.toContain("offre-fleuriste")
     })
 
-    it("nom d'entreprise : 'sncf' → les offres de l'employeur remontent [Marion]", async () => {
+    it("nom d'entreprise : 'sncf' → les offres de l'employeur remontent", async () => {
       const result = await search({ q: "sncf" })
 
       expect(ids(result)).toContain("offre-sncf")
     })
 
-    it("acronyme couvert par les synonymes : 'mco' → BTS Management Commercial Opérationnel [Marion]", async () => {
+    it("acronyme couvert par les synonymes : 'mco' → BTS Management Commercial Opérationnel", async () => {
       const result = await search({ q: "mco" })
 
       expect(ids(result)).toContain("formation-mco")
     })
 
-    it("nom de poste couvert par les keywords : 'vigile' → agent de sécurité [Marion]", async () => {
+    it("nom de poste couvert par les keywords : 'vigile' → agent de sécurité", async () => {
       const result = await search({ q: "vigile" })
 
       expect(rankOf(result, "offre-securite")).toBe(0)
@@ -633,7 +631,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(rankOf(result, "offre-animateur")).toBe(0)
     })
 
-    it("sélection d'autocomplete (intitulé ROME avec doublet M/F) : 'Cuisinier / Cuisinière à domicile' → l'offre exacte en tête [Aurélie]", async () => {
+    it("sélection d'autocomplete (intitulé ROME avec doublet M/F) : 'Cuisinier / Cuisinière à domicile' → l'offre exacte en tête", async () => {
       const result = await search({ q: "Cuisinier / Cuisinière à domicile" })
 
       expect(rankOf(result, "offre-cuisinier-domicile")).toBe(0)
@@ -645,13 +643,13 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(rankOf(result, "offre-cadreur")).toBe(0)
     })
 
-    it("multi-mots avec doc full-match : 'chargé de déploiement' en tête devant les 'chargé de …' [Marion]", async () => {
+    it("multi-mots avec doc full-match : 'chargé de déploiement' en tête devant les 'chargé de …'", async () => {
       const result = await search({ q: "chargé de déploiement" })
 
       expect(rankOf(result, "offre-deploiement")).toBe(0)
     })
 
-    it("priorité au titre sur la description : 'commerce' → conseiller de vente avant le dev e-commerce [Marion]", async () => {
+    it("priorité au titre sur la description : 'commerce' → conseiller de vente avant le dev e-commerce", async () => {
       const result = await search({ q: "commerce" })
 
       const conseiller = rankOf(result, "offre-conseiller-commerce")
@@ -682,7 +680,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(result.nbHits).toBe(CORPUS.length - 1)
     })
 
-    it("tri par proximité : les documents remontent du plus proche au plus lointain [Aurélie]", async () => {
+    it("tri par proximité : les documents remontent du plus proche au plus lointain", async () => {
       const result = await search({ ...PARIS, radius: 1_000, sort: "proximity" })
 
       const resultIds = ids(result)
@@ -707,7 +705,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(result.hits).toHaveLength(5)
     })
 
-    it("autocomplétion : 'compta' suggère l'intitulé comptable [Aurélie — suggestions jugées pertinentes]", async () => {
+    it("autocomplétion : 'compta' suggère l'intitulé comptable [recette — suggestions jugées pertinentes]", async () => {
       const { suggestions } = await suggestSearchTerms({ q: "compta", limit: 5 })
 
       expect(suggestions.some((s) => s.toLowerCase().includes("comptab"))).toBe(true)
@@ -729,7 +727,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   // comportement CIBLE ; quand une modif le corrige, retirer le `.fails`.
   // ──────────────────────────────────────────────────────────────────────────
   describe("corrigés par la refonte Phase 1 (ex-KO/Mitigé en recette)", () => {
-    it("couverture multi-termes : 'product manager' ne remonte pas les docs ne matchant qu'un seul terme [Marion, KO]", async () => {
+    it("couverture multi-termes : 'product manager' ne remonte pas les docs ne matchant qu'un seul terme [recette, KO]", async () => {
       const result = await search({ q: "product manager" })
 
       // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : minimumShouldMatch=1 → 'Product Designer' et 'Assistant manager'
@@ -739,14 +737,14 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(ids(result)).not.toContain("offre-assistant-manager")
     })
 
-    it("couverture multi-termes : 'chargé de déploiement' ne remonte pas les autres 'chargé de …' [Marion, KO]", async () => {
+    it("couverture multi-termes : 'chargé de déploiement' ne remonte pas les autres 'chargé de …' [recette, KO]", async () => {
       const result = await search({ q: "chargé de déploiement" })
 
       expect(ids(result)).not.toContain("offre-charge-recrutement")
       expect(ids(result)).not.toContain("offre-charge-communication")
     })
 
-    it("nom d'entreprise : l'offre de l'employeur avant les offres qui le mentionnent en description [Marion]", async () => {
+    it("nom d'entreprise : l'offre de l'employeur avant les offres qui le mentionnent en description", async () => {
       const result = await search({ q: "sncf" })
 
       // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : la mention en description (boost 2, mais champ court → TF/IDF fort)
@@ -758,7 +756,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(mention === -1 || employeur < mention).toBe(true)
     })
 
-    it("acronyme ambigu : 'esf' privilégie le synonyme exact (économie sociale et familiale) sur le fuzzy 'ESG' [Claire, KO]", async () => {
+    it("acronyme ambigu : 'esf' privilégie le synonyme exact (économie sociale et familiale) sur le fuzzy 'ESG' [recette, KO]", async () => {
       const result = await search({ q: "esf" })
 
       // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : le fuzzy (maxEdits 1) sur le titre 'Analyste ESG' (boost 7) écrase
@@ -769,7 +767,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(esg === -1 || esf < esg).toBe(true)
     })
 
-    it("abréviation / mot incomplet : 'compta' trouve les offres comptables (comme l'autocomplétion) [Marion, KO]", async () => {
+    it("abréviation / mot incomplet : 'compta' trouve les offres comptables (comme l'autocomplétion) [recette, KO]", async () => {
       const result = await search({ q: "compta" })
 
       // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : 'compta' → 'comptable' dépasse maxEdits=1 et l'opérateur text
@@ -797,7 +795,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(result.nbHits).toBe(0)
     })
 
-    it("sélection d'autocomplete : 'Cuisinier / Cuisinière à domicile' ne remonte pas les docs ne matchant que 'domicile' [Aurélie, KO]", async () => {
+    it("sélection d'autocomplete : 'Cuisinier / Cuisinière à domicile' ne remonte pas les docs ne matchant que 'domicile' [recette, KO]", async () => {
       const result = await search({ q: "Cuisinier / Cuisinière à domicile" })
 
       // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : le doublet masculin/féminin des intitulés ROME gonfle le nombre de
@@ -823,7 +821,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   // par description, tri par date pollué par les recruteurs, synonyme métier.
   // ──────────────────────────────────────────────────────────────────────────
   describe("corrigés par la recette #2", () => {
-    it("pas de fuzzy sur les noms d'entreprise : 'vigile' ne remonte pas VIGIER [Marion, KO]", async () => {
+    it("pas de fuzzy sur les noms d'entreprise : 'vigile' ne remonte pas VIGIER [recette, KO]", async () => {
       const result = await search({ q: "vigile" })
 
       expect(ids(result)).not.toContain("recruteur-vigier")
@@ -843,7 +841,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(ids(result)).toContain("recruteur-vigier")
     })
 
-    it("la description seule ne fait plus entrer un doc : 'chargé de déploiement' exclut la mention marketing [Marion, KO]", async () => {
+    it("la description seule ne fait plus entrer un doc : 'chargé de déploiement' exclut la mention marketing [recette, KO]", async () => {
       const result = await search({ q: "chargé de déploiement" })
 
       // "chargé" est couvert par le titre mais "déploiement" ne l'est que par la description
@@ -873,35 +871,35 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   // 2ter. CORRIGÉS PAR LA RECETTE #3 — synonymes en séquence, fuzzy resserré,
   // edgeGram/keywords réservés selon le contexte, mots de diplôme neutralisés.
   describe("corrigés par la recette #3", () => {
-    it("synonymes en séquence : 'vigile' ne remonte plus les agents commerciaux via le token 'agent' [Marion, KO]", async () => {
+    it("synonymes en séquence : 'vigile' ne remonte plus les agents commerciaux via le token 'agent' [recette, KO]", async () => {
       const result = await search({ q: "vigile" })
 
       expect(ids(result)).toContain("offre-securite")
       expect(ids(result)).not.toContain("recruteur-agent-commercial")
     })
 
-    it("fuzzy resserré : 'vente' ne matche plus 'verte' (paysagistes) [Aurélie, KO]", async () => {
+    it("fuzzy resserré : 'vente' ne matche plus 'verte' (paysagistes) [recette, KO]", async () => {
       const result = await search({ q: "vente" })
 
       expect(ids(result)).toContain("offre-conseiller-vente")
       expect(ids(result)).not.toContain("offre-paysagiste")
     })
 
-    it("multi-termes sans edgeGram ni fuzzy accidentels : 'product manager' ne remonte plus les boucheries [Marion, KO]", async () => {
+    it("multi-termes sans edgeGram ni fuzzy accidentels : 'product manager' ne remonte plus les boucheries [recette, KO]", async () => {
       const result = await search({ q: "product manager" })
 
       expect(rankOf(result, "offre-product-manager")).toBe(0)
       expect(ids(result)).not.toContain("recruteur-boucherie")
     })
 
-    it("mots de diplôme neutralisés : 'bac pro commerce' cible le commerce, pas les offres 'Bac pro exigé' [Aurélie, KO]", async () => {
+    it("mots de diplôme neutralisés : 'bac pro commerce' cible le commerce, pas les offres 'Bac pro exigé' [recette, KO]", async () => {
       const result = await search({ q: "bac pro commerce" })
 
       expect(ids(result)).toContain("offre-conseiller-commerce")
       expect(ids(result)).not.toContain("offre-carrossier-bacpro")
     })
 
-    it("keyword générique : la requête mono-terme 'communication' n'ouvre plus les offres par keywords [Aurélie, KO]", async () => {
+    it("keyword générique : la requête mono-terme 'communication' n'ouvre plus les offres par keywords [recette, KO]", async () => {
       const result = await search({ q: "communication" })
 
       expect(ids(result)).toContain("offre-charge-communication")

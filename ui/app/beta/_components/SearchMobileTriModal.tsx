@@ -6,6 +6,7 @@ import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box } from "@mui/material"
 import { useState } from "react"
 
+import { useDialogA11y } from "../_hooks/useDialogA11y"
 import { useLockBodyScroll } from "../_hooks/useLockBodyScroll"
 import type { ISearchPageParams, SortOption } from "../_utils/search.params.utils"
 import { FORMATION_SORTS, SORT_LABELS } from "./SearchSortSelect"
@@ -23,6 +24,7 @@ interface SearchMobileTriModalProps {
  */
 export function SearchMobileTriModal({ params, onNavigate, onClose }: SearchMobileTriModalProps) {
   useLockBodyScroll()
+  const dialogRef = useDialogA11y(onClose)
 
   const [selected, setSelected] = useState<SortOption | "">(params.sort ?? "")
   const hasGeo = params.latitude !== undefined && params.longitude !== undefined
@@ -35,9 +37,10 @@ export function SearchMobileTriModal({ params, onNavigate, onClose }: SearchMobi
 
   return (
     <Box sx={{ position: "fixed", inset: 0, zIndex: 1250, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-      {/* Backdrop décoratif (clic = fermer) — la fermeture clavier passe par le bouton Fermer. */}
+      {/* Backdrop décoratif (clic = fermer) — la fermeture clavier passe par Escape et le bouton Fermer. */}
       <Box onClick={onClose} sx={{ position: "absolute", inset: 0, backgroundColor: "rgba(22,22,22,0.64)" }} aria-hidden="true" />
       <Box
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label="Tri"

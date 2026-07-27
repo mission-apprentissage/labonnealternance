@@ -1,5 +1,7 @@
 .bin/scripts/env-init.sh:generic-password-assignment:pwd
 .bin/scripts/env-init.sh:mongodb-connection-string:mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true
+.github/workflows/ci.yml:mongodb-connection-string:mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true
+.github/workflows/ci.yml:mongodb-connection-string:mongodb://__system:password@localhost:27017/ci_probe?authSource=local&directConnection=true
 .infra/ansible/preview.yml:generic-password-assignment:pwd
 .infra/ansible/preview.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/admin?authSource=local&directConnection=true
 .infra/ansible/preview_cleanup.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/admin?authSource=local&directConnection=true
