@@ -50,6 +50,7 @@ import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { createApiUser } from "./recruiters/createApiUser"
 import { disableApiUser } from "./recruiters/disableApiUser"
+import { nurturingEntreprises } from "./recruiters/nurturingEntreprises"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
 import { resetApiKey } from "./recruiters/resetApiKey"
@@ -127,6 +128,10 @@ export async function setupJobProcessor() {
             cron_string: "30 0 * * 1,3,5",
             handler: opcoReminderJob,
             tag: "main",
+          },
+          "Nurturing des entreprises dormantes (anniversaire du dépôt d'offre)": {
+            cron_string: "0 8 * * *",
+            handler: config.env === "production" ? async () => nurturingEntreprises() : async () => Promise.resolve(0),
           },
           "Anonymisation des reasons de plus de (1) an": {
             cron_string: "35 0 * * *",
