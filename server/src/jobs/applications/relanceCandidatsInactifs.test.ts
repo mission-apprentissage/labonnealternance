@@ -134,7 +134,6 @@ describe("relanceCandidatsInactifs", () => {
     const [, rows] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
     expect(rows[0].lien_recherche).toBe("")
   })
-
   it("exclut les inactifs qui n'ont jamais fait de candidature spontanée (pris en charge par la liste B)", async () => {
     const onlyOffers = makeApplicant({ last_connection: new Date("2026-07-02T12:00:00Z") })
     await getDbCollection("applicants").insertOne(onlyOffers)

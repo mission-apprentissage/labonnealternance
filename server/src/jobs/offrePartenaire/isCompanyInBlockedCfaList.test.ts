@@ -29,6 +29,10 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
     expect(isCompanyInBlockedCfaList("CIO'sup drome-ardeche")).toBe(true)
   })
 
+  it("devrait trouver le nouveau CFA bloqué demandé", () => {
+    expect(isCompanyInBlockedCfaList("AURLOM BTS+ PARIS")).toBe(true)
+  })
+
   it("devrait trouver les CFA lorsqu'ils sont mentionnés dans un texte", () => {
     expect(isCompanyInBlockedCfaList("Formation en alternance avec Iscod pour une prise de poste immediate")).toBe(true)
     expect(isCompanyInBlockedCfaList("Entreprise partenaire du CFA Iscod pour le recrutement en alternance")).toBe(true)

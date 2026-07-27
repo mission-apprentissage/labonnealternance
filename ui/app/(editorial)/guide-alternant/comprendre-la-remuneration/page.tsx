@@ -11,9 +11,25 @@ import { TableArticle } from "@/app/(editorial)/_components/TableArticle"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { SchemaOrg } from "@/components/SchemaOrg"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.guideAlternantComprendreLaRemuneration.getMetadata()
+const remunerationPage = PAGES.static.guideAlternantComprendreLaRemuneration
+
+export const metadata: Metadata = remunerationPage.getMetadata()
+
+// Miroir texte brut de la FAQ visible ci-dessous, pour le JSON-LD FAQPage (aide à obtenir les rich results / PAA).
+const FAQ_ITEMS = [
+  {
+    question: "L'alternant est-il payé pendant ses périodes de formation ?",
+    answer:
+      "Oui, l'alternant perçoit son salaire à la fois pendant les périodes en entreprise et pendant les périodes de formation en CFA ou organisme de formation. C'est l'employeur qui verse l'intégralité du salaire.",
+  },
+  {
+    question: "Le salaire est-il versé pendant les congés payés ?",
+    answer: "Oui, comme tout salarié, l'alternant bénéficie de congés payés rémunérés (5 semaines par an minimum) et son salaire est maintenu pendant les congés.",
+  },
+]
 
 const BlocSalaire = () => (
   <Grid container spacing={fr.spacing("4v")} mb={fr.spacing("4v")}>
@@ -245,6 +261,15 @@ const ComprendreLaRemunerationPage = () => {
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantComprendreLaRemuneration}
     >
+      <SchemaOrg
+        type="FAQPage"
+        title={remunerationPage.title}
+        description={remunerationPage.getMetadata().description ?? ""}
+        url={remunerationPage.getPath()}
+        breadcrumbs={[]}
+        omitBreadcrumb
+        faqItems={FAQ_ITEMS}
+      />
       <Section title="Comprendre la rémunération en alternance">
         <Paragraph>La rémunération minimale en alternance diffère selon le contrat choisi. Deux types de contrats existent :</Paragraph>
         <ParagraphList

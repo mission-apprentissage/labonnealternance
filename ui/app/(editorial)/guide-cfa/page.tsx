@@ -83,6 +83,9 @@ const guideCfaPage = () => {
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["la-carte-etudiant-des-metiers"]} />
             </Grid>
+            <Grid size={{ md: 3, xs: 12 }}>
+              <AllerPlusLoinItem {...ARTICLES["accompagner-vos-alternants"]} />
+            </Grid>
           </Grid>
           <Grid container size={12} spacing={fr.spacing("4v")}>
             <Grid size={12} my={fr.spacing("6v")}>
@@ -197,6 +200,11 @@ const guideCfaPage = () => {
               <DocumentGridItem
                 title="Convention de réduction ou d’allongement de la durée du contrat d’apprentissage"
                 link="https://www.legifrance.gouv.fr/download/pdf?id=RXAkPiH46HPlfBr9nv5wqIvKSk5AJ5_K4MfKeTuWgLs="
+              />
+              <DocumentGridItem
+                download="affiche-cfa-avril-2026.pdf"
+                title="Télécharger l’affiche La bonne alternance, à exposer dans votre CFA (format A3)."
+                link="/ressources/affiche-cfa-avril-2026.pdf"
               />
             </Grid>
           </Grid>

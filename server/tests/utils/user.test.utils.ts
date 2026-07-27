@@ -107,7 +107,6 @@ export const saveRoleManagement = async (data: Partial<IRoleManagement> = {}) =>
     authorized_id: "id",
     authorized_type: AccessEntityType.CFA,
     createdAt: new Date(),
-    origin: "origin",
     status: [],
     updatedAt: new Date(),
     user_id: new ObjectId(),

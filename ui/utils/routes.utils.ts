@@ -4,9 +4,9 @@ import type { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/index"
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
-
+import { buildRechercheMetadata } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.metadata.utils"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { buildRecherchePageParams, buildSearchTitle, IRechercheMode } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { buildRecherchePageParams, IRechercheMode } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export interface IPage {
   getPath: (args?: any) => string
@@ -228,8 +228,9 @@ export const PAGES = {
       title: "Comprendre la rémunération en alternance",
       index: true,
       getMetadata: () => ({
-        title: "Salaire alternant 2026 | Grilles et barèmes officiels",
-        description: "Barèmes de salaire en apprentissage et professionnalisation 2026. Grilles par âge, diplôme, calcul brut/net et exonérations fiscales.",
+        title: "Salaire en alternance 2026 : grille et barèmes officiels",
+        description:
+          "Grille de salaire en alternance 2026 : de 27 % à 100 % du SMIC selon l'âge et l'année de contrat. Apprentissage et professionnalisation, calcul brut/net et exonérations.",
       }),
     },
     guideAlternantCommentSignerUnContratEnAlternance: {
@@ -302,6 +303,15 @@ export const PAGES = {
       getMetadata: () => ({
         title: "Carte étudiant des métiers | Délivrance et avantages",
         description: "Délivrance de la carte d'étudiant des métiers par les CFA : obligations, délais (30 jours), avantages et réductions pour les alternants.",
+      }),
+    },
+    guideCfaAccompagnerVosAlternants: {
+      getPath: () => `/guide-cfa/accompagner-vos-alternants` as string,
+      title: "Accompagner vos alternants dans leurs démarches de candidatures",
+      index: true,
+      getMetadata: () => ({
+        title: "Guide CFA | Accompagner vos alternants",
+        description: "Comment les candidatures spontanées augmentent les chances de trouver son futur employeur.",
       }),
     },
     jeSuisRecruteur: {
@@ -753,49 +763,31 @@ export const PAGES = {
     },
     recherche: (rechercheParams: Partial<IRecherchePageParams> | null): IPage => {
       const search = buildRecherchePageParams(rechercheParams, IRechercheMode.DEFAULT)
-      const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
         getPath: () => `/recherche${search ? `?${search}` : ""}` as string,
         index: false,
-        getMetadata: () => ({
-          title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
-          description: searchTitleContext
-            ? `Trouvez des offres d'emploi en alternance et des formations en apprentissage${searchTitleContext}. Postulez directement en ligne.`
-            : "Trouvez des offres d'emploi en alternance et des formations en apprentissage près de chez vous. Filtrez par métier, ville et type de contrat.",
-        }),
+        getMetadata: () => buildRechercheMetadata(rechercheParams, "default"),
         title: "Offres en alternance",
       }
     },
     rechercheFormation: (rechercheParams: Partial<IRecherchePageParams> | null): IPage => {
       const search = buildRecherchePageParams(rechercheParams, IRechercheMode.FORMATIONS_ONLY)
-      const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
         getPath: () => `/recherche-formation${search ? `?${search}` : ""}` as string,
         index: false,
-        getMetadata: () => ({
-          title: `Formations en alternance${searchTitleContext} | La bonne alternance`,
-          description: searchTitleContext
-            ? `Trouvez des formations en apprentissage${searchTitleContext}. Comparez les programmes et postulez en ligne.`
-            : "Trouvez des formations en apprentissage près de chez vous. Comparez les programmes par métier et par ville, postulez directement en ligne.",
-        }),
+        getMetadata: () => buildRechercheMetadata(rechercheParams, "formation"),
         title: "Formations en alternance",
       }
     },
     rechercheEmploi: (rechercheParams: Partial<IRecherchePageParams> | null): IPage => {
       const search = buildRecherchePageParams(rechercheParams, IRechercheMode.JOBS_ONLY)
-      const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
         getPath: () => `/recherche-emploi${search ? `?${search}` : ""}` as string,
         index: false,
-        getMetadata: () => ({
-          title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
-          description: searchTitleContext
-            ? `Trouvez des offres d'emploi en alternance${searchTitleContext}. Postulez directement en ligne.`
-            : "Trouvez des offres d'emploi en alternance près de chez vous. Filtrez par métier, ville et type de contrat, postulez directement en ligne.",
-        }),
+        getMetadata: () => buildRechercheMetadata(rechercheParams, "emploi"),
         title: "Offres en alternance",
       }
     },
@@ -862,6 +854,13 @@ export const PAGES = {
     },
     backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
+      title: user_label ?? "Entreprise",
+      getMetadata: () => ({
+        title: `${user_label ?? "Entreprise"} - La bonne alternance`,
+      }),
+    }),
+    backAdminUserCfaEntreprise: ({ user_id, establishment_id, user_label }: { user_id: string; establishment_id: string; user_label?: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/users/${user_id}/cfa/${establishment_id}` as string,
       title: user_label ?? "Entreprise",
       getMetadata: () => ({
         title: `${user_label ?? "Entreprise"} - La bonne alternance`,

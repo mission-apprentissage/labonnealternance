@@ -52,7 +52,7 @@ const updateEntreprisesInfosInError = async () => {
   return stats
 }
 
-const deactivationWarningOriginExclusion = ["opcoep-HUBE", "opcoep-CRM"]
+const deactivationWarningOriginExclusion = ["OPCOEP", "opcoep-HUBE", "opcoep-CRM"]
 
 export const warnDeactivatedRecruteur = async (user: IUserWithAccount, entreprise: IEntreprise, error: IBusinessError) => {
   if (!deactivationWarningOriginExclusion.includes(user.origin ?? "")) {

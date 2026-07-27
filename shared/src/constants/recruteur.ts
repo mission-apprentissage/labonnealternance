@@ -114,16 +114,15 @@ export enum TRAINING_REMOTE_TYPE {
 }
 
 export const RECRUITER_USER_ORIGIN = {
-  sante: "Opco Santé",
-  atlas: "Opco Atlas",
-  opco2i: "Opco 2i",
-  constructys: "Opco Constructys",
-  "opcoep-CRM": "Opco EP",
-  akto: "Opco Akto",
-  "lesentreprises-sengagent": "Les entreprises s'engagent",
-  "opcoep-HUBE": "Opco EP",
-  portailalternance: "Portail de l'alternance",
-  "1J1S": "1 jeune 1 solution",
+  OPCOSanté: "Opco Santé",
+  OPCOAtlas: "Opco Atlas",
+  OPCO2i: "Opco 2i",
+  OPCOConstructys: "Opco Constructys",
+  OPCOEP: "Opco EP",
+  OPCOAkto: "Opco Akto",
+  "Lesentreprisess'engagent": "Les entreprises s'engagent",
+  "Portaildel'alternance": "Portail de l'alternance",
+  "1jeune1solution": "1 jeune 1 solution",
 }
 
 export const TYPE_EMPLOI_OPTIONS = {

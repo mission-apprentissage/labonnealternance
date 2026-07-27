@@ -12,6 +12,7 @@ import CustomInput from "@/app/_components/CustomInput"
 import { useToast } from "@/app/hooks/useToast"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { cancelOffreFromAdmin } from "@/utils/api"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 const zodSchema = z.object({
   motif: z.string().nonempty(),
@@ -51,6 +52,7 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
     const motifFinal = (motif === motifAutre ? autreMotif || motif : motif) || undefined
     cancelOffreFromAdmin(offre._id, { job_status: jobStatus, job_status_comment: motifFinal })
       .then(() => {
+        pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_DELETE_CONFIRMED })
         toast({
           title: `Offre supprimée.`,
           description: "Votre offre a bien été mise à jour.",
