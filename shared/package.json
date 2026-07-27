@@ -30,7 +30,7 @@
     "dev": "tsc -b -w"
   },
   "dependencies": {
-    "bson": "^6.10.4",
+    "bson": "^7.1.1",
     "change-case": "5.4.4",
     "dayjs": "^1.11.19",
     "i18next": "^25.6.0",
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@tsconfig/node24": "^24.0.3",
     "@types/node": "^24.10.0",
-    "mongodb": "^6.20.0",
+    "mongodb": "^7.0.0",
     "typescript": "^5.9.3"
   }
 }

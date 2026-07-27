@@ -55,8 +55,9 @@
     src: "{{inventory_dir}}/../files/configs/mongodb/mongo_keyfile.txt"
     dest: "/opt/app/configs/mongodb/mongo_keyfile.txt"
     mode: "400"
-    owner: 999
-    group: 999
+    # uid de mongod dans l'image mongodb-community-server (999 = ancienne image mongo:7).
+    owner: 1000
+    group: 1000
   when: env_type == 'preview'
 
 - name: copy server env file

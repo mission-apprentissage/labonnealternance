@@ -2,6 +2,7 @@
 
 import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { usePathname } from "next/navigation"
+import { useNewSearchOptIn } from "@/app/beta/_hooks/useNewSearchOptIn"
 import { PAGES } from "@/utils/routes.utils"
 
 type NavLink = {
@@ -75,19 +76,28 @@ function isMenuActive(pathname: string, menuLinks: NavLink[]): boolean {
   return menuLinks.some((link) => isLinkActive(pathname, link.href))
 }
 
+const RECHERCHE_LEGACY_HREF = PAGES.dynamic.recherche({}).getPath()
+const RECHERCHE_NEW_HREF = "/beta/recherche"
+
 export function HeaderNavigation() {
   const pathname = usePathname()
+
+  // « Je recherche une alternance » suit l'opt-in au nouveau moteur (le SSR rend le href
+  // legacy — snapshot serveur du hook — et la valeur client s'applique après l'hydratation).
+  const { optedIn } = useNewSearchOptIn()
+  const rechercheHref = optedIn ? RECHERCHE_NEW_HREF : RECHERCHE_LEGACY_HREF
 
   const items = NAV_ITEMS.map((item) => ({
     text: item.text,
     isActive: isMenuActive(pathname, item.menuLinks),
-    menuLinks: item.menuLinks.map((link) => ({
-      text: link.text,
-      isActive: isLinkActive(pathname, link.href),
-      linkProps: {
-        href: link.href,
-      },
-    })),
+    menuLinks: item.menuLinks.map((link) => {
+      const href = link.href === RECHERCHE_LEGACY_HREF ? rechercheHref : link.href
+      return {
+        text: link.text,
+        isActive: isLinkActive(pathname, href),
+        linkProps: { href },
+      }
+    }),
   }))
 
   return <MainNavigation items={items} />

@@ -5,6 +5,7 @@ import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Server } from "@/http/server"
+import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/searchItems.service"
 
 type IModelTraining = {
   partner_job_id: string
@@ -160,6 +161,8 @@ const updateClassificationAndSynchronise = async ({ classification, partner_job_
           { $set: { business_error: null, errors: [], validated: false }, $pull: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION } }
         ),
       ])
+      // Après l'update (le sync lit l'état post-annulation) : retrait de l'index de recherche.
+      syncJobPartnersToSearchItemsInBackground([jobPartners._id])
     } else {
       const computedJobPartner = await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: job.partner_job_id })
       if (computedJobPartner) {

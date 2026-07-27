@@ -5,6 +5,13 @@ import { getLoggerWithContext, logger } from "@/common/logger"
 import { getDatabase } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
+import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/searchItems.service"
+import {
+  applyKeywordsBatchFile,
+  applyPendingMistralBatches,
+  generateSearchItemsKeywordsContinuous,
+  submitSearchItemsKeywordsBatch,
+} from "@/services/search/searchItemsKeywords.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
@@ -57,6 +64,8 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
+import { rollbackSearchSuggestions } from "./search/analyzeSearchQueries"
+import { fillSearchItemsCollection } from "./search/generateSearchItemsCollection"
 import { updateSEO } from "./seo/updateSEO"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import { updateBrevoBlockedEmails } from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
@@ -222,6 +231,42 @@ export async function setupJobProcessor() {
             cron_string: "30 5 * * *",
             handler: config.env === "production" ? async () => exportJobsToFranceTravail() : async () => Promise.resolve(0),
             tag: "main",
+          },
+          "Sync delta search_items (jobs_partners modifiés)": {
+            cron_string: "*/15 * * * *",
+            handler: async () => syncSearchItemsDelta(),
+            tag: "slave",
+          },
+          // Après processComputedAndImportToJobPartners (départ 00:01, maxRuntime 300 min → fin
+          // au plus tard ~05:00) : rattrape ce que la sync incrémentale a manqué et purge les
+          // orphelins (suppressions physiques, invisibles au delta).
+          "Réconciliation nightly search_items": {
+            cron_string: "0 6 * * *",
+            handler: fillSearchItemsCollection,
+            tag: "slave",
+            maxRuntimeInMinutes: 180,
+          },
+          "Contrôle de dérive search_items (alerte Slack)": {
+            cron_string: "30 7 * * *",
+            handler: controlSearchItemsDrift,
+            tag: "main",
+          },
+          "Génération continue des keywords search_items (cache + API immédiate)": {
+            cron_string: "*/30 * * * *",
+            handler: async () => generateSearchItemsKeywordsContinuous(),
+            tag: "slave",
+          },
+          // Après le rechargement dominical des recruteurs (processRecruteursLba, 10:00 UTC) :
+          // batch Mistral dédupliqué par texte source, ramassé par applyPendingMistralBatches.
+          "Batch hebdo keywords des recruteurs LBA": {
+            cron_string: "0 18 * * SUN",
+            handler: async () => submitSearchItemsKeywordsBatch({ recruteursOnly: true }),
+            tag: "slave",
+          },
+          "Ramasse des batchs Mistral keywords": {
+            cron_string: "10 * * * *",
+            handler: applyPendingMistralBatches,
+            tag: "slave",
           },
           "export des offres LBA sur S3": {
             cron_string: "30 6 * * 1",
@@ -403,6 +448,12 @@ export async function setupJobProcessor() {
       },
       "referentiel:commune:import": {
         handler: updateReferentielCommune,
+      },
+      "search:apply-keywords-batch": {
+        handler: async (job) => applyKeywordsBatchFile(job.payload as any),
+      },
+      "search:suggestions:rollback": {
+        handler: async (job) => rollbackSearchSuggestions(job.payload as any),
       },
       ...Object.fromEntries(
         simpleJobDefinitions.map((jobDef) => {

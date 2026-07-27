@@ -28,6 +28,8 @@ export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJob
   const setStages = {
     $set: {
       offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      // updated_at : requis par le cron delta search_items (syncSearchItemsDelta).
+      updated_at: new Date(),
     },
   }
   const unsetStage = {

@@ -20,6 +20,9 @@ export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
     orientation: "horizontal",
   },
   id: "header-links",
+  // L'accès au nouveau moteur passe par l'opt-in de la page d'accueil (encart « Tester → »)
+  // et le menu « Je recherche une alternance » qui suit le flag — plus de quick access dédiée.
+  quickAccessItems: [],
 }
 
 export const DsfrHeaderNavigation = HeaderNavigation

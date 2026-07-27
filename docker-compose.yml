@@ -1,19 +1,45 @@
 services:
   mongodb:
-    build: ./.infra/local/
+    build:
+      context: ./.infra/local/
+      dockerfile: Dockerfile.mongod
     restart: unless-stopped
     hostname: mongodb
     mem_limit: 5g
     ports:
       - "127.0.0.1:27017:27017"
     volumes:
-      - lba_mongodb_data:/data
+      # ⚠️ Monter précisément /data/db (dbPath par défaut) : l'image déclare VOLUME /data/db,
+      # un montage sur /data laissait les données partir dans un volume ANONYME à chaque
+      # recréation du conteneur (volumes orphelins + données "perdues" au changement d'image).
+      - lba_mongodb_data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", '''db.runCommand("ping").ok''', "--quiet"]
       interval: 10s
       timeout: 5s
       retries: 12
       start_period: 10s
+
+  mongot:
+    build:
+      context: ./.infra/local/
+      dockerfile: Dockerfile.mongot
+    restart: unless-stopped
+    hostname: mongot
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - lba_mongot_data:/var/lib/mongot
+      # Mot de passe monté à l'exécution (généré par env-init.sh, gitignoré) — jamais cuit
+      # dans une layer d'image (extractible via docker history), même pattern qu'en preview.
+      - ./.infra/local/mongot_password:/etc/mongot/secrets/passwordFile:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
   clamav:
     image: clamav/clamav:stable
@@ -45,6 +71,9 @@ volumes:
   lba_mongodb_data:
     driver: local
     name: lba_mongodb_data
+  lba_mongot_data:
+    driver: local
+    name: lba_mongot_data
   lba_smtp_data:
     driver: local
     name: lba_smtp_data

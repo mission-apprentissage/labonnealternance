@@ -13,6 +13,7 @@ import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherch
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { scrollToVirtualItem } from "@/app/(candidat)/(recherche)/recherche/_utils/scrollToVirtualItem"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
+import { RechercheOptInBanner } from "./RechercheOptInBanner"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
 import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileFormUpdate"
 import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
@@ -83,6 +84,10 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   return (
     <Box>
       <RecherchePageHeader rechercheParams={props.rechercheParams} />
+      {/* En desktop, l'encart est rendu DANS le container du moteur (RechercheHeader) ; ici uniquement pour le mobile. */}
+      <Box sx={{ display: { xs: "block", lg: "none" } }}>
+        <RechercheOptInBanner />
+      </Box>
       <VirtualContainer
         scrollElementRef={scrollElement}
         virtualizerRef={virtualizerRef}

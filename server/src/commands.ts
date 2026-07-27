@@ -305,6 +305,18 @@ program
   .description("Classification des offres de France Travail")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("francetravail:jobs:classify"))
+program
+  .command("search:apply-keywords-batch")
+  .description("Applique un fichier JSONL de sortie batch Mistral aux mots-clés de la collection search_items")
+  .requiredOption("-f, --file <path>", "Chemin du fichier JSONL de sortie téléchargé depuis Mistral")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("search:apply-keywords-batch"))
+program
+  .command("search:suggestions:rollback")
+  .description("Supprime les suggestions et synonymes insérés par un run de analyzeSearchQueries")
+  .requiredOption("--runId <runId>", "Identifiant du run (cf. rapport Slack)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("search:suggestions:rollback"))
 
 /**
  *
@@ -394,9 +406,12 @@ program
   .action(createJobAction("exportJobsToS3V2"))
 
 simpleJobDefinitions.forEach((jobDef) => {
-  const { description } = jobDef
+  const { description, cliOptions = [] } = jobDef
   const command = SimpleJobDefinition.getFctName(jobDef)
-  program.command(command).description(description).option("-q, --queued", "Run job asynchronously", false).action(createJobAction(command))
+  const cmd = program.command(command).description(description).option("-q, --queued", "Run job asynchronously", false)
+  // Options spécifiques au job (transmises telles quelles dans le payload — strings côté handler).
+  cliOptions.forEach(({ flags, description: optionDescription }) => cmd.option(flags, optionDescription))
+  cmd.action(createJobAction(command))
 })
 
 export async function startCLI() {

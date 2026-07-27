@@ -1,5 +1,4 @@
 import type { z } from "zod"
-
 import anonymizedApplicantModel from "./anonymizedApplicant.model.js"
 import anonymizedApplicationsModel from "./anonymizedApplications.model.js"
 import anonymizedAppointmentsModel from "./anonymizedAppointments.model.js"
@@ -32,6 +31,7 @@ import geolocationsModel from "./geolocations.model.js"
 import jobsModel from "./jobs.model.js"
 import jobsPartnersModel from "./jobsPartners.model.js"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model.js"
+import mistralBatchJobsModel from "./mistralBatchJobs.model.js"
 import opcoModel from "./opco.model.js"
 import rawApecModel from "./rawApec.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
@@ -67,6 +67,11 @@ import reportedCompanyModel from "./reportedCompany.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
+import searchItemsModel from "./searchItems.model.js"
+import searchItemsKeywordsModel from "./searchItemsKeywords.model.js"
+import searchQueriesModel from "./searchQueries.model.js"
+import searchSuggestionsModel from "./searchSuggestions.model.js"
+import searchSynonymsModel from "./searchSynonyms.model.js"
 import seoDiplomeModel from "./seoDiplome.model.js"
 import seoMetierModel from "./seoMetier.model.js"
 import seoVilleModel from "./seoVille.model.js"
@@ -79,6 +84,7 @@ import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
 
 const modelDescriptorMap = {
+  [searchItemsModel.collectionName]: searchItemsModel,
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
   [anonymizedApplicationsModel.collectionName]: anonymizedApplicationsModel,
   [anonymizedAppointmentsModel.collectionName]: anonymizedAppointmentsModel,
@@ -149,6 +155,11 @@ const modelDescriptorMap = {
   [rawFranceTravailCEGIDModel.collectionName]: rawFranceTravailCEGIDModel,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
+  [searchQueriesModel.collectionName]: searchQueriesModel,
+  [searchItemsKeywordsModel.collectionName]: searchItemsKeywordsModel,
+  [mistralBatchJobsModel.collectionName]: mistralBatchJobsModel,
+  [searchSuggestionsModel.collectionName]: searchSuggestionsModel,
+  [searchSynonymsModel.collectionName]: searchSynonymsModel,
   [seoVilleModel.collectionName]: seoVilleModel,
   [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
   [recruiterModel.collectionName]: recruiterModel,

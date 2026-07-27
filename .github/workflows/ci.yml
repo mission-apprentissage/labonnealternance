@@ -58,6 +58,22 @@ jobs:
           docker compose up --build -d --wait mongodb
           yarn setup:mongodb
 
+      # mongot (MongoDB Search) : nécessaire aux tests du contrôleur /v1/search — sans lui,
+      # $search échoue. Mot de passe jetable généré pour le job (aucun secret requis).
+      - name: start mongot service
+        run: |
+          openssl rand -hex 24 > .infra/local/mongot_password
+          chmod 600 .infra/local/mongot_password
+          docker compose exec -e MONGOT_VALUE="$(cat .infra/local/mongot_password)" mongodb mongosh \
+            "mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true" \
+            --eval 'db.createUser({ user: "mongotUser", pwd: process.env.MONGOT_VALUE, roles: ["searchCoordinator"] })' --quiet
+          docker compose up --build -d --wait mongot
+          # Le healthcheck mongot répond SERVING avant que le canal $search de mongod soit
+          # opérationnel → sonde sur le chemin réel jusqu'à ce qu'un $search aboutisse.
+          docker compose exec mongodb mongosh \
+            "mongodb://__system:password@localhost:27017/ci_probe?authSource=local&directConnection=true" \
+            --eval 'let ok = false; for (let i = 0; i < 45 && !ok; i++) { try { db.probe.aggregate([{ $search: { index: "probe", exists: { path: "x" } } }]).toArray(); ok = true } catch (e) { sleep(2000) } } if (!ok) throw new Error("canal $search indisponible après 90s")' --quiet
+
       - name: test
         run: yarn test:ci
 

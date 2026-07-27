@@ -1,0 +1,8 @@
+FROM mongodb/mongodb-community-search:1.70.1
+
+# Create secrets directory (le mot de passe est monté à l'exécution par docker-compose —
+# ne jamais le COPY ici : il resterait extractible dans une layer d'image via docker history).
+RUN mkdir -p /etc/mongot/secrets
+
+# Copy config file (non sensible)
+COPY mongot.yml /mongot-community/config.default.yml

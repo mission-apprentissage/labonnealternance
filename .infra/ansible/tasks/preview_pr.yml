@@ -114,6 +114,51 @@
         db_collections_count.rc != 0 or
         (db_collections_count.stdout | trim | int) == 0
 
+    # L'archive de seed contient admin.system.users : le mongorestore écrase mongotUser
+    # avec le mot de passe d'un autre environnement (constaté : mechanisms SCRAM-SHA-1+256
+    # au lieu du SCRAM-SHA-256 seul posé par preview.yml) → mongot perd l'auth
+    # (« Topology cache is unavailable ») et les search indexes ne se créent plus.
+    # Resync systématique depuis le fichier après chaque deploy — idempotent.
+    - name: "[{{ pr_number }}] Lire le mot de passe mongot"
+      ansible.builtin.slurp:
+        src: "/opt/app/configs/mongot/mongot_password"
+      register: mongot_password_file
+      no_log: true
+
+    - name: "[{{ pr_number }}] Resynchroniser mongotUser après seed"
+      no_log: true
+      shell:
+        cmd: >
+          docker exec -e MONGOT_SYNC_VALUE lba_mongodb mongosh
+          "mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/admin?authSource=local&directConnection=true"
+          --quiet
+          --eval 'try { db.dropUser("mongotUser") } catch (e) {} db.runCommand({ createUser: "mongotUser", pwd: process.env.MONGOT_SYNC_VALUE, roles: [{ role: "searchCoordinator", db: "admin" }], mechanisms: ["SCRAM-SHA-256"] })'
+      environment:
+        MONGOT_SYNC_VALUE: "{{ mongot_password_file.content | b64decode }}"
+
+    # mongot ne se remet pas seul d'une fenêtre de désauth (constaté : son monitor de
+    # topologie reste en « Topology cache is unavailable » même une fois mongotUser
+    # resynchronisé, et la création de search indexes échoue en silence) : si le canal
+    # de gestion ne répond pas, restart de mongot et attente de son retour AVANT
+    # indexes:recreate. Le restart n'a lieu qu'en cas de canal KO (mongot est partagé
+    # par toutes les previews).
+    - name: "[{{ pr_number }}] Vérifier le canal search indexes (restart mongot si KO)"
+      shell:
+        cmd: |
+          URI="mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/preview_{{ pr_number }}?authSource=local&directConnection=true"
+          check() { docker exec lba_mongodb mongosh "$URI" --quiet --eval 'db.search_items.aggregate([{ $listSearchIndexes: {} }]).toArray().length' >/dev/null 2>&1; }
+          if check; then echo "canal search OK"; exit 0; fi
+          echo "canal search KO — restart mongot"
+          docker restart lba_mongot
+          for i in $(seq 1 30); do
+            sleep 5
+            if check; then echo "canal search OK après restart ($((i * 5))s)"; exit 0; fi
+          done
+          echo "canal search toujours KO après restart mongot" >&2
+          exit 1
+
+    # Crée aussi les MongoDB Search indexes de la base preview_<PR> via le driver
+    # (createSearchIndexes) et seed les synonymes — mongot tourne dans preview-system.
     - name: "[{{ pr_number }}] Create MongoDB indexes (before migrations)"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"

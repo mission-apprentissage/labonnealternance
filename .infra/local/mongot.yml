@@ -1,0 +1,32 @@
+# Config mongot community 1.x — format d'authentification explicite (scramAuth) introduit
+# par la série 1.x (l'ancien format 0.x username/passwordFile à plat n'est plus accepté).
+syncSource:
+  replicaSet:
+    hostAndPort: "mongodb:27017"
+    scramAuth:
+      username: mongotUser
+      authSource: admin
+      passwordFile: /etc/mongot/secrets/passwordFile
+      tls:
+        enabled: false
+  replicationReader:
+    readPreference: primaryPreferred
+
+storage:
+  dataPath: "/var/lib/mongot"
+
+server:
+  grpc:
+    address: "0.0.0.0:27028"
+    tls:
+      mode: "disabled"
+
+metrics:
+  enabled: true
+  address: "0.0.0.0:9946"
+
+healthCheck:
+  address: "0.0.0.0:8080"
+
+logging:
+  verbosity: INFO

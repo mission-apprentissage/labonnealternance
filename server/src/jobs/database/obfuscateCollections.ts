@@ -270,7 +270,7 @@ const obfuscateEntreprisesManagedByCfa = async () => {
   }
 }
 
-const modelToKeep: string[] = ["algolia", "job_processor.workers", "job_processor.jobs", "changelog"]
+const modelToKeep: string[] = ["search_items", "job_processor.workers", "job_processor.jobs", "changelog"]
 
 const dropUnknownCollections = async () => {
   const knownCollections = new Set<string>([...modelDescriptors.map((d) => d.collectionName), ...modelToKeep])

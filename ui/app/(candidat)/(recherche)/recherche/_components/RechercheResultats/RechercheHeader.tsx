@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container } from "@mui/material"
 import { CandidatRechercheFilters } from "@/app/(candidat)/(recherche)/recherche/_components/CandidatRechercheFilters"
 import { CandidatRechercheForm } from "@/app/(candidat)/(recherche)/recherche/_components/CandidatRechercheForm"
+import { RechercheOptInBanner } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheOptInBanner"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export function RechercheHeader(props: { rechercheParams: IRecherchePageParams; fullWidth?: boolean }) {
@@ -63,6 +64,8 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams; 
           <Box sx={{ flex: 1 }}>
             <CandidatRechercheForm rechercheParams={rechercheParams} />
             <CandidatRechercheFilters rechercheParams={rechercheParams} embedded />
+            {/* Encart nouveau moteur dans le container du moteur, sous les filtres — pas en mode collapsed sticky. */}
+            {!fullWidth && <RechercheOptInBanner embedded />}
           </Box>
         </Box>
       </Container>

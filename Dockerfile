@@ -53,6 +53,12 @@ COPY --from=builder_server /app/server ./server
 COPY --from=builder_server /app/node_modules ./node_modules
 COPY --from=builder_server /app/server/node_modules ./server/node_modules
 COPY ./server/static /app/server/static
+# Seed des synonymes de recherche : lu à l'exécution par seedSearchSynonyms
+# (résolu depuis /app/server en ../docs/mongodb/search-synonyms.json).
+COPY ./docs/mongodb/search-synonyms.json /app/docs/mongodb/search-synonyms.json
+# Cache de mots-clés Mistral pré-générés (32k hashs) : lu par la migration
+# seed-search-items-keywords-cache pour éviter de payer la première génération.
+COPY ./docs/mongodb/search-items-keywords-cache.jsonl.gz /app/docs/mongodb/search-items-keywords-cache.jsonl.gz
 
 EXPOSE 5000
 WORKDIR /app/server
