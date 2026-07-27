@@ -153,7 +153,7 @@ const LaRuptureDeContratPage = () => {
           >
             des allocations chômage
           </DsfrLink>{" "}
-          selon certaines conditions.
+          selon certaines conditions. Le CFA doit aussi l'aider à trouver un nouvel employeur.
         </Paragraph>
         <Paragraph>Pensez à vous inscrire à France Travail dès que possible.</Paragraph>
         <Paragraph>
