@@ -108,7 +108,7 @@ export const zSearchRoutes = {
       path: "/v1/search/suggest",
       querystring: z
         .object({
-          q: z.string().min(3).describe("Texte de saisie (autocomplétion par préfixe, min 3 caractères)"),
+          q: z.string().trim().min(3).describe("Texte de saisie (autocomplétion par préfixe, min 3 caractères après trim)"),
           limit: z.coerce.number().min(1).max(20).default(8).describe("Nombre de suggestions (max 20)"),
         })
         .strict(),
