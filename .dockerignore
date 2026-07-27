@@ -18,8 +18,9 @@
 /ui/.next
 /ui/.eslintrc.js
 
-# Seed des synonymes de recherche, embarqué dans l'image server (cf. Dockerfile).
+# Seeds de recherche embarqués dans l'image server (cf. Dockerfile).
 !/docs/mongodb/search-synonyms.json
+!/docs/mongodb/search-items-keywords-cache.jsonl.gz
 
 !/package.json
 !/.yarn/cache
