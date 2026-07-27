@@ -1,15 +1,12 @@
-<<<<<<< HEAD
 import type { Metadata } from "next"
+import { MAX_SEARCH_ROMES_PRIVATE } from "shared"
 
-=======
->>>>>>> origin/main
 import type { IRecherchePageParams } from "./recherche.route.utils"
 
 export type IRechercheMetaKind = "default" | "emploi" | "formation"
 
 const SUFFIX = " | La bonne alternance"
 
-<<<<<<< HEAD
 const BASE_PATH_BY_KIND: Record<IRechercheMetaKind, string> = {
   default: "/recherche",
   emploi: "/recherche-emploi",
@@ -22,11 +19,13 @@ const BASE_PATH_BY_KIND: Record<IRechercheMetaKind, string> = {
  * l'`address` quand une ville est renseignée — les SERP géolocalisées ont leur propre trafic).
  * Exclut tout le bruit d'URL : `s` (timestamp), `lat`/`lon`, `display`, `page`/`itemId`,
  * `activeItems`, toggles UI, `utm_*`.
+ * Applique la même limitation que `buildRecherchePageParams` (MAX_SEARCH_ROMES_PRIVATE) pour
+ * garantir que le canonical correspond à l'URL réellement servie.
  */
 function buildRechercheCanonical(rechercheParams: Partial<IRecherchePageParams> | null, kind: IRechercheMetaKind): string {
   const basePath = BASE_PATH_BY_KIND[kind]
   const params = new URLSearchParams()
-  const romes = rechercheParams?.romes
+  const romes = rechercheParams?.romes?.slice(0, MAX_SEARCH_ROMES_PRIVATE)
   const hasRomes = Boolean(romes && romes.length > 0)
   if (hasRomes) {
     params.set("romes", romes!.join(","))
@@ -57,14 +56,6 @@ function buildRechercheCanonical(rechercheParams: Partial<IRecherchePageParams> 
  * `kind` : "default" (offres + formations), "emploi" (offres d'emploi), "formation" (formations).
  */
 export function buildRechercheMetadata(rechercheParams: Partial<IRecherchePageParams> | null, kind: IRechercheMetaKind): Metadata {
-=======
-/**
- * Construit le title + meta description SEO d'une page de recherche.
- * Met le métier (et la ville) en tête du title et ajoute un CTA dans la description.
- * `kind` : "default" (offres + formations), "emploi" (offres d'emploi), "formation" (formations).
- */
-export function buildRechercheMetadata(rechercheParams: Partial<IRecherchePageParams> | null, kind: IRechercheMetaKind): { title: string; description: string } {
->>>>>>> origin/main
   const jobName = rechercheParams?.job_name?.trim() || null
   const address = rechercheParams?.geo?.address?.trim() || null
   // Distingue 3 cas de géo : adresse libellée (" à Lyon") · géo sans libellé (recherche
@@ -73,7 +64,6 @@ export function buildRechercheMetadata(rechercheParams: Partial<IRecherchePagePa
   const lieuTitle = address ? ` à ${address}` : ""
   const lieuDesc = address ? ` à ${address}` : hasGeo ? "" : " en France"
 
-<<<<<<< HEAD
   const alternates = { canonical: buildRechercheCanonical(rechercheParams, kind) }
 
   let title: string
@@ -88,19 +78,6 @@ export function buildRechercheMetadata(rechercheParams: Partial<IRecherchePagePa
       description = "Trouvez votre formation en apprentissage près de chez vous. Comparez les programmes par métier et par ville, postulez gratuitement."
     }
     return { title, description, alternates }
-=======
-  if (kind === "formation") {
-    if (jobName) {
-      return {
-        title: `Formations en alternance ${jobName}${lieuTitle}${SUFFIX}`,
-        description: `Toutes les formations en apprentissage ${jobName}${lieuDesc}. Comparez les programmes et postulez gratuitement sur le service public de l'alternance.`,
-      }
-    }
-    return {
-      title: `Formations en alternance${SUFFIX}`,
-      description: "Trouvez votre formation en apprentissage près de chez vous. Comparez les programmes par métier et par ville, postulez gratuitement.",
-    }
->>>>>>> origin/main
   }
 
   const isEmploi = kind === "emploi"
@@ -108,7 +85,6 @@ export function buildRechercheMetadata(rechercheParams: Partial<IRecherchePagePa
   const descOffreLabel = isEmploi ? "offres d'emploi en alternance" : "offres et formations en alternance"
 
   if (jobName) {
-<<<<<<< HEAD
     title = `Alternance ${jobName}${lieuTitle} : ${offreLabel}${SUFFIX}`
     description = `Toutes les ${descOffreLabel} ${jobName}${lieuDesc}. Postulez gratuitement sur le service public de l'alternance.`
   } else {
@@ -119,18 +95,4 @@ export function buildRechercheMetadata(rechercheParams: Partial<IRecherchePagePa
   }
 
   return { title, description, alternates }
-=======
-    return {
-      title: `Alternance ${jobName}${lieuTitle} : ${offreLabel}${SUFFIX}`,
-      description: `Toutes les ${descOffreLabel} ${jobName}${lieuDesc}. Postulez gratuitement sur le service public de l'alternance.`,
-    }
-  }
-
-  return {
-    title: `${isEmploi ? "Offres d'emploi en alternance" : "Offres et formations en alternance"}${SUFFIX}`,
-    description: isEmploi
-      ? "Trouvez votre alternance parmi des milliers d'offres d'emploi près de chez vous. Filtrez par métier, ville et type de contrat, postulez gratuitement."
-      : "Trouvez votre alternance parmi des milliers d'offres et de formations près de chez vous. Filtrez par métier, ville et type de contrat.",
-  }
->>>>>>> origin/main
 }

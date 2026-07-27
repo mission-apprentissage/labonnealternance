@@ -62,7 +62,6 @@ describe("buildRechercheMetadata", () => {
       expect(description).toBe("Toutes les offres et formations en alternance Data analyst. Postulez gratuitement sur le service public de l'alternance.")
     })
   })
-<<<<<<< HEAD
 
   describe("canonical (déduplication des paramètres parasites)", () => {
     it("métier + ville : garde job_name + lat/lon + address pour reproduire fidèlement la SERP géo", () => {
@@ -92,7 +91,15 @@ describe("buildRechercheMetadata", () => {
     it("retombe sur le chemin nu sans critère de recherche", () => {
       expect(buildRechercheMetadata(empty, "default").alternates?.canonical).toBe("/recherche")
     })
+
+    it("limite les romes à MAX_SEARCH_ROMES_PRIVATE pour être cohérent avec l'URL servie", () => {
+      // MAX_SEARCH_ROMES_PRIVATE = 20 ; on génère 21 codes fictifs et vérifie la troncature
+      const manyRomes = Array.from({ length: 21 }, (_, i) => `A${String(i).padStart(4, "0")}`)
+      const params = { job_name: null, romes: manyRomes, geo: null }
+      const canonical = buildRechercheMetadata(params, "default").alternates?.canonical as string
+      const url = new URL(canonical, "https://example.com")
+      const romesInCanonical = url.searchParams.get("romes")?.split(",") ?? []
+      expect(romesInCanonical).toHaveLength(20)
+    })
   })
-=======
->>>>>>> origin/main
 })
