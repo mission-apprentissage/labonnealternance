@@ -1,8 +1,10 @@
+import { getConnectedInfos } from "@tests/fixture/connectedUser.fixture"
 import type { CreationBody, CreationResponse } from "@tests/sdk/entrepriseSdk"
 import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { saveUserWithAccount } from "@tests/utils/user.test.utils"
+import { roleManagementEventFactory, saveAdminUserTest, saveCfaUserTest, saveRoleManagement, saveUserWithAccount, validatedUserStatus } from "@tests/utils/user.test.utils"
+import { ObjectId } from "bson"
 import { omit } from "lodash-es"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
@@ -135,6 +137,33 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response.statusCode).toBe(200)
     })
 
+    it.each([
+      { first_name: "Jean-Paul", last_name: "D'Artagnan" },
+      { first_name: "Élodie", last_name: "François-Marie" },
+    ])("Accepte les noms valides avec accents et séparateurs", async ({ first_name, last_name }) => {
+      const response = await callCreation({
+        ...defaultCreationEntreprisePayload,
+        first_name,
+        last_name,
+      })
+
+      expect.soft(response.statusCode).toBe(200)
+    })
+
+    it.each([
+      { first_name: ".", last_name: "Doe" },
+      { first_name: "John", last_name: "1" },
+      { first_name: " ", last_name: "Doe" },
+    ])("Refuse les noms et prénoms sans 2 lettres valides", async ({ first_name, last_name }) => {
+      const response = await callCreation({
+        ...defaultCreationEntreprisePayload,
+        first_name,
+        last_name,
+      })
+
+      expect.soft(response.statusCode).toBe(400)
+    })
+
     it("Envoie un email de confirmation dès la création de compte entreprise", async () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
 
@@ -186,5 +215,86 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response.statusCode).toBe(403)
       expect.soft(response.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
     })
+  })
+})
+
+describe("GET /etablissement/cfa/:cfaId/entreprises", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  it("permet à un CFA de lister les entreprises qu'il gère", async () => {
+    // given
+    const { user, cfa, entreprise } = await saveCfaUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(user.email)
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${cfa._id}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(200)
+    const entreprises = response.json()
+    expect.soft(entreprises).toHaveLength(1)
+    expect.soft(entreprises[0].establishment_siret).toBe(entreprise.siret)
+  })
+
+  it("permet à un admin de lister les entreprises gérées par un CFA", async () => {
+    // given
+    const { cfa, entreprise } = await saveCfaUserTest({ status: validatedUserStatus })
+    const { user: adminUser } = await saveAdminUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(adminUser.email)
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${cfa._id}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(200)
+    const entreprises = response.json()
+    expect.soft(entreprises).toHaveLength(1)
+    expect.soft(entreprises[0].establishment_siret).toBe(entreprise.siret)
+  })
+
+  it("renvoie une erreur si aucun compte CFA n'existe pour l'id donné, même pour un admin", async () => {
+    // given
+    const { user: adminUser } = await saveAdminUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(adminUser.email)
+    // Un role CFA GRANTED référence bien le cfaId ciblé, mais aucun document cfa n'existe pour cet id
+    const cfaId = new ObjectId()
+    const cfaUser = await saveUserWithAccount({ status: validatedUserStatus })
+    await saveRoleManagement({ user_id: cfaUser._id, authorized_id: cfaId.toString(), status: [roleManagementEventFactory()] })
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${cfaId}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(404)
+  })
+
+  it("renvoie une liste vide pour un admin quand le CFA n'a aucun droit attribué", async () => {
+    // given
+    const { user: adminUser } = await saveAdminUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(adminUser.email)
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${new ObjectId()}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(200)
+    expect.soft(response.json()).toEqual([])
   })
 })

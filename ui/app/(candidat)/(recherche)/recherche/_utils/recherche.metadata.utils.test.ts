@@ -62,6 +62,7 @@ describe("buildRechercheMetadata", () => {
       expect(description).toBe("Toutes les offres et formations en alternance Data analyst. Postulez gratuitement sur le service public de l'alternance.")
     })
   })
+<<<<<<< HEAD
 
   describe("canonical (déduplication des paramètres parasites)", () => {
     it("métier + ville : garde job_name + lat/lon + address pour reproduire fidèlement la SERP géo", () => {
@@ -92,4 +93,6 @@ describe("buildRechercheMetadata", () => {
       expect(buildRechercheMetadata(empty, "default").alternates?.canonical).toBe("/recherche")
     })
   })
+=======
+>>>>>>> origin/main
 })

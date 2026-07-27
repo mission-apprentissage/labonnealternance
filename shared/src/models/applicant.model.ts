@@ -31,6 +31,9 @@ export type IApplicantNew = z.output<typeof ZApplicantNew>
 
 export default {
   zod: ZApplicant,
-  indexes: [[{ email: 1 }, { unique: true }]],
+  indexes: [
+    [{ email: 1 }, { unique: true }],
+    [{ last_connection: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

@@ -8,6 +8,7 @@ const collectionName = "applicants_email_logs" as const
 
 export enum EMAIL_LOG_TYPE {
   RELANCE = "RELANCE",
+  RELANCE_INACTIVITE = "RELANCE_INACTIVITE",
   NOTIFICATION = "NOTIFICATION",
   INTENTION_ENTRETIEN = "INTENTION_ENTRETIEN",
   INTENTION_REFUS = "INTENTION_REFUS",
@@ -27,6 +28,6 @@ export type IApplicantEmailLog = z.output<typeof ZApplicantEmailLog>
 
 export default {
   zod: ZApplicantEmailLog,
-  indexes: [],
+  indexes: [[{ applicant_id: 1, type: 1 }, {}]],
   collectionName,
 } as const satisfies IModelDescriptor

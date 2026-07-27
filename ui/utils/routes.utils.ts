@@ -228,8 +228,9 @@ export const PAGES = {
       title: "Comprendre la rémunération en alternance",
       index: true,
       getMetadata: () => ({
-        title: "Salaire alternant 2026 | Grilles et barèmes officiels",
-        description: "Barèmes de salaire en apprentissage et professionnalisation 2026. Grilles par âge, diplôme, calcul brut/net et exonérations fiscales.",
+        title: "Salaire en alternance 2026 : grille et barèmes officiels",
+        description:
+          "Grille de salaire en alternance 2026 : de 27 % à 100 % du SMIC selon l'âge et l'année de contrat. Apprentissage et professionnalisation, calcul brut/net et exonérations.",
       }),
     },
     guideAlternantCommentSignerUnContratEnAlternance: {
@@ -302,6 +303,15 @@ export const PAGES = {
       getMetadata: () => ({
         title: "Carte étudiant des métiers | Délivrance et avantages",
         description: "Délivrance de la carte d'étudiant des métiers par les CFA : obligations, délais (30 jours), avantages et réductions pour les alternants.",
+      }),
+    },
+    guideCfaAccompagnerVosAlternants: {
+      getPath: () => `/guide-cfa/accompagner-vos-alternants` as string,
+      title: "Accompagner vos alternants dans leurs démarches de candidatures",
+      index: true,
+      getMetadata: () => ({
+        title: "Guide CFA | Accompagner vos alternants",
+        description: "Comment les candidatures spontanées augmentent les chances de trouver son futur employeur.",
       }),
     },
     jeSuisRecruteur: {
@@ -844,6 +854,13 @@ export const PAGES = {
     },
     backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
+      title: user_label ?? "Entreprise",
+      getMetadata: () => ({
+        title: `${user_label ?? "Entreprise"} - La bonne alternance`,
+      }),
+    }),
+    backAdminUserCfaEntreprise: ({ user_id, establishment_id, user_label }: { user_id: string; establishment_id: string; user_label?: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/users/${user_id}/cfa/${establishment_id}` as string,
       title: user_label ?? "Entreprise",
       getMetadata: () => ({
         title: `${user_label ?? "Entreprise"} - La bonne alternance`,

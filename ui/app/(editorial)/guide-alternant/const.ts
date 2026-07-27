@@ -17,7 +17,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: PAGES.static.guideAlternantSeFaireAccompagner.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}se-faire-accompagner.svg`,
     path: PAGES.static.guideAlternantSeFaireAccompagner.getPath(),
-    updatedAt: "26/03/2026",
+    updatedAt: "20/07/2026",
   },
   ["la-rupture-de-contrat"]: {
     id: "la-rupture-de-contrat",
@@ -25,7 +25,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: PAGES.static.guideAlternantLaRuptureDeContrat.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}la-rupture-de-contrat.svg`,
     path: PAGES.static.guideAlternantLaRuptureDeContrat.getPath(),
-    updatedAt: "26/03/2026",
+    updatedAt: "20/07/2026",
   },
   ["comprendre-la-remuneration"]: {
     id: "comprendre-la-remuneration",

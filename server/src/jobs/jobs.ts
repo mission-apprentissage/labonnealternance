@@ -16,6 +16,7 @@ import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
+import { relanceCandidatsInactifs } from "./applications/relanceCandidatsInactifs"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
@@ -50,6 +51,7 @@ import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { createApiUser } from "./recruiters/createApiUser"
 import { disableApiUser } from "./recruiters/disableApiUser"
+import { nurturingEntreprises } from "./recruiters/nurturingEntreprises"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
 import { resetApiKey } from "./recruiters/resetApiKey"
@@ -128,6 +130,10 @@ export async function setupJobProcessor() {
             handler: opcoReminderJob,
             tag: "main",
           },
+          "Nurturing des entreprises dormantes (anniversaire du dépôt d'offre)": {
+            cron_string: "0 8 * * *",
+            handler: config.env === "production" ? async () => nurturingEntreprises() : async () => Promise.resolve(0),
+          },
           "Anonymisation des reasons de plus de (1) an": {
             cron_string: "35 0 * * *",
             handler: anonymizeReportedReasons,
@@ -197,6 +203,10 @@ export async function setupJobProcessor() {
           "Export contact recruteurs vers Brevo": {
             cron_string: "10 4 * * *",
             handler: exportRecruteursToBrevo,
+          },
+          "Relance des candidats inactifs (J+7 sans nouvelle candidature)": {
+            cron_string: "0 7 * * *",
+            handler: config.env === "production" ? async () => relanceCandidatsInactifs() : async () => Promise.resolve(0),
           },
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
             cron_string: "0 5 * * *",

@@ -11,17 +11,20 @@ import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 export const OffresTabsMenu = ({
   row,
   openSuppression,
   buildOfferEditionUrl,
   onOffreProlongationClick,
+  hideCfaShareAction = false,
 }: {
   row: any
   openSuppression: (row: any) => any
   buildOfferEditionUrl: (offerId: string) => string
   onOffreProlongationClick: (offerId: string) => void
+  hideCfaShareAction?: boolean
 }) => {
   const router = useRouter()
   const { user } = useAuth()
@@ -50,7 +53,10 @@ export const OffresTabsMenu = ({
     {
       label: "Éditer l'offre",
       ariaLabel: `Éditer l'offre ${offerTitle}`,
-      onClick: () => router.push(buildOfferEditionUrl(row._id)),
+      onClick: () => {
+        pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_EDIT_CLICKED })
+        router.push(buildOfferEditionUrl(row._id))
+      },
       type: "button",
       icon: <DsfrIcon name="fr-icon-edit-line" size={16} />,
     },
@@ -58,6 +64,7 @@ export const OffresTabsMenu = ({
       label: "Prolonger l'offre",
       ariaLabel: `Prolonger l'offre ${offerTitle}`,
       onClick: () => {
+        pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_EXTEND_CLICKED })
         onOffreProlongationClick(row._id)
       },
       type: "button",
@@ -68,6 +75,7 @@ export const OffresTabsMenu = ({
       ariaLabel: `Voir l'offre ${offerTitle} en ligne - nouvelle fenêtre`,
       link: directLink,
       type: "externalLink",
+      onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_VIEW_ONLINE_CLICKED }),
       icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
     },
     row.job_status !== JOB_STATUS.EN_ATTENTE
@@ -75,6 +83,7 @@ export const OffresTabsMenu = ({
           label: "Imprimer l'offre",
           ariaLabel: "Lien vers la page d'impression de l'offre",
           link: `${publicConfig.baseUrl}/espace-pro/offre/impression/${row._id}`,
+          onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_PRINT_CLICKED }),
           icon: <DsfrIcon name="fr-icon-printer-line" size={16} />,
           type: "externalLink",
         }
@@ -85,6 +94,7 @@ export const OffresTabsMenu = ({
         e.preventDefault()
         e.stopPropagation()
         navigator.clipboard.writeText(directLink).then(function () {
+          pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_LINK_COPIED })
           setCopied(true)
         })
       },
@@ -96,12 +106,13 @@ export const OffresTabsMenu = ({
         </Box>
       ),
     },
-    user.type !== AUTHTYPE.CFA
+    user.type !== AUTHTYPE.CFA && !hideCfaShareAction
       ? ({
           label: "Partager aux CFA à proximité",
           link: cfaOptionParams.link,
           type: cfaOptionParams.type,
           ariaLabel: cfaOptionParams.ariaLabel,
+          onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_CFA_SHARE_CLICKED }),
           icon: <DsfrIcon name="fr-icon-presentation-line" size={16} />,
         } as PopoverMenuAction)
       : null,
@@ -111,6 +122,7 @@ export const OffresTabsMenu = ({
       onClick: (e) => {
         e.preventDefault()
         e.stopPropagation()
+        pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_DELETE_CLICKED })
         openSuppression(row)
       },
       type: "button",

@@ -1,8 +1,9 @@
-import { givenAConnectedOpcoUser } from "@tests/fixture/connectedUser.fixture"
+import { getConnectedInfos, givenAConnectedOpcoUser } from "@tests/fixture/connectedUser.fixture"
 import type { GetOfferResponse, OfferCreationByTokenResponse, OfferCreationResponse, OfferUpdateBody } from "@tests/sdk/entrepriseSdk"
 import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
+import { saveAdminUserTest, saveCfaUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import type { IJob } from "shared"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
@@ -14,6 +15,7 @@ import { AccessEntityType, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOB_START_TYPE } from "shared/models/job.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { buildEstablishmentId } from "@/services/etablissement.service"
 
 // Mock mailer service to avoid sending actual emails during tests
 vi.mock("@/services/mailer.service", () => {
@@ -404,6 +406,60 @@ describe("formulaire.controller", () => {
         cookies: entrepriseCookies,
       })
       expect.soft(response.statusCode).toBe(404)
+    })
+  })
+
+  describe("POST /formulaire/:establishment_id/informations", () => {
+    const newContactInfo = {
+      email: "contact@entreprise-partenaire.fr",
+      phone: "0611111111",
+      first_name: "Jean",
+      last_name: "Dupont",
+    }
+
+    it("permet à un CFA de modifier les informations de contact d'une entreprise qu'il gère", async () => {
+      // given
+      const { user: cfaUser, cfa, entreprise } = await saveCfaUserTest({ email: "cfa@cfa-domain.fr", phone: "0600000000", status: validatedUserStatus })
+      const { cookies } = await getConnectedInfos(cfaUser.email)
+      const establishment_id = buildEstablishmentId(cfaUser._id, entreprise.siret)
+
+      // when
+      const response = await httpClient().inject({
+        method: "POST",
+        path: `/api/formulaire/${establishment_id}/informations`,
+        cookies,
+        body: newContactInfo,
+      })
+
+      // then
+      expect.soft(response.statusCode).toBe(200)
+      const entrepriseManagedByCfa = await getDbCollection("entreprise_managed_by_cfa").findOne({ cfa_id: cfa._id, entreprise_id: entreprise._id })
+      expect.soft(entrepriseManagedByCfa?.email).toBe(newContactInfo.email)
+      expect.soft(entrepriseManagedByCfa?.phone).toBe(newContactInfo.phone)
+      expect.soft(entrepriseManagedByCfa?.first_name).toBe(newContactInfo.first_name)
+      expect.soft(entrepriseManagedByCfa?.last_name).toBe(newContactInfo.last_name)
+    })
+
+    it("permet à un admin de modifier les informations de contact d'une entreprise gérée par un CFA", async () => {
+      // given
+      const { user: cfaUser, cfa, entreprise } = await saveCfaUserTest({ email: "cfa@cfa-domain.fr", phone: "0600000000", status: validatedUserStatus })
+      const { user: adminUser } = await saveAdminUserTest({ status: validatedUserStatus })
+      const { cookies } = await getConnectedInfos(adminUser.email)
+      const establishment_id = buildEstablishmentId(cfaUser._id, entreprise.siret)
+
+      // when
+      const response = await httpClient().inject({
+        method: "POST",
+        path: `/api/formulaire/${establishment_id}/informations`,
+        cookies,
+        body: newContactInfo,
+      })
+
+      // then
+      expect.soft(response.statusCode).toBe(200)
+      const entrepriseManagedByCfa = await getDbCollection("entreprise_managed_by_cfa").findOne({ cfa_id: cfa._id, entreprise_id: entreprise._id })
+      expect.soft(entrepriseManagedByCfa?.email).toBe(newContactInfo.email)
+      expect.soft(entrepriseManagedByCfa?.phone).toBe(newContactInfo.phone)
     })
   })
 })

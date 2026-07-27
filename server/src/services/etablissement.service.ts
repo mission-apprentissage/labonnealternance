@@ -434,7 +434,7 @@ export const getCfaSiretInfos = async (siret: string) => {
   return response.cfa
 }
 
-export const validateEligibiliteCfa = async (siret: string, origin = "") => {
+export const validateEligibiliteCfa = async (siret: string) => {
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
     throw badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: BusinessErrorCodes.UNKNOWN })
@@ -450,7 +450,7 @@ export const validateEligibiliteCfa = async (siret: string, origin = "") => {
     throw badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: BusinessErrorCodes.NOT_QUALIOPI, ...formattedReferentiel })
   }
   const { address, address_detail, establishment_raison_sociale, geo_coordinates } = formattedReferentiel
-  const cfa = await upsertCfa(siret, { address, address_detail, enseigne: null, geo_coordinates, raison_sociale: establishment_raison_sociale }, origin)
+  const cfa = await upsertCfa(siret, { address, address_detail, enseigne: null, geo_coordinates, raison_sociale: establishment_raison_sociale })
   return { referentiel: formattedReferentiel, cfa }
 }
 

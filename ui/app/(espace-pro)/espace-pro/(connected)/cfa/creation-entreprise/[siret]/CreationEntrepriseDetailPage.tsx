@@ -12,7 +12,7 @@ import CustomInput from "@/app/_components/CustomInput"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
-import { phoneValidation } from "@/common/validation/fieldValidations"
+import { personNameValidation, phoneValidation } from "@/common/validation/fieldValidations"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -53,8 +53,8 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
       }}
       validationSchema={Yup.object().shape({
         email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
-        last_name: Yup.string().required("champ obligatoire"),
-        first_name: Yup.string().required("champ obligatoire"),
+        last_name: personNameValidation().required("champ obligatoire"),
+        first_name: personNameValidation().required("champ obligatoire"),
         phone: phoneValidation().required("champ obligatoire"),
         isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations"),
       })}

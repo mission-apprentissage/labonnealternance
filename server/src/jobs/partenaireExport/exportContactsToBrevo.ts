@@ -18,6 +18,8 @@ type IBrevoContact = {
   user_last_name: string
   user_email: string
   role_createdAt: Date
+  user_last_action_date?: Date | null
+  last_offer_date?: Date | null
   role_authorized_type: AccessEntityType.CFA | AccessEntityType.ENTREPRISE
   entreprise_enseigne: string | null
   entreprise_raison_sociale: string | null
@@ -49,6 +51,14 @@ const contactMapper: ColumnOption[] = [
   {
     key: "role_createdAt",
     header: "ROLE_CREATEDAT",
+  },
+  {
+    key: "user_last_action_date",
+    header: "LAST_ACTION_DATE",
+  },
+  {
+    key: "last_offer_date",
+    header: "DATE_DERNIERE_OFFRE",
   },
   {
     key: "entreprise_enseigne",
@@ -104,6 +114,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
             user_last_name: 1,
             user_email: 1,
             role_createdAt: 1,
+            user_last_action_date: 1,
             role_authorized_type: 1,
             entreprise_enseigne: 1,
             entreprise_raison_sociale: 1,
@@ -142,6 +153,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
               user_last_name: "$user_last_name",
               user_email: "$user_email",
               role_createdAt: "$role_createdAt",
+              user_last_action_date: "$user_last_action_date",
               role_authorized_type: "$role_authorized_type",
               entreprise_enseigne: "$entreprise_enseigne",
               entreprise_raison_sociale: "$entreprise_raison_sociale",
@@ -157,6 +169,11 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
                 $size: "$jobs_partners",
               },
             },
+            last_offer_date: {
+              $max: {
+                $max: "$jobs_partners.offer_creation",
+              },
+            },
           },
         },
         {
@@ -166,6 +183,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
             user_last_name: "$_id.user_last_name",
             user_email: "$_id.user_email",
             role_createdAt: "$_id.role_createdAt",
+            user_last_action_date: "$_id.user_last_action_date",
             role_authorized_type: "$_id.role_authorized_type",
             entreprise_enseigne: "$_id.entreprise_enseigne",
             entreprise_raison_sociale: "$_id.entreprise_raison_sociale",
@@ -174,6 +192,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
             cfa_raison_sociale: "$_id.cfa_raison_sociale",
             cfa_siret: "$_id.cfa_siret",
             job_count: 1,
+            last_offer_date: 1,
             recruiter_establishment_size: "$_id.recruiter_establishment_size",
             _id: 0,
           },
