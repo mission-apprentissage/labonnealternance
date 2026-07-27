@@ -14,7 +14,7 @@ import type { QSource, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, DEFAULT_SEARCH_MODE } from "../_utils/search.params.utils"
 import { searchTypeOf } from "../_utils/search.tracking.utils"
 import { ExitNewSearchLink } from "./ExitNewSearchLink"
-import { SearchBar } from "./SearchBar"
+import { BetaBadge, SearchBar } from "./SearchBar"
 import { SearchMobilePanel } from "./SearchMobilePanel"
 import { SEARCH_MODE_OPTIONS, SearchTypeRechercheSelect } from "./SearchTypeRechercheSelect"
 
@@ -145,6 +145,7 @@ export function SearchHomeForm() {
       <Box sx={{ display: { xs: "block", md: "none" } }}>
         <Box component="span" sx={{ display: "block", fontSize: "1rem", fontWeight: 700, color: fr.colors.decisions.text.default.grey.default, mb: fr.spacing("1v") }}>
           Que recherchez-vous ?
+          <BetaBadge />
         </Box>
         {/* minWidth 0 sur la rangée ET le wrapper flex du faux champ : sans eux, le contenu
             nowrap impose sa largeur min → le champ déborde de l'écran. */}

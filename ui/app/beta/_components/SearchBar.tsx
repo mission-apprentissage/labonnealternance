@@ -1,6 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Badge from "@codegouvfr/react-dsfr/Badge"
 import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
@@ -147,6 +148,15 @@ interface SearchBarProps {
   lieuError?: string
 }
 
+/** Badge accolé au libellé du champ métier : signale que la recherche est servie par le nouveau moteur. */
+export function BetaBadge() {
+  return (
+    <Badge as="span" severity="info" noIcon small style={{ marginLeft: 8, verticalAlign: "text-bottom" }}>
+      VERSION BETA
+    </Badge>
+  )
+}
+
 function FieldLabel({ children, error }: { children: ReactNode; error?: boolean }) {
   return (
     <Box
@@ -272,7 +282,10 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     >
       {/* Champ métier */}
       <Box sx={{ flex: rowSx.metierFlex, width: rowSx.fieldWidth }}>
-        <FieldLabel error={Boolean(qError)}>Que recherchez-vous ?</FieldLabel>
+        <FieldLabel error={Boolean(qError)}>
+          Que recherchez-vous ?
+          <BetaBadge />
+        </FieldLabel>
         <Autocomplete
           freeSolo
           options={metierOptions}
