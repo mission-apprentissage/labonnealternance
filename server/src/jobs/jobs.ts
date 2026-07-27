@@ -335,7 +335,7 @@ export async function setupJobProcessor() {
           },
           "Emission des contacts vers Brevo": {
             cron_string: "30 22 * * *",
-            handler: sendContactsToBrevo,
+            handler: config.env === "production" ? async () => sendContactsToBrevo() : async () => Promise.resolve(0),
             tag: "main",
           },
           "Synchronisation Onisep entre Id formation Onisep et Clé ME du catalogue RCO": {
