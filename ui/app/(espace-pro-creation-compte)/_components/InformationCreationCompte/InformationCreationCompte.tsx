@@ -16,7 +16,7 @@ import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { AUTHTYPE } from "@/common/contants"
-import { phoneValidation } from "@/common/validation/fieldValidations"
+import { personNameValidation, phoneValidation } from "@/common/validation/fieldValidations"
 import { AnimationContainer } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { ArrowRightLine } from "@/theme/components/icons"
@@ -62,11 +62,11 @@ const Formulaire = ({
         first_name: "",
         phone: "",
         email,
-        origin: origin ?? "lba",
+        origin: origin ?? "Labonnealternance",
       }}
       validationSchema={Yup.object().shape({
-        last_name: Yup.string().required("champ obligatoire"),
-        first_name: Yup.string().required("champ obligatoire"),
+        last_name: personNameValidation().required("champ obligatoire"),
+        first_name: personNameValidation().required("champ obligatoire"),
         phone: phoneValidation().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
@@ -99,15 +99,14 @@ const Formulaire = ({
                     }
                   />
                   <Box
+                    className={fr.cx("fr-messages-group")}
                     sx={{
-                      mb: fr.spacing("4v"),
+                      my: fr.spacing("4v"),
                     }}
                   >
-                    <Box className={fr.cx("fr-messages-group")}>
-                      <Box sx={{ fontSize: "0.75rem", lineHeight: "1.25rem", mt: "0 !important", display: "block !important" }} className="fr-info-text">
-                        Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
-                        email comportant <span style={{ fontWeight: "bold" }}>le nom de domaine de votre établissement.</span>
-                      </Box>
+                    <Box sx={{ fontSize: "0.75rem", lineHeight: "1.25rem", mt: "0 !important", display: "block !important" }} className="fr-info-text">
+                      Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
+                      email comportant <span style={{ fontWeight: "bold" }}>le nom de domaine de votre établissement.</span>
                     </Box>
                   </Box>
                   {shouldSelectOpco && (

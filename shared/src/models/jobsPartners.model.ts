@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
-import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import type { IDiplomaParam } from "../routes/_params.js"
 
@@ -84,26 +84,11 @@ export const ZJobsPartnersRecruiterApi = z.object({
 })
 
 export const NIVEAUX_DIPLOMES_EUROPEENS = [
-  {
-    value: "3",
-    label: "Cap, autres formations (Infrabac)",
-  },
-  {
-    value: "4",
-    label: "BP, Bac, autres formations (Bac)",
-  },
-  {
-    value: "5",
-    label: "BTS, DEUST, autres formations (Bac+2)",
-  },
-  {
-    value: "6",
-    label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
-  },
-  {
-    value: "7",
-    label: "Master, titre ingénieur, autres formations (Bac+5)",
-  },
+  { value: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+  { value: "4", label: NIVEAU_DIPLOME_LABEL["4"] },
+  { value: "5", label: NIVEAU_DIPLOME_LABEL["5"] },
+  { value: "6", label: NIVEAU_DIPLOME_LABEL["6"] },
+  { value: "7", label: NIVEAU_DIPLOME_LABEL["7"] },
 ] as const
 
 export const NIVEAUX_DIPLOMES_EUROPEENS_ENUM = Object.fromEntries(NIVEAUX_DIPLOMES_EUROPEENS.map((x) => [x.value, x.value]))
@@ -181,6 +166,7 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   cfa_apply_phone: z.string().nullish().describe("Numéro de téléphone du CFA si offre déléguée"),
   cfa_apply_email: z.string().email().nullish().describe("Email de contact du CFA si offre déléguée"),
   cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
+  ft_support: z.boolean().nullish().describe("Indique si le créateur de l'offre a demandé un accompagnement par France Travail"),
   job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
   job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
   delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
@@ -191,6 +177,7 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   managed_by: zObjectId.nullish().describe("Id du userwithaccount si l'offre est une offre géré par LBA"),
   relance_mail_expiration_J7: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-7"),
   relance_mail_expiration_J1: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-1"),
+  relance_mail_nurturing: z.date().nullish().describe("Date de l'envoi du mail de nurturing à l'anniversaire du dépôt de l'offre"),
   job_last_prolongation_date: z.date().nullish().describe("Date de dernière prolongation de l'offre"),
   job_prolongation_count: z.number().int().nullish().describe("Nombre de fois où l'offre a été prolongée"),
   offer_rome_appellation: z.string().nullish().describe("Pour les offres LBA uniquement, libellé de l'appellation ROME"),

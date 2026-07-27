@@ -33,7 +33,7 @@ exports[`importDecathlon > should test the import of data into computed_job_part
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
-      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+      "label": "Licence, BUT, Licence Pro (Bac+3)",
     },
     "offer_title": "Assistant.e Responsable Sécurité Exploitation HSE H/F - Niveau Master",
     "offer_to_be_acquired_knowledge": [],
@@ -129,7 +129,7 @@ Tu as de multiples cordes à ton arc : tu aimes être sur le terrain avec les cl
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
-      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+      "label": "Licence, BUT, Licence Pro (Bac+3)",
     },
     "offer_title": "ALTERNANCE Manager Commerce (H/F)",
     "offer_to_be_acquired_knowledge": [],
@@ -231,7 +231,7 @@ Point Bonus si tu es pratiquant(e) de cyclisme ;) ",
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "7",
-      "label": "Master, titre ingénieur, autres formations (Bac+5)",
+      "label": "Master, titre ingénieur, grande école (Bac+5)",
     },
     "offer_title": "ALTERNANCE Manager Commerce (H/F)",
     "offer_to_be_acquired_knowledge": [],

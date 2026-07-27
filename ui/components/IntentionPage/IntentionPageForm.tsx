@@ -1,14 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Checkbox, FormControlLabel, FormGroup, Stack, TextField, Typography } from "@mui/material"
 import { FormikProvider, useFormik } from "formik"
+import { useEffect } from "react"
 import { zRoutes } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { toFormikValidationSchema } from "zod-formik-adapter"
-
 import { CustomFormControl } from "@/app/_components/CustomFormControl"
 import CustomInput from "@/app/_components/CustomInput"
-import { DsfrIcon } from "@/components/DsfrIcon"
 
 export type IntentionPageFormValues = {
   email: string
@@ -18,30 +16,33 @@ export type IntentionPageFormValues = {
 }
 
 export function IntentionPageForm({
-  onCancel,
   onSubmit,
   email,
-  phone,
   company_recruitment_intention,
+  onStateChange,
 }: {
   email: string
-  phone: string
-  onCancel: () => void
   onSubmit: (formValues: IntentionPageFormValues) => void
   company_recruitment_intention: ApplicationIntention
+  onStateChange?: (state: { isValid: boolean; isSubmitting: boolean }) => void
 }) {
   const isRefusedState = company_recruitment_intention === ApplicationIntention.REFUS
   const placeholderTextArea = ApplicationIntentionDefaultText[company_recruitment_intention]
   const schema = zRoutes.post["/application/intentionComment/:id"].body
 
   const formik = useFormik({
-    initialValues: { company_recruitment_intention, company_feedback: placeholderTextArea, email, phone, refusal_reasons: [] },
+    initialValues: { company_recruitment_intention, company_feedback: placeholderTextArea, email, phone: "", refusal_reasons: [] },
     validationSchema: toFormikValidationSchema(schema),
     onSubmit,
     validate: validateForm,
   })
 
-  const { values, setFieldValue, handleBlur, submitForm, isValid, isSubmitting } = formik
+  const { values, setFieldValue, handleBlur, isValid, isSubmitting } = formik
+
+  useEffect(() => {
+    onStateChange?.({ isValid, isSubmitting })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isValid, isSubmitting])
 
   function validateForm(formValues) {
     const parseResult = schema.safeParse(formValues ?? values)
@@ -59,12 +60,14 @@ export function IntentionPageForm({
   }
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form id="intention-form" onSubmit={formik.handleSubmit}>
       <FormikProvider value={formik}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          <Box sx={{ pt: fr.spacing("6v") }} data-testid="fieldset-message">
-            <CustomFormControl label="Modifiez votre message :" required name="company_feedback">
-              <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#666", marginTop: "4px" }}>Le candidat recevra le message suivant par courriel.</Typography>
+          <Box data-testid="fieldset-message">
+            <Typography sx={{ fontSize: "12px", my: fr.spacing("6v"), color: "#666", marginTop: "4px" }}>
+              Tous les champs sont obligatoires, sauf mention contraire “facultatif”.
+            </Typography>
+            <CustomFormControl label="Modifiez votre message :" required={false} name="company_feedback">
               <TextField
                 id="company_feedback"
                 data-testid="company_feedback"
@@ -95,15 +98,30 @@ export function IntentionPageForm({
           {!isRefusedState && (
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: "24px" }}>
               <Box data-testid="fieldset-email" sx={{ flex: 1 }}>
-                <CustomInput data-testid="email" name="email" required={true} label="E-mail" type="email" value={values.email} />
+                <CustomInput
+                  data-testid="email"
+                  name="email"
+                  required={false}
+                  label="Votre e-mail (facultatif)"
+                  info="Vous serez en copie de la réponse envoyée"
+                  type="email"
+                  value={values.email}
+                />
               </Box>
               <Box data-testid="fieldset-phone" sx={{ flex: 1 }}>
-                <CustomInput data-testid="phone" name="phone" required={false} label="Téléphone" type="tel" value={values.phone} />
+                <CustomInput
+                  data-testid="phone"
+                  name="phone"
+                  label="Votre téléphone (facultatif)"
+                  info="Votre numéro apparaîtra dans l’e-mail de réponse"
+                  type="tel"
+                  required={false}
+                />
               </Box>
             </Box>
           )}
           {isRefusedState && (
-            <CustomFormControl label="Précisez la ou les raison(s) de votre refus :" required={false} name="refusal_reasons">
+            <CustomFormControl label="Précisez la ou les raison(s) de votre refus (facultatif) :" required={false} name="refusal_reasons">
               <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#666666", marginTop: "8px" }}>Les motifs sélectionnés seront partagés au candidat</Typography>
               <FormGroup>
                 <Stack
@@ -147,19 +165,6 @@ export function IntentionPageForm({
               </FormGroup>
             </CustomFormControl>
           )}
-
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: "24px" }}>
-              <Button priority="secondary" aria-label="Annuler l’envoi de la réponse" type="button" onClick={onCancel} disabled={isSubmitting}>
-                <DsfrIcon name="fr-icon-arrow-go-back-line" size={16} />
-                Annuler les modifications
-              </Button>
-              <Button aria-label="Envoyer le message au candidat" type="submit" onClick={submitForm} disabled={!isValid || isSubmitting}>
-                <DsfrIcon name="fr-icon-mail-send-line" size={16} />
-                Envoyer le message
-              </Button>
-            </Box>
-          </Box>
         </Box>
       </FormikProvider>
     </form>

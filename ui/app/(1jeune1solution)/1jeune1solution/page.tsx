@@ -165,7 +165,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
             aux entreprises qui recrutent en alternance
           </Box>
         </Typography>
-        <Box sx={{ width: "13%", height: "4px", background: "#EA619E", mt: fr.spacing("9v") }} />
+        <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: "#EA619E", mt: fr.spacing("9v") }} />
 
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: "row", marginTop: fr.spacing("4v") }}>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>

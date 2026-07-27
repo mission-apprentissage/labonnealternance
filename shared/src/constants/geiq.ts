@@ -1,5 +1,5 @@
 // la liste connue des GEIQ dont on sait que les offres couplées sont légitimes
-export const GEIQ_WHITELIST: string[] = [
+const GEIQ_WHITELIST: string[] = [
   "30784534700011",
   "35111116600028",
   "38280216300099",
@@ -440,3 +440,5 @@ export const GEIQ_WHITELIST: string[] = [
   "98532616400011",
   "98848378000017",
 ]
+
+export default GEIQ_WHITELIST

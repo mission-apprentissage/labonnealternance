@@ -8,7 +8,7 @@ import type { IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartne
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getCompanyContactInfo, getRecruteursLbaFromDB, updateContactInfo } from "./recruteurLba.service"
+import { getCompanyContactInfo, getRecruteursLbaFromDB, searchLbaCompaniesForAdmin, updateContactInfo } from "./recruteurLba.service"
 
 useMongo()
 
@@ -192,6 +192,92 @@ describe("getRecruteursLbaFromDB", () => {
 
   it("retourne un tableau vide si RECRUTEURS_LBA est exclu des partenaires", async () => {
     const result = await getRecruteursLbaFromDB({ geo: null, romes: null, opco: null, departements: null, partners_to_exclude: [JOBPARTNERS_LABEL.RECRUTEURS_LBA] })
+
+    expect(result).toHaveLength(0)
+  })
+})
+
+describe("searchLbaCompaniesForAdmin", () => {
+  // Deux offres pour le même siret : la recherche doit dédupliquer et garder la plus récente
+  const companyAncienne = generateJobsPartnersOfferPrivate({
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+    workplace_siret: "55217863900132",
+    workplace_legal_name: "Boulangerie Dupont",
+    workplace_brand: "Chez Dupont",
+    apply_email: "ancien@dupont.fr",
+    apply_phone: "0611223344",
+    created_at: new Date("2024-01-01"),
+  }) as IJobsPartnersRecruteurAlgoPrivate
+
+  const companyRecente = generateJobsPartnersOfferPrivate({
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+    workplace_siret: "55217863900132",
+    workplace_legal_name: "Boulangerie Dupont",
+    apply_email: "recent@dupont.fr",
+    created_at: new Date("2024-06-01"),
+  }) as IJobsPartnersRecruteurAlgoPrivate
+
+  const garage = generateJobsPartnersOfferPrivate({
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+    workplace_siret: "13002526500013",
+    workplace_legal_name: "Garage Martin",
+    apply_email: "info@martin.fr",
+  }) as IJobsPartnersRecruteurAlgoPrivate
+
+  // Autre partenaire : ne doit jamais remonter
+  const autrePartenaire = generateJobsPartnersOfferPrivate({
+    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+    workplace_siret: "38439774100029",
+    workplace_legal_name: "Boulangerie Externe",
+  }) as IJobsPartnersRecruteurAlgoPrivate
+
+  beforeEach(async () => {
+    await getDbCollection("jobs_partners").insertMany([companyAncienne, companyRecente, garage, autrePartenaire])
+    return async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+    }
+  })
+
+  it("recherche par raison sociale (insensible à la casse, sous-chaîne) et déduplique par siret", async () => {
+    const result = await searchLbaCompaniesForAdmin({ search: "boulangerie", field: "workplace_legal_name" })
+
+    expect(result).toHaveLength(1)
+    expect(result[0].siret).toBe("55217863900132")
+  })
+
+  it("garde l'offre la plus récente lors de la déduplication", async () => {
+    const result = await searchLbaCompaniesForAdmin({ search: "Dupont", field: "workplace_legal_name" })
+
+    expect(result).toHaveLength(1)
+    expect(result[0].email).toBe("recent@dupont.fr")
+  })
+
+  it("recherche par email", async () => {
+    const result = await searchLbaCompaniesForAdmin({ search: "martin.fr", field: "apply_email" })
+
+    expect(result).toHaveLength(1)
+    expect(result[0].siret).toBe("13002526500013")
+  })
+
+  it("recherche par siret en correspondance exacte", async () => {
+    const result = await searchLbaCompaniesForAdmin({ search: "13002526500013", field: "workplace_siret" })
+
+    expect(result).toHaveLength(1)
+    expect(result[0].raison_sociale).toBe("Garage Martin")
+  })
+
+  it("rejette un siret invalide", async () => {
+    await expect(searchLbaCompaniesForAdmin({ search: "123", field: "workplace_siret" })).rejects.toThrow("Le SIRET fourni est invalide")
+  })
+
+  it("ne retourne pas les recruteurs d'autres partenaires que RECRUTEURS_LBA", async () => {
+    const result = await searchLbaCompaniesForAdmin({ search: "Externe", field: "workplace_legal_name" })
+
+    expect(result).toHaveLength(0)
+  })
+
+  it("retourne un tableau vide sans correspondance", async () => {
+    const result = await searchLbaCompaniesForAdmin({ search: "inexistant", field: "workplace_legal_name" })
 
     expect(result).toHaveLength(0)
   })

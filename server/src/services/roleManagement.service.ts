@@ -18,10 +18,10 @@ import { archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations }
 import { sendEngagementHandicapEmailIfNeeded } from "./handiEngagement.service"
 import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
-import { activateUser } from "./userWithAccount.service"
+import { activateUser, hasActiveRoleOnAnotherOrganization } from "./userWithAccount.service"
 
 export const modifyPermissionToUser = async (
-  props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
+  props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id">,
   eventProps: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 ): Promise<IRoleManagement> => {
   const now = new Date()
@@ -234,7 +234,6 @@ const adminOrOpcoUpdatePermissionToUser = async ({
       user_id: userId,
       authorized_id: role.authorized_id,
       authorized_type: role.authorized_type,
-      origin: "action admin ou opco",
     },
     {
       validation_type: VALIDATION_UTILISATEUR.MANUAL,
@@ -358,6 +357,10 @@ export const deactivateUserRole = async ({
 export const activateUserRole = async ({ userId, organizationId, requestedBy }: { userId: ObjectId; organizationId: string; requestedBy: IUserWithAccount }) => {
   const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
   if (!user) throw badRequest()
+
+  if (await hasActiveRoleOnAnotherOrganization(userId, organizationId)) {
+    throw badRequest("Cet utilisateur a déjà un accès actif sur une autre organisation. L'activation est impossible.")
+  }
 
   const updatedRole = await adminOrOpcoUpdatePermissionToUser({
     reason: "",

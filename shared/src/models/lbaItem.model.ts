@@ -158,6 +158,7 @@ const ZLbaItemCompany = z
     headquarter: ZLbaItemCompanyHQ.nullish(), // uniquement pour formation
     opco: ZLbaItemOpco.nullish(), // partner -> workplace_opco
     elligibleHandicap: z.boolean().nullish(),
+    isGeiq: z.boolean().nullish(), // issu de la liste GEIQ cf shared/src/services/isGeiqEntreprise.ts
   })
   .strict()
 

@@ -1,11 +1,13 @@
 import { PassThrough } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
+import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import type { CollectionName } from "shared/models/models"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const importFromStreamInJson = async ({
@@ -43,12 +45,25 @@ export const importFromStreamInJson = async ({
       callback(null, null)
     },
   })
-  logger.info(`starting stream pipeline for partner "${partnerLabel}" into collection "${destinationCollection}"`)
-  await pipeline(stream, takeChunkTransform)
-  logger.info(`stream pipeline ended for partner "${partnerLabel}" into collection "${destinationCollection}"`)
-  const content = chunks.join("")
-  const json = JSON.parse(content)
-  await readJson(json)
+  try {
+    logger.info(`starting stream pipeline for partner "${partnerLabel}" into collection "${destinationCollection}"`)
+    await pipeline(stream, takeChunkTransform)
+    logger.info(`stream pipeline ended for partner "${partnerLabel}" into collection "${destinationCollection}"`)
+    const content = chunks.join("")
+    const json = JSON.parse(content)
+    await readJson(json)
+  } catch (err) {
+    const error = internal(`importFromStreamInJson: erreur lors de l'import ${partnerLabel}`)
+    error.cause = err
+    logger.error(err, error.message)
+    sentryCaptureException(error)
+    await notifyToSlack({
+      subject: `import des offres ${partnerLabel} dans raw`,
+      message: `import ${partnerLabel} en erreur : ${err instanceof Error ? err.message : String(err)}`,
+      error: true,
+    })
+    throw error
+  }
 
   logger.info(`${offerInsertCount} offers inserted`)
   logger.info("Pipeline succeeded.")

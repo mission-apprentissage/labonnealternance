@@ -28,6 +28,10 @@ export async function sendEngagementHandicapEmailIfNeeded(user: IUserWithAccount
     )
     return
   }
+
+  const hasFtSupportJob = await getDbCollection("jobs_partners").countDocuments({ workplace_siret: siret, ft_support: true }, { limit: 1 })
+  if (hasFtSupportJob) return
+
   const messageId = await sendEngagementHandicapEmail(user, entreprise)
   await getDbCollection("rolemanagements").updateOne(
     { _id: roleId },

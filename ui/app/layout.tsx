@@ -6,6 +6,7 @@ import { setupZodErrorMap } from "shared/helpers/zodHelpers/setupZodErrorMap"
 import { HeadLaBonneAlternance } from "@/components/head"
 import { publicConfig } from "@/config.public"
 import { Matomo } from "@/tracking/trackingMatomo"
+import { getRobotsMetadata } from "@/utils/robots.utils"
 import RootTemplate from "./client_only_providers"
 import { DsfrProvider, StartDsfrOnHydration } from "./dsfr-setup"
 import { DsfrHead, getHtmlAttributes } from "./dsfr-setup/server-only-index"
@@ -19,6 +20,8 @@ import "@/styles/search.css"
 export const metadata: Metadata = {
   metadataBase: new URL(publicConfig.baseUrl),
   manifest: "/favicon/site.webmanifest",
+  description: "La bonne alternance vous aide à trouver un emploi en alternance et une formation en apprentissage. Service public gratuit, des milliers d'offres en France.",
+  robots: getRobotsMetadata(publicConfig.disableRobots),
   alternates: {
     canonical: "./",
   },

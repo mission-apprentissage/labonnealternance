@@ -53,11 +53,13 @@ export const FormulaireEditionOffreStep1 = ({
   establishment_id,
   onSubmit,
   formValues,
+  totalSteps = 3,
 }: {
   offre?: IJob
   establishment_id?: string
   onSubmit?: (values: any) => void
   formValues: any
+  totalSteps?: number
 }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
   const initRome = rome_code?.at(0)
@@ -205,7 +207,7 @@ export const FormulaireEditionOffreStep1 = ({
                   },
                 })}
               >
-                Étape 1/2 : Description de l’offre
+                Étape 1/{totalSteps} : Description de l'offre
               </Typography>
               <Typography component="h2" sx={{ fontWeight: 700 }}>
                 Votre offre

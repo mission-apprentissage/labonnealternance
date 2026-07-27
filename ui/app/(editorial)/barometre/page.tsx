@@ -528,12 +528,12 @@ export default function BarometrePage() {
               <BarChartHorizontal
                 title="Quel est le niveau de diplôme le plus recherché par les recruteurs ?"
                 items={[
-                  { label: "BTS, DEUST, autres formations (Bac+2)", value: 28, displayValue: "28 %" },
+                  { label: "BTS, DEUST (Bac+2)", value: 28, displayValue: "28 %" },
                   { label: "Indifférent", value: 25, displayValue: "25 %" },
-                  { label: "CAP, autres formations (Infrabac)", value: 15, displayValue: "15 %" },
-                  { label: "BP, Bac, autres formations (Bac)", value: 12, displayValue: "12 %" },
-                  { label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)", value: 11, displayValue: "11 %" },
-                  { label: "Master, titre ingénieur, autres formations (Bac+5)", value: 8, displayValue: "8 %" },
+                  { label: "CAP, BEP (Infrabac)", value: 15, displayValue: "15 %" },
+                  { label: "Bac, Bac Pro, BP (Bac)", value: 12, displayValue: "12 %" },
+                  { label: "Licence, BUT, Licence Pro (Bac+3)", value: 11, displayValue: "11 %" },
+                  { label: "Master, titre ingénieur, grande école (Bac+5)", value: 8, displayValue: "8 %" },
                 ]}
                 tone="info"
               />

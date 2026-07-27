@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { joinNonNullStrings } from "shared"
-import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/index"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
@@ -52,17 +52,17 @@ function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_targe
   switch (job.education) {
     case "RJ/Qualif/BEP_CAP":
     case "RJ/Qualif/Employe_Operateur":
-      return { european: "3", label: NIVEAUX_POUR_LBA["3 (CAP...)"] }
+      return { european: "3", label: NIVEAU_DIPLOME_LABEL["3"] }
     case "RJ/Qualif/Technicien_B2":
     case "RJ/Qualif/Technicien":
-      return { european: "5", label: NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"] }
+      return { european: "5", label: NIVEAU_DIPLOME_LABEL["5"] }
     case "RJ/Qualif/Agent_maitrise_B3":
     case "RJ/Qualif/Agent_maitrise":
-      return { european: "6", label: NIVEAUX_POUR_LBA["6 (Licence, BUT...)"] }
+      return { european: "6", label: NIVEAU_DIPLOME_LABEL["6"] }
     case "RJ/Qualif/Cadre_dirigeant":
     case "RJ/Qualif/Ingenieur_B5":
     case "RJ/Qualif/Ingenieur":
-      return { european: "7", label: NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"] }
+      return { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] }
     default:
       return null
   }

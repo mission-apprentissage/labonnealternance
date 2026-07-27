@@ -18,14 +18,13 @@ export const FieldWithValue = ({
     return null
   }
   return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
+    <Box sx={{ display: "flex", alignItems: "flex-start" }}>
       <Typography
         sx={{
           mr: fr.spacing("2v"),
-          minWidth: "fit-content",
         }}
       >
-        {title} :
+        {title}&nbsp;:
       </Typography>
       {!isValueEmpty ? (
         <Typography sx={{ background: "#F9F8F6", px: 1, py: "2px", mr: 1, fontWeight: 700 }}>{value}</Typography>

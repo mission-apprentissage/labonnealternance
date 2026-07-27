@@ -121,6 +121,7 @@ export const ZJobFields = z
       .refine((value: string | null | undefined) => (value ? detectUrlAndEmails(value).length === 0 : true), "Les urls et les emails sont interdits")
       .describe("Titre de l'offre saisi par le recruteur"),
     to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
+    ft_support: z.boolean().nullish().default(false).describe("Offre transmise à France Travail"),
   })
   .strict()
 
@@ -168,6 +169,7 @@ export const ZJobCreate = ZJobFields.pick({
   competences_rome: true,
   offer_title_custom: true,
   to_applicant_questions: true,
+  ft_support: true,
   job_start_type: true,
   job_start_date_flexible: true,
 })

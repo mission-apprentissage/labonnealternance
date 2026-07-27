@@ -160,6 +160,64 @@ describe("detectDuplicateJobPartners", () => {
     expect.soft(job.business_error).toEqual(null)
     expect.soft(job2.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
   }, 10_000)
+  it("should not detect a duplicate when workplace_siret is null or empty", async () => {
+    // given
+    await givenSomeComputedJobPartners([
+      {
+        partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+        workplace_siret: null,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75007",
+      },
+      {
+        partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
+        workplace_siret: null,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75007",
+      },
+    ])
+    // when
+    await detectDuplicateJobPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    for (const job of jobs) {
+      expect.soft(job.duplicates).toEqual([])
+    }
+  }, 10_000)
+
+  it("should not detect duplicates when the group has more than 500 offers", async () => {
+    // given: 501 offers sharing the same siret from two partner labels – normally duplicates, but group is too large
+    const helloworkCount = 251 // total = 501 (> 500 limit)
+    const rhAlternanceCount = 250
+    let index = 0
+    await givenSomeComputedJobPartners(
+      Array.from({ length: helloworkCount }, () => ({
+        partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+        workplace_siret: siret,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75007",
+        partner_job_id: JOBPARTNERS_LABEL.HELLOWORK + " " + index++,
+      }))
+    )
+    await givenSomeComputedJobPartners(
+      Array.from({ length: rhAlternanceCount }, () => ({
+        partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
+        workplace_siret: siret,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75007",
+        partner_job_id: JOBPARTNERS_LABEL.RH_ALTERNANCE + " " + index++,
+      }))
+    )
+    // when
+    await detectDuplicateJobPartners()
+    // then: no offer should be flagged as duplicate because the group exceeds the 500-offer limit
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    for (const job of jobs) {
+      expect.soft(job.duplicates).toEqual([])
+      expect.soft(job.business_error).toEqual(null)
+    }
+  }, 30_000)
+
   it("should not detect a duplicate with an exact match in the offer title and the siret but a different zip code (recruiter)", async () => {
     // given
     await givenSomeComputedJobPartners([

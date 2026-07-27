@@ -1,8 +1,22 @@
 import { zRoutes } from "shared/index"
 import type { Server } from "@/http/server"
-import { getCompanyContactInfo, updateContactInfo } from "@/services/recruteurLba.service"
+import { getCompanyContactInfo, searchLbaCompaniesForAdmin, updateContactInfo } from "@/services/recruteurLba.service"
 
 export default function (server: Server) {
+  server.get(
+    "/admin/lba-companies",
+    {
+      schema: zRoutes.get["/admin/lba-companies"],
+      onRequest: [server.auth(zRoutes.get["/admin/lba-companies"])],
+    },
+    async (req, res) => {
+      const { search, field } = req.query
+
+      const companies = await searchLbaCompaniesForAdmin({ search, field })
+      return res.status(200).send(companies)
+    }
+  )
+
   server.get(
     "/lbacompany/:siret/contactInfo",
     {

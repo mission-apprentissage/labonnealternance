@@ -25,7 +25,9 @@ const ErrorMessage = ({ type = undefined, message }: Props) => {
         }}
       >
         <Image width={32} height={32} src="/images/icons/errorAlert.svg" alt="" />
-        {message}
+        <Typography component="span" sx={{ ml: fr.spacing("2v") }}>
+          {message}
+        </Typography>
       </Box>
       {type === "column" && (
         <Box sx={{ margin: "auto", maxWidth: "75%", textAlign: "center" }}>

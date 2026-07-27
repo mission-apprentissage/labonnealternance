@@ -9,6 +9,7 @@ import { JOB_STATUS_ENGLISH, JobCollectionName, traductionJobStatus } from "shar
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { isCfaEntreprise } from "shared/services/isCfaEntreprise"
+import { isGeiqEntreprise } from "shared/services/isGeiqEntreprise"
 import { manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -84,6 +85,7 @@ function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance, 
       url: partnerJob.workplace_website,
       mandataire: partnerJob.is_delegated,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
+      isGeiq: isGeiqEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
     },
     job: {
       id: partnerJob.partner_job_id,
@@ -154,6 +156,7 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
       opco: { label: partnerJob.workplace_opco, url: null },
       mandataire: partnerJob.is_delegated,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
+      isGeiq: isGeiqEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
     },
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,

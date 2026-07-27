@@ -5,6 +5,22 @@ import { Box, Stack, Typography } from "@mui/material"
 import { type IJobJson, type ILbaItemPartnerJobJson, JOB_START_TYPE } from "shared"
 import { formatDate } from "@/utils/strutils"
 
+const getDiplomaPills = (label: string): string[] => {
+  const parenIdx = label.indexOf("(")
+  if (parenIdx === -1)
+    return label
+      .split(", ")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  const mainParts = label
+    .substring(0, parenIdx)
+    .split(", ")
+    .map((s) => s.trim())
+    .filter(Boolean)
+  const parenContent = label.substring(parenIdx + 1, label.indexOf(")")).trim()
+  return [...new Set(parenContent ? [...mainParts, parenContent] : mainParts)]
+}
+
 const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
@@ -45,7 +61,7 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
         <strong>Niveau de formation visé en fin de contrat :</strong>{" "}
         {job?.target_diploma_level ? (
           <Stack direction="row" sx={{ flexWrap: "wrap" }}>
-            {job?.target_diploma_level.split(", ").map((d, idx) => (
+            {getDiplomaPills(job.target_diploma_level).map((pill, idx) => (
               <Typography
                 component="span"
                 key={idx}
@@ -60,7 +76,7 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
                   mb: fr.spacing("2v"),
                 }}
               >
-                {d}
+                {pill}
               </Typography>
             ))}
           </Stack>

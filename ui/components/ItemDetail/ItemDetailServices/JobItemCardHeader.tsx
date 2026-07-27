@@ -22,23 +22,24 @@ interface JobItemCardHeaderProps {
 export default function JobItemCardHeader({ selectedItem, kind, isMandataire, isCollapsedHeader = undefined }: JobItemCardHeaderProps) {
   let res = <></>
   const companyName = selectedItem?.company?.name
+  const isGeiq = selectedItem?.company?.isGeiq
 
   if (!isCollapsedHeader) {
-    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) {
+    if ((kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) || isGeiq) {
       res = (
         <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
           <Typography component="span" sx={{ fontWeight: 400 }}>
-            Le centre de formation&nbsp;
+            L'organisme&nbsp;
           </Typography>
-          <Typography component="span" dangerouslySetInnerHTML={{ __html: companyName }} />
+          <Typography sx={{ fontWeight: 700 }} component="span" dangerouslySetInnerHTML={{ __html: companyName }} />
           <Typography component="span" sx={{ fontWeight: 400 }}>
-            &nbsp;propose actuellement cette offre dans le domaine suivant
+            &nbsp;{isGeiq ? "recherche un·e alternant·e pour le poste suivant" : "propose actuellement cette offre dans le domaine suivant"} :
           </Typography>
         </Typography>
       )
     }
 
-    if ([LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind) && !isMandataire) {
+    if ([LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind) && !isMandataire && !isGeiq) {
       res = (
         <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
           {companyName ? (

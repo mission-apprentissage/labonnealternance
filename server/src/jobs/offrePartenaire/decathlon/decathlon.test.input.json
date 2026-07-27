@@ -11,8 +11,8 @@
       "catch_phrase": "",
       "contract_type": "Contrat d'alternance (pro, apprentissage)",
       "contract_duration": {
-        "min": "12",
-        "max": "24"
+        "min": 12,
+        "max": 24
       },
       "contract_work_period": "Temps plein",
       "service": "Manager Commerce",
@@ -59,8 +59,8 @@
         },
         "formatted": "2 Avenue de l'Europe,  78140 Vélizy-Villacoublay, France",
         "position": {
-          "lon": "2.2201465",
-          "lat": "48.7812805"
+          "lon": 2.2201465,
+          "lat": 48.7812805
         }
       },
       "entity": {
@@ -78,8 +78,8 @@
           },
           "formatted": "2 Avenue de l'Europe,  78140 Vélizy-Villacoublay, France",
           "position": {
-            "lon": "2.2201465",
-            "lat": "48.7812805"
+            "lon": 2.2201465,
+            "lat": 48.7812805
           }
         },
         "manager": {
@@ -142,8 +142,8 @@
       "catch_phrase": "",
       "contract_type": "Contrat d'alternance (pro, apprentissage)",
       "contract_duration": {
-        "min": "12",
-        "max": "24"
+        "min": 12,
+        "max": 24
       },
       "contract_work_period": "Temps plein",
       "service": "Responsable Sécurité Opérationnel",
@@ -187,8 +187,8 @@
         },
         "formatted": "8 Rue des Orangers,  64700 Hendaye, France",
         "position": {
-          "lon": "-1.7799301",
-          "lat": "43.3689738"
+          "lon": -1.7799301,
+          "lat": 43.3689738
         }
       },
       "entity": {
@@ -206,8 +206,8 @@
           },
           "formatted": "8 Rue des Orangers,  64700 Hendaye, France",
           "position": {
-            "lon": "-1.7799301",
-            "lat": "43.3689738"
+            "lon": -1.7799301,
+            "lat": 43.3689738
           }
         },
         "manager": {
@@ -265,8 +265,8 @@
       "catch_phrase": "Le Rayon Cycle-Atelier est à la recherche de sa future pépite",
       "contract_type": "Contrat d'alternance (pro, apprentissage)",
       "contract_duration": {
-        "min": "12",
-        "max": "24"
+        "min": 12,
+        "max": 24
       },
       "contract_work_period": "Temps plein",
       "service": "Manager Commerce",
@@ -333,8 +333,8 @@
         },
         "formatted": "Le Mazaud,  19100 Brive-la-Gaillarde, France",
         "position": {
-          "lon": "1.477267",
-          "lat": "45.143855"
+          "lon": 1.477267,
+          "lat": 45.143855
         }
       },
       "entity": {
@@ -352,8 +352,8 @@
           },
           "formatted": "Le Mazaud,  19100 Brive-la-Gaillarde, France",
           "position": {
-            "lon": "1.477267",
-            "lat": "45.143855"
+            "lon": 1.477267,
+            "lat": 45.143855
           }
         },
         "manager": {

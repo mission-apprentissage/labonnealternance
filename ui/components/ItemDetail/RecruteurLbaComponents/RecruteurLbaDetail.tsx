@@ -216,27 +216,6 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             type={LBA_ITEM_TYPE.RECRUTEURS_LBA}
             linkLabelNotReported="Signaler l’entreprise"
             linkLabelReported="Entreprise signalée"
-            tooltip={
-              <Box sx={{ p: fr.spacing("2v") }}>
-                <Typography
-                  sx={{
-                    fontSize: "16px",
-                    lineHeight: "24px",
-                    fontWeight: "700",
-                    marginBottom: "8px",
-                    color: "#161616",
-                  }}
-                >
-                  Cette entreprise vous semble peu recommandable ? Voici les raisons pour lesquelles vous pouvez nous signaler une entreprise :
-                </Typography>
-                <ul>
-                  <li>Informations trompeuses ou fausses</li>
-                  <li>Non-respect des lois du travail </li>
-                  <li>Fraude ou arnaque</li>
-                  <li>Comportement inapproprié ou abusif </li>
-                </ul>
-              </Box>
-            }
           />
         </Box>
       </Box>

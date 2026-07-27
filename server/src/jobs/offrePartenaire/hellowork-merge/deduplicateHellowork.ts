@@ -20,7 +20,7 @@ export async function deduplicateHellowork() {
       {
         $addFields: {
           ref_start: {
-            $substr: ["$job.reference", 0, 8],
+            $substrCP: ["$job.reference", 0, 8],
           },
         },
       },
@@ -45,7 +45,7 @@ export async function deduplicateHellowork() {
       {
         $addFields: {
           ref_start: {
-            $substr: ["$job.reference", 0, 8],
+            $substrCP: ["$job.reference", 0, 8],
           },
         },
       },

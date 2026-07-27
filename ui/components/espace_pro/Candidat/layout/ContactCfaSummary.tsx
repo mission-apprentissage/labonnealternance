@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
+import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 
 type Props = {
   entrepriseRaisonSociale: string
@@ -7,29 +8,17 @@ type Props = {
   adresse: string
   codePostal: string
   ville: string
-  fromMail?: boolean
 }
 
 /**
  * Etablissement information.
  */
 export const ContactCfaSummary = (props: Props) => {
-  const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule, fromMail = false } = props
+  const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule } = props
 
   return (
     <Box sx={{ mb: fr.spacing("6v") }}>
-      <Typography
-        variant="h1"
-        sx={{ fontSize: fromMail ? "32px !important" : "24px !important", lineHeight: fromMail ? "40px !important" : "32px !important", mb: fr.spacing("6v") }}
-      >
-        Contacter l’établissement
-      </Typography>
-      <Typography
-        variant="h2"
-        sx={{ fontSize: fromMail ? "24px !important" : "22px !important", lineHeight: fromMail ? "32px !important" : "28px !important", mb: fr.spacing("2v") }}
-      >
-        {entrepriseRaisonSociale}
-      </Typography>
+      <ModalTitle sx={{ mb: fr.spacing("6v") }}>{`Contacter l’établissement ${entrepriseRaisonSociale}`}</ModalTitle>
       <Typography sx={{ mb: fr.spacing("2v") }}>
         à propos de la formation : <strong>{intitule}</strong>
       </Typography>

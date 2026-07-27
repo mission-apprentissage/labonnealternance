@@ -168,7 +168,7 @@ const obfuscateRecruteursLba = async () => {
 const reduceRecruteursLba = async (limit = 75_000) => {
   logger.info(`reducing jobs_partners recruteurs_lba to ${limit} latest documents`)
   const result = await getDbCollection("jobs_partners")
-    .aggregate([{ $match: { partner_label: "recruteurs_lba" } }, { $sort: { _id: -1 } }, { $skip: limit }, { $project: { _id: 1 } }])
+    .aggregate([{ $match: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } }, { $sort: { _id: -1 } }, { $skip: limit }, { $project: { _id: 1 } }])
     .toArray()
   const idsToDelete = result.map((val) => val._id)
   const chunks = chunk(idsToDelete, 1_000)

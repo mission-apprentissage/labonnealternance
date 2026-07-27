@@ -10,6 +10,7 @@ import { Formik, useField } from "formik"
 import { JOB_START_TYPE } from "shared"
 import dayjs from "shared/helpers/dayjs"
 import * as Yup from "yup"
+import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import type { useDisclosure } from "@/common/hooks/useDisclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
@@ -34,13 +35,8 @@ export const OffreProlongationModal = ({
     .required("Champ obligatoire")
 
   return (
-    <ModalReadOnly size="xl" isOpen={isOpen} onClose={onClose}>
-      <Box
-        sx={{
-          pt: fr.spacing("8v"),
-          maxWidth: "588px",
-        }}
-      >
+    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+      <Box>
         <Formik
           validateOnMount
           enableReinitialize={true}
@@ -58,17 +54,7 @@ export const OffreProlongationModal = ({
             return (
               <>
                 <Box sx={{ px: fr.spacing("8v") }}>
-                  <Typography
-                    component="h1"
-                    sx={{
-                      fontSize: "24px",
-                      lineHeight: "32px",
-                      fontWeight: 700,
-                      color: "#161616",
-                    }}
-                  >
-                    Prolongez votre offre
-                  </Typography>
+                  <ModalTitle>Prolongez votre offre</ModalTitle>
                   <Typography
                     sx={{
                       my: fr.spacing("4v"),

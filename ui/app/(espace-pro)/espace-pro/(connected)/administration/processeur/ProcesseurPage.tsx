@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 import { ProcessorStatusProvider } from "./components/ProcessorStatusProvider"
+import { ProcessorTriggerButtons } from "./components/ProcessorTriggerButtons"
 
 export default function AdminProcessorPage() {
   return (
@@ -16,6 +17,7 @@ export default function AdminProcessorPage() {
       <ProcessorStatusProvider>
         {(status) => <ProcessorStatusIndexComponent status={status} baseUrl={new URL(PAGES.static.adminProcessor.getPath(), publicConfig.baseUrl).href} />}
       </ProcessorStatusProvider>
+      <ProcessorTriggerButtons />
     </Box>
   )
 }

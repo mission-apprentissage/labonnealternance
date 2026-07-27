@@ -18,7 +18,6 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import {
-  buildEstablishmentId,
   entrepriseOnboardingWorkflow,
   establishmentIdToUserIdAndSiret,
   etablissementUnsubscribeDemandeDelegation,
@@ -29,6 +28,7 @@ import {
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
   validateEligibiliteCfa,
+  verifyRecruiterEmailInUse,
 } from "@/services/etablissement.service"
 import { getFormulairesForCfaManagedEnterprises, jobPartnersToRecruiter } from "@/services/formulaire.service"
 import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
@@ -181,7 +181,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { cfaId } = req.params
       const userFromRequest = getUserFromRequest(req, zRoutes.get["/etablissement/cfa/:cfaId/entreprises"]).value
-      const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, cfaId)
+      const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, cfaId, Boolean(req.userAccess?.admin))
       recruiters.forEach((recruiter) => {
         recruiter.jobs.forEach((job) => {
           // @ts-expect-error
@@ -253,7 +253,7 @@ export default (server: Server) => {
           const opco = (req.body.opco as OPCOS_LABEL) || OPCOS_LABEL.UNKNOWN_OPCO
           const result = await entrepriseOnboardingWorkflow.create({ ...req.body, opco, siret, source: getSourceFromCookies(req) })
           if ("error" in result) {
-            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw forbidden(result.message, result)
+            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS || result.errorCode === BusinessErrorCodes.ROLE_DENIED) throw forbidden(result.message, result)
             else throw badRequest(result.message, result)
           }
           const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id)
@@ -261,11 +261,12 @@ export default (server: Server) => {
         }
         case CFA: {
           const { email, establishment_siret, first_name, last_name, phone } = req.body
-          const origin = req.body.origin ?? "formulaire public de création"
+          const origin = req.body.origin ?? "Labonnealternance"
           const formatedEmail = email.toLocaleLowerCase()
-          // check if user already exist
+          const accessError = await verifyRecruiterEmailInUse({ email: formatedEmail, siret: establishment_siret, entityType: AccessEntityType.CFA })
+          if (accessError) throw forbidden(accessError.message, { reason: accessError.errorCode })
           if (await getUserWithAccountByEmail(formatedEmail)) {
-            throw forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
+            throw forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
           }
 
           const isValid = await isCfaCreationValid(establishment_siret)
@@ -276,7 +277,7 @@ export default (server: Server) => {
           const {
             referentiel: { contacts },
             cfa,
-          } = await validateEligibiliteCfa(establishment_siret, origin)
+          } = await validateEligibiliteCfa(establishment_siret)
 
           const organization: Organization = { type: CFA, cfa }
           const { user: userCfa } = await createOrganizationUser({
@@ -301,13 +302,13 @@ export default (server: Server) => {
           const userAndOrganization: UserAndOrganization = { user: userCfa, organization }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            await setUserHasToBeManuallyValidated(userAndOrganization, origin)
+            await setUserHasToBeManuallyValidated(userAndOrganization)
             await notifyToSlack(slackNotification)
             return res.status(200).send({ user: userCfa, validated: false, token })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
-            await autoValidateUser(userAndOrganization, origin, "l'email correspond à un contact")
+            await autoValidateUser(userAndOrganization, "l'email correspond à un contact")
             await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
             return res.status(200).send({ user: userCfa, validated: true, token })
@@ -317,14 +318,14 @@ export default (server: Server) => {
             const userEmailDomain = getEmailDomain(formatedEmail)
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              await autoValidateUser(userAndOrganization, origin, "le nom de domaine de l'email correspond à celui d'un contact")
+              await autoValidateUser(userAndOrganization, "le nom de domaine de l'email correspond à celui d'un contact")
               await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
               return res.status(200).send({ user: userCfa, validated: true, token })
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          await setUserHasToBeManuallyValidated(userAndOrganization, origin)
+          await setUserHasToBeManuallyValidated(userAndOrganization)
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
           return res.status(200).send({ user: userCfa, validated: false, token })

@@ -11,6 +11,7 @@ import type {
   IQuery,
   IResponse,
 } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { type ITypeEmploi, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -159,7 +160,7 @@ function useJobQuery(rechercheParams: IRecherchePageParams | null) {
       }
 
       if (rechercheParams.displayEntreprises && jobData.lbaCompanies && "results" in jobData.lbaCompanies) {
-        lbaCompanies.push(...jobData.lbaCompanies.results)
+        lbaCompanies.push(...(jobData.lbaCompanies.results as ILbaItemLbaCompanyJson[]))
       }
     }
 
@@ -235,27 +236,36 @@ function useFormationQuery(rechercheParams: IRecherchePageParams | null) {
 
 export type DisplayedJob = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson
 
-function splitLbaJobs<T extends { company?: { mandataire?: boolean | null } | null }>(lbaJobs: T[]): { direct: T[]; delegated: T[] } {
+function splitLbaJobs<T extends { company?: { mandataire?: boolean | null; isGeiq?: boolean | null } | null }>(lbaJobs: T[]): { direct: T[]; delegated: T[]; geiq: T[] } {
   const direct: T[] = []
   const delegated: T[] = []
+  const geiq: T[] = []
   for (const job of lbaJobs) {
     if (job.company?.mandataire === true) {
       delegated.push(job)
+    } else if (job.company?.isGeiq === true) {
+      geiq.push(job)
     } else {
       direct.push(job)
     }
   }
-  return { direct, delegated }
+  return { direct, delegated, geiq }
 }
 
 export function matchesTypeEmploi(job: DisplayedJob, typeEmploi: ITypeEmploi): boolean {
   switch (typeEmploi) {
     case TYPE_EMPLOI_OPTIONS.alternance:
-      return (job.ideaType === "offres_emploi_lba" && job.company?.mandataire === false) || job.ideaType === "offres_emploi_partenaires"
+      return (
+        ((job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && job.company?.mandataire === false) || job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) &&
+        job.company.isGeiq === false
+      )
     case TYPE_EMPLOI_OPTIONS.formation_incluse:
-      return job.ideaType === "offres_emploi_lba" && job.company?.mandataire === true
+      return (
+        (job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && job.company?.mandataire === true) ||
+        ((job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && job.company?.isGeiq === true)
+      )
     case TYPE_EMPLOI_OPTIONS.candidatures_spontanees:
-      return job.ideaType === "lba"
+      return job.ideaType === "lba" || job.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA
   }
 }
 
@@ -272,11 +282,14 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
   const result = useMemo(() => {
     const selectedJobQuery = rechercheParams.elligibleHandicapFilter ? handicapJobQueryResult : allJobQueryResult
 
-    const { direct: allDirect, delegated: allDelegated } = splitLbaJobs(allJobQueryResult.lbaJobs)
-    const allJobs = [...allDirect, ...allJobQueryResult.partnerJobs, ...allDelegated, ...allJobQueryResult.lbaCompanies]
+    // ordre d'affichage : offres LBA directes, offres partenaires, offres LBA mandataires, offres LBA Geiq, offres partenaires Geiq, entreprises LBA
+    const { direct: allDirect, delegated: allDelegated, geiq: allGeiq } = splitLbaJobs(allJobQueryResult.lbaJobs)
+    const { direct: allPartnerDirect, geiq: allPartnerGeiq } = splitLbaJobs(allJobQueryResult.partnerJobs)
+    const allJobs = [...allDirect, ...allPartnerDirect, ...allDelegated, ...allGeiq, ...allPartnerGeiq, ...allJobQueryResult.lbaCompanies]
 
-    const { direct: handicapDirect, delegated: handicapDelegated } = splitLbaJobs(handicapJobQueryResult.lbaJobs)
-    const handicapJobs = [...handicapDirect, ...handicapJobQueryResult.partnerJobs, ...handicapDelegated, ...handicapJobQueryResult.lbaCompanies]
+    const { direct: handicapDirect, delegated: handicapDelegated, geiq: handicapGeiq } = splitLbaJobs(handicapJobQueryResult.lbaJobs)
+    const { direct: handicapPartnerDirect, geiq: handicapPartnerGeiq } = splitLbaJobs(handicapJobQueryResult.partnerJobs)
+    const handicapJobs = [...handicapDirect, ...handicapPartnerDirect, ...handicapDelegated, ...handicapGeiq, ...handicapPartnerGeiq, ...handicapJobQueryResult.lbaCompanies]
 
     const unfilteredJobs: DisplayedJob[] = rechercheParams.elligibleHandicapFilter ? handicapJobs : allJobs
     const displayedJobs = filterJobsByTypesEmploi(unfilteredJobs, rechercheParams.typesEmploi)

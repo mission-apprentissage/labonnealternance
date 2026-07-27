@@ -15,6 +15,7 @@
 import { writeFileSync } from "fs"
 import { join } from "path"
 import { removeAccents } from "shared"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { closeMongodbConnection, connectToMongodb, getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
@@ -69,7 +70,7 @@ export const analyzeCfaBlockList = async () => {
 
   let processed = 0
   const cursor = collection.find(
-    { partner_label: { $ne: "recruteurs_lba" } },
+    { partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
     {
       projection: { workplace_name: 1, offer_description: 1, workplace_description: 1 },
     }

@@ -5,13 +5,13 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ISearchItem } from "shared/models/searchItems.model"
-
+import { isGeiqEntreprise } from "shared/services/isGeiqEntreprise"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+
 import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { GEIQ_WHITELIST } from "@/jobs/offrePartenaire/geiqWhitelist"
 
 /**
  * Construction et synchronisation des documents `search_items` (index MongoDB Search).
@@ -228,8 +228,6 @@ export const getTypeFilterLabel = (partner_label: string, fromCfa?: boolean | nu
   }
 }
 
-const GEIQ_SIRETS = new Set(GEIQ_WHITELIST)
-
 // Certains intitulés sources arrivent dupliqués (« BTS bâtiment BTS bâtiment » — formations
 // catalogue comme offres partenaires) : on ne garde qu'une occurrence, sinon le doublon
 // pollue les suggestions d'autocomplétion et les titres affichés.
@@ -252,7 +250,7 @@ export const sanitizeContractStart = (date: Date | null | undefined): Date | nul
  * ou par un GEIQ (whitelist SIRET). Ces offres sont exclues du mode « Emplois uniquement ».
  */
 export const isFormationIncluded = (job: { is_delegated?: boolean | null; workplace_siret?: string | null }): boolean =>
-  job.is_delegated === true || (job.workplace_siret != null && GEIQ_SIRETS.has(job.workplace_siret))
+  job.is_delegated === true || isGeiqEntreprise(job.workplace_siret)
 
 export const getJobType = (partner_label: string) => {
   switch (partner_label) {

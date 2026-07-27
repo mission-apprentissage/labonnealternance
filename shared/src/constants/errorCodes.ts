@@ -18,6 +18,7 @@ export enum BusinessErrorCodes {
   ROMEO_NOT_FOUND = "Une erreur est survenue lors de la récupération du code ROME à partir du titre de l'offre",
   GEOLOCATION_NOT_FOUND = "Une erreur est survenue lors de la récupération de la géolocalisation à partir de l'adresse de l'entreprise",
   TRAINING_NOT_FOUND = "Formation introuvable",
+  ROLE_DENIED = "ROLE_DENIED",
 }
 
 export enum EntrepriseErrorCodes {

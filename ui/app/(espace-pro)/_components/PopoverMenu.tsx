@@ -137,7 +137,10 @@ export const PopoverMenu = ({
                           component="a"
                           href={action.link}
                           aria-label={action.ariaLabel || (action.label as string)}
-                          onClick={handleClose}
+                          onClick={(event) => {
+                            action.onClick?.(event)
+                            handleClose(event)
+                          }}
                           disableGutters
                           sx={menuItemSx}
                           {...(action.type === "externalLink" ? { target: "_blank", rel: "noopener noreferrer" } : {})}

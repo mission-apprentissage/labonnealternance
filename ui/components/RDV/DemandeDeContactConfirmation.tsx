@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-
+import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { BarberGuy } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
@@ -21,20 +21,20 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
 
   return (
     <div>
-      <Box sx={{ mb: fr.spacing("6v"), display: "flex", alignItems: "center" }}>
-        <Box component="img" src="/images/paperplane2.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
-        <Typography variant="h4" data-testid="DemandeDeContactConfirmationTitle">
+      <Box sx={{ mb: fr.spacing("4v"), display: "flex", alignItems: "center" }}>
+        <Box component="img" src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
+        <ModalTitle>
           Voilà une bonne chose de faite {data.user.firstname} {data.user.lastname} !
-        </Typography>
+        </ModalTitle>
       </Box>
       <Box sx={{ mb: fr.spacing("6v") }}>
         <Typography sx={{ fontWeight: 700, color: "grey.750" }}>
           {data.formation.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
-          <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.actionHigh.blueCumulus.default }}>
+          <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.default.info.default }}>
             {data.user.phone.match(/.{1,2}/g).join(".")}
           </Typography>{" "}
           ou sur{" "}
-          <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.actionHigh.blueCumulus.default }}>
+          <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.default.info.default }}>
             {data.user.email}
           </Typography>{" "}
           pour répondre à vos questions.
@@ -48,7 +48,7 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
         <Box sx={{ mt: "12px", pb: "24px", pr: "10px" }}>
           <Typography sx={{ fontSize: "20px", fontWeight: 700, mt: "6px" }}>
             Psst, nous avons une{" "}
-            <Box component="span" sx={{ color: fr.colors.decisions.text.actionHigh.blueCumulus.default }}>
+            <Box component="span" sx={{ color: fr.colors.decisions.text.default.info.default }}>
               info pour vous !
             </Box>
           </Typography>

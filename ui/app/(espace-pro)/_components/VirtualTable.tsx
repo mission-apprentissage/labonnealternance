@@ -6,7 +6,8 @@ import { Box, Typography } from "@mui/material"
 import { type ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, type SortingState, useReactTable } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { matchSorter } from "match-sorter"
-import React, { useEffect, useRef, useState } from "react"
+import type React from "react"
+import { useEffect, useRef, useState } from "react"
 import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
@@ -53,6 +54,9 @@ interface VirtualTableProps<T> {
   onSearchChange?: (value: string) => void
   isLoadingMore?: boolean
   hideSearch?: boolean
+  hideCount?: boolean
+  onRowClick?: (rowData: T) => void
+  getRowStyle?: (rowData: T) => React.CSSProperties | undefined
 }
 
 export function VirtualTable<T>({
@@ -67,6 +71,9 @@ export function VirtualTable<T>({
   onSearchChange,
   isLoadingMore,
   hideSearch,
+  hideCount,
+  onRowClick,
+  getRowStyle,
 }: VirtualTableProps<T>) {
   const [globalFilter, setGlobalFilter] = useState("")
   const [sorting, setSorting] = useState<SortingState>(defaultSortBy)
@@ -122,9 +129,11 @@ export function VirtualTable<T>({
         </Box>
       )}
 
-      <Typography sx={{ mb: 2, color: "text.secondary", fontSize: ".875rem" }}>
-        {rows.length} résultat{rows.length !== 1 ? "s" : ""}
-      </Typography>
+      {!hideCount && (
+        <Typography sx={{ mb: 2, color: "text.secondary", fontSize: ".875rem" }}>
+          {rows.length} résultat{rows.length !== 1 ? "s" : ""}
+        </Typography>
+      )}
       <Box
         ref={scrollRef}
         className="fr-table__content"
@@ -184,7 +193,13 @@ export function VirtualTable<T>({
             {virtualRows.map((virtualRow) => {
               const row = rows[virtualRow.index]
               return (
-                <tr key={row.id} data-index={virtualRow.index} ref={virtualizer.measureElement} style={{ display: "flex", width: "100%" }}>
+                <tr
+                  key={row.id}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                  style={{ display: "flex", width: "100%", cursor: onRowClick ? "pointer" : undefined, ...getRowStyle?.(row.original) }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}

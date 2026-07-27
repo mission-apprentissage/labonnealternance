@@ -55,7 +55,7 @@ const DemandeDeContactBody = ({
   }
 
   return (
-    <Box sx={{ p: fr.spacing("8v") }}>
+    <Box sx={{ py: fr.spacing("4v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
       {confirmation ? (
         <DemandeDeContactConfirmation {...confirmation} />
       ) : (
@@ -66,7 +66,6 @@ const DemandeDeContactBody = ({
             adresse={adresse}
             codePostal={codePostal}
             ville={ville}
-            fromMail={false}
           />
           <DemandeDeContactForm context={context} onRdvSuccess={localOnSuccess} referrer={referrer} />
         </>

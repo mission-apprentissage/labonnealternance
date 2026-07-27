@@ -127,6 +127,14 @@ export const emailHasActiveRole = async (email: string): Promise<boolean> => {
   return Boolean(activeRoles.length)
 }
 
+export const hasActiveRoleOnAnotherOrganization = async (userId: ObjectId, organizationId: string): Promise<boolean> => {
+  const roles = await getDbCollection("rolemanagements").find({ user_id: userId }).toArray()
+  return roles.some((role) => {
+    const roleStatus = getLastStatusEvent(role.status)?.status
+    return roleStatus === AccessStatus.GRANTED && role.authorized_id !== organizationId
+  })
+}
+
 export const isUserEmailChecked = (user: IUserWithAccount): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)
 
 const activationStatus = [UserEventType.ACTIF, UserEventType.DESACTIVE]

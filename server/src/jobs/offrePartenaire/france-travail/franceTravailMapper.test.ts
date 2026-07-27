@@ -168,7 +168,7 @@ describe("franceTravailJobsToJobsPartners", () => {
     }
 
     expect(franceTravailJobsToJobsPartners(job)).toMatchObject({
-      offer_target_diploma: { european: "4", label: "BP, Bac, autres formations (Bac)" },
+      offer_target_diploma: { european: "4", label: "Bac, Bac Pro, BP (Bac)" },
     })
   })
 

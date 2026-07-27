@@ -9,7 +9,7 @@ import { ARTICLES } from "@/app/(editorial)/guide-cfa/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
-import { BandeauAuthentificationCfa } from "./BandeauAuthentificationCfa"
+import { BandeauAuthentificationCfa } from "../BandeauAuthentificationCfa"
 
 export const metadata: Metadata = PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getMetadata()
 

@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import type { InputProps } from "@codegouvfr/react-dsfr/Input"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import type { AutocompleteInputChangeReason, AutocompleteRenderGroupParams, AutocompleteRenderInputParams, AutocompleteRenderOptionState } from "@mui/material/Autocomplete"
 import Autocomplete from "@mui/material/Autocomplete"
@@ -28,6 +29,7 @@ interface AutocompleteAsyncProps<T> {
   id: string
   label: string
   disabled?: boolean
+  iconIdWithPlaceholder?: InputProps.RegularInput["iconId"]
 }
 
 function renderGroup(props: AutocompleteRenderGroupParams) {
@@ -81,6 +83,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   useWindowSize()
 
   const [isOpen, setIsOpenned] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
 
   const onOpen = useCallback(() => {
     setIsOpenned(true)
@@ -120,11 +123,20 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
         <InputFormField
           disabled={inputParams.disabled ?? false}
           label={props.label}
+          iconId={!isFocused && inputParams.inputProps.value === "" ? props.iconIdWithPlaceholder : undefined}
           // @ts-expect-error
           ref={inputParams.InputProps.ref}
           nativeInputProps={{
             ...inputParams.inputProps,
             placeholder: props.placeholder,
+            onFocus: (e) => {
+              setIsFocused(true)
+              inputParams.inputProps.onFocus?.(e)
+            },
+            onBlur: (e) => {
+              setIsFocused(false)
+              inputParams.inputProps.onBlur?.(e)
+            },
           }}
           action={
             isDeferredOrFetching ? (
@@ -150,7 +162,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
         />
       )
     },
-    [props.label, props.placeholder, isDeferredOrFetching, meta]
+    [props.label, props.placeholder, isDeferredOrFetching, meta, isFocused, setIsFocused]
   )
 
   const renderOption = useCallback(

@@ -40,7 +40,7 @@ export const GeiqJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; tit
       </Box>
 
       <EmployeurPresentationBlock
-        title="Présentation de l'organisme en charge du recrutement"
+        title="Quelques informations sur l'établissement"
         item={job}
         description={job?.job?.employeurDescription}
         showPhone

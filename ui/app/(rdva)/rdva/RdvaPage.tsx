@@ -31,6 +31,7 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
   // interprété comme un fragment et le serveur n'a pas reçu la partie "#L01".
   // On détecte ce cas en comparant window.location.hash avec la clé reçue côté serveur.
   const [rescueCleMinistereEducatif, setRescueCleMinistereEducatif] = useState<string | null>(null)
+  const [rescueChecked, setRescueChecked] = useState(false)
 
   useEffect(() => {
     const hash = window.location.hash // ex: "#L01"
@@ -38,6 +39,7 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
       // Le hash ressemble à un suffixe de cleMinistereEducatif (ex: "#L01", "#L05")
       setRescueCleMinistereEducatif(`${cleMinistereEducatif}${hash}`)
     }
+    setRescueChecked(true)
   }, [cleMinistereEducatif, initialData])
 
   const { data: rescuedData, isFetching: isRescueFetching } = useQuery({
@@ -54,13 +56,13 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
   const { setPrdvDone } = useFormationPrdvTracker(trackingId)
   const [confirmation, setConfirmation] = useState<{ appointmentId: string; token: string } | null>(null)
 
-  // Rescue en cours : ne pas afficher le message d'erreur tant que la requête n'est pas terminée
-  if (!data && (rescueCleMinistereEducatif === null || isRescueFetching)) {
+  // Rescue en cours : ne pas afficher le message d'erreur tant que la tentative n'est pas terminée
+  if (!data && (!rescueChecked || isRescueFetching)) {
     return null
   }
 
   if (!data) {
-    return <Box sx={{ my: "5rem", textAlign: "center" }}>La prise de rendez-vous n'est pas disponible pour cette formation.</Box>
+    throw new Error(`Un problème est survenu lors de l’accès au formulaire de demande au CFA - cleMinistereEducatif: ${cleMinistereEducatif}, referrer: ${referrer}`)
   }
 
   const context = { cle_ministere_educatif: data.cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale: data.etablissement_formateur_entreprise_raison_sociale }
@@ -80,7 +82,6 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
         adresse={data.lieu_formation_adresse}
         codePostal={data.code_postal}
         ville={data.localite}
-        fromMail={true}
       />
       <DemandeDeContactForm context={context} referrer={referrer ?? "lba"} onRdvSuccess={localOnSuccess} />
     </Box>
