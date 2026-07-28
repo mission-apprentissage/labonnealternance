@@ -11,7 +11,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/stringUtils"
 
 /**
  * Construction et synchronisation des documents `search_items` (index MongoDB Search).
@@ -230,9 +230,10 @@ export const getTypeFilterLabel = (partner_label: string, fromCfa?: boolean | nu
 
 // Certains intitulés sources arrivent dupliqués (« BTS bâtiment BTS bâtiment » — formations
 // catalogue comme offres partenaires) : on ne garde qu'une occurrence, sinon le doublon
-// pollue les suggestions d'autocomplétion et les titres affichés.
+// pollue les suggestions d'autocomplétion et les titres affichés. Titres passés en texte
+// brut (sanitizeToPlainText) : rendus en children React côté UI, jamais en innerHTML.
 export const dedupeRepeatedTitle = (title: string): string => {
-  const trimmed = title.trim()
+  const trimmed = sanitizeToPlainText(title)
   if (trimmed.length <= 6) return trimmed
   const half = Math.floor(trimmed.length / 2)
   const first = trimmed.slice(0, half).trim()
@@ -455,9 +456,10 @@ export const upsertSearchItem = async (doc: ISearchItem) => {
 
 /**
  * Synchronise des jobs_partners identifiés vers search_items :
- * - offre ACTIVE → upsert (keywords Mistral préservés) ;
- * - offre non-ACTIVE ou _id disparu de jobs_partners → retrait de l'index ;
- * - recruteurs_lba → upsert inconditionnel (le batch nightly n'a jamais filtré leur statut).
+ * - offre ou recruteur ACTIVE → upsert (keywords Mistral préservés) ;
+ * - non-ACTIVE ou _id disparu de jobs_partners → retrait de l'index (même règle que le
+ *   $match du batch nightly — sinon un recruteur inactif purgé réapparaîtrait via le cron
+ *   delta entre deux nightly).
  * Ne touche JAMAIS les documents `type: "formation"`.
  */
 export const upsertJobPartnersToSearchItems = async (ids: ObjectId[], sharedCtx?: SearchItemBuildContext): Promise<{ upserted: number; removed: number }> => {
@@ -479,6 +481,10 @@ export const upsertJobPartnersToSearchItems = async (ids: ObjectId[], sharedCtx?
   }
 
   for (const recruteur of recruteurs) {
+    if (recruteur.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
+      toRemove.push(recruteur._id)
+      continue
+    }
     await upsertSearchItem(buildRecruteurSearchItem(recruteur, ctx))
     upserted++
   }

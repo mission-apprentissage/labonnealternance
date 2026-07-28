@@ -8,7 +8,27 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { removeJobPartnersFromSearchItems, resetSearchItemBuildContextCache, syncSearchItemsDelta, upsertJobPartnersToSearchItems } from "./searchItems.service"
+import {
+  dedupeRepeatedTitle,
+  removeJobPartnersFromSearchItems,
+  resetSearchItemBuildContextCache,
+  syncSearchItemsDelta,
+  upsertJobPartnersToSearchItems,
+} from "./searchItems.service"
+
+describe("dedupeRepeatedTitle", () => {
+  it("supprime la duplication d'intitulé", () => {
+    expect(dedupeRepeatedTitle("BTS bâtiment BTS bâtiment")).toBe("BTS bâtiment")
+  })
+
+  it("détecte la duplication malgré des entités HTML", () => {
+    expect(dedupeRepeatedTitle("Achat &amp; vente Achat & vente")).toBe("Achat & vente")
+  })
+
+  it("laisse intact un titre non dupliqué", () => {
+    expect(dedupeRepeatedTitle("Conseiller de vente en alternance")).toBe("Conseiller de vente en alternance")
+  })
+})
 
 describe("searchItems.service — synchronisation jobs_partners → search_items", () => {
   useMongo()
@@ -118,6 +138,19 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
         rome_labels: ["Boulangerie - viennoiserie"],
       })
       expect(doc?.title).toBe("Boulangerie du Marché")
+    })
+
+    it("retire un recruteur passé inactif (même règle que le batch nightly)", async () => {
+      const recruteur = generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+      await getDbCollection("jobs_partners").insertOne(recruteur)
+      await upsertJobPartnersToSearchItems([recruteur._id])
+      expect(await getDbCollection("search_items").countDocuments({ _id: recruteur._id })).toBe(1)
+
+      await getDbCollection("jobs_partners").updateOne({ _id: recruteur._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
+      const result = await upsertJobPartnersToSearchItems([recruteur._id])
+
+      expect(result.removed).toBe(1)
+      expect(await getDbCollection("search_items").countDocuments({ _id: recruteur._id })).toBe(0)
     })
   })
 

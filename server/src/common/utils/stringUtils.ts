@@ -14,6 +14,19 @@ export const sanitizeTextField = (text: string | null | undefined, keepFormat: b
 }
 
 /**
+ * Texte brut sur une seule ligne, sûr à rendre en children React (jamais en innerHTML) :
+ * strip des tags puis décodage final des entités — sanitizeTextField seul ne suffit pas,
+ * il ré-encode & < > en sortie et ces entités (« &amp; ») s'affichent telles quelles hors
+ * innerHTML. Fins de blocs et <br> deviennent des espaces. Pour les intitulés : titres
+ * d'offres (dont offer_title_custom saisi librement par les recruteurs), search_items.title.
+ */
+export const sanitizeToPlainText = (text: string | null | undefined): string => {
+  if (!text) return ""
+  const withSpaces = text.replace(/<\/(p|li|ul|ol|div|h[1-6])>|<br\s*\/?>/gi, " ")
+  return he.decode(sanitizeTextField(withSpaces)).replace(/\s+/g, " ").trim()
+}
+
+/**
  * Aplatit un texte sur une seule ligne : supprime sauts de ligne, tabulations et caractères de
  * contrôle, puis normalise les espaces. À utiliser pour les champs exportés en CSV / flux à plat
  * (ex: France Travail) afin que des retours à la ligne dans `description` / `description_entreprise`

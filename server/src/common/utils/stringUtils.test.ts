@@ -1,6 +1,36 @@
 import { describe, expect, it } from "vitest"
 
-import { isNormalizedStringInSetOrArray, removeLineBreaks, sanitizeTextField } from "./stringUtils"
+import { isNormalizedStringInSetOrArray, removeLineBreaks, sanitizeTextField, sanitizeToPlainText } from "./stringUtils"
+
+describe("sanitizeToPlainText — texte brut (rendu children React, jamais innerHTML)", () => {
+  it("décode les entités HTML résiduelles", () => {
+    expect(sanitizeToPlainText("Boulanger &amp; pâtissier")).toBe("Boulanger & pâtissier")
+  })
+
+  it("laisse intact un texte déjà brut", () => {
+    expect(sanitizeToPlainText("H&M vendeur")).toBe("H&M vendeur")
+    expect(sanitizeToPlainText("Mécanicien H/F")).toBe("Mécanicien H/F")
+  })
+
+  it("supprime les tags exécutables (offer_title_custom non restreint par le schéma Zod)", () => {
+    expect(sanitizeToPlainText("<img src=x onerror=alert(1)>Serveur")).toBe("Serveur")
+    expect(sanitizeToPlainText("<script>alert(1)</script>Cuisinier")).toBe("Cuisinier")
+  })
+
+  it("neutralise un payload double-encodé", () => {
+    expect(sanitizeToPlainText("&lt;script&gt;alert(1)&lt;/script&gt;Cuisinier")).toBe("Cuisinier")
+  })
+
+  it("aplatit les tags de mise en forme sur une seule ligne", () => {
+    expect(sanitizeToPlainText("Commercial<br>terrain")).toBe("Commercial terrain")
+    expect(sanitizeToPlainText("<p>Vendeur</p><p>conseil</p>")).toBe("Vendeur conseil")
+  })
+
+  it("retourne une chaîne vide pour null/undefined", () => {
+    expect(sanitizeToPlainText(null)).toBe("")
+    expect(sanitizeToPlainText(undefined)).toBe("")
+  })
+})
 
 describe("sanitizeTextField", () => {
   describe("Edge cases and null handling", () => {
