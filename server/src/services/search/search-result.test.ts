@@ -1032,6 +1032,10 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(rankOf(result, "recruteur-travaux")).toBeGreaterThan(rankOf(result, "offre-travaux-flexible"))
       // Une offre sans date de démarrage reste écartée (elle trierait en tête sinon).
       expect(ids(result)).not.toContain("offre-conducteur-travaux")
+      // Invariant du result set : une vraie date de démarrage, sauf candidatures spontanées.
+      for (const hit of result.hits) {
+        if (!hit.is_algo_company) expect(hit.start_date).not.toBeNull()
+      }
     })
 
     it("compteur handi : counts.is_disabled_elligible reflète le result set et reste stable filtre actif", async () => {
