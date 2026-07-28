@@ -1022,14 +1022,20 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(ids(result)).not.toContain("offre-conducteur-travaux")
     })
 
-    it("sort=start_date : démarrages les plus proches d'abord, docs sans date écartés", async () => {
-      const result = await search({ q: "conducteur de travaux", sort: "start_date" })
+    it("sort=start_date : démarrages les plus proches d'abord, candidatures spontanées en fin de liste, offres sans date écartées", async () => {
+      const result = await search({ q: "conduite de travaux", sort: "start_date" })
 
       // aout (01/08) < handi (01/09) < flexible (01/12)
       expect(rankOf(result, "offre-travaux-aout")).toBeLessThan(rankOf(result, "offre-travaux-handi"))
       expect(rankOf(result, "offre-travaux-handi")).toBeLessThan(rankOf(result, "offre-travaux-flexible"))
-      // Sans date, un doc trierait en tête (valeur manquante avant toute date) → exclu de ce tri.
-      for (const hit of result.hits) expect(hit.start_date).not.toBeNull()
+      // Candidature spontanée : pas de date de début par nature → visible mais reléguée en fin.
+      expect(rankOf(result, "recruteur-travaux")).toBeGreaterThan(rankOf(result, "offre-travaux-flexible"))
+      // Une offre sans date de démarrage reste écartée (elle trierait en tête sinon).
+      expect(ids(result)).not.toContain("offre-conducteur-travaux")
+      // Invariant du result set : une vraie date de démarrage, sauf candidatures spontanées.
+      for (const hit of result.hits) {
+        if (!hit.is_algo_company) expect(hit.start_date).not.toBeNull()
+      }
     })
 
     it("compteur handi : counts.is_disabled_elligible reflète le result set et reste stable filtre actif", async () => {
