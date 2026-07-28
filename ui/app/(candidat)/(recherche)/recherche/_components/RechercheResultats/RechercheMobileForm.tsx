@@ -44,7 +44,11 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
         niveauSelect={<RechercheNiveauSelectFormik />}
         typesOffresEmploiSelect={<RechercheTypesEmploiSelectFormik rechercheResults={rechercheResults} />}
         handicapCheckbox={<RechercheElligibleHandicapCheckboxFormik rechercheParams={rechercheParams} />}
-        submitButton={<RechercheSubmitButton forceMobileStyle={true}>Rechercher</RechercheSubmitButton>}
+        submitButton={
+          <RechercheSubmitButton forceMobileStyle={true} compareAllFields={true}>
+            Rechercher
+          </RechercheSubmitButton>
+        }
       />
     </RechercheForm>
   )
