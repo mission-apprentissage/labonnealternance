@@ -10,7 +10,7 @@ import { ZEntreprise } from "../models/entreprise.model.js"
 import { ZEntrepriseManagedByCfa } from "../models/entreprisesManagedByCfa.model.js"
 import { ZRecruiter } from "../models/recruiter.model.js"
 import { EntrepriseEngagementSources } from "../models/referentielEngagementEntreprise.model.js"
-import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
+import { ZPersonNameInput, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccount } from "../models/userWithAccount.model.js"
 import type { IRoutesDef } from "./common.routes.js"
 
@@ -156,17 +156,17 @@ export const zRecruiterRoutes = {
             type: z.literal("CFA"),
           })
           .strict()
-          .extend(
-            ZUserRecruteurWritable.pick({
-              last_name: true,
-              first_name: true,
+          .extend({
+            last_name: ZPersonNameInput,
+            first_name: ZPersonNameInput,
+            ...ZUserRecruteurWritable.pick({
               phone: true,
               email: true,
               origin: true,
               establishment_siret: true,
               opco: true,
-            }).shape
-          ),
+            }).shape,
+          }),
         z
           .object({
             type: z.literal("ENTREPRISE"),
@@ -174,16 +174,16 @@ export const zRecruiterRoutes = {
             idcc: z.string().optional(),
           })
           .strict()
-          .extend(
-            ZUserRecruteurWritable.pick({
-              last_name: true,
-              first_name: true,
+          .extend({
+            last_name: ZPersonNameInput,
+            first_name: ZPersonNameInput,
+            ...ZUserRecruteurWritable.pick({
               phone: true,
               email: true,
               origin: true,
               establishment_siret: true,
-            }).shape
-          ),
+            }).shape,
+          }),
       ]),
       response: {
         "200": z

@@ -3,7 +3,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { JOB_START_TYPE, JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
 import { ZRecruiter, ZRecruiterWithRomeDetailAndApplicationCount } from "../models/recruiter.model.js"
-import { ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
+import { ZPersonNameInput } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 import type { IRoutesDef } from "./common.routes.js"
 
@@ -78,8 +78,8 @@ export const zFormulaireRoute = {
         .object({
           establishment_siret: z.string(),
           email: z.string(),
-          last_name: ZUserRecruteurWritable.shape.last_name,
-          first_name: ZUserRecruteurWritable.shape.first_name,
+          last_name: ZPersonNameInput,
+          first_name: ZPersonNameInput,
           phone: z.string(),
           isDeclarationExact: z.boolean().optional(),
         })
