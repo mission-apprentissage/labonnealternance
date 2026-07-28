@@ -26,17 +26,24 @@ export const ZUserStatusValidation = z
   })
   .strict()
 
+// Validation de saisie des noms (2 lettres minimum) : à n'appliquer qu'aux BODIES des routes
+// de création/édition. Portée par le modèle, elle fuiterait dans les schémas de RÉPONSE dérivés
+// (ZUserRecruteurPublic, ZUserForOpco…) et bloquerait la connexion des comptes existants dont
+// le nom stocké ne la satisfait pas (nom vide, une lettre…).
+export const ZPersonNameInput = z
+  .string()
+  .transform((value) => removeUrlsFromText(value))
+  .refine(validatePersonName, PERSON_NAME_VALIDATION_MESSAGE)
+
 export const ZUserRecruteurWritable = z
   .object({
     last_name: z
       .string()
       .transform((value) => removeUrlsFromText(value))
-      .refine(validatePersonName, PERSON_NAME_VALIDATION_MESSAGE)
       .describe("Nom de l'utilisateur"),
     first_name: z
       .string()
       .transform((value) => removeUrlsFromText(value))
-      .refine(validatePersonName, PERSON_NAME_VALIDATION_MESSAGE)
       .describe("Prénom de l'utilisateur"),
     opco: extensions.buildEnum(OPCOS_LABEL).nullable().describe("Information sur l'opco de l'entreprise"),
     idcc: z.number().nullable().describe("Identifiant convention collective de l'entreprise"),
