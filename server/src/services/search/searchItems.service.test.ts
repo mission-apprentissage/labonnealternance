@@ -8,7 +8,27 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { removeJobPartnersFromSearchItems, resetSearchItemBuildContextCache, syncSearchItemsDelta, upsertJobPartnersToSearchItems } from "./searchItems.service"
+import {
+  dedupeRepeatedTitle,
+  removeJobPartnersFromSearchItems,
+  resetSearchItemBuildContextCache,
+  syncSearchItemsDelta,
+  upsertJobPartnersToSearchItems,
+} from "./searchItems.service"
+
+describe("dedupeRepeatedTitle", () => {
+  it("supprime la duplication d'intitulé", () => {
+    expect(dedupeRepeatedTitle("BTS bâtiment BTS bâtiment")).toBe("BTS bâtiment")
+  })
+
+  it("détecte la duplication malgré des entités HTML", () => {
+    expect(dedupeRepeatedTitle("Achat &amp; vente Achat & vente")).toBe("Achat & vente")
+  })
+
+  it("laisse intact un titre non dupliqué", () => {
+    expect(dedupeRepeatedTitle("Conseiller de vente en alternance")).toBe("Conseiller de vente en alternance")
+  })
+})
 
 describe("searchItems.service — synchronisation jobs_partners → search_items", () => {
   useMongo()

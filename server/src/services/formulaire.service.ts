@@ -36,7 +36,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getUserManagingOffer } from "./application.service"
@@ -626,7 +626,9 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     offer_description: romeDetails?.definition,
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
-    offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? existingJob.offer_title,
+    // offer_title_custom = saisie libre recruteur (le schéma Zod n'interdit pas les tags HTML) →
+    // texte brut avant stockage ; si le nettoyage vide le titre, fallback comme s'il était absent.
+    offer_title: sanitizeToPlainText(job.offer_title_custom) || job.rome_appellation_label || existingJob.offer_title,
     offer_rome_appellation: job.rome_appellation_label,
     workplace_description: job.job_employer_description !== undefined ? sanitizeTextField(job.job_employer_description, true) || null : existingJob.workplace_description,
     to_applicant_questions: job.to_applicant_questions,
@@ -1183,7 +1185,9 @@ async function jobCreateToJobsPartner({
 
   const { definition, acces_metier } = romeDetails ?? {}
 
-  const offer_title = job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre"
+  // offer_title_custom = saisie libre recruteur (le schéma Zod n'interdit pas les tags HTML) →
+  // texte brut avant stockage ; si le nettoyage vide le titre, fallback comme s'il était absent.
+  const offer_title = sanitizeToPlainText(job.offer_title_custom) || job.rome_appellation_label || job.rome_label || "Offre"
   const newId = new ObjectId()
   const lbaUrl = buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, newId, siret, offer_title)
   const contractStartDate = resolveContractStartFromJob(job, now)
