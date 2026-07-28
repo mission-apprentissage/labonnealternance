@@ -115,6 +115,7 @@ export const fillSearchItemsCollection = async () => {
     {
       $match: {
         partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
       },
     },
     {

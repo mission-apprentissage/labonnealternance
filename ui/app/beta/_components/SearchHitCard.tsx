@@ -135,9 +135,12 @@ export function SearchHitCard({ hit, currentParams, position }: SearchHitCardPro
           linkProps={{ href: detailUrl, prefetch: false, onClick: trackClick }}
           start={<HitTags hit={hit} />}
           title={
-            <Typography component="span" className={fr.cx("fr-text--bold", "fr-text--md")} sx={{ color: fr.colors.decisions.text.actionHigh.grey.default }}>
-              {hit.title ?? ""}
-            </Typography>
+            <Typography
+              component="span"
+              dangerouslySetInnerHTML={{ __html: hit.title ?? "" }}
+              className={fr.cx("fr-text--bold", "fr-text--md")}
+              sx={{ color: fr.colors.decisions.text.actionHigh.grey.default }}
+            />
           }
           desc={
             <Box component="span" sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v") }}>
