@@ -1,9 +1,16 @@
+"use client"
+
 import { captureException } from "@sentry/browser"
 import { useEffect } from "react"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+
+import { parseSearchPageParams } from "../_utils/search.params.utils"
+import { SEARCH_MODE_OPTIONS } from "./SearchTypeRechercheSelect"
+
+// https://tally.so/forms/LZq2l1 — « Donnez votre avis » (nouveau moteur de recherche)
+const TALLY_FORM_ID = "LZq2l1"
 
 let triggered = false
-const PERCENTAGE_TRIGGER = 0.1 // 10%
+const PERCENTAGE_TRIGGER = 0.2 // 20%
 const TIME_ELAPSED_TRIGGER = 15_000 // 15 secondes
 let scriptInitialized = false
 
@@ -28,22 +35,13 @@ const openPopup = () => {
     }
     triggered = true
 
-    const rechercheParams = parseRecherchePageParams(new URL(window.location.href).searchParams, IRechercheMode.DEFAULT)
+    const params = parseSearchPageParams(new URL(window.location.href).searchParams)
 
-    const itemTypes: string[] = []
-    if (rechercheParams.displayEntreprises) {
-      itemTypes.push("métier")
-    }
-    if (rechercheParams.displayFormations) {
-      itemTypes.push("formation")
-    }
-
-    const hiddenFields: { checkbox?: string; libelle?: string; lieu?: string; niveau?: string; handi?: string } = {
-      libelle: rechercheParams.job_name,
-      lieu: rechercheParams.geo?.address,
-      niveau: rechercheParams.diploma,
-      handi: `${rechercheParams.elligibleHandicapFilter}`,
-      checkbox: itemTypes.join(" & "),
+    // Clés = hidden fields configurés dans le formulaire Tally (keywords / lieu / type).
+    const hiddenFields: { keywords?: string; lieu?: string; type?: string } = {
+      keywords: params.q,
+      lieu: params.lieu_label,
+      type: SEARCH_MODE_OPTIONS.find((option) => option.value === params.mode)?.label ?? params.mode,
     }
 
     const options: TallyOptions = {
@@ -58,7 +56,7 @@ const openPopup = () => {
       hiddenFields,
     }
     // @ts-expect-error
-    window.Tally.openPopup("b5xXxZ", options)
+    window.Tally.openPopup(TALLY_FORM_ID, options)
   } catch (err) {
     captureException(err)
   }

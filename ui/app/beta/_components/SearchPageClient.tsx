@@ -18,6 +18,7 @@ import type { ISearchPageParams, SearchMode } from "../_utils/search.params.util
 import { buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
 import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
 import { diffFilterChanges, diffSortChange, searchTypeOf } from "../_utils/search.tracking.utils"
+import { EnqueteTally } from "./EnqueteTally"
 import { ExitNewSearchLink } from "./ExitNewSearchLink"
 import { SearchBar } from "./SearchBar"
 import { clearedFilters, SearchFilters } from "./SearchFilters"
@@ -215,6 +216,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
 
   return (
     <>
+      <EnqueteTally />
       <Box component="main" sx={{ display: "flex", flexDirection: "column", backgroundColor: fr.colors.decisions.background.alt.grey.default, minHeight: "100dvh" }}>
         <PublicHeader />
 
