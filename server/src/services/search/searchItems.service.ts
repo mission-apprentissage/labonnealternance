@@ -456,9 +456,10 @@ export const upsertSearchItem = async (doc: ISearchItem) => {
 
 /**
  * Synchronise des jobs_partners identifiés vers search_items :
- * - offre ACTIVE → upsert (keywords Mistral préservés) ;
- * - offre non-ACTIVE ou _id disparu de jobs_partners → retrait de l'index ;
- * - recruteurs_lba → upsert inconditionnel (le batch nightly n'a jamais filtré leur statut).
+ * - offre ou recruteur ACTIVE → upsert (keywords Mistral préservés) ;
+ * - non-ACTIVE ou _id disparu de jobs_partners → retrait de l'index (même règle que le
+ *   $match du batch nightly — sinon un recruteur inactif purgé réapparaîtrait via le cron
+ *   delta entre deux nightly).
  * Ne touche JAMAIS les documents `type: "formation"`.
  */
 export const upsertJobPartnersToSearchItems = async (ids: ObjectId[], sharedCtx?: SearchItemBuildContext): Promise<{ upserted: number; removed: number }> => {
@@ -480,6 +481,10 @@ export const upsertJobPartnersToSearchItems = async (ids: ObjectId[], sharedCtx?
   }
 
   for (const recruteur of recruteurs) {
+    if (recruteur.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
+      toRemove.push(recruteur._id)
+      continue
+    }
     await upsertSearchItem(buildRecruteurSearchItem(recruteur, ctx))
     upserted++
   }

@@ -139,6 +139,19 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       })
       expect(doc?.title).toBe("Boulangerie du Marché")
     })
+
+    it("retire un recruteur passé inactif (même règle que le batch nightly)", async () => {
+      const recruteur = generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+      await getDbCollection("jobs_partners").insertOne(recruteur)
+      await upsertJobPartnersToSearchItems([recruteur._id])
+      expect(await getDbCollection("search_items").countDocuments({ _id: recruteur._id })).toBe(1)
+
+      await getDbCollection("jobs_partners").updateOne({ _id: recruteur._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
+      const result = await upsertJobPartnersToSearchItems([recruteur._id])
+
+      expect(result.removed).toBe(1)
+      expect(await getDbCollection("search_items").countDocuments({ _id: recruteur._id })).toBe(0)
+    })
   })
 
   describe("removeJobPartnersFromSearchItems", () => {
