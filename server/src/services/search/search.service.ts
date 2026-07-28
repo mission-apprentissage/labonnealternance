@@ -263,6 +263,18 @@ const HAS_START_DATE = { range: { path: "start_date", gte: new Date("1900-01-01T
 const HAS_PUBLICATION_DATE = { range: { path: "publication_date", gte: new Date("1900-01-01T00:00:00.000Z") } }
 const HAS_APPLICATION_COUNT = { range: { path: "application_count", gte: 0 } }
 
+// Result set du tri par date de début : les docs à vraie date de démarrage + les candidatures
+// spontanées (jamais de date par nature — elles restent visibles et sont reléguées en fin de
+// liste par la clé de tri is_algo_company, cf. buildSortStage, comme au tri par date de
+// publication). Les autres docs sans date (formations, offres sans start_date) trieraient en
+// tête (valeur manquante avant toute date en ordre croissant) → écartés.
+const START_DATE_SORT_FILTER = {
+  compound: {
+    should: [HAS_START_DATE, { equals: { path: "is_algo_company", value: true } }],
+    minimumShouldMatch: 1,
+  },
+}
+
 const buildStartDateFilter = (start_date: Date) => ({
   compound: {
     should: [
@@ -441,10 +453,10 @@ function buildCompoundOperator(filters: ISearchFilters) {
   if (sort === "applications") {
     filter.push(HAS_APPLICATION_COUNT)
   }
-  // Tri par date de début de contrat : même logique — les docs sans start_date (candidatures
-  // spontanées, formations) trieraient en tête en ordre croissant → écartés du tri.
+  // Tri par date de début de contrat : docs sans start_date écartés, SAUF les candidatures
+  // spontanées, conservées et reléguées en fin de liste (cf. START_DATE_SORT_FILTER).
   if (sort === "start_date") {
-    filter.push(HAS_START_DATE)
+    filter.push(START_DATE_SORT_FILTER)
   }
 
   // Tri par proximité : la porte de pertinence devient un filtre, et le score provient
@@ -479,9 +491,10 @@ function buildSortStage(filters: ISearchFilters): Record<string, unknown> {
     return { is_algo_company: { order: 1 }, publication_date: { order: -1 } }
   }
   if (filters.sort === "start_date") {
-    // Démarrages les plus proches d'abord ; les docs sans date sont écartés en amont
-    // (filter HAS_START_DATE, cf. buildCompoundOperator).
-    return { start_date: { order: 1 }, score: { $meta: "searchScore", order: -1 } }
+    // Démarrages les plus proches d'abord ; candidatures spontanées (sans date de début par
+    // nature) en DERNIER via la clé is_algo_company — même mécanique que le tri par date de
+    // publication. Les autres docs sans date sont écartés en amont (START_DATE_SORT_FILTER).
+    return { is_algo_company: { order: 1 }, start_date: { order: 1 }, score: { $meta: "searchScore", order: -1 } }
   }
   if (filters.sort === "applications") {
     // Moins de candidatures d'abord : maximise les chances du candidat et répartit les
@@ -570,7 +583,7 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
     filter.push(HAS_APPLICATION_COUNT)
   }
   if (filters.sort === "start_date") {
-    filter.push(HAS_START_DATE)
+    filter.push(START_DATE_SORT_FILTER)
   }
 
   if (!gate && !filter.length) filter.push({ exists: { path: "type" } })
