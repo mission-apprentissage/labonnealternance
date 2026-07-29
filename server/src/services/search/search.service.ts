@@ -630,6 +630,13 @@ export type SearchHit = ISearchItem & {
   distance: number | null
 }
 
+// TEMPORAIRE — mongot n'est actif que sur le primaire du cluster prod (rollout des
+// secondaires en cours) : un $search servi par un secondaire sans mongot échoue en
+// SearchNotEnabled (Sentry LBA-SERVER-5J7KF4ZZZT961). Épingle toutes les agrégations
+// $search/$searchMeta sur le primaire ; à retirer une fois mongot déployé sur tous les
+// membres du replica set (la répartition de charge sur les secondaires redeviendra souhaitable).
+const SEARCH_AGGREGATE_OPTIONS = { readPreference: "primary" } as const
+
 export async function searchItems(params: ISearchFilters): Promise<{
   hits: SearchHit[]
   nbHits: number
@@ -646,44 +653,50 @@ export async function searchItems(params: ISearchFilters): Promise<{
 
   const [rows, chipCountArrays, ...metaArrays] = await Promise.all([
     getDbCollection("search_items")
-      .aggregate<SearchRow>([
-        {
-          $search: {
-            index: "search_items_index",
-            compound,
-            sort: buildSortStage(params),
-            highlight: {
-              // rome_labels inclus : les recruteurs n'ont pas de description → preview via les intitulés métier.
-              path: ["title", "description", "rome_labels"],
-              maxNumPassages: HIGHLIGHT_MAX_PASSAGES,
+      .aggregate<SearchRow>(
+        [
+          {
+            $search: {
+              index: "search_items_index",
+              compound,
+              sort: buildSortStage(params),
+              highlight: {
+                // rome_labels inclus : les recruteurs n'ont pas de description → preview via les intitulés métier.
+                path: ["title", "description", "rome_labels"],
+                maxNumPassages: HIGHLIGHT_MAX_PASSAGES,
+              },
+              count: { type: "total" },
             },
-            count: { type: "total" },
           },
-        },
-        {
-          $addFields: {
-            highlights: { $meta: "searchHighlights" },
-            _meta: "$$SEARCH_META",
+          {
+            $addFields: {
+              highlights: { $meta: "searchHighlights" },
+              _meta: "$$SEARCH_META",
+            },
           },
-        },
-        { $skip: page * hitsPerPage },
-        { $limit: hitsPerPage },
-      ])
+          { $skip: page * hitsPerPage },
+          { $limit: hitsPerPage },
+        ],
+        SEARCH_AGGREGATE_OPTIONS
+      )
       .toArray(),
 
     // Compteurs des chips booléennes (handi, urgent, candidature simplifiée) — un $searchMeta chacun.
     Promise.all(
       chipCountKeys.map((key) =>
         getDbCollection("search_items")
-          .aggregate<{ count?: { total?: number } }>([
-            {
-              $searchMeta: {
-                index: "search_items_index",
-                compound: chipCountCompounds[key],
-                count: { type: "total" },
+          .aggregate<{ count?: { total?: number } }>(
+            [
+              {
+                $searchMeta: {
+                  index: "search_items_index",
+                  compound: chipCountCompounds[key],
+                  count: { type: "total" },
+                },
               },
-            },
-          ])
+            ],
+            SEARCH_AGGREGATE_OPTIONS
+          )
           .toArray()
       )
     ),
@@ -691,17 +704,20 @@ export async function searchItems(params: ISearchFilters): Promise<{
     // Une requête $searchMeta par groupe de facettes (faceting disjonctif).
     ...facetGroups.map((group) =>
       getDbCollection("search_items")
-        .aggregate<FacetMetaRow>([
-          {
-            $searchMeta: {
-              index: "search_items_index",
-              facet: {
-                operator: { compound: group.compound },
-                facets: Object.fromEntries(group.keys.map((key) => [key, FACET_FIELD_DEFS[key]])),
+        .aggregate<FacetMetaRow>(
+          [
+            {
+              $searchMeta: {
+                index: "search_items_index",
+                facet: {
+                  operator: { compound: group.compound },
+                  facets: Object.fromEntries(group.keys.map((key) => [key, FACET_FIELD_DEFS[key]])),
+                },
               },
             },
-          },
-        ])
+          ],
+          SEARCH_AGGREGATE_OPTIONS
+        )
         .toArray()
     ),
   ])
@@ -752,22 +768,25 @@ export async function searchItems(params: ISearchFilters): Promise<{
 // Autocomplétion sur le contenu indexé (title + rome_labels, edgeGram).
 async function suggestFromItems(q: string, limit: number): Promise<string[]> {
   const rows = await getDbCollection("search_items")
-    .aggregate<{ title: string; rome_labels: string[] | null }>([
-      {
-        $search: {
-          index: "search_items_index",
-          compound: {
-            should: [
-              { autocomplete: { query: q, path: "title", fuzzy: { maxEdits: 1 }, score: { boost: { value: 2 } } } },
-              { autocomplete: { query: q, path: "rome_labels", fuzzy: { maxEdits: 1 } } },
-            ],
-            minimumShouldMatch: 1,
+    .aggregate<{ title: string; rome_labels: string[] | null }>(
+      [
+        {
+          $search: {
+            index: "search_items_index",
+            compound: {
+              should: [
+                { autocomplete: { query: q, path: "title", fuzzy: { maxEdits: 1 }, score: { boost: { value: 2 } } } },
+                { autocomplete: { query: q, path: "rome_labels", fuzzy: { maxEdits: 1 } } },
+              ],
+              minimumShouldMatch: 1,
+            },
           },
         },
-      },
-      { $limit: limit * 5 },
-      { $project: { _id: 0, title: 1, rome_labels: 1 } },
-    ])
+        { $limit: limit * 5 },
+        { $project: { _id: 0, title: 1, rome_labels: 1 } },
+      ],
+      SEARCH_AGGREGATE_OPTIONS
+    )
     .toArray()
   return rows.flatMap((row) => [row.title, ...(row.rome_labels ?? [])])
 }
@@ -777,19 +796,22 @@ async function suggestFromItems(q: string, limit: number): Promise<string[]> {
 // `active` sont servis ; kill-switch : passer origin user_queries en disabled).
 async function suggestFromUserSuggestions(q: string, limit: number): Promise<string[]> {
   const rows = await getDbCollection("search_suggestions")
-    .aggregate<{ term: string }>([
-      {
-        $search: {
-          index: "search_suggestions_index",
-          compound: {
-            must: [{ autocomplete: { query: q, path: "term", fuzzy: { maxEdits: 1 } } }],
-            filter: [{ equals: { path: "status", value: "active" } }],
+    .aggregate<{ term: string }>(
+      [
+        {
+          $search: {
+            index: "search_suggestions_index",
+            compound: {
+              must: [{ autocomplete: { query: q, path: "term", fuzzy: { maxEdits: 1 } } }],
+              filter: [{ equals: { path: "status", value: "active" } }],
+            },
           },
         },
-      },
-      { $limit: limit },
-      { $project: { _id: 0, term: 1 } },
-    ])
+        { $limit: limit },
+        { $project: { _id: 0, term: 1 } },
+      ],
+      SEARCH_AGGREGATE_OPTIONS
+    )
     .toArray()
   return rows.map((row) => row.term)
 }
