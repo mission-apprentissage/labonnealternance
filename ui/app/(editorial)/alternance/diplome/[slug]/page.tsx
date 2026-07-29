@@ -7,6 +7,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { UTM_PARAMS } from "@/app/(editorial)/alternance/diplome/[slug]/_data/constants"
+import { SchemaOrg } from "@/components/SchemaOrg"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { DescriptionDiplome } from "./_components/DescriptionDiplome"
@@ -46,9 +47,23 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
 
   const data = rawData as unknown as ISeoDiplome
 
+  const diplomePage = PAGES.dynamic.seoDiplome(slug, data.titre)
+  const breadcrumbs = [
+    { name: "Accueil", url: PAGES.static.home.getPath() },
+    { name: PAGES.static.alternanceDiplomes.title, url: PAGES.static.alternanceDiplomes.getPath() },
+    { name: data.titre, url: diplomePage.getPath() },
+  ]
+
   return (
     <Box>
-      <Breadcrumb pages={[PAGES.static.home]} />
+      <SchemaOrg
+        type="WebPage"
+        title={`${data.titre} en alternance`}
+        description={`Découvrez le ${data.titre} en alternance : programme, prérequis, salaire, entreprises qui recrutent et débouchés.`}
+        url={diplomePage.getPath()}
+        breadcrumbs={breadcrumbs}
+      />
+      <Breadcrumb pages={[PAGES.static.alternanceDiplomes, diplomePage]} />
 
       <DefaultContainer sx={{ px: 0 }}>
         <HeroDiplome titre={data.titre} sousTitre={data.sousTitre} kpis={data.kpis} romes={data.romes} />

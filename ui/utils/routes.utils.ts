@@ -958,17 +958,17 @@ export const PAGES = {
         title: `Tâche CRON ${props.id} - La bonne alternance`,
       }),
     }),
-    seoVille: (villeSlug: string): IPage => ({
+    seoVille: (villeSlug: string, villeLabel?: string): IPage => ({
       getPath: () => `/alternance/ville/${villeSlug}`,
-      title: `Trouver une alternance à ${villeSlug}`,
+      title: villeLabel ?? `Trouver une alternance à ${villeSlug}`,
     }),
-    seoMetier: (metierSlug: string): IPage => ({
+    seoMetier: (metierSlug: string, metierLabel?: string): IPage => ({
       getPath: () => `/alternance/metier/${metierSlug}`,
-      title: `Trouver une alternance en ${metierSlug}`,
+      title: metierLabel ?? `Trouver une alternance en ${metierSlug}`,
     }),
-    seoDiplome: (diplomeSlug: string): IPage => ({
+    seoDiplome: (diplomeSlug: string, diplomeLabel?: string): IPage => ({
       getPath: () => `/alternance/diplome/${diplomeSlug}`,
-      title: `${diplomeSlug} en alternance`,
+      title: diplomeLabel ?? `${diplomeSlug} en alternance`,
     }),
   },
   notion: {},
