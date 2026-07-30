@@ -1,7 +1,7 @@
 "use client"
 
 import Button from "@codegouvfr/react-dsfr/Button"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
 
 type SearchOrigin = "page_ville" | "page_metier"
 
@@ -25,6 +25,8 @@ export function JobsCtaTracked({ href, searchOrigin, searchJobName, searchAddres
       search_radius: 30,
       search_diploma: "indifferent",
       search_origin: searchOrigin,
+      // Les CTA éditoriaux pointent vers les parcours du moteur legacy.
+      search_engine: SEARCH_ENGINES.PRODUCTION,
     })
   }
 
