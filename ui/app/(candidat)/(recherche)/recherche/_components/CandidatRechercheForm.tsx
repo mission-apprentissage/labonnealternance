@@ -8,7 +8,7 @@ import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherc
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
 import { RechercheInputsLayout } from "./RechercheInputs/RechercheInputsLayout"
 import { RechercheLieuAutocomplete } from "./RechercheInputs/RechercheLieuAutocomplete"
 import { RechercheMetierAutocomplete } from "./RechercheInputs/RechercheMetierAutocomplete"
@@ -39,6 +39,7 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
         search_radius: rechercheForm.radius ? parseInt(rechercheForm.radius, 10) : 30,
         search_diploma: rechercheForm.diploma ?? "indifferent",
         search_origin: "page_resultat",
+        search_engine: SEARCH_ENGINES.PRODUCTION,
       })
       navigateToRecherchePage({ ...rechercheFormToRechercheParams(rechercheForm), scrollToRecruteursLba: false })
     },
@@ -70,6 +71,7 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
       search_job_name: rechercheParams.job_name || "non_renseigné",
       search_address: rechercheParams.geo?.address || "non_renseigné",
       search_diploma: rechercheParams.diploma ?? "indifferent",
+      search_engine: SEARCH_ENGINES.PRODUCTION,
     })
   }, [rechercheResults.status, rechercheResults.displayedItems.length, rechercheResults.displayedJobs.length, rechercheResults.displayedFormations.length, rechercheParams])
 
