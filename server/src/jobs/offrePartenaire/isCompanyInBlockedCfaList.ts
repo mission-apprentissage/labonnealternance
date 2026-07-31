@@ -696,6 +696,7 @@ export const cfaCompanyList = [
   "ESCG MONTPELLIER",
   "ESED",
   "ESGCV",
+  "ESIC",
   "ESID",
   "ESIMA LYON - PERFORMANCES CONCEPT",
   "ESIMED",
