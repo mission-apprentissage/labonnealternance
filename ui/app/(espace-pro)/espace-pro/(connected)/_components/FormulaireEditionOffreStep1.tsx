@@ -184,13 +184,11 @@ export const FormulaireEditionOffreStep1 = ({
   })
 
   const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? formValues?.competences_rome ?? null)
-  const [competencesDirty, setCompetencesDirty] = useState(Boolean(formValues))
   const [descriptionMode, setDescriptionMode] = useState<DescriptionMode>(offre?.job_description || formValues?.job_description ? "custom" : "structured")
 
   const onRomeChange = (rome: string, appellation: string) => {
     setRomeAndAppellation({ rome, appellation })
     setSelectedCompetences(null)
-    setCompetencesDirty(true)
   }
 
   const onSelectedCompetencesChange = (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => {
@@ -218,7 +216,6 @@ export const FormulaireEditionOffreStep1 = ({
       }),
     }
     setSelectedCompetences(savedCompetences)
-    setCompetencesDirty(true)
   }
 
   if (!establishment_id) return <></>
@@ -408,7 +405,7 @@ export const FormulaireEditionOffreStep1 = ({
                 </Box>
               </Box>
               <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("8v") }}>
-                <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
+                <FormulaireEditionOffreButtons offre={offre} />
               </Box>
             </div>
           )
