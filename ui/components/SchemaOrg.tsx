@@ -186,7 +186,8 @@ export const SchemaOrg = ({
   return (
     <>
       {schemas.map((schema, index) => (
-        <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+        // On échappe le caractère inférieur en séquence unicode pour qu'un libellé contenant une balise fermante de script ne puisse pas casser le script (XSS script-breakout).
+        <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }} />
       ))}
     </>
   )

@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
 import { redirect } from "next/navigation"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
@@ -9,8 +10,10 @@ import { appartements, loisirs, transports } from "@/app/(editorial)/alternance/
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
+import { SchemaOrg } from "@/components/SchemaOrg"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
@@ -39,8 +42,24 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
     redirect("/404")
   }
 
+  const villePage = PAGES.dynamic.seoVille(ville, data.ville)
+  const breadcrumbs = [
+    { name: "Accueil", url: PAGES.static.home.getPath() },
+    { name: PAGES.static.alternanceVilles.title, url: PAGES.static.alternanceVilles.getPath() },
+    { name: data.ville, url: villePage.getPath() },
+  ]
+
   return (
     <Box>
+      <SchemaOrg
+        type="WebPage"
+        title={`Alternance à ${data.ville}`}
+        description={`Offres d'alternance, entreprises qui recrutent, logement et vie d'alternant à ${data.ville}.`}
+        url={villePage.getPath()}
+        breadcrumbs={breadcrumbs}
+      />
+      <Breadcrumb pages={[PAGES.static.alternanceVilles, villePage]} />
+
       <DefaultContainer sx={{ px: 0 }}>
         <Box
           sx={{

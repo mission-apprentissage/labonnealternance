@@ -4,13 +4,17 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
+import { findVilleLandingSlug } from "@/app/(editorial)/alternance/_components/landing_links"
 import { SalaireSection } from "@/app/(editorial)/alternance/diplome/[slug]/_components/SalaireSection"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
+import { SchemaOrg } from "@/components/SchemaOrg"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 const UTM_PARAMS = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-metiers"
 
@@ -104,6 +108,13 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
   const jobsSearchUrl = `/recherche?romes=${romesParam}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}&${UTM_PARAMS}`
   const formationsSearchUrl = `/recherche?romes=${romesParam}&radius=30&displayEntreprises=false&job_name=${encodeURIComponent(data.metier)}&${UTM_PARAMS}`
 
+  const metierPage = PAGES.dynamic.seoMetier(metier, data.metier)
+  const breadcrumbs = [
+    { name: "Accueil", url: PAGES.static.home.getPath() },
+    { name: PAGES.static.alternanceMetiers.title, url: PAGES.static.alternanceMetiers.getPath() },
+    { name: data.metier, url: metierPage.getPath() },
+  ]
+
   const statItems = [
     { icon: "/images/seo/malette.svg", value: data.job_count, label: "Offres d'emploi en alternance disponibles" },
     { icon: "/images/seo/metier/ecosystem.svg", value: data.applicant_count, label: "candidats sur les 3 derniers mois" },
@@ -113,6 +124,15 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
 
   return (
     <Box>
+      <SchemaOrg
+        type="WebPage"
+        title={`Alternance ${data.metier}`}
+        description={`Offres, salaire moyen, entreprises et formations en alternance ${data.metier}.`}
+        url={metierPage.getPath()}
+        breadcrumbs={breadcrumbs}
+      />
+      <Breadcrumb pages={[PAGES.static.alternanceMetiers, metierPage]} />
+
       <DefaultContainer sx={{ px: 0 }}>
         <Box
           sx={{
@@ -308,48 +328,50 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               mt: fr.spacing("4v"),
             }}
           >
-            {(data.villes as { nom: string; job_count: number; geopoint: { lat: number; long: number } }[]).map((ville) => (
-              <Link
-                key={ville.nom}
-                href={`/recherche?romes=${romesParam}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${ville.nom}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false&${UTM_PARAMS}`}
-                style={{ background: "transparent" }}
-                aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}
-              >
-                <Box
-                  sx={{
-                    ...boxCss,
-                    minWidth: "220px",
-                    width: "100%",
-                    maxWidth: "100%",
-                    paddingY: fr.spacing("8v"),
-                    paddingX: fr.spacing("6v"),
-                    ":hover": {
-                      backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  <Box sx={{ width: "100%", textAlign: "center" }}>
-                    <Image alt="" aria-hidden="true" src="/images/seo/metier/france.svg" width={60} height={60} />
-                  </Box>
-                  <Box sx={{ width: "100%", textAlign: "left" }}>
-                    <Typography
-                      sx={{ mt: fr.spacing("1v"), fontSize: "2rem", fontWeight: "bold", lineHeight: 1.2, color: fr.colors.decisions.background.actionHigh.blueFrance.default }}
-                    >
-                      {ville.nom}
-                    </Typography>
-                    <Box sx={{ width: "100%", display: "flex", alignItems: "center", flexDirection: "row" }}>
-                      <Typography sx={{ flex: 1, mt: fr.spacing("2v"), fontSize: "1.375rem", fontWeight: "bold", lineHeight: 1.1, color: "#161616" }}>
-                        {ville.job_count} offres
+            {(data.villes as { nom: string; job_count: number; geopoint: { lat: number; long: number } }[]).map((ville) => {
+              const villeSlug = findVilleLandingSlug(ville.nom)
+              // Maillage interne : lien vers la page ville sœur si elle existe, sinon repli vers la recherche.
+              const href = villeSlug
+                ? `/alternance/ville/${villeSlug}?${UTM_PARAMS}`
+                : `/recherche?romes=${romesParam}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${encodeURIComponent(ville.nom)}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false&${UTM_PARAMS}`
+              return (
+                <Link key={ville.nom} href={href} style={{ background: "transparent" }} aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}>
+                  <Box
+                    sx={{
+                      ...boxCss,
+                      minWidth: "220px",
+                      width: "100%",
+                      maxWidth: "100%",
+                      paddingY: fr.spacing("8v"),
+                      paddingX: fr.spacing("6v"),
+                      ":hover": {
+                        backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+                        cursor: "pointer",
+                      },
+                    }}
+                  >
+                    <Box sx={{ width: "100%", textAlign: "center" }}>
+                      <Image alt="" aria-hidden="true" src="/images/seo/metier/france.svg" width={60} height={60} />
+                    </Box>
+                    <Box sx={{ width: "100%", textAlign: "left" }}>
+                      <Typography
+                        sx={{ mt: fr.spacing("1v"), fontSize: "2rem", fontWeight: "bold", lineHeight: 1.2, color: fr.colors.decisions.background.actionHigh.blueFrance.default }}
+                      >
+                        {ville.nom}
                       </Typography>
-                      <ArrowRightLine
-                        sx={{ color: fr.colors.decisions.background.actionHigh.blueFrance.default, mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }}
-                      />
+                      <Box sx={{ width: "100%", display: "flex", alignItems: "center", flexDirection: "row" }}>
+                        <Typography sx={{ flex: 1, mt: fr.spacing("2v"), fontSize: "1.375rem", fontWeight: "bold", lineHeight: 1.1, color: "#161616" }}>
+                          {ville.job_count} offres
+                        </Typography>
+                        <ArrowRightLine
+                          sx={{ color: fr.colors.decisions.background.actionHigh.blueFrance.default, mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }}
+                        />
+                      </Box>
                     </Box>
                   </Box>
-                </Box>
-              </Link>
-            ))}
+                </Link>
+              )
+            })}
           </Box>
         </Box>
 
