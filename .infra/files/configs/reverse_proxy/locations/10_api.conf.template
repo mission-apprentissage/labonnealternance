@@ -4,7 +4,7 @@ location /api {
     include includes/proxy.conf;
 }
 
-# Routes réservées au front : rate limiting nginx (zones dans extra-conf.d/rate-limit.conf)
+# Routes réservées au front : rate limiting nginx (zones dans extra-conf.d/rate-limit.conf.template)
 location /api/rome {
     limit_req zone=lba_autocomplete burst=40 nodelay;
 
