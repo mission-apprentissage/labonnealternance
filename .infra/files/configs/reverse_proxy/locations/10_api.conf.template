@@ -4,6 +4,31 @@ location /api {
     include includes/proxy.conf;
 }
 
+# Routes réservées au front : rate limiting nginx (zones dans extra-conf.d/rate-limit.conf)
+location /api/rome {
+    limit_req zone=lba_autocomplete burst=40 nodelay;
+
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}
+
+location /api/_private/ {
+    limit_req zone=lba_search burst=60 nodelay;
+
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}
+
+location /api/v1/_private/ {
+    limit_req zone=lba_search burst=60 nodelay;
+
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}
+
 location ~* ^/api/v1/application$ {
     client_max_body_size    5M;
 
