@@ -96,6 +96,7 @@ export const FormulaireEditionOffre = ({
                 step_name: "screening_questions",
                 has_screening_questions: finalValues.to_applicant_questions?.length > 0,
                 ft_eligible: isFtEligible,
+                description_mode: finalValues.job_description ? "custom" : "structured",
               })
               handleSave(finalValues)
             } else {
@@ -121,6 +122,7 @@ export const FormulaireEditionOffre = ({
               step_name: "ft_support",
               has_screening_questions: finalValues.to_applicant_questions?.length > 0,
               ft_eligible: isFtEligible,
+              description_mode: finalValues.job_description ? "custom" : "structured",
             })
             pushMatomoEvent({
               event: MATOMO_EVENTS.JOB_CREATION_FT_PARTNERSHIP_STEP,

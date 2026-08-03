@@ -2,6 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Input from "@codegouvfr/react-dsfr/Input"
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
@@ -14,6 +15,7 @@ import * as Yup from "yup"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getRomeDetail } from "@/utils/api"
 import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
@@ -21,6 +23,66 @@ import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
 const EMPLOYER_DESCRIPTION_MAX = 800
+const JOB_DESCRIPTION_MAX = 3000
+
+type DescriptionMode = "structured" | "custom"
+
+const DescriptionModeToggle = ({ mode, onChange }: { mode: DescriptionMode; onChange: (mode: DescriptionMode) => void }) => (
+  <RadioButtons
+    style={{ marginBottom: 0 }}
+    legend="Mode de rédaction"
+    name="description_mode"
+    options={[
+      {
+        label: "Utiliser la description du métier",
+        hintText: "Description générée à partir de la fiche métier, personnalisable via les compétences.",
+        nativeInputProps: {
+          checked: mode === "structured",
+          onChange: () => onChange("structured"),
+        },
+      },
+      {
+        label: "Personnaliser la description",
+        hintText: "Rédigez vous-même la description du poste.",
+        nativeInputProps: {
+          checked: mode === "custom",
+          onChange: () => onChange("custom"),
+        },
+      },
+    ]}
+  />
+)
+
+const JobDescriptionField = () => {
+  const { values, setFieldValue, errors } = useFormikContext<any>()
+  return (
+    <Box sx={{ mt: fr.spacing("4v") }}>
+      <Input
+        label="Description du poste"
+        hintText={
+          <>
+            Décrivez les missions et responsabilités du poste.{" "}
+            <DsfrLink href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur">Découvrir la charte</DsfrLink>
+          </>
+        }
+        state={errors.job_description ? "error" : "info"}
+        stateRelatedMessage={
+          (errors.job_description as string) ??
+          "Notre équipe modère les contenus. Toute description non conforme à la réglementation pourra entrainer la suppression de l'offre, la désactivation du compte et faire l'objet d'un signalement aux autorités compétentes. La taille du champ est limitée à 3000 caractères."
+        }
+        textArea
+        nativeTextAreaProps={{
+          name: "job_description",
+          value: values.job_description,
+          maxLength: JOB_DESCRIPTION_MAX,
+          rows: 8,
+          style: { resize: "none" },
+          onChange: (e) => setFieldValue("job_description", e.target.value),
+        }}
+      />
+    </Box>
+  )
+}
 
 const EmployerDescriptionField = () => {
   const { values, setFieldValue, errors } = useFormikContext<any>()
@@ -77,6 +139,7 @@ export const FormulaireEditionOffreStep1 = ({
 
   const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? formValues?.competences_rome ?? null)
   const [competencesDirty, setCompetencesDirty] = useState(Boolean(formValues))
+  const [descriptionMode, setDescriptionMode] = useState<DescriptionMode>(offre?.job_description || formValues?.job_description ? "custom" : "structured")
 
   const onRomeChange = (rome: string, appellation: string) => {
     setRomeAndAppellation({ rome, appellation })
@@ -124,6 +187,7 @@ export const FormulaireEditionOffreStep1 = ({
       competences_rome: finalSelectedCompetences,
       offer_title_custom: values.offer_title_custom || null,
       job_employer_description: values.job_employer_description || null,
+      job_description: descriptionMode === "custom" ? values.job_description?.trim() || null : null,
     }
     onSubmit?.(values)
   }
@@ -154,6 +218,7 @@ export const FormulaireEditionOffreStep1 = ({
     job_rythm: offre?.job_rythm ?? "",
     offer_title_custom: offre?.offer_title_custom ?? "",
     job_employer_description: offre?.job_employer_description ?? "",
+    job_description: offre?.job_description ?? "",
     ...formValues,
   }
   initialValues.offer_title_custom = initialValues.offer_title_custom ?? ""
@@ -185,6 +250,12 @@ export const FormulaireEditionOffreStep1 = ({
             .transform((v) => v || undefined)
             .min(30, "La présentation est trop courte (minimum 30 caractères).")
             .max(EMPLOYER_DESCRIPTION_MAX, `La présentation est trop longue (maximum ${EMPLOYER_DESCRIPTION_MAX} caractères).`),
+          job_description: Yup.string()
+            .trim()
+            .transform((v) => v || undefined)
+            .min(30, "La description est trop courte (minimum 30 caractères).")
+            .max(JOB_DESCRIPTION_MAX, `La description est trop longue (maximum ${JOB_DESCRIPTION_MAX} caractères).`)
+            .test("required-if-custom", "Champ obligatoire", (value) => descriptionMode !== "custom" || Boolean(value)),
         })}
         onSubmit={(values: any) => localOnSubmit(values)}
       >
@@ -262,6 +333,13 @@ export const FormulaireEditionOffreStep1 = ({
                   <Box sx={{ mt: fr.spacing("4v") }}>
                     <FormulaireEditionOffreFields section="offer" onRomeChange={onRomeChange} />
                   </Box>
+
+                  {romeAndAppellation && (
+                    <Box sx={{ mt: fr.spacing("6v") }}>
+                      <DescriptionModeToggle mode={descriptionMode} onChange={setDescriptionMode} />
+                      {descriptionMode === "custom" && <JobDescriptionField />}
+                    </Box>
+                  )}
 
                   <Box sx={{ mt: fr.spacing("4v") }}>
                     {romeAndAppellation ? (

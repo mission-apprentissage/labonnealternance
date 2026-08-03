@@ -623,7 +623,7 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
     offer_access_conditions: romeDetails?.acces_metier ? [romeDetails.acces_metier] : [],
-    offer_description: romeDetails?.definition,
+    offer_description: sanitizeTextField(job.job_description, true) || romeDetails?.definition || "",
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     // offer_title_custom = saisie libre recruteur (le schéma Zod n'interdit pas les tags HTML) →
@@ -1244,7 +1244,7 @@ async function jobCreateToJobsPartner({
     offer_access_conditions: acces_metier ? [acces_metier] : [],
     offer_title,
     offer_rome_codes: job.rome_code ?? null,
-    offer_description: job.job_description ?? definition ?? "",
+    offer_description: sanitizeTextField(job.job_description, true) || definition || "",
     offer_creation: now,
     offer_expiration: addExpirationPeriod(now).toDate(),
     offer_status: status,

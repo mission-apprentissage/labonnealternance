@@ -214,6 +214,7 @@ export const zFormulaireRoute = {
         job_duration: true,
         job_rythm: true,
         job_employer_description: true,
+        job_description: true,
         competences_rome: true,
         offer_title_custom: true,
         to_applicant_questions: true,
