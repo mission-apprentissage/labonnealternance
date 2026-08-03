@@ -333,7 +333,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               // Maillage interne : lien vers la page ville sœur si elle existe, sinon repli vers la recherche.
               const href = villeSlug
                 ? `/alternance/ville/${villeSlug}?${UTM_PARAMS}`
-                : `/recherche?romes=${romesParam}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${ville.nom}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false&${UTM_PARAMS}`
+                : `/recherche?romes=${romesParam}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${encodeURIComponent(ville.nom)}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false&${UTM_PARAMS}`
               return (
                 <Link key={ville.nom} href={href} style={{ background: "transparent" }} aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}>
                   <Box
