@@ -1,9 +1,10 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
-import { Box, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { Formik, useFormikContext } from "formik"
@@ -16,7 +17,7 @@ import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { getRomeDetail } from "@/utils/api"
+import { ameliorerTexteOffre, getRomeDetail } from "@/utils/api"
 import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 
@@ -24,6 +25,45 @@ const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
 const EMPLOYER_DESCRIPTION_MAX = 800
 const JOB_DESCRIPTION_MAX = 3000
+const AMELIORER_IA_MAX_USAGES = 2
+
+type FreeTextFieldName = "job_description" | "job_employer_description"
+
+const AmeliorerIaButton = ({ fieldName, establishmentId }: { fieldName: FreeTextFieldName; establishmentId?: string }) => {
+  const { values, setFieldValue } = useFormikContext<any>()
+  const [remaining, setRemaining] = useState(AMELIORER_IA_MAX_USAGES)
+  const [loading, setLoading] = useState(false)
+  const text: string = values[fieldName] ?? ""
+
+  const handleClick = async () => {
+    if (!establishmentId || loading || remaining <= 0 || !text.trim()) return
+    setLoading(true)
+    try {
+      const result = await ameliorerTexteOffre(establishmentId, fieldName, text)
+      if (result && "text" in result && result.text) {
+        setFieldValue(fieldName, result.text)
+        setRemaining((r) => r - 1)
+      }
+    } catch {
+      // Échec de l'appel IA (timeout, erreur API) : le recruteur peut poursuivre son dépôt sans blocage.
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Button type="button" priority="tertiary" size="small" disabled={!establishmentId || loading || remaining <= 0 || !text.trim()} onClick={handleClick}>
+      {loading ? (
+        <>
+          <CircularProgress size={14} sx={{ mr: fr.spacing("2v"), verticalAlign: "middle" }} />
+          Amélioration en cours…
+        </>
+      ) : (
+        `Améliorer via l'IA (${remaining}/${AMELIORER_IA_MAX_USAGES})`
+      )}
+    </Button>
+  )
+}
 
 type DescriptionMode = "structured" | "custom"
 
@@ -53,7 +93,7 @@ const DescriptionModeToggle = ({ mode, onChange }: { mode: DescriptionMode; onCh
   />
 )
 
-const JobDescriptionField = () => {
+const JobDescriptionField = ({ establishmentId }: { establishmentId?: string }) => {
   const { values, setFieldValue, errors } = useFormikContext<any>()
   return (
     <Box sx={{ mt: fr.spacing("4v") }}>
@@ -80,11 +120,14 @@ const JobDescriptionField = () => {
           onChange: (e) => setFieldValue("job_description", e.target.value),
         }}
       />
+      <Box sx={{ mt: fr.spacing("2v"), display: "flex", justifyContent: "flex-end" }}>
+        <AmeliorerIaButton fieldName="job_description" establishmentId={establishmentId} />
+      </Box>
     </Box>
   )
 }
 
-const EmployerDescriptionField = () => {
+const EmployerDescriptionField = ({ establishmentId }: { establishmentId?: string }) => {
   const { values, setFieldValue, errors } = useFormikContext<any>()
   return (
     <Box>
@@ -106,6 +149,9 @@ const EmployerDescriptionField = () => {
           onChange: (e) => setFieldValue("job_employer_description", e.target.value),
         }}
       />
+      <Box sx={{ mt: fr.spacing("2v"), display: "flex", justifyContent: "flex-end" }}>
+        <AmeliorerIaButton fieldName="job_employer_description" establishmentId={establishmentId} />
+      </Box>
     </Box>
   )
 }
@@ -324,7 +370,7 @@ export const FormulaireEditionOffreStep1 = ({
                     La présentation de l'entreprise
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
-                    <EmployerDescriptionField />
+                    <EmployerDescriptionField establishmentId={establishment_id} />
                   </Box>
 
                   <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
@@ -337,7 +383,7 @@ export const FormulaireEditionOffreStep1 = ({
                   {romeAndAppellation && (
                     <Box sx={{ mt: fr.spacing("6v") }}>
                       <DescriptionModeToggle mode={descriptionMode} onChange={setDescriptionMode} />
-                      {descriptionMode === "custom" && <JobDescriptionField />}
+                      {descriptionMode === "custom" && <JobDescriptionField establishmentId={establishment_id} />}
                     </Box>
                   )}
 

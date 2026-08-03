@@ -15,9 +15,15 @@ import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise, IJobCreate, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { JOB_START_TYPE } from "shared/models/job.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { createJob, getCompetencesRomeFromPartnerJob, getFormulairesForCfaManagedEnterprises } from "./formulaire.service"
+
+// createJob/patchOffre appellent Mistral pour modérer job_description/job_employer_description (cf #5006) :
+// on mocke pour ne jamais dépendre du réseau/d'une clé API dans les tests, quel que soit le contenu des fixtures.
+vi.mock("@/services/mistralai/mistralai.service", () => ({
+  sendMistralMessages: vi.fn().mockResolvedValue(null),
+}))
 
 useMongo()
 
