@@ -23,7 +23,7 @@ export default defineConfig({
           root: "./server",
           include: ["./tests/**/*.test.ts", "**/*.test.ts"],
           setupFiles: ["./tests/utils/setup.ts"],
-          globalSetup: ["./server/tests/utils/globalSetup.ts"],
+          globalSetup: ["./tests/utils/globalSetup.ts"],
           clearMocks: true,
           sequence: {
             // Important for useMongo to be sequential
