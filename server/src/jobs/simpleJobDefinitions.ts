@@ -37,6 +37,7 @@ import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { processApec } from "./offrePartenaire/apec/processApec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
+import { closeJobsPartnersOnApplicationThreshold } from "./offrePartenaire/closeJobsPartnersOnApplicationThreshold"
 import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
 import { processEmploiInclusion } from "./offrePartenaire/emploi-inclusion/importEmploiInclusion"
@@ -340,6 +341,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: expireJobsPartners,
     description: "Change le status des offres dont la date d'expiration est dépassée",
+  },
+  {
+    fct: closeJobsPartnersOnApplicationThreshold,
+    description: "Clôture les offres jobs_partners ayant atteint le seuil de 80 candidatures",
   },
   {
     fct: classifyRomesForDomainesMetiers,

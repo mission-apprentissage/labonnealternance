@@ -7,6 +7,15 @@ import { ZPersonNameInput } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 import type { IRoutesDef } from "./common.routes.js"
 
+const zJobClosingBody = z
+  .object({
+    job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
+    job_status_comment: z.string(),
+    job_status_comment_precision: z.string().optional(),
+    job_relation_channel: z.string().optional(),
+  })
+  .strict()
+
 export const zFormulaireRoute = {
   get: {
     "/formulaire/:establishment_id": {
@@ -239,6 +248,7 @@ export const zFormulaireRoute = {
       method: "put",
       path: "/formulaire/offre/:jobId/cancel",
       params: z.object({ jobId: zObjectId }).strict(),
+      body: zJobClosingBody,
       response: {
         "200": z.object({}).strict(),
       },
@@ -254,12 +264,7 @@ export const zFormulaireRoute = {
       method: "put",
       path: "/formulaire/offre/f/:jobId/cancel",
       params: z.object({ jobId: zObjectId }).strict(),
-      body: z
-        .object({
-          job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
-          job_status_comment: z.string(),
-        })
-        .strict(),
+      body: zJobClosingBody,
       response: {
         "200": z.object({}).strict(),
       },

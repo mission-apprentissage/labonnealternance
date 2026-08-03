@@ -168,6 +168,11 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
   ft_support: z.boolean().nullish().describe("Indique si le créateur de l'offre a demandé un accompagnement par France Travail"),
   job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
+  job_status_comment_precision: z.string().nullish().describe('Précision libre quand job_status_comment = "Autre"'),
+  job_relation_channel: z
+    .string()
+    .nullish()
+    .describe("Canal de mise en relation quand l'offre a été pourvue sans l'aide de LBA (ex: via un site internet, école/CFA, ...), ou texte libre si \"Autre\""),
   job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
   delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
 

@@ -34,6 +34,7 @@ import { generateFranceTravailAccess } from "./franceTravail/generateFranceTrava
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { create as createMigration, status as statusMigration, up as upMigration } from "./migrations/migrations"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
+import { closeJobsPartnersOnApplicationThreshold } from "./offrePartenaire/closeJobsPartnersOnApplicationThreshold"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { importers } from "./offrePartenaire/jobsPartners.importer"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
@@ -100,6 +101,11 @@ export async function setupJobProcessor() {
           "Expiration des offres jobs_partners": {
             cron_string: "*/30 * * * *",
             handler: expireJobsPartners,
+            tag: "main",
+          },
+          "Clôture des offres jobs_partners au seuil de candidatures": {
+            cron_string: "*/30 * * * *",
+            handler: closeJobsPartnersOnApplicationThreshold,
             tag: "main",
           },
           "Mise à jour des adresses emails bloquées": {

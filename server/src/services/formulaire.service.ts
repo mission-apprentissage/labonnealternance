@@ -667,33 +667,35 @@ export const provideOffre = async (id: ObjectId): Promise<void> => {
 }
 
 /**
- * @description Cancel job from transaction email
+ * @description Clôture une offre (POURVUE ou ANNULEE) avec un motif de clôture, quelle que soit l'origine
+ * (mail transactionnel via magic-link, ou interface d'admin/dashboard)
  */
-export const cancelOffre = async (id: ObjectId): Promise<void> => {
-  const now = new Date()
-  const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
-    { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now, offer_expiration: now } }
-  )
-  if (!found) {
-    throw new Error(`could not find lba offer with id=${id}`)
-  }
-  syncJobPartnersToSearchItemsInBackground([id])
-}
-
-export const cancelOffreFromAdminInterface = async ({
+export const closeOffreWithMotif = async ({
   id,
   offer_status,
   job_status_comment,
+  job_status_comment_precision,
+  job_relation_channel,
 }: {
   id: ObjectId
   offer_status: JOB_STATUS_ENGLISH
   job_status_comment: string
+  job_status_comment_precision?: string
+  job_relation_channel?: string
 }): Promise<void> => {
   const now = new Date()
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
     { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
-    { $set: { offer_status, updated_at: now, offer_expiration: now, job_status_comment } },
+    {
+      $set: {
+        offer_status,
+        updated_at: now,
+        offer_expiration: now,
+        job_status_comment,
+        job_status_comment_precision,
+        job_relation_channel,
+      },
+    },
     {
       returnDocument: "after",
     }
