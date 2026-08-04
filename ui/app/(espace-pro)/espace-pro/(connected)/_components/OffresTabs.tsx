@@ -247,7 +247,7 @@ export const OffresTabs = ({
   return (
     <>
       <OffreProlongationModal modalControls={offreProlongationModalControls} onOffreProlongationSubmit={onOffreProlongationSubmit} />
-      <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />
+      {currentOffre && <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />}
       <Table caption={caption} columns={columns} data={jobsWithGeoCoords} />
     </>
   )
