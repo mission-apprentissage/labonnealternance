@@ -56,7 +56,7 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
     const estPourvueSansAideLba = motif === motifSansAideLba
     const jobStatus = motifsPourvus.includes(motif) ? JOB_STATUS.POURVUE : JOB_STATUS.ANNULEE
 
-    const job_relation_channel = estPourvueSansAideLba ? (canal === canalAutre ? canalPrecision || canal : canal) || undefined : undefined
+    const job_relation_channel = estPourvueSansAideLba ? (canal === canalAutre ? canalPrecision || undefined : canal) || undefined : undefined
     const job_status_comment_precision = motif === motifAutre ? motifPrecision || undefined : undefined
 
     await submit(offreId, {
