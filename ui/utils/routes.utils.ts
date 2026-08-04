@@ -187,6 +187,15 @@ export const PAGES = {
         description: "Obligations des employeurs, accueil en entreprise et rôle des CFA dans la prévention des risques professionnels pour les apprentis.",
       }),
     },
+    guideRedigerSonOffreDAlternance: {
+      getPath: () => `/guide/rediger-son-offre-d-alternance` as string,
+      title: "Bien rédiger son offre d'alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Bien rédiger son offre d'alternance | Charte de rédaction",
+        description: "Règles obligatoires, bonnes pratiques et modération : tout savoir pour rédiger une offre d'alternance claire, conforme et attractive.",
+      }),
+    },
     guideAlternant: {
       getPath: () => `/guide-alternant` as string,
       title: "Je m'informe sur l'alternance",
