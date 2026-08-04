@@ -90,10 +90,7 @@ export const createJob = async ({
 
   // Modération systématique des champs de description libre (correction + PII, cf #5006),
   // indépendamment du nombre d'utilisations restantes du CTA "Améliorer via l'IA" côté UI.
-  const [moderatedDescription, moderatedEmployerDescription] = await Promise.all([
-    moderateFreeText(job.job_description),
-    moderateFreeText(job.job_employer_description),
-  ])
+  const [moderatedDescription, moderatedEmployerDescription] = await Promise.all([moderateFreeText(job.job_description), moderateFreeText(job.job_employer_description)])
   const moderatedJob: IJobCreate = { ...job, job_description: moderatedDescription, job_employer_description: moderatedEmployerDescription }
 
   const entreprise = await getDbCollection("entreprises").findOne({ siret })

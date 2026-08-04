@@ -101,8 +101,7 @@ const JobDescriptionField = ({ establishmentId }: { establishmentId?: string }) 
         label="Description du poste"
         hintText={
           <>
-            Décrivez les missions et responsabilités du poste.{" "}
-            <DsfrLink href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur">Découvrir la charte</DsfrLink>
+            Décrivez les missions et responsabilités du poste. <DsfrLink href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur">Découvrir la charte</DsfrLink>
           </>
         }
         state={errors.job_description ? "error" : "info"}

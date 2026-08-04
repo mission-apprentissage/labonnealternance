@@ -17,9 +17,17 @@ export const metadata: Metadata = {
   alternates: { canonical: PAGES.static.guideRedigerSonOffreDAlternance.getPath() },
 }
 
-const ALLER_PLUS_LOIN_ITEMS_RECRUTEUR = [ARTICLES["decouvrir-l-alternance"], ARTICLES["apprentissage-et-handicap"], ARTICLES_RECRUTEUR["cerfa-apprentissage-et-professionnalisation"]]
+const ALLER_PLUS_LOIN_ITEMS_RECRUTEUR = [
+  ARTICLES["decouvrir-l-alternance"],
+  ARTICLES["apprentissage-et-handicap"],
+  ARTICLES_RECRUTEUR["cerfa-apprentissage-et-professionnalisation"],
+]
 const ALLER_PLUS_LOIN_ITEMS_CFA = [ARTICLES["decouvrir-l-alternance"], ARTICLES["apprentissage-et-handicap"], ARTICLES_CFA["la-carte-etudiant-des-metiers"]]
-const ALLER_PLUS_LOIN_ITEMS_DEFAULT = [ARTICLES["decouvrir-l-alternance"], ARTICLES["apprentissage-et-handicap"], ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"]]
+const ALLER_PLUS_LOIN_ITEMS_DEFAULT = [
+  ARTICLES["decouvrir-l-alternance"],
+  ARTICLES["apprentissage-et-handicap"],
+  ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"],
+]
 
 const getAllerPlusLoinItems = (source?: string): typeof ALLER_PLUS_LOIN_ITEMS_DEFAULT => {
   switch (source) {
