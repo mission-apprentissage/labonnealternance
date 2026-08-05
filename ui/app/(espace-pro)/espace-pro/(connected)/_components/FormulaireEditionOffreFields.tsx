@@ -67,7 +67,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
             }}
             name="rome_label"
             value={values.rome_appellation_label}
-            placeholder="Rechercher un métier.."
+            placeholder="Rechercher un métier"
             dataTestId="offre-metier"
           />
         </FormControl>
@@ -135,7 +135,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
         nativeSelectProps={{ name: "job_level_label", defaultValue: values.job_level_label || "", onChange: handleChange }}
       >
         <option value="" disabled hidden>
-          Sélectionnez un niveau de formation
+          Sélectionner une option
         </option>
         <option value={NIVEAU_DIPLOME_LABEL["3"]}>{NIVEAU_DIPLOME_LABEL["3"]}</option>
         <option value={NIVEAU_DIPLOME_LABEL["4"]}>{NIVEAU_DIPLOME_LABEL["4"]}</option>
