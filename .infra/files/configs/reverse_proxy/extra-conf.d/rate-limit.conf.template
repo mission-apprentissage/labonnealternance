@@ -24,5 +24,6 @@ limit_req_zone $lba_limit_key zone=lba_search:10m rate=30r/m;
 # Autocomplétion métiers (/api/rome) : 1 appel par frappe, rafales tolérées.
 limit_req_zone $lba_limit_key zone=lba_autocomplete:10m rate=2r/s;
 
-# limit_req_status 429 déjà défini globalement par le reverse proxy (extra-conf.d/limit_req.conf),
+# limit_req_status 429 déjà défini globalement par l'image du reverse proxy
+# (/etc/nginx/extra-conf.d/limit_req.conf dans le conteneur, hors de ce repo) :
 # ne pas le redéclarer ici sous peine de "directive is duplicate" au reload nginx.
