@@ -10,7 +10,7 @@ vi.mock("@/common/utils/sentryUtils")
 
 const siret = apiEntrepriseEtablissementFixture.dinum.data.siret
 
-const nockApiEntreprise = (status: number, body: unknown = {}) =>
+const nockApiEntreprise = (status: number, body: nock.Body = {}) =>
   nock("https://entreprise.api.gouv.fr/v3/insee/")
     .get(`/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`)
     .query({
