@@ -96,9 +96,10 @@ export const PAGES = {
       getPath: () => `/metiers` as string,
       title: "Métiers",
       index: false,
+      // Le « 77 » correspond au nombre de secteurs listés dans ui/config/metiers.txt (compteur en dur, cf. note ci-dessous).
       getMetadata: () => ({
-        title: "Métiers en alternance - Découvrez les opportunités sur La bonne alternance",
-        description: "Découvrez plus de 200 métiers accessibles en alternance : commerce, informatique, santé, BTP et bien d'autres. Trouvez la voie qui vous correspond.",
+        title: "Métiers en alternance : 77 secteurs | La bonne alternance",
+        description: "La liste des 77 secteurs qui recrutent en alternance : RH, communication, vente, BTP, santé, informatique… Offres d'emploi et formations du CAP au Master.",
       }),
     },
     // Note : les compteurs des meta ci-dessous sont en dur volontairement.
