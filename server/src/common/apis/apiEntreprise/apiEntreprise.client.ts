@@ -41,6 +41,9 @@ export async function getEtablissementFromGouvSafe(siret: string): Promise<IEtab
       return null
     }
     sentryCaptureException(error)
+    if ([502, 503, 504].includes(status)) {
+      return null
+    }
     throw error
   }
 }
