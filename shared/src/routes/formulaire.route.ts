@@ -6,6 +6,21 @@ import { ZRecruiter, ZRecruiterWithRomeDetailAndApplicationCount } from "../mode
 import { ZPersonNameInput } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 import type { IRoutesDef } from "./common.routes.js"
+import { ZResError } from "./common.routes.js"
+
+const zJobClosingBody = z
+  .object({
+    job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
+    job_status_comment: z.string(),
+    job_status_comment_precision: z.string().optional(),
+    job_recruitment_channel: z.string().optional(),
+  })
+  .strict()
+
+// alreadyClosed : l'offre n'était déjà plus ACTIVE au moment de la requête (ex: lien de clôture utilisé
+// deux fois) — la mise à jour du motif est appliquée quand même, mais le front peut adapter son message.
+const zJobClosingResponse = z.object({ alreadyClosed: z.boolean() }).strict()
+const zInvalidRessourceError = z.object({ status: z.literal("INVALID_RESSOURCE"), message: z.string() }).strict()
 
 export const zFormulaireRoute = {
   get: {
@@ -239,8 +254,10 @@ export const zFormulaireRoute = {
       method: "put",
       path: "/formulaire/offre/:jobId/cancel",
       params: z.object({ jobId: zObjectId }).strict(),
+      body: zJobClosingBody,
       response: {
-        "200": z.object({}).strict(),
+        "200": zJobClosingResponse,
+        "400": z.union([ZResError, zInvalidRessourceError]),
       },
       securityScheme: {
         auth: "access-token",
@@ -254,14 +271,10 @@ export const zFormulaireRoute = {
       method: "put",
       path: "/formulaire/offre/f/:jobId/cancel",
       params: z.object({ jobId: zObjectId }).strict(),
-      body: z
-        .object({
-          job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
-          job_status_comment: z.string(),
-        })
-        .strict(),
+      body: zJobClosingBody,
       response: {
-        "200": z.object({}).strict(),
+        "200": zJobClosingResponse,
+        "400": z.union([ZResError, zInvalidRessourceError]),
       },
       securityScheme: {
         auth: "cookie-session",

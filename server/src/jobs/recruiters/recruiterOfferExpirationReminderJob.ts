@@ -17,7 +17,7 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { createAuthMagicLink, createCancelJobLink, createProlongerOffreLink, createProvidedJobLink } from "@/services/appLinks.service"
+import { createAuthMagicLink, createCloturerOffreMagicLink, createProlongerOffreLink, createProvidedJobLink } from "@/services/appLinks.service"
 import { buildEstablishmentId } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
 
@@ -105,7 +105,13 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
             job_type: job.contract_type.join(", "),
             job_level_label: job.offer_target_diploma?.label ?? "Indifférent",
             job_start_date: dayjs(job.contract_start).format("DD/MM/YYYY"),
-            supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+            supprimer: job.workplace_siret
+              ? createCloturerOffreMagicLink(userWithAccountToUserForToken(contactUser), {
+                  jobId: job._id.toString(),
+                  establishment_id: buildEstablishmentId(contactUser._id, job.workplace_siret),
+                  userType: is_delegated ? CFA : ENTREPRISE,
+                })
+              : createAuthMagicLink(userWithAccountToUserForToken(contactUser)),
             pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             prolonger: job.workplace_siret
               ? createProlongerOffreLink(userWithAccountToUserForToken(contactUser), {
