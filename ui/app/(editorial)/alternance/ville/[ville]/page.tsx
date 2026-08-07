@@ -26,9 +26,12 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
     }
   }
 
+  const totalOffres = (data.job_count + data.recruteur_count).toLocaleString("fr-FR")
+  const totalRecruteurs = data.recruteur_count.toLocaleString("fr-FR")
+
   return {
-    title: `Alternance ${data.ville} : ${data.job_count + data.recruteur_count} Offres | Salaires & Formations ${new Date().getFullYear()}`,
-    description: `${data.job_count + data.recruteur_count} offres d'alternance à ${data.ville}. Salaire moyen 1050€. BTS, Licence Pro, Master. Trouvez votre contrat d'apprentissage en ${data.region}.`,
+    title: `Alternance à ${data.ville} : ${totalOffres} offres | La bonne alternance`,
+    description: `${totalOffres} offres d'alternance à ${data.ville}, dont ${totalRecruteurs} entreprises qui recrutent sans publier d'annonce. Service public gratuit. Infos salaire, logement, transports.`,
   }
 }
 
