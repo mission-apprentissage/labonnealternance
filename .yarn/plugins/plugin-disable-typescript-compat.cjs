@@ -18,7 +18,9 @@ module.exports = {
         reduceDependency: async (dependency) => {
           if (structUtils.stringifyIdent(dependency) !== "typescript") return dependency
 
-          if (!dependency.range.startsWith("patch:")) return dependency
+          // Only strip the builtin compat/typescript patch — leave any other
+          // patch (e.g. a real custom one added later via .yarn/patches) alone.
+          if (!dependency.range.startsWith("patch:") || !dependency.range.includes("builtin<compat/typescript>")) return dependency
 
           const source = dependency.range.match(/^patch:([^#]+)/)?.[1]
 
