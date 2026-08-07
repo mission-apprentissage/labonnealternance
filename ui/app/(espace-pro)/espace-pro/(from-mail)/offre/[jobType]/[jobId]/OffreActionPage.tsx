@@ -3,16 +3,19 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import ClotureRecrutementForm, { type IClotureRecrutementPayload } from "@/app/(espace-pro)/_components/ClotureRecrutementForm"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { cancelOffre, cancelPartnerJob, fillOffre, providedPartnerJob } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
+// Note: l'action "cancel" pour les offres LBA (OFFRES_EMPLOI_LBA) n'est plus déclenchée automatiquement ici,
+// elle passe désormais par le formulaire ClotureRecrutementForm (voir plus bas) qui recueille un motif obligatoire.
 const jobActions = {
   [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: {
-    cancel: cancelOffre,
     provided: fillOffre,
   },
   [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: {
@@ -46,8 +49,16 @@ export function OffreActionPage({
   jobType: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>
 }) {
   const [result, setResult] = useState("")
+  const router = useRouter()
+
+  // Pour les offres LBA, l'annulation passe par le formulaire "Clôturer votre recrutement" (motif obligatoire),
+  // au lieu d'annuler silencieusement l'offre au chargement de la page.
+  const isClotureForm = actionName === "cancel" && jobType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
 
   useEffect(() => {
+    if (isClotureForm) {
+      return
+    }
     if (!jobId || !actionName || !jobType) return
 
     const action = jobActions[jobType]?.[actionName]
@@ -62,7 +73,9 @@ export function OffreActionPage({
     } else {
       setResult("Unsupported action.")
     }
-  }, [jobId, actionName, jobType, token])
+  }, [jobId, actionName, jobType, token, isClotureForm])
+
+  const submitCloture = async (id: string, payload: IClotureRecrutementPayload) => cancelOffre(id, token, payload)
 
   const cssParameters = {
     background: "#fff1e5",
@@ -79,7 +92,7 @@ export function OffreActionPage({
         margin: "auto",
       }}
     >
-      {actionName === "cancel" && (
+      {actionName === "cancel" && !isClotureForm && (
         <Typography component="h1" sx={homeEditorialH1}>
           Annulation de l'offre déposée sur La bonne alternance
         </Typography>
@@ -89,18 +102,37 @@ export function OffreActionPage({
           Modification de l'offre déposée sur La bonne alternance
         </Typography>
       )}
-      {!result && <LoadingEmptySpace label="Chargement en cours..." />}
-      {result && result !== "ok" && (
-        <Box sx={{ display: "flex", alignItems: "center", color: "#4a4a4a", ...cssParameters }}>
-          <Image width="32" style={{ marginRight: fr.spacing("2v") }} src="/images/icons/errorAlert.svg" alt="" />
-          {result}
-        </Box>
+
+      {isClotureForm ? (
+        result === "ok" || result === "already-closed" ? (
+          <Typography component="h2" sx={homeEditorialH2}>
+            {result === "already-closed" ? "Cette offre était déjà clôturée. Votre réponse a bien été enregistrée." : "Votre offre a été modifiée"}
+          </Typography>
+        ) : (
+          <ClotureRecrutementForm
+            offreId={jobId}
+            onSuccess={(cloturationResult) => setResult(cloturationResult?.alreadyClosed ? "already-closed" : "ok")}
+            onCancel={() => router.push(PAGES.static.home.getPath())}
+            submit={submitCloture}
+          />
+        )
+      ) : (
+        <>
+          {!result && <LoadingEmptySpace label="Chargement en cours..." />}
+          {result && result !== "ok" && (
+            <Box sx={{ display: "flex", alignItems: "center", color: "#4a4a4a", ...cssParameters }}>
+              <Image width="32" style={{ marginRight: fr.spacing("2v") }} src="/images/icons/errorAlert.svg" alt="" />
+              {result}
+            </Box>
+          )}
+          {result && result === "ok" && (
+            <Typography component="h2" sx={homeEditorialH2}>
+              Votre offre a été modifiée
+            </Typography>
+          )}
+        </>
       )}
-      {result && result === "ok" && (
-        <Typography component="h2" sx={homeEditorialH2}>
-          Votre offre a été modifiée
-        </Typography>
-      )}
+
       <Box sx={{ mt: fr.spacing("8v") }}>
         Aller sur le site{" "}
         <Link
