@@ -40,14 +40,14 @@ export interface IClotureRecrutementPayload {
   job_status: JOB_STATUS.POURVUE | JOB_STATUS.ANNULEE
   job_status_comment: string
   job_status_comment_precision?: string
-  job_relation_channel?: string
+  job_recruitment_channel?: string
 }
 
 export interface ClotureRecrutementFormProps {
   offreId: string
-  onSuccess: () => void
+  onSuccess: (result?: { alreadyClosed?: boolean }) => void
   onCancel: () => void
-  submit: (offreId: string, payload: IClotureRecrutementPayload) => Promise<unknown>
+  submit: (offreId: string, payload: IClotureRecrutementPayload) => Promise<{ alreadyClosed?: boolean } | unknown>
 }
 
 export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, submit }: ClotureRecrutementFormProps) {
@@ -56,16 +56,16 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
     const estPourvueSansAideLba = motif === motifSansAideLba
     const jobStatus = motifsPourvus.includes(motif) ? JOB_STATUS.POURVUE : JOB_STATUS.ANNULEE
 
-    const job_relation_channel = estPourvueSansAideLba ? (canal === canalAutre ? canalPrecision || undefined : canal) || undefined : undefined
+    const job_recruitment_channel = estPourvueSansAideLba ? (canal === canalAutre ? canalPrecision || undefined : canal) || undefined : undefined
     const job_status_comment_precision = motif === motifAutre ? motifPrecision || undefined : undefined
 
-    await submit(offreId, {
+    const result = await submit(offreId, {
       job_status: jobStatus,
       job_status_comment: motif,
       job_status_comment_precision,
-      job_relation_channel,
+      job_recruitment_channel,
     })
-    onSuccess()
+    onSuccess(result as { alreadyClosed?: boolean } | undefined)
   }
 
   const formik = useFormik({
@@ -93,7 +93,7 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
         <FormikProvider value={formik}>
           <form onSubmit={formik.handleSubmit}>
             <Select
-              label="Motif de la clôture (obligatoire) *"
+              label="Motif (obligatoire)"
               nativeSelectProps={{
                 onChange: async (event) => formik.setFieldValue("motif", event.target.value, true),
                 name: "motif",
@@ -101,7 +101,7 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
               }}
             >
               <option disabled hidden selected value="">
-                Sélectionnez une valeur...
+                Sélectionner un motif
               </option>
               {motifs.map((reason) => (
                 <option key={reason} value={reason}>
@@ -119,7 +119,7 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
                 }}
               >
                 <option disabled hidden selected value="">
-                  Sélectionnez une valeur...
+                  Sélectionner une option
                 </option>
                 {canaux.map((c) => (
                   <option key={c} value={c}>

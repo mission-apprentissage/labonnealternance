@@ -89,7 +89,7 @@ export const OffresTabs = ({
 
   const currentOffre = jobs.find((job) => job._id === currentOfferId)
 
-  const confirmationSuppression = useDisclosure()
+  const confirmationSuppression = useDisclosure(Boolean(searchParams.get("action") === "cloturer" && currentOffre))
   const offreProlongationModalControls = useDisclosure(Boolean(searchParams.get("action") === "prolonger" && currentOffre))
   const toast = useToast()
   const client = useQueryClient()

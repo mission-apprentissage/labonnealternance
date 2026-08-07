@@ -83,7 +83,11 @@ const sendThresholdEmails = async (closedJobs: IJobsPartnersOfferPrivate[]) => {
  * (seuil au-delà duquel on considère que le recruteur n'a plus besoin de nouvelles candidatures),
  * et notifie le recruteur par mail avec un lien vers le formulaire de clôture de recrutement.
  */
-export const closeJobsPartnersOnApplicationThreshold = async () => {
+export const closeJobsPartnersOnApplicationThreshold = async (payload?: { threshold?: string | number }) => {
+  // threshold configurable (CLI --threshold, défaut 80) : permet de tester en preview sans avoir
+  // à créer 80 candidatures réelles sur une offre.
+  const threshold = payload?.threshold !== undefined ? Number(payload.threshold) : APPLICATION_COUNT_THRESHOLD
+
   const activeJobs = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }).toArray()
 
   if (!activeJobs.length) {
@@ -94,10 +98,10 @@ export const closeJobsPartnersOnApplicationThreshold = async () => {
   const applicationCounts = await getApplicationByJobCount(activeJobs.map((job) => job._id))
   const countByJobId = new Map(applicationCounts.map((appCount) => [appCount._id, appCount.count]))
 
-  const jobsToClose = activeJobs.filter((job) => (countByJobId.get(job._id.toString()) ?? 0) >= APPLICATION_COUNT_THRESHOLD)
+  const jobsToClose = activeJobs.filter((job) => (countByJobId.get(job._id.toString()) ?? 0) >= threshold)
 
   if (!jobsToClose.length) {
-    logger.info("closeJobsPartnersOnApplicationThreshold: aucune offre n'a atteint le seuil de candidatures.")
+    logger.info(`closeJobsPartnersOnApplicationThreshold: aucune offre n'a atteint le seuil de ${threshold} candidatures.`)
     return
   }
 
@@ -113,7 +117,7 @@ export const closeJobsPartnersOnApplicationThreshold = async () => {
           offer_status_history: {
             date: now,
             status: JOB_STATUS_ENGLISH.ANNULEE,
-            reason: "seuil de 80 candidatures atteint",
+            reason: `seuil de ${threshold} candidatures atteint`,
             granted_by: "closeJobsPartnersOnApplicationThreshold",
           },
         },
@@ -125,7 +129,7 @@ export const closeJobsPartnersOnApplicationThreshold = async () => {
     }
   })
 
-  logger.info(`closeJobsPartnersOnApplicationThreshold: ${closedJobs.length} offres clôturées (seuil de ${APPLICATION_COUNT_THRESHOLD} candidatures atteint)`)
+  logger.info(`closeJobsPartnersOnApplicationThreshold: ${closedJobs.length} offres clôturées (seuil de ${threshold} candidatures atteint)`)
 
   await sendThresholdEmails(closedJobs)
 }

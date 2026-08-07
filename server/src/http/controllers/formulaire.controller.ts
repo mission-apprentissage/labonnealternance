@@ -413,20 +413,20 @@ export default (server: Server) => {
       if (!exists) {
         return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
-      const { job_status, job_status_comment, job_status_comment_precision, job_relation_channel } = req.body
+      const { job_status, job_status_comment, job_status_comment_precision, job_recruitment_channel } = req.body
       const statusMapping: Record<typeof job_status, JOB_STATUS_ENGLISH> = {
         [JOB_STATUS.POURVUE]: JOB_STATUS_ENGLISH.POURVUE,
         [JOB_STATUS.ANNULEE]: JOB_STATUS_ENGLISH.ANNULEE,
       }
-      await closeOffreWithMotif({
+      const { alreadyClosed } = await closeOffreWithMotif({
         id: jobId,
         offer_status: statusMapping[job_status],
         job_status_comment,
         job_status_comment_precision,
-        job_relation_channel,
+        job_recruitment_channel,
       })
       await validateUserEmailFromJobId(jobId)
-      return res.status(200).send({})
+      return res.status(200).send({ alreadyClosed })
     }
   )
 
@@ -444,19 +444,19 @@ export default (server: Server) => {
       if (!exists) {
         return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
-      const { job_status, job_status_comment, job_status_comment_precision, job_relation_channel } = req.body
+      const { job_status, job_status_comment, job_status_comment_precision, job_recruitment_channel } = req.body
       const statusMapping: Record<typeof job_status, JOB_STATUS_ENGLISH> = {
         [JOB_STATUS.POURVUE]: JOB_STATUS_ENGLISH.POURVUE,
         [JOB_STATUS.ANNULEE]: JOB_STATUS_ENGLISH.ANNULEE,
       }
-      await closeOffreWithMotif({
+      const { alreadyClosed } = await closeOffreWithMotif({
         job_status_comment,
         job_status_comment_precision,
-        job_relation_channel,
+        job_recruitment_channel,
         offer_status: statusMapping[job_status],
         id: req.params.jobId,
       })
-      return res.status(200).send({})
+      return res.status(200).send({ alreadyClosed })
     }
   )
 

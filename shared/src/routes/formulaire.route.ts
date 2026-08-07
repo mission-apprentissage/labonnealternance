@@ -12,9 +12,14 @@ const zJobClosingBody = z
     job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
     job_status_comment: z.string(),
     job_status_comment_precision: z.string().optional(),
-    job_relation_channel: z.string().optional(),
+    job_recruitment_channel: z.string().optional(),
   })
   .strict()
+
+// alreadyClosed : l'offre n'était déjà plus ACTIVE au moment de la requête (ex: lien de clôture utilisé
+// deux fois) — la mise à jour du motif est appliquée quand même, mais le front peut adapter son message.
+const zJobClosingResponse = z.object({ alreadyClosed: z.boolean() }).strict()
+const zInvalidRessourceError = z.object({ status: z.literal("INVALID_RESSOURCE"), message: z.string() }).strict()
 
 export const zFormulaireRoute = {
   get: {
@@ -250,7 +255,8 @@ export const zFormulaireRoute = {
       params: z.object({ jobId: zObjectId }).strict(),
       body: zJobClosingBody,
       response: {
-        "200": z.object({}).strict(),
+        "200": zJobClosingResponse,
+        "400": zInvalidRessourceError,
       },
       securityScheme: {
         auth: "access-token",
@@ -266,7 +272,8 @@ export const zFormulaireRoute = {
       params: z.object({ jobId: zObjectId }).strict(),
       body: zJobClosingBody,
       response: {
-        "200": z.object({}).strict(),
+        "200": zJobClosingResponse,
+        "400": zInvalidRessourceError,
       },
       securityScheme: {
         auth: "cookie-session",

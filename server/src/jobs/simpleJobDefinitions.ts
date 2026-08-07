@@ -345,6 +345,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: closeJobsPartnersOnApplicationThreshold,
     description: "Clôture les offres jobs_partners ayant atteint le seuil de 80 candidatures",
+    cliOptions: [{ flags: "--threshold <n>", description: "Seuil de candidatures à utiliser pour ce run (défaut 80, utile pour tester en preview)" }],
   },
   {
     fct: classifyRomesForDomainesMetiers,

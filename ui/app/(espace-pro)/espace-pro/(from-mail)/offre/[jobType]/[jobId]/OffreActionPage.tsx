@@ -75,9 +75,7 @@ export function OffreActionPage({
     }
   }, [jobId, actionName, jobType, token, isClotureForm])
 
-  const submitCloture = async (id: string, payload: IClotureRecrutementPayload) => {
-    await cancelOffre(id, token, payload)
-  }
+  const submitCloture = async (id: string, payload: IClotureRecrutementPayload) => cancelOffre(id, token, payload)
 
   const cssParameters = {
     background: "#fff1e5",
@@ -106,12 +104,17 @@ export function OffreActionPage({
       )}
 
       {isClotureForm ? (
-        result === "ok" ? (
+        result === "ok" || result === "already-closed" ? (
           <Typography component="h2" sx={homeEditorialH2}>
-            Votre offre a été modifiée
+            {result === "already-closed" ? "Cette offre était déjà clôturée. Votre réponse a bien été enregistrée." : "Votre offre a été modifiée"}
           </Typography>
         ) : (
-          <ClotureRecrutementForm offreId={jobId} onSuccess={() => setResult("ok")} onCancel={() => router.push(PAGES.static.home.getPath())} submit={submitCloture} />
+          <ClotureRecrutementForm
+            offreId={jobId}
+            onSuccess={(cloturationResult) => setResult(cloturationResult?.alreadyClosed ? "already-closed" : "ok")}
+            onCancel={() => router.push(PAGES.static.home.getPath())}
+            submit={submitCloture}
+          />
         )
       ) : (
         <>

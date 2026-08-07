@@ -675,15 +675,18 @@ export const closeOffreWithMotif = async ({
   offer_status,
   job_status_comment,
   job_status_comment_precision,
-  job_relation_channel,
+  job_recruitment_channel,
 }: {
   id: ObjectId
   offer_status: JOB_STATUS_ENGLISH
   job_status_comment: string
   job_status_comment_precision?: string
-  job_relation_channel?: string
-}): Promise<void> => {
+  job_recruitment_channel?: string
+}): Promise<{ alreadyClosed: boolean }> => {
   const now = new Date()
+  // returnDocument: "before" pour savoir si l'offre était déjà clôturée avant cette requête
+  // (ex: lien de clôture cliqué deux fois) — la mise à jour est appliquée dans tous les cas,
+  // le motif reste une donnée utile même sur une offre déjà close.
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
     { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
     {
@@ -693,17 +696,18 @@ export const closeOffreWithMotif = async ({
         offer_expiration: now,
         job_status_comment,
         job_status_comment_precision,
-        job_relation_channel,
+        job_recruitment_channel,
       },
     },
     {
-      returnDocument: "after",
+      returnDocument: "before",
     }
   )
   if (!found) {
     throw new Error(`could not find lba offer with id=${id}`)
   }
   syncJobPartnersToSearchItemsInBackground([id])
+  return { alreadyClosed: found.offer_status !== JOB_STATUS_ENGLISH.ACTIVE }
 }
 
 /**

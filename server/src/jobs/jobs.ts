@@ -105,7 +105,7 @@ export async function setupJobProcessor() {
           },
           "Clôture des offres jobs_partners au seuil de candidatures": {
             cron_string: "*/30 * * * *",
-            handler: closeJobsPartnersOnApplicationThreshold,
+            handler: async () => closeJobsPartnersOnApplicationThreshold(),
             tag: "main",
           },
           "Mise à jour des adresses emails bloquées": {
