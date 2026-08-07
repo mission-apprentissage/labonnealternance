@@ -221,7 +221,7 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
         {
           path: "/salaire-alternant",
           label: "Simulateur de salaire en alternance",
-          description: "Simulateur de salaire en alternance : calcul de la rémunération mensuelle brut et net selon l'âge, le contrat et l'année de formation.",
+          description: "Simulateur de salaire en alternance : calcul de la rémunération mensuelle brute et nette selon l'âge, le contrat et l'année de formation.",
         },
       ],
     },
