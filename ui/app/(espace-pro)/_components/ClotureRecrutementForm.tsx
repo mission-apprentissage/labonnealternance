@@ -83,73 +83,81 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
   const { motif, canal } = formik.values
 
   return (
-    <Box>
-      <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
-        Clôturer votre recrutement
-      </Typography>
+    <FormikProvider value={formik}>
+      {/* Figma (mode dev) : la modale empile ses éléments dans un flex column avec un gap fixe de 16px (fr.spacing("4v")),
+          au lieu des marges par défaut de DSFR (24px entre deux .fr-select-group / .fr-input-group consécutifs). */}
+      <Box
+        component="form"
+        onSubmit={formik.handleSubmit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: fr.spacing("4v"),
+          "& .fr-select-group, & .fr-input-group": { marginBottom: "0 !important" },
+        }}
+      >
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} component="h2" sx={{ mb: 0 }}>
+          Clôturer votre recrutement
+        </Typography>
 
-      <Box sx={{ pb: fr.spacing("4v") }}>
-        <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>Vous ne recevrez plus de candidatures.</Typography>
-        <FormikProvider value={formik}>
-          <form onSubmit={formik.handleSubmit}>
-            <Select
-              label="Motif (obligatoire)"
-              nativeSelectProps={{
-                onChange: async (event) => formik.setFieldValue("motif", event.target.value, true),
-                name: "motif",
-                required: true,
-              }}
-            >
-              <option disabled hidden selected value="">
-                Sélectionner un motif
+        <Typography sx={{ color: "#3A3A3A", lineHeight: "24px" }}>Vous ne recevrez plus de candidatures.</Typography>
+
+        <Select
+          label="Motif (obligatoire)"
+          nativeSelectProps={{
+            onChange: async (event) => formik.setFieldValue("motif", event.target.value, true),
+            name: "motif",
+            required: true,
+          }}
+        >
+          <option disabled hidden selected value="">
+            Sélectionner un motif
+          </option>
+          {motifs.map((reason) => (
+            <option key={reason} value={reason}>
+              {reason}
+            </option>
+          ))}
+        </Select>
+
+        {motif === motifSansAideLba && (
+          <Select
+            label="Comment avez-vous pourvu votre offre ? (Facultatif)"
+            nativeSelectProps={{
+              onChange: async (event) => formik.setFieldValue("canal", event.target.value, true),
+              name: "canal",
+            }}
+          >
+            <option disabled hidden selected value="">
+              Sélectionner une option
+            </option>
+            {canaux.map((c) => (
+              <option key={c} value={c}>
+                {c}
               </option>
-              {motifs.map((reason) => (
-                <option key={reason} value={reason}>
-                  {reason}
-                </option>
-              ))}
-            </Select>
+            ))}
+          </Select>
+        )}
 
-            {motif === motifSansAideLba && (
-              <Select
-                label="Comment avez-vous pourvu votre offre ? (Facultatif)"
-                nativeSelectProps={{
-                  onChange: async (event) => formik.setFieldValue("canal", event.target.value, true),
-                  name: "canal",
-                }}
-              >
-                <option disabled hidden selected value="">
-                  Sélectionner une option
-                </option>
-                {canaux.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </Select>
-            )}
+        {motif === motifSansAideLba && canal === canalAutre && (
+          <CustomInput label="Par quel autre moyen avez-vous pourvu l'offre ? (Facultatif)" name="canalPrecision" required={false} pb={0} />
+        )}
 
-            {motif === motifSansAideLba && canal === canalAutre && (
-              <CustomInput label="Par quel autre moyen avez-vous pourvu l'offre ? (Facultatif)" name="canalPrecision" required={false} />
-            )}
+        {motif === motifAutre && <CustomInput label="Précisez votre motif (Facultatif)" name="motifPrecision" required={false} pb={0} />}
 
-            {motif === motifAutre && <CustomInput label="Précisez votre motif (Facultatif)" name="motifPrecision" required={false} />}
-
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("6v") }}>
-              <Box sx={{ ml: fr.spacing("3v") }}>
-                <Button type="button" priority="secondary" onClick={() => onCancel()}>
-                  Annuler
-                </Button>
-              </Box>
-              <Box sx={{ ml: fr.spacing("3v") }}>
-                <Button type="submit" disabled={!formik.dirty || !formik.isValid}>
-                  Confirmer
-                </Button>
-              </Box>
-            </Box>
-          </form>
-        </FormikProvider>
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box sx={{ ml: fr.spacing("3v") }}>
+            <Button type="button" priority="secondary" onClick={() => onCancel()}>
+              Annuler
+            </Button>
+          </Box>
+          <Box sx={{ ml: fr.spacing("3v") }}>
+            <Button type="submit" disabled={!formik.dirty || !formik.isValid}>
+              Confirmer
+            </Button>
+          </Box>
+        </Box>
       </Box>
-    </Box>
+    </FormikProvider>
   )
 }
