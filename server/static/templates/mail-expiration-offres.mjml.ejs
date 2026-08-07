@@ -96,8 +96,12 @@
               Connectez-vous à votre espace afin de gérer vos offres :
               <br />
             </mj-text>
-              <mj-button href="<%= data.connectionUrl %>" align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 0px 0px" width="123px">
-              Me connecter
+            <mj-button href="<%= offre.supprimer %>" align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px" width="180px">
+              Dépublier mon offre
+            </mj-button>
+            <mj-spacer width="16px"></mj-spacer>
+            <mj-button href="<%= offre.prolonger %>" align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px" width="180px">
+              Prolonger mon offre
             </mj-button>
           </mj-column>
         </mj-group>
@@ -131,16 +135,6 @@
               <br />
               <span style="font-weight: 700;"><%= offre.job_type %></span>
               <br /><br />
-
-              <a href="<%= offre.prolonger %>" style="text-decoration: underline; color: inherit;">
-                Prolonger mon offre
-              </a>
-              <br />
-              <br />
-              <a href="<%= offre.supprimer %>" style="text-decoration: underline; color: inherit;">
-                Dépublier mon offre
-              </a>
-              <br />
             </mj-text>
           </mj-column>
         </mj-group>
