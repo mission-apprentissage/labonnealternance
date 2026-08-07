@@ -2,10 +2,6 @@ name: CI
 
 on:
   workflow_call:
-    secrets:
-      CODECOV_TOKEN:
-        description: Code coverrage token
-        required: true
 jobs:
   npm-packages-check:
     runs-on: ubuntu-latest
@@ -38,7 +34,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 26
           cache: "yarn"
 
       - name: Install dependencies
@@ -76,8 +72,3 @@ jobs:
 
       - name: test
         run: yarn test:ci
-
-      - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}

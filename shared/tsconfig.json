@@ -18,6 +18,9 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": false,
+    "types": [
+      "node"
+    ],
     "jsx": "react",
     "noErrorTruncation": true,
     "noUncheckedSideEffectImports": true
