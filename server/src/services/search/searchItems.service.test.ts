@@ -9,6 +9,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import {
+  controlSearchItemsDrift,
   dedupeRepeatedTitle,
   removeJobPartnersFromSearchItems,
   resetSearchItemBuildContextCache,
@@ -192,6 +193,25 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
 
       expect(result.removed).toBe(1)
       expect(await getDbCollection("search_items").countDocuments({ _id: job._id })).toBe(0)
+    })
+  })
+
+  describe("controlSearchItemsDrift", () => {
+    it("ne compte que les recruteurs LBA actifs dans le volume attendu", async () => {
+      const recruteurActif = generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+      const recruteurInactif = generateJobsPartnersOfferPrivate({
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      })
+      await getDbCollection("jobs_partners").insertMany([recruteurActif, recruteurInactif])
+      // Seul le recruteur actif est indexé : le recruteur annulé n'a jamais été (ou plus) dans search_items.
+      await upsertJobPartnersToSearchItems([recruteurActif._id, recruteurInactif._id])
+
+      const result = await controlSearchItemsDrift()
+
+      expect(result.expectedRecruteurs).toBe(1)
+      expect(result.indexedRecruteurs).toBe(1)
+      expect(result.drift).toBe(false)
     })
   })
 })
