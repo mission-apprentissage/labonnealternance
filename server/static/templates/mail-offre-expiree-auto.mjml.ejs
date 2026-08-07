@@ -1,4 +1,3 @@
-<% var dansXjours = data.threshold === 1 ? 'demain' : 'dans '+data.threshold+' jours' %>
 <% var offre = data.offres[0] %>
 <mjml>
   <mj-head>
@@ -61,7 +60,7 @@
       .column > table { border-collapse: separate; }
     </mj-style>
   </mj-head>
-  <mj-body background-color="#f5f5fe" name="Entreprise - Rappel " width="800px">
+  <mj-body background-color="#f5f5fe" name="Entreprise - Offre expirée" width="800px">
     <mj-column border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
       <mj-section border-radius="0px" css-class="section">
         <mj-group>
@@ -85,57 +84,20 @@
       </mj-spacer>
       <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" padding="23px"vertical-align="middle" width="100%">
+          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 16px 0px">
               Bonjour <%= data.first_name %> <%= data.last_name %>,
               <br />
               <br />
-              L’offre d’alternance que vous avez publiée pour <span style="font-weight: 700;"><%= data.establishment_raison_sociale %></span><% if (offre.workplace_siret) { %>, SIRET <span style="font-weight: 700;"><%= offre.workplace_siret %></span><% } %> expire <%= dansXjours %>.
+              Votre offre d'alternance <span style="font-weight: 700;"><%= offre.job_title %></span> pour l'établissement <span style="font-weight: 700;"><%= data.establishment_raison_sociale %></span> a expiré et n'est plus visible sur le site La bonne alternance.
               <br />
               <br />
-              Connectez-vous à votre espace afin de gérer vos offres :
+              Afin de mesurer l'utilité de notre service, pouvez-vous nous indiquer où en est votre recrutement ?
               <br />
             </mj-text>
-            <mj-button href="<%= offre.supprimer %>" align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px" width="180px">
-              Dépublier mon offre
+              <mj-button href="<%= offre.cloturer %>" align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 0px 0px" width="200px">
+              Clôturer mon recrutement
             </mj-button>
-            <mj-spacer width="16px"></mj-spacer>
-            <mj-button href="<%= offre.prolonger %>" align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px" width="180px">
-              Prolonger mon offre
-            </mj-button>
-          </mj-column>
-        </mj-group>
-      </mj-section>
-      <mj-spacer height="24px">
-
-      </mj-spacer>
-      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
-        <mj-group>
-          <mj-column border-radius="0px" css-class="column" padding="11px 23px" vertical-align="middle" width="100%">
-            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="10px 0px 10px 0px">
-              Rappel de l’offre
-              <br />
-            </mj-text>
-
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 0px 0px">
-
-              <% if (offre.job_title) { %>
-              Titre :
-              <br />
-              <span style="font-weight: 700;"><%= offre.job_title %></span>
-              <br /><br />
-              <% } %>
-
-              Métier :
-              <br />
-              <span style="font-weight: 700;"><%= offre.rome_appellation_label %></span>
-              <br /><br />
-
-              Type :
-              <br />
-              <span style="font-weight: 700;"><%= offre.job_type %></span>
-              <br /><br />
-            </mj-text>
           </mj-column>
         </mj-group>
       </mj-section>

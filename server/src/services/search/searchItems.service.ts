@@ -562,7 +562,7 @@ const DRIFT_RELATIVE_THRESHOLD = 0.01
 export const controlSearchItemsDrift = async () => {
   const [expectedOffers, expectedRecruteurs, indexedOffers, indexedRecruteurs] = await Promise.all([
     getDbCollection("jobs_partners").countDocuments({ partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, offer_status: JOB_STATUS_ENGLISH.ACTIVE }),
-    getDbCollection("jobs_partners").countDocuments({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }),
+    getDbCollection("jobs_partners").countDocuments({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }),
     getDbCollection("search_items").countDocuments({ type: "offre", sub_type: { $ne: LBA_ITEM_TYPE.RECRUTEURS_LBA } }),
     getDbCollection("search_items").countDocuments({ sub_type: LBA_ITEM_TYPE.RECRUTEURS_LBA }),
   ])

@@ -3,7 +3,7 @@ import { mockApiBal } from "@tests/mocks/mockApiBal"
 import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
 import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import type { TestHttpClient } from "@tests/utils/server.test.utils"
-import { type IJobCreate, type IUserWithAccount, JOB_START_TYPE } from "shared"
+import { type IJobCreate, type IUserWithAccount, JOB_START_TYPE, JOB_STATUS } from "shared"
 import { ENTREPRISE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
@@ -105,7 +105,15 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
     })
     return response
   },
-  async cancelOffer({ jobId, user }: { jobId: string; user: IUserWithAccount }) {
+  async cancelOffer({
+    jobId,
+    user,
+    body = { job_status: JOB_STATUS.ANNULEE, job_status_comment: "Je ne suis plus en recherche" },
+  }: {
+    jobId: string
+    user: IUserWithAccount
+    body?: z.input<(typeof zRoutes)["put"]["/formulaire/offre/:jobId/cancel"]["body"]>
+  }) {
     const url = createCancelJobLink(userWithAccountToUserForToken(user), jobId, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
     const token = new URL(url).searchParams.get("token")
 
@@ -115,6 +123,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      body,
     })
     return response
   },
