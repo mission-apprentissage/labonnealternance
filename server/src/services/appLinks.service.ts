@@ -55,6 +55,34 @@ export const createProlongerOffreLink = (
   return `${config.publicUrl}/espace-pro/authentification?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent(redirectPath)}`
 }
 
+/**
+ * Lien magique connectant le recruteur puis le redirigeant vers son tableau de bord avec la modale
+ * "Clôturer votre recrutement" ouverte sur l'offre concernée (au lieu d'exécuter l'action côté serveur
+ * sans passer par la saisie d'un motif).
+ */
+export const createCloturerOffreMagicLink = (
+  user: UserForAccessToken,
+  { establishment_id, jobId, userType }: { establishment_id: string; jobId: string; userType: typeof CFA | typeof ENTREPRISE }
+) => {
+  const token = generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.post["/login/verification"],
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+  const redirectPath = userType === CFA ? `/espace-pro/cfa/entreprise/${establishment_id}?action=cloturer&jobId=${jobId}` : `/espace-pro/entreprise?action=cloturer&jobId=${jobId}`
+  return `${config.publicUrl}/espace-pro/authentification?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent(redirectPath)}`
+}
+
 export function createValidationMagicLink(user: IUserWithAccountForAccessToken) {
   const token = generateAccessToken(
     user,

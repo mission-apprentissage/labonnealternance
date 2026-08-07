@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.7/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -29,7 +29,8 @@
       "!.infra/local/mongo_keyfile",
       "!.infra/env.*.yml",
       "!.infra/authorizations/*",
-      "!.infra/inventories/*"
+      "!.infra/inventories/*",
+      "!**/*.svg"
     ]
   },
   "linter": {
@@ -203,7 +204,8 @@
       "!**/tmp",
       "!**/venv",
       "!**/CLAUDE.md",
-      "!.yarn"
+      "!.yarn",
+      "!**/*.svg"
     ]
   },
   "javascript": {
@@ -238,6 +240,20 @@
     }
   },
   "overrides": [
+    {
+      "includes": [
+        "**/*.svg"
+      ],
+      "formatter": {
+        "enabled": false
+      },
+      "linter": {
+        "enabled": false
+      },
+      "assist": {
+        "enabled": false
+      }
+    },
     {
       "includes": [
         "**/*.ts",

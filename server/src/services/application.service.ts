@@ -33,10 +33,11 @@ import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import type { UserForAccessToken } from "@/security/accessTokenService"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
+import { createCancelJobLink, createCloturerOffreMagicLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import type { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
+import { buildEstablishmentId } from "./etablissement.service"
 import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import mailer from "./mailer.service"
 import { syncJobPartnersToSearchItemsInBackground } from "./search/searchItems.service"
@@ -405,12 +406,14 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
 
   let user: IUserWithAccount | undefined
   let jobPartnerLabel = ""
+  let lbaJob: IJobsPartnersOfferPrivate | undefined
   if (application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const jobOrCompany = await getJobOrCompany(application)
     if (jobOrCompany.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
       throw internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
     }
     const { job } = jobOrCompany
+    lbaJob = job
     const { managed_by } = job
     if (managed_by) {
       user = await getUserManagingOffer({ _id: job._id, managed_by })
@@ -437,7 +440,18 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
   if (application.job_id) {
     urls.jobUrl = `${config.publicUrl}${buildJobUrlPath(application.job_origin, application.job_id.toString())}${utmRecruiterData}`
     urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
-    urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
+    // Pour une offre LBA gérée par un recruteur identifié, on privilégie le lien qui connecte le recruteur
+    // et ouvre la modale "Clôturer votre recrutement" sur son tableau de bord (motif obligatoire).
+    // Sinon (offre partenaire, ou offre LBA sans gestionnaire identifié) on garde l'ancien lien par jeton,
+    // qui exécute l'action directement sur une page autonome.
+    urls.cancelJobUrl =
+      user && lbaJob?.workplace_siret
+        ? createCloturerOffreMagicLink(userWithAccountToUserForToken(user), {
+            jobId: application.job_id.toString(),
+            establishment_id: buildEstablishmentId(user._id, lbaJob.workplace_siret),
+            userType: lbaJob.is_delegated ? CFA : ENTREPRISE,
+          })
+        : createCancelJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
   }
 
   return urls

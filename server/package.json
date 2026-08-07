@@ -7,7 +7,7 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=20",
+    "node": ">=24",
     "npm": "please-use-yarn"
   },
   "scripts": {
@@ -15,7 +15,7 @@
     "build:dev": "tsup-node",
     "dev": "tsup-node --env.TSUP_WATCH true",
     "build": "tsup-node --env.NODE_ENV production",
-    "seed:reference": "dotenv ts-node-esm src/jobs/seed/candidat.seed.ts",
+    "seed:reference": "dotenv tsx src/jobs/seed/candidat.seed.ts",
     "typecheck": "tsc -b"
   },
   "dependencies": {
@@ -101,7 +101,7 @@
     "@types/string-similarity": "^4.0.2",
     "nock": "14.0.10",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.2",
     "zod-fixture": "^2.5.2"
   },
   "files": [

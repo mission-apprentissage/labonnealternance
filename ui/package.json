@@ -41,7 +41,7 @@
     "match-sorter": "^8.1.0",
     "mersenne-twister": "^1.1.0",
     "motion": "^12.23.24",
-    "next": "^16.2.6",
+    "next": "^16.3.0",
     "next-plausible": "^3.12.5",
     "next-recompose-plugins": "^3.0.1",
     "notion-client": "7.10.0",
@@ -73,7 +73,7 @@
     "dotenv": "^17.2.3",
     "sass": "^1.93.3",
     "type-fest": "^5.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   },
   "resolutions": {
     "@types/react": "19.2.6"

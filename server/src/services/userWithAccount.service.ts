@@ -86,7 +86,7 @@ export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"], 
   }
   const grantedRoles = await getGrantedRoles(userOpt._id.toString())
   const entrepriseRoles = grantedRoles.filter((role) => role.authorized_type === AccessEntityType.ENTREPRISE)
-  await asyncForEach(entrepriseRoles, async (role) => checkForJobActivations(userOpt._id, new ObjectId(role.authorized_id)))
+  await asyncForEach(entrepriseRoles, (role) => checkForJobActivations(userOpt._id, new ObjectId(role.authorized_id)))
   return newUser
 }
 

@@ -680,41 +680,47 @@ export const provideOffre = async (id: ObjectId): Promise<void> => {
 }
 
 /**
- * @description Cancel job from transaction email
+ * @description Clôture une offre (POURVUE ou ANNULEE) avec un motif de clôture, quelle que soit l'origine
+ * (mail transactionnel via magic-link, ou interface d'admin/dashboard)
  */
-export const cancelOffre = async (id: ObjectId): Promise<void> => {
-  const now = new Date()
-  const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
-    { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now, offer_expiration: now } }
-  )
-  if (!found) {
-    throw new Error(`could not find lba offer with id=${id}`)
-  }
-  syncJobPartnersToSearchItemsInBackground([id])
-}
-
-export const cancelOffreFromAdminInterface = async ({
+export const closeOffreWithMotif = async ({
   id,
   offer_status,
   job_status_comment,
+  job_status_comment_precision,
+  job_recruitment_channel,
 }: {
   id: ObjectId
   offer_status: JOB_STATUS_ENGLISH
   job_status_comment: string
-}): Promise<void> => {
+  job_status_comment_precision?: string
+  job_recruitment_channel?: string
+}): Promise<{ alreadyClosed: boolean }> => {
   const now = new Date()
+  // returnDocument: "before" pour savoir si l'offre était déjà clôturée avant cette requête
+  // (ex: lien de clôture cliqué deux fois) — la mise à jour est appliquée dans tous les cas,
+  // le motif reste une donnée utile même sur une offre déjà close.
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
     { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
-    { $set: { offer_status, updated_at: now, offer_expiration: now, job_status_comment } },
     {
-      returnDocument: "after",
+      $set: {
+        offer_status,
+        updated_at: now,
+        offer_expiration: now,
+        job_status_comment,
+        job_status_comment_precision,
+        job_recruitment_channel,
+      },
+    },
+    {
+      returnDocument: "before",
     }
   )
   if (!found) {
     throw new Error(`could not find lba offer with id=${id}`)
   }
   syncJobPartnersToSearchItemsInBackground([id])
+  return { alreadyClosed: found.offer_status !== JOB_STATUS_ENGLISH.ACTIVE }
 }
 
 /**

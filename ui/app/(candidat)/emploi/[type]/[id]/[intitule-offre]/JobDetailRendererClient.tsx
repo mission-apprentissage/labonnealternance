@@ -149,7 +149,7 @@ function JobDetail({
   })()
   const handleClose = betaNavigation ? betaNavigation.handleClose : () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
-  const [firstNaf] = selectedItem?.nafs as ILbaItemNaf[]
+  const [firstNaf] = (selectedItem.nafs ?? []) as ILbaItemNaf[]
   const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && firstNaf ? firstNaf.label : selectedItem.title
 
   useEffect(() => {
