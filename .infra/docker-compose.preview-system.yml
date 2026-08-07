@@ -187,7 +187,7 @@ services:
 
   metabase:
     <<: *default
-    image: metabase/metabase:v0.63.1.4
+    image: metabase/metabase:v0.63.5
     container_name: lba_metabase
     deploy:
       resources:
