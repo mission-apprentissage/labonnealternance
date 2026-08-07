@@ -122,7 +122,7 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
 
         {motif === motifSansAideLba && (
           <Select
-            label="Comment avez-vous pourvu votre offre ? (Facultatif)"
+            label="Comment avez-vous pourvu votre offre ? (facultatif)"
             nativeSelectProps={{
               onChange: async (event) => formik.setFieldValue("canal", event.target.value, true),
               name: "canal",
@@ -140,10 +140,10 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
         )}
 
         {motif === motifSansAideLba && canal === canalAutre && (
-          <CustomInput label="Par quel autre moyen avez-vous pourvu l'offre ? (Facultatif)" name="canalPrecision" required={false} pb={0} />
+          <CustomInput label="Par quel autre moyen avez-vous pourvu l'offre ? (facultatif)" name="canalPrecision" required={false} pb={0} />
         )}
 
-        {motif === motifAutre && <CustomInput label="Précisez votre motif (Facultatif)" name="motifPrecision" required={false} pb={0} />}
+        {motif === motifAutre && <CustomInput label="Précisez votre motif (facultatif)" name="motifPrecision" required={false} pb={0} />}
 
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Box sx={{ ml: fr.spacing("3v") }}>
