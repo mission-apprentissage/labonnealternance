@@ -6,6 +6,7 @@ import { ZRecruiter, ZRecruiterWithRomeDetailAndApplicationCount } from "../mode
 import { ZPersonNameInput } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 import type { IRoutesDef } from "./common.routes.js"
+import { ZResError } from "./common.routes.js"
 
 const zJobClosingBody = z
   .object({
@@ -256,7 +257,7 @@ export const zFormulaireRoute = {
       body: zJobClosingBody,
       response: {
         "200": zJobClosingResponse,
-        "400": zInvalidRessourceError,
+        "400": z.union([ZResError, zInvalidRessourceError]),
       },
       securityScheme: {
         auth: "access-token",
@@ -273,7 +274,7 @@ export const zFormulaireRoute = {
       body: zJobClosingBody,
       response: {
         "200": zJobClosingResponse,
-        "400": zInvalidRessourceError,
+        "400": z.union([ZResError, zInvalidRessourceError]),
       },
       securityScheme: {
         auth: "cookie-session",
