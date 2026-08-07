@@ -10,7 +10,7 @@ import { getStaticMetiers } from "@/utils/getStaticData"
 import { getHostFromHeader } from "@/utils/requestUtils"
 
 // Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
-export const mainSitemapLastModificationDate = new Date("2026-06-03T00:00:00.000Z")
+export const mainSitemapLastModificationDate = new Date("2026-08-06T00:00:00.000Z")
 
 // Une page référencée à la fois dans le sitemap et dans le llms.txt.
 // `label` et `description` ne servent qu'au llms.txt (le sitemap n'utilise que le path).
@@ -213,6 +213,17 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
         label: job.name,
         description: `Fiche métier ${job.name} : missions, formations et offres en alternance.`,
       })),
+    },
+    {
+      title: "Salaire en alternance",
+      priority: 0.9,
+      pages: [
+        {
+          path: "/salaire-alternant",
+          label: "Simulateur de salaire en alternance",
+          description: "Simulateur de salaire en alternance : calcul de la rémunération mensuelle brute et nette selon l'âge, le contrat et l'année de formation.",
+        },
+      ],
     },
   ]
 }

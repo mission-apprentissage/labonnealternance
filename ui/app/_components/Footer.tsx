@@ -43,6 +43,12 @@ const linkListContent: LinkCategory[] = [
       },
       {
         linkProps: {
+          href: PAGES.static.guideAlternantComprendreLaRemuneration.getPath(),
+        },
+        text: "Salaire en alternance",
+      },
+      {
+        linkProps: {
           href: PAGES.static.guideRecruteur.getPath(),
         },
         text: "Guide recruteur",
