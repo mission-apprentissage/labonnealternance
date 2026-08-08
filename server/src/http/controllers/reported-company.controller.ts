@@ -1,7 +1,7 @@
 import { zRoutes } from "shared"
 
 import type { Server } from "@/http/server"
-import { reportCompany } from "@/services/reportedCompany.service"
+import { reportCompany } from "@/services/reported-company.service"
 
 export default (server: Server) => {
   server.post(

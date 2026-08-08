@@ -5,7 +5,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import mailer from "./mailer.service"
-import { getEntrepriseHandiEngagement } from "./referentielEngagementEntreprise.service"
+import { getEntrepriseHandiEngagement } from "./referentiel-engagement-entreprise.service"
 
 export async function sendEngagementHandicapEmailIfNeeded(user: IUserWithAccount, role: IRoleManagement): Promise<void> {
   if (role.authorized_type !== AccessEntityType.ENTREPRISE) return

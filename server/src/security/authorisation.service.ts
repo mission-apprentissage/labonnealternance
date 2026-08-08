@@ -17,8 +17,8 @@ import type { Primitive } from "type-fest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getApplicantFromDB } from "@/services/applicant.service"
 import { establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
-import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
-import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
+import { getComputedUserAccess, getGrantedRoles } from "@/services/role-management.service"
+import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/user-with-account.service"
 import { getUserFromRequest } from "./authentication.service"
 
 type JobResource = { job: IJobsPartnersOfferPrivate; entreprise?: IEntreprise; cfa?: ICFA }

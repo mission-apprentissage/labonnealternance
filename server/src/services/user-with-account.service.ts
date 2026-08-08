@@ -10,8 +10,8 @@ import { assertUnreachable, getLastStatusEvent } from "shared/utils/index"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { checkForJobActivations } from "./formulaire.service"
-import { getGrantedRoles } from "./roleManagement.service"
-import { createAdminUser, createOpcoUser } from "./userRecruteur.service"
+import { getGrantedRoles } from "./role-management.service"
+import { createAdminUser, createOpcoUser } from "./user-recruteur.service"
 
 export const findOrCreateUserWithAccount = async (
   userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,

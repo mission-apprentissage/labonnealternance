@@ -15,8 +15,8 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getEntrepriseDataFromSiret } from "@/services/etablissement.service"
 import { archiveFormulaire, sendMailNouvelleOffre } from "@/services/formulaire.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
-import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
-import { setEntrepriseInError } from "@/services/userRecruteur.service"
+import { sendDeactivatedRecruteurMail } from "@/services/role-management.service"
+import { setEntrepriseInError } from "@/services/user-recruteur.service"
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await getDbCollection("entreprises")

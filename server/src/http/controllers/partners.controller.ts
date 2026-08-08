@@ -1,7 +1,7 @@
 import { zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
-import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligible-trainings-for-appointment.service"
 import type { Server } from "../server"
 
 /**

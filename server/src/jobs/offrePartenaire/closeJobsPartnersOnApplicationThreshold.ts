@@ -13,7 +13,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { createCancelJobLink } from "@/services/appLinks.service"
+import { createCancelJobLink } from "@/services/app-links.service"
 import { getApplicationByJobCount } from "@/services/application.service"
 import mailer from "@/services/mailer.service"
 

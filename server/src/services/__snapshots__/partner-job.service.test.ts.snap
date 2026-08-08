@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`partnerJob.service > should execute query with full data 1`] = `
+exports[`partner-job.service > should execute query with full data 1`] = `
 {
   "results": [
     {
@@ -82,7 +82,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
 }
 `;
 
-exports[`partnerJob.service > should execute query with minimalData 1`] = `
+exports[`partner-job.service > should execute query with minimalData 1`] = `
 {
   "results": [
     {

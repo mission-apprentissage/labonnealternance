@@ -9,7 +9,7 @@ import type { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { buildEstablishmentId } from "./etablissement.service"
-import { getUserRecruteursForManagement } from "./userRecruteur.service"
+import { getUserRecruteursForManagement } from "./user-recruteur.service"
 
 export const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
   const newUserId = new ObjectId()

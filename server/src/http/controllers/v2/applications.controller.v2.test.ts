@@ -23,7 +23,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { s3WriteString } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { generateApplicationReplyToken } from "@/services/appLinks.service"
+import { generateApplicationReplyToken } from "@/services/app-links.service"
 import { buildUserForToken } from "@/services/application.service"
 import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 

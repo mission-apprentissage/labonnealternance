@@ -7,8 +7,8 @@ import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import type { Server } from "@/http/server"
 import { getJobsQueryPrivate } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { addOffreDetailView } from "@/services/lbajob.service"
-import { getPartnerJobByIdV2 } from "@/services/partnerJob.service"
-import { getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
+import { getPartnerJobByIdV2 } from "@/services/partner-job.service"
+import { getRecruteurLbaFromDB } from "@/services/recruteur-lba.service"
 
 const config = {
   rateLimit: {

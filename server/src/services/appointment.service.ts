@@ -9,10 +9,10 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
-import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
+import { createRdvaAppointmentIdPageLink } from "./app-links.service"
 import mailer from "./mailer.service"
 import { getReferrerByKeyName } from "./referrers.service"
-import { getLBALink } from "./trainingLinks.service"
+import { getLBALink } from "./training-links.service"
 
 const createAppointment = async (params: Omit<IAppointment, "_id" | "created_at">) => {
   const appointment: IAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }

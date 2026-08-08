@@ -15,7 +15,7 @@ import config from "@/config"
 import type { Server } from "@/http/server"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { getUserFromRequest } from "@/security/authentication.service"
-import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
+import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/app-links.service"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import {
   entrepriseOnboardingWorkflow,
@@ -31,20 +31,20 @@ import {
   verifyRecruiterEmailInUse,
 } from "@/services/etablissement.service"
 import { getFormulairesForCfaManagedEnterprises, jobPartnersToRecruiter } from "@/services/formulaire.service"
-import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
+import { sendEngagementHandicapEmailIfNeeded } from "@/services/handi-engagement.service"
 import type { Organization, UserAndOrganization } from "@/services/organization.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
-import { getEntrepriseHandiEngagement } from "@/services/referentielEngagementEntreprise.service"
-import { getMainRoleManagement, getPublicUserRecruteurPropsOrError, isGrantedAndAutoValidatedRole } from "@/services/roleManagement.service"
-import { saveUserTrafficSourceIfAny } from "@/services/trafficSource.service"
+import { getEntrepriseHandiEngagement } from "@/services/referentiel-engagement-entreprise.service"
+import { getMainRoleManagement, getPublicUserRecruteurPropsOrError, isGrantedAndAutoValidatedRole } from "@/services/role-management.service"
+import { saveUserTrafficSourceIfAny } from "@/services/traffic-source.service"
 import {
   autoValidateUser,
   createOrganizationUser,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
-} from "@/services/userRecruteur.service"
-import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
+} from "@/services/user-recruteur.service"
+import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/user-with-account.service"
 
 export default (server: Server) => {
   /**

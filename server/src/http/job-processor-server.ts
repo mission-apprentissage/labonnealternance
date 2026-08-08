@@ -5,7 +5,7 @@ import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod
 
 import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { coreRoutes } from "./controllers/core.controller"
-import { errorMiddleware } from "./middlewares/errorMiddleware"
+import { errorMiddleware } from "./middlewares/error-middleware"
 import type { Server } from "./server"
 
 async function bind(app: Server) {

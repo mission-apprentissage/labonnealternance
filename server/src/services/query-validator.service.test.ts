@@ -1,6 +1,6 @@
 import { MAX_SEARCH_ROMES, MAX_SEARCH_ROMES_PRIVATE } from "shared"
 import { describe, expect, it, vi } from "vitest"
-import { formationsQueryValidator, jobsQueryValidatorPrivate } from "./queryValidator.service"
+import { formationsQueryValidator, jobsQueryValidatorPrivate } from "./query-validator.service"
 
 vi.mock("./external/api-alternance/certification.service", () => ({
   getRomesFromRncp: vi.fn(),

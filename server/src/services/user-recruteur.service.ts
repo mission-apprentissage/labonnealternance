@@ -21,12 +21,12 @@ import config from "@/config"
 import type { RoleManagement360Document } from "@/jobs/metabase/metabaseRoleManagement360"
 import { roleManagement360AggregationStages } from "@/jobs/metabase/metabaseRoleManagement360"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { createAuthMagicLink } from "./appLinks.service"
+import { createAuthMagicLink } from "./app-links.service"
 import { buildEstablishmentId } from "./etablissement.service"
 import mailer from "./mailer.service"
 import type { Organization, UserAndOrganization } from "./organization.service"
-import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
-import { findOrCreateUserWithAccount, isUserDisabled, isUserEmailChecked } from "./userWithAccount.service"
+import { getOrganizationFromRole, modifyPermissionToUser } from "./role-management.service"
+import { findOrCreateUserWithAccount, isUserDisabled, isUserEmailChecked } from "./user-with-account.service"
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
   const { reason, validation_type, granted_by } = entrepriseStatusEvent

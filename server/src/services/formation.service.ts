@@ -16,7 +16,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { isEmailBlacklisted } from "./application.service"
 import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
-import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
+import { formationsQueryValidator, formationsRegionQueryValidator } from "./query-validator.service"
 
 const formationResultLimit = 500
 const worldRadius = 21000

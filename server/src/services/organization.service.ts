@@ -14,7 +14,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { getEntrepriseDataFromSiret } from "./etablissement.service"
 import { autoValidateUserRoleOnCompany, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { checkForJobActivations } from "./formulaire.service"
-import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "./userRecruteur.service"
+import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "./user-recruteur.service"
 
 export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } | { cfa: ICFA; type: typeof CFA }
 export type UserAndOrganization = { user: IUserWithAccount; organization: Organization }

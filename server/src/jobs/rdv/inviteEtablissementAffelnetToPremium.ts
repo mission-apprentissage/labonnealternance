@@ -5,7 +5,7 @@ import { isValidEmail } from "@/common/utils/isValidEmail"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
+import { createRdvaPremiumAffelnetPageLink } from "@/services/app-links.service"
 import mailer from "@/services/mailer.service"
 
 interface IEtablissementsToInviteToPremium {
