@@ -123,7 +123,7 @@ export const classificationRoutes = (server: Server) => {
     if (user.scope !== "classification") throw unauthorized("scope classification required")
     const { classification, partner_job_ids } = req.body
     await updateClassificationAndSynchronise({ classification, partner_job_ids })
-    return res.status(200).send({ response: "Les mises à jour vont être traité par le serveur", time: new Date() })
+    return res.status(200).send({ response: "Les mises à jour vont être traitées par le serveur", time: new Date() })
   })
 }
 
