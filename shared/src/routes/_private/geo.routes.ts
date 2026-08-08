@@ -1,5 +1,5 @@
+import { extensions } from "../../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../../helpers/zod-with-open-api.js"
-import { extensions } from "../../helpers/zodHelpers/zod-primitives.js"
 import { zReferentielCommune } from "../../models/index.js"
 import type { IRoutesDef } from "../common.routes.js"
 import { zRefererHeaders } from "../params.js"

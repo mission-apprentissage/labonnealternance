@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { OPCOS_LABEL, TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
-import { extensions } from "../../../helpers/zodHelpers/zod-primitives.js"
+import { extensions } from "../../../helpers/zod-helpers/zod-primitives.js"
 import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
 import type { IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, JOBPARTNERS_LABEL } from "../../../models/jobs-partners.model.js"
 import { ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, ZJobsPartnersRecruiterApi, zDiplomaEuropeanLevel } from "../../../models/jobs-partners.model.js"

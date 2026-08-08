@@ -2,7 +2,7 @@
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import type { Metadata } from "next"
 import type { PropsWithChildren } from "react"
-import { setupZodErrorMap } from "shared/helpers/zodHelpers/setup-zod-error-map"
+import { setupZodErrorMap } from "shared/helpers/zod-helpers/setup-zod-error-map"
 import { HeadLaBonneAlternance } from "@/components/head"
 import { publicConfig } from "@/config.public"
 import { Matomo } from "@/tracking/trackingMatomo"

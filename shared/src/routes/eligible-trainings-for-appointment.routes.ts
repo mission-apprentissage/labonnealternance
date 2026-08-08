@@ -1,5 +1,5 @@
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 import { zObjectId } from "../models/common.js"
 import { ZEligibleTrainingsForAppointmentSchema, ZETFAParameters } from "../models/elligible-training.model.js"
 

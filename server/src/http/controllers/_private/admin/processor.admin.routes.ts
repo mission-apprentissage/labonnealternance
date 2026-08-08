@@ -6,8 +6,8 @@ import type { zTriggerableJobs } from "shared/routes/_private/admin/processor.ad
 import type { Server } from "@/http/server"
 import { processApplications } from "@/jobs/applications/process-applications"
 import { processRecruiterIntentions } from "@/jobs/applications/process-recruiter-intentions"
-import { importCatalogueFormationJob } from "@/jobs/formationsCatalogue/formations-catalogue"
-import { processJobPartnersForApi } from "@/jobs/offrePartenaire/process-job-partners-for-api"
+import { importCatalogueFormationJob } from "@/jobs/formations-catalogue/formations-catalogue"
+import { processJobPartnersForApi } from "@/jobs/offre-partenaire/process-job-partners-for-api"
 
 type TriggerableJob = z.infer<typeof zTriggerableJobs>
 

@@ -18,13 +18,13 @@ import type { IJobOfferApiReadV3, IJobOfferApiWriteV3Input } from "shared/routes
 import { zJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import z from "zod"
-import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/api-entreprise.client"
-import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/api-entreprise.client.fixture"
+import { getEtablissementFromGouvSafe } from "@/common/apis/api-entreprise/api-entreprise.client"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 
-vi.mock("@/common/apis/franceTravail/france-travail.client")
-vi.mock("@/common/apis/apiEntreprise/api-entreprise.client")
+vi.mock("@/common/apis/france-travail/france-travail.client")
+vi.mock("@/common/apis/api-entreprise/api-entreprise.client")
 
 const httpClient = useServer()
 const jobsSdk = jobsV3Sdk(httpClient)

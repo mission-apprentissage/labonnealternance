@@ -1,6 +1,6 @@
 import { OPCOS_LABEL } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 
 export const ZComputedUserAccess = z.strictObject({
   admin: z.boolean(),

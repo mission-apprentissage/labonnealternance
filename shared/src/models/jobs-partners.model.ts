@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import type { IDiplomaParam } from "../routes/params.js"
 
 import { ZPointGeometry } from "./address.model.js"

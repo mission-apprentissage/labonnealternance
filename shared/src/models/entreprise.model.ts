@@ -1,8 +1,8 @@
 import type { Jsonify } from "type-fest"
 
 import { OPCOS_LABEL } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 
 import { ZGlobalAddress } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"

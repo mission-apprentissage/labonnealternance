@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import type { FormikErrors } from "formik"
 import { Formik } from "formik"
-import { extensions } from "shared/helpers/zodHelpers/zod-primitives"
+import { extensions } from "shared/helpers/zod-helpers/zod-primitives"
 import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/params"
 import { z } from "zod"
 

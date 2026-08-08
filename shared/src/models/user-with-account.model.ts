@@ -1,8 +1,8 @@
 import type { Jsonify } from "type-fest"
 
 import { ADMIN, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"

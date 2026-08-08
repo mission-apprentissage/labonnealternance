@@ -8,7 +8,7 @@ import { generateSitemapFromUrlEntries } from "shared/utils/sitemap-utils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
-import { buildLbaUrl } from "./jobs/jobOpportunity/job-opportunity.service"
+import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 
 const generateSitemapXml = async () => {
   const lbaJobPartners = await getDbCollection("jobs_partners")

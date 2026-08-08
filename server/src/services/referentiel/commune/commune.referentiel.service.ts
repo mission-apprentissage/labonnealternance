@@ -1,8 +1,8 @@
 import { internal } from "@hapi/boom"
 import type { IGeoPoint, IReferentielCommune } from "shared/models/index"
 
-import type { IGeoApiCommune } from "@/common/apis/geoApiGouv/geo-api-gouv"
-import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geoApiGouv/geo-api-gouv"
+import type { IGeoApiCommune } from "@/common/apis/geo-api-gouv/geo-api-gouv"
+import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geo-api-gouv/geo-api-gouv"
 import { sleep } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 

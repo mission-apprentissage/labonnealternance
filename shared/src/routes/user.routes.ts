@@ -1,6 +1,6 @@
 import { ETAT_UTILISATEUR } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 import { zObjectId } from "../models/common.js"
 import { ZJob } from "../models/job.model.js"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/role-management.model.js"

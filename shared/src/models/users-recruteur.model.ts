@@ -1,8 +1,8 @@
 import type { Jsonify } from "type-fest"
 
 import { AUTHTYPE, CFA, ETAT_UTILISATEUR, OPCOS_LABEL } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "../validators/name-validator.js"
 
 import { ZGlobalAddress, ZPointGeometry } from "./address.model.js"
