@@ -165,6 +165,27 @@ export const zFormulaireRoute = {
         },
       },
     },
+    "/formulaire/:establishment_id/offre/ameliorer-texte": {
+      method: "post",
+      path: "/formulaire/:establishment_id/offre/ameliorer-texte",
+      params: z.object({ establishment_id: z.string() }).strict(),
+      body: z
+        .object({
+          field: z.enum(["job_description", "job_employer_description"]),
+          text: z.string().trim().min(1).max(3000),
+        })
+        .strict(),
+      response: {
+        "200": z.object({ text: z.string() }).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:add_job",
+        resources: {
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
+    },
     "/formulaire/offre/:jobId/delegation": {
       method: "post",
       path: "/formulaire/offre/:jobId/delegation",
@@ -219,6 +240,7 @@ export const zFormulaireRoute = {
         job_duration: true,
         job_rythm: true,
         job_employer_description: true,
+        job_description: true,
         competences_rome: true,
         offer_title_custom: true,
         to_applicant_questions: true,
