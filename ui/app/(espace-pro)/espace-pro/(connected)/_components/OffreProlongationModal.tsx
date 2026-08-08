@@ -11,7 +11,7 @@ import { JOB_START_TYPE } from "shared"
 import dayjs from "shared/helpers/dayjs"
 import * as Yup from "yup"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
-import type { useDisclosure } from "@/common/hooks/use-disclosure"
+import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"

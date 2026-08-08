@@ -10,7 +10,7 @@ import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants
 import type { IUserRecruteur } from "shared/models/users-recruteur.model"
 import { getUserStatus } from "shared/models/users-recruteur.model"
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
-import { useDisclosure } from "@/common/hooks/use-disclosure"
+import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { apiGet } from "@/utils/api.utils"

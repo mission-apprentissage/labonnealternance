@@ -1,4 +1,4 @@
-import { useDisclosure } from "@/common/hooks/use-disclosure"
+import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { DemandeDeContactButton } from "./DemandeDeContactButton"
 import { type DemandeDeContactContext, DemandeDeContactModal } from "./DemandeDeContactModal"

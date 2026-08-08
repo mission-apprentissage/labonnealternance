@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useState } from "react"
-import type { useDisclosure } from "@/common/hooks/use-disclosure"
+import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { DemandeDeContactConfirmation } from "./DemandeDeContactConfirmation"

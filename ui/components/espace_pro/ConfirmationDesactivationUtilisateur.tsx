@@ -7,10 +7,9 @@ import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, Typography } from "@mui/material"
 import { useState } from "react"
 import type { IUserRecruteurJson } from "shared"
-
+import { useDisclosure } from "@/app/hooks/use-disclosure"
+import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { AUTHTYPE } from "@/common/contants"
-import { useDisclosure } from "@/common/hooks/use-disclosure"
-import { useUserPermissionsActions } from "@/common/hooks/use-user-permissions-actions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
 const ConfirmationDesactivationUtilisateur = ({

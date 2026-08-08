@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import type { ReactElement } from "react"
-import { useDisclosure } from "@/common/hooks/use-disclosure"
+import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ModalReadOnly } from "./ModalReadOnly"
 
 export const InfoTooltipOrModal = ({ tooltipContent, children }: { tooltipContent: React.ReactNode; children: ReactElement }) => {
