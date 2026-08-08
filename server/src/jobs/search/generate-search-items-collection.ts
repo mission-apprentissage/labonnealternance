@@ -24,7 +24,7 @@ import {
   upsertSearchItem,
 } from "@/services/search/search-items.service"
 
-// Génération des mots-clés Mistral : déplacée dans searchItemsKeywords.service.ts
+// Génération des mots-clés Mistral : déplacée dans search-items-keywords.service.ts
 // (cron continu + batch hebdo recruteurs + ramasse des jobs + import manuel).
 
 const NIGHTLY_CONCURRENCY = 100
