@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL, NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobsPartners.model"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { JOBPARTNERS_LABEL, NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobs-partners.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { IEnedisJob } from "@/jobs/offrePartenaire/enedis/enedisMapper"
 import { edfJobToJobsPartners } from "./edfMapper"

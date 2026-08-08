@@ -1,6 +1,6 @@
 import type { Jsonify } from "type-fest"
 
-import { z } from "../helpers/zodWithOpenApi.js"
+import { z } from "../helpers/zod-with-open-api.js"
 
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"

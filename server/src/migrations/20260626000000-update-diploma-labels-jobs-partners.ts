@@ -1,5 +1,5 @@
 import { NIVEAU_DIPLOME_LABEL } from "shared/constants/recruteur"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 

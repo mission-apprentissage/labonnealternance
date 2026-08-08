@@ -7,7 +7,7 @@ import CandidatureParTelephone from "@/components/ItemDetail/CandidatureParTelep
 import PartnerJobExternalApply from "@/components/ItemDetail/PartnerJobComponents/PartnerJobExternalApply"
 
 export const PartnerJobPostuler = ({ job, showScrollToTop }: { job: ILbaItemPartnerJobJson; showScrollToTop?: boolean }) => {
-  // KBA fix enum shared/models/lbaItem.model.ts
+  // KBA fix enum shared/models/lba-item.model.ts
   if (["Pourvue", "Annulée"].includes(job.job.status)) return null
   if (job.contact?.hasEmail) {
     return (

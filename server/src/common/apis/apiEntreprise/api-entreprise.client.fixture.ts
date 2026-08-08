@@ -1,5 +1,5 @@
 import { EDiffusibleStatus } from "shared/constants/diffusible-status"
-import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
+import type { IEtablissementGouvData } from "shared/models/cache-infos-siret.model"
 
 export const apiEntrepriseEtablissementFixture = {
   dinum: {

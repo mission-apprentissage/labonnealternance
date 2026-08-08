@@ -4,7 +4,7 @@ import { join } from "node:path"
 
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "bson"
-import { generateSearchItemFixture } from "shared/fixtures/searchItems.fixture"
+import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"

@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
-import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
+import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { InfoTooltip } from "@/app/(espace-pro)/_components/InfoToolTip"

@@ -1,6 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
-import { generateSearchItemFixture } from "shared/fixtures/searchItems.fixture"
+import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { beforeAll, describe, expect, it } from "vitest"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"

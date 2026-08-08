@@ -1,7 +1,7 @@
 import type { Jsonify } from "type-fest"
 import type { core } from "zod"
 
-import { z } from "../helpers/zodWithOpenApi.js"
+import { z } from "../helpers/zod-with-open-api.js"
 import type { AccessPermission, AccessRessouces } from "../security/permissions.js"
 
 export const ZResError = z.strictObject({

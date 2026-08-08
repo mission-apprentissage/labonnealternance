@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawHelloWorkModel from "shared/models/rawHelloWork.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawHelloWorkModel from "shared/models/raw-hello-work.model"
 import config from "@/config"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"

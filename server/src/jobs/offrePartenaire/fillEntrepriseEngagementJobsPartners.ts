@@ -1,7 +1,7 @@
 import { JOB_STATUS_ENGLISH } from "shared"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
-import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
+import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 

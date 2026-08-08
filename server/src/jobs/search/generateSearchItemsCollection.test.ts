@@ -1,8 +1,8 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared"
-import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { generateSearchItemFixture } from "shared/fixtures/searchItems.fixture"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
+import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"

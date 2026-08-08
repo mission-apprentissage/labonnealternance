@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
+import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const getEntrepriseEngagementFranceTravail = async (siret: string): Promise<boolean> => {

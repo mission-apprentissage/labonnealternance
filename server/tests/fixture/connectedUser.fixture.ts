@@ -1,5 +1,5 @@
-import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
-import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
+import { generateRoleManagementFixture } from "shared/fixtures/role-management.fixture"
+import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
 import type { IRoleManagement, IUserWithAccount } from "shared/models/index"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"

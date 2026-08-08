@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawApecModel from "shared/models/rawApec.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawApecModel from "shared/models/raw-apec.model"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 import { apecJobToJobsPartners, ZApecJob } from "./apecMapper"

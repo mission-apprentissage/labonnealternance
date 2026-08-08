@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"

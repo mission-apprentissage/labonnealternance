@@ -1,6 +1,6 @@
 import { getProcessorStatus } from "job-processor"
 import { zRoutes } from "shared"
-import type { z } from "shared/helpers/zodWithOpenApi"
+import type { z } from "shared/helpers/zod-with-open-api"
 import type { zTriggerableJobs } from "shared/routes/_private/admin/processor.admin.routes"
 
 import type { Server } from "@/http/server"

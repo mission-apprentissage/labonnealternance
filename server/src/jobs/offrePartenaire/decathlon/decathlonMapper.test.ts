@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { decathlonJobToJobsPartners } from "./decathlonMapper"
 

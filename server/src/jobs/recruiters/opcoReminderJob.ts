@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { isEnum } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"

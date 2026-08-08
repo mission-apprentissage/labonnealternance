@@ -1,8 +1,8 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { generateRoleManagementFixture, generateRoleManagementStatusEventFixture } from "shared/fixtures/roleManagement.fixture"
-import { AccessStatus } from "shared/models/roleManagement.model"
+import { generateRoleManagementFixture, generateRoleManagementStatusEventFixture } from "shared/fixtures/role-management.fixture"
+import { AccessStatus } from "shared/models/role-management.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"

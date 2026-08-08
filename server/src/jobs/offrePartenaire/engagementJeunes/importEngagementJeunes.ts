@@ -1,6 +1,6 @@
 import axios from "axios"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { rawEngagementJeunesModel } from "shared/models/rawEngagementJeunes.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { rawEngagementJeunesModel } from "shared/models/raw-engagement-jeunes.model"
 import z from "zod"
 import config from "@/config"
 import { importFromStreamInJson } from "@/jobs/offrePartenaire/importFromStreamInJson"

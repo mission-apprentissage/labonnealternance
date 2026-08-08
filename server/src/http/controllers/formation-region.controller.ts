@@ -1,5 +1,5 @@
 import { zRoutes } from "shared"
-import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+import { INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
 
 import { trackApiCall } from "@/common/utils/send-tracking-event"
 import type { Server } from "@/http/server"

@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 import type { CreateIndexesOptions, IndexSpecification, SearchIndexDescription } from "mongodb"
 import type { ZodType } from "zod"
 
-import { z } from "../helpers/zodWithOpenApi.js"
+import { z } from "../helpers/zod-with-open-api.js"
 
 export interface IModelDescriptor<CollectionName = string, LocalZodType = ZodType> {
   zod: LocalZodType

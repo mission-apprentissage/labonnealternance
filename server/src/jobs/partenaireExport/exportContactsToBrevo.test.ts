@@ -1,9 +1,9 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
-import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { UserEventType } from "shared/models/userWithAccount.model"
+import { generateJobsPartnersFull } from "shared/fixtures/job-partners.fixture"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import { UserEventType } from "shared/models/user-with-account.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"

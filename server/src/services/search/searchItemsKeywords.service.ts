@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises"
 import { ObjectId } from "bson"
 import type { AnyBulkWriteOperation } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import type { ISearchItem } from "shared/models/searchItems.model"
+import type { ISearchItem } from "shared/models/search-items.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

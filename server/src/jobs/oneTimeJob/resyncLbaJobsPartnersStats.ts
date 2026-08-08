@@ -1,6 +1,6 @@
 import type { AnyBulkWriteOperation } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

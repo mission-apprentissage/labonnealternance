@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
+import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { helloWorkJobToJobsPartners } from "./helloWorkMapper"
 

@@ -1,6 +1,6 @@
 import { roleManagementEventFactory } from "@tests/utils/user.test.utils"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
+import { generateRoleManagementFixture } from "shared/fixtures/role-management.fixture"
 import type { IRoleManagement } from "shared/models/index"
 import { AccessStatus } from "shared/models/index"
 import { describe, expect, it } from "vitest"

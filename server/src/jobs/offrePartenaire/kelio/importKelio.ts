@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawKelioModel from "shared/models/rawKelio.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawKelioModel from "shared/models/raw-kelio.model"
 import config from "@/config"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"

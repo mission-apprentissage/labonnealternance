@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
-import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
-import { ZEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
+import type { IEtablissementGouvData } from "shared/models/cache-infos-siret.model"
+import { ZEtablissementGouvData } from "shared/models/cache-infos-siret.model"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/api-entreprise.client"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

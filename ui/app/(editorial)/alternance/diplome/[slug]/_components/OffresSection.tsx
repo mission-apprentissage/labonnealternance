@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
-import type { ISeoJobCard } from "shared/models/seoMetier.model"
+import type { ISeoJobCard } from "shared/models/seo-metier.model"
 
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTitle"

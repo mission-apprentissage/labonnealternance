@@ -5,7 +5,7 @@ import { AccessEntityType, assertUnreachable, TrafficType, toPublicUser, zRoutes
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
+import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { getSourceFromCookies } from "@/common/utils/http-utils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mail-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

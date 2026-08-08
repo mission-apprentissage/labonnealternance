@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
-import { EMAIL_LOG_TYPE } from "shared/models/applicantEmailLog.model"
+import { EMAIL_LOG_TYPE } from "shared/models/applicant-email-log.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

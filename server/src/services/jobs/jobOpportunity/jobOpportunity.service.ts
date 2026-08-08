@@ -9,10 +9,10 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
-import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobsPartnersComputed.model"
-import { JOB_PARTNER_BUSINESS_ERROR, JOBS_PARTNERS_OFFER_ORIGIN, PARTNER_WHITELIST, TRUSTED_COMPANY_JOB_PARTNERS } from "shared/models/jobsPartnersComputed.model"
+import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobs-partners-computed.model"
+import { JOB_PARTNER_BUSINESS_ERROR, JOBS_PARTNERS_OFFER_ORIGIN, PARTNER_WHITELIST, TRUSTED_COMPANY_JOB_PARTNERS } from "shared/models/jobs-partners-computed.model"
 import type {
   IJobOfferApiReadV3,
   IJobOfferApiWriteV3,

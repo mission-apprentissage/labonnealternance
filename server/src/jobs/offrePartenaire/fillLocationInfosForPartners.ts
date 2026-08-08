@@ -1,5 +1,5 @@
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { joinNonNullStrings } from "shared/utils/index"
 import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"

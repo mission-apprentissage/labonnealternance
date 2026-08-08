@@ -1,5 +1,5 @@
 import { ObjectId } from "bson"
-import type { IClassificationJobsPartners } from "shared/models/cacheClassification.model"
+import type { IClassificationJobsPartners } from "shared/models/cache-classification.model"
 import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 

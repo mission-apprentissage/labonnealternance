@@ -1,9 +1,9 @@
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-import { z } from "../helpers/zodWithOpenApi.js"
+import { z } from "../helpers/zod-with-open-api.js"
+import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 import { zObjectId } from "../models/common.js"
-import { ZApiError, ZLbacError } from "../models/lbacError.model.js"
-import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPartnerJob } from "../models/lbaItem.model.js"
+import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPartnerJob } from "../models/lba-item.model.js"
+import { ZApiError, ZLbacError } from "../models/lbac-error.model.js"
 
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zCallerParam, zDiplomaParam, zInseeParams, zOpcoParams, zRefererHeaders, zRncpsParams, zRomesParams } from "./_params.js"
 import type { IRoutesDef } from "./common.routes.js"

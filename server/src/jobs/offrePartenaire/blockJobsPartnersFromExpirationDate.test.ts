@@ -1,7 +1,7 @@
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { blockJobsPartnersFromExpirationDate } from "./blockJobsPartnersFromExpirationDate"

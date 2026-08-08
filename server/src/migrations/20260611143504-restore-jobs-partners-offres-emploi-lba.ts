@@ -1,6 +1,6 @@
 import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
-import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

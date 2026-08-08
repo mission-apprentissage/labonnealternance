@@ -1,5 +1,5 @@
 import omit from "lodash-es/omit"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { generateJobEtudiantJobFixture } from "@/common/apis/etudiant/etudiant.client.fixture"
 import { ETUDIANT_ELIGIBLE_CONTRACT_FR, etudiantJobToJobsPartners, REMOTE_FR_MAP } from "./etudiant.mapper"

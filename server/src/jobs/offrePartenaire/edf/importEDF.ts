@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawEdfModel from "shared/models/rawEdf.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawEdfModel from "shared/models/raw-edf.model"
 import config from "@/config"
 import { ZEnedisJob } from "@/jobs/offrePartenaire/enedis/enedisMapper"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"

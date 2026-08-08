@@ -1,6 +1,6 @@
 import fs from "node:fs"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { importEdfRaw, importEdfToComputed } from "./importEDF"

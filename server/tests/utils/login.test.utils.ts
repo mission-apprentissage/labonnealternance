@@ -1,5 +1,5 @@
 import { OPCOS_LABEL } from "shared/constants/index"
-import type { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"

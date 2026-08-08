@@ -1,6 +1,6 @@
 import axios from "axios"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawDecathlonModel from "shared/models/rawDecathlon.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawDecathlonModel from "shared/models/raw-decathlon.model"
 import z from "zod"
 import config from "@/config"
 import { importFromStreamInJson } from "@/jobs/offrePartenaire/importFromStreamInJson"

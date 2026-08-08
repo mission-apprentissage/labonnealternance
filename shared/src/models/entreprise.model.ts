@@ -1,13 +1,13 @@
 import type { Jsonify } from "type-fest"
 
 import { OPCOS_LABEL } from "../constants/recruteur.js"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-import { z } from "../helpers/zodWithOpenApi.js"
+import { z } from "../helpers/zod-with-open-api.js"
+import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 
 import { ZGlobalAddress } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
-import { ZValidationUtilisateur } from "./userWithAccount.model.js"
+import { ZValidationUtilisateur } from "./user-with-account.model.js"
 
 export enum EntrepriseStatus {
   ERROR = "ERROR",

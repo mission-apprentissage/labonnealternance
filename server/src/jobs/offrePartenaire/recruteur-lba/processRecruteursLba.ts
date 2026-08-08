@@ -7,8 +7,8 @@
 import type Stream from "node:stream"
 
 import type { Filter } from "mongodb"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { logger } from "@/common/logger"
 import { cancelRemovedJobsPartners } from "@/jobs/offrePartenaire/cancelRemovedJobsPartners"
 import { fillComputedRecruteursLba } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"

@@ -4,7 +4,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 
-import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
+import { generateJobsPartnersFull } from "shared/fixtures/job-partners.fixture"
 import type Stream from "stream"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

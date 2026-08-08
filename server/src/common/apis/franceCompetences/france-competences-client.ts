@@ -1,6 +1,6 @@
 import axios from "axios"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { z } from "shared/helpers/zodWithOpenApi"
+import { z } from "shared/helpers/zod-with-open-api"
 import { assertUnreachable, parseEnum } from "shared/utils/index"
 
 import { sentryCaptureException } from "@/common/utils/sentry-utils"

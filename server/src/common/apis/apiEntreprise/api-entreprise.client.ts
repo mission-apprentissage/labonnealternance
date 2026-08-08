@@ -1,6 +1,6 @@
 import { EDiffusibleStatus } from "shared/constants/diffusible-status"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
-import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
+import type { IEtablissementGouvData } from "shared/models/cache-infos-siret.model"
 import { ZAdresseV3 } from "shared/models/index"
 
 import getApiClient from "@/common/apis/client"
