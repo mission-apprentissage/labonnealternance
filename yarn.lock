@@ -18959,16 +18959,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "type-fest@npm:5.2.0"
-  dependencies:
-    tagged-tag: ^1.0.0
-  checksum: 238eb0f14bd840db77c834ce5ed264d28aa79d1ed1e7b8606985f17cc01c9c1b6f266f780a132512764f81816e51b7a72a6e537188702fb985e1971ad2dcc920
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^5.4.1":
+"type-fest@npm:^5.2.0, type-fest@npm:^5.4.1":
   version: 5.8.0
   resolution: "type-fest@npm:5.8.0"
   dependencies:
