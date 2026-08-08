@@ -1,6 +1,6 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { EApplicantRole } from "shared/constants/rdva"
 import dayjs from "shared/helpers/dayjs"
 import { zRoutes } from "shared/index"

@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 import { ZEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 

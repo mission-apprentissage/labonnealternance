@@ -1,7 +1,7 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import type { Filter, ObjectId } from "mongodb"
 import type { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
 import type { IAppointMentResponseAvailable, IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
 import { logger } from "@/common/logger"

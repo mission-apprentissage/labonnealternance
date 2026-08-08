@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, FormControl, FormHelperText, FormLabel, Input, Typography } from "@mui/material"
 import { useField } from "formik"
 import parse from "html-react-parser"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"

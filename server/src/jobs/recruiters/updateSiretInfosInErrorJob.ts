@@ -1,7 +1,7 @@
 import { internal } from "@hapi/boom"
 import type { IBusinessError, IEntreprise, IEntrepriseManagedByCfa, IRoleManagement, IUserWithAccount } from "shared"
 import { JOB_STATUS_ENGLISH } from "shared"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"

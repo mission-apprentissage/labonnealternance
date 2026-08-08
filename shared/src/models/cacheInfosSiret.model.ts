@@ -1,5 +1,5 @@
-import { EDiffusibleStatus } from "../constants/diffusibleStatus.js"
-import { BusinessErrorCodes } from "../constants/errorCodes.js"
+import { EDiffusibleStatus } from "../constants/diffusible-status.js"
+import { BusinessErrorCodes } from "../constants/error-codes.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 

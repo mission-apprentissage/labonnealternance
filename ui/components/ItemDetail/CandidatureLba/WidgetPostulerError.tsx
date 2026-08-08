@@ -1,6 +1,6 @@
 import { Box } from "@mui/material"
 import React from "react"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 
 const getErrorText = (error: string) => {
   switch (error) {

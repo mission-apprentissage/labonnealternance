@@ -1,5 +1,5 @@
-import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { EDiffusibleStatus } from "shared/constants/diffusible-status"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 import { ZAdresseV3 } from "shared/models/index"
 

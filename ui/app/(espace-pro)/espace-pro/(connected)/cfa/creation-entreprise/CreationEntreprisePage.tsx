@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"

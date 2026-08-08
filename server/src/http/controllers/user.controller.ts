@@ -1,7 +1,7 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { ENTREPRISE } from "shared/constants/index"
 import { CFA, OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJob } from "shared/index"
