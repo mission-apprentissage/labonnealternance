@@ -6,7 +6,7 @@ import { Box, Divider, Grid, List, ListItem, Skeleton, Stack, Typography } from 
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
-import type { AnneeSimulation, InputSimulation, OutputSimulation } from "@/services/simulateurAlternant"
+import type { AnneeSimulation, InputSimulation, OutputSimulation } from "@/services/simulateur-alternant"
 import { PAGES } from "@/utils/routes.utils"
 
 const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulation; index: number }) => {

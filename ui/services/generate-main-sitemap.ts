@@ -6,8 +6,8 @@ import { generateSitemapFromUrlEntries } from "shared/utils/sitemap-utils"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
-import { getStaticMetiers } from "@/utils/getStaticData"
-import { getHostFromHeader } from "@/utils/requestUtils"
+import { getStaticMetiers } from "@/utils/get-static-data"
+import { getHostFromHeader } from "@/utils/request-utils"
 
 // Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
 export const mainSitemapLastModificationDate = new Date("2026-08-06T00:00:00.000Z")

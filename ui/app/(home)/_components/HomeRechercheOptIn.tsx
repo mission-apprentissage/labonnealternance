@@ -3,7 +3,7 @@
 import type { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { NewSearchOptInBanner } from "@/app/beta/_components/NewSearchOptInBanner"
 import { SearchHomeForm } from "@/app/beta/_components/SearchHomeForm"
-import { useNewSearchOptIn } from "@/app/beta/_hooks/useNewSearchOptIn"
+import { useNewSearchOptIn } from "@/app/beta/_hooks/use-new-search-opt-in"
 
 import { HomeRechercheForm } from "./HomeRechercheForm"
 

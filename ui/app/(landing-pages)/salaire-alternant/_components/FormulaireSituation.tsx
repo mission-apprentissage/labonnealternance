@@ -13,9 +13,9 @@ import { Form, Formik } from "formik"
 import * as Yup from "yup"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
 import { DATE_DERNIERE_MISE_A_JOUR, MAX_DATE_NAISSANCE, MIN_DATE_NAISSANCE, MIN_DEBUT_CONTRAT, NEXT_START_OF_MONTH } from "@/config/simulateur-alternant"
-import type { InputSimulation } from "@/services/simulateurAlternant"
-import { getSimulationInformation } from "@/services/simulateurAlternant"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import type { InputSimulation } from "@/services/simulateur-alternant"
+import { getSimulationInformation } from "@/services/simulateur-alternant"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 

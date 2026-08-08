@@ -9,7 +9,7 @@ import { assertUnreachable } from "shared"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { useUrlHash } from "@/app/hooks/useUrlHash"
+import { useUrlHash } from "@/app/hooks/use-url-hash"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 

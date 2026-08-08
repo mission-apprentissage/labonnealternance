@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { BackEntrepriseUpsertOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/BackEntrepriseUpsertOffre"
-import { getSession } from "@/utils/getSession"
+import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {

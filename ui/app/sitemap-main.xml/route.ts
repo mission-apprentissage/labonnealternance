@@ -1,4 +1,4 @@
-import { generateMainSitemap } from "@/services/generateMainSitemap"
+import { generateMainSitemap } from "@/services/generate-main-sitemap"
 
 export async function GET(request: Request) {
   const sitemap = generateMainSitemap(request)

@@ -6,7 +6,7 @@ import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { createOffreByToken } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 export function DepotSimplifieCreationOffre({ isWidget = false }: { isWidget?: boolean }) {
   const router = useRouter()

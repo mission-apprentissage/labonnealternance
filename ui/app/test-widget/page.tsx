@@ -5,7 +5,7 @@ import type { Metadata } from "next"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
 import { WidgetTester } from "@/app/_components/WidgetTester"
-import { getSession } from "@/utils/getSession"
+import { getSession } from "@/utils/get-session"
 
 export const metadata: Metadata = {
   title: "Formulaire de test des widgets - La bonne alternance",

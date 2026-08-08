@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { getSession } from "@/utils/getSession"
+import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 import { PageWithParams } from "./PageWithParams"
 

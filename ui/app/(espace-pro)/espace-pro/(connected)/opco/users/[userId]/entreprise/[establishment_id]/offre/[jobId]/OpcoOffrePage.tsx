@@ -5,7 +5,7 @@ import { OPCO } from "shared/constants/recruteur"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import UpsertOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/UpsertOffre"
 import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 export default function OpcoOffrePage() {
   const router = useRouter()

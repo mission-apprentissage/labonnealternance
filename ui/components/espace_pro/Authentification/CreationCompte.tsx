@@ -15,11 +15,11 @@ import { BorderedBox } from "@/components/espace_pro/common/components/BorderedB
 import { publicConfig } from "@/config.public"
 import { LogoContext } from "@/context/contextLogo"
 import { WidgetContext } from "@/context/contextWidget"
-import type { searchEntreprise } from "@/services/searchEntreprises"
+import type { searchEntreprise } from "@/services/search-entreprises"
 import { getEntrepriseInformation, validateCfaCreation } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 import { AnimationContainer } from ".."
 import { SiretAutocomplete } from "./SiretAutocomplete"
 

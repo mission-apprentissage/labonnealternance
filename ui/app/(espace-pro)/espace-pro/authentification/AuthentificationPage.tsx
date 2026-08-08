@@ -12,7 +12,7 @@ import CustomInput from "@/app/_components/CustomInput"
 import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 export default function Authentification() {
   const { error } = useSearchParamsRecord()

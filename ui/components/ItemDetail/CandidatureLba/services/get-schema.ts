@@ -3,7 +3,7 @@ import { ZApplicationApiPrivate } from "shared"
 import { validatePhone } from "shared/validators/phone-validator"
 import { z } from "zod"
 
-import { sessionStorageGet } from "@/utils/localStorage"
+import { sessionStorageGet } from "@/utils/local-storage"
 
 export type IApplicationSchemaInitValues = Omit<IApplicationApiPrivateJSON, "caller">
 

@@ -12,7 +12,7 @@ import {
   TAUX_EXONERATION_CHARGES_SALARIALES_APPRENTISSAGE_PUBLIC,
   TAUX_PROFESSIONNALISATION,
 } from "@/config/simulateur-alternant"
-import { getChargesSalariales, getSimulationInformation } from "./simulateurAlternant"
+import { getChargesSalariales, getSimulationInformation } from "./simulateur-alternant"
 
 // ============================================
 // HELPERS POUR LES TESTS

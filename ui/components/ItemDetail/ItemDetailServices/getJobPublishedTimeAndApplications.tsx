@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack } from "@mui/material"
 import Image from "next/image"
 import type { ILbaItemJobsGlobal, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import { getDaysSinceDate } from "@/utils/dateUtils"
+import { getDaysSinceDate } from "@/utils/date-utils"
 
 const hasJob = (item: ILbaItemJobsGlobal): item is ILbaItemLbaJobJson | ILbaItemPartnerJobJson => "job" in item
 

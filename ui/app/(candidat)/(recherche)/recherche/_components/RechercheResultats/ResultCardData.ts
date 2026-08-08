@@ -1,5 +1,5 @@
-import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
-import type { IWhisper } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
+import type { IWhisper } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-whispers"
 
 export type ResultCardILba = {
   type: "lba_item"

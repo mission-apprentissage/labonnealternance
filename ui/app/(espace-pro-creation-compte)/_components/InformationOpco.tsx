@@ -4,7 +4,7 @@ import { Box, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 
 import { Edit2Fill, InfoCircle } from "@/theme/components/icons"
-import type { InfosOpco } from "@/theme/components/logos/infosOpcos"
+import type { InfosOpco } from "@/theme/components/logos/infos-opcos"
 
 export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { isUpdatable: boolean; resetOpcoChoice: () => void; infosOpco: InfosOpco }) => {
   return (

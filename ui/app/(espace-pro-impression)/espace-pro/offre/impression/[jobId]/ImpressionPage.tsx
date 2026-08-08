@@ -13,7 +13,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_START_TYPE } from "shared/models/job.model"
 
 import { LoadingEmptySpace } from "@/components/espace_pro"
-import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
+import fetchLbaJobDetails from "@/services/fetch-lba-job-details"
 import { LbaNew } from "@/theme/components/logos/LbaNew"
 import { PAGES } from "@/utils/routes.utils"
 

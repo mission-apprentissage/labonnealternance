@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import MiseEnRelation from "@/app/(espace-pro)/_components/MiseEnRelation"
-import { getSession } from "@/utils/getSession"
+import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 
 export async function generateMetadata({ params }: { params: Promise<{ job_id: string }> }): Promise<Metadata> {

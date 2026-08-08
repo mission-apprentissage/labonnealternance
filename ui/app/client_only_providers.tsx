@@ -6,8 +6,8 @@ import type { PropsWithChildren } from "react"
 import { Suspense, useEffect } from "react"
 
 import Providers from "@/context/Providers"
-import { setIsTrackingEnabled, setTrackingCookies } from "@/tracking/trackingCookieUtils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { setIsTrackingEnabled, setTrackingCookies } from "@/tracking/tracking-cookie-utils"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 function Tracking(): null {
   const searchParamsRecord = useSearchParamsRecord()

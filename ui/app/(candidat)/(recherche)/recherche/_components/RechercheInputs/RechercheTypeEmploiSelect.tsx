@@ -2,9 +2,9 @@ import { useField } from "formik"
 import { useCallback } from "react"
 import { type ITypeEmploi, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 import { MultiSelectField, type MultiSelectOption } from "@/app/_components/FormComponents/MultiSelectField"
-import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
-import { type DisplayedJob, matchesTypeEmploi } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
+import { type DisplayedJob, matchesTypeEmploi } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
 // Libellés d'affichage découplés de la valeur d'enum (qui sert aussi de param d'URL / dimension Matomo).
 // Ne pas modifier les valeurs de TYPE_EMPLOI_OPTIONS pour renommer un type : changer uniquement ici.

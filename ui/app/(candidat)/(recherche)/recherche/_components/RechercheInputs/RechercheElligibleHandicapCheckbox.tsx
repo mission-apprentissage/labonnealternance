@@ -2,11 +2,11 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useField } from "formik"
 
-import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoTooltipOrModal } from "@/components/InfoTooltipOrModal"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
 const infoIconButtonId = "recherche-elligible-handicap-tooltip-button"
 

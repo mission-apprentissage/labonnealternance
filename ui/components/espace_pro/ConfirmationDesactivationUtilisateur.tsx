@@ -9,8 +9,8 @@ import { useState } from "react"
 import type { IUserRecruteurJson } from "shared"
 
 import { AUTHTYPE } from "@/common/contants"
-import { useDisclosure } from "@/common/hooks/useDisclosure"
-import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
+import { useDisclosure } from "@/common/hooks/use-disclosure"
+import { useUserPermissionsActions } from "@/common/hooks/use-user-permissions-actions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
 const ConfirmationDesactivationUtilisateur = ({

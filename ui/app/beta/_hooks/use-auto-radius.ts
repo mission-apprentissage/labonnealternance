@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
-import type { useSearchResults } from "./useSearchResults"
+import type { useSearchResults } from "./use-search-results"
 
 const RADIUS_STEP = 20
 export const RADIUS_MAX = 100

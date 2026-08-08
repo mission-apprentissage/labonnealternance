@@ -5,9 +5,9 @@ import type { ILbaItemPartnerJobJson } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
-import { useDisclosure } from "@/common/hooks/useDisclosure"
+import { useDisclosure } from "@/common/hooks/use-disclosure"
 import { notifyJobPostulerV3 } from "@/utils/api"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 const partnerLabelsShownInCta = [

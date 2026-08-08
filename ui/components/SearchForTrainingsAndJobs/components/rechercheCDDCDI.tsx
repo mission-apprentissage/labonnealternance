@@ -6,7 +6,7 @@ import Image from "next/image"
 import React, { useEffect, useState } from "react"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { fetchAddressFromCoordinates } from "@/services/baseAdresse"
+import { fetchAddressFromCoordinates } from "@/services/base-adresse"
 
 type RechercheCDICDDProps = { romes: string[]; geo: { longitude?: number; latitude?: number; radius?: number } | null }
 

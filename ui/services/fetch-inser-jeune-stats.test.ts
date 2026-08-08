@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
-import fetchInserJeunesStats from "./fetchInserJeuneStats"
+import fetchInserJeunesStats from "./fetch-inser-jeune-stats"
 
 const { captureException } = vi.hoisted(() => ({
   captureException: vi.fn(),

@@ -1,6 +1,6 @@
 import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
-import { rawPostalAddress } from "./addressUtils"
+import { rawPostalAddress } from "./address-utils"
 
 //import * as Sentry from "@sentry/react";
 

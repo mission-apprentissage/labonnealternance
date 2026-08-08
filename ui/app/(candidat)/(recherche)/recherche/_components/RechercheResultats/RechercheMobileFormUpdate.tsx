@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
-import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-navigate-to-recherche-page"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { RechercheMobileForm } from "./RechercheMobileForm"
 
