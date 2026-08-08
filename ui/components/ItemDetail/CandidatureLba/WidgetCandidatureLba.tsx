@@ -1,6 +1,6 @@
 import { Box } from "@mui/material"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import { useDisclosure } from "@/common/hooks/use-disclosure"
+import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { CandidatureLbaModal } from "./CandidatureLbaModal"
 import { useSubmitCandidature } from "./services/submit-candidature"
 

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import type { useDisclosure } from "@/common/hooks/use-disclosure"
+import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import CandidatureLbaFailed from "./CandidatureLbaFailed"

@@ -6,9 +6,9 @@ import type { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import type { IUserRecruteur } from "shared/models/users-recruteur.model"
 import { getUserStatus } from "shared/models/users-recruteur.model"
 
-import type { useDisclosure } from "@/common/hooks/use-disclosure"
-import { sortReactTableDate, sortReactTableString } from "@/common/utils/date-utils"
+import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { CustomTag } from "@/components/SearchForTrainingsAndJobs/components/CustomTag"
+import { sortReactTableDate, sortReactTableString } from "@/utils/date-utils"
 import { UserMenu } from "../users/_component/UserMenu"
 import { statusLabels, statusTagColor } from "../users/UsersList"
 

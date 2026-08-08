@@ -3,7 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import type { ILbaCompanyForAdminSearchJSON } from "shared/routes/update-lba-company.routes"
 
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
-import { sortReactTableString } from "@/common/utils/date-utils"
+import { sortReactTableString } from "@/utils/date-utils"
 
 export function getLbaCompaniesColumns({ onSelect }: { onSelect: (siret: string) => void }): ColumnDef<ILbaCompanyForAdminSearchJSON>[] {
   return [
