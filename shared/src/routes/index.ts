@@ -1,6 +1,6 @@
 import type { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
 import type z from "zod"
-import type { ZodType } from "zod"
+import type { core } from "zod"
 
 import { zProcessorAdminRoutes } from "./_private/admin/processor.admin.routes.js"
 import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
@@ -165,21 +165,21 @@ export const zRoutes: IRoutes = {
   patch: zRoutesPatch,
 } as const
 
-export type IResponse<S extends IRouteSchema> = S["response"][`200`] extends ZodType
+export type IResponse<S extends IRouteSchema> = S["response"][`200`] extends core.$ZodType
   ? Jsonify<z.output<S["response"][`200`]>>
-  : S["response"][`2${string}`] extends ZodType
+  : S["response"][`2${string}`] extends core.$ZodType
     ? Jsonify<z.output<S["response"][`2${string}`]>>
     : never
 
-export type IBody<S extends IRouteSchemaWrite> = S["body"] extends ZodType ? z.input<S["body"]> : never
+export type IBody<S extends IRouteSchemaWrite> = S["body"] extends core.$ZodType ? z.input<S["body"]> : never
 
-export type IQuery<S extends IRouteSchema> = S["querystring"] extends ZodType ? z.input<S["querystring"]> : never
+export type IQuery<S extends IRouteSchema> = S["querystring"] extends core.$ZodType ? z.input<S["querystring"]> : never
 
-export type IParam<S extends IRouteSchema> = S["params"] extends ZodType ? z.input<S["params"]> : never
+export type IParam<S extends IRouteSchema> = S["params"] extends core.$ZodType ? z.input<S["params"]> : never
 
 type IHeadersAuth<S extends IRouteSchema> = S extends { securityScheme: { auth: infer A } } ? (A extends "access-token" ? { authorization: `Bearer ${string}` } : object) : object
 
-type IHeaders<S extends IRouteSchema> = S["headers"] extends ZodType ? Omit<z.input<S["headers"]>, "referrer"> : object
+type IHeaders<S extends IRouteSchema> = S["headers"] extends core.$ZodType ? Omit<z.input<S["headers"]>, "referrer"> : object
 
 type IRequestRaw<S extends IRouteSchema> = {
   params: IParam<S>

@@ -2423,7 +2423,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/error@npm:^4.0.0":
+"@fastify/error@npm:^4.0.0, @fastify/error@npm:^4.2.0":
   version: 4.2.0
   resolution: "@fastify/error@npm:4.2.0"
   checksum: 92b1b368bf100fd78786d212515f481670f8102ffbbb4d43a561c3e9841fa57ef2b6af3360cad6770440a5548a1ec20e6e48e1784d7d45794ae88a2458abe962
@@ -8908,12 +8908,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cron-parser@npm:^5.1.0":
-  version: 5.4.0
-  resolution: "cron-parser@npm:5.4.0"
+"cron-parser@npm:^5.5.0":
+  version: 5.7.0
+  resolution: "cron-parser@npm:5.7.0"
   dependencies:
-    luxon: ^3.7.1
-  checksum: 7d4807fb3b2f5b8fe2b50ff90737fd5c60c49a26e344b4fd64eb6d5ebe9adf0b9f9adf3f890b11a1881b98327594008bf30b64b41ff74f8cd8281babd4ea637b
+    luxon: ^3.7.2
+  checksum: 54ae02b360cca2ca386dbec3623718c2859190ef8bdc5c0f67a72f20d0af9de6c2b60376c856e16550c92965efd98425839a26645a6f564349c63c3ab1608642
   languageName: node
   linkType: hard
 
@@ -10388,16 +10388,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastify-type-provider-zod@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "fastify-type-provider-zod@npm:4.0.2"
+"fastify-type-provider-zod@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "fastify-type-provider-zod@npm:7.0.0"
   dependencies:
-    "@fastify/error": ^4.0.0
-    zod-to-json-schema: ^3.23.3
+    "@fastify/error": ^4.2.0
   peerDependencies:
-    fastify: ^5.0.0
-    zod: ^3.14.2
-  checksum: 9da4d86dcee88c318ca4699221c49a32a4fc7f5416136994d90399d4920da3208d8aebb370bb402f2be5f47faaf77f0861a96f9be610c4e07fb62a7d749be83a
+    "@fastify/swagger": ">=9.5.1"
+    fastify: ^5.5.0
+    openapi-types: ^12.1.3
+    zod: ">=4.1.5"
+  checksum: fda5184aa0c44143e333f0334cf9eadef29612bcd2ac15b4951ae6a16089540fbe530ef854b29705e6220aaec8d392fcb69627a3e2c2e5c118b93b9feb6bf212
   languageName: node
   linkType: hard
 
@@ -12275,22 +12276,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"job-processor@npm:^1.10.3":
-  version: 1.10.3
-  resolution: "job-processor@npm:1.10.3"
+"job-processor@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "job-processor@npm:3.0.0"
   dependencies:
-    cron-parser: ^5.1.0
+    cron-parser: ^5.5.0
     date-fns: ^4.1.0
-    type-fest: ^4.39.0
+    type-fest: ^5.4.1
   peerDependencies:
-    "@codegouvfr/react-dsfr": ^1.9.11
-    "@mui/material": ^5.15.18
-    "@mui/x-data-grid": ^7.5.0
-    "@sentry/node": ^7.51.1 || ^8.0.0
+    "@codegouvfr/react-dsfr": ^1.25.3
+    "@mui/material": ^7.1.1
+    "@mui/x-data-grid": ^8.5.2
+    "@sentry/node": ^9.29.0 || ^10.0.0
     mongodb: "*"
-    react: ^18.0.0 || ^19.0.0
-    zod: ^3.0.0
-    zod-mongodb-schema: ^1.0.0
+    react: ^19.2.4
+    zod: ^3.25.64 || ^4.0.0
+    zod-mongodb-schema: ^2.0.0 || ^3.0.2
   peerDependenciesMeta:
     "@codegouvfr/react-dsfr":
       optional: true
@@ -12300,7 +12301,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 1ec02b3fc8b159755cb7ae8c9119d9daff1e76912cb0e6d27286aee6bb036fc03ff3c82678c4e61061c8e095defd27cbeb134abe307e9016ab30bb04dc978d0b
+  checksum: aac4a8fb07d043070c6aa34ceabf66d7b7ccdc5519d59dca4d9e9a42d993b5f39164a47e051bc48bd3408809cbdea03ee579507234eac1eb0a02cbcbd6f0de54
   languageName: node
   linkType: hard
 
@@ -12424,13 +12425,6 @@ __metadata:
   version: 1.0.0
   resolution: "json-schema-traverse@npm:1.0.0"
   checksum: 02f2f466cdb0362558b2f1fd5e15cce82ef55d60cd7f8fa828cf35ba74330f8d767fcae5c5c2adb7851fa811766c694b9405810879bc4e1ddd78a7c0e03658ad
-  languageName: node
-  linkType: hard
-
-"json-schema@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "json-schema@npm:0.4.0"
-  checksum: 66389434c3469e698da0df2e7ac5a3281bcff75e797a5c127db7c5b56270e01ae13d9afa3c03344f76e32e81678337a8c912bdbb75101c62e487dc3778461d72
   languageName: node
   linkType: hard
 
@@ -13194,7 +13188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.7.1":
+"luxon@npm:^3.7.1, luxon@npm:^3.7.2":
   version: 3.7.2
   resolution: "luxon@npm:3.7.2"
   checksum: fc115fd6a7acc2adb7df3476d20c672beb2985d2a034294282f2c31de8c07f29a15460f5a2b7dd0107797be0dab545ddbc64862662b059fb18c1931a726064f4
@@ -17423,14 +17417,14 @@ __metadata:
     fast-deep-equal: ^3.1.3
     fastest-levenshtein: ^1.0.16
     fastify: ^5.8.4
-    fastify-type-provider-zod: ^4.0.2
+    fastify-type-provider-zod: ^7.0.0
     file-type: ^22.0.0
     form-data: ^4.0.2
     geolib: ^3.3.4
     he: ^1.2.0
     iconv-lite: ^0.7.0
     is-semver: ^1.0.12
-    job-processor: ^1.10.3
+    job-processor: ^3.0.0
     jsonwebtoken: ^9.0.3
     lil-http-terminator: ^1.2.3
     lodash-es: ^4.17.23
@@ -17456,9 +17450,9 @@ __metadata:
     type-fest: ^5.2.0
     typescript: ^7.0.2
     xml2js: ^0.6.2
-    zod: ^3.24.3
+    zod: ^4.4.3
     zod-fixture: ^2.5.2
-    zod-mongodb-schema: ^1.0.2
+    zod-mongodb-schema: ^3.0.2
   languageName: unknown
   linkType: soft
 
@@ -17522,9 +17516,8 @@ __metadata:
     mongodb: ^7.0.0
     type-fest: ^5.2.0
     typescript: ^7.0.2
-    zod: ^3.24.3
-    zod-i18n-map: ^2.27.0
-    zod-mongodb-schema: ^1.0.2
+    zod: ^4.4.3
+    zod-mongodb-schema: ^3.0.2
   languageName: unknown
   linkType: soft
 
@@ -18959,19 +18952,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.39.0, type-fest@npm:^4.39.1, type-fest@npm:^4.6.0":
+"type-fest@npm:^4.39.1, type-fest@npm:^4.6.0":
   version: 4.41.0
   resolution: "type-fest@npm:4.41.0"
   checksum: 7055c0e3eb188425d07403f1d5dc175ca4c4f093556f26871fe22041bc93d137d54bef5851afa320638ca1379106c594f5aa153caa654ac1a7f22c71588a4e80
   languageName: node
   linkType: hard
 
-"type-fest@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "type-fest@npm:5.2.0"
+"type-fest@npm:^5.2.0, type-fest@npm:^5.4.1":
+  version: 5.8.0
+  resolution: "type-fest@npm:5.8.0"
   dependencies:
     tagged-tag: ^1.0.0
-  checksum: 238eb0f14bd840db77c834ce5ed264d28aa79d1ed1e7b8606985f17cc01c9c1b6f266f780a132512764f81816e51b7a72a6e537188702fb985e1971ad2dcc920
+  checksum: d234cd3ad6b0d57641223ca1fdeb7b4162c8656e50184f3d8e4a8a8b580519b959c0a5bca6c80609b90bba7e2769b69eb941f0293e27d49bd07273f7f93c9ab9
   languageName: node
   linkType: hard
 
@@ -19182,8 +19175,8 @@ __metadata:
     type-fest: ^5.2.0
     typescript: ^7.0.2
     yup: ^1.7.1
-    zod: ^3.24.3
-    zod-formik-adapter: ^1.3.0
+    zod: ^4.4.3
+    zod-formik-adapter: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -20133,40 +20126,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-formik-adapter@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "zod-formik-adapter@npm:1.3.0"
+"zod-formik-adapter@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "zod-formik-adapter@npm:2.0.0"
   peerDependencies:
     formik: ^2.2.9
-    zod: ^3.22.4
-  checksum: 5c77666105b89c35255d42a85e60c30ee2b1546029a633fdc74f8d3ee2fba618ce6f6bb16ccf79c164fba33ca78fa72e94902590e2966b081b20c71ab7b05b9c
+    zod: 4.x
+  checksum: 22ea8ea9c97f6c9c48e2731b6f7153fc6688b956ac9c246d706982decb9909d4a6e8cb323f8bc70d7e3ea79e957387326cd3d237f9c59f61a6d49d51c45010e9
   languageName: node
   linkType: hard
 
-"zod-i18n-map@npm:^2.27.0":
-  version: 2.27.0
-  resolution: "zod-i18n-map@npm:2.27.0"
+"zod-mongodb-schema@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "zod-mongodb-schema@npm:3.0.2"
   peerDependencies:
-    i18next: ">=21.3.0"
-    zod: ">=3.17.0"
-  checksum: 9c06867e6f8ee883ccde1b980477563409cf89759a7af345cafd2da5a3d241892f3372e37ddf482a7b7dc40602079292870b64c3c82263141feae341b80da1c1
+    bson: ^7.0.0
+    zod: ^3.25.64 || ^4.0.0
+  checksum: 19566ba6b1aaa4eee88778c650279642bfaa6ec979b747a50e2f04a382028aba7b9edd9bcd316453c0df7b8ef813349ee0fc130b4e7b4fe60da28338c8edf94f
   languageName: node
   linkType: hard
 
-"zod-mongodb-schema@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "zod-mongodb-schema@npm:1.0.2"
-  dependencies:
-    json-schema: ^0.4.0
-    zod-to-json-schema: ^3.21.4
-  peerDependencies:
-    bson: " ^5.0.0 || ^6.0.0"
-    zod: ^3.22.4
-  checksum: 63f872bfcfdaeb83061452e7137d7763a93b89a8f423a0dc2b5e904d295b7e7f3d204bec0691a0c344ef7cc1afb0a3d84a1508e66f472d16e3401f3db4f8d31f
-  languageName: node
-  linkType: hard
-
-"zod-to-json-schema@npm:^3.21.4, zod-to-json-schema@npm:^3.23.3, zod-to-json-schema@npm:^3.25.0":
+"zod-to-json-schema@npm:^3.25.0":
   version: 3.25.2
   resolution: "zod-to-json-schema@npm:3.25.2"
   peerDependencies:
@@ -20175,17 +20155,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.24.3, zod@npm:^3.25.76":
-  version: 3.25.76
-  resolution: "zod@npm:3.25.76"
-  checksum: c9a403a62b329188a5f6bd24d5d935d2bba345f7ab8151d1baa1505b5da9f227fb139354b043711490c798e91f3df75991395e40142e6510a4b16409f302b849
-  languageName: node
-  linkType: hard
-
-"zod@npm:^3.25.0 || ^4.0.0, zod@npm:^4.1.11":
+"zod@npm:^3.25.0 || ^4.0.0, zod@npm:^4.1.11, zod@npm:^4.4.3":
   version: 4.4.3
   resolution: "zod@npm:4.4.3"
   checksum: bf236fdee7a5a5ec645eef5bfea3aad34e7df912931c2a23bc17e5b59882482751da42392916529da52ff9bc70f584797a5d496f1fb81f2d1a4c90fdd3922d2a
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.25.76":
+  version: 3.25.76
+  resolution: "zod@npm:3.25.76"
+  checksum: c9a403a62b329188a5f6bd24d5d935d2bba345f7ab8151d1baa1505b5da9f227fb139354b043711490c798e91f3df75991395e40142e6510a4b16409f302b849
   languageName: node
   linkType: hard
 

@@ -5,15 +5,13 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
-export const ZSession = z
-  .object({
-    _id: zObjectId,
-    token: z.string().describe("Token de la session"),
-    updated_at: z.date().optional().describe("Date de mise à jour en base de données"),
-    created_at: z.date().optional().describe("Date d'ajout en base de données"),
-    expires_at: z.date().optional().describe("Date d'expiration en base de données"),
-  })
-  .strict()
+export const ZSession = z.strictObject({
+  _id: zObjectId,
+  token: z.string().describe("Token de la session"),
+  updated_at: z.date().optional().describe("Date de mise à jour en base de données"),
+  created_at: z.date().optional().describe("Date d'ajout en base de données"),
+  expires_at: z.date().optional().describe("Date d'expiration en base de données"),
+})
 
 export type ISession = z.output<typeof ZSession>
 export type ISessionJson = Jsonify<z.input<typeof ZSession>>

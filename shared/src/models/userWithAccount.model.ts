@@ -15,34 +15,30 @@ export enum UserEventType {
 
 export const ZValidationUtilisateur = extensions.buildEnum(VALIDATION_UTILISATEUR)
 
-export const ZUserStatusEvent = z
-  .object({
-    validation_type: ZValidationUtilisateur,
-    status: extensions.buildEnum(UserEventType),
-    reason: z.string(),
-    granted_by: z.string().nullish(),
-    date: z.date(),
-  })
-  .strict()
+export const ZUserStatusEvent = z.strictObject({
+  validation_type: ZValidationUtilisateur,
+  status: extensions.buildEnum(UserEventType),
+  reason: z.string(),
+  granted_by: z.string().nullish(),
+  date: z.date(),
+})
 export type IUserStatusEvent = z.output<typeof ZUserStatusEvent>
 export type IUserStatusEventJson = Jsonify<z.input<typeof ZUserStatusEvent>>
 
 const collectionName = "userswithaccounts" as const
 
-export const ZUserWithAccount = z
-  .object({
-    _id: zObjectId,
-    origin: z.string().nullish(),
-    status: z.array(ZUserStatusEvent),
-    first_name: z.string(),
-    last_name: z.string(),
-    email: z.string().email(),
-    phone: extensions.phone(),
-    last_action_date: z.date(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-  })
-  .strict()
+export const ZUserWithAccount = z.strictObject({
+  _id: zObjectId,
+  origin: z.string().nullish(),
+  status: z.array(ZUserStatusEvent),
+  first_name: z.string(),
+  last_name: z.string(),
+  email: z.email(),
+  phone: extensions.phone(),
+  last_action_date: z.date(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
 export type IUserWithAccount = z.output<typeof ZUserWithAccount>
 export type IUserWithAccountJson = Jsonify<z.input<typeof ZUserWithAccount>>
 

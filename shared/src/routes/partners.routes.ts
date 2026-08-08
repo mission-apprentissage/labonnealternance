@@ -8,7 +8,7 @@ export const zPartnersRoutes = {
       method: "get",
       path: "/partners/parcoursup/formations",
       response: {
-        "200": z.object({ ids: z.array(z.string()) }).strict(),
+        "200": z.strictObject({ ids: z.array(z.string()) }),
       },
       securityScheme: null,
     },

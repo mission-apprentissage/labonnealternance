@@ -110,7 +110,7 @@ export const zJobSearchApiV3Query = z
   .object({
     latitude: extensions.latitude({ coerce: true }).nullable().default(null),
     longitude: extensions.longitude({ coerce: true }).nullable().default(null),
-    radius: z.coerce.number().min(0).max(200).default(30),
+    radius: z.coerce.number<number>().min(0).max(200).default(30),
     target_diploma_level: zDiplomaEuropeanLevel.optional(),
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
@@ -157,14 +157,14 @@ export const zJobOfferApiWriteV3 = z.object({
       start: z
         .string({ message: "Expected ISO 8601 date string" })
         .datetime({ offset: true, message: "Expected ISO 8601 date string" })
-        .pipe(z.coerce.date())
+        .transform((value) => new Date(value))
         .nullable()
         .default(null),
       duration: ZJobsPartnersOfferPrivate.shape.contract_duration.default(null),
       type: ZJobsPartnersOfferPrivate.shape.contract_type.default([TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]),
       remote: ZJobsPartnersOfferPrivate.shape.contract_remote.default(null),
     })
-    .default({}),
+    .prefault({}),
   identifier: z
     .object({
       partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
@@ -188,25 +188,23 @@ export const zJobOfferApiWriteV3 = z.object({
         creation: z
           .string({ message: "Expected ISO 8601 date string" })
           .datetime({ offset: true, message: "Expected ISO 8601 date string" })
-          .pipe(
-            z.coerce.date().refine((value) => value.getTime() < Date.now() + TIME_CLOCK_TOLERANCE, {
-              message: "Creation date cannot be in the future",
-            })
-          )
+          .transform((value) => new Date(value))
+          .refine((value) => value.getTime() < Date.now() + TIME_CLOCK_TOLERANCE, {
+            message: "Creation date cannot be in the future",
+          })
           .nullable()
           .default(null),
         expiration: z
           .string({ message: "Expected ISO 8601 date string" })
           .datetime({ offset: true, message: "Expected ISO 8601 date string" })
-          .pipe(
-            z.coerce.date().refine((value) => value === null || value.getTime() > Date.now() - TIME_CLOCK_TOLERANCE, {
-              message: "Expiration date cannot be in the past",
-            })
-          )
+          .transform((value) => new Date(value))
+          .refine((value) => value === null || value.getTime() > Date.now() - TIME_CLOCK_TOLERANCE, {
+            message: "Expiration date cannot be in the past",
+          })
           .nullable()
           .default(null),
       })
-      .default({}),
+      .prefault({}),
     opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.default(1),
     origin: ZJobsPartnersOfferPrivate.shape.offer_origin,
     multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast,
@@ -218,7 +216,6 @@ export const zJobOfferApiWriteV3 = z.object({
       phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
       url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
     })
-    .required()
     .superRefine((data, ctx) => {
       const keys = ["url", "email", "phone"] as const
       if (keys.every((key) => data[key] == null)) {
@@ -230,8 +227,6 @@ export const zJobOfferApiWriteV3 = z.object({
           })
         })
       }
-
-      return data
     }),
   workplace: z.object({
     siret: extensions.siret,
@@ -243,7 +238,7 @@ export const zJobOfferApiWriteV3 = z.object({
         address: z.string().nullable().default(null),
       })
       .nullable()
-      .default({}),
+      .prefault({}),
   }),
 })
 

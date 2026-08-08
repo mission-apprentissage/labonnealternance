@@ -11,16 +11,14 @@ export enum EntrepriseEngagementSources {
   LES_ENTREPRISE_S_ENGAGENT = "les",
 }
 
-export const ZReferentielEngagementEntreprise = z
-  .object({
-    _id: zObjectId,
-    siret: z.string(),
-    engagement: z.enum(["handicap"]),
-    sources: z.array(z.enum([EntrepriseEngagementSources.FRANCE_TRAVAIL, EntrepriseEngagementSources.LBA, EntrepriseEngagementSources.LES_ENTREPRISE_S_ENGAGENT])),
-    created_at: z.date(),
-    updated_at: z.date(),
-  })
-  .strict()
+export const ZReferentielEngagementEntreprise = z.strictObject({
+  _id: zObjectId,
+  siret: z.string(),
+  engagement: z.enum(["handicap"]),
+  sources: z.array(z.enum([EntrepriseEngagementSources.FRANCE_TRAVAIL, EntrepriseEngagementSources.LBA, EntrepriseEngagementSources.LES_ENTREPRISE_S_ENGAGENT])),
+  created_at: z.date(),
+  updated_at: z.date(),
+})
 
 export type IReferentielEngagementEntreprise = z.output<typeof ZReferentielEngagementEntreprise>
 

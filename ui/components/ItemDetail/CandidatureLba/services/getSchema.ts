@@ -30,11 +30,11 @@ export const ApplicationFormikSchema = ZApplicationApiPrivate.pick({
   applicant_formation_description: true,
   applicant_rythm_description: true,
 }).extend({
-  applicant_first_name: z.string({ required_error: "⚠ Le prénom est obligatoire" }).trim(),
-  applicant_last_name: z.string({ required_error: "⚠ Le nom est obligatoire" }).trim(),
-  applicant_email: z.string({ required_error: "⚠ L'adresse email est obligatoire" }).email("⚠ Adresse e-mail invalide").trim(),
+  applicant_first_name: z.string({ error: "⚠ Le prénom est obligatoire" }).trim(),
+  applicant_last_name: z.string({ error: "⚠ Le nom est obligatoire" }).trim(),
+  applicant_email: z.string({ error: "⚠ L'adresse email est obligatoire" }).email("⚠ Adresse e-mail invalide").trim(),
   applicant_phone: z
-    .string({ required_error: "⚠ Le téléphone est obligatoire" })
+    .string({ error: "⚠ Le téléphone est obligatoire" })
     .trim()
     .refine(validatePhone, { message: "Téléphone non valide : veuillez utiliser le format international (+33XXX...) ou national (06XXX...)" }),
 })

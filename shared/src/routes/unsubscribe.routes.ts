@@ -17,12 +17,10 @@ export const zUnsubscribeRoute = {
     "/unsubscribe": {
       method: "post",
       path: "/unsubscribe",
-      body: z
-        .object({
-          email: z.string().email(),
-          reason: z.string(),
-        })
-        .strict(),
+      body: z.strictObject({
+        email: z.email(),
+        reason: z.string(),
+      }),
       response: {
         "200": z.union([
           z.object({
@@ -38,13 +36,11 @@ export const zUnsubscribeRoute = {
     "/unsubscribe/sirets": {
       method: "post",
       path: "/unsubscribe/sirets",
-      body: z
-        .object({
-          email: z.string().email(),
-          reason: z.string(),
-          sirets: z.array(extensions.siret).min(1),
-        })
-        .strict(),
+      body: z.strictObject({
+        email: z.email(),
+        reason: z.string(),
+        sirets: z.array(extensions.siret).min(1),
+      }),
       response: {
         "200": z.object({
           modifiedCount: z.number(),

@@ -8,19 +8,17 @@ import { zObjectId } from "./common.js"
 
 const collectionName = "cfas" as const
 
-export const zCFA = z
-  .object({
-    _id: zObjectId,
-    createdAt: z.date(),
-    updatedAt: z.date(),
-    siret: z.string(),
-    raison_sociale: z.string().nullish(),
-    enseigne: z.string().nullish(),
-    address_detail: ZGlobalAddress.nullish(),
-    address: z.string().nullish(),
-    geo_coordinates: z.string().nullish(),
-  })
-  .strict()
+export const zCFA = z.strictObject({
+  _id: zObjectId,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  siret: z.string(),
+  raison_sociale: z.string().nullish(),
+  enseigne: z.string().nullish(),
+  address_detail: ZGlobalAddress.nullish(),
+  address: z.string().nullish(),
+  geo_coordinates: z.string().nullish(),
+})
 
 export type ICFA = z.output<typeof zCFA>
 export type ICFAJson = Jsonify<z.input<typeof zCFA>>

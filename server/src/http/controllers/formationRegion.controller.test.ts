@@ -184,6 +184,6 @@ describe("formationRegionV1", () => {
 
     expect(res.statusCode).toBe(400)
     expect(JSON.parse(res.body).error).toEqual("Bad Request")
-    expect(JSON.parse(res.body).message).toContain("querystring.diploma: Invalid enum value.")
+    expect(JSON.parse(res.body).message).toContain("querystring.diploma: Invalid option")
   })
 })

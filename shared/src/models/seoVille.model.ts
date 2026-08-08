@@ -60,22 +60,20 @@ const ZSeoVilleContent = z.object({
   loisirs: ZSeoVilleLoisirs,
 })
 
-export const ZSeoVille = z
-  .object({
-    _id: zObjectId,
-    ville: z.string(),
-    cp: z.string().min(5).max(5),
-    slug: z.string(),
-    region: z.string(),
-    geopoint: z.object({ lat: z.number(), long: z.number() }),
-    job_count: z.number(),
-    recruteur_count: z.number(),
-    content: ZSeoVilleContent,
-    cards: z.array(ZSeoJobCard),
-    created_at: z.date(),
-    updated_at: z.date(),
-  })
-  .strict()
+export const ZSeoVille = z.strictObject({
+  _id: zObjectId,
+  ville: z.string(),
+  cp: z.string().min(5).max(5),
+  slug: z.string(),
+  region: z.string(),
+  geopoint: z.object({ lat: z.number(), long: z.number() }),
+  job_count: z.number(),
+  recruteur_count: z.number(),
+  content: ZSeoVilleContent,
+  cards: z.array(ZSeoJobCard),
+  created_at: z.date(),
+  updated_at: z.date(),
+})
 
 export type ISeoVille = z.output<typeof ZSeoVille>
 

@@ -23,6 +23,7 @@ import type {
   IJobSearchApiV3Response,
 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { JOB_PUBLISHING_STATUS, jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobRecruiterApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
+import { treeifyError } from "zod"
 import { logger } from "@/common/logger"
 import type { IApiError } from "@/common/utils/errorManager"
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
@@ -554,7 +555,7 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   const jobs = [...offreEmploiLba, ...franceTravail, ...offreEmploiPartenaire].filter((job) => {
     const parsedJob = zJobOfferApiReadV3.safeParse(job)
     if (!parsedJob.success) {
-      const error = internal("jobOpportunity.service.ts-findJobsOpportunities: invalid job offer", { job, error: parsedJob.error.format() })
+      const error = internal("jobOpportunity.service.ts-findJobsOpportunities: invalid job offer", { job, error: treeifyError(parsedJob.error) })
       logger.error(error)
       context.addWarning("JOB_OFFER_FORMATING_ERROR")
       sentryCaptureException(error)
@@ -564,7 +565,7 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   const recruiters = convertLbaCompanyToJobRecruiterApi(recruteurLba).filter((recruteur) => {
     const parsedRecruiter = zJobRecruiterApiReadV3.safeParse(recruteur)
     if (!parsedRecruiter.success) {
-      const error = internal("jobOpportunity.service.ts-findJobsOpportunities: invalid recruiter", { recruteur, error: parsedRecruiter.error.format() })
+      const error = internal("jobOpportunity.service.ts-findJobsOpportunities: invalid recruiter", { recruteur, error: treeifyError(parsedRecruiter.error) })
       logger.error(error)
       context.addWarning("RECRUITERS_FORMATING_ERROR")
       sentryCaptureException(error)
@@ -776,7 +777,7 @@ function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpp
   if (!parsedJob.success) {
     const error = internal("jobOpportunity.service.ts-validateJobOffer: invalid job offer", {
       job,
-      error: parsedJob.error.format(),
+      error: treeifyError(parsedJob.error),
       id: id.toString(),
     })
 

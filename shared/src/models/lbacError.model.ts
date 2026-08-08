@@ -1,33 +1,27 @@
 import { MAX_SEARCH_ROMES } from "../constants/search.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
-export const ZLbacError = z
-  .object({
-    error: z.string(),
-    error_messages: z
-      .array(z.string())
+export const ZLbacError = z.strictObject({
+  error: z.string(),
+  error_messages: z
+    .array(z.string())
 
-      .nullish(),
-  })
-  .strict()
+    .nullish(),
+})
 
-export const ZApiError = z
-  .object({
-    result: z.string().optional(),
-    error: z.string(),
-    message: z.any().optional(),
-    status: z.number().optional(),
-    statusText: z.string().optional(),
-    error_messages: z
-      .array(z.string())
+export const ZApiError = z.strictObject({
+  result: z.string().optional(),
+  error: z.string(),
+  message: z.any().optional(),
+  status: z.number().optional(),
+  statusText: z.string().optional(),
+  error_messages: z
+    .array(z.string())
 
-      .nullish(),
-  })
-  .strict()
+    .nullish(),
+})
 
-export const ZLbarError = z
-  .object({
-    error: z.boolean(),
-    message: z.string(),
-  })
-  .strict()
+export const ZLbarError = z.strictObject({
+  error: z.boolean(),
+  message: z.string(),
+})

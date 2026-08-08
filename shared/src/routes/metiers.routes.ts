@@ -8,11 +8,9 @@ export const zMetiersRoutes = {
     "/v1/metiers/metiersParFormation/:cfd": {
       method: "get",
       path: "/v1/metiers/metiersParFormation/:cfd",
-      params: z
-        .object({
-          cfd: z.string().min(1),
-        })
-        .strict(),
+      params: z.strictObject({
+        cfd: z.string().min(1),
+      }),
       response: {
         200: ZMetiers,
       },
@@ -29,33 +27,27 @@ export const zMetiersRoutes = {
     "/v1/metiers": {
       method: "get",
       path: "/v1/metiers",
-      querystring: z
-        .object({
-          title: z.string(),
-          romes: z
-            .string()
+      querystring: z.strictObject({
+        title: z.string(),
+        romes: z
+          .string()
 
-            .optional(),
-          rncps: z.string().optional(),
-        })
-        .strict(),
+          .optional(),
+        rncps: z.string().optional(),
+      }),
       response: {
-        200: z
-          .object({
-            labelsAndRomes: ZMetierEnrichiArray,
-          })
-          .strict(),
+        200: z.strictObject({
+          labelsAndRomes: ZMetierEnrichiArray,
+        }),
       },
       securityScheme: null,
     },
     "/v1/metiers/intitule": {
       method: "get",
       path: "/v1/metiers/intitule",
-      querystring: z
-        .object({
-          label: z.string().nonempty(),
-        })
-        .strict(),
+      querystring: z.strictObject({
+        label: z.string().min(1),
+      }),
       response: {
         200: ZAppellationsRomes.strict(),
       },

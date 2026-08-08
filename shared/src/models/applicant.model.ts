@@ -1,4 +1,3 @@
-import { removeUrlsFromText } from "../helpers/common.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
@@ -7,18 +6,16 @@ import { zObjectId } from "./common.js"
 
 const collectionName = "applicants" as const
 
-export const ZApplicant = z
-  .object({
-    _id: zObjectId,
-    firstname: z.string().min(1).transform(removeUrlsFromText).describe("Prenom du candidat"),
-    lastname: z.string().min(1).transform(removeUrlsFromText).describe("Nom du candidat"),
-    email: z.string().email().describe("Email du candidat"),
-    phone: extensions.telephone.describe("Téléphone du candidat"),
-    last_connection: z.date().describe("Date de dernière connexion du candidat"),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-  })
-  .strict()
+export const ZApplicant = z.strictObject({
+  _id: zObjectId,
+  firstname: extensions.withoutUrls(z.string().min(1)).describe("Prenom du candidat"),
+  lastname: extensions.withoutUrls(z.string().min(1)).describe("Nom du candidat"),
+  email: z.email().describe("Email du candidat"),
+  phone: extensions.telephone.describe("Téléphone du candidat"),
+  last_connection: z.date().describe("Date de dernière connexion du candidat"),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
 export type IApplicant = z.output<typeof ZApplicant>
 
 export const ZApplicantNew = ZApplicant.omit({

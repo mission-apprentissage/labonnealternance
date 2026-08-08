@@ -14,16 +14,14 @@ export enum EMAIL_LOG_TYPE {
   INTENTION_ENTRETIEN = "INTENTION_ENTRETIEN",
   INTENTION_REFUS = "INTENTION_REFUS",
 }
-export const ZApplicantEmailLog = z
-  .object({
-    _id: zObjectId,
-    applicant_id: zObjectId,
-    application_id: zObjectId.nullable(),
-    type: extensions.buildEnum(EMAIL_LOG_TYPE),
-    message_id: z.string().nullable(),
-    createdAt: z.date(),
-  })
-  .strict()
+export const ZApplicantEmailLog = z.strictObject({
+  _id: zObjectId,
+  applicant_id: zObjectId,
+  application_id: zObjectId.nullable(),
+  type: extensions.buildEnum(EMAIL_LOG_TYPE),
+  message_id: z.string().nullable(),
+  createdAt: z.date(),
+})
 
 export type IApplicantEmailLog = z.output<typeof ZApplicantEmailLog>
 

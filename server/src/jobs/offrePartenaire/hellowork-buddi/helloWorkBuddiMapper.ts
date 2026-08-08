@@ -9,26 +9,24 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { z } from "zod"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-export const ZHelloWorkBuddiJob = z
-  .object({
-    reference: z.string(),
-    contract_start_date: z.string().nullish(),
-    contract: z.string().nullish(),
-    title: z.string().nullish(),
-    description: z.string().nullish(),
-    benefits: z.string().nullish(),
-    profile: z.string().nullish(),
-    publication_date: z.string().nullish(),
-    siret: z.string().nullish(),
-    company_title: z.string().nullish(),
-    company_description: z.string().nullish(),
-    apply_mail: z.string().nullish(),
-    city: z.string().nullish(),
-    postal_code: z.string().nullish(),
-    geoloc: z.string().nullish(),
-    company_sector: z.string().nullish(),
-  })
-  .passthrough()
+export const ZHelloWorkBuddiJob = z.looseObject({
+  reference: z.string(),
+  contract_start_date: z.string().nullish(),
+  contract: z.string().nullish(),
+  title: z.string().nullish(),
+  description: z.string().nullish(),
+  benefits: z.string().nullish(),
+  profile: z.string().nullish(),
+  publication_date: z.string().nullish(),
+  siret: z.string().nullish(),
+  company_title: z.string().nullish(),
+  company_description: z.string().nullish(),
+  apply_mail: z.string().nullish(),
+  city: z.string().nullish(),
+  postal_code: z.string().nullish(),
+  geoloc: z.string().nullish(),
+  company_sector: z.string().nullish(),
+})
 
 export type IHelloWorkBuddiJob = z.output<typeof ZHelloWorkBuddiJob>
 

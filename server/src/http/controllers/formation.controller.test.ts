@@ -120,9 +120,9 @@ describe("formationV1", () => {
             {
               code: "invalid_type",
               expected: "number",
-              message: "Expected number, received nan",
+              message: "Invalid input: expected number, received NaN",
               path: ["radius"],
-              received: "nan",
+              received: "NaN",
             },
           ],
           name: "ZodError",
@@ -131,7 +131,7 @@ describe("formationV1", () => {
         },
       },
       error: "Bad Request",
-      message: "querystring.radius: Expected number, received nan",
+      message: "querystring.radius: Invalid input: expected number, received NaN",
       statusCode: 400,
     })
   })
@@ -158,9 +158,9 @@ describe("formationV1", () => {
             {
               code: "invalid_type",
               expected: "number",
-              message: "Expected number, received nan",
+              message: "Invalid input: expected number, received NaN",
               path: ["latitude"],
-              received: "nan",
+              received: "NaN",
             },
           ],
           name: "ZodError",
@@ -169,7 +169,7 @@ describe("formationV1", () => {
         },
       },
       error: "Bad Request",
-      message: "querystring.latitude: Expected number, received nan",
+      message: "querystring.latitude: Invalid input: expected number, received NaN",
       statusCode: 400,
     })
   })
@@ -196,9 +196,9 @@ describe("formationV1", () => {
             {
               code: "invalid_type",
               expected: "number",
-              message: "Expected number, received nan",
+              message: "Invalid input: expected number, received NaN",
               path: ["longitude"],
-              received: "nan",
+              received: "NaN",
             },
           ],
           name: "ZodError",
@@ -207,7 +207,7 @@ describe("formationV1", () => {
         },
       },
       error: "Bad Request",
-      message: "querystring.longitude: Expected number, received nan",
+      message: "querystring.longitude: Invalid input: expected number, received NaN",
       statusCode: 400,
     })
   })

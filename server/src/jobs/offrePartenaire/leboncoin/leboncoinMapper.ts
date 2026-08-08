@@ -6,18 +6,16 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { z } from "zod"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-export const ZLeboncoinJob = z
-  .object({
-    redirection: z.string().describe("url de l'offre"),
-    ville: z.string(),
-    entreprise: z.string(),
-    description: z.string(),
-    titre: z.string(),
-    identifiant: z.string(),
-    région: z.string(),
-    "code postal": z.string(),
-  })
-  .passthrough()
+export const ZLeboncoinJob = z.looseObject({
+  redirection: z.string().describe("url de l'offre"),
+  ville: z.string(),
+  entreprise: z.string(),
+  description: z.string(),
+  titre: z.string(),
+  identifiant: z.string(),
+  région: z.string(),
+  "code postal": z.string(),
+})
 
 export type ILeboncoinJob = z.output<typeof ZLeboncoinJob>
 

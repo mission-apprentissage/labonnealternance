@@ -12,7 +12,7 @@ export const zFormationsRoutes = {
     "/admin/formations": {
       method: "get",
       path: "/admin/formations",
-      querystring: z.object({ search_item: z.string() }).strict(),
+      querystring: z.strictObject({ search_item: z.string() }),
       response: {
         "200": z.array(zFormationCatalogueSchema),
       },
@@ -32,7 +32,7 @@ export const zFormationsRoutes = {
       method: "get",
       path: "/v1/formations",
       querystring: z
-        .object({
+        .strictObject({
           romes: zRomesParams("romeDomain"),
           romeDomain: z.string().optional(),
           latitude: ZLatitudeParam,
@@ -42,7 +42,6 @@ export const zFormationsRoutes = {
           caller: zCallerParam.optional(),
           options: zGetFormationOptions,
         })
-        .strict()
         .passthrough(),
       headers: zRefererHeaders,
       response: {
@@ -71,16 +70,12 @@ export const zFormationsRoutes = {
     "/v1/formations/formation/:id": {
       method: "get",
       path: "/v1/formations/formation/:id",
-      querystring: z
-        .object({
-          caller: zCallerParam,
-        })
-        .strict(),
-      params: z
-        .object({
-          id: z.string(),
-        })
-        .strict(),
+      querystring: z.strictObject({
+        caller: zCallerParam,
+      }),
+      params: z.strictObject({
+        id: z.string(),
+      }),
       response: {
         "200": ZLbaItemFormationResult,
         "400": z.union([ZResError, ZLbacError]),
@@ -92,11 +87,9 @@ export const zFormationsRoutes = {
     "/_private/formations/:id": {
       method: "get",
       path: "/_private/formations/:id",
-      params: z
-        .object({
-          id: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        id: z.string(),
+      }),
       response: {
         "200": ZLbaItemFormation2,
       },

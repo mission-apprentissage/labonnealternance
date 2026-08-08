@@ -1,6 +1,6 @@
-import { zObjectId } from "zod-mongodb-schema"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
+import { zObjectId } from "../models/common.js"
 import { JOB_START_TYPE, JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
 import { ZRecruiter, ZRecruiterWithRomeDetailAndApplicationCount } from "../models/recruiter.model.js"
 import { ZPersonNameInput } from "../models/usersRecruteur.model.js"
@@ -8,26 +8,24 @@ import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
 
-const zJobClosingBody = z
-  .object({
-    job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
-    job_status_comment: z.string(),
-    job_status_comment_precision: z.string().optional(),
-    job_recruitment_channel: z.string().optional(),
-  })
-  .strict()
+const zJobClosingBody = z.strictObject({
+  job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
+  job_status_comment: z.string(),
+  job_status_comment_precision: z.string().optional(),
+  job_recruitment_channel: z.string().optional(),
+})
 
 // alreadyClosed : l'offre n'était déjà plus ACTIVE au moment de la requête (ex: lien de clôture utilisé
 // deux fois) — la mise à jour du motif est appliquée quand même, mais le front peut adapter son message.
-const zJobClosingResponse = z.object({ alreadyClosed: z.boolean() }).strict()
-const zInvalidRessourceError = z.object({ status: z.literal("INVALID_RESSOURCE"), message: z.string() }).strict()
+const zJobClosingResponse = z.strictObject({ alreadyClosed: z.boolean() })
+const zInvalidRessourceError = z.strictObject({ status: z.literal("INVALID_RESSOURCE"), message: z.string() })
 
 export const zFormulaireRoute = {
   get: {
     "/formulaire/:establishment_id": {
       method: "get",
       path: "/formulaire/:establishment_id",
-      params: z.object({ establishment_id: z.string() }).strict(),
+      params: z.strictObject({ establishment_id: z.string() }),
       response: {
         "200": ZRecruiterWithRomeDetailAndApplicationCount,
       },
@@ -42,7 +40,7 @@ export const zFormulaireRoute = {
     "/formulaire/:establishment_id/by-token": {
       method: "get",
       path: "/formulaire/:establishment_id/by-token",
-      params: z.object({ establishment_id: z.string() }).strict(),
+      params: z.strictObject({ establishment_id: z.string() }),
       response: {
         "200": ZRecruiterWithRomeDetailAndApplicationCount,
       },
@@ -57,7 +55,7 @@ export const zFormulaireRoute = {
     "/formulaire/delegation/:establishment_id": {
       method: "get",
       path: "/formulaire/delegation/:establishment_id",
-      params: z.object({ establishment_id: z.string() }).strict(),
+      params: z.strictObject({ establishment_id: z.string() }),
       response: {
         "200": ZRecruiter,
       },
@@ -71,7 +69,7 @@ export const zFormulaireRoute = {
       method: "get",
       path: "/formulaire/offre/f/:jobId",
       // TODO_SECURITY_FIX faire un ZJobPublic sans la partie delegations
-      params: z.object({ jobId: zObjectId }).strict(),
+      params: z.strictObject({ jobId: zObjectId }),
       response: {
         "200": ZJob,
       },
@@ -88,17 +86,15 @@ export const zFormulaireRoute = {
     "/user/:userId/formulaire": {
       method: "post",
       path: "/user/:userId/formulaire",
-      params: z.object({ userId: zObjectId }).strict(),
-      body: z
-        .object({
-          establishment_siret: z.string(),
-          email: z.string(),
-          last_name: ZPersonNameInput,
-          first_name: ZPersonNameInput,
-          phone: z.string(),
-          isDeclarationExact: z.boolean().optional(),
-        })
-        .strict(),
+      params: z.strictObject({ userId: zObjectId }),
+      body: z.strictObject({
+        establishment_siret: z.string(),
+        email: z.string(),
+        last_name: ZPersonNameInput,
+        first_name: ZPersonNameInput,
+        phone: z.string(),
+        isDeclarationExact: z.boolean().optional(),
+      }),
       response: {
         "200": z.object({
           establishment_id: z.string(),
@@ -115,12 +111,12 @@ export const zFormulaireRoute = {
     "/formulaire/:establishment_id/informations": {
       method: "post",
       path: "/formulaire/:establishment_id/informations",
-      params: z.object({ establishment_id: z.string() }).strict(),
+      params: z.strictObject({ establishment_id: z.string() }),
       body: ZUserWithAccountFields.partial().extend({
         isDeclarationExact: z.boolean().optional(),
       }),
       response: {
-        "200": z.object({ ok: z.boolean() }).strict(),
+        "200": z.strictObject({ ok: z.boolean() }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -134,9 +130,9 @@ export const zFormulaireRoute = {
       method: "post",
       path: "/formulaire/:establishment_id/offre",
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
-      params: z.object({ establishment_id: z.string() }).strict(),
+      params: z.strictObject({ establishment_id: z.string() }),
       // TODO nonstrict TO BE FIXED on the frontend
-      body: ZJobCreate.nonstrict(),
+      body: ZJobCreate.passthrough(),
       response: {
         "200": z.object({ _id: zObjectId }),
       },
@@ -152,16 +148,14 @@ export const zFormulaireRoute = {
       method: "post",
       path: "/formulaire/:establishment_id/offre/by-token",
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
-      params: z.object({ establishment_id: z.string() }).strict(),
+      params: z.strictObject({ establishment_id: z.string() }),
       // TODO nonstrict TO BE FIXED on the frontend
-      body: ZJobCreate.nonstrict(),
+      body: ZJobCreate.passthrough(),
       response: {
-        "200": z
-          .object({
-            job_id: z.string(),
-            token: z.string(),
-          })
-          .strict(),
+        "200": z.strictObject({
+          job_id: z.string(),
+          token: z.string(),
+        }),
       },
       securityScheme: {
         auth: "access-token",
@@ -195,12 +189,10 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/delegation": {
       method: "post",
       path: "/formulaire/offre/:jobId/delegation",
-      params: z.object({ jobId: zObjectId }).strict(),
-      body: z
-        .object({
-          etablissementCatalogueIds: z.array(z.string()),
-        })
-        .strict(),
+      params: z.strictObject({ jobId: zObjectId }),
+      body: z.strictObject({
+        etablissementCatalogueIds: z.array(z.string()),
+      }),
       response: {
         "200": z.object({}),
       },
@@ -215,12 +207,10 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/delegation/by-token": {
       method: "post",
       path: "/formulaire/offre/:jobId/delegation/by-token",
-      params: z.object({ jobId: zObjectId }).strict(),
-      body: z
-        .object({
-          etablissementCatalogueIds: z.array(z.string()),
-        })
-        .strict(),
+      params: z.strictObject({ jobId: zObjectId }),
+      body: z.strictObject({
+        etablissementCatalogueIds: z.array(z.string()),
+      }),
       response: {
         "200": z.object({}),
       },
@@ -237,7 +227,7 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId": {
       method: "put",
       path: "/formulaire/offre/:jobId",
-      params: z.object({ jobId: zObjectId }).strict(),
+      params: z.strictObject({ jobId: zObjectId }),
       body: ZJob.pick({
         rome_label: true,
         rome_appellation_label: true,
@@ -257,8 +247,8 @@ export const zFormulaireRoute = {
         ft_support: true,
         job_start_date_flexible: true,
       }).extend({
-        job_start_date: z.coerce.date(),
-        job_expiration_date: z.coerce.date(),
+        job_start_date: z.coerce.date<Date>(),
+        job_expiration_date: z.coerce.date<Date>(),
         job_start_type: extensions.buildEnum(JOB_START_TYPE),
       }),
       response: {
@@ -275,7 +265,7 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/cancel": {
       method: "put",
       path: "/formulaire/offre/:jobId/cancel",
-      params: z.object({ jobId: zObjectId }).strict(),
+      params: z.strictObject({ jobId: zObjectId }),
       body: zJobClosingBody,
       response: {
         "200": zJobClosingResponse,
@@ -292,7 +282,7 @@ export const zFormulaireRoute = {
     "/formulaire/offre/f/:jobId/cancel": {
       method: "put",
       path: "/formulaire/offre/f/:jobId/cancel",
-      params: z.object({ jobId: zObjectId }).strict(),
+      params: z.strictObject({ jobId: zObjectId }),
       body: zJobClosingBody,
       response: {
         "200": zJobClosingResponse,
@@ -309,9 +299,10 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/provided": {
       method: "put",
       path: "/formulaire/offre/:jobId/provided",
-      params: z.object({ jobId: zObjectId }).strict(),
+      params: z.strictObject({ jobId: zObjectId }),
       response: {
-        "2xx": z.object({}).strict(),
+        "2xx": z.strictObject({}),
+        "400": z.union([ZResError, zInvalidRessourceError]),
       },
       securityScheme: {
         auth: "access-token",
@@ -324,18 +315,16 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/extend": {
       method: "put",
       path: "/formulaire/offre/:jobId/extend",
-      params: z.object({ jobId: zObjectId }).strict(),
+      params: z.strictObject({ jobId: zObjectId }),
       body: ZJobCreate.pick({
         job_start_date: true,
         job_start_type: true,
         job_start_date_flexible: true,
       }),
       response: {
-        "200": z
-          .object({
-            job_expiration_date: z.date(),
-          })
-          .strict(),
+        "200": z.strictObject({
+          job_expiration_date: z.date(),
+        }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -350,8 +339,8 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/delegation/view": {
       method: "patch",
       path: "/formulaire/offre/:jobId/delegation/view",
-      params: z.object({ jobId: zObjectId }).strict(),
-      querystring: z.object({ siret_formateur: z.string() }).strict(),
+      params: z.strictObject({ jobId: zObjectId }),
+      querystring: z.strictObject({ siret_formateur: z.string() }),
       response: {
         "200": z.object({}),
       },
@@ -368,9 +357,9 @@ export const zFormulaireRoute = {
     "/formulaire/:establishment_id": {
       method: "delete",
       path: "/formulaire/:establishment_id",
-      params: z.object({ establishment_id: z.string() }).strict(),
+      params: z.strictObject({ establishment_id: z.string() }),
       response: {
-        "200": z.object({}).strict(),
+        "200": z.strictObject({}),
       },
       securityScheme: {
         auth: "cookie-session",

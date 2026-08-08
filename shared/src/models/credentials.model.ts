@@ -5,20 +5,18 @@ import { zObjectId } from "./common.js"
 
 const collectionName = "credentials" as const
 
-export const ZCredential = z
-  .object({
-    _id: zObjectId,
-    nom: z.string(),
-    prenom: z.string(),
-    organisation: z.string(),
-    scope: z.string(),
-    email: z.string().email(),
-    api_key: z.string(),
-    actif: z.boolean(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-  })
-  .strict()
+export const ZCredential = z.strictObject({
+  _id: zObjectId,
+  nom: z.string(),
+  prenom: z.string(),
+  organisation: z.string(),
+  scope: z.string(),
+  email: z.email(),
+  api_key: z.string(),
+  actif: z.boolean(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
 
 export type ICredential = z.output<typeof ZCredential>
 

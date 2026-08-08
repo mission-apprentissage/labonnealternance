@@ -33,7 +33,7 @@ type LLMInputDocument = {
   appellations: string[]
 }
 
-const ZLLMOutput = z.record(z.array(z.string()))
+const ZLLMOutput = z.record(z.string(), z.array(z.string()))
 
 const domainContainsRome = (
   domaine: {

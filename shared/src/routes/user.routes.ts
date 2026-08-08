@@ -35,13 +35,11 @@ export const zUserRecruteurRoutes = {
       method: "get",
       path: "/user/opco",
       response: {
-        "200": z
-          .object({
-            awaiting: z.array(ZUserForOpco),
-            active: z.array(ZUserForOpco),
-            disable: z.array(ZUserForOpco),
-          })
-          .strict(),
+        "200": z.strictObject({
+          awaiting: z.array(ZUserForOpco),
+          active: z.array(ZUserForOpco),
+          disable: z.array(ZUserForOpco),
+        }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -54,8 +52,8 @@ export const zUserRecruteurRoutes = {
       path: "/admin/users-recruteurs",
       querystring: z.object({
         status: extensions.buildEnum(ETAT_UTILISATEUR).optional(),
-        limit: z.coerce.number().int().min(1).optional(),
-        offset: z.coerce.number().int().min(0).optional(),
+        limit: z.coerce.number<number>().int().min(1).optional(),
+        offset: z.coerce.number<number>().int().min(0).optional(),
         search: z.string().optional(),
       }),
       response: {
@@ -71,11 +69,9 @@ export const zUserRecruteurRoutes = {
       method: "get",
       path: "/admin/users",
       response: {
-        "200": z
-          .object({
-            users: z.array(ZUserWithAccount.extend({ type: z.enum([AccessEntityType.ADMIN, AccessEntityType.OPCO]) })),
-          })
-          .strict(),
+        "200": z.strictObject({
+          users: z.array(ZUserWithAccount.extend({ type: z.enum([AccessEntityType.ADMIN, AccessEntityType.OPCO]) })),
+        }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -86,11 +82,9 @@ export const zUserRecruteurRoutes = {
     "/admin/users/:userId": {
       method: "get",
       path: "/admin/users/:userId",
-      params: z
-        .object({
-          userId: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        userId: z.string(),
+      }),
       response: {
         "200": ZUserWithAccount.extend({
           role: ZRoleManagement.optional(),
@@ -106,12 +100,10 @@ export const zUserRecruteurRoutes = {
       method: "get",
       path: "/user/:userId/organization/:organizationId",
       // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
-      params: z
-        .object({
-          userId: z.string(),
-          organizationId: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        userId: z.string(),
+        organizationId: z.string(),
+      }),
       response: {
         "200": ZUserRecruteur.extend({ jobs: z.array(ZJob), organizationId: z.string() }),
       },
@@ -131,17 +123,13 @@ export const zUserRecruteurRoutes = {
     "/user/status/:userId": {
       method: "get",
       path: "/user/status/:userId",
-      params: z
-        .object({
-          userId: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        userId: z.string(),
+      }),
       response: {
-        "200": z
-          .object({
-            status_current: ZEtatUtilisateur,
-          })
-          .strict(),
+        "200": z.strictObject({
+          status_current: ZEtatUtilisateur,
+        }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -154,17 +142,13 @@ export const zUserRecruteurRoutes = {
     "/user/status/:userId/by-token": {
       method: "get",
       path: "/user/status/:userId/by-token",
-      params: z
-        .object({
-          userId: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        userId: z.string(),
+      }),
       response: {
-        "200": z
-          .object({
-            status_current: ZEtatUtilisateur,
-          })
-          .strict(),
+        "200": z.strictObject({
+          status_current: ZEtatUtilisateur,
+        }),
       },
       securityScheme: {
         auth: "access-token",
@@ -181,7 +165,7 @@ export const zUserRecruteurRoutes = {
       path: "/admin/users",
       body: ZNewSuperUser,
       response: {
-        "200": z.object({ _id: zObjectId }).strict(),
+        "200": z.strictObject({ _id: zObjectId }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -192,9 +176,9 @@ export const zUserRecruteurRoutes = {
     "/user/:userId/organization/:organizationId/activate": {
       method: "post",
       path: "/user/:userId/organization/:organizationId/activate",
-      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      params: z.strictObject({ userId: zObjectId, organizationId: zObjectId }),
       response: {
-        "200": z.object({}).strict(),
+        "200": z.strictObject({}),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -207,12 +191,12 @@ export const zUserRecruteurRoutes = {
     "/user/:userId/organization/:organizationId/deactivate": {
       method: "post",
       path: "/user/:userId/organization/:organizationId/deactivate",
-      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      params: z.strictObject({ userId: zObjectId, organizationId: zObjectId }),
       body: ZRoleManagementEvent.pick({
         reason: true,
       }),
       response: {
-        "200": z.object({}).strict(),
+        "200": z.strictObject({}),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -225,12 +209,12 @@ export const zUserRecruteurRoutes = {
     "/user/:userId/organization/:organizationId/not-my-opco": {
       method: "post",
       path: "/user/:userId/organization/:organizationId/not-my-opco",
-      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      params: z.strictObject({ userId: zObjectId, organizationId: zObjectId }),
       body: ZRoleManagementEvent.pick({
         reason: true,
       }),
       response: {
-        "200": z.object({}).strict(),
+        "200": z.strictObject({}),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -245,7 +229,7 @@ export const zUserRecruteurRoutes = {
     "/user/:userId": {
       method: "put",
       path: "/user/:userId",
-      params: z.object({ userId: zObjectId }).strict(),
+      params: z.strictObject({ userId: zObjectId }),
       body: ZUserWithAccount.pick({
         last_name: true,
         first_name: true,
@@ -254,7 +238,7 @@ export const zUserRecruteurRoutes = {
       }).strict(),
       response: {
         "200": z.object({}),
-        "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
+        "400": z.union([ZResError, z.strictObject({ error: z.boolean(), reason: z.string() })]),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -267,10 +251,10 @@ export const zUserRecruteurRoutes = {
     "/admin/users/:userId": {
       method: "put",
       path: "/admin/users/:userId",
-      params: z.object({ userId: zObjectId }).strict(),
+      params: z.strictObject({ userId: zObjectId }),
       body: ZUserWithAccountFields.partial(),
       response: {
-        "200": z.object({ ok: z.boolean() }).strict(),
+        "200": z.strictObject({ ok: z.boolean() }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -283,12 +267,12 @@ export const zUserRecruteurRoutes = {
     "/admin/users/:userId/organization/:siret": {
       method: "put",
       path: "/admin/users/:userId/organization/:siret",
-      params: z.object({ userId: zObjectId, siret: z.string() }).strict(),
+      params: z.strictObject({ userId: zObjectId, siret: z.string() }),
       body: ZUserWithAccountFields.extend({
         opco: ZUserRecruteur.shape.opco,
       }).partial(),
       response: {
-        "200": z.object({ ok: z.boolean() }).strict(),
+        "200": z.strictObject({ ok: z.boolean() }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -304,13 +288,11 @@ export const zUserRecruteurRoutes = {
     "/admin/users/:userId": {
       method: "delete",
       path: "/admin/users/:userId",
-      params: z
-        .object({
-          userId: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        userId: z.string(),
+      }),
       response: {
-        "200": z.object({ ok: z.boolean() }).strict(),
+        "200": z.strictObject({ ok: z.boolean() }),
       },
       securityScheme: {
         auth: "cookie-session",

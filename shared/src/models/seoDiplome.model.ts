@@ -31,33 +31,31 @@ const ZSeoDiplomeEcoleCard = z.object({
   lieu: z.string(),
 })
 
-export const ZSeoDiplome = z
-  .object({
-    _id: zObjectId,
-    slug: z.string(),
-    titre: z.string(),
-    intituleLongFormation: z.string(),
-    romes: z.array(z.string()),
-    sousTitre: z.string(),
-    kpis: ZSeoDiplomeKpis,
-    description: z.object({
-      text: z.string(),
-      objectifs: z.array(z.string()),
-    }),
-    programme: z.object({
-      text: z.string(),
-      sections: ZSeoDiplomeProgrammeSections,
-    }),
-    ecoles: z.array(ZSeoDiplomeEcoleCard),
-    metiers: z.object({
-      text: z.string(),
-      liste: z.array(ZSeoDiplomeMetier),
-    }),
-    cards: z.array(ZSeoJobCard),
-    created_at: z.date(),
-    updated_at: z.date(),
-  })
-  .strict()
+export const ZSeoDiplome = z.strictObject({
+  _id: zObjectId,
+  slug: z.string(),
+  titre: z.string(),
+  intituleLongFormation: z.string(),
+  romes: z.array(z.string()),
+  sousTitre: z.string(),
+  kpis: ZSeoDiplomeKpis,
+  description: z.object({
+    text: z.string(),
+    objectifs: z.array(z.string()),
+  }),
+  programme: z.object({
+    text: z.string(),
+    sections: ZSeoDiplomeProgrammeSections,
+  }),
+  ecoles: z.array(ZSeoDiplomeEcoleCard),
+  metiers: z.object({
+    text: z.string(),
+    liste: z.array(ZSeoDiplomeMetier),
+  }),
+  cards: z.array(ZSeoJobCard),
+  created_at: z.date(),
+  updated_at: z.date(),
+})
 
 export type ISeoDiplome = z.output<typeof ZSeoDiplome>
 

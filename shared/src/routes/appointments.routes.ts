@@ -1,48 +1,41 @@
 import type { Jsonify } from "type-fest"
-import { zObjectId } from "zod-mongodb-schema"
-
 import { referrers } from "../constants/referers.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { EREASONS, ZAppointment, ZAppointmentRecap, ZAppointmentShortRecap } from "../models/appointments.model.js"
+import { zObjectId } from "../models/common.js"
 import { ZEtablissement } from "../models/etablissement.model.js"
 import { ZUser } from "../models/user.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 import { ZAppointmentResponseAvailable } from "./v2/appointments.routes.v2.js"
 
-const zContextCreateSchemaParcoursup = z
-  .object({
-    idParcoursup: z.string(),
-    trainingHasJob: z.boolean().optional(),
-    referrer: z.literal(referrers.PARCOURSUP.name.toLowerCase()),
-  })
-  .strict()
+const zContextCreateSchemaParcoursup = z.strictObject({
+  idParcoursup: z.string(),
+  trainingHasJob: z.boolean().optional(),
+  referrer: z.literal(referrers.PARCOURSUP.name.toLowerCase()),
+})
 
 export type IContextCreateSchemaParcoursup = z.output<typeof zContextCreateSchemaParcoursup>
 
-const zContextCreateSchemaActionFormation = z
-  .object({
-    idActionFormation: z.string().min(1),
-    trainingHasJob: z.boolean().optional(),
-    referrer: z.literal(referrers.ONISEP.name.toLowerCase()),
-  })
-  .strict()
+const zContextCreateSchemaActionFormation = z.strictObject({
+  idActionFormation: z.string().min(1),
+  trainingHasJob: z.boolean().optional(),
+  referrer: z.literal(referrers.ONISEP.name.toLowerCase()),
+})
 
 export type IContextCreateSchemaActionFormation = z.output<typeof zContextCreateSchemaActionFormation>
 
-const zContextCreateSchemaCleMinistereEducatif = z
-  .object({
-    idCleMinistereEducatif: z.string().min(1),
-    trainingHasJob: z.boolean().optional(),
-    referrer: z.enum([
-      referrers.PARCOURSUP.name.toLowerCase(),
-      referrers.LBA.name.toLowerCase(),
-      referrers.ONISEP.name.toLowerCase(),
-      referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
-      referrers.AFFELNET.name.toLowerCase(),
-    ]),
-  })
-  .strict()
+const zContextCreateSchemaCleMinistereEducatif = z.strictObject({
+  idCleMinistereEducatif: z.string().min(1),
+  trainingHasJob: z.boolean().optional(),
+  referrer: z.enum([
+    referrers.PARCOURSUP.name.toLowerCase(),
+    referrers.LBA.name.toLowerCase(),
+    referrers.ONISEP.name.toLowerCase(),
+    referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
+    referrers.AFFELNET.name.toLowerCase(),
+  ]),
+})
 
 export type IContextCreateSchemaCleMinistereEducatif = z.output<typeof zContextCreateSchemaCleMinistereEducatif>
 
@@ -57,29 +50,25 @@ const zContextCreateSchema = z.union([
   zContextCreateSchemaCleMinistereEducatif,
 ])
 
-const zAppointmentRequestContextCreateFormAvailableResponseSchema = z
-  .object({
-    etablissement_formateur_entreprise_raison_sociale: ZEtablissement.shape.raison_sociale,
-    intitule_long: z.string(),
-    lieu_formation_adresse: z.string(),
-    code_postal: z.string(),
-    etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,
-    cfd: z.string(),
-    localite: z.string(),
-    id_rco_formation: z
-      .string()
+const zAppointmentRequestContextCreateFormAvailableResponseSchema = z.strictObject({
+  etablissement_formateur_entreprise_raison_sociale: ZEtablissement.shape.raison_sociale,
+  intitule_long: z.string(),
+  lieu_formation_adresse: z.string(),
+  code_postal: z.string(),
+  etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,
+  cfd: z.string(),
+  localite: z.string(),
+  id_rco_formation: z
+    .string()
 
-      .nullable(),
-    cle_ministere_educatif: z.string(),
-    form_url: z.string(),
-  })
-  .strict()
+    .nullable(),
+  cle_ministere_educatif: z.string(),
+  form_url: z.string(),
+})
 
-const zAppointmentRequestContextCreateFormUnavailableResponseSchema = z
-  .object({
-    error: z.literal("Prise de rendez-vous non disponible."),
-  })
-  .strict()
+const zAppointmentRequestContextCreateFormUnavailableResponseSchema = z.strictObject({
+  error: z.literal("Prise de rendez-vous non disponible."),
+})
 
 const zAppointmentRequestContextCreateResponseSchema = z.union([
   zAppointmentRequestContextCreateFormAvailableResponseSchema,
@@ -119,7 +108,7 @@ export const zAppointmentsRoute = {
     "/appointment-request/context/short-recap": {
       method: "get",
       path: "/appointment-request/context/short-recap",
-      querystring: z.object({ appointmentId: z.string() }).strict(),
+      querystring: z.strictObject({ appointmentId: z.string() }),
       response: {
         "200": ZAppointmentShortRecap,
       },
@@ -132,7 +121,7 @@ export const zAppointmentsRoute = {
     "/appointment-request/context/recap": {
       method: "get",
       path: "/appointment-request/context/recap",
-      querystring: z.object({ appointmentId: z.string() }).strict(),
+      querystring: z.strictObject({ appointmentId: z.string() }),
       response: {
         "200": ZAppointmentRecap,
       },
@@ -171,35 +160,29 @@ export const zAppointmentsRoute = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            userId: zObjectId,
-            appointment: z.union([ZAppointment, z.null()]),
-            token: z.string(),
-          })
-          .strict(),
+        "200": z.strictObject({
+          userId: zObjectId,
+          appointment: z.union([ZAppointment, z.null()]),
+          token: z.string(),
+        }),
       },
       securityScheme: null,
     },
     "/appointment-request/reply": {
       method: "post",
       path: "/appointment-request/reply",
-      body: z
-        .object({
-          appointment_id: zObjectId,
+      body: z.strictObject({
+        appointment_id: zObjectId,
+        cfa_intention_to_applicant: z.string(),
+        cfa_message_to_applicant: z.string().nullable(),
+      }),
+      response: {
+        "200": z.strictObject({
+          appointment_id: z.string(),
           cfa_intention_to_applicant: z.string(),
           cfa_message_to_applicant: z.string().nullable(),
-        })
-        .strict(),
-      response: {
-        "200": z
-          .object({
-            appointment_id: z.string(),
-            cfa_intention_to_applicant: z.string(),
-            cfa_message_to_applicant: z.string().nullable(),
-            cfa_message_to_applicant_date: z.string(),
-          })
-          .strict(),
+          cfa_message_to_applicant_date: z.string(),
+        }),
       },
       securityScheme: {
         auth: "access-token",
