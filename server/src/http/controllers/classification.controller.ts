@@ -173,7 +173,7 @@ const updateClassificationAndSynchronise = async ({ classification, partner_job_
       }
     }
   }
-  // add job to fillComputedJobsPartners with the filteredScopeIds
+  // add job to fill-computed-jobs-partners with the filteredScopeIds
   await addJob({ name: "fill-computed-jobs-partners", payload: { addedMatchFilter: { partner_job_id: { $in: filteredScopeIds } } } })
   await addJob({ name: "import-from-computed-to-jobs-partners", payload: { partner_job_id: { $in: filteredScopeIds } } })
 }
