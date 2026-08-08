@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "./jobs-partners.model.js"

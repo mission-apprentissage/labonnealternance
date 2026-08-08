@@ -12,8 +12,8 @@ import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixt
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { UserEventType } from "shared/models/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/api-referentiel-catalogue.fixture"
-import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/api-entreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
 

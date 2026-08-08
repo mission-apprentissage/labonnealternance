@@ -21,7 +21,7 @@ import { generateApplicationToken } from "./app-links.service"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByCompanyCount } from "./application.service"
 import type { TLbaItemResult } from "./job-opportunity.service.types"
-import { getRecipientID } from "./jobs/jobOpportunity/job-opportunity.service"
+import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
 const setDistance = (distance: number | null | undefined) => {

@@ -1,8 +1,8 @@
 import type { Jsonify } from "type-fest"
 
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 
 import { ZJobType } from "./job.model.js"
 import { ZJobsPartnersOfferPrivate } from "./jobs-partners.model.js"

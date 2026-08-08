@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 
 import type { IModelDescriptor } from "./common.js"
 

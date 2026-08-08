@@ -1,7 +1,7 @@
 import type { Jsonify } from "type-fest"
 import { z } from "zod"
 
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { ZJobsPartnersOfferPrivate } from "../models/jobs-partners.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"

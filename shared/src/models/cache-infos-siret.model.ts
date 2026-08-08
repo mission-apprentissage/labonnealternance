@@ -1,7 +1,7 @@
 import { EDiffusibleStatus } from "../constants/diffusible-status.js"
 import { BusinessErrorCodes } from "../constants/error-codes.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
-import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 
 import { ZAdresseV3 } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"

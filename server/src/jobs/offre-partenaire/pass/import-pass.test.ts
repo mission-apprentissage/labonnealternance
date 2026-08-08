@@ -1,0 +1,38 @@
+import fs from "node:fs"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { importPassRaw, importPassToComputed } from "./import-pass"
+
+const now = new Date("2024-07-21T04:49:06.000+02:00")
+
+describe("import-pass", () => {
+  useMongo()
+
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(now)
+
+    return async () => {
+      vi.useRealTimers()
+      await getDbCollection("computed_jobs_partners").deleteMany({})
+      await getDbCollection("raw_pass").deleteMany({})
+    }
+  })
+
+  it("should test the import of pass data into computed_job_partners", async () => {
+    const fileStream = fs.createReadStream("server/src/jobs/offre-partenaire/pass/import-pass.test.input.rss")
+    await importPassRaw(fileStream)
+    expect.soft(await getDbCollection("raw_pass").countDocuments({})).toBe(7)
+
+    await importPassToComputed()
+    const jobs = (
+      await getDbCollection("computed_jobs_partners")
+        .find({ partner_label: JOBPARTNERS_LABEL.PASS }, { projection: { _id: 0, created_at: 0 } })
+        .toArray()
+    ).sort((a, b) => ((a.partner_job_id ?? "") < (b.partner_job_id ?? "") ? -1 : 1))
+    expect.soft(jobs.length).toBe(7)
+    expect.soft(jobs).toMatchSnapshot()
+  })
+})
