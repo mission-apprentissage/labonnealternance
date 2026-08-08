@@ -12,11 +12,11 @@ import { JOB_STATUS } from "shared/models/job.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { cleanClosedCompanies } from "./cleanClosedCompanies"
+import { cleanClosedCompanies } from "./clean-closed-companies"
 
 useMongo()
 
-describe("cleanClosedCompanies", () => {
+describe("clean-closed-companies", () => {
   let managedById: ObjectId
   const createdCsvFiles: string[] = []
 

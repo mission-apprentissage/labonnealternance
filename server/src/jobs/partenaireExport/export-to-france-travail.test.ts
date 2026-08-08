@@ -7,7 +7,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
-import { offerToFTOffer } from "@/jobs/partenaireExport/exportToFranceTravail"
+import { offerToFTOffer } from "@/jobs/partenaireExport/export-to-france-travail"
 
 describe("offerToFTOffer", () => {
   it("should convert a job to an exported offer for FT", async () => {

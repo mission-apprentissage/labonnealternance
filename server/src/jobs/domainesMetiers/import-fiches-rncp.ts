@@ -9,7 +9,7 @@ export async function importFichesRncp() {
     stream: fileStream,
     // @ts-ignore
     destinationCollection: "fiches_rncp",
-    importName: "importFichesRncp",
+    importName: "import-fiches-rncp",
     offerXmlTag: "FICHE",
     conflictingOpeningTagWithoutAttributes: true,
   })

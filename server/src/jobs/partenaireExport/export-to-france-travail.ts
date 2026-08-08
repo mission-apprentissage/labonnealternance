@@ -286,7 +286,7 @@ const getJobsToExport = async ({ ftSupport = false }: { ftSupport?: boolean } = 
         from: "referentielromes",
         localField: "offer_rome_codes",
         foreignField: "rome.code_rome",
-        as: "referentielRome",
+        as: "referentiel-rome",
       },
     },
     {

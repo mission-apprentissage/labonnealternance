@@ -1,4 +1,4 @@
-import { recreateIndexes } from "@/jobs/database/recreateIndexes"
+import { recreateIndexes } from "@/jobs/database/recreate-indexes"
 
 export const up = async () => {
   await recreateIndexes()

@@ -9,7 +9,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 
-import { sendContactsToBrevo } from "./exportContactsToBrevo"
+import { sendContactsToBrevo } from "./export-contacts-to-brevo"
 
 vi.mock("@/services/brevo.service", () => ({ uploadContactListToBrevo: vi.fn().mockResolvedValue(undefined) }))
 vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolvedValue(undefined) }))

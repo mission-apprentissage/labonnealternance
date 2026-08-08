@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 
-import { buildRelanceSearchUrl, relanceCandidatsInactifs } from "./relanceCandidatsInactifs"
+import { buildRelanceSearchUrl, relanceCandidatsInactifs } from "./relance-candidats-inactifs"
 
 vi.mock("@/services/brevo.service", () => ({ uploadContactListToBrevo: vi.fn().mockResolvedValue(undefined) }))
 vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolvedValue(undefined) }))
@@ -62,7 +62,7 @@ const makeApplication = (applicantId: ObjectId, over: Parameters<typeof generate
     ...over,
   })
 
-describe("relanceCandidatsInactifs", () => {
+describe("relance-candidats-inactifs", () => {
   useMongo()
 
   beforeEach(async () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import type { IQueryAnalysis, IQueryStats } from "./searchSuggestionCriteria"
-import { decideSuggestion, decideSynonym, isSuggestionCandidate, isSynonymCandidate, passesQuantitativeGate } from "./searchSuggestionCriteria"
+import type { IQueryAnalysis, IQueryStats } from "./search-suggestion-criteria"
+import { decideSuggestion, decideSynonym, isSuggestionCandidate, isSynonymCandidate, passesQuantitativeGate } from "./search-suggestion-criteria"
 
 // Candidat "idéal suggestion" : fréquent, récurrent, efficace, tapé en texte libre.
 const goodStats = (overrides: Partial<IQueryStats> = {}): IQueryStats => ({
@@ -27,7 +27,7 @@ const goodAnalysis = (overrides: Partial<IQueryAnalysis> = {}): IQueryAnalysis =
   ...overrides,
 })
 
-describe("searchSuggestionCriteria", () => {
+describe("search-suggestion-criteria", () => {
   describe("passesQuantitativeGate (S1, S2, S6, S8)", () => {
     it("accepte un candidat idéal", () => {
       expect(passesQuantitativeGate(goodStats())).toEqual({ verdict: "pass", reason: null })

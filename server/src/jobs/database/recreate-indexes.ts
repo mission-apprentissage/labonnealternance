@@ -1,6 +1,6 @@
 import { logger } from "@/common/logger"
 import { createIndexes, createSearchIndexes, dropIndexes } from "@/common/utils/mongodb-utils"
-import { seedSearchSynonyms } from "./seedSearchSynonyms"
+import { seedSearchSynonyms } from "./seed-search-synonyms"
 
 export const recreateIndexes = async ({ drop } = { drop: false }) => {
   if (drop) {

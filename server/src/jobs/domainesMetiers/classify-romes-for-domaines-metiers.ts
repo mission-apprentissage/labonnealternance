@@ -99,7 +99,7 @@ export const classifyRomesForDomainesMetiers = async () => {
       stats.receivedSize += receivedSize
       stats.receivedMatchingInputSize += receivedMatchingInputSize
 
-      const filename = `./classifyRomesForDomainesMetiers.output.${index}.json`
+      const filename = `./classify-romes-for-domaines-metiers.output.${index}.json`
       console.info("writing", filename)
       await fs.appendFile(filename, JSON.stringify(typedResponse, null, 2))
       index++
@@ -193,9 +193,9 @@ export const classifyRomesForDomainesMetiersAnalyze = async () => {
   const { match: validInvertedEntries, notMatch: hallucinatedInvertedEntries } = partition(Object.entries(domaineToRomes), ([domain]) => isValidDomain(domain))
 
   const validDomainToRomes = Object.fromEntries(validInvertedEntries)
-  await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.valid.json", JSON.stringify(validDomainToRomes, null, 2))
+  await fs.writeFile("./classify-romes-for-domaines-metiers.inverted.valid.json", JSON.stringify(validDomainToRomes, null, 2))
   const hallucinatedDomainToRomes = Object.fromEntries(hallucinatedInvertedEntries)
-  await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.invalid.json", JSON.stringify(hallucinatedDomainToRomes, null, 2))
+  await fs.writeFile("./classify-romes-for-domaines-metiers.inverted.invalid.json", JSON.stringify(hallucinatedDomainToRomes, null, 2))
 
   const domainesAvecRomes = Object.entries(domaineToRomes)
     .filter(([_domain, romes]) => Boolean(romes.length))
@@ -323,7 +323,7 @@ const getValidSousDomaines = async () => {
 const getCurrentIndex = async () => {
   let index = 0
   await asyncForEach(await fs.readdir("."), async (filename) => {
-    const reg = /classifyRomesForDomainesMetiers.output.([0-9]+).json/g
+    const reg = /classify-romes-for-domaines-metiers.output.([0-9]+).json/g
     const match = reg.exec(filename)
     if (!match) {
       return
@@ -335,11 +335,11 @@ const getCurrentIndex = async () => {
 }
 
 const getAllMappings = async (): Promise<Record<string, string[]>> => {
-  const outputFilename = `./classifyRomesForDomainesMetiers.output.json`
+  const outputFilename = `./classify-romes-for-domaines-metiers.output.json`
 
   let mappings: Record<string, string[]> = {}
   await asyncForEach(await fs.readdir("."), async (filename) => {
-    if (!/classifyRomesForDomainesMetiers.output.[0-9]+.json/g.test(filename)) {
+    if (!/classify-romes-for-domaines-metiers.output.[0-9]+.json/g.test(filename)) {
       return
     }
     const json = JSON.parse((await fs.readFile(`./${filename}`)).toString()) as Record<string, string[]>

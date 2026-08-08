@@ -4,9 +4,9 @@ import type { z } from "shared/helpers/zod-with-open-api"
 import type { zTriggerableJobs } from "shared/routes/_private/admin/processor.admin.routes"
 
 import type { Server } from "@/http/server"
-import { processApplications } from "@/jobs/applications/processApplications"
-import { processRecruiterIntentions } from "@/jobs/applications/processRecruiterIntentions"
-import { importCatalogueFormationJob } from "@/jobs/formationsCatalogue/formationsCatalogue"
+import { processApplications } from "@/jobs/applications/process-applications"
+import { processRecruiterIntentions } from "@/jobs/applications/process-recruiter-intentions"
+import { importCatalogueFormationJob } from "@/jobs/formationsCatalogue/formations-catalogue"
 import { processJobPartnersForApi } from "@/jobs/offrePartenaire/process-job-partners-for-api"
 
 type TriggerableJob = z.infer<typeof zTriggerableJobs>
