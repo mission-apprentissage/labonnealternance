@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import type { IDiplomeKpis } from "shared/models/seoDiplome.model"
+import type { IDiplomeKpis } from "shared/models/seo-diplome.model"
 import { UTM_PARAMS } from "../_data/constants"
 import diplomeDecoration from "./diplome_decoration.svg"
 

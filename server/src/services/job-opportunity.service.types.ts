@@ -1,4 +1,4 @@
-import type { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+import type { INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
 import type { IApiError } from "@/common/utils/error-manager"
 import type { ILbaItemCompany, ILbaItemFormation, ILbaItemFtJob, ILbaItemJob } from "./lbaitem.shared.service.types"
 

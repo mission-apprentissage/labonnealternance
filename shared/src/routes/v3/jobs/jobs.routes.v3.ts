@@ -1,6 +1,6 @@
-import { z } from "../../../helpers/zodWithOpenApi.js"
+import { z } from "../../../helpers/zod-with-open-api.js"
 import { zObjectId } from "../../../models/common.js"
-import { ZComputedJobsPartnersWrite } from "../../../models/jobsPartnersComputed.model.js"
+import { ZComputedJobsPartnersWrite } from "../../../models/jobs-partners-computed.model.js"
 import type { IRoutesDef } from "../../common.routes.js"
 
 import { zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobOfferPublishingV3, zJobSearchApiV3Query, zJobSearchApiV3Response } from "./jobs.routes.v3.model.js"

@@ -1,6 +1,6 @@
 import type { Filter } from "mongodb"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
 import { MAX_DIAGORIENTE_PAYLOAD_SIZE } from "@/common/apis/diagoriente/diagoriente.client"
 import { getRomesInfosFromDiagoriente } from "@/services/cache-diagoriente.service"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"

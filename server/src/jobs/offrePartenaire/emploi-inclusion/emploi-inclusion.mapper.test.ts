@@ -1,5 +1,5 @@
 import omit from "lodash-es/omit"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { generateEmploiInclusionJobFixture } from "@/common/apis/emploiInclusion/emploi-inclusion.client.fixture"
 import { emploiInclusionJobToJobsPartners, isEligiblePoste } from "./emploi-inclusion.mapper"

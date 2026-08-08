@@ -1,1 +1,1 @@
-export * from "shared/validators/siretValidator"
+export * from "shared/validators/siret-validator"

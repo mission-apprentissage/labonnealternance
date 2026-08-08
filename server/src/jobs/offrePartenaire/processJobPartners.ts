@@ -1,4 +1,4 @@
-import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
 import { logger } from "@/common/logger"
 import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
 import { detectDuplicateJobPartners } from "./detectDuplicateJobPartners"

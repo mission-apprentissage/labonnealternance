@@ -1,5 +1,5 @@
 import type { Filter } from "mongodb"
-import anonymizedAppointmentsModel from "shared/models/anonymizedAppointments.model"
+import anonymizedAppointmentsModel from "shared/models/anonymized-appointments.model"
 import type { IAppointment } from "shared/models/index"
 
 import { logger } from "@/common/logger"

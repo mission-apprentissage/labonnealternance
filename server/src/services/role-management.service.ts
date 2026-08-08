@@ -4,9 +4,9 @@ import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import type { ComputedUserAccess, IUserRecruteurPublic, IUserWithAccount } from "shared/models/index"
-import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
+import type { IRoleManagement, IRoleManagementEvent } from "shared/models/role-management.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last-status-event"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"

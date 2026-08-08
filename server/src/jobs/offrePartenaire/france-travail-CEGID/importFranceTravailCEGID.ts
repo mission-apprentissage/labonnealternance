@@ -1,6 +1,6 @@
 import axios from "axios"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawFranceTravailCEGIDModel from "shared/models/rawFranceTravailCEGID.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawFranceTravailCEGIDModel from "shared/models/raw-france-travail-cegid.model"
 import z from "zod"
 import { stringToStream } from "@/common/utils/stream-utils"
 import config from "@/config"

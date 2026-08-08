@@ -1,7 +1,7 @@
 import path from "path"
 
-import type { SitemapUrlEntry } from "shared/utils/sitemapUtils"
-import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
+import type { SitemapUrlEntry } from "shared/utils/sitemap-utils"
+import { generateSitemapFromUrlEntries } from "shared/utils/sitemap-utils"
 
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"

@@ -1,7 +1,7 @@
 import type { AnyBulkWriteOperation } from "mongodb"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { ISearchItem } from "shared/models/searchItems.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { ISearchItem } from "shared/models/search-items.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

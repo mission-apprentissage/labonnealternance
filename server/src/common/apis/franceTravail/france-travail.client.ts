@@ -4,7 +4,7 @@ import FormData from "form-data"
 import { createReadStream } from "fs"
 import querystring from "querystring"
 import type { IFTJobRaw } from "shared"
-import type { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
+import type { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/france-travail-access.model"
 
 import getApiClient from "@/common/apis/client"
 import { logger } from "@/common/logger"

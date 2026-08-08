@@ -1,6 +1,6 @@
 import type { Filter } from "mongodb"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"

@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawEnedisModel from "shared/models/rawEnedis.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawEnedisModel from "shared/models/raw-enedis.model"
 import config from "@/config"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"

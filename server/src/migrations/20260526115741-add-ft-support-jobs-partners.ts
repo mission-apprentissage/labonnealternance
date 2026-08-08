@@ -1,4 +1,4 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const up = async () => {

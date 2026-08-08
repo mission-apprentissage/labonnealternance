@@ -1,6 +1,6 @@
 import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

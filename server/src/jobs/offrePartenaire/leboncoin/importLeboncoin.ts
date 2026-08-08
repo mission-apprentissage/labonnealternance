@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawLeboncoinModel from "shared/models/rawLeboncoin.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawLeboncoinModel from "shared/models/raw-leboncoin.model"
 import config from "@/config"
 import { importFromStreamInCsv } from "@/jobs/offrePartenaire/importFromStreamInCsv"
 import { importFromUrlInCsv } from "@/jobs/offrePartenaire/importFromUrlInCsv"

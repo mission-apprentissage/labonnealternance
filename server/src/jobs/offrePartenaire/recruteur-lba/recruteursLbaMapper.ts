@@ -1,9 +1,9 @@
 import { ObjectId } from "bson"
 import proj4 from "proj4"
 import { joinNonNullStrings } from "shared"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
-import type { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
+import type { IRecruteursLbaRaw } from "shared/models/raw-recruteurs-lba.model"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 

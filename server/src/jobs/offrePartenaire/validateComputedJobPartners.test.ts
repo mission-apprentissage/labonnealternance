@@ -1,7 +1,7 @@
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
-import { generateComputedJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
+import { generateComputedJobsPartnersFull } from "shared/fixtures/job-partners.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"

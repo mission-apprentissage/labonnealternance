@@ -1,6 +1,6 @@
 import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
+import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
 import { logger } from "@/common/logger"
 import { blockJobsPartnersFromExpirationDate } from "@/jobs/offrePartenaire/blockJobsPartnersFromExpirationDate"
 import { blockJobsPartnersFromFluxCompanyList } from "@/jobs/offrePartenaire/blockJobsPartnersFromFluxCompanyList"

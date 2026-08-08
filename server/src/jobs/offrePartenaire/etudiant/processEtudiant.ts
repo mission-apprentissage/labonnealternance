@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawEtudiantModel from "shared/models/rawEtudiant.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawEtudiantModel from "shared/models/raw-etudiant.model"
 import { getJobEtudiantJobs, ZJobEtudiantJob } from "@/common/apis/etudiant/etudiant.client"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

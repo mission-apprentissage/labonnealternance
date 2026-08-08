@@ -1,5 +1,5 @@
-import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "shared/validators/nameValidator"
-import { validateSIRET } from "shared/validators/siretValidator"
+import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "shared/validators/name-validator"
+import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
 
 export const phoneValidation = () => {

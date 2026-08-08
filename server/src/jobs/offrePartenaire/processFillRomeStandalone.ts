@@ -1,4 +1,4 @@
-import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
 import { logger } from "@/common/logger"
 import { fillRomeForPartners } from "./fillRomeForPartners"
 

@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawJobteaserModel from "shared/models/rawJobteaser.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawJobteaserModel from "shared/models/raw-jobteaser.model"
 import { Readable } from "stream"
 import { createGunzip } from "zlib"
 import config from "@/config"

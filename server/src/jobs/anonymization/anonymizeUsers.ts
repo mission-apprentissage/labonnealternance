@@ -1,4 +1,4 @@
-import anonymizedUsersModel from "shared/models/anonymizedUsers.model"
+import anonymizedUsersModel from "shared/models/anonymized-users.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

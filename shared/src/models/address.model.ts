@@ -1,5 +1,5 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-import { z } from "../helpers/zodWithOpenApi.js"
+import { z } from "../helpers/zod-with-open-api.js"
+import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 
 const ZAcademie = z.strictObject({
   code: z.string(),

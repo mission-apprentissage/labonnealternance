@@ -1,6 +1,6 @@
 import { OPCOS_LABEL } from "shared/constants/index"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
 import { getOpcosData } from "@/services/etablissement.service"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"

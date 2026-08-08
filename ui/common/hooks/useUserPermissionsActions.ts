@@ -1,4 +1,4 @@
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { activateUserRole, deactivateUserRole, notifyNotMyOpcoUserRole } from "@/utils/api"
 import useUserHistoryUpdate from "./useUserHistoryUpdate"
 

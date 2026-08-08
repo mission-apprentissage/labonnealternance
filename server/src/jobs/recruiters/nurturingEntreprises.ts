@@ -1,9 +1,9 @@
 import type { ObjectId } from "mongodb"
 import dayjs from "shared/helpers/dayjs"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { UserEventType } from "shared/models/userWithAccount.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import { UserEventType } from "shared/models/user-with-account.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

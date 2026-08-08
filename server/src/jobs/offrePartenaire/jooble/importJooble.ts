@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawJoobleModel from "shared/models/rawJooble.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import rawJoobleModel from "shared/models/raw-jooble.model"
 import config from "@/config"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"

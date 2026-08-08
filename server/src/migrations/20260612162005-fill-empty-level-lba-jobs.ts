@@ -1,7 +1,7 @@
 import type { AnyBulkWriteOperation } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-import { NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
+import { NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobs-partners.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

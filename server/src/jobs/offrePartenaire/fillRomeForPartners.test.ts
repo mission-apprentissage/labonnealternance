@@ -2,7 +2,7 @@ import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJo
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
 import type { IDiagorienteClassificationResponseSchema } from "shared"
-import { cacheDiagorienteFixture } from "shared/fixtures/cacheDiagoriente.fixture"
+import { cacheDiagorienteFixture } from "shared/fixtures/cache-diagoriente.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { nockDiagorienteAccessToken, nockDiagorienteRomeClassifier } from "@/common/apis/diagoriente/diagoriente.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

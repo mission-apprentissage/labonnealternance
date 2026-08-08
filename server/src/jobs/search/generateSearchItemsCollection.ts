@@ -3,7 +3,7 @@ import { pipeline } from "node:stream/promises"
 import { ObjectId } from "bson"
 import type { AggregationCursor, FindCursor } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

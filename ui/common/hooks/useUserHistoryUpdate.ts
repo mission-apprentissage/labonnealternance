@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useCallback } from "react"
 import { assertUnreachable } from "shared"
-import { AccessStatus } from "shared/models/roleManagement.model"
+import { AccessStatus } from "shared/models/role-management.model"
 
 import { useToast } from "@/app/hooks/useToast"
 

@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { exactractFTContractDuration, franceTravailJobsToJobsPartners } from "./franceTravailMapper"

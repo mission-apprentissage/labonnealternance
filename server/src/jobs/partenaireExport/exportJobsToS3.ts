@@ -1,7 +1,7 @@
 import { createReadStream, createWriteStream } from "fs"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { createProjectionFromZod } from "shared/helpers/zodHelpers/zodPrimitives"
-import { JOBPARTNERS_LABEL, ZJobsPartnersRecruiterApi } from "shared/models/jobsPartners.model"
+import { createProjectionFromZod } from "shared/helpers/zodHelpers/zod-primitives"
+import { JOBPARTNERS_LABEL, ZJobsPartnersRecruiterApi } from "shared/models/jobs-partners.model"
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 

@@ -2,7 +2,7 @@ import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"

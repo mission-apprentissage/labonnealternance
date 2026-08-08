@@ -15,7 +15,7 @@
 import { writeFileSync } from "fs"
 import { join } from "path"
 import { removeAccents } from "shared"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 
 import { closeMongodbConnection, connectToMongodb, getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"

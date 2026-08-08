@@ -1,6 +1,6 @@
 import type { ColumnOption } from "csv-stringify/sync"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
-import { UserEventType } from "shared/models/userWithAccount.model"
+import { UserEventType } from "shared/models/user-with-account.model"
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 

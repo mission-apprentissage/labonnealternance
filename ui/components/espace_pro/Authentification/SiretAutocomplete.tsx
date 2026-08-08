@@ -5,7 +5,7 @@ import { captureException } from "@sentry/nextjs"
 import type { FormikHelpers } from "formik"
 import { Form, Formik } from "formik"
 import { useState } from "react"
-import { validateSIRET } from "shared/validators/siretValidator"
+import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
 
 import AutocompleteAsync from "@/app/(espace-pro)/_components/AutocompleteAsync"

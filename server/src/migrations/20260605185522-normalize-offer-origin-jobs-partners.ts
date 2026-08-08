@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobsPartners.model"
-import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
+import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
+import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const ORIGIN_MAP: Record<string, string> = {

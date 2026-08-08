@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
-import { JOBPARTNERS_LABEL, NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { JOBPARTNERS_LABEL, NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"

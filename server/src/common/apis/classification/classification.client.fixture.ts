@@ -1,5 +1,5 @@
 import nock from "nock"
-import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
+import type { IClassificationLabBatchResponse } from "shared/models/cache-classification.model"
 import config from "@/config"
 import type { IGetLabClassificationBatch } from "./classification.client"
 

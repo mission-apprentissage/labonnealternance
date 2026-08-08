@@ -1,4 +1,4 @@
-import { z } from "../../helpers/zodWithOpenApi.js"
+import { z } from "../../helpers/zod-with-open-api.js"
 import { ZApplicationApiPrivate, ZApplicationApiPublic } from "../../models/applications.model.js"
 import type { IRoutesDef } from "../common.routes.js"
 

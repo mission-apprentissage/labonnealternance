@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import type { IReferentielOnisep } from "../../models/referentielOnisep.model.js"
+import type { IReferentielOnisep } from "../../models/referentiel-onisep.model.js"
 
 export function generateReferentielOnisepFixture(data: Partial<IReferentielOnisep>): IReferentielOnisep {
   return {

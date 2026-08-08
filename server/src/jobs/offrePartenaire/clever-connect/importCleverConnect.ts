@@ -1,4 +1,4 @@
-import type { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { CollectionName } from "shared/models/models"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"

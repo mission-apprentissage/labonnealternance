@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
+import { extensions } from "shared/helpers/zodHelpers/zod-primitives"
 import { zObjectId } from "shared/models/common"
 import { ZPointGeometry } from "shared/models/index"
 import type { z } from "zod"

@@ -1,6 +1,6 @@
-import { z } from "../helpers/zodWithOpenApi.js"
+import { z } from "../helpers/zod-with-open-api.js"
 import { JOB_START_TYPE } from "../models/job.model.js"
-import { ZSearchItem } from "../models/searchItems.model.js"
+import { ZSearchItem } from "../models/search-items.model.js"
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam } from "./_params.js"
 import type { IRoutesDef } from "./common.routes.js"
 

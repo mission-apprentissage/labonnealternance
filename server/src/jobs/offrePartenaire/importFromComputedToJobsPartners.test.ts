@@ -1,7 +1,7 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"

@@ -15,10 +15,10 @@ import {
   mismatchedHeaderContentTestFile,
   wrongApplicationTestFile,
 } from "shared/fixtures/application.fixture"
-import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
-import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it, vi } from "vitest"
 
 import { s3WriteString } from "@/common/utils/aws-utils"

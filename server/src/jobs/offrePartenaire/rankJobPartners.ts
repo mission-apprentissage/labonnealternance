@@ -1,6 +1,6 @@
 import type { Filter } from "mongodb"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { jobPartnersRankConfig, jobPartnersRankDefaultFactor } from "./jobPartnersRankConfig"

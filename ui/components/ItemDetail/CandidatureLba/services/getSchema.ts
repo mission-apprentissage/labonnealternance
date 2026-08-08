@@ -1,6 +1,6 @@
 import type { IApplicationApiPrivateJSON } from "shared"
 import { ZApplicationApiPrivate } from "shared"
-import { validatePhone } from "shared/validators/phoneValidator"
+import { validatePhone } from "shared/validators/phone-validator"
 import { z } from "zod"
 
 import { sessionStorageGet } from "@/utils/localStorage"

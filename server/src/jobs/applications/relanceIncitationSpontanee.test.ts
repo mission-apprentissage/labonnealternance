@@ -2,7 +2,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
-import { EMAIL_LOG_TYPE } from "shared/models/applicantEmailLog.model"
+import { EMAIL_LOG_TYPE } from "shared/models/applicant-email-log.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"

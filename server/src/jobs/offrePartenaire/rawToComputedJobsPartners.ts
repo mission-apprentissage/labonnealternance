@@ -3,9 +3,9 @@ import { pipeline } from "node:stream/promises"
 
 import { internal } from "@hapi/boom"
 import type { Filter } from "mongodb"
-import type { z } from "shared/helpers/zodWithOpenApi"
-import type { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { z } from "shared/helpers/zod-with-open-api"
+import type { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import type { CollectionName } from "shared/models/models"
 import type { ZodObject } from "zod"
 

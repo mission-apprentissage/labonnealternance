@@ -1,6 +1,6 @@
-import { z } from "../../helpers/zodWithOpenApi.js"
+import { z } from "../../helpers/zod-with-open-api.js"
 import { ZSeoDiplome, ZSeoVille } from "../../models/index.js"
-import { ZSeoMetier } from "../../models/seoMetier.model.js"
+import { ZSeoMetier } from "../../models/seo-metier.model.js"
 import type { IRoutesDef } from "../common.routes.js"
 
 export const zPrivateSeoRoutes = {

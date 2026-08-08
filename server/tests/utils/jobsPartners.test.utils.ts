@@ -1,6 +1,6 @@
-import { generateComputedJobsPartnersFixture, generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { generateComputedJobsPartnersFixture, generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
