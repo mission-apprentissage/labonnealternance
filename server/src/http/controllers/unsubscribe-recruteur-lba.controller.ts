@@ -3,7 +3,7 @@ import { zRoutes } from "shared"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants/index"
 
 import type { Server } from "@/http/server"
-import { unsubscribeNoSiret, unsubscribeWithSirets } from "@/services/unsubscribeRecruteurLba.service"
+import { unsubscribeNoSiret, unsubscribeWithSirets } from "@/services/unsubscribe-recruteur-lba.service"
 
 export default function (server: Server) {
   server.post(

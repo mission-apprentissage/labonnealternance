@@ -3,7 +3,7 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils/index"
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
-import { getSiretInfos } from "@/services/cacheInfosSiret.service"
+import { getSiretInfos } from "@/services/cache-infos-siret.service"
 import { formatEntrepriseData } from "@/services/etablissement.service"
 import { addressDetailToStreetLabel } from "@/services/geolocation.service"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"

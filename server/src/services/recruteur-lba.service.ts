@@ -17,10 +17,10 @@ import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geoli
 import { isAllowedSource } from "@/common/utils/isAllowedSource"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { generateApplicationToken } from "./appLinks.service"
+import { generateApplicationToken } from "./app-links.service"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByCompanyCount } from "./application.service"
-import type { TLbaItemResult } from "./jobOpportunity.service.types"
+import type { TLbaItemResult } from "./job-opportunity.service.types"
 import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
 import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 

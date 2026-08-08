@@ -10,7 +10,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import type { Server } from "@/http/server"
-import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligible-trainings-for-appointment.service"
 import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
 

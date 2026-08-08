@@ -17,7 +17,7 @@ import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
 import { buildEstablishmentId } from "@/services/etablissement.service"
 import { getFormulaireWithRomeDetail } from "@/services/formulaire.service"
-import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/roleManagement.service"
+import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/role-management.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -26,8 +26,8 @@ import {
   removeUser,
   updateUserWithAccountFields,
   userAndRoleAndOrganizationToUserRecruteur,
-} from "@/services/userRecruteur.service"
-import { createSuperUser } from "@/services/userWithAccount.service"
+} from "@/services/user-recruteur.service"
+import { createSuperUser } from "@/services/user-with-account.service"
 
 export default (server: Server) => {
   server.get(

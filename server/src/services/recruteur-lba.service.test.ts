@@ -8,7 +8,7 @@ import type { IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartne
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getCompanyContactInfo, getRecruteursLbaFromDB, searchLbaCompaniesForAdmin, updateContactInfo } from "./recruteurLba.service"
+import { getCompanyContactInfo, getRecruteursLbaFromDB, searchLbaCompaniesForAdmin, updateContactInfo } from "./recruteur-lba.service"
 
 useMongo()
 

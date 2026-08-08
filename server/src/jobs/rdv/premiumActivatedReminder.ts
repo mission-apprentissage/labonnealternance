@@ -2,7 +2,7 @@ import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligible-trainings-for-appointment.service"
 import mailer from "@/services/mailer.service"
 
 export const getEmailsForParcoursup = async (): Promise<string[]> => {

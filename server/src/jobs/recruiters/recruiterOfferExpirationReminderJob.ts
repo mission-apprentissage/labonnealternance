@@ -17,7 +17,7 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { createAuthMagicLink, createCloturerOffreMagicLink, createProlongerOffreLink, createProvidedJobLink } from "@/services/appLinks.service"
+import { createAuthMagicLink, createCloturerOffreMagicLink, createProlongerOffreLink, createProvidedJobLink } from "@/services/app-links.service"
 import { buildEstablishmentId } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
 

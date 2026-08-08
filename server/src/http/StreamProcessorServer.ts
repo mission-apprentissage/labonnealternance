@@ -6,7 +6,7 @@ import { zRoutes } from "shared"
 import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { ensureInitialization, getMongodbClientState } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-import { errorMiddleware } from "./middlewares/errorMiddleware"
+import { errorMiddleware } from "./middlewares/error-middleware"
 import type { Server } from "./server"
 
 const getHealthCheck = async () => {

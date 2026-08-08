@@ -15,10 +15,10 @@ import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { buildEstablishmentId } from "./etablissement.service"
 import { archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations } from "./formulaire.service"
-import { sendEngagementHandicapEmailIfNeeded } from "./handiEngagement.service"
+import { sendEngagementHandicapEmailIfNeeded } from "./handi-engagement.service"
 import mailer from "./mailer.service"
-import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
-import { activateUser, hasActiveRoleOnAnotherOrganization } from "./userWithAccount.service"
+import { sendWelcomeEmailToUserRecruteur } from "./user-recruteur.service"
+import { activateUser, hasActiveRoleOnAnotherOrganization } from "./user-with-account.service"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id">,

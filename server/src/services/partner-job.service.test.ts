@@ -5,11 +5,11 @@ import { levalloisFixture, marseilleFixture, parisFixture } from "shared/fixture
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getPartnerJobs } from "./partnerJob.service"
+import { getPartnerJobs } from "./partner-job.service"
 
 useMongo()
 
-describe("partnerJob.service", () => {
+describe("partner-job.service", () => {
   const partnerJobs: IJobsPartnersOfferPrivate[] = [
     generateJobsPartnersOfferPrivate({
       _id: new ObjectId("675209e704377be3d437bbb9"),

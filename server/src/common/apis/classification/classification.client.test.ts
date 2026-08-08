@@ -4,8 +4,8 @@ import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
 import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 import { describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import type { TJobClassification } from "@/services/cacheClassification.service"
-import { getClassificationFromLab } from "@/services/cacheClassification.service"
+import type { TJobClassification } from "@/services/cache-classification.service"
+import { getClassificationFromLab } from "@/services/cache-classification.service"
 import { nockLabClassification } from "./classification.client.fixture"
 
 useMongo()

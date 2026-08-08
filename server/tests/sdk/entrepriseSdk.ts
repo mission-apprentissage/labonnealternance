@@ -12,7 +12,7 @@ import type { z } from "shared/helpers/zodWithOpenApi"
 import type { zRoutes } from "shared/routes/index"
 import { expect } from "vitest"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { createCancelJobLink, createProvidedJobLink, createValidationMagicLink, generateDepotSimplifieToken } from "@/services/appLinks.service"
+import { createCancelJobLink, createProvidedJobLink, createValidationMagicLink, generateDepotSimplifieToken } from "@/services/app-links.service"
 
 export type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creation"]["body"]>
 export type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>

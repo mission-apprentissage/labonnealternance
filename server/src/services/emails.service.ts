@@ -14,7 +14,7 @@ import {
   processAppointmentToCfaWebhookEvent,
 } from "./appointment.service"
 import { BrevoEventStatus } from "./brevo.service"
-import { disableEligibleTraininForAppointmentWithEmail } from "./eligibleTrainingsForAppointment.service"
+import { disableEligibleTraininForAppointmentWithEmail } from "./eligible-trainings-for-appointment.service"
 import { isHardbounceEventFromEtablissement } from "./etablissement.service"
 import { cleanHardbouncedAppointmentUser } from "./user.service"
 

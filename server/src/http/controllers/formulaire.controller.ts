@@ -5,7 +5,7 @@ import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
-import { generateOffreToken } from "@/services/appLinks.service"
+import { generateOffreToken } from "@/services/app-links.service"
 import { buildEstablishmentId, entrepriseOnboardingWorkflow, establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import {
   archiveFormulaireByEstablishmentId,
@@ -24,8 +24,8 @@ import {
   validateDelegatedCompanyPhoneAndEmail,
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
-import { getUserRecruteurById } from "@/services/userRecruteur.service"
-import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
+import { getUserRecruteurById } from "@/services/user-recruteur.service"
+import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
 
 export default (server: Server) => {
   /**

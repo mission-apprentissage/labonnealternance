@@ -4,7 +4,7 @@ import { isValidReferrerApi } from "shared/constants/referers"
 import { zRoutes } from "shared/index"
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
-import { findElligibleTrainingForAppointmentV2 } from "@/services/eligibleTrainingsForAppointment.service"
+import { findElligibleTrainingForAppointmentV2 } from "@/services/eligible-trainings-for-appointment.service"
 
 export default (server: Server) => {
   // TODO: évaluation passage en GET avant communication utilisateurs finaux

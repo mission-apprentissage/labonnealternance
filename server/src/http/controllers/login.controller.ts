@@ -9,13 +9,13 @@ import config from "@/config"
 import type { Server } from "@/http/server"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { getUserFromRequest } from "@/security/authentication.service"
-import { createAuthMagicLink } from "@/services/appLinks.service"
+import { createAuthMagicLink } from "@/services/app-links.service"
 import { sendUserConfirmationEmail } from "@/services/etablissement.service"
 import { controlUserState } from "@/services/login.service"
 import mailer from "@/services/mailer.service"
-import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurProps, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { updateLastConnectionDate } from "@/services/userRecruteur.service"
-import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
+import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurProps, getPublicUserRecruteurPropsOrError } from "@/services/role-management.service"
+import { updateLastConnectionDate } from "@/services/user-recruteur.service"
+import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/user-with-account.service"
 
 export default (server: Server) => {
   server.post(

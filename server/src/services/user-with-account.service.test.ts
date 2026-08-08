@@ -7,11 +7,11 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { hasActiveRoleOnAnotherOrganization } from "./userWithAccount.service"
+import { hasActiveRoleOnAnotherOrganization } from "./user-with-account.service"
 
 useMongo()
 
-describe("userWithAccount.service", () => {
+describe("user-with-account.service", () => {
   describe("hasActiveRoleOnAnotherOrganization", () => {
     const userId = new ObjectId()
     const organizationId = "org-A"

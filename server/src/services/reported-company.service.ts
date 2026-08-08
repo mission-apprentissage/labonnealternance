@@ -3,7 +3,7 @@ import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getSiretInfos } from "./cacheInfosSiret.service"
+import { getSiretInfos } from "./cache-infos-siret.service"
 import { formatEntrepriseData } from "./etablissement.service"
 
 export const reportCompany = async ({ reason, reasonDetails, itemId, type }: { reason: string; reasonDetails?: string; itemId: string; type: LBA_ITEM_TYPE }) => {

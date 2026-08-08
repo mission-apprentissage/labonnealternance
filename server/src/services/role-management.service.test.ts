@@ -4,7 +4,7 @@ import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fi
 import type { IRoleManagement } from "shared/models/index"
 import { AccessStatus } from "shared/models/index"
 import { describe, expect, it } from "vitest"
-import { isGrantedAndAutoValidatedRole } from "./roleManagement.service"
+import { isGrantedAndAutoValidatedRole } from "./role-management.service"
 
 const roleWithEventsFactory = (events: IRoleManagement["status"]) => {
   return generateRoleManagementFixture({
@@ -12,7 +12,7 @@ const roleWithEventsFactory = (events: IRoleManagement["status"]) => {
   })
 }
 
-describe("roleManagement.service", () => {
+describe("role-management.service", () => {
   describe("isGrantedAndAutoValidatedRole", () => {
     it("should return true if role is auto-validated (AWAITING then GRANTED with AUTO)", () => {
       expect(

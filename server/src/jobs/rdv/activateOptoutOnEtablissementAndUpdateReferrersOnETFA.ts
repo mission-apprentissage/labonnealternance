@@ -6,8 +6,8 @@ import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
-import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import { createRdvaOptOutUnsubscribePageLink } from "@/services/app-links.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligible-trainings-for-appointment.service"
 import mailer from "@/services/mailer.service"
 
 /**
