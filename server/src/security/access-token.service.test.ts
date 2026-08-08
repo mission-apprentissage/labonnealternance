@@ -5,10 +5,10 @@ import { z } from "shared/helpers/zodWithOpenApi"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { describe, expect, it } from "vitest"
-import type { IUserWithAccountForAccessToken, SchemaWithSecurity, UserForAccessToken } from "./accessTokenService"
-import { generateAccessToken, generateScope, parseAccessToken, userWithAccountToUserForToken } from "./accessTokenService"
+import type { IUserWithAccountForAccessToken, SchemaWithSecurity, UserForAccessToken } from "./access-token.service"
+import { generateAccessToken, generateScope, parseAccessToken, userWithAccountToUserForToken } from "./access-token.service"
 
-describe("accessTokenService", () => {
+describe("access-token.service", () => {
   let userACTIVE: IUserWithAccountForAccessToken
   let userPENDING: IUserWithAccountForAccessToken
   let userDISABLED: IUserWithAccountForAccessToken

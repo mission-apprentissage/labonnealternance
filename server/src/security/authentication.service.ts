@@ -16,8 +16,8 @@ import { controlUserState } from "@/services/login.service"
 import { getSession } from "@/services/sessions.service"
 import { updateLastConnectionDate } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
-import type { IAccessToken } from "./accessTokenService"
-import { parseAccessToken, verifyJwtToken } from "./accessTokenService"
+import type { IAccessToken } from "./access-token.service"
+import { parseAccessToken, verifyJwtToken } from "./access-token.service"
 
 export type AccessUser2 = UserWithType<"IUser2", IUserWithAccount>
 export type AccessUserCredential = UserWithType<"ICredential", ICredential>

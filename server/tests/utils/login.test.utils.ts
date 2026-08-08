@@ -2,7 +2,7 @@ import { OPCOS_LABEL } from "shared/constants/index"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Server } from "@/http/server"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createAuthMagicLinkToken } from "@/services/appLinks.service"
 import { saveAdminUserTest, saveCfaUserTest, saveOpcoUserTest, validatedUserStatus } from "./user.test.utils"
 

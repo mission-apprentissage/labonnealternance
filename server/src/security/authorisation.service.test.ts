@@ -9,8 +9,8 @@ import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import type { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import type { AccessRessouces } from "shared/security/permissions"
 import { describe, expect, it } from "vitest"
-import type { AccessUser2, AccessUserCredential, AccessUserToken } from "./authenticationService"
-import { authorizationMiddleware } from "./authorisationService"
+import type { AccessUser2, AccessUserCredential, AccessUserToken } from "./authentication.service"
+import { authorizationMiddleware } from "./authorisation.service"
 
 type MockedRequest = Pick<FastifyRequest, "params" | "query">
 const emptyRequest: MockedRequest = { params: {}, query: {} }
@@ -96,7 +96,7 @@ const createLbaOfferFromCfa = (cfaObj: Awaited<ReturnType<typeof saveCfaUserTest
   })
 }
 
-describe("authorisationService", async () => {
+describe("authorisation.service", async () => {
   let adminUser: Awaited<ReturnType<typeof saveAdminUserTest>>
   let entrepriseUserA: Awaited<ReturnType<typeof saveEntrepriseUserTest>>
   let entrepriseUserB: Awaited<ReturnType<typeof saveEntrepriseUserTest>>

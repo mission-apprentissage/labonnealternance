@@ -11,7 +11,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink } from "@/services/appLinks.service"
 import mailer from "@/services/mailer.service"
 
