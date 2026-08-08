@@ -2,7 +2,7 @@ import type { FastifyRequest } from "fastify"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { assertUnreachable } from "shared/utils/index"
 import { logger } from "@/common/logger"
-import type { IAccessLog } from "./accessLog.types"
+import type { IAccessLog } from "./access-log.types"
 
 const loggerAccess = logger.child({ module: "accessLog" })
 

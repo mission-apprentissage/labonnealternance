@@ -3,7 +3,7 @@ import type { ReferrerApiEnum } from "shared/constants/referers"
 import { isValidReferrerApi } from "shared/constants/referers"
 import { zRoutes } from "shared/index"
 import type { Server } from "@/http/server"
-import { getUserFromRequest } from "@/security/authenticationService"
+import { getUserFromRequest } from "@/security/authentication.service"
 import { findElligibleTrainingForAppointmentV2 } from "@/services/eligibleTrainingsForAppointment.service"
 
 export default (server: Server) => {

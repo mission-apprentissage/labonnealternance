@@ -1,4 +1,4 @@
-import type { ResourceIds } from "./authorisationService"
+import type { ResourceIds } from "./authorisation.service"
 
 interface IAccessLog {
   authorized: boolean

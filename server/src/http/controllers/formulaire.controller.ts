@@ -4,7 +4,7 @@ import { JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Server } from "@/http/server"
-import { getUserFromRequest } from "@/security/authenticationService"
+import { getUserFromRequest } from "@/security/authentication.service"
 import { generateOffreToken } from "@/services/appLinks.service"
 import { buildEstablishmentId, entrepriseOnboardingWorkflow, establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import {

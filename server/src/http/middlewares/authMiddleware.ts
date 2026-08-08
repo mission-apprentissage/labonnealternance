@@ -14,9 +14,9 @@ import type {
 } from "fastify"
 import type { IRouteSchema, SecurityScheme, WithSecurityScheme } from "shared/routes/common.routes"
 
-import { createAccessLog } from "@/security/accessLog.service"
-import { authenticationMiddleware } from "@/security/authenticationService"
-import { authorizationMiddleware } from "@/security/authorisationService"
+import { createAccessLog } from "@/security/access-log.service"
+import { authenticationMiddleware } from "@/security/authentication.service"
+import { authorizationMiddleware } from "@/security/authorisation.service"
 
 const symbol = Symbol("authStrategy")
 

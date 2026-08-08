@@ -19,7 +19,7 @@ import { getApplicantFromDB } from "@/services/applicant.service"
 import { establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
-import { getUserFromRequest } from "./authenticationService"
+import { getUserFromRequest } from "./authentication.service"
 
 type JobResource = { job: IJobsPartnersOfferPrivate; entreprise?: IEntreprise; cfa?: ICFA }
 type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string; user?: IUserWithAccount | null }
