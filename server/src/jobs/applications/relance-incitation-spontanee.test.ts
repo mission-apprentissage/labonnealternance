@@ -8,8 +8,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 
-import { relanceIncitationSpontanee } from "./relanceIncitationSpontanee"
-import { buildTaggedSearchUrl } from "./relanceSearchUrl"
+import { relanceIncitationSpontanee } from "./relance-incitation-spontanee"
+import { buildTaggedSearchUrl } from "./relance-search-url"
 
 vi.mock("@/services/brevo.service", () => ({ uploadContactListToBrevo: vi.fn().mockResolvedValue(undefined) }))
 vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolvedValue(undefined) }))
@@ -45,7 +45,7 @@ const makeApplication = (applicantId: ObjectId, over: Parameters<typeof generate
     ...over,
   })
 
-describe("relanceIncitationSpontanee", () => {
+describe("relance-incitation-spontanee", () => {
   useMongo()
 
   beforeEach(async () => {

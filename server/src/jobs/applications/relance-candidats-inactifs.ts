@@ -9,15 +9,15 @@ import { notifyToSlack } from "@/common/utils/slack-utils"
 import config from "@/config"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 
-import { buildTaggedSearchUrl } from "./relanceSearchUrl"
+import { buildTaggedSearchUrl } from "./relance-search-url"
 
-const RELANCE_SPONTANEE_UTM_CAMPAIGN = "relance-incitation-spontanee"
+const RELANCE_INACTIVITE_UTM_CAMPAIGN = "relance-candidat-inactif"
 const TIMEZONE = "Europe/Paris"
-// Même déclencheur que la relance des inactifs : 7 jours après la dernière candidature (jour calendaire, heure de Paris).
-// Cible disjointe : uniquement les inactifs qui n'ont JAMAIS fait de candidature spontanée (recruteurs_lba).
+// Relance 7 jours après la dernière candidature. La fenêtre cible le jour calendaire d'il y a 7 jours (heure de Paris) :
+// comme le cron tourne chaque jour, chaque candidat n'est ciblé qu'une seule fois.
 const INACTIVITY_DAYS = 7
 
-type RelanceSpontaneeRow = {
+type RelanceCandidatRow = {
   email: string
   firstname: string
   lien_recherche: string
@@ -33,10 +33,13 @@ type CandidateAggregate = {
   job_title: string | null
 }
 
-export const relanceIncitationSpontanee = async () => {
-  const listId = config.smtp.brevoRelanceSpontaneeListId
+export const buildRelanceSearchUrl = (application_url: string | null | undefined): string | null =>
+  buildTaggedSearchUrl(application_url, { utmCampaign: RELANCE_INACTIVITE_UTM_CAMPAIGN })
+
+export const relanceCandidatsInactifs = async () => {
+  const listId = config.smtp.brevoRelanceCandidatsListId
   if (!listId) {
-    logger.warn("relanceIncitationSpontanee: LBA_BREVO_RELANCE_SPONTANEE_LIST_ID non configuré, job ignoré")
+    logger.warn("relanceCandidatsInactifs: LBA_BREVO_RELANCE_CANDIDATS_LIST_ID non configuré, job ignoré")
     return
   }
 
@@ -51,12 +54,13 @@ export const relanceIncitationSpontanee = async () => {
         $lookup: {
           from: "applicants_email_logs",
           let: { applicantId: "$_id" },
-          pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$applicant_id", "$$applicantId"] }, { $eq: ["$type", EMAIL_LOG_TYPE.RELANCE_INCITATION_SPONTANEE] }] } } }],
+          pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$applicant_id", "$$applicantId"] }, { $eq: ["$type", EMAIL_LOG_TYPE.RELANCE_INACTIVITE] }] } } }],
           as: "relance_logs",
         },
       },
       { $match: { relance_logs: { $size: 0 } } },
-      // Cible : aucune candidature spontanée (recruteurs_lba). Disjoint de la liste A (relance des inactifs).
+      // Liste A (relance générique) : uniquement les inactifs qui ont DÉJÀ fait au moins une candidature spontanée.
+      // Ceux qui n'en ont jamais fait sont pris en charge par la boucle "incitation spontanée" (liste B, disjointe).
       {
         $lookup: {
           from: "applications",
@@ -65,7 +69,7 @@ export const relanceIncitationSpontanee = async () => {
           as: "spontaneous_applications",
         },
       },
-      { $match: { spontaneous_applications: { $size: 0 } } },
+      { $match: { "spontaneous_applications.0": { $exists: true } } },
       {
         $lookup: {
           from: "applications",
@@ -89,27 +93,26 @@ export const relanceIncitationSpontanee = async () => {
     .toArray()
 
   if (candidates.length === 0) {
-    logger.info("relanceIncitationSpontanee: aucun candidat à relancer")
+    logger.info("relanceCandidatsInactifs: aucun candidat à relancer")
     return
   }
 
-  const rows: RelanceSpontaneeRow[] = candidates.map((candidate) => ({
+  const rows: RelanceCandidatRow[] = candidates.map((candidate) => ({
     email: candidate.email,
     firstname: candidate.firstname,
-    // On met en avant les entreprises où candidater spontanément (recruteurs LBA) sur la page de recherche
-    lien_recherche: buildTaggedSearchUrl(candidate.application_url, { utmCampaign: RELANCE_SPONTANEE_UTM_CAMPAIGN, highlightRecruteursLba: true }) ?? "",
+    lien_recherche: buildRelanceSearchUrl(candidate.application_url) ?? "",
     metier: candidate.job_searched_by_user ?? candidate.job_title ?? "",
   }))
 
   // On trace la relance AVANT l'envoi : en cas de crash entre les deux, on préfère rater une relance
-  // plutôt que d'en envoyer deux (garantie "une seule relance par candidat et par liste").
+  // plutôt que d'en envoyer deux (garantie "une seule relance par candidat").
   const now = new Date()
   await getDbCollection("applicants_email_logs").insertMany(
     candidates.map((candidate) => ({
       _id: new ObjectId(),
       applicant_id: candidate._id,
       application_id: null,
-      type: EMAIL_LOG_TYPE.RELANCE_INCITATION_SPONTANEE,
+      type: EMAIL_LOG_TYPE.RELANCE_INACTIVITE,
       message_id: null,
       createdAt: now,
     }))
@@ -129,17 +132,13 @@ export const relanceIncitationSpontanee = async () => {
     )
   } catch (error) {
     await notifyToSlack({
-      subject: "RELANCE INCITATION SPONTANEE",
+      subject: "RELANCE CANDIDATS INACTIFS",
       message: `Échec de l'envoi vers Brevo pour ${rows.length} candidat(s) (déjà tracés, ils ne seront pas relancés)`,
       error: true,
     })
     throw error
   }
 
-  await notifyToSlack({
-    subject: "RELANCE INCITATION SPONTANEE",
-    message: `${rows.length} candidat(s) poussé(s) vers la liste Brevo d'incitation aux candidatures spontanées`,
-    error: false,
-  })
-  logger.info(`relanceIncitationSpontanee: ${rows.length} candidat(s) relancé(s)`)
+  await notifyToSlack({ subject: "RELANCE CANDIDATS INACTIFS", message: `${rows.length} candidat(s) poussé(s) vers la liste Brevo de relance`, error: false })
+  logger.info(`relanceCandidatsInactifs: ${rows.length} candidat(s) relancé(s)`)
 }

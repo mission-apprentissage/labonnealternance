@@ -13,7 +13,7 @@ import { bindProcessorServer } from "./http/job-processor-server"
 import { bindStreamProcessorServer } from "./http/StreamProcessorServer"
 import { bindFastifyServer } from "./http/server"
 import { setupJobProcessor } from "./jobs/jobs"
-import { SimpleJobDefinition, simpleJobDefinitions } from "./jobs/simpleJobDefinitions"
+import { SimpleJobDefinition, simpleJobDefinitions } from "./jobs/simple-job-definitions"
 
 async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
   logger.info("Setup job processor")
@@ -283,11 +283,11 @@ program
   .action(createJobAction("api:user:disable"))
 
 program
-  .command("recruiterOfferExpirationReminderJob")
+  .command("recruiter-offer-expiration-reminder-job")
   .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
   .requiredOption("--threshold <string>", "threshold")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiterOfferExpirationReminderJob"))
+  .action(createJobAction("recruiter-offer-expiration-reminder-job"))
 
 program
   .command("export-offre-pole-emploi")
@@ -400,10 +400,10 @@ program
   .action(createJobAction("referentiel:commune:import"))
 
 program
-  .command("exportJobsToS3V2")
+  .command("export-jobs-to-s3-v2")
   .description("export les offres dans un json")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("exportJobsToS3V2"))
+  .action(createJobAction("export-jobs-to-s3-v2"))
 
 simpleJobDefinitions.forEach((jobDef) => {
   const { description, cliOptions = [] } = jobDef

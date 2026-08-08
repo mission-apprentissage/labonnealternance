@@ -4,7 +4,7 @@ import anonymizedApplicationsModel from "shared/models/anonymized-applications.m
 import anonymizedUsersWithAccountsModel from "shared/models/anonymized-users-with-accounts.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { anonymizeAppointments } from "./anonymizeAppointments"
+import { anonymizeAppointments } from "./anonymize-appointments"
 
 const anonimizeUserWithAccount = (_id: ObjectId) =>
   getDbCollection("userswithaccounts")

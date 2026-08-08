@@ -7,7 +7,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
-import { recruiterOfferExpirationReminderJob } from "./recruiterOfferExpirationReminderJob"
+import { recruiterOfferExpirationReminderJob } from "./recruiter-offer-expiration-reminder-job"
 
 vi.mock("@/services/mailer.service", () => {
   return {
@@ -26,7 +26,7 @@ vi.mock("@/common/utils/slack-utils", () => {
 
 useMongo()
 
-describe("recruiterOfferExpirationReminderJob", () => {
+describe("recruiter-offer-expiration-reminder-job", () => {
   beforeEach(async () => {
     vi.clearAllMocks()
 

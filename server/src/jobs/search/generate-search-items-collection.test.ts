@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
-import { fillSearchItemsCollection } from "./generateSearchItemsCollection"
+import { fillSearchItemsCollection } from "./generate-search-items-collection"
 
 describe("fillSearchItemsCollection — réconciliation nightly (streamée)", () => {
   useMongo()

@@ -12,7 +12,7 @@ import { UserEventType } from "shared/models/user-with-account.model"
 import { logger } from "@/common/logger"
 import { getDatabase, getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
-import { recreateIndexes } from "./recreateIndexes"
+import { recreateIndexes } from "./recreate-indexes"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
 export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`

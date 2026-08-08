@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 
-import { nurturingEntreprises } from "./nurturingEntreprises"
+import { nurturingEntreprises } from "./nurturing-entreprises"
 
 vi.mock("@/services/brevo.service", () => ({ uploadContactListToBrevo: vi.fn().mockResolvedValue(undefined) }))
 vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolvedValue(undefined) }))
@@ -43,7 +43,7 @@ const makeOffer = (userId: ObjectId, over: Parameters<typeof generateJobsPartner
     ...over,
   })
 
-describe("nurturingEntreprises", () => {
+describe("nurturing-entreprises", () => {
   useMongo()
 
   beforeEach(async () => {

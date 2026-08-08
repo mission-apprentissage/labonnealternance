@@ -9,7 +9,7 @@ import type Stream from "stream"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { streamToString } from "@/common/utils/stream-utils"
-import { EXPORT_JOBS_TO_S3_V2_FILENAME, exportJobsToS3V2 } from "./exportJobsToS3V2"
+import { EXPORT_JOBS_TO_S3_V2_FILENAME, exportJobsToS3V2 } from "./export-jobs-to-s3-v2"
 
 useMongo()
 
@@ -22,7 +22,7 @@ const exportJobsToS3V2ForTests = async () => {
   return JSON.parse(content)
 }
 
-describe("exportJobsToS3V2", () => {
+describe("export-jobs-to-s3-v2", () => {
   beforeEach(async () => {
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2024-08-21"))

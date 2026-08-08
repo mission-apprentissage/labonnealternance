@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`exportJobsToS3V2 > should publish a partenariat job 1`] = `
+exports[`export-jobs-to-s3-v2 > should publish a partenariat job 1`] = `
 [
   {
     "apply": {
@@ -80,7 +80,7 @@ exports[`exportJobsToS3V2 > should publish a partenariat job 1`] = `
 ]
 `;
 
-exports[`exportJobsToS3V2 > should publish jobs 1`] = `
+exports[`export-jobs-to-s3-v2 > should publish jobs 1`] = `
 [
   {
     "apply": {

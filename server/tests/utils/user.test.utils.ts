@@ -13,7 +13,7 @@ import { UserEventType, ZUserWithAccount } from "shared/models/user-with-account
 import type { ZodType, z } from "zod"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { getFakeEmail } from "@/jobs/database/obfuscateCollections"
+import { getFakeEmail } from "@/jobs/database/obfuscate-collections"
 import { generateFixture } from "./zodFixtureCompat"
 
 export const saveDbEntity = async <T extends ZodType>(schema: T, saveEntity: (item: z.output<T>) => Promise<any>, data: Partial<z.input<T>>): Promise<z.output<T>> => {

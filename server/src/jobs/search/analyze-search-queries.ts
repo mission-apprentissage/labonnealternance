@@ -9,8 +9,8 @@ import { sendMistralBatch } from "@/services/mistralai/mistralai.service"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
 import { normalizeQuery } from "@/services/search/searchQueryLog.service"
 
-import type { IQueryAnalysis, IQueryStats } from "./searchSuggestionCriteria"
-import { CRITERIA, decideSuggestion, decideSynonym, isSuggestionCandidate, isSynonymCandidate, passesQuantitativeGate } from "./searchSuggestionCriteria"
+import type { IQueryAnalysis, IQueryStats } from "./search-suggestion-criteria"
+import { CRITERIA, decideSuggestion, decideSynonym, isSuggestionCandidate, isSynonymCandidate, passesQuantitativeGate } from "./search-suggestion-criteria"
 
 /**
  * Analyse périodique des recherches utilisateurs (`search_queries`, alimentée au fil de l'eau

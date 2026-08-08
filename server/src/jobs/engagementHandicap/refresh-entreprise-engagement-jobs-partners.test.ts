@@ -6,7 +6,7 @@ import { EntrepriseEngagementSources } from "shared/models/referentiel-engagemen
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/api-entreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { refreshEntrepriseEngagementJobsPartners, refreshReferentielEngagementFranceTravail } from "./refreshEntrepriseEngagementJobsPartners"
+import { refreshEntrepriseEngagementJobsPartners, refreshReferentielEngagementFranceTravail } from "./refresh-entreprise-engagement-jobs-partners"
 
 vi.mock("node:fs/promises", () => ({
   default: {
@@ -115,7 +115,7 @@ describe("refreshReferentielEngagementFranceTravail", () => {
   })
 })
 
-describe("refreshEntrepriseEngagementJobsPartners", () => {
+describe("refresh-entreprise-engagement-jobs-partners", () => {
   beforeEach(async () => {
     await getDbCollection("referentiel_engagement_entreprise").insertOne({
       _id: new ObjectId(),

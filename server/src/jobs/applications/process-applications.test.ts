@@ -8,7 +8,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
-import { processApplications } from "./processApplications"
+import { processApplications } from "./process-applications"
 
 // Mock ClamAV to be available and not detect viruses
 vi.mock("@/services/clamav.service", () => ({
@@ -51,7 +51,7 @@ vi.mock("axios", async (importOriginal) => {
 
 useMongo()
 
-describe("processApplications", () => {
+describe("process-applications", () => {
   const mailerSendEmailSpy = vi.mocked(mailer.sendEmail)
 
   beforeEach(async () => {
