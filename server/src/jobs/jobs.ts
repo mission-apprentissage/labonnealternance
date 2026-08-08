@@ -5,13 +5,13 @@ import { getLoggerWithContext, logger } from "@/common/logger"
 import { getDatabase } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
-import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/searchItems.service"
+import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import {
   applyKeywordsBatchFile,
   applyPendingMistralBatches,
   generateSearchItemsKeywordsContinuous,
   submitSearchItemsKeywordsBatch,
-} from "@/services/search/searchItemsKeywords.service"
+} from "@/services/search/search-items-keywords.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimize-users-with-accounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymize-applicant-and-applications"

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 
-import { containsPii, normalizeQuery } from "./searchQueryLog.service"
+import { containsPii, normalizeQuery } from "./search-query-log.service"
 
-describe("searchQueryLog.service", () => {
+describe("search-query-log.service", () => {
   describe("containsPii", () => {
     it.each([
       ["jean.dupont@gmail.com", true],

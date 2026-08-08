@@ -23,8 +23,8 @@ import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/a
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
+import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsPartnersByIdAsJobOfferApi, updateJobOffer } from "./job-opportunity.service"
 import { JobOpportunityRequestContext } from "./job-opportunity-request-context"
-import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsPartnersByIdAsJobOfferApi, updateJobOffer } from "./jobOpportunity.service"
 
 useMongo()
 

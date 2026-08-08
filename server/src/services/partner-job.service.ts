@@ -17,7 +17,7 @@ import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { generateApplicationToken } from "./app-links.service"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByJobCount, PARTNERS_WITH_APPLICATION_API } from "./application.service"
-import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/job-opportunity.service"
 import { sortLbaJobs } from "./lbajob.service"
 import { filterJobsByOpco } from "./opco.service"
 

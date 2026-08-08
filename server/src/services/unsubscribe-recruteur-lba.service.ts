@@ -9,7 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { obfuscateLbaCompanyApplications } from "./application.service"
 import mailer from "./mailer.service"
-import { syncJobPartnersToSearchItemsInBackground } from "./search/searchItems.service"
+import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
 
 const imagePath = `${config.publicUrl}/images/emails/`
 

@@ -11,7 +11,7 @@ import { s3WriteStream } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { concatStreams, waitForStreamEnd } from "@/common/utils/stream-utils"
 import config from "@/config"
-import { jobsPartnersToApiV3Read } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+import { jobsPartnersToApiV3Read } from "@/services/jobs/jobOpportunity/job-opportunity.service"
 
 const getFileWriteStream = (fileName: string) => {
   logger.info(`Generating file ${fileName}`)

@@ -2,7 +2,7 @@ import { zRoutes } from "shared"
 
 import type { Server } from "@/http/server"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
-import { logSearchQuery } from "@/services/search/searchQueryLog.service"
+import { logSearchQuery } from "@/services/search/search-query-log.service"
 
 export default (server: Server) => {
   server.get(
