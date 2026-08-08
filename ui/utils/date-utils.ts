@@ -9,7 +9,7 @@ export const getDaysSinceDate = (fromDate: number | string | Date): number => {
 
 /**
  * Get the current date, as a formatted string : YYYY/MM/DD (separator can be changed)
- * @param {string} separator - Optionnally change the separator, defaults to "/".
+ * @param {string} separator - Optionally change the separator, defaults to "/".
  * @returns {string} - A string representation of the date : YYYY/MM/DD
  */
 export const getCurrentDate = (separator = "/") => {
@@ -18,7 +18,7 @@ export const getCurrentDate = (separator = "/") => {
 
 /**
  * Get the current hour and minutes, as a formatted string : 14h42
- * @param {string} separator - Optionnally change the separator, defaults to "h".
+ * @param {string} separator - Optionally change the separator, defaults to "h".
  * @returns {string} - A string representation of the hour and minutes, for example, 10h07
  */
 export const getCurrentHourMinute = (separator = "h") => {
@@ -27,22 +27,15 @@ export const getCurrentHourMinute = (separator = "h") => {
 }
 
 export const sortReactTableDate = (a: string | number | Date, b: string | number | Date) => {
-  const val = dayjs(a).isAfter(dayjs(b))
+  const dateA = dayjs(a)
+  const dateB = dayjs(b)
 
-  if (val) {
-    return 1
-  } else {
-    return -1
-  }
+  if (dateA.isAfter(dateB)) return 1
+  if (dateA.isBefore(dateB)) return -1
+  return 0
 }
 
 export const sortReactTableString = (a: string, b: string) => {
-  const val = a.localeCompare(b, "fr")
-
-  // localeCompare can return -2, check if val is negative or positive
-  if (val > 0) {
-    return 1
-  } else {
-    return -1
-  }
+  // localeCompare can return any negative/positive number depending on the engine, normalize to -1/0/1
+  return Math.sign(a.localeCompare(b, "fr"))
 }

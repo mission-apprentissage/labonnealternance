@@ -17,7 +17,7 @@ export function useLocalStorage<T>(key: string, initialValue?: T) {
   const setLocalStorage = useCallback(
     (value: T) => {
       if (typeof window === "undefined") return
-      localStorageSet(key, value)
+      localStorageSet(key, JSON.stringify(value))
       setStoredValue(value)
     },
     [key]
