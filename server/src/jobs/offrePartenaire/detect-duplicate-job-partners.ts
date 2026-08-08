@@ -1,0 +1,412 @@
+import * as Sentry from "@sentry/node"
+import { groupBy } from "lodash-es"
+import type { AggregationCursor, AnyBulkWriteOperation, Filter } from "mongodb"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
+import type { IComputedJobPartnersDuplicateRef } from "shared/models/job-partners-duplicate-ref"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import jobsPartnersModel, { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import jobsPartnersComputedModel, { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
+import { removeAccents } from "shared/utils/index"
+import * as stringSimilarity from "string-similarity"
+import { logger } from "@/common/logger"
+import { deduplicate, getPairs } from "@/common/utils/array"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
+import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
+import { defaultFillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
+
+// champs utilisés pour les projections
+const fieldsRead = [
+  "_id",
+  "partner_label",
+  "partner_job_id",
+  "offer_title",
+  "duplicates",
+  "workplace_address_zipcode",
+  "rank",
+  "created_at",
+] as const satisfies (keyof IComputedJobsPartners)[]
+
+const jobPartnerCollection = jobsPartnersModel.collectionName
+const computedJobPartnerCollection = jobsPartnersComputedModel.collectionName
+
+type ReadFields = (typeof fieldsRead)[number]
+
+type ProjectedComputedJobPartner = Pick<IComputedJobsPartners, ReadFields>
+type ProjectedJobPartner = ProjectedComputedJobPartner & Pick<IJobsPartnersOfferPrivate, "offer_status">
+
+type AggregationResult = {
+  _id: string
+  documents: ProjectedComputedJobPartner[]
+  jobPartners?: ProjectedJobPartner[]
+}
+type TreatedDocument = ProjectedComputedJobPartner & {
+  collectionName: typeof jobPartnerCollection | typeof computedJobPartnerCollection
+}
+
+export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
+  const startDate = new Date()
+  // @ts-ignore
+  const computedJobPartnersFilter: Filter<IComputedJobsPartners> = {
+    $and: [{ business_error: null, offer_status: JOB_STATUS_ENGLISH.ACTIVE }, ...(addedMatchFilter ? [addedMatchFilter] : [])],
+  }
+
+  await getDbCollection("computed_jobs_partners").updateMany(computedJobPartnersFilter, { $set: { duplicates: [] } })
+  const jobPartnerFields: (keyof IComputedJobsPartners)[] = ["workplace_siret", "workplace_brand", "workplace_legal_name", "workplace_name"]
+
+  await asyncForEach(jobPartnerFields, async (groupField) => {
+    await logOversizedGroups(groupField, computedJobPartnersFilter)
+    const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
+      groupField,
+      computedJobPartnerStreamFactory(groupField, computedJobPartnersFilter)
+    )
+    const message = `detectDuplicateJobPartners: VS computed_job_partners: groupé par le champ ${groupField}. duplicateCount=${duplicateCount}, maxOfferPairCount=${maxOfferPairCount}, offerPairCount=${offerPairCount}`
+    logger.info(message)
+  })
+  await asyncForEach(jobPartnerFields, async (groupField) => {
+    await logOversizedGroups(groupField, computedJobPartnersFilter)
+    const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
+      groupField,
+      computedJobPartnerVsJobPartnerStreamFactory(groupField, computedJobPartnersFilter)
+    )
+    const message = `detectDuplicateJobPartners: VS job_partners: groupé par le champ ${groupField}. duplicateCount=${duplicateCount}, maxOfferPairCount=${maxOfferPairCount}, offerPairCount=${offerPairCount}`
+    logger.info(message)
+  })
+  const executionDurationInSeconds = Math.round((new Date().getTime() - startDate.getTime()) / 1000)
+  if (executionDurationInSeconds > 60 * 5) {
+    await notifyToSlack({
+      subject: `Détection des offres en doublon`,
+      message: `Temps d'exécution : ${executionDurationInSeconds} secondes`,
+      error: true,
+    })
+  }
+}
+
+const logOversizedGroups = async (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
+  const oversizedGroups = await getDbCollection("computed_jobs_partners")
+    .aggregate([
+      { $match: computedJobPartnersFilter },
+      { $match: { [groupField]: { $exists: true, $nin: [null, ""] } } },
+      { $group: { _id: `$${groupField}`, count: { $sum: 1 } } },
+      { $match: { count: { $gt: 500 } } },
+    ])
+    .toArray()
+
+  if (oversizedGroups.length > 0) {
+    const sample = oversizedGroups
+      .slice(0, 10)
+      .map((g) => `${g._id}(${g.count})`)
+      .join(", ")
+    const suffix = oversizedGroups.length > 10 ? ` ... et ${oversizedGroups.length - 10} autres` : ""
+
+    logger.warn(`detectDuplicateJobPartners: ${oversizedGroups.length} groupes ignorés (count > 500) pour le champ ${groupField}: ${sample}${suffix}`)
+    Sentry.captureMessage(`detectDuplicateJobPartners: ${oversizedGroups.length} groupes ignorés (count > 500) pour le champ ${groupField}: ${sample}${suffix}`, {
+      level: "warning",
+    })
+  }
+}
+
+const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
+  logger.info(`début de detectDuplicateJobPartners groupé par le champ ${groupField}`)
+  const projectFields = Object.fromEntries(fieldsRead.map((field) => [field, 1]))
+  return getDbCollection("computed_jobs_partners").aggregate(
+    [
+      { $match: computedJobPartnersFilter },
+      // Exclure les valeurs nulles/vides : inutiles pour la détection de doublons
+      // et source de documents groupés > 16MB (BSONObjectTooLarge)
+      { $match: { [groupField]: { $exists: true, $nin: [null, ""] } } },
+      { $project: { ...projectFields, [groupField]: 1 } },
+      // Compter les documents et ne conserver que les 500 premiers pour éviter un dépassement BSON
+      // sur les groupes pathologiquement volumineux (ils seront filtrés ensuite via count > 500)
+      { $group: { _id: `$${groupField}`, count: { $sum: 1 }, documents: { $firstN: { input: "$$ROOT", n: 500 } } } },
+      // Ne garder que les groupes avec au moins 2 offres (doublons potentiels) et ignorer les groupes trop larges
+      { $match: { count: { $gte: 2, $lte: 500 } } },
+      {
+        $project: {
+          _id: 1,
+          documents: {
+            $map: {
+              input: "$documents",
+              as: "document",
+              in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
+            },
+          },
+        },
+      },
+    ],
+    { allowDiskUse: true }
+  ) as AggregationCursor<AggregationResult>
+}
+
+const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
+  logger.info(
+    `début de detectDuplicateJobPartners entre computedJobPartners et jobPartners, pour les champs computedJobPartnerField=${computedJobPartnerField} et jobPartnerField=${computedJobPartnerField}`
+  )
+
+  const commonProjectFields = Object.fromEntries(fieldsRead.map((field) => [field, 1]))
+
+  return getDbCollection("computed_jobs_partners").aggregate(
+    [
+      { $match: computedJobPartnersFilter },
+      {
+        $project: {
+          ...commonProjectFields,
+          [computedJobPartnerField]: 1,
+        },
+      },
+      { $match: { [computedJobPartnerField]: { $exists: true, $nin: [null, ""] } } },
+      { $group: { _id: `$${computedJobPartnerField}`, count: { $sum: 1 }, documents: { $firstN: { input: "$$ROOT", n: 500 } } } },
+      { $match: { _id: { $ne: null }, count: { $lte: 500 } } },
+      {
+        $lookup: {
+          from: jobPartnerCollection,
+          let: { localId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: [`$${computedJobPartnerField}`, "$$localId"] },
+              },
+            },
+            {
+              $project: {
+                ...commonProjectFields,
+                [computedJobPartnerField]: 1,
+                offer_status: 1,
+              },
+            },
+          ],
+          as: "jobPartners",
+        },
+      },
+    ],
+    { allowDiskUse: true }
+  ) as AggregationCursor<AggregationResult>
+}
+
+const detectDuplicateJobPartnersFactory = async (groupField: keyof IComputedJobsPartners, documentStream: AggregationCursor<AggregationResult>) => {
+  let duplicateCount = 0
+  let maxOfferPairCount = 0
+  let offerPairCount = 0
+
+  for await (const aggregationResult of documentStream) {
+    const result = await processAggregateResult(groupField, aggregationResult)
+    duplicateCount += result.duplicateCount
+    offerPairCount += result.offerPairCount
+    maxOfferPairCount = Math.max(maxOfferPairCount, result.offerPairCount)
+  }
+  return {
+    duplicateCount,
+    maxOfferPairCount,
+    offerPairCount,
+  }
+}
+
+export const checkSimilarity = (string1: string | null | undefined, string2: string | null | undefined): string | undefined => {
+  if (!string1 || !string2) {
+    return
+  }
+  if (string1 === string2) {
+    return "identical"
+  }
+  string1 = cleanForSearch(string1)
+  string2 = cleanForSearch(string2)
+  if (string1 === string2) {
+    return "similar after clean"
+  }
+  const similarity = stringSimilarity.compareTwoStrings(string1, string2)
+  if (similarity >= 0.8) {
+    return `similar ${similarity.toFixed(2)}`
+  }
+}
+
+const processAggregateResult = async (groupField: string, aggregationResult: AggregationResult) => {
+  let duplicateCount = 0
+  let maxOfferPairCount = 0
+  let offerPairCount = 0
+
+  const partnerGroups: TreatedDocument[][] = Object.values(
+    groupBy(
+      [
+        ...aggregationResult.documents.map((props) => ({ ...props, collectionName: computedJobPartnerCollection })),
+        ...(aggregationResult.jobPartners ?? []).flatMap((props) => (props.offer_status === JOB_STATUS_ENGLISH.ACTIVE ? [{ ...props, collectionName: jobPartnerCollection }] : [])),
+      ],
+      (document) => document.partner_label
+    )
+  )
+  if (partnerGroups.length < 2) {
+    return {
+      duplicateCount,
+      maxOfferPairCount,
+      offerPairCount,
+    }
+  }
+  const groupPairs: [TreatedDocument[], TreatedDocument[]][] = getPairs(partnerGroups)
+  const offerPairs: [TreatedDocument, TreatedDocument][] = groupPairs.flatMap(([partnerGroup, otherGroup]) =>
+    partnerGroup.flatMap((offer) =>
+      otherGroup.flatMap<[TreatedDocument, TreatedDocument]>((offer2) => {
+        if (isFlaggedDuplicateOf(offer, offer2) || isFlaggedDuplicateOf(offer2, offer) || offer._id.equals(offer2._id)) {
+          return []
+        }
+        return [[offer, offer2]]
+      })
+    )
+  )
+  maxOfferPairCount = Math.max(maxOfferPairCount, offerPairs.length)
+  offerPairCount += offerPairs.length
+  const updates = offerPairs.flatMap(([offer1, offer2]) => {
+    if (offer1.workplace_address_zipcode !== offer2.workplace_address_zipcode) {
+      return []
+    }
+    const reasons: string[] = [`identical ${groupField}`]
+    const similarityOpt = checkSimilarity(offer1.offer_title, offer2.offer_title)
+    if (similarityOpt) {
+      reasons.push(`${similarityOpt} offer_title`)
+    }
+    if (reasons.length <= 1) {
+      return []
+    } else {
+      duplicateCount += 2
+      return [duplicateInfosToMongoUpdates(offer1, offer2, reasons)]
+    }
+  })
+  const reducedUpdates = reduceDbUpdates(updates)
+  const { computedJobPartnerOperations, jobPartnerOperations } = reducedUpdates
+  if (computedJobPartnerOperations.length) {
+    await getDbCollection("computed_jobs_partners").bulkWrite(computedJobPartnerOperations, {
+      ordered: false,
+    })
+  }
+  if (jobPartnerOperations.length) {
+    await getDbCollection("jobs_partners").bulkWrite(jobPartnerOperations, {
+      ordered: false,
+    })
+  }
+  return {
+    duplicateCount,
+    maxOfferPairCount,
+    offerPairCount,
+  }
+}
+
+export type OfferRef = Pick<TreatedDocument, "rank" | "collectionName" | "created_at" | "partner_label">
+
+// in case of duplicates, returns true if offer1 is selected over offer2
+export const isCanonicalForDuplicate = (offer1: OfferRef, offer2: OfferRef) => {
+  if (
+    offer1.partner_label !== offer2.partner_label &&
+    (offer1.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA || offer2.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
+  ) {
+    if (offer1.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) return true
+    if (offer2.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) return false
+  }
+  const rank1 = offer1.rank ?? 0
+  const rank2 = offer2.rank ?? 0
+  if (rank1 !== rank2) {
+    return rank1 >= rank2
+  }
+  return offer1.created_at.getTime() <= offer2.created_at.getTime()
+}
+
+type ComputedJobPartnerOperation = AnyBulkWriteOperation<IComputedJobsPartners>
+type JobPartnerOperation = AnyBulkWriteOperation<IJobsPartnersOfferPrivate>
+type DbUpdate = { computedJobPartnerOperations: ComputedJobPartnerOperation[]; jobPartnerOperations: JobPartnerOperation[] }
+
+const duplicateInfosToMongoUpdates = (offer1: TreatedDocument, offer2: TreatedDocument, reasons: string[]): DbUpdate => {
+  const reason = reasons.join(", ")
+  const duplicateObjectForOffer1: IComputedJobPartnersDuplicateRef = {
+    partner_job_id: offer2.partner_job_id,
+    partner_label: offer2.partner_label,
+    collectionName: offer2.collectionName,
+    reason,
+  }
+  const duplicateObjectForOffer2: IComputedJobPartnersDuplicateRef = {
+    partner_job_id: offer1.partner_job_id,
+    partner_label: offer1.partner_label,
+    collectionName: offer1.collectionName,
+    reason,
+  }
+  const isOffer1canonical = isCanonicalForDuplicate(offer1, offer2)
+  const update1 = buildOperationsForASingleOffer(offer1, duplicateObjectForOffer1, isOffer1canonical)
+  const update2 = buildOperationsForASingleOffer(offer2, duplicateObjectForOffer2, !isOffer1canonical)
+  return reduceDbUpdates([update1, update2])
+}
+
+const reduceDbUpdates = (updates: DbUpdate[]): DbUpdate => {
+  return updates.reduce(
+    ({ computedJobPartnerOperations, jobPartnerOperations }, { computedJobPartnerOperations: computedJobPartnerOperations2, jobPartnerOperations: jobPartnerOperations2 }) => ({
+      computedJobPartnerOperations: [...computedJobPartnerOperations, ...computedJobPartnerOperations2],
+      jobPartnerOperations: [...jobPartnerOperations, ...jobPartnerOperations2],
+    }),
+    { computedJobPartnerOperations: [], jobPartnerOperations: [] }
+  )
+}
+
+const buildOperationsForASingleOffer = (offer: TreatedDocument, otherOfferDuplicateObject: IComputedJobPartnersDuplicateRef, isCanonical: boolean): DbUpdate => {
+  const computedJobPartnerOperations: ComputedJobPartnerOperation[] = []
+  const jobPartnerOperations: JobPartnerOperation[] = []
+  if (offer.collectionName === computedJobPartnerCollection) {
+    computedJobPartnerOperations.push({
+      updateOne: {
+        filter: { _id: offer._id },
+        update: { $push: { duplicates: otherOfferDuplicateObject } },
+      },
+    })
+    if (!isCanonical) {
+      computedJobPartnerOperations.push({
+        updateOne: {
+          filter: { _id: offer._id },
+          update: { $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.DUPLICATE } },
+        },
+      })
+    }
+  } else if (offer.collectionName === jobPartnerCollection && !isCanonical) {
+    jobPartnerOperations.push({
+      updateOne: {
+        filter: { _id: offer._id },
+        // updated_at : requis par le cron delta search_items (syncSearchItemsDelta).
+        update: { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() } },
+      },
+    })
+    jobPartnerOperations.push({
+      updateOne: {
+        filter: { _id: offer._id },
+        update: {
+          $push: {
+            offer_status_history: {
+              date: new Date(),
+              status: JOB_STATUS_ENGLISH.ANNULEE,
+              reason: `détectée comme doublon, remplacée par ${JSON.stringify(otherOfferDuplicateObject)}`,
+              granted_by: "détecteur de doublons",
+            },
+          },
+        },
+      },
+    })
+  }
+  return { computedJobPartnerOperations, jobPartnerOperations }
+}
+
+const acronymes = {
+  MFR: "maison familiale rurale",
+  RH: "ressources humaines",
+}
+const acronymeEntries = Object.entries(acronymes)
+
+const cleanForSearch = (str: string): string => {
+  const words = removeAccents(str)
+    .split(/[^a-z]/gi)
+    .flatMap((part) => {
+      const acronymeEntryOpt = acronymeEntries.find(([acronyme]) => acronyme === part)
+      if (acronymeEntryOpt) {
+        return acronymeEntryOpt[1].split(" ")
+      }
+      part = part.toLowerCase()
+      return part.length > Math.min(3, str.length / 5) ? [part] : []
+    })
+  return deduplicate(words).join(" ")
+}
+
+const isFlaggedDuplicateOf = (doc1: TreatedDocument, doc2: TreatedDocument): boolean =>
+  Boolean(doc1.duplicates?.some(({ partner_job_id, partner_label }) => partner_job_id === doc2.partner_job_id && partner_label === doc2.partner_label))
