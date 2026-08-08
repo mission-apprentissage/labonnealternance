@@ -19,7 +19,7 @@ import {
   generateSearchItemsKeywordsContinuous,
   submitSearchItemsKeywordsBatch,
   writeKeywordsToCache,
-} from "./searchItemsKeywords.service"
+} from "./search-items-keywords.service"
 
 vi.mock("@/services/mistralai/mistralai.service", () => ({
   sendMistralMessages: vi.fn(),

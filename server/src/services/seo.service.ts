@@ -9,7 +9,7 @@ import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils.js"
 import { metierData } from "@/jobs/seo/data-metier-seo"
 import { getApplicationByCompanyCount, getApplicationByJobCount } from "@/services/application.service"
-import { getJobsPartnersFromDBForUI, getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { getJobsPartnersFromDBForUI, getPartnerJobsCount } from "./jobs/jobOpportunity/job-opportunity.service"
 
 const DEFAULT_RADIUS_KM = 30
 

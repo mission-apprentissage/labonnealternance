@@ -2,7 +2,7 @@ import type { Filter } from "mongodb"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { buildLbaUrlFromJob } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+import { buildLbaUrlFromJob } from "@/services/jobs/jobOpportunity/job-opportunity.service"
 import { fillFieldsForPartnersFactory } from "./fill-fields-for-partners-factory"
 
 const sourceFields = ["workplace_siret", "_id", "partner_label", "offer_title", "workplace_naf_label"] as const satisfies (keyof IJobsPartnersOfferPrivate)[]

@@ -5,7 +5,7 @@ import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
-import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/searchItems.service"
+import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 type IModelTraining = {
   partner_job_id: string

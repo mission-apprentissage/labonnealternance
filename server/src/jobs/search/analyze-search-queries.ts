@@ -7,7 +7,7 @@ import { notifyToSlack } from "@/common/utils/slack-utils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { sendMistralBatch } from "@/services/mistralai/mistralai.service"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
-import { normalizeQuery } from "@/services/search/searchQueryLog.service"
+import { normalizeQuery } from "@/services/search/search-query-log.service"
 
 import type { IQueryAnalysis, IQueryStats } from "./search-suggestion-criteria"
 import { CRITERIA, decideSuggestion, decideSynonym, isSuggestionCandidate, isSynonymCandidate, passesQuantitativeGate } from "./search-suggestion-criteria"

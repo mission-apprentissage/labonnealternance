@@ -13,7 +13,7 @@ import { matchesDepartment, roundDistance } from "@/common/utils/geolib"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import type { FTJob, FTResponse } from "./ftjob.service.types"
 import type { TLbaItemResult } from "./job-opportunity.service.types"
-import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { getRecipientID } from "./jobs/jobOpportunity/job-opportunity.service"
 import type { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 

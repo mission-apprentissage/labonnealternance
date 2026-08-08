@@ -15,7 +15,7 @@ import {
   resetSearchItemBuildContextCache,
   syncSearchItemsDelta,
   upsertJobPartnersToSearchItems,
-} from "./searchItems.service"
+} from "./search-items.service"
 
 describe("dedupeRepeatedTitle", () => {
   it("supprime la duplication d'intitulé", () => {

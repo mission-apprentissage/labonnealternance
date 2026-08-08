@@ -20,7 +20,7 @@ import { notifyToSlack } from "@/common/utils/slack-utils"
 import { removeLineBreaks, sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import type { FTOffre } from "@/jobs/partenaireExport/ft-export.types"
-import { buildLbaUrl } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+import { buildLbaUrl } from "@/services/jobs/jobOpportunity/job-opportunity.service"
 
 const pipelineAsync = promisify(pipeline)
 

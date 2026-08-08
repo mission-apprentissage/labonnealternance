@@ -9,7 +9,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { limitStream } from "@/common/utils/stream-utils"
-import type { IJobPartnerForSearchItem } from "@/services/search/searchItems.service"
+import type { IJobPartnerForSearchItem } from "@/services/search/search-items.service"
 import {
   buildFormationSearchItem,
   buildJobOfferSearchItem,
@@ -22,7 +22,7 @@ import {
   sanitizeContractStart,
   stripHtmlToText,
   upsertSearchItem,
-} from "@/services/search/searchItems.service"
+} from "@/services/search/search-items.service"
 
 // Génération des mots-clés Mistral : déplacée dans searchItemsKeywords.service.ts
 // (cron continu + batch hebdo recruteurs + ramasse des jobs + import manuel).
