@@ -7,7 +7,7 @@ import type { IUserRecruteur } from "shared/models/index"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import type { Jsonify } from "type-fest"
-import type { AnyZodObject, z } from "zod"
+import type { z } from "zod"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
@@ -23,11 +23,12 @@ const TOKEN_MAX_LENGTH = URL_MAX_LENGTH - (config.publicUrl.length + 1) // +1 fo
 export type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
 
 type AllowAllType = { allowAll: true }
-type AuthorizedValuesRecord<ZodObject> = ZodObject extends AnyZodObject
-  ? {
-      [Key in keyof Jsonify<z.input<ZodObject>>]: Jsonify<z.input<ZodObject>>[Key] | AllowAllType
-    }
-  : undefined
+type AuthorizedValuesRecord<ZodObject> =
+  ZodObject extends z.ZodObject<any>
+    ? {
+        [Key in keyof Jsonify<z.input<ZodObject>>]: Jsonify<z.input<ZodObject>>[Key] | AllowAllType
+      }
+    : undefined
 
 type IScope<Schema extends SchemaWithSecurity> = {
   method: Schema["method"]
@@ -126,7 +127,7 @@ export function getAccessTokenScope<Schema extends SchemaWithSecurity>(
       if (params) {
         const allowedParams = scope.options.params
         const isAuthorized = Object.entries(params).every(([key, requiredValue]) => {
-          const allowedParam = allowedParams?.[key]
+          const allowedParam = allowedParams?.[key] as string | AllowAllType | undefined
           return isAuthorizedParam(requiredValue, allowedParam)
         })
         if (!isAuthorized) {

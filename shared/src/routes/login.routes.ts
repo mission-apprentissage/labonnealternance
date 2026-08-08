@@ -1,23 +1,23 @@
-import { zObjectId } from "zod-mongodb-schema"
-
 import { z } from "../helpers/zodWithOpenApi.js"
+import { zObjectId } from "../models/common.js"
 import { ZComputedUserAccess } from "../models/computedUserAccess.model.js"
 import { ZUserRecruteurPublic } from "../models/usersRecruteur.model.js"
-
 import type { IRoutesDef } from "./common.routes.js"
+import { ZResError } from "./common.routes.js"
+
+const zLoginError = z.strictObject({ error: z.boolean(), data: z.string().optional() })
 
 export const zLoginRoutes = {
   post: {
     "/login/:userId/resend-confirmation-email": {
       method: "post",
       path: "/login/:userId/resend-confirmation-email",
-      params: z
-        .object({
-          userId: zObjectId,
-        })
-        .strict(),
+      params: z.strictObject({
+        userId: zObjectId,
+      }),
       response: {
-        "200": z.object({}).strict(),
+        "200": z.strictObject({}),
+        "400": z.union([ZResError, zLoginError]),
       },
       securityScheme: {
         auth: "access-token",
@@ -28,13 +28,12 @@ export const zLoginRoutes = {
     "/login/magiclink": {
       method: "post",
       path: "/login/magiclink",
-      body: z
-        .object({
-          email: z.string().email(),
-        })
-        .strict(),
+      body: z.strictObject({
+        email: z.email(),
+      }),
       response: {
-        "200": z.object({}).strict(),
+        "200": z.strictObject({}),
+        "400": z.union([ZResError, zLoginError]),
       },
       securityScheme: null,
     },
@@ -81,7 +80,7 @@ export const zLoginRoutes = {
       method: "get",
       path: "/auth/logout",
       response: {
-        "200": z.object({}).strict(),
+        "200": z.strictObject({}),
       },
       securityScheme: null,
     },

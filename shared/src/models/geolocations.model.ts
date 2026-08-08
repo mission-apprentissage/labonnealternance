@@ -5,15 +5,13 @@ import { zObjectId } from "./common.js"
 
 const collectionName = "geolocations" as const
 
-export const ZGeoLocation = z
-  .object({
-    _id: zObjectId.nullish(),
-    address: z.string(),
-    city: z.string(),
-    geo_coordinates: z.string(),
-    zip_code: z.string(),
-  })
-  .strict()
+export const ZGeoLocation = z.strictObject({
+  _id: zObjectId.nullish(),
+  address: z.string(),
+  city: z.string(),
+  geo_coordinates: z.string(),
+  zip_code: z.string(),
+})
 
 export type IGeoLocation = z.output<typeof ZGeoLocation>
 

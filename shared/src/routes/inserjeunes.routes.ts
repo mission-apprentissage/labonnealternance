@@ -10,12 +10,10 @@ export const zInserJeunesRoutes = {
     "/inserjeunes/:zipcode/:cfd": {
       method: "get",
       path: "/inserjeunes/:zipcode/:cfd",
-      params: z
-        .object({
-          zipcode: z.string().describe("Code postal de la région"),
-          cfd: z.string().describe("Code Formation Diplôme"),
-        })
-        .strict(),
+      params: z.strictObject({
+        zipcode: z.string().describe("Code postal de la région"),
+        cfd: z.string().describe("Code Formation Diplôme"),
+      }),
       response: {
         "200": zInserJeunesStatsResponse,
         "404": ZResError,

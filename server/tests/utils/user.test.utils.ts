@@ -1,97 +1,24 @@
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import type { ICFA } from "shared/models/cfa.model"
 import { zCFA } from "shared/models/cfa.model"
-import { zObjectId } from "shared/models/common"
 import type { IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { EntrepriseStatus, ZEntreprise } from "shared/models/entreprise.model"
 import type { IApplication, ICredential, IEmailBlacklist, IEntrepriseManagedByCfa } from "shared/models/index"
-import { ZApplication, ZCredential, ZEmailBlacklist, ZPointGeometry } from "shared/models/index"
+import { ZApplication, ZCredential, ZEmailBlacklist } from "shared/models/index"
 import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
-import type { ZodTypeAny, z } from "zod"
-import { ZodArray, ZodObject, ZodString } from "zod"
-import { Fixture, Generator } from "zod-fixture"
+import type { ZodType, z } from "zod"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getFakeEmail } from "@/jobs/database/obfuscateCollections"
+import { generateFixture } from "./zodFixtureCompat"
 
-function generateRandomRomeCode() {
-  // Générer une lettre aléatoire
-  const letters = "ABCDEFGHIJKL"
-  const randomLetter = letters.charAt(Math.floor(Math.random() * letters.length))
-
-  // Générer quatre chiffres aléatoires
-  const randomDigits = Math.floor(1000 + Math.random() * 9000) // Cela génère un nombre entre 1000 et 9999
-
-  // Combiner la lettre et les chiffres pour former le code ROME
-  return randomLetter + randomDigits
-}
-
-let seed = 0
-export function getFixture() {
-  seed++
-  return new Fixture({ seed }).extend([
-    Generator({
-      schema: ZodArray,
-      filter: ({ context }) => context.path.at(-1) === "offer_rome_codes",
-      output: () => [generateRandomRomeCode()],
-    }),
-    Generator({
-      schema: ZodObject,
-      filter: ({ context }) => context.path.at(-1) === "geopoint",
-      output: ({ transform }) => ({
-        type: "Point",
-        coordinates: [transform.utils.random.float({ min: -180, max: 180 }), transform.utils.random.float({ min: -90, max: 90 })],
-      }),
-    }),
-    Generator({
-      schema: ZodString,
-      filter: ({ context }) => context.path.at(-1) === "email",
-      output: () => `rando${seed}@email.com`,
-    }),
-    Generator({
-      schema: ZodString,
-      filter: ({ context }) => context.path.at(-1) === "applicant_attachment_name",
-      output: () => "file.pdf",
-    }),
-    Generator({
-      schema: zObjectId,
-      output: () => new ObjectId(),
-    }),
-    Generator({
-      schema: extensions.siret,
-      output: ({ transform }) =>
-        transform.utils.random.from([
-          "58006820882692",
-          "94770756516212",
-          "08993700810714",
-          "89557430766546",
-          "10392947668876",
-          "81952222258729",
-          "34843069553553",
-          "55445073871148",
-          "44477717954190",
-          "62006652591225",
-          "77147689105960",
-        ]),
-    }),
-    Generator({
-      schema: ZPointGeometry,
-      output: ({ transform }) => ({
-        type: "Point",
-        coordinates: [transform.utils.random.float({ min: -180, max: 180 }), transform.utils.random.float({ min: -90, max: 90 })],
-      }),
-    }),
-  ])
-}
-
-export const saveDbEntity = async <T extends ZodTypeAny>(schema: T, saveEntity: (item: z.output<T>) => Promise<any>, data: Partial<z.input<T>>): Promise<z.output<T>> => {
+export const saveDbEntity = async <T extends ZodType>(schema: T, saveEntity: (item: z.output<T>) => Promise<any>, data: Partial<z.input<T>>): Promise<z.output<T>> => {
   const entity = schema.parse({
-    ...getFixture().fromSchema(schema),
+    ...(generateFixture(schema) as Record<string, unknown>),
     ...data,
   })
   await saveEntity(entity)
@@ -152,7 +79,7 @@ export const saveCfa = async (data: Partial<ICFA> = {}) => {
 
 export async function createCredentialTest(data: Partial<ICredential>) {
   const u: ICredential = {
-    ...getFixture().fromSchema(ZCredential),
+    ...generateFixture(ZCredential),
     ...data,
   }
   await getDbCollection("credentials").insertOne(u)
@@ -161,7 +88,7 @@ export async function createCredentialTest(data: Partial<ICredential>) {
 
 export async function createApplicationTest(data: Partial<IApplication>) {
   const application: IApplication = {
-    ...getFixture().fromSchema(ZApplication),
+    ...generateFixture(ZApplication),
     applicant_attachment_name: "my-cv.pdf",
     ...data,
   }
@@ -171,7 +98,7 @@ export async function createApplicationTest(data: Partial<IApplication>) {
 
 export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   const u = {
-    ...getFixture().fromSchema(ZEmailBlacklist),
+    ...generateFixture(ZEmailBlacklist),
     ...data,
   }
   await getDbCollection("emailblacklists").insertOne(u)

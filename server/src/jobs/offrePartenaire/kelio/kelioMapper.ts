@@ -8,49 +8,47 @@ import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-export const ZKelioJob = z
-  .object({
-    html_description: z.string(),
-    last_activation_at: z.string(),
-    html_profile: z.string(),
-    contract_duration: z.string().nullable(),
-    education_level: z.string().nullable(),
-    job_start_date: z.string().nullable(),
-    working_time: z.string(),
-    remote_level: z.string().nullable(),
-    description: z.string(),
-    video_host: z.string().nullable(),
-    created_at: z.string(),
-    cover_url: z.string().nullable(),
-    video_id: z.string().nullable(),
-    job_type: z.string(),
-    profile: z.string(),
-    company: z.object({
-      name: z.string(),
-      slug: z.string(),
-      company_description: z.string().nullable(),
-    }),
-    address: z.object({
-      city: z.string().nullable(),
-      street: z.string().nullable(),
-      country: z.string().nullable(),
-      latitude: z.string(),
-      longitude: z.string(),
-      postal_code: z.string().nullable(),
-      street_number: z.string().nullable(),
-    }),
-    id: z.string(),
-    url: z.string(),
+export const ZKelioJob = z.looseObject({
+  html_description: z.string(),
+  last_activation_at: z.string(),
+  html_profile: z.string(),
+  contract_duration: z.string().nullable(),
+  education_level: z.string().nullable(),
+  job_start_date: z.string().nullable(),
+  working_time: z.string(),
+  remote_level: z.string().nullable(),
+  description: z.string(),
+  video_host: z.string().nullable(),
+  created_at: z.string(),
+  cover_url: z.string().nullable(),
+  video_id: z.string().nullable(),
+  job_type: z.string(),
+  profile: z.string(),
+  company: z.object({
     name: z.string(),
     slug: z.string(),
-    tags: z.string().nullable(),
-    salary: z.object({
-      max: z.string().nullable(),
-      min: z.string().nullable(),
-      currency: z.string(),
-    }),
-  })
-  .passthrough()
+    company_description: z.string().nullable(),
+  }),
+  address: z.object({
+    city: z.string().nullable(),
+    street: z.string().nullable(),
+    country: z.string().nullable(),
+    latitude: z.string(),
+    longitude: z.string(),
+    postal_code: z.string().nullable(),
+    street_number: z.string().nullable(),
+  }),
+  id: z.string(),
+  url: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  tags: z.string().nullable(),
+  salary: z.object({
+    max: z.string().nullable(),
+    min: z.string().nullable(),
+    currency: z.string(),
+  }),
+})
 
 export type IKelioJob = z.output<typeof ZKelioJob>
 
@@ -60,7 +58,7 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
   let contract_remote: TRAINING_REMOTE_TYPE | null = null
   let offer_target_diploma: IComputedJobsPartners["offer_target_diploma"] = null
   let business_error: JOB_PARTNER_BUSINESS_ERROR | null = null
-  const urlParsing = z.string().url().safeParse(url)
+  const urlParsing = z.url().safeParse(url)
   const descriptionComputed = html_description + html_profile.trim()
   const publicationDate = new Date(created_at)
   const updatedDate = last_activation_at ? new Date(last_activation_at) : null

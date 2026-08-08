@@ -1,23 +1,9 @@
-import i18next from "i18next"
 import { z } from "zod"
-import { makeZodI18nMap, zodI18nMap } from "zod-i18n-map"
 
-import LOCALE_FR from "./locale/locale.fr.js"
-
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-i18next.init({
-  lng: "en",
-  resources: {
-    fr: { zod: LOCALE_FR },
-  },
-})
-
-z.setErrorMap(zodI18nMap)
+z.config(z.locales.en())
 
 const setZodLanguage = (language: "fr" | "en") => {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  i18next.changeLanguage(language)
-  z.setErrorMap(makeZodI18nMap({ t: i18next.t }))
+  z.config(language === "fr" ? z.locales.fr() : z.locales.en())
 }
 
 export { setZodLanguage, z }

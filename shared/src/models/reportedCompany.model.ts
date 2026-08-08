@@ -5,20 +5,18 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
-export const ZReportedCompany = z
-  .object({
-    _id: zObjectId,
-    type: extensions.buildEnum(LBA_ITEM_TYPE),
-    itemId: z.string(),
-    createdAt: z.coerce.date(),
-    reason: z.string(),
-    reasonDetails: z.string().nullish(),
-    siret: extensions.siret.nullish(),
-    partnerLabel: z.string().nullish(),
-    jobTitle: z.string().nullish(),
-    companyName: z.string().nullish(),
-  })
-  .strict()
+export const ZReportedCompany = z.strictObject({
+  _id: zObjectId,
+  type: extensions.buildEnum(LBA_ITEM_TYPE),
+  itemId: z.string(),
+  createdAt: z.coerce.date<Date>(),
+  reason: z.string(),
+  reasonDetails: z.string().nullish(),
+  siret: extensions.siret.nullish(),
+  partnerLabel: z.string().nullish(),
+  jobTitle: z.string().nullish(),
+  companyName: z.string().nullish(),
+})
 
 export type IReportedCompany = z.output<typeof ZReportedCompany>
 

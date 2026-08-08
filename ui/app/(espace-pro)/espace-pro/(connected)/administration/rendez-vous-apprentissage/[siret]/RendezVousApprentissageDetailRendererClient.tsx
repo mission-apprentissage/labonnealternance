@@ -48,7 +48,7 @@ export default function RendezVousApprentissageDetailRendererClient({
    * @returns {Promise<string|number>}
    */
   const saveEmail = async (parameterId, email, cle_ministere_educatif) => {
-    if (!email && !z.string().email().safeParse(email).success) {
+    if (!email && !z.email().safeParse(email).success) {
       return toast({ title: "Email de contact non valide.", variant: "error" })
     }
 

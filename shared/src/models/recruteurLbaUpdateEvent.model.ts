@@ -12,15 +12,13 @@ export enum ERecruteurLbaUpdateEventType {
   UPDATE_EMAIL = "UPDATE_EMAIL",
 }
 
-export const ZRecruteurLbaUpdateEvent = z
-  .object({
-    _id: zObjectId,
-    siret: z.string().describe("Le Siret de la société"),
-    event: z.enum([Object.values(ERecruteurLbaUpdateEventType)[0], ...Object.values(ERecruteurLbaUpdateEventType).slice(1)]).describe("Le type d'événement"),
-    value: z.string().describe("La nouvelle valeur"),
-    created_at: z.date().describe("La date création de la demande"),
-  })
-  .strict()
+export const ZRecruteurLbaUpdateEvent = z.strictObject({
+  _id: zObjectId,
+  siret: z.string().describe("Le Siret de la société"),
+  event: z.enum([Object.values(ERecruteurLbaUpdateEventType)[0], ...Object.values(ERecruteurLbaUpdateEventType).slice(1)]).describe("Le type d'événement"),
+  value: z.string().describe("La nouvelle valeur"),
+  created_at: z.date().describe("La date création de la demande"),
+})
 
 export const ZRecruteurLbaUpdateEventNew = ZRecruteurLbaUpdateEvent.omit({
   _id: true,

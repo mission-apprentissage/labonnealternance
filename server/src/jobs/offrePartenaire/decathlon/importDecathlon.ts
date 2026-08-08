@@ -9,11 +9,9 @@ import { decathlonJobToJobsPartners, ZDecathlonJob } from "./decathlonMapper"
 
 const rawCollectionName = rawDecathlonModel.collectionName
 
-const ZJsonFile = z
-  .object({
-    ads: z.array(ZDecathlonJob),
-  })
-  .passthrough()
+const ZJsonFile = z.looseObject({
+  ads: z.array(ZDecathlonJob),
+})
 
 export const importDecathlonRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (!sourceStream) {

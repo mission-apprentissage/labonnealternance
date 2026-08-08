@@ -1,7 +1,7 @@
 import assert from "node:assert"
 
 import { describe, it } from "vitest"
-import { ZodEffects } from "zod"
+import { ZodUnion } from "zod"
 
 import type { IRouteSchema, IRouteSchemaGet, IRouteSchemaWrite, IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
@@ -17,10 +17,8 @@ describe("zRoutes", () => {
             if (response === ZResError) {
               continue
             }
-            // @ts-expect-error
-            assert.equal(response._def.typeName, "ZodUnion", `${method} ${path}: doesn't satisfies ZResError`)
-            // @ts-expect-error
-            assert.equal(response._def.options.includes(ZResError), true, `${method} ${path}: doesn't satisfies ZResError`)
+            assert.equal(response instanceof ZodUnion, true, `${method} ${path}: doesn't satisfies ZResError`)
+            assert.equal((response as InstanceType<typeof ZodUnion>).options.includes(ZResError), true, `${method} ${path}: doesn't satisfies ZResError`)
           }
         }
       }
@@ -45,8 +43,11 @@ describe("zRoutes", () => {
             for (const resourceAccess of resourceAccesses) {
               for (const [, access] of Object.entries(resourceAccess)) {
                 const zodInputShape = access.type === "params" ? typedDef.params : typedDef.querystring
-                const zodInputShapeObj = zodInputShape instanceof ZodEffects ? zodInputShape.innerType() : zodInputShape
-                assert.notEqual(zodInputShapeObj?.shape?.[access.key], undefined, `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`)
+                assert.notEqual(
+                  (zodInputShape as { shape?: Record<string, unknown> })?.shape?.[access.key],
+                  undefined,
+                  `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`
+                )
               }
             }
           }

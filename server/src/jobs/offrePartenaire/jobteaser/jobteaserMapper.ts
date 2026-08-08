@@ -8,31 +8,27 @@ import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-export const ZJobteaserJob = z
-  .object({
-    id: z.string(),
-    job_details: z.object({
-      title: z.string(),
-      description: z.string(),
-      url: z.string(),
-      contract_type: z.string(),
-      remote_type: z.string(),
-    }),
-    job_dates: z.object({
-      start_date: z.string().nullable(),
-      first_activated_at: z.string(),
-    }),
-    job_locations: z
-      .object({
-        location_city: z.string().nullish(),
-      })
-      .passthrough(),
-    company: z.object({
-      company_name: z.string(),
-      company_siren: z.string().nullable(),
-    }),
-  })
-  .passthrough()
+export const ZJobteaserJob = z.looseObject({
+  id: z.string(),
+  job_details: z.object({
+    title: z.string(),
+    description: z.string(),
+    url: z.string(),
+    contract_type: z.string(),
+    remote_type: z.string(),
+  }),
+  job_dates: z.object({
+    start_date: z.string().nullable(),
+    first_activated_at: z.string(),
+  }),
+  job_locations: z.looseObject({
+    location_city: z.string().nullish(),
+  }),
+  company: z.object({
+    company_name: z.string(),
+    company_siren: z.string().nullable(),
+  }),
+})
 
 export type IJobteaserJob = z.output<typeof ZJobteaserJob>
 
@@ -70,7 +66,7 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
       contract_remote = null
   }
 
-  const urlParsing = z.string().url().safeParse(url)
+  const urlParsing = z.url().safeParse(url)
 
   const publicationDate = new Date(first_activated_at)
 

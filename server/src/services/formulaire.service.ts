@@ -1376,6 +1376,7 @@ export function jobPartnersToRecruiter(
     establishment_enseigne: entreprise.enseigne,
     establishment_siret: entreprise.siret,
     address: entreprise.address,
+    address_detail: null,
     geo_coordinates: entreprise.geo_coordinates,
     is_delegated: Boolean(cfa),
     cfa_delegated_siret: cfa?.siret,

@@ -162,22 +162,20 @@ describe("GET /v3/jobs/search", () => {
           issues: [
             {
               code: "too_big",
-              exact: false,
               inclusive: true,
               maximum: 90,
               message: "Latitude doit être comprise entre -90 et 90",
+              origin: "number",
               path: ["latitude"],
-              type: "number",
             },
 
             {
               code: "too_big",
-              exact: false,
               inclusive: true,
               maximum: 180,
               message: "Longitude doit être comprise entre -180 et 180",
+              origin: "number",
               path: ["longitude"],
-              type: "number",
             },
           ],
           name: "ZodError",

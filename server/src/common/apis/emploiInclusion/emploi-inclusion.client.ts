@@ -15,8 +15,8 @@ const ZEmploiInclusionLieu = z.object({
 const ZEmploiInclusionPoste = z.object({
   id: z.number(),
   rome: z.string(),
-  cree_le: z.string().datetime({ offset: true }),
-  mis_a_jour_le: z.string().datetime({ offset: true }),
+  cree_le: z.iso.datetime({ offset: true }),
+  mis_a_jour_le: z.iso.datetime({ offset: true }),
   recrutement_ouvert: z.string(),
   description: z.string(),
   appellation_modifiee: z.string(),
@@ -27,9 +27,9 @@ const ZEmploiInclusionPoste = z.object({
 })
 
 export const ZEmploiInclusionJob = z.object({
-  id: z.string().uuid(),
-  cree_le: z.string().datetime({ offset: true }),
-  mis_a_jour_le: z.string().datetime({ offset: true }),
+  id: z.uuid(),
+  cree_le: z.iso.datetime({ offset: true }),
+  mis_a_jour_le: z.iso.datetime({ offset: true }),
   siret: z.string(),
   type: z.string(),
   raison_sociale: z.string(),
@@ -51,8 +51,8 @@ export type IEmploiInclusionJob = z.output<typeof ZEmploiInclusionJob>
 
 const ZEmploiInclusionResponse = z.object({
   count: z.number(),
-  next: z.string().url().nullable(),
-  previous: z.string().url().nullable(),
+  next: z.url().nullable(),
+  previous: z.url().nullable(),
   results: z.array(ZEmploiInclusionJob),
 })
 

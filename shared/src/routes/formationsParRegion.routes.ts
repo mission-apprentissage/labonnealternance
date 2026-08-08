@@ -12,7 +12,7 @@ export const zV1FormationsParRegion = {
       method: "get",
       path: "/v1/formationsParRegion",
       querystring: z
-        .object({
+        .strictObject({
           romes: z.string().optional(),
           romeDomain: z.string().optional(),
           caller: zCallerParam,
@@ -21,7 +21,6 @@ export const zV1FormationsParRegion = {
           diploma: zDiplomaParam,
           options: zGetFormationOptions,
         })
-        .strict()
         .passthrough(),
       headers: zRefererHeaders,
       response: {

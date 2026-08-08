@@ -7,14 +7,14 @@ import type { z } from "shared/helpers/zodWithOpenApi"
 import type { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import type { CollectionName } from "shared/models/models"
-import type { AnyZodObject } from "zod"
+import type { ZodObject } from "zod"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
-export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
+export const rawToComputedJobsPartners = async <ZodInput extends ZodObject<any>>({
   collectionSource,
   mapper,
   zodInput,

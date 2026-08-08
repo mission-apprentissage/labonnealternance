@@ -8,28 +8,24 @@ export const zEmailsRoutes = {
     "/emails/webhook": {
       method: "post",
       path: "/emails/webhook",
-      querystring: z
-        .object({
-          apiKey: z.string(),
-        })
-        .strict(),
+      querystring: z.strictObject({
+        apiKey: z.string(),
+      }),
       body: extensions.brevoWebhook(),
       response: {
-        "200": z.object({}).strict(),
+        "200": z.strictObject({}),
       },
       securityScheme: null,
     },
     "/emails/webhookHardbounce": {
       method: "post",
       path: "/emails/webhookHardbounce",
-      querystring: z
-        .object({
-          apiKey: z.string(),
-        })
-        .strict(),
+      querystring: z.strictObject({
+        apiKey: z.string(),
+      }),
       body: extensions.brevoWebhook(),
       response: {
-        "200": z.object({}).strict(),
+        "200": z.strictObject({}),
       },
       securityScheme: null,
     },

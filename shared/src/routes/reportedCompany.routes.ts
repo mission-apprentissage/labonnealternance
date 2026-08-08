@@ -9,18 +9,14 @@ export const zReportedCompanyRoutes = {
     "/report-company": {
       method: "post",
       path: "/report-company",
-      querystring: z
-        .object({
-          type: extensions.buildEnum(LBA_ITEM_TYPE),
-          itemId: z.string(),
-        })
-        .strict(),
-      body: z
-        .object({
-          reason: z.string(),
-          reasonDetails: z.string().optional(),
-        })
-        .strict(),
+      querystring: z.strictObject({
+        type: extensions.buildEnum(LBA_ITEM_TYPE),
+        itemId: z.string(),
+      }),
+      body: z.strictObject({
+        reason: z.string(),
+        reasonDetails: z.string().optional(),
+      }),
       response: {
         "200": z.object({}),
       },

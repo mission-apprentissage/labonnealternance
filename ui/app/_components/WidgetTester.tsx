@@ -104,6 +104,7 @@ export function WidgetTester() {
     diploma: null,
     metier: null,
     lieu: null,
+    displayedItemTypes: [],
     job_name: "",
     opco: "",
     scope: IRechercheMode.DEFAULT,

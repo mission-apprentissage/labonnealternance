@@ -1,5 +1,3 @@
-import type { ZodEnum } from "zod"
-
 import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_POSTAL_REGEX, CODE_ROME_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex.js"
 import { validatePhone } from "../../validators/phoneValidator.js"
 import { validateSIRET } from "../../validators/siretValidator.js"
@@ -24,11 +22,23 @@ export const extensions = {
     message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
   }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
+  // z.codec() (not .transform()) so the schema can also be used in response schemas: unlike a
+  // bare .transform(), fastify-type-provider-zod@7's encode-based response serialization needs
+  // schemas to declare both directions, and a stored value is already sanitized, so encode is a no-op.
   phone: () =>
-    z
-      .string()
-      .trim()
-      .transform((value) => removeUrlsFromText(value)), /// is it a phone extensions still ??
+    z.codec(z.string().trim(), z.string(), {
+      decode: (value) => removeUrlsFromText(value),
+      encode: (value) => value,
+    }), /// is it a phone extensions still ??
+  // Same z.codec() rationale as `phone` above: strips URLs from free-text user input
+  // (anti-spam) while staying response-schema-safe. Accepts a custom input schema
+  // (e.g. z.string().min(1).max(50)) so length/format constraints still apply to
+  // the raw input, before sanitization, matching the pre-existing validation order.
+  withoutUrls: (inputSchema: z.ZodString = z.string()) =>
+    z.codec(inputSchema, z.string(), {
+      decode: (value) => removeUrlsFromText(value),
+      encode: (value) => value,
+    }),
   telephone: z.string().trim().refine(validatePhone, { message: "Invalid Phone Number: please use international format (+XXXX...) or french national format (06XXX...)" }),
   code_naf: () =>
     z.preprocess(
@@ -36,21 +46,9 @@ export const extensions = {
       z.string().trim().toUpperCase().regex(CODE_NAF_REGEX, "NAF invalide") // e.g 1071D
     ),
   iso8601Date: () =>
-    z.preprocess(
-      (v: unknown) => (typeof v === "string" && v.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/) ? new Date(v.trim()) : v),
-      z.date({
-        invalid_type_error: "Date invalide",
-        required_error: "Champ obligatoire",
-      })
-    ),
+    z.preprocess((v: unknown) => (typeof v === "string" && v.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/) ? new Date(v.trim()) : v), z.date({ error: "Date invalide" })),
   iso8601Datetime: () =>
-    z.preprocess(
-      (v: unknown) => (typeof v === "string" && v.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/) ? new Date(v.trim()) : v),
-      z.date({
-        invalid_type_error: "Date invalide",
-        required_error: "Champ obligatoire",
-      })
-    ),
+    z.preprocess((v: unknown) => (typeof v === "string" && v.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/) ? new Date(v.trim()) : v), z.date({ error: "Date invalide" })),
   codeCommuneInsee: () => z.string().regex(/^([0-9]{2}|2A|2B)[0-9]{3}$/, "Format invalide"),
   brevoWebhook: () =>
     z.object({
@@ -82,7 +80,7 @@ export const extensions = {
       key: z.string().nullish(),
       content: z.array(z.string()).nullish(),
     }),
-  buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>): ZodEnum<[EnumValue, ...EnumValue[]]> => {
+  buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>) => {
     const values = Object.values(enumObject)
     if (!values.length) {
       throw new Error("inattendu : enum vide")
@@ -100,22 +98,22 @@ export const extensions = {
       }),
   rncpCode: () => z.string().trim().regex(RNCP_REGEX, "Code RNCP invalide"),
   latitude: ({ coerce }: { coerce: boolean }) => {
-    const base = coerce ? z.coerce.number() : z.number()
+    const base = coerce ? z.coerce.number<number>() : z.number()
     return base.min(-90, "Latitude doit être comprise entre -90 et 90").max(90, "Latitude doit être comprise entre -90 et 90")
   },
   longitude: ({ coerce }: { coerce: boolean }) => {
-    const base = coerce ? z.coerce.number() : z.number()
+    const base = coerce ? z.coerce.number<number>() : z.number()
     return base.min(-180, "Longitude doit être comprise entre -180 et 180").max(180, "Longitude doit être comprise entre -180 et 180")
   },
   inseeCode: () => z.string().trim().regex(CODE_INSEE_REGEX, "Code INSEE invalide"),
   zipCode: () => z.string().trim().regex(CODE_POSTAL_REGEX, "Code postal invalide"),
   url: () => z.string().regex(/^(https?:\/\/)?(http?:\/\/)?(www\.)?([a-zA-Z0-9-]+)(\.[a-zA-Z0-9-]+)+(\.[a-zA-Z]{2,6})(:[0-9]{1,5})?(\/.*)?$/, "URL invalide"),
-  optionalToNullish<Schema extends z.AnyZodObject>(schema: Schema) {
+  optionalToNullish<Schema extends z.ZodObject<any>>(schema: Schema) {
     // cf https://github.com/colinhacks/zod/discussions/2050
-    const entries = Object.entries(schema.shape) as [keyof Schema["shape"], z.ZodTypeAny][]
+    const entries = Object.entries(schema.shape) as [keyof Schema["shape"], z.ZodType][]
     const newProps = entries.reduce(
       (acc, [key, value]) => {
-        acc[key] = value instanceof z.ZodOptional ? value.unwrap().nullish() : value
+        acc[key] = (value instanceof z.ZodOptional ? (value as z.ZodOptional<z.ZodType>).unwrap().nullish() : value) as any
         return acc
       },
       {} as {

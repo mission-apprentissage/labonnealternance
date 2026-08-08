@@ -35,7 +35,7 @@ export const zClassificationRoute = {
         classification: z.enum(["publish", "unpublish"]),
       }),
       response: {
-        200: z.object({ response: z.literal("Les mises à jour vont être traité par le serveur"), time: z.coerce.date() }),
+        200: z.object({ response: z.literal("Les mises à jour vont être traité par le serveur"), time: z.coerce.date<Date>() }),
       },
       securityScheme: {
         auth: "api-key",

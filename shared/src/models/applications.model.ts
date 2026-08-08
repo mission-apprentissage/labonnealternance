@@ -3,7 +3,6 @@ import type { Jsonify } from "type-fest"
 
 import { RefusalReasons } from "../constants/application.js"
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
-import { removeUrlsFromText } from "../helpers/common.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
@@ -30,83 +29,71 @@ export enum CompanyFeebackSendStatus {
   ERROR = "ERROR",
 }
 
-const ZApplicationOld = z
-  .object({
-    _id: zObjectId,
-    applicant_id: zObjectId,
-    applicant_email: z.string().email().describe("Email du candidat"),
-    applicant_first_name: z
-      .string()
-      .min(1)
-      .max(50)
-      .transform((value) => removeUrlsFromText(value))
-      .describe("Prenom du candidat"),
-    applicant_last_name: z
-      .string()
-      .min(1)
-      .max(50)
-      .transform((value) => removeUrlsFromText(value))
-      .describe("Nom du candidat"),
-    applicant_phone: extensions.telephone.describe("Téléphone du candidat"),
-    applicant_attachment_name: z
-      .string()
-      .min(1)
-      .regex(/((.*?))(\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$/i)
-      .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
-    applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
-    applicant_inscription_formation: z.boolean().nullish().describe("Information donnée par le candidat. Indique si le candidat est inscrit en formation."),
-    applicant_contract_duration: z.string().nullish().describe("Information donnée par le candidat. Durée souhaitée du contrat."),
-    applicant_contract_start: z.array(z.string()).nullish().describe("Information donnée par le candidat. Début du contrat souhaité."),
-    applicant_formation_description: z.string().max(200, "200 caractères maximum.").nullish().describe("Information donnée par le candidat. Description de sa formation."),
-    applicant_rythm_description: z.string().max(200, "200 caractères maximum.").nullish().describe("Information donnée par le candidat. Description du rythme de sa formation."),
-    job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
-    company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
-    company_recruitment_intention_date: z.date().nullable().describe("Date d'enregistrement d'intention/avis programmé"),
-    company_feedback: z.string().nullish().describe("L'avis donné par la société"),
-    company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullish(),
-    company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
-    company_feedback_send_status: extensions.buildEnum(CompanyFeebackSendStatus).nullable().describe("Etat de l'envoi de l'intention de recrutement"),
-    company_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
-    company_email: z.string().describe("Email de l'entreprise"),
-    company_phone: z.string().nullish().describe("Numéro de téléphone du recruteur"),
-    company_name: z.string().describe("Nom de l'entreprise"),
-    company_naf: z.string().nullish().describe("Code NAF de l'entreprise"),
-    company_address: z.string().nullish().describe("Adresse de l'entreprise"),
-    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).describe("Origine de l'offre d'emploi"),
-    job_title: z
-      .string()
-      .nullish()
-      .describe(
-        `Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `
-      ),
-    job_id: zObjectId
-      .nullish()
-      .describe(
-        `L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `
-      ),
-    to_applicant_message_id: z.string().nullish().describe("Identifiant chez le transporteur du mail envoyé au candidat"),
-    to_company_message_id: z.string().nullish().describe("Identifiant chez le transporteur du mail envoyé à l'entreprise"),
-    caller: z.string().nullish().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
-    created_at: z.date().nullable().describe("La date création de la demande"),
-    last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
-    scan_status: extensions.buildEnum(ApplicationScanStatus).describe("Status du processus de scan de virus"),
-    application_url: z.string().nullish().describe("URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA."),
-    foreign_application_id: z.string().nullish().describe("Identifiant de la candidature dans un système tiers."),
-    foreign_application_status_url: z
-      .string()
-      .nullish()
-      .describe("URL de suivi de la candidature dans un système tiers. ex: https://ats-partner.hellowork.com/v1/applications/{applicationId}/status"),
-    applicant_answers_to_recruiter_questions: z
-      .array(
-        z.object({
-          question: z.string(),
-          answer: z.string(),
-        })
-      )
-      .nullish()
-      .describe("Réponse du candidat aux questions du recruteur"),
-  })
-  .strict()
+const ZApplicationOld = z.strictObject({
+  _id: zObjectId,
+  applicant_id: zObjectId,
+  applicant_email: z.email().describe("Email du candidat"),
+  applicant_first_name: extensions.withoutUrls(z.string().min(1).max(50)).describe("Prenom du candidat"),
+  applicant_last_name: extensions.withoutUrls(z.string().min(1).max(50)).describe("Nom du candidat"),
+  applicant_phone: extensions.telephone.describe("Téléphone du candidat"),
+  applicant_attachment_name: z
+    .string()
+    .min(1)
+    .regex(/((.*?))(\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$/i)
+    .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
+  applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
+  applicant_inscription_formation: z.boolean().nullish().describe("Information donnée par le candidat. Indique si le candidat est inscrit en formation."),
+  applicant_contract_duration: z.string().nullish().describe("Information donnée par le candidat. Durée souhaitée du contrat."),
+  applicant_contract_start: z.array(z.string()).nullish().describe("Information donnée par le candidat. Début du contrat souhaité."),
+  applicant_formation_description: z.string().max(200, "200 caractères maximum.").nullish().describe("Information donnée par le candidat. Description de sa formation."),
+  applicant_rythm_description: z.string().max(200, "200 caractères maximum.").nullish().describe("Information donnée par le candidat. Description du rythme de sa formation."),
+  job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
+  company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
+  company_recruitment_intention_date: z.date().nullable().describe("Date d'enregistrement d'intention/avis programmé"),
+  company_feedback: z.string().nullish().describe("L'avis donné par la société"),
+  company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullish(),
+  company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
+  company_feedback_send_status: extensions.buildEnum(CompanyFeebackSendStatus).nullable().describe("Etat de l'envoi de l'intention de recrutement"),
+  company_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
+  company_email: z.string().describe("Email de l'entreprise"),
+  company_phone: z.string().nullish().describe("Numéro de téléphone du recruteur"),
+  company_name: z.string().describe("Nom de l'entreprise"),
+  company_naf: z.string().nullish().describe("Code NAF de l'entreprise"),
+  company_address: z.string().nullish().describe("Adresse de l'entreprise"),
+  job_origin: extensions.buildEnum(LBA_ITEM_TYPE).describe("Origine de l'offre d'emploi"),
+  job_title: z
+    .string()
+    .nullish()
+    .describe(
+      `Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `
+    ),
+  job_id: zObjectId
+    .nullish()
+    .describe(
+      `L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `
+    ),
+  to_applicant_message_id: z.string().nullish().describe("Identifiant chez le transporteur du mail envoyé au candidat"),
+  to_company_message_id: z.string().nullish().describe("Identifiant chez le transporteur du mail envoyé à l'entreprise"),
+  caller: z.string().nullish().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
+  created_at: z.date().nullable().describe("La date création de la demande"),
+  last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
+  scan_status: extensions.buildEnum(ApplicationScanStatus).describe("Status du processus de scan de virus"),
+  application_url: z.string().nullish().describe("URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA."),
+  foreign_application_id: z.string().nullish().describe("Identifiant de la candidature dans un système tiers."),
+  foreign_application_status_url: z
+    .string()
+    .nullish()
+    .describe("URL de suivi de la candidature dans un système tiers. ex: https://ats-partner.hellowork.com/v1/applications/{applicationId}/status"),
+  applicant_answers_to_recruiter_questions: z
+    .array(
+      z.object({
+        question: z.string(),
+        answer: z.string(),
+      })
+    )
+    .nullish()
+    .describe("Réponse du candidat aux questions du recruteur"),
+})
 
 export const ZApplication = ZApplicationOld.omit({
   applicant_email: true,
@@ -178,7 +165,7 @@ export const ZHelloworkApplication = z.object({
   applicant: z.object({
     firstName: z.string(),
     lastName: z.string(),
-    email: z.string().email(),
+    email: z.email(),
     phoneNumber: extensions.telephone,
     coverLetter: z.string().nullish(),
   }),
@@ -190,7 +177,7 @@ export const ZHelloworkApplication = z.object({
     }),
   }),
   source: z.any(),
-  statusApiUrl: z.string().url(),
+  statusApiUrl: z.url(),
   screenerQuestions: z.array(z.any()),
 })
 

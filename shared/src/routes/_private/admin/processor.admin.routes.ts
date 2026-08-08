@@ -21,8 +21,8 @@ export const zProcessorAdminRoutes = {
     "/_private/admin/processor/trigger": {
       method: "post",
       path: "/_private/admin/processor/trigger",
-      body: z.object({ job: zTriggerableJobs }).strict(),
-      response: { "200": z.object({}).strict() },
+      body: z.strictObject({ job: zTriggerableJobs }),
+      response: { "200": z.strictObject({}) },
       securityScheme: {
         auth: "cookie-session",
         access: "admin",

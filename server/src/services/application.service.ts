@@ -135,7 +135,7 @@ export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boo
  */
 export const addEmailToBlacklist = async (email: string, blacklistingOrigin: BlackListOrigins, event: BrevoEventStatus): Promise<void> => {
   try {
-    z.string().email().parse(email)
+    z.email().parse(email)
 
     await getDbCollection("emailblacklists").findOneAndUpdate(
       { email },

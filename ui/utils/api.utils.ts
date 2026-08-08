@@ -4,16 +4,16 @@ import { generateUri } from "shared/helpers/generateUri"
 import type { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
 import type { EmptyObject } from "type-fest"
 import type z from "zod"
-import type { ZodType } from "zod"
+import type { core } from "zod"
 
 import { publicConfig } from "@/config.public"
 
 type OptionsGet = {
-  [Prop in keyof Pick<IRouteSchema, "params" | "querystring" | "headers">]: IRouteSchema[Prop] extends ZodType ? z.input<IRouteSchema[Prop]> : never
+  [Prop in keyof Pick<IRouteSchema, "params" | "querystring" | "headers">]: IRouteSchema[Prop] extends core.$ZodType ? z.input<IRouteSchema[Prop]> : never
 }
 
 type OptionsWrite = {
-  [Prop in keyof Pick<IRouteSchemaWrite, "params" | "querystring" | "headers" | "body">]: IRouteSchemaWrite[Prop] extends ZodType ? z.input<IRouteSchemaWrite[Prop]> : never
+  [Prop in keyof Pick<IRouteSchemaWrite, "params" | "querystring" | "headers" | "body">]: IRouteSchemaWrite[Prop] extends core.$ZodType ? z.input<IRouteSchemaWrite[Prop]> : never
 }
 
 type IRequestOptions = OptionsGet | OptionsWrite | EmptyObject
@@ -56,7 +56,7 @@ async function getHeaders(options: IRequestOptions) {
   if ("headers" in options) {
     const h = options.headers
     Object.keys(h).forEach((name) => {
-      headers.append(name, h[name])
+      headers.append(name, h[name] as string)
     })
   }
 

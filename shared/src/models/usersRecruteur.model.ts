@@ -1,7 +1,6 @@
 import type { Jsonify } from "type-fest"
 
 import { AUTHTYPE, CFA, ETAT_UTILISATEUR, OPCOS_LABEL } from "../constants/recruteur.js"
-import { removeUrlsFromText } from "../helpers/common.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "../validators/nameValidator.js"
@@ -15,60 +14,43 @@ export const ZEtatUtilisateur = extensions.buildEnum(ETAT_UTILISATEUR).describe(
 
 const authTypeValues = Object.values(AUTHTYPE)
 
-export const ZUserStatusValidation = z
-  .object({
-    validation_type: ZValidationUtilisateur.describe("Processus de validation lors de l'inscription de l'utilisateur"),
-    // TODO : check DB and remove nullish
-    status: ZEtatUtilisateur.nullish(),
-    reason: z.string().nullish().describe("Raison du changement de statut"),
-    user: z.string().describe("Id de l'utilisateur ayant effectué la modification | 'SERVEUR' si le compte a été validé automatiquement"),
-    date: z.date().nullish().describe("Date de l'évènement"),
-  })
-  .strict()
+export const ZUserStatusValidation = z.strictObject({
+  validation_type: ZValidationUtilisateur.describe("Processus de validation lors de l'inscription de l'utilisateur"),
+  // TODO : check DB and remove nullish
+  status: ZEtatUtilisateur.nullish(),
+  reason: z.string().nullish().describe("Raison du changement de statut"),
+  user: z.string().describe("Id de l'utilisateur ayant effectué la modification | 'SERVEUR' si le compte a été validé automatiquement"),
+  date: z.date().nullish().describe("Date de l'évènement"),
+})
 
 // Validation de saisie des noms (2 lettres minimum) : à n'appliquer qu'aux BODIES des routes
 // de création/édition. Portée par le modèle, elle fuiterait dans les schémas de RÉPONSE dérivés
 // (ZUserRecruteurPublic, ZUserForOpco…) et bloquerait la connexion des comptes existants dont
 // le nom stocké ne la satisfait pas (nom vide, une lettre…).
-export const ZPersonNameInput = z
-  .string()
-  .transform((value) => removeUrlsFromText(value))
-  .refine(validatePersonName, PERSON_NAME_VALIDATION_MESSAGE)
+export const ZPersonNameInput = extensions.withoutUrls().refine(validatePersonName, PERSON_NAME_VALIDATION_MESSAGE)
 
-export const ZUserRecruteurWritable = z
-  .object({
-    last_name: z
-      .string()
-      .transform((value) => removeUrlsFromText(value))
-      .describe("Nom de l'utilisateur"),
-    first_name: z
-      .string()
-      .transform((value) => removeUrlsFromText(value))
-      .describe("Prénom de l'utilisateur"),
-    opco: extensions.buildEnum(OPCOS_LABEL).nullable().describe("Information sur l'opco de l'entreprise"),
-    idcc: z.number().nullable().describe("Identifiant convention collective de l'entreprise"),
-    establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
-    establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
-    establishment_siret: extensions.siret.describe("Siret de l'établissement"),
-    address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
-    address: z
-      .string()
-      .transform((value) => removeUrlsFromText(value))
-      .nullish()
-      .describe("Adresse de l'établissement"),
-    geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
-    phone: extensions.phone().describe("Téléphone de l'établissement"),
-    email: z.string().email().describe("L'email de l'utilisateur"),
-    scope: z.string().nullish().describe("Scope accessible par l'utilisateur"),
-    is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),
-    type: z.enum([authTypeValues[0], ...authTypeValues.slice(1)]).describe("Type d'utilisateur"),
-    establishment_id: z.string().nullish().describe("Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique"),
-    last_connection: z.date().nullish().describe("Date de dernière connexion"),
-    origin: z.string().nullish().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi"),
-    status: z.array(ZUserStatusValidation).describe("Tableau des modifications de statut de l'utilisateur"),
-    is_qualiopi: z.boolean().describe("Statut qualiopi d'un CFA (toujours à true pour les CFA, false pour les entreprises)"),
-  })
-  .strict()
+export const ZUserRecruteurWritable = z.strictObject({
+  last_name: extensions.withoutUrls().describe("Nom de l'utilisateur"),
+  first_name: extensions.withoutUrls().describe("Prénom de l'utilisateur"),
+  opco: extensions.buildEnum(OPCOS_LABEL).nullable().describe("Information sur l'opco de l'entreprise"),
+  idcc: z.number().nullable().describe("Identifiant convention collective de l'entreprise"),
+  establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
+  establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
+  establishment_siret: extensions.siret.describe("Siret de l'établissement"),
+  address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
+  address: extensions.withoutUrls().nullish().describe("Adresse de l'établissement"),
+  geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
+  phone: extensions.phone().describe("Téléphone de l'établissement"),
+  email: z.email().describe("L'email de l'utilisateur"),
+  scope: z.string().nullish().describe("Scope accessible par l'utilisateur"),
+  is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),
+  type: z.enum([authTypeValues[0], ...authTypeValues.slice(1)]).describe("Type d'utilisateur"),
+  establishment_id: z.string().nullish().describe("Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique"),
+  last_connection: z.date().nullish().describe("Date de dernière connexion"),
+  origin: z.string().nullish().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi"),
+  status: z.array(ZUserStatusValidation).describe("Tableau des modifications de statut de l'utilisateur"),
+  is_qualiopi: z.boolean().describe("Statut qualiopi d'un CFA (toujours à true pour les CFA, false pour les entreprises)"),
+})
 
 export const ZUserRecruteur = ZUserRecruteurWritable.omit({
   // Following field are not supposed to be nullish but they are...
@@ -84,28 +66,24 @@ export const ZUserRecruteur = ZUserRecruteurWritable.omit({
   is_qualiopi: ZUserRecruteurWritable.shape.is_qualiopi.nullish(),
 })
 
-export const ZCfaReferentielData = z
-  .object({
-    establishment_state: z.string(),
-    is_qualiopi: z.boolean(),
-    establishment_siret: z.string(),
-    establishment_raison_sociale: z.string(),
-    contacts: z.array(
-      z
-        .object({
-          email: z.string(),
-          confirmé: z.boolean(),
-          sources: z.array(z.string()),
-          date_collecte: z.string(),
-        })
-        .strict()
-    ),
-    address_detail: ZGlobalAddress,
-    address: z.string(),
-    geo_coordinates: z.string().max(40).nullish(),
-    geopoint: ZPointGeometry.nullish(),
-  })
-  .strict()
+export const ZCfaReferentielData = z.strictObject({
+  establishment_state: z.string(),
+  is_qualiopi: z.boolean(),
+  establishment_siret: z.string(),
+  establishment_raison_sociale: z.string(),
+  contacts: z.array(
+    z.strictObject({
+      email: z.string(),
+      confirmé: z.boolean(),
+      sources: z.array(z.string()),
+      date_collecte: z.string(),
+    })
+  ),
+  address_detail: ZGlobalAddress,
+  address: z.string(),
+  geo_coordinates: z.string().max(40).nullish(),
+  geopoint: ZPointGeometry.nullish(),
+})
 
 export type ICfaReferentielData = z.output<typeof ZCfaReferentielData>
 export type ICfaReferentielDataJson = Jsonify<z.input<typeof ZCfaReferentielData>>

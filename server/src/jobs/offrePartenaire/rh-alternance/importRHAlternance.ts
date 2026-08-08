@@ -21,12 +21,10 @@ import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJ
 
 const ZRawRHAlternanceJob = rawRHAlternanceModel.zod.shape.job
 
-const ZRHAlternanceResponse = z
-  .object({
-    jobs: z.array(ZRawRHAlternanceJob),
-    pageCount: z.number(),
-  })
-  .passthrough()
+const ZRHAlternanceResponse = z.looseObject({
+  jobs: z.array(ZRawRHAlternanceJob),
+  pageCount: z.number(),
+})
 
 const rawCollectionName = rawRHAlternanceModel.collectionName
 
