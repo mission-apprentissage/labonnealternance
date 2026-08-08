@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import { EDiffusibleStatus } from "../constants/diffusibleStatus.js"
+import { EDiffusibleStatus } from "../constants/diffusible-status.js"
 import type { ICacheInfosSiret } from "../models/cacheInfosSiret.model.js"
 
 export function generateCacheInfoSiretFixture(data: Partial<ICacheInfosSiret> = {}, etat_administratif: "A" | "F" = "A"): ICacheInfosSiret {

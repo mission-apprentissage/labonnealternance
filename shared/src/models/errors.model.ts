@@ -1,4 +1,4 @@
-import { BusinessErrorCodes } from "../constants/errorCodes.js"
+import { BusinessErrorCodes } from "../constants/error-codes.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
 const businessErrorCodeValues = Object.values(BusinessErrorCodes)

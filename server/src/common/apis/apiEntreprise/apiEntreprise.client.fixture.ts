@@ -1,4 +1,4 @@
-import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
+import { EDiffusibleStatus } from "shared/constants/diffusible-status"
 import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 
 export const apiEntrepriseEtablissementFixture = {

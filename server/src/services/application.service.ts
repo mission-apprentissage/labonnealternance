@@ -8,7 +8,7 @@ import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicati
 import { ApplicationScanStatus, assertUnreachable, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS_ENGLISH, parseEnum } from "shared"
 import type { RefusalReasons } from "shared/constants/application"
 import { ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"

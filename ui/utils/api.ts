@@ -14,7 +14,7 @@ import type {
 } from "shared"
 import { removeUndefinedFields } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
-import type { BusinessErrorCodes } from "shared/constants/errorCodes"
+import type { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ILbaCompanySearchField } from "shared/routes/updateLbaCompany.routes"
 import type { Jsonify } from "type-fest"

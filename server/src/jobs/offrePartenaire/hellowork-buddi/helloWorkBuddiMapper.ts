@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { joinNonNullStrings } from "shared"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
