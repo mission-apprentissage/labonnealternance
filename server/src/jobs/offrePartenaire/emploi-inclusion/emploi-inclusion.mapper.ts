@@ -5,7 +5,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import type { IEmploiInclusionJob } from "@/common/apis/emploiInclusion/emploi-inclusion.client"
-import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fill-computed-jobs-partners"
 
 type IEmploiInclusionPoste = IEmploiInclusionJob["postes"][number]
 

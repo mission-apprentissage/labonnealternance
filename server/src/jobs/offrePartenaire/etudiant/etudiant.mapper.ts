@@ -6,7 +6,7 @@ import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import type { IJobEtudiantJob } from "@/common/apis/etudiant/etudiant.client"
 import { sanitizeTextField } from "@/common/utils/string-utils"
-import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fill-computed-jobs-partners"
 
 // Seules les offres dont la traduction FR du contrat est cette valeur sont importées (filtre dans processEtudiant)
 export const ETUDIANT_ELIGIBLE_CONTRACT_FR = "Alternance - Apprentissage / Professionalisation"

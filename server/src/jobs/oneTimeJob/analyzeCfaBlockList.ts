@@ -19,7 +19,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 
 import { closeMongodbConnection, connectToMongodb, getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
-import { cfaCompanyList } from "@/jobs/offrePartenaire/isCompanyInBlockedCfaList"
+import { cfaCompanyList } from "@/jobs/offrePartenaire/is-company-in-blocked-cfa-list"
 
 // En dev (tsx) : import.meta.dirname = server/src/jobs/oneTimeJob → ../../../../ = racine du monorepo
 // En prod (dist compilé) : import.meta.dirname = server/dist/jobs/oneTimeJob → ../../../../ = racine du monorepo

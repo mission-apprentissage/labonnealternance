@@ -7,7 +7,7 @@ import type { Server } from "@/http/server"
 import { processApplications } from "@/jobs/applications/processApplications"
 import { processRecruiterIntentions } from "@/jobs/applications/processRecruiterIntentions"
 import { importCatalogueFormationJob } from "@/jobs/formationsCatalogue/formationsCatalogue"
-import { processJobPartnersForApi } from "@/jobs/offrePartenaire/processJobPartnersForApi"
+import { processJobPartnersForApi } from "@/jobs/offrePartenaire/process-job-partners-for-api"
 
 type TriggerableJob = z.infer<typeof zTriggerableJobs>
 
