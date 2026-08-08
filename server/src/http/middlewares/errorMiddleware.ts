@@ -3,7 +3,8 @@ import { captureException } from "@sentry/node"
 import type { FastifyError } from "fastify"
 import { hasZodFastifySchemaValidationErrors, isResponseSerializationError } from "fastify-type-provider-zod"
 import type { IResError } from "shared/routes/common.routes"
-import { ZodError } from "zod"
+import type { core } from "zod"
+import { treeifyError, ZodError } from "zod"
 
 import { stopSession } from "@/common/utils/session.service"
 import config from "@/config"
@@ -27,7 +28,7 @@ export function boomify(rawError: FastifyError | Boom<unknown> | Error | ZodErro
     if (config.env === "local") {
       const zodError = rawError.cause
       return internal(rawError.message, {
-        validationError: zodError.format(),
+        validationError: treeifyError(zodError),
       })
     }
 
@@ -35,7 +36,21 @@ export function boomify(rawError: FastifyError | Boom<unknown> | Error | ZodErro
   }
 
   if (hasZodFastifySchemaValidationErrors(rawError)) {
-    const zodError = new ZodError(rawError.validation.map((v) => v.params.issue))
+    // fastify-type-provider-zod's createValidationError() disassembles each Zod issue into
+    // { keyword, instancePath, schemaPath, message, params } (params holds the issue's
+    // remaining fields, e.g. "expected"/"minimum") rather than exposing the original issue
+    // object directly, so it must be reassembled to construct a ZodError from it.
+    const zodError = new ZodError(
+      rawError.validation.map(
+        (v) =>
+          ({
+            code: v.keyword,
+            path: v.instancePath.split("/").filter(Boolean),
+            message: v.message,
+            ...v.params,
+          }) as core.$ZodIssue
+      )
+    )
     return badRequest(getZodMessageError(zodError, rawError.validationContext ?? ""), {
       validationError: {
         code: rawError.code,
@@ -64,7 +79,6 @@ export function boomify(rawError: FastifyError | Boom<unknown> | Error | ZodErro
 
 export function errorMiddleware(server: Server) {
   server.setErrorHandler<FastifyError | Boom<unknown> | Error | ZodError, { Reply: IResError }>(async (rawError, request, reply) => {
-    // console.error("error", JSON.stringify(rawError, null, 2))
     const error = boomify(rawError)
 
     if (error.output.statusCode === 403) {

@@ -8,32 +8,30 @@ import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-export const ZJoobleJob = z
-  .object({
-    guid: z.string(),
-    referencenumber: z.string(),
-    url: z.string(),
-    title: z.string(),
-    region: z.object({
-      country: z.string(),
-      state: z.string(),
-      city: z.string(),
-    }),
-    date_updated: z.string(),
-    cpc: z.string(),
-    currency: z.string(),
-    company: z.string(),
-    date_expired: z.string().nullable(),
-    job_type: z.string().nullish(),
-    description: z.string(),
-    salary: z.object({
-      min: z.string().nullable(),
-      max: z.string().nullable(),
-      currency: z.string().nullable(),
-      rate: z.string().nullable(),
-    }),
-  })
-  .passthrough()
+export const ZJoobleJob = z.looseObject({
+  guid: z.string(),
+  referencenumber: z.string(),
+  url: z.string(),
+  title: z.string(),
+  region: z.object({
+    country: z.string(),
+    state: z.string(),
+    city: z.string(),
+  }),
+  date_updated: z.string(),
+  cpc: z.string(),
+  currency: z.string(),
+  company: z.string(),
+  date_expired: z.string().nullable(),
+  job_type: z.string().nullish(),
+  description: z.string(),
+  salary: z.object({
+    min: z.string().nullable(),
+    max: z.string().nullable(),
+    currency: z.string().nullable(),
+    rate: z.string().nullable(),
+  }),
+})
 
 export type IJoobleJob = z.output<typeof ZJoobleJob>
 

@@ -10,13 +10,11 @@ export const zV1JobsEtFormationsRoutes = {
       response: {
         "410": z.union([
           ZResError,
-          z
-            .object({
-              error: z.string(),
-              message: z.string(),
-              new_endpoint: z.string(),
-            })
-            .strict(),
+          z.strictObject({
+            error: z.string(),
+            message: z.string(),
+            new_endpoint: z.string(),
+          }),
         ]),
       },
       securityScheme: null,

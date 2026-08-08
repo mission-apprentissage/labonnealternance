@@ -120,7 +120,7 @@ export default function Authentification() {
             initialValues={{ email: undefined }}
             validationSchema={toFormikValidationSchema(
               z.object({
-                email: z.string({ required_error: "Champ obligatoire" }).email("Insérez un email valide"),
+                email: z.string({ error: "Champ obligatoire" }).email("Insérez un email valide"),
               })
             )}
             onSubmit={submitEmail}

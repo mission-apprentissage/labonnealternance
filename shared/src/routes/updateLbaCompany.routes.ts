@@ -23,7 +23,7 @@ export const ZLbaCompanyForAdminSearch = z.object({
   address: z.string().nullish().describe("Adresse complète (workplace_address_label)"),
   email: z.string().nullish().describe("Adresse email de contact (apply_email)"),
   phone: extensions.phone().nullish().describe("Numéro de téléphone de contact (apply_phone)"),
-  created_at: z.coerce.date().nullish().describe("Date de création"),
+  created_at: z.coerce.date<Date>().nullish().describe("Date de création"),
 })
 export type ILbaCompanyForAdminSearch = z.output<typeof ZLbaCompanyForAdminSearch>
 export type ILbaCompanyForAdminSearchJSON = Jsonify<z.output<typeof ZLbaCompanyForAdminSearch>>
@@ -37,12 +37,10 @@ export const zUpdateLbaCompanyRoutes = {
     "/admin/lba-companies": {
       method: "get",
       path: "/admin/lba-companies",
-      querystring: z
-        .object({
-          search: z.string().min(2),
-          field: ZLbaCompanySearchField.default("workplace_legal_name"),
-        })
-        .strict(),
+      querystring: z.strictObject({
+        search: z.string().min(2),
+        field: ZLbaCompanySearchField.default("workplace_legal_name"),
+      }),
       response: {
         "200": z.array(ZLbaCompanyForAdminSearch),
       },
@@ -55,11 +53,9 @@ export const zUpdateLbaCompanyRoutes = {
     "/lbacompany/:siret/contactInfo": {
       method: "get",
       path: "/lbacompany/:siret/contactInfo",
-      params: z
-        .object({
-          siret: extensions.siret,
-        })
-        .strict(),
+      params: z.strictObject({
+        siret: extensions.siret,
+      }),
       response: {
         "200": ZLbaCompanyForContactUpdate,
       },
@@ -75,11 +71,9 @@ export const zUpdateLbaCompanyRoutes = {
     "/lbacompany/:siret/contactInfo": {
       method: "put",
       path: "/lbacompany/:siret/contactInfo",
-      params: z
-        .object({
-          siret: extensions.siret,
-        })
-        .strict(),
+      params: z.strictObject({
+        siret: extensions.siret,
+      }),
       body: z.object({
         email: ZJobsPartnersOfferPrivate.shape.apply_email,
         phone: ZJobsPartnersOfferPrivate.shape.apply_phone,

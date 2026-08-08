@@ -1,6 +1,5 @@
-import { zObjectId } from "zod-mongodb-schema"
-
 import { z } from "../../../helpers/zodWithOpenApi.js"
+import { zObjectId } from "../../../models/common.js"
 import { ZComputedJobsPartnersWrite } from "../../../models/jobsPartnersComputed.model.js"
 import type { IRoutesDef } from "../../common.routes.js"
 

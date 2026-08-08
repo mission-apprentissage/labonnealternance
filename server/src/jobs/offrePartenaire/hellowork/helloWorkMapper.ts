@@ -9,33 +9,31 @@ import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-export const ZHelloWorkJob = z
-  .object({
-    job_id: z.string(),
-    contract_start_date: z.string().nullish(),
-    contract: z.string(),
-    remote: z.string().nullish(),
-    contract_period_value: z.coerce.number().nullish(),
-    contract_period_unit: z.string().nullish(),
-    title: z.string(),
-    description: z.string().nullish(),
-    education: z.string().nullish(),
-    profile: z.string().nullish(),
-    code_rome: z.string().nullish(),
-    publication_date: z.string().nullish(),
-    updated_date: z.string().nullish(),
-    siret: z.string().nullish(),
-    company_title: z.string().nullish(),
-    company_description: z.string().nullish(),
-    address: z.string().nullish(),
-    postal_code: z.string().nullish(),
-    city: z.string().nullish(),
-    country: z.string().nullish(),
-    geoloc: z.string().nullish(),
-    url: extensions.url(),
-    guid: z.string(),
-  })
-  .passthrough()
+export const ZHelloWorkJob = z.looseObject({
+  job_id: z.string(),
+  contract_start_date: z.string().nullish(),
+  contract: z.string(),
+  remote: z.string().nullish(),
+  contract_period_value: z.coerce.number<number>().nullish(),
+  contract_period_unit: z.string().nullish(),
+  title: z.string(),
+  description: z.string().nullish(),
+  education: z.string().nullish(),
+  profile: z.string().nullish(),
+  code_rome: z.string().nullish(),
+  publication_date: z.string().nullish(),
+  updated_date: z.string().nullish(),
+  siret: z.string().nullish(),
+  company_title: z.string().nullish(),
+  company_description: z.string().nullish(),
+  address: z.string().nullish(),
+  postal_code: z.string().nullish(),
+  city: z.string().nullish(),
+  country: z.string().nullish(),
+  geoloc: z.string().nullish(),
+  url: extensions.url(),
+  guid: z.string(),
+})
 
 export type IHelloWorkJob = z.output<typeof ZHelloWorkJob>
 

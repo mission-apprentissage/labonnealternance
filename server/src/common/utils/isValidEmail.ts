@@ -1,3 +1,3 @@
 import { z } from "zod"
 
-export const isValidEmail = (email: string | null | undefined) => z.string().email().safeParse(email).success
+export const isValidEmail = (email: string | null | undefined) => z.email().safeParse(email).success

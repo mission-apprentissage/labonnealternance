@@ -14,21 +14,19 @@ export const zGetFormationOptions = z
 
   .optional()
 
-export const zRefererHeaders = z
-  .object({
-    referer: z.string().optional(),
-  })
-  .passthrough()
+export const zRefererHeaders = z.looseObject({
+  referer: z.string().optional(),
+})
 
 export const zRomesParams = (imcompatibleWith: "romeDomain" | "rncp") => z.string().optional()
 
 export const zRncpsParams = z.string().optional()
 
-export const ZLatitudeParam = z.coerce.number().optional()
+export const ZLatitudeParam = z.coerce.number<number>().optional()
 
-export const ZLongitudeParam = z.coerce.number().optional()
+export const ZLongitudeParam = z.coerce.number<number>().optional()
 
-export const ZRadiusParam = z.coerce.number().optional()
+export const ZRadiusParam = z.coerce.number<number>().optional()
 
 export const zInseeParams = z.string().optional()
 

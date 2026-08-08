@@ -19,16 +19,14 @@ import { getUserStatus, getUserStatusByToken, sendValidationLink } from "@/utils
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
-const ZComponentProps = z
-  .object({
-    jobId: z.string(),
-    email: z.string().optional(),
-    withDelegation: z.enum(["true", "false"]).transform((value) => value === "true"),
-    fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
-    userId: z.union([z.string(), zObjectId]),
-    token: z.string().optional(),
-  })
-  .strict()
+const ZComponentProps = z.strictObject({
+  jobId: z.string(),
+  email: z.string().optional(),
+  withDelegation: z.enum(["true", "false"]).transform((value) => value === "true"),
+  fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
+  userId: z.union([z.string(), zObjectId]),
+  token: z.string().optional(),
+})
 
 type ComponentProps = z.output<typeof ZComponentProps>
 

@@ -36,30 +36,28 @@ const mappingDiplomes: Record<EngagementJeunesDiplome, INiveauDiplomeEuropeen | 
   "Sans diplôme": undefined,
 }
 
-export const ZEngagementJeunesJob = z
-  .object({
-    id: z.number(),
-    creation_date: z.coerce.date(),
-    title: z.string(),
-    mission: z.string().nullish(),
-    profil: z.string().nullish(),
-    reference: z.string().nullish(),
-    contrat: z.enum(["Apprentissage"]).nullish(),
-    duree_contrat: z.number().nullish(),
-    duree_contrat_unit: z.string().nullish(),
-    temps_partiel: z.boolean().nullish(),
-    niveau_diplome: extensions.buildEnum(EngagementJeunesDiplome).nullish(),
-    societe: z.string(),
-    description_societe: z.string(),
-    location_pays: z.string().nullish(),
-    location_pays_code: z.string().nullish(),
-    location_departement: z.string().nullish(),
-    location_departement_code: z.string().nullish(),
-    location_ville: z.string(),
-    location_cp: z.string(),
-    application_url: z.string().url(),
-  })
-  .passthrough()
+export const ZEngagementJeunesJob = z.looseObject({
+  id: z.number(),
+  creation_date: z.coerce.date<Date>(),
+  title: z.string(),
+  mission: z.string().nullish(),
+  profil: z.string().nullish(),
+  reference: z.string().nullish(),
+  contrat: z.enum(["Apprentissage"]).nullish(),
+  duree_contrat: z.number().nullish(),
+  duree_contrat_unit: z.string().nullish(),
+  temps_partiel: z.boolean().nullish(),
+  niveau_diplome: extensions.buildEnum(EngagementJeunesDiplome).nullish(),
+  societe: z.string(),
+  description_societe: z.string(),
+  location_pays: z.string().nullish(),
+  location_pays_code: z.string().nullish(),
+  location_departement: z.string().nullish(),
+  location_departement_code: z.string().nullish(),
+  location_ville: z.string(),
+  location_cp: z.string(),
+  application_url: z.url(),
+})
 
 export type IEngagementJeunesJob = z.output<typeof ZEngagementJeunesJob>
 

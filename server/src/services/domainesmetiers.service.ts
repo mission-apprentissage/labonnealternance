@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb"
 import type { IDomainesMetiers } from "shared"
 import { removeAccents } from "shared"
+import { zObjectId } from "shared/models/common"
 import z from "zod"
-import { zObjectId } from "zod-mongodb-schema"
 import { deduplicate, deduplicateBy } from "@/common/utils/array"
 import { ensureInitialization, getDbCollection } from "@/common/utils/mongodbUtils"
 

@@ -46,7 +46,7 @@ export const CandidatureLbaModalBody = ({
 }) => {
   const customQuestions = "job" in item ? (item.job?.to_applicant_questions ?? []) : []
 
-  const questionZodExtension = Object.fromEntries(customQuestions.map((question) => [question, z.string({ required_error: "⚠ Une réponse est obligatoire" })]))
+  const questionZodExtension = Object.fromEntries(customQuestions.map((question) => [question, z.string({ error: "⚠ Une réponse est obligatoire" })]))
 
   const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
   const questionsInitValues = Object.fromEntries(customQuestions.map((question) => [question, applicantAnswersSession?.[question] ?? ""]))

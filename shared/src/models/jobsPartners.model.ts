@@ -67,7 +67,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
-  apply_url: z.string().url().describe("URL pour candidater"),
+  apply_url: z.url().describe("URL pour candidater"),
   apply_phone: z.string().nullable().describe("Téléphone de contact"),
   apply_recipient_id: z
     .string()
@@ -75,7 +75,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
     .describe(
       "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler"
     ),
-  is_delegated: z.boolean().default(false).describe("Indique si l'offre est déléguée à un mandataire"),
+  is_delegated: z.boolean().default(false).optional().describe("Indique si l'offre est déléguée à un mandataire"),
 
   cfa_legal_name: z.string().nullish().describe("Raison sociale du CFA si offre déléguée"),
   cfa_siret: extensions.siret.nullish().describe("Siret du CFA si offre déléguée"),
@@ -153,7 +153,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({
-  apply_email: z.string().email().nullable().describe("Email de contact").default(null),
+  apply_email: z.email().nullable().describe("Email de contact").default(null),
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur").default(null),
 
@@ -164,7 +164,7 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   cfa_siret: extensions.siret.nullish().describe("Siret du CFA si offre déléguée"),
   cfa_legal_name: z.string().nullish().describe("Raison sociale du CFA si offre déléguée"),
   cfa_apply_phone: z.string().nullish().describe("Numéro de téléphone du CFA si offre déléguée"),
-  cfa_apply_email: z.string().email().nullish().describe("Email de contact du CFA si offre déléguée"),
+  cfa_apply_email: z.email().nullish().describe("Email de contact du CFA si offre déléguée"),
   cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
   ft_support: z.boolean().nullish().describe("Indique si le créateur de l'offre a demandé un accompagnement par France Travail"),
   job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
@@ -189,20 +189,20 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   mer_sent: z.date().nullish().describe("Pour les offres LBA uniquement, date de l'envoi du mail de promotion de la mise en relation, si il a été envoyé."),
 })
 
-export const ZJobsPartnersRecruiterPrivate = ZJobsPartnersRecruiterApi.merge(ZJobsPartnersRecruiterPrivateFields)
+export const ZJobsPartnersRecruiterPrivate = ZJobsPartnersRecruiterApi.extend(ZJobsPartnersRecruiterPrivateFields.shape)
 
 export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
   _id: true,
   apply_url: true,
 })
-  .merge(ZJobsPartnersRecruiterPrivateFields)
+  .extend(ZJobsPartnersRecruiterPrivateFields.shape)
   .extend({
     _id: zObjectId,
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
     applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
-    lba_url: z.string().nullable().default(null),
+    lba_url: z.string().nullable().default(null).optional(),
     to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
   })
 
@@ -230,7 +230,7 @@ export const ZJobsPartnersPostApiBodyBase = z.object({
   contract_start: z
     .string({ message: "Expected ISO 8601 date string" })
     .datetime({ offset: true, message: "Expected ISO 8601 date string" })
-    .pipe(z.coerce.date())
+    .transform((value) => new Date(value))
     .nullable()
     .default(null),
   contract_duration: ZJobsPartnersOfferPrivate.shape.contract_duration.default(null),
@@ -247,21 +247,19 @@ export const ZJobsPartnersPostApiBodyBase = z.object({
   offer_creation: z
     .string({ message: "Expected ISO 8601 date string" })
     .datetime({ offset: true, message: "Expected ISO 8601 date string" })
-    .pipe(
-      z.coerce.date().refine((value) => value.getTime() < Date.now() + TIME_CLOCK_TOLERANCE, {
-        message: "Creation date cannot be in the future",
-      })
-    )
+    .transform((value) => new Date(value))
+    .refine((value) => value.getTime() < Date.now() + TIME_CLOCK_TOLERANCE, {
+      message: "Creation date cannot be in the future",
+    })
     .nullable()
     .default(null),
   offer_expiration: z
     .string({ message: "Expected ISO 8601 date string" })
     .datetime({ offset: true, message: "Expected ISO 8601 date string" })
-    .pipe(
-      z.coerce.date().refine((value) => value === null || value.getTime() > Date.now() - TIME_CLOCK_TOLERANCE, {
-        message: "Expiration date cannot be in the past",
-      })
-    )
+    .transform((value) => new Date(value))
+    .refine((value) => value === null || value.getTime() > Date.now() - TIME_CLOCK_TOLERANCE, {
+      message: "Expiration date cannot be in the past",
+    })
     .nullable()
     .default(null),
   offer_opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.default(1),
@@ -290,8 +288,6 @@ export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine
       })
     })
   }
-
-  return data
 })
 
 export type IJobsPartnersWritableApi = z.output<typeof ZJobsPartnersWritableApi>

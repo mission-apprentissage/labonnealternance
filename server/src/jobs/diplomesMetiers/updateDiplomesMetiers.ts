@@ -129,7 +129,7 @@ export const updateDiplomeMetier = async (): Promise<void> => {
         diplomesToInsert.push(parsedDiplomeMetier.data)
       } else {
         invalidDiplomes.push(diplome.intitule_long)
-        logger.error({ errors: parsedDiplomeMetier.error.errors }, `Mauvais format diplomesmetier pour le diplôme ${diplome.intitule_long}`)
+        logger.error({ errors: parsedDiplomeMetier.error.issues }, `Mauvais format diplomesmetier pour le diplôme ${diplome.intitule_long}`)
       }
     }
 

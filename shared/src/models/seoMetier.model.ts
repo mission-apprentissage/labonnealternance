@@ -86,27 +86,25 @@ export const ZSeoJobCard = z.object({
   offer_creation: z.date().nullable(),
 })
 
-export const ZSeoMetier = z
-  .object({
-    _id: zObjectId,
-    metier: z.string(),
-    slug: z.string(),
-    description: z.string(),
-    job_count: z.number(),
-    company_count: z.number(),
-    applicant_count: z.number(),
-    missions: z.array(ZSeoMetierMission),
-    competences: z.array(ZSeoMetierCompetence),
-    salaire: ZSeoMetierSalaire,
-    entreprises: z.array(ZSeoMetierEntreprise),
-    formations: z.array(ZSeoMetierFormation),
-    villes: z.array(ZSeoMetierVille),
-    romes: z.array(z.string()),
-    cards: z.array(ZSeoJobCard),
-    created_at: z.date(),
-    updated_at: z.date(),
-  })
-  .strict()
+export const ZSeoMetier = z.strictObject({
+  _id: zObjectId,
+  metier: z.string(),
+  slug: z.string(),
+  description: z.string(),
+  job_count: z.number(),
+  company_count: z.number(),
+  applicant_count: z.number(),
+  missions: z.array(ZSeoMetierMission),
+  competences: z.array(ZSeoMetierCompetence),
+  salaire: ZSeoMetierSalaire,
+  entreprises: z.array(ZSeoMetierEntreprise),
+  formations: z.array(ZSeoMetierFormation),
+  villes: z.array(ZSeoMetierVille),
+  romes: z.array(z.string()),
+  cards: z.array(ZSeoJobCard),
+  created_at: z.date(),
+  updated_at: z.date(),
+})
 
 export type ISeoMetier = z.output<typeof ZSeoMetier>
 export type ISeoJobCard = z.output<typeof ZSeoJobCard>

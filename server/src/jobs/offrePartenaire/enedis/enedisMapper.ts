@@ -9,85 +9,70 @@ import { z } from "zod"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 // xml2js stores attributes under '$' and text content under '_'
-const ZXmlAttr = z.object({ $: z.record(z.string()).nullish() }).passthrough()
+const ZXmlAttr = z.looseObject({ $: z.record(z.string(), z.string()).nullish() })
 
-const ZEnedisJobLocation = z
-  .object({
-    jobLocation: z.string().nullish(),
-    departements: z
-      .object({
-        departement: z.union([z.string(), ZXmlAttr, z.array(z.union([z.string(), ZXmlAttr]))]).nullish(),
-      })
-      .passthrough()
-      .nullish(),
-  })
-  .passthrough()
+const ZEnedisJobLocation = z.looseObject({
+  jobLocation: z.string().nullish(),
+  departements: z
+    .looseObject({
+      departement: z.union([z.string(), ZXmlAttr, z.array(z.union([z.string(), ZXmlAttr]))]).nullish(),
+    })
+    .nullish(),
+})
 
-const ZEnedisJobDescriptionCustomFields = z
-  .object({
-    datetime1: z.union([z.string(), ZXmlAttr]).nullish(),
-    LongText1: z.union([z.string(), ZXmlAttr]).nullish(),
-    LongText1Formatted: z.union([z.string(), ZXmlAttr]).nullish(),
-  })
-  .passthrough()
+const ZEnedisJobDescriptionCustomFields = z.looseObject({
+  datetime1: z.union([z.string(), ZXmlAttr]).nullish(),
+  LongText1: z.union([z.string(), ZXmlAttr]).nullish(),
+  LongText1Formatted: z.union([z.string(), ZXmlAttr]).nullish(),
+})
 
 const ZEnedisContract = z
   .union([
     z.string(),
-    z
-      .object({
-        _: z.string().nullish(),
-        $: z.object({ clientcode: z.string().nullish() }).passthrough().nullish(),
-      })
-      .passthrough(),
+    z.looseObject({
+      _: z.string().nullish(),
+      $: z.looseObject({ clientcode: z.string().nullish() }).nullish(),
+    }),
   ])
   .nullish()
 
 const ZEnedisDiploma = z
-  .object({
-    $: z.object({ clientcode: z.string().nullish() }).passthrough().nullish(),
+  .looseObject({
+    $: z.looseObject({ clientcode: z.string().nullish() }).nullish(),
   })
-  .passthrough()
   .nullish()
 
-const ZEnedisSpecialisationOuter = z
-  .object({
-    specialisation: z.union([z.string(), ZXmlAttr]).nullish(),
-  })
-  .passthrough()
+const ZEnedisSpecialisationOuter = z.looseObject({
+  specialisation: z.union([z.string(), ZXmlAttr]).nullish(),
+})
 
-const ZEnedisJobDescription = z
-  .object({
-    title: z.string(),
-    description: z.string(),
-    missionDescription: z.string().nullish(),
-    missionDescriptionFormatted: z.string().nullish(),
-    applicantProfile: z.string().nullish(),
-    applicantProfileFormatted: z.string().nullish(),
-    contract: ZEnedisContract,
-    contractLength: z.coerce.string().nullish(),
-    location: ZEnedisJobLocation.nullish(),
-    customFields: ZEnedisJobDescriptionCustomFields.nullish(),
-  })
-  .passthrough()
+const ZEnedisJobDescription = z.looseObject({
+  title: z.string(),
+  description: z.string(),
+  missionDescription: z.string().nullish(),
+  missionDescriptionFormatted: z.string().nullish(),
+  applicantProfile: z.string().nullish(),
+  applicantProfileFormatted: z.string().nullish(),
+  contract: ZEnedisContract,
+  contractLength: z.coerce.string<string>().nullish(),
+  location: ZEnedisJobLocation.nullish(),
+  customFields: ZEnedisJobDescriptionCustomFields.nullish(),
+})
 
 const ZEnedisApplicantCriteria = z
-  .object({
+  .looseObject({
     diploma: ZEnedisDiploma,
     customFields: z
-      .object({
+      .looseObject({
         list1: z.union([z.string(), ZXmlAttr]).nullish(), // Used for remuneration in the mapper
       })
-      .passthrough()
       .nullish(),
     specialisations: z
-      .object({
+      .looseObject({
         specialisation: z.union([ZEnedisSpecialisationOuter, z.array(ZEnedisSpecialisationOuter)]).nullish(),
       })
-      .passthrough()
       .nullish(),
   })
-  .passthrough()
   .nullish()
 
 const ZEnedisSupervisor = z.object({
@@ -99,7 +84,7 @@ const ZEnedisSupervisor = z.object({
 })
 
 export const ZEnedisJob = z.object({
-  id: z.coerce.string(),
+  id: z.coerce.string<string>(),
   reference: z.string(),
   entityDescription: z.string().nullish(),
   origin: z.any().nullish(),
@@ -273,7 +258,7 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
   const dateTime = getXmlTextValue(customFields?.datetime1) ?? null
   const contract_start = dateTime ? parseEnedisShortDate(dateTime) : null
 
-  const urlParsing = z.string().url().safeParse(directUrl)
+  const urlParsing = z.url().safeParse(directUrl)
 
   const experienceLevel = getXmlTextValue(applicantCriteria?.experienceLevel) ?? null
 

@@ -35,17 +35,18 @@ describe("zod", () => {
       JSON.stringify(
         [
           {
-            code: "invalid_type",
             expected: "string",
-            received: "undefined",
+            code: "invalid_type",
             path: ["missing"],
-            message: "Required",
+            message: "Invalid input: expected string, received undefined",
           },
           {
-            validation: "regex",
-            code: "invalid_string",
-            message: "Invalid",
+            origin: "string",
+            code: "invalid_format",
+            format: "regex",
+            pattern: "/ asdf/",
             path: ["preprocess"],
+            message: "Invalid string: must match pattern / asdf/",
           },
         ],
         null,

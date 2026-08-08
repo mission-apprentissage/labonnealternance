@@ -7,58 +7,51 @@ import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-export const ZDecathlonJob = z
-  .object({
-    reference: z.string(),
-    title: z.string(),
-    description: z.string().nullish(),
-    profile: z.string().nullish(),
-    contract_type: z.string().nullish(),
-    education_level: z.string().nullish(),
-    skills: z.array(z.string()).nullish(),
-    published_at: z.string().nullish(),
-    contract_duration: z
-      .object({
-        min: z.coerce.number().nullish(),
-      })
-      .passthrough()
-      .nullish(),
-    brand: z
-      .object({
-        name: z.string().nullish(),
-        description: z.string().nullish(),
-      })
-      .passthrough()
-      .nullish(),
-    entity: z
-      .object({
-        address: z
-          .object({
-            formatted: z.string().nullish(),
-            position: z
-              .object({
-                lon: z.coerce.number().nullish(),
-                lat: z.coerce.number().nullish(),
-              })
-              .passthrough()
-              .nullish(),
-            parts: z.object({
-              street: z.string().nullish(),
-              zip: z.string().nullish(),
-              city: z.string().nullish(),
-              county: z.string().nullish(),
-              state: z.string().nullish(),
-              country: z.string().nullish(),
-            }),
-          })
-          .passthrough()
-          .nullish(),
-      })
-      .passthrough()
-      .nullish(),
-    apply_url: z.string().nullish(),
-  })
-  .passthrough()
+export const ZDecathlonJob = z.looseObject({
+  reference: z.string(),
+  title: z.string(),
+  description: z.string().nullish(),
+  profile: z.string().nullish(),
+  contract_type: z.string().nullish(),
+  education_level: z.string().nullish(),
+  skills: z.array(z.string()).nullish(),
+  published_at: z.string().nullish(),
+  contract_duration: z
+    .looseObject({
+      min: z.coerce.number<number>().nullish(),
+    })
+    .nullish(),
+  brand: z
+    .looseObject({
+      name: z.string().nullish(),
+      description: z.string().nullish(),
+    })
+    .nullish(),
+  entity: z
+    .looseObject({
+      address: z
+        .looseObject({
+          formatted: z.string().nullish(),
+          position: z
+            .looseObject({
+              lon: z.coerce.number<number>().nullish(),
+              lat: z.coerce.number<number>().nullish(),
+            })
+            .nullish(),
+          parts: z.object({
+            street: z.string().nullish(),
+            zip: z.string().nullish(),
+            city: z.string().nullish(),
+            county: z.string().nullish(),
+            state: z.string().nullish(),
+            country: z.string().nullish(),
+          }),
+        })
+        .nullish(),
+    })
+    .nullish(),
+  apply_url: z.string().nullish(),
+})
 
 export type IDecathlonJob = z.output<typeof ZDecathlonJob>
 

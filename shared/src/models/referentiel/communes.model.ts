@@ -1,23 +1,20 @@
 import { z } from "zod"
-import { zObjectId } from "zod-mongodb-schema"
-
 import { ZGeometry, ZPointGeometry } from "../address.model.js"
 import type { IModelDescriptor } from "../common.js"
+import { zObjectId } from "../common.js"
 
 const collectionName = "referentiel.communes" as const
 
-export const zReferentielCommune = z
-  .object({
-    _id: zObjectId,
-    code: z.string(),
-    codesPostaux: z.array(z.string()),
-    centre: ZPointGeometry,
-    bbox: ZGeometry,
-    nom: z.string(),
-    codeDepartement: z.string(),
-    codeRegion: z.string(),
-  })
-  .strict()
+export const zReferentielCommune = z.strictObject({
+  _id: zObjectId,
+  code: z.string(),
+  codesPostaux: z.array(z.string()),
+  centre: ZPointGeometry,
+  bbox: ZGeometry,
+  nom: z.string(),
+  codeDepartement: z.string(),
+  codeRegion: z.string(),
+})
 
 export type IReferentielCommune = z.output<typeof zReferentielCommune>
 

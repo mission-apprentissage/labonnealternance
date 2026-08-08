@@ -9,7 +9,7 @@ import { z } from "zod"
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { PAGES } from "@/utils/routes.utils"
 
-const zIdeaType = z.nativeEnum(LBA_ITEM_TYPE_OLD)
+const zIdeaType = z.enum(LBA_ITEM_TYPE_OLD)
 
 type ItemReference = {
   id: string
@@ -93,7 +93,7 @@ const zRecherchePageParams = z.object({
   elligibleHandicapFilter: z.boolean().optional(),
   activeItems: z
     .object({
-      ideaType: z.nativeEnum(LBA_ITEM_TYPE_OLD),
+      ideaType: z.enum(LBA_ITEM_TYPE_OLD),
       id: z.string(),
     })
     .array()

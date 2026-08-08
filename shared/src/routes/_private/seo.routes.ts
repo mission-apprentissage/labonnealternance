@@ -8,11 +8,9 @@ export const zPrivateSeoRoutes = {
     "/_private/seo/ville/:ville": {
       method: "get",
       path: "/_private/seo/ville/:ville",
-      params: z
-        .object({
-          ville: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        ville: z.string(),
+      }),
       response: {
         "200": ZSeoVille.nullable(),
       },
@@ -21,11 +19,9 @@ export const zPrivateSeoRoutes = {
     "/_private/seo/metier/:metier": {
       method: "get",
       path: "/_private/seo/metier/:metier",
-      params: z
-        .object({
-          metier: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        metier: z.string(),
+      }),
       response: {
         "200": ZSeoMetier.nullable(),
       },
@@ -34,11 +30,9 @@ export const zPrivateSeoRoutes = {
     "/_private/seo/diplome/:diplome": {
       method: "get",
       path: "/_private/seo/diplome/:diplome",
-      params: z
-        .object({
-          diplome: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        diplome: z.string(),
+      }),
       response: {
         "200": ZSeoDiplome.nullable(),
       },

@@ -104,13 +104,13 @@ export const jobsApiV3Routes = (server: Server) => {
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/v4/jobs/multi-partner/bulk"]).value
       const jobs = req.body
-      const results: { status: number; id?: string; error?: string }[] = []
+      const results: { status: number; id?: ObjectId; error?: string }[] = []
       await asyncForEach(jobs, async (job) => {
         try {
           const { id, modified } = await upsertJobsPartnersMulti({ data: job, requestedByEmail: user.email })
           const status = modified ? 200 : 304
           results.push({
-            id: id.toString(),
+            id,
             status,
           })
         } catch (err) {

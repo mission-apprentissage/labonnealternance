@@ -9,12 +9,10 @@ export const zRomeRoutes = {
     "/rome": {
       method: "get",
       path: "/rome",
-      querystring: z
-        .object({
-          title: z.string(),
-          withRomeLabels: z.coerce.boolean().optional(),
-        })
-        .strict(),
+      querystring: z.strictObject({
+        title: z.string(),
+        withRomeLabels: z.coerce.boolean<boolean>().optional(),
+      }),
       response: {
         "200": ZMetiersEnrichis,
       },
@@ -23,11 +21,9 @@ export const zRomeRoutes = {
     "/rome/detail/:rome": {
       method: "get",
       path: "/rome/detail/:rome",
-      params: z
-        .object({
-          rome: z.string(),
-        })
-        .strict(),
+      params: z.strictObject({
+        rome: z.string(),
+      }),
       response: {
         "200": ZReferentielRomeForJob,
       },

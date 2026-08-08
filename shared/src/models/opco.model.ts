@@ -9,15 +9,13 @@ const collectionName = "opcos" as const
 
 export const zOpcoLabel = extensions.buildEnum(OPCOS_LABEL).describe("Opco de rattachement de l'établissement")
 
-export const ZOpco = z
-  .object({
-    _id: zObjectId,
-    siren: z.string().describe("SIREN de l'établissement"),
-    opco: z.string().describe("Opco de rattachement de l'établissement"),
-    idcc: z.number().nullable().describe("Identifiant convention collective"),
-    url: z.string().nullish().describe("Site internet de l'opco"),
-  })
-  .strict()
+export const ZOpco = z.strictObject({
+  _id: zObjectId,
+  siren: z.string().describe("SIREN de l'établissement"),
+  opco: z.string().describe("Opco de rattachement de l'établissement"),
+  idcc: z.number().nullable().describe("Identifiant convention collective"),
+  url: z.string().nullish().describe("Site internet de l'opco"),
+})
 
 export type IOpco = z.output<typeof ZOpco>
 

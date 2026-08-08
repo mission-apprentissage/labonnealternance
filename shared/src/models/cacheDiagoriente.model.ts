@@ -1,7 +1,6 @@
 import { z } from "zod"
-import { zObjectId } from "zod-mongodb-schema"
-
 import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
 
 const collectionName = "cache_diagoriente" as const
 
@@ -14,6 +13,7 @@ export const ZDiagorienteClassificationSchema = z.object({
 export type IDiagorienteClassificationSchema = z.output<typeof ZDiagorienteClassificationSchema>
 
 export const ZDiagorienteClassificationResponseSchema = z.record(
+  z.string(),
   z.object({
     classify_results: z.array(
       z.object({

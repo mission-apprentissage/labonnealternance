@@ -27,66 +27,56 @@ export const ZCEGIDOfferDetail = z.object({
     .nullish(),
 })
 
-export const ZFranceTravailCEGIDJob = z
-  .object({
-    reference: z.string(),
-    title: z.string(),
-    description1: z.string().nullish(),
-    description2: z.string().nullish(),
-    contractType: z
-      .object({
-        label: z.string(),
+export const ZFranceTravailCEGIDJob = z.looseObject({
+  reference: z.string(),
+  title: z.string(),
+  description1: z.string().nullish(),
+  description2: z.string().nullish(),
+  contractType: z
+    .object({
+      label: z.string(),
+    })
+    .nullish(),
+  organisationName: z.string().nullish(),
+  organisationDescription: z.string().nullish(),
+  organisationLogoUrl: z.string().nullish(),
+  salaryRange: z
+    .object({
+      label: z.string(),
+    })
+    .nullish(),
+  offerUrl: z.string().nullish(),
+  startPublicationDate: z.string().nullish(),
+  beginningDate: z.string().nullish(),
+  region: z
+    .array(
+      z.looseObject({
+        clientCode: z.string(),
       })
-      .nullish(),
-    organisationName: z.string().nullish(),
-    organisationDescription: z.string().nullish(),
-    organisationLogoUrl: z.string().nullish(),
-    salaryRange: z
-      .object({
-        label: z.string(),
+    )
+    .nullish(),
+  department: z
+    .array(
+      z.looseObject({
+        clientCode: z.string(),
       })
-      .nullish(),
-    offerUrl: z.string().nullish(),
-    startPublicationDate: z.string().nullish(),
-    beginningDate: z.string().nullish(),
-    region: z
-      .array(
-        z
-          .object({
-            clientCode: z.string(),
-          })
-          .passthrough()
-      )
-      .nullish(),
-    department: z
-      .array(
-        z
-          .object({
-            clientCode: z.string(),
-          })
-          .passthrough()
-      )
-      .nullish(),
-    country: z
-      .array(
-        z
-          .object({
-            clientCode: z.string(),
-          })
-          .passthrough()
-      )
-      .nullish(),
-    _links: z.array(
-      z
-        .object({
-          href: z.string(),
-          rel: z.string(),
-        })
-        .passthrough()
-    ),
-    details: ZCEGIDOfferDetail.nullish(),
-  })
-  .passthrough()
+    )
+    .nullish(),
+  country: z
+    .array(
+      z.looseObject({
+        clientCode: z.string(),
+      })
+    )
+    .nullish(),
+  _links: z.array(
+    z.looseObject({
+      href: z.string(),
+      rel: z.string(),
+    })
+  ),
+  details: ZCEGIDOfferDetail.nullish(),
+})
 
 enum CEGIDDurationCode {
   D12_mois = "12_mois",

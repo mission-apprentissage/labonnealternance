@@ -14,28 +14,22 @@ const rawCollectionName = rawFranceTravailCEGIDModel.collectionName
 
 const ZJsonFile = z.object({
   data: z.array(ZFranceTravailCEGIDJob),
-  _pagination: z
-    .object({
-      hasMore: z.boolean().optional(),
-      links: z.array(
-        z
-          .object({
-            href: z.string(),
-            rel: z.string(),
-          })
-          .passthrough()
-      ),
-    })
-    .passthrough(),
+  _pagination: z.looseObject({
+    hasMore: z.boolean().optional(),
+    links: z.array(
+      z.looseObject({
+        href: z.string(),
+        rel: z.string(),
+      })
+    ),
+  }),
 })
 
-const ZTokenObject = z
-  .object({
-    access_token: z.string(),
-    token_type: z.string(),
-    expires_in: z.number(),
-  })
-  .passthrough()
+const ZTokenObject = z.looseObject({
+  access_token: z.string(),
+  token_type: z.string(),
+  expires_in: z.number(),
+})
 
 const baseUrl = `${config.franceTravailCegidFlux.url}/api`
 

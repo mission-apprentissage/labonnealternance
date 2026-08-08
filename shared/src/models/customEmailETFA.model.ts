@@ -5,13 +5,11 @@ import { zObjectId } from "./common.js"
 
 const collectionName = "customemailetfas" as const
 
-export const ZCustomEmailETFA = z
-  .object({
-    _id: zObjectId,
-    email: z.string(),
-    cle_ministere_educatif: z.string(),
-  })
-  .strict()
+export const ZCustomEmailETFA = z.strictObject({
+  _id: zObjectId,
+  email: z.string(),
+  cle_ministere_educatif: z.string(),
+})
 
 export type ICustomEmailETFA = z.output<typeof ZCustomEmailETFA>
 

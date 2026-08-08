@@ -25,132 +25,130 @@ type ICleverConnectjobJobLocation = z.output<typeof ZCleverConnectjobJobLocation
 
 const CONTRAT_ALTERNANCE = "Alternance / Apprentissage"
 
-export const ZCleverConnectJob = z
-  .object({
-    $: z.object({ id: z.string(), reference: z.string(), lang: z.string().nullish() }),
-    title: z.string(),
-    description: z.string(),
-    link: z.string(),
-    publicationDate: z.string(),
-    lastModificationDate: z.string(),
-    position: z.string().nullish(),
-    industry: z.string().nullish(),
-    company: z.object({
-      $: z.object({ id: z.string(), anonymous: z.string() }),
-      description: z.string().nullish(),
-      name: z.string().nullish(),
+export const ZCleverConnectJob = z.looseObject({
+  $: z.object({ id: z.string(), reference: z.string(), lang: z.string().nullish() }),
+  title: z.string(),
+  description: z.string(),
+  link: z.string(),
+  publicationDate: z.string(),
+  lastModificationDate: z.string(),
+  position: z.string().nullish(),
+  industry: z.string().nullish(),
+  company: z.object({
+    $: z.object({ id: z.string(), anonymous: z.string() }),
+    description: z.string().nullish(),
+    name: z.string().nullish(),
+  }),
+  workplace: z.object({
+    locations: z.object({
+      location: z.union([ZCleverConnectjobJobLocation, z.array(ZCleverConnectjobJobLocation)]),
     }),
-    workplace: z.object({
-      locations: z.object({
-        location: z.union([ZCleverConnectjobJobLocation, z.array(ZCleverConnectjobJobLocation)]),
-      }),
-      remote: z
-        .object({
+    remote: z
+      .object({
+        _: z.string(),
+        $: z.object({ code: z.string() }),
+      })
+      .nullish(),
+  }),
+  contract: z.object({
+    types: z.object({
+      type: z.union([
+        z.object({
           _: z.string(),
           $: z.object({ code: z.string() }),
-        })
-        .nullish(),
-    }),
-    contract: z.object({
-      types: z.object({
-        type: z.union([
+        }),
+        z.array(
           z.object({
             _: z.string(),
             $: z.object({ code: z.string() }),
-          }),
+          })
+        ),
+      ]),
+    }),
+    length: z
+      .object({
+        _: z.string(),
+        $: z.object({ value: z.string(), unit: z.string() }),
+      })
+      .nullish(),
+    startDate: z.string().nullish(),
+  }),
+  workSchedule: z
+    .object({
+      types: z.object({
+        type: z.union([
           z.array(
             z.object({
               _: z.string(),
               $: z.object({ code: z.string() }),
             })
           ),
+          z.object({
+            _: z.string(),
+            $: z.object({ code: z.string() }),
+          }),
         ]),
       }),
-      length: z
+    })
+    .nullish(),
+  benefits: z
+    .union([
+      z.object({
+        salary: z
+          .object({
+            _: z.string(),
+            $: z
+              .object({
+                lowEnd: z.string().optional(),
+                currency: z.string().optional(),
+                period: z.string().optional(),
+              })
+              .optional(),
+          })
+          .nullish(),
+        description: z.string().nullish(),
+      }),
+      z.string(),
+    ])
+    .nullish(),
+  profile: z
+    .object({
+      description: z.string().nullish(),
+      degrees: z
         .object({
-          _: z.string(),
-          $: z.object({ value: z.string(), unit: z.string() }),
-        })
-        .nullish(),
-      startDate: z.string().nullish(),
-    }),
-    workSchedule: z
-      .object({
-        types: z.object({
-          type: z.union([
+          degree: z.union([
+            z.object({
+              _: z.string(),
+              $: z.object({ code: z.string() }),
+            }),
             z.array(
               z.object({
                 _: z.string(),
                 $: z.object({ code: z.string() }),
               })
             ),
+          ]),
+        })
+        .nullish(),
+      experienceLevels: z
+        .object({
+          experienceLevel: z.union([
             z.object({
               _: z.string(),
               $: z.object({ code: z.string() }),
             }),
+            z.array(
+              z.object({
+                _: z.string(),
+                $: z.object({ code: z.string() }),
+              })
+            ),
           ]),
-        }),
-      })
-      .nullish(),
-    benefits: z
-      .union([
-        z.object({
-          salary: z
-            .object({
-              _: z.string(),
-              $: z
-                .object({
-                  lowEnd: z.string().optional(),
-                  currency: z.string().optional(),
-                  period: z.string().optional(),
-                })
-                .optional(),
-            })
-            .nullish(),
-          description: z.string().nullish(),
-        }),
-        z.string(),
-      ])
-      .nullish(),
-    profile: z
-      .object({
-        description: z.string().nullish(),
-        degrees: z
-          .object({
-            degree: z.union([
-              z.object({
-                _: z.string(),
-                $: z.object({ code: z.string() }),
-              }),
-              z.array(
-                z.object({
-                  _: z.string(),
-                  $: z.object({ code: z.string() }),
-                })
-              ),
-            ]),
-          })
-          .nullish(),
-        experienceLevels: z
-          .object({
-            experienceLevel: z.union([
-              z.object({
-                _: z.string(),
-                $: z.object({ code: z.string() }),
-              }),
-              z.array(
-                z.object({
-                  _: z.string(),
-                  $: z.object({ code: z.string() }),
-                })
-              ),
-            ]),
-          })
-          .nullish(),
-      })
-      .nullable(),
-  })
-  .passthrough()
+        })
+        .nullish(),
+    })
+    .nullable(),
+})
 
 export type ICleverConnectJob = z.output<typeof ZCleverConnectJob>
 

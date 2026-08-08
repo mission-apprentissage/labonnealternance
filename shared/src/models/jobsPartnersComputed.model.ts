@@ -1,8 +1,7 @@
 import { z } from "zod"
-import { zObjectId } from "zod-mongodb-schema"
-
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
 import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
 // Ces partenaires sont exclus des processus de classification et de blacklistage.
@@ -123,8 +122,8 @@ export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({
   offer_creation: true,
   offer_expiration: true,
 }).extend({
-  offer_creation: z.string().datetime(),
-  offer_expiration: z.string().datetime(),
+  offer_creation: z.iso.datetime(),
+  offer_expiration: z.iso.datetime(),
 })
 
 export type IComputedJobsPartnersWrite = z.output<typeof ZComputedJobsPartnersWrite>

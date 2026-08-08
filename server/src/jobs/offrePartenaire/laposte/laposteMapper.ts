@@ -8,37 +8,35 @@ import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-export const ZLaposteJob = z
-  .object({
-    "intitule-du-poste": z.string(),
-    reference: z.string(),
-    "date-de-mise-a-jour": z.string().nullable(),
-    "type-de-contrat": z.string(),
-    "duree-du-contrat": z.string().nullable(),
-    company: z.string(),
-    "region-du-poste": z.string(),
-    "departement-du-poste": z.string().nullable().describe("ex: Var (83)"),
-    "localisation-du-poste": z.string().describe("ville"),
-    localite: z.string().nullable().describe("ex : 83126 LA SEYNE SUR MER"),
-    longitude: z.coerce.number(),
-    latitude: z.coerce.number(),
-    contexte: z.string().nullable().describe("description"),
-    filiere: z.string().describe("ex : Distribution / Livraison<"),
-    metier: z.string().nullable().describe("ex: Responsable collecte distribution"),
-    "fiche-metier": z.string().nullable().describe("slug à coller après https://www.laposterecrute.fr ex: /fichemetier/responsable-collecte-distribution"),
-    "description-de-la-mission": z.string().describe("description en CDATA"),
-    "profil-recherche": z.string().describe("description"),
-    "formation-et-experience": z.string().describe("description en CDATA"),
-    "niveau-de-formation-requis": z.string().describe("ex: Bac+3"),
-    "url-de-l-offre": z.string().describe("lien vers l'offre"),
-    "nombre-d-annees-d-experience-total": z.string().describe("ex: 0-1 an"),
-    "remuneration-brute-annuelle": z.string().describe("0 peut être présent"),
-    "temps-de-travail-hebdomadaire": z.string().nullable().describe("ex: 35"),
-    teletravail: z.string().nullable(),
-    Broadbean: z.string().nullable(),
-    "profil-candidat": z.string().describe("description en CDATA"),
-  })
-  .passthrough()
+export const ZLaposteJob = z.looseObject({
+  "intitule-du-poste": z.string(),
+  reference: z.string(),
+  "date-de-mise-a-jour": z.string().nullable(),
+  "type-de-contrat": z.string(),
+  "duree-du-contrat": z.string().nullable(),
+  company: z.string(),
+  "region-du-poste": z.string(),
+  "departement-du-poste": z.string().nullable().describe("ex: Var (83)"),
+  "localisation-du-poste": z.string().describe("ville"),
+  localite: z.string().nullable().describe("ex : 83126 LA SEYNE SUR MER"),
+  longitude: z.coerce.number<number>(),
+  latitude: z.coerce.number<number>(),
+  contexte: z.string().nullable().describe("description"),
+  filiere: z.string().describe("ex : Distribution / Livraison<"),
+  metier: z.string().nullable().describe("ex: Responsable collecte distribution"),
+  "fiche-metier": z.string().nullable().describe("slug à coller après https://www.laposterecrute.fr ex: /fichemetier/responsable-collecte-distribution"),
+  "description-de-la-mission": z.string().describe("description en CDATA"),
+  "profil-recherche": z.string().describe("description"),
+  "formation-et-experience": z.string().describe("description en CDATA"),
+  "niveau-de-formation-requis": z.string().describe("ex: Bac+3"),
+  "url-de-l-offre": z.string().describe("lien vers l'offre"),
+  "nombre-d-annees-d-experience-total": z.string().describe("ex: 0-1 an"),
+  "remuneration-brute-annuelle": z.string().describe("0 peut être présent"),
+  "temps-de-travail-hebdomadaire": z.string().nullable().describe("ex: 35"),
+  teletravail: z.string().nullable(),
+  Broadbean: z.string().nullable(),
+  "profil-candidat": z.string().describe("description en CDATA"),
+})
 
 export type ILaposteJob = z.output<typeof ZLaposteJob>
 

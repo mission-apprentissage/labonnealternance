@@ -34,7 +34,7 @@ const ZRechercheForm = z.object({
 
 export type IRechercheForm = z.output<typeof ZRechercheForm>
 
-const validate = (zodSchema: z.AnyZodObject) => (values: IRechercheForm) => {
+const validate = (zodSchema: z.ZodObject<any>) => (values: IRechercheForm) => {
   const errors: FormikErrors<IRechercheForm> = {}
   const result = zodSchema.safeParse(values)
   if (!result.success) {

@@ -4,14 +4,16 @@ import { z } from "../zodWithOpenApi.js"
 
 export function setupZodErrorMap() {
   // custom error map to translate zod errors to french
-  const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
-    if (issue.code === z.ZodIssueCode.invalid_type) {
-      return { message: `${capitalize(issue.expected)} attendu` }
-    } else if (issue.code === z.ZodIssueCode.custom) {
-      return { message: `${capitalize(issue.path.join("."))}: ${issue.message}` }
-    }
-
-    return { message: ctx.defaultError }
-  }
-  z.setErrorMap(customErrorMap)
+  z.config({
+    customError: (iss) => {
+      if (iss.code === "invalid_type") {
+        return `${capitalize(iss.expected)} attendu`
+      } else if (iss.code === "custom") {
+        return `${capitalize((iss.path ?? []).join("."))}: ${iss.message}`
+      }
+      // returning undefined defers to the next error map in the precedence chain
+      // (ultimately Zod's own default message), matching the old `ctx.defaultError` fallback.
+      return undefined
+    },
+  })
 }

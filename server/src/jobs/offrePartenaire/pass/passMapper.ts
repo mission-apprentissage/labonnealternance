@@ -9,30 +9,26 @@ import { z } from "zod"
 import { jsonToXml } from "@/common/utils/jsonToXml"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-export const ZPassJob = z
-  .object({
-    title: z.object({
-      a: z
-        .object({
-          _: z.string().nullish(),
-        })
-        .passthrough(),
+export const ZPassJob = z.looseObject({
+  title: z.object({
+    a: z.looseObject({
+      _: z.string().nullish(),
     }),
-    link: z.string().nullish(),
-    description: z.any().nullish(),
-    author: z.string().nullish(),
-    pubDate: z.string().nullish(),
-    "dc:identifier": z.string(),
-    "dc:description": z.string().nullish(),
-    "dc:publisher": z.string().nullish(),
-    "dc:contributor": z.string().nullish(),
-    "dc:date": z.string().nullish(),
-    "dc:type": z.string().nullish(),
-    "dc:format": z.string().nullish(),
-    "dc:coverage": z.string().nullish(),
-    "dc:creator": z.string().nullish().or(z.array(z.string().nullish())),
-  })
-  .passthrough()
+  }),
+  link: z.string().nullish(),
+  description: z.any().nullish(),
+  author: z.string().nullish(),
+  pubDate: z.string().nullish(),
+  "dc:identifier": z.string(),
+  "dc:description": z.string().nullish(),
+  "dc:publisher": z.string().nullish(),
+  "dc:contributor": z.string().nullish(),
+  "dc:date": z.string().nullish(),
+  "dc:type": z.string().nullish(),
+  "dc:format": z.string().nullish(),
+  "dc:coverage": z.string().nullish(),
+  "dc:creator": z.string().nullish().or(z.array(z.string().nullish())),
+})
 
 export type IPassJob = z.output<typeof ZPassJob>
 
@@ -57,7 +53,7 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
     const trimmedEmail = parsedEmail?.trim() || null
     const trimmedPhone = parsedPhone?.trim() || null
 
-    if (trimmedEmail && z.string().email().safeParse(trimmedEmail).success) {
+    if (trimmedEmail && z.email().safeParse(trimmedEmail).success) {
       email = trimmedEmail
     }
 

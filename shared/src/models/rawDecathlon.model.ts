@@ -4,12 +4,10 @@ import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
 export default {
-  zod: z
-    .object({
-      _id: zObjectId,
-      createdAt: z.date(),
-    })
-    .passthrough(),
+  zod: z.looseObject({
+    _id: zObjectId,
+    createdAt: z.date(),
+  }),
   indexes: [],
   collectionName: "raw_decathlon",
   authorizeAdditionalProperties: true,
