@@ -4,7 +4,7 @@ import { parseEnum } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 
 import { IntentionPage } from "@/components/IntentionPage/IntentionPage"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 export default function FormulaireIntentionPage() {
   const { token, id, company_recruitment_intention } = useSearchParamsRecord()

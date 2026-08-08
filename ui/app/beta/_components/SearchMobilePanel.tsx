@@ -5,8 +5,8 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import type { ReactNode } from "react"
 
-import { useDialogA11y } from "../_hooks/useDialogA11y"
-import { useLockBodyScroll } from "../_hooks/useLockBodyScroll"
+import { useDialogA11y } from "../_hooks/use-dialog-a11y"
+import { useLockBodyScroll } from "../_hooks/use-lock-body-scroll"
 
 interface SearchMobilePanelProps {
   /** Sans titre : header réduit au bouton « Fermer » aligné à droite (modale de la home). */

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import ListeOffres from "@/app/(espace-pro)/espace-pro/(connected)/_components/ListeOffres"
-import { getSession } from "@/utils/getSession"
+import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {

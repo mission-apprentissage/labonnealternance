@@ -1,7 +1,7 @@
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { useMemo } from "react"
 import type { IUserRecruteurPublic } from "shared"
-import { getDepotCtaHref } from "@/services/getDepotCtaHref"
+import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
 import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"

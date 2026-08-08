@@ -2,7 +2,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Typography } from "@mui/material"
 import { useCallback } from "react"
 
-import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-navigate-to-recherche-page"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
 import RechercheCDICDD from "@/components/SearchForTrainingsAndJobs/components/rechercheCDDCDI"

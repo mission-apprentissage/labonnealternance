@@ -10,8 +10,8 @@ import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import WidgetCandidatureLba from "@/components/ItemDetail/CandidatureLba/WidgetCandidatureLba"
 import { WidgetPostulerError } from "@/components/ItemDetail/CandidatureLba/WidgetPostulerError"
-import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
-import fetchPartnerJobDetails from "@/services/fetchPartnerJobDetails"
+import fetchLbaJobDetails from "@/services/fetch-lba-job-details"
+import fetchPartnerJobDetails from "@/services/fetch-partner-job-details"
 
 export default function WidgetPostuler() {
   const searchParams = useSearchParams()

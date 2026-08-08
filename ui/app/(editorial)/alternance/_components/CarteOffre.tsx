@@ -6,7 +6,7 @@ import { CardStyling } from "@/app/(candidat)/(recherche)/recherche/_components/
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { publicConfig } from "@/config.public"
-import { getDaysSinceDate } from "@/utils/dateUtils"
+import { getDaysSinceDate } from "@/utils/date-utils"
 
 const CarteOffre = ({ card, utmParams }) => {
   return (

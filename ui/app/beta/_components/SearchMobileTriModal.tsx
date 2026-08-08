@@ -6,8 +6,8 @@ import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box } from "@mui/material"
 import { useState } from "react"
 
-import { useDialogA11y } from "../_hooks/useDialogA11y"
-import { useLockBodyScroll } from "../_hooks/useLockBodyScroll"
+import { useDialogA11y } from "../_hooks/use-dialog-a11y"
+import { useLockBodyScroll } from "../_hooks/use-lock-body-scroll"
 import type { ISearchPageParams, SortOption } from "../_utils/search.params.utils"
 import { FORMATION_SORTS, SORT_LABELS } from "./SearchSortSelect"
 

@@ -4,7 +4,7 @@ import Image from "next/image"
 import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 import { UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { getCompanyGoogleSearchLink } from "./getCompanyGoogleSearchLink"
+import { getCompanyGoogleSearchLink } from "./get-company-google-search-link"
 
 export default function ItemGoogleSearchLink({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson }) {
   return (

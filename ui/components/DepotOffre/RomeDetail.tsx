@@ -6,7 +6,7 @@ import { useState } from "react"
 import type { IReferentielRomeForJobJson } from "shared"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
-import { classNames } from "@/utils/classNames"
+import { classNames } from "@/utils/class-names"
 
 export type RomeCompetenceKey = "savoir_etre_professionnel" | "savoir_faire" | "savoirs"
 

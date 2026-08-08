@@ -6,7 +6,7 @@ import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteu
 import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/_params"
 import { z } from "zod"
 
-import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
 import { PAGES } from "@/utils/routes.utils"
 
 const zIdeaType = z.enum(LBA_ITEM_TYPE_OLD)

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { createContext, useContext, useState } from "react"
-import type { OutputSimulation } from "@/services/simulateurAlternant"
+import type { OutputSimulation } from "@/services/simulateur-alternant"
 
 type SimulateurContextType = {
   simulation: OutputSimulation | null

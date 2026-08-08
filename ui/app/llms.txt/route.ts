@@ -1,4 +1,4 @@
-import { generateLlmsTxt } from "@/services/generateLlmsTxt"
+import { generateLlmsTxt } from "@/services/generate-llms-txt"
 
 export async function GET(request: Request) {
   const llmsTxt = generateLlmsTxt(request)

@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react"
 
-import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
 
 export const NEW_SEARCH_OPTIN_KEY = "lba-new-search-optin"
 

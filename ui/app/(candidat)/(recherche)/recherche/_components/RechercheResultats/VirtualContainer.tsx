@@ -7,7 +7,7 @@ import type { Virtualizer } from "@tanstack/react-virtual"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import type { RefObject } from "react"
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { scrollToVirtualItem } from "@/app/(candidat)/(recherche)/recherche/_utils/scrollToVirtualItem"
+import { scrollToVirtualItem } from "@/app/(candidat)/(recherche)/recherche/_utils/scroll-to-virtual-item"
 
 type VirtualElement = { height?: number; render: () => React.ReactNode; onRender?: () => void }
 

@@ -16,7 +16,7 @@ import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
 import { useToast } from "@/app/hooks/useToast"
-import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
+import { useUserPermissionsActions } from "@/common/hooks/use-user-permissions-actions"
 import { createSuperUser, updateUser } from "@/utils/api"
 import { ApiError, apiDelete } from "@/utils/api.utils"
 

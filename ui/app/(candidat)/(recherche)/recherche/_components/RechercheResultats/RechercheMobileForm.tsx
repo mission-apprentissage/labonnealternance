@@ -10,10 +10,10 @@ import { RechercheRayonSelectFormik } from "@/app/(candidat)/(recherche)/recherc
 import { RechercheResultTypeCheckboxFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheResultTypeCheckbox"
 import { RechercheSubmitButton } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheSubmitButton"
 import { RechercheTypesEmploiSelectFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheTypeEmploiSelect"
-import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
-import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-navigate-to-recherche-page"
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
 
 export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)

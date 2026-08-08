@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
-import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
 
 import type { QSource, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, DEFAULT_SEARCH_MODE } from "../_utils/search.params.utils"

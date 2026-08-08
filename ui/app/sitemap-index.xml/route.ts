@@ -1,6 +1,6 @@
 import { publicConfig } from "@/config.public"
-import { mainSitemapLastModificationDate } from "@/services/generateMainSitemap"
-import { getHostFromHeader } from "@/utils/requestUtils"
+import { mainSitemapLastModificationDate } from "@/services/generate-main-sitemap"
+import { getHostFromHeader } from "@/utils/request-utils"
 
 export async function GET(request: Request) {
   const sitemap = await generateSiteMap(request)

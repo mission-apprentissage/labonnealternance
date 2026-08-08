@@ -2,13 +2,13 @@ import { useMutation } from "@tanstack/react-query"
 import { useContext } from "react"
 import type { IApplicationApiPrivate, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
-import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
+import { useLocalStorage } from "@/app/hooks/use-local-storage"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { apiPost } from "@/utils/api.utils"
-import { sessionStorageSet } from "@/utils/localStorage"
-import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
-import type { IApplicationSchemaInitValues } from "./getSchema"
+import { sessionStorageSet } from "@/utils/local-storage"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
+import type { IApplicationSchemaInitValues } from "./get-schema"
 
 export const useStoredApplicationDate = (item: ILbaItem) => {
   return useLocalStorage<number>(`application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`)
@@ -71,7 +71,7 @@ export const useSubmitCandidature = (
   const { storedValue: applicationDateTimestamp, setLocalStorage: setApplicationDate } = useStoredApplicationDate(LbaJob)
 
   const { isPending, error, isSuccess, isError, mutate } = useMutation({
-    mutationKey: ["submitCandidature", LbaJob.id],
+    mutationKey: ["submit-candidature", LbaJob.id],
     mutationFn: submitCandidature,
     onSuccess: (_, variables) => {
       setApplicationDate(Date.now())

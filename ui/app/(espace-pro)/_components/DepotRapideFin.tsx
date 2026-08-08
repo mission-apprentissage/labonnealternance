@@ -17,7 +17,7 @@ import { LoadingEmptySpace } from "@/components/espace_pro"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { getUserStatus, getUserStatusByToken, sendValidationLink } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 const ZComponentProps = z.strictObject({
   jobId: z.string(),

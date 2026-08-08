@@ -1,18 +1,18 @@
 import { describe, expect, it, vi } from "vitest"
 
-vi.mock("@/utils/getStaticData", () => ({
+vi.mock("@/utils/get-static-data", () => ({
   getStaticMetiers: () => [{ name: "Développeur web", slug: "developpeur-web", romes: ["M1805"] }],
 }))
 
-import { generateLlmsTxt } from "./generateLlmsTxt"
-import { generateMainSitemap } from "./generateMainSitemap"
+import { generateLlmsTxt } from "./generate-llms-txt"
+import { generateMainSitemap } from "./generate-main-sitemap"
 
 const host = "labonnealternance.apprentissage.beta.gouv.fr"
 const request = {
   headers: { get: (name: string) => (name === "host" ? host : null) },
 } as unknown as Request
 
-describe("generateLlmsTxt", () => {
+describe("generate-llms-txt", () => {
   const llmsTxt = generateLlmsTxt(request)
 
   it("commence par le H1 et le blockquote de présentation (spec llmstxt.org)", () => {

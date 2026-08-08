@@ -2,7 +2,7 @@
 
 import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
 import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
-import { searchAddress } from "@/services/baseAdresse"
+import { searchAddress } from "@/services/base-adresse"
 
 export async function fetchLieuOptions(query: string): Promise<IRechercheForm["lieu"][]> {
   const data = await searchAddress(query)

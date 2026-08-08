@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { classNames } from "@/utils/classNames"
+import { classNames } from "@/utils/class-names"
 import { PAGES } from "@/utils/routes.utils"
 import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 

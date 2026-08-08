@@ -5,7 +5,7 @@ import { useMemo } from "react"
 import { useSwipeable } from "react-swipeable"
 
 import { buildHitDetailUrl, parseSearchPageParams } from "../_utils/search.params.utils"
-import { useSearchResults } from "./useSearchResults"
+import { useSearchResults } from "./use-search-results"
 
 export interface IBetaDetailNavigation {
   swipeHandlers: ReturnType<typeof useSwipeable>

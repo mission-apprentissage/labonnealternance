@@ -1,5 +1,5 @@
-import { getMainSitemapPageGroups } from "@/services/generateMainSitemap"
-import { getHostFromHeader } from "@/utils/requestUtils"
+import { getMainSitemapPageGroups } from "@/services/generate-main-sitemap"
+import { getHostFromHeader } from "@/utils/request-utils"
 
 /**
  * Génère le contenu du fichier /llms.txt (standard llmstxt.org) : un index Markdown destiné aux LLMs.

@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useRouter } from "next/navigation"
 
-import { useNewSearchOptIn } from "../_hooks/useNewSearchOptIn"
+import { useNewSearchOptIn } from "../_hooks/use-new-search-opt-in"
 
 /**
  * Encart d'invitation au nouveau moteur (home + page de résultats legacy) : box à fond bleu

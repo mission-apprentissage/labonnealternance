@@ -1,7 +1,7 @@
 "use client"
 
 import Button from "@codegouvfr/react-dsfr/Button"
-import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
 
 type SearchOrigin = "page_ville" | "page_metier"
 

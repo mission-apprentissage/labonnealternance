@@ -8,7 +8,7 @@ import { Box } from "@mui/material"
 import type { ReactNode } from "react"
 import { useMemo, useRef } from "react"
 
-import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { SearchChipOptionRow, SearchFilterChip } from "./SearchFilterChip"

@@ -2,7 +2,7 @@
 
 import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { usePathname } from "next/navigation"
-import { useNewSearchOptIn } from "@/app/beta/_hooks/useNewSearchOptIn"
+import { useNewSearchOptIn } from "@/app/beta/_hooks/use-new-search-opt-in"
 import { PAGES } from "@/utils/routes.utils"
 
 type NavLink = {

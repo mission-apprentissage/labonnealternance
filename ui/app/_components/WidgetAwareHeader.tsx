@@ -1,7 +1,7 @@
 "use client"
 
 import { PublicHeaderStatic } from "@/app/_components/PublicHeader"
-import { useIsWidget } from "@/app/hooks/useIsWidget"
+import { useIsWidget } from "@/app/hooks/use-is-widget"
 
 /**
  * Affiche le header public LBA, sauf en mode widget (page embarquée en iframe),

@@ -6,7 +6,7 @@ import ClotureRecrutementForm, { type IClotureRecrutementPayload } from "@/app/(
 import { useToast } from "@/app/hooks/useToast"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { cancelOffreFromAdmin } from "@/utils/api"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
 export interface ConfirmationSuppressionOffreProps {
   isOpen: boolean
