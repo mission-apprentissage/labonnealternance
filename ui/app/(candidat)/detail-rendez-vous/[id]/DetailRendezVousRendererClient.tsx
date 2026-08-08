@@ -12,7 +12,7 @@ import { CfaCandidatInformationAnswered } from "@/components/espace_pro/CfaCandi
 import { CfaCandidatInformationForm } from "@/components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationForm"
 import { CfaCandidatInformationOther } from "@/components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationOther"
 import { CfaCandidatInformationUnreachable } from "@/components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationUnreachable"
-import { RdvReasons } from "@/components/RDV/RdvReasons"
+import { RdvReasons } from "@/components/RDV/rdv-reasons"
 import { apiPost } from "@/utils/api.utils"
 
 type State = "initial" | "sending" | "answered" | "other" | "unreachable" | "error"

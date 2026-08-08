@@ -3,7 +3,7 @@ import { MAX_SEARCH_ROMES_PRIVATE, parseEnum, typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import type { ITypeEmploi } from "shared/constants/recruteur"
 import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
-import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/_params"
+import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/params"
 import { z } from "zod"
 
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
