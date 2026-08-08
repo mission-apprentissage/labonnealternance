@@ -3,14 +3,14 @@ import nock from "nock"
 import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
 import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 import { describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { TJobClassification } from "@/services/cache-classification.service"
 import { getClassificationFromLab } from "@/services/cache-classification.service"
 import { nockLabClassification } from "./classification.client.fixture"
 
 useMongo()
 
-vi.mock("@/common/utils/sentryUtils")
+vi.mock("@/common/utils/sentry-utils")
 
 describe("getLabClassification - get batch classification", () => {
   const jobFixture = generateJobsPartnersFull({

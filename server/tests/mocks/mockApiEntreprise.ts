@@ -1,5 +1,5 @@
 import nock from "nock"
-import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/api-entreprise.client.fixture"
 
 export const mockApiEntreprise = {
   infosEntreprise() {

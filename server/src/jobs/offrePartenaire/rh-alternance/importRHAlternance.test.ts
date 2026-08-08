@@ -2,7 +2,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import omit from "lodash-es/omit"
 import { generateRawRHAlternanceJobFixture } from "shared/fixtures/rawRHAlternanceJob.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { rawRhAlternanceToComputedMapper } from "./importRHAlternance"
 
 describe("import RH Alternance", () => {

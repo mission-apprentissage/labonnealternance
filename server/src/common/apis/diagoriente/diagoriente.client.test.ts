@@ -8,7 +8,7 @@ import { nockDiagorienteAccessToken, nockDiagorienteRomeClassifier } from "./dia
 
 useMongo()
 
-vi.mock("@/common/utils/sentryUtils")
+vi.mock("@/common/utils/sentry-utils")
 
 describe("getDiagorienteRomeClassifierPredictions", () => {
   const payload = [{ title: "Software Engineer", id: "1", sector: "sector", description: "Software Engineer" }]

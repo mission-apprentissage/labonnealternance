@@ -5,7 +5,7 @@ import GEIQ_WHITELIST from "shared/constants/geiq"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { blockJobsPartnersFromCfaList, getBlockedCfaMention } from "./blockJobsPartnersFromCfaList"
 
 describe("blockJobsPartnersFromCfaListTask", () => {

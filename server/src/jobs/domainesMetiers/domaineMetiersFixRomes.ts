@@ -1,6 +1,6 @@
 import type { IDomainesMetiers } from "shared"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { domaineMetierSimpleToDomaineMetier, domaineMetierToDomaineMetierSimple } from "@/services/domainesmetiers.service"
 
 export async function ajoutRomesADomaineMetiers(romeAjoutsParSousDomaine: Record<string, string[]>, dryRun = true) {

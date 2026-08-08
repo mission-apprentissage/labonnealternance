@@ -12,7 +12,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
 import { buildEstablishmentId } from "@/services/etablissement.service"

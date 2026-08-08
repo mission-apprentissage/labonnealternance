@@ -6,11 +6,11 @@ import { EntrepriseEngagementSources } from "shared/models/referentielEngagement
 import { validateSIRET } from "shared/validators/siretValidator"
 
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { parseCsvContent } from "@/common/utils/fileUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { parseCsvContent } from "@/common/utils/file-utils"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 
 const HANDIMATCH_FT_CSV_PATH = "referentiel/engagementHandicap/siret_handimatch_ft.csv"
 

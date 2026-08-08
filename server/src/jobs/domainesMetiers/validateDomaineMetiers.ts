@@ -1,5 +1,5 @@
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { domaineMetierToDomaineMetierSimple } from "@/services/domainesmetiers.service"
 
 export async function validateDomaineMetiers() {

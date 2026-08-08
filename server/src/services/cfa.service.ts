@@ -2,7 +2,7 @@ import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import type { ICFA } from "shared/models/cfa.model"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const upsertCfa = async (siret: string, cfaFields: Omit<ICFA, "_id" | "createdAt" | "updatedAt" | "siret">): Promise<ICFA> => {
   const now = new Date()

@@ -4,8 +4,8 @@ import dayjs from "shared/helpers/dayjs"
 import { EMAIL_LOG_TYPE } from "shared/models/applicantEmailLog.model"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 import config from "@/config"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 

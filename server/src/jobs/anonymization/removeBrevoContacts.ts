@@ -5,9 +5,9 @@ import type { GetContactDetails } from "@getbrevo/brevo"
 import brevo from "@getbrevo/brevo"
 
 import { logger } from "@/common/logger"
-import { sleep } from "@/common/utils/asyncUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
-import { groupStreamData } from "@/common/utils/streamUtils"
+import { sleep } from "@/common/utils/async-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
+import { groupStreamData } from "@/common/utils/stream-utils"
 import config from "@/config"
 
 const createBrevoContactStream = () => {

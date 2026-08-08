@@ -14,7 +14,7 @@ import type { IReferentielRome } from "shared/models/index"
 import { AccessEntityType, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOB_START_TYPE } from "shared/models/job.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { buildEstablishmentId } from "@/services/etablissement.service"
 
 // Mock mailer service to avoid sending actual emails during tests

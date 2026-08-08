@@ -4,7 +4,7 @@ import { useServer } from "@tests/utils/server.test.utils"
 import { generateEligibleTrainingEstablishmentFixture, generateEligibleTrainingFixture } from "shared/fixtures/appointment.fixture"
 import { generateReferentielOnisepFixture } from "shared/fixtures/referentiel/onisep.fixture"
 import { describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const parcousupToken = await getApiApprentissageTestingToken({
   email: "test@test.fr",

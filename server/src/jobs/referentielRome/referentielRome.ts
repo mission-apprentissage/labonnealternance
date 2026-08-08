@@ -4,8 +4,8 @@ import { ObjectId } from "mongodb"
 import type { IReferentielRome } from "shared/index"
 import * as xml2js from "xml2js"
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const getGenericItem = (genericItem: { libelle: string; items: { item: any | any[] } }) => {
   const tempsItems = !(genericItem.items.item instanceof Array) ? [genericItem.items.item] : genericItem.items.item

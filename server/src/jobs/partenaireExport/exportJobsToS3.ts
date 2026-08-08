@@ -6,8 +6,8 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { logger } from "@/common/logger"
-import { s3WriteStream } from "@/common/utils/awsUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { s3WriteStream } from "@/common/utils/aws-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 interface IGeneratorParams {
   collection: "jobs" | "jobs_partners"

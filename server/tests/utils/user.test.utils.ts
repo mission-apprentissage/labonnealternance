@@ -12,7 +12,7 @@ import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
 import type { ZodType, z } from "zod"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getFakeEmail } from "@/jobs/database/obfuscateCollections"
 import { generateFixture } from "./zodFixtureCompat"
 

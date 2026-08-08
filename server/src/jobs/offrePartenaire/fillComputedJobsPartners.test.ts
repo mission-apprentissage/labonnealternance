@@ -8,7 +8,7 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { entriesToTypedRecord } from "shared/utils/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
 import { detectClassificationJobsPartners } from "./detectClassificationJobsPartners"
 import { fillComputedJobsPartners } from "./fillComputedJobsPartners"

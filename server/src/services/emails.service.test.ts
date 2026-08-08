@@ -5,7 +5,7 @@ import { generateAppointmentFixture, generateEligibleTrainingEstablishmentFixtur
 import { generateUserFixture } from "shared/fixtures/user.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { BrevoBlockedReasons, saveBlacklistEmails } from "@/jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { BlackListOrigins } from "./application.service"
 import { BrevoEventStatus } from "./brevo.service"

@@ -8,10 +8,10 @@ import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { pipeline } from "stream/promises"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
-import { limitStream } from "@/common/utils/streamUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
+import { limitStream } from "@/common/utils/stream-utils"
 
 export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, shouldNotifySlack = true) => {
   logger.info(`import dans jobs_partners commencé`)

@@ -3,7 +3,7 @@ import anonymizedApplicantsModel from "shared/models/anonymizedApplicant.model"
 import anonymizedApplicationsModel from "shared/models/anonymizedApplications.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { anonymizeAppointments } from "./anonymizeAppointments"
 
 const anonimizeUserWithAccount = (_id: ObjectId) =>

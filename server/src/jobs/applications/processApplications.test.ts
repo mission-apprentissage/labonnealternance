@@ -6,7 +6,7 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fi
 import { ApplicationScanStatus } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
 import { processApplications } from "./processApplications"
 
@@ -17,7 +17,7 @@ vi.mock("@/services/clamav.service", () => ({
 }))
 
 // Mock S3 to avoid actual AWS calls
-vi.mock("@/common/utils/awsUtils", () => ({
+vi.mock("@/common/utils/aws-utils", () => ({
   s3WriteString: vi.fn().mockResolvedValue(undefined),
   s3ReadAsString: vi.fn().mockResolvedValue(applicationTestFile),
   s3Delete: vi.fn().mockResolvedValue(undefined),
@@ -32,7 +32,7 @@ vi.mock("@/services/mailer.service", () => ({
 }))
 
 // Mock Slack notifications
-vi.mock("@/common/utils/slackUtils", () => ({
+vi.mock("@/common/utils/slack-utils", () => ({
   notifyToSlack: vi.fn().mockResolvedValue(undefined),
 }))
 

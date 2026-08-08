@@ -10,8 +10,8 @@ import { generateRecruiterRawFixture } from "shared/fixtures/recruiterRaw.fixtur
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { stringToStream } from "@/common/utils/streamUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { stringToStream } from "@/common/utils/stream-utils"
 import { processRecruteursLba } from "./processRecruteursLba"
 
 useMongo()

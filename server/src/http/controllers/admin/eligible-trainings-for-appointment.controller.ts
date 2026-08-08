@@ -1,6 +1,6 @@
 import { badRequest } from "@hapi/boom"
 import { zRoutes } from "shared/index"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 
 /**

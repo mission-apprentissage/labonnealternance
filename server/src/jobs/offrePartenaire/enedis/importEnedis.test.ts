@@ -2,7 +2,7 @@ import fs from "node:fs"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { importEnedisRaw, importEnedisToComputed } from "./importEnedis"
 
 const now = new Date("2025-01-21T04:49:06.000+01:00")

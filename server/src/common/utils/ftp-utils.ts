@@ -1,7 +1,7 @@
 import Ftp from "basic-ftp"
 import { Client as SFTPClient } from "ssh2"
 import { logger } from "@/common/logger"
-import { sentryCaptureException } from "./sentryUtils"
+import { sentryCaptureException } from "./sentry-utils"
 
 class FTPClient {
   client = new Ftp.Client()

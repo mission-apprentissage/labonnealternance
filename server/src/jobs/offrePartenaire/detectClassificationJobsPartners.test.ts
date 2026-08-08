@@ -5,7 +5,7 @@ import GEIQ_WHITELIST from "shared/constants/geiq"
 import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detectClassificationJobsPartners"
 

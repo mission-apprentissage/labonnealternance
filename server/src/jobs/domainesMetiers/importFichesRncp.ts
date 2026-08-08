@@ -1,5 +1,5 @@
 import fs from "node:fs"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 
 export async function importFichesRncp() {

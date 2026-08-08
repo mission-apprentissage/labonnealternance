@@ -4,8 +4,8 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ISearchItem } from "shared/models/searchItems.model"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sanitizeToPlainText } from "@/common/utils/stringUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sanitizeToPlainText } from "@/common/utils/string-utils"
 
 /**
  * Les titres d'offres sont désormais stockés en texte brut (tags strippés, entités décodées —

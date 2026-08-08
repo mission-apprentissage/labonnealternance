@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb"
 import type { IApiCall } from "shared/models/index"
 
-import { getDbCollection } from "./mongodbUtils"
-import { sentryCaptureException } from "./sentryUtils"
+import { getDbCollection } from "./mongodb-utils"
+import { sentryCaptureException } from "./sentry-utils"
 
 export const trackApiCall = async ({
   caller,

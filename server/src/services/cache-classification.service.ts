@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 import type { IClassificationJobsPartners } from "shared/models/cacheClassification.model"
 import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export type TJobClassification = {
   partner_label: string

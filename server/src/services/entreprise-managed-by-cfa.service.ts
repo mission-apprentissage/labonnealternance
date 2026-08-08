@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import type { IEntrepriseManagedByCfa } from "shared"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export async function getEntrepriseManagedByCfa(entrepriseSiret: string, cfaSiret: string): Promise<IEntrepriseManagedByCfa | null> {
   const entreprise = await getDbCollection("entreprises").findOne({ siret: entrepriseSiret })

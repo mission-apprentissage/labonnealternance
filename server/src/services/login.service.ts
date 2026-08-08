@@ -7,7 +7,7 @@ import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const controlUserState = async (user: IUserWithAccount): Promise<{ error: boolean; data?: string }> => {
   const status = getLastStatusEvent(user.status)?.status

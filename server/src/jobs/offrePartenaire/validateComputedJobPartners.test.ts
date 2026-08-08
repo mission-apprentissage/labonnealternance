@@ -3,7 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
 import { generateComputedJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")

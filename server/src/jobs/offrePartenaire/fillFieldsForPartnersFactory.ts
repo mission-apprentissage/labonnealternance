@@ -6,9 +6,9 @@ import type { AnyBulkWriteOperation, Filter } from "mongodb"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { logger as globalLogger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
 /**
  * Fonction permettant de facilement enrichir un computedJobPartner avec de nouvelles données provenant d'une source async

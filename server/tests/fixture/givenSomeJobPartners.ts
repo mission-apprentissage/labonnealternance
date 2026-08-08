@@ -1,7 +1,7 @@
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const givenSomeJobPartners = async (jobs: Partial<IJobsPartnersOfferPrivate>[]) => {
   const finalJobs = jobs.map(generateJobsPartnersOfferPrivate)

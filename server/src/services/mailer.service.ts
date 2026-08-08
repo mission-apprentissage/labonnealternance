@@ -7,7 +7,7 @@ import type { Address } from "nodemailer/lib/mailer"
 import type SMTPTransport from "nodemailer/lib/smtp-transport"
 import nodemailerHtmlToText from "nodemailer-html-to-text"
 import { promisify } from "util"
-import { startSentryPerfRecording } from "@/common/utils/sentryUtils"
+import { startSentryPerfRecording } from "@/common/utils/sentry-utils"
 import config from "@/config"
 
 type Attachment = Exclude<SendMailOptions["attachments"], undefined>[number]

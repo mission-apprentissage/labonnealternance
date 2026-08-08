@@ -6,7 +6,7 @@ import { saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@te
 import { OPCOS_LABEL } from "shared/constants/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () => {
   beforeEach(async () => {

@@ -3,8 +3,8 @@ import fs from "node:fs/promises"
 import type { IDomainesMetiers } from "shared"
 import { removeAccents } from "shared"
 
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const updateRomesForDomainesMetiers = async () => {
   console.info("Début de updateRomesForDomainesMetiers")

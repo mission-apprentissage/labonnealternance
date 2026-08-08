@@ -1,9 +1,9 @@
 import { UserEventType } from "shared"
 
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { sendUserConfirmationEmail } from "@/services/etablissement.service"
 
 export const renvoiMailCreationCompte = async () => {

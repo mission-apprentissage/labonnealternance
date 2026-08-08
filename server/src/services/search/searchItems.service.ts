@@ -7,11 +7,11 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ISearchItem } from "shared/models/searchItems.model"
 import { isGeiqEntreprise } from "shared/services/isGeiqEntreprise"
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
-import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/stringUtils"
+import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/string-utils"
 
 /**
  * Construction et synchronisation des documents `search_items` (index MongoDB Search).

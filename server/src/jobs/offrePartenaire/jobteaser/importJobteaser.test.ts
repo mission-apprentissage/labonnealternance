@@ -3,7 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { omit } from "lodash-es"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { importJobteaserRaw, importJobteaserToComputed } from "./importJobteaser"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")

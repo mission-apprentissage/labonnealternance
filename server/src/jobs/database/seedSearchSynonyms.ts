@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb"
 import path from "path"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const seedSearchSynonyms = async () => {
   const configPath = path.resolve(process.cwd(), "../docs/mongodb/search-synonyms.json")

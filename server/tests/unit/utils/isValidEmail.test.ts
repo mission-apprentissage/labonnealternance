@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { isValidEmail } from "@/common/utils/isValidEmail"
+import { isValidEmail } from "@/common/utils/is-valid-email"
 
 describe("Email", () => {
   it("should be valid", () => {

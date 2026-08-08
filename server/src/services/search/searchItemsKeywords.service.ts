@@ -7,9 +7,9 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ISearchItem } from "shared/models/searchItems.model"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { downloadMistralBatchOutput, getMistralBatchJob, sendMistralMessages, submitMistralBatch } from "@/services/mistralai/mistralai.service"
 

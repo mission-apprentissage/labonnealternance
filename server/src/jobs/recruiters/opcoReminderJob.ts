@@ -3,9 +3,9 @@ import { isEnum } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import mailer from "@/services/mailer.service"
 

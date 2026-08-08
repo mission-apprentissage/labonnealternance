@@ -1,7 +1,7 @@
 import { MAX_SEARCH_ROMES, MAX_SEARCH_ROMES_PRIVATE } from "shared"
 import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
-import { isOriginLocal } from "@/common/utils/isOriginLocal"
-import { regionCodeToDepartmentList } from "@/common/utils/regionInseeCodes"
+import { isOriginLocal } from "@/common/utils/is-origin-local"
+import { regionCodeToDepartmentList } from "@/common/utils/region-insee-codes"
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import type { TFormationSearchQuery, TJobSearchQuery } from "./job-opportunity.service.types"
 

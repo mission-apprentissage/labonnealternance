@@ -3,8 +3,8 @@ import NodeClam from "clamscan"
 import { Readable } from "stream"
 
 import { logger } from "@/common/logger"
-import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils/sentryUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 import config from "@/config"
 
 const isClamavDisabled = config.env === "preview" || config.env === "local"

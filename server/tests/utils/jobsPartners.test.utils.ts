@@ -2,7 +2,7 @@ import { generateComputedJobsPartnersFixture, generateJobsPartnersOfferPrivate }
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export async function createComputedJobPartner(data: Partial<IComputedJobsPartners> = {}) {
   const computedJobPartner = {

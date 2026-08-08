@@ -4,7 +4,7 @@ import { zReferentielCommune } from "shared/models/index"
 import { z } from "zod"
 
 import getApiClient from "@/common/apis/client"
-import { apiRateLimiter } from "@/common/utils/apiUtils"
+import { apiRateLimiter } from "@/common/utils/api-utils"
 
 const zGeoApiCommune = zReferentielCommune.omit({ _id: true })
 

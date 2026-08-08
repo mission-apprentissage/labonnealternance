@@ -1,8 +1,8 @@
 import anonymizedUsersModel from "shared/models/anonymizedUsers.model"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
 /**
  * Anonymize users older than 1 year.

@@ -3,7 +3,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 /**
  * Annule les offres jobs_partners absentes (ou expirées) du flux source correspondant.

@@ -8,7 +8,7 @@ import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.m
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getPairs } from "@/common/utils/array"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { OfferRef } from "./detectDuplicateJobPartners"
 import { checkSimilarity, detectDuplicateJobPartners, isCanonicalForDuplicate } from "./detectDuplicateJobPartners"
 

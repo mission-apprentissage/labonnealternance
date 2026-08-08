@@ -4,7 +4,7 @@ import { saveDbEntity } from "@tests/utils/user.test.utils"
 import type { IFormationCatalogue } from "shared/models/index"
 import { zFormationCatalogueSchema } from "shared/models/index"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 useMongo()
 

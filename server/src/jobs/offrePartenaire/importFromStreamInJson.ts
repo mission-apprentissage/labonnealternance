@@ -5,10 +5,10 @@ import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import type { CollectionName } from "shared/models/models"
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
 export const importFromStreamInJson = async ({
   stream,

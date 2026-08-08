@@ -6,7 +6,7 @@ import { generateCacheInfoSiretForSiret } from "shared/fixtures/cacheInfoSiret.f
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { entriesToTypedRecord } from "shared/utils/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")

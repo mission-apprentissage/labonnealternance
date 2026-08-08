@@ -6,7 +6,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
-import { jsonToXml } from "@/common/utils/jsonToXml"
+import { jsonToXml } from "@/common/utils/json-to-xml"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const ZPassJob = z.looseObject({

@@ -14,7 +14,7 @@ import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.rout
 import type { AccessPermission, AccessResourcePath } from "shared/security/permissions"
 import { assertUnreachable, parseEnum } from "shared/utils/index"
 import type { Primitive } from "type-fest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getApplicantFromDB } from "@/services/applicant.service"
 import { establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/role-management.service"

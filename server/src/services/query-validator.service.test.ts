@@ -6,7 +6,7 @@ vi.mock("./external/api-alternance/certification.service", () => ({
   getRomesFromRncp: vi.fn(),
 }))
 
-vi.mock("@/common/utils/isOriginLocal", () => ({
+vi.mock("@/common/utils/is-origin-local", () => ({
   isOriginLocal: vi.fn(() => true),
 }))
 

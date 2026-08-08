@@ -1,7 +1,7 @@
 import { NIVEAU_DIPLOME_LABEL } from "shared/constants/recruteur"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const LABEL_UPDATES: Array<{ oldLabel: string; newLabel: string }> = [
   { oldLabel: "Cap, autres formations (Infrabac)", newLabel: NIVEAU_DIPLOME_LABEL["3"] },

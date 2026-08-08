@@ -3,9 +3,9 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import * as mongodbUtils from "@/common/utils/mongodbUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import * as sentryUtils from "@/common/utils/sentryUtils"
+import * as mongodbUtils from "@/common/utils/mongodb-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import * as sentryUtils from "@/common/utils/sentry-utils"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 
 useMongo()

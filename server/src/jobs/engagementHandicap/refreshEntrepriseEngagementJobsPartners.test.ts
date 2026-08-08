@@ -4,8 +4,8 @@ import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/api-entreprise.client.fixture"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { refreshEntrepriseEngagementJobsPartners, refreshReferentielEngagementFranceTravail } from "./refreshEntrepriseEngagementJobsPartners"
 
 vi.mock("node:fs/promises", () => ({

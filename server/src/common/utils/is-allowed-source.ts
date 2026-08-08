@@ -1,5 +1,5 @@
 import config from "@/config"
-import { isOriginLocal } from "./isOriginLocal"
+import { isOriginLocal } from "./is-origin-local"
 
 const allowedSources = config.allowedSources
 

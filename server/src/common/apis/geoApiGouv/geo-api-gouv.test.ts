@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { getCommuneParCodeDepartement, getCommuneParCodeInsee, getDepartements } from "./geoApiGouv"
+import { getCommuneParCodeDepartement, getCommuneParCodeInsee, getDepartements } from "./geo-api-gouv"
 
 const paris = {
   centre: {

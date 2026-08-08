@@ -13,12 +13,12 @@ import type { IReferentielRome } from "shared/models/index"
 import { ApplicationScanStatus, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
 import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, removeEmailFromLbaCompanies, sendApplicationV2 } from "./application.service"
 
 // Mock S3 operations to avoid actual AWS calls during tests
-vi.mock("@/common/utils/awsUtils", () => {
+vi.mock("@/common/utils/aws-utils", () => {
   return {
     s3WriteString: vi.fn().mockResolvedValue(undefined),
     s3ReadAsString: vi.fn().mockResolvedValue(applicationTestFile),

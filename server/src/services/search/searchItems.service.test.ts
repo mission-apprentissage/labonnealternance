@@ -6,7 +6,7 @@ import { generateSearchItemFixture } from "shared/fixtures/searchItems.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 import {
   controlSearchItemsDrift,

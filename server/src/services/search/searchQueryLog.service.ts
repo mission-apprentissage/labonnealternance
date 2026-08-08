@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 
 import { normalizeTerm, tokenizeQuery } from "./search.service"
 

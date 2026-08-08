@@ -3,7 +3,7 @@ import { useServer } from "@tests/utils/server.test.utils"
 import { generateSearchItemFixture } from "shared/fixtures/searchItems.fixture"
 import { describe, expect, it } from "vitest"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 describe("search.controller", () => {
   useMongo()

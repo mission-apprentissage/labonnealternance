@@ -5,7 +5,7 @@ import type { Options as CsvParseOptions } from "csv-parse"
 import { parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
 import { __dirname } from "./dirname"
-import { FTPClient } from "./ftpUtils"
+import { FTPClient } from "./ftp-utils"
 
 export const CURRENT_DIR_PATH = __dirname(import.meta.url)
 

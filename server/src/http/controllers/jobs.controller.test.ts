@@ -5,7 +5,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 describe("jobs.controller", () => {
   useMongo()

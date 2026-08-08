@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { ensureInitialization } from "@/common/utils/mongodbUtils"
+import { ensureInitialization } from "@/common/utils/mongodb-utils"
 
 export async function buildMappingRomeRNCP() {
   const results = await ensureInitialization()

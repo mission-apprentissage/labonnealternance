@@ -9,8 +9,8 @@ import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import userWithAccountModel, { ZUserWithAccount } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
-import { getDatabase, getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDatabase, getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
 export const roleManagement360AggregationStages = [
   { $match: { authorized_type: { $in: [AccessEntityType.CFA, AccessEntityType.ENTREPRISE] } } },

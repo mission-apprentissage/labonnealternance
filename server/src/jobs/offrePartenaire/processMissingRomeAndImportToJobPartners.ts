@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { fillLbaUrl } from "./fillLbaUrl"
 import { fillRomeForPartners } from "./fillRomeForPartners"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"

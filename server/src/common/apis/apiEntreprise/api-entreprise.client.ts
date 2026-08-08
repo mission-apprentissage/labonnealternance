@@ -4,7 +4,7 @@ import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model
 import { ZAdresseV3 } from "shared/models/index"
 
 import getApiClient from "@/common/apis/client"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
 
 const client = getApiClient({ timeout: 5000 })

@@ -3,7 +3,7 @@ import { addJob } from "job-processor"
 import type { ICredential } from "shared"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/searchItems.service"
 

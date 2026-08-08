@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb"
 import { referrers } from "shared/constants/referers"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getEmailForRdv } from "@/services/eligible-trainings-for-appointment.service"
 import { findFirstNonBlacklistedEmail } from "@/services/formation.service"
 

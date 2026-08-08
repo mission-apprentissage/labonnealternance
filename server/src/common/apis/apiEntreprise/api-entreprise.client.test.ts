@@ -1,12 +1,12 @@
 import nock from "nock"
 import { describe, expect, it, vi } from "vitest"
 
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 
-import { getEtablissementFromGouvSafe } from "./apiEntreprise.client"
-import { apiEntrepriseEtablissementFixture } from "./apiEntreprise.client.fixture"
+import { getEtablissementFromGouvSafe } from "./api-entreprise.client"
+import { apiEntrepriseEtablissementFixture } from "./api-entreprise.client.fixture"
 
-vi.mock("@/common/utils/sentryUtils")
+vi.mock("@/common/utils/sentry-utils")
 
 const siret = apiEntrepriseEtablissementFixture.dinum.data.siret
 

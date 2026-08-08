@@ -3,7 +3,7 @@ import type { IClassificationLabBatchResponse, IClassificationLabResponse, IClas
 import { ZClassificationLabBatchResponse, ZClassificationLabResponse, ZClassificationLabVersionResponse } from "shared/models/cacheClassification.model"
 
 import getApiClient from "@/common/apis/client"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
 
 const client = getApiClient({ baseURL: config.labonnealternanceLab.baseUrl })

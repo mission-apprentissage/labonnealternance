@@ -1,6 +1,6 @@
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 
 export const exportRecruteursToBrevo = async () => {

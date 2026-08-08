@@ -8,7 +8,7 @@ import { modelDescriptors } from "shared/models/models"
 import { zodToMongoSchema } from "zod-mongodb-schema"
 import { logger } from "@/common/logger"
 import config from "@/config"
-import { sleep } from "./asyncUtils"
+import { sleep } from "./async-utils"
 
 let mongodbClient: MongoClient | null = null
 let mongodbClientState: string | null = null

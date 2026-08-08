@@ -7,7 +7,7 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { buildEstablishmentId } from "./etablissement.service"
 import { getUserRecruteursForManagement } from "./user-recruteur.service"
 

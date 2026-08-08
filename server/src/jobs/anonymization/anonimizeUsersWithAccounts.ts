@@ -4,8 +4,8 @@ import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithA
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
 const anonymize = async () => {
   const fromDate = dayjs().subtract(2, "years").toDate()

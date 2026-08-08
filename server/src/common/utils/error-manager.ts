@@ -2,7 +2,7 @@ import { captureException } from "@sentry/node"
 import type { ZApiError } from "shared/models/index"
 import type { z } from "zod"
 
-import { trackApiCall } from "./sendTrackingEvent"
+import { trackApiCall } from "./send-tracking-event"
 
 export type IApiError = z.input<typeof ZApiError>
 

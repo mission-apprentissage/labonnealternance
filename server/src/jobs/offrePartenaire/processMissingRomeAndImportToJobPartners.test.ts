@@ -4,7 +4,7 @@ import nock from "nock"
 import type { IDiagorienteClassificationResponseSchema } from "shared"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { nockDiagorienteAccessToken, nockDiagorienteRomeClassifier } from "@/common/apis/diagoriente/diagoriente.client.fixture"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { processMissingRomeAndImportToJobPartners } from "./processMissingRomeAndImportToJobPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")

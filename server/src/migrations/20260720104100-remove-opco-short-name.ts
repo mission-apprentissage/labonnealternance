@@ -1,5 +1,5 @@
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const up = async () => {
   logger.info("Removing opco_short_name field from opcos collection")
