@@ -40,7 +40,7 @@ import { getPartnerJobs } from "@/services/partner-job.service"
 import { jobsQueryValidatorPrivate } from "@/services/query-validator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteur-lba.service"
 import { getEntrepriseEngagementFranceTravail } from "@/services/referentiel-engagement-entreprise.service"
-import type { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
+import type { JobOpportunityRequestContext } from "./job-opportunity-request-context"
 
 // TODO : QUICK FIX & TO REFACTO WITH JOBS PARTNER RETURN MODEL
 export const getJobsFromApiPrivate = async ({

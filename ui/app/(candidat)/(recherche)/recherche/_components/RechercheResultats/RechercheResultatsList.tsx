@@ -20,7 +20,7 @@ import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/component
 import { getObjectId } from "@/utils/api"
 import { LbaItemCard } from "./LbaItemCard"
 import { RechercheResultatsFooter } from "./RechercheResultatsFooter"
-import type { ResultCardData } from "./ResultCardData"
+import type { ResultCardData } from "./result-card-data"
 import { Whisper } from "./Whisper"
 
 export function RechercheResultatsList(props: { rechercheParams: IRecherchePageParams; scrollToItem: (item: ResultCardData) => void }) {

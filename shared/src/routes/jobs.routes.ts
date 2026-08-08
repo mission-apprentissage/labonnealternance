@@ -4,10 +4,9 @@ import { extensions } from "../helpers/zodHelpers/zod-primitives.js"
 import { zObjectId } from "../models/common.js"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPartnerJob } from "../models/lba-item.model.js"
 import { ZApiError, ZLbacError } from "../models/lbac-error.model.js"
-
-import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zCallerParam, zDiplomaParam, zInseeParams, zOpcoParams, zRefererHeaders, zRncpsParams, zRomesParams } from "./_params.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
+import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zCallerParam, zDiplomaParam, zInseeParams, zOpcoParams, zRefererHeaders, zRncpsParams, zRomesParams } from "./params.js"
 
 export const zV1JobsRoutes = {
   get: {

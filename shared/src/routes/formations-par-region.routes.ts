@@ -1,10 +1,9 @@
 import { z } from "../helpers/zod-with-open-api.js"
 import { ZLbaItemFormationResult } from "../models/lba-item.model.js"
 import { ZLbacError } from "../models/lbac-error.model.js"
-
-import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders } from "./_params.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
+import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders } from "./params.js"
 
 export const zV1FormationsParRegion = {
   get: {

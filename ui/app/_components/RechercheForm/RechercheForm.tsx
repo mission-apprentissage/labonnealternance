@@ -2,7 +2,7 @@ import { Box } from "@mui/material"
 import type { FormikErrors } from "formik"
 import { Formik } from "formik"
 import { extensions } from "shared/helpers/zodHelpers/zod-primitives"
-import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/_params"
+import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/params"
 import { z } from "zod"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"

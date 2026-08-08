@@ -2,10 +2,9 @@ import { z } from "../helpers/zod-with-open-api.js"
 import { zFormationCatalogueSchema } from "../models/formation.model.js"
 import { ZLbaItemFormation, ZLbaItemFormation2, ZLbaItemFormationResult } from "../models/lba-item.model.js"
 import { ZLbacError } from "../models/lbac-error.model.js"
-
-import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders, zRomesParams } from "./_params.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
+import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders, zRomesParams } from "./params.js"
 
 export const zFormationsRoutes = {
   get: {

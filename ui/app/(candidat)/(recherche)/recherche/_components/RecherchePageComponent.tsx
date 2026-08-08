@@ -19,7 +19,7 @@ import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileF
 import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
 import { RechercheResultatsList } from "./RechercheResultats/RechercheResultatsList"
 import { RechercheTitle } from "./RechercheResultats/RechercheTitle"
-import type { ResultCardData } from "./RechercheResultats/ResultCardData"
+import type { ResultCardData } from "./RechercheResultats/result-card-data"
 import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
 
 /** Hauteur réservée sous le header sticky lors des scrolls programmatiques vers un item. */
