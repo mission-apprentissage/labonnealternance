@@ -2,7 +2,7 @@ import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
 import { getLoggerWithContext, logger } from "@/common/logger"
-import { getDatabase } from "@/common/utils/mongodbUtils"
+import { getDatabase } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/searchItems.service"

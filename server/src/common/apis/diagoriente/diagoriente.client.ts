@@ -5,7 +5,7 @@ import { z } from "zod"
 
 import getApiClient from "@/common/apis/client"
 import { logger } from "@/common/logger"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
 
 export const MAX_DIAGORIENTE_PAYLOAD_SIZE = 100

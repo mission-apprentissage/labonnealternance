@@ -1,6 +1,6 @@
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { sanitizeTextField } from "@/common/utils/string-utils"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 

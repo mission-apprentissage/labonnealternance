@@ -1,7 +1,7 @@
 import { distance as stringDistance } from "fastest-levenshtein"
 import type { ObjectId } from "mongodb"
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 type AggregateResult = {
   _id: ObjectId

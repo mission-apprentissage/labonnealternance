@@ -1,7 +1,7 @@
 import fs from "node:fs/promises"
 import z from "zod"
-import { parseCsvContent } from "@/common/utils/fileUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { parseCsvContent } from "@/common/utils/file-utils"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 
 const ZAgenceCEGID = z.object({
   ClientCode: z.string(),

@@ -3,7 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { blockJobsPartnersFromFluxCompanyList } from "./blockJobsPartnersFromFluxCompanyList"
 
 describe("blockJobsPartnersFromFluxCompanyList", () => {

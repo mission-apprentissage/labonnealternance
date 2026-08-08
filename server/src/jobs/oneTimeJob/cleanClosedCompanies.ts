@@ -6,9 +6,9 @@ import { RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recru
 import { JOB_STATUS } from "shared/models/job.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 interface CsvRow {
   id: string

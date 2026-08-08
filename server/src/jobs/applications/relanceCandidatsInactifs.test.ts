@@ -5,13 +5,13 @@ import { generateApplicantFixture, generateApplicationFixture } from "shared/fix
 import { EMAIL_LOG_TYPE } from "shared/models/applicantEmailLog.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 
 import { buildRelanceSearchUrl, relanceCandidatsInactifs } from "./relanceCandidatsInactifs"
 
 vi.mock("@/services/brevo.service", () => ({ uploadContactListToBrevo: vi.fn().mockResolvedValue(undefined) }))
-vi.mock("@/common/utils/slackUtils", () => ({ notifyToSlack: vi.fn().mockResolvedValue(undefined) }))
+vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolvedValue(undefined) }))
 
 const BASE_URL = "https://labonnealternance.apprentissage.beta.gouv.fr"
 

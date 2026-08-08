@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { isNormalizedStringInSetOrArray, removeLineBreaks, sanitizeTextField, sanitizeToPlainText } from "./stringUtils"
+import { isNormalizedStringInSetOrArray, removeLineBreaks, sanitizeTextField, sanitizeToPlainText } from "./string-utils"
 
 describe("sanitizeToPlainText — texte brut (rendu children React, jamais innerHTML)", () => {
   it("décode les entités HTML résiduelles", () => {

@@ -3,7 +3,7 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IOpco } from "shared/models/opco.model"
 import { parseEnum } from "shared/utils/index"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 /**
  * @description get opco from database collection OPCOS

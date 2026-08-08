@@ -1,8 +1,8 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
 
-import { getSourceFromCookies } from "@/common/utils/httpUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getSourceFromCookies } from "@/common/utils/http-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
 import { generateOffreToken } from "@/services/app-links.service"

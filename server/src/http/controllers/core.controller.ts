@@ -1,7 +1,7 @@
 import { getProcessorHealthcheck } from "job-processor"
 import { zRoutes } from "shared"
 
-import { ensureInitialization, getMongodbClientState } from "@/common/utils/mongodbUtils"
+import { ensureInitialization, getMongodbClientState } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import type { Server } from "@/http/server"
 

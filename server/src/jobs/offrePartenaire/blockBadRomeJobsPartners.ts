@@ -1,6 +1,6 @@
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 
 const blacklistedRomes = ["K2202", "G1605", "I1201", "L1102", "N4104"]

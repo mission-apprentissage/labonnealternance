@@ -1,6 +1,6 @@
 import { badRequest } from "@hapi/boom"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/searchItems.service"
 

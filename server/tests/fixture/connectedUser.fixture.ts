@@ -2,7 +2,7 @@ import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fi
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import type { IRoleManagement, IUserWithAccount } from "shared/models/index"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { createSessionToken } from "@/common/utils/session.service"
 import config from "@/config"
 import { createSession } from "@/services/sessions.service"

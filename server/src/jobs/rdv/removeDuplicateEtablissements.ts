@@ -1,8 +1,8 @@
 import type { IEtablissement } from "shared"
 
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 function findDocumentWithMostFields(documents: Array<Partial<IEtablissement>>): Partial<IEtablissement> | null {
   if (!Array.isArray(documents) || documents.length === 0) {

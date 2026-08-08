@@ -1,4 +1,4 @@
-import { getNormalizedStringInSetOrArray, isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
+import { getNormalizedStringInSetOrArray, isNormalizedStringInSetOrArray } from "@/common/utils/string-utils"
 
 export const cfaCompanyList = [
   "13 EN FORM",

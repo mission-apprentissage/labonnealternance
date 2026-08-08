@@ -5,7 +5,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import type { IJobEtudiantJob } from "@/common/apis/etudiant/etudiant.client"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { sanitizeTextField } from "@/common/utils/string-utils"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 // Seules les offres dont la traduction FR du contrat est cette valeur sont importées (filtre dans processEtudiant)

@@ -4,7 +4,7 @@ import { removeAccents } from "shared"
 import { zObjectId } from "shared/models/common"
 import z from "zod"
 import { deduplicate, deduplicateBy } from "@/common/utils/array"
-import { ensureInitialization, getDbCollection } from "@/common/utils/mongodbUtils"
+import { ensureInitialization, getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const ZDomaineMetierSimple = z.object({
   _id: zObjectId,

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const getEntrepriseEngagementFranceTravail = async (siret: string): Promise<boolean> => {
   // 2025-08-07 : locked on france-travail sources for now

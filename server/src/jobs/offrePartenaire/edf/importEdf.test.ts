@@ -2,7 +2,7 @@ import fs from "node:fs"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { importEdfRaw, importEdfToComputed } from "./importEDF"
 
 const now = new Date("2026-02-01T00:00:00.000Z")

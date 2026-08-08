@@ -1,10 +1,10 @@
 import fs from "node:fs/promises"
 import z from "zod"
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { parseCsvContent } from "@/common/utils/fileUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { parseCsvContent } from "@/common/utils/file-utils"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const getRomeDetailsFromDB = async (romeCode: string) =>
   getDbCollection("referentielromes").findOne(

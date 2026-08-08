@@ -7,7 +7,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getCompanyContactInfo, getRecruteursLbaFromDB, searchLbaCompaniesForAdmin, updateContactInfo } from "./recruteur-lba.service"
 
 useMongo()

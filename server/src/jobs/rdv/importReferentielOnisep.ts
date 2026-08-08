@@ -8,10 +8,10 @@ import { ObjectId } from "mongodb"
 import type { IReferentielOnisep } from "shared/models/index"
 
 import { logger } from "@/common/logger"
-import { parseCsv } from "@/common/utils/fileUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { parseCsv } from "@/common/utils/file-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
 type TCsvRow = {
   "ID formation MA": string

@@ -1,5 +1,5 @@
 import { zRoutes } from "shared/index"
-import { getSourceFromCookies } from "@/common/utils/httpUtils"
+import { getSourceFromCookies } from "@/common/utils/http-utils"
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
 import { sendApplicationV2 } from "@/services/application.service"

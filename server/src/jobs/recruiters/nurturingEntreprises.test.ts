@@ -7,13 +7,13 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { UserEventType } from "shared/models/userWithAccount.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 
 import { nurturingEntreprises } from "./nurturingEntreprises"
 
 vi.mock("@/services/brevo.service", () => ({ uploadContactListToBrevo: vi.fn().mockResolvedValue(undefined) }))
-vi.mock("@/common/utils/slackUtils", () => ({ notifyToSlack: vi.fn().mockResolvedValue(undefined) }))
+vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolvedValue(undefined) }))
 
 // today fixé au 2026-07-16 (Paris) → fenêtre J+330 = offres créées le 2025-08-20
 const TODAY = new Date("2026-07-16T07:00:00Z")

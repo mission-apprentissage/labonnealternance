@@ -7,8 +7,8 @@ import { ObjectId } from "bson"
 import { generateSearchItemFixture } from "shared/fixtures/searchItems.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 import { downloadMistralBatchOutput, getMistralBatchJob, sendMistralMessages, submitMistralBatch } from "@/services/mistralai/mistralai.service"
 
 import {
@@ -28,7 +28,7 @@ vi.mock("@/services/mistralai/mistralai.service", () => ({
   downloadMistralBatchOutput: vi.fn(),
 }))
 
-vi.mock("@/common/utils/slackUtils", () => ({
+vi.mock("@/common/utils/slack-utils", () => ({
   notifyToSlack: vi.fn(),
 }))
 

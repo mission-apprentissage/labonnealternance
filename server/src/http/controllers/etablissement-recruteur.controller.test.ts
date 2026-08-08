@@ -12,9 +12,9 @@ import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixt
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { UserEventType } from "shared/models/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
-import { apiReferentielCatalogueFixture } from "@/common/apis/apiReferentielCatalogue.fixture"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { apiReferentielCatalogueFixture } from "@/common/apis/api-referentiel-catalogue.fixture"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/api-entreprise.client.fixture"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
 
 vi.mock("@/services/mailer.service", () => {

@@ -1,7 +1,7 @@
 import { modelDescriptors } from "shared/models/models"
 import { afterAll, beforeAll, beforeEach } from "vitest"
 
-import { clearAllCollections, closeMongodbConnection, configureDbSchemaValidation, connectToMongodb, createIndexes } from "@/common/utils/mongodbUtils"
+import { clearAllCollections, closeMongodbConnection, configureDbSchemaValidation, connectToMongodb, createIndexes } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 
 export const startAndConnectMongodb = async () => {

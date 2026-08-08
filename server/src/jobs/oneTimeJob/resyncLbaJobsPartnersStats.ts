@@ -3,7 +3,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const BULK_SIZE = 500
 

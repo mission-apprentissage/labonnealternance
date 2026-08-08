@@ -4,7 +4,7 @@ import nock from "nock"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { clichyFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { beforeEach, describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { saveGeolocationInCache } from "@/services/cache-geolocation.service"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 

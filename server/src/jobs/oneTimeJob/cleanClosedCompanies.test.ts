@@ -11,7 +11,7 @@ import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.
 import { JOB_STATUS } from "shared/models/job.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { cleanClosedCompanies } from "./cleanClosedCompanies"
 
 useMongo()

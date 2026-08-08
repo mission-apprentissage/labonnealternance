@@ -4,10 +4,10 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import config from "@/config"
 
-import { FCGetOpcoInfos, FCOpcoToOpcoEnum } from "./franceCompetencesClient"
-import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "./franceCompetencesClient.fixture"
+import { FCGetOpcoInfos, FCOpcoToOpcoEnum } from "./france-competences-client"
+import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "./france-competences-client.fixture"
 
-describe("franceCompetencesClient", () => {
+describe("france-competences-client", () => {
   beforeEach(() => {
     nock.cleanAll()
   })

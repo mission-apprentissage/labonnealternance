@@ -4,7 +4,7 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fi
 import { levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getPartnerJobs } from "./partner-job.service"
 
 useMongo()

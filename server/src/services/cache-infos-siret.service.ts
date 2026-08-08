@@ -3,8 +3,8 @@ import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 import { ZEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 
-import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/api-entreprise.client"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const getSiretInfos = async (siret: string | null | undefined): Promise<BusinessErrorCodes.NON_DIFFUSIBLE | null | IEtablissementGouvData> => {
   if (!siret) {

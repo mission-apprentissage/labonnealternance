@@ -10,7 +10,7 @@ import { modelDescriptors } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import { logger } from "@/common/logger"
-import { getDatabase, getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDatabase, getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { recreateIndexes } from "./recreateIndexes"
 

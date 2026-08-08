@@ -8,7 +8,7 @@ import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { verifyRecruiterEmailInUse } from "./etablissement.service"
 
 useMongo()

@@ -2,14 +2,14 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { searchForFtJobs } from "./franceTravail.client"
-import { generateFtJobFixture, nockFranceTravailOffreSearch, nockFranceTravailTokenAccessOffre } from "./franceTravail.client.fixture"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { searchForFtJobs } from "./france-travail.client"
+import { generateFtJobFixture, nockFranceTravailOffreSearch, nockFranceTravailTokenAccessOffre } from "./france-travail.client.fixture"
 
 useMongo()
 
-vi.mock("@/common/utils/sentryUtils")
+vi.mock("@/common/utils/sentry-utils")
 
 describe("searchForFtJobs", () => {
   const jobs = [generateFtJobFixture({})]

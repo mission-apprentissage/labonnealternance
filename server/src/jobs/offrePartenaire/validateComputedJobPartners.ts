@@ -6,9 +6,9 @@ import jobsPartnersModel from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
-import { groupStreamData } from "@/common/utils/streamUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
+import { groupStreamData } from "@/common/utils/stream-utils"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 
 const groupSize = 500

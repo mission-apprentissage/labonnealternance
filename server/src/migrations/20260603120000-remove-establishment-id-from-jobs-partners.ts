@@ -1,5 +1,5 @@
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const up = async () => {
   logger.info("Removing establishment_id field from jobs_partners collection")

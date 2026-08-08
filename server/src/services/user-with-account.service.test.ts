@@ -5,7 +5,7 @@ import { generateRoleManagementFixture, generateRoleManagementStatusEventFixture
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 import { hasActiveRoleOnAnotherOrganization } from "./user-with-account.service"
 

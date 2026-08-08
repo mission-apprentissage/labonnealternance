@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb"
 import type { ITrackingCookies } from "shared/models/index"
 import { TrafficType } from "shared/models/index"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export function hashEmail(email) {
   return crypto.createHash("sha256").update(email).digest("hex")

@@ -7,9 +7,9 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { logger } from "@/common/logger"
-import { s3WriteStream } from "@/common/utils/awsUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { concatStreams, waitForStreamEnd } from "@/common/utils/streamUtils"
+import { s3WriteStream } from "@/common/utils/aws-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { concatStreams, waitForStreamEnd } from "@/common/utils/stream-utils"
 import config from "@/config"
 import { jobsPartnersToApiV3Read } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 

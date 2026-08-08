@@ -1,6 +1,6 @@
 import type { ICacheInfosSiret, IEntreprise } from "shared"
 import { EntrepriseStatus, getLastStatusEvent } from "shared"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const analyzeClosedCompanies = async (): Promise<void> => {
   console.info("start analyzeClosedCompanies")

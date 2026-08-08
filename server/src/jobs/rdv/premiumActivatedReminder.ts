@@ -1,6 +1,6 @@
 import { logger } from "@/common/logger"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligible-trainings-for-appointment.service"
 import mailer from "@/services/mailer.service"

@@ -10,9 +10,9 @@ import type { CollectionName } from "shared/models/models"
 import type { ZodObject } from "zod"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
 export const rawToComputedJobsPartners = async <ZodInput extends ZodObject<any>>({
   collectionSource,

@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb"
 import type { ICredential } from "shared/models/index"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const createApiUser = async (
   nom: ICredential["nom"],

@@ -6,9 +6,9 @@ import { JOB_STATUS_ENGLISH } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { limitStream } from "@/common/utils/streamUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { limitStream } from "@/common/utils/stream-utils"
 import type { IJobPartnerForSearchItem } from "@/services/search/searchItems.service"
 import {
   buildFormationSearchItem,

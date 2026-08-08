@@ -6,7 +6,7 @@ import type { ISearchItemKeywords } from "shared/models/searchItemsKeywords.mode
 import { gunzipSync } from "zlib"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 /**
  * Pré-remplit le cache `search_items_keywords` avec les mots-clés Mistral déjà générés

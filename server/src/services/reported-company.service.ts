@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getSiretInfos } from "./cache-infos-siret.service"
 import { formatEntrepriseData } from "./etablissement.service"
 

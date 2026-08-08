@@ -19,8 +19,8 @@ import type { IJobOfferApiWriteV3, IJobOfferApiWriteV3Input } from "shared/route
 import { jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobSearchApiV3Response } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/api-entreprise.client.fixture"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
@@ -28,8 +28,8 @@ import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsP
 
 useMongo()
 
-vi.mock("@/common/apis/franceTravail/franceTravail.client")
-vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")
+vi.mock("@/common/apis/franceTravail/france-travail.client")
+vi.mock("@/common/apis/apiEntreprise/api-entreprise.client")
 
 beforeAll(async () => {
   nock.disableNetConnect()

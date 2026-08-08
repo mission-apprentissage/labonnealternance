@@ -2,7 +2,7 @@ import axios from "axios"
 import z from "zod"
 import { logger } from "@/common/logger"
 
-import { delay } from "@/common/utils/asyncUtils"
+import { delay } from "@/common/utils/async-utils"
 import config from "@/config"
 
 const ZEmploiInclusionLieu = z.object({

@@ -2,7 +2,7 @@ import { JOB_STATUS_ENGLISH } from "shared"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const fillEntrepriseEngagementJobsPartners = async () => {

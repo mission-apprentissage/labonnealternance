@@ -2,7 +2,7 @@ import type { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { jobPartnersByFlux } from "@/jobs/offrePartenaire/processJobPartners"
 
 const GRANTED_BY = "20260618102545-cancel-jobs-partners-with-invalid-computed"

@@ -5,7 +5,7 @@ import dayjs from "shared/helpers/dayjs"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
 import { recruiterOfferExpirationReminderJob } from "./recruiterOfferExpirationReminderJob"
 
@@ -18,7 +18,7 @@ vi.mock("@/services/mailer.service", () => {
   }
 })
 
-vi.mock("@/common/utils/slackUtils", () => {
+vi.mock("@/common/utils/slack-utils", () => {
   return {
     notifyToSlack: vi.fn().mockResolvedValue(undefined),
   }

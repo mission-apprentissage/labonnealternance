@@ -9,9 +9,9 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { buildEstablishmentId } from "./etablissement.service"
 import { archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations } from "./formulaire.service"

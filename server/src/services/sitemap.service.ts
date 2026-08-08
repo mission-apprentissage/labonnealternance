@@ -6,8 +6,8 @@ import type { ISitemap } from "shared/models/sitemap.model"
 import { hashcode } from "shared/utils/index"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 
 const generateSitemapXml = async () => {

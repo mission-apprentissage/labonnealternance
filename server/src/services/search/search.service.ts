@@ -3,7 +3,7 @@ import type { ISearchItem } from "shared/models/index"
 import { JOB_START_TYPE } from "shared/models/job.model"
 
 import { getDistanceInKm } from "@/common/utils/geolib"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const HIGHLIGHT_MAX_PASSAGES = 5
 const HIGHLIGHT_MAX_CHARS = 300

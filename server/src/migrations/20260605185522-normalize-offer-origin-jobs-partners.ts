@@ -1,6 +1,6 @@
 import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobsPartners.model"
 import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const ORIGIN_MAP: Record<string, string> = {
   "": JOBS_PARTNERS_OFFER_ORIGIN.LBA,

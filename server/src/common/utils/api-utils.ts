@@ -2,7 +2,7 @@ import type { AxiosInstance } from "axios"
 import type { AxiosCacheInstance } from "axios-cache-interceptor"
 import { RateLimiterMemory, RateLimiterQueue } from "rate-limiter-flexible"
 
-import { timeout } from "./asyncUtils"
+import { timeout } from "./async-utils"
 
 interface ApiRateLimiterOptions {
   nbRequests?: number

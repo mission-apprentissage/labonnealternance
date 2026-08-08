@@ -4,7 +4,7 @@ import config from "@/config"
 import { getAllEmploiInclusionJobsByDepartement } from "./emploi-inclusion.client"
 import { generateEmploiInclusionJobFixture, nockEmploiInclusionNextPage, nockEmploiInclusionPage } from "./emploi-inclusion.client.fixture"
 
-vi.mock("@/common/utils/asyncUtils", () => ({
+vi.mock("@/common/utils/async-utils", () => ({
   delay: vi.fn().mockResolvedValue(undefined),
 }))
 

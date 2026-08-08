@@ -1,8 +1,8 @@
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { s3WriteString } from "@/common/utils/awsUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
+import { s3WriteString } from "@/common/utils/aws-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
 const uploadJsonToS3 = async (fileKey: string, data: unknown): Promise<void> => {
   await s3WriteString("storage", fileKey, {

@@ -16,7 +16,7 @@ import type { IEntreprise, IJobCreate, IReferentielRome, IUserWithAccount } from
 import { JOB_START_TYPE } from "shared/models/job.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { createJob, getCompetencesRomeFromPartnerJob, getFormulairesForCfaManagedEnterprises } from "./formulaire.service"
 
 useMongo()

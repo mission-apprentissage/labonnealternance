@@ -1,7 +1,7 @@
 import { zRoutes } from "shared"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
-import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { trackApiCall } from "@/common/utils/send-tracking-event"
 import type { Server } from "@/http/server"
 import { getFormationsParRegionQuery } from "@/services/formation.service"
 

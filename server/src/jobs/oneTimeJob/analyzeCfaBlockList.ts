@@ -17,7 +17,7 @@ import { join } from "path"
 import { removeAccents } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
-import { closeMongodbConnection, connectToMongodb, getDbCollection } from "@/common/utils/mongodbUtils"
+import { closeMongodbConnection, connectToMongodb, getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { cfaCompanyList } from "@/jobs/offrePartenaire/isCompanyInBlockedCfaList"
 

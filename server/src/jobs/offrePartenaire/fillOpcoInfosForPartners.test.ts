@@ -4,8 +4,8 @@ import pick from "lodash-es/pick"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "@/common/apis/franceCompetences/franceCompetencesClient.fixture"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "@/common/apis/franceCompetences/france-competences-client.fixture"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")

@@ -2,8 +2,8 @@ import { internal } from "@hapi/boom"
 import { z } from "zod"
 
 import getApiClient from "@/common/apis/client"
-import { delay } from "@/common/utils/asyncUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { delay } from "@/common/utils/async-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
 
 const OMOGEN_BASE_URL = "https://omogen-api-pr.phm.education.gouv.fr"
