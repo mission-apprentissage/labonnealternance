@@ -46,7 +46,6 @@ import toulouseMetropole from "@/public/images/logosPartenaires/partenaire-toulo
 import veritone from "@/public/images/logosPartenaires/partenaire-veritone.webp"
 
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = {
   title: PAGES.static.aPropos.getMetadata().title,
   description: PAGES.static.aPropos.getMetadata().description,

@@ -3,7 +3,6 @@ import { Box, Link, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = {
   title: PAGES.dynamic.backCreateCFAConfirmation({ email: "" }).getMetadata().title,
 }

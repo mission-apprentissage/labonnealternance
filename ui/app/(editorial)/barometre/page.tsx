@@ -31,7 +31,6 @@ import {
   topSecteursRecruteurs,
   topSecteursSpontanees,
 } from "./_data/t1-2026"
-
 export const metadata: Metadata = {
   ...PAGES.static.barometre.getMetadata(),
   alternates: {

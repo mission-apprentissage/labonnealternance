@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { OffreActionPage } from "@/app/(espace-pro)/espace-pro/(from-mail)/offre/[jobType]/[jobId]/OffreActionPage"
-
 export const metadata: Metadata = {
   title: "Annuler une offre - La bonne alternance",
 }

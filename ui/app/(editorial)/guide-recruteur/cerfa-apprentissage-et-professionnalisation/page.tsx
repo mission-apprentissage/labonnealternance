@@ -14,7 +14,6 @@ import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { ARTICLES } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation.getMetadata()
 
 const CerfaApprentissageEtProfessionnalisationPage = () => {

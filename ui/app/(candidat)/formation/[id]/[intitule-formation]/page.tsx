@@ -1,5 +1,6 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import type { Metadata } from "next"
+import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -7,6 +8,13 @@ import { ApiError, apiGet } from "@/utils/api.utils"
 import TrainingDetailRendererClient from "./TrainingDetailRendererClient"
 
 async function getFormationOption(id: string) {
+  // `apiGet` lit toujours `headers()` en interne (pour transmettre le cookie de session),
+  // ce qui est interdit dans un `"use cache"` classique — seul `"use cache: private"` l'autorise
+  // (cache navigateur uniquement, jamais côté serveur).
+  "use cache: private"
+  cacheTag(`formation:${id}`)
+  cacheLife("minutes")
+
   try {
     const formation = await apiGet("/_private/formations/:id", { params: { id } })
     return formation

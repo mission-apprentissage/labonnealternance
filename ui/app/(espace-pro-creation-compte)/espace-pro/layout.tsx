@@ -7,7 +7,6 @@ import { Footer } from "@/app/_components/Footer"
 import { DsfrHeaderProps } from "@/app/_components/Header"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { PAGES } from "@/utils/routes.utils"
-
 export default async function Layout({ children }: PropsWithChildren) {
   return (
     <>

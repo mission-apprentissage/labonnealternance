@@ -4,7 +4,6 @@ import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import { PublicHeader } from "@/app/_components/PublicHeader"
 import { RechercheLayoutClient } from "./RechercheLayoutClient"
-
 export default async function RechercheLayout({ children }: PropsWithChildren) {
   return (
     <>

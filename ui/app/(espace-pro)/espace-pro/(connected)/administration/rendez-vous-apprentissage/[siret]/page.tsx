@@ -3,7 +3,6 @@ import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getEligibleTrainingsForAppointments, getEtablissement } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import RendezVousApprentissageDetailRendererClient from "./RendezVousApprentissageDetailRendererClient"
-
 export async function generateMetadata({ params }: { params: Promise<{ siret: string }> }): Promise<Metadata> {
   const { siret } = await params
   return {

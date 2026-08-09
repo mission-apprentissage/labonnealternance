@@ -8,7 +8,6 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { getStaticMetiers } from "@/utils/get-static-data"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = {
   title: PAGES.static.metiers.getMetadata().title,
   description: PAGES.static.metiers.getMetadata().description,

@@ -4,7 +4,6 @@ import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
-
 export default async function Layout({ children }: PropsWithChildren) {
   return (
     <>

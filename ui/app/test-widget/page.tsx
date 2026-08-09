@@ -2,8 +2,9 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 
 import type { Metadata } from "next"
+import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
-import { PublicHeader } from "@/app/_components/PublicHeader"
+import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
 import { WidgetTester } from "@/app/_components/WidgetTester"
 import { getSession } from "@/utils/get-session"
 
@@ -11,13 +12,13 @@ export const metadata: Metadata = {
   title: "Formulaire de test des widgets - La bonne alternance",
 }
 
-export default async function Page() {
-  const { user } = await getSession()
-
+export default function Page() {
   return (
     <html lang="en">
       <body>
-        <PublicHeader user={user} />
+        <Suspense fallback={<PublicHeaderStatic />}>
+          <TestWidgetHeaderWithUser />
+        </Suspense>
         <Box
           sx={{
             maxWidth: "xl",
@@ -31,4 +32,9 @@ export default async function Page() {
       </body>
     </html>
   )
+}
+
+async function TestWidgetHeaderWithUser() {
+  const { user } = await getSession()
+  return <PublicHeader user={user} />
 }

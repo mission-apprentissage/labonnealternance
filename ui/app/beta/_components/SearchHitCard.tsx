@@ -132,7 +132,7 @@ export function SearchHitCard({ hit, currentParams, position }: SearchHitCardPro
           shadow
           enlargeLink
           horizontal
-          linkProps={{ href: detailUrl, prefetch: false, onClick: trackClick }}
+          linkProps={{ href: detailUrl, onClick: trackClick }}
           start={<HitTags hit={hit} />}
           title={
             <Typography component="span" className={fr.cx("fr-text--bold", "fr-text--md")} sx={{ color: fr.colors.decisions.text.actionHigh.grey.default }}>

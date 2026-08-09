@@ -11,7 +11,6 @@ import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternan
 import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = {
   ...PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getMetadata(),
   alternates: { canonical: PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getPath() },

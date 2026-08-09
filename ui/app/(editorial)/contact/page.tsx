@@ -8,7 +8,6 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = {
   title: PAGES.static.contact.getMetadata().title,
   description: PAGES.static.contact.getMetadata().description,

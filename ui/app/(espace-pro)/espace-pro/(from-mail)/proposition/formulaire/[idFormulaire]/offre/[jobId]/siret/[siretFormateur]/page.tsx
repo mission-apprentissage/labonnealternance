@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { PropositionOffreId } from "./PropositionOffreId"
-
 export const metadata: Metadata = {
   title: "Proposition d'offre - La bonne alternance",
 }

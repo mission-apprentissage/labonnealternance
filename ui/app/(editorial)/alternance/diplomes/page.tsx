@@ -15,7 +15,6 @@ import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = {
   title: PAGES.static.alternanceDiplomes.getMetadata().title,
   description: PAGES.static.alternanceDiplomes.getMetadata().description,

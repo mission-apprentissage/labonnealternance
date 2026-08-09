@@ -4,7 +4,6 @@ import type { PropsWithChildren } from "react"
 
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
-
 export default function Layout({ children }: PropsWithChildren) {
   return (
     <Container

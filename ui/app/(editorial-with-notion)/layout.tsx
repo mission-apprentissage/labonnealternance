@@ -1,13 +1,12 @@
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
+import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
-import { PublicHeader } from "@/app/_components/PublicHeader"
+import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
 import { getSession } from "@/utils/get-session"
 
-export default async function HomeLayout({ children }: PropsWithChildren) {
-  const { user } = await getSession()
-
+export default function HomeLayout({ children }: PropsWithChildren) {
   return (
     <>
       <SkipLinks
@@ -17,9 +16,16 @@ export default async function HomeLayout({ children }: PropsWithChildren) {
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
-      <PublicHeader user={user} hideConnectionButton={true} />
+      <Suspense fallback={<PublicHeaderStatic />}>
+        <EditorialWithNotionHeaderWithUser />
+      </Suspense>
       <Box>{children}</Box>
       <Footer />
     </>
   )
+}
+
+async function EditorialWithNotionHeaderWithUser() {
+  const { user } = await getSession()
+  return <PublicHeader user={user} hideConnectionButton={true} />
 }

@@ -1,7 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import type { Metadata } from "next"
+import { cacheLife } from "next/cache"
 import { notFound } from "next/navigation"
+import { Suspense } from "react"
 import type { ISeoDiplome } from "shared/models/seo-diplome.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -20,8 +22,12 @@ import { PreparationSection } from "./_components/PreparationSection"
 import { ProgrammeDiplome } from "./_components/ProgrammeDiplome"
 import { SalaireSection } from "./_components/SalaireSection"
 
-function getDiplomeData(slug: string) {
-  return apiGet("/_private/seo/diplome/:diplome", { params: { diplome: slug } })
+async function getDiplomeData(slug: string) {
+  // `apiGet` lit toujours `headers()` en interne (transmission du cookie de session),
+  // incompatible avec un `"use cache"` classique — seul `"use cache: private"` l'autorise.
+  "use cache: private"
+  cacheLife("hours")
+  return await apiGet("/_private/seo/diplome/:diplome", { params: { diplome: slug } })
 }
 
 export function generateStaticParams() {
@@ -39,7 +45,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function DiplomePage({ params }: { params: Promise<{ slug: string }> }) {
+export default function DiplomePage({ params }: { params: Promise<{ slug: string }> }) {
+  return (
+    <Suspense fallback={null}>
+      <DiplomeContent params={params} />
+    </Suspense>
+  )
+}
+
+async function DiplomeContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const rawData = await getDiplomeData(slug)
 

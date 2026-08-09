@@ -14,7 +14,6 @@ import { SchemaOrg } from "@/components/SchemaOrg"
 import { PAGES } from "@/utils/routes.utils"
 import { ARTICLES as ARTICLES_PARTAGES } from "../guide/const"
 import { ARTICLES } from "./const"
-
 export const metadata: Metadata = PAGES.static.guideCfa.getMetadata()
 
 const guideCfaPage = () => {

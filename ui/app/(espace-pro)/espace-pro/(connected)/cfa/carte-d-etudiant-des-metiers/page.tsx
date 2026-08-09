@@ -7,7 +7,6 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getMetadata()
 
 const CarteDEtudiantDesMetiersPage = () => (
