@@ -2,17 +2,12 @@ import { fr } from "@codegouvfr/react-dsfr"
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box, Container } from "@mui/material"
 import type { PropsWithChildren } from "react"
+import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
-import { PublicHeader } from "@/app/_components/PublicHeader"
+import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
 import { getSession } from "@/utils/get-session"
 
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false
-
-export default async function RecruteurLayout({ children }: PropsWithChildren) {
-  const { user } = await getSession()
-
+export default function RecruteurLayout({ children }: PropsWithChildren) {
   return (
     <>
       <SkipLinks
@@ -22,7 +17,9 @@ export default async function RecruteurLayout({ children }: PropsWithChildren) {
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
-      <PublicHeader user={user} />
+      <Suspense fallback={<PublicHeaderStatic />}>
+        <FromMailHeaderWithUser />
+      </Suspense>
       <Box component="main" role="main" id="main-content" tabIndex={-1} sx={{ marginBottom: fr.spacing("8v") }}>
         <Container maxWidth="xl" sx={{ marginTop: fr.spacing("4v") }}>
           {children}
@@ -31,4 +28,9 @@ export default async function RecruteurLayout({ children }: PropsWithChildren) {
       <Footer />
     </>
   )
+}
+
+async function FromMailHeaderWithUser() {
+  const { user } = await getSession()
+  return <PublicHeader user={user} />
 }

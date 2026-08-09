@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { Suspense } from "react"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
@@ -11,13 +12,19 @@ import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 import { BandeauAuthentificationCfa } from "../BandeauAuthentificationCfa"
 
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false
-
 export const metadata: Metadata = PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getMetadata()
 
-const LaCarteEtudiantDesMetiersPage = async () => {
+const LaCarteEtudiantDesMetiersPage = () => {
+  return (
+    <Suspense fallback={null}>
+      <LaCarteEtudiantDesMetiersContent />
+    </Suspense>
+  )
+}
+
+// La session gate à la fois le bandeau (prop top-level de LayoutArticle) et le lien inline
+// plus bas dans le contenu — un seul composant Suspense-wrappé lit la session une fois pour les deux.
+const LaCarteEtudiantDesMetiersContent = async () => {
   const { user } = await getSession()
   const isCfaConnected = user && user.type === AUTHTYPE.CFA
   const linkCarteEtudiantDesMetiers = isCfaConnected ? PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() : PAGES.static.authentification.getPath()

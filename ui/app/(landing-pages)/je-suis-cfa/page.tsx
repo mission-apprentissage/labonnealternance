@@ -3,6 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Grid, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Image from "next/image"
+import { Suspense } from "react"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -15,18 +16,58 @@ import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false
-
 export const metadata: Metadata = PAGES.static.jeSuisCFA.getMetadata()
 
-const JeSuisCFAPage = async () => {
+async function DepotCtaButtons() {
+  const { user } = await getSession()
+  const ctaDepotHref: string = getDepotCtaHref(user, "CFA")
+
+  return (
+    <Box display={"flex"} flexDirection={{ sm: "row", xs: "column" }} gap={fr.spacing("4v")}>
+      <Button linkProps={{ href: ctaDepotHref }} priority="primary">
+        Créer mon espace dédié
+      </Button>
+      <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
+        Me connecter
+      </Button>
+    </Box>
+  )
+}
+
+async function CarteMetiersCtaButtons() {
   const { user } = await getSession()
   const isCfaConnected = user && user.type === AUTHTYPE.CFA
 
-  const ctaDepotHref: string = getDepotCtaHref(user, "CFA")
+  return (
+    <Box display={"flex"} flexDirection={{ md: "row", xs: "column" }} gap={fr.spacing("2v")} justifyContent={{ md: "start", xs: "center" }} textAlign={"center"}>
+      {isCfaConnected ? (
+        <Button
+          linkProps={{ href: PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() }}
+          aria-label="Accéder à la carte des métiers"
+          priority="primary"
+          style={{ margin: "auto" }}
+        >
+          Télécharger la carte des métiers
+        </Button>
+      ) : (
+        <>
+          <Box>
+            <Button linkProps={{ href: PAGES.static.authentification.getPath() }} aria-label="Accéder à la page de connexion" priority="secondary">
+              Me connecter
+            </Button>
+          </Box>
+          <Box>
+            <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} aria-label="Accéder à la page de création de compte" priority="secondary">
+              Me créer un compte
+            </Button>
+          </Box>
+        </>
+      )}
+    </Box>
+  )
+}
 
+const JeSuisCFAPage = () => {
   return (
     <Box
       sx={{
@@ -64,14 +105,9 @@ const JeSuisCFAPage = async () => {
             <Typography variant="body1" gutterBottom>
               Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.{" "}
             </Typography>
-            <Box display={"flex"} flexDirection={{ sm: "row", xs: "column" }} gap={fr.spacing("4v")}>
-              <Button linkProps={{ href: ctaDepotHref }} priority="primary">
-                Créer mon espace dédié
-              </Button>
-              <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
-                Me connecter
-              </Button>
-            </Box>
+            <Suspense fallback={<Box sx={{ height: 40 }} />}>
+              <DepotCtaButtons />
+            </Suspense>
           </Grid>
           <Grid size={{ md: 6, xs: 0 }} display={"flex"} flexDirection={"column"} justifyContent={"center"}>
             <Image
@@ -345,31 +381,9 @@ const JeSuisCFAPage = async () => {
               La carte d’étudiant des métiers ouvre droit à de nombreuses réductions pour vos alternants. Vous devez leur délivrer la carte dans les 30 jours qui suivent leur
               inscription.
             </Typography>
-            <Box display={"flex"} flexDirection={{ md: "row", xs: "column" }} gap={fr.spacing("2v")} justifyContent={{ md: "start", xs: "center" }} textAlign={"center"}>
-              {isCfaConnected ? (
-                <Button
-                  linkProps={{ href: PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() }}
-                  aria-label="Accéder à la carte des métiers"
-                  priority="primary"
-                  style={{ margin: "auto" }}
-                >
-                  Télécharger la carte des métiers
-                </Button>
-              ) : (
-                <>
-                  <Box>
-                    <Button linkProps={{ href: PAGES.static.authentification.getPath() }} aria-label="Accéder à la page de connexion" priority="secondary">
-                      Me connecter
-                    </Button>
-                  </Box>
-                  <Box>
-                    <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} aria-label="Accéder à la page de création de compte" priority="secondary">
-                      Me créer un compte
-                    </Button>
-                  </Box>
-                </>
-              )}
-            </Box>
+            <Suspense fallback={<Box sx={{ height: 40 }} />}>
+              <CarteMetiersCtaButtons />
+            </Suspense>
           </Grid>
         </Grid>
       </DefaultContainer>
