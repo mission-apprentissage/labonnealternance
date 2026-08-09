@@ -1,7 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
+import { cacheLife } from "next/cache"
 import Image from "next/image"
 import { redirect } from "next/navigation"
+import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
@@ -15,13 +17,17 @@ import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false
+async function getVilleData(ville: string) {
+  // `apiGet` lit toujours `headers()` en interne (transmission du cookie de session),
+  // incompatible avec un `"use cache"` classique — seul `"use cache: private"` l'autorise.
+  "use cache: private"
+  cacheLife("hours")
+  return await apiGet("/_private/seo/ville/:ville", { params: { ville } })
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
-  const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
+  const data = await getVilleData(ville)
 
   if (!data) {
     return {
@@ -39,9 +45,17 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   }
 }
 
-export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
+export default function Ville({ params }: { params: Promise<{ ville: string }> }) {
+  return (
+    <Suspense fallback={null}>
+      <VilleContent params={params} />
+    </Suspense>
+  )
+}
+
+async function VilleContent({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
-  const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
+  const data = await getVilleData(ville)
 
   const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-villes"
 
