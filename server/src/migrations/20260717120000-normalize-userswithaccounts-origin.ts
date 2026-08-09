@@ -1,5 +1,5 @@
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const ORIGIN_MAPPING: Record<string, string> = {
   "1J1S": "1jeune1solution",

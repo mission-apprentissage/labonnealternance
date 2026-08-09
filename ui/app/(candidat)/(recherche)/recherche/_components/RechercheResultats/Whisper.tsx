@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
-import type { IWhisper } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
+import type { IWhisper } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-whispers"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type WhisperProps = {

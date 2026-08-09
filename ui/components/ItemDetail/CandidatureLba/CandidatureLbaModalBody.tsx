@@ -18,10 +18,10 @@ import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
-import { sessionStorageGet, sessionStorageSet } from "@/utils/localStorage"
+import { sessionStorageGet, sessionStorageSet } from "@/utils/local-storage"
 import { CandidatureLbaFileDropzone } from "./CandidatureLbaFileDropzone"
-import type { IApplicationSchemaInitValues } from "./services/getSchema"
-import { ApplicationFormikSchema, getInitialSchemaValues } from "./services/getSchema"
+import type { IApplicationSchemaInitValues } from "./services/get-schema"
+import { ApplicationFormikSchema, getInitialSchemaValues } from "./services/get-schema"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 

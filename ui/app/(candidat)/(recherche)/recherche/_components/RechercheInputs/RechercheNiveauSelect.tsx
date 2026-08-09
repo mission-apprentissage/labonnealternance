@@ -2,7 +2,7 @@ import { Box } from "@mui/material"
 import { useField } from "formik"
 import { typedEntries } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
-import type { IDiplomaParam } from "shared/routes/_params"
+import type { IDiplomaParam } from "shared/routes/params"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 
 export const niveauOptions = typedEntries(NIVEAUX_POUR_LBA).map(([value, label]) => ({ value, label })) satisfies Array<{

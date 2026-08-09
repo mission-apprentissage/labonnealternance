@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import type { IPointProperties } from "../models/address.model.js"
-import type { ICacheGeolocation } from "../models/cacheGeolocation.model.js"
+import type { ICacheGeolocation } from "../models/cache-geolocation.model.js"
 
 export function generateFeaturePropertyFixture(data: Partial<IPointProperties> = {}): IPointProperties {
   return {

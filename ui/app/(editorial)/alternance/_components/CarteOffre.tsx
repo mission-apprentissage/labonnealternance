@@ -1,12 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Card from "@codegouvfr/react-dsfr/Card"
 import { Box, Typography } from "@mui/material"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { CardStyling } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/CardStyling"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { publicConfig } from "@/config.public"
-import { getDaysSinceDate } from "@/utils/dateUtils"
+import { getDaysSinceDate } from "@/utils/date-utils"
 
 const CarteOffre = ({ card, utmParams }) => {
   return (

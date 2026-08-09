@@ -2,11 +2,11 @@ import { readFileSync } from "fs"
 import type { AnyBulkWriteOperation } from "mongodb"
 import { ObjectId } from "mongodb"
 import path from "path"
-import type { ISearchItemKeywords } from "shared/models/searchItemsKeywords.model"
+import type { ISearchItemKeywords } from "shared/models/search-items-keywords.model"
 import { gunzipSync } from "zlib"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 /**
  * Pré-remplit le cache `search_items_keywords` avec les mots-clés Mistral déjà générés

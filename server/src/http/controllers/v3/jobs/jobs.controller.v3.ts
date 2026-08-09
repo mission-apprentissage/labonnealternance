@@ -2,12 +2,11 @@ import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { assertUnreachable, zRoutes } from "shared"
 
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getS3FileLastUpdate, s3SignedUrl } from "@/common/utils/awsUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getS3FileLastUpdate, s3SignedUrl } from "@/common/utils/aws-utils"
 import type { Server } from "@/http/server"
-import { EXPORT_JOBS_TO_S3_V2_FILENAME } from "@/jobs/partenaireExport/exportJobsToS3V2"
-import { getUserFromRequest } from "@/security/authenticationService"
-import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
+import { EXPORT_JOBS_TO_S3_V2_FILENAME } from "@/jobs/partenaire-export/export-jobs-to-s3-v2"
+import { getUserFromRequest } from "@/security/authentication.service"
 import {
   createJobOffer,
   findJobOpportunityById,
@@ -19,7 +18,8 @@ import {
   updateJobOffer,
   upsertJobOffer,
   upsertJobsPartnersMulti,
-} from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+} from "@/services/jobs/job-opportunity/job-opportunity.service"
+import { JobOpportunityRequestContext } from "@/services/jobs/job-opportunity/job-opportunity-request-context"
 
 const config = {
   rateLimit: {

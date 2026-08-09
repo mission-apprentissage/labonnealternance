@@ -3,7 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Grid, Typography } from "@mui/material"
 import Image from "next/image"
 import { AUTHTYPE } from "shared/constants/recruteur"
-import { getSession } from "@/utils/getSession"
+import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 
 type IUserType = "CFA_CONNECTED" | "CFA" | "RECRUTEUR_CONNECTED" | "RECRUTEUR" | "OTHER"

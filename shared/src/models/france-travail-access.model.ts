@@ -1,0 +1,25 @@
+import { z } from "../helpers/zod-with-open-api.js"
+
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
+
+const collectionName = "francetravail_access" as const
+
+export type IFranceTravailAccessType = "OFFRE" | "ROMEO"
+
+export const ZFranceTravailAccess = z.strictObject({
+  _id: zObjectId,
+  access_token: z.string(),
+  access_type: z.enum(["OFFRE", "ROMEO"]),
+  created_at: z.date(),
+})
+export type IFranceTravailAccess = z.output<typeof ZFranceTravailAccess>
+
+export default {
+  zod: ZFranceTravailAccess,
+  indexes: [
+    [{ created_at: 1 }, { expireAfterSeconds: 1499 }],
+    [{ access_type: 1 }, {}],
+  ],
+  collectionName,
+} as const satisfies IModelDescriptor

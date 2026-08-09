@@ -1,0 +1,79 @@
+import { PassThrough } from "node:stream"
+import { pipeline } from "node:stream/promises"
+
+import { internal } from "@hapi/boom"
+import { ObjectId } from "mongodb"
+import type { CollectionName } from "shared/models/models"
+import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
+
+export const importFromStreamInJson = async ({
+  stream,
+  destinationCollection,
+  partnerLabel,
+  getOffers,
+}: {
+  stream: NodeJS.ReadableStream
+  destinationCollection: CollectionName
+  partnerLabel: string
+  getOffers: (json: object) => object[]
+}) => {
+  logger.info("deleting old data")
+  await getDbCollection(destinationCollection).deleteMany({})
+
+  logger.info("import starting...")
+
+  const now = new Date()
+  let offerInsertCount = 0
+
+  const readJson = async (json: object) => {
+    const offers = getOffers(json)
+    await asyncForEach(offers, async (offer) => {
+      await getDbCollection(destinationCollection).insertOne({ ...offer, _id: new ObjectId(), createdAt: now })
+      offerInsertCount++
+    })
+  }
+
+  const chunks: string[] = []
+
+  const takeChunkTransform = new PassThrough({
+    transform(chunk, _encoding, callback) {
+      chunks.push(chunk.toString())
+      callback(null, null)
+    },
+  })
+  try {
+    logger.info(`starting stream pipeline for partner "${partnerLabel}" into collection "${destinationCollection}"`)
+    await pipeline(stream, takeChunkTransform)
+    logger.info(`stream pipeline ended for partner "${partnerLabel}" into collection "${destinationCollection}"`)
+    const content = chunks.join("")
+    const json = JSON.parse(content)
+    await readJson(json)
+  } catch (err) {
+    const error = internal(`importFromStreamInJson: erreur lors de l'import ${partnerLabel}`)
+    error.cause = err
+    logger.error(err, error.message)
+    sentryCaptureException(error)
+    await notifyToSlack({
+      subject: `import des offres ${partnerLabel} dans raw`,
+      message: `import ${partnerLabel} en erreur : ${err instanceof Error ? err.message : String(err)}`,
+      error: true,
+    })
+    throw error
+  }
+
+  logger.info(`${offerInsertCount} offers inserted`)
+  logger.info("Pipeline succeeded.")
+  const message = `import ${partnerLabel} terminé : ${offerInsertCount} offres importées`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `import des offres ${partnerLabel} dans raw`,
+    message,
+  })
+  return {
+    offerInsertCount,
+  }
+}

@@ -1,9 +1,9 @@
-import { assertUnreachable } from "../utils/assertUnreachable.js"
+import { assertUnreachable } from "../utils/assert-unreachable.js"
 
 export const UNKNOWN_COMPANY = "Enseigne inconnue"
 /**
  * KBA 20240805
- * to be split and replaced with shared/models/jobsPartners.model.ts when private route V2 are active
+ * to be split and replaced with shared/models/jobs-partners.model.ts when private route V2 are active
  */
 export enum LBA_ITEM_TYPE {
   FORMATION = "formation",

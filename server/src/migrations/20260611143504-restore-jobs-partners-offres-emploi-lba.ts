@@ -1,9 +1,9 @@
 import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
-import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const GRANTED_BY = "20260611143504-restore-jobs-partners-offres-emploi-lba"
 

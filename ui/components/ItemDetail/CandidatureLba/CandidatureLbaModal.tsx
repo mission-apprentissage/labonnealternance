@@ -1,13 +1,13 @@
 import { useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import type { useDisclosure } from "@/common/hooks/useDisclosure"
+import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
-import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import { CandidatureLbaModalBody } from "./CandidatureLbaModalBody"
 import CandidatureLbaWorked from "./CandidatureLbaWorked"
-import type { IApplicationSchemaInitValues } from "./services/getSchema"
-import type { useSubmitCandidature } from "./services/submitCandidature"
+import type { IApplicationSchemaInitValues } from "./services/get-schema"
+import type { useSubmitCandidature } from "./services/submit-candidature"
 
 export const CandidatureLbaModal = ({
   item,

@@ -4,15 +4,15 @@ import type { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IU
 import { mailType } from "shared/constants/appointment"
 import type { ReferrerObject } from "shared/constants/referers"
 import dayjs from "shared/helpers/dayjs"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
-import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
+import { createRdvaAppointmentIdPageLink } from "./app-links.service"
 import mailer from "./mailer.service"
 import { getReferrerByKeyName } from "./referrers.service"
-import { getLBALink } from "./trainingLinks.service"
+import { getLBALink } from "./training-links.service"
 
 const createAppointment = async (params: Omit<IAppointment, "_id" | "created_at">) => {
   const appointment: IAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }

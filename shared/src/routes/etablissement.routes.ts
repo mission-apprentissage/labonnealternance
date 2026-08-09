@@ -1,5 +1,5 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-import { z } from "../helpers/zodWithOpenApi.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
+import { z } from "../helpers/zod-with-open-api.js"
 import { zObjectId } from "../models/common.js"
 import { ZEtablissement } from "../models/etablissement.model.js"
 

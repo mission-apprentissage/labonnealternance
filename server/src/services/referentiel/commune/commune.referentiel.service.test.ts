@@ -3,12 +3,12 @@ import { ObjectId } from "bson"
 import { clichyFixture, levalloisFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import type { IGeoPoint } from "shared/models/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
-import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geoApiGouv/geoApiGouv"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { IGeoApiCommune } from "@/common/apis/geo-api-gouv/geo-api-gouv"
+import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geo-api-gouv/geo-api-gouv"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getNearestCommuneByGeoPoint, updateReferentielCommune } from "./commune.referentiel.service"
 
-vi.mock("@/common/apis/geoApiGouv/geoApiGouv")
+vi.mock("@/common/apis/geo-api-gouv/geo-api-gouv")
 
 useMongo()
 

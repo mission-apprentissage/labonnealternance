@@ -3,7 +3,7 @@ import { setTimeout as sleep } from "node:timers/promises"
 import { Mistral } from "@mistralai/mistralai"
 
 import { logger } from "@/common/logger"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
 
 const mistral = new Mistral({

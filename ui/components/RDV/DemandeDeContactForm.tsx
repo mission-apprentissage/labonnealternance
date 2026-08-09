@@ -11,7 +11,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { apiPost } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
-import { RdvReasons } from "./RdvReasons"
+import { RdvReasons } from "./rdv-reasons"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 

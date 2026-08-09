@@ -1,10 +1,10 @@
 import { internal } from "@hapi/boom"
 import type { IGeoPoint, IReferentielCommune } from "shared/models/index"
 
-import type { IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
-import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geoApiGouv/geoApiGouv"
-import { sleep } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { IGeoApiCommune } from "@/common/apis/geo-api-gouv/geo-api-gouv"
+import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geo-api-gouv/geo-api-gouv"
+import { sleep } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 let inseeToCodesPostaux: Record<string, string[]> | null = null
 

@@ -3,7 +3,7 @@ import * as v8 from "v8"
 
 import { startCLI } from "./commands"
 import { logger } from "./common/logger"
-import { configureDbSchemaValidation, connectToMongodb } from "./common/utils/mongodbUtils"
+import { configureDbSchemaValidation, connectToMongodb } from "./common/utils/mongodb-utils"
 import config from "./config"
 
 process.on("unhandledRejection", (err) => logger.error({ err }, "unhandledRejection"))

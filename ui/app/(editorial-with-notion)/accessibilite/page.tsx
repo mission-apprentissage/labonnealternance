@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { fetchNotionPage } from "@/services/fetchNotionPage"
+import { fetchNotionPage } from "@/services/fetch-notion-page"
 import { PAGES } from "@/utils/routes.utils"
 import { AccessibilitePage } from "./AccessibilitePage"
 

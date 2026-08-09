@@ -2,8 +2,8 @@ import { ObjectId } from "bson"
 import type { Jsonify } from "type-fest"
 
 import { OPCOS_LABEL, RECRUITER_STATUS } from "../constants/recruteur.js"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-import { z } from "../helpers/zodWithOpenApi.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
+import { z } from "../helpers/zod-with-open-api.js"
 
 import { ZPointGeometry } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"

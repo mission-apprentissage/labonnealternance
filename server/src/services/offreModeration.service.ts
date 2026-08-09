@@ -1,5 +1,5 @@
 import { maskPersonalData } from "@/common/utils/maskPersonalData"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { sanitizeTextField } from "@/common/utils/string-utils"
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
 const MODERATION_SYSTEM_PROMPT = `Tu es un assistant de modération et de correction pour des offres d'alternance publiées sur La bonne alternance, un service public français.

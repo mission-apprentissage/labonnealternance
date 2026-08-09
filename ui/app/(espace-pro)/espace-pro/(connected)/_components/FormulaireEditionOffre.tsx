@@ -8,8 +8,8 @@ import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(conn
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
 import { FormulaireEditionOffreStep3FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3FtSupport"
 import { getFormulaire, getFormulaireByToken } from "@/utils/api"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 const FT_ELIGIBLE_ZIP_PREFIXES = ["08", "10", "51", "52", "54", "55", "57", "67", "68", "88", "44", "49", "53", "72", "85"]
 

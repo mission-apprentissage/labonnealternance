@@ -1,8 +1,8 @@
-import { extensions } from "../../helpers/zodHelpers/zodPrimitives.js"
-import { z } from "../../helpers/zodWithOpenApi.js"
+import { extensions } from "../../helpers/zod-helpers/zod-primitives.js"
+import { z } from "../../helpers/zod-with-open-api.js"
 import { zReferentielCommune } from "../../models/index.js"
-import { zRefererHeaders } from "../_params.js"
 import type { IRoutesDef } from "../common.routes.js"
+import { zRefererHeaders } from "../params.js"
 
 export const zPrivateGeoRoutes = {
   get: {

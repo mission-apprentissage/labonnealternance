@@ -1,0 +1,25 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ui-dev",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "workspace",
+        "ui",
+        "dev"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "server-dev",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "workspace",
+        "server",
+        "dev"
+      ],
+      "port": 5001
+    }
+  ]
+}

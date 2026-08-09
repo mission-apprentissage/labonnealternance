@@ -6,14 +6,14 @@ import type { IEntreprise, IEntrepriseStatusEvent } from "shared/models/entrepri
 import { EntrepriseStatus, ZEntreprise } from "shared/models/entreprise.model"
 import type { IApplication, ICredential, IEmailBlacklist, IEntrepriseManagedByCfa } from "shared/models/index"
 import { ZApplication, ZCredential, ZEmailBlacklist } from "shared/models/index"
-import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import type { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IRoleManagement, IRoleManagementEvent } from "shared/models/role-management.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { UserEventType, ZUserWithAccount } from "shared/models/user-with-account.model"
 import type { ZodType, z } from "zod"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getFakeEmail } from "@/jobs/database/obfuscateCollections"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { getFakeEmail } from "@/jobs/database/obfuscate-collections"
 import { generateFixture } from "./zodFixtureCompat"
 
 export const saveDbEntity = async <T extends ZodType>(schema: T, saveEntity: (item: z.output<T>) => Promise<any>, data: Partial<z.input<T>>): Promise<z.output<T>> => {

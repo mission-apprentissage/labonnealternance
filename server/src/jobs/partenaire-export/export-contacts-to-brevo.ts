@@ -1,0 +1,243 @@
+import type { ColumnOption } from "csv-stringify/sync"
+import { AccessEntityType, AccessStatus } from "shared/models/index"
+import { UserEventType } from "shared/models/user-with-account.model"
+import { Transform } from "stream"
+import { pipeline } from "stream/promises"
+
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
+import { groupStreamData } from "@/common/utils/stream-utils"
+import config from "@/config"
+import { uploadContactListToBrevo } from "@/services/brevo.service"
+
+type IBrevoContact = {
+  user_origin: string
+  user_first_name: string
+  user_last_name: string
+  user_email: string
+  role_createdAt: Date
+  user_last_action_date?: Date | null
+  last_offer_date?: Date | null
+  role_authorized_type: AccessEntityType.CFA | AccessEntityType.ENTREPRISE
+  entreprise_enseigne: string | null
+  entreprise_raison_sociale: string | null
+  entreprise_siret: string | null
+  cfa_enseigne: string | null
+  cfa_raison_sociale: string | null
+  cfa_siret: string | null
+  job_count?: string | null
+  establishment_size?: string | null
+}
+
+let contactCount = 0
+
+const contactMapper: ColumnOption[] = [
+  {
+    key: "user_email",
+    header: "EMAIL",
+  },
+  { key: "user_first_name", header: "PRENOM" },
+  { key: "user_last_name", header: "NOM" },
+  {
+    key: "user_origin",
+    header: "USER_ORIGIN",
+  },
+  {
+    key: "role_authorized_type",
+    header: "ROLE_AUTHORIZED_TYPE",
+  },
+  {
+    key: "role_createdAt",
+    header: "ROLE_CREATEDAT",
+  },
+  {
+    key: "user_last_action_date",
+    header: "LAST_ACTION_DATE",
+  },
+  {
+    key: "last_offer_date",
+    header: "DATE_DERNIERE_OFFRE",
+  },
+  {
+    key: "entreprise_enseigne",
+    header: "ENTREPRISE_ENSEIGNE",
+  },
+  {
+    key: "entreprise_raison_sociale",
+    header: "ENTREPRISE_RAISON_SOCIALE",
+  },
+  {
+    key: "entreprise_siret",
+    header: "ENTREPRISE_SIRET",
+  },
+  {
+    key: "cfa_enseigne",
+    header: "CFA_ENSEIGNE",
+  },
+  {
+    key: "cfa_raison_sociale",
+    header: "CFA_RAISON_SOCIALE",
+  },
+  {
+    key: "cfa_siret",
+    header: "CFA_SIRET",
+  },
+  {
+    key: "job_count",
+    header: "JOB_COUNT",
+  },
+  {
+    key: "recruiter_establishment_size",
+    header: "EFFECTIFS",
+  },
+]
+
+const postToBrevo = async (contacts: IBrevoContact[]) => {
+  contactCount += contacts.length
+
+  await uploadContactListToBrevo("TRANSACTIONAL", contacts, contactMapper, config.smtp.brevoContactListId!)
+  await uploadContactListToBrevo("MARKETING", contacts, contactMapper, config.smtp.brevoMarketingContactListId!)
+}
+
+const getRoleManagement360Stream = async (type: AccessEntityType) => {
+  if (type === AccessEntityType.CFA) {
+    return await getDbCollection("rolemanagement360")
+      .find(
+        { role_last_status: AccessStatus.GRANTED, user_last_status: UserEventType.ACTIF, role_authorized_type: AccessEntityType.CFA },
+        {
+          projection: {
+            _id: 0,
+            user_origin: 1,
+            user_first_name: 1,
+            user_last_name: 1,
+            user_email: 1,
+            role_createdAt: 1,
+            user_last_action_date: 1,
+            role_authorized_type: 1,
+            entreprise_enseigne: 1,
+            entreprise_raison_sociale: 1,
+            entreprise_siret: 1,
+            cfa_enseigne: 1,
+            cfa_raison_sociale: 1,
+            cfa_siret: 1,
+          },
+        }
+      )
+      .stream()
+  } else {
+    return await getDbCollection("rolemanagement360")
+      .aggregate([
+        {
+          $match: {
+            role_last_status: AccessStatus.GRANTED,
+            user_last_status: UserEventType.ACTIF,
+            role_authorized_type: AccessEntityType.ENTREPRISE,
+          },
+        },
+        {
+          $lookup: {
+            from: "jobs_partners",
+            localField: "user__id",
+            foreignField: "managed_by",
+            as: "jobs_partners",
+          },
+        },
+        {
+          $group: {
+            _id: {
+              _id: "$_id",
+              user_origin: "$user_origin",
+              user_first_name: "$user_first_name",
+              user_last_name: "$user_last_name",
+              user_email: "$user_email",
+              role_createdAt: "$role_createdAt",
+              user_last_action_date: "$user_last_action_date",
+              role_authorized_type: "$role_authorized_type",
+              entreprise_enseigne: "$entreprise_enseigne",
+              entreprise_raison_sociale: "$entreprise_raison_sociale",
+              entreprise_siret: "$entreprise_siret",
+              cfa_enseigne: "$cfa_enseigne",
+              cfa_raison_sociale: "$cfa_raison_sociale",
+              cfa_siret: "$cfa_siret",
+              // TODO add establishment_size to entreprises
+              recruiter_establishment_size: "$recruiters.establishment_size",
+            },
+            job_count: {
+              $sum: {
+                $size: "$jobs_partners",
+              },
+            },
+            last_offer_date: {
+              $max: {
+                $max: "$jobs_partners.offer_creation",
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            user_origin: "$_id.user_origin",
+            user_first_name: "$_id.user_first_name",
+            user_last_name: "$_id.user_last_name",
+            user_email: "$_id.user_email",
+            role_createdAt: "$_id.role_createdAt",
+            user_last_action_date: "$_id.user_last_action_date",
+            role_authorized_type: "$_id.role_authorized_type",
+            entreprise_enseigne: "$_id.entreprise_enseigne",
+            entreprise_raison_sociale: "$_id.entreprise_raison_sociale",
+            entreprise_siret: "$_id.entreprise_siret",
+            cfa_enseigne: "$_id.cfa_enseigne",
+            cfa_raison_sociale: "$_id.cfa_raison_sociale",
+            cfa_siret: "$_id.cfa_siret",
+            job_count: 1,
+            last_offer_date: 1,
+            recruiter_establishment_size: "$_id.recruiter_establishment_size",
+            _id: 0,
+          },
+        },
+      ])
+      .stream()
+  }
+}
+
+const sendContacts = async (type: AccessEntityType) => {
+  const cursor = await getRoleManagement360Stream(type)
+
+  const postingTransform = new Transform({
+    objectMode: true,
+    async transform(contacts, _, callback) {
+      try {
+        await postToBrevo(contacts as IBrevoContact[])
+        callback()
+      } catch (err) {
+        callback(err as Error)
+      }
+    },
+  })
+
+  await pipeline(cursor, groupStreamData({ size: 2000 }), postingTransform)
+}
+
+export const sendContactsToBrevo = async () => {
+  contactCount = 0
+  logger.info("Sending contacts to Brevo ...")
+
+  try {
+    await sendContacts(AccessEntityType.CFA)
+    await sendContacts(AccessEntityType.ENTREPRISE)
+
+    await notifyToSlack({
+      subject: `Envoi des contacts vers Brevo`,
+      message: `${contactCount} envoyés vers Brevo.`,
+      error: contactCount === 0,
+    })
+  } catch (err) {
+    sentryCaptureException(err)
+    await notifyToSlack({ subject: "Envoi des contacts vers Brevo", message: `ECHEC envoi des contacts vers Brevo`, error: true })
+    throw err
+  }
+
+  logger.info(`${contactCount} contacts sent to brevo`)
+}

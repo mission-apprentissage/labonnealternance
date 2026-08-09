@@ -13,4 +13,4 @@ export type {
   ILbaItemRome,
   ILbaItemTraining,
   ILbaItemTrainingSession,
-} from "shared/models/lbaItem.model"
+} from "shared/models/lba-item.model"

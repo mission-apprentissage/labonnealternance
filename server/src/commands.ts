@@ -6,14 +6,14 @@ import HttpTerminator from "lil-http-terminator"
 import { closeMemoryCache } from "./common/apis/client"
 import { logger, setRootContext } from "./common/logger"
 import { closeSentry } from "./common/sentry/sentry"
-import { closeMongodbConnection } from "./common/utils/mongodbUtils"
-import { notifyToSlack } from "./common/utils/slackUtils"
+import { closeMongodbConnection } from "./common/utils/mongodb-utils"
+import { notifyToSlack } from "./common/utils/slack-utils"
 import config from "./config"
-import { bindProcessorServer } from "./http/jobProcessorServer"
-import { bindStreamProcessorServer } from "./http/StreamProcessorServer"
+import { bindProcessorServer } from "./http/job-processor-server"
 import { bindFastifyServer } from "./http/server"
+import { bindStreamProcessorServer } from "./http/stream-processor-server"
 import { setupJobProcessor } from "./jobs/jobs"
-import { SimpleJobDefinition, simpleJobDefinitions } from "./jobs/simpleJobDefinitions"
+import { SimpleJobDefinition, simpleJobDefinitions } from "./jobs/simple-job-definitions"
 
 async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
   logger.info("Setup job processor")
@@ -283,11 +283,11 @@ program
   .action(createJobAction("api:user:disable"))
 
 program
-  .command("recruiterOfferExpirationReminderJob")
+  .command("recruiter-offer-expiration-reminder-job")
   .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
   .requiredOption("--threshold <string>", "threshold")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiterOfferExpirationReminderJob"))
+  .action(createJobAction("recruiter-offer-expiration-reminder-job"))
 
 program
   .command("export-offre-pole-emploi")
@@ -400,10 +400,10 @@ program
   .action(createJobAction("referentiel:commune:import"))
 
 program
-  .command("exportJobsToS3V2")
+  .command("export-jobs-to-s3-v2")
   .description("export les offres dans un json")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("exportJobsToS3V2"))
+  .action(createJobAction("export-jobs-to-s3-v2"))
 
 simpleJobDefinitions.forEach((jobDef) => {
   const { description, cliOptions = [] } = jobDef

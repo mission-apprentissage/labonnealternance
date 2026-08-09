@@ -20,7 +20,7 @@ import {
   optUserOut,
   removeCookie,
   setCookie,
-} from "@/tracking/trackingCookieUtils"
+} from "@/tracking/tracking-cookie-utils"
 import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer))

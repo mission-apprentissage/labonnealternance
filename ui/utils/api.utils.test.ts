@@ -1,4 +1,4 @@
-import { generatePath, generateQueryString } from "shared/helpers/generateUri"
+import { generatePath, generateQueryString } from "shared/helpers/generate-uri"
 import { describe, expect, it } from "vitest"
 
 // import { generateUrl } from "./api.utils"

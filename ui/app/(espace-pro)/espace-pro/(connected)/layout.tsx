@@ -5,7 +5,7 @@ import type { PropsWithChildren } from "react"
 import { AuthWatcher } from "@/app/_components/AuthWatcher"
 import { Footer } from "@/app/_components/Footer"
 import { UserContextProvider } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
-import { getSession } from "@/utils/getSession"
+import { getSession } from "@/utils/get-session"
 import { ConnectedHeader } from "./_components/ConnectedHeader"
 
 export default async function EspaceProConnecteLayout({ children }: PropsWithChildren) {

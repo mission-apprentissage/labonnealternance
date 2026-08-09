@@ -1,0 +1,20 @@
+import { z } from "../helpers/zod-with-open-api.js"
+
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
+
+const collectionName = "customemailetfas" as const
+
+export const ZCustomEmailETFA = z.strictObject({
+  _id: zObjectId,
+  email: z.string(),
+  cle_ministere_educatif: z.string(),
+})
+
+export type ICustomEmailETFA = z.output<typeof ZCustomEmailETFA>
+
+export default {
+  zod: ZCustomEmailETFA,
+  indexes: [[{ cle_ministere_educatif: 1 }, {}]],
+  collectionName,
+} as const satisfies IModelDescriptor

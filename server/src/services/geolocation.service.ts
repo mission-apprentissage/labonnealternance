@@ -6,8 +6,8 @@ import { ZPointFeature, ZPointGeometry } from "shared/models/index"
 import { joinNonNullStrings } from "shared/utils/index"
 import z from "zod"
 import getApiClient from "@/common/apis/client"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { getGeolocationFromCache, saveGeolocationInCache } from "./cache-geolocation.service"
 
 export const API_ADRESSE_URL = "https://data.geopf.fr/geocodage"
 

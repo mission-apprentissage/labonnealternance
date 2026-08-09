@@ -3,7 +3,7 @@ import { useCombobox } from "downshift"
 import { useMemo, useState } from "react"
 
 import CustomInput from "@/app/_components/CustomInput"
-import { debounce } from "@/common/utils/debounce"
+import { debounce } from "@/utils/debounce"
 
 export default function AutocompleteAsync<T>({
   onSelectItem,

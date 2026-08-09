@@ -1,0 +1,419 @@
+import admzip from "adm-zip"
+import { stringify } from "csv-stringify"
+import { createWriteStream } from "fs"
+import { rm } from "fs/promises"
+import type { Filter } from "mongodb"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import dayjs from "shared/helpers/dayjs"
+import { ZAdresseCFA } from "shared/models/address.model"
+import type { ICFA } from "shared/models/cfa.model"
+import { type IEntreprise, type IReferentielRome, type IUserWithAccount, JOB_STATUS_ENGLISH, ZAdresseV3 } from "shared/models/index"
+import { type IJobsPartnersOfferPrivate, type INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { pipeline, Readable, Transform } from "stream"
+import { fileURLToPath } from "url"
+import { promisify } from "util"
+import { sendCsvToFranceTravail } from "@/common/apis/france-travail/france-travail.client"
+import { logger } from "@/common/logger"
+import { getDepartmentInfos } from "@/common/territoires"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
+import { removeLineBreaks, sanitizeTextField } from "@/common/utils/string-utils"
+import config from "@/config"
+import type { FTOffre } from "@/jobs/partenaire-export/ft-export.types"
+import { buildLbaUrl } from "@/services/jobs/job-opportunity/job-opportunity.service"
+
+const pipelineAsync = promisify(pipeline)
+
+const formatDate = (date: Date | null) => (date ? dayjs(date).format("DD/MM/YYYY") : null)
+
+/**
+ * Correspondance niveau de diplôme visé (NIVEAUX_DIPLOMES_EUROPEENS) → qualification d'emploi France Travail (Qua_cle / Qua_libelle).
+ *
+ * Équivalence conventionnelle : les deux référentiels ne mesurent pas la même chose
+ * (niveau de formation vs niveau de poste), il n'existe pas de correspondance officielle 1:1.
+ */
+const DIPLOMA_TO_FT_QUALIFICATION: Record<INiveauDiplomeEuropeen, { cle: number; libelle: string }> = {
+  "3": { cle: 6, libelle: "Employé qualifié" }, // CAP, Infrabac
+  "4": { cle: 6, libelle: "Employé qualifié" }, // BP, Bac
+  "5": { cle: 7, libelle: "Technicien" }, // BTS, DEUST, Bac+2
+  "6": { cle: 8, libelle: "Agent de maîtrise" }, // Licence, Maîtrise, Bac+3 à Bac+4
+  "7": { cle: 9, libelle: "Cadre" }, // Master, ingénieur, Bac+5
+}
+
+type DBJob = IJobsPartnersOfferPrivate & {
+  referentielRome: IReferentielRome
+  entreprise: IEntreprise
+  cfa?: ICFA
+  userWithAccount?: Pick<IUserWithAccount, "first_name" | "last_name" | "email" | "phone">
+}
+
+// Mention salaire portée par les descriptions (le champ FT Off_salaire_cpt_commentaire est limité à Alphanum(36),
+// il ne peut donc pas contenir cette URL). On l'ajoute en fin de Description et Description_entreprise.
+const SALAIRE_MENTION =
+  "Le salaire d'un apprenti est fixé par la réglementation en vigueur. Il dépend de plusieurs facteurs. Un simulateur à jour est disponible à l'adresse https://labonnealternance.apprentissage.beta.gouv.fr/salaire-alternant"
+
+// Concatène un corps de description (déjà nettoyé) avec la mention salaire en garantissant le respect de la longueur max FT.
+// Le corps est tronqué en priorité pour préserver la mention et son URL.
+const withSalaireMention = (body: string, maxLength: number): string => {
+  const suffix = ` ${SALAIRE_MENTION}`
+  const availableForBody = Math.max(0, maxLength - suffix.length)
+  return `${body.slice(0, availableForBody)}${suffix}`.trim()
+}
+
+export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>, options?: { capPublicationDateToJ30?: boolean }) => {
+  const { referentielRome, workplace_address_zipcode, cfa } = offre
+  const addressPart = jobToFTOfferAddress(offre)
+  //Récupération de l'appellation dans le rome_detail pour identifier le code OGR
+  const appellation = referentielRome.appellations.find((appellation) => appellation.libelle === offre.offer_rome_appellation)
+
+  if (!appellation || !addressPart) {
+    return
+  }
+
+  const romeCode = offre.offer_rome_codes.at(0)
+  const [longitude, latitude] = offre.workplace_geopoint.coordinates
+  const ntcCle = offre.contract_type.includes("Apprentissage") ? "E2" : "FS"
+
+  const companyLabel = offre.workplace_legal_name || offre.workplace_name || offre.workplace_brand
+  const departmentInfos = workplace_address_zipcode ? getDepartmentInfos(workplace_address_zipcode) : null
+  const cfaAddress = jobToCfaAddress(offre)
+  const qualification = offre.offer_target_diploma ? DIPLOMA_TO_FT_QUALIFICATION[offre.offer_target_diploma.european] : null
+
+  // Flux confiée : la date de fin de publication est plafonnée à J+30. Au-delà, on renvoie J+30 ; sinon la date d'expiration réelle.
+  const maxPublicationDate = dayjs().add(30, "days")
+  const publicationDate =
+    options?.capPublicationDateToJ30 && offre.offer_expiration && dayjs(offre.offer_expiration).isAfter(maxPublicationDate) ? maxPublicationDate.toDate() : offre.offer_expiration
+
+  const ftOffre: FTOffre = {
+    Par_ref_offre: `${ntcCle}-${offre._id}`,
+    Par_cle: "LABONNEALTERNANCE",
+    Par_nom: "LABONNEALTERNANCE",
+    Par_URL_offre: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, offre._id, null, offre.offer_rome_appellation ?? undefined),
+    Code_rome: romeCode,
+    Code_OGR: parseInt(appellation.code_ogr, 10),
+    Libelle_metier_OGR: appellation.libelle,
+    Description: withSalaireMention(removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.offer_description}`)), 4000),
+    Off_experience_duree_min: null,
+    Off_experience_duree_max: null,
+    Exp_cle: "D",
+    Exp_libelle: null,
+    Dur_cle_experience: null,
+    Dur_libelle_experience: null,
+    Off_experience_commentaire: null,
+    Qua_cle: qualification?.cle ?? null,
+    Qua_libelle: qualification?.libelle ?? null,
+    SCN_cle: offre.workplace_naf_code,
+    SCN_libelle: offre.workplace_naf_label,
+    Tfm_cle_1: null,
+    Tfm_libelle_1: null,
+    Dfm_cle_1: null,
+    Dfm_libelle_1: null,
+    Dfm_exi_cle_1: null,
+    Dfm_exi_libelle_1: null,
+    Tfm_cle_2: null,
+    Tfm_libelle_2: null,
+    Dfm_cle_2: null,
+    Dfm_libelle_2: null,
+    Dfm_exi_cle_2: null,
+    Dfm_exi_libelle_2: null,
+    Lan_cle_1: null,
+    Lan_libelle_1: null,
+    NVL_cle_1: null,
+    NVL_libelle_1: null,
+    Lan_exi_cle_1: null,
+    Lan_exi_libelle_1: null,
+    Lan_cle_2: null,
+    Lan_libelle_2: null,
+    NVL_cle_2: null,
+    NVL_libelle_2: null,
+    Lan_exi_cle_2: null,
+    Lan_exi_libelle_2: null,
+    TSA_cle: "X",
+    TSA_libelle: null,
+    Off_salaire_min: null,
+    Off_salaire_max: null,
+    UMO_cle: null,
+    UMO_libelle: null,
+    Off_salaire_nb_mois: null,
+    // Champ FT Alphanum(36) : pas d'URL ni d'accents possibles, on garde un libellé court
+    Off_salaire_cpt_commentaire: "Salaire selon barème légal apprenti",
+    Off_travail_hebdo_nb_hh: 35,
+    Off_travail_hebdo_nb_mi: 0,
+    THO_cle: "HAN",
+    THO_libelle: null,
+    Off_THO_commentaire: null,
+    NTC_cle: ntcCle,
+    NTC_libelle: null,
+    TCO_cle: "CDD",
+    TCO_libelle: null,
+    Off_contrat_duree_MO: offre.contract_duration,
+    Off_contrat_duree_JO: null,
+    Off_adr_id: null,
+    Off_adr_norme: null,
+    Off_adr_compl_1: null,
+    Off_adr_compl_2: null,
+    Off_adr_no_voie: null,
+    Off_adr_nom_voie: null,
+    CPO_cle: null,
+    COM_cle: null,
+    COM_libelle: null,
+    DEP_cle: departmentInfos?.code,
+    DEP_libelle: null,
+    REG_cle: departmentInfos?.region.code,
+    REG_libelle: null,
+    Pay_cle: null,
+    Pay_libelle: null,
+    CON_cle: null,
+    CON_libelle: null,
+    Coordonnee_geo_loc_1: latitude.toString(),
+    Coordonnee_geo_loc_2: longitude.toString(),
+    PCO_cle_1: null,
+    PCO_libelle_1: null,
+    PCO_exi_cle_1: null,
+    PCO_exi_libelle_1: null,
+    PCO_cle_2: null,
+    PCO_libelle_2: null,
+    PCO_exi_cle_2: null,
+    PCO_exi_libelle_2: null,
+    Off_date_creation: formatDate(offre.created_at),
+    Off_date_modification: formatDate(offre.updated_at),
+    Off_date_fin_publication: formatDate(publicationDate),
+    OST_poste_restant_nb: offre.offer_opening_count,
+    Off_client_final_siret: offre.workplace_siret,
+    Off_client_final_nom: undefined,
+    Col_cle: null,
+    Col_nom: null,
+    Col_URL_offre: null,
+    Version: null,
+    Type_mouvement: "C",
+    Date_debut_contrat: formatDate(offre.contract_start),
+    Motif_suppression: null,
+    Description_entreprise: withSalaireMention(
+      offre.workplace_description ? removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description}`)) : "",
+      500
+    ),
+    Id_recruteur: null,
+    Civ_correspondant: 0,
+    Nom_correspondant: offre.userWithAccount?.last_name ?? null,
+    Prenom_correspondant: offre.userWithAccount?.first_name ?? null,
+    Tel_correspondant: offre.userWithAccount?.phone ?? null,
+    Mail_correspondant: offre.userWithAccount?.email ?? null,
+    Off_etab_enseigne: offre.is_delegated ? offre.cfa_legal_name : companyLabel,
+    Off_etab_siret: offre.is_delegated ? offre.cfa_siret : offre.workplace_siret,
+    Libelle_etab: cfa?.raison_sociale,
+    Num_voie_etab: null,
+    Type_voie_etab: null,
+    Lib_voie_etab: null,
+    Cplt_adresse_1: null,
+    Cplt_adresse_2: null,
+    Code_postal_etab: cfaAddress?.code_postal,
+    Code_commune_etab: cfaAddress?.localite,
+    Service: null,
+    Mode_diffusion: "O",
+    Rappel: null,
+    Mode_presentation: "URL",
+    Emploi_metier_isco: null,
+    ...addressPart,
+    ...override,
+  }
+  return ftOffre
+}
+
+const jobToCfaAddress = (job: DBJob) => {
+  const { cfa } = job
+  const parseResult = ZAdresseCFA.safeParse(cfa?.address_detail)
+  return parseResult.data
+}
+
+const jobToFTOfferAddress = (job: DBJob): Partial<FTOffre> | null => {
+  const { cfa, entreprise } = job
+  if (cfa) {
+    const adresse = jobToCfaAddress(job)
+    if (!adresse) {
+      return null
+    }
+    return {
+      COM_cle: adresse.code_insee,
+      COM_libelle: adresse.localite,
+    }
+  }
+  const adresse = ZAdresseV3.safeParse(entreprise.address_detail).data
+  if (!adresse) {
+    return null
+  }
+  return {
+    Off_adr_compl_1: adresse.complement_adresse,
+    Off_adr_no_voie: adresse.numero_voie,
+    Off_adr_nom_voie: [adresse.type_voie, adresse.libelle_voie].filter((x) => x).join(" "),
+    COM_cle: adresse.code_commune,
+    COM_libelle: adresse.libelle_commune,
+    Pay_libelle: adresse.libelle_pays_etranger ?? "France",
+  }
+}
+
+const getJobsToExport = async ({ ftSupport = false }: { ftSupport?: boolean } = {}) => {
+  const minDate = dayjs().subtract(60, "days").toDate()
+
+  const jobPartnerFilter: Filter<IJobsPartnersOfferPrivate> = {
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+    updated_at: { $gt: minDate },
+    offer_target_diploma: { $ne: null },
+    ft_support: ftSupport,
+  }
+
+  // Flux confiée : on n'exporte que les offres dont l'expiration est strictement supérieure à J+4.
+  if (ftSupport) {
+    jobPartnerFilter.offer_expiration = { $gt: dayjs().add(4, "days").toDate() }
+  }
+  const pipelineStages: object[] = [
+    {
+      $match: jobPartnerFilter,
+    },
+    {
+      $lookup: {
+        from: "entreprises",
+        localField: "workplace_siret",
+        foreignField: "siret",
+        as: "entreprise",
+      },
+    },
+    {
+      $unwind: "$entreprise",
+    },
+    {
+      $lookup: {
+        from: "referentielromes",
+        localField: "offer_rome_codes",
+        foreignField: "rome.code_rome",
+        as: "referentiel-rome",
+      },
+    },
+    {
+      $unwind: "$referentielRome",
+    },
+  ]
+
+  // Flux confiée : on joint le userwithaccount gestionnaire (managed_by) pour alimenter le correspondant FT.
+  if (ftSupport) {
+    pipelineStages.push(
+      {
+        $lookup: {
+          from: "userswithaccounts",
+          localField: "managed_by",
+          foreignField: "_id",
+          as: "userWithAccount",
+          pipeline: [{ $project: { _id: 0, first_name: 1, last_name: 1, email: 1, phone: 1 } }],
+        },
+      },
+      {
+        $unwind: { path: "$userWithAccount", preserveNullAndEmptyArrays: true },
+      }
+    )
+  }
+
+  const jobs = (await getDbCollection("jobs_partners").aggregate(pipelineStages).toArray()) as DBJob[]
+
+  return jobs
+}
+
+const generateCsvFile = async (csvPath: URL, jobs: DBJob[]) => {
+  const source = Readable.from(jobs)
+  const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|" })
+  const destination = createWriteStream(csvPath)
+  const transform = new Transform({
+    objectMode: true,
+    transform(chunk, _, callback) {
+      try {
+        const transformedChunk = offerToFTOffer(chunk as DBJob)
+        callback(null, transformedChunk)
+      } catch (error: any) {
+        callback(error)
+      }
+    },
+  })
+  logger.info("Start stream to CSV")
+  await pipelineAsync(source, transform, stringifier, destination)
+}
+
+// Flux "confiée" : export des offres filtrées via `ft_support` avec un identifiant partenaire dédié.
+// Le fichier contient l'ensemble des offres confiées retournées par `getJobsToExport({ ftSupport: true })`.
+const generateCsvFileConfiee = async (csvPath: URL, jobs: DBJob[]) => {
+  const source = Readable.from(jobs)
+  const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|" })
+  const destination = createWriteStream(csvPath)
+  const transform = new Transform({
+    objectMode: true,
+    transform(chunk, _, callback) {
+      try {
+        const job = chunk as DBJob
+        const ftOffer = offerToFTOffer(job, { Par_cle: "LABONNEALTERNANCE_CONFIEE", Par_nom: "LABONNEALTERNANCE_CONFIEE" }, { capPublicationDateToJ30: true })
+        callback(null, ftOffer)
+      } catch (error: any) {
+        callback(error)
+      }
+    },
+  })
+  logger.info("Start stream to CSV (confiee)")
+  await pipelineAsync(source, transform, stringifier, destination)
+}
+
+const zipAndSendToFranceTravail = async (csvPath1: URL, csvPath2: URL) => {
+  const zipPath = fileURLToPath(new URL("./exportFT.zip", import.meta.url))
+  const zip = new admzip()
+  zip.addLocalFile(fileURLToPath(csvPath1))
+  zip.addLocalFile(fileURLToPath(csvPath2))
+  zip.writeZip(zipPath)
+  try {
+    logger.info("Send ZIP file to France Travail")
+    if (config.env === "production") {
+      await sendCsvToFranceTravail(zipPath)
+    }
+  } finally {
+    await rm(zipPath, { force: true })
+  }
+}
+
+export const exportJobsToFranceTravailCsvOnly = async () => {
+  const csvPath = new URL("./exportFT.csv", import.meta.url)
+  try {
+    const jobs = await getJobsToExport()
+    await generateCsvFile(csvPath, jobs)
+    logger.info("Send CSV file to France Travail")
+    if (config.env === "production") {
+      await sendCsvToFranceTravail(fileURLToPath(csvPath))
+    }
+    await notifyToSlack({
+      subject: "EXPORT FRANCE TRAVAIL",
+      message: `${jobs.length} offres transmises à France Travail`,
+    })
+  } catch (err) {
+    await notifyToSlack({
+      subject: "EXPORT FRANCE TRAVAIL",
+      message: `Echec de l'export des offres France Travail. ${err}`,
+      error: true,
+    })
+  }
+}
+
+export const exportJobsToFranceTravail = async () => {
+  const csvPath = new URL("./exportFT.csv", import.meta.url)
+  const csvPathConfiee = new URL("./exportFTConfiee.csv", import.meta.url)
+  try {
+    const jobs = await getJobsToExport()
+    const jobsConfiee = await getJobsToExport({ ftSupport: true })
+    await generateCsvFile(csvPath, jobs)
+    await generateCsvFileConfiee(csvPathConfiee, jobsConfiee)
+    await zipAndSendToFranceTravail(csvPath, csvPathConfiee)
+    await notifyToSlack({
+      subject: "EXPORT FRANCE TRAVAIL",
+      message: `${jobs.length} offres transmises à France Travail (dont ${jobsConfiee.length} en flux confiée)`,
+    })
+  } catch (err) {
+    await notifyToSlack({
+      subject: "EXPORT FRANCE TRAVAIL",
+      message: `Echec de l'export des offres France Travail. ${err}`,
+      error: true,
+    })
+  }
+}

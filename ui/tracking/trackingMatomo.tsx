@@ -3,7 +3,7 @@
 import Script from "next/script"
 
 import { publicConfig } from "@/config.public"
-import { isWidget } from "@/utils/isWidget.utils"
+import { isWidget } from "@/utils/is-widget.utils"
 
 export const Matomo = () => {
   if (!isWidget()) {

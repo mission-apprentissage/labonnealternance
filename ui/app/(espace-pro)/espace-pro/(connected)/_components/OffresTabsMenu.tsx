@@ -11,7 +11,7 @@ import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
 export const OffresTabsMenu = ({
   row,

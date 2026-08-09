@@ -1,0 +1,331 @@
+import { createRequire } from "node:module"
+import type Stream from "node:stream"
+import { Transform } from "node:stream"
+import { pipeline } from "node:stream/promises"
+
+import { internal } from "@hapi/boom"
+import { ObjectId } from "bson"
+import type { AnyBulkWriteOperation } from "mongodb"
+import { extensions } from "shared/helpers/zod-helpers/zod-primitives"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/raw-recruteurs-lba.model"
+import { logger } from "@/common/logger"
+import { getS3FileLastUpdate, s3ReadAsStream } from "@/common/utils/aws-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
+import { groupStreamData } from "@/common/utils/stream-utils"
+import config from "@/config"
+import { recruteursLbaToJobPartners } from "./recruteurs-lba-mapper"
+
+const require = createRequire(import.meta.url)
+
+const { parser } = require("stream-json")
+const { streamArray } = require("stream-json/streamers/StreamArray")
+
+const S3_FILE = config.algoRecuteursLba.s3File
+
+type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
+
+export const checkIfAlgoFileAlreadyProcessed = async (): Promise<boolean> => {
+  const algoFileLastModificationDate = await getS3FileLastUpdate("storage", S3_FILE)
+  if (!algoFileLastModificationDate) {
+    throw new Error("Aucune date de dernière modifications disponible sur le fichier issue de l'algo sur S3.")
+  }
+
+  const recruteurLbaRaw = await getDbCollection("raw_recruteurslba").findOne({}, { projection: { createdAt: 1 } })
+  if (!recruteurLbaRaw) return false
+  if (algoFileLastModificationDate.getTime() < recruteurLbaRaw.createdAt.getTime()) {
+    await notifyToSlack({
+      subject: `import des offres recruteurs lba dans raw`,
+      message: `dernier fichier en date déjà traité.`,
+    })
+    return true
+  }
+  return false
+}
+
+const importRecruteursLbaToRawCollection = async (sourceStream: Stream.Readable) => {
+  logger.info("deleting old data")
+  await getDbCollection("raw_recruteurslba").deleteMany({})
+  logger.info("import starting...")
+
+  const now = new Date()
+  let count = 0
+
+  const validationStream = new Transform({
+    objectMode: true,
+    transform(chunk, _, callback) {
+      const recruteur = { ...chunk.value, createdAt: now, _id: new ObjectId() }
+      const parseResult = ZRecruteursLbaRaw.safeParse(recruteur)
+      if (!parseResult.success) {
+        return callback() // ignore les entrées invalides sans erreur
+      }
+      callback(null, recruteur)
+    },
+  })
+
+  const insertionStream = new Transform({
+    objectMode: true,
+    async transform(chunk, _, callback) {
+      const filtered = chunk.filter((item) => item)
+      if (!filtered.length) {
+        callback()
+        return
+      }
+      try {
+        count += filtered.length
+        await getDbCollection("raw_recruteurslba").insertMany(filtered)
+        callback()
+      } catch (err) {
+        callback(err as Error)
+      }
+    },
+  })
+
+  await pipeline(sourceStream, parser(), streamArray(), validationStream, groupStreamData({ size: 10_000 }), insertionStream)
+
+  const message = `import recruteurs lba terminé : ${count} recruteurs importées`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `import des offres recruteurs lba dans raw`,
+    message,
+  })
+}
+
+export const importRecruteursLbaRaw = async (sourceFileReadStream?: Stream.Readable) => {
+  try {
+    logger.info(`début de importRecruteursLbaRaw`)
+    const readStream = sourceFileReadStream ?? (await s3ReadAsStream("storage", S3_FILE))
+    await importRecruteursLbaToRawCollection(readStream)
+    logger.info(`fin de importRecruteursLbaRaw`)
+  } catch (err) {
+    await notifyToSlack({ subject: `import des offres recruteurs lba dans raw`, message: `import recruteurs lba terminé : echec de l'import`, error: true })
+    logger.error(err)
+    sentryCaptureException(err)
+  }
+}
+
+export const importRecruteurLbaToComputed = async () => {
+  const partnerLabel = JOBPARTNERS_LABEL.RECRUTEURS_LBA
+
+  logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
+  const counters = { total: 0, success: 0, error: 0 }
+  const importDate = new Date()
+  const transformStream = new Transform({
+    objectMode: true,
+    async transform(documents, _encoding, callback) {
+      counters.total += documents.length
+      if (counters.total % 10_000 === 0) logger.info(`processing document ${counters.total}`)
+
+      const operations: BulkOperation[] = []
+
+      for (const document of documents) {
+        try {
+          const parsedDocument = ZRecruteursLbaRaw.parse(document)
+          const {
+            partner_label,
+            partner_job_id,
+            workplace_siret,
+            workplace_brand,
+            workplace_legal_name,
+            workplace_naf_code,
+            workplace_naf_label,
+            workplace_address_city,
+            workplace_address_street_label,
+            workplace_address_zipcode,
+            workplace_address_label,
+            workplace_geopoint,
+            workplace_size,
+            offer_rome_codes,
+            offer_title,
+            offer_description,
+            offer_multicast,
+            apply_email,
+            apply_phone,
+            offer_creation,
+            _id: _unusedId,
+            updated_at: _unusedUpdatedAt,
+            ...blankMetaFields
+          } = recruteursLbaToJobPartners(parsedDocument)
+
+          if (workplace_address_zipcode) {
+            if (!extensions.zipCode().safeParse(workplace_address_zipcode).success) {
+              counters.error++
+              continue
+            }
+          }
+
+          operations.push({
+            updateOne: {
+              filter: { partner_label, workplace_siret },
+              update: {
+                $set: {
+                  workplace_brand,
+                  workplace_legal_name,
+                  workplace_naf_code,
+                  workplace_naf_label,
+                  workplace_address_city,
+                  workplace_address_street_label,
+                  workplace_address_zipcode,
+                  workplace_address_label,
+                  workplace_geopoint,
+                  workplace_size,
+                  offer_rome_codes,
+                  offer_title,
+                  offer_description,
+                  offer_multicast,
+                  apply_email,
+                  apply_phone,
+                  offer_creation,
+                  updated_at: importDate,
+                },
+                $setOnInsert: {
+                  ...blankMetaFields,
+                  partner_job_id,
+                  offer_status_history: [],
+                  _id: new ObjectId(),
+                },
+              },
+              upsert: true,
+            },
+          })
+
+          counters.success++
+        } catch (err) {
+          counters.error++
+          const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
+          logger.error(err, newError.message)
+          logger.error(JSON.stringify(err))
+          newError.cause = err
+          sentryCaptureException(newError)
+        }
+      }
+
+      if (operations.length > 0) {
+        await getDbCollection("computed_jobs_partners").bulkWrite(operations, { ordered: true })
+      }
+
+      callback()
+    },
+  })
+
+  await pipeline(getDbCollection(rawRecruteursLbaModel.collectionName).find({}).stream(), groupStreamData({ size: 10_000 }), transformStream)
+
+  const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
+  logger.info(message)
+
+  await notifyToSlack({
+    subject: `mapping Raw recruteurs LBA => computed_jobs_partners`,
+    message,
+    error: counters.error > 0,
+  })
+}
+
+export const removeMissingRecruteursLbaFromComputedJobPartners = async () => {
+  logger.info("clean-up recruteurs_lba in computed_jobs_partners from raw")
+  logger.info("removeMissingRecruteursLbaFromComputedJobPartners: chargement des sirets raw en mémoire")
+  const rawSirets = new Set(await getDbCollection("raw_recruteurslba").distinct("siret"))
+  logger.info(`removeMissingRecruteursLbaFromComputedJobPartners: ${rawSirets.size} sirets chargés`)
+
+  const computedCursor = getDbCollection("computed_jobs_partners")
+    .find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { projection: { _id: 1, workplace_siret: 1 } })
+    .stream()
+
+  let total = 0
+  let batch: IComputedJobsPartners["_id"][] = []
+  let scanned = 0
+
+  for await (const doc of computedCursor as AsyncIterable<{ _id: IComputedJobsPartners["_id"]; workplace_siret: string }>) {
+    scanned++
+    if (scanned % 10_000 === 0) {
+      logger.info(`removeMissingRecruteursLbaFromComputedJobPartners: ${scanned} docs parcourus, ${total} supprimés`)
+    }
+    if (!rawSirets.has(doc.workplace_siret)) {
+      batch.push(doc._id)
+    }
+    if (batch.length >= 1_000) {
+      await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: batch } })
+      total += batch.length
+      batch = []
+    }
+  }
+
+  logger.info(`removeMissingRecruteursLbaFromComputedJobPartners: curseur terminé, ${scanned} docs parcourus`)
+
+  if (batch.length) {
+    await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: batch } })
+    total += batch.length
+  }
+
+  const message = `clean-up dans computed_jobs_partners pour partner_label=${JOBPARTNERS_LABEL.RECRUTEURS_LBA} terminé. total=${total}`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `mapping Raw => computed_jobs_partners`,
+    message,
+  })
+}
+
+export const removeUnsubscribedRecruteursLbaFromComputedJobPartners = async () => {
+  logger.info("debut removeUnsubscribedRecruteursLbaFromComputedJobPartners")
+
+  const unsubscribedSirets = new Set(await getDbCollection("unsubscribedrecruteurslba").distinct("siret"))
+  logger.info(`removeUnsubscribedRecruteursLbaFromComputedJobPartners: ${unsubscribedSirets.size} sirets désinscrits chargés`)
+
+  const computedCursor = getDbCollection("computed_jobs_partners")
+    .find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { projection: { _id: 1, workplace_siret: 1 } })
+    .stream()
+
+  let total = 0
+  let batch: IComputedJobsPartners["_id"][] = []
+
+  for await (const doc of computedCursor as AsyncIterable<{ _id: IComputedJobsPartners["_id"]; workplace_siret: string }>) {
+    if (unsubscribedSirets.has(doc.workplace_siret)) {
+      batch.push(doc._id)
+    }
+    if (batch.length >= 1_000) {
+      await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: batch } })
+      total += batch.length
+      batch = []
+    }
+  }
+
+  if (batch.length) {
+    await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: batch } })
+    total += batch.length
+  }
+
+  const message = `suppression dans computed_jobs_partners des recruteurs désinscrits terminée. total=${total}`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `mapping Raw => computed_jobs_partners`,
+    message,
+  })
+}
+
+export const clearBlacklistedEmailsRecruteursLba = async () => {
+  logger.info("clearBlacklistedEmailsRecruteursLba: chargement de la blacklist emails")
+  const blacklistedEmails = new Set(
+    (
+      await getDbCollection("emailblacklists")
+        .find({}, { projection: { email: 1 } })
+        .toArray()
+    ).map((d) => d.email as string)
+  )
+  logger.info(`clearBlacklistedEmailsRecruteursLba: ${blacklistedEmails.size} emails blacklistés chargés`)
+
+  const cursor = getDbCollection("computed_jobs_partners")
+    .find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, apply_email: { $ne: null } }, { projection: { _id: 1, apply_email: 1 } })
+    .stream()
+
+  let total = 0
+  for await (const doc of cursor as AsyncIterable<{ _id: IComputedJobsPartners["_id"]; apply_email: string }>) {
+    if (blacklistedEmails.has(doc.apply_email)) {
+      await getDbCollection("computed_jobs_partners").updateOne({ _id: doc._id }, { $set: { apply_email: null } })
+      total++
+    }
+  }
+
+  logger.info(`clearBlacklistedEmailsRecruteursLba: terminé, ${total} emails supprimés`)
+}

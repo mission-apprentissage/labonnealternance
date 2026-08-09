@@ -2,7 +2,7 @@
 
 import { createContext, type ReactNode, useContext } from "react"
 
-import { useIsWidget as useDetectWidget } from "@/app/hooks/useIsWidget"
+import { useIsWidget as useDetectWidget } from "@/app/hooks/use-is-widget"
 
 const IsWidgetContext = createContext(false)
 

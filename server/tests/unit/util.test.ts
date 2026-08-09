@@ -4,7 +4,7 @@ import { cleanEmail, removeUrlsFromText } from "shared/helpers/common"
 import { describe, it } from "vitest"
 
 import __filename from "@/common/filename"
-import { isOriginLocal } from "@/common/utils/isOriginLocal"
+import { isOriginLocal } from "@/common/utils/is-origin-local"
 
 describe(__filename(import.meta.url), () => {
   it("Détection origine autorisée - retourne false si undefined ", () => {

@@ -1,9 +1,9 @@
 import { internal } from "@hapi/boom"
-import type { IClassificationLabBatchResponse, IClassificationLabResponse, IClassificationLabVersionResponse } from "shared/models/cacheClassification.model"
-import { ZClassificationLabBatchResponse, ZClassificationLabResponse, ZClassificationLabVersionResponse } from "shared/models/cacheClassification.model"
+import type { IClassificationLabBatchResponse, IClassificationLabResponse, IClassificationLabVersionResponse } from "shared/models/cache-classification.model"
+import { ZClassificationLabBatchResponse, ZClassificationLabResponse, ZClassificationLabVersionResponse } from "shared/models/cache-classification.model"
 
 import getApiClient from "@/common/apis/client"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
 
 const client = getApiClient({ baseURL: config.labonnealternanceLab.baseUrl })

@@ -1,11 +1,11 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
 
-import { getSourceFromCookies } from "@/common/utils/httpUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getSourceFromCookies } from "@/common/utils/http-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
-import { getUserFromRequest } from "@/security/authenticationService"
-import { generateOffreToken } from "@/services/appLinks.service"
+import { getUserFromRequest } from "@/security/authentication.service"
+import { generateOffreToken } from "@/services/app-links.service"
 import { buildEstablishmentId, entrepriseOnboardingWorkflow, establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import {
   archiveFormulaireByEstablishmentId,
@@ -25,8 +25,8 @@ import {
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
 import { moderateFreeText } from "@/services/offreModeration.service"
-import { getUserRecruteurById } from "@/services/userRecruteur.service"
-import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
+import { getUserRecruteurById } from "@/services/user-recruteur.service"
+import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
 
 export default (server: Server) => {
   /**

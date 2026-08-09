@@ -2,10 +2,10 @@ import { unauthorized } from "@hapi/boom"
 import { addJob } from "job-processor"
 import type { ICredential } from "shared"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
-import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
-import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/searchItems.service"
+import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 type IModelTraining = {
   partner_job_id: string
@@ -173,7 +173,7 @@ const updateClassificationAndSynchronise = async ({ classification, partner_job_
       }
     }
   }
-  // add job to fillComputedJobsPartners with the filteredScopeIds
-  await addJob({ name: "fillComputedJobsPartners", payload: { addedMatchFilter: { partner_job_id: { $in: filteredScopeIds } } } })
-  await addJob({ name: "importFromComputedToJobsPartners", payload: { partner_job_id: { $in: filteredScopeIds } } })
+  // add job to fill-computed-jobs-partners with the filteredScopeIds
+  await addJob({ name: "fill-computed-jobs-partners", payload: { addedMatchFilter: { partner_job_id: { $in: filteredScopeIds } } } })
+  await addJob({ name: "import-from-computed-to-jobs-partners", payload: { partner_job_id: { $in: filteredScopeIds } } })
 }

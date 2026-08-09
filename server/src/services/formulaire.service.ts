@@ -16,42 +16,42 @@ import type {
   zRoutes,
 } from "shared"
 import { assertUnreachable, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
-import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
+import { EntrepriseErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
-import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import type { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import type z from "zod"
 import { deduplicate } from "@/common/utils/array"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/stringUtils"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mail-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/string-utils"
 import config from "@/config"
-import { createViewDelegationLink } from "./appLinks.service"
 import { getUserManagingOffer } from "./application.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDataFromSiret } from "./etablissement.service"
-import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-notifications.service"
+import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
 import { moderateFreeText } from "./offreModeration.service"
-import { anonymizeLbaJobsPartners } from "./partnerJob.service"
-import { getEntrepriseEngagementFranceTravail } from "./referentielEngagementEntreprise.service"
-import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./roleManagement.service"
+import { anonymizeLbaJobsPartners } from "./partner-job.service"
+import { getEntrepriseEngagementFranceTravail } from "./referentiel-engagement-entreprise.service"
+import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./role-management.service"
 import { getRomeDetailsFromDB } from "./rome.service"
-import { syncJobPartnersToSearchItemsInBackground } from "./search/searchItems.service"
-import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
-import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
+import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
+import { saveJobTrafficSourceIfAny } from "./traffic-source.service"
+import { isUserEmailChecked, validateUserWithAccountEmail } from "./user-with-account.service"
 
 type ISentDelegation = {
   raison_sociale: string
@@ -814,93 +814,6 @@ export const checkForJobActivations = async (userId: ObjectId, entrepriseId: Obj
     const extendedOffer = await activateAndExtendOffre(job._id)
     const delegations = extendedOffer.delegations ?? []
     await Promise.all(delegations.map(async (delegation) => sendDelegationMailToCFA(delegation.email, extendedOffer, delegation.siret_code)))
-  })
-}
-
-const getJobOrigin = async (userId: ObjectId) => {
-  const userWithAccount = await getDbCollection("userswithaccounts").findOne({ _id: userId })
-  return (userWithAccount && userWithAccount.origin && RECRUITER_USER_ORIGIN[userWithAccount.origin]) ?? "La bonne alternance"
-}
-
-/**
- * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
- */
-export async function sendDelegationMailToCFA(email: string, offre: IJobsPartnersOfferPrivate, siret: string) {
-  const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret })
-  if (unsubscribeOF) return
-
-  const { managed_by, workplace_siret } = offre
-  if (!managed_by) {
-    throw new Error(`inattendu: managed_by vide pour l'offre avec id=${offre._id}`)
-  }
-  if (!workplace_siret) {
-    throw new Error(`inattendu: workplace_siret vide pour l'offre avec id=${offre._id}`)
-  }
-
-  const jobOrigin = await getJobOrigin(managed_by)
-  const establishment_id = buildEstablishmentId(managed_by, workplace_siret)
-
-  await mailer.sendEmail({
-    to: email,
-    subject: `Une entreprise recrute dans votre domaine`,
-    template: getStaticFilePath("./templates/mail-cfa-delegation.mjml.ejs"),
-    data: {
-      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-      enterpriseName: offre.workplace_brand || offre.workplace_name || offre.workplace_legal_name,
-      jobName: offre.offer_title,
-      contractType: (offre.contract_type ?? []).join(", "),
-      trainingLevel: offre.offer_target_diploma?.label ?? "Indifférent",
-      startDate: dayjs(offre.contract_start).format("DD/MM/YYYY"),
-      duration: offre.contract_duration,
-      jobOrigin,
-      offerButton:
-        createViewDelegationLink(email, establishment_id, offre._id.toString(), siret) +
-        "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
-      createAccountButton: `${config.publicUrl}/organisme-de-formation?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_creer-compte`,
-      policyUrl: `${config.publicUrl}/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_politique-confidentialite`,
-      publicEmail: config.publicEmail,
-    },
-  })
-}
-
-export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPartnersOfferPrivate) {
-  const isRecruteurAwaiting = job.offer_status === JOB_STATUS_ENGLISH.EN_ATTENTE
-  if (isRecruteurAwaiting) {
-    return
-  }
-  const { email, last_name, first_name } = user
-  const { is_delegated, workplace_name, workplace_siret, cfa_siret, cfa_legal_name, workplace_legal_name, workplace_brand } = job
-  const raisonSocialeEntreprise = workplace_name || workplace_legal_name || workplace_brand
-  const establishmentTitle = workplace_name ?? workplace_siret
-  // Send mail with action links to manage offers
-  await mailer.sendEmail({
-    to: email,
-    subject: raisonSocialeEntreprise ? `Votre offre d'alternance pour ${raisonSocialeEntreprise} publiée` : "Votre offre d'alternance est publiée",
-    template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
-    data: {
-      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-      nom: sanitizeTextField(last_name),
-      prenom: sanitizeTextField(first_name),
-      raison_sociale: establishmentTitle,
-      mandataire: is_delegated,
-      offre: {
-        rome_appellation_label: job.offer_rome_appellation,
-        job_type: job.contract_type.join(", "),
-        job_level_label: job.offer_target_diploma?.label ?? "Indifférent",
-        job_start_date: dayjs(job.contract_start).format("DD/MM/YY"),
-        job_title: job.offer_title,
-      },
-      cfa: {
-        cfa_siret,
-        cfa_legal_name,
-      },
-      entreprise: {
-        raisonSocialeEntreprise,
-        workplace_siret,
-      },
-      lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, workplace_siret, job.offer_title),
-      publicEmail: config.publicEmail,
-    },
   })
 }
 

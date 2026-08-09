@@ -1,0 +1,243 @@
+import { internal } from "@hapi/boom"
+import { ObjectId } from "bson"
+import FormData from "form-data"
+import { createReadStream } from "fs"
+import querystring from "querystring"
+import type { IFTJobRaw } from "shared"
+import type { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/france-travail-access.model"
+
+import getApiClient from "@/common/apis/client"
+import { logger } from "@/common/logger"
+import { apiRateLimiter } from "@/common/utils/api-utils"
+import { sleep } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
+import config from "@/config"
+import type { FTResponse } from "@/services/ftjob.service.types"
+import { ZFTApiToken } from "@/services/rome.service.types"
+
+const axiosClient = getApiClient({})
+
+const OffreFranceTravailLimiter = apiRateLimiter("apiOffreFT", {
+  nbRequests: 10,
+  durationInSeconds: 1,
+  client: axiosClient,
+})
+
+const getFranceTravailTokenFromDB = async (access_type: IAccessParams): Promise<IFranceTravailAccess["access_token"] | undefined> => {
+  const data = await getDbCollection("francetravail_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
+  return data?.access_token
+}
+const updateFranceTravailTokenInDB = async ({ access_type, access_token }: { access_type: IFranceTravailAccessType; access_token: string }) =>
+  await getDbCollection("francetravail_access").updateOne(
+    { access_type },
+    { $set: { access_token }, $setOnInsert: { _id: new ObjectId(), created_at: new Date() } },
+    { upsert: true }
+  )
+
+export const ACCESS_PARAMS = {
+  OFFRE: querystring.stringify({
+    grant_type: "client_credentials",
+    client_id: config.esdClientId,
+    client_secret: config.esdClientSecret,
+    scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
+  }),
+}
+
+export type IAccessParams = keyof typeof ACCESS_PARAMS
+
+const getToken = async (access: IAccessParams) => {
+  const token = await getFranceTravailTokenFromDB(access)
+  if (token) {
+    return token
+  } else {
+    return await getFranceTravailTokenFromAPI(access)
+  }
+}
+
+export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promise<string> => {
+  try {
+    logger.info(`requesting new FT token for access=${access}`)
+    const tokenParams = ACCESS_PARAMS[access]
+    const { data } = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=partenaire`, tokenParams, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      timeout: 3000,
+    })
+
+    const validation = ZFTApiToken.safeParse(data)
+    if (!validation.success) {
+      throw internal("inattendu: FT api token format non valide", { error: validation.error })
+    }
+
+    await updateFranceTravailTokenInDB({ access_type: access, access_token: validation.data.access_token })
+
+    return validation.data.access_token
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    throw internal("impossible d'obtenir un token pour l'API france travail")
+  }
+}
+
+/**
+ * @description Search for FT Jobs
+ */
+export const searchForFtJobs = async (
+  params: {
+    codeROME?: string
+    commune?: string
+    departement?: string
+    region?: string
+    sort?: number
+    natureContrat: string
+    range: string
+    niveauFormation?: string
+    insee?: string
+    distance?: number
+    publieeDepuis?: number
+  },
+  options: {
+    throwOnError: boolean
+  }
+): Promise<{ data: FTResponse; contentRange: string } | null | ""> => {
+  const token = await getToken("OFFRE")
+  return OffreFranceTravailLimiter(async (client) => {
+    try {
+      const extendedParams = {
+        ...params,
+        // paramètres exclurant les offres LBA des résultats de l'api PE
+        partenaires: "LABONNEALTERNANCE",
+        modeSelectionPartenaires: "EXCLU",
+      }
+
+      const { data, headers } = await client.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/search`, {
+        params: extendedParams,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      return { data, contentRange: headers["content-range"] } //  fyi: 'content-range': 'offres 0-149/9981',
+    } catch (error: any) {
+      if (options.throwOnError) {
+        throw error
+      }
+      sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+      return null
+    }
+  })
+}
+
+/**
+ * @description Get a FT Job
+ */
+export const getFtJob = async (id: string) => {
+  const token = await getToken("OFFRE")
+  const result = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  return result
+}
+
+/**
+ * Sends CSV file to France Travail API through a "form data".
+ */
+export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => {
+  const form = new FormData()
+  form.append("login", config.franceTravailDepotOffres.login)
+  form.append("password", config.franceTravailDepotOffres.password)
+  form.append("nomFlux", config.franceTravailDepotOffres.nomFlux)
+  form.append("fichierAenvoyer", createReadStream(csvPath))
+  form.append("periodeRef", "")
+
+  try {
+    const { data } = await axiosClient.post(config.franceTravailIO.depotUrl, form, {
+      headers: {
+        ...form.getHeaders(),
+      },
+      timeout: 0,
+    })
+
+    if (data !== "Votre fichier a bien ete envoye\n") {
+      throw new Error(data)
+    }
+  } catch (error: any) {
+    logger.error(error)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    throw error
+  }
+}
+
+// Documentation https://francetravail.io/produits-partages/catalogue/offres-emploi/documentation#/api-reference/operations/recupererListeOffre
+export async function* getAllFTJobsByDepartments(departement: string): AsyncGenerator<Omit<IFTJobRaw, "_id" | "createdAt">[], void, void> {
+  const jobLimit = 150
+  let start = 0
+  let total = 1
+
+  while (start < total) {
+    // Construct the range for this "page"
+    const range = `${start}-${start + jobLimit - 1}`
+
+    // Prepare your query params
+    const params: Parameters<typeof searchForFtJobs>[0] = {
+      natureContrat: "E2,FS", // E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
+      range,
+      departement,
+      // publieeDepuis: 7, // Il vaut mieux ne pas mettre de date de publication pour avoir le plus de résultats possible
+      sort: 1, // making sure we get the most recent jobs first
+    }
+
+    try {
+      const response = await searchForFtJobs(params, { throwOnError: true })
+      await sleep(1500)
+      if (!response) {
+        throw new Error("No response from FranceTravail")
+      }
+
+      const { data: jobs, contentRange } = response
+
+      if (!jobs.resultats) {
+        //  logger.info("No resultats from FranceTravail", params)
+        break
+      }
+
+      yield jobs.resultats as Omit<IFTJobRaw, "_id" | "createdAt">[]
+
+      // Safely parse out the total
+      // Usually, contentRange might look like "offres 0-149/9981"
+      // We split by "/" and take the second part (9981), converting to Number
+      if (contentRange) {
+        const totalString = contentRange.split("/")[1]
+        if (totalString) {
+          total = parseInt(totalString, 10)
+        }
+      }
+
+      // Move to the next "page"
+      start += jobLimit
+    } catch (error: any) {
+      // handle 3000 limit page reach
+      if (error.response?.data?.message === "La position de début doit être inférieure ou égale à 3000.") {
+        sentryCaptureException(error)
+        await notifyToSlack({
+          subject: "Import Offres France Travail",
+          message: `Limite des 3000 offres par département dépassée! dept: ${departement} total: ${total}`,
+          error: true,
+        })
+        throw error
+      }
+      if (error.response?.data?.message === "Valeur du paramètre « region » incorrecte." || error.response?.data?.message === "Valeur du paramètre « departement » incorrecte.") {
+        // code region or departement not found
+        break
+      }
+      logger.error(error, "Error while fetching jobs")
+    }
+  }
+}

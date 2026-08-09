@@ -8,11 +8,11 @@ import { ENTREPRISE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
-import type { z } from "shared/helpers/zodWithOpenApi"
+import type { z } from "shared/helpers/zod-with-open-api"
 import type { zRoutes } from "shared/routes/index"
 import { expect } from "vitest"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { createCancelJobLink, createProvidedJobLink, createValidationMagicLink, generateDepotSimplifieToken } from "@/services/appLinks.service"
+import { userWithAccountToUserForToken } from "@/security/access-token.service"
+import { createCancelJobLink, createProvidedJobLink, createValidationMagicLink, generateDepotSimplifieToken } from "@/services/app-links.service"
 
 export type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creation"]["body"]>
 export type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>
@@ -146,7 +146,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
       path: `/api/formulaire/offre/${jobId}/extend`,
       cookies,
       body: {
-        job_start_date: dayjs().format("YYYY-MM-DD"),
+        job_start_date: dayjs().tz().format("YYYY-MM-DD"),
         job_start_type: JOB_START_TYPE.PRECISE_DATE,
         job_start_date_flexible: false,
       },

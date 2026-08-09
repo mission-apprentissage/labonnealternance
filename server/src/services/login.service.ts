@@ -2,12 +2,12 @@ import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { assertUnreachable } from "shared"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import type { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { UserEventType } from "shared/models/userWithAccount.model"
-import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { UserEventType } from "shared/models/user-with-account.model"
+import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const controlUserState = async (user: IUserWithAccount): Promise<{ error: boolean; data?: string }> => {
   const status = getLastStatusEvent(user.status)?.status

@@ -2,7 +2,7 @@ import type { Filter, FindOptions } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { ISession } from "shared"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 
 type TCreateSession = Pick<ISession, "token">

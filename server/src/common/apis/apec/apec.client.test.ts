@@ -3,14 +3,14 @@ import { describe, expect, it, vi } from "vitest"
 
 import { getApecJobs } from "./apec.client"
 
-vi.mock("@/common/utils/ftpUtils")
+vi.mock("@/common/utils/ftp-utils")
 vi.mock("@/common/logger")
 
 describe("getFileFromApecFTP", () => {
   it("should return a readable stream from SFTP", async () => {
     const xmlContent = `<?xml version="1.0" encoding="UTF-8"?><offres><offre><id>1</id></offre></offres>`
 
-    const { downloadFileFromSFTP } = await import("@/common/utils/ftpUtils")
+    const { downloadFileFromSFTP } = await import("@/common/utils/ftp-utils")
     vi.mocked(downloadFileFromSFTP).mockResolvedValue(Readable.from(xmlContent))
 
     const stream = await getApecJobs()

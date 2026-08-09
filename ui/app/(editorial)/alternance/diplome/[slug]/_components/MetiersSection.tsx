@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
-import type { IDiplomeMetier } from "shared/models/seoDiplome.model"
+import type { IDiplomeMetier } from "shared/models/seo-diplome.model"
 import { findMetierLandingSlug } from "@/app/(editorial)/alternance/_components/landing_links"
 import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTitle"
 import { UTM_PARAMS } from "../_data/constants"

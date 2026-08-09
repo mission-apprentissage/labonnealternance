@@ -3,8 +3,8 @@ import { setupCache } from "axios-cache-interceptor"
 import http from "http"
 import https from "https"
 
-import { apiRateLimiter } from "@/common/utils/apiUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { apiRateLimiter } from "@/common/utils/api-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
 
 const getApiClient = (options) =>

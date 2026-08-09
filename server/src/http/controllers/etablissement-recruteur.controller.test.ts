@@ -1,0 +1,300 @@
+import { getConnectedInfos } from "@tests/fixture/connectedUser.fixture"
+import type { CreationBody, CreationResponse } from "@tests/sdk/entrepriseSdk"
+import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
+import { roleManagementEventFactory, saveAdminUserTest, saveCfaUserTest, saveRoleManagement, saveUserWithAccount, validatedUserStatus } from "@tests/utils/user.test.utils"
+import { ObjectId } from "bson"
+import { omit } from "lodash-es"
+import nock from "nock"
+import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
+import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
+import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
+import { UserEventType } from "shared/models/index"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
+import { apiReferentielCatalogueFixture } from "@/common/apis/api-referentiel-catalogue.fixture"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import mailer from "@/services/mailer.service"
+
+vi.mock("@/services/mailer.service", () => {
+  return {
+    default: {
+      sendEmail: vi.fn().mockResolvedValue({ messageId: "test-message-id", accepted: ["test@example.com"] }),
+      renderEmail: vi.fn().mockResolvedValue("<html>Test Email</html>"),
+    },
+  }
+})
+
+describe("POST /etablissement/creation", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+
+    const mockEntreprise = nock("https://entreprise.api.gouv.fr/v3/insee")
+      .persist()
+      .get(new RegExp("/sirene/etablissements/diffusibles/"))
+      .reply(200, apiEntrepriseEtablissementFixture.dinum)
+
+    const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+")).reply(200, apiReferentielCatalogueFixture)
+
+    const mockGeocoding = nock("https://data.geopf.fr:443/geocodage")
+      .persist()
+      .get("/search")
+      .query(true)
+      .reply(200, {
+        features: [
+          {
+            type: "Feature",
+            geometry: parisFixture.centre,
+            properties: generateFeaturePropertyFixture({ city: parisFixture.nom, postcode: parisFixture.codesPostaux[0], name: "20 AVENUE DE SEGUR" }),
+          },
+        ],
+      })
+
+    return async () => {
+      mockCfa.persist(false)
+      mockGeocoding.persist(false)
+      mockEntreprise.persist(false)
+
+      await getDbCollection("jobs_partners").deleteMany()
+      await getDbCollection("rolemanagements").deleteMany()
+      await getDbCollection("entreprises").deleteMany()
+      await getDbCollection("cfas").deleteMany()
+      await getDbCollection("userswithaccounts").deleteMany()
+    }
+  })
+
+  const defaultCreationEntreprisePayload = {
+    email: "email@email.com",
+    first_name: "John",
+    last_name: "Doe",
+    phone: "0612345678",
+    establishment_siret: "42476141900045",
+    origin: "Labonnealternance",
+    opco: OPCOS_LABEL.AKTO,
+    idcc: "3248",
+    type: ENTREPRISE,
+  } as const
+
+  const defaultCreationCFAPayload = {
+    opco: null,
+    email: "email@email.com",
+    first_name: "John",
+    last_name: "Doe",
+    phone: "0612345678",
+    origin: "Labonnealternance",
+    type: CFA,
+    establishment_siret: "52151363000017",
+  } as const
+
+  const callCreation = (body: CreationBody) => entrepriseSdk(httpClient).create(body)
+
+  describe("Création d'entreprise", () => {
+    it("Vérifie que le recruteur est créé avec une offre", async () => {
+      const response = await callCreation(defaultCreationEntreprisePayload)
+      expect.soft(response.statusCode).toBe(200)
+      const { user } = response.json() as CreationResponse
+      expect.soft(omit(user, ["_id", "createdAt", "updatedAt", "last_action_date", "status"])).toMatchSnapshot()
+      expect.soft(user.status[0].status).toBe(UserEventType.ACTIF)
+    }, 10_000)
+
+    it("Vérifie qu'une fois créé, l'opco n'est plus modifié par une autre création de compte", async () => {
+      const response = await callCreation(defaultCreationEntreprisePayload)
+      const { formulaire } = response.json() as CreationResponse
+      expect.soft(formulaire?.opco).toBe(OPCOS_LABEL.AKTO)
+
+      const response2 = await callCreation({
+        ...defaultCreationEntreprisePayload,
+        email: "email2@email.com",
+        opco: OPCOS_LABEL.CONSTRUCTYS,
+      })
+      const { formulaire: formulaire2 } = response2.json() as CreationResponse
+      expect.soft(formulaire2?.opco).toBe(OPCOS_LABEL.AKTO)
+    })
+
+    it("Vérifie qu'un email ne peut pas créer plusieurs comptes", async () => {
+      const response = await callCreation(defaultCreationEntreprisePayload)
+      const { formulaire } = response.json() as CreationResponse
+      expect.soft(formulaire?.opco).toBe(OPCOS_LABEL.AKTO)
+
+      const response2 = await callCreation({
+        ...defaultCreationEntreprisePayload,
+        establishment_siret: "48755980900016",
+      })
+      expect.soft(response2.statusCode).toBe(403)
+      expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
+    })
+    it("Vérifie qu'un utilisateur existant sans rôle actif peut recréer un compte", async () => {
+      // given: user exists in DB but has no active role (e.g. previously deleted/cleaned up)
+      const { email } = defaultCreationEntreprisePayload
+      await saveUserWithAccount({ email })
+      // when
+      const response = await callCreation({ ...defaultCreationEntreprisePayload, email })
+      // then: re-registration is allowed since no active role exists
+      expect.soft(response.statusCode).toBe(200)
+    })
+
+    it.each([
+      { first_name: "Jean-Paul", last_name: "D'Artagnan" },
+      { first_name: "Élodie", last_name: "François-Marie" },
+    ])("Accepte les noms valides avec accents et séparateurs", async ({ first_name, last_name }) => {
+      const response = await callCreation({
+        ...defaultCreationEntreprisePayload,
+        first_name,
+        last_name,
+      })
+
+      expect.soft(response.statusCode).toBe(200)
+    })
+
+    it.each([
+      { first_name: ".", last_name: "Doe" },
+      { first_name: "John", last_name: "1" },
+      { first_name: " ", last_name: "Doe" },
+    ])("Refuse les noms et prénoms sans 2 lettres valides", async ({ first_name, last_name }) => {
+      const response = await callCreation({
+        ...defaultCreationEntreprisePayload,
+        first_name,
+        last_name,
+      })
+
+      expect.soft(response.statusCode).toBe(400)
+    })
+
+    it("Envoie un email de confirmation dès la création de compte entreprise", async () => {
+      const response = await callCreation(defaultCreationEntreprisePayload)
+
+      expect.soft(response.statusCode).toBe(200)
+      expect.soft(vi.mocked(mailer.sendEmail).mock.calls.length).toBe(1)
+      expect.soft(vi.mocked(mailer.sendEmail).mock.calls[0]?.[0]?.to).toBe(defaultCreationEntreprisePayload.email)
+      expect.soft(vi.mocked(mailer.sendEmail).mock.calls[0]?.[0]?.subject).toBe("Confirmez votre adresse mail")
+    })
+
+    it("N'échoue pas si l'envoi de l'email de confirmation échoue", async () => {
+      vi.mocked(mailer.sendEmail).mockRejectedValueOnce(new Error("smtp failed"))
+
+      const response = await callCreation(defaultCreationEntreprisePayload)
+
+      expect.soft(response.statusCode).toBe(200)
+      expect.soft(vi.mocked(mailer.sendEmail).mock.calls.length).toBe(1)
+    })
+  })
+  describe("Création de CFA", () => {
+    it("Vérifie que le CFA est créé", async () => {
+      const response = await callCreation(defaultCreationCFAPayload)
+      expect.soft(response.statusCode).toBe(200)
+      const { formulaire, user } = response.json() as CreationResponse
+      expect.soft(formulaire).not.toBeDefined()
+      expect.soft(omit(user, ["_id", "createdAt", "updatedAt", "last_action_date", "status"])).toMatchSnapshot()
+      expect.soft(user.status[0].status).toBe(UserEventType.ACTIF)
+    })
+    it("Vérifie qu un email ne peut pas créer 2 comptes CFA", async () => {
+      const response = await callCreation(defaultCreationCFAPayload)
+      expect.soft(response.statusCode).toBe(200)
+      const response2 = await callCreation({ ...defaultCreationCFAPayload, establishment_siret: "13002172800261" })
+      expect.soft(response2.statusCode).toBe(403)
+      expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
+    })
+    it("Vérifie que 2 emails ne peuvent pas avoir un compte sur le même CFA", async () => {
+      const response = await callCreation(defaultCreationCFAPayload)
+      expect.soft(response.statusCode).toBe(200)
+      const response2 = await callCreation({ ...defaultCreationCFAPayload, email: "email2@email.fr" })
+      expect.soft(response2.statusCode).toBe(403)
+      expect.soft(response2.json().message).toBe("Ce numéro siret est déjà associé à un compte utilisateur.")
+    })
+    it("Vérifie qu'un email ne peut pas créer un compte si l utilisateur existe déjà", async () => {
+      // given
+      const { email } = defaultCreationCFAPayload
+      await saveUserWithAccount({ email })
+      // when
+      const response = await callCreation({ ...defaultCreationCFAPayload, email })
+      // then
+      expect.soft(response.statusCode).toBe(403)
+      expect.soft(response.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
+    })
+  })
+})
+
+describe("GET /etablissement/cfa/:cfaId/entreprises", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  it("permet à un CFA de lister les entreprises qu'il gère", async () => {
+    // given
+    const { user, cfa, entreprise } = await saveCfaUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(user.email)
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${cfa._id}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(200)
+    const entreprises = response.json()
+    expect.soft(entreprises).toHaveLength(1)
+    expect.soft(entreprises[0].establishment_siret).toBe(entreprise.siret)
+  })
+
+  it("permet à un admin de lister les entreprises gérées par un CFA", async () => {
+    // given
+    const { cfa, entreprise } = await saveCfaUserTest({ status: validatedUserStatus })
+    const { user: adminUser } = await saveAdminUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(adminUser.email)
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${cfa._id}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(200)
+    const entreprises = response.json()
+    expect.soft(entreprises).toHaveLength(1)
+    expect.soft(entreprises[0].establishment_siret).toBe(entreprise.siret)
+  })
+
+  it("renvoie une erreur si aucun compte CFA n'existe pour l'id donné, même pour un admin", async () => {
+    // given
+    const { user: adminUser } = await saveAdminUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(adminUser.email)
+    // Un role CFA GRANTED référence bien le cfaId ciblé, mais aucun document cfa n'existe pour cet id
+    const cfaId = new ObjectId()
+    const cfaUser = await saveUserWithAccount({ status: validatedUserStatus })
+    await saveRoleManagement({ user_id: cfaUser._id, authorized_id: cfaId.toString(), status: [roleManagementEventFactory()] })
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${cfaId}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(404)
+  })
+
+  it("renvoie une liste vide pour un admin quand le CFA n'a aucun droit attribué", async () => {
+    // given
+    const { user: adminUser } = await saveAdminUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(adminUser.email)
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${new ObjectId()}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(200)
+    expect.soft(response.json()).toEqual([])
+  })
+})

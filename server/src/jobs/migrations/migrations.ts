@@ -3,8 +3,8 @@ import { internal } from "@hapi/boom"
 import path from "path"
 import dayjs from "shared/helpers/dayjs"
 import { __dirname } from "@/common/utils/dirname"
-import { withCause } from "@/common/utils/errorManager"
-import { getDatabase, getMongodbClient } from "@/common/utils/mongodbUtils"
+import { withCause } from "@/common/utils/error-manager"
+import { getDatabase, getMongodbClient } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 
 const myConfig = {
@@ -113,7 +113,7 @@ export async function create({ description }: { description: string }) {
   const fileName = dayjs().format(`YYYYMMDDHHmmss-[${description.replaceAll(" ", "_")}.ts]`)
   const file = `src/migrations/${fileName}`
   const newContent = `
-import { getDbCollection } from "@/common/utils/mongodbUtils";
+import { getDbCollection } from "@/common/utils/mongodb-utils";
 
 export const up = async () => {
 await getDbCollection("").updateMany({}, { $set: { "profile.newField": "defaultValue" } });

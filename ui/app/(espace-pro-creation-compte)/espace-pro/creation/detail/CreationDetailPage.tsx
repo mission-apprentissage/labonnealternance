@@ -1,7 +1,7 @@
 "use client"
 
 import { InformationCreationCompte } from "@/app/(espace-pro-creation-compte)/_components/InformationCreationCompte/InformationCreationCompte"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 export default function CreationDetail() {
   const { siret, email, type, origin } = useSearchParamsRecord()

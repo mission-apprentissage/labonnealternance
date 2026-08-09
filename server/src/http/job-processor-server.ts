@@ -1,0 +1,47 @@
+import { notFound } from "@hapi/boom"
+import fastify from "fastify"
+import type { ZodTypeProvider } from "fastify-type-provider-zod"
+import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
+
+import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
+import { coreRoutes } from "./controllers/core.controller"
+import { errorMiddleware } from "./middlewares/error-middleware"
+import type { Server } from "./server"
+
+async function bind(app: Server) {
+  app.addHook("onRequest", (request, _reply, done) => {
+    enterRequestLoggerContext(request.log)
+    done()
+  })
+  app.setValidatorCompiler(validatorCompiler)
+  app.setSerializerCompiler(serializerCompiler)
+
+  app.register(
+    (subApp, _, done) => {
+      const typedSubApp = subApp.withTypeProvider<ZodTypeProvider>()
+      coreRoutes(typedSubApp)
+
+      done()
+    },
+    { prefix: "/api" }
+  )
+
+  app.setNotFoundHandler((_req, res) => {
+    res.status(404).send(notFound().output)
+  })
+
+  errorMiddleware(app)
+  return app
+}
+
+export const bindProcessorServer = async (): Promise<Server> => {
+  const app: Server = fastify({
+    loggerInstance: getRootLogger(),
+    trustProxy: 1,
+    routerOptions: {
+      caseSensitive: false,
+    },
+  }).withTypeProvider<ZodTypeProvider>()
+
+  return bind(app)
+}

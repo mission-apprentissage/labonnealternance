@@ -8,23 +8,23 @@ import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IGeoPoint, IReferentielRome } from "shared/models/index"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { IJobOfferApiReadV3, IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { zJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import z from "zod"
-import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
-import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getEtablissementFromGouvSafe } from "@/common/apis/api-entreprise/api-entreprise.client"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 
-vi.mock("@/common/apis/franceTravail/franceTravail.client")
-vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")
+vi.mock("@/common/apis/france-travail/france-travail.client")
+vi.mock("@/common/apis/api-entreprise/api-entreprise.client")
 
 const httpClient = useServer()
 const jobsSdk = jobsV3Sdk(httpClient)

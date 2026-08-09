@@ -1,15 +1,15 @@
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
-import jobsPartnersModel, { type IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import seoDiplomeModel, { type IDiplomeEcoleCard } from "shared/models/seoDiplome.model"
-import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seoMetier.model"
-import seoVilleModel from "shared/models/seoVille.model"
+import jobsPartnersModel, { type IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import seoDiplomeModel, { type IDiplomeEcoleCard } from "shared/models/seo-diplome.model"
+import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seo-metier.model"
+import seoVilleModel from "shared/models/seo-ville.model"
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils.js"
-import { metierData } from "@/jobs/seo/dataMetierSEO"
+import { asyncForEach } from "@/common/utils/async-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils.js"
+import { metierData } from "@/jobs/seo/data-metier-seo"
 import { getApplicationByCompanyCount, getApplicationByJobCount } from "@/services/application.service"
-import { getJobsPartnersFromDBForUI, getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { getJobsPartnersFromDBForUI, getPartnerJobsCount } from "./jobs/job-opportunity/job-opportunity.service"
 
 const DEFAULT_RADIUS_KM = 30
 

@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 import type { Filter, MatchKeysAndValues } from "mongodb"
 import type { IApplicant, IApplicantNew } from "shared"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const getApplicantFromDB = async (filter: Filter<IApplicant>) => getDbCollection("applicants").findOne(filter)
 

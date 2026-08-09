@@ -1,7 +1,7 @@
-import { z } from "../helpers/zodWithOpenApi.js"
+import { z } from "../helpers/zod-with-open-api.js"
 import { zObjectId } from "../models/common.js"
-import { ZComputedUserAccess } from "../models/computedUserAccess.model.js"
-import { ZUserRecruteurPublic } from "../models/usersRecruteur.model.js"
+import { ZComputedUserAccess } from "../models/computed-user-access.model.js"
+import { ZUserRecruteurPublic } from "../models/users-recruteur.model.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
 

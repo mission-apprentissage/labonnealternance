@@ -1,5 +1,5 @@
-import { z } from "../helpers/zodWithOpenApi.js"
-import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/diplomesMetiers.model.js"
+import { z } from "../helpers/zod-with-open-api.js"
+import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/diplomes-metiers.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 

@@ -4,7 +4,7 @@ import type { SyntheticEvent } from "react"
 import { useEffect } from "react"
 
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
-import { useIsMobileDevice } from "@/app/hooks/useIsMobileDevice"
+import { useIsMobileDevice } from "@/app/hooks/use-is-mobile-device"
 
 export const ModalReadOnly = ({
   children,

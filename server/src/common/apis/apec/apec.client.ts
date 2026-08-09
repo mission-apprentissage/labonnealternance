@@ -1,5 +1,5 @@
 import { logger } from "@/common/logger"
-import { downloadFileFromSFTP } from "@/common/utils/ftpUtils"
+import { downloadFileFromSFTP } from "@/common/utils/ftp-utils"
 import config from "@/config"
 
 const APEC_REMOTE_FILE = "/Export_offres_LA_BONNE_ALTERNANCE.xml"

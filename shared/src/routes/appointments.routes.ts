@@ -1,6 +1,6 @@
 import type { Jsonify } from "type-fest"
 import { referrers } from "../constants/referers.js"
-import { z } from "../helpers/zodWithOpenApi.js"
+import { z } from "../helpers/zod-with-open-api.js"
 import { EREASONS, ZAppointment, ZAppointmentRecap, ZAppointmentShortRecap } from "../models/appointments.model.js"
 import { zObjectId } from "../models/common.js"
 import { ZEtablissement } from "../models/etablissement.model.js"

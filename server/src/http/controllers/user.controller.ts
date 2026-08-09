@@ -1,23 +1,23 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { ENTREPRISE } from "shared/constants/index"
 import { CFA, OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJob } from "shared/index"
 import { getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import { getLastStatusEvent } from "shared/utils/get-last-status-event"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
-import { getUserFromRequest } from "@/security/authenticationService"
+import { getUserFromRequest } from "@/security/authentication.service"
 import { buildEstablishmentId } from "@/services/etablissement.service"
 import { getFormulaireWithRomeDetail } from "@/services/formulaire.service"
-import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/roleManagement.service"
+import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/role-management.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -26,8 +26,8 @@ import {
   removeUser,
   updateUserWithAccountFields,
   userAndRoleAndOrganizationToUserRecruteur,
-} from "@/services/userRecruteur.service"
-import { createSuperUser } from "@/services/userWithAccount.service"
+} from "@/services/user-recruteur.service"
+import { createSuperUser } from "@/services/user-with-account.service"
 
 export default (server: Server) => {
   server.get(

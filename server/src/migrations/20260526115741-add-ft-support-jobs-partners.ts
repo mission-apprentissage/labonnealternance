@@ -1,5 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 export const up = async () => {
   await getDbCollection("jobs_partners").updateMany(

@@ -4,12 +4,12 @@ import { ObjectId } from "mongodb"
 import type { IUser } from "shared"
 import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { IUserForOpco } from "shared/routes/user.routes"
-import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getLastStatusEvent } from "shared/utils/get-last-status-event"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { buildEstablishmentId } from "./etablissement.service"
-import { getUserRecruteursForManagement } from "./userRecruteur.service"
+import { getUserRecruteursForManagement } from "./user-recruteur.service"
 
 export const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
   const newUserId = new ObjectId()

@@ -11,8 +11,8 @@ import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsager
 import { GrandsGroupesRecruteur } from "@/app/(home)/_components/GrandsGroupesRecruteur"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
-import { getDepotCtaHref } from "@/services/getDepotCtaHref"
-import { getSession } from "@/utils/getSession"
+import { getDepotCtaHref } from "@/services/get-depot-cta-href"
+import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 
 export const cardSx = {

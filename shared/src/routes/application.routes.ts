@@ -1,8 +1,8 @@
 import { ApplicationIntention, RefusalReasons } from "../constants/application.js"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-import { z } from "../helpers/zodWithOpenApi.js"
+import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
+import { z } from "../helpers/zod-with-open-api.js"
 import { CompanyFeebackSendStatus, ZHelloworkApplication } from "../models/applications.model.js"
-import { ZLbacError } from "../models/lbacError.model.js"
+import { ZLbacError } from "../models/lbac-error.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"

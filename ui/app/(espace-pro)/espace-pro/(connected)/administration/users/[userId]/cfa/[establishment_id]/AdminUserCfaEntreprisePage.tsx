@@ -7,10 +7,10 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { ConfirmationSuppressionEntreprise } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionEntreprise"
 import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
-import { useDisclosure } from "@/common/hooks/useDisclosure"
+import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { getEntrepriseManagedByCfa, getFormulaire, getUser } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 export default function AdminUserCfaEntreprisePage() {
   const { userId, establishment_id } = useParams() as { userId: string; establishment_id: string }

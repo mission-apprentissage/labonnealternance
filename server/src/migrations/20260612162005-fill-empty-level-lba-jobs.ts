@@ -1,10 +1,10 @@
 import type { AnyBulkWriteOperation } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-import { NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
+import { NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobs-partners.model"
 
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 // Niveaux de formation déduits par IA (job deduceTargetDiplomaLevelJobsPartners) pour les offres LBA
 // dont le champ offer_target_diploma était vide. La migration ne remplit que les offres encore vides.

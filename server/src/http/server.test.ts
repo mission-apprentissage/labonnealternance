@@ -7,7 +7,7 @@ import { zRoutes } from "shared/index"
 import type { SecurityScheme } from "shared/routes/common.routes"
 import { describe, it } from "vitest"
 
-import { describeAuthMiddleware } from "./middlewares/authMiddleware"
+import { describeAuthMiddleware } from "./middlewares/auth-middleware"
 import { bind } from "./server"
 
 describe("server", () => {

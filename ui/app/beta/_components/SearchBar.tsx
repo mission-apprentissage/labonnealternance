@@ -7,7 +7,7 @@ import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
 import type { ReactNode } from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { searchAddress } from "@/services/baseAdresse"
+import { searchAddress } from "@/services/base-adresse"
 import { apiGet } from "@/utils/api.utils"
 
 function useThrottle(value: string, delay: number) {
