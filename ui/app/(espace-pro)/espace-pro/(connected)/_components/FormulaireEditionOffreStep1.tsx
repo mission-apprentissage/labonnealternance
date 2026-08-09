@@ -10,7 +10,7 @@ import dayjs from "dayjs"
 import { Formik, useFormikContext } from "formik"
 import { useState } from "react"
 import type { IJob, IReferentielRomeForJob } from "shared"
-import { JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
+import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails, detectUrls } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
@@ -23,8 +23,8 @@ import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
-const EMPLOYER_DESCRIPTION_MAX = 800
-const JOB_DESCRIPTION_MAX = 3000
+const EMPLOYER_DESCRIPTION_MAX = JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH
+const JOB_DESCRIPTION_MAX = JOB_DESCRIPTION_MAX_LENGTH
 const AMELIORER_IA_MAX_USAGES = 2
 
 type FreeTextFieldName = "job_description" | "job_employer_description"
@@ -306,9 +306,13 @@ export const FormulaireEditionOffreStep1 = ({
           job_description: Yup.string()
             .trim()
             .transform((v) => v || undefined)
-            .min(30, "La description est trop courte (minimum 30 caractères).")
-            .max(JOB_DESCRIPTION_MAX, `La description est trop longue (maximum ${JOB_DESCRIPTION_MAX} caractères).`)
-            .test("required-if-custom", "Champ obligatoire", (value) => descriptionMode !== "custom" || Boolean(value)),
+            .test("required-if-custom", "Champ obligatoire", (value) => descriptionMode !== "custom" || Boolean(value))
+            .test("min-if-custom", "La description est trop courte (minimum 30 caractères).", (value) => descriptionMode !== "custom" || !value || value.length >= 30)
+            .test(
+              "max-if-custom",
+              `La description est trop longue (maximum ${JOB_DESCRIPTION_MAX} caractères).`,
+              (value) => descriptionMode !== "custom" || !value || value.length <= JOB_DESCRIPTION_MAX
+            ),
         })}
         onSubmit={(values: any) => localOnSubmit(values)}
       >
@@ -393,7 +397,7 @@ export const FormulaireEditionOffreStep1 = ({
                       alignItems: "center",
                     }}
                   >
-                    <Typography className={fr.cx("ri-certificate-line", "fr-icon--sm")} sx={{ color: fr.colors.decisions.text.active.blueFrance.default, flexShrink: 0 }} />
+                    <Typography className={`ri-certificate-line ${fr.cx("fr-icon--sm")}`} sx={{ color: fr.colors.decisions.text.active.blueFrance.default, flexShrink: 0 }} />
                     <Box>
                       <Typography sx={{ fontSize: "0.875rem", fontWeight: 600, mb: fr.spacing("1v") }}>Comment bien rédiger votre offre ?</Typography>
                       <Typography sx={{ fontSize: "0.8125rem" }}>

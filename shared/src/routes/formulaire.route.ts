@@ -1,7 +1,7 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { zObjectId } from "../models/common.js"
-import { JOB_START_TYPE, JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
+import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
 import { ZRecruiter, ZRecruiterWithRomeDetailAndApplicationCount } from "../models/recruiter.model.js"
 import { ZPersonNameInput } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
@@ -169,12 +169,10 @@ export const zFormulaireRoute = {
       method: "post",
       path: "/formulaire/:establishment_id/offre/ameliorer-texte",
       params: z.object({ establishment_id: z.string() }).strict(),
-      body: z
-        .object({
-          field: z.enum(["job_description", "job_employer_description"]),
-          text: z.string().trim().min(1).max(3000),
-        })
-        .strict(),
+      body: z.discriminatedUnion("field", [
+        z.strictObject({ field: z.literal("job_description"), text: z.string().trim().min(1).max(JOB_DESCRIPTION_MAX_LENGTH) }),
+        z.strictObject({ field: z.literal("job_employer_description"), text: z.string().trim().min(1).max(JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH) }),
+      ]),
       response: {
         "200": z.object({ text: z.string() }).strict(),
       },

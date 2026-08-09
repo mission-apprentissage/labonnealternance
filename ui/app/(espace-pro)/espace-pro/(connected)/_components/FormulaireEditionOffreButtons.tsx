@@ -5,11 +5,23 @@ import { Box } from "@mui/material"
 import { useFormikContext } from "formik"
 import type { IJob } from "shared"
 
+// Certains champs (ex: job_type, un groupe de checkboxes) n'ont pas d'élément DOM avec
+// name="<clé Formik>" : chaque checkbox a son propre name. On les repère via un conteneur
+// marqué data-field-name="<clé>" et on cible son premier élément focusable.
+const findFieldElement = (name: string): HTMLElement | null => {
+  const escapedName = CSS.escape(name)
+  const container = document.querySelector<HTMLElement>(`[data-field-name="${escapedName}"]`)
+  if (container) {
+    return container.querySelector<HTMLElement>("input, textarea, select, button, [tabindex]") ?? container
+  }
+  return document.querySelector<HTMLElement>(`[name="${escapedName}"]`)
+}
+
 // Focus le premier champ en erreur dans l'ordre visuel (DOM), pas dans l'ordre des clés de errors
 // (non garanti). Fonctionne aussi sur mobile : scrollIntoView + focus sont supportés nativement.
 const focusFirstInvalidField = (errorFieldNames: string[]) => {
   const candidates = errorFieldNames
-    .map((name) => document.querySelector<HTMLElement>(`[name="${name}"]`))
+    .map((name) => findFieldElement(name))
     .filter((el): el is HTMLElement => Boolean(el))
     .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1))
 

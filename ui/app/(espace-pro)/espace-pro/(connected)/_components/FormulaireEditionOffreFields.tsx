@@ -91,7 +91,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
 
   return (
     <>
-      <Box sx={{ mt: fr.spacing("4v") }}>
+      <Box sx={{ mt: fr.spacing("4v") }} data-field-name="job_type">
         <Checkbox
           orientation="vertical"
           state={values.job_type.length === 0 ? "error" : "default"}
