@@ -16,7 +16,6 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { PAGES } from "@/utils/routes.utils"
 import { ARTICLES } from "./const"
-
 export const metadata: Metadata = PAGES.static.guideAlternant.getMetadata()
 
 const GuideAlternantPage = () => {

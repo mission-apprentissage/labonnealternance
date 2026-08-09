@@ -11,7 +11,6 @@ import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = PAGES.static.guideAlternantLaRuptureDeContrat.getMetadata()
 
 const LaRuptureDeContratPage = () => {

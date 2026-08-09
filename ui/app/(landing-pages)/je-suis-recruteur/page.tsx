@@ -4,6 +4,7 @@ import Card from "@codegouvfr/react-dsfr/Card"
 import { Box, Divider, Grid, List, ListItem, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Image from "next/image"
+import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
@@ -24,11 +25,24 @@ export const cardSx = {
 }
 
 export const metadata: Metadata = PAGES.static.jeSuisRecruteur.getMetadata()
-const JeSuisRecruteurPage = async () => {
-  const { user } = await getSession()
 
+async function DepotCtaButtons() {
+  const { user } = await getSession()
   const ctaDepotHref: string = getDepotCtaHref(user, "ENTREPRISE")
 
+  return (
+    <Box display={"flex"} flexDirection={{ sm: "row", xs: "column" }} gap={fr.spacing("4v")}>
+      <Button linkProps={{ href: ctaDepotHref }} priority="primary">
+        Déposer une offre
+      </Button>
+      <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
+        Me connecter
+      </Button>
+    </Box>
+  )
+}
+
+const JeSuisRecruteurPage = () => {
   return (
     <>
       <Box
@@ -66,14 +80,9 @@ const JeSuisRecruteurPage = async () => {
               <Typography variant="body1" gutterBottom>
                 Exprimez vos besoins en alternance afin d’être visible auprès des jeunes en recherche de contrat, et des centres de formation pouvant vous accompagner.
               </Typography>
-              <Box display={"flex"} flexDirection={{ sm: "row", xs: "column" }} gap={fr.spacing("4v")}>
-                <Button linkProps={{ href: ctaDepotHref }} priority="primary">
-                  Déposer une offre
-                </Button>
-                <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
-                  Me connecter
-                </Button>
-              </Box>
+              <Suspense fallback={<Box sx={{ height: 40 }} />}>
+                <DepotCtaButtons />
+              </Suspense>
             </Grid>
             <Grid size={6} display={{ md: "flex", xs: "none" }} flexDirection={"column"} justifyContent={"center"}>
               <Image

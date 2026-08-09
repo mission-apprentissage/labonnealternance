@@ -7,7 +7,6 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = {
   title: PAGES.static.EspaceDeveloppeurs.getMetadata().title,
   description: PAGES.static.EspaceDeveloppeurs.getMetadata().description,

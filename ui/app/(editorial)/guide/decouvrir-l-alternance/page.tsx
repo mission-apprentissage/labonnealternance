@@ -14,7 +14,6 @@ import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = {
   ...PAGES.static.guideDecouvrirLAlternance.getMetadata(),
   alternates: { canonical: PAGES.static.guideDecouvrirLAlternance.getPath() },

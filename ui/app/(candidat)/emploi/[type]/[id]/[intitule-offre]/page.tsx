@@ -1,5 +1,6 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import type { Metadata } from "next"
+import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
 import type { ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -8,13 +9,6 @@ import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(rech
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { ApiError, apiGet } from "@/utils/api.utils"
 import JobDetailRendererClient from "./JobDetailRendererClient"
-
-// Désactive le streaming SSR pour éviter l'erreur "transformAlgorithm is not a function"
-// avec Next.js 16 quand les connexions sont interrompues (healthchecks, timeouts, etc.)
-// Voir: https://github.com/vercel/next.js/discussions/75995
-// Context: PRs #2474-2479, Sentry issue https://sentry.apprentissage.beta.gouv.fr/organizations/sentry/issues/6/
-export const dynamic = "force-dynamic"
-export const revalidate = 300 // Cache ISR pendant 5 minutes
 
 export async function generateMetadata({ params }): Promise<Metadata> {
   const { type, id } = await params
@@ -64,7 +58,15 @@ export default async function JobOfferPage({ params, searchParams }: { params: P
 const acceptedTypes = [LBA_ITEM_TYPE.RECRUTEURS_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]
 
 async function getOffreOption(type: LBA_ITEM_TYPE, id: string) {
+  // `apiGet` lit toujours `headers()` en interne (pour transmettre le cookie de session),
+  // ce qui est interdit dans un `"use cache"` classique — seul `"use cache: private"` l'autorise
+  // (cache navigateur uniquement, jamais côté serveur).
+  "use cache: private"
   if (!type || !id || !acceptedTypes.includes(type)) return null
+
+  cacheTag(`offer:${type}:${id}`)
+  cacheLife({ revalidate: 300 }) // 5 minutes, aligné sur l'ancien `revalidate = 300`
+
   try {
     const offre = await apiGet("/_private/jobs/:source/:id", { params: { source: type, id } })
     return offre

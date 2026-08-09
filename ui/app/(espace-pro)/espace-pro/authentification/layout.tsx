@@ -2,13 +2,12 @@ import { fr } from "@codegouvfr/react-dsfr"
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
+import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
-import { PublicHeader } from "@/app/_components/PublicHeader"
+import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
 import { getSession } from "@/utils/get-session"
 
-export default async function AuthentificationLayout({ children }: PropsWithChildren) {
-  const { user } = await getSession()
-
+export default function AuthentificationLayout({ children }: PropsWithChildren) {
   return (
     <>
       <SkipLinks
@@ -18,7 +17,9 @@ export default async function AuthentificationLayout({ children }: PropsWithChil
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
-      <PublicHeader user={user} />
+      <Suspense fallback={<PublicHeaderStatic />}>
+        <AuthentificationHeaderWithUser />
+      </Suspense>
       <Box
         id="main-content"
         tabIndex={-1}
@@ -36,4 +37,9 @@ export default async function AuthentificationLayout({ children }: PropsWithChil
       <Footer />
     </>
   )
+}
+
+async function AuthentificationHeaderWithUser() {
+  const { user } = await getSession()
+  return <PublicHeader user={user} />
 }

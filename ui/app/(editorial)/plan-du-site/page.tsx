@@ -10,7 +10,6 @@ import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
-
 export const metadata: Metadata = {
   title: PAGES.static.planDuSite.getMetadata().title,
   description: PAGES.static.planDuSite.getMetadata().description,
