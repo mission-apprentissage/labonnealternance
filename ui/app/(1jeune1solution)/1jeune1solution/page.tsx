@@ -7,10 +7,6 @@ import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false
-
 const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=landinglba1j1s"
 export default async function unJeune1Solution({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
