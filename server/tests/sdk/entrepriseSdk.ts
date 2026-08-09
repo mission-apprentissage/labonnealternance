@@ -146,7 +146,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
       path: `/api/formulaire/offre/${jobId}/extend`,
       cookies,
       body: {
-        job_start_date: dayjs().format("YYYY-MM-DD"),
+        job_start_date: dayjs().tz().format("YYYY-MM-DD"),
         job_start_type: JOB_START_TYPE.PRECISE_DATE,
         job_start_date_flexible: false,
       },
