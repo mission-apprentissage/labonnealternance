@@ -6,11 +6,6 @@ import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { DsfrHeaderProps1J1S } from "@/app/(1jeune1solution)/components/Header1J1S"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
-
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false
-
 export default async function UnJeuneUneSolutionLayout({ children }: PropsWithChildren) {
   return (
     <>
