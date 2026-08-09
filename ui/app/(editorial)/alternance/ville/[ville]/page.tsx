@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
+import { cacheLife } from "next/cache"
 import Image from "next/image"
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
@@ -20,6 +21,7 @@ async function getVilleData(ville: string) {
   // `apiGet` lit toujours `headers()` en interne (transmission du cookie de session),
   // incompatible avec un `"use cache"` classique — seul `"use cache: private"` l'autorise.
   "use cache: private"
+  cacheLife("hours")
   return await apiGet("/_private/seo/ville/:ville", { params: { ville } })
 }
 

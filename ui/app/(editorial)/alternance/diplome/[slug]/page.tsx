@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import type { Metadata } from "next"
+import { cacheLife } from "next/cache"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import type { ISeoDiplome } from "shared/models/seo-diplome.model"
@@ -25,6 +26,7 @@ async function getDiplomeData(slug: string) {
   // `apiGet` lit toujours `headers()` en interne (transmission du cookie de session),
   // incompatible avec un `"use cache"` classique — seul `"use cache: private"` l'autorise.
   "use cache: private"
+  cacheLife("hours")
   return await apiGet("/_private/seo/diplome/:diplome", { params: { diplome: slug } })
 }
 

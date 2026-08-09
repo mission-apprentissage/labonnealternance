@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
+import { cacheLife } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -60,6 +61,7 @@ async function fetchMetierData(metier: string) {
   // `apiGet` lit toujours `headers()` en interne (transmission du cookie de session),
   // incompatible avec un `"use cache"` classique — seul `"use cache: private"` l'autorise.
   "use cache: private"
+  cacheLife("hours")
   return apiGet("/_private/seo/metier/:metier", { params: { metier } })
 }
 
@@ -91,8 +93,11 @@ export async function generateMetadata({ params }: { params: Promise<{ metier: s
     .map((e) => e.nom)
     .join(", ")
 
-  const firstFormation = (data.formations as { title: string }[]).pop() ?? { title: "" }
-  const lastFormation = (data.formations as { title: string }[]).shift() ?? { title: "" }
+  const formationsForMetadata = data.formations as { title: string }[]
+  // .at() non-mutatif : data.formations est réutilisé plus bas dans le rendu de page
+  // (et peut provenir du même objet mis en cache par use cache: private).
+  const firstFormation = formationsForMetadata.at(-1) ?? { title: "" }
+  const lastFormation = formationsForMetadata.at(0) ?? { title: "" }
 
   return {
     title: `Alternance en ${data.metier} : ${jobCount} Offres, ${data.salaire.salaire_brut_moyen}€/mois | La bonne alternance`,
