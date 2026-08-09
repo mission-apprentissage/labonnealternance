@@ -4,6 +4,7 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
@@ -15,10 +16,6 @@ import { SchemaOrg } from "@/components/SchemaOrg"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
-
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false
 
 const UTM_PARAMS = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-metiers"
 
@@ -60,6 +57,9 @@ const threeColGridSx = {
 }
 
 async function fetchMetierData(metier: string) {
+  // `apiGet` lit toujours `headers()` en interne (transmission du cookie de session),
+  // incompatible avec un `"use cache"` classique — seul `"use cache: private"` l'autorise.
+  "use cache: private"
   return apiGet("/_private/seo/metier/:metier", { params: { metier } })
 }
 
@@ -100,7 +100,15 @@ export async function generateMetadata({ params }: { params: Promise<{ metier: s
   }
 }
 
-export default async function Metier({ params }: { params: Promise<{ metier: string }> }) {
+export default function Metier({ params }: { params: Promise<{ metier: string }> }) {
+  return (
+    <Suspense fallback={null}>
+      <MetierContent params={params} />
+    </Suspense>
+  )
+}
+
+async function MetierContent({ params }: { params: Promise<{ metier: string }> }) {
   const { metier } = await params
   const data = await fetchMetierData(metier)
 
