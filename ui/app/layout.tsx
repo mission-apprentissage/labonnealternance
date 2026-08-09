@@ -17,6 +17,10 @@ import "@/public/styles/fonts.css"
 import "@/public/styles/notion.css"
 import "@/styles/search.css"
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false
+
 export const metadata: Metadata = {
   metadataBase: new URL(publicConfig.baseUrl),
   manifest: "/favicon/site.webmanifest",

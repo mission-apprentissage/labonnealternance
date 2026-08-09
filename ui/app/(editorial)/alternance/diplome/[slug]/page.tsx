@@ -20,6 +20,10 @@ import { PreparationSection } from "./_components/PreparationSection"
 import { ProgrammeDiplome } from "./_components/ProgrammeDiplome"
 import { SalaireSection } from "./_components/SalaireSection"
 
+// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false
+
 function getDiplomeData(slug: string) {
   return apiGet("/_private/seo/diplome/:diplome", { params: { diplome: slug } })
 }

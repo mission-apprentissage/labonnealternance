@@ -120,7 +120,6 @@ export function LbaItemCard({ item, active, rechercheParams, position }: ResultC
           horizontal
           linkProps={{
             href: itemUrl,
-            prefetch: false,
             onClick:
               item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION
                 ? undefined

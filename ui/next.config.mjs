@@ -78,11 +78,14 @@ const nextConfig = {
   bundlePagesRouterDependencies: true,
   serverExternalPackages: ["react-pdf"],
   poweredByHeader: false,
+  cacheComponents: true,
   experimental: {
     fallbackNodePolyfills: false,
     staleTimes: {
       static: 180,
     },
+    // Uniquement pour les tests Playwright instant() en local/CI, jamais en production réelle.
+    exposeTestingApiInProductionBuild: process.env.PLAYWRIGHT_TEST_MODE === "1",
   },
   output: "standalone",
   compress: false, // disable default gzip compression by nextJS, done by Nginx
