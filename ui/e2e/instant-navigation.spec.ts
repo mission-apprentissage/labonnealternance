@@ -30,8 +30,10 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
     await page.goto("/recherche-emploi?romes=M1602")
     const offerLink = page.locator("a[href^='/emploi/']").first()
     await expect(offerLink).toBeVisible()
-    // Laisse le temps au prefetch client de compléter avant d'entrer en mode instant().
-    await page.waitForTimeout(1000)
+    // Attente déterministe (plutôt qu'un délai fixe) : le survol déclenche/confirme le prefetch
+    // du lien, puis on attend la fin des requêtes réseau associées avant d'entrer en mode instant().
+    await offerLink.hover()
+    await page.waitForLoadState("networkidle")
 
     await instant(page, async () => {
       await offerLink.click()
@@ -43,7 +45,8 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
     await page.goto("/recherche-formation?romes=M1602")
     const formationLink = page.locator("a[href^='/formation/']").first()
     await expect(formationLink).toBeVisible()
-    await page.waitForTimeout(1000)
+    await formationLink.hover()
+    await page.waitForLoadState("networkidle")
 
     await instant(page, async () => {
       await formationLink.click()

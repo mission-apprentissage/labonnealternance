@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Grid } from "@mui/material"
 
 import type { Metadata } from "next"
+import { Suspense } from "react"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
 import { GrandsGroupesCandidat } from "@/app/(home)/_components/GrandsGroupesCandidat"
@@ -14,18 +15,12 @@ import { HomeRechercheOptIn } from "./_components/HomeRechercheOptIn"
 import { HowTo } from "./_components/HowTo"
 import { InformationsAlternance } from "./_components/InformationsAlternance"
 
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false
-
 export const metadata: Metadata = {
   title: PAGES.static.home.getMetadata().title,
   description: PAGES.static.home.getMetadata().description,
 }
 
-export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
-  const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
-
+export default function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   return (
     <>
       <SchemaOrg
@@ -70,7 +65,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <HomeCircleImageDecoration size="high" />
           </Box>
           <Box sx={{ position: "relative", display: "grid", padding: { xs: 0, md: fr.spacing("12v") }, gap: fr.spacing("8v"), gridTemplateColumns: "1fr" }}>
-            <HomeRechercheOptIn rechercheParams={rechercheParams} />
+            <Suspense fallback={null}>
+              <HomeRechercheOptInWithParams searchParams={searchParams} />
+            </Suspense>
             <HowTo />
           </Box>
         </Box>
@@ -93,4 +90,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       </Container>
     </>
   )
+}
+
+async function HomeRechercheOptInWithParams({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
+  return <HomeRechercheOptIn rechercheParams={rechercheParams} />
 }
