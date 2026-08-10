@@ -10,9 +10,9 @@ vi.mock("job-processor", async (importOriginal) => {
 
 const { sendJobPartnersNightlyDigest } = await import("./send-job-partners-nightly-digest")
 
-const cronTask = (params: { name: string; status: string; result?: unknown; error?: string | null }) => {
-  const { name, status, result = null, error = null } = params
-  return { name, type: "cron_task", status, output: { duration: "1s", result, error } }
+const cronTask = (params: { name: string; status: string; result?: unknown; error?: string | null; started_at?: Date }) => {
+  const { name, status, result = null, error = null, started_at } = params
+  return { name, type: "cron_task", status, started_at, output: { duration: "1s", result, error } }
 }
 
 describe("sendJobPartnersNightlyDigest", () => {
@@ -73,5 +73,23 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(filter.type).toBe("cron_task")
     expect(filter.name.$in).toContain("Import RHAlternance")
     expect(filter.name.$in).not.toContain("Bilan nocturne offres partenaires")
+    // un job "running" n'a pas de ended_at : il doit rester inclus malgré la fenêtre temporelle
+    expect(filter.$or).toContainEqual({ status: "running" })
+  })
+
+  it("signale un job encore en cours à l'heure du digest comme une anomalie", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      cronTask({ name: "Import RHAlternance", status: "finished", result: { offerInsertCount: 42 } }),
+      cronTask({ name: "Import Emploi Inclusion", status: "running", started_at: new Date("2026-08-10T00:00:00Z") }),
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    const result = await sendJobPartnersNightlyDigest()
+
+    expect(result).toEqual({ total: 2, anomalies: 1 })
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.error).toBe(true)
+    expect(payload.message).toContain("Import Emploi Inclusion")
+    expect(payload.message).toContain("toujours en cours")
   })
 })

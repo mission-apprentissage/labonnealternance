@@ -88,10 +88,16 @@ const importRecruteursLbaToRawCollection = async (sourceStream: Stream.Readable)
 
 export const importRecruteursLbaRaw = async (sourceFileReadStream?: Stream.Readable) => {
   logger.info(`début de importRecruteursLbaRaw`)
-  const readStream = sourceFileReadStream ?? (await s3ReadAsStream("storage", S3_FILE))
-  const result = await importRecruteursLbaToRawCollection(readStream)
-  logger.info(`fin de importRecruteursLbaRaw`)
-  return result
+  try {
+    const readStream = sourceFileReadStream ?? (await s3ReadAsStream("storage", S3_FILE))
+    const result = await importRecruteursLbaToRawCollection(readStream)
+    logger.info(`fin de importRecruteursLbaRaw`)
+    return result
+  } catch (err) {
+    logger.error(err, "importRecruteursLbaRaw: échec de l'import")
+    sentryCaptureException(err)
+    throw err
+  }
 }
 
 export const importRecruteurLbaToComputed = async () => {

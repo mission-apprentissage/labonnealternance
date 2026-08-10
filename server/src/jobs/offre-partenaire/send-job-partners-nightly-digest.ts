@@ -5,6 +5,7 @@ import { notifyToSlack } from "@/common/utils/slack-utils"
 import { importers } from "./jobs-partners.importer"
 
 const DIGEST_WINDOW_HOURS = 24
+const MAX_MESSAGE_LENGTH = 35_000 // marge sous la limite Slack (~40k caractères) pour le champ `text`
 
 export const JOB_PARTNERS_DIGEST_JOB_NAME = "Bilan nocturne offres partenaires"
 
@@ -25,12 +26,16 @@ const hasNonZeroErrorCount = (value: unknown): boolean => {
 }
 
 const isAnomalous = (job: IJobsCronTask): boolean => {
-  if (job.status === "errored" || job.status === "killed") return true
+  // "running" à l'heure du digest : le job aurait dû se terminer avant (cf. timing du cron) — signe d'un job bloqué
+  if (job.status === "errored" || job.status === "killed" || job.status === "running") return true
   return hasNonZeroErrorCount(job.output?.result)
 }
 
 const formatAnomaly = (job: IJobsCronTask): string => {
   const duration = job.output?.duration ?? "?"
+  if (job.status === "running") {
+    return `• ${job.name} (toujours en cours, démarré à ${job.started_at?.toISOString() ?? "?"})`
+  }
   if (job.status === "errored" || job.status === "killed") {
     return `• ${job.name} (${job.status}, ${duration}) : ${job.output?.error ?? "erreur inconnue"}`
   }
@@ -48,7 +53,9 @@ export const sendJobPartnersNightlyDigest = async () => {
   const jobs = await findJobs<IJobsCronTask>({
     type: "cron_task",
     name: { $in: getJobPartnersNightlyJobNames() },
-    ended_at: { $gte: since },
+    // un job encore "running" n'a pas de ended_at : on le remonte quand même, sinon un job bloqué
+    // à l'heure du digest disparaîtrait silencieusement du rapport
+    $or: [{ ended_at: { $gte: since } }, { status: "running" }],
   })
 
   if (jobs.length === 0) {
@@ -62,10 +69,13 @@ export const sendJobPartnersNightlyDigest = async () => {
   const summaryLine =
     anomalousJobs.length === 0 ? `${okCount}/${jobs.length} jobs offre-partenaire OK, aucune anomalie.` : `${okCount}/${jobs.length} jobs OK, ${anomalousJobs.length} en erreur :`
 
-  const message = [summaryLine, ...anomalousJobs.map(formatAnomaly)].join("\n")
+  let message = [summaryLine, ...anomalousJobs.map(formatAnomaly)].join("\n")
+  if (message.length > MAX_MESSAGE_LENGTH) {
+    message = `${message.slice(0, MAX_MESSAGE_LENGTH)}\n… (message tronqué, voir les logs pour le détail complet)`
+  }
 
   await notifyToSlack({
-    subject: "Bilan nocturne offres partenaires",
+    subject: JOB_PARTNERS_DIGEST_JOB_NAME,
     message,
     error: anomalousJobs.length > 0,
   })
