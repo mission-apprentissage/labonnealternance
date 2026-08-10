@@ -17,7 +17,7 @@ describe("block-jobs-partners-from-flux-company-list", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromFluxCompanyList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromFluxCompanyList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -33,7 +33,7 @@ describe("block-jobs-partners-from-flux-company-list", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromFluxCompanyList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromFluxCompanyList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -49,7 +49,7 @@ describe("block-jobs-partners-from-flux-company-list", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromFluxCompanyList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromFluxCompanyList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -66,7 +66,7 @@ describe("block-jobs-partners-from-flux-company-list", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromFluxCompanyList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromFluxCompanyList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -82,7 +82,7 @@ describe("block-jobs-partners-from-flux-company-list", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromFluxCompanyList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromFluxCompanyList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -99,7 +99,7 @@ describe("block-jobs-partners-from-flux-company-list", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromFluxCompanyList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromFluxCompanyList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)

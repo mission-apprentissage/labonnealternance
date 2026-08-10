@@ -20,7 +20,7 @@ describe("block-jobs-partners-from-expiration-date", () => {
       },
     ])
 
-    await blockJobsPartnersFromExpirationDate({ shouldNotifySlack: false })
+    await blockJobsPartnersFromExpirationDate({})
 
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -37,7 +37,7 @@ describe("block-jobs-partners-from-expiration-date", () => {
       },
     ])
 
-    await blockJobsPartnersFromExpirationDate({ shouldNotifySlack: false })
+    await blockJobsPartnersFromExpirationDate({})
 
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -54,7 +54,7 @@ describe("block-jobs-partners-from-expiration-date", () => {
       },
     ])
 
-    await blockJobsPartnersFromExpirationDate({ shouldNotifySlack: false })
+    await blockJobsPartnersFromExpirationDate({})
 
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -72,7 +72,7 @@ describe("block-jobs-partners-from-expiration-date", () => {
       },
     ])
 
-    await blockJobsPartnersFromExpirationDate({ shouldNotifySlack: false })
+    await blockJobsPartnersFromExpirationDate({})
 
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)

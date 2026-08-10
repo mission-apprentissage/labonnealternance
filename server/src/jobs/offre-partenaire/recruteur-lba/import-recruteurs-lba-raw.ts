@@ -14,7 +14,6 @@ import { logger } from "@/common/logger"
 import { getS3FileLastUpdate, s3ReadAsStream } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 import { groupStreamData } from "@/common/utils/stream-utils"
 import config from "@/config"
 import { recruteursLbaToJobPartners } from "./recruteurs-lba-mapper"
@@ -37,10 +36,7 @@ export const checkIfAlgoFileAlreadyProcessed = async (): Promise<boolean> => {
   const recruteurLbaRaw = await getDbCollection("raw_recruteurslba").findOne({}, { projection: { createdAt: 1 } })
   if (!recruteurLbaRaw) return false
   if (algoFileLastModificationDate.getTime() < recruteurLbaRaw.createdAt.getTime()) {
-    await notifyToSlack({
-      subject: `import des offres recruteurs lba dans raw`,
-      message: `dernier fichier en date déjà traité.`,
-    })
+    logger.info(`import des offres recruteurs lba dans raw : dernier fichier en date déjà traité.`)
     return true
   }
   return false
@@ -86,25 +82,16 @@ const importRecruteursLbaToRawCollection = async (sourceStream: Stream.Readable)
 
   await pipeline(sourceStream, parser(), streamArray(), validationStream, groupStreamData({ size: 10_000 }), insertionStream)
 
-  const message = `import recruteurs lba terminé : ${count} recruteurs importées`
-  logger.info(message)
-  await notifyToSlack({
-    subject: `import des offres recruteurs lba dans raw`,
-    message,
-  })
+  logger.info(`import recruteurs lba terminé : ${count} recruteurs importées`)
+  return { count }
 }
 
 export const importRecruteursLbaRaw = async (sourceFileReadStream?: Stream.Readable) => {
-  try {
-    logger.info(`début de importRecruteursLbaRaw`)
-    const readStream = sourceFileReadStream ?? (await s3ReadAsStream("storage", S3_FILE))
-    await importRecruteursLbaToRawCollection(readStream)
-    logger.info(`fin de importRecruteursLbaRaw`)
-  } catch (err) {
-    await notifyToSlack({ subject: `import des offres recruteurs lba dans raw`, message: `import recruteurs lba terminé : echec de l'import`, error: true })
-    logger.error(err)
-    sentryCaptureException(err)
-  }
+  logger.info(`début de importRecruteursLbaRaw`)
+  const readStream = sourceFileReadStream ?? (await s3ReadAsStream("storage", S3_FILE))
+  const result = await importRecruteursLbaToRawCollection(readStream)
+  logger.info(`fin de importRecruteursLbaRaw`)
+  return result
 }
 
 export const importRecruteurLbaToComputed = async () => {
@@ -213,14 +200,9 @@ export const importRecruteurLbaToComputed = async () => {
 
   await pipeline(getDbCollection(rawRecruteursLbaModel.collectionName).find({}).stream(), groupStreamData({ size: 10_000 }), transformStream)
 
-  const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
-  logger.info(message)
+  logger.info(`import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`)
 
-  await notifyToSlack({
-    subject: `mapping Raw recruteurs LBA => computed_jobs_partners`,
-    message,
-    error: counters.error > 0,
-  })
+  return counters
 }
 
 export const removeMissingRecruteursLbaFromComputedJobPartners = async () => {
@@ -259,12 +241,8 @@ export const removeMissingRecruteursLbaFromComputedJobPartners = async () => {
     total += batch.length
   }
 
-  const message = `clean-up dans computed_jobs_partners pour partner_label=${JOBPARTNERS_LABEL.RECRUTEURS_LBA} terminé. total=${total}`
-  logger.info(message)
-  await notifyToSlack({
-    subject: `mapping Raw => computed_jobs_partners`,
-    message,
-  })
+  logger.info(`clean-up dans computed_jobs_partners pour partner_label=${JOBPARTNERS_LABEL.RECRUTEURS_LBA} terminé. total=${total}`)
+  return { total }
 }
 
 export const removeUnsubscribedRecruteursLbaFromComputedJobPartners = async () => {
@@ -296,12 +274,8 @@ export const removeUnsubscribedRecruteursLbaFromComputedJobPartners = async () =
     total += batch.length
   }
 
-  const message = `suppression dans computed_jobs_partners des recruteurs désinscrits terminée. total=${total}`
-  logger.info(message)
-  await notifyToSlack({
-    subject: `mapping Raw => computed_jobs_partners`,
-    message,
-  })
+  logger.info(`suppression dans computed_jobs_partners des recruteurs désinscrits terminée. total=${total}`)
+  return { total }
 }
 
 export const clearBlacklistedEmailsRecruteursLba = async () => {

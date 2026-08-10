@@ -13,7 +13,6 @@ import { logger } from "@/common/logger"
 import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 import { defaultFillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 
@@ -76,12 +75,10 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
   })
   const executionDurationInSeconds = Math.round((new Date().getTime() - startDate.getTime()) / 1000)
   if (executionDurationInSeconds > 60 * 5) {
-    await notifyToSlack({
-      subject: `Détection des offres en doublon`,
-      message: `Temps d'exécution : ${executionDurationInSeconds} secondes`,
-      error: true,
-    })
+    logger.warn(`detectDuplicateJobPartners: temps d'exécution anormalement long : ${executionDurationInSeconds} secondes`)
   }
+
+  return { executionDurationInSeconds }
 }
 
 const logOversizedGroups = async (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {

@@ -3,6 +3,7 @@ import { importApecRaw, importApecToComputed } from "./import-apec"
 
 export const processApec = async () => {
   const sourceStream = await getApecJobs()
-  await importApecRaw(sourceStream)
-  await importApecToComputed()
+  const raw = await importApecRaw(sourceStream)
+  const computed = await importApecToComputed()
+  return { raw, computed }
 }

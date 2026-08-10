@@ -26,7 +26,7 @@ describe("fill-computed-jobs-partners", () => {
     // given
     await givenSomeComputedJobPartners([generateComputedJobsPartnersFull()])
     // when
-    await validateComputedJobPartners({ shouldNotifySlack: false })
+    await validateComputedJobPartners({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -41,7 +41,7 @@ describe("fill-computed-jobs-partners", () => {
       }),
     ])
     // when
-    await validateComputedJobPartners({ shouldNotifySlack: false })
+    await validateComputedJobPartners({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)

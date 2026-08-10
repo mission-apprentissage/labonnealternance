@@ -24,14 +24,14 @@ export const processMissingRomeAndImportToJobPartners = async () => {
   const processFilter = { currently_processed_id: processId }
 
   try {
-    await fillRomeForPartners({ addedMatchFilter: processFilter, shouldNotifySlack: false })
-    await validateComputedJobPartners({ addedMatchFilter: processFilter, shouldNotifySlack: false })
+    await fillRomeForPartners({ addedMatchFilter: processFilter })
+    await validateComputedJobPartners({ addedMatchFilter: processFilter })
 
     const validatedOffers = await getDbCollection("computed_jobs_partners")
       .find({ $and: [processFilter, { validated: true, business_error: null }] }, { projection: { partner_label: 1, partner_job_id: 1 } })
       .toArray()
 
-    await importFromComputedToJobsPartners(processFilter, false)
+    await importFromComputedToJobsPartners(processFilter)
 
     const BATCH_SIZE = 500
     for (let i = 0; i < validatedOffers.length; i += BATCH_SIZE) {
