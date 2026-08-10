@@ -1,6 +1,7 @@
 import { importJobteaserRaw, importJobteaserToComputed } from "./import-jobteaser"
 
 export const processJobteaser = async () => {
-  await importJobteaserRaw()
-  await importJobteaserToComputed()
+  const raw = await importJobteaserRaw()
+  const computed = await importJobteaserToComputed()
+  return { raw, computed }
 }

@@ -72,7 +72,7 @@ describe("fill-computed-jobs-partners", () => {
         },
       ])
       // when
-      await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+      await blockJobsPartnersFromCfaList({})
       // then
       const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
       expect.soft(job.business_error).toBeNull()
@@ -90,7 +90,7 @@ describe("fill-computed-jobs-partners", () => {
         },
       ])
       // when — no lab API nock needed: OPCO EP is filtered out by the query so getData is never called
-      await detectClassificationJobsPartners({ shouldNotifySlack: false })
+      await detectClassificationJobsPartners({})
       // then
       const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
       expect.soft(job.business_error).toBeNull()

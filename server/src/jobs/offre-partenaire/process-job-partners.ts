@@ -18,23 +18,24 @@ export const cancelRemovedJobsPartnersFlux = async () => {
 }
 
 export const fillComputedJobsPartnersFlux = async () => {
-  await fillComputedJobsPartners({ addedMatchFilter: { partner_label: { $in: jobPartnersByFlux } }, shouldNotifySlack: true })
+  return fillComputedJobsPartners({ addedMatchFilter: { partner_label: { $in: jobPartnersByFlux } } })
 }
 
 export const detectDuplicateJobPartnersFlux = async () => {
-  await detectDuplicateJobPartners({ addedMatchFilter: { partner_label: { $in: jobPartnersByFlux } }, shouldNotifySlack: true })
+  return detectDuplicateJobPartners({ addedMatchFilter: { partner_label: { $in: jobPartnersByFlux } } })
 }
 
 export const validateComputedJobPartnersFlux = async () => {
-  await validateComputedJobPartners({ addedMatchFilter: { partner_label: { $in: jobPartnersByFlux } }, shouldNotifySlack: true })
+  return validateComputedJobPartners({ addedMatchFilter: { partner_label: { $in: jobPartnersByFlux } } })
 }
 
 export const processComputedAndImportToJobPartners = async () => {
   logger.info("début de processComputedAndImportToJobPartners")
   const filter = { partner_label: { $in: jobPartnersByFlux } }
-  await fillComputedJobsPartners({ addedMatchFilter: filter })
-  await importFromComputedToJobsPartners(filter)
+  const filled = await fillComputedJobsPartners({ addedMatchFilter: filter })
+  const imported = await importFromComputedToJobsPartners(filter)
   await cancelRemovedJobsPartnersFlux()
   await fillLbaUrl()
   logger.info("fin de processComputedAndImportToJobPartners")
+  return { filled, imported }
 }

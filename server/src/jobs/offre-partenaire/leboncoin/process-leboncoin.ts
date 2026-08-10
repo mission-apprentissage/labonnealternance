@@ -1,6 +1,7 @@
 import { importLeboncoin, importLeboncoinToComputed } from "./import-leboncoin"
 
 export const processLeboncoin = async () => {
-  await importLeboncoin()
-  await importLeboncoinToComputed()
+  const raw = await importLeboncoin()
+  const computed = await importLeboncoinToComputed()
+  return { raw, computed }
 }

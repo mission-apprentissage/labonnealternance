@@ -9,8 +9,9 @@ import config from "@/config"
 import { importCleverConnectRaw, importCleverConnectToComputed } from "./import-clever-connect"
 
 const cleverConnectProcessor = async (model: { collectionName: CollectionName }, label: JOBPARTNERS_LABEL, url: string) => {
-  await importCleverConnectRaw(model.collectionName, label, url)
-  await importCleverConnectToComputed(model.collectionName, label)
+  const raw = await importCleverConnectRaw(model.collectionName, label, url)
+  const computed = await importCleverConnectToComputed(model.collectionName, label)
+  return { raw, computed }
 }
 
 export const processAtlas = async () => cleverConnectProcessor(rawAtlasModel, JOBPARTNERS_LABEL.ATLAS, config.cleverConnect.atlasUrl)

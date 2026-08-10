@@ -1,6 +1,7 @@
 import { importKelioRaw, importKelioToComputed } from "./import-kelio"
 
 export const processKelio = async () => {
-  await importKelioRaw()
-  await importKelioToComputed()
+  const raw = await importKelioRaw()
+  const computed = await importKelioToComputed()
+  return { raw, computed }
 }

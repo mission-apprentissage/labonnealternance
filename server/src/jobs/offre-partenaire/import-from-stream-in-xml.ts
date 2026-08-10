@@ -7,7 +7,6 @@ import * as xml2j from "xml2js"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 
 const XML_PREVIEW_LENGTH = 500
 
@@ -116,14 +115,7 @@ export const importFromStreamInXml = async ({
         reject(err)
       } else {
         logger.info("Pipeline succeeded.")
-        const message = `import ${importName} terminé : ${offerInsertCount} offres importées. ${offerErrorCount} offres en erreur.`
-        logger.info(message)
-        // biome-ignore lint/nursery/noFloatingPromises: migration
-        notifyToSlack({
-          subject: `import des offres ${importName} dans raw`,
-          message,
-          error: offerErrorCount > 0,
-        })
+        logger.info(`import ${importName} terminé : ${offerInsertCount} offres importées. ${offerErrorCount} offres en erreur.`)
         resolve({
           offerInsertCount,
           offerErrorCount,

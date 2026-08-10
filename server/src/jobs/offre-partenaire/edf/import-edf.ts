@@ -12,7 +12,7 @@ const offerXmlTag = "offer"
 
 export const importEdfRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
-    await importFromStreamInXml({
+    return importFromStreamInXml({
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: sourceStream,
@@ -20,7 +20,7 @@ export const importEdfRaw = async (sourceStream?: NodeJS.ReadableStream) => {
       conflictingOpeningTagWithoutAttributes: true,
     })
   } else {
-    await importFromUrlInXml({
+    return importFromUrlInXml({
       destinationCollection: rawCollectionName,
       url: config.edfUrl,
       offerXmlTag,
@@ -31,7 +31,7 @@ export const importEdfRaw = async (sourceStream?: NodeJS.ReadableStream) => {
 }
 
 export const importEdfToComputed = async () => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.EDF,
     zodInput: ZEnedisJob, // same structure as Enedis, so we can reuse the same Zod schema

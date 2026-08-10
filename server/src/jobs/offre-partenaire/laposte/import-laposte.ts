@@ -11,7 +11,7 @@ const offerXmlTag = "offre"
 
 export const importLaposteRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
-    await importFromStreamInXml({
+    return importFromStreamInXml({
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: sourceStream,
@@ -19,7 +19,7 @@ export const importLaposteRaw = async (sourceStream?: NodeJS.ReadableStream) => 
       conflictingOpeningTagWithoutAttributes: true,
     })
   } else {
-    await importFromUrlInXml({
+    return importFromUrlInXml({
       destinationCollection: rawCollectionName,
       url: config.laposteUrl,
       offerXmlTag,
@@ -30,7 +30,7 @@ export const importLaposteRaw = async (sourceStream?: NodeJS.ReadableStream) => 
 }
 
 export const importLaposteToComputed = async () => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.LAPOSTE,
     zodInput: ZLaposteJob,

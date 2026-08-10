@@ -22,4 +22,5 @@ export const blockJobsPartnersWithNaf85 = async ({ addedMatchFilter }: FillCompu
   })
 
   jobLogger.info(`job ${job} : enrichissement terminé. modifiedCount=${result.modifiedCount}`)
+  return { modifiedCount: result.modifiedCount }
 }
