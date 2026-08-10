@@ -18,7 +18,10 @@ const hasNonZeroErrorCount = (value: unknown): boolean => {
   if (Array.isArray(value)) return value.some(hasNonZeroErrorCount)
   if (typeof value === "object") {
     return Object.entries(value as Record<string, unknown>).some(([key, val]) => {
-      if (/error/i.test(key) && typeof val === "number") return val > 0
+      if (/error/i.test(key)) {
+        if (typeof val === "number") return val > 0
+        if (typeof val === "boolean") return val === true
+      }
       return hasNonZeroErrorCount(val)
     })
   }
@@ -31,15 +34,40 @@ const isAnomalous = (job: IJobsCronTask): boolean => {
   return hasNonZeroErrorCount(job.output?.result)
 }
 
-const formatAnomaly = (job: IJobsCronTask): string => {
+const jobTimestamp = (job: IJobsCronTask): number => (job.ended_at ?? job.started_at ?? new Date(0)).getTime()
+
+const describeAnomaly = (job: IJobsCronTask): string => {
   const duration = job.output?.duration ?? "?"
   if (job.status === "running") {
-    return `• ${job.name} (toujours en cours, démarré à ${job.started_at?.toISOString() ?? "?"})`
+    return `toujours en cours, démarré à ${job.started_at?.toISOString() ?? "?"}`
   }
   if (job.status === "errored" || job.status === "killed") {
-    return `• ${job.name} (${job.status}, ${duration}) : ${job.output?.error ?? "erreur inconnue"}`
+    return `${job.status}, ${duration} : ${job.output?.error ?? "erreur inconnue"}`
   }
-  return `• ${job.name} (${duration}) : ${JSON.stringify(job.output?.result)}`
+  return `${duration} : ${JSON.stringify(job.output?.result)}`
+}
+
+// Un même job (ex. "Process missing Rome...", ~65 exécutions/jour) peut échouer en boucle sur la fenêtre :
+// on regroupe par nom pour garder un digest lisible plutôt qu'une ligne par exécution en anomalie.
+const formatAnomalyGroup = (name: string, jobsForName: IJobsCronTask[]): string => {
+  const [mostRecent] = [...jobsForName].sort((a, b) => jobTimestamp(b) - jobTimestamp(a))
+  if (jobsForName.length === 1) {
+    return `• ${name} (${describeAnomaly(mostRecent)})`
+  }
+  return `• ${name} : ${jobsForName.length} exécutions en anomalie sur la période (dernière : ${describeAnomaly(mostRecent)})`
+}
+
+const groupByName = (jobs: IJobsCronTask[]): [string, IJobsCronTask[]][] => {
+  const groups = new Map<string, IJobsCronTask[]>()
+  for (const job of jobs) {
+    const group = groups.get(job.name)
+    if (group) {
+      group.push(job)
+    } else {
+      groups.set(job.name, [job])
+    }
+  }
+  return [...groups.entries()]
 }
 
 /**
@@ -69,7 +97,8 @@ export const sendJobPartnersNightlyDigest = async () => {
   const summaryLine =
     anomalousJobs.length === 0 ? `${okCount}/${jobs.length} jobs offre-partenaire OK, aucune anomalie.` : `${okCount}/${jobs.length} jobs OK, ${anomalousJobs.length} en erreur :`
 
-  let message = [summaryLine, ...anomalousJobs.map(formatAnomaly)].join("\n")
+  const anomalyLines = groupByName(anomalousJobs).map(([name, jobsForName]) => formatAnomalyGroup(name, jobsForName))
+  let message = [summaryLine, ...anomalyLines].join("\n")
   if (message.length > MAX_MESSAGE_LENGTH) {
     message = `${message.slice(0, MAX_MESSAGE_LENGTH)}\n… (message tronqué, voir les logs pour le détail complet)`
   }

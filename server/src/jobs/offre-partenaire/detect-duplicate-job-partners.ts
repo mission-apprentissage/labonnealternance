@@ -74,11 +74,12 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
     logger.info(message)
   })
   const executionDurationInSeconds = Math.round((new Date().getTime() - startDate.getTime()) / 1000)
-  if (executionDurationInSeconds > 60 * 5) {
+  const executionDurationError = executionDurationInSeconds > 60 * 5
+  if (executionDurationError) {
     logger.warn(`detectDuplicateJobPartners: temps d'exécution anormalement long : ${executionDurationInSeconds} secondes`)
   }
 
-  return { executionDurationInSeconds }
+  return { executionDurationInSeconds, executionDurationError }
 }
 
 const logOversizedGroups = async (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {

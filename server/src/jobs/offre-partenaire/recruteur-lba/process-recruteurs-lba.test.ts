@@ -1,4 +1,5 @@
 import fs from "node:fs"
+import { Readable } from "node:stream"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import omit from "lodash-es/omit"
@@ -11,7 +12,9 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IRecruteursLbaRaw } from "shared/models/raw-recruteurs-lba.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import * as sentryUtils from "@/common/utils/sentry-utils"
 import { stringToStream } from "@/common/utils/stream-utils"
+import { importRecruteursLbaRaw } from "./import-recruteurs-lba-raw"
 import { processRecruteursLba } from "./process-recruteurs-lba"
 
 useMongo()
@@ -196,5 +199,20 @@ describe("import-recruteurs-lba-raw", () => {
     // then
     const publishedJobPartners = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).toArray()
     expect.soft(publishedJobPartners.length).toBe(0)
+  })
+
+  it("propage l'erreur (et la capture dans Sentry) au lieu de l'avaler silencieusement quand le flux source échoue", async () => {
+    // biome-ignore lint/suspicious/noEmptyBlockStatements: test
+    const sentrySpy = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
+    const brokenStream = new Readable({
+      read() {
+        this.emit("error", new Error("s3 stream failed"))
+      },
+    })
+
+    await expect(importRecruteursLbaRaw(brokenStream)).rejects.toThrow("s3 stream failed")
+    expect(sentrySpy).toHaveBeenCalledTimes(1)
+
+    sentrySpy.mockRestore()
   })
 })

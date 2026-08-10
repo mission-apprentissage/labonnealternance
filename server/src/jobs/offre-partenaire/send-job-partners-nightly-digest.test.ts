@@ -10,9 +10,9 @@ vi.mock("job-processor", async (importOriginal) => {
 
 const { sendJobPartnersNightlyDigest } = await import("./send-job-partners-nightly-digest")
 
-const cronTask = (params: { name: string; status: string; result?: unknown; error?: string | null; started_at?: Date }) => {
-  const { name, status, result = null, error = null, started_at } = params
-  return { name, type: "cron_task", status, started_at, output: { duration: "1s", result, error } }
+const cronTask = (params: { name: string; status: string; result?: unknown; error?: string | null; started_at?: Date; ended_at?: Date }) => {
+  const { name, status, result = null, error = null, started_at, ended_at } = params
+  return { name, type: "cron_task", status, started_at, ended_at, output: { duration: "1s", result, error } }
 }
 
 describe("sendJobPartnersNightlyDigest", () => {
@@ -91,5 +91,42 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(payload.error).toBe(true)
     expect(payload.message).toContain("Import Emploi Inclusion")
     expect(payload.message).toContain("toujours en cours")
+  })
+
+  it("regroupe plusieurs exécutions en anomalie du même job en une seule ligne", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      cronTask({ name: "Process missing Rome and import to Jobs Partners", status: "errored", error: "timeout", ended_at: new Date("2026-08-10T06:00:00Z") }),
+      cronTask({ name: "Process missing Rome and import to Jobs Partners", status: "errored", error: "timeout", ended_at: new Date("2026-08-10T06:15:00Z") }),
+      cronTask({ name: "Process missing Rome and import to Jobs Partners", status: "errored", error: "dernier timeout", ended_at: new Date("2026-08-10T06:30:00Z") }),
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    const result = await sendJobPartnersNightlyDigest()
+
+    expect(result).toEqual({ total: 3, anomalies: 3 })
+    const [payload] = notifySpy.mock.calls[0]
+    const occurrences = payload.message.split("Process missing Rome and import to Jobs Partners").length - 1
+    expect(occurrences).toBe(1)
+    expect(payload.message).toContain("3 exécutions en anomalie")
+    expect(payload.message).toContain("dernier timeout")
+  })
+
+  it("détecte une anomalie signalée par un booléen *Error* (ex. dépassement de durée)", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      cronTask({ name: "Import RHAlternance", status: "finished", result: { offerInsertCount: 42 } }),
+      cronTask({
+        name: "Process computed and import to Jobs Partners",
+        status: "finished",
+        result: { steps: { detectDuplicateJobPartners: { executionDurationInSeconds: 400, executionDurationError: true } } },
+      }),
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    const result = await sendJobPartnersNightlyDigest()
+
+    expect(result).toEqual({ total: 2, anomalies: 1 })
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.error).toBe(true)
+    expect(payload.message).toContain("Process computed and import to Jobs Partners")
   })
 })
