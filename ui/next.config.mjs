@@ -79,6 +79,7 @@ const nextConfig = {
   serverExternalPackages: ["react-pdf"],
   poweredByHeader: false,
   cacheComponents: true,
+  partialPrefetching: true,
   experimental: {
     fallbackNodePolyfills: false,
     staleTimes: {
