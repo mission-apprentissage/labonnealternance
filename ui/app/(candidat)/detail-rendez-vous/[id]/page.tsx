@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import DetailRendezVousRendererClient from "./DetailRendezVousRendererClient"
@@ -21,6 +21,6 @@ export default async function DetailRendezVousPage({ params, searchParams }: { p
 
     return <DetailRendezVousRendererClient appointmentId={id} appointment={appointmentRecap} token={token} />
   } catch {
-    redirect("/404")
+    notFound()
   }
 }
