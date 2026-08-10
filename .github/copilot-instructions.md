@@ -5,8 +5,28 @@
 **La Bonne Alternance (LBA)** is a French government platform for finding apprenticeship training and job opportunities. It's a full-stack web application serving job seekers, employers, and training centers.
 
 **Repository Size**: ~93,000 lines of TypeScript/JavaScript code across 3 workspaces  
-**Tech Stack**: Node.js, Yarn, TypeScript, Next.js (UI), Fastify (Server), MongoDB, Vitest  
+**Tech Stack**: Node.js 26, Yarn, TypeScript 7, Next.js 16.3 (UI), Fastify (Server), MongoDB, Biome, Zod 4, Vitest  
 **Architecture**: Monorepo with 3 workspaces: `server` (API), `ui` (Next.js frontend), `shared` (common code)
+
+## Architecture Principles to Enforce
+
+These apply when generating code **and** when reviewing it — flag violations even where no lint/CI rule currently checks for them.
+
+**Deep Modules**: a module should expose a simple interface that hides significant implementation complexity (Ousterhout, *A Philosophy of Software Design*). Avoid shallow modules — wrappers whose interface is nearly as complex as their implementation. When a service or component grows and mixes several responsibilities, extract a deep module with a narrow interface rather than splitting it into small interdependent files.
+
+**File naming**: kebab-case for all `.ts` files (services, hooks, utils, jobs, models); PascalCase unchanged for `.tsx` components. Not yet enforced by Biome (no naming rule in `biome.json`) — apply and flag in review regardless.
+
+**Next.js — Cache Components & Partial Prefetching**: `cacheComponents: true` and `partialPrefetching: true` are enabled globally in `ui/next.config.mjs`. For dynamic routes/fetches, use `"use cache: private"` with `cacheTag()` and `cacheLife({ revalidate })` — never `"use cache"` (plain) once `headers()`/session cookies are read, and never reintroduce `export const instant = false` (a completed migration flag). `<Activity>` pitfall: components stay mounted across back-navigation instead of remounting, so any state derived from an initial prop (`useState(initialProp)`) needs an explicit `useEffect(() => setState(prop), [prop])` to resync — check for this on every page/component with prop-derived initial state.
+
+**Zod v4**: use top-level validators (`z.email()`, not `z.string().email()`); use `z.codec(input, output, { decode, encode })` instead of `.transform()` for two-way schemas; `AnyZodObject`/`ZodTypeAny` are gone, use `z.ZodObject<any>`/`z.ZodType`.
+
+## Autonomous Agent Files — Do Not Touch
+
+`ui/AGENTS.md` is auto-generated/re-added by `next dev` (see `node_modules/next/dist/server/lib/generate-agent-files.js`). Leave it alone — do not merge its content elsewhere or edit it.
+
+## PR Process
+
+PRs go through the `pull-request-lba` skill: dedicated branch, commit, PR opened with title `type(lba-XXX): subject` and `Closes #XXX` as the first line of the description, then automatic sync of the linked issue's status in the "La bonne alternance" GitHub Project.
 
 ## Critical Build & Test Requirements
 
@@ -148,7 +168,7 @@ server/              # Backend API (Fastify)
 ui/                  # Frontend (Next.js 16)
 shared/              # Shared types & utilities
 package.json         # Root workspace config
-eslint.config.mjs    # ESLint flat config
+biome.json           # Biome lint + format config
 vitest.config.ts     # Vitest test configuration
 tsconfig.json        # Root TypeScript config
 docker-compose.yml   # Local services (MongoDB, ClamAV, SMTP)
@@ -223,7 +243,7 @@ Steps executed in order:
 
 1. **npm-packages-check**: Security check via `mna-npm-check`
 2. **tests**: Main test suite
-   - Node.js 24
+   - Node.js 26
    - `yarn install --immutable` (validate lockfile)
    - `yarn dedupe --check` (must pass)
    - `yarn typecheck`
@@ -447,7 +467,7 @@ yarn services:clean   # Remove all services & volumes
 
 - 4 separate `tsconfig.json` files (root, server, ui, shared)
 - Build references: shared must build before others
-- Path aliases configured per workspace in `eslint.config.mjs`
+- Path aliases configured per workspace in each `tsconfig.json`
 
 ### Workspace Dependencies
 
@@ -513,7 +533,7 @@ yarn seed:update          # Update seed from local DB
 
 - **Use async/await**: Wrap awaits in try/catch with structured errors
 - **Guard early**: Check edge cases at function start to avoid deep nesting
-- **No floating promises**: All promises must be awaited or handled (enforced by ESLint)
+- **No floating promises**: All promises must be awaited or handled (enforced by Biome)
 - **Structured logging**: Send errors through Sentry and logging utilities
 
 ### Security Practices
