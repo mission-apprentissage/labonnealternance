@@ -85,7 +85,7 @@ export const OffresTabs = ({
   const jobs: LocalJob[] = recruiter?.jobs ?? []
   const searchParams = new URLSearchParams(window.location.search)
   const jobId = searchParams.get("jobId")
-  const [currentOfferId, setCurrentOfferId] = useState<string>(jobId ?? null)
+  const [currentOfferId, setCurrentOfferId] = useState<string | null>(jobId ?? null)
 
   // <Activity> garde ce tableau de bord monté au retour arrière (ex : créer une offre →
   // redirection ici avec ?jobId=A → retour → créer une autre offre → redirection ici avec

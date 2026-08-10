@@ -129,8 +129,11 @@ export function RechercheForm(props: {
         // reset, isSubmitting reste bloqué à true — invisible tant que le formulaire était démonté
         // en quittant la page, mais <Activity> le garde monté au retour arrière : le bouton Rechercher
         // reste alors désactivé indéfiniment.
-        props.onSubmit(values)
-        setSubmitting(false)
+        try {
+          props.onSubmit(values)
+        } finally {
+          setSubmitting(false)
+        }
       }}
     >
       {(formik) => {
