@@ -5,7 +5,7 @@
 **La Bonne Alternance (LBA)** is a French government platform for finding apprenticeship training and job opportunities. It's a full-stack web application serving job seekers, employers, and training centers.
 
 **Repository Size**: ~93,000 lines of TypeScript/JavaScript code across 3 workspaces  
-**Tech Stack**: Node.js 26, Yarn, TypeScript 7, Next.js 16.3 (UI), Fastify (Server), MongoDB, Biome, Zod 4, Vitest  
+**Tech Stack**: Node.js (>=24, CI runs on 26), Yarn, TypeScript 7, Next.js 16.3 (UI), Fastify (Server), MongoDB, Biome, Zod 4, Vitest  
 **Architecture**: Monorepo with 3 workspaces: `server` (API), `ui` (Next.js frontend), `shared` (common code)
 
 ## Architecture Principles to Enforce
@@ -14,7 +14,7 @@ These apply when generating code **and** when reviewing it — flag violations e
 
 **Deep Modules**: a module should expose a simple interface that hides significant implementation complexity (Ousterhout, *A Philosophy of Software Design*). Avoid shallow modules — wrappers whose interface is nearly as complex as their implementation. When a service or component grows and mixes several responsibilities, extract a deep module with a narrow interface rather than splitting it into small interdependent files.
 
-**File naming**: kebab-case for all `.ts` files (services, hooks, utils, jobs, models); PascalCase unchanged for `.tsx` components. Not yet enforced by Biome (no naming rule in `biome.json`) — apply and flag in review regardless.
+**File naming**: kebab-case for all `.ts` files (services, hooks, utils, jobs, models); PascalCase unchanged for `.tsx` components, except Next.js App Router reserved filenames (`page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, `template.tsx`, `default.tsx`), which keep Next's own lowercase convention. Not yet enforced by Biome (no naming rule in `biome.json`) — apply and flag in review regardless.
 
 **Next.js — Cache Components & Partial Prefetching**: `cacheComponents: true` and `partialPrefetching: true` are enabled globally in `ui/next.config.mjs`. For dynamic routes/fetches, use `"use cache: private"` with `cacheTag()` and `cacheLife({ revalidate })` — never `"use cache"` (plain) once `headers()`/session cookies are read, and never reintroduce `export const instant = false` (a completed migration flag). `<Activity>` pitfall: components stay mounted across back-navigation instead of remounting, so any state derived from an initial prop (`useState(initialProp)`) needs an explicit `useEffect(() => setState(prop), [prop])` to resync — check for this on every page/component with prop-derived initial state.
 
