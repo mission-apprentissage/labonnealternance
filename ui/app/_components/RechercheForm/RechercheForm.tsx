@@ -117,7 +117,25 @@ export function RechercheForm(props: {
   const initialValues: IRechercheForm = rechercheParamsToRechercheForm(rechercheParams)
 
   return (
-    <Formik<IRechercheForm> initialValues={initialValues} enableReinitialize validate={validate(zodSchema)} validateOnBlur={false} onSubmit={props.onSubmit}>
+    <Formik<IRechercheForm>
+      initialValues={initialValues}
+      enableReinitialize
+      validate={validate(zodSchema)}
+      validateOnBlur={false}
+      onSubmit={(values, { setSubmitting }) => {
+        // La « soumission » ne fait que déclencher une navigation client (router.push/replace),
+        // jamais réinitialisée par Formik ensuite : sur la home, rechercheParams est un littéral
+        // statique, donc enableReinitialize ne se redéclenche jamais après le 1er envoi. Sans ce
+        // reset, isSubmitting reste bloqué à true — invisible tant que le formulaire était démonté
+        // en quittant la page, mais <Activity> le garde monté au retour arrière : le bouton Rechercher
+        // reste alors désactivé indéfiniment.
+        try {
+          props.onSubmit(values)
+        } finally {
+          setSubmitting(false)
+        }
+      }}
+    >
       {(formik) => {
         return (
           <Box component={"form"} onSubmit={formik.handleSubmit}>

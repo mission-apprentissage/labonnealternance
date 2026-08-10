@@ -97,8 +97,17 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   const [{ onBlur, value }, meta] = useField(props.id)
   const { setFieldValue } = useFormikContext()
 
-  const [query, setQuery] = useState(meta.initialValue ? getOptionLabel(meta.initialValue) : "")
+  const initialQueryLabel = meta.initialValue ? getOptionLabel(meta.initialValue) : ""
+  const [query, setQuery] = useState(initialQueryLabel)
   const debouncedQuery = useThrottle(query, 300)
+
+  // Formik enableReinitialize met à jour meta.initialValue quand initialValues change SANS
+  // démonter ce composant (formulaire de recherche : <Activity> garde l'instance montée au
+  // retour home ⇄ résultats) — sans resync, le champ reste affiché sur l'ancienne saisie
+  // alors que la valeur réellement appliquée (meta.value) est déjà à jour.
+  useEffect(() => {
+    setQuery(initialQueryLabel)
+  }, [initialQueryLabel])
 
   const enabled = isOpen && debouncedQuery.length > 0
 
