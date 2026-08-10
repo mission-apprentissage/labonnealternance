@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import { redirect } from "next/navigation"
-import { apiGet } from "@/utils/api.utils"
+import { notFound } from "next/navigation"
+import { ApiError, apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import DetailRendezVousRendererClient from "./DetailRendezVousRendererClient"
 export const metadata: Metadata = {
@@ -20,7 +20,10 @@ export default async function DetailRendezVousPage({ params, searchParams }: { p
     })
 
     return <DetailRendezVousRendererClient appointmentId={id} appointment={appointmentRecap} token={token} />
-  } catch {
-    redirect("/404")
+  } catch (err) {
+    if (err instanceof ApiError && err.isNotFoundError()) {
+      notFound()
+    }
+    throw err
   }
 }

@@ -1,7 +1,7 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import type { ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 export default async function JobOfferPage({ params, searchParams }: { params: Promise<{ type: LBA_ITEM_TYPE; id: string }>; searchParams: Promise<Record<string, string>> }) {
   const { type, id } = await params
   const job = await getOffreOption(type, id)
-  if (!job) redirect("/404")
+  if (!job) notFound()
 
   return (
     <>

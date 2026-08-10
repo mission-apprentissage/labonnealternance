@@ -1,7 +1,7 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { ApiError, apiGet } from "@/utils/api.utils"
@@ -42,7 +42,7 @@ export default async function FormationPage({ params, searchParams }: { params: 
   const { id } = await params
   const idParam = decodeURIComponent(id)
   const formation = await getFormationOption(idParam)
-  if (!formation) redirect("/404")
+  if (!formation) notFound()
 
   return (
     <>
