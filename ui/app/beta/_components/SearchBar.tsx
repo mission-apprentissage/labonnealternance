@@ -191,6 +191,20 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
   // restauration au blur (le champ ne doit jamais afficher un texte ≠ critère actif).
   const [appliedLieuLabel, setAppliedLieuLabel] = useState(initialLieuLabel ?? "")
 
+  // Cache Components (<Activity>) garde l'instance de ce composant montée (masquée, pas
+  // démontée) d'une navigation à l'autre — sans ceci, revenir en arrière puis relancer une
+  // recherche depuis la home laisse le champ affiché sur l'ancienne saisie alors que l'URL
+  // et les résultats reflètent déjà la nouvelle (initialQ/initialLieuLabel ne sont relus
+  // qu'au montage via useState). Ne s'exécute que quand la prop change réellement — un
+  // onSubmit/onLieuChange local la fait déjà pointer vers la valeur déjà affichée.
+  useEffect(() => {
+    setInputValue(initialQ)
+  }, [initialQ])
+  useEffect(() => {
+    setLieuInput(initialLieuLabel ?? "")
+    setAppliedLieuLabel(initialLieuLabel ?? "")
+  }, [initialLieuLabel])
+
   const debouncedInput = useThrottle(inputValue, 300)
   const debouncedLieu = useThrottle(lieuInput, 300)
 
