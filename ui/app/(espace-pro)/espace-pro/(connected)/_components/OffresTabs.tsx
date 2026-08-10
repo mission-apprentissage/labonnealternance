@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material"
 import { useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { IJobJson, IRecruiterJson, JOB_START_TYPE } from "shared"
 import { JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/index"
@@ -86,6 +86,14 @@ export const OffresTabs = ({
   const searchParams = new URLSearchParams(window.location.search)
   const jobId = searchParams.get("jobId")
   const [currentOfferId, setCurrentOfferId] = useState<string>(jobId ?? null)
+
+  // <Activity> garde ce tableau de bord monté au retour arrière (ex : créer une offre →
+  // redirection ici avec ?jobId=A → retour → créer une autre offre → redirection ici avec
+  // ?jobId=B, même URL de dashboard) — sans resync, l'onglet reste sur A alors que l'URL
+  // pointe déjà vers B.
+  useEffect(() => {
+    setCurrentOfferId(jobId ?? null)
+  }, [jobId])
 
   const currentOffre = jobs.find((job) => job._id === currentOfferId)
 
