@@ -181,15 +181,15 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       const { classification } = req.body
-      const job = await getDbCollection("jobs_partners").findOne({ _id: id }, { projection: { partner_job_id: 1 } })
+      const job = await getDbCollection("jobs_partners").findOne({ _id: id }, { projection: { partner_job_id: 1, partner_label: 1 } })
       if (!job) throw notFound("Offre introuvable")
 
-      const existingEntry = await getDbCollection("cache_classification").findOne({ partner_job_id: job.partner_job_id })
+      const existingEntry = await getDbCollection("cache_classification").findOne({ partner_label: job.partner_label, partner_job_id: job.partner_job_id })
       if (!existingEntry) {
         return res.status(200).send({ updated: false })
       }
 
-      await updateClassificationAndSynchronise({ classification, partner_job_ids: [job.partner_job_id] })
+      await updateClassificationAndSynchronise({ classification, jobs: [{ partner_label: job.partner_label, partner_job_id: job.partner_job_id }] })
       return res.status(200).send({ updated: true })
     }
   )
