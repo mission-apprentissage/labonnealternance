@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
-import { updateClassificationAndSynchronise } from "./classification.controller"
+import { reviewJobPartnersClassification, updateClassificationAndSynchronise } from "./human-classification-review.service"
 
 const { addJobMock } = vi.hoisted(() => ({ addJobMock: vi.fn() }))
 vi.mock("job-processor", async (importOriginal) => {
@@ -79,5 +79,40 @@ describe("updateClassificationAndSynchronise", () => {
     await updateClassificationAndSynchronise({ classification: "publish", partner_job_ids: [partner_job_id] })
 
     expect(addJobMock).not.toHaveBeenCalled()
+  })
+})
+
+describe("reviewJobPartnersClassification (wrapper CLI)", () => {
+  useMongo()
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    await getDbCollection("cache_classification").deleteMany({})
+  })
+
+  it("parse la liste de partner_job_id séparés par des virgules", async () => {
+    await getDbCollection("cache_classification").insertOne({
+      _id: new ObjectId(),
+      partner_label,
+      partner_job_id,
+      classification: "publish",
+      scores: { publish: 0.9, unpublish: 0.1 },
+      model: "model",
+      human_verification: null,
+      created_at: new Date(),
+    })
+
+    await reviewJobPartnersClassification({ classification: "publish", partnerJobIds: ` ${partner_job_id} , other-id ` })
+
+    const cached = await getDbCollection("cache_classification").findOne({ partner_job_id })
+    expect(cached?.human_verification).toBe("publish")
+  })
+
+  it("rejette une classification invalide", async () => {
+    await expect(reviewJobPartnersClassification({ classification: "nope", partnerJobIds: partner_job_id })).rejects.toThrow()
+  })
+
+  it("rejette une liste de partner_job_id vide", async () => {
+    await expect(reviewJobPartnersClassification({ classification: "publish", partnerJobIds: "" })).rejects.toThrow()
   })
 })

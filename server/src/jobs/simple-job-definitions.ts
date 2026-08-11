@@ -5,6 +5,7 @@ import { analyzeCfaBlockList } from "@/jobs/one-time-job/analyze-cfa-block-list"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
 import { compareLabAndMistralClassification } from "@/services/classification/compare-lab-mistral-classification.service"
+import { reviewJobPartnersClassification } from "@/services/classification/human-classification-review.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import { applyPendingMistralBatches, generateSearchItemsKeywordsContinuous, submitSearchItemsKeywordsBatch } from "@/services/search/search-items-keywords.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -548,6 +549,14 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: compareLabAndMistralClassification,
     description: "Compare sur un échantillon de cache_classification les décisions Lab (déjà stockées) et Mistral, sans rien modifier",
     cliOptions: [{ flags: "--sampleSize <n>", description: "Taille de l'échantillon comparé (défaut 200)" }],
+  },
+  {
+    fct: reviewJobPartnersClassification,
+    description: "Corrige manuellement la classification d'offres (remplace l'ancien POST /classification) et republie/dépublie en conséquence",
+    cliOptions: [
+      { flags: "--classification <publish|unpublish>", description: "Classification humaine à appliquer" },
+      { flags: "--partnerJobIds <ids>", description: "Liste de partner_job_id séparés par des virgules" },
+    ],
   },
   {
     fct: deduplicateHellowork,
