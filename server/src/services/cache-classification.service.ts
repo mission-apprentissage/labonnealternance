@@ -90,9 +90,11 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
 export const updateClassificationAndSynchronise = async ({
   classification,
   jobs,
+  grantedBy = "cache-classification.service",
 }: {
   classification: "publish" | "unpublish"
   jobs: { partner_label: string; partner_job_id: string }[]
+  grantedBy?: string
 }): Promise<void> => {
   if (!jobs.length) return
 
@@ -123,7 +125,7 @@ export const updateClassificationAndSynchronise = async ({
                 date: new Date(),
                 status: JOB_STATUS_ENGLISH.ANNULEE,
                 reason: "classification humaine non conforme",
-                granted_by: "classification.controller",
+                granted_by: grantedBy,
               },
             },
           }

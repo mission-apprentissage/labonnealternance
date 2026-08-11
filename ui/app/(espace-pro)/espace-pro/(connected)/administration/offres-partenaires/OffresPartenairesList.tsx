@@ -3,7 +3,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, Checkbox, CircularProgress, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Typography } from "@mui/material"
-import { useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import type { IJobsPartnersOfferForAdminJSON } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
@@ -24,7 +24,7 @@ export function OffresPartenairesList() {
   const [submittedId, setSubmittedId] = useState("")
   const [offset, setOffset] = useState(0)
 
-  const { data, isFetching } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["/admin/jobs-partners", selectedPartnerLabels, submittedId, offset],
     queryFn: () =>
       getJobsPartnersForAdmin({
@@ -34,6 +34,7 @@ export function OffresPartenairesList() {
         offset,
       }),
     staleTime: 1000 * 30,
+    placeholderData: keepPreviousData,
   })
 
   const jobs = useMemo(() => data?.jobs ?? [], [data])
@@ -94,7 +95,7 @@ export function OffresPartenairesList() {
         />
       </Box>
 
-      {isFetching ? (
+      {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
           <CircularProgress />
         </Box>

@@ -343,6 +343,9 @@ export default {
     [{ offer_expiration: 1 }, {}],
     // Cron delta de synchronisation search_items (syncSearchItemsDelta).
     [{ updated_at: 1 }, {}],
+    // Tri par défaut de la liste admin (/admin/jobs-partners) : évite un $sort en mémoire sur toute la collection
+    // quand le filtre partner_label n'est pas assez sélectif pour qu'un index composé serve le tri.
+    [{ offer_creation: -1 }, {}],
     [{ contract_is_disabled_elligible: 1 }, {}],
     [{ "duplicates.partner_job_id": 1 }, {}],
     [{ "duplicates.partner_job_label": 1 }, {}],
