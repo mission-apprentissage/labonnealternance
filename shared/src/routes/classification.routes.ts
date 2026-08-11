@@ -26,22 +26,4 @@ export const zClassificationRoute = {
       },
     },
   },
-  post: {
-    "/classification": {
-      method: "post",
-      path: "/classification",
-      body: z.object({
-        partner_job_ids: z.string().array().min(1, "Il faut au moins un id à mettre à jour"),
-        classification: z.enum(["publish", "unpublish"]),
-      }),
-      response: {
-        200: z.object({ response: z.literal("Les mises à jour vont être traitées par le serveur"), time: z.coerce.date<Date>() }),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: null,
-        resources: {},
-      },
-    },
-  },
 } as const satisfies IRoutesDef
