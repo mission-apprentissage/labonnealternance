@@ -1,10 +1,10 @@
 import { unauthorized } from "@hapi/boom"
-import { addJob } from "job-processor"
 import type { ICredential } from "shared"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
+import { processJobPartnersWithFilter } from "@/jobs/offre-partenaire/process-job-partners-for-api"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 type IModelTraining = {
@@ -127,7 +127,7 @@ export const classificationRoutes = (server: Server) => {
   })
 }
 
-const updateClassificationAndSynchronise = async ({ classification, partner_job_ids }: { classification: "publish" | "unpublish"; partner_job_ids: string[] }) => {
+export const updateClassificationAndSynchronise = async ({ classification, partner_job_ids }: { classification: "publish" | "unpublish"; partner_job_ids: string[] }) => {
   // update cache_classification
   await getDbCollection("cache_classification").updateMany({ partner_job_id: { $in: partner_job_ids } }, { $set: { human_verification: classification } })
   // get jobs_partners to update offer_status to annulé if classification !== human_verification
@@ -173,7 +173,11 @@ const updateClassificationAndSynchronise = async ({ classification, partner_job_
       }
     }
   }
-  // add job to fill-computed-jobs-partners with the filteredScopeIds
-  await addJob({ name: "fill-computed-jobs-partners", payload: { addedMatchFilter: { partner_job_id: { $in: filteredScopeIds } } } })
-  await addJob({ name: "import-from-computed-to-jobs-partners", payload: { partner_job_id: { $in: filteredScopeIds } } })
+  // Ré-exécute la chaîne de traitement (validation + import vers jobs_partners) pour les offres
+  // dont le business_error vient d'être réinitialisé ci-dessus — appel direct (pas addJob : ces
+  // noms de job kebab-case ne correspondaient à aucun handler enregistré, échec silencieux
+  // capturé par Sentry sans jamais republier l'offre corrigée).
+  if (filteredScopeIds.length) {
+    await processJobPartnersWithFilter({ partner_job_id: { $in: filteredScopeIds } })
+  }
 }

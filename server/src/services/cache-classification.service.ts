@@ -1,7 +1,10 @@
 import { ObjectId } from "bson"
 import type { IClassificationJobsPartners } from "shared/models/cache-classification.model"
+import type { IGetLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
+import { getMistralClassificationBatch } from "@/common/apis/classification/classification-mistral.client"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import config from "@/config"
 
 export type TJobClassification = {
   partner_label: string
@@ -20,7 +23,11 @@ const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(ICl
   })
 }
 
-export const getClassificationFromLab = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
+/** Bascule de provider pilotée par LBA_CLASSIFICATION_PROVIDER (rollback rapide sans redéploiement). */
+const classifyBatch = (payload: IGetLabClassificationBatch) =>
+  config.classification.provider === "mistral" ? getMistralClassificationBatch(payload) : getLabClassificationBatch(payload)
+
+export const getClassification = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
   const cachedClassifications = await getClassificationFromDB(jobs)
   const notFoundJobs = jobs.flatMap((job, index) => {
     if (cachedClassifications[index] !== null) {
@@ -42,8 +49,8 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
     offer_description: job.offer_description,
   }))
 
-  const classificationsFromLab = await getLabClassificationBatch(classificationPayload)
-  const classificationsById = new Map(classificationsFromLab.map((result) => [result.id, result]))
+  const classificationsFromProvider = await classifyBatch(classificationPayload)
+  const classificationsById = new Map(classificationsFromProvider.map((result) => [result.id, result]))
 
   const now = new Date()
   const zippedJobsNotFound = notFoundJobs.flatMap(({ job, index }) => {

@@ -76,6 +76,11 @@ const config = {
   labonnealternanceLab: {
     baseUrl: "https://lab.apprentissage.beta.gouv.fr",
   },
+  classification: {
+    // "mistral" par défaut à terme ; "lab" tant que la comparaison Lab/Mistral n'a pas validé
+    // la bascule. Permet un rollback instantané (variable d'env) sans redéploiement de code.
+    provider: env.get("LBA_CLASSIFICATION_PROVIDER").default("lab").asEnum(["lab", "mistral"]),
+  },
   franceTravailDepotOffres: {
     login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),
     password: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_PASSWORD").required().asString(),

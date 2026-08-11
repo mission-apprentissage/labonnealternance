@@ -3,6 +3,8 @@ import { processEnedis } from "@/jobs/offre-partenaire/enedis/process-enedis"
 import { processMissingRomeAndImportToJobPartners } from "@/jobs/offre-partenaire/process-missing-rome-and-import-to-job-partners"
 import { analyzeCfaBlockList } from "@/jobs/one-time-job/analyze-cfa-block-list"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
+import { compareLabAndMistralClassification } from "@/services/classification/compare-lab-mistral-classification.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import { applyPendingMistralBatches, generateSearchItemsKeywordsContinuous, submitSearchItemsKeywordsBatch } from "@/services/search/search-items-keywords.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -65,7 +67,7 @@ import {
   processComputedAndImportToJobPartners,
   validateComputedJobPartnersFlux,
 } from "./offre-partenaire/process-job-partners"
-import { processJobPartnersForApi } from "./offre-partenaire/process-job-partners-for-api"
+import { processJobPartnersForApi, processJobPartnersWithFilter } from "./offre-partenaire/process-job-partners-for-api"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offre-partenaire/recruteur-lba/import-recruteurs-lba-raw"
 import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offre-partenaire/recruteur-lba/process-recruteurs-lba"
 import { processRhAlternance } from "./offre-partenaire/rh-alternance/process-rh-alternance"
@@ -529,6 +531,23 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: detectClassificationJobsPartners,
     description: "Analyse la classification des offres partenaires",
+  },
+  {
+    fct: processJobPartnersWithFilter,
+    description: "Ré-exécute la chaîne de traitement des jobs_partners pour un filtre donné (ex. reprise après classification batch)",
+  },
+  {
+    fct: submitClassificationBatch,
+    description: "Soumet un batch Mistral de classification jobs_partners pour un filtre donné, suivi dans mistral_batch_jobs",
+  },
+  {
+    fct: applyPendingClassificationBatches,
+    description: "Ramasse les batchs Mistral de classification jobs_partners terminés (téléchargement + application + reprise du pipeline)",
+  },
+  {
+    fct: compareLabAndMistralClassification,
+    description: "Compare sur un échantillon de cache_classification les décisions Lab (déjà stockées) et Mistral, sans rien modifier",
+    cliOptions: [{ flags: "--sampleSize <n>", description: "Taille de l'échantillon comparé (défaut 200)" }],
   },
   {
     fct: deduplicateHellowork,
