@@ -7,7 +7,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getClassification } from "@/services/cache-classification.service"
 import { submitClassificationRequests } from "@/services/classification/classification-mistral-batch.service"
 import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
-import { fillFieldsForComputedPartnersFactory } from "./fill-fields-for-partners-factory"
+import { buildComputedPartnersCandidateFilter, fillFieldsForComputedPartnersFactory } from "./fill-fields-for-partners-factory"
 
 const CLASSIFICATION_SOURCE_FIELDS = [
   "workplace_description",
@@ -32,16 +32,14 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter }: Fil
     filters.push(addedMatchFilter)
   }
 
-  // Même prédicat que celui construit par fillFieldsForComputedPartnersFactory pour ce job —
-  // nécessaire pour compter les candidats avant de choisir la voie sync/batch.
-  const candidateFilter: Filter<IComputedJobsPartners> = {
-    $and: [
-      { $or: CLASSIFICATION_SOURCE_FIELDS.map((field) => ({ [field]: { $ne: null } })) },
-      { $or: CLASSIFICATION_FILLED_FIELDS.map((field) => ({ [field]: null })) },
-      { business_error: null, jobs_in_success: { $nin: [COMPUTED_ERROR_SOURCE.CLASSIFICATION] } },
-      ...filters,
-    ],
-  }
+  // Prédicat partagé avec fillFieldsForComputedPartnersFactory (même helper) — nécessaire pour
+  // compter les candidats avant de choisir la voie sync/batch, sans risque de divergence.
+  const candidateFilter = buildComputedPartnersCandidateFilter({
+    job: COMPUTED_ERROR_SOURCE.CLASSIFICATION,
+    sourceFields: CLASSIFICATION_SOURCE_FIELDS,
+    filledFields: CLASSIFICATION_FILLED_FIELDS,
+    addedMatchFilter: { $and: filters },
+  })
 
   const candidateCount = await getDbCollection("computed_jobs_partners").countDocuments(candidateFilter)
 

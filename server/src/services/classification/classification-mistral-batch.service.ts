@@ -190,7 +190,14 @@ export const applyPendingClassificationBatches = async () => {
               filter: { _id: doc._id },
               update: {
                 $set: { business_error: parsed.label === "unpublish" ? JOB_PARTNER_BUSINESS_ERROR.CFA : null, updated_at: appliedAt },
-                $pull: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION },
+                // $addToSet (pas $pull) : la classification a réellement été obtenue, comme le
+                // chemin sync (fillFieldsForComputedPartnersFactory) qui pousse CLASSIFICATION
+                // dans jobs_in_success sur tout succès quel que soit le label. Un $pull laisserait
+                // les offres "publish" (business_error: null) éligibles au filtre de candidature
+                // de detectClassificationJobsPartners re-déclenché juste après par
+                // processJobPartnersWithFilter → fillComputedJobsPartners → boucle de
+                // resoumission Mistral à chaque ramasse pour les gros lots "publish".
+                $addToSet: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION },
               },
             },
           })

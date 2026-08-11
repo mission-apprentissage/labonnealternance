@@ -73,13 +73,15 @@ describe("classification-mistral-batch.service", () => {
       applied_at: null,
     })
 
-    it("job terminé : cache et computed_jobs_partners mis à jour, pipeline re-déclenché, statut applied", async () => {
+    it("job terminé (unpublish) : cache et computed_jobs_partners mis à jour, pipeline re-déclenché, statut applied", async () => {
+      // jobs_in_success ne contient PAS encore CLASSIFICATION : un document routé vers le batch
+      // par detectClassificationJobsPartners ne l'a jamais eu (il est diverti avant que le
+      // chemin sync ne le pousse) — état réaliste au moment où CLASSIFICATION_PENDING est posé.
       const [job] = await givenSomeComputedJobPartners([
         {
           offer_title: "Vendeur",
           workplace_name: "CFA Test",
           business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING,
-          jobs_in_success: [COMPUTED_ERROR_SOURCE.CLASSIFICATION],
         },
       ])
       await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-ok"))
@@ -93,10 +95,35 @@ describe("classification-mistral-batch.service", () => {
       expect(cached).toMatchObject({ classification: "unpublish", model: "mistral:mistral-small-latest" })
       const updated = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
       expect(updated?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CFA)
-      expect(updated?.jobs_in_success).not.toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
+      expect(updated?.jobs_in_success).toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
       expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } } })
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-ok" })
       expect(tracked).toMatchObject({ status: "applied", applied_count: 1 })
+    })
+
+    it("job terminé (publish) : jobs_in_success contient CLASSIFICATION — pas de boucle de resoumission", async () => {
+      // Régression : un $pull ici laisserait le document éligible au filtre de candidature de
+      // detectClassificationJobsPartners (business_error: null ET jobs_in_success sans
+      // CLASSIFICATION), ré-déclenché juste après par processJobPartnersWithFilter — pour un gros
+      // lot "publish", ça resoumettrait indéfiniment le même batch à chaque ramasse horaire.
+      const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING }])
+      await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-ok-publish"))
+      vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "SUCCESS", outputFile: "file-1" } as never)
+      vi.mocked(downloadMistralBatchOutput).mockResolvedValue(new Map([[job._id.toString(), '{"label":"publish","scores":{"publish":0.9,"unpublish":0.1}}']]))
+
+      await applyPendingClassificationBatches()
+
+      const updated = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
+      expect(updated?.business_error).toBeNull()
+      expect(updated?.jobs_in_success).toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
+      // Reproduit le filtre de candidature de detectClassificationJobsPartners : ce document ne
+      // doit plus matcher (sinon il repartirait en CLASSIFICATION_PENDING dès le prochain passage).
+      const stillCandidate = await getDbCollection("computed_jobs_partners").countDocuments({
+        _id: job._id,
+        business_error: null,
+        jobs_in_success: { $nin: [COMPUTED_ERROR_SOURCE.CLASSIFICATION] },
+      })
+      expect(stillCandidate).toBe(0)
     })
 
     it("job en échec terminal : statut failed + alerte Slack, le document reste bloqué (repris par le filet de sécurité)", async () => {
@@ -116,9 +143,7 @@ describe("classification-mistral-batch.service", () => {
 
     it("filet de sécurité : débloque une offre pendante depuis plus de 6h, même sans job suivi", async () => {
       const staleDate = new Date(Date.now() - 7 * 60 * 60 * 1000)
-      const [job] = await givenSomeComputedJobPartners([
-        { business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, jobs_in_success: [COMPUTED_ERROR_SOURCE.CLASSIFICATION], updated_at: staleDate },
-      ])
+      const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: staleDate }])
 
       await applyPendingClassificationBatches()
 
