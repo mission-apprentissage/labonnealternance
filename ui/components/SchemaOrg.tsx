@@ -182,11 +182,11 @@ export const SchemaOrg = ({
         url: BASE_URL,
       },
       ...(courseCredential ? { educationalCredentialAwarded: courseCredential } : {}),
+      ...(courseDuration ? { timeRequired: courseDuration } : {}),
       hasCourseInstance: {
         "@type": "CourseInstance",
         // L'alternance combine formation en école et travail en entreprise.
         courseMode: "blended",
-        ...(courseDuration ? { courseWorkload: courseDuration } : {}),
       },
       inLanguage: "fr",
     })
