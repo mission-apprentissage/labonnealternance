@@ -7,6 +7,7 @@ import type { Metadata } from "next"
 import { Suspense } from "react"
 
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
+import { InfoSection } from "@/app/(editorial)/_components/InfoSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
@@ -23,7 +24,7 @@ import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = PAGES.static.guideRecruteurRecruterUnAlternant.getMetadata()
 
-const faqItems = [
+const faqItems: { question: string; answer: string; link?: { href: string; label: string } }[] = [
   {
     question: "Quelles aides pour recruter un alternant en 2026 ?",
     answer:
@@ -33,6 +34,10 @@ const faqItems = [
     question: "Combien coûte un alternant pour l'employeur ?",
     answer:
       "La rémunération légale d'un apprenti va de 27 % du SMIC (moins de 18 ans, 1re année) à 100 % du SMIC (26 ans et plus), soit d'environ 504 € à 1 867 € brut par mois sur la base du SMIC en vigueur (1 867,02 € au 1er juin 2026). Le coût réel est nettement réduit la première année grâce à l'aide à l'embauche (jusqu'à 5 000 €), et le salaire de l'apprenti est exonéré de cotisations salariales jusqu'à 50 % du SMIC (933,51 € au 1er juin 2026). Pour une estimation précise du coût net, utilisez le simulateur de l'URSSAF.",
+    link: {
+      href: "https://www.urssaf.fr/accueil/outils-documentation/simulateurs/cotisations-employeur.html",
+      label: "Simulateur de coût employeur de l'URSSAF",
+    },
   },
   {
     question: "Quelles conditions pour embaucher un apprenti ?",
@@ -42,7 +47,7 @@ const faqItems = [
   {
     question: "Comment recruter un alternant, étape par étape ?",
     answer:
-      "1. Définissez le poste et le diplôme préparé. 2. Trouvez un candidat — vous pouvez déposer gratuitement votre offre sur La bonne alternance. 3. Identifiez le CFA et la formation. 4. Signez le contrat d'apprentissage (Cerfa FA13) ou de professionnalisation. 5. Désignez un maître d'apprentissage. 6. Transmettez le contrat à votre OPCO au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en charge les frais de formation.",
+      "1. Définissez le poste et le diplôme préparé. 2. Désignez un maître d'apprentissage. 3. Trouvez un candidat — vous pouvez déposer gratuitement votre offre sur La bonne alternance. 4. Rapprochez-vous du centre de formation qui préparera l'alternant. 5. Signez le contrat d'apprentissage (Cerfa FA13) ou de professionnalisation ; votre OPCO peut vous accompagner dans cette démarche. 6. Transmettez le contrat à votre OPCO au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en charge les frais de formation.",
   },
   {
     question: "Quand faut-il recruter un alternant pour la rentrée ?",
@@ -52,12 +57,12 @@ const faqItems = [
   {
     question: "Où trouver un candidat en alternance ?",
     answer:
-      "La bonne alternance, le service public de l'alternance, vous permet de déposer gratuitement votre offre. Elle est diffusée sur La bonne alternance, 1jeune1solution et Parcoursup, et vous recevez directement les candidatures. Vous pouvez aussi être contacté par des candidats en recherche d'alternance, y compris en candidature spontanée.",
+      "La bonne alternance, le service public de l'alternance, vous permet de déposer gratuitement votre offre. Elle est diffusée sur La bonne alternance, Hellowork et Parcoursup, et vous recevez directement les candidatures. Vous pouvez aussi être contacté par des candidats en recherche d'alternance, y compris en candidature spontanée.",
   },
   {
     question: "Combien coûte le dépôt d'une offre d'alternance sur La bonne alternance ?",
     answer:
-      "Le dépôt d'une offre d'alternance sur La bonne alternance est entièrement gratuit. C'est un service public opéré par la Délégation générale à l'emploi et à la formation professionnelle (DGEFP).",
+      "Le dépôt d'une offre d'alternance sur La bonne alternance est entièrement gratuit. C'est un service public opéré par la Délégation générale à l'emploi et à la formation professionnelle (DGEFP) du ministère du Travail et de l'Emploi.",
   },
   {
     question: "Peut-on rompre un contrat d'apprentissage ?",
@@ -135,9 +140,10 @@ const RecruterUnAlternantPage = () => {
 
       <Section id="aides" title="Aides à l'embauche d'un alternant en 2026">
         <Paragraph>
-          L'aide à l'embauche est le premier levier pour recruter un apprenti. Elle concerne les contrats d'apprentissage conclus <strong>depuis le 8 mars 2026</strong> et dont
-          l'exécution débute <strong>avant le 1er janvier 2027</strong> : l'entreprise perçoit alors une aide versée chaque mois par l'Agence de services et de paiement (ASP)
-          pendant la première année du contrat. Son montant dépend de la taille de l'entreprise et du niveau du diplôme préparé.
+          L'aide financière proposée par le gouvernement à l'embauche d'un apprenti a vocation à soutenir le recours à ce mode de formation insérant. Elle concerne les contrats
+          d'apprentissage conclus <strong>depuis le 8 mars 2026</strong> et dont l'exécution débute <strong>avant le 1er janvier 2027</strong> : l'entreprise perçoit alors une aide
+          versée chaque mois par l'Agence de services et de paiement (ASP) pendant la première année du contrat. Son montant dépend de la taille de l'entreprise et du niveau du
+          diplôme préparé par l'apprenti.
         </Paragraph>
         <TableArticle
           caption="Montant de l'aide à l'embauche d'un apprenti (contrats conclus depuis le 8 mars 2026)"
@@ -154,17 +160,33 @@ const RecruterUnAlternantPage = () => {
         />
         <Paragraph variant="caption" color={fr.colors.decisions.text.mention.grey.default}>
           Montants fixés par le{" "}
-          <DsfrLink href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053634597" aria-label="Consulter le décret n° 2026-168 du 6 mars 2026 sur Légifrance">
+          <DsfrLink href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053634597" size="sm" aria-label="Consulter le décret n° 2026-168 du 6 mars 2026 sur Légifrance">
             décret n° 2026-168 du 6 mars 2026
           </DsfrLink>
           , pour les contrats d'apprentissage conclus depuis le 8 mars 2026 et dont l'exécution débute avant le 1er janvier 2027. Aide versée par l'ASP la première année du
           contrat. Pour les entreprises de 250 salariés et plus, l'aide est soumise à une condition d'effectif d'alternants et n'est pas cumulable avec l'aide unique. L'aide «
           apprenti en situation de handicap » est cumulable avec les aides spécifiques de l'AGEFIPH. Voir aussi{" "}
-          <DsfrLink href="https://entreprendre.service-public.gouv.fr/actualites/A17983" aria-label="Consulter les aides à l'embauche d'un apprenti sur service-public.fr">
+          <DsfrLink
+            href="https://entreprendre.service-public.gouv.fr/actualites/A17983"
+            size="sm"
+            aria-label="Consulter les aides à l'embauche d'un apprenti sur service-public.fr"
+          >
             service-public.fr
           </DsfrLink>
           .
         </Paragraph>
+        <InfoSection>
+          <Paragraph>
+            Ces montants sont fixés par décret et actualisés chaque année. Pour les montants en vigueur, référez-vous au{" "}
+            <DsfrLink
+              href="https://travail-emploi.gouv.fr/aides-aux-contrats-en-alternance-guide-pratique-destination-des-employeurs-et-des-organismes-de-formation"
+              aria-label="Consulter le guide des aides aux contrats en alternance du ministère du Travail"
+            >
+              guide des aides aux contrats en alternance du ministère du Travail
+            </DsfrLink>
+            , qui détaille et actualise ces informations.
+          </Paragraph>
+        </InfoSection>
       </Section>
 
       <Section id="conditions" title="Conditions pour recruter un alternant">
@@ -201,7 +223,7 @@ const RecruterUnAlternantPage = () => {
         <Paragraph variant="caption" color={fr.colors.decisions.text.mention.grey.default}>
           Pourcentages du SMIC en vigueur (1 867,02 € brut/mois au 1er juin 2026). Pour les 21 ans et plus, la rémunération peut être relevée au SMIC ou au minimum conventionnel
           lorsqu'il est plus favorable. Source :{" "}
-          <DsfrLink href="https://www.service-public.fr/particuliers/vosdroits/F2918" aria-label="Consulter la rémunération d'un apprenti sur service-public.fr">
+          <DsfrLink href="https://www.service-public.fr/particuliers/vosdroits/F2918" size="sm" aria-label="Consulter la rémunération d'un apprenti sur service-public.fr">
             service-public.fr
           </DsfrLink>
           .
@@ -233,16 +255,21 @@ const RecruterUnAlternantPage = () => {
               <strong>Définissez le poste et le diplôme préparé</strong> : missions confiées à l'alternant et niveau de formation visé.
             </>,
             <>
+              <strong>Désignez un maître d'apprentissage</strong> pour encadrer l'alternant en entreprise.
+            </>,
+            <>
               <strong>Trouvez un candidat</strong> : déposez gratuitement votre offre sur La bonne alternance pour recevoir des candidatures ciblées.
             </>,
             <>
-              <strong>Identifiez le CFA et la formation</strong> qui prépareront l'alternant au diplôme.
+              <strong>Rapprochez-vous du centre de formation</strong> qui préparera l'alternant au diplôme.
             </>,
             <>
-              <strong>Signez le contrat</strong> d'apprentissage (Cerfa FA13) ou de professionnalisation avec l'alternant.
-            </>,
-            <>
-              <strong>Désignez un maître d'apprentissage</strong> pour encadrer l'alternant en entreprise.
+              <strong>Signez le contrat</strong> d'apprentissage (Cerfa FA13) ou de professionnalisation avec l'alternant et le centre de formation. Votre OPCO peut vous
+              accompagner dans cette démarche —{" "}
+              <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr/" aria-label="Trouver mon OPCO sur le site de France compétences">
+                trouver mon OPCO
+              </DsfrLink>
+              .
             </>,
             <>
               <strong>Transmettez le contrat à votre OPCO</strong> au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en
@@ -261,16 +288,29 @@ const RecruterUnAlternantPage = () => {
 
       <Section id="trouver-un-candidat" title="Où trouver un candidat en alternance ?">
         <Paragraph>
-          Le dépôt d'une offre sur La bonne alternance est <strong>entièrement gratuit</strong>. Votre offre est diffusée sur La bonne alternance, 1jeune1solution et Parcoursup, et
-          vous pouvez aussi être contacté par des candidats en recherche d'alternance, y compris en candidature spontanée.
+          Le dépôt d'une offre sur La bonne alternance est <strong>entièrement gratuit</strong>. Votre offre est diffusée sur La bonne alternance, Hellowork et Parcoursup, et vous
+          pouvez aussi être contacté par des candidats en recherche d'alternance, y compris en candidature spontanée.
         </Paragraph>
+        <Suspense fallback={<Box sx={{ height: 48 }} />}>
+          <DepotOffreCtaButton />
+        </Suspense>
       </Section>
 
       <Section id="faq" title="Questions fréquentes des employeurs">
         <Box>
           {faqItems.map((item, idx) => (
             <Accordion key={item.question} label={item.question} defaultExpanded={idx === 0}>
-              <Typography>{item.answer}</Typography>
+              <Typography>
+                {item.answer}
+                {item.link ? (
+                  <>
+                    {" "}
+                    <DsfrLink href={item.link.href} aria-label={item.link.label}>
+                      {item.link.label}
+                    </DsfrLink>
+                  </>
+                ) : null}
+              </Typography>
             </Accordion>
           ))}
         </Box>
