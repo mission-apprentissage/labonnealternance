@@ -70,18 +70,19 @@ const parseBatchClassificationContent = (content: string): z.output<typeof ZBatc
 
 const CLASSIFICATION_PROJECTION = { _id: 1, workplace_name: 1, workplace_description: 1, offer_title: 1, offer_description: 1 } as const
 
-/** Soumet un batch Mistral (fire-and-forget, suivi dans mistral_batch_jobs) pour les
- * computed_jobs_partners matchant `filter` — appelé automatiquement par detectClassificationJobsPartners
- * au-delà du seuil sync, ou manuellement (backfill/rattrapage) via addJob. */
-export const submitClassificationBatch = async (filter: Filter<IComputedJobsPartners>): Promise<string | null> => {
-  const docs = await getDbCollection("computed_jobs_partners").find(filter, { projection: CLASSIFICATION_PROJECTION }).toArray()
+type ClassificationCandidate = { _id: ObjectId } & ClassificationSourceDoc
+
+/** Soumet directement des documents déjà chargés (évite un second aller-retour Mongo quand
+ * l'appelant les a déjà en main — ex. le routage sync/batch de detectClassificationJobsPartners,
+ * qui a besoin des mêmes champs pour compter les candidats avant de décider de la bascule). */
+export const submitClassificationRequests = async (docs: ClassificationCandidate[]): Promise<string | null> => {
   if (!docs.length) return null
 
   const requests = docs.map((doc) => ({ customId: doc._id.toString(), messages: buildBatchMessages(doc) }))
   const jobId = await submitMistralBatch({ requests, model: CLASSIFICATION_MISTRAL_MODEL, inputFileName: `jobs_partners_classification_${now().getTime()}.jsonl` })
 
   if (!jobId) {
-    logger.error(`submitClassificationBatch: échec de soumission (${requests.length} requêtes) — les offres restent CLASSIFICATION_PENDING, débloquées par le filet de sécurité`)
+    logger.error(`submitClassificationRequests: échec de soumission (${requests.length} requêtes) — les offres restent CLASSIFICATION_PENDING, débloquées par le filet de sécurité`)
     return null
   }
 
@@ -102,11 +103,20 @@ export const submitClassificationBatch = async (filter: Filter<IComputedJobsPart
     // Job soumis (facturé) mais suivi non enregistré : le filet de sécurité (PENDING_TIMEOUT_MS)
     // débloquera les offres concernées même sans ramasse possible pour ce job précis.
     sentryCaptureException(err)
-    logger.error(`submitClassificationBatch: job ${jobId} soumis mais suivi non enregistré`)
+    logger.error(`submitClassificationRequests: job ${jobId} soumis mais suivi non enregistré`)
   }
 
-  logger.info(`submitClassificationBatch: ${requests.length} offre(s) soumise(s) au batch Mistral (job ${jobId})`)
+  logger.info(`submitClassificationRequests: ${requests.length} offre(s) soumise(s) au batch Mistral (job ${jobId})`)
   return jobId
+}
+
+/** Soumet un batch Mistral (fire-and-forget, suivi dans mistral_batch_jobs) pour les
+ * computed_jobs_partners matchant `filter` — usage manuel (backfill/rattrapage via addJob). Le
+ * routage automatique de detectClassificationJobsPartners appelle submitClassificationRequests
+ * directement avec les documents déjà chargés, pour ne pas les refetcher ici. */
+export const submitClassificationBatch = async (filter: Filter<IComputedJobsPartners>): Promise<string | null> => {
+  const docs = await getDbCollection("computed_jobs_partners").find(filter, { projection: CLASSIFICATION_PROJECTION }).toArray()
+  return submitClassificationRequests(docs)
 }
 
 // Largement au-dessus d'une durée normale de batch (souvent quelques minutes à heures) : sert de

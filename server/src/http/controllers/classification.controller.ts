@@ -1,10 +1,10 @@
 import { unauthorized } from "@hapi/boom"
+import { addJob } from "job-processor"
 import type { ICredential } from "shared"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
-import { processJobPartnersWithFilter } from "@/jobs/offre-partenaire/process-job-partners-for-api"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 type IModelTraining = {
@@ -174,10 +174,13 @@ export const updateClassificationAndSynchronise = async ({ classification, partn
     }
   }
   // Ré-exécute la chaîne de traitement (validation + import vers jobs_partners) pour les offres
-  // dont le business_error vient d'être réinitialisé ci-dessus — appel direct (pas addJob : ces
-  // noms de job kebab-case ne correspondaient à aucun handler enregistré, échec silencieux
-  // capturé par Sentry sans jamais republier l'offre corrigée).
+  // dont le business_error vient d'être réinitialisé ci-dessus. `queued: true` pour ne pas
+  // bloquer la réponse HTTP sur un pipeline potentiellement long — l'ancien code utilisait déjà
+  // addJob mais avec des noms kebab-case ne correspondant à aucun handler enregistré (échec
+  // silencieux "Job not found", capturé par Sentry, jamais de republication réelle) ; le nom
+  // correct est le nom JS exact de la fonction (`processJobPartnersWithFilter`, enregistrée dans
+  // simple-job-definitions.ts).
   if (filteredScopeIds.length) {
-    await processJobPartnersWithFilter({ partner_job_id: { $in: filteredScopeIds } })
+    await addJob({ name: "processJobPartnersWithFilter", payload: { partner_job_id: { $in: filteredScopeIds } }, queued: true })
   }
 }

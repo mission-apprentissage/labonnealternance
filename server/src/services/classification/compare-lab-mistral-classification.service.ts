@@ -17,8 +17,11 @@ type ClassificationDisagreement = { partner_job_id: string; partner_label: strin
  * humaines, pour comparer sur des décisions non déjà validées à la main) à travers Mistral, sans
  * rien modifier en base. Usage ponctuel avant de couper le provider Lab (voir plan de migration).
  */
+const DEFAULT_SAMPLE_SIZE = 200
+
 export const compareLabAndMistralClassification = async (payload?: { sampleSize?: number | string }) => {
-  const sampleSize = Number(payload?.sampleSize ?? 200)
+  const requestedSampleSize = Number(payload?.sampleSize)
+  const sampleSize = Number.isFinite(requestedSampleSize) && requestedSampleSize > 0 ? Math.floor(requestedSampleSize) : DEFAULT_SAMPLE_SIZE
 
   const sample = (await getDbCollection("cache_classification")
     .aggregate([

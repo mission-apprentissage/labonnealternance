@@ -5,7 +5,7 @@ import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR, PARTNER_WHITELIST } 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getClassification } from "@/services/cache-classification.service"
-import { submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
+import { submitClassificationRequests } from "@/services/classification/classification-mistral-batch.service"
 import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 import { fillFieldsForComputedPartnersFactory } from "./fill-fields-for-partners-factory"
 
@@ -47,15 +47,17 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter }: Fil
 
   if (candidateCount > SYNC_BATCH_THRESHOLD) {
     logger.info(`detectClassificationJobsPartners: ${candidateCount} documents (> seuil ${SYNC_BATCH_THRESHOLD}) — routage vers le batch Mistral`)
+    // Un seul aller-retour Mongo : les champs source servent à la fois à construire les requêtes
+    // Mistral (submitClassificationRequests) et à récupérer les _id à marquer CLASSIFICATION_PENDING.
     const toDefer = await getDbCollection("computed_jobs_partners")
-      .find(candidateFilter, { projection: { _id: 1 } })
+      .find(candidateFilter, { projection: { _id: 1, workplace_name: 1, workplace_description: 1, offer_title: 1, offer_description: 1 } })
       .toArray()
     const ids = toDefer.map((doc) => doc._id)
     await getDbCollection("computed_jobs_partners").updateMany(
       { _id: { $in: ids } },
       { $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() } }
     )
-    await submitClassificationBatch({ _id: { $in: ids } })
+    await submitClassificationRequests(toDefer)
     return { total: ids.length, success: 0, error: 0 }
   }
 

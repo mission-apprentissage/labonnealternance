@@ -10,7 +10,7 @@ import config from "@/config"
 import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detect-classification-jobs-partners"
 
 vi.mock("@/services/classification/classification-mistral-batch.service", () => ({
-  submitClassificationBatch: vi.fn(),
+  submitClassificationRequests: vi.fn(),
 }))
 
 const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({})
@@ -176,7 +176,7 @@ describe("detect-classification-jobs-partners", () => {
     // given: > 500 candidats (seuil sync/batch), pas de mock nock nécessaire : la voie batch ne
     // doit appeler ni l'API Lab ni l'API Mistral synchrone.
     nock.cleanAll()
-    const { submitClassificationBatch } = await import("@/services/classification/classification-mistral-batch.service")
+    const { submitClassificationRequests } = await import("@/services/classification/classification-mistral-batch.service")
     const jobs = Array.from({ length: 501 }, (_, i) => ({
       partner_job_id: `bulk-${i}`,
       offer_title,
@@ -188,8 +188,10 @@ describe("detect-classification-jobs-partners", () => {
     // then
     const pendingCount = await getDbCollection("computed_jobs_partners").countDocuments({ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING })
     expect(pendingCount).toBe(501)
-    expect(submitClassificationBatch).toHaveBeenCalledTimes(1)
-    const filter = vi.mocked(submitClassificationBatch).mock.calls[0][0] as { _id: { $in: unknown[] } }
-    expect(filter._id.$in).toHaveLength(501)
+    // Un seul aller-retour Mongo pour construire les requêtes batch : les documents déjà chargés
+    // sont passés directement, pas un filtre à refetcher (cf. commentaire Copilot sur la PR).
+    expect(submitClassificationRequests).toHaveBeenCalledTimes(1)
+    const docs = vi.mocked(submitClassificationRequests).mock.calls[0][0]
+    expect(docs).toHaveLength(501)
   }, 15_000)
 })
