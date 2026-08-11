@@ -520,6 +520,13 @@ export const PAGES = {
         title: "Gestion des recruteurs - La bonne alternance",
       }),
     },
+    backAdminGestionDesOffresPartenaires: {
+      getPath: () => `/espace-pro/administration/offres-partenaires` as string,
+      title: "Offres partenaires",
+      getMetadata: () => ({
+        title: "Offres partenaires - La bonne alternance",
+      }),
+    },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",

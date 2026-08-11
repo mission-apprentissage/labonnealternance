@@ -1,3 +1,4 @@
+import type { Jsonify } from "type-fest"
 import { z } from "zod"
 
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
@@ -209,6 +210,35 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
   distance: z.number().nullish(),
 })
+
+export const ZJobsPartnersOfferForAdmin = z.object({
+  _id: ZJobsPartnersOfferPrivate.shape._id,
+  partner_label: ZJobsPartnersOfferPrivate.shape.partner_label,
+  partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
+  offer_title: ZJobsPartnersOfferPrivate.shape.offer_title,
+  offer_status: ZJobsPartnersOfferPrivate.shape.offer_status,
+  offer_creation: ZJobsPartnersOfferPrivate.shape.offer_creation,
+  offer_expiration: ZJobsPartnersOfferPrivate.shape.offer_expiration,
+  workplace_name: ZJobsPartnersOfferPrivate.shape.workplace_name,
+  workplace_legal_name: ZJobsPartnersOfferPrivate.shape.workplace_legal_name,
+  workplace_siret: ZJobsPartnersOfferPrivate.shape.workplace_siret,
+  workplace_address_city: ZJobsPartnersOfferPrivate.shape.workplace_address_city,
+  is_delegated: ZJobsPartnersOfferPrivate.shape.is_delegated,
+  cfa_legal_name: ZJobsPartnersOfferPrivate.shape.cfa_legal_name,
+  cfa_siret: ZJobsPartnersOfferPrivate.shape.cfa_siret,
+  created_at: ZJobsPartnersOfferPrivate.shape.created_at,
+  updated_at: ZJobsPartnersOfferPrivate.shape.updated_at,
+  lba_url: ZJobsPartnersOfferPrivate.shape.lba_url,
+  classification: z
+    .object({
+      model: z.enum(["publish", "unpublish"]).nullable(),
+      human_verification: z.enum(["publish", "unpublish"]).nullable(),
+    })
+    .nullable()
+    .describe("Etat de classification CFA de l'offre, si une entrée cache_classification correspondante existe"),
+})
+export type IJobsPartnersOfferForAdmin = z.output<typeof ZJobsPartnersOfferForAdmin>
+export type IJobsPartnersOfferForAdminJSON = Jsonify<z.output<typeof ZJobsPartnersOfferForAdmin>>
 
 export const ZJobsPartnersRecruteurAlgoPrivate = ZJobsPartnersOfferPrivate.omit({ workplace_siret: true, workplace_legal_name: true }).extend({
   workplace_siret: z.string().describe("Siret toujours présent pour les entreprises issue de l'algo"),
