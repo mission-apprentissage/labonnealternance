@@ -8,6 +8,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
+import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { appartements, loisirs, transports } from "@/app/(editorial)/alternance/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
@@ -70,6 +71,8 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
     { name: data.ville, url: villePage.getPath() },
   ]
 
+  const offresItemList = buildOffresItemList(data.cards ?? [])
+
   return (
     <Box>
       <SchemaOrg
@@ -79,6 +82,17 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
         url={villePage.getPath()}
         breadcrumbs={breadcrumbs}
       />
+      {offresItemList.length > 0 && (
+        <SchemaOrg
+          type="ItemList"
+          title={`Offres en alternance à ${data.ville}`}
+          description={`Sélection d'offres d'alternance et d'entreprises qui recrutent à ${data.ville}.`}
+          url={villePage.getPath()}
+          breadcrumbs={breadcrumbs}
+          itemList={offresItemList}
+          omitBreadcrumb
+        />
+      )}
       <Breadcrumb pages={[PAGES.static.alternanceVilles, villePage]} />
 
       <DefaultContainer sx={{ px: 0 }}>

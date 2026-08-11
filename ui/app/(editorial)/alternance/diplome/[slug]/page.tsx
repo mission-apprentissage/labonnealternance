@@ -8,6 +8,7 @@ import type { ISeoDiplome } from "shared/models/seo-diplome.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
+import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { UTM_PARAMS } from "@/app/(editorial)/alternance/diplome/[slug]/_data/constants"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { apiGet } from "@/utils/api.utils"
@@ -68,6 +69,10 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
     { name: data.titre, url: diplomePage.getPath() },
   ]
 
+  const durationMatch = data.kpis.duration.match(/^(\d+)\s*ans?$/)
+  const courseDuration = durationMatch ? `P${durationMatch[1]}Y` : undefined
+  const offresItemList = buildOffresItemList(data.cards)
+
   return (
     <Box>
       <SchemaOrg
@@ -77,6 +82,27 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
         url={diplomePage.getPath()}
         breadcrumbs={breadcrumbs}
       />
+      <SchemaOrg
+        type="Course"
+        title={`${data.titre} en alternance`}
+        description={`Découvrez le ${data.titre} en alternance : programme, prérequis, salaire, entreprises qui recrutent et débouchés.`}
+        url={diplomePage.getPath()}
+        breadcrumbs={breadcrumbs}
+        courseCredential={data.intituleLongFormation}
+        courseDuration={courseDuration}
+        omitBreadcrumb
+      />
+      {offresItemList.length > 0 && (
+        <SchemaOrg
+          type="ItemList"
+          title={`Offres en alternance pour le ${data.titre}`}
+          description={`Sélection d'offres d'alternance et d'entreprises qui recrutent pour le ${data.titre}.`}
+          url={diplomePage.getPath()}
+          breadcrumbs={breadcrumbs}
+          itemList={offresItemList}
+          omitBreadcrumb
+        />
+      )}
       <Breadcrumb pages={[PAGES.static.alternanceDiplomes, diplomePage]} />
 
       <DefaultContainer sx={{ px: 0 }}>
