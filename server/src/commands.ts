@@ -284,7 +284,7 @@ program
 
 program
   .command("recruiter-offer-expiration-reminder-job")
-  .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
+  .description("Envoie une relance par mail pour les offres expirant dans <threshold> jours")
   .requiredOption("--threshold <string>", "threshold")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("recruiterOfferExpirationReminderJob"))
