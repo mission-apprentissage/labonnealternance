@@ -14,7 +14,7 @@ export default async function RechercheLayout({ children }: PropsWithChildren) {
         ]}
       />
       <RechercheLayoutClient header={<PublicHeader />}>
-        <Box component="main" role="main" tabIndex={-1} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, py: fr.spacing("4v") }}>
+        <Box component="main" role="main" tabIndex={-1} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           {children}
         </Box>
       </RechercheLayoutClient>

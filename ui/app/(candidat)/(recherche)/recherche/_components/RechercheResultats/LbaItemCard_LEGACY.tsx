@@ -1,0 +1,209 @@
+import { fr } from "@codegouvfr/react-dsfr"
+import { Card } from "@codegouvfr/react-dsfr/Card"
+import { Box, Typography } from "@mui/material"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
+import { useResultItemUrl } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-result-item-url_LEGACY"
+import type { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
+import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
+import { getDaysSinceDate } from "@/utils/date-utils"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
+import { CardStyling } from "./CardStyling"
+
+type ResultCardProps = WithRecherchePageParams<{
+  active: boolean
+  item: ILbaItem
+  position: number
+}>
+
+function getTitle(item: ILbaItem) {
+  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    return item.company.name
+  }
+
+  if (item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
+    return item.title || item.longTitle
+  }
+
+  return item.title
+}
+
+function ItemCompanyName({ item }: Pick<ResultCardProps, "item">) {
+  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    // @ts-expect-error strict mode
+    return `Secteur d'activité : ${item?.nafs?.[0]?.label ?? ""}`
+  }
+
+  return item.company?.name == null ? <i>Offre anonyme</i> : <Typography component="span" dangerouslySetInnerHTML={{ __html: item.company.name }} />
+}
+
+function getAdresse(item: ILbaItem) {
+  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA || item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
+    return item.place.fullAddress
+  }
+
+  if (item?.company?.mandataire) {
+    return item.place.city
+  }
+
+  return item.place.fullAddress
+}
+
+function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
+  if (item.contact?.hasEmail && "applicationCount" in item && item.applicationCount != null)
+    return (
+      <Typography
+        component="span"
+        sx={{
+          whiteSpace: "nowrap",
+          color: fr.colors.decisions.text.default.info.default,
+          py: fr.spacing("1v"),
+        }}
+        className={fr.cx("fr-text--xs", "fr-text--bold", "fr-icon-flashlight-fill", "fr-icon--sm")}
+      >
+        {`${item.applicationCount} CANDIDATURE${item.applicationCount > 1 ? "S" : ""}`}
+      </Typography>
+    )
+}
+
+function DatePublication({ item }: Pick<ResultCardProps, "item">) {
+  if (item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    return null
+  }
+
+  if (!item?.job?.creationDate) {
+    return null
+  }
+
+  const daysPublished = getDaysSinceDate(item.job.creationDate)
+
+  return (
+    <Typography
+      component="span"
+      sx={{
+        color: fr.colors.decisions.text.mention.grey.default,
+        py: fr.spacing("1v"),
+      }}
+      className={fr.cx("fr-text--xs")}
+    >
+      Publiée {`${daysPublished ? `depuis ${daysPublished} jour(s)` : "aujourd'hui"}`}
+    </Typography>
+  )
+}
+
+const activeStyle = {
+  "& > div": {
+    backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+    border: `1px solid ${fr.colors.decisions.border.open.blueFrance.default}`,
+    "&:hover": { backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default },
+    "&:active": { backgroundColor: fr.colors.decisions.background.alt.blueFrance.hover },
+  },
+}
+
+export function LbaItemCard({ item, active, rechercheParams, position }: ResultCardProps) {
+  const itemUrl = useResultItemUrl(item, rechercheParams)
+
+  return (
+    <Box
+      sx={{
+        ".fr-card__title a::before": { zIndex: "unset" },
+        ...(active ? activeStyle : null),
+      }}
+    >
+      <CardStyling>
+        <Card
+          background
+          style={{ paddingBottom: fr.spacing("1v") }}
+          shadow
+          enlargeLink
+          horizontal
+          linkProps={{
+            href: itemUrl,
+            onClick:
+              item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION
+                ? undefined
+                : () => {
+                    pushMatomoEvent({
+                      event: MATOMO_EVENTS.JOB_OFFER_CLICKED,
+                      job_offer_id: item.id,
+                      job_offer_type: getMatomoJobOfferType(item.ideaType),
+                      job_offer_company: item.company?.name || "non_renseigné",
+                      job_offer_name: getTitle(item),
+                      position_in_list: position,
+                      has_contact: Boolean((item as any).contact?.hasEmail || (item as any).contact?.url || (item as any).contact?.phone),
+                      search_job_name: rechercheParams.job_name || "non_renseigné",
+                      search_address: rechercheParams.geo?.address || "non_renseigné",
+                    })
+                  },
+          }}
+          start={<LbaItemTags item={item} displayTooltips={true} />}
+          title={
+            <Typography
+              component="span"
+              className={fr.cx("fr-text--bold", "fr-text--md")}
+              sx={{
+                color: fr.colors.decisions.text.actionHigh.grey.default,
+              }}
+              dangerouslySetInnerHTML={{ __html: getTitle(item) }}
+            />
+          }
+          desc={
+            <Box
+              component="span"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: fr.spacing("3v"),
+              }}
+            >
+              <Typography component="span" className={fr.cx("fr-text--sm")} color={fr.colors.decisions.text.actionHigh.grey.default}>
+                <ItemCompanyName item={item} />
+              </Typography>
+              <Typography
+                component="span"
+                sx={{
+                  color: fr.colors.decisions.text.title.grey.default,
+                }}
+                className={fr.cx("fr-text--xs")}
+              >
+                {getAdresse(item)}
+                {rechercheParams.geo && item.place.distance != null && (
+                  <>
+                    <br />
+                    <Typography
+                      component="span"
+                      sx={{
+                        my: 0,
+                        fontWeight: 400,
+                        color: fr.colors.decisions.text.mention.grey.default,
+                      }}
+                      className={fr.cx("fr-text--xs")}
+                    >
+                      {item.place.distance} km(s) du lieu de recherche
+                    </Typography>
+                  </>
+                )}
+              </Typography>
+
+              <Box
+                component="span"
+                sx={{
+                  alignItems: { xs: "left", sm: "left", md: "center" },
+                  gap: { xs: fr.spacing("2v"), md: fr.spacing("1v") },
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                }}
+              >
+                <DatePublication item={item} />
+                <CandidatureCount item={item} />
+                <ItemDetailApplicationsStatus item={item} />
+              </Box>
+            </Box>
+          }
+          size="medium"
+        />
+      </CardStyling>
+    </Box>
+  )
+}

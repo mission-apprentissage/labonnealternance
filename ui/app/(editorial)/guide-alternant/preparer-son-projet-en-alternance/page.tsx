@@ -278,10 +278,7 @@ const PreparerSonProjetEnAlternancePage = () => {
         </Paragraph>
         <Paragraph>
           Pour vous aider dans votre recherche, vous pouvez utiliser le catalogue des formations disponible sur{" "}
-          <DsfrLink
-            href={PAGES.dynamic.recherche({ displayEntreprises: false }).getPath()}
-            aria-label="Consultez les offres de formation en alternance sur le moteur de recherche de La Bonne Alternance"
-          >
+          <DsfrLink href="/recherche?mode=formations" aria-label="Consultez les offres de formation en alternance sur le moteur de recherche de La Bonne Alternance">
             cette page
           </DsfrLink>
           .

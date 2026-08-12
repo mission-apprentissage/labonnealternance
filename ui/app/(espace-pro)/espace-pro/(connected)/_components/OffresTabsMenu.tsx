@@ -6,6 +6,7 @@ import { JOB_STATUS } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
+import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { DsfrIcon } from "@/components/DsfrIcon"
@@ -30,7 +31,10 @@ export const OffresTabsMenu = ({
   const { user } = useAuth()
   const [copied, setCopied] = useState(false)
 
-  const [lat, lon] = (row.geo_coordinates ?? "").split(",")
+  const [rawLat, rawLon] = (row.geo_coordinates ?? "").split(",")
+  const lat = Number(rawLat)
+  const lon = Number(rawLon)
+  const hasGeo = Number.isFinite(lat) && Number.isFinite(lon)
 
   const offerTitle = row?.offer_title_custom ?? row?.rome_appellation_label ?? row?.rome_label
 
@@ -42,7 +46,7 @@ export const OffresTabsMenu = ({
           type: "link",
         }
       : {
-          link: `${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`,
+          link: `${publicConfig.baseUrl}${buildSearchUrl({ mode: "formations", q: offerTitle, radius: 20, page: 0, hitsPerPage: 20, ...(hasGeo ? { latitude: lat, longitude: lon } : {}) })}`,
           ariaLabel: `Lien vers les formations pour l'offre ${offerTitle} - nouvelle fenêtre`,
           type: "externalLink",
         }

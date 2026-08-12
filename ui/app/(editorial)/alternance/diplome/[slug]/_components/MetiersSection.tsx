@@ -6,7 +6,7 @@ import { findMetierLandingSlug } from "@/app/(editorial)/alternance/_components/
 import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTitle"
 import { UTM_PARAMS } from "../_data/constants"
 
-export function MetiersSection({ titre, text, liste, romes }: { titre: string; text: string; liste: IDiplomeMetier[]; romes: string[] }) {
+export function MetiersSection({ titre, text, liste }: { titre: string; text: string; liste: IDiplomeMetier[] }) {
   const title = `Quels métiers exercer avec un diplôme ${titre} ?`
   return (
     <Box>
@@ -15,8 +15,8 @@ export function MetiersSection({ titre, text, liste, romes }: { titre: string; t
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: fr.spacing("6v"), alignItems: "start" }}>
         {liste.map((metier) => {
           const metierSlug = findMetierLandingSlug(metier.title)
-          // Maillage interne : on pointe vers la page métier sœur si elle existe, sinon repli vers la recherche.
-          const href = metierSlug ? `/alternance/metier/${metierSlug}?${UTM_PARAMS}` : `/recherche-emploi?romes=${romes.join(",")}&${UTM_PARAMS}`
+          // Maillage interne : on pointe vers la page métier sœur si elle existe, sinon repli vers la recherche (le titre du métier sert de texte libre).
+          const href = metierSlug ? `/alternance/metier/${metierSlug}?${UTM_PARAMS}` : `/recherche?mode=emplois&q=${encodeURIComponent(metier.title)}&${UTM_PARAMS}`
           return (
             <Box
               key={metier.title}
