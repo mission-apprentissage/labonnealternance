@@ -279,12 +279,16 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             {/* Ligne tri + compteur */}
             <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", py: fr.spacing("4v") }}>
               <SearchSortSelect params={params} onNavigate={handleFilterChange} />
-              <Box sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
-                {nbHits} résultat{nbHits > 1 ? "s" : ""}
-              </Box>
+              {result.data && (
+                <Box role="status" sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
+                  {nbHits} résultat{nbHits > 1 ? "s" : ""}
+                </Box>
+              )}
             </Box>
 
-            <SearchResultsList result={result} params={params} />
+            <Box role="region" aria-label="Résultats de la recherche">
+              <SearchResultsList result={result} params={params} />
+            </Box>
           </DefaultContainer>
         </Box>
 
