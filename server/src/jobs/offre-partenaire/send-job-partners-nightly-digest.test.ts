@@ -153,8 +153,9 @@ describe("sendJobPartnersNightlyDigest", () => {
     await sendJobPartnersNightlyDigest()
 
     const [payload] = notifySpy.mock.calls[0]
+    // un dump JSON complet contiendrait cette clé (step sans erreur) : sa présence trahirait un retour en arrière
+    expect(payload.message).not.toContain("blockJobsPartnersFromFluxCompanyList")
     // les compteurs à 0 et le flag executionDurationError=false ne doivent pas apparaître
-    expect(payload.message).not.toContain("JSON")
     expect(payload.message).not.toContain('"error":0')
     expect(payload.message).not.toContain("executionDurationError")
     // seules les 3 vraies anomalies doivent ressortir, avec leur ratio
