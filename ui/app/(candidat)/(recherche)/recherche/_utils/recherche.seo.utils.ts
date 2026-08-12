@@ -38,3 +38,17 @@ export function buildJobsMinQuerystring(rechercheParams: IRecherchePageParams | 
 
   return query
 }
+
+/**
+ * Texte du H1 SEO d'une page de recherche : « Alternance {métier}{ à {ville}} ».
+ * Aligné sur la logique de libellé de `buildRechercheMetadata` (métier requis, ville si adresse libellée).
+ * Retourne `null` en l'absence de métier → on conserve alors le H1 générique existant.
+ */
+export function buildRechercheH1(rechercheParams: Partial<IRecherchePageParams> | null): string | null {
+  const jobName = rechercheParams?.job_name?.trim() || null
+  if (!jobName) return null
+
+  const address = rechercheParams?.geo?.address?.trim() || null
+  const lieu = address ? ` à ${address}` : ""
+  return `Alternance ${jobName}${lieu}`
+}
