@@ -3,6 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
+import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -11,7 +12,6 @@ import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
-
 import { useAutoRadius } from "../_hooks/use-auto-radius"
 import { useSearchResults } from "../_hooks/use-search-results"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
@@ -217,6 +217,14 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   return (
     <>
       <EnqueteTally />
+      <SkipLinks
+        links={[
+          { label: "Menu", anchor: "#header-links" },
+          { label: "Recherche", anchor: "#search-form" },
+          { label: "Résultat de la recherche", anchor: "#search-content-container" },
+          { label: "Pied de page", anchor: "#footer-links" },
+        ]}
+      />
       <Box component="main" sx={{ display: "flex", flexDirection: "column", backgroundColor: fr.colors.decisions.background.alt.grey.default, minHeight: "100dvh" }}>
         <PublicHeader />
 
@@ -261,7 +269,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                   boxShadow: isStuck ? "none" : "0 2px 6px rgba(0,0,18,0.08)",
                 }}
               >
-                <Box sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
+                <Box id="search-form" tabIndex={-1} sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
                   <Box sx={{ flex: 1 }}>
                     <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
                   </Box>
@@ -286,7 +294,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               )}
             </Box>
 
-            <Box role="region" aria-label="Résultats de la recherche">
+            <Box role="region" id="search-content-container" tabIndex={-1} aria-label="Résultats de la recherche">
               <SearchResultsList result={result} params={params} />
             </Box>
           </DefaultContainer>
