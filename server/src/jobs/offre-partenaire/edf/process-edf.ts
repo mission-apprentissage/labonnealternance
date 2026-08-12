@@ -1,6 +1,7 @@
 import { importEdfRaw, importEdfToComputed } from "./import-edf"
 
 export const processEdf = async () => {
-  await importEdfRaw()
-  await importEdfToComputed()
+  const raw = await importEdfRaw()
+  const computed = await importEdfToComputed()
+  return { raw, computed }
 }

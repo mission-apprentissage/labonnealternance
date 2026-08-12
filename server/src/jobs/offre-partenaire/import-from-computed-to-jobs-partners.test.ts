@@ -91,7 +91,7 @@ describe("when computed_jobs_partners updateOne in the catch block fails", () =>
       return collection
     })
 
-    await expect(importFromComputedToJobsPartners()).resolves.toBeUndefined()
+    await expect(importFromComputedToJobsPartners()).resolves.toEqual({ total: 1, success: 0, error: 1 })
     expect(sentrySpy).toHaveBeenCalledTimes(2)
 
     sentrySpy.mockRestore()
@@ -111,7 +111,7 @@ describe("offer_status_history lors de l'import", () => {
     await createJobPartner({ partner_job_id: "reactivated_1", offer_status: JOB_STATUS_ENGLISH.ANNULEE })
     await createComputedJobPartner({ partner_job_id: "reactivated_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
 
-    await importFromComputedToJobsPartners({}, false)
+    await importFromComputedToJobsPartners({})
 
     const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "reactivated_1" })
     expect.soft(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
@@ -126,7 +126,7 @@ describe("offer_status_history lors de l'import", () => {
     await createJobPartner({ partner_job_id: "already_active_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE })
     await createComputedJobPartner({ partner_job_id: "already_active_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
 
-    await importFromComputedToJobsPartners({}, false)
+    await importFromComputedToJobsPartners({})
 
     const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "already_active_1" })
     expect.soft(job?.offer_status_history.filter(({ reason }) => reason === "réactivée par le flux source")).toHaveLength(0)
@@ -136,7 +136,7 @@ describe("offer_status_history lors de l'import", () => {
     await createJobPartner({ partner_job_id: "stay_cancelled_1", offer_status: JOB_STATUS_ENGLISH.ANNULEE })
     await createComputedJobPartner({ partner_job_id: "stay_cancelled_1", offer_status: JOB_STATUS_ENGLISH.ANNULEE, validated: true })
 
-    await importFromComputedToJobsPartners({}, false)
+    await importFromComputedToJobsPartners({})
 
     const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "stay_cancelled_1" })
     expect.soft(job?.offer_status_history.filter(({ reason }) => reason === "réactivée par le flux source")).toHaveLength(0)
@@ -146,7 +146,7 @@ describe("offer_status_history lors de l'import", () => {
     const historyEntry = { date: new Date(), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "supprimée du flux source", granted_by: "cancel-removed-jobs-partners" }
     await createComputedJobPartner({ partner_job_id: "with_history_1", validated: true, offer_status_history: [historyEntry] })
 
-    await importFromComputedToJobsPartners({}, false)
+    await importFromComputedToJobsPartners({})
 
     const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "with_history_1" })
     expect.soft(job?.offer_status_history.map(({ status, reason, granted_by }) => ({ status, reason, granted_by }))).toContainEqual({

@@ -26,7 +26,7 @@ describe("blockJobsPartnersFromCfaListTask", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromCfaList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -44,7 +44,7 @@ describe("blockJobsPartnersFromCfaListTask", () => {
       },
     ])
 
-    await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromCfaList({})
 
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -61,7 +61,7 @@ describe("blockJobsPartnersFromCfaListTask", () => {
       },
     ])
 
-    await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromCfaList({})
 
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -79,7 +79,7 @@ describe("blockJobsPartnersFromCfaListTask", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromCfaList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -97,7 +97,7 @@ describe("blockJobsPartnersFromCfaListTask", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromCfaList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
@@ -115,7 +115,7 @@ describe("blockJobsPartnersFromCfaListTask", () => {
       },
     ])
     // when
-    await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+    await blockJobsPartnersFromCfaList({})
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)

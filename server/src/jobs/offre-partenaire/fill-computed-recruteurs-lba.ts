@@ -19,7 +19,7 @@ const computedJobFilter: Filter<IComputedJobsPartners> = {
 }
 
 export const fillComputedRecruteursLba = async () => {
-  const context: FillComputedJobsPartnersContext = { addedMatchFilter: computedJobFilter, shouldNotifySlack: false }
+  const context: FillComputedJobsPartnersContext = { addedMatchFilter: computedJobFilter }
 
   await removeMissingRecruteursLbaFromComputedJobPartners()
   await removeUnsubscribedRecruteursLbaFromComputedJobPartners()

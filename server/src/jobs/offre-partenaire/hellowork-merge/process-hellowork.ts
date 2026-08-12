@@ -3,11 +3,13 @@ import { importHelloWorkBuddiRaw, importHelloWorkBuddiToComputed } from "@/jobs/
 import { deduplicateHellowork } from "./deduplicate-hellowork"
 
 export const processHellowork = async () => {
-  await importHelloWorkRaw()
-  await importHelloWorkBuddiRaw()
+  const helloWorkRaw = await importHelloWorkRaw()
+  const helloWorkBuddiRaw = await importHelloWorkBuddiRaw()
 
   await deduplicateHellowork()
 
-  await importHelloWorkToComputed()
-  await importHelloWorkBuddiToComputed()
+  const helloWorkComputed = await importHelloWorkToComputed()
+  const helloWorkBuddiComputed = await importHelloWorkBuddiToComputed()
+
+  return { helloWorkRaw, helloWorkBuddiRaw, helloWorkComputed, helloWorkBuddiComputed }
 }

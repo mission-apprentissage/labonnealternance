@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
 import { cacheLife } from "next/cache"
 import Image from "next/image"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -60,7 +60,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
   const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-villes"
 
   if (!data) {
-    redirect("/404")
+    notFound()
   }
 
   const villePage = PAGES.dynamic.seoVille(ville, data.ville)

@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material"
 import { cacheLife } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -118,7 +118,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
   const data = await fetchMetierData(metier)
 
   if (!data) {
-    redirect("/404")
+    notFound()
   }
 
   const romesParam = data.romes.join()

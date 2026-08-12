@@ -13,7 +13,6 @@ import { z } from "zod"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 import config from "@/config"
 import { blankComputedJobPartner } from "@/jobs/offre-partenaire/fill-computed-jobs-partners"
 
@@ -65,16 +64,12 @@ export const importRHAlternanceRaw = async () => {
     }
     jobCount += savedJobs.length
   }
-  const message = `import RH Alternance terminé : ${jobCount} offres importées`
-  logger.info(message)
-  await notifyToSlack({
-    subject: `import des offres RH Alternance dans raw`,
-    message,
-  })
+  logger.info(`import RH Alternance terminé : ${jobCount} offres importées`)
+  return { jobCount }
 }
 
 export const importRHAlternanceToComputed = async () => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.RH_ALTERNANCE,
     zodInput: ZRawRHAlternanceJob,

@@ -16,6 +16,7 @@ import { removeUndefinedFields } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
 import type { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import type { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { ILbaCompanySearchField } from "shared/routes/update-lba-company.routes"
 import type { Jsonify } from "type-fest"
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
@@ -113,6 +114,19 @@ export const notifyNotMyOpcoUserRole = async (userId: string, organizationId: st
   apiPost("/user/:userId/organization/:organizationId/not-my-opco", { params: { userId, organizationId }, body: { reason } })
 
 export const createSuperUser = async (user: INewSuperUser) => apiPost("/admin/users", { body: user })
+
+/**
+ * Admin - jobs_partners
+ */
+export const getJobsPartnersForAdmin = async (params: { partner_label?: string[]; offer_status?: JOB_STATUS_ENGLISH[]; id?: string; limit?: number; offset?: number }) =>
+  apiGet("/admin/jobs-partners", { querystring: removeUndefinedFields(params) })
+
+export const activateJobPartner = async (id: string) => apiPost("/admin/jobs-partners/:id/activate", { params: { id } })
+
+export const deactivateJobPartner = async (id: string, reason: string) => apiPost("/admin/jobs-partners/:id/deactivate", { params: { id }, body: { reason } })
+
+export const setJobPartnerClassification = async (id: string, classification: "publish" | "unpublish") =>
+  apiPost("/admin/jobs-partners/:id/classification", { params: { id }, body: { classification } })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**

@@ -25,7 +25,10 @@ jobs:
 
       - name: Comment PR Preview
         if: github.event.issue.state != 'closed'
+        continue-on-error: true
         uses: thollander/actions-comment-pull-request@v3
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           message: |
             ### :rocket: Prévisualisation
@@ -133,7 +136,10 @@ jobs:
 
       - name: Comment PR Preview
         if: github.event.issue.state != 'closed'
+        continue-on-error: true
         uses: thollander/actions-comment-pull-request@v3
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           message: |
             ### :rocket: Prévisualisation
@@ -149,7 +155,10 @@ jobs:
 
       - name: Comment PR Preview when failed
         if: failure() && github.event.issue.state != 'closed'
+        continue-on-error: true
         uses: thollander/actions-comment-pull-request@v3
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           message: |
             ### :ambulance: Prévisualisation failed
@@ -166,7 +175,10 @@ jobs:
 
       - name: Comment PR Preview when cancelled
         if: cancelled() && github.event.issue.state != 'closed'
+        continue-on-error: true
         uses: thollander/actions-comment-pull-request@v3
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           message: |
             ### :ambulance: Prévisualisation cancelled

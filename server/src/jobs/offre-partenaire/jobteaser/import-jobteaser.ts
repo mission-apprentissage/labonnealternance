@@ -13,7 +13,7 @@ const offerXmlTag = "job"
 type ListType = { last_modified: string; mode: number; name: string; size: number }
 export const importJobteaserRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
-    await importFromStreamInXml({
+    return importFromStreamInXml({
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: sourceStream,
@@ -54,7 +54,7 @@ export const importJobteaserRaw = async (sourceStream?: NodeJS.ReadableStream) =
     const nodeStream = Readable.fromWeb(fileResponse.body!)
     const gunzip = createGunzip()
     const fileSourceStream = nodeStream.pipe(gunzip)
-    await importFromStreamInXml({
+    return importFromStreamInXml({
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: fileSourceStream,
@@ -65,7 +65,7 @@ export const importJobteaserRaw = async (sourceStream?: NodeJS.ReadableStream) =
 }
 
 export const importJobteaserToComputed = async () => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.JOBTEASER,
     zodInput: ZJobteaserJob,

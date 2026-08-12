@@ -9,7 +9,7 @@ import { fillFieldsForComputedPartnersFactory } from "./fill-fields-for-partners
 const API_ADRESSE_MIN_SCORE = 0.6 // entre 0 et 1, 1 signifiant que l'api est certaine de sa réponse
 // j'ai pu constater des adresses à strasbourg alors que la vraie adresse est à Caen avec un score à 0.52 : https://api-adresse.data.gouv.fr/search?q=General%20Eisenhower%2014000%20CAEN
 
-export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
+export const fillLocationInfosForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const sourceFields = ["workplace_address_label"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const filledFields = [
@@ -92,7 +92,6 @@ export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNot
 
       return [result]
     },
-    shouldNotifySlack,
   })
 }
 

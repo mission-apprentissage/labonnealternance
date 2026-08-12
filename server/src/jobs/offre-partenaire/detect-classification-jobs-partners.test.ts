@@ -9,7 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detect-classification-jobs-partners"
 
-const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({ shouldNotifySlack: false })
+const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({})
 
 const offer_title = "vendeur / vendeuse"
 const workplace_name = "decathlon"

@@ -20,8 +20,8 @@ export const processJobPartnersForApi = async () => {
   )
 
   const filter = { currently_processed_id: processId }
-  await fillComputedJobsPartners({ addedMatchFilter: filter, shouldNotifySlack: false })
-  await importFromComputedToJobsPartners(filter, false)
+  await fillComputedJobsPartners({ addedMatchFilter: filter })
+  await importFromComputedToJobsPartners(filter)
   await fillLbaUrl()
   await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
   await getDbCollection("computed_jobs_partners").updateMany(filter, { $set: { currently_processed_id: null } })
@@ -30,8 +30,8 @@ export const processJobPartnersForApi = async () => {
 
 export const processJobPartnersWithFilter = async (filter: Filter<IComputedJobsPartners>) => {
   logger.info({ filter }, "début de processJobPartnersWithFilter")
-  await fillComputedJobsPartners({ addedMatchFilter: filter, shouldNotifySlack: false })
-  await importFromComputedToJobsPartners(filter, false)
+  await fillComputedJobsPartners({ addedMatchFilter: filter })
+  await importFromComputedToJobsPartners(filter)
   await fillLbaUrl()
   await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
   logger.info({ filter }, "fin de processJobPartnersWithFilter")

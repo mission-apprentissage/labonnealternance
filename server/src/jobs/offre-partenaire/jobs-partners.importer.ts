@@ -19,6 +19,7 @@ import { processPass } from "./pass/process-pass"
 import { processComputedAndImportToJobPartners } from "./process-job-partners"
 import { processMissingRomeAndImportToJobPartners } from "./process-missing-rome-and-import-to-job-partners"
 import { processRhAlternance } from "./rh-alternance/process-rh-alternance"
+import { JOB_PARTNERS_DIGEST_JOB_NAME, sendJobPartnersNightlyDigest } from "./send-job-partners-nightly-digest"
 
 const timings = {
   import_source: "0 0 * * *",
@@ -186,5 +187,13 @@ export const importers: Record<string, CronDef> = {
     maxRuntimeInMinutes: 300,
     tag: "slave",
     resumable: true,
+  },
+
+  // Bilan unique des jobs ci-dessus, envoyé une fois le pire cas (5h de "Process computed...") passé
+  [JOB_PARTNERS_DIGEST_JOB_NAME]: {
+    cron_string: "30 5 * * *",
+    handler: sendJobPartnersNightlyDigest,
+    checkinMargin: 30,
+    maxRuntimeInMinutes: 10,
   },
 }

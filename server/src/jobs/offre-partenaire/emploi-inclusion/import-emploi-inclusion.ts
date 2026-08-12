@@ -7,7 +7,6 @@ import { getAllEmploiInclusionJobsByDepartement, ZEmploiInclusionJob } from "@/c
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 import config from "@/config"
 import { emploiInclusionJobToJobsPartners, isEligiblePoste } from "./emploi-inclusion.mapper"
 
@@ -40,13 +39,8 @@ export const importEmploiInclusionRaw = async () => {
     await getDbCollection(rawCollectionName).insertMany([...jobsById.values()].map((job) => ({ ...job, _id: new ObjectId(), createdAt: now })))
   }
 
-  const message = `import ${partnerLabel} terminé : ${jobsById.size} offres importées`
-  logger.info(message)
-  // biome-ignore lint/nursery/noFloatingPromises: migration
-  notifyToSlack({
-    subject: `import des offres ${partnerLabel} dans raw`,
-    message,
-  })
+  logger.info(`import ${partnerLabel} terminé : ${jobsById.size} offres importées`)
+  return { jobCount: jobsById.size }
 }
 
 export const importEmploiInclusionToComputed = async () => {
@@ -100,12 +94,14 @@ export const importEmploiInclusionToComputed = async () => {
     logger.info({ counters }, `emploi-inclusion: fin du parcours cursor`)
   }
 
-  const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. rawOk=${counters.rawOk}, rawParseError=${counters.rawParseError}, postesTotal=${counters.postesTotal}, postesEligibles=${counters.postesEligibles}, success=${counters.success}, insertError=${counters.insertError}`
-  logger.info(message)
-  await notifyToSlack({ subject: `mapping Raw => computed_jobs_partners`, message, error: counters.rawParseError > 0 || counters.insertError > 0 })
+  logger.info(
+    `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. rawOk=${counters.rawOk}, rawParseError=${counters.rawParseError}, postesTotal=${counters.postesTotal}, postesEligibles=${counters.postesEligibles}, success=${counters.success}, insertError=${counters.insertError}`
+  )
+  return counters
 }
 
 export const processEmploiInclusion = async () => {
-  await importEmploiInclusionRaw()
-  await importEmploiInclusionToComputed()
+  const raw = await importEmploiInclusionRaw()
+  const computed = await importEmploiInclusionToComputed()
+  return { raw, computed }
 }
