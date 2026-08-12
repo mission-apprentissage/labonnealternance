@@ -178,8 +178,8 @@ export const SchemaOrg = ({
       url: `${BASE_URL}${url}`,
       provider: {
         "@type": "GovernmentOrganization",
-        name: "La bonne alternance",
-        url: BASE_URL,
+        name: "Délégation générale à l'emploi et à la formation professionnelle (DGEFP)",
+        url: "https://travail-emploi.gouv.fr",
       },
       ...(courseCredential ? { educationalCredentialAwarded: courseCredential } : {}),
       ...(courseDuration ? { timeRequired: courseDuration } : {}),
