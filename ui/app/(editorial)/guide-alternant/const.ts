@@ -33,7 +33,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: PAGES.static.guideAlternantComprendreLaRemuneration.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}comprendre-la-remuneration.svg`,
     path: PAGES.static.guideAlternantComprendreLaRemuneration.getPath(),
-    updatedAt: "26/03/2026",
+    updatedAt: "12/08/2026",
   },
   ["comment-signer-un-contrat-en-alternance"]: {
     id: "comment-signer-un-contrat-en-alternance",

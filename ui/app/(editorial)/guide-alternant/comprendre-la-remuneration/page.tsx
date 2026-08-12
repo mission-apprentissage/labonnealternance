@@ -21,13 +21,43 @@ export const metadata: Metadata = remunerationPage.getMetadata()
 // Miroir texte brut de la FAQ visible ci-dessous, pour le JSON-LD FAQPage (aide à obtenir les rich results / PAA).
 const FAQ_ITEMS = [
   {
-    question: "L'alternant est-il payé pendant ses périodes de formation ?",
+    question: "Quel est le salaire minimum d'un alternant en 2026 ?",
     answer:
-      "Oui, l'alternant perçoit son salaire à la fois pendant les périodes en entreprise et pendant les périodes de formation en CFA ou organisme de formation. C'est l'employeur qui verse l'intégralité du salaire.",
+      "En contrat d'apprentissage, la rémunération va de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02 €) pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.",
   },
   {
-    question: "Le salaire est-il versé pendant les congés payés ?",
-    answer: "Oui, comme tout salarié, l'alternant bénéficie de congés payés rémunérés (5 semaines par an minimum) et son salaire est maintenu pendant les congés.",
+    question: "Quel est le SMIC applicable en 2026 ?",
+    answer: "Depuis le 1er juin 2026, le SMIC s'élève à 1 867,02 € brut par mois, soit 12,31 € brut de l'heure. C'est la base de calcul de la rémunération minimale en alternance.",
+  },
+  {
+    question: "Le salaire net d'un alternant a-t-il baissé depuis mars 2025 ?",
+    answer:
+      "Oui, pour les contrats d'apprentissage conclus depuis le 1er mars 2025, le seuil d'exonération de cotisations est passé de 79 % à 50 % du SMIC (933,51 €). Au-delà de ce seuil, la CSG (9,2 %) et la CRDS (0,5 %) s'appliquent sur la part dépassante, ce qui fait décrocher le net du brut sur les rémunérations les plus élevées.",
+  },
+  {
+    question: "Combien gagne un alternant en BTS, en licence ou en master ?",
+    answer:
+      "La rémunération dépend de l'âge et de l'année d'exécution du contrat, pas directement du diplôme. Un apprenti en licence professionnelle (généralement 20-21 ans) est rémunéré sur la base de la 2e année de contrat ; un apprenti en master l'est le plus souvent sur la base de la 2e année et de la tranche 21-25 ans (au moins 61 % du SMIC).",
+  },
+  {
+    question: "Le salaire d'un alternant est-il imposable ?",
+    answer:
+      "Les salaires versés aux apprentis sont exonérés d'impôt sur le revenu dans la limite du montant annuel du SMIC. Les salariés en contrat de professionnalisation sont imposés selon le régime de droit commun.",
+  },
+  {
+    question: "Un alternant peut-il être payé plus que la grille ?",
+    answer:
+      "Oui. Les barèmes légaux sont des minimums. Une convention collective peut prévoir une rémunération plus favorable, et l'employeur reste libre de proposer un salaire supérieur.",
+  },
+  {
+    question: "Quand le salaire d'un alternant augmente-t-il ?",
+    answer:
+      "La rémunération est réévaluée automatiquement à chaque changement de tranche d'âge (par exemple au passage de 18 ans ou de 21 ans) et à chaque nouvelle année d'exécution du contrat.",
+  },
+  {
+    question: "L'alternant est-il payé pendant ses périodes de formation et ses congés ?",
+    answer:
+      "Oui, l'alternant perçoit son salaire aussi bien pendant les périodes en entreprise que pendant les périodes de formation en CFA. Comme tout salarié, il bénéficie de congés payés rémunérés (5 semaines par an minimum) durant lesquels son salaire est maintenu.",
   },
 ]
 
@@ -48,19 +78,19 @@ const BlocSalaire = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            27%
+            27 % — 504,10 €
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            39%
+            39 % — 728,14 €
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            55%
+            55 % — 1 026,86 €
           </Typography>{" "}
           la 3e année
         </ListItem>
@@ -81,19 +111,19 @@ const BlocSalaire = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            43%
+            43 % — 802,82 €
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            51%
+            51 % — 952,18 €
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            67%
+            67 % — 1 250,90 €
           </Typography>{" "}
           la 3e année
         </ListItem>
@@ -114,19 +144,19 @@ const BlocSalaire = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            53%*
+            53 %* — 989,52 €
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            61%*
+            61 %* — 1 138,88 €
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            78%*
+            78 %* — 1 456,28 €
           </Typography>{" "}
           la 3e année
         </ListItem>
@@ -147,19 +177,19 @@ const BlocSalaire = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100%*
+            100 %* — 1 867,02 €
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100%*
+            100 %* — 1 867,02 €
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100%*
+            100 %* — 1 867,02 €
           </Typography>{" "}
           la 3e année
         </ListItem>
@@ -185,21 +215,21 @@ const BlocSalaireProfessionalisation = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            55%
+            55 % — 1 026,86 €
           </Typography>{" "}
-          pour les moins de 25 ans
+          pour les moins de 21 ans
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            70%
+            70 % — 1 306,91 €
           </Typography>{" "}
           de 21 à 25 ans
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100%
+            100 % — 1 867,02 €
           </Typography>{" "}
-          SMIC ou 85% SMC* pour les 26 ans et plus
+          SMIC ou 85 % SMC* pour les 26 ans et plus
         </ListItem>
       </List>
     </Grid>
@@ -218,21 +248,21 @@ const BlocSalaireProfessionalisation = () => (
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            65%
+            65 % — 1 213,56 €
           </Typography>{" "}
           pour les moins de 21 ans
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            80%
+            80 % — 1 493,62 €
           </Typography>{" "}
           de 21 à 25 ans
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100%
+            100 % — 1 867,02 €
           </Typography>{" "}
-          SMIC ou 85% SMC* pour les 26 ans et plus
+          SMIC ou 85 % SMC* pour les 26 ans et plus
         </ListItem>
       </List>
     </Grid>
@@ -243,6 +273,7 @@ const ComprendreLaRemunerationPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantComprendreLaRemuneration]
 
   const descriptionParts = [
+    "En 2026, le salaire en alternance va de 27 % à 100 % du SMIC, soit de 504 € à 1 867 € brut par mois, selon l'âge, l'année de contrat et le type de contrat (apprentissage ou professionnalisation).",
     "Vous vous lancez dans l'alternance et vous vous demandez combien vous allez gagner ? La rémunération en alternance dépend de plusieurs facteurs : le type de contrat (apprentissage ou professionnalisation), votre âge, votre année de formation et parfois votre niveau de diplôme. Ce guide complet vous présente tous les barèmes de salaire en vigueur en 2026.",
   ]
 
@@ -425,11 +456,11 @@ const ComprendreLaRemunerationPage = () => {
       <Section title="Salaire en contrat de professionnalisation en 2026">
         <Paragraph>
           Le contrat de professionnalisation offre une rémunération différente, basée sur l'âge du bénéficiaire et son niveau de formation initial au début du contrat. La
-          rémunération minimale s'élève à 55 % du SMIC pour les moins de 21 ans sans qualification. La rémunération ne peut pas être inférieure au SMIC (1 823,03 € brut en janvier
-          2026) ni à 85 % du salaire minimum conventionnel de branche.
+          rémunération minimale s'élève à 55 % du SMIC pour les moins de 21 ans sans qualification. La rémunération ne peut pas être inférieure au SMIC (1 867,02 € brut depuis le
+          1er juin 2026) ni à 85 % du salaire minimum conventionnel de branche.
         </Paragraph>
         <BlocSalaireProfessionalisation />
-        <Paragraph>*La rémunération ne peut pas être inférieure au SMIC (1 823,03 €) ni à 85 % du salaire minimum conventionnel de branche (SMC)</Paragraph>
+        <Paragraph>*La rémunération ne peut pas être inférieure au SMIC (1 867,02 €) ni à 85 % du salaire minimum conventionnel de branche (SMC)</Paragraph>
       </Section>
       <Section title="Salaire brut et salaire net en alternance">
         <Paragraph>Le salaire net perçu par l'alternant varie selon le type de contrat en raison d'exonérations spécifiques.</Paragraph>
@@ -441,14 +472,14 @@ const ComprendreLaRemunerationPage = () => {
           à 79 % du SMIC.
         </Paragraph>
         <Paragraph>
-          Pour les contrats conclus à partir du 1er mars 2025 : le seuil d'exonération est abaissé à 50 % du SMIC (environ 911,52 € brut). Au-delà de ce seuil, les cotisations
-          sociales s'appliquent.
+          Pour les contrats conclus à partir du 1er mars 2025 : le seuil d'exonération est abaissé à 50 % du SMIC (933,51 € brut depuis le 1er juin 2026). Au-delà de ce seuil, les
+          cotisations sociales s'appliquent.
         </Paragraph>
         <Paragraph>Concrètement :</Paragraph>
         <ParagraphList
           listItems={[
-            "Rémunération ≤ 50 % du SMIC (contrats 2025) : le salaire net est quasiment égal au salaire brut",
-            "Rémunération > 50 % du SMIC (contrats 2025) : les cotisations salariales classiques s'appliquent sur la part dépassant ce seuil",
+            "Rémunération ≤ 50 % du SMIC (933,51 €, contrats depuis mars 2025) : le salaire net est quasiment égal au salaire brut",
+            "Rémunération > 50 % du SMIC (contrats depuis mars 2025) : la CSG (9,2 %) et la CRDS (0,5 %) s'appliquent sur la part dépassant 933,51 €, ce qui fait décrocher le net du brut sur les tranches les plus hautes",
           ]}
         />
         <Paragraph>
@@ -504,21 +535,72 @@ const ComprendreLaRemunerationPage = () => {
       </Section>
       <Section title="FAQ : Vos questions sur le salaire en alternance">
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
-          L'alternant est-il payé pendant ses périodes de formation ?
+          Quel est le salaire minimum d'un alternant en 2026 ?
         </Paragraph>
         <Paragraph>
-          Oui, l'alternant perçoit son salaire à la fois pendant les périodes en entreprise et pendant les périodes de formation en CFA ou organisme de formation. C'est l'employeur
-          qui verse l'intégralité du salaire (
+          En contrat d'apprentissage, la rémunération va de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02 €)
+          pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.
+        </Paragraph>
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
+          Quel est le SMIC applicable en 2026 ?
+        </Paragraph>
+        <Paragraph>
+          Depuis le 1er juin 2026, le SMIC s'élève à 1 867,02 € brut par mois, soit 12,31 € brut de l'heure (
+          <DsfrLink href={"https://www.service-public.gouv.fr/particuliers/vosdroits/F2918"} aria-label="Consulter le site service-public.gouv.fr – Montant du SMIC">
+            service-public.gouv.fr
+          </DsfrLink>
+          ). C'est la base de calcul de la rémunération minimale en alternance.
+        </Paragraph>
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
+          Le salaire net d'un alternant a-t-il baissé depuis mars 2025 ?
+        </Paragraph>
+        <Paragraph>
+          Oui, pour les contrats d'apprentissage conclus depuis le 1er mars 2025, le seuil d'exonération de cotisations est passé de 79 % à 50 % du SMIC (933,51 €). Au-delà de ce
+          seuil, la CSG (9,2 %) et la CRDS (0,5 %) s'appliquent sur la part dépassante, ce qui fait décrocher le net du brut sur les rémunérations les plus élevées.
+        </Paragraph>
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
+          Combien gagne un alternant en BTS, en licence ou en master ?
+        </Paragraph>
+        <Paragraph>
+          La rémunération dépend de l'âge et de l'année d'exécution du contrat, pas directement du diplôme. Un apprenti en licence professionnelle (généralement 20-21 ans) est
+          rémunéré sur la base de la 2e année de contrat ; un apprenti en master l'est le plus souvent sur la base de la 2e année et de la tranche 21-25 ans (au moins 61 % du
+          SMIC).
+        </Paragraph>
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
+          Le salaire d'un alternant est-il imposable ?
+        </Paragraph>
+        <Paragraph>
+          Les salaires versés aux apprentis sont exonérés d'impôt sur le revenu dans la limite du montant annuel du SMIC. Les salariés en contrat de professionnalisation sont
+          imposés selon le régime de droit commun (
+          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F15478" aria-label="Consulter le site service-public.fr – Contrat de professionnalisation">
+            service-public.fr – Contrat de professionnalisation
+          </DsfrLink>
+          ).
+        </Paragraph>
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
+          Un alternant peut-il être payé plus que la grille ?
+        </Paragraph>
+        <Paragraph>
+          Oui. Les barèmes légaux sont des minimums. Une convention collective peut prévoir une rémunération plus favorable, et l'employeur reste libre de proposer un salaire
+          supérieur.
+        </Paragraph>
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
+          Quand le salaire d'un alternant augmente-t-il ?
+        </Paragraph>
+        <Paragraph>
+          La rémunération est réévaluée automatiquement à chaque changement de tranche d'âge (par exemple au passage de 18 ans ou de 21 ans) et à chaque nouvelle année d'exécution
+          du contrat.
+        </Paragraph>
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
+          L'alternant est-il payé pendant ses périodes de formation et ses congés ?
+        </Paragraph>
+        <Paragraph>
+          Oui. L'alternant perçoit son salaire aussi bien pendant les périodes en entreprise que pendant les périodes de formation en CFA ou organisme de formation : c'est
+          l'employeur qui verse l'intégralité du salaire (
           <DsfrLink href={"https://travail-emploi.gouv.fr/lapprentissage-au-quotidien"} aria-label="Consulter le site travail-emploi.gouv.fr – L'apprentissage au quotidien">
             travail-emploi.gouv.fr – L'apprentissage au quotidien
           </DsfrLink>
-          ).
-        </Paragraph>{" "}
-        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
-          Le salaire est-il versé pendant les congés payés ?
-        </Paragraph>
-        <Paragraph>
-          Oui, comme tout salarié, l'alternant bénéficie de congés payés rémunérés : 5 semaines par an minimum (
+          ). Comme tout salarié, il bénéficie aussi de congés payés rémunérés : 5 semaines par an minimum (
           <DsfrLink href={"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000033020517"} aria-label={"Consulter l'article L. 3141-3 du Code du travail – Légifrance"}>
             article L. 3141-3 du Code du travail – Légifrance
           </DsfrLink>
