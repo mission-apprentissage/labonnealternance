@@ -1,0 +1,73 @@
+import { Box } from "@mui/material"
+import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder_LEGACY"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { RechercheHeader } from "./RechercheHeader_LEGACY"
+import { RechercheMobileFormUpdate } from "./RechercheMobileFormUpdate_LEGACY"
+import { RechercheMobileHome } from "./RechercheMobileHome_LEGACY"
+
+export function RecherchePageHome(props: { rechercheParams: IRecherchePageParams }) {
+  const { displayMobileForm } = props.rechercheParams
+
+  if (displayMobileForm) {
+    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
+  }
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: {
+            xs: "block",
+            md: "none",
+          },
+        }}
+      >
+        <RechercheMobileHome {...props} />
+      </Box>
+      <Box
+        sx={{
+          height: "100vh",
+          flexDirection: "column",
+          display: {
+            xs: "none",
+            md: "flex",
+          },
+        }}
+      >
+        <RechercheHeader {...props} />
+        <Box
+          sx={{
+            overflow: "hidden",
+            flex: 1,
+            display: "flex",
+            flexDirection: {
+              xs: "column",
+              md: "row",
+            },
+          }}
+        >
+          <Box
+            sx={{
+              overflow: "auto",
+              height: "100%",
+              width: "100%",
+              contain: "strict",
+              flex: 1,
+            }}
+          >
+            <Box
+              sx={{
+                maxWidth: "xl",
+                width: "100%",
+                position: "relative",
+                margin: "auto",
+              }}
+            >
+              <RechercheResultatsPlaceholder {...props} />
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </>
+  )
+}

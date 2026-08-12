@@ -56,7 +56,7 @@ function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
   )
 }
 
-export function EcolesSection({ titre, formations, romes }: { titre: string; formations: IDiplomeEcoleCard[]; romes: string[] }) {
+export function EcolesSection({ titre, formations, searchHref }: { titre: string; formations: IDiplomeEcoleCard[]; searchHref: string }) {
   return (
     <Box>
       <SectionTitle title="Quelques écoles qui proposent le diplôme" highlightedText={`${titre} :`} />
@@ -81,7 +81,7 @@ export function EcolesSection({ titre, formations, romes }: { titre: string; for
           size="large"
           iconId="fr-icon-arrow-right-line"
           iconPosition="right"
-          linkProps={{ href: `/recherche-formation?romes=${romes.join(",")}&${UTM_PARAMS}` }}
+          linkProps={{ href: searchHref }}
         >
           Voir toutes les formations
         </Button>

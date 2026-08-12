@@ -2,8 +2,6 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Grid } from "@mui/material"
 
 import type { Metadata } from "next"
-import { Suspense } from "react"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
 import { GrandsGroupesCandidat } from "@/app/(home)/_components/GrandsGroupesCandidat"
 import { SchemaOrg } from "@/components/SchemaOrg"
@@ -20,7 +18,7 @@ export const metadata: Metadata = {
   description: PAGES.static.home.getMetadata().description,
 }
 
-export default function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+export default function HomePage() {
   return (
     <>
       <SchemaOrg
@@ -65,9 +63,7 @@ export default function HomePage({ searchParams }: { searchParams: Promise<Recor
             <HomeCircleImageDecoration size="high" />
           </Box>
           <Box sx={{ position: "relative", display: "grid", padding: { xs: 0, md: fr.spacing("12v") }, gap: fr.spacing("8v"), gridTemplateColumns: "1fr" }}>
-            <Suspense fallback={null}>
-              <HomeRechercheOptInWithParams searchParams={searchParams} />
-            </Suspense>
+            <HomeRechercheOptIn />
             <HowTo />
           </Box>
         </Box>
@@ -90,9 +86,4 @@ export default function HomePage({ searchParams }: { searchParams: Promise<Recor
       </Container>
     </>
   )
-}
-
-async function HomeRechercheOptInWithParams({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
-  const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
-  return <HomeRechercheOptIn rechercheParams={rechercheParams} />
 }
