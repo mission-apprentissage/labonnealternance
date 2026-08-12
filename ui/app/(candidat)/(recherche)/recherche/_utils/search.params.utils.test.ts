@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { ISearchPageParams } from "./search.params.utils"
-import { buildSearchPageTitle, buildSearchUrl, parseSearchPageParams } from "./search.params.utils"
+import { buildRechercheH1, buildSearchPageTitle, buildSearchUrl, parseSearchPageParams } from "./search.params.utils"
 
 const base: ISearchPageParams = { mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 }
 
@@ -47,6 +47,28 @@ describe("buildSearchPageTitle", () => {
 
   it("mode emplois_formation : base « Offres en alternance » (offres CFA/GEIQ)", () => {
     expect(buildSearchPageTitle({ ...base, mode: "emplois_formation" })).toBe("Offres en alternance | La bonne alternance")
+  })
+})
+
+describe("buildRechercheH1", () => {
+  it("compose métier + lieu", () => {
+    expect(buildRechercheH1({ q: "Data analyst", lieu_label: "Lyon" })).toBe("Alternance Data analyst à Lyon")
+  })
+
+  it("gère le métier seul (sans lieu)", () => {
+    expect(buildRechercheH1({ q: "Data analyst" })).toBe("Alternance Data analyst")
+  })
+
+  it("ignore un lieu vide", () => {
+    expect(buildRechercheH1({ q: "Data analyst", lieu_label: "  " })).toBe("Alternance Data analyst")
+  })
+
+  it("retourne null sans métier", () => {
+    expect(buildRechercheH1({})).toBeNull()
+  })
+
+  it("traite un métier vide comme une absence", () => {
+    expect(buildRechercheH1({ q: "  " })).toBeNull()
   })
 })
 

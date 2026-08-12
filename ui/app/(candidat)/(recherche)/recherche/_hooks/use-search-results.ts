@@ -4,7 +4,7 @@ import { apiGet } from "@/utils/api.utils"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 
-function paramsToQuerystring(params: ISearchPageParams) {
+export function paramsToQuerystring(params: ISearchPageParams) {
   const qs: Record<string, unknown> = {
     radius: params.radius,
     hitsPerPage: params.hitsPerPage,

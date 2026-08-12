@@ -65,6 +65,11 @@ export const zSearchRoutes = {
         page: z.coerce.number<number>().min(0).default(0).describe("Index de page (0-based)"),
         hitsPerPage: z.coerce.number<number>().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
         source: z.enum(["suggestion", "free_text"]).optional().describe("Origine de la requête côté UI (télémétrie autocomplete, sans effet sur les résultats)"),
+        internal: z
+          .enum(["true", "false"])
+          .transform((v) => v === "true")
+          .optional()
+          .describe("true : requête interne (ex. prefetch SSR pour le SEO, pas une recherche utilisateur) — exclue du log analytics de recherche"),
       }),
       headers: z.looseObject({ referer: z.string().optional() }),
       response: {
