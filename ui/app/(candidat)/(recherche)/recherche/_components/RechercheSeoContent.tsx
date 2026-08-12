@@ -5,6 +5,7 @@ import type { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import type { IRecherchePageParams, ItemReferenceLike } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { getItemReference, getResultItemUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { buildJobsMinQuerystring, buildRechercheH1 } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.seo.utils"
+import { publicConfig } from "@/config.public"
 import { apiGet } from "@/utils/api.utils"
 
 const MAX_SEO_OFFERS = 10
@@ -60,7 +61,13 @@ export function RechercheSeoContent({ rechercheParams }: { rechercheParams: IRec
 async function RechercheSeoOffers({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   let offers: SeoOffer[] = []
   try {
-    const data = await apiGet("/v1/_private/jobs/min", { querystring: buildJobsMinQuerystring({ ...rechercheParams, elligibleHandicapFilter: false }) })
+    // Côté serveur, aucun `referer` n'est envoyé par défaut ; or `/v1/_private/jobs/min` exige
+    // `referer` ou `caller` (sinon HTTP 400). On fournit le referer du site, comme le fait le navigateur.
+    const data = await apiGet(
+      "/v1/_private/jobs/min",
+      { querystring: buildJobsMinQuerystring({ ...rechercheParams, elligibleHandicapFilter: false }) },
+      { headers: { referer: publicConfig.baseUrl } }
+    )
     offers = extractSeoOffers(data).slice(0, MAX_SEO_OFFERS)
   } catch {
     // Fail-safe : une erreur/lenteur de l'API ne doit jamais casser la page. On omet le bloc offres.
