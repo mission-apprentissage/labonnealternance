@@ -15,6 +15,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { type ITypeEmploi, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { buildJobsMinQuerystring } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.seo.utils"
 import { apiGet } from "@/utils/api.utils"
 
 export type QueryStatus = "success" | "error" | "disabled" | "loading"
@@ -78,39 +79,9 @@ function isPartialJobError(data?: IResponse<IGetRoutes["/v1/_private/jobs/min"]>
   return errors.some(Boolean)
 }
 
-function rechercheParamsToJobQueryString(rechercheParams: IRecherchePageParams | null): IQuery<IGetRoutes["/v1/_private/jobs/min"]> {
-  if (!rechercheParams) return {}
-
-  const query: IQuery<IGetRoutes["/v1/_private/jobs/min"]> = {
-    romes: rechercheParams.romes.join(","),
-  }
-
-  if (rechercheParams.geo) {
-    query.longitude = rechercheParams.geo.longitude
-    query.latitude = rechercheParams.geo.latitude
-    query.radius = rechercheParams.radius
-  }
-
-  if (rechercheParams.diploma) {
-    query.diploma = rechercheParams.diploma
-  }
-
-  if (rechercheParams.opco) {
-    query.opco = rechercheParams.opco
-  }
-
-  if (rechercheParams.rncp) {
-    query.rncp = rechercheParams.rncp
-  }
-  if (rechercheParams.elligibleHandicapFilter) {
-    query.elligibleHandicapFilter = "true"
-  }
-  return query
-}
-
 function useJobQuery(rechercheParams: IRecherchePageParams | null) {
   const { isJobsEnabled, queryString: jobQuerystring } = useMemo(() => {
-    const queryString = rechercheParamsToJobQueryString(rechercheParams)
+    const queryString = buildJobsMinQuerystring(rechercheParams)
     const isJobsEnabled = Boolean((queryString.romes.length > 0 || queryString.rncp) && rechercheParams.displayEntreprises)
     return { isJobsEnabled, queryString }
   }, [rechercheParams])
