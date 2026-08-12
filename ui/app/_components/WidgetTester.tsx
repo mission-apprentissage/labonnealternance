@@ -3,85 +3,15 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, FormLabel, Input, Stack, Typography } from "@mui/material"
-import type { FormikProps } from "formik"
-import { Formik } from "formik"
 import { useState } from "react"
-import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { RechercheLieuAutocomplete } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
-import { RechercheMetierAutocomplete } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
-import { RechercheNiveauSelectFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
-import { RechercheRayonSelectFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheRayonSelect"
-import { IRechercheMode } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { SearchBar } from "@/app/(candidat)/(recherche)/recherche/_components/SearchBar"
+import { SearchTypeRechercheSelect } from "@/app/(candidat)/(recherche)/recherche/_components/SearchTypeRechercheSelect"
+import type { QSource, SearchMode } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
+import { buildSearchUrl, DEFAULT_SEARCH_MODE } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { baseUrl } from "@/config/config"
-import { PAGES } from "@/utils/routes.utils"
-import { SelectFormField } from "./FormComponents/SelectFormField"
-import type { IRechercheForm } from "./RechercheForm/RechercheForm"
-import { rechercheFormToRechercheParams } from "./RechercheForm/RechercheForm"
 
-type IFormTypeWidget = IRechercheForm & {
-  job_name?: string
-  opco?: string
-  caller?: string
-  scope: IRechercheMode
-}
-
-const scopeOptions = [
-  {
-    value: IRechercheMode.DEFAULT,
-    label: "Tout",
-  },
-  {
-    value: IRechercheMode.JOBS_ONLY,
-    label: "Emplois uniquement",
-  },
-  {
-    value: IRechercheMode.FORMATIONS_ONLY,
-    label: "Formations uniquement",
-  },
-]
-
-const validOpcos = Object.values(OPCOS_LABEL).filter((value) => value !== OPCOS_LABEL.UNKNOWN_OPCO)
-
-function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
-  return (
-    <Box component={"form"} onSubmit={props.handleSubmit}>
-      <Stack spacing={2}>
-        <RechercheMetierAutocomplete />
-        <RechercheLieuAutocomplete />
-        <RechercheRayonSelectFormik />
-        <RechercheNiveauSelectFormik />
-        <SelectFormField
-          id="scope"
-          label="Périmètre (scope)"
-          style={{
-            marginBottom: 0,
-            textWrap: "nowrap",
-          }}
-          options={scopeOptions.map((option) => ({ ...option, selected: option.value === props.values.scope }))}
-          disabled={false}
-        />
-        <SelectFormField
-          id="opco"
-          label="Filtrage des opportunités d'emploi pour un OPCO. Optionnel (opco)"
-          style={{
-            marginBottom: 0,
-            textWrap: "nowrap",
-          }}
-          options={validOpcos.map((opco) => ({ value: opco, label: opco, selected: opco === props.values.opco }))}
-          disabled={false}
-        />
-        <FormLabel htmlFor="caller">Identifiant appelant (caller)</FormLabel>
-        <Input onChange={props.handleChange} id="caller" name="caller" type="text" placeholder="ex: nom_site" className={fr.cx("fr-input")} />
-        <FormLabel htmlFor="job_name">Nom d'affichage du métier. Optionnel (job_name)</FormLabel>
-        <Input onChange={props.handleChange} id="job_name" name="job_name" type="text" placeholder="Ex: Assistant ressources humaines" className={fr.cx("fr-input")} />
-        <Button type="submit" title="Rafraîchir les widgets" disabled={false}>
-          Rafraîchir les widgets
-        </Button>
-      </Stack>
-    </Box>
-  )
-}
+type Lieu = { label: string; latitude: number; longitude: number }
 
 const WidgetIFrame = ({ title, width, height, url }: { title: string; width?: number; height: number; url: string }) => {
   return (
@@ -99,19 +29,30 @@ const WidgetIFrame = ({ title, width, height, url }: { title: string; width?: nu
 }
 
 export function WidgetTester() {
-  const initialValues: IFormTypeWidget = {
-    radius: "30",
-    diploma: null,
-    metier: null,
-    lieu: null,
-    displayedItemTypes: [],
-    job_name: "",
-    opco: "",
-    scope: IRechercheMode.DEFAULT,
-    caller: "",
-  }
+  const [q, setQ] = useState("")
+  const [qSource, setQSource] = useState<QSource>("free_text")
+  const [lieu, setLieu] = useState<Lieu | null>(null)
+  const [mode, setMode] = useState<SearchMode>(DEFAULT_SEARCH_MODE)
+  const [caller, setCaller] = useState("")
 
   const [widgetUrl, setWidgetUrl] = useState(`${baseUrl}/recherche`)
+
+  const refreshWidgets = () => {
+    const path = buildSearchUrl({
+      q: q.trim() || undefined,
+      q_source: q.trim() ? qSource : undefined,
+      lieu_label: lieu?.label,
+      latitude: lieu?.latitude,
+      longitude: lieu?.longitude,
+      mode,
+      radius: 20,
+      page: 0,
+      hitsPerPage: 20,
+    })
+    const url = new URL(`${baseUrl}${path}`)
+    if (caller) url.searchParams.append("caller", caller)
+    setWidgetUrl(url.toString())
+  }
 
   return (
     <Box sx={{ p: fr.spacing("6v"), backgroundColor: "#f8f8f8" }}>
@@ -124,32 +65,25 @@ export function WidgetTester() {
           https://www.data.gouv.fr/fr/dataservices/api-la-bonne-alternance/
         </DsfrLink>
       </Typography>
-      <Formik<IFormTypeWidget>
-        initialValues={initialValues}
-        enableReinitialize
-        validateOnBlur={false}
-        onSubmit={async (values) => {
-          const { job_name, opco, caller, scope, metier } = values
-          const rechercheParams = rechercheFormToRechercheParams(values)
-          const path = PAGES.dynamic.genericRecherche({ rechercheParams: rechercheParams, mode: scope }).getPath()
-
-          const url = new URL(`${baseUrl}${path}`)
-          const searchParams = url.searchParams
-          if (caller) {
-            searchParams.append("caller", caller)
-          }
-          if (opco) {
-            searchParams.append("opco", opco)
-          }
-          if (job_name) {
-            searchParams.append("job_name", job_name)
-          } else if (metier?.label) {
-            searchParams.append("job_name", metier.label)
-          }
-          setWidgetUrl(url.toString())
-        }}
-        component={WidgetFormComponent}
-      />
+      <Stack spacing={2}>
+        <SearchBar
+          layout="column"
+          initialQ={q}
+          initialLieuLabel={lieu?.label}
+          onSubmit={(value, source) => {
+            setQ(value)
+            setQSource(source)
+          }}
+          onQChange={setQ}
+          onLieuChange={setLieu}
+        />
+        <SearchTypeRechercheSelect value={mode} onChange={setMode} fullWidth />
+        <FormLabel htmlFor="caller">Identifiant appelant (caller)</FormLabel>
+        <Input onChange={(e) => setCaller(e.target.value)} id="caller" name="caller" type="text" placeholder="ex: nom_site" className={fr.cx("fr-input")} />
+        <Button type="button" title="Rafraîchir les widgets" onClick={refreshWidgets}>
+          Rafraîchir les widgets
+        </Button>
+      </Stack>
       <Box sx={{ p: fr.spacing("6v"), backgroundColor: fr.colors.decisions.background.altOverlap.grey.active, my: fr.spacing("6v") }}>
         <Typography sx={{ textAlign: "center" }}>
           URL associée à l&apos;attribut{" "}

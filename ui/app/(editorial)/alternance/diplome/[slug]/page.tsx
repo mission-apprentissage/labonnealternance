@@ -30,6 +30,26 @@ async function getDiplomeData(slug: string) {
   return await apiGet("/_private/seo/diplome/:diplome", { params: { diplome: slug } })
 }
 
+// Le moteur de recherche n'a pas d'équivalent pour un filtre par code(s) ROME : on résout le
+// 1er code en libellé métier (référentiel ROME) pour l'injecter en texte libre (q). Best-effort
+// (un diplôme peut couvrir plusieurs romes, on ne garde que le plus représentatif) — silencieux
+// en cas d'échec, la recherche retombe simplement sur "toutes les offres/formations".
+async function getMetierLabel(romes: string[]): Promise<string | undefined> {
+  const romeCode = romes[0]
+  if (!romeCode) return undefined
+  try {
+    const romeDetail = await apiGet("/rome/detail/:rome", { params: { rome: romeCode } })
+    return romeDetail.rome.intitule
+  } catch {
+    return undefined
+  }
+}
+
+function buildRechercheHref(mode: "emplois" | "formations", metierLabel: string | undefined): string {
+  const query = metierLabel ? `q=${encodeURIComponent(metierLabel)}&` : ""
+  return `/recherche?mode=${mode}&${query}${UTM_PARAMS}`
+}
+
 export function generateStaticParams() {
   return diplomeData.map((d) => ({ slug: d.slug }))
 }
@@ -60,6 +80,9 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
   if (!rawData) notFound()
 
   const data = rawData as unknown as ISeoDiplome
+  const metierLabel = await getMetierLabel(data.romes)
+  const rechercheEmploiHref = buildRechercheHref("emplois", metierLabel)
+  const rechercheFormationHref = buildRechercheHref("formations", metierLabel)
 
   const diplomePage = PAGES.dynamic.seoDiplome(slug, data.titre)
   const breadcrumbs = [
@@ -80,7 +103,7 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
       <Breadcrumb pages={[PAGES.static.alternanceDiplomes, diplomePage]} />
 
       <DefaultContainer sx={{ px: 0 }}>
-        <HeroDiplome titre={data.titre} sousTitre={data.sousTitre} kpis={data.kpis} romes={data.romes} />
+        <HeroDiplome titre={data.titre} sousTitre={data.sousTitre} kpis={data.kpis} searchHref={rechercheEmploiHref} />
 
         <Box sx={{ py: fr.spacing("8v") }}>
           <DescriptionDiplome titre={data.titre} text={data.description.text} objectifs={data.description.objectifs} />
@@ -93,7 +116,7 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
         <PreparationSection titre={data.titre} />
 
         <Box sx={{ py: fr.spacing("8v") }}>
-          <EcolesSection titre={data.titre} formations={data?.ecoles ?? []} romes={data.romes} />
+          <EcolesSection titre={data.titre} formations={data?.ecoles ?? []} searchHref={rechercheFormationHref} />
         </Box>
 
         <SalaireSection
@@ -106,11 +129,11 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
         />
 
         <Box sx={{ py: fr.spacing("8v") }}>
-          <MetiersSection titre={data.titre} text={data.metiers.text} liste={data?.metiers?.liste ?? []} romes={data?.romes ?? []} />
+          <MetiersSection titre={data.titre} text={data.metiers.text} liste={data?.metiers?.liste ?? []} />
         </Box>
 
         <Box sx={{ py: fr.spacing("8v") }}>
-          <OffresSection offreCount={data.kpis.offres} romes={data?.romes ?? []} offres={data?.cards ?? []} />
+          <OffresSection offreCount={data.kpis.offres} searchHref={rechercheEmploiHref} offres={data?.cards ?? []} />
         </Box>
 
         <ExplorerDiplomesSection currentSlug={slug} />

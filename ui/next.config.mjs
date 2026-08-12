@@ -188,7 +188,22 @@ const nextConfig = {
       },
       {
         source: "/recherche-apprentissage-formation",
-        destination: "/recherche-formation",
+        destination: "/recherche?mode=formations",
+        permanent: true,
+      },
+      {
+        source: "/recherche-formation",
+        destination: "/recherche?mode=formations",
+        permanent: true,
+      },
+      {
+        source: "/recherche-emploi",
+        destination: "/recherche?mode=emplois",
+        permanent: true,
+      },
+      {
+        source: "/beta/recherche",
+        destination: "/recherche",
         permanent: true,
       },
       {

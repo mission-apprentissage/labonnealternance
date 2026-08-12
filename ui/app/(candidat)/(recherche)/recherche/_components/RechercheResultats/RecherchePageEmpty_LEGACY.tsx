@@ -1,0 +1,77 @@
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box } from "@mui/material"
+import { RechercheTitle } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheTitle_LEGACY"
+import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder_LEGACY"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { RechercheHeader } from "./RechercheHeader_LEGACY"
+import { RechercheMobileEmpty } from "./RechercheMobileEmpty_LEGACY"
+import { RechercheMobileFormUpdate } from "./RechercheMobileFormUpdate_LEGACY"
+
+export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParams }) {
+  const { displayMobileForm } = props.rechercheParams
+
+  if (displayMobileForm) {
+    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
+  }
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: {
+            xs: "block",
+            lg: "none",
+          },
+        }}
+      >
+        <RechercheMobileEmpty {...props} />
+      </Box>
+      <Box
+        sx={{
+          height: "100vh",
+          flexDirection: "column",
+          display: {
+            xs: "none",
+            lg: "flex",
+          },
+        }}
+      >
+        <RechercheTitle viewType={props.rechercheParams.viewType} />
+        <RechercheHeader {...props} />
+        <Box
+          sx={{
+            overflow: "hidden",
+            flex: 1,
+            display: "flex",
+            flexDirection: {
+              xs: "column",
+              md: "row",
+            },
+          }}
+          id="search-content-container"
+        >
+          <Box
+            sx={{
+              overflow: "auto",
+              height: "100%",
+              width: "100%",
+              contain: "strict",
+              flex: 1,
+            }}
+          >
+            <Box
+              sx={{
+                maxWidth: "xl",
+                width: "100%",
+                position: "relative",
+                margin: "auto",
+              }}
+            >
+              <RechercheResultatsPlaceholder {...props} />
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </>
+  )
+}

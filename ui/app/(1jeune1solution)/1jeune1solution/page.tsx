@@ -2,14 +2,12 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, List, ListItem, Typography } from "@mui/material"
 import NextImage from "next/image"
 import Social from "@/app/(1jeune1solution)/components/Social"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
+import { SearchHomeForm } from "@/app/(candidat)/(recherche)/recherche/_components/SearchHomeForm"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 
 const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=landinglba1j1s"
-export default async function unJeune1Solution({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
-  const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
+export default function unJeune1Solution() {
   return (
     <Container
       sx={{
@@ -78,7 +76,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
             gridTemplateColumns: "1fr",
           }}
         >
-          <HomeRechercheForm rechercheParams={rechercheParams} />
+          <SearchHomeForm />
         </Box>
       </Box>
 
