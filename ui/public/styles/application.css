@@ -49,7 +49,7 @@ EXTERNAL LINK
 /**
 HEADER — garantit que le header (et ses menus déroulants "Je suis alternant/recruteur/CFA")
 passe toujours au-dessus du contenu de page. Le DSFR ne fixe le z-index de .fr-header qu'à
-partir de 992px (calc(--ground + 750)) ; sous ce seuil, ou tant qu'aucune règle DSFR ne
+partir de 992px (calc(var(--ground) + 750)) ; sous ce seuil, ou tant qu'aucune règle DSFR ne
 s'applique, il vaut "auto" — n'importe quel élément de page avec un z-index positif (bandeau
 sticky, carte, etc.) passe alors devant, quelle que soit sa valeur. On fixe donc ici un
 z-index explicite, stable sur tous les breakpoints, sous les modales DSFR (1250+).
