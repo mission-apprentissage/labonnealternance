@@ -8,7 +8,7 @@ import { isWidget } from "@/utils/is-widget.utils"
 export const Matomo = () => {
   if (!isWidget()) {
     // lazyOnload : le conteneur Matomo (~86 ko + plugin heatmap) sort du chemin
-    // critique et ne charge qu'après le load, sans perte de page vue
+    // critique et ne charge qu'après `window.load` (un rebond avant `load` ne sera pas tracké).
     return (
       <Script id="matomo" strategy="lazyOnload">
         {`
