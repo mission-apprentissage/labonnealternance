@@ -220,10 +220,11 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
         <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, overflowX: "clip" }}>
           <DefaultContainer sx={{ py: fr.spacing("4v") }}>
             {/* Bandeau : champs + chips, panneau blanc arrondi comme le design — sticky au scroll.
-                z-index > 500 : les cartes DSFR shadow portent z-index calc(--ground + 500) ;
-                on reste sous les poppers des chips et les modales (1250-1300). */}
+                z-index > 500 (cartes DSFR shadow), < 1100 (.fr-header, cf application.css) et
+                < 1250 (modales DSFR). Le header a son propre z-index garanti globalement — pas
+                besoin de deviner la valeur DSFR interne du menu déroulant ici. */}
             <Box ref={stickySentinelRef} aria-hidden="true" sx={{ height: 0 }} />
-            <Box sx={{ position: "sticky", top: 0, zIndex: 1000 }}>
+            <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
               {/* Bandeau collé : fond blanc pleine largeur (comme le legacy) — couvre les
                   gouttières latérales du container et masque les résultats qui défilent
                   derrière (encoches des coins arrondis comprises). */}
@@ -285,8 +286,9 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             sx={{
               position: "sticky",
               top: 0,
-              // > 500 (cartes DSFR shadow), < 1250 (modales mobiles).
-              zIndex: 1000,
+              // > 500 (cartes DSFR shadow), < 1100 (.fr-header, cf application.css), < 1250
+              // (modales DSFR) — voir commentaire desktop ci-dessus.
+              zIndex: 999,
               flexShrink: 0,
               px: fr.spacing("4v"),
               py: fr.spacing("2v"),
