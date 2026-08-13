@@ -17,7 +17,7 @@ type ClassificationDisagreement = { partner_job_id: string; partner_label: strin
  * humaines, pour comparer sur des décisions non déjà validées à la main) à travers Mistral, sans
  * rien modifier en base. Usage ponctuel avant de couper le provider Lab (voir plan de migration).
  */
-const DEFAULT_SAMPLE_SIZE = 200
+const DEFAULT_SAMPLE_SIZE = 300
 
 export const compareLabAndMistralClassification = async (payload?: { sampleSize?: number | string }) => {
   const requestedSampleSize = Number(payload?.sampleSize)
@@ -25,7 +25,7 @@ export const compareLabAndMistralClassification = async (payload?: { sampleSize?
 
   const sample = (await getDbCollection("cache_classification")
     .aggregate([
-      { $match: { human_verification: { $in: [null, ""] } } },
+      { $match: { human_verification: { $in: [null, ""] }, partner_label: { $ne: "recruteurs_lba" } } },
       { $sample: { size: sampleSize } },
       { $lookup: { from: "jobs_partners", localField: "partner_job_id", foreignField: "partner_job_id", as: "job" } },
       { $unwind: "$job" },
@@ -43,6 +43,8 @@ export const compareLabAndMistralClassification = async (payload?: { sampleSize?
       },
     ])
     .toArray()) as SampleEntry[]
+
+  logger.info(`compareLabAndMistralClassification: sample size ${sample.length} (requested ${sampleSize})`)
 
   let agree = 0
   const disagreements: ClassificationDisagreement[] = []
@@ -66,5 +68,6 @@ export const compareLabAndMistralClassification = async (payload?: { sampleSize?
   }
 
   logger.info(`compareLabAndMistralClassification: ${agree}/${sample.length} accords (${disagreements.length} désaccords)`)
+  console.table(disagreements)
   return { total: sample.length, agree, disagreements }
 }
