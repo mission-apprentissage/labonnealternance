@@ -208,14 +208,6 @@ export function SearchChipOptionRow({ label, selected, onSelect }: { label: stri
   return (
     <ButtonBase
       onClick={onSelect}
-      // Entrée doit activer le bouton au même titre qu'Espace (pattern ARIA bouton) — géré
-      // explicitement plutôt que de compter sur le clic natif déclenché par le navigateur.
-      onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          event.preventDefault()
-          onSelect()
-        }
-      }}
       aria-pressed={selected}
       sx={{
         display: "flex",
