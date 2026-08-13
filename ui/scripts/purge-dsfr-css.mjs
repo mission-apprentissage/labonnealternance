@@ -62,7 +62,16 @@ const DYNAMIC_COMPONENT_PREFIXES = [
 ]
 
 async function main() {
-  const allCssFiles = (await fs.readdir(cssDir)).filter((f) => f.endsWith(".css")).map((f) => path.join(cssDir, f))
+  // Listing récursif : Next peut émettre des chunks CSS dans des sous-dossiers,
+  // et un dossier absent doit produire une erreur explicite plutôt qu'une ENOENT brute.
+  let entries
+  try {
+    entries = await fs.readdir(cssDir, { recursive: true })
+  } catch {
+    console.error(`purge-dsfr-css: dossier ${cssDir} introuvable — lancer après \`next build\``)
+    process.exit(1)
+  }
+  const allCssFiles = entries.filter((f) => f.endsWith(".css")).map((f) => path.join(cssDir, f))
 
   // On ne purge QUE le chunk DSFR : les CSS tiers (react-dates, notion…) utilisent
   // des classes composées au runtime qui échappent au scan statique.
