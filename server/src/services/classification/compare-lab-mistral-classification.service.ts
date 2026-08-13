@@ -82,6 +82,7 @@ type HumanVerifiedEntry = {
 }
 
 type ProviderError = { partner_job_id: string; partner_label: string; got: string; human_verification: string }
+type MistralRegression = { partner_job_id: string; partner_label: string; offer_title?: string; lab: string; mistral: string; human_verification: string }
 
 // Une entrée human_verification (correction manuelle, cf. reviewJobPartnersClassification) est
 // une vraie vérité terrain — contrairement aux 299/319 "accords" de compareLabAndMistralClassification
@@ -128,6 +129,9 @@ export const compareLabAndMistralAgainstHumanVerification = async (payload?: { l
   const counters = { total: 0, labCorrect: 0, mistralCorrect: 0, bothCorrect: 0, bothWrong: 0, onlyLabCorrect: 0, onlyMistralCorrect: 0, mistralCallFailures: 0 }
   const labErrors: ProviderError[] = []
   const mistralErrors: ProviderError[] = []
+  // Cas où Lab avait raison et Mistral se trompe : le risque de régression d'une bascule, à
+  // l'inverse de knownLabErrors/knownLabErrorCatchRate qui ne mesurent que le rattrapage.
+  const mistralRegressions: MistralRegression[] = []
 
   for (let i = 0; i < sample.length; i += HUMAN_VERIFIED_CHUNK_SIZE) {
     const chunk = sample.slice(i, i + HUMAN_VERIFIED_CHUNK_SIZE)
@@ -166,8 +170,17 @@ export const compareLabAndMistralAgainstHumanVerification = async (payload?: { l
 
       if (labOk && mistralOk) counters.bothCorrect++
       else if (!labOk && !mistralOk) counters.bothWrong++
-      else if (labOk) counters.onlyLabCorrect++
-      else counters.onlyMistralCorrect++
+      else if (labOk) {
+        counters.onlyLabCorrect++
+        mistralRegressions.push({
+          partner_job_id: entry.partner_job_id,
+          partner_label: entry.partner_label,
+          offer_title: entry.job.offer_title,
+          lab: entry.classification,
+          mistral: mistralLabel ?? "?",
+          human_verification: entry.human_verification,
+        })
+      } else counters.onlyMistralCorrect++
     })
 
     logger.info(`compareLabAndMistralAgainstHumanVerification: ${Math.min(i + chunk.length, sample.length)}/${sample.length} traités`)
@@ -206,5 +219,10 @@ export const compareLabAndMistralAgainstHumanVerification = async (payload?: { l
   ])
   console.table([{ knownLabErrors, knownLabErrorsCaughtByMistral, knownLabErrorCatchRate: `${(knownLabErrorCatchRate * 100).toFixed(1)}%` }])
 
-  return { ...counters, labAccuracy, mistralAccuracy, knownLabErrors, knownLabErrorsCaughtByMistral, knownLabErrorCatchRate, labErrors, mistralErrors }
+  logger.info(
+    `compareLabAndMistralAgainstHumanVerification: ${mistralRegressions.length} régression(s) (Lab correct, Mistral faux) — voir tableau ci-dessous (limité à 100 lignes)`
+  )
+  console.table(mistralRegressions.slice(0, 100))
+
+  return { ...counters, labAccuracy, mistralAccuracy, knownLabErrors, knownLabErrorsCaughtByMistral, knownLabErrorCatchRate, labErrors, mistralErrors, mistralRegressions }
 }

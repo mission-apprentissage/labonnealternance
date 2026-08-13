@@ -79,6 +79,9 @@ describe("compareLabAndMistralAgainstHumanVerification", () => {
     expect(result.knownLabErrors).toBe(2)
     expect(result.knownLabErrorsCaughtByMistral).toBe(1)
     expect(result.knownLabErrorCatchRate).toBe(0.5)
+    // D est la seule régression (Lab correct, Mistral faux) : le risque introduit par une bascule.
+    expect(result.mistralRegressions).toHaveLength(1)
+    expect(result.mistralRegressions[0]).toMatchObject({ partner_job_id: "job-d", lab: "unpublish", mistral: "publish", human_verification: "unpublish" })
   })
 
   it("découpe en lots de 50 (vrai batching Mistral, pas un appel par offre)", async () => {
