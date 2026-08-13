@@ -6,7 +6,8 @@ import { useEffect, useState } from "react"
 import type { IJob } from "shared"
 import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep1"
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
-import { FormulaireEditionOffreStep3FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3FtSupport"
+import { FormulaireEditionOffreStep3 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3"
+import { FormulaireEditionOffreStep4FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep4FtSupport"
 import { getFormulaire, getFormulaireByToken } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
@@ -47,7 +48,7 @@ export const FormulaireEditionOffre = ({
   onChangeScreen?: () => void
 }) => {
   const { token } = useSearchParamsRecord() as { token?: string }
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1)
   const [formValues, setFormValues] = useState<any>({})
 
   useEffect(() => {
@@ -65,7 +66,7 @@ export const FormulaireEditionOffre = ({
   if (!establishment_id) return <></>
 
   const isFtEligible = isEligibleForFtSupport(pathname, formulaire)
-  const totalSteps = isFtEligible ? 3 : 2
+  const totalSteps = isFtEligible ? 4 : 3
 
   return (
     <>
@@ -89,6 +90,20 @@ export const FormulaireEditionOffre = ({
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2
           onSubmit={(values) => {
+            setFormValues({ ...formValues, ...values })
+            setCurrentStep(3)
+            onChangeScreen?.()
+          }}
+          offre={offre}
+          onCancel={() => {
+            setCurrentStep(1)
+            onChangeScreen?.()
+          }}
+          totalSteps={totalSteps}
+        />
+      ) : currentStep === 3 ? (
+        <FormulaireEditionOffreStep3
+          onSubmit={(values) => {
             if (!isFtEligible) {
               const finalValues = { ...formValues, ...values, ft_support: false }
               pushMatomoEvent({
@@ -100,20 +115,20 @@ export const FormulaireEditionOffre = ({
               handleSave(finalValues)
             } else {
               setFormValues({ ...formValues, ...values })
-              setCurrentStep(3)
+              setCurrentStep(4)
               onChangeScreen?.()
             }
           }}
           offre={offre}
           onCancel={() => {
-            setCurrentStep(1)
+            setCurrentStep(2)
             onChangeScreen?.()
           }}
           isFtEligible={isFtEligible}
           totalSteps={totalSteps}
         />
-      ) : currentStep === 3 && isFtEligible ? (
-        <FormulaireEditionOffreStep3FtSupport
+      ) : currentStep === 4 && isFtEligible ? (
+        <FormulaireEditionOffreStep4FtSupport
           onSubmit={(values) => {
             const finalValues = { ...formValues, ...values }
             pushMatomoEvent({
@@ -130,7 +145,7 @@ export const FormulaireEditionOffre = ({
           }}
           offre={offre}
           onCancel={() => {
-            setCurrentStep(2)
+            setCurrentStep(3)
             onChangeScreen?.()
           }}
         />

@@ -29,13 +29,11 @@ export const FormulaireEditionOffreStep2 = ({
   offre,
   onSubmit,
   onCancel,
-  isFtEligible = true,
-  totalSteps = 3,
+  totalSteps = 4,
 }: {
   offre?: IJob
   onSubmit?: (values: any) => void
   onCancel: () => void
-  isFtEligible?: boolean
   totalSteps?: number
 }) => {
   return (
@@ -89,7 +87,7 @@ export const FormulaireEditionOffreStep2 = ({
           >
             Vous avez une question à suggérer ? Écrivez-nous à <a href="mailto:contact@labonnealternance.apprentissage.beta.fr">contact@labonnealternance.apprentissage.beta.fr</a>
           </Typography>
-          <Buttons offre={offre} onCancel={onCancel} isFtEligible={isFtEligible} />
+          <Buttons onCancel={onCancel} />
         </>
       )}
     </Formik>
@@ -143,7 +141,7 @@ const InfoText = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-const Buttons = ({ offre, onCancel, isFtEligible }: { offre?: IJob; onCancel: () => void; isFtEligible: boolean }) => {
+const Buttons = ({ onCancel }: { onCancel: () => void }) => {
   const { isValid, isSubmitting, submitForm } = useFormikContext<any>()
 
   return (
@@ -155,15 +153,9 @@ const Buttons = ({ offre, onCancel, isFtEligible }: { offre?: IJob; onCancel: ()
           Retour
         </Button>
       </Box>
-      {isFtEligible ? (
-        <Button disabled={!isValid || isSubmitting} aria-label="Continuer vers l'étape 3 du formulaire de dépôt d'offre" onClick={submitForm} data-testid="continuer-creer-offre">
-          Continuer
-        </Button>
-      ) : (
-        <Button disabled={!isValid || isSubmitting} onClick={submitForm} data-testid="creer-offre">
-          {offre?._id ? "Continuer et Mettre à jour l'offre" : "Continuer et Créer l'offre"}
-        </Button>
-      )}
+      <Button disabled={!isValid || isSubmitting} aria-label="Continuer vers l'étape 3 du formulaire de dépôt d'offre" onClick={submitForm} data-testid="continuer-creer-offre">
+        Continuer
+      </Button>
     </Box>
   )
 }

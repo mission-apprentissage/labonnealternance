@@ -8,7 +8,7 @@ import { Formik, useField, useFormikContext } from "formik"
 import Image from "next/image"
 import type { IJob } from "shared"
 
-type IStep3Form = {
+type IStep4Form = {
   ft_support: boolean
 }
 
@@ -27,9 +27,9 @@ const blueBoxTextStyle = {
   lineHeight: "24px",
 }
 
-export const FormulaireEditionOffreStep3FtSupport = ({ offre, onSubmit, onCancel }: { offre?: IJob; onSubmit: (values: IStep3Form) => void; onCancel: () => void }) => {
+export const FormulaireEditionOffreStep4FtSupport = ({ offre, onSubmit, onCancel }: { offre?: IJob; onSubmit: (values: IStep4Form) => void; onCancel: () => void }) => {
   return (
-    <Formik<IStep3Form>
+    <Formik<IStep4Form>
       validateOnMount
       enableReinitialize={true}
       initialValues={{
@@ -49,7 +49,7 @@ export const FormulaireEditionOffreStep3FtSupport = ({ offre, onSubmit, onCancel
               lineHeight: { xs: "24px !important", md: "28px !important" },
             }}
           >
-            Étape 3/3 : Accompagnement France Travail
+            Étape 4/4 : Accompagnement France Travail
           </Typography>
           <Typography
             component="h2"
@@ -135,7 +135,7 @@ const FtSupportCheckbox = () => {
 }
 
 const Buttons = ({ offre, onCancel }: { offre?: IJob; onCancel: () => void }) => {
-  const { isSubmitting, submitForm } = useFormikContext<IStep3Form>()
+  const { isSubmitting, submitForm } = useFormikContext<IStep4Form>()
 
   return (
     <Box
