@@ -288,7 +288,7 @@ const RecruterUnAlternantPage = () => {
 
       <Section id="trouver-un-candidat" title="Où trouver un candidat en alternance ?">
         <Paragraph>
-          Le dépôt d'une offre sur La bonne alternance est <strong>entièrement gratuit</strong>. Votre offre est diffusée sur La bonne alternance, Hellowork et Parcoursup, et vous
+          Le dépôt d'une offre sur La bonne alternance est <strong>entièrement gratuit</strong>. Votre offre est notamment diffusée sur La bonne alternance, Hellowork et Parcoursup, et vous
           pouvez aussi être contacté par des candidats en recherche d'alternance, y compris en candidature spontanée.
         </Paragraph>
         <Suspense fallback={<Box sx={{ height: 48 }} />}>
