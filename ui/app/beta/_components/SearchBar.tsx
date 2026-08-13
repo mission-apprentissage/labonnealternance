@@ -6,7 +6,7 @@ import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
 import type { ReactNode } from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { searchAddress } from "@/services/base-adresse"
 import { apiGet } from "@/utils/api.utils"
 
@@ -157,16 +157,16 @@ export function BetaBadge() {
   )
 }
 
-function FieldLabel({ children, error }: { children: ReactNode; error?: boolean }) {
+// `id` : nécessaire pour l'association explicite au champ via aria-labelledby
+function FieldLabel({ children, error, id }: { children: ReactNode; error?: boolean; id?: string }) {
   return (
     <Box
+      id={id}
       component="label"
       sx={{
-        display: "block",
         fontSize: "1rem",
         fontWeight: 700,
         color: error ? fr.colors.decisions.text.default.error.default : fr.colors.decisions.text.default.grey.default,
-        mb: fr.spacing("1v"),
       }}
     >
       {children}
@@ -184,6 +184,8 @@ function FieldError({ children }: { children: ReactNode }) {
 }
 
 export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange, onQChange, layout = "row", qError, lieuError }: SearchBarProps) {
+  const metierLabelId = useId()
+  const lieuLabelId = useId()
   const [inputValue, setInputValue] = useState(initialQ)
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
@@ -296,10 +298,12 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     >
       {/* Champ métier */}
       <Box sx={{ flex: rowSx.metierFlex, width: rowSx.fieldWidth }}>
-        <FieldLabel error={Boolean(qError)}>
-          Que recherchez-vous ?
+        <Box sx={{ display: "flex", alignItems: "center", mb: fr.spacing("1v") }}>
+          <FieldLabel id={metierLabelId} error={Boolean(qError)}>
+            Que recherchez-vous ?
+          </FieldLabel>
           <BetaBadge />
-        </FieldLabel>
+        </Box>
         <Autocomplete
           freeSolo
           options={metierOptions}
@@ -385,7 +389,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               fullWidth
               sx={fieldSx(Boolean(qError))}
               // Aligné sur la borne API (q max 200) : sans lui, un collage long produit un 400.
-              slotProps={{ htmlInput: { ...params.inputProps, maxLength: 200 } }}
+              slotProps={{ htmlInput: { ...params.inputProps, maxLength: 200, "aria-labelledby": metierLabelId } }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit(inputValue, "free_text")
               }}
@@ -399,7 +403,11 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
 
       {/* Champ lieu */}
       <Box sx={{ flex: rowSx.lieuFlex, width: rowSx.fieldWidth }}>
-        <FieldLabel error={Boolean(lieuError)}>Lieu</FieldLabel>
+        <Box sx={{ mb: fr.spacing("1v") }}>
+          <FieldLabel id={lieuLabelId} error={Boolean(lieuError)}>
+            Lieu
+          </FieldLabel>
+        </Box>
         <Autocomplete
           freeSolo
           // autoHighlight : la 1re suggestion est pré-surlignée → Entrée la sélectionne
@@ -461,7 +469,16 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
           }
           slotProps={{ paper: { sx: POPPER_PAPER_SX }, listbox: { sx: { maxHeight: lieuListbox.maxHeight } } }}
           renderInput={(params) => (
-            <TextField {...params} inputRef={lieuListbox.inputRef} placeholder="France entière" variant="outlined" size="small" fullWidth sx={fieldSx(Boolean(lieuError))} />
+            <TextField
+              {...params}
+              inputRef={lieuListbox.inputRef}
+              placeholder="France entière"
+              variant="outlined"
+              size="small"
+              fullWidth
+              sx={fieldSx(Boolean(lieuError))}
+              slotProps={{ htmlInput: { ...params.inputProps, "aria-labelledby": lieuLabelId } }}
+            />
           )}
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
