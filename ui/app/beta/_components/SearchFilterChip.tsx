@@ -170,7 +170,11 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
         />
       )}
       {isDropdown && (
-        <Popper id={popperId} open={open} anchorEl={anchorRef.current} placement="bottom-start" transition sx={{ zIndex: (theme) => theme.zIndex.modal }}>
+        // disablePortal : par défaut MUI monte le Popper en fin de <body>, ce qui sort le
+        // panneau de l'ordre de tabulation du formulaire (Tab en sortie atterrit ailleurs
+        // dans la page). En le laissant à sa place dans l'arbre, la tabulation qui quitte le
+        // panneau retombe naturellement sur l'élément suivant du bandeau (chip suivant).
+        <Popper id={popperId} open={open} anchorEl={anchorRef.current} placement="bottom-start" transition disablePortal sx={{ zIndex: (theme) => theme.zIndex.modal }}>
           {({ TransitionProps }) => (
             <Grow
               {...TransitionProps}
