@@ -1,7 +1,11 @@
 import { ObjectId } from "bson"
+import { addJob } from "job-processor"
 import type { IClassificationJobsPartners } from "shared/models/cache-classification.model"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
 import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 export type TJobClassification = {
   partner_label: string
@@ -81,4 +85,73 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
 
     return classificationsById.get(index.toString())?.label ?? null
   })
+}
+
+export const updateClassificationAndSynchronise = async ({
+  classification,
+  jobs,
+  grantedBy = "cache-classification.service",
+}: {
+  classification: "publish" | "unpublish"
+  jobs: { partner_label: string; partner_job_id: string }[]
+  grantedBy?: string
+}): Promise<void> => {
+  if (!jobs.length) return
+
+  // cache_classification n'est pas unique sur partner_job_id seul : un même partner_job_id peut exister chez plusieurs
+  // partenaires, donc on filtre systématiquement sur le couple (partner_label, partner_job_id) pour ne jamais toucher
+  // l'entrée d'un autre partenaire.
+  const jobsFilter = { $or: jobs.map(({ partner_label, partner_job_id }) => ({ partner_label, partner_job_id })) }
+
+  // update cache_classification
+  await getDbCollection("cache_classification").updateMany(jobsFilter, { $set: { human_verification: classification } })
+  // get jobs_partners to update offer_status to annulé if classification !== human_verification
+  const scopeToUpdate = await getDbCollection("cache_classification")
+    .find(jobsFilter, { projection: { partner_label: 1, partner_job_id: 1, classification: 1, human_verification: 1 } })
+    .toArray()
+  // filter scopeToUpdate to keep only the jobs where classification !== human_verification
+  const filteredScope = scopeToUpdate.filter(({ classification, human_verification }) => classification !== human_verification)
+
+  for await (const entry of filteredScope) {
+    const jobPartners = await getDbCollection("jobs_partners").findOne({ partner_label: entry.partner_label, partner_job_id: entry.partner_job_id })
+    if (jobPartners) {
+      await Promise.all([
+        getDbCollection("jobs_partners").updateOne(
+          { partner_label: entry.partner_label, partner_job_id: entry.partner_job_id },
+          {
+            $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
+            $push: {
+              offer_status_history: {
+                date: new Date(),
+                status: JOB_STATUS_ENGLISH.ANNULEE,
+                reason: "classification humaine non conforme",
+                granted_by: grantedBy,
+              },
+            },
+          }
+        ),
+        getDbCollection("computed_jobs_partners").updateOne(
+          { partner_label: entry.partner_label, partner_job_id: entry.partner_job_id },
+          { $set: { business_error: null, errors: [], validated: false }, $pull: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION } }
+        ),
+      ])
+      // Après l'update (le sync lit l'état post-annulation) : retrait de l'index de recherche.
+      syncJobPartnersToSearchItemsInBackground([jobPartners._id])
+    } else {
+      const computedJobPartner = await getDbCollection("computed_jobs_partners").findOne({ partner_label: entry.partner_label, partner_job_id: entry.partner_job_id })
+      if (computedJobPartner) {
+        await getDbCollection("computed_jobs_partners").updateOne(
+          { partner_label: entry.partner_label, partner_job_id: entry.partner_job_id },
+          { $set: { business_error: null, errors: [], validated: false }, $pull: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION } }
+        )
+      }
+    }
+  }
+
+  if (filteredScope.length) {
+    const filteredScopeFilter = { $or: filteredScope.map(({ partner_label, partner_job_id }) => ({ partner_label, partner_job_id })) }
+    // add job to fill-computed-jobs-partners with the filtered scope
+    await addJob({ name: "fill-computed-jobs-partners", payload: { addedMatchFilter: filteredScopeFilter } })
+    await addJob({ name: "import-from-computed-to-jobs-partners", payload: filteredScopeFilter })
+  }
 }

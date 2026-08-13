@@ -7,10 +7,10 @@ import React, { useEffect, useRef, useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
+import { useBetaDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-beta-detail-navigation"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { useBetaDetailNavigation } from "@/app/beta/_hooks/use-beta-detail-navigation"
 import { useBuildNavigation } from "@/app/hooks/use-build-navigation"
 import { useIsWidget } from "@/app/hooks/use-is-widget"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
@@ -132,8 +132,8 @@ function JobDetail({
     currentItemId: selectedItem.id,
     rechercheParams: rechercheParams,
   })
-  // Ouverture depuis le nouveau moteur (?from=/beta/recherche…) : précédent/suivant naviguent
-  // dans les résultats de /beta/recherche et « fermer » y retourne, au lieu du legacy.
+  // Ouverture depuis le moteur de recherche (?from=/recherche…) : précédent/suivant naviguent
+  // dans les résultats de /recherche et « fermer » y retourne, au lieu du fallback legacy.
   const betaNavigation = useBetaDetailNavigation()
   const { swipeHandlers, goNext, goPrev } = betaNavigation ?? legacyNavigation
 

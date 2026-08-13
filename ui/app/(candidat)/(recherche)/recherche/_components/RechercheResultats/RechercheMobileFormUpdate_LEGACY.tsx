@@ -1,0 +1,37 @@
+"use client"
+
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-navigate-to-recherche-page_LEGACY"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { RechercheMobileForm } from "./RechercheMobileForm_LEGACY"
+
+export function RechercheMobileFormUpdate(props: { rechercheParams: IRecherchePageParams }) {
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.rechercheParams)
+
+  return (
+    <Box
+      sx={{
+        py: fr.spacing("4v"),
+        px: fr.spacing("2v"),
+      }}
+    >
+      <Button iconId="fr-icon-arrow-left-line" priority="secondary" onClick={() => navigateToRecherchePage({ displayMobileForm: false }, true)}>
+        Retour
+      </Button>
+      <Typography
+        sx={{
+          fontSize: "18px",
+          fontWeight: 700,
+          lineHeight: "24px",
+          marginTop: fr.spacing("6v"),
+          marginBottom: fr.spacing("2v"),
+        }}
+      >
+        Que recherchez-vous ?
+      </Typography>
+      <RechercheMobileForm {...props} />
+    </Box>
+  )
+}

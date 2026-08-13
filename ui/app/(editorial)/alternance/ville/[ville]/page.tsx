@@ -6,6 +6,7 @@ import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
 import { appartements, loisirs, transports } from "@/app/(editorial)/alternance/_components/ville_data"
@@ -118,7 +119,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
                 <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.job_count + data.recruteur_count}</span> offres en alternance sont disponibles:
                 <br />
                 <JobsCtaTracked
-                  href={`/recherche-emploi?radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${encodeURIComponent(`${data.ville} (${data.cp})`)}&${utmParams}`}
+                  href={`${buildSearchUrl({ mode: "emplois", radius: 30, page: 0, hitsPerPage: 20, latitude: data.geopoint.lat, longitude: data.geopoint.long, lieu_label: `${data.ville} (${data.cp})` })}&${utmParams}`}
                   searchOrigin="page_ville"
                   searchAddress={`${data.ville} (${data.cp})`}
                 />
@@ -208,7 +209,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
                 <Link
                   key={activite.naf_label}
                   underline="none"
-                  href={`/recherche-emploi?romes=${activite.rome_codes.join(",")}&job_name=${activite.naf_label}&radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})&${utmParams}`}
+                  href={`${buildSearchUrl({ mode: "emplois", q: activite.naf_label, radius: 30, page: 0, hitsPerPage: 20, latitude: data.geopoint.lat, longitude: data.geopoint.long, lieu_label: `${data.ville} (${data.cp})` })}&${utmParams}`}
                   sx={{
                     display: "flex",
                     width: "100%",
@@ -317,7 +318,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
 
             <Box sx={{ textAlign: "center" }}>
               <JobsCtaTracked
-                href={`/recherche-emploi?radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})&${utmParams}`}
+                href={`${buildSearchUrl({ mode: "emplois", radius: 30, page: 0, hitsPerPage: 20, latitude: data.geopoint.lat, longitude: data.geopoint.long, lieu_label: `${data.ville} (${data.cp})` })}&${utmParams}`}
                 searchOrigin="page_ville"
                 searchAddress={`${data.ville} (${data.cp})`}
               />

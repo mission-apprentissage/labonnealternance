@@ -21,6 +21,7 @@ import { seoRouteController } from "./controllers/_private/seo.private.controlle
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligible-trainings-for-appointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
 import formationsRoute from "./controllers/admin/formations.controller"
+import jobsPartnersAdminRoute from "./controllers/admin/jobs-partners.controller"
 import application from "./controllers/application.controller"
 import appointmentRequestRoute from "./controllers/appointment-request.controller"
 import { classificationRoutes } from "./controllers/classification.controller"
@@ -151,6 +152,7 @@ export async function bind(app: Server) {
       formulaireRoute(typedSubApp)
       etablissementsRecruteurRoute(typedSubApp)
       jobsRouteV2(typedSubApp)
+      jobsPartnersAdminRoute(typedSubApp)
 
       trainingLinks(typedSubApp)
       jobsApiV3Routes(typedSubApp)
