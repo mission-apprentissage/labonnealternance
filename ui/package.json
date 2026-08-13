@@ -6,7 +6,8 @@
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "scripts": {
     "dev": "yarn predev && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next dev",
-    "build": "yarn prebuild && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 NODE_OPTIONS=--max_old_space_size=2048 next build",
+    "build": "yarn prebuild && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 NODE_OPTIONS=--max_old_space_size=2048 next build && yarn postbuild",
+    "postbuild": "node scripts/purge-dsfr-css.mjs",
     "start": "next start",
     "typecheck": "tsc -b",
     "analyse": "ANALYZE=true yarn build",
@@ -74,6 +75,7 @@
     "@types/react": "19.2.6",
     "@types/react-csv": "^1.1.10",
     "dotenv": "^17.2.3",
+    "purgecss": "^8.0.0",
     "sass": "^1.93.3",
     "type-fest": "^5.2.0",
     "typescript": "^7.0.2"
