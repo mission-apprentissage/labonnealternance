@@ -4,7 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Summary } from "@codegouvfr/react-dsfr/Summary"
 import { Box, Typography } from "@mui/material"
 import type { Metadata } from "next"
-import { Suspense } from "react"
+import { type ReactNode, Suspense } from "react"
 
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { InfoSection } from "@/app/(editorial)/_components/InfoSection"
@@ -24,7 +24,7 @@ import { getSession } from "@/utils/get-session"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = PAGES.static.guideRecruteurRecruterUnAlternant.getMetadata()
 
-const faqItems: { question: string; answer: string; link?: { href: string; label: string } }[] = [
+const faqItems: { question: string; answer: string; answerNode?: ReactNode; link?: { href: string; label: string } }[] = [
   {
     question: "Quelles aides pour recruter un alternant en 2026 ?",
     answer:
@@ -48,6 +48,19 @@ const faqItems: { question: string; answer: string; link?: { href: string; label
     question: "Comment recruter un alternant, étape par étape ?",
     answer:
       "1. Définissez le poste et le diplôme préparé. 2. Désignez un maître d'apprentissage. 3. Trouvez un candidat — vous pouvez déposer gratuitement votre offre sur La bonne alternance. 4. Rapprochez-vous du centre de formation qui préparera l'alternant. 5. Signez le contrat d'apprentissage (Cerfa FA13) ou de professionnalisation ; votre OPCO peut vous accompagner dans cette démarche. 6. Transmettez le contrat à votre OPCO au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en charge les frais de formation.",
+    answerNode: (
+      <ParagraphList
+        ordered
+        listItems={[
+          "Définissez le poste et le diplôme préparé.",
+          "Désignez un maître d'apprentissage.",
+          "Trouvez un candidat — vous pouvez déposer gratuitement votre offre sur La bonne alternance.",
+          "Rapprochez-vous du centre de formation qui préparera l'alternant.",
+          "Signez le contrat d'apprentissage (Cerfa FA13) ou de professionnalisation ; votre OPCO peut vous accompagner dans cette démarche.",
+          "Transmettez le contrat à votre OPCO au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en charge les frais de formation.",
+        ]}
+      />
+    ),
   },
   {
     question: "Quand faut-il recruter un alternant pour la rentrée ?",
@@ -158,20 +171,16 @@ const RecruterUnAlternantPage = () => {
             ["Toutes tailles", "Apprenti en situation de handicap", "6 000 €"],
           ]}
         />
-        <Paragraph variant="caption" color={fr.colors.decisions.text.mention.grey.default}>
-          Montants fixés par le{" "}
-          <DsfrLink href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053634597" size="sm" aria-label="Consulter le décret n° 2026-168 du 6 mars 2026 sur Légifrance">
-            décret n° 2026-168 du 6 mars 2026
-          </DsfrLink>
-          , pour les contrats d'apprentissage conclus depuis le 8 mars 2026 et dont l'exécution débute avant le 1er janvier 2027. Aide versée par l'ASP la première année du
-          contrat. Pour les entreprises de 250 salariés et plus, l'aide est soumise à une condition d'effectif d'alternants et n'est pas cumulable avec l'aide unique. L'aide «
-          apprenti en situation de handicap » est cumulable avec les aides spécifiques de l'AGEFIPH. Voir aussi{" "}
+        <Paragraph variant="body2" color={fr.colors.decisions.text.mention.grey.default}>
+          Montants fixés par le décret n° 2026-168 du 6 mars 2026, pour les contrats d'apprentissage conclus depuis le 8 mars 2026 et dont l'exécution débute avant le 1er janvier
+          2027. Aide versée par l'ASP la première année du contrat. Pour les entreprises de 250 salariés et plus, l'aide est soumise à une condition d'effectif d'alternants et
+          n'est pas cumulable avec l'aide unique. L'aide « apprenti en situation de handicap » est cumulable avec les aides spécifiques de l'AGEFIPH. Voir aussi{" "}
           <DsfrLink
-            href="https://entreprendre.service-public.gouv.fr/actualites/A17983"
+            href="https://travail-emploi.gouv.fr/laide-aux-employeurs-qui-recrutent-en-apprentissage"
             size="sm"
-            aria-label="Consulter les aides à l'embauche d'un apprenti sur service-public.fr"
+            aria-label="Consulter l'aide aux employeurs qui recrutent en apprentissage sur le site du ministère du Travail"
           >
-            service-public.fr
+            l'aide aux employeurs qui recrutent en apprentissage
           </DsfrLink>
           .
         </Paragraph>
@@ -220,7 +229,7 @@ const RecruterUnAlternantPage = () => {
             ["26 ans et plus", "100 % — 1 867 €", "100 % — 1 867 €", "100 % — 1 867 €"],
           ]}
         />
-        <Paragraph variant="caption" color={fr.colors.decisions.text.mention.grey.default}>
+        <Paragraph variant="body2" color={fr.colors.decisions.text.mention.grey.default}>
           Pourcentages du SMIC en vigueur (1 867,02 € brut/mois au 1er juin 2026). Pour les 21 ans et plus, la rémunération peut être relevée au SMIC ou au minimum conventionnel
           lorsqu'il est plus favorable. Source :{" "}
           <DsfrLink href="https://www.service-public.fr/particuliers/vosdroits/F2918" size="sm" aria-label="Consulter la rémunération d'un apprenti sur service-public.fr">
@@ -258,7 +267,14 @@ const RecruterUnAlternantPage = () => {
               <strong>Désignez un maître d'apprentissage</strong> pour encadrer l'alternant en entreprise.
             </>,
             <>
-              <strong>Trouvez un candidat</strong> : déposez gratuitement votre offre sur La bonne alternance pour recevoir des candidatures ciblées.
+              <strong>Trouvez un candidat</strong> :{" "}
+              <DsfrLink
+                href={`${PAGES.static.espaceProCreationEntreprise.getPath()}?utm_source=lba&utm_medium=website&utm_campaign=lba_ressources_recruteur`}
+                aria-label="Déposer gratuitement une offre d'alternance sur La bonne alternance"
+              >
+                déposez gratuitement votre offre sur La bonne alternance
+              </DsfrLink>{" "}
+              pour recevoir des candidatures ciblées.
             </>,
             <>
               <strong>Rapprochez-vous du centre de formation</strong> qui préparera l'alternant au diplôme.
@@ -288,8 +304,8 @@ const RecruterUnAlternantPage = () => {
 
       <Section id="trouver-un-candidat" title="Où trouver un candidat en alternance ?">
         <Paragraph>
-          Le dépôt d'une offre sur La bonne alternance est <strong>entièrement gratuit</strong>. Votre offre est notamment diffusée sur La bonne alternance, Hellowork et Parcoursup, et vous
-          pouvez aussi être contacté par des candidats en recherche d'alternance, y compris en candidature spontanée.
+          Le dépôt d'une offre sur La bonne alternance est <strong>entièrement gratuit</strong>. Votre offre est notamment diffusée sur La bonne alternance, Hellowork et
+          Parcoursup, et vous pouvez aussi être contacté par des candidats en recherche d'alternance, y compris en candidature spontanée.
         </Paragraph>
         <Suspense fallback={<Box sx={{ height: 48 }} />}>
           <DepotOffreCtaButton />
@@ -300,17 +316,19 @@ const RecruterUnAlternantPage = () => {
         <Box>
           {faqItems.map((item, idx) => (
             <Accordion key={item.question} label={item.question} defaultExpanded={idx === 0}>
-              <Typography>
-                {item.answer}
-                {item.link ? (
-                  <>
-                    {" "}
-                    <DsfrLink href={item.link.href} aria-label={item.link.label}>
-                      {item.link.label}
-                    </DsfrLink>
-                  </>
-                ) : null}
-              </Typography>
+              {item.answerNode ?? (
+                <Typography>
+                  {item.answer}
+                  {item.link ? (
+                    <>
+                      {" "}
+                      <DsfrLink href={item.link.href} aria-label={item.link.label}>
+                        {item.link.label}
+                      </DsfrLink>
+                    </>
+                  ) : null}
+                </Typography>
+              )}
             </Accordion>
           ))}
         </Box>
