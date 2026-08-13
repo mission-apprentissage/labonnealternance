@@ -57,7 +57,7 @@ const faqItems: { question: string; answer: string; link?: { href: string; label
   {
     question: "Où trouver un candidat en alternance ?",
     answer:
-      "La bonne alternance, le service public de l'alternance, vous permet de déposer gratuitement votre offre. Elle est diffusée sur La bonne alternance, Hellowork et Parcoursup, et vous recevez directement les candidatures. Vous pouvez aussi être contacté par des candidats en recherche d'alternance, y compris en candidature spontanée.",
+      "La bonne alternance, le service public de l'alternance, vous permet de déposer gratuitement votre offre. Elle est notamment diffusée sur La bonne alternance, Hellowork et Parcoursup, et vous recevez directement les candidatures. Vous pouvez aussi être contacté par des candidats en recherche d'alternance, y compris en candidature spontanée.",
   },
   {
     question: "Combien coûte le dépôt d'une offre d'alternance sur La bonne alternance ?",
