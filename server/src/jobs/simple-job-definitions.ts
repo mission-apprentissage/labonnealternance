@@ -4,7 +4,7 @@ import { processMissingRomeAndImportToJobPartners } from "@/jobs/offre-partenair
 import { analyzeCfaBlockList } from "@/jobs/one-time-job/analyze-cfa-block-list"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
-import { compareLabAndMistralClassification } from "@/services/classification/compare-lab-mistral-classification.service"
+import { compareLabAndMistralAgainstHumanVerification, compareLabAndMistralClassification } from "@/services/classification/compare-lab-mistral-classification.service"
 import { reviewJobPartnersClassification } from "@/services/classification/human-classification-review.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import { applyPendingMistralBatches, generateSearchItemsKeywordsContinuous, submitSearchItemsKeywordsBatch } from "@/services/search/search-items-keywords.service"
@@ -549,6 +549,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: compareLabAndMistralClassification,
     description: "Compare sur un échantillon de cache_classification les décisions Lab (déjà stockées) et Mistral, sans rien modifier",
     cliOptions: [{ flags: "--sampleSize <n>", description: "Taille de l'échantillon comparé (défaut 200)" }],
+  },
+  {
+    fct: compareLabAndMistralAgainstHumanVerification,
+    description: "Compare Lab et Mistral contre une vraie vérité terrain (cache_classification.human_verification déjà corrigé à la main), en vrai batching Mistral (lots de 50)",
+    cliOptions: [{ flags: "--limit <n>", description: "Nombre max d'entrées human_verification comparées (défaut 5000)" }],
   },
   {
     fct: reviewJobPartnersClassification,
