@@ -217,14 +217,30 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   return (
     <>
       <EnqueteTally />
-      <SkipLinks
-        links={[
-          { label: "Menu", anchor: "#header-links" },
-          { label: "Recherche", anchor: "#search-form" },
-          { label: "Résultat de la recherche", anchor: "#search-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
-        ]}
-      />
+      {/* Deux jeux de SkipLinks selon le breakpoint : desktop et mobile sont deux arbres DOM
+          disjoints (l'un `display: none` selon la largeur, cf. plus bas) — un seul id ne peut
+          pas cibler les deux à la fois, donc chaque jeu pointe vers les ids de SA branche et
+          n'est lui-même atteignable au clavier que sur son propre breakpoint. */}
+      <Box sx={{ display: { xs: "none", lg: "block" } }}>
+        <SkipLinks
+          links={[
+            { label: "Menu", anchor: "#header-links" },
+            { label: "Recherche", anchor: "#search-form" },
+            { label: "Résultat de la recherche", anchor: "#search-content-container" },
+            { label: "Pied de page", anchor: "#footer-links" },
+          ]}
+        />
+      </Box>
+      <Box sx={{ display: { xs: "block", lg: "none" } }}>
+        <SkipLinks
+          links={[
+            { label: "Menu", anchor: "#header-links" },
+            { label: "Recherche", anchor: "#search-form-mobile" },
+            { label: "Résultat de la recherche", anchor: "#search-content-container-mobile" },
+            { label: "Pied de page", anchor: "#footer-links" },
+          ]}
+        />
+      </Box>
       <Box component="main" sx={{ display: "flex", flexDirection: "column", backgroundColor: fr.colors.decisions.background.alt.grey.default, minHeight: "100dvh" }}>
         <PublicHeader />
 
@@ -303,6 +319,8 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
         {/* Mobile : barre résumé (2 lignes + chips Filtres/Tri) et liste plein écran */}
         <Box sx={{ display: { xs: "flex", lg: "none" }, flexDirection: "column", flex: 1, minHeight: 0 }}>
           <Box
+            id="search-form-mobile"
+            tabIndex={-1}
             sx={{
               position: "sticky",
               top: 0,
@@ -324,7 +342,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             />
           </Box>
 
-          <Box sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
+          <Box role="region" id="search-content-container-mobile" tabIndex={-1} aria-label="Résultats de la recherche" sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
             <SearchResultsList result={result} params={params} />
           </Box>
         </Box>
