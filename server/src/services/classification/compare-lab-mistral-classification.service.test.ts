@@ -74,6 +74,11 @@ describe("compareLabAndMistralAgainstHumanVerification", () => {
     expect(result.onlyMistralCorrect).toBe(1)
     expect(result.labAccuracy).toBe(0.5)
     expect(result.mistralAccuracy).toBe(0.5)
+    // Lab se trompe sur B et C (classification !== human_verification) ; Mistral n'en rattrape
+    // indépendamment que B (celui où son propre label matche human_verification).
+    expect(result.knownLabErrors).toBe(2)
+    expect(result.knownLabErrorsCaughtByMistral).toBe(1)
+    expect(result.knownLabErrorCatchRate).toBe(0.5)
   })
 
   it("découpe en lots de 50 (vrai batching Mistral, pas un appel par offre)", async () => {

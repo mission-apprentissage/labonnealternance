@@ -176,9 +176,20 @@ export const compareLabAndMistralAgainstHumanVerification = async (payload?: { l
   const labAccuracy = counters.total ? counters.labCorrect / counters.total : 0
   const mistralAccuracy = counters.total ? counters.mistralCorrect / counters.total : 0
 
+  // Sous-total distinct de labAccuracy/mistralAccuracy : uniquement les cas où Lab s'est trompé
+  // (classification !== human_verification, donc Lab est faux par construction sur ce sous-
+  // ensemble — ce n'est PAS une mesure de précision, seulement un taux de rattrapage). Répond à
+  // "sur les erreurs déjà connues de Lab, combien Mistral en rattrape-t-il indépendamment ?".
+  const knownLabErrors = counters.total - counters.labCorrect
+  const knownLabErrorsCaughtByMistral = counters.onlyMistralCorrect
+  const knownLabErrorCatchRate = knownLabErrors ? knownLabErrorsCaughtByMistral / knownLabErrors : 0
+
   logger.info(
     `compareLabAndMistralAgainstHumanVerification: Lab ${counters.labCorrect}/${counters.total} (${(labAccuracy * 100).toFixed(1)}%), ` +
       `Mistral ${counters.mistralCorrect}/${counters.total} (${(mistralAccuracy * 100).toFixed(1)}%)`
+  )
+  logger.info(
+    `compareLabAndMistralAgainstHumanVerification: sur les ${knownLabErrors} erreurs connues de Lab, Mistral en rattrape ${knownLabErrorsCaughtByMistral} (${(knownLabErrorCatchRate * 100).toFixed(1)}%)`
   )
   console.table([
     { provider: "lab", correct: counters.labCorrect, total: counters.total, accuracy: `${(labAccuracy * 100).toFixed(1)}%` },
@@ -193,6 +204,7 @@ export const compareLabAndMistralAgainstHumanVerification = async (payload?: { l
       mistralCallFailures: counters.mistralCallFailures,
     },
   ])
+  console.table([{ knownLabErrors, knownLabErrorsCaughtByMistral, knownLabErrorCatchRate: `${(knownLabErrorCatchRate * 100).toFixed(1)}%` }])
 
-  return { ...counters, labAccuracy, mistralAccuracy, labErrors, mistralErrors }
+  return { ...counters, labAccuracy, mistralAccuracy, knownLabErrors, knownLabErrorsCaughtByMistral, knownLabErrorCatchRate, labErrors, mistralErrors }
 }
