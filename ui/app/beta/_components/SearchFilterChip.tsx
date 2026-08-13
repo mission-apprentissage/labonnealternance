@@ -94,6 +94,13 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
     // posé à la fois sur le déclencheur et sur le Paper (les touches remontent par bubbling
     // depuis les cases/lignes du contenu).
     if (!open || !isDropdown) return
+
+    const target = event.target as HTMLElement | null
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) {
+      const inputType = target instanceof HTMLInputElement ? target.type : undefined
+      if (inputType !== "checkbox" && inputType !== "radio") return
+    }
+
     if (event.key !== "ArrowDown" && event.key !== "ArrowUp" && event.key !== "Home" && event.key !== "End") return
     const container = popperContentRef.current
     if (!container) return
