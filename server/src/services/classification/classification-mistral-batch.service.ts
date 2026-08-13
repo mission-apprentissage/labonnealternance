@@ -27,9 +27,10 @@ import { downloadMistralBatchOutput, getMistralBatchJob, submitMistralBatch } fr
 
 const now = () => new Date()
 
-const BATCH_SYSTEM_PROMPT = `Tu classes une offre d'alternance transmise par un partenaire. Détecte si elle est publiée par un CFA ou un organisme de formation se présentant comme un employeur (CFA "déguisé"), qui doit être dépubliée.
+const BATCH_SYSTEM_PROMPT = `Tu classes une offre d'alternance transmise par un partenaire. Détecte si elle est publiée par un CFA ou un organisme de formation qui se présente LUI-MÊME comme l'employeur (CFA "déguisé"), qui doit être dépubliée.
 Retourne :
-- label: "unpublish" si l'annonceur est manifestement un CFA/organisme de formation qui recrute pour ses propres formations (vocabulaire "notre centre", "nos apprenants", nom d'établissement type CFA/GRETA/AFPA/CFPPA, etc.) ; "publish" sinon.
+- label: "unpublish" UNIQUEMENT si l'ANNONCEUR (les champs workplace_name/workplace_description, pas un tiers mentionné dans le texte) se présente lui-même comme un CFA/organisme de formation qui recrute pour SES PROPRES formations (vocabulaire "notre centre", "nos apprenants", nom d'établissement type CFA/GRETA/AFPA/CFPPA, "organisme de formation certifié", etc. appliqué à l'annonceur lui-même) ; "publish" sinon.
+- Le simple fait que l'offre MENTIONNE un centre de formation partenaire (où se déroulera la formation théorique, mention légale du contrat d'apprentissage) est un cas NORMAL de toute offre d'alternance et NE DOIT PAS déclencher "unpublish" — seul le statut de l'ANNONCEUR/EMPLOYEUR compte, jamais celui d'un tiers cité dans le texte.
 - scores.publish et scores.unpublish : deux nombres entre 0 et 1, dont la somme fait 1.
 Ignore le HTML.
 Réponds STRICTEMENT en JSON : {"label": "publish"|"unpublish", "scores": {"publish": 0.0, "unpublish": 0.0}}`
