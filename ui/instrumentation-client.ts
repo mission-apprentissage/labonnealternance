@@ -4,6 +4,8 @@
 
 import { captureConsoleIntegration, captureRouterTransitionStart, extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
 
+import { shouldReloadOnce } from "@/utils/reload-guard.utils"
+
 import { publicConfig } from "./config.public"
 
 init({
@@ -51,14 +53,14 @@ export const onRouterTransitionStart = captureRouterTransitionStart
 
 // Pendant un déploiement (rolling update Docker Swarm), un onglet resté ouvert peut garder en
 // mémoire des chunks JS de l'ancien build : le routeur y navigue ensuite vers des modules qui
-// n'existent plus (ou plus au même endroit) côté nouveau déploiement. Symptômes observés en prod :
-// ChunkLoadError, "Failed to find Server Action..." (Sentry LBA-UI-2DH, LBA-UI-5CVZZZZZZG4M9), et
-// des TypeError "X is not a function" sur des hooks pourtant bien exportés (LBA-UI-5CVZZZZZZG4QA).
-// Un simple reload récupère automatiquement le build courant ; le flag de session évite une boucle
-// si l'erreur persiste pour une autre raison.
+// n'existent plus (ou plus au même endroit) côté nouveau déploiement. Deux signatures fiables
+// (Sentry LBA-UI-2DH, LBA-UI-5CVZZZZZZG4M9) sont ciblées ici, hors du render React (promesse de
+// chargement de chunk / appel de Server Action) — un simple reload récupère le build courant.
+// NB : un TypeError générique "X is not a function" (LBA-UI-5CVZZZZZZG4QA) a la même origine
+// probable, mais matcher ce pattern trop largement risquerait de masquer de vrais bugs ; il n'est
+// donc PAS couvert ici. Le rendu React est couvert séparément par ErrorComponent.tsx (ChunkLoadError
+// uniquement, via error boundary) — même clé de garde-fou pour ne compter qu'un seul reload.
 if (typeof window !== "undefined") {
-  const STALE_DEPLOYMENT_RELOAD_KEY = "lba-stale-deployment-reload"
-
   const isStaleDeploymentError = (error: unknown): boolean => {
     if (!(error instanceof Error)) return false
     if (error.name === "ChunkLoadError") return true
@@ -66,9 +68,9 @@ if (typeof window !== "undefined") {
   }
 
   const reloadOnce = () => {
-    if (window.sessionStorage.getItem(STALE_DEPLOYMENT_RELOAD_KEY)) return
-    window.sessionStorage.setItem(STALE_DEPLOYMENT_RELOAD_KEY, "1")
-    window.location.reload()
+    if (shouldReloadOnce("lba:staleDeploymentReload", 30000)) {
+      window.location.reload()
+    }
   }
 
   window.addEventListener("error", (event) => {

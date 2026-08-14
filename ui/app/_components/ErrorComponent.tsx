@@ -10,30 +10,10 @@ import { useEffect } from "react"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { ApiError } from "@/utils/api.utils"
-
-function wasPageReloaded(): boolean {
-  const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined
-  return navigationEntry?.type === "reload"
-}
+import { shouldReloadOnce } from "@/utils/reload-guard.utils"
 
 function shouldReloadChunkError(): boolean {
-  const storageKey = "lba:lastChunkReload"
-  const reloadThrottleMs = 30000
-  const now = Date.now()
-
-  try {
-    const storedValue = window.sessionStorage.getItem(storageKey)
-    const lastReload = storedValue ? Number(storedValue) : 0
-
-    if (!lastReload || Number.isNaN(lastReload) || now - lastReload > reloadThrottleMs) {
-      window.sessionStorage.setItem(storageKey, String(now))
-      return true
-    }
-
-    return false
-  } catch {
-    return !wasPageReloaded()
-  }
+  return shouldReloadOnce("lba:staleDeploymentReload", 30000)
 }
 
 function getErrorDescription(error: unknown): string | null {
