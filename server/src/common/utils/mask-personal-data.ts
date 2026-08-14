@@ -5,9 +5,9 @@ const URL_WITH_PREFIX_REGEX = /\b(?:https?:\/\/|www\.)[^\s,;:!?()<>"'«»]+/gi
 // domaine nu sans www/protocole (ex: "voir entreprise.fr") : bornée par \b, insensible à la ponctuation adjacente
 const BARE_DOMAIN_REGEX = /\b[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.(?:gouv\.fr|asso\.fr|co\.uk|fr|com|net|org|io|co|eu|info|biz)\b/gi
 
-const PHONE_MASK = "06xxxxxxxx"
-const EMAIL_MASK = "emxxx@xxx.fr"
-const URL_MASK = "www.lien_non_disponible.com"
+export const PHONE_MASK = "06xxxxxxxx"
+export const EMAIL_MASK = "emxxx@xxx.fr"
+export const URL_MASK = "www.lien_non_disponible.com"
 
 // ponctuation de fin de phrase pouvant suivre un match sans espace (à ne jamais inclure dans le masque)
 const TRAILING_PUNCTUATION_REGEX = /[.,;:!?)\]}>"'»]+$/

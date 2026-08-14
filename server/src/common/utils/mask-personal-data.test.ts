@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { maskPersonalData } from "./maskPersonalData"
+import { maskPersonalData } from "./mask-personal-data"
 
 describe("maskPersonalData", () => {
   describe("null/undefined/empty handling", () => {

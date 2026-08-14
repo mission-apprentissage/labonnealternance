@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
-import { moderateFreeText } from "./offreModeration.service"
+import { moderateFreeText } from "./offre-moderation.service"
 
 vi.mock("@/services/mistralai/mistralai.service", () => ({
   sendMistralMessages: vi.fn(),
@@ -28,6 +28,18 @@ describe("moderateFreeText", () => {
     const userMessage = messages.find((m) => m.role === "user")
     expect(userMessage?.content).toContain("06xxxxxxxx")
     expect(userMessage?.content).not.toContain("06 12 34 56 78")
+  })
+
+  it("should instruct the AI to also mask contact info formulated to bypass the deterministic masking", async () => {
+    vi.mocked(sendMistralMessages).mockResolvedValue(null)
+    await moderateFreeText("un texte quelconque")
+
+    const [{ messages }] = vi.mocked(sendMistralMessages).mock.calls[0]
+    const systemMessage = messages.find((m) => m.role === "system")
+    expect(systemMessage?.content).toContain("contourner")
+    expect(systemMessage?.content).toContain("06xxxxxxxx")
+    expect(systemMessage?.content).toContain("emxxx@xxx.fr")
+    expect(systemMessage?.content).toContain("www.lien_non_disponible.com")
   })
 
   it("should return the masked input, unmodified by AI, when the Mistral call fails", async () => {

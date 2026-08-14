@@ -24,7 +24,7 @@ import {
   validateDelegatedCompanyPhoneAndEmail,
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
-import { moderateFreeText } from "@/services/offreModeration.service"
+import { moderateFreeText } from "@/services/offre-moderation.service"
 import { getUserRecruteurById } from "@/services/user-recruteur.service"
 import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
 

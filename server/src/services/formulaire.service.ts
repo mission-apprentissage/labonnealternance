@@ -44,7 +44,7 @@ import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDat
 import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-notifications.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
-import { moderateFreeText } from "./offreModeration.service"
+import { moderateFreeText } from "./offre-moderation.service"
 import { anonymizeLbaJobsPartners } from "./partner-job.service"
 import { getEntrepriseEngagementFranceTravail } from "./referentiel-engagement-entreprise.service"
 import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./role-management.service"
