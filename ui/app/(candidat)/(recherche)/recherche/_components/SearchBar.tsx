@@ -290,7 +290,9 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     >
       {/* Champ métier */}
       <Box sx={{ flex: rowSx.metierFlex, width: rowSx.fieldWidth }}>
-        <FieldLabel id={metierLabelId} error={Boolean(qError)}>Que recherchez-vous ?</FieldLabel>
+        <FieldLabel id={metierLabelId} error={Boolean(qError)}>
+          Que recherchez-vous ?
+        </FieldLabel>
         <Autocomplete
           freeSolo
           options={metierOptions}
