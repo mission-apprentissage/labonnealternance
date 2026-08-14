@@ -15,7 +15,9 @@ export default (server: Server) => {
       const result = await searchItems(req.query)
       // Log des recherches au fil de l'eau : fire-and-forget (jamais d'await — zéro impact
       // sur la latence), page 0 uniquement (l'infinite scroll rejoue le même q à chaque page).
-      if (req.query.q?.trim() && req.query.page === 0) {
+      // `internal` exclut les requêtes non issues d'un utilisateur (ex. prefetch SSR pour le SEO
+      // de /recherche), qui rejouent sinon le même q que le fetch client et faussent les stats.
+      if (!req.query.internal && req.query.q?.trim() && req.query.page === 0) {
         void logSearchQuery(req.query, result.nbHits)
       }
       return res.status(200).send(result)

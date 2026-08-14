@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+import { RechercheSeoContent } from "./_components/RechercheSeoContent"
 import { SearchPageClient } from "./_components/SearchPageClient"
 import { buildRecherchePageMetadata } from "./_utils/recherche.metadata.utils"
 import { parseSearchPageParams } from "./_utils/search.params.utils"
@@ -21,8 +22,11 @@ export default async function RecherchePage({ searchParams }: Props) {
   const params = parseSearchPageParams(urlSearchParams)
 
   return (
-    <Suspense>
-      <SearchPageClient initialParams={params} />
-    </Suspense>
+    <>
+      <RechercheSeoContent params={params} />
+      <Suspense>
+        <SearchPageClient initialParams={params} />
+      </Suspense>
+    </>
   )
 }
