@@ -72,7 +72,10 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
 
       return simplifiedItems(returnedItems)
     } catch (err) {
-      console.error("Fetch addresses cancelled : ", err)
+      // Requête supplantée par une saisie plus récente (React Query annule via signal à chaque
+      // frappe) : flux normal de l'autocomplétion, pas une erreur à faire remonter.
+      if (signal?.aborted) return []
+      console.error("Fetch addresses failed : ", err)
       return []
     }
   } else return []

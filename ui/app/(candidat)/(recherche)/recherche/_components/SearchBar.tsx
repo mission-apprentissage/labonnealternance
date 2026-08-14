@@ -241,7 +241,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
   // Suggestions pour le champ lieu
   const { data: lieuOptions } = useQuery({
     queryKey: ["lieu-suggestions", debouncedLieu],
-    queryFn: () => searchAddress(debouncedLieu),
+    queryFn: ({ signal }) => searchAddress(debouncedLieu, undefined, signal),
     enabled: debouncedLieu.length >= 2,
     staleTime: 1000 * 60 * 5,
     throwOnError: false,

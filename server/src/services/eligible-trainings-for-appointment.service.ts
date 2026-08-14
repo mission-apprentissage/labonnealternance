@@ -137,7 +137,7 @@ const getAppointmentContext = async (
 
   return {
     etablissement_formateur_entreprise_raison_sociale: etablissement.raison_sociale,
-    intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
+    intitule_long: eligibleTrainingsForAppointment.training_intitule_long ?? null,
     lieu_formation_adresse: eligibleTrainingsForAppointment.lieu_formation_street,
     code_postal: eligibleTrainingsForAppointment.lieu_formation_zip_code,
     etablissement_formateur_siret: etablissement.formateur_siret,
@@ -180,7 +180,7 @@ export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmen
 
   return {
     etablissement_formateur_entreprise_raison_sociale: etablissement.raison_sociale,
-    intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
+    intitule_long: eligibleTrainingsForAppointment.training_intitule_long ?? null,
     lieu_formation_adresse: eligibleTrainingsForAppointment.lieu_formation_street,
     code_postal: eligibleTrainingsForAppointment.lieu_formation_zip_code,
     etablissement_formateur_siret: etablissement.formateur_siret ?? null,
@@ -213,7 +213,7 @@ export const findElligibleTrainingForAppointmentPrivate = async (referrer: strin
 
   return {
     etablissement_formateur_entreprise_raison_sociale: etablissement.raison_sociale,
-    intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
+    intitule_long: eligibleTrainingsForAppointment.training_intitule_long ?? null,
     lieu_formation_adresse: eligibleTrainingsForAppointment.lieu_formation_street,
     code_postal: eligibleTrainingsForAppointment.lieu_formation_zip_code,
     etablissement_formateur_siret: etablissement.formateur_siret ?? null,

@@ -80,7 +80,10 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
       if (fileRejections.length > 1) {
         Sentry.setTag("multiple-files", "true")
       }
-      Sentry.captureException(new Error(message))
+      // Rejet de fichier (taille, type, nombre) : validation attendue du dropzone déclenchée par
+      // le choix de l'utilisateur, pas un défaut applicatif — captureMessage/info conserve la
+      // télémétrie (tags ci-dessus) sans polluer le triage des erreurs.
+      Sentry.captureMessage(message, "info")
       Sentry.setTag("errorType", undefined)
       Sentry.setTag("file-extension", undefined)
       Sentry.setTag("file-size-in-mo", undefined)
