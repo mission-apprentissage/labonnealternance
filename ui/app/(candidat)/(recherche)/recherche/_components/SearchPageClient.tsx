@@ -213,30 +213,6 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
 
   return (
     <>
-      {/* Deux jeux de SkipLinks selon le breakpoint : desktop et mobile sont deux arbres DOM
-          disjoints (l'un `display: none` selon la largeur, cf. plus bas) — un seul id ne peut
-          pas cibler les deux à la fois, donc chaque jeu pointe vers les ids de SA branche et
-          n'est lui-même atteignable au clavier que sur son propre breakpoint. */}
-      <Box sx={{ display: { xs: "none", lg: "block" } }}>
-        <SkipLinks
-          links={[
-            { label: "Menu", anchor: "#header-links" },
-            { label: "Recherche", anchor: "#search-form" },
-            { label: "Résultat de la recherche", anchor: "#search-content-container" },
-            { label: "Pied de page", anchor: "#footer-links" },
-          ]}
-        />
-      </Box>
-      <Box sx={{ display: { xs: "block", lg: "none" } }}>
-        <SkipLinks
-          links={[
-            { label: "Menu", anchor: "#header-links" },
-            { label: "Recherche", anchor: "#search-form-mobile" },
-            { label: "Résultat de la recherche", anchor: "#search-content-container-mobile" },
-            { label: "Pied de page", anchor: "#footer-links" },
-          ]}
-        />
-      </Box>
       <Box sx={{ display: "flex", flexDirection: "column", backgroundColor: fr.colors.decisions.background.alt.grey.default, minHeight: "100dvh" }}>
         {/* Desktop : bandeau de recherche + liste mono-colonne (affichage piloté par CSS pour éviter le flash d'hydratation).
             overflow-x clip : le fond blanc 100vw du bandeau collé inclut la scrollbar — clip
