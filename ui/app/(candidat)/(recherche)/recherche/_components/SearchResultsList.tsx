@@ -51,7 +51,7 @@ export function SearchResultsList({ result, params }: SearchResultsListProps) {
     return (
       <Box sx={{ mt: fr.spacing("8v"), textAlign: "center" }}>
         {/* Illustration legacy réutilisée (pas d'export Figma pour cet état). */}
-        <Image src="/images/dosearch.svg" alt="" width={266} height={190} />
+        <Image src="/images/dosearch.svg" alt="" aria-hidden="true" width={266} height={190} />
         <Box sx={{ mt: fr.spacing("4v"), fontWeight: 700, color: fr.colors.decisions.text.default.grey.default }}>Aucun résultat trouvé pour votre recherche.</Box>
         <Box sx={{ mt: fr.spacing("2v"), color: fr.colors.decisions.text.mention.grey.default }}>
           Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.

@@ -5,7 +5,7 @@ import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
 import type { ReactNode } from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { searchAddress } from "@/services/base-adresse"
 import { apiGet } from "@/utils/api.utils"
 
@@ -147,9 +147,11 @@ interface SearchBarProps {
   lieuError?: string
 }
 
-function FieldLabel({ children, error }: { children: ReactNode; error?: boolean }) {
+// `id` : nécessaire pour l'association explicite au champ via aria-labelledby
+function FieldLabel({ children, error, id }: { children: ReactNode; error?: boolean; id?: string }) {
   return (
     <Box
+      id={id}
       component="label"
       sx={{
         display: "block",
@@ -164,9 +166,13 @@ function FieldLabel({ children, error }: { children: ReactNode; error?: boolean 
   )
 }
 
-function FieldError({ children }: { children: ReactNode }) {
+// `id` : nécessaire pour l'association explicite au champ via aria-describedby (RGAA 11.10)
+function FieldError({ children, id }: { children: ReactNode; id?: string }) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v"), mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.default.error.default }}>
+    <Box
+      id={id}
+      sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v"), mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.default.error.default }}
+    >
       <Box component="span" className={fr.cx("fr-icon-error-fill", "fr-icon--sm")} aria-hidden="true" />
       {children}
     </Box>
@@ -174,6 +180,10 @@ function FieldError({ children }: { children: ReactNode }) {
 }
 
 export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange, onQChange, layout = "row", qError, lieuError }: SearchBarProps) {
+  const metierLabelId = useId()
+  const lieuLabelId = useId()
+  const metierErrorId = useId()
+  const lieuErrorId = useId()
   const [inputValue, setInputValue] = useState(initialQ)
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
@@ -286,7 +296,9 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     >
       {/* Champ métier */}
       <Box sx={{ flex: rowSx.metierFlex, width: rowSx.fieldWidth }}>
-        <FieldLabel error={Boolean(qError)}>Que recherchez-vous ?</FieldLabel>
+        <FieldLabel id={metierLabelId} error={Boolean(qError)}>
+          Que recherchez-vous ?
+        </FieldLabel>
         <Autocomplete
           freeSolo
           options={metierOptions}
@@ -372,7 +384,15 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               fullWidth
               sx={fieldSx(Boolean(qError))}
               // Aligné sur la borne API (q max 200) : sans lui, un collage long produit un 400.
-              slotProps={{ htmlInput: { ...params.inputProps, maxLength: 200 } }}
+              slotProps={{
+                htmlInput: {
+                  ...params.inputProps,
+                  maxLength: 200,
+                  "aria-labelledby": metierLabelId,
+                  "aria-describedby": qError ? metierErrorId : undefined,
+                  "aria-invalid": Boolean(qError),
+                },
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit(inputValue, "free_text")
               }}
@@ -381,12 +401,16 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
-        {qError && <FieldError>{qError}</FieldError>}
+        {qError && <FieldError id={metierErrorId}>{qError}</FieldError>}
       </Box>
 
       {/* Champ lieu */}
       <Box sx={{ flex: rowSx.lieuFlex, width: rowSx.fieldWidth }}>
-        <FieldLabel error={Boolean(lieuError)}>Lieu</FieldLabel>
+        <Box sx={{ mb: fr.spacing("1v") }}>
+          <FieldLabel id={lieuLabelId} error={Boolean(lieuError)}>
+            Lieu
+          </FieldLabel>
+        </Box>
         <Autocomplete
           freeSolo
           // autoHighlight : la 1re suggestion est pré-surlignée → Entrée la sélectionne
@@ -448,12 +472,28 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
           }
           slotProps={{ paper: { sx: POPPER_PAPER_SX }, listbox: { sx: { maxHeight: lieuListbox.maxHeight } } }}
           renderInput={(params) => (
-            <TextField {...params} inputRef={lieuListbox.inputRef} placeholder="France entière" variant="outlined" size="small" fullWidth sx={fieldSx(Boolean(lieuError))} />
+            <TextField
+              {...params}
+              inputRef={lieuListbox.inputRef}
+              placeholder="France entière"
+              variant="outlined"
+              size="small"
+              fullWidth
+              sx={fieldSx(Boolean(lieuError))}
+              slotProps={{
+                htmlInput: {
+                  ...params.inputProps,
+                  "aria-labelledby": lieuLabelId,
+                  "aria-describedby": lieuError ? lieuErrorId : undefined,
+                  "aria-invalid": Boolean(lieuError),
+                },
+              }}
+            />
           )}
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
-        {lieuError && <FieldError>{lieuError}</FieldError>}
+        {lieuError && <FieldError id={lieuErrorId}>{lieuError}</FieldError>}
       </Box>
     </Box>
   )

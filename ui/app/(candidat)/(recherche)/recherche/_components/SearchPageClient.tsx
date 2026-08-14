@@ -10,7 +10,6 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
-
 import { useAutoRadius } from "../_hooks/use-auto-radius"
 import { useSearchResults } from "../_hooks/use-search-results"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
@@ -256,7 +255,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                   boxShadow: isStuck ? "none" : "0 2px 6px rgba(0,0,18,0.08)",
                 }}
               >
-                <Box sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
+                <Box id="search-form" tabIndex={-1} sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
                   <Box sx={{ flex: 1 }}>
                     <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
                   </Box>
@@ -271,18 +270,24 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             {/* Ligne tri + compteur */}
             <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", py: fr.spacing("4v") }}>
               <SearchSortSelect params={params} onNavigate={handleFilterChange} />
-              <Box sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
-                {nbHits} résultat{nbHits > 1 ? "s" : ""}
-              </Box>
+              {result.data && (
+                <Box role="status" sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
+                  {nbHits} résultat{nbHits > 1 ? "s" : ""}
+                </Box>
+              )}
             </Box>
 
-            <SearchResultsList result={result} params={params} />
+            <Box role="region" id="search-content-container" tabIndex={-1} aria-label="Résultats de la recherche">
+              <SearchResultsList result={result} params={params} />
+            </Box>
           </DefaultContainer>
         </Box>
 
         {/* Mobile : barre résumé (2 lignes + chips Filtres/Tri) et liste plein écran */}
         <Box sx={{ display: { xs: "flex", lg: "none" }, flexDirection: "column", flex: 1, minHeight: 0 }}>
           <Box
+            id="search-form-mobile"
+            tabIndex={-1}
             sx={{
               position: "sticky",
               top: 0,
@@ -305,7 +310,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             />
           </Box>
 
-          <Box sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
+          <Box role="region" id="search-content-container-mobile" tabIndex={-1} aria-label="Résultats de la recherche" sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
             <SearchResultsList result={result} params={params} />
           </Box>
         </Box>
