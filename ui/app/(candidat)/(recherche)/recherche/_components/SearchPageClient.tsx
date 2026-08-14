@@ -3,7 +3,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
-import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"

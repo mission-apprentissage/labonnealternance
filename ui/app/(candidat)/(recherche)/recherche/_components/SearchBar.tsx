@@ -166,9 +166,13 @@ function FieldLabel({ children, error, id }: { children: ReactNode; error?: bool
   )
 }
 
-function FieldError({ children }: { children: ReactNode }) {
+// `id` : nécessaire pour l'association explicite au champ via aria-describedby (RGAA 11.10)
+function FieldError({ children, id }: { children: ReactNode; id?: string }) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v"), mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.default.error.default }}>
+    <Box
+      id={id}
+      sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v"), mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.default.error.default }}
+    >
       <Box component="span" className={fr.cx("fr-icon-error-fill", "fr-icon--sm")} aria-hidden="true" />
       {children}
     </Box>
@@ -178,6 +182,8 @@ function FieldError({ children }: { children: ReactNode }) {
 export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange, onQChange, layout = "row", qError, lieuError }: SearchBarProps) {
   const metierLabelId = useId()
   const lieuLabelId = useId()
+  const metierErrorId = useId()
+  const lieuErrorId = useId()
   const [inputValue, setInputValue] = useState(initialQ)
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
@@ -378,7 +384,15 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               fullWidth
               sx={fieldSx(Boolean(qError))}
               // Aligné sur la borne API (q max 200) : sans lui, un collage long produit un 400.
-              slotProps={{ htmlInput: { ...params.inputProps, maxLength: 200, "aria-labelledby": metierLabelId } }}
+              slotProps={{
+                htmlInput: {
+                  ...params.inputProps,
+                  maxLength: 200,
+                  "aria-labelledby": metierLabelId,
+                  "aria-describedby": qError ? metierErrorId : undefined,
+                  "aria-invalid": Boolean(qError),
+                },
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit(inputValue, "free_text")
               }}
@@ -387,7 +401,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
-        {qError && <FieldError>{qError}</FieldError>}
+        {qError && <FieldError id={metierErrorId}>{qError}</FieldError>}
       </Box>
 
       {/* Champ lieu */}
@@ -466,13 +480,20 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               size="small"
               fullWidth
               sx={fieldSx(Boolean(lieuError))}
-              slotProps={{ htmlInput: { ...params.inputProps, "aria-labelledby": lieuLabelId } }}
+              slotProps={{
+                htmlInput: {
+                  ...params.inputProps,
+                  "aria-labelledby": lieuLabelId,
+                  "aria-describedby": lieuError ? lieuErrorId : undefined,
+                  "aria-invalid": Boolean(lieuError),
+                },
+              }}
             />
           )}
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
-        {lieuError && <FieldError>{lieuError}</FieldError>}
+        {lieuError && <FieldError id={lieuErrorId}>{lieuError}</FieldError>}
       </Box>
     </Box>
   )
