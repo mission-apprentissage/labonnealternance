@@ -76,7 +76,7 @@ export const importFranceTravailCEGIDRaw = async (sourceStream?: NodeJS.Readable
 
     sourceStream = stringToStream(JSON.stringify(offers))
   }
-  await importFromStreamInJson({
+  return importFromStreamInJson({
     destinationCollection: rawCollectionName,
     stream: sourceStream!,
     partnerLabel: JOBPARTNERS_LABEL.FRANCE_TRAVAIL_CEGID,
@@ -89,7 +89,7 @@ export const importFranceTravailCEGIDRaw = async (sourceStream?: NodeJS.Readable
 
 export const importFranceTravailCEGIDToComputed = async () => {
   const agences = await parseAgences()
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.FRANCE_TRAVAIL_CEGID,
     zodInput: ZFranceTravailCEGIDJob,
@@ -98,8 +98,9 @@ export const importFranceTravailCEGIDToComputed = async () => {
 }
 
 export const processFranceTravailCEGID = async () => {
-  await importFranceTravailCEGIDRaw()
-  await importFranceTravailCEGIDToComputed()
+  const raw = await importFranceTravailCEGIDRaw()
+  const computed = await importFranceTravailCEGIDToComputed()
+  return { raw, computed }
 }
 
 async function searchCEGIDOffers(url: string, token: string) {

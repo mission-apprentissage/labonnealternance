@@ -4,10 +4,11 @@ import { Box, Typography } from "@mui/material"
 import { cacheLife } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
 import { findVilleLandingSlug } from "@/app/(editorial)/alternance/_components/landing_links"
@@ -118,12 +119,11 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
   const data = await fetchMetierData(metier)
 
   if (!data) {
-    redirect("/404")
+    notFound()
   }
 
-  const romesParam = data.romes.join()
-  const jobsSearchUrl = `/recherche?romes=${romesParam}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}&${UTM_PARAMS}`
-  const formationsSearchUrl = `/recherche?romes=${romesParam}&radius=30&displayEntreprises=false&job_name=${encodeURIComponent(data.metier)}&${UTM_PARAMS}`
+  const jobsSearchUrl = `${buildSearchUrl({ mode: "emplois", q: data.metier, radius: 30, page: 0, hitsPerPage: 20 })}&${UTM_PARAMS}`
+  const formationsSearchUrl = `${buildSearchUrl({ mode: "formations", q: data.metier, radius: 30, page: 0, hitsPerPage: 20 })}&${UTM_PARAMS}`
 
   const metierPage = PAGES.dynamic.seoMetier(metier, data.metier)
   const breadcrumbs = [
@@ -350,7 +350,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
               // Maillage interne : lien vers la page ville sœur si elle existe, sinon repli vers la recherche.
               const href = villeSlug
                 ? `/alternance/ville/${villeSlug}?${UTM_PARAMS}`
-                : `/recherche?romes=${romesParam}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${encodeURIComponent(ville.nom)}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false&${UTM_PARAMS}`
+                : `${buildSearchUrl({ mode: "emplois", q: data.metier, radius: 30, page: 0, hitsPerPage: 20, latitude: ville.geopoint.lat, longitude: ville.geopoint.long, lieu_label: ville.nom })}&${UTM_PARAMS}`
               return (
                 <Link key={ville.nom} href={href} style={{ background: "transparent" }} aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}>
                   <Box

@@ -26,9 +26,10 @@ export const processRecruteursLba = async ({ sourceFileReadStream, skipCheckFile
     }
   }
 
-  await importRecruteursLbaRaw(sourceFileReadStream)
-  await processRecruteursLbaRawToEnd()
+  const raw = await importRecruteursLbaRaw(sourceFileReadStream)
+  const rest = await processRecruteursLbaRawToEnd()
   logger.info("fin de processRecruteursLba")
+  return { raw, ...rest }
 }
 
 const recruteursLbaFilter: Filter<IComputedJobsPartners> = {
@@ -44,10 +45,12 @@ export const cancelRemovedJobsPartnersRecruteursLba = async () => {
 }
 
 export async function processRecruteursLbaRawToEnd() {
-  await importRecruteurLbaToComputed()
+  const computed = await importRecruteurLbaToComputed()
   await fillComputedRecruteursLba()
 
-  await importFromComputedToJobsPartners(recruteursLbaFilter)
+  const imported = await importFromComputedToJobsPartners(recruteursLbaFilter)
   await fillLbaUrl()
   await cancelRemovedJobsPartnersRecruteursLba()
+
+  return { computed, imported }
 }

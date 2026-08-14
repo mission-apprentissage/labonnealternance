@@ -5,7 +5,6 @@ import type { CollectionName } from "shared/models/models"
 import { logger } from "@/common/logger"
 import { parseCsv } from "@/common/utils/file-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 
 export const importFromStreamInCsv = async ({
   stream,
@@ -50,13 +49,7 @@ export const importFromStreamInCsv = async ({
           reject(err)
         } else {
           logger.info("Pipeline succeeded.")
-          const message = `import ${partnerLabel} terminé : ${offerInsertCount} offres importées`
-          logger.info(message)
-          // biome-ignore lint/nursery/noFloatingPromises: migration
-          notifyToSlack({
-            subject: `import des offres ${partnerLabel} dans raw`,
-            message,
-          })
+          logger.info(`import ${partnerLabel} terminé : ${offerInsertCount} offres importées`)
           resolve({
             offerInsertCount,
           })

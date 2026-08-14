@@ -1,6 +1,7 @@
 import { importEnedisRaw, importEnedisToComputed } from "./import-enedis"
 
 export const processEnedis = async () => {
-  await importEnedisRaw()
-  await importEnedisToComputed()
+  const raw = await importEnedisRaw()
+  const computed = await importEnedisToComputed()
+  return { raw, computed }
 }

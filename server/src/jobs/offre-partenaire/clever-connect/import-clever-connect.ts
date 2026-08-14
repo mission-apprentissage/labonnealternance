@@ -11,15 +11,15 @@ export const importCleverConnectRaw = async (destinationCollection: CollectionNa
   if (!url && !sourceStream) throw new Error("url or sourceStream is required")
 
   if (sourceStream) {
-    await importFromStreamInXml({ destinationCollection, offerXmlTag, stream: sourceStream, importName: partnerLabel })
+    return importFromStreamInXml({ destinationCollection, offerXmlTag, stream: sourceStream, importName: partnerLabel })
   }
   if (url) {
-    await importFromUrlInXml({ destinationCollection, url, offerXmlTag, partnerLabel })
+    return importFromUrlInXml({ destinationCollection, url, offerXmlTag, partnerLabel })
   }
 }
 
 export const importCleverConnectToComputed = async (collectionSource: CollectionName, partnerLabel: JOBPARTNERS_LABEL) => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource,
     partnerLabel,
     zodInput: ZCleverConnectJob,

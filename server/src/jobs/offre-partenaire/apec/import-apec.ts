@@ -8,7 +8,7 @@ const rawCollectionName = rawApecModel.collectionName
 const offerXmlTag = "Offre_emploi"
 
 export const importApecRaw = async (sourceStream: NodeJS.ReadableStream) => {
-  await importFromStreamInXml({
+  return importFromStreamInXml({
     destinationCollection: rawCollectionName,
     offerXmlTag,
     stream: sourceStream,
@@ -18,7 +18,7 @@ export const importApecRaw = async (sourceStream: NodeJS.ReadableStream) => {
 }
 
 export const importApecToComputed = async () => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.APEC,
     zodInput: ZApecJob,

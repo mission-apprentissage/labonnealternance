@@ -12,7 +12,6 @@ import type { ZodObject } from "zod"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 
 export const rawToComputedJobsPartners = async <ZodInput extends ZodObject<any>>({
   collectionSource,
@@ -74,11 +73,8 @@ export const rawToComputedJobsPartners = async <ZodInput extends ZodObject<any>>
     })
   )
 
-  const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}, filtered=${counters.filtered}`
-  logger.info(message)
-  await notifyToSlack({
-    subject: `mapping Raw => computed_jobs_partners`,
-    message,
-    error: counters.error > 0,
-  })
+  logger.info(
+    `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}, filtered=${counters.filtered}`
+  )
+  return counters
 }

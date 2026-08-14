@@ -7,7 +7,7 @@ import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partn
 import { defaultFillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 import { fillFieldsForComputedPartnersFactory } from "./fill-fields-for-partners-factory"
 
-export const fillRomeForPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
+export const fillRomeForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const finalFilter: Filter<IComputedJobsPartners> = {
@@ -26,7 +26,6 @@ export const fillRomeForPartners = async ({ addedMatchFilter, shouldNotifySlack 
     filledFields,
     groupSize: MAX_DIAGORIENTE_PAYLOAD_SIZE,
     replaceMatchFilter: finalFilter,
-    shouldNotifySlack,
     getData: async (documents) => {
       const validDocuments = documents.flatMap((document) => (document.offer_title ? [document] : []))
       const queries = validDocuments.map(({ offer_title, workplace_naf_label, offer_description, _id }) => ({

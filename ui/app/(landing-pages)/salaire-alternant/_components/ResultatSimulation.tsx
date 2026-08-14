@@ -7,7 +7,6 @@ import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
 import type { AnneeSimulation, InputSimulation, OutputSimulation } from "@/services/simulateur-alternant"
-import { PAGES } from "@/utils/routes.utils"
 
 const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulation; index: number }) => {
   const annee: string = index === 0 ? "1ère année" : `${index + 1}e année`
@@ -188,7 +187,7 @@ export const ResultatSimulation = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }} display={"flex"} justifyContent={"center"}>
                 <Button
-                  linkProps={{ href: `${PAGES.dynamic.recherche({ displayFormations: false }).getPath()}&utm_source=lba&utm_medium=website&utm_campaign=lba_simulateur` }}
+                  linkProps={{ href: "/recherche?mode=emplois&utm_source=lba&utm_medium=website&utm_campaign=lba_simulateur" }}
                   priority="secondary"
                   iconId="fr-icon-arrow-right-line"
                   iconPosition="right"

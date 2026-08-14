@@ -8,7 +8,6 @@ import rawFranceTravailModel from "shared/models/raw-france-travail.model"
 import { getAllFTJobsByDepartments } from "@/common/apis/france-travail/france-travail.client"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 
 import config from "@/config"
 import { rawToComputedJobsPartners } from "@/jobs/offre-partenaire/raw-to-computed-jobs-partners"
@@ -51,16 +50,12 @@ export const importFranceTravailRaw = async () => {
   })
   await getDbCollection("raw_francetravail").updateMany({ updatedAt: { $lt: now } }, { $set: { unpublishedAt: now, updatedAt: now } })
 
-  const message = `import France Travail terminé : ${count} offres importées`
-  logger.info(message)
-  await notifyToSlack({
-    subject: `import des offres France Travail dans raw`,
-    message,
-  })
+  logger.info(`import France Travail terminé : ${count} offres importées`)
+  return { count }
 }
 
 export const importFranceTravailToComputed = async () => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawFranceTravailModel.collectionName,
     partnerLabel: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
     zodInput: ZFTJobRaw,

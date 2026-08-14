@@ -24,4 +24,5 @@ export const blockBadRomeJobsPartners = async ({ addedMatchFilter }: FillCompute
   })
 
   jobLogger.info(`job ${job} : enrichissement terminé. modifiedCount=${result.modifiedCount}`)
+  return { modifiedCount: result.modifiedCount }
 }

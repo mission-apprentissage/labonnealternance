@@ -4,7 +4,7 @@ import type { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/index"
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generate-uri"
-import { buildRechercheMetadata } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.metadata.utils"
+import { buildRechercheMetadata } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.metadata.utils_LEGACY"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { buildRecherchePageParams, IRechercheMode } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
@@ -527,6 +527,13 @@ export const PAGES = {
       title: "Gestion des recruteurs",
       getMetadata: () => ({
         title: "Gestion des recruteurs - La bonne alternance",
+      }),
+    },
+    backAdminGestionDesOffresPartenaires: {
+      getPath: () => `/espace-pro/administration/offres-partenaires` as string,
+      title: "Offres partenaires",
+      getMetadata: () => ({
+        title: "Offres partenaires - La bonne alternance",
       }),
     },
     backOpcoHome: {

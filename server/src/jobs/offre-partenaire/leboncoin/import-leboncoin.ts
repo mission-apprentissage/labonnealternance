@@ -11,14 +11,14 @@ const documentJobRoot = "job"
 
 export const importLeboncoin = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
-    await importFromStreamInCsv({
+    return importFromStreamInCsv({
       destinationCollection: rawCollectionName,
       stream: sourceStream,
       partnerLabel: JOBPARTNERS_LABEL.LEBONCOIN,
       parseOptions: { delimiter: "," },
     })
   } else {
-    await importFromUrlInCsv({
+    return importFromUrlInCsv({
       destinationCollection: rawCollectionName,
       url: config.leboncoinUrl,
       partnerLabel: JOBPARTNERS_LABEL.LEBONCOIN,
@@ -28,7 +28,7 @@ export const importLeboncoin = async (sourceStream?: NodeJS.ReadableStream) => {
 }
 
 export const importLeboncoinToComputed = async () => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.LEBONCOIN,
     zodInput: ZLeboncoinJob,

@@ -6,7 +6,7 @@ import { getClassificationFromLab } from "@/services/cache-classification.servic
 import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 import { fillFieldsForComputedPartnersFactory } from "./fill-fields-for-partners-factory"
 
-export const detectClassificationJobsPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext) => {
+export const detectClassificationJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const filters: Filter<IComputedJobsPartners>[] = [{ partner_label: { $nin: PARTNER_WHITELIST } }, { workplace_siret: { $nin: GEIQ_WHITELIST } }]
@@ -46,6 +46,5 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter, shoul
         return result
       })
     },
-    shouldNotifySlack,
   })
 }

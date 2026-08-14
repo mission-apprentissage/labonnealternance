@@ -20,35 +20,36 @@ import { validateComputedJobPartners } from "./validate-computed-job-partners"
 
 export type FillComputedJobsPartnersContext = {
   addedMatchFilter?: Filter<IComputedJobsPartners>
-  shouldNotifySlack: boolean
 }
 
-export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersContext = {
-  shouldNotifySlack: true,
-}
+export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersContext = {}
 
 export const fillComputedJobsPartners = async (partialContext: Partial<FillComputedJobsPartnersContext> = {}) => {
   logger.info("début de fillComputedJobsPartners")
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
-  await blockJobsPartnersFromFluxCompanyList(context)
-  await blockJobsPartnersFromExpirationDate(context)
-  await fillEntrepriseEngagementComputedJobsPartners(context)
-  await formatTextFieldsJobsPartners(context)
-  await blockJobsPartnersFromCfaList(context)
-  await detectClassificationJobsPartners(context)
 
-  await fillOpcoInfosForPartners(context)
-  await fillSiretInfosForPartners(context)
-  await blockJobsPartnersWithNaf85(context)
-  await fillLocationInfosForPartners(context)
-  await fillRomeForPartners(context)
-  await blockBadRomeJobsPartners(context)
+  const steps = {
+    blockJobsPartnersFromFluxCompanyList: await blockJobsPartnersFromFluxCompanyList(context),
+    blockJobsPartnersFromExpirationDate: await blockJobsPartnersFromExpirationDate(context),
+    fillEntrepriseEngagementComputedJobsPartners: await fillEntrepriseEngagementComputedJobsPartners(context),
+    formatTextFieldsJobsPartners: await formatTextFieldsJobsPartners(context),
+    blockJobsPartnersFromCfaList: await blockJobsPartnersFromCfaList(context),
+    detectClassificationJobsPartners: await detectClassificationJobsPartners(context),
 
-  await rankJobPartners(context)
-  await detectDuplicateJobPartners(context)
+    fillOpcoInfosForPartners: await fillOpcoInfosForPartners(context),
+    fillSiretInfosForPartners: await fillSiretInfosForPartners(context),
+    blockJobsPartnersWithNaf85: await blockJobsPartnersWithNaf85(context),
+    fillLocationInfosForPartners: await fillLocationInfosForPartners(context),
+    fillRomeForPartners: await fillRomeForPartners(context),
+    blockBadRomeJobsPartners: await blockBadRomeJobsPartners(context),
 
-  await validateComputedJobPartners(context)
+    rankJobPartners: await rankJobPartners(context),
+    detectDuplicateJobPartners: await detectDuplicateJobPartners(context),
+
+    validateComputedJobPartners: await validateComputedJobPartners(context),
+  }
   logger.info("fin de fillComputedJobsPartners")
+  return steps
 }
 
 export const blankComputedJobPartner = (now: Date): Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> => ({

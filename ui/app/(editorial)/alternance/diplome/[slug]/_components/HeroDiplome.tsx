@@ -3,7 +3,6 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import type { IDiplomeKpis } from "shared/models/seo-diplome.model"
-import { UTM_PARAMS } from "../_data/constants"
 import diplomeDecoration from "./diplome_decoration.svg"
 
 const KPI_CONFIG = [
@@ -13,7 +12,7 @@ const KPI_CONFIG = [
   { key: "offres" as const, label: "offres d'alternance", iconSrc: "/images/seo/malette.svg", labelFirst: false },
 ]
 
-export function HeroDiplome({ titre, sousTitre, kpis, romes }: { titre: string; sousTitre: string; kpis: IDiplomeKpis; romes: string[] }) {
+export function HeroDiplome({ titre, sousTitre, kpis, searchHref }: { titre: string; sousTitre: string; kpis: IDiplomeKpis; searchHref: string }) {
   return (
     <Box sx={{ marginBottom: fr.spacing("10v") }}>
       {/* Banner background */}
@@ -183,7 +182,7 @@ export function HeroDiplome({ titre, sousTitre, kpis, romes }: { titre: string; 
           size="large"
           iconId="fr-icon-arrow-right-line"
           iconPosition="right"
-          linkProps={{ href: `/recherche-emploi?romes=${romes.join(",")}&${UTM_PARAMS}` }}
+          linkProps={{ href: searchHref }}
         >
           Voir toutes les opportunités
         </Button>

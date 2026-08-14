@@ -11,7 +11,7 @@ const offerXmlTag = "job"
 
 export const importHelloWorkRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
-    await importFromStreamInXml({
+    return importFromStreamInXml({
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: sourceStream,
@@ -19,7 +19,7 @@ export const importHelloWorkRaw = async (sourceStream?: NodeJS.ReadableStream) =
       conflictingOpeningTagWithoutAttributes: true,
     })
   } else {
-    await importFromUrlInXml({
+    return importFromUrlInXml({
       destinationCollection: rawCollectionName,
       url: config.helloworkUrl,
       offerXmlTag,
@@ -30,7 +30,7 @@ export const importHelloWorkRaw = async (sourceStream?: NodeJS.ReadableStream) =
 }
 
 export const importHelloWorkToComputed = async () => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.HELLOWORK,
     zodInput: ZHelloWorkJob,

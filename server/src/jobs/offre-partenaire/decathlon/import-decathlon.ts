@@ -20,7 +20,7 @@ export const importDecathlonRaw = async (sourceStream?: NodeJS.ReadableStream) =
     })
     sourceStream = response.data
   }
-  await importFromStreamInJson({
+  return importFromStreamInJson({
     destinationCollection: rawCollectionName,
     stream: sourceStream!,
     partnerLabel: JOBPARTNERS_LABEL.DECATHLON,
@@ -32,7 +32,7 @@ export const importDecathlonRaw = async (sourceStream?: NodeJS.ReadableStream) =
 }
 
 export const importDecathlonToComputed = async () => {
-  await rawToComputedJobsPartners({
+  return rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.DECATHLON,
     zodInput: ZDecathlonJob,
@@ -41,6 +41,7 @@ export const importDecathlonToComputed = async () => {
 }
 
 export const processDecathlon = async () => {
-  await importDecathlonRaw()
-  await importDecathlonToComputed()
+  const raw = await importDecathlonRaw()
+  const computed = await importDecathlonToComputed()
+  return { raw, computed }
 }

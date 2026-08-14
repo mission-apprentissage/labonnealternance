@@ -8,7 +8,6 @@ import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
 
 export const importFromStreamInJson = async ({
   stream,
@@ -57,22 +56,12 @@ export const importFromStreamInJson = async ({
     error.cause = err
     logger.error(err, error.message)
     sentryCaptureException(error)
-    await notifyToSlack({
-      subject: `import des offres ${partnerLabel} dans raw`,
-      message: `import ${partnerLabel} en erreur : ${err instanceof Error ? err.message : String(err)}`,
-      error: true,
-    })
     throw error
   }
 
   logger.info(`${offerInsertCount} offers inserted`)
   logger.info("Pipeline succeeded.")
-  const message = `import ${partnerLabel} terminé : ${offerInsertCount} offres importées`
-  logger.info(message)
-  await notifyToSlack({
-    subject: `import des offres ${partnerLabel} dans raw`,
-    message,
-  })
+  logger.info(`import ${partnerLabel} terminé : ${offerInsertCount} offres importées`)
   return {
     offerInsertCount,
   }
