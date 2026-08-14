@@ -136,11 +136,11 @@ export async function setupJobProcessor() {
           },
           "Envoi des mails de relance pour l'expiration des offres à J+7": {
             cron_string: "20 9 * * *",
-            handler: async () => addJob({ name: "recruiter-offer-expiration-reminder-job", payload: { threshold: "7" } }),
+            handler: async () => recruiterOfferExpirationReminderJob(7),
           },
           "Envoi des mails de relance pour l'expiration des offres à J+1": {
             cron_string: "25 9 * * *",
-            handler: async () => addJob({ name: "recruiter-offer-expiration-reminder-job", payload: { threshold: "1" } }),
+            handler: async () => recruiterOfferExpirationReminderJob(1),
           },
           "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
             cron_string: "30 0 * * 1,3,5",

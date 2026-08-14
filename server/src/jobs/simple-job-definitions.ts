@@ -3,9 +3,9 @@ import { processEnedis } from "@/jobs/offre-partenaire/enedis/process-enedis"
 import { processMissingRomeAndImportToJobPartners } from "@/jobs/offre-partenaire/process-missing-rome-and-import-to-job-partners"
 import { analyzeCfaBlockList } from "@/jobs/one-time-job/analyze-cfa-block-list"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { reviewJobPartnersClassification } from "@/services/cache-classification.service"
 import { applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
 import { compareLabAndMistralAgainstHumanVerification, compareLabAndMistralClassification } from "@/services/classification/compare-lab-mistral-classification.service"
-import { reviewJobPartnersClassification } from "@/services/classification/human-classification-review.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import { applyPendingMistralBatches, generateSearchItemsKeywordsContinuous, submitSearchItemsKeywordsBatch } from "@/services/search/search-items-keywords.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -557,9 +557,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: reviewJobPartnersClassification,
-    description: "Corrige manuellement la classification d'offres (remplace l'ancien POST /classification) et republie/dépublie en conséquence",
+    description:
+      "Corrige manuellement en masse la classification d'offres d'un même partenaire (complète l'écran admin, qui traite un id à la fois) et republie/dépublie en conséquence",
     cliOptions: [
       { flags: "--classification <publish|unpublish>", description: "Classification humaine à appliquer" },
+      { flags: "--partnerLabel <label>", description: "Partenaire concerné (ex. Hellowork)" },
       { flags: "--partnerJobIds <ids>", description: "Liste de partner_job_id séparés par des virgules" },
     ],
   },
