@@ -20,15 +20,15 @@ function InfoDelegation() {
     <Box sx={{ ml: fr.spacing("10v"), display: { xs: "none", lg: "block" } }}>
       <Box sx={{ border: "1px solid #000091", p: fr.spacing("6v") }}>
         <Typography component="h2" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3v") }}>
-          Pourquoi être accompagné par des CFA dans votre recherche d’alternant ?
+          Partager votre offre aux CFA à proximité :
         </Typography>
         <Box>
-          <Typography sx={{ fontWeight: "700", mt: fr.spacing("6v") }}>Gagnez du temps.</Typography>
-          <Typography sx={{ mt: fr.spacing("4v") }}>
-            Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre région.
+          <Typography sx={{ mt: fr.spacing("6v") }}>
+            <strong>Gagnez du temps : </strong>Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre
+            région.
           </Typography>
-          <Typography sx={{ fontWeight: "700", mt: fr.spacing("6v") }}>Rejoignez le réseau des acteurs de l'apprentissage de votre territoire.</Typography>
-          <Typography sx={{ mt: fr.spacing("4v") }}>
+          <Typography sx={{ mt: fr.spacing("6v") }}>
+            <strong>Rejoindre le réseau des acteurs de l'apprentissage de votre territoire : </strong>
             Développez des relations de confiance avec les acteurs de l'apprentissage de votre territoire afin de promouvoir votre entreprise et vos métiers auprès des jeunes.
           </Typography>
         </Box>
