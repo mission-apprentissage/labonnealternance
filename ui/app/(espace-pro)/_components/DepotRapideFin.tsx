@@ -7,7 +7,6 @@ import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useState } from "react"
 import { ETAT_UTILISATEUR } from "shared/constants/index"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"
 
@@ -113,7 +112,7 @@ function FinComponent(props: ComponentProps) {
           justifyContent: "center",
           width: "100%",
           mt: fr.spacing("2v"),
-          pt: `${fr.spacing("4v")} !important`,
+          p: `${fr.spacing("10v")} !important`,
         }}
       >
         <Image src="/images/espace_pro/mailcloud.svg" width="269" height="151" alt="" />
@@ -148,14 +147,6 @@ function FinComponent(props: ComponentProps) {
               <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
             )
           ) : null}
-
-          <Box
-            sx={{
-              mt: fr.spacing("4v"),
-            }}
-          >
-            <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
-          </Box>
         </Box>
       </BorderedBox>
     </>
@@ -181,10 +172,15 @@ const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { 
         <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
           Votre compte sera validé manuellement
         </Typography>
+        <Typography>Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne.</Typography>
+      </ContenuAvecPuce>
+      <ContenuAvecPuce contenuPuce={3}>
+        <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
+          Ensuite, votre offre sera publiée !
+        </Typography>
         <Typography>
-          {withDelegation
-            ? "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne et partagée aux organismes de formation que vous avez sélectionnés."
-            : "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne."}
+          Elle sera visible pour les candidats depuis La bonne alternance, sur les <DsfrLink href={`${PAGES.static.aPropos.getPath()}#nos-partenaires`}>sites partenaires</DsfrLink>
+          {withDelegation ? " et sera partagée aux centres de formation si vous en avez sélectionné." : "."}
         </Typography>
       </ContenuAvecPuce>
     </Box>
@@ -193,7 +189,7 @@ const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { 
 
 const ContenuAvecPuce = ({ children, contenuPuce }: { children: React.ReactNode; contenuPuce: React.ReactNode }) => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", gap: fr.spacing("2v") }}>
+    <Box sx={{ display: "flex", mt: fr.spacing("4v"), flexDirection: "row", gap: fr.spacing("2v") }}>
       <Box
         sx={{
           display: "flex",
@@ -242,6 +238,7 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
             color: "#000091",
             textDecoration: "underline",
             lineHeight: "inherit",
+            fontStyle: "italic",
             width: "fit-content",
           }}
           onClick={() => {
@@ -257,60 +254,6 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
   )
 }
 
-const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated: boolean }) => {
-  return (
-    <Box
-      sx={{
-        mb: fr.spacing("2v"),
-      }}
-    >
-      <Box sx={{ mb: fr.spacing("3v") }}>
-        <DsfrLink
-          href={PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId }).getPath()}
-          aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
-          external
-        >
-          Voir mon offre sur La bonne alternance
-        </DsfrLink>
-      </Box>
-      {userIsValidated && (
-        <Box
-          sx={{
-            mb: fr.spacing("2v"),
-            mt: fr.spacing("4v"),
-          }}
-        >
-          <PrintJobLink jobId={jobId} />
-        </Box>
-      )}
-      <Typography sx={{ fontSize: "16px", fontStyle: "italic", color: "grey.425" }}>
-        Votre offre est également visible sur les sites partenaires de La bonne alternance dont : “Choisir son affectation après la 3è”, Parcoursup, Mon Master, l’Onisep,
-        Hellowork, et bien d'autres.
-      </Typography>
-    </Box>
-  )
-}
-
 const GreenText = ({ children }: { children: React.ReactNode }) => (
   <span style={{ fontWeight: "700", backgroundColor: "#B8FEC9", color: "#18753C", padding: "2px 4px", borderRadius: "4px" }}>{children}</span>
 )
-
-function PrintJobLink({ jobId }) {
-  return (
-    <Box sx={{ display: "flex" }}>
-      <DsfrLink
-        href={PAGES.dynamic.espaceProOffreImpression(jobId).getPath()}
-        aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
-        external
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "2px",
-        }}
-      >
-        <Typography component="span">Imprimer l'offre </Typography>
-        <Image src="/images/icons/print.svg" width="24" height="24" style={{ marginTop: "4px", marginLeft: "3px", marginRight: "3px" }} aria-hidden={true} alt="" />
-      </DsfrLink>
-    </Box>
-  )
-}
