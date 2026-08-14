@@ -4,10 +4,14 @@ import nock from "nock"
 import GEIQ_WHITELIST from "shared/constants/geiq"
 import type { IClassificationLabBatchResponse } from "shared/models/cache-classification.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detect-classification-jobs-partners"
+
+vi.mock("@/services/classification/classification-mistral-batch.service", () => ({
+  submitClassificationRequests: vi.fn(),
+}))
 
 const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({})
 
@@ -167,4 +171,27 @@ describe("detect-classification-jobs-partners", () => {
     const [job] = jobs
     expect.soft(job.jobs_in_success.includes(COMPUTED_ERROR_SOURCE.CLASSIFICATION)).toEqual(false)
   })
+
+  it("should route the whole batch to Mistral batch (CLASSIFICATION_PENDING) when candidate volume exceeds the sync threshold", async () => {
+    // given: > 500 candidats (seuil sync/batch), pas de mock nock nécessaire : la voie batch ne
+    // doit appeler ni l'API Lab ni l'API Mistral synchrone.
+    nock.cleanAll()
+    const { submitClassificationRequests } = await import("@/services/classification/classification-mistral-batch.service")
+    const jobs = Array.from({ length: 501 }, (_, i) => ({
+      partner_job_id: `bulk-${i}`,
+      offer_title,
+      workplace_name,
+    }))
+    await givenSomeComputedJobPartners(jobs)
+    // when
+    await detectClassificationJobsPartners()
+    // then
+    const pendingCount = await getDbCollection("computed_jobs_partners").countDocuments({ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING })
+    expect(pendingCount).toBe(501)
+    // Un seul aller-retour Mongo pour construire les requêtes batch : les documents déjà chargés
+    // sont passés directement, pas un filtre à refetcher (cf. commentaire Copilot sur la PR).
+    expect(submitClassificationRequests).toHaveBeenCalledTimes(1)
+    const docs = vi.mocked(submitClassificationRequests).mock.calls[0][0]
+    expect(docs).toHaveLength(501)
+  }, 15_000)
 })

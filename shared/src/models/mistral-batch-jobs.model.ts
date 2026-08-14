@@ -14,7 +14,7 @@ const collectionName = "mistral_batch_jobs" as const
 export const ZMistralBatchJob = z.object({
   _id: zObjectId,
   job_id: z.string().describe("Identifiant du job batch côté Mistral"),
-  kind: z.enum(["search_items_keywords"]).describe("Consommateur du batch (détermine l'application du résultat)"),
+  kind: z.enum(["search_items_keywords", "jobs_partners_classification"]).describe("Consommateur du batch (détermine l'application du résultat)"),
   status: z.enum(["submitted", "applied", "failed"]),
   request_count: z.number().describe("Nombre de requêtes soumises"),
   applied_count: z.number().nullable().describe("Nombre de lignes appliquées (null tant que non ramassé)"),

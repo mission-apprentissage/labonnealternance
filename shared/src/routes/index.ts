@@ -7,7 +7,6 @@ import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
 import { zPrivateSeoRoutes } from "./_private/seo.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
-import { zClassificationRoute } from "./classification.routes.js"
 import type { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
 import { zCoreRoutes } from "./core.routes.js"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligible-trainings-for-appointment.routes.js"
@@ -73,7 +72,6 @@ const zRoutesGetP5 = {
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
   ...zJobsRoutesV3.get,
-  ...zClassificationRoute.get,
   ...zSearchRoutes.get,
   ...zJobsPartnersAdminRoutes.get,
 } as const

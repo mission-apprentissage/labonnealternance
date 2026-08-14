@@ -842,6 +842,7 @@ const otherErrorsLabels: Record<string, string> = {
 const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> = {
   [JOB_PARTNER_BUSINESS_ERROR.CFA]: "The offer is published by a training entity",
   [JOB_PARTNER_BUSINESS_ERROR.CFA_CLASSIFIED]: "The offer is classified as a training entity",
+  [JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING]: "The offer's classification is being processed",
   [JOB_PARTNER_BUSINESS_ERROR.CFA_BLACKLISTED]: "The offer is blacklisted as a training entity",
   [JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY]: "The company is closed",
   [JOB_PARTNER_BUSINESS_ERROR.DUPLICATE]: "The offer is considered as a duplicate of another published offer",

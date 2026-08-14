@@ -5,7 +5,7 @@ import type { IClassificationLabBatchResponse } from "shared/models/cache-classi
 import { describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { TJobClassification } from "@/services/cache-classification.service"
-import { getClassificationFromLab } from "@/services/cache-classification.service"
+import { getClassification } from "@/services/cache-classification.service"
 import { nockLabClassification } from "./classification.client.fixture"
 
 useMongo()
@@ -46,7 +46,7 @@ describe("getLabClassification - get batch classification", () => {
   it("should request labonnealternance lab for a classification", async () => {
     nockLabClassification([apiPayload], apiResponse)
 
-    expect(await getClassificationFromLab([payload])).toEqual([apiResponse[0].label])
+    expect(await getClassification([payload])).toEqual([apiResponse[0].label])
     expect(nock.isDone()).toBe(true)
   })
 
@@ -87,7 +87,7 @@ describe("getLabClassification - get batch classification", () => {
     }
     nockLabClassification([uncachedApiPayload], [{ ...apiResponse[0], id: "1" }])
 
-    const result = await getClassificationFromLab([cachedPayload, payload])
+    const result = await getClassification([cachedPayload, payload])
     // cachedJob should return human_verification ("unpublish"), not classification ("publish")
     expect(result[0]).toBe("unpublish")
     // uncached job should return the API result
@@ -135,7 +135,7 @@ describe("getLabClassification - get batch classification", () => {
       ]
     )
 
-    const result = await getClassificationFromLab(duplicatedPayloads)
+    const result = await getClassification(duplicatedPayloads)
 
     expect(result).toEqual(["publish", "unpublish"])
   })
@@ -144,7 +144,7 @@ describe("getLabClassification - get batch classification", () => {
     const before = new Date()
     nockLabClassification([apiPayload], apiResponse)
 
-    await getClassificationFromLab([payload])
+    await getClassification([payload])
 
     const cached = await getDbCollection("cache_classification").findOne({ partner_job_id: jobFixture.partner_job_id })
     expect(cached).not.toBeNull()

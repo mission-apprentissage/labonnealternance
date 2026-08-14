@@ -24,7 +24,6 @@ import formationsRoute from "./controllers/admin/formations.controller"
 import jobsPartnersAdminRoute from "./controllers/admin/jobs-partners.controller"
 import application from "./controllers/application.controller"
 import appointmentRequestRoute from "./controllers/appointment-request.controller"
-import { classificationRoutes } from "./controllers/classification.controller"
 import { coreRoutes } from "./controllers/core.controller"
 import emailsRoute from "./controllers/emails.controller"
 import etablissementRoute from "./controllers/etablissement.controller"
@@ -158,9 +157,6 @@ export async function bind(app: Server) {
       jobsApiV3Routes(typedSubApp)
       applicationRouteV2(typedSubApp)
       appointmentRequestRouteV2(typedSubApp)
-
-      /** model training */
-      classificationRoutes(typedSubApp)
 
       /**
        * Search
