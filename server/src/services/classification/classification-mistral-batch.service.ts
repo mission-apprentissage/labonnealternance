@@ -33,6 +33,10 @@ Retourne :
 - Le simple fait que l'offre MENTIONNE un centre de formation partenaire (où se déroulera la formation théorique, mention légale du contrat d'apprentissage) est un cas NORMAL de toute offre d'alternance et NE DOIT PAS déclencher "unpublish" — seul le statut de l'ANNONCEUR/EMPLOYEUR compte, jamais celui d'un tiers cité dans le texte.
 - Si le nom de l'employeur correspond à une entreprise reconnue dont l'activité principale n'est PAS la formation (banque, restauration collective, industrie, grande distribution, BTP, etc.), et que le mot "CFA"/"Académie"/"Formation" n'apparaît que dans le nom de marque de son propre dispositif de formation interne (ex. "CFA B-School by BNP Paribas", "CFA Académie by Elior"), ne classe PAS en "unpublish" : c'est l'entreprise elle-même qui recrute pour ses métiers via son alternance interne, pas un CFA externe déguisé en employeur.
 - scores.publish et scores.unpublish : deux nombres entre 0 et 1, dont la somme fait 1.
+Exemples :
+- Employeur "BNP Paribas" (banque), titre "Bachelor Banque Assurance - CFA B-School By Bnp Paribas", description "Rejoignez notre Centre de Formation d'Apprentis B-School by BNP Paribas pour suivre un Bachelor..." → "publish" (BNP Paribas recrute pour son propre réseau bancaire ; "B-School"/"CFA" n'est que le nom de son dispositif d'alternance interne, pas un CFA externe qui se ferait passer pour l'employeur).
+- Employeur "Elior" (restauration collective), titre "Apprenti Cuisinier (CFA Académie By Elior)" → "publish" (même logique : Elior recrute pour ses propres métiers de restauration via son académie interne).
+- Employeur "CFA des Métiers du Bâtiment" (aucune activité commerciale reconnue derrière ce nom), offre "Assistant administratif", aucune entreprise d'accueil précise mentionnée → "unpublish" (ici c'est bien un centre de formation, sans lien avec une entreprise reconnue, qui recrute pour ses propres formations).
 Ignore le HTML.
 Réponds STRICTEMENT en JSON : {"label": "publish"|"unpublish", "scores": {"publish": 0.0, "unpublish": 0.0}}`
 
