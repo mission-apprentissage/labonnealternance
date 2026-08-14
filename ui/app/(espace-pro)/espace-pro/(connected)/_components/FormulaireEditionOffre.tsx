@@ -120,6 +120,8 @@ export const FormulaireEditionOffre = ({
             }
           }}
           offre={offre}
+          romeCode={formValues?.rome_code?.[0] ?? offre?.rome_code?.[0]}
+          geoCoordinates={formulaire?.geo_coordinates}
           onCancel={() => {
             setCurrentStep(2)
             onChangeScreen?.()
