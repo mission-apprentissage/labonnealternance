@@ -130,22 +130,7 @@ function FinComponent(props: ComponentProps) {
             {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
           </Typography>
           {shouldDisplayAccountInformation ? (
-            userIsValidated ? (
-              <Box>
-                <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
-                  Confirmez votre email
-                </Typography>
-                <Typography>
-                  {withDelegation
-                    ? "Pour publier votre offre auprès des candidats et la transmettre aux organismes de formation sélectionnés, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"
-                    : "Pour publier votre offre auprès des candidats, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"}{" "}
-                  <GreenText>{email}</GreenText>
-                </Typography>
-                <ResendEmailContent onClick={resendMail} />
-              </Box>
-            ) : (
-              <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
-            )
+            <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} skipAccountValidationStep={userIsValidated} />
           ) : null}
         </Box>
       </BorderedBox>
@@ -153,7 +138,19 @@ function FinComponent(props: ComponentProps) {
   )
 }
 
-const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { withDelegation: boolean; email: string; onResendEmail: () => void }) => {
+const AwaitingAccountDescription = ({
+  withDelegation,
+  email,
+  onResendEmail,
+  skipAccountValidationStep = false,
+}: {
+  withDelegation: boolean
+  email: string
+  onResendEmail: () => void
+  skipAccountValidationStep?: boolean
+}) => {
+  const lastStepNumber = skipAccountValidationStep ? 2 : 3
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v"), my: fr.spacing("2v") }}>
       <Typography>Voici les prochaines étapes qui vous attendent :</Typography>
@@ -168,13 +165,15 @@ const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { 
         </Typography>
         <ResendEmailContent onClick={onResendEmail} />
       </ContenuAvecPuce>
-      <ContenuAvecPuce contenuPuce={2}>
-        <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
-          Votre compte sera validé manuellement
-        </Typography>
-        <Typography>Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne.</Typography>
-      </ContenuAvecPuce>
-      <ContenuAvecPuce contenuPuce={3}>
+      {!skipAccountValidationStep && (
+        <ContenuAvecPuce contenuPuce={2}>
+          <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
+            Votre compte sera validé manuellement
+          </Typography>
+          <Typography>Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne.</Typography>
+        </ContenuAvecPuce>
+      )}
+      <ContenuAvecPuce contenuPuce={lastStepNumber}>
         <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
           Ensuite, votre offre sera publiée !
         </Typography>
