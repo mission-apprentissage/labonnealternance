@@ -23,6 +23,21 @@ import { PreparationSection } from "./_components/PreparationSection"
 import { ProgrammeDiplome } from "./_components/ProgrammeDiplome"
 import { SalaireSection } from "./_components/SalaireSection"
 
+// Convertit un `kpis.duration` en texte libre ("2 ans", "1 à 2 ans", "12 mois") en durée ISO 8601.
+// Pour une plage ("1 à 2 ans"), on retient le nombre le plus élevé.
+function parseCourseDuration(duration: string): string | undefined {
+  const rangeMatch = duration.match(/^(\d+)\s*(?:à|-)\s*(\d+)\s*ans?$/)
+  if (rangeMatch) return `P${rangeMatch[2]}Y`
+
+  const yearsMatch = duration.match(/^(\d+)\s*ans?$/)
+  if (yearsMatch) return `P${yearsMatch[1]}Y`
+
+  const monthsMatch = duration.match(/^(\d+)\s*mois$/)
+  if (monthsMatch) return `P${monthsMatch[1]}M`
+
+  return undefined
+}
+
 async function getDiplomeData(slug: string) {
   // `apiGet` lit toujours `headers()` en interne (transmission du cookie de session),
   // incompatible avec un `"use cache"` classique — seul `"use cache: private"` l'autorise.
@@ -69,9 +84,8 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
     { name: data.titre, url: diplomePage.getPath() },
   ]
 
-  const durationMatch = data.kpis.duration.match(/^(\d+)\s*ans?$/)
-  const courseDuration = durationMatch ? `P${durationMatch[1]}Y` : undefined
-  const offresItemList = buildOffresItemList(data.cards)
+  const courseDuration = parseCourseDuration(data.kpis.duration)
+  const offresItemList = buildOffresItemList(data.cards ?? [])
 
   return (
     <Box>
