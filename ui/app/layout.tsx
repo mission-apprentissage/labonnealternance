@@ -11,10 +11,8 @@ import RootTemplate from "./client_only_providers"
 import { DsfrProvider, StartDsfrOnHydration } from "./dsfr-setup"
 import { DsfrHead, getHtmlAttributes } from "./dsfr-setup/server-only-index"
 
-import "react-notion-x/src/styles.css"
 import "@/public/styles/application.css"
 import "@/public/styles/fonts.css"
-import "@/public/styles/notion.css"
 import "@/styles/search.css"
 
 export const metadata: Metadata = {
@@ -36,7 +34,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html {...getHtmlAttributes({ lang })}>
       <head>
         <HeadLaBonneAlternance />
-        <DsfrHead preloadFonts={["Marianne-Regular", "Marianne-Bold"]} doDisableFavicon={true} />
+        {/* Marianne-Medium est aussi préchargée : sans elle, la police n'est découverte
+            qu'après le parse du CSS DSFR et devient la plus longue chaîne critique (~1,3 s mobile) */}
+        <DsfrHead preloadFonts={["Marianne-Regular", "Marianne-Medium", "Marianne-Bold"]} doDisableFavicon={true} />
         <Matomo />
       </head>
       <body>

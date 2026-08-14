@@ -60,6 +60,15 @@ z-index explicite, stable sur tous les breakpoints, sous les modales DSFR (1250+
 }
 
 /**
+Le logo opérateur est rendu par le Header DSFR sans attributs width/height (l'API
+react-dsfr ne les expose pas) : on fixe le ratio du SVG (213×55) pour réserver
+l'espace avant chargement et éviter le layout shift (audit Lighthouse unsized-images).
+*/
+.fr-header__operator img[src$="logo_LBA.svg"] {
+  aspect-ratio: 213 / 55;
+}
+
+/**
 PAGE NOTION
 */
 .disable-chakra {

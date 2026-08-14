@@ -27,6 +27,8 @@ export const HowTo = () => (
         justifyContent: "center",
       }}
     >
+      {/* Seule la 1re illustration garde priority : c'est l'élément LCP mobile (1 colonne),
+          les deux autres sont sous la ligne de flottaison et se disputaient la bande passante */}
       <Image fetchPriority="high" priority src="/images/howto1.svg" alt="" unoptimized width={286} height={141} style={{ width: "100%", height: "auto" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Le job de vos rêves</Typography>
@@ -52,7 +54,7 @@ export const HowTo = () => (
         position: "relative",
       }}
     >
-      <Image fetchPriority="high" priority src="/images/howto2.svg" alt="" unoptimized width={299} height={145} style={{ width: "100%", height: "auto" }} />
+      <Image src="/images/howto2.svg" alt="" unoptimized width={299} height={145} style={{ width: "100%", height: "auto" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>En un clin d’oeil</Typography>
         <Typography>
@@ -73,7 +75,7 @@ export const HowTo = () => (
         position: "relative",
       }}
     >
-      <Image fetchPriority="high" priority src="/images/howto3.svg" alt="" unoptimized width={285} height={140} style={{ width: "100%", height: "auto" }} />
+      <Image src="/images/howto3.svg" alt="" unoptimized width={285} height={140} style={{ width: "100%", height: "auto" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Un contact facile</Typography>
         <Typography>
