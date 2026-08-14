@@ -8,33 +8,12 @@ import { Formik, useField, useFormikContext } from "formik"
 import Image from "next/image"
 import type { IJob } from "shared"
 import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
+import { CfaSolicitationIntro, InfoDelegation } from "@/app/(espace-pro)/_components/CfaDelegationContent"
 import { getRelatedEtablissementsFromRome } from "@/utils/api"
 
-// même contenu (textes et présentation) que la page /espace-pro/entreprise/offre/:id/mise-en-relation, pour le moment.
+// texte et présentation mutualisés avec la page /espace-pro/entreprise/offre/:id/mise-en-relation (cf. CfaDelegationContent).
 type IStep3Form = {
   etablissementCatalogueIds: string[]
-}
-
-function InfoDelegation() {
-  return (
-    <Box sx={{ ml: fr.spacing("10v"), display: { xs: "none", lg: "block" } }}>
-      <Box sx={{ border: "1px solid #000091", p: fr.spacing("6v") }}>
-        <Typography component="h2" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3v") }}>
-          Partager votre offre aux CFA à proximité :
-        </Typography>
-        <Box>
-          <Typography sx={{ mt: fr.spacing("6v") }}>
-            <strong>Gagnez du temps : </strong>Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre
-            région.
-          </Typography>
-          <Typography sx={{ mt: fr.spacing("6v") }}>
-            <strong>Rejoindre le réseau des acteurs de l'apprentissage de votre territoire : </strong>
-            Développez des relations de confiance avec les acteurs de l'apprentissage de votre territoire afin de promouvoir votre entreprise et vos métiers auprès des jeunes.
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
-  )
 }
 
 const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: IEtablissementCatalogueProcheWithDistanceJSON[]; disabledIds: string[] }) => {
@@ -165,11 +144,7 @@ export const FormulaireEditionOffreStep3 = ({
               <Typography component="h2" sx={{ fontSize: "22px", lineHeight: "28px", fontWeight: 700, mb: fr.spacing("4v") }}>
                 Ces centres de formation pourraient vous proposer des candidats (Facultatif)
               </Typography>
-              <Typography>
-                Les CFA suivants proposent des formations en lien avec votre offre et sont localisés dans un rayon de 100km près de votre entreprise.
-                <br />
-                Choisissez ceux que vous souhaitez solliciter : <strong>votre offre et vos informations de contact leur seront partagées par email.</strong>
-              </Typography>
+              <CfaSolicitationIntro />
               {isLoading ? (
                 <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("5v") }}>
                   <CircularProgress size={24} />

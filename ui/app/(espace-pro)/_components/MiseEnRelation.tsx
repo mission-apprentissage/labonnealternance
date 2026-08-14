@@ -14,29 +14,8 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { createEtablissementDelegation, createEtablissementDelegationByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { CfaSolicitationIntro, InfoDelegation } from "./CfaDelegationContent"
 import LoadingEmptySpace from "./LoadingEmptySpace"
-
-function InfoDelegation() {
-  return (
-    <Box sx={{ ml: fr.spacing("10v"), display: { xs: "none", lg: "block" } }}>
-      <Box sx={{ border: "1px solid #000091", p: fr.spacing("6v") }}>
-        <Typography component="h2" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3v") }}>
-          Pourquoi être accompagné par des CFA dans votre recherche d’alternant ?
-        </Typography>
-        <Box>
-          <Typography sx={{ fontWeight: "700", mt: fr.spacing("6v") }}>Gagnez du temps.</Typography>
-          <Typography sx={{ mt: fr.spacing("4v") }}>
-            Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre région.
-          </Typography>
-          <Typography sx={{ fontWeight: "700", mt: fr.spacing("6v") }}>Rejoignez le réseau des acteurs de l'apprentissage de votre territoire.</Typography>
-          <Typography sx={{ mt: fr.spacing("4v") }}>
-            Développez des relations de confiance avec les acteurs de l'apprentissage de votre territoire afin de promouvoir votre entreprise et vos métiers auprès des jeunes.
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
-  )
-}
 
 function AucunCFAProche({ title }: { title?: string }) {
   return (
@@ -213,11 +192,7 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                     <Typography component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold" }}>
                       Ces centres de formation pourraient vous proposer des candidats
                     </Typography>
-                    <Typography sx={{ fontSize: "20px", lineHeight: "28px", mt: fr.spacing("4v") }}>
-                      Les centres de formation suivants proposent des formations en lien avec votre offre et sont localisés à proximité de votre entreprise.
-                      <br />
-                      Choisissez ceux à qui vous souhaitez partager votre offre.
-                    </Typography>
+                    <CfaSolicitationIntro sx={{ fontSize: "20px", lineHeight: "28px", mt: fr.spacing("4v") }} />
 
                     <Box sx={{ mt: fr.spacing("5v") }}>
                       {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistanceJSON, index) => {
