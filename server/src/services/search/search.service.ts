@@ -251,15 +251,6 @@ const fuzzyFor = (term: string): { maxEdits: number; prefixLength: number } | un
 // Nombre minimal de termes couverts exigé : tous jusqu'à 2 termes, n−1 pour 3-4, 75 % au-delà.
 const msmFor = (n: number): number => (n <= 2 ? n : n <= 4 ? n - 1 : Math.ceil(0.75 * n))
 
-// Plafond de termes injectés dans la porte de pertinence : un intitulé de formation entier
-// envoyé tel quel comme `q` (clic sur une suggestion) peut tokeniser en 20+ termes, chacun
-// généré en plusieurs clauses `text`/fuzzy par champ (rome_labels/title/organization_name/
-// keywords) — le compound $search dépasse alors maxClauseCount=1024 côté mongot
-// (Sentry LBA-SERVER-5J7KF4ZZZT961). Les premiers termes portent l'intitulé principal (le
-// détail vient après tirets/parenthèses) : tronquer ne change pas la pertinence perçue pour
-// une recherche normale et borne le pire cas.
-const MAX_TEXT_GATE_TERMS = 12
-
 // Filtre « date de début de contrat » (spec ticket Contract start) : l'utilisateur indique
 // quand il veut démarrer → on montre tout ce qui est compatible, c'est-à-dire les offres qui
 // démarrent AVANT OU À cette date ($lte), celles à date flexible, et les docs SANS date de
@@ -375,7 +366,7 @@ function buildTermCoverageClause(term: string, isSingleTerm: boolean): object {
  */
 function buildTextGate(q?: string): object | null {
   if (!q?.trim()) return null
-  const terms = tokenizeQuery(q).slice(0, MAX_TEXT_GATE_TERMS)
+  const terms = tokenizeQuery(q)
   const coverage = terms.length ? [{ compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1)), minimumShouldMatch: msmFor(terms.length) } }] : []
   const synonyms = { phrase: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", slop: 0, score: { boost: { value: 6 } } } }
   return { compound: { should: [...coverage, synonyms], minimumShouldMatch: 1 } }
