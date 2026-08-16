@@ -6,6 +6,7 @@ import { pipeline } from "node:stream/promises"
 import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
 import type { AnyBulkWriteOperation } from "mongodb"
+import { MongoBulkWriteError } from "mongodb"
 import { extensions } from "shared/helpers/zod-helpers/zod-primitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
@@ -200,9 +201,14 @@ export const importRecruteurLbaToComputed = async () => {
         try {
           await getDbCollection("computed_jobs_partners").bulkWrite(operations, { ordered: true })
         } catch (err) {
-          counters.success -= operations.length
-          counters.error += operations.length
-          const newError = internal(`error lors du bulkWrite d'un groupe de documents pour partner_label=${partnerLabel}`)
+          // en écriture ordonnée, tout ce qui précède le premier échec a bien été appliqué
+          const succeededOperations = err instanceof MongoBulkWriteError ? err.matchedCount + err.upsertedCount : 0
+          const failedOperations = operations.length - succeededOperations
+          counters.success -= failedOperations
+          counters.error += failedOperations
+          const newError = internal(
+            `error lors du bulkWrite d'un groupe de documents pour partner_label=${partnerLabel} (${failedOperations}/${operations.length} opérations en échec)`
+          )
           logger.error(err, newError.message)
           newError.cause = err
           sentryCaptureException(newError)
