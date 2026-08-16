@@ -197,7 +197,16 @@ export const importRecruteurLbaToComputed = async () => {
       }
 
       if (operations.length > 0) {
-        await getDbCollection("computed_jobs_partners").bulkWrite(operations, { ordered: true })
+        try {
+          await getDbCollection("computed_jobs_partners").bulkWrite(operations, { ordered: true })
+        } catch (err) {
+          counters.success -= operations.length
+          counters.error += operations.length
+          const newError = internal(`error lors du bulkWrite d'un groupe de documents pour partner_label=${partnerLabel}`)
+          logger.error(err, newError.message)
+          newError.cause = err
+          sentryCaptureException(newError)
+        }
       }
 
       callback()
