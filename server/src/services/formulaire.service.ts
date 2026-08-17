@@ -229,7 +229,9 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     }
   })
   const sentDelegations: ISentDelegation[] = []
-  if (shouldSentMailToCfa && delegations.length) {
+  // les mails (CFA + confirmation recruteur) ne doivent partir qu'une fois le compte réellement validé :
+  // rôle GRANTED sur l'entreprise ET adresse email du recruteur confirmée.
+  if (shouldSentMailToCfa && isUserEmailChecked(managingUser) && delegations.length) {
     await Promise.all(
       delegations.map(async (delegation) => {
         const { etablissement_id: etablissementId, siret_code } = delegation
