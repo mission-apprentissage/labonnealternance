@@ -13,6 +13,10 @@ const CompetencesGroupDiv = styled.div`
     font-weight: 700;
     margin-bottom: 12px;
   }
+
+  li {
+    margin-left: 24px;
+  }
 `
 
 export const RomeDetailReadOnly = ({
