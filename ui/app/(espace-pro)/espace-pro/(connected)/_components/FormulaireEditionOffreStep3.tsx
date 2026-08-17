@@ -123,7 +123,11 @@ export const FormulaireEditionOffreStep3 = ({
       initialValues={{
         etablissementCatalogueIds: disabledIds,
       }}
-      onSubmit={onSubmit}
+      onSubmit={(values) => {
+        // ne transmet que les nouvelles sélections : les CFA déjà en délégation (disabledIds) ne doivent pas être re-notifiés
+        const newEtablissementCatalogueIds = values.etablissementCatalogueIds.filter((id) => !disabledIds.includes(id))
+        onSubmit?.({ etablissementCatalogueIds: newEtablissementCatalogueIds })
+      }}
     >
       {() => (
         <>
