@@ -13,6 +13,7 @@ import { RomeDetailReadOnly } from "@/components/DepotOffre/RomeDetailReadOnly"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { publicConfig } from "@/config.public"
+import { DownloadLine } from "@/theme/components/icons"
 import { getDelegationDetails, viewOffreDelegation } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -61,6 +62,11 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
     })
   }
 
+  const downloadQRCode = () => {
+    const qrCodeUrl = `${publicConfig.baseUrl}${PAGES.dynamic.espaceProOffreImpression(job._id.toString()).getPath()}`
+    window.open(qrCodeUrl, "_blank")
+  }
+
   if (!job) {
     return <LoadingEmptySpace />
   }
@@ -70,34 +76,51 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
   return (
     <DepotSimplifieStyling>
       <Box>
-        <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, mt: fr.spacing("8v"), mb: fr.spacing("6v") }}>
+        <Typography component="h1" sx={{ fontSize: "40px", lineHeight: "48px", fontWeight: 700, my: fr.spacing("6v") }}>
           Détails de la demande
         </Typography>
         <hr />
       </Box>
-      <Box sx={{ backgroundColor: "#F2F2F9", mt: fr.spacing("10v"), p: fr.spacing("6v") }}>
-        <Typography component="h3" sx={{ fontSize: "20px", fontWeight: 700 }}>
+      <Box sx={{ backgroundColor: "#F2F2F9", p: fr.spacing("6v") }}>
+        <Typography component="h3" sx={{ fontSize: "28px", lineHeight: "36px", fontWeight: 700 }}>
           Souhaitez-vous proposer des candidats à cette entreprise ?
         </Typography>
         <Typography sx={{ fontSize: "16px", mt: fr.spacing("5v") }}>
-          Vous pouvez contacter directement l’entreprise pour évaluer son besoin, ou alors partager le lien vers l’offre à vos étudiants :
+          Pour partager l’offre à vos alternants utilisez le lien à partager, ou le QR code que vous pouvez imprimer et afficher :
         </Typography>
         <Button
           style={{
             marginTop: fr.spacing("4v"),
+            marginRight: fr.spacing("2v"),
           }}
           type="submit"
           priority="primary"
           onClick={copyInClipboard}
         >
-          Copier l'url
+          Copier le lien
+        </Button>
+        <Button
+          style={{
+            marginTop: fr.spacing("4v"),
+          }}
+          type="submit"
+          priority="secondary"
+          onClick={downloadQRCode}
+          aria-label="Télécharger le QR code - ouvre une nouvelle fenêtre"
+        >
+          <DownloadLine sx={{ mr: fr.spacing("2v"), width: "0.75rem", height: "0.75rem" }} />
+          Télécharger le QR code
         </Button>
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: fr.spacing("10v"), my: fr.spacing("10v") }}>
-        <Box>
-          <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("10v"), fontWeight: 700 }}>
-            Offre d’alternance
-          </Typography>
+      <Box sx={{ display: "flex", gap: fr.spacing("6v"), my: fr.spacing("8v"), flexDirection: { xs: "column", lg: "row" } }}>
+        <Box sx={{ border: { xs: "none", lg: "1px solid #ddd" }, p: { xs: 0, lg: fr.spacing("6v") } }}>
+          {job.job_employer_description && (
+            <Box>
+              <Typography sx={{ fontSize: "24px", mb: fr.spacing("6v"), fontWeight: 700 }}>Présentation de l’entreprise</Typography>
+              <Typography sx={{ fontSize: "16px", mb: fr.spacing("6v") }}>{job.job_employer_description}</Typography>
+              <hr />
+            </Box>
+          )}
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("7v") }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography sx={{ mr: fr.spacing("3v") }}>Métier :</Typography>
@@ -124,46 +147,50 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
               <Typography sx={valueWithEllipsis}>{job.job_count}</Typography>
             </Box>
           </Box>
+
+          {competencesRome && <RomeDetailReadOnly romeReferentiel={job.rome_detail} competences={competencesRome} appellation={job.rome_appellation_label} />}
         </Box>
-        <Box sx={{ border: "solid 1px #000091", p: fr.spacing("10v") }}>
-          <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("10v"), fontWeight: 700 }}>
-            Informations de contact
-          </Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("7v") }}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography sx={{ mr: fr.spacing("3v") }}>Email :</Typography>
-              <Typography sx={valueWithEllipsis}>{formulaire.email}</Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography sx={{ mr: fr.spacing("3v") }}>Téléphone :</Typography>
-              <Typography sx={valueWithEllipsis}>{formulaire.phone}</Typography>
-            </Box>
-            <hr />
+        <Box>
+          <Box sx={{ background: "#FFE9E6", color: "#3A3A3A" }}>Texte</Box>
+          <Box sx={{ border: "solid 1px #000091", p: fr.spacing("10v") }}>
             <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("10v"), fontWeight: 700 }}>
-              Informations légales
+              Informations de contact
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography sx={{ mr: fr.spacing("3v") }}>SIRET :</Typography>
-              <Typography sx={valueWithEllipsis}>{formulaire.establishment_siret}</Typography>
-            </Box>
-            {formulaire.establishment_enseigne && (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("7v") }}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography sx={{ mr: fr.spacing("3v") }}>Enseigne :</Typography>
-                <Typography sx={valueWithEllipsis}>{formulaire.establishment_enseigne}</Typography>
+                <Typography sx={{ mr: fr.spacing("3v") }}>Email :</Typography>
+                <Typography sx={valueWithEllipsis}>{formulaire.email}</Typography>
               </Box>
-            )}
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography sx={{ mr: fr.spacing("3v") }}>Raison sociale :</Typography>
-              <Typography sx={valueWithEllipsis}>{formulaire.establishment_raison_sociale}</Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography sx={{ mr: fr.spacing("3v") }}>Adresse :</Typography>
-              <Typography sx={valueWithEllipsis}>{formulaire.address}</Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography sx={{ mr: fr.spacing("3v") }}>Téléphone :</Typography>
+                <Typography sx={valueWithEllipsis}>{formulaire.phone}</Typography>
+              </Box>
+              <hr />
+              <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("10v"), fontWeight: 700 }}>
+                Informations légales
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography sx={{ mr: fr.spacing("3v") }}>SIRET :</Typography>
+                <Typography sx={valueWithEllipsis}>{formulaire.establishment_siret}</Typography>
+              </Box>
+              {formulaire.establishment_enseigne && (
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography sx={{ mr: fr.spacing("3v") }}>Enseigne :</Typography>
+                  <Typography sx={valueWithEllipsis}>{formulaire.establishment_enseigne}</Typography>
+                </Box>
+              )}
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography sx={{ mr: fr.spacing("3v") }}>Raison sociale :</Typography>
+                <Typography sx={valueWithEllipsis}>{formulaire.establishment_raison_sociale}</Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography sx={{ mr: fr.spacing("3v") }}>Adresse :</Typography>
+                <Typography sx={valueWithEllipsis}>{formulaire.address}</Typography>
+              </Box>
             </Box>
           </Box>
         </Box>
       </Box>
-      {competencesRome && <RomeDetailReadOnly romeReferentiel={job.rome_detail} competences={competencesRome} appellation={job.rome_appellation_label} />}
     </DepotSimplifieStyling>
   )
 }
