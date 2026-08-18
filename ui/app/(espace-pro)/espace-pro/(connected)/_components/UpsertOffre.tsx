@@ -39,7 +39,7 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
       delete values.job_update_date
       delete values.delegations
       await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: values }).then(async () => {
-        notifyCfas(job_id, etablissementCatalogueIds)
+        await notifyCfas(job_id, etablissementCatalogueIds)
         toast({
           title: "Offre mise à jour avec succès.",
         })
@@ -47,7 +47,7 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
       })
     } else {
       const { _id } = await createOffre(establishment_id, values)
-      notifyCfas(_id.toString(), etablissementCatalogueIds)
+      await notifyCfas(_id.toString(), etablissementCatalogueIds)
       toast({
         title: "Offre enregistrée avec succès.",
       })
