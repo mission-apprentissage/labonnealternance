@@ -259,7 +259,7 @@ export const analyzeSearchQueries = async () => {
     `Suggestions insérées (${insertedSuggestions.length}) : ${insertedSuggestions.join(", ") || "—"}`,
     `Synonymes insérés (${insertedSynonyms.length}) : ${insertedSynonyms.join(" ; ") || "—"}`,
     `Rejets : ${reasonsSummary || "—"}`,
-    `Rollback : \`yarn cli rollbackSearchSuggestions --runId ${runId}\``,
+    `Rollback : \`yarn cli search:suggestions:rollback --runId ${runId}\``,
   ].join("\n")
   logger.info(`analyzeSearchQueries[${runId}]:\n${message}`)
   await notifyToSlack({ subject: "ANALYSE RECHERCHES UTILISATEURS", message })
