@@ -155,6 +155,18 @@ export function buildSearchPageTitle(params: ISearchPageParams): string {
   return `${base}${context} | La bonne alternance`
 }
 
+/**
+ * Texte du H1 SEO de la page de résultats : « Alternance {métier}{ à {lieu}} ».
+ * Retourne `null` sans métier saisi (`q`) — la page n'a alors pas de H1 dynamique à afficher.
+ */
+export function buildRechercheH1(params: Pick<ISearchPageParams, "q" | "lieu_label">): string | null {
+  const q = params.q?.trim() || null
+  if (!q) return null
+
+  const lieu = params.lieu_label?.trim() || null
+  return `Alternance ${q}${lieu ? ` à ${lieu}` : ""}`
+}
+
 export function buildHitDetailUrl(hit: { sub_type: string; url_id: string; title: string }, currentSearchUrl: string): string {
   const slug = toKebabCase(hit.title || "offre")
   const from = encodeURIComponent(currentSearchUrl)

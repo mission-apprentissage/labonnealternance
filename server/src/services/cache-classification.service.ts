@@ -3,8 +3,11 @@ import { addJob } from "job-processor"
 import type { IClassificationJobsPartners } from "shared/models/cache-classification.model"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
+import type { IGetLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
+import { getMistralClassificationBatch } from "@/common/apis/classification/classification-mistral.client"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import config from "@/config"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 export type TJobClassification = {
@@ -24,7 +27,11 @@ const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(ICl
   })
 }
 
-export const getClassificationFromLab = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
+/** Bascule de provider pilotée par LBA_CLASSIFICATION_PROVIDER (rollback rapide sans redéploiement). */
+const classifyBatch = (payload: IGetLabClassificationBatch) =>
+  config.classification.provider === "mistral" ? getMistralClassificationBatch(payload) : getLabClassificationBatch(payload)
+
+export const getClassification = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
   const cachedClassifications = await getClassificationFromDB(jobs)
   const notFoundJobs = jobs.flatMap((job, index) => {
     if (cachedClassifications[index] !== null) {
@@ -46,8 +53,8 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
     offer_description: job.offer_description,
   }))
 
-  const classificationsFromLab = await getLabClassificationBatch(classificationPayload)
-  const classificationsById = new Map(classificationsFromLab.map((result) => [result.id, result]))
+  const classificationsFromProvider = await classifyBatch(classificationPayload)
+  const classificationsById = new Map(classificationsFromProvider.map((result) => [result.id, result]))
 
   const now = new Date()
   const zippedJobsNotFound = notFoundJobs.flatMap(({ job, index }) => {
@@ -150,8 +157,39 @@ export const updateClassificationAndSynchronise = async ({
 
   if (filteredScope.length) {
     const filteredScopeFilter = { $or: filteredScope.map(({ partner_label, partner_job_id }) => ({ partner_label, partner_job_id })) }
-    // add job to fill-computed-jobs-partners with the filtered scope
-    await addJob({ name: "fill-computed-jobs-partners", payload: { addedMatchFilter: filteredScopeFilter } })
-    await addJob({ name: "import-from-computed-to-jobs-partners", payload: filteredScopeFilter })
+    // Ré-exécute la chaîne de traitement (validation + import vers jobs_partners) pour les seules
+    // offres concernées. `queued: true` pour ne pas bloquer l'appelant (endpoint admin HTTP ou
+    // CLI) sur un pipeline potentiellement long. Le nom doit être le nom JS exact de la fonction
+    // (`processJobPartnersWithFilter`, enregistrée dans simple-job-definitions.ts) — d'anciens
+    // noms kebab-case ("fill-computed-jobs-partners", "import-from-computed-to-jobs-partners") ne
+    // correspondaient à aucun handler enregistré et échouaient silencieusement en prod ("Job not
+    // found", confirmé via Sentry sur ~16 occurrences en 13 jours avant correctif).
+    await addJob({ name: "processJobPartnersWithFilter", payload: filteredScopeFilter, queued: true })
   }
+}
+
+/** Point d'entrée CLI (`yarn cli reviewJobPartnersClassification --classification publish
+ * --partnerLabel Hellowork --partnerJobIds job1,job2`) pour corriger manuellement la
+ * classification de plusieurs offres d'un même partenaire en une fois — complète l'écran admin
+ * (POST /admin/jobs-partners/:id/classification, un id à la fois) pour les corrections en lot. */
+export const reviewJobPartnersClassification = async (payload?: { classification?: string; partnerLabel?: string; partnerJobIds?: string }) => {
+  const { classification, partnerLabel, partnerJobIds } = payload ?? {}
+  if (classification !== "publish" && classification !== "unpublish") {
+    throw new Error(`reviewJobPartnersClassification: --classification invalide (attendu "publish" ou "unpublish", reçu ${classification})`)
+  }
+  if (!partnerLabel) {
+    throw new Error("reviewJobPartnersClassification: --partnerLabel requis")
+  }
+  const ids = (partnerJobIds ?? "")
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean)
+  if (!ids.length) {
+    throw new Error("reviewJobPartnersClassification: --partnerJobIds requis (liste de partner_job_id séparés par des virgules)")
+  }
+  return updateClassificationAndSynchronise({
+    classification,
+    jobs: ids.map((partner_job_id) => ({ partner_label: partnerLabel, partner_job_id })),
+    grantedBy: "cli:reviewJobPartnersClassification",
+  })
 }

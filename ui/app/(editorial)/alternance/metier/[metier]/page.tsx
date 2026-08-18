@@ -12,6 +12,7 @@ import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/se
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
 import { findVilleLandingSlug } from "@/app/(editorial)/alternance/_components/landing_links"
+import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { SalaireSection } from "@/app/(editorial)/alternance/diplome/[slug]/_components/SalaireSection"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { SchemaOrg } from "@/components/SchemaOrg"
@@ -132,6 +133,8 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
     { name: data.metier, url: metierPage.getPath() },
   ]
 
+  const offresItemList = buildOffresItemList(data.cards)
+
   const statItems = [
     { icon: "/images/seo/malette.svg", value: data.job_count, label: "Offres d'emploi en alternance disponibles" },
     { icon: "/images/seo/metier/ecosystem.svg", value: data.applicant_count, label: "candidats sur les 3 derniers mois" },
@@ -148,6 +151,17 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
         url={metierPage.getPath()}
         breadcrumbs={breadcrumbs}
       />
+      {offresItemList.length > 0 && (
+        <SchemaOrg
+          type="ItemList"
+          title={`Offres en alternance ${data.metier}`}
+          description={`Sélection d'offres d'alternance et d'entreprises qui recrutent pour le métier ${data.metier}.`}
+          url={metierPage.getPath()}
+          breadcrumbs={breadcrumbs}
+          itemList={offresItemList}
+          omitBreadcrumb
+        />
+      )}
       <Breadcrumb pages={[PAGES.static.alternanceMetiers, metierPage]} />
 
       <DefaultContainer sx={{ px: 0 }}>

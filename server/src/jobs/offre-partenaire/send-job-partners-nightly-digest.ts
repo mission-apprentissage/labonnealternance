@@ -9,9 +9,13 @@ const MAX_MESSAGE_LENGTH = 35_000 // marge sous la limite Slack (~40k caractère
 
 export const JOB_PARTNERS_DIGEST_JOB_NAME = "Bilan nocturne offres partenaires"
 
+// Jobs de la pipeline jobs_partners enregistrés directement dans jobs.ts, donc absents du map
+// `importers` ci-dessous mais dont le digest doit quand même surveiller les anomalies.
+const ADDITIONAL_MONITORED_JOB_NAMES = ["Traitement des recruteur LBA par la pipeline jobs partners"]
+
 // Calculé à l'appel (pas au chargement du module) : jobs-partners.importer.ts importe ce fichier pour enregistrer
 // son propre CronDef, donc `importers` n'est pas encore initialisé tant que ce module est en cours de chargement.
-const getJobPartnersNightlyJobNames = () => Object.keys(importers).filter((name) => name !== JOB_PARTNERS_DIGEST_JOB_NAME)
+const getJobPartnersNightlyJobNames = () => [...new Set([...Object.keys(importers), ...ADDITIONAL_MONITORED_JOB_NAMES])].filter((name) => name !== JOB_PARTNERS_DIGEST_JOB_NAME)
 
 type ErrorSignal = { path: string; detail: string }
 

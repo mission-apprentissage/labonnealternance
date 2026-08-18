@@ -10,6 +10,33 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 
 /**
+ * Prédicat de candidature utilisé par fillFieldsForComputedPartnersFactory (sourceFields
+ * renseigné, filledFields à null, business_error null, job pas déjà dans jobs_in_success).
+ * Exporté pour que les appelants ayant besoin de compter/pré-filtrer les candidats avant d'appeler
+ * la factory (ex. detectClassificationJobsPartners, pour choisir la voie sync/batch) utilisent
+ * exactement le même filtre, sans risque de divergence si la factory évolue.
+ */
+export const buildComputedPartnersCandidateFilter = <SourceFields extends keyof IComputedJobsPartners, FilledFields extends keyof IComputedJobsPartners | "business_error">({
+  job,
+  sourceFields,
+  filledFields,
+  addedMatchFilter,
+}: {
+  job: COMPUTED_ERROR_SOURCE
+  sourceFields: readonly SourceFields[]
+  filledFields: readonly FilledFields[]
+  addedMatchFilter?: Filter<IComputedJobsPartners>
+}): Filter<IComputedJobsPartners> => {
+  const filters: Filter<IComputedJobsPartners>[] = [
+    { $or: sourceFields.map((field) => ({ [field]: { $ne: null } })) },
+    { $or: filledFields.map((field) => ({ [field]: null })) },
+    { business_error: null, jobs_in_success: { $nin: [job] } },
+  ]
+  if (addedMatchFilter) filters.push(addedMatchFilter)
+  return { $and: filters }
+}
+
+/**
  * Fonction permettant de facilement enrichir un computedJobPartner avec de nouvelles données provenant d'une source async
  *
  * @param job: nom du job
@@ -42,14 +69,7 @@ export const fillFieldsForComputedPartnersFactory = async <SourceFields extends 
   const logger = globalLogger.child({ job })
   logger.info(`job ${job} : début d'enrichissement des données`)
 
-  const filters: Filter<IComputedJobsPartners>[] = [
-    { $or: sourceFields.map((field) => ({ [field]: { $ne: null } })) },
-    { $or: filledFields.map((field) => ({ [field]: null })) },
-    { business_error: null, jobs_in_success: { $nin: [job] } },
-  ]
-  if (addedMatchFilter) filters.push(addedMatchFilter)
-
-  const queryFilter: Filter<IComputedJobsPartners> = replaceMatchFilter ?? { $and: filters }
+  const queryFilter: Filter<IComputedJobsPartners> = replaceMatchFilter ?? buildComputedPartnersCandidateFilter({ job, sourceFields, filledFields, addedMatchFilter })
 
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(queryFilter)
   logger.info(`${toUpdateCount} documents à traiter`)

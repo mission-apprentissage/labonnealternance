@@ -8,6 +8,7 @@ import type { ISeoDiplome } from "shared/models/seo-diplome.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
+import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { UTM_PARAMS } from "@/app/(editorial)/alternance/diplome/[slug]/_data/constants"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { apiGet } from "@/utils/api.utils"
@@ -21,6 +22,21 @@ import { OffresSection } from "./_components/OffresSection"
 import { PreparationSection } from "./_components/PreparationSection"
 import { ProgrammeDiplome } from "./_components/ProgrammeDiplome"
 import { SalaireSection } from "./_components/SalaireSection"
+
+// Convertit un `kpis.duration` en texte libre ("2 ans", "1 à 2 ans", "12 mois") en durée ISO 8601.
+// Pour une plage ("1 à 2 ans"), on retient le nombre le plus élevé.
+function parseCourseDuration(duration: string): string | undefined {
+  const rangeMatch = duration.match(/^(\d+)\s*(?:à|-)\s*(\d+)\s*ans?$/)
+  if (rangeMatch) return `P${rangeMatch[2]}Y`
+
+  const yearsMatch = duration.match(/^(\d+)\s*ans?$/)
+  if (yearsMatch) return `P${yearsMatch[1]}Y`
+
+  const monthsMatch = duration.match(/^(\d+)\s*mois$/)
+  if (monthsMatch) return `P${monthsMatch[1]}M`
+
+  return undefined
+}
 
 async function getDiplomeData(slug: string) {
   // `apiGet` lit toujours `headers()` en interne (transmission du cookie de session),
@@ -91,6 +107,9 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
     { name: data.titre, url: diplomePage.getPath() },
   ]
 
+  const courseDuration = parseCourseDuration(data.kpis.duration)
+  const offresItemList = buildOffresItemList(data.cards ?? [])
+
   return (
     <Box>
       <SchemaOrg
@@ -100,6 +119,27 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
         url={diplomePage.getPath()}
         breadcrumbs={breadcrumbs}
       />
+      <SchemaOrg
+        type="Course"
+        title={`${data.titre} en alternance`}
+        description={`Découvrez le ${data.titre} en alternance : programme, prérequis, salaire, entreprises qui recrutent et débouchés.`}
+        url={diplomePage.getPath()}
+        breadcrumbs={breadcrumbs}
+        courseCredential={data.intituleLongFormation}
+        courseDuration={courseDuration}
+        omitBreadcrumb
+      />
+      {offresItemList.length > 0 && (
+        <SchemaOrg
+          type="ItemList"
+          title={`Offres en alternance pour le ${data.titre}`}
+          description={`Sélection d'offres d'alternance et d'entreprises qui recrutent pour le ${data.titre}.`}
+          url={diplomePage.getPath()}
+          breadcrumbs={breadcrumbs}
+          itemList={offresItemList}
+          omitBreadcrumb
+        />
+      )}
       <Breadcrumb pages={[PAGES.static.alternanceDiplomes, diplomePage]} />
 
       <DefaultContainer sx={{ px: 0 }}>

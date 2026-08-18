@@ -3,6 +3,9 @@ import { processEnedis } from "@/jobs/offre-partenaire/enedis/process-enedis"
 import { processMissingRomeAndImportToJobPartners } from "@/jobs/offre-partenaire/process-missing-rome-and-import-to-job-partners"
 import { analyzeCfaBlockList } from "@/jobs/one-time-job/analyze-cfa-block-list"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { reviewJobPartnersClassification } from "@/services/cache-classification.service"
+import { applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
+import { compareLabAndMistralAgainstHumanVerification, compareLabAndMistralClassification } from "@/services/classification/compare-lab-mistral-classification.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import { applyPendingMistralBatches, generateSearchItemsKeywordsContinuous, submitSearchItemsKeywordsBatch } from "@/services/search/search-items-keywords.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -65,7 +68,7 @@ import {
   processComputedAndImportToJobPartners,
   validateComputedJobPartnersFlux,
 } from "./offre-partenaire/process-job-partners"
-import { processJobPartnersForApi } from "./offre-partenaire/process-job-partners-for-api"
+import { processJobPartnersForApi, processJobPartnersWithFilter } from "./offre-partenaire/process-job-partners-for-api"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offre-partenaire/recruteur-lba/import-recruteurs-lba-raw"
 import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offre-partenaire/recruteur-lba/process-recruteurs-lba"
 import { processRhAlternance } from "./offre-partenaire/rh-alternance/process-rh-alternance"
@@ -529,6 +532,38 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: detectClassificationJobsPartners,
     description: "Analyse la classification des offres partenaires",
+  },
+  {
+    fct: processJobPartnersWithFilter,
+    description: "Ré-exécute la chaîne de traitement des jobs_partners pour un filtre donné (ex. reprise après classification batch)",
+  },
+  {
+    fct: submitClassificationBatch,
+    description: "Soumet un batch Mistral de classification jobs_partners pour un filtre donné, suivi dans mistral_batch_jobs",
+  },
+  {
+    fct: applyPendingClassificationBatches,
+    description: "Ramasse les batchs Mistral de classification jobs_partners terminés (téléchargement + application + reprise du pipeline)",
+  },
+  {
+    fct: compareLabAndMistralClassification,
+    description: "Compare sur un échantillon de cache_classification les décisions Lab (déjà stockées) et Mistral, sans rien modifier",
+    cliOptions: [{ flags: "--sampleSize <n>", description: "Taille de l'échantillon comparé (défaut 200)" }],
+  },
+  {
+    fct: compareLabAndMistralAgainstHumanVerification,
+    description: "Compare Lab et Mistral contre une vraie vérité terrain (cache_classification.human_verification déjà corrigé à la main), en vrai batching Mistral (lots de 50)",
+    cliOptions: [{ flags: "--limit <n>", description: "Nombre max d'entrées human_verification comparées (défaut 5000)" }],
+  },
+  {
+    fct: reviewJobPartnersClassification,
+    description:
+      "Corrige manuellement en masse la classification d'offres d'un même partenaire (complète l'écran admin, qui traite un id à la fois) et republie/dépublie en conséquence",
+    cliOptions: [
+      { flags: "--classification <publish|unpublish>", description: "Classification humaine à appliquer" },
+      { flags: "--partnerLabel <label>", description: "Partenaire concerné (ex. Hellowork)" },
+      { flags: "--partnerJobIds <ids>", description: "Liste de partner_job_id séparés par des virgules" },
+    ],
   },
   {
     fct: deduplicateHellowork,

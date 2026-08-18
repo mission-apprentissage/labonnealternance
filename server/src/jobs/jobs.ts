@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb"
 import { getLoggerWithContext, logger } from "@/common/logger"
 import { getDatabase } from "@/common/utils/mongodb-utils"
 import config from "@/config"
+import { applyPendingClassificationBatches } from "@/services/classification/classification-mistral-batch.service"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import {
@@ -272,6 +273,12 @@ export async function setupJobProcessor() {
           "Ramasse des batchs Mistral keywords": {
             cron_string: "10 * * * *",
             handler: applyPendingMistralBatches,
+            tag: "slave",
+          },
+          // Décalé de 10 min par rapport à la ramasse keywords pour étaler la charge Mongo.
+          "Ramasse des batchs Mistral classification jobs_partners": {
+            cron_string: "20 * * * *",
+            handler: applyPendingClassificationBatches,
             tag: "slave",
           },
           "export des offres LBA sur S3": {
