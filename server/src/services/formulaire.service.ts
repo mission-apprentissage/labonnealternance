@@ -162,25 +162,36 @@ export const createJob = async ({
  * Envoie le mail de délégation à chaque CFA concerné, puis le mail de confirmation récapitulatif au recruteur.
  * Utilisé à la fois à la création des délégations (si le compte est déjà validé) et lors du rattrapage
  * différé (`checkForJobActivations`, une fois le compte réellement validé).
+ *
+ * @param preloadedFormations Résultat déjà chargé de `getCatalogueFormations` pour ces délégations (évite un
+ * second aller-retour catalogue quand l'appelant, `createJobDelegations`, l'a déjà fait pour construire les
+ * délégations). Absent depuis `checkForJobActivations`, qui ne dispose pas de cette donnée et doit la relire.
  */
-const notifyCfaDelegations = async (offer: IJobsPartnersOfferPrivate, delegations: IDelegation[], managingUser: IUserWithAccount): Promise<void> => {
+const notifyCfaDelegations = async (
+  offer: IJobsPartnersOfferPrivate,
+  delegations: IDelegation[],
+  managingUser: IUserWithAccount,
+  preloadedFormations?: Awaited<ReturnType<typeof getCatalogueFormations>>
+): Promise<void> => {
   if (!delegations.length) return
 
   const etablissementIds = delegations.map((delegation) => delegation.etablissement_id).filter((id): id is string => Boolean(id))
-  const formations = await getCatalogueFormations(
-    {
-      $or: [{ etablissement_gestionnaire_id: { $in: etablissementIds } }, { etablissement_formateur_id: { $in: etablissementIds } }],
-      catalogue_published: true,
-    },
-    {
-      etablissement_gestionnaire_id: 1,
-      etablissement_formateur_id: 1,
-      etablissement_formateur_entreprise_raison_sociale: 1,
-      etablissement_formateur_adresse: 1,
-      etablissement_formateur_code_postal: 1,
-      etablissement_formateur_localite: 1,
-    }
-  )
+  const formations =
+    preloadedFormations ??
+    (await getCatalogueFormations(
+      {
+        $or: [{ etablissement_gestionnaire_id: { $in: etablissementIds } }, { etablissement_formateur_id: { $in: etablissementIds } }],
+        catalogue_published: true,
+      },
+      {
+        etablissement_gestionnaire_id: 1,
+        etablissement_formateur_id: 1,
+        etablissement_formateur_entreprise_raison_sociale: 1,
+        etablissement_formateur_adresse: 1,
+        etablissement_formateur_code_postal: 1,
+        etablissement_formateur_localite: 1,
+      }
+    ))
 
   // le récap (raison sociale/adresse) vient d'une relecture du catalogue, qui peut ne plus retrouver la formation
   // (dépubliée, etc.) si ce rattrapage tourne longtemps après la sélection initiale du CFA. On ne doit pas pour autant
@@ -303,7 +314,9 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   // les mails (CFA + confirmation recruteur) ne doivent partir qu'une fois le compte réellement validé :
   // rôle GRANTED sur l'entreprise ET adresse email du recruteur confirmée.
   if (shouldSentMailToCfa && isUserEmailChecked(managingUser)) {
-    await notifyCfaDelegations(offer, delegations, managingUser)
+    // `formations` a déjà été chargé ci-dessus pour construire les délégations : il couvre les mêmes établissements
+    // et projette déjà tous les champs nécessaires au récap (cf. notifyCfaDelegations), pas besoin de le relire.
+    await notifyCfaDelegations(offer, delegations, managingUser, formations)
   }
 
   const newDelegations = offer.delegations?.concat(delegations) ?? delegations
