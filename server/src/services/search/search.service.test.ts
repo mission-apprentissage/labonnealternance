@@ -7,12 +7,15 @@ import * as sentryUtils from "@/common/utils/sentry-utils"
 import { searchItems } from "@/services/search/search.service"
 
 /**
- * Repli sans fuzzy quand mongot dépasse maxClauseCount=1024 (#5153) : le fix précédent
- * plafonnant le nombre de termes n'avait aucun effet (la requête fautive en prod ne
- * comptait que 6 termes) — la vraie cause est l'expansion interne des clauses `fuzzy` par
- * champ, indépendante du nombre de termes, et mongot n'expose aucun réglage pour relever
- * la limite. `searchItems` retente désormais la même requête avec le fuzzy désactivé au
- * lieu de renvoyer un 500.
+ * Repli sans fuzzy ni synonymes quand mongot dépasse maxClauseCount=1024 (#5153) : le premier
+ * fix (plafond de 12 termes) n'avait aucun effet (la requête fautive en prod ne comptait que
+ * 6 termes) ; le deuxième (désactiver seulement le fuzzy) non plus (même requête, retry sans
+ * fuzzy toujours en échec 31ms plus tard en prod). Diagnostic confirmé en isolant chaque
+ * clause contre mongot : la clause `phrase`+`synonyms` sur la requête entière (buildTextGate)
+ * suffit À ELLE SEULE à dépasser la limite sur une requête longue et riche en mots courants
+ * (intitulé de formation complet), indépendamment du fuzzy et du nombre de termes — et mongot
+ * n'expose aucun réglage pour relever la limite. `searchItems` retente désormais la même
+ * requête avec le fuzzy ET les synonymes désactivés au lieu de renvoyer un 500.
  *
  * ⚠️ Nécessite mongot (sidecar MongoDB Search), comme search-result.test.ts — gated :
  *   SEARCH_RELEVANCE_TESTS=true yarn vitest run src/services/search/search.service.test.ts
@@ -67,7 +70,7 @@ function mockFirstAggregateCallToFail(errorMessage: string) {
   })
 }
 
-describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy sur maxClauseCount dépassé", () => {
+describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy ni synonymes sur maxClauseCount dépassé", () => {
   useMongo(seedCorpus, "beforeAll")
 
   beforeAll(async () => {
@@ -75,7 +78,7 @@ describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy sur maxClauseCou
     await waitForSearchIndexSync()
   })
 
-  it("retente sans fuzzy et renvoie un résultat au lieu de propager l'erreur", async () => {
+  it("retente sans fuzzy ni synonymes et renvoie un résultat au lieu de propager l'erreur", async () => {
     // biome-ignore lint/suspicious/noEmptyBlockStatements: test
     const sentrySpy = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
     const getDbCollectionSpy = mockFirstAggregateCallToFail(
