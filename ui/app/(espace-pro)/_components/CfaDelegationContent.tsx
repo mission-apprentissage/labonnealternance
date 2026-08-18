@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material"
 import type { SxProps, Theme } from "@mui/material/styles"
 
 // Textes mutualisés entre la page /espace-pro/entreprise/offre/:id/mise-en-relation (MiseEnRelation.tsx)
-// et l'étape 3 du tunnel de dépôt d'offre rapide (FormulaireEditionOffreStep3.tsx).
+// et l'étape 3 du tunnel de dépôt d'offre rapide (FormulaireEditionOffreStep3CFA.tsx).
 
 export function InfoDelegation() {
   return (

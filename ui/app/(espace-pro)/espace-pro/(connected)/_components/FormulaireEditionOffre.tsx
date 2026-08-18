@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import type { IJob } from "shared"
 import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep1"
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
-import { FormulaireEditionOffreStep3 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3"
+import { FormulaireEditionOffreStep3 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3CFA"
 import { FormulaireEditionOffreStep4FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep4FtSupport"
 import { getFormulaire, getFormulaireByToken } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
@@ -112,6 +112,11 @@ export const FormulaireEditionOffre = ({
                 has_screening_questions: finalValues.to_applicant_questions?.length > 0,
                 ft_eligible: isFtEligible,
               })
+              pushMatomoEvent({
+                event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
+                cfa_count_proposed: finalValues.cfaCountProposed,
+                cfa_count_selected: finalValues.cfaCountSelected,
+              })
               handleSave(finalValues)
             } else {
               setFormValues({ ...formValues, ...values })
@@ -142,6 +147,11 @@ export const FormulaireEditionOffre = ({
             pushMatomoEvent({
               event: MATOMO_EVENTS.JOB_CREATION_FT_PARTNERSHIP_STEP,
               ft_partnership: finalValues.ft_support,
+            })
+            pushMatomoEvent({
+              event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
+              cfa_count_proposed: finalValues.cfaCountProposed,
+              cfa_count_selected: finalValues.cfaCountSelected,
             })
             handleSave(finalValues)
           }}
