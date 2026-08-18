@@ -114,6 +114,11 @@ export const analyzeSearchQueries = async () => {
   const allStats = await aggregateQueryStats()
   const rejectedReasons = new Map<string, number>()
   const countReason = (reason: string) => rejectedReasons.set(reason, (rejectedReasons.get(reason) ?? 0) + 1)
+  // Compté à part des vrais rejets (cf. plus bas) : un candidat capé n'est PAS persisté en
+  // "rejected" et sera réévalué au prochain run — le confondre avec "Rejets" dans le rapport
+  // Slack laisserait croire à tort qu'il est écarté définitivement.
+  const cappedReasons = new Map<string, number>()
+  const countCapped = (reason: string) => cappedReasons.set(reason, (cappedReasons.get(reason) ?? 0) + 1)
 
   const gatePassed: IQueryStats[] = []
   for (const stats of allStats) {
@@ -240,7 +245,7 @@ export const analyzeSearchQueries = async () => {
     // de rejet trompeur — "not_synonym_candidate" — qui masquait le vrai motif : capé). Réévalué
     // au prochain run.
     if (suggestionCapped || synonymCapped) {
-      countReason(suggestionCapped ? "suggestion_capped" : "synonym_capped")
+      countCapped(suggestionCapped ? "suggestion_capped" : "synonym_capped")
       continue
     }
 
@@ -250,15 +255,17 @@ export const analyzeSearchQueries = async () => {
   }
 
   // 6. Rapport.
-  const reasonsSummary = [...rejectedReasons.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([reason, count]) => `${reason}: ${count}`)
-    .join(", ")
+  const summarize = (reasons: Map<string, number>) =>
+    [...reasons.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([reason, count]) => `${reason}: ${count}`)
+      .join(", ")
   const message = [
     `Run \`${runId}\` — ${allStats.length} requêtes distinctes analysées (fenêtre ${CRITERIA.WINDOW_DAYS} j), ${candidates.length} candidats après pré-filtre.`,
     `Suggestions insérées (${insertedSuggestions.length}) : ${insertedSuggestions.join(", ") || "—"}`,
     `Synonymes insérés (${insertedSynonyms.length}) : ${insertedSynonyms.join(" ; ") || "—"}`,
-    `Rejets : ${reasonsSummary || "—"}`,
+    `Rejets : ${summarize(rejectedReasons) || "—"}`,
+    `Capés par le quota du run (réévalués au prochain run, pas un rejet) : ${summarize(cappedReasons) || "—"}`,
     `Rollback : \`yarn cli search:suggestions:rollback --runId ${runId}\``,
   ].join("\n")
   logger.info(`analyzeSearchQueries[${runId}]:\n${message}`)
