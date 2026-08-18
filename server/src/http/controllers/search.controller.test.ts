@@ -193,13 +193,15 @@ describe("search.controller", () => {
 
       it("logue status=degraded quand searchItems replie après un dépassement de maxClauseCount", async () => {
         const spy = mockFirstAggregateCallToFail("Query exceeded maxClauseCount")
+        try {
+          const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=degraded&page=0" })
+          expect(response.statusCode).toBe(200)
 
-        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=degraded&page=0" })
-        expect(response.statusCode).toBe(200)
-        spy.mockRestore()
-
-        const doc = await waitForLoggedQuery("degraded")
-        expect(doc).toMatchObject({ status: "degraded", nb_hits: 0 })
+          const doc = await waitForLoggedQuery("degraded")
+          expect(doc).toMatchObject({ status: "degraded", nb_hits: 0 })
+        } finally {
+          spy.mockRestore()
+        }
       })
 
       it("logue status=error, nb_hits=null et renvoie 500 quand searchItems échoue", async () => {
@@ -209,12 +211,15 @@ describe("search.controller", () => {
           throw new Error("boom")
         })
 
-        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=erreur&page=0" })
-        expect(response.statusCode).toBe(500)
-        spy.mockRestore()
+        try {
+          const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=erreur&page=0" })
+          expect(response.statusCode).toBe(500)
 
-        const doc = await waitForLoggedQuery("erreur")
-        expect(doc).toMatchObject({ status: "error", nb_hits: null })
+          const doc = await waitForLoggedQuery("erreur")
+          expect(doc).toMatchObject({ status: "error", nb_hits: null })
+        } finally {
+          spy.mockRestore()
+        }
       })
     })
   })

@@ -21,9 +21,9 @@ export default (server: Server) => {
       // inchangé pour le client et pour la capture Sentry standard.
       const shouldLog = !req.query.internal && req.query.q?.trim() && req.query.page === 0
       try {
-        const result = await searchItems(req.query)
+        const { degraded, ...result } = await searchItems(req.query)
         if (shouldLog) {
-          void logSearchQuery(req.query, { status: result.degraded ? "degraded" : "ok", nbHits: result.nbHits })
+          void logSearchQuery(req.query, { status: degraded ? "degraded" : "ok", nbHits: result.nbHits })
         }
         return res.status(200).send(result)
       } catch (err) {
