@@ -30,12 +30,15 @@ export const CRITERIA = {
   SUGGESTION_MIN_LETTER_RATE: 0.8,
   /** S12 — confiance IA minimale. */
   SUGGESTION_MIN_CONFIDENCE: 0.8,
-  /** Garde-fou : insertions max par run (tri par fréquence décroissante au-delà). 30 s'est
-   * révélé trop bas dès le premier run de rattrapage (backlog initial jamais traité) : ~170-180
-   * candidats suggestion légitimes passaient le filtre, la moitié capée. Le repli sur le quota
-   * n'est plus perdant (les candidats capés sont réévalués au run suivant, cf. la boucle
-   * principale), mais un quota plus large réduit la latence de mise en autocomplete. */
-  MAX_SUGGESTIONS_PER_RUN: 100,
+  /** Garde-fou : insertions max par run (tri par fréquence décroissante au-delà). Le job tourne
+   * désormais en cron mensuel (cf. jobs.ts) — la fenêtre WINDOW_DAYS=30 correspond donc à peu
+   * près à un cycle. Le premier run réel après le passage à 100 a lui-même saturé le quota
+   * (97 insérées + 69 suggestion_capped, soit ~166 candidats légitimes sur une seule fenêtre) :
+   * remonté à 200 pour absorber un cycle complet sans backlog chronique. Le repli sur le quota
+   * n'est pas perdant (les candidats capés sont réévalués au run suivant, cf. la boucle
+   * principale), mais un quota trop juste au regard du volume réel observé retarde inutilement
+   * la mise en autocomplete. */
+  MAX_SUGGESTIONS_PER_RUN: 200,
 
   // ── Candidat → synonyme (impacte le matching global → plus strict) ──────
   /** Y1 — fréquence minimale. */
