@@ -151,11 +151,11 @@ export const FormulaireEditionOffreStep3 = ({
           >
             Étape 3/{totalSteps} : Contacter les écoles
           </Typography>
+          <Typography component="h2" sx={{ fontSize: "22px", lineHeight: "28px", fontWeight: 700, mb: fr.spacing("4v") }}>
+            Ces centres de formation pourraient vous proposer des candidats (Facultatif)
+          </Typography>
           <Box sx={{ display: "flex" }}>
             <Box sx={{ minWidth: { xs: "100%", md: "50%" } }}>
-              <Typography component="h2" sx={{ fontSize: "22px", lineHeight: "28px", fontWeight: 700, mb: fr.spacing("4v") }}>
-                Ces centres de formation pourraient vous proposer des candidats (Facultatif)
-              </Typography>
               <CfaSolicitationIntro />
               {isLoading ? (
                 <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("5v") }}>
@@ -195,7 +195,7 @@ const Buttons = ({ offre, onCancel, isFtEligible }: { offre?: IJob; onCancel: ()
         </Button>
       ) : (
         <Button disabled={isSubmitting} onClick={submitForm} data-testid="creer-offre">
-          {offre?._id ? "Continuer et Mettre à jour l'offre" : "Continuer et Créer l'offre"}
+          {offre?._id ? "Continuer et Mettre à jour l'offre" : "Créer l'offre"}
         </Button>
       )}
     </Box>

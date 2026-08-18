@@ -187,13 +187,12 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
           <>
             {etablissements?.length > 0 && (
               <Box sx={{ p: 0 }}>
+                <Typography component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold" }}>
+                  Ces centres de formation pourraient vous proposer des candidats
+                </Typography>
                 <Box sx={{ display: "flex" }}>
                   <Box sx={{ minWidth: { xs: "100%", md: "50%" } }}>
-                    <Typography component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold" }}>
-                      Ces centres de formation pourraient vous proposer des candidats
-                    </Typography>
                     <CfaSolicitationIntro sx={{ fontSize: "20px", lineHeight: "28px", mt: fr.spacing("4v") }} />
-
                     <Box sx={{ mt: fr.spacing("5v") }}>
                       {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistanceJSON, index) => {
                         const isDisabled = checkedDisabledEtablissements.some((etab) => etab._id === etablissement._id)
