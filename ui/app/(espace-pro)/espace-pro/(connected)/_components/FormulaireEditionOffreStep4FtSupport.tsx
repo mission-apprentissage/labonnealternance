@@ -147,7 +147,7 @@ const Buttons = ({ offre, onCancel }: { offre?: IJob; onCancel: () => void }) =>
         </Button>
       </Box>
       <Button disabled={isSubmitting} onClick={submitForm} data-testid="creer-offre">
-        {offre?._id ? "Continuer et Mettre à jour l'offre" : "Continuer et Créer l'offre"}
+        {offre?._id ? "Continuer et Mettre à jour l'offre" : "Créer l'offre"}
       </Button>
     </Box>
   )
