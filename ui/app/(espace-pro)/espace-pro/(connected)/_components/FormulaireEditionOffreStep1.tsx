@@ -209,7 +209,15 @@ export const FormulaireEditionOffreStep1 = ({
               >
                 Étape 1/{totalSteps} : Description de l'offre
               </Typography>
-              <Typography component="h2" sx={{ fontWeight: 700 }}>
+              <Typography
+                component="h2"
+                sx={{
+                  fontSize: { xs: "22px !important", md: "32px !important" },
+                  lineHeight: { xs: "28px !important", md: "40px !important" },
+                  mb: fr.spacing("6v"),
+                  fontWeight: 700,
+                }}
+              >
                 Votre offre
               </Typography>
               <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>

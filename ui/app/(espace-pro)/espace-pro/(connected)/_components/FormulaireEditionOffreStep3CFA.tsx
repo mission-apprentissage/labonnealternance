@@ -41,12 +41,11 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
               borderWidth: "1px",
               borderColor: isDisabled ? "#E5E5E5" : "#000091",
               mb: fr.spacing("4v"),
-              p: fr.spacing("4v"),
             }}
             key={etablissement._id}
             data-testid={`cfa-${index}`}
           >
-            <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }}>
+            <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row", pl: fr.spacing("1v") }}>
               <Checkbox
                 sx={{ "&.Mui-disabled .MuiSvgIcon-root": { display: "none" } }}
                 disabled={isDisabled}
@@ -54,7 +53,7 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
                 onChange={() => toggleEtablissement(etablissement._id, etablissement.siret)}
               />
             </Box>
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ py: fr.spacing("4v"), flex: 1 }}>
               {isDisabled && (
                 <Box sx={{ display: "flex", alignItems: "flex-start", backgroundColor: "#F6F6F6", width: "fit-content", px: fr.spacing("2v"), py: fr.spacing("1v") }}>
                   <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" style={{ margin: "4px" }} unoptimized width={16} height={16} />
@@ -71,7 +70,7 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
                 underline="hover"
                 aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
                 href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
-                color="inherit"
+                sx={{ color: "#000091" }}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => pushMatomoEvent({ event: MATOMO_EVENTS.CFA_DETAILS_CLICKED, cfa_siret: etablissement.siret })}
@@ -151,7 +150,10 @@ export const FormulaireEditionOffreStep3 = ({
           >
             Étape 3/{totalSteps} : Contacter les écoles
           </Typography>
-          <Typography component="h2" sx={{ fontSize: "22px", lineHeight: "28px", fontWeight: 700, mb: fr.spacing("4v") }}>
+          <Typography
+            component="h2"
+            sx={{ fontSize: { xs: "22px !important", md: "32px !important" }, lineHeight: { xs: "28px !important", md: "40px !important" }, fontWeight: 700, mb: fr.spacing("6v") }}
+          >
             Ces centres de formation pourraient vous proposer des candidats (Facultatif)
           </Typography>
           <Box sx={{ display: "flex" }}>
