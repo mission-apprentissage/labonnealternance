@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Image from "next/image"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import QRCode from "react-qr-code"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
@@ -21,6 +21,8 @@ const printExactColor = { WebkitPrintColorAdjust: "exact", printColorAdjust: "ex
 
 export default function PrintableJobPage() {
   const { jobId } = useParams() as { jobId: string }
+  const searchParams = useSearchParams()
+  const utmCampaign = searchParams.get("source") === "cfa-sharing" ? "mer-cfa-affiche" : "offre-phygital-sur-affiche"
 
   const { data: offre, isLoading } = useQuery({
     queryKey: ["offre"],
@@ -126,7 +128,7 @@ export default function PrintableJobPage() {
             type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
             jobId,
           })
-          .getPath()}?utm_source=lba-phygital&utm_medium=phygital&utm_campaign=offre-phygital`}
+          .getPath()}?utm_source=lba-phygital&utm_medium=phygital&utm_campaign=${utmCampaign}`}
         size={128}
         style={{ margin: "auto", height: "auto", maxWidth: "128x", width: "128px" }}
         viewBox={`0 0 128 128`}
