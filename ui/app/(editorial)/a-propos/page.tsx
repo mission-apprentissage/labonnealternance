@@ -9,6 +9,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import j1s from "@/public/images/logosPartenaires/partenaire-1j1s.webp"
 import affelnet from "@/public/images/logosPartenaires/partenaire-affelnet.webp"
 import apec from "@/public/images/logosPartenaires/partenaire-apec.webp"
+import apecita from "@/public/images/logosPartenaires/partenaire-apecita.webp"
 import auchan from "@/public/images/logosPartenaires/partenaire-auchan.webp"
 import bpce from "@/public/images/logosPartenaires/partenaire-bpce.webp"
 import daher from "@/public/images/logosPartenaires/partenaire-daher.webp"
@@ -280,6 +281,7 @@ export default function APropos() {
                   <Image src={taleez} alt="Taleez" style={{ width: "100%", height: "auto" }} />
                   <Image src={talentplug} alt="Talent Plug" style={{ width: "100%", height: "auto" }} />
                   <Image src={apec} alt="Apec" style={{ width: "100%", height: "auto" }} />
+                  <Image src={apecita} alt="apecita, l'emploi agri, agro et environnement" style={{ width: "100%", height: "auto" }} />
                 </Box>
 
                 <Typography>La bonne alternance collabore également avec les acteurs publics suivants :</Typography>

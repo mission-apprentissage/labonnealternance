@@ -4,6 +4,7 @@ import { JOB_START_TYPE } from "shared/models/job.model"
 
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 
 const HIGHLIGHT_MAX_PASSAGES = 5
 const HIGHLIGHT_MAX_CHARS = 300
@@ -251,15 +252,6 @@ const fuzzyFor = (term: string): { maxEdits: number; prefixLength: number } | un
 // Nombre minimal de termes couverts exigé : tous jusqu'à 2 termes, n−1 pour 3-4, 75 % au-delà.
 const msmFor = (n: number): number => (n <= 2 ? n : n <= 4 ? n - 1 : Math.ceil(0.75 * n))
 
-// Plafond de termes injectés dans la porte de pertinence : un intitulé de formation entier
-// envoyé tel quel comme `q` (clic sur une suggestion) peut tokeniser en 20+ termes, chacun
-// généré en plusieurs clauses `text`/fuzzy par champ (rome_labels/title/organization_name/
-// keywords) — le compound $search dépasse alors maxClauseCount=1024 côté mongot
-// (Sentry LBA-SERVER-5J7KF4ZZZT961). Les premiers termes portent l'intitulé principal (le
-// détail vient après tirets/parenthèses) : tronquer ne change pas la pertinence perçue pour
-// une recherche normale et borne le pire cas.
-const MAX_TEXT_GATE_TERMS = 12
-
 // Filtre « date de début de contrat » (spec ticket Contract start) : l'utilisateur indique
 // quand il veut démarrer → on montre tout ce qui est compatible, c'est-à-dire les offres qui
 // démarrent AVANT OU À cette date ($lte), celles à date flexible, et les docs SANS date de
@@ -334,8 +326,8 @@ const buildLevelFilter = (level: string[]) => ({ in: { path: "level", value: [..
 //   exige déjà les autres termes ailleurs ("monteur vidéo" : « vidéo » légitimement couvert
 //   par les keywords d'une offre dont le title porte « monteur »). Les keywords restent un
 //   signal de score pour tous les types (cf. buildTextBonusClauses).
-function buildTermCoverageClause(term: string, isSingleTerm: boolean): object {
-  const fuzzy = fuzzyFor(term)
+function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQuery: boolean): object {
+  const fuzzy = simplifyQuery ? undefined : fuzzyFor(term)
   const text = (path: string, boost: number) => ({ text: { query: term, path, ...(fuzzy ? { fuzzy } : {}), score: { boost: { value: boost } } } })
   return {
     compound: {
@@ -372,13 +364,28 @@ function buildTermCoverageClause(term: string, isSingleTerm: boolean): object {
  * Opérateur `phrase` (et non `text`) pour les synonymes : `text` matche l'expansion token par
  * token (« vigile » → « agent de sécurité » laissait entrer tout doc contenant « agent » —
  * agents commerciaux compris, recette #3) ; `phrase` exige la séquence complète du synonyme.
+ *
+ * `simplifyQuery` (repli sur maxClauseCount dépassé, cf. runSearchAggregations) retire la
+ * clause synonymes en plus de désactiver le fuzzy : sur une requête longue et riche en mots
+ * courants (ex. intitulé de formation complet), `phrase`+`synonyms` peut À LUI SEUL dépasser
+ * la limite — reproduit en isolant cette clause contre mongot (#5153) sur une requête où la
+ * couverture par terme, elle, passe sans problème même avec le fuzzy actif. La clause reste
+ * peu utile sur ces requêtes de toute façon : `phrase`/`slop:0` exige une correspondance quasi
+ * exacte, peu probable sur un texte libre long.
  */
-function buildTextGate(q?: string): object | null {
+function buildTextGate(q: string | undefined, simplifyQuery: boolean): object | null {
   if (!q?.trim()) return null
-  const terms = tokenizeQuery(q).slice(0, MAX_TEXT_GATE_TERMS)
-  const coverage = terms.length ? [{ compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1)), minimumShouldMatch: msmFor(terms.length) } }] : []
-  const synonyms = { phrase: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", slop: 0, score: { boost: { value: 6 } } } }
-  return { compound: { should: [...coverage, synonyms], minimumShouldMatch: 1 } }
+  const terms = tokenizeQuery(q)
+  const coverage = terms.length
+    ? [{ compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1, simplifyQuery)), minimumShouldMatch: msmFor(terms.length) } }]
+    : []
+  const synonyms = simplifyQuery ? [] : [{ phrase: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", slop: 0, score: { boost: { value: 6 } } } }]
+  const should = [...coverage, ...synonyms]
+  // simplifyQuery peut vider les deux voies d'entrée à la fois (q composé uniquement de
+  // stopwords, sans la clause synonymes — qui opère sur le q brut, pas sur `terms` — pour
+  // compenser) : un compound `should: []` est un comportement $search non défini côté mongot.
+  // Repli sur « pas de porte de pertinence », comme pour un q vide.
+  return should.length ? { compound: { should, minimumShouldMatch: 1 } } : null
 }
 
 // Bonus de score (bloc `should`, n'élargit pas le result set) : adjacence/ordre des termes.
@@ -397,7 +404,7 @@ function buildTextBonusClauses(q?: string): object[] {
   ]
 }
 
-function buildCompoundOperator(filters: ISearchFilters) {
+function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) {
   const {
     q,
     type,
@@ -420,7 +427,7 @@ function buildCompoundOperator(filters: ISearchFilters) {
   const hasGeo = latitude !== undefined && longitude !== undefined
   const proximity = sort === "proximity" && hasGeo
 
-  const gate = buildTextGate(q)
+  const gate = buildTextGate(q, simplifyQuery)
 
   const filter: object[] = []
 
@@ -545,7 +552,7 @@ function isDimensionActive(filters: ISearchFilters, key: FacetDimension): boolea
 // Faceting DISJONCTIF : compound = texte + géo + type + tous les filtres de dimension
 // SAUF `exclude`. Ainsi une facette ne masque pas ses propres options en multi-sélection,
 // mais reflète bien les restrictions imposées par les AUTRES filtres (filtres synchronisés).
-function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | null) {
+function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | null, simplifyQuery: boolean) {
   const {
     q,
     type,
@@ -566,7 +573,7 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   } = filters
   const hasGeo = latitude !== undefined && longitude !== undefined
   // Même porte de pertinence que la recherche → les counts de facettes reflètent le même result set.
-  const gate = buildTextGate(q)
+  const gate = buildTextGate(q, simplifyQuery)
   const filter: object[] = []
 
   if (type) filter.push({ equals: { path: "type", value: type } })
@@ -606,14 +613,14 @@ type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: nu
 // mongot ne supportent que string/number/date) → un count dédié par chip via $searchMeta.
 // Disjonctif comme les facettes : le filtre de la chip est exclu de son propre compound
 // pour que le compteur reste stable quand l'utilisateur active le filtre.
-function buildChipCountCompounds(filters: ISearchFilters) {
-  const handi = buildFacetCompound({ ...filters, is_disabled_elligible: undefined }, null)
+function buildChipCountCompounds(filters: ISearchFilters, simplifyQuery: boolean) {
+  const handi = buildFacetCompound({ ...filters, is_disabled_elligible: undefined }, null, simplifyQuery)
   handi.filter.push({ equals: { path: "is_disabled_elligible", value: true } })
 
-  const urgent = buildFacetCompound({ ...filters, start_type: undefined }, null)
+  const urgent = buildFacetCompound({ ...filters, start_type: undefined }, null, simplifyQuery)
   urgent.filter.push({ equals: { path: "start_type", value: JOB_START_TYPE.DES_QUE_POSSIBLE } })
 
-  const smartApply = buildFacetCompound({ ...filters, smart_apply: undefined }, null)
+  const smartApply = buildFacetCompound({ ...filters, smart_apply: undefined }, null, simplifyQuery)
   smartApply.filter.push({ equals: { path: "smart_apply", value: true } })
 
   return { is_disabled_elligible: handi, urgent, smart_apply: smartApply }
@@ -624,12 +631,12 @@ function buildChipCountCompounds(filters: ISearchFilters) {
 //   compteurs informatifs — sub_type alimente le détail par type d'offre de l'événement
 //   Matomo search_results_displayed), calculé avec tous les filtres actifs ;
 // - 1 groupe par dimension sélectionnée, calculé en excluant cette dimension.
-function buildFacetGroups(filters: ISearchFilters): { keys: string[]; compound: object }[] {
+function buildFacetGroups(filters: ISearchFilters, simplifyQuery: boolean): { keys: string[]; compound: object }[] {
   const activeDims = FACET_DIMENSIONS.filter((k) => isDimensionActive(filters, k))
   const inactiveDims = FACET_DIMENSIONS.filter((k) => !activeDims.includes(k))
 
-  const groups: { keys: string[]; compound: object }[] = [{ keys: [...inactiveDims, "type", "sub_type"], compound: buildFacetCompound(filters, null) }]
-  for (const dim of activeDims) groups.push({ keys: [dim], compound: buildFacetCompound(filters, dim) })
+  const groups: { keys: string[]; compound: object }[] = [{ keys: [...inactiveDims, "type", "sub_type"], compound: buildFacetCompound(filters, null, simplifyQuery) }]
+  for (const dim of activeDims) groups.push({ keys: [dim], compound: buildFacetCompound(filters, dim, simplifyQuery) })
   return groups
 }
 
@@ -646,18 +653,23 @@ export type SearchHit = ISearchItem & {
 // membres du replica set (la répartition de charge sur les secondaires redeviendra souhaitable).
 const SEARCH_AGGREGATE_OPTIONS = { readPreference: "primary" } as const
 
-export async function searchItems(params: ISearchFilters): Promise<{
-  hits: SearchHit[]
-  nbHits: number
-  page: number
-  nbPages: number
-  facets?: ISearchFacets
-  counts?: { is_disabled_elligible: number; urgent: number; smart_apply: number }
-}> {
-  const { page, hitsPerPage, latitude, longitude } = params
-  const compound = buildCompoundOperator(params)
-  const facetGroups = buildFacetGroups(params)
-  const chipCountCompounds = buildChipCountCompounds(params)
+// mongot n'expose pas de réglage pour relever cette limite (ni en config Docker/preview, ni en
+// déploiement natif prod — vérifié dans les deux repos d'infra). Deux clauses indépendantes
+// peuvent chacune expandre en dizaines/centaines de sous-clauses selon le vocabulaire indexé,
+// indépendamment du nombre de termes de la requête : le `fuzzy` par terme, et — surtout, cf.
+// #5153 où une requête a été isolée et rejouée directement contre mongot — la clause
+// `phrase`+`synonyms` sur la requête entière (buildTextGate), qui à elle seule suffit à
+// dépasser la limite sur une requête longue et riche en mots courants (intitulé de formation
+// complet), même avec le fuzzy désactivé et sans qu'aucun terme ne soit en cause.
+function isMaxClauseCountError(err: unknown): boolean {
+  return err instanceof Error && err.message.includes("maxClauseCount")
+}
+
+async function runSearchAggregations(params: ISearchFilters, simplifyQuery: boolean) {
+  const { page, hitsPerPage } = params
+  const compound = buildCompoundOperator(params, simplifyQuery)
+  const facetGroups = buildFacetGroups(params, simplifyQuery)
+  const chipCountCompounds = buildChipCountCompounds(params, simplifyQuery)
   const chipCountKeys = Object.keys(chipCountCompounds) as (keyof typeof chipCountCompounds)[]
 
   const [rows, chipCountArrays, ...metaArrays] = await Promise.all([
@@ -731,6 +743,33 @@ export async function searchItems(params: ISearchFilters): Promise<{
     ),
   ])
 
+  return { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys }
+}
+
+export async function searchItems(params: ISearchFilters): Promise<{
+  hits: SearchHit[]
+  nbHits: number
+  page: number
+  nbPages: number
+  facets?: ISearchFacets
+  counts?: { is_disabled_elligible: number; urgent: number; smart_apply: number }
+}> {
+  const { page, hitsPerPage, latitude, longitude } = params
+
+  let aggregations: Awaited<ReturnType<typeof runSearchAggregations>>
+  try {
+    aggregations = await runSearchAggregations(params, false)
+  } catch (err) {
+    if (!isMaxClauseCountError(err)) throw err
+    // Dégradation gracieuse plutôt qu'un 500 : on retente sans fuzzy ni synonymes (tolérance
+    // aux fautes de frappe et alternative de couverture par synonyme perdues pour cette requête
+    // précise seulement — la couverture par terme reste intacte) — capturé en warning pour
+    // suivre la fréquence réelle de ce repli, sans polluer le triage des vraies erreurs.
+    sentryCaptureException(err, { level: "warning", extra: { q: params.q, fallback: "search-simplify-query" } })
+    aggregations = await runSearchAggregations(params, true)
+  }
+  const { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys } = aggregations
+
   const nbHits = rows[0]?._meta?.count?.total ?? 0
   const nbPages = Math.ceil(nbHits / hitsPerPage)
 
@@ -769,7 +808,10 @@ export async function searchItems(params: ISearchFilters): Promise<{
     }
   })
 
-  const counts = Object.fromEntries(chipCountKeys.map((key, i) => [key, chipCountArrays[i][0]?.count?.total ?? 0])) as Record<keyof typeof chipCountCompounds, number>
+  const counts = Object.fromEntries(chipCountKeys.map((key, i) => [key, chipCountArrays[i][0]?.count?.total ?? 0])) as Record<
+    keyof ReturnType<typeof buildChipCountCompounds>,
+    number
+  >
 
   return { hits, nbHits, page, nbPages, facets, counts }
 }
