@@ -114,6 +114,11 @@ export const analyzeSearchQueries = async () => {
   const allStats = await aggregateQueryStats()
   const rejectedReasons = new Map<string, number>()
   const countReason = (reason: string) => rejectedReasons.set(reason, (rejectedReasons.get(reason) ?? 0) + 1)
+  // Compté à part des vrais rejets (cf. plus bas) : un candidat capé n'est PAS persisté en
+  // "rejected" et sera réévalué au prochain run — le confondre avec "Rejets" dans le rapport
+  // Slack laisserait croire à tort qu'il est écarté définitivement.
+  const cappedReasons = new Map<string, number>()
+  const countCapped = (reason: string) => cappedReasons.set(reason, (cappedReasons.get(reason) ?? 0) + 1)
 
   const gatePassed: IQueryStats[] = []
   for (const stats of allStats) {
@@ -185,7 +190,8 @@ export const analyzeSearchQueries = async () => {
 
     // Route suggestion (prioritaire) puis route synonyme.
     const suggestionVerdict = decideSuggestion(stats, parsed)
-    if (suggestionVerdict.verdict === "pass" && insertedSuggestions.length < CRITERIA.MAX_SUGGESTIONS_PER_RUN) {
+    const suggestionCapped = suggestionVerdict.verdict === "pass" && insertedSuggestions.length >= CRITERIA.MAX_SUGGESTIONS_PER_RUN
+    if (suggestionVerdict.verdict === "pass" && !suggestionCapped) {
       // S13 : on insère la forme canonique — re-testée contre l'anti-doublon après correction.
       const canonical = parsed.canonical!.trim()
       const canonicalStats = { ...stats, top_raw_q: canonical, q_normalized: normalizeQuery(canonical) || stats.q_normalized }
@@ -200,7 +206,8 @@ export const analyzeSearchQueries = async () => {
     }
 
     const synonymVerdict = decideSynonym(stats, parsed)
-    if (synonymVerdict.verdict === "pass" && insertedSynonyms.length < CRITERIA.MAX_SYNONYM_GROUPS_PER_RUN) {
+    const synonymCapped = synonymVerdict.verdict === "pass" && insertedSynonyms.length >= CRITERIA.MAX_SYNONYM_GROUPS_PER_RUN
+    if (synonymVerdict.verdict === "pass" && !synonymCapped) {
       const target = parsed.synonym_of!.trim()
       // Y4 — vérification empirique : la forme cible doit réellement produire des résultats.
       const control = await searchItems({ q: target, radius: 30, page: 0, hitsPerPage: 1 })
@@ -230,22 +237,36 @@ export const analyzeSearchQueries = async () => {
       continue
     }
 
-    const reason = suggestionVerdict.reason ?? synonymVerdict.reason ?? "capped"
+    // Capé par le quota du run (pas un vrai rejet IA) : ne PAS persister en "rejected", sinon
+    // `already_processed` l'exclurait à vie de tous les prochains runs — y compris de bons
+    // candidats qui n'ont simplement pas eu de place cette fois (constaté sur le run de
+    // rattrapage initial : des candidats à forte confiance comme "devops"/"design" dépassaient
+    // le quota suggestion, retombaient sur le test synonyme, et étaient reportés sous un motif
+    // de rejet trompeur — "not_synonym_candidate" — qui masquait le vrai motif : capé). Réévalué
+    // au prochain run.
+    if (suggestionCapped || synonymCapped) {
+      countCapped(suggestionCapped ? "suggestion_capped" : "synonym_capped")
+      continue
+    }
+
+    const reason = suggestionVerdict.reason ?? synonymVerdict.reason ?? "rejected_both_routes"
     countReason(reason)
     await persistDecision(stats, parsed, "rejected", reason, runId, now)
   }
 
   // 6. Rapport.
-  const reasonsSummary = [...rejectedReasons.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([reason, count]) => `${reason}: ${count}`)
-    .join(", ")
+  const summarize = (reasons: Map<string, number>) =>
+    [...reasons.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([reason, count]) => `${reason}: ${count}`)
+      .join(", ")
   const message = [
     `Run \`${runId}\` — ${allStats.length} requêtes distinctes analysées (fenêtre ${CRITERIA.WINDOW_DAYS} j), ${candidates.length} candidats après pré-filtre.`,
     `Suggestions insérées (${insertedSuggestions.length}) : ${insertedSuggestions.join(", ") || "—"}`,
     `Synonymes insérés (${insertedSynonyms.length}) : ${insertedSynonyms.join(" ; ") || "—"}`,
-    `Rejets : ${reasonsSummary || "—"}`,
-    `Rollback : \`yarn cli rollbackSearchSuggestions --runId ${runId}\``,
+    `Rejets : ${summarize(rejectedReasons) || "—"}`,
+    `Capés par le quota du run (réévalués au prochain run, pas un rejet) : ${summarize(cappedReasons) || "—"}`,
+    `Rollback : \`yarn cli search:suggestions:rollback --runId ${runId}\``,
   ].join("\n")
   logger.info(`analyzeSearchQueries[${runId}]:\n${message}`)
   await notifyToSlack({ subject: "ANALYSE RECHERCHES UTILISATEURS", message })

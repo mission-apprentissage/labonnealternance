@@ -30,8 +30,12 @@ export const CRITERIA = {
   SUGGESTION_MIN_LETTER_RATE: 0.8,
   /** S12 — confiance IA minimale. */
   SUGGESTION_MIN_CONFIDENCE: 0.8,
-  /** Garde-fou : insertions max par run (tri par fréquence décroissante au-delà). */
-  MAX_SUGGESTIONS_PER_RUN: 30,
+  /** Garde-fou : insertions max par run (tri par fréquence décroissante au-delà). 30 s'est
+   * révélé trop bas dès le premier run de rattrapage (backlog initial jamais traité) : ~170-180
+   * candidats suggestion légitimes passaient le filtre, la moitié capée. Le repli sur le quota
+   * n'est plus perdant (les candidats capés sont réévalués au run suivant, cf. la boucle
+   * principale), mais un quota plus large réduit la latence de mise en autocomplete. */
+  MAX_SUGGESTIONS_PER_RUN: 100,
 
   // ── Candidat → synonyme (impacte le matching global → plus strict) ──────
   /** Y1 — fréquence minimale. */
