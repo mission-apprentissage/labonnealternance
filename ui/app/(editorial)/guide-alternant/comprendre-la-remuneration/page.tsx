@@ -23,7 +23,7 @@ const FAQ_ITEMS = [
   {
     question: "Quel est le salaire minimum d'un alternant en 2026 ?",
     answer:
-      "En contrat d'apprentissage, la rémunération va de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02 €) pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.",
+      "En contrat d'apprentissage, la rémunération varie de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02 €) pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.",
   },
   {
     question: "Quel est le SMIC applicable en 2026 ?",
@@ -273,7 +273,7 @@ const ComprendreLaRemunerationPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantComprendreLaRemuneration]
 
   const descriptionParts = [
-    "En 2026, le salaire en alternance va de 27 % à 100 % du SMIC, soit de 504 € à 1 867 € brut par mois, selon l'âge, l'année de contrat et le type de contrat (apprentissage ou professionnalisation).",
+    "En 2026, le salaire en alternance varie de 27 % à 100 % du SMIC, soit de 504 € à 1 867 € brut par mois, selon l'âge, l'année de contrat et le type de contrat (apprentissage ou professionnalisation).",
     "Vous vous lancez dans l'alternance et vous vous demandez combien vous allez gagner ? La rémunération en alternance dépend de plusieurs facteurs : le type de contrat (apprentissage ou professionnalisation), votre âge, votre année de formation et parfois votre niveau de diplôme. Ce guide complet vous présente tous les barèmes de salaire en vigueur en 2026.",
   ]
 
@@ -352,7 +352,7 @@ const ComprendreLaRemunerationPage = () => {
         </Paragraph>
         <BlocSalaire />
         <Paragraph>
-          *ou du salaire minimum conventionnel (SMC) de l'emploi occupé si celui-ci est plus favorable (
+          *du SMIC ou du salaire minimum conventionnel (SMC) de l'emploi occupé si celui-ci est plus favorable (
           <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033238/" aria-label="Consulter l'article D. 6222-26 du Code du travail – Légifrance">
             article D. 6222-26 du Code du travail – Légifrance
           </DsfrLink>
@@ -538,7 +538,7 @@ const ComprendreLaRemunerationPage = () => {
           Quel est le salaire minimum d'un alternant en 2026 ?
         </Paragraph>
         <Paragraph>
-          En contrat d'apprentissage, la rémunération va de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02 €)
+          En contrat d'apprentissage, la rémunération varie de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02 €)
           pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -546,7 +546,7 @@ const ComprendreLaRemunerationPage = () => {
         </Paragraph>
         <Paragraph>
           Depuis le 1er juin 2026, le SMIC s'élève à 1 867,02 € brut par mois, soit 12,31 € brut de l'heure (
-          <DsfrLink href={"https://www.service-public.gouv.fr/particuliers/vosdroits/F2918"} aria-label="Consulter le site service-public.gouv.fr – Montant du SMIC">
+          <DsfrLink href={"https://travail-emploi.gouv.fr/le-smic-salaire-minimum-de-croissance"} aria-label="Consulter le site travail-emploi.gouv.fr – Montant du SMIC">
             service-public.gouv.fr
           </DsfrLink>
           ). C'est la base de calcul de la rémunération minimale en alternance.
@@ -604,11 +604,7 @@ const ComprendreLaRemunerationPage = () => {
           <DsfrLink href={"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000033020517"} aria-label={"Consulter l'article L. 3141-3 du Code du travail – Légifrance"}>
             article L. 3141-3 du Code du travail – Légifrance
           </DsfrLink>
-          ). Le salaire est maintenu pendant les congés (
-          <DsfrLink href={"https://travail-emploi.gouv.fr/lapprentissage-au-quotidien"} aria-label="Consulter le site travail-emploi.gouv.fr – L'apprentissage au quotidien">
-            travail-emploi.gouv.fr – L'apprentissage au quotidien
-          </DsfrLink>
-          ).
+          ). Le salaire est maintenu pendant les congés.
         </Paragraph>
         <Paragraph>
           Pour en savoir plus, rendez-vous sur le site du Ministère du Travail (
@@ -632,7 +628,7 @@ const ComprendreLaRemunerationPage = () => {
               href={"https://travail-emploi.gouv.fr/questions-reponses-la-formation-en-alternance"}
               aria-label="Consulter le site travail-emploi.gouv.fr – Questions-réponses sur la rémunération des apprentis (PDF)"
             >
-              Questions-réponses sur la rémunération des apprentis (PDF)
+              Questions-réponses sur la rémunération des apprentis
             </DsfrLink>,
           ]}
         />
