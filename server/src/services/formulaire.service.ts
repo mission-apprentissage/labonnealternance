@@ -207,8 +207,6 @@ const notifyCfaDelegations = async (offer: IJobsPartnersOfferPrivate, delegation
     })
   )
 
-  if (!sentDelegations.length) return
-
   const jobTitle = offer.offer_title
   const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${offer._id}/${encodeURIComponent(jobTitle)}`)
   await mailer.sendEmail({
