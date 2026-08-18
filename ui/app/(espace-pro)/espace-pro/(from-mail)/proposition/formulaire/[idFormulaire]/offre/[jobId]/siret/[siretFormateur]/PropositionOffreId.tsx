@@ -65,7 +65,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
 
   const downloadQRCode = () => {
     const qrCodeUrl = `${publicConfig.baseUrl}${PAGES.dynamic.espaceProOffreImpression(job._id.toString()).getPath()}`
-    window.open(qrCodeUrl, "_blank")
+    window.open(qrCodeUrl, "_blank", "noopener,noreferrer")
   }
 
   if (!job) {
