@@ -147,6 +147,7 @@ export default function PrintableJobPage() {
         <Typography
           component="span"
           sx={{
+            fontSize: "12px",
             fontWeight: 700,
           }}
         >
