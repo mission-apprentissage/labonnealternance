@@ -753,10 +753,14 @@ export async function searchItems(params: ISearchFilters): Promise<{
   nbPages: number
   facets?: ISearchFacets
   counts?: { is_disabled_elligible: number; urgent: number; smart_apply: number }
+  // Repli maxClauseCount déclenché (cf. #5153) — pas dans le schéma de réponse publique
+  // (strippé par le type provider zod), lu uniquement par le contrôleur pour search_queries.
+  degraded?: boolean
 }> {
   const { page, hitsPerPage, latitude, longitude } = params
 
   let aggregations: Awaited<ReturnType<typeof runSearchAggregations>>
+  let degraded = false
   try {
     aggregations = await runSearchAggregations(params, false)
   } catch (err) {
@@ -767,6 +771,7 @@ export async function searchItems(params: ISearchFilters): Promise<{
     // suivre la fréquence réelle de ce repli, sans polluer le triage des vraies erreurs.
     sentryCaptureException(err, { level: "warning", extra: { q: params.q, fallback: "search-simplify-query" } })
     aggregations = await runSearchAggregations(params, true)
+    degraded = true
   }
   const { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys } = aggregations
 
@@ -813,7 +818,7 @@ export async function searchItems(params: ISearchFilters): Promise<{
     number
   >
 
-  return { hits, nbHits, page, nbPages, facets, counts }
+  return { hits, nbHits, page, nbPages, facets, counts, degraded }
 }
 
 // Autocomplétion sur le contenu indexé (title + rome_labels, edgeGram).

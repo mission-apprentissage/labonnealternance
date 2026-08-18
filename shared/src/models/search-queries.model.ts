@@ -15,7 +15,13 @@ export const ZSearchQuery = z.object({
   _id: zObjectId,
   q: z.string().max(200).describe("Requête brute saisie (tronquée à 200 caractères, PII pré-filtrées)"),
   q_normalized: z.string().describe("Clé d'agrégation : termes tokenizeQuery normalisés, joints par espace"),
-  nb_hits: z.number().describe("Nombre de résultats retournés"),
+  // "degraded" : searchItems a dû retenter sans fuzzy/synonymes suite à maxClauseCount dépassé
+  // (cf. #5153) — succès quand même, mais signal à part du "ok" pour repérer les requêtes qui
+  // stressent le moteur. "error" : searchItems a levé une exception non récupérée ; nb_hits est
+  // alors null (avant #5153/#5166, la quasi-totalité des échecs n'étaient jamais logués du tout
+  // puisque ce log n'était appelé qu'après un succès — ce champ comble ce trou).
+  status: z.enum(["ok", "degraded", "error"]).describe("Issue de la recherche : succès normal, succès après repli, ou échec"),
+  nb_hits: z.number().nullable().describe("Nombre de résultats retournés (null si status=error)"),
   source: z.enum(["suggestion", "free_text"]).describe("Suggestion d'autocomplete sélectionnée vs texte libre"),
   filters: z
     .object({
