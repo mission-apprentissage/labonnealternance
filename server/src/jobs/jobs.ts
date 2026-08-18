@@ -259,7 +259,7 @@ export async function setupJobProcessor() {
             tag: "main",
           },
           "Analyse mensuelle des recherches utilisateurs (autocomplete + synonymes)": {
-            cron_string: "0 1 1 * *",
+            cron_string: "0 7 1 * *",
             handler: analyzeSearchQueries,
             tag: "slave",
             maxRuntimeInMinutes: 60,
