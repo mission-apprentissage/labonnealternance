@@ -75,10 +75,6 @@ export const RomeDetailReadOnly = ({
       <Accordion id="accessibilite" label="À qui ce métier est-il accessible ?">
         <Typography>{acces_metier}</Typography>
       </Accordion>
-
-      <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px", mt: fr.spacing("4v") }}>
-        La fiche métier se base sur la classification ROME de France Travail
-      </Typography>
     </Box>
   )
 }

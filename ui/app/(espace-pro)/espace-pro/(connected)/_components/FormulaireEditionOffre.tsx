@@ -108,7 +108,7 @@ export const FormulaireEditionOffre = ({
               const finalValues = { ...formValues, ...values, ft_support: false }
               pushMatomoEvent({
                 event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
-                step_name: "screening_questions",
+                step_name: "cfa_share",
                 has_screening_questions: finalValues.to_applicant_questions?.length > 0,
                 ft_eligible: isFtEligible,
               })
