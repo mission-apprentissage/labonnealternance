@@ -208,7 +208,7 @@ const SeFaireAccompagnerPage = () => {
               Pays de la Loire
             </DsfrLink>,
             <DsfrLink
-              href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-region-occita"
+              href="https://demarche.numerique.gouv.fr/commencer/apprentissage-volet-recherche-2026"
               aria-label="Contacter la cellule apprentissage Provence-Alpes-Côte d'Azur (PACA)"
             >
               Provence-Alpes-Côte d'Azur (PACA)
