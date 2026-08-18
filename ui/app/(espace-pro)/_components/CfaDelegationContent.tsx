@@ -16,7 +16,7 @@ export function InfoDelegation() {
         </Typography>
         <Box>
           <Typography sx={{ mt: fr.spacing("6v") }}>
-            <strong>Gagnez du temps : </strong>Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre
+            <strong>Gagner du temps : </strong>Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre
             région.
           </Typography>
           <Typography sx={{ mt: fr.spacing("6v") }}>
