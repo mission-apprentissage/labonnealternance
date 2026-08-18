@@ -66,7 +66,7 @@ import { opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiter-offer-expiration-reminder-job"
 import { resetApiKey } from "./recruiters/reset-api-key"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
-import { rollbackSearchSuggestions } from "./search/analyze-search-queries"
+import { analyzeSearchQueries, rollbackSearchSuggestions } from "./search/analyze-search-queries"
 import { fillSearchItemsCollection } from "./search/generate-search-items-collection"
 import { updateSEO } from "./seo/update-seo"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simple-job-definitions"
@@ -257,6 +257,12 @@ export async function setupJobProcessor() {
             cron_string: "30 7 * * *",
             handler: controlSearchItemsDrift,
             tag: "main",
+          },
+          "Analyse mensuelle des recherches utilisateurs (autocomplete + synonymes)": {
+            cron_string: "0 1 1 * *",
+            handler: analyzeSearchQueries,
+            tag: "slave",
+            maxRuntimeInMinutes: 60,
           },
           "Génération continue des keywords search_items (cache + API immédiate)": {
             cron_string: "*/30 * * * *",
