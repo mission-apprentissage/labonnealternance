@@ -64,7 +64,10 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
   const since = new Date(Date.now() - CRITERIA.WINDOW_DAYS * 24 * 3600 * 1000)
   return getDbCollection("search_queries")
     .aggregate<IQueryStats>([
-      { $match: { created_at: { $gte: since } } },
+      // status=error exclu : nb_hits est alors null (recherche non aboutie, aucun signal de
+      // pertinence) — l'inclure gonflerait `total` sans jamais compter dans `zero_hits_count`,
+      // ce qui ferait paraître le terme plus pertinent qu'il ne l'est (cf. #5166).
+      { $match: { created_at: { $gte: since }, status: { $ne: "error" } } },
       {
         $group: {
           _id: "$q_normalized",

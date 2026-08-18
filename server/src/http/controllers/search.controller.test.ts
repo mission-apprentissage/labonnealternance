@@ -1,9 +1,36 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
+import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+
+// Intercepte les appels `aggregate` sur search_items pour simuler un échec mongot précis
+// (même pattern que search.service.test.ts), sans toucher au reste de la stack.
+function mockFirstAggregateCallToFail(errorMessage: string) {
+  const getDbCollectionOriginal = mongodbUtils.getDbCollection
+  let aggregateCalls = 0
+  return vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
+    const collection = getDbCollectionOriginal(name)
+    if (name !== "search_items") return collection
+    return new Proxy(collection, {
+      get(target, prop, receiver) {
+        if (prop === "aggregate") {
+          return (...args: Parameters<typeof collection.aggregate>) => {
+            aggregateCalls++
+            if (aggregateCalls === 1) {
+              return { toArray: () => Promise.reject(new Error(errorMessage)) }
+            }
+            return target.aggregate(...args)
+          }
+        }
+        const value = Reflect.get(target, prop, receiver)
+        return typeof value === "function" ? value.bind(target) : value
+      },
+    }) as typeof collection
+  })
+}
 
 describe("search.controller", () => {
   useMongo()
@@ -128,6 +155,66 @@ describe("search.controller", () => {
         })
 
         expect(response.statusCode).toBe(200)
+      })
+    })
+
+    describe("log search_queries (#5153/#5166)", () => {
+      // logSearchQuery est fire-and-forget (jamais awaited par le contrôleur, cf. commentaire
+      // search.controller.ts) : l'insert peut atterrir après que inject() a résolu la réponse.
+      const waitForLoggedQuery = (q: string) =>
+        vi.waitFor(
+          async () => {
+            const doc = await getDbCollection("search_queries").findOne({ q })
+            expect(doc).not.toBeNull()
+            return doc!
+          },
+          { timeout: 1000, interval: 20 }
+        )
+
+      it("logue status=ok sur une recherche réussie", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=développeur&page=0" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("développeur")
+        expect(doc).toMatchObject({ status: "ok", nb_hits: 0 })
+      })
+
+      it("ne logue pas une requête interne ni une page > 0", async () => {
+        const response1 = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=interne&page=0&internal=true" })
+        const response2 = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=page1&page=1" })
+        expect(response1.statusCode).toBe(200)
+        expect(response2.statusCode).toBe(200)
+
+        // Laisse une marge à un éventuel (faux) log fire-and-forget avant de conclure à son absence.
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        expect(await getDbCollection("search_queries").findOne({ q: "interne" })).toBeNull()
+        expect(await getDbCollection("search_queries").findOne({ q: "page1" })).toBeNull()
+      })
+
+      it("logue status=degraded quand searchItems replie après un dépassement de maxClauseCount", async () => {
+        const spy = mockFirstAggregateCallToFail("Query exceeded maxClauseCount")
+
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=degraded&page=0" })
+        expect(response.statusCode).toBe(200)
+        spy.mockRestore()
+
+        const doc = await waitForLoggedQuery("degraded")
+        expect(doc).toMatchObject({ status: "degraded", nb_hits: 0 })
+      })
+
+      it("logue status=error, nb_hits=null et renvoie 500 quand searchItems échoue", async () => {
+        const getDbCollectionOriginal = mongodbUtils.getDbCollection
+        const spy = vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
+          if (name !== "search_items") return getDbCollectionOriginal(name)
+          throw new Error("boom")
+        })
+
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=erreur&page=0" })
+        expect(response.statusCode).toBe(500)
+        spy.mockRestore()
+
+        const doc = await waitForLoggedQuery("erreur")
+        expect(doc).toMatchObject({ status: "error", nb_hits: null })
       })
     })
   })
