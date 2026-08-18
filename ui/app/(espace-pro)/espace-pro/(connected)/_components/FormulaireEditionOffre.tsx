@@ -105,7 +105,7 @@ export const FormulaireEditionOffre = ({
         <FormulaireEditionOffreStep3
           onSubmit={(values) => {
             if (!isFtEligible) {
-              const finalValues = { ...formValues, ...values, ft_support: false }
+              const { cfaCountProposed, cfaCountSelected, ...finalValues } = { ...formValues, ...values, ft_support: false }
               pushMatomoEvent({
                 event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
                 step_name: "cfa_share",
@@ -114,8 +114,8 @@ export const FormulaireEditionOffre = ({
               })
               pushMatomoEvent({
                 event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
-                cfa_count_proposed: finalValues.cfaCountProposed,
-                cfa_count_selected: finalValues.cfaCountSelected,
+                cfa_count_proposed: cfaCountProposed,
+                cfa_count_selected: cfaCountSelected,
               })
               handleSave(finalValues)
             } else {
@@ -137,7 +137,7 @@ export const FormulaireEditionOffre = ({
       ) : currentStep === 4 && isFtEligible ? (
         <FormulaireEditionOffreStep4FtSupport
           onSubmit={(values) => {
-            const finalValues = { ...formValues, ...values }
+            const { cfaCountProposed, cfaCountSelected, ...finalValues } = { ...formValues, ...values }
             pushMatomoEvent({
               event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
               step_name: "ft_support",
@@ -150,8 +150,8 @@ export const FormulaireEditionOffre = ({
             })
             pushMatomoEvent({
               event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
-              cfa_count_proposed: finalValues.cfaCountProposed,
-              cfa_count_selected: finalValues.cfaCountSelected,
+              cfa_count_proposed: cfaCountProposed,
+              cfa_count_selected: cfaCountSelected,
             })
             handleSave(finalValues)
           }}
