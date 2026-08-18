@@ -1,6 +1,7 @@
 import fs from "fs"
 import path from "path"
 import { describe, expect, it } from "vitest"
+import { __dirname } from "@/common/utils/dirname"
 
 /**
  * Garde-fou de qualité de données sur `docs/mongodb/search-synonyms.json` : un groupe
@@ -12,7 +13,7 @@ import { describe, expect, it } from "vitest"
  * "logistique", contre 640 résultats réellement pertinents — cf. #5153).
  */
 describe("search-synonyms.json — pas de mot générique isolé mélangé à une phrase", () => {
-  const filePath = path.resolve(__dirname, "../../../../docs/mongodb/search-synonyms.json")
+  const filePath = path.resolve(__dirname(import.meta.url), "../../../../docs/mongodb/search-synonyms.json")
   const groups = JSON.parse(fs.readFileSync(filePath, "utf-8")) as Array<{ mappingType: string; synonyms: string[] }>
 
   it("charge bien 1660+ groupes depuis le fichier", () => {
@@ -23,7 +24,7 @@ describe("search-synonyms.json — pas de mot générique isolé mélangé à un
     const singleUpperWord = /^[A-ZÀ-Ý'-]+$/
     const offenders = groups.filter((g) => {
       const singleWords = g.synonyms.filter((s) => singleUpperWord.test(s) && s.length >= 4 && !s.includes(" "))
-      const hasPhrase = g.synonyms.some((s) => s.includes(" ") && /[A-ZÀ-Ý]/.test(s))
+      const hasPhrase = g.synonyms.some((s) => s.includes(" "))
       return singleWords.length > 0 && hasPhrase
     })
 
