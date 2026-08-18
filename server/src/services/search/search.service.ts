@@ -380,7 +380,12 @@ function buildTextGate(q: string | undefined, simplifyQuery: boolean): object | 
     ? [{ compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1, simplifyQuery)), minimumShouldMatch: msmFor(terms.length) } }]
     : []
   const synonyms = simplifyQuery ? [] : [{ phrase: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", slop: 0, score: { boost: { value: 6 } } } }]
-  return { compound: { should: [...coverage, ...synonyms], minimumShouldMatch: 1 } }
+  const should = [...coverage, ...synonyms]
+  // simplifyQuery peut vider les deux voies d'entrée à la fois (q composé uniquement de
+  // stopwords, sans la clause synonymes — qui opère sur le q brut, pas sur `terms` — pour
+  // compenser) : un compound `should: []` est un comportement $search non défini côté mongot.
+  // Repli sur « pas de porte de pertinence », comme pour un q vide.
+  return should.length ? { compound: { should, minimumShouldMatch: 1 } } : null
 }
 
 // Bonus de score (bloc `should`, n'élargit pas le result set) : adjacence/ordre des termes.

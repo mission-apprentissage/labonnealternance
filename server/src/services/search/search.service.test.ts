@@ -102,4 +102,23 @@ describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy ni synonymes sur
 
     getDbCollectionSpy.mockRestore()
   })
+
+  it("ne construit pas un compound should:[] quand le repli désactive les synonymes sur un q réduit à des stopwords (retour Copilot)", async () => {
+    // biome-ignore lint/suspicious/noEmptyBlockStatements: test
+    const sentrySpy = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
+    const getDbCollectionSpy = mockFirstAggregateCallToFail(
+      "MongoServerError: Executor error during aggregate command on namespace: labonnealternance.search_items :: caused by :: maxClauseCount is set to 1024"
+    )
+
+    // "de la le en" : uniquement des stopwords → tokenizeQuery(q) = [] côté couverture, mais la
+    // clause synonymes opère sur le q brut (pas sur `terms`) donc `gate` n'était pas null avant
+    // repli. En repli (synonymes retirées, coverage déjà vide), should:[] devait renvoyer null.
+    const result = await searchItems({ q: "de la le en", radius: 30, page: 0, hitsPerPage: 10 })
+
+    expect(result).toBeDefined()
+    expect(sentrySpy).toHaveBeenCalledTimes(1)
+
+    sentrySpy.mockRestore()
+    getDbCollectionSpy.mockRestore()
+  })
 })
