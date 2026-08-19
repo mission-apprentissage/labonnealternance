@@ -615,12 +615,6 @@ const ComprendreLaRemunerationPage = () => {
         </Paragraph>
         <ParagraphList
           listItems={[
-            <DsfrLink
-              href={"https://travail-emploi.gouv.fr/formation-en-alternance/apprentissage-et-formation-en-alternance"}
-              aria-label="Consulter le site travail-emploi.gouv.fr – Le contrat d'apprentissage"
-            >
-              Le contrat d'apprentissage
-            </DsfrLink>,
             <DsfrLink href={"https://travail-emploi.gouv.fr/lapprentissage-au-quotidien"} aria-label="Consulter le site travail-emploi.gouv.fr – L'apprentissage au quotidien">
               L'apprentissage au quotidien
             </DsfrLink>,
