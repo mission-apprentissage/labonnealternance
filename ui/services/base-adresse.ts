@@ -1,5 +1,7 @@
-import type { IPointGeometry } from "shared"
-import { ZPointGeometry } from "shared"
+// Import profond et non via le barrel "shared" : ce service part dans le bundle de la
+// home (autocomplete du SearchBar) et le barrel ré-exporte routes/params + modèles.
+import type { IPointGeometry } from "shared/models/address.model"
+import { ZPointGeometry } from "shared/models/address.model"
 import { z } from "zod"
 
 import { simplifiedItems } from "./arrondissements"

@@ -1,6 +1,8 @@
 import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 import { LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
-import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
+// Import du module léger et non de `extensions` : ce fichier part dans les bundles
+// client (params de recherche) et `zod-primitives.ts` traîne libphonenumber-js.
+import { buildEnum } from "../helpers/zod-helpers/zod-primitives-light.js"
 import { z } from "../helpers/zod-with-open-api.js"
 import { typedKeys } from "../utils/object-utils.js"
 
@@ -55,7 +57,7 @@ export const zDiplomaParam = z.enum([diplomaLevels[0], ...diplomaLevels.slice(1)
 
 export type IDiplomaParam = z.output<typeof zDiplomaParam>
 
-export const zTypesEmploiParam = z.array(extensions.buildEnum(TYPE_EMPLOI_OPTIONS)).optional()
+export const zTypesEmploiParam = z.array(buildEnum(TYPE_EMPLOI_OPTIONS)).optional()
 
 export type ITypesEmploiParam = z.output<typeof zTypesEmploiParam>
 
