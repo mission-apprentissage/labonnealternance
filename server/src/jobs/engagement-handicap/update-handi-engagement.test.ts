@@ -125,4 +125,63 @@ describe("updateHandiEngagement", () => {
     const docs = await getDbCollection("referentiel_engagement_entreprise").find({}).toArray()
     expect(docs).toHaveLength(0)
   })
+
+  describe("quand un SIRET n'est plus présent dans le fichier téléchargé", () => {
+    it("supprime l'entrée si la source FRANCE_TRAVAIL était sa seule source", async () => {
+      // given
+      await getDbCollection("referentiel_engagement_entreprise").insertOne({
+        _id: new ObjectId(),
+        siret: SIRET_2,
+        engagement: "handicap",
+        sources: [EntrepriseEngagementSources.FRANCE_TRAVAIL],
+        created_at: new Date(),
+        updated_at: new Date(),
+      })
+      mockNdjson([{ siret: SIRET_1 }])
+      // when
+      await updateHandiEngagement()
+      // then
+      const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: SIRET_2 })
+      expect(doc).toBeNull()
+    })
+
+    it("laisse l'entrée inchangée si elle n'a que la source LBA", async () => {
+      // given
+      const before = new Date("2020-01-01")
+      await getDbCollection("referentiel_engagement_entreprise").insertOne({
+        _id: new ObjectId(),
+        siret: SIRET_2,
+        engagement: "handicap",
+        sources: [EntrepriseEngagementSources.LBA],
+        created_at: before,
+        updated_at: before,
+      })
+      mockNdjson([{ siret: SIRET_1 }])
+      // when
+      await updateHandiEngagement()
+      // then
+      const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: SIRET_2 })
+      expect(doc?.sources).toEqual([EntrepriseEngagementSources.LBA])
+      expect(doc?.updated_at.getTime()).toBe(before.getTime())
+    })
+
+    it("retire uniquement la source FRANCE_TRAVAIL si l'entrée a aussi la source LBA", async () => {
+      // given
+      await getDbCollection("referentiel_engagement_entreprise").insertOne({
+        _id: new ObjectId(),
+        siret: SIRET_2,
+        engagement: "handicap",
+        sources: [EntrepriseEngagementSources.LBA, EntrepriseEngagementSources.FRANCE_TRAVAIL],
+        created_at: new Date(),
+        updated_at: new Date(),
+      })
+      mockNdjson([{ siret: SIRET_1 }])
+      // when
+      await updateHandiEngagement()
+      // then
+      const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: SIRET_2 })
+      expect(doc).not.toBeNull()
+      expect(doc?.sources).toEqual([EntrepriseEngagementSources.LBA])
+    })
+  })
 })
