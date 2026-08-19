@@ -26,7 +26,7 @@ const CarteDEtudiantDesMetiersPage = () => (
             <Image fetchPriority="low" src="/images/carte-d-etudiant-des-metiers-recto.svg" width={181} height={121} alt="" unoptimized style={{ height: "100%" }} />
             <Image fetchPriority="low" src="/images/carte-d-etudiant-des-metiers-verso.svg" width={181} height={121} alt="" unoptimized style={{ height: "100%" }} />
           </Box>
-          <Button linkProps={{ href: "/ressources/carte-d-etudiant-des-metiers.zip" }} style={{ margin: "auto", marginTop: fr.spacing("3w") }}>
+          <Button linkProps={{ href: "/ressources/carte-etudiant-metiers-2026-2027.zip" }} style={{ margin: "auto", marginTop: fr.spacing("3w") }}>
             <DsfrIcon name="fr-icon-download-line" size={16} />
             Télécharger la carte (ZIP)
             <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
