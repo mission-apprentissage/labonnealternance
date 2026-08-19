@@ -29,6 +29,7 @@ import { relanceIncitationSpontanee } from "./applications/relance-incitation-sp
 import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
+import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formations-catalogue/update-parcoursup-and-affelnet-info-on-formation-catalogue"
 import { generateFranceTravailAccess } from "./france-travail/generate-france-travail-access"
@@ -387,6 +388,10 @@ export async function setupJobProcessor() {
           "maj-diplome-metier": {
             cron_string: "0 8 * * SUN",
             handler: updateDiplomeMetier,
+          },
+          "update-handi-engagement": {
+            cron_string: "45 4 * * SAT",
+            handler: updateHandiEngagement,
           },
         },
     jobs: {
