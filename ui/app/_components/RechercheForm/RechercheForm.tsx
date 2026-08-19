@@ -1,11 +1,13 @@
 import { Box } from "@mui/material"
 import type { FormikErrors } from "formik"
 import { Formik } from "formik"
-import { extensions } from "shared/helpers/zod-helpers/zod-primitives"
-import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/params"
+// Module léger et non `extensions` (zod-primitives traîne libphonenumber-js dans le bundle client)
+import { buildEnum } from "shared/helpers/zod-helpers/zod-primitives-light"
+import { zDiplomaParam } from "shared/routes/params"
 import { z } from "zod"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { zTypesEmploiParam } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export enum UserItemTypes {
   EMPLOI = "Emplois",
@@ -25,7 +27,7 @@ const ZRechercheForm = z.object({
       latitude: z.number(),
     })
     .nullish(),
-  displayedItemTypes: z.array(extensions.buildEnum(UserItemTypes)),
+  displayedItemTypes: z.array(buildEnum(UserItemTypes)),
   radius: z.string().nullish(),
   diploma: zDiplomaParam.nullish(),
   typesEmploi: zTypesEmploiParam.nullish(),
