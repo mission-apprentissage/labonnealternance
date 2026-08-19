@@ -42,7 +42,14 @@ const removeFranceTravailSourceForMissingSirets = async (sirets: Set<string>) =>
 export const updateHandiEngagement = async () => {
   logger.info(`updateHandiEngagement: téléchargement de ${S3_KEY}`)
 
-  const content = await s3ReadAsString("storage", S3_KEY)
+  let content: string | undefined
+  try {
+    content = await s3ReadAsString("storage", S3_KEY)
+  } catch (err) {
+    logger.error({ err }, `updateHandiEngagement: échec de la lecture du fichier S3 (${S3_KEY})`)
+    return
+  }
+
   if (!content) {
     logger.warn(`updateHandiEngagement: fichier vide ou introuvable (${S3_KEY})`)
     return
