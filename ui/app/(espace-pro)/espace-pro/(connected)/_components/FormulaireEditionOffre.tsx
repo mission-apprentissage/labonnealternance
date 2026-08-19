@@ -55,6 +55,13 @@ export const FormulaireEditionOffre = ({
     window.scrollTo({ top: 0, behavior: "smooth" })
   }, [currentStep])
 
+  // certaines routes réutilisent le même composant entre deux offres (ou entre édition et création) sans le remonter :
+  // on réinitialise explicitement l'étape courante et les valeurs saisies dès que l'offre éditée change (y compris vers "aucune offre" pour une création)
+  useEffect(() => {
+    setCurrentStep(1)
+    setFormValues({})
+  }, [offre?._id])
+
   const pathname = usePathname()
 
   const { data: formulaire } = useQuery({
