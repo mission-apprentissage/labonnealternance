@@ -66,7 +66,6 @@ export const FormulaireEditionOffre = ({
   if (!establishment_id) return <></>
 
   const isFtEligible = isEligibleForFtSupport(pathname, formulaire)
-  const totalSteps = isFtEligible ? 4 : 3
 
   return (
     <>
@@ -85,7 +84,6 @@ export const FormulaireEditionOffre = ({
           }}
           offre={offre}
           establishment_id={establishment_id}
-          totalSteps={totalSteps}
         />
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2
@@ -99,7 +97,6 @@ export const FormulaireEditionOffre = ({
             setCurrentStep(1)
             onChangeScreen?.()
           }}
-          totalSteps={totalSteps}
         />
       ) : currentStep === 3 ? (
         <FormulaireEditionOffreStep3
@@ -132,7 +129,6 @@ export const FormulaireEditionOffre = ({
             onChangeScreen?.()
           }}
           isFtEligible={isFtEligible}
-          totalSteps={totalSteps}
         />
       ) : currentStep === 4 && isFtEligible ? (
         <FormulaireEditionOffreStep4FtSupport

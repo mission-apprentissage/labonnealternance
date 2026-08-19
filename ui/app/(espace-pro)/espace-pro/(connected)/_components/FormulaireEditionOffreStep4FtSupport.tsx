@@ -49,7 +49,7 @@ export const FormulaireEditionOffreStep4FtSupport = ({ offre, onSubmit, onCancel
               lineHeight: { xs: "24px !important", md: "28px !important" },
             }}
           >
-            Étape 4/4 : Accompagnement France Travail
+            Étape 4 : Accompagnement France Travail
           </Typography>
           <Typography
             component="h2"

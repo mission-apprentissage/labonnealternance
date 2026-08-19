@@ -25,17 +25,7 @@ const ZStep2Form = ZJobFields.pick({
 
 type IStep2Form = z.output<typeof ZStep2Form>
 
-export const FormulaireEditionOffreStep2 = ({
-  offre,
-  onSubmit,
-  onCancel,
-  totalSteps = 4,
-}: {
-  offre?: IJob
-  onSubmit?: (values: any) => void
-  onCancel: () => void
-  totalSteps?: number
-}) => {
+export const FormulaireEditionOffreStep2 = ({ offre, onSubmit, onCancel }: { offre?: IJob; onSubmit?: (values: any) => void; onCancel: () => void }) => {
   return (
     <Formik<IStep2Form>
       validateOnMount
@@ -58,7 +48,7 @@ export const FormulaireEditionOffreStep2 = ({
               lineHeight: { xs: "24px !important", md: "28px !important" },
             }}
           >
-            Étape 2/{totalSteps} : Questions pour les candidats
+            Étape 2 : Questions pour les candidats
           </Typography>
           <Typography
             component="h2"

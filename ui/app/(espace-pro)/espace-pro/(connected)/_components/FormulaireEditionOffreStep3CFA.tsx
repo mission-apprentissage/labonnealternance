@@ -96,7 +96,6 @@ export const FormulaireEditionOffreStep3 = ({
   onSubmit,
   onCancel,
   isFtEligible = true,
-  totalSteps = 4,
 }: {
   offre?: IJob
   romeCode?: string
@@ -104,7 +103,6 @@ export const FormulaireEditionOffreStep3 = ({
   onSubmit?: (values: any) => void
   onCancel: () => void
   isFtEligible?: boolean
-  totalSteps?: number
 }) => {
   const [latitude, longitude] = (geoCoordinates ?? "").split(",").map(parseFloat)
   const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude)
@@ -148,7 +146,7 @@ export const FormulaireEditionOffreStep3 = ({
               lineHeight: { xs: "24px !important", md: "28px !important" },
             }}
           >
-            Étape 3/{totalSteps} : Contacter les écoles
+            Étape 3 : Contacter les écoles
           </Typography>
           <Typography
             component="h2"
