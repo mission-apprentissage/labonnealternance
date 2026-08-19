@@ -61,6 +61,7 @@ export const updateHandiEngagement = async () => {
       if (!validateSIRET(siret)) {
         throw new Error(`SIRET invalide "${siret}"`)
       }
+      if (sirets.has(siret)) continue
       sirets.add(siret)
 
       const existing = await getEntrepriseHandiEngagement(siret)
