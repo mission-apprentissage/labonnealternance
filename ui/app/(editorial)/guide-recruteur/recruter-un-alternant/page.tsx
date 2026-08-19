@@ -54,7 +54,16 @@ const faqItems: { question: string; answer: string; answerNode?: ReactNode; link
         listItems={[
           "Définissez le poste et le diplôme préparé.",
           "Désignez un maître d'apprentissage.",
-          "Trouvez un candidat — vous pouvez déposer gratuitement votre offre sur La bonne alternance.",
+          <>
+            Trouvez un candidat — vous pouvez{" "}
+            <DsfrLink
+              href={`${PAGES.static.espaceProCreationEntreprise.getPath()}?utm_source=lba&utm_medium=website&utm_campaign=lba_ressources_recruteur`}
+              aria-label="Déposer gratuitement une offre d'alternance sur La bonne alternance"
+            >
+              déposer gratuitement votre offre sur La bonne alternance
+            </DsfrLink>
+            .
+          </>,
           "Rapprochez-vous du centre de formation qui préparera l'alternant.",
           "Signez le contrat d'apprentissage (Cerfa FA13) ou de professionnalisation ; votre OPCO peut vous accompagner dans cette démarche.",
           "Transmettez le contrat à votre OPCO au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en charge les frais de formation.",
