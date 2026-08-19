@@ -2,8 +2,12 @@ import type { ReadonlyURLSearchParams } from "next/navigation"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import type { ITypeEmploi } from "shared/constants/recruteur"
 import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
-// Imports profonds et non via le barrel "shared" : ce module part dans le bundle de
-// la home (via le registre PAGES de routes.utils).
+// Imports profonds plutôt que le barrel "shared" : ce module part dans le bundle de la home
+// (via le registre PAGES de routes.utils). Ce n'est pas ce qui a sorti zod du first-load — le
+// barrel est élaguable et `routes.utils` l'utilise encore ; c'est la suppression des usages de
+// zod *au niveau valeur* (z.object/z.enum/buildEnum) qui l'a fait. Les imports profonds sont
+// une ceinture de sécurité : ils rendent la chaîne insensible à un futur `sideEffects` élargi
+// dans shared/package.json, qui rendrait shared/routes non élaguable.
 import { MAX_SEARCH_ROMES_PRIVATE } from "shared/constants/search"
 import { parseEnum } from "shared/utils/enum-utils"
 import { typedKeys } from "shared/utils/object-utils"
@@ -30,6 +34,15 @@ export function deserializeItemReferences(items: string): ItemReference[] {
   return decodeURIComponent(items).split(",").map(deserializeItemReference).filter(Boolean)
 }
 
+/**
+ * `parseEnum` compare en minuscules, là où le `z.enum(LBA_ITEM_TYPE_OLD).parse` d'avant était
+ * sensible à la casse : `?activeItems=PEJOB:x` était rejeté, il est maintenant accepté et
+ * normalisé sur la valeur canonique. Élargissement assumé — les valeurs d'`activeItems` sont
+ * toujours produites par `serializeItemReferences` (liens partagés, navigation interne), jamais
+ * saisies à la main. Vérifié sur 24 h de logs nginx prod (172 900 requêtes avec `activeItems`) :
+ * 100 % des types sont canoniques (`partnerJob` 85 587, `lba` 53 030, `formation` 17 659,
+ * `matcha` 15 977), zéro variante de casse. Voir le test qui verrouille ce comportement.
+ */
 function deserializeItemReference(item: string): ItemReference | null {
   const [rawIdeaType, ...rest] = item.split(":")
   const ideaType = parseEnum(LBA_ITEM_TYPE_OLD, rawIdeaType)

@@ -6945,13 +6945,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mersenne-twister@npm:^1.1.7":
-  version: 1.1.7
-  resolution: "@types/mersenne-twister@npm:1.1.7"
-  checksum: 2d97e98287573ef6bdf3684ac3ed80bc384e5f9e214d4fa20e0449642fe0bd77347a9c4f8ef5feedd137a22ae073f51e314d52fe3aa921c1ecb7b5cc0d5e3d93
-  languageName: node
-  linkType: hard
-
 "@types/mjml-core@npm:*":
   version: 4.15.2
   resolution: "@types/mjml-core@npm:4.15.2"
@@ -13545,13 +13538,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mersenne-twister@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "mersenne-twister@npm:1.1.0"
-  checksum: 7de1940ded117f2aad9320ae4d21d647b0ecf0667abbadcfe6a2835c669feb674ef46cb7a72da7af69a56d8b19e50e95e2fb7ef6d780efab7a6acd4d87f4cb2d
-  languageName: node
-  linkType: hard
-
 "mgrs@npm:1.0.0":
   version: 1.0.0
   resolution: "mgrs@npm:1.0.0"
@@ -19207,7 +19193,6 @@ __metadata:
     "@testing-library/react": ^16.3.0
     "@tsconfig/next": ^2.0.3
     "@types/autosuggest-highlight": ^3.2.3
-    "@types/mersenne-twister": ^1.1.7
     "@types/node": ^24.10.0
     "@types/react": 19.2.6
     "@types/react-csv": ^1.1.10
@@ -19223,7 +19208,6 @@ __metadata:
     html-react-parser: ^5.2.8
     lodash-es: ^4.17.21
     match-sorter: ^8.1.0
-    mersenne-twister: ^1.1.0
     motion: ^12.23.24
     next: ^16.3.0
     next-plausible: ^3.12.5
