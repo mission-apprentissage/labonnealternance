@@ -17,7 +17,7 @@ type HandiEngageFlagDocument = { siret: string }
 // - source FRANCE_TRAVAIL seule → l'entrée est supprimée
 // - sources LBA + FRANCE_TRAVAIL → la source FRANCE_TRAVAIL est retirée, l'entrée (source LBA) est conservée
 // (les entrées avec uniquement la source LBA ne sont pas concernées : elles ne sont jamais retournées par ce filtre)
-const removeFranceTravailSourceForMissingSirets = async (sirets: Set<string>) => {
+const _removeFranceTravailSourceForMissingSirets = async (sirets: Set<string>) => {
   const staleDocs = await getDbCollection("referentiel_engagement_entreprise").find({ engagement: "handicap", sources: EntrepriseEngagementSources.FRANCE_TRAVAIL }).toArray()
 
   let removed = 0
@@ -94,12 +94,13 @@ export const updateHandiEngagement = async () => {
 
   logger.info(`updateHandiEngagement: ${created} créés, ${alreadyUpToDate} déjà à jour, ${completed} sources complétées, ${errors} erreurs`)
 
-  if (errors === 0 && sirets.size > 0) {
-    const { removed, franceTravailSourceRemoved } = await removeFranceTravailSourceForMissingSirets(sirets)
-    logger.info(`updateHandiEngagement: ${removed} entrées supprimées, ${franceTravailSourceRemoved} sources France Travail retirées (SIRET absents du fichier)`)
-  } else {
-    logger.warn(`updateHandiEngagement: contrôle inverse ignoré (errors=${errors}, sirets=${sirets.size})`)
-  }
+  // TODO: à voir avec métier. un fichier tronqué ou incomplet pourrait entraîner la suppression de sources France Travail pour des SIRET encore valides.
+  // if (errors === 0 && sirets.size > 0) {
+  //   const { removed, franceTravailSourceRemoved } = await removeFranceTravailSourceForMissingSirets(sirets)
+  //   logger.info(`updateHandiEngagement: ${removed} entrées supprimées, ${franceTravailSourceRemoved} sources France Travail retirées (SIRET absents du fichier)`)
+  // } else {
+  //   logger.warn(`updateHandiEngagement: contrôle inverse ignoré (errors=${errors}, sirets=${sirets.size})`)
+  // }
 
   logger.info(`updateHandiEngagement: mise à jour des offres dans jobs_partners`)
   await refreshEntrepriseEngagementJobsPartners()
