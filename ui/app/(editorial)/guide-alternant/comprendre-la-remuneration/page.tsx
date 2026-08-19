@@ -538,8 +538,8 @@ const ComprendreLaRemunerationPage = () => {
           Quel est le salaire minimum d'un alternant en 2026 ?
         </Paragraph>
         <Paragraph>
-          En contrat d'apprentissage, la rémunération varie de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02 €)
-          pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.
+          En contrat d'apprentissage, la rémunération varie de 27 % du SMIC (504,10 € brut par mois pour un apprenti de moins de 18 ans en première année) à 100 % du SMIC (1 867,02
+          €) pour les 26 ans et plus. En contrat de professionnalisation, le minimum est de 55 % du SMIC pour les moins de 21 ans sans qualification.
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Quel est le SMIC applicable en 2026 ?
