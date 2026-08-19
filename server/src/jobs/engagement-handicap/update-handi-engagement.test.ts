@@ -116,9 +116,19 @@ describe("updateHandiEngagement", () => {
     expect(docs[0].siret).toBe(SIRET_2)
   })
 
-  it("ne fait rien si le fichier S3 est vide ou introuvable", async () => {
+  it("ne fait rien si le fichier S3 est vide", async () => {
     // given
     vi.mocked(s3ReadAsString).mockResolvedValue(undefined)
+    // when
+    await updateHandiEngagement()
+    // then
+    const docs = await getDbCollection("referentiel_engagement_entreprise").find({}).toArray()
+    expect(docs).toHaveLength(0)
+  })
+
+  it("ne fait rien si la lecture S3 échoue (fichier introuvable / erreur S3)", async () => {
+    // given
+    vi.mocked(s3ReadAsString).mockRejectedValue(new Error("S3 error"))
     // when
     await updateHandiEngagement()
     // then
