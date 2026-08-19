@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
-import { Box, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { Formik, useField, useFormikContext } from "formik"
 import { type IJob, ZJobFields } from "shared"
@@ -189,9 +189,15 @@ const Buttons = ({
           Retour
         </Button>
       </Box>
-      {willContinue ? (
+      {isPendingCfaCheck ? (
+        // le libellé du bouton dépend de la présence de CFA à proximité : tant que cette recherche n'est pas terminée,
+        // on affiche un spinner plutôt qu'un libellé provisoire qui changerait juste après
+        <Button disabled aria-label="Vérification des centres de formation à proximité en cours" data-testid="continuer-creer-offre">
+          <CircularProgress size={16} color="inherit" />
+        </Button>
+      ) : willContinue ? (
         <Button
-          disabled={!isValid || isSubmitting || isPendingCfaCheck}
+          disabled={!isValid || isSubmitting}
           aria-label="Continuer vers l'étape suivante du formulaire de dépôt d'offre"
           onClick={submitForm}
           data-testid="continuer-creer-offre"
@@ -199,8 +205,8 @@ const Buttons = ({
           Continuer
         </Button>
       ) : (
-        <Button disabled={!isValid || isSubmitting || isPendingCfaCheck} onClick={submitForm} data-testid="creer-offre">
-          {offre?._id ? "Continuer et Mettre à jour l'offre" : "Créer l'offre"}
+        <Button disabled={!isValid || isSubmitting} onClick={submitForm} data-testid="creer-offre">
+          {offre?._id ? "Mettre à jour l'offre" : "Créer l'offre"}
         </Button>
       )}
     </Box>
