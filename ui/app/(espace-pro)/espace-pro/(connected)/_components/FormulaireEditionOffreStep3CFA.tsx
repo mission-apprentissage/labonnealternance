@@ -2,14 +2,12 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Checkbox, CircularProgress, Divider, Link, Typography } from "@mui/material"
-import { useQuery } from "@tanstack/react-query"
+import { Box, Checkbox, Divider, Link, Typography } from "@mui/material"
 import { Formik, useField, useFormikContext } from "formik"
 import Image from "next/image"
 import type { IJob } from "shared"
 import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import { CfaSolicitationIntro, InfoDelegation } from "@/app/(espace-pro)/_components/CfaDelegationContent"
-import { getRelatedEtablissementsFromRome } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
 // texte et présentation mutualisés avec la page /espace-pro/entreprise/offre/:id/mise-en-relation (cf. CfaDelegationContent).
@@ -91,30 +89,19 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
 
 export const FormulaireEditionOffreStep3 = ({
   offre,
-  romeCode,
-  geoCoordinates,
+  etablissements,
   onSubmit,
   onCancel,
   isFtEligible = true,
 }: {
   offre?: IJob
-  romeCode?: string
-  geoCoordinates?: string | null
+  // disponibilité déjà déterminée à l'étape 2 : cette étape n'est affichée que si la liste est non vide
+  etablissements: IEtablissementCatalogueProcheWithDistanceJSON[]
   onSubmit?: (values: any) => void
   onCancel: () => void
   isFtEligible?: boolean
 }) => {
-  const [latitude, longitude] = (geoCoordinates ?? "").split(",").map(parseFloat)
-  const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude)
-
-  const { data: etablissements, isLoading } = useQuery({
-    queryKey: ["etablissements-related-rome", romeCode, geoCoordinates],
-    queryFn: () => getRelatedEtablissementsFromRome({ rome: romeCode as string, latitude, longitude, limit: 10 }) as Promise<IEtablissementCatalogueProcheWithDistanceJSON[]>,
-    enabled: Boolean(romeCode) && hasCoordinates,
-    gcTime: 0,
-  })
-
-  const disabledIds = (etablissements ?? [])
+  const disabledIds = etablissements
     .filter((etablissement) => offre?.delegations?.some((delegation) => etablissement.siret === delegation.siret_code))
     .map((etablissement) => etablissement._id)
 
@@ -129,7 +116,7 @@ export const FormulaireEditionOffreStep3 = ({
         const newEtablissementCatalogueIds = values.etablissementCatalogueIds.filter((id) => !disabledIds.includes(id))
         onSubmit?.({
           etablissementCatalogueIds: newEtablissementCatalogueIds,
-          cfaCountProposed: etablissements?.length ?? 0,
+          cfaCountProposed: etablissements.length,
           cfaCountSelected: values.etablissementCatalogueIds.length,
         })
       }}
@@ -157,16 +144,7 @@ export const FormulaireEditionOffreStep3 = ({
           <Box sx={{ display: "flex" }}>
             <Box sx={{ minWidth: { xs: "100%", md: "50%" } }}>
               <CfaSolicitationIntro />
-              {isLoading ? (
-                <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("5v") }}>
-                  <CircularProgress size={24} />
-                  <Typography>Recherche des centres de formation à proximité…</Typography>
-                </Box>
-              ) : etablissements?.length ? (
-                <EtablissementsList etablissements={etablissements} disabledIds={disabledIds} />
-              ) : (
-                <Typography sx={{ mt: fr.spacing("5v") }}>Aucun centre de formation n'a été trouvé à proximité de votre entreprise pour ce métier.</Typography>
-              )}
+              <EtablissementsList etablissements={etablissements} disabledIds={disabledIds} />
             </Box>
             <InfoDelegation />
           </Box>
@@ -195,7 +173,7 @@ const Buttons = ({ offre, onCancel, isFtEligible }: { offre?: IJob; onCancel: ()
         </Button>
       ) : (
         <Button disabled={isSubmitting} onClick={submitForm} data-testid="creer-offre">
-          {offre?._id ? "Continuer et Mettre à jour l'offre" : "Créer l'offre"}
+          {offre?._id ? "Mettre à jour l'offre" : "Créer l'offre"}
         </Button>
       )}
     </Box>

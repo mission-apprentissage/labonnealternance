@@ -87,12 +87,39 @@ export const FormulaireEditionOffre = ({
         />
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2
-          onSubmit={(values) => {
-            setFormValues({ ...formValues, ...values })
-            setCurrentStep(3)
-            onChangeScreen?.()
+          onSubmit={({ etablissements, ...values }) => {
+            const hasCfa = Boolean(etablissements?.length)
+            if (hasCfa) {
+              // des CFA à proximité sont disponibles : l'étape 3 permet de choisir lesquels contacter
+              setFormValues({ ...formValues, ...values, etablissements })
+              setCurrentStep(3)
+              onChangeScreen?.()
+            } else if (isFtEligible) {
+              // pas de CFA à proximité mais éligible à l'accompagnement France Travail : l'étape 3 est sautée
+              setFormValues({ ...formValues, ...values, etablissements, cfaCountProposed: 0, cfaCountSelected: 0 })
+              setCurrentStep(4)
+              onChangeScreen?.()
+            } else {
+              // ni CFA à proximité, ni éligibilité France Travail : l'offre est créée directement
+              const finalValues = { ...formValues, ...values, ft_support: false }
+              pushMatomoEvent({
+                event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
+                step_name: "cfa_share",
+                has_screening_questions: finalValues.to_applicant_questions?.length > 0,
+                ft_eligible: isFtEligible,
+              })
+              pushMatomoEvent({
+                event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
+                cfa_count_proposed: 0,
+                cfa_count_selected: 0,
+              })
+              handleSave(finalValues)
+            }
           }}
           offre={offre}
+          romeCode={formValues?.rome_code?.[0] ?? offre?.rome_code?.[0]}
+          geoCoordinates={formulaire?.geo_coordinates}
+          isFtEligible={isFtEligible}
           onCancel={() => {
             setCurrentStep(1)
             onChangeScreen?.()
@@ -102,7 +129,7 @@ export const FormulaireEditionOffre = ({
         <FormulaireEditionOffreStep3
           onSubmit={(values) => {
             if (!isFtEligible) {
-              const { cfaCountProposed, cfaCountSelected, ...finalValues } = { ...formValues, ...values, ft_support: false }
+              const { cfaCountProposed, cfaCountSelected, etablissements, ...finalValues } = { ...formValues, ...values, ft_support: false }
               pushMatomoEvent({
                 event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
                 step_name: "cfa_share",
@@ -122,8 +149,7 @@ export const FormulaireEditionOffre = ({
             }
           }}
           offre={offre}
-          romeCode={formValues?.rome_code?.[0] ?? offre?.rome_code?.[0]}
-          geoCoordinates={formulaire?.geo_coordinates}
+          etablissements={formValues?.etablissements ?? []}
           onCancel={() => {
             setCurrentStep(2)
             onChangeScreen?.()
@@ -133,7 +159,7 @@ export const FormulaireEditionOffre = ({
       ) : currentStep === 4 && isFtEligible ? (
         <FormulaireEditionOffreStep4FtSupport
           onSubmit={(values) => {
-            const { cfaCountProposed, cfaCountSelected, ...finalValues } = { ...formValues, ...values }
+            const { cfaCountProposed, cfaCountSelected, etablissements, ...finalValues } = { ...formValues, ...values }
             pushMatomoEvent({
               event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
               step_name: "ft_support",

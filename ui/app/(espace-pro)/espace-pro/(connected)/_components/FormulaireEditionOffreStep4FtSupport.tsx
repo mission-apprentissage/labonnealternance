@@ -142,12 +142,12 @@ const Buttons = ({ offre, onCancel }: { offre?: IJob; onCancel: () => void }) =>
       sx={{ display: "flex", justifyContent: "flex-end", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v"), mt: fr.spacing("6v") }}
     >
       <Box sx={{ mr: fr.spacing("4v") }}>
-        <Button className="fr-btn--secondary" onClick={() => onCancel()}>
+        <Button className="fr-btn--secondary" aria-label="Retour vers l'étape précédente du formulaire de dépôt d'offre" onClick={() => onCancel()}>
           Retour
         </Button>
       </Box>
       <Button disabled={isSubmitting} onClick={submitForm} data-testid="creer-offre">
-        {offre?._id ? "Continuer et Mettre à jour l'offre" : "Créer l'offre"}
+        {offre?._id ? "Mettre à jour l'offre" : "Créer l'offre"}
       </Button>
     </Box>
   )
