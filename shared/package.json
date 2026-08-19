@@ -8,7 +8,7 @@
   "private": true,
   "type": "module",
   "sideEffects": [
-    "./dist/src/helpers/zodWithOpenApi.js"
+    "./dist/src/helpers/zod-with-open-api.js"
   ],
   "exports": {
     ".": {

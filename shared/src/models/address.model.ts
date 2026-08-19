@@ -1,4 +1,6 @@
-import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
+// Import du module léger et non de `extensions` : ce modèle part dans les bundles
+// client (autocomplete d'adresse) et `zod-primitives.ts` traîne libphonenumber-js.
+import { latitude, longitude } from "../helpers/zod-helpers/zod-primitives-light.js"
 import { z } from "../helpers/zod-with-open-api.js"
 
 const ZAcademie = z.strictObject({
@@ -6,7 +8,7 @@ const ZAcademie = z.strictObject({
   nom: z.string(),
 })
 
-export const Z2DCoord = z.tuple([extensions.longitude({ coerce: false }), extensions.latitude({ coerce: false })])
+export const Z2DCoord = z.tuple([longitude({ coerce: false }), latitude({ coerce: false })])
 
 export const ZPointGeometry = z.strictObject({
   coordinates: Z2DCoord,

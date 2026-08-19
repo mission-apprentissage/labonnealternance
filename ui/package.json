@@ -10,12 +10,12 @@
     "start": "next start",
     "typecheck": "tsc -b",
     "analyse": "ANALYZE=true yarn build",
-    "predev": "react-dsfr update-icons",
-    "prebuild": "react-dsfr update-icons",
+    "predev": "react-dsfr update-icons && react-dsfr only-include-used-components",
+    "prebuild": "react-dsfr update-icons && react-dsfr only-include-used-components",
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@codegouvfr/react-dsfr": "1.31.0",
+    "@codegouvfr/react-dsfr": "1.33.0",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/server": "^11.11.0",

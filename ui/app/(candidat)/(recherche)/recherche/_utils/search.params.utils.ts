@@ -1,5 +1,7 @@
-import { toKebabCase } from "shared"
+// Import profond et non via le barrel "shared" : ce module part dans le bundle de la home.
+
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { toKebabCase } from "shared/utils/string-utils"
 
 export interface ISearchPageParams {
   q?: string
