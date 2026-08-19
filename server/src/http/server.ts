@@ -13,7 +13,6 @@ import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/is-origin-local"
 import config from "@/config"
-import jobsEtFormationsController from "@/http/controllers/jobs-et-formations.controller"
 import { initBrevoWebhooks } from "@/services/brevo.service"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "./controllers/_private/geo.private.controller"
@@ -122,7 +121,6 @@ export async function bind(app: Server) {
       jobsV1Route(typedSubApp)
       formationsV1Route(typedSubApp)
       formationsRegionV1Route(typedSubApp)
-      jobsEtFormationsController(typedSubApp)
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
       seoRouteController(typedSubApp)
