@@ -86,8 +86,12 @@ export const updateHandiEngagement = async () => {
 
   logger.info(`updateHandiEngagement: ${created} créés, ${alreadyUpToDate} déjà à jour, ${completed} sources complétées, ${errors} erreurs`)
 
-  const { removed, franceTravailSourceRemoved } = await removeFranceTravailSourceForMissingSirets(sirets)
-  logger.info(`updateHandiEngagement: ${removed} entrées supprimées, ${franceTravailSourceRemoved} sources France Travail retirées (SIRET absents du fichier)`)
+  if (errors === 0 && sirets.size > 0) {
+    const { removed, franceTravailSourceRemoved } = await removeFranceTravailSourceForMissingSirets(sirets)
+    logger.info(`updateHandiEngagement: ${removed} entrées supprimées, ${franceTravailSourceRemoved} sources France Travail retirées (SIRET absents du fichier)`)
+  } else {
+    logger.warn(`updateHandiEngagement: contrôle inverse ignoré (errors=${errors}, sirets=${sirets.size})`)
+  }
 
   logger.info(`updateHandiEngagement: mise à jour des offres dans jobs_partners`)
   await refreshEntrepriseEngagementJobsPartners()
