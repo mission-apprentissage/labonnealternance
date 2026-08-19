@@ -1,0 +1,128 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { ObjectId } from "mongodb"
+import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
+import { s3ReadAsString } from "@/common/utils/aws-utils"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { updateHandiEngagement } from "./update-handi-engagement"
+
+// Mock S3 pour fournir le contenu ndjson sans appel AWS réel
+vi.mock("@/common/utils/aws-utils", () => ({
+  s3ReadAsString: vi.fn(),
+}))
+
+const SIRET_1 = apiEntrepriseEtablissementFixture.dinum.data.siret
+const SIRET_2 = "42476141900045"
+
+const mockNdjson = (docs: object[]) => {
+  vi.mocked(s3ReadAsString).mockResolvedValue(docs.map((doc) => JSON.stringify(doc)).join("\n"))
+}
+
+useMongo()
+
+describe("updateHandiEngagement", () => {
+  beforeEach(async () => {
+    vi.mocked(s3ReadAsString).mockReset()
+    return async () => {
+      await getDbCollection("referentiel_engagement_entreprise").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
+    }
+  })
+
+  it("Cas 1 - crée une nouvelle entrée avec source FRANCE_TRAVAIL quand le SIRET est absent du référentiel", async () => {
+    // given
+    mockNdjson([{ siret: SIRET_1 }])
+    // when
+    await updateHandiEngagement()
+    // then
+    const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: SIRET_1 })
+    expect(doc).not.toBeNull()
+    expect(doc?.engagement).toBe("handicap")
+    expect(doc?.sources).toEqual([EntrepriseEngagementSources.FRANCE_TRAVAIL])
+  })
+
+  it("Cas 2 - ne modifie rien quand le SIRET est déjà présent avec la source FRANCE_TRAVAIL", async () => {
+    // given
+    const before = new Date("2020-01-01")
+    await getDbCollection("referentiel_engagement_entreprise").insertOne({
+      _id: new ObjectId(),
+      siret: SIRET_1,
+      engagement: "handicap",
+      sources: [EntrepriseEngagementSources.FRANCE_TRAVAIL],
+      created_at: before,
+      updated_at: before,
+    })
+    mockNdjson([{ siret: SIRET_1 }])
+    // when
+    await updateHandiEngagement()
+    // then
+    const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: SIRET_1 })
+    expect(doc?.sources).toEqual([EntrepriseEngagementSources.FRANCE_TRAVAIL])
+    expect(doc?.updated_at.getTime()).toBe(before.getTime())
+  })
+
+  it("Cas 3 - complète les sources avec FRANCE_TRAVAIL quand le SIRET n'a que la source LBA, sans écraser l'existant", async () => {
+    // given
+    await getDbCollection("referentiel_engagement_entreprise").insertOne({
+      _id: new ObjectId(),
+      siret: SIRET_1,
+      engagement: "handicap",
+      sources: [EntrepriseEngagementSources.LBA],
+      created_at: new Date(),
+      updated_at: new Date(),
+    })
+    mockNdjson([{ siret: SIRET_1 }])
+    // when
+    await updateHandiEngagement()
+    // then
+    const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: SIRET_1 })
+    expect(doc?.sources).toContain(EntrepriseEngagementSources.LBA)
+    expect(doc?.sources).toContain(EntrepriseEngagementSources.FRANCE_TRAVAIL)
+    expect(doc?.sources).toHaveLength(2)
+  })
+
+  it("traite plusieurs sirets du fichier ndjson", async () => {
+    // given
+    mockNdjson([{ siret: SIRET_1 }, { siret: SIRET_2 }])
+    // when
+    await updateHandiEngagement()
+    // then
+    const docs = await getDbCollection("referentiel_engagement_entreprise").find({}).toArray()
+    expect(docs).toHaveLength(2)
+    expect(docs.map((d) => d.siret)).toContain(SIRET_1)
+    expect(docs.map((d) => d.siret)).toContain(SIRET_2)
+  })
+
+  it("ignore les lignes avec un SIRET invalide sans interrompre le traitement des autres lignes", async () => {
+    // given
+    mockNdjson([{ siret: "invalid-siret" }, { siret: SIRET_2 }])
+    // when
+    await updateHandiEngagement()
+    // then
+    const docs = await getDbCollection("referentiel_engagement_entreprise").find({}).toArray()
+    expect(docs).toHaveLength(1)
+    expect(docs[0].siret).toBe(SIRET_2)
+  })
+
+  it("ignore les lignes ndjson non parsables sans interrompre le traitement des autres lignes", async () => {
+    // given
+    vi.mocked(s3ReadAsString).mockResolvedValue(["not-json", JSON.stringify({ siret: SIRET_2 })].join("\n"))
+    // when
+    await updateHandiEngagement()
+    // then
+    const docs = await getDbCollection("referentiel_engagement_entreprise").find({}).toArray()
+    expect(docs).toHaveLength(1)
+    expect(docs[0].siret).toBe(SIRET_2)
+  })
+
+  it("ne fait rien si le fichier S3 est vide ou introuvable", async () => {
+    // given
+    vi.mocked(s3ReadAsString).mockResolvedValue(undefined)
+    // when
+    await updateHandiEngagement()
+    // then
+    const docs = await getDbCollection("referentiel_engagement_entreprise").find({}).toArray()
+    expect(docs).toHaveLength(0)
+  })
+})
