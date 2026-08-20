@@ -29,6 +29,7 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
     <Box sx={{ mt: fr.spacing("5v") }}>
       {etablissements.map((etablissement, index) => {
         const isDisabled = disabledIds.includes(etablissement._id)
+        const isChecked = input.value.includes(etablissement._id)
         return (
           <Box
             sx={{
@@ -37,7 +38,7 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
               gap: fr.spacing("4v"),
               borderStyle: "solid",
               borderWidth: "1px",
-              borderColor: isDisabled ? "#E5E5E5" : "#000091",
+              borderColor: isDisabled ? "#E5E5E5" : isChecked ? "#000091" : "#DDDDDD",
               mb: fr.spacing("4v"),
             }}
             key={etablissement._id}
@@ -47,7 +48,7 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
               <Checkbox
                 sx={{ "&.Mui-disabled .MuiSvgIcon-root": { display: "none" } }}
                 disabled={isDisabled}
-                checked={input.value.includes(etablissement._id)}
+                checked={isChecked}
                 onChange={() => toggleEtablissement(etablissement._id, etablissement.siret)}
               />
             </Box>

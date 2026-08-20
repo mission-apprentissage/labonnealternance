@@ -196,6 +196,7 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                     <Box sx={{ mt: fr.spacing("5v") }}>
                       {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistanceJSON, index) => {
                         const isDisabled = checkedDisabledEtablissements.some((etab) => etab._id === etablissement._id)
+                        const isChecked = checkedEtablissements.some((etab) => etab._id === etablissement._id)
                         return (
                           <Box
                             sx={{
@@ -204,7 +205,7 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                               gap: fr.spacing("4v"),
                               borderStyle: "solid",
                               borderWidth: "1px",
-                              borderColor: isDisabled ? "#E5E5E5" : "#000091",
+                              borderColor: isDisabled ? "#E5E5E5" : isChecked ? "#000091" : "#DDDDDD",
                               mb: fr.spacing("4v"),
                               p: fr.spacing("4v"),
                             }}
