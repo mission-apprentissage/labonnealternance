@@ -1,4 +1,4 @@
-name: Perf Budget
+name: Performance budget
 
 on:
   pull_request:
@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   perf-budget:
-    name: Budget de performance
+    name: Measure bundle size
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:

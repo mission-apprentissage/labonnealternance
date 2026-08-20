@@ -71,6 +71,7 @@ jobs:
           APP_VERSION: ${{ inputs.app_version }}
 
   npm-packages-check:
+    name: NPM dependency check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
