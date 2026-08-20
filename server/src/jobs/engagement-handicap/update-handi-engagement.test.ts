@@ -27,7 +27,6 @@ describe("updateHandiEngagement", () => {
     vi.mocked(s3ReadAsStream).mockReset()
     return async () => {
       await getDbCollection("referentiel_engagement_entreprise").deleteMany({})
-      await getDbCollection("jobs_partners").deleteMany({})
     }
   })
 
