@@ -3,9 +3,10 @@ import type { Readable } from "node:stream"
 
 import type { AnyBulkWriteOperation } from "mongodb"
 import { ObjectId } from "mongodb"
+import { extensions } from "shared/helpers/zod-helpers/zod-primitives"
 import type { IReferentielEngagementEntreprise } from "shared/models/referentiel-engagement-entreprise.model"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
-import { validateSIRET } from "shared/validators/siret-validator"
+import { z } from "zod"
 
 import { logger } from "@/common/logger"
 import { s3ReadAsStream } from "@/common/utils/aws-utils"
@@ -24,7 +25,8 @@ const MISSING_SIRETS_CLEANUP_MARGIN_RATIO = 0.2
 
 // Le fichier ndjson est supposé contenir une entrée `{ siret: string, ... }` par ligne.
 // Hypothèse à vérifier sur un échantillon réel du fichier : nom du champ = "siret" (lowercase).
-type HandiEngageFlagDocument = { siret: string }
+// `extensions.siret` contrôle à la fois le format (regex) et la clé de Luhn.
+const ZHandiEngageFlagDocument = z.object({ siret: extensions.siret })
 
 type BulkUpsertOp = AnyBulkWriteOperation<IReferentielEngagementEntreprise>
 
@@ -116,10 +118,7 @@ export const updateHandiEngagement = async () => {
   for await (const line of lines) {
     if (!line.trim()) continue
     try {
-      const { siret } = JSON.parse(line) as HandiEngageFlagDocument
-      if (!validateSIRET(siret)) {
-        throw new Error(`SIRET invalide "${siret}"`)
-      }
+      const { siret } = ZHandiEngageFlagDocument.parse(JSON.parse(line))
       if (sirets.has(siret)) continue
       sirets.add(siret)
 
