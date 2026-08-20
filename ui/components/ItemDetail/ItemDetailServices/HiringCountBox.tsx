@@ -1,12 +1,22 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
+import Image from "next/image"
 
-// Style calqué sur StatsInserJeunes.tsx (chiffre 32-40px en gras dans une carte grise) : convention
-// déjà établie dans le repo pour un encart "chiffre clé" annexe sur une fiche détail.
 export const HiringCountBox = ({ hiringCount3Years }: { hiringCount3Years: number }) => (
-  <Box sx={{ textAlign: "center", backgroundColor: "#F6F6F6", maxWidth: "330px", p: 3 }}>
-    <Typography sx={{ mb: 1, fontSize: "32px", fontWeight: 700 }}>{hiringCount3Years}</Typography>
-    <Typography sx={{ mb: 0 }}>{hiringCount3Years === 1 ? "alternant recruté" : "alternants recrutés"} ces 3 dernières années</Typography>
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "flex-start",
+      border: "solid 1px #DDDDDD",
+      borderRadius: "8px",
+      gap: fr.spacing("1v"),
+      padding: fr.spacing("4v"),
+      backgroundColor: "white",
+    }}
+  >
+    <Image src="/images/icons/hirings.png" alt="" width={24} height={24} />
+    <Typography sx={{ fontWeight: 700 }}>Cette entreprise a recruté {hiringCount3Years} alternant(s) sur les 3 dernières années</Typography>
   </Box>
 )
 

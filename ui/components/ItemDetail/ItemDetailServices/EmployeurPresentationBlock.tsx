@@ -38,25 +38,33 @@ export const EmployeurPresentationBlock = ({
 
   return (
     <Box sx={{ mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
+      <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        {title}
+      </Typography>
+
+      {description && (
+        <Box
+          sx={{
+            whiteSpace: "pre-wrap",
+            mb: fr.spacing("6v"),
+          }}
+          dangerouslySetInnerHTML={{ __html: description || emptyStateText }}
+        />
+      )}
+
+      {isHandicapEngaged && (
+        <Box sx={{ mb: fr.spacing("6v") }}>
+          <LbaJobEngagement />
+        </Box>
+      )}
+
+      {typeof hiringCount3Years === "number" && hiringCount3Years > 0 && (
+        <Box sx={{ mb: fr.spacing("4v") }}>
+          <HiringCountBox hiringCount3Years={hiringCount3Years} />
+        </Box>
+      )}
+
       <Stack spacing={fr.spacing("2v")} sx={{ mb: fr.spacing("4v") }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          {title}
-        </Typography>
-
-        {isHandicapEngaged && (
-          <Box sx={{ mb: fr.spacing("4v") }}>
-            <LbaJobEngagement />
-          </Box>
-        )}
-
-        {typeof hiringCount3Years === "number" && (
-          <Box sx={{ mb: fr.spacing("4v") }}>
-            <HiringCountBox hiringCount3Years={hiringCount3Years} />
-          </Box>
-        )}
-
-        <div dangerouslySetInnerHTML={{ __html: description || emptyStateText }} />
-
         {cityOnly ? (
           <div>
             <strong>Localisation :</strong> {item?.place?.city}
