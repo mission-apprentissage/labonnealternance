@@ -8,9 +8,10 @@
  *  - `.next/server/app/<route>.html` : les feuilles CSS du first-load d'une route prérendue.
  *  - les sourcemaps des chunks : pour asserter l'absence d'un package sur le first-load.
  *
- * Deux classes de sortie, volontairement distinctes :
+ * Trois classes de sortie, volontairement distinctes :
  *  - dépassement de budget → jugement, assouplissable par `--report-only` ;
- *  - erreur de mesure (fichier absent, sourcemap introuvable, route inconnue) → toujours exit 1.
+ *  - erreur de mesure (fichier absent, sourcemap introuvable, route inconnue) → toujours exit 1 ;
+ *  - usage invalide (flag inconnu, fichier de budgets mal formé) → toujours exit 1.
  * Sinon un run vert serait indiscernable d'un run qui n'a rien mesuré.
  *
  * Usage : node ui/scripts/perf-budget.mjs [--report-only] [--json] [--ui-dir=…] [--config=…] [--out=…]
@@ -25,6 +26,14 @@ export class MeasureError extends Error {
   constructor(message) {
     super(message)
     this.name = "MeasureError"
+  }
+}
+
+/** Usage invalide : flag inconnu ou fichier de budgets mal formé. Jamais assoupli non plus. */
+export class UsageError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = "UsageError"
   }
 }
 
@@ -226,6 +235,37 @@ export function findForbiddenPackages(uiDir, chunkPaths, packages) {
   return { hits, chunksAnalysed: jsChunks.length, chunksWithSources, sourceCount }
 }
 
+/**
+ * Le fichier de budgets est une entrée non validée : une clé mal orthographiée (`routs`) ou une
+ * route citée dans `forbiddenOnFirstLoad` sans être dans `routes` désactive un contrôle **sans rien
+ * afficher**, et le job sort vert. On refuse plutôt que de mesurer à moitié en silence.
+ */
+const KNOWN_CONFIG_KEYS = new Set(["gzipLevel", "routes", "globalMaxFirstLoadJsRaw", "forbiddenOnFirstLoad"])
+
+export function validateConfig(config) {
+  // Les clés `$…` sont la convention de commentaire du fichier ($comment, $measured).
+  const unknown = Object.keys(config).filter((key) => !key.startsWith("$") && !KNOWN_CONFIG_KEYS.has(key))
+  if (unknown.length > 0) {
+    throw new UsageError(
+      `clé(s) inconnue(s) dans le fichier de budgets : ${unknown.join(", ")}. Faute de frappe probable — ` +
+        `le contrôle correspondant ne serait pas exécuté. Clés acceptées : ${[...KNOWN_CONFIG_KEYS].join(", ")}.`
+    )
+  }
+
+  const routes = Object.keys(config.routes ?? {})
+  if (routes.length === 0 && config.globalMaxFirstLoadJsRaw === undefined) {
+    throw new UsageError("fichier de budgets sans « routes » ni « globalMaxFirstLoadJsRaw » : rien ne serait contrôlé")
+  }
+
+  const orphans = Object.keys(config.forbiddenOnFirstLoad ?? {}).filter((route) => !routes.includes(route))
+  if (orphans.length > 0) {
+    throw new UsageError(
+      `« forbiddenOnFirstLoad » cite des routes absentes de « routes » : ${orphans.join(", ")}. Le scan n'est ` +
+        `exécuté que sur les routes de « routes » — ces interdits ne seraient jamais vérifiés.`
+    )
+  }
+}
+
 function judge(measured, budget) {
   if (budget === null || budget === undefined) {
     return "unset"
@@ -234,6 +274,7 @@ function judge(measured, budget) {
 }
 
 export function evaluate({ uiDir, config }) {
+  validateConfig(config)
   const level = config.gzipLevel ?? 9
   const stats = readRouteStats(uiDir)
   const rows = []
@@ -349,7 +390,17 @@ export function formatMarkdown(report, { configPath, reportOnly }) {
   return lines.join("\n")
 }
 
-function budgetFailureMessage(report, configPath) {
+/** Les deux familles de violation cohabitent : les clés s'additionnent, aucune n'est un fallback. */
+export function concernedConfigKeys(report) {
+  return [
+    ...report.rows
+      .filter((row) => row.status === "over")
+      .map((row) => (row.kind === "global" ? "globalMaxFirstLoadJsRaw" : `routes["${row.route}"].firstLoad${row.kind === "js" ? "Js" : "Css"}Gzip`)),
+    ...new Set(report.forbidden.filter((item) => item.chunks.length > 0).map((item) => `forbiddenOnFirstLoad["${item.route}"]`)),
+  ]
+}
+
+export function budgetFailureMessage(report, configPath) {
   return [
     `Budget de performance dépassé : ${report.violations.join(", ")}.`,
     "",
@@ -358,29 +409,64 @@ function budgetFailureMessage(report, configPath) {
     `  2. si la hausse est assumée, mettre à jour le seuil dans ${configPath} avec la mesure`,
     "     affichée ci-dessus, et justifier la hausse en description de PR.",
     "",
-    `Clés concernées : ${
-      report.rows
-        .filter((row) => row.status === "over")
-        .map((row) => (row.kind === "global" ? "globalMaxFirstLoadJsRaw" : `routes["${row.route}"].firstLoad${row.kind === "js" ? "Js" : "Css"}Gzip`))
-        .join(", ") || "forbiddenOnFirstLoad"
-    }`,
+    `Clés concernées : ${concernedConfigKeys(report).join(", ")}`,
   ].join("\n")
 }
 
-export function main(argv = []) {
-  const flags = new Set(argv.filter((arg) => !arg.includes("=")))
-  const options = Object.fromEntries(argv.filter((arg) => arg.includes("=")).map((arg) => [arg.slice(0, arg.indexOf("=")), arg.slice(arg.indexOf("=") + 1)]))
-  const reportOnly = flags.has("--report-only")
-  const uiDir = path.resolve(options["--ui-dir"] ?? DEFAULT_UI_DIR)
-  const configPath = path.resolve(options["--config"] ?? path.join(uiDir, "perf-budget.json"))
+const KNOWN_FLAGS = new Set(["--report-only", "--json"])
+const KNOWN_OPTIONS = new Set(["--ui-dir", "--config", "--out"])
 
+/**
+ * Un flag mal orthographié ne doit pas être ignoré : `--reportonly` ferait passer le job en mode
+ * bloquant à l'insu de l'appelant, et `--out=` vide supprimerait le rapport sans un mot.
+ */
+export function parseArgv(argv) {
+  const expected = [...KNOWN_FLAGS, ...[...KNOWN_OPTIONS].map((option) => `${option}=…`)].join(", ")
+  const flags = new Set()
+  const options = {}
+  for (const arg of argv) {
+    const separator = arg.indexOf("=")
+    if (separator === -1) {
+      if (!KNOWN_FLAGS.has(arg)) {
+        throw new UsageError(`argument inconnu : ${arg}. Attendu : ${expected}.`)
+      }
+      flags.add(arg)
+      continue
+    }
+    const key = arg.slice(0, separator)
+    const value = arg.slice(separator + 1)
+    if (!KNOWN_OPTIONS.has(key)) {
+      throw new UsageError(`argument inconnu : ${key}. Attendu : ${expected}.`)
+    }
+    if (value === "") {
+      throw new UsageError(`option ${key} sans valeur.`)
+    }
+    options[key] = value
+  }
+  return { flags, options }
+}
+
+export function main(argv = []) {
+  let flags
+  let options
+  let reportOnly = false
+  let configPath
   let report
   try {
+    ;({ flags, options } = parseArgv(argv))
+    reportOnly = flags.has("--report-only")
+    const uiDir = path.resolve(options["--ui-dir"] ?? DEFAULT_UI_DIR)
+    configPath = path.resolve(options["--config"] ?? path.join(uiDir, "perf-budget.json"))
     report = evaluate({ uiDir, config: readJsonFile(configPath, "fichier de budgets") })
   } catch (error) {
+    // Ni la mesure ni l'usage ne sont assouplis par --report-only : un run vert doit prouver
+    // qu'il a mesuré quelque chose.
     if (error instanceof MeasureError) {
-      // Erreur de mesure : jamais assouplie par --report-only.
       console.error(`❌ mesure impossible — ${error.message}`)
+      return 1
+    }
+    if (error instanceof UsageError) {
+      console.error(`❌ usage invalide — ${error.message}`)
       return 1
     }
     throw error

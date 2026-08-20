@@ -3,7 +3,19 @@ import { tmpdir } from "node:os"
 import path from "node:path"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { evaluate, extractCssHrefs, findForbiddenPackages, MeasureError, main, readSourceMapSources, routeHtmlFile } from "./perf-budget.mjs"
+import {
+  concernedConfigKeys,
+  evaluate,
+  extractCssHrefs,
+  findForbiddenPackages,
+  MeasureError,
+  main,
+  parseArgv,
+  readSourceMapSources,
+  routeHtmlFile,
+  UsageError,
+  validateConfig,
+} from "./perf-budget.mjs"
 
 type ChunkSpec = {
   /** Nom du fichier chunk, ex. "aaa.js". */
@@ -311,5 +323,89 @@ describe("jugement des seuils", () => {
     expect(global.route).toBe("/lourd")
     expect(global.measured).toBe(9_000)
     expect(report.violations).toEqual(["JS first-load max (toutes routes, brut)"])
+  })
+})
+
+describe("validation du fichier de budgets — un contrôle muet est un bug", () => {
+  /** Build où `libphonenumber-js` est réellement présent : les cas ci-dessous ne sont pas vacuous. */
+  function buildWithForbiddenPackage() {
+    makeBuild({
+      chunks: [{ name: "home.js", sources: [PHONE_SOURCE] }],
+      routes: [{ route: "/", chunks: ["home.js"] }],
+    })
+  }
+
+  it("échoue quand « forbiddenOnFirstLoad » cite une route absente de « routes »", () => {
+    // Sans garde, la route n'est jamais scannée : le package interdit passe et le job sort vert.
+    buildWithForbiddenPackage()
+    const config = { routes: {}, globalMaxFirstLoadJsRaw: 10_000, forbiddenOnFirstLoad: { "/": ["libphonenumber-js"] } }
+
+    expect(run(config, ["--report-only"])).toBe(1)
+    expect(() => validateConfig(config)).toThrow(UsageError)
+  })
+
+  it("échoue sur une clé racine mal orthographiée plutôt que de n'en contrôler aucune", () => {
+    buildWithForbiddenPackage()
+
+    expect(run({ routs: { "/": { firstLoadJsGzip: 1 } }, globalMaxFirstLoadJsRaw: 10_000 }, ["--report-only"])).toBe(1)
+    expect(run({ routes: { "/": { firstLoadJsGzip: 1 } }, forbidenOnFirstLoad: { "/": ["libphonenumber-js"] } }, ["--report-only"])).toBe(1)
+  })
+
+  it("accepte les clés de commentaire $comment et $measured", () => {
+    buildWithForbiddenPackage()
+    const config = { $comment: "…", $measured: { commit: "abc" }, routes: { "/": { firstLoadJsGzip: 10_000 } }, globalMaxFirstLoadJsRaw: 10_000 }
+
+    expect(() => validateConfig(config)).not.toThrow()
+    expect(run(config)).toBe(0)
+  })
+
+  it("échoue quand ni « routes » ni « globalMaxFirstLoadJsRaw » ne sont renseignés", () => {
+    buildWithForbiddenPackage()
+
+    expect(run({ routes: {} }, ["--report-only"])).toBe(1)
+  })
+})
+
+describe("arguments de ligne de commande", () => {
+  beforeEach(() => {
+    makeBuild({
+      chunks: [{ name: "home.js", sources: ["turbopack:///[project]/ui/app/page.tsx"] }],
+      routes: [{ route: "/", chunks: ["home.js"] }],
+    })
+  })
+
+  it("rejette un flag mal orthographié au lieu de basculer en mode bloquant en silence", () => {
+    // Un parseur permissif ignore `--reportonly` et repasse en mode bloquant : le code de sortie
+    // est le même (1) que celui du rejet, seule la cause diffère. On assert donc l'erreur elle-même.
+    const config = { routes: { "/": { firstLoadJsGzip: 1 } }, globalMaxFirstLoadJsRaw: 10_000 }
+
+    expect(() => parseArgv(["--reportonly"])).toThrow(UsageError)
+    expect(run(config, ["--reportonly"])).toBe(1)
+    expect(run(config, ["--report-only"])).toBe(0)
+  })
+
+  it("rejette une option sans valeur au lieu de perdre le rapport en silence", () => {
+    expect(run({ routes: { "/": { firstLoadJsGzip: 10_000 } }, globalMaxFirstLoadJsRaw: 10_000 }, ["--out="])).toBe(1)
+  })
+
+  it("sort 0 en mode strict quand tous les seuils sont renseignés et tenus", () => {
+    // Chemin exact de la bascule en bloquant : il ne doit pas échouer sur un « unset » oublié.
+    expect(run({ routes: { "/": { firstLoadJsGzip: 10_000 } }, globalMaxFirstLoadJsRaw: 10_000 })).toBe(0)
+  })
+})
+
+describe("message d'échec", () => {
+  it("cumule les clés de seuil et les clés de packages interdits", () => {
+    makeBuild({
+      chunks: [{ name: "home.js", sources: [PHONE_SOURCE] }],
+      routes: [{ route: "/", chunks: ["home.js"], rawBytes: 9_000 }],
+    })
+
+    const report = evaluate({
+      uiDir,
+      config: { routes: { "/": { firstLoadJsGzip: 1 } }, globalMaxFirstLoadJsRaw: 8_999, forbiddenOnFirstLoad: { "/": ["libphonenumber-js"] } },
+    })
+
+    expect(concernedConfigKeys(report)).toEqual(['routes["/"].firstLoadJsGzip', "globalMaxFirstLoadJsRaw", 'forbiddenOnFirstLoad["/"]'])
   })
 })
