@@ -3,11 +3,14 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
-import { Box, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
+import { useQuery } from "@tanstack/react-query"
 import { Formik, useField, useFormikContext } from "formik"
 import { type IJob, ZJobFields } from "shared"
+import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import type z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
+import { getRelatedEtablissementsFromRome } from "@/utils/api"
 
 const questions = [
   "Pourquoi souhaitez-vous rejoindre notre entreprise ?",
@@ -27,17 +30,34 @@ type IStep2Form = z.output<typeof ZStep2Form>
 
 export const FormulaireEditionOffreStep2 = ({
   offre,
+  romeCode,
+  geoCoordinates,
+  isFtEligible = true,
   onSubmit,
   onCancel,
-  isFtEligible = true,
-  totalSteps = 3,
 }: {
   offre?: IJob
+  romeCode?: string
+  geoCoordinates?: string | null
+  isFtEligible?: boolean
   onSubmit?: (values: any) => void
   onCancel: () => void
-  isFtEligible?: boolean
-  totalSteps?: number
 }) => {
+  const [latitude, longitude] = (geoCoordinates ?? "").split(",").map(parseFloat)
+  const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude)
+
+  // les CFA disponibles à proximité sont déterminés dès cette étape pour décider si l'étape 3 (contacter les écoles) a lieu d'être affichée
+  const { data: etablissements, isLoading } = useQuery({
+    queryKey: ["etablissements-related-rome", romeCode, geoCoordinates],
+    queryFn: () => getRelatedEtablissementsFromRome({ rome: romeCode as string, latitude, longitude, limit: 10 }) as Promise<IEtablissementCatalogueProcheWithDistanceJSON[]>,
+    enabled: Boolean(romeCode) && hasCoordinates,
+    gcTime: 0,
+  })
+
+  const hasCfa = Boolean(etablissements?.length)
+  // tant que la recherche de CFA n'est pas terminée, on ne peut pas savoir si l'étape 3 sera affichée
+  const isPendingCfaCheck = !isFtEligible && isLoading
+
   return (
     <Formik<IStep2Form>
       validateOnMount
@@ -46,7 +66,7 @@ export const FormulaireEditionOffreStep2 = ({
         to_applicant_questions: offre?.to_applicant_questions ?? [],
       }}
       validationSchema={toFormikValidationSchema(ZStep2Form)}
-      onSubmit={onSubmit}
+      onSubmit={(values) => onSubmit?.({ ...values, etablissements: etablissements ?? [] })}
     >
       {({ values }) => (
         <>
@@ -60,7 +80,7 @@ export const FormulaireEditionOffreStep2 = ({
               lineHeight: { xs: "24px !important", md: "28px !important" },
             }}
           >
-            Étape 2/{totalSteps} : Questions pour les candidats
+            Étape 2 : Questions pour les candidats
           </Typography>
           <Typography
             component="h2"
@@ -89,7 +109,7 @@ export const FormulaireEditionOffreStep2 = ({
           >
             Vous avez une question à suggérer ? Écrivez-nous à <a href="mailto:contact@labonnealternance.apprentissage.beta.fr">contact@labonnealternance.apprentissage.beta.fr</a>
           </Typography>
-          <Buttons offre={offre} onCancel={onCancel} isFtEligible={isFtEligible} />
+          <Buttons offre={offre} onCancel={onCancel} isFtEligible={isFtEligible} hasCfa={hasCfa} isPendingCfaCheck={isPendingCfaCheck} />
         </>
       )}
     </Formik>
@@ -143,8 +163,22 @@ const InfoText = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-const Buttons = ({ offre, onCancel, isFtEligible }: { offre?: IJob; onCancel: () => void; isFtEligible: boolean }) => {
+const Buttons = ({
+  offre,
+  onCancel,
+  isFtEligible,
+  hasCfa,
+  isPendingCfaCheck,
+}: {
+  offre?: IJob
+  onCancel: () => void
+  isFtEligible: boolean
+  hasCfa: boolean
+  isPendingCfaCheck: boolean
+}) => {
   const { isValid, isSubmitting, submitForm } = useFormikContext<any>()
+
+  const willContinue = isFtEligible || hasCfa
 
   return (
     <Box
@@ -155,13 +189,24 @@ const Buttons = ({ offre, onCancel, isFtEligible }: { offre?: IJob; onCancel: ()
           Retour
         </Button>
       </Box>
-      {isFtEligible ? (
-        <Button disabled={!isValid || isSubmitting} aria-label="Continuer vers l'étape 3 du formulaire de dépôt d'offre" onClick={submitForm} data-testid="continuer-creer-offre">
+      {isPendingCfaCheck ? (
+        // le libellé du bouton dépend de la présence de CFA à proximité : tant que cette recherche n'est pas terminée,
+        // on affiche un spinner plutôt qu'un libellé provisoire qui changerait juste après
+        <Button disabled aria-label="Vérification des centres de formation à proximité en cours" data-testid="continuer-creer-offre">
+          <CircularProgress size={16} color="inherit" />
+        </Button>
+      ) : willContinue ? (
+        <Button
+          disabled={!isValid || isSubmitting}
+          aria-label="Continuer vers l'étape suivante du formulaire de dépôt d'offre"
+          onClick={submitForm}
+          data-testid="continuer-creer-offre"
+        >
           Continuer
         </Button>
       ) : (
         <Button disabled={!isValid || isSubmitting} onClick={submitForm} data-testid="creer-offre">
-          {offre?._id ? "Continuer et Mettre à jour l'offre" : "Continuer et Créer l'offre"}
+          {offre?._id ? "Mettre à jour l'offre" : "Créer l'offre"}
         </Button>
       )}
     </Box>

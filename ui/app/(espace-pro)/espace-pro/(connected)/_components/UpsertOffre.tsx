@@ -5,7 +5,7 @@ import type { IJob } from "shared"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { useToast } from "@/app/hooks/useToast"
-import { createOffre, getOffre } from "@/utils/api"
+import { createEtablissementDelegation, createOffre, getOffre } from "@/utils/api"
 import { apiPut } from "@/utils/api.utils"
 
 export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { establishment_id: string; job_id?: string; onSuccess: () => void }) {
@@ -18,20 +18,36 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
     gcTime: 0,
   })
 
-  const handleSave = async (values) => {
+  // partage l'offre aux CFA sélectionnés à l'étape 3 du tunnel, sans bloquer le message de succès de l'offre en cas d'échec
+  const notifyCfas = async (jobId: string, etablissementCatalogueIds?: string[]) => {
+    if (!etablissementCatalogueIds?.length) return
+    try {
+      await createEtablissementDelegation({ jobId, data: { etablissementCatalogueIds } })
+    } catch {
+      toast({
+        title: "L'offre a bien été enregistrée, mais son partage aux centres de formation sélectionnés a échoué.",
+        variant: "error",
+      })
+    }
+  }
+
+  const handleSave = async (allValues: any) => {
+    const { etablissementCatalogueIds, ...values } = allValues
     // Updates an offer
     if (job_id) {
       delete values.job_creation_date
       delete values.job_update_date
       delete values.delegations
-      await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: values }).then(() => {
+      await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: values }).then(async () => {
+        await notifyCfas(job_id, etablissementCatalogueIds)
         toast({
           title: "Offre mise à jour avec succès.",
         })
         onSuccess()
       })
     } else {
-      await createOffre(establishment_id, values)
+      const { _id } = await createOffre(establishment_id, values)
+      await notifyCfas(_id.toString(), etablissementCatalogueIds)
       toast({
         title: "Offre enregistrée avec succès.",
       })
