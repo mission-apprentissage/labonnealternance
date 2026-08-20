@@ -9,6 +9,10 @@ import { getEntrepriseHandiEngagement, upsertEntrepriseHandiEngagement } from "@
 
 const S3_KEY = "siretlist/lba_handi_engage_flag.ndjson"
 
+// Marge acceptée entre le nombre de SIRET du fichier téléchargé et le nombre de documents
+// FRANCE_TRAVAIL déjà en base, avant d'autoriser le nettoyage des sources obsolètes.
+const MISSING_SIRETS_CLEANUP_MARGIN_RATIO = 0.2
+
 // Le fichier ndjson est supposé contenir une entrée `{ siret: string, ... }` par ligne.
 // Hypothèse à vérifier sur un échantillon réel du fichier : nom du champ = "siret" (lowercase).
 type HandiEngageFlagDocument = { siret: string }
@@ -17,7 +21,7 @@ type HandiEngageFlagDocument = { siret: string }
 // - source FRANCE_TRAVAIL seule → l'entrée est supprimée
 // - sources LBA + FRANCE_TRAVAIL → la source FRANCE_TRAVAIL est retirée, l'entrée (source LBA) est conservée
 // (les entrées avec uniquement la source LBA ne sont pas concernées : elles ne sont jamais retournées par ce filtre)
-const _removeFranceTravailSourceForMissingSirets = async (sirets: Set<string>) => {
+const removeFranceTravailSourceForMissingSirets = async (sirets: Set<string>) => {
   const staleDocs = await getDbCollection("referentiel_engagement_entreprise").find({ engagement: "handicap", sources: EntrepriseEngagementSources.FRANCE_TRAVAIL }).toArray()
 
   let removed = 0
@@ -41,6 +45,11 @@ const _removeFranceTravailSourceForMissingSirets = async (sirets: Set<string>) =
 
 export const updateHandiEngagement = async () => {
   logger.info(`updateHandiEngagement: téléchargement de ${S3_KEY}`)
+
+  const previousFranceTravailCount = await getDbCollection("referentiel_engagement_entreprise").countDocuments({
+    engagement: "handicap",
+    sources: EntrepriseEngagementSources.FRANCE_TRAVAIL,
+  })
 
   let content: string | undefined
   try {
@@ -94,13 +103,21 @@ export const updateHandiEngagement = async () => {
 
   logger.info(`updateHandiEngagement: ${created} créés, ${alreadyUpToDate} déjà à jour, ${completed} sources complétées, ${errors} erreurs`)
 
-  // TODO: à voir avec métier. un fichier tronqué ou incomplet pourrait entraîner la suppression de sources France Travail pour des SIRET encore valides.
-  // if (errors === 0 && sirets.size > 0) {
-  //   const { removed, franceTravailSourceRemoved } = await removeFranceTravailSourceForMissingSirets(sirets)
-  //   logger.info(`updateHandiEngagement: ${removed} entrées supprimées, ${franceTravailSourceRemoved} sources France Travail retirées (SIRET absents du fichier)`)
-  // } else {
-  //   logger.warn(`updateHandiEngagement: contrôle inverse ignoré (errors=${errors}, sirets=${sirets.size})`)
-  // }
+  // Garde-fou : un fichier tronqué ou incomplet pourrait entraîner la suppression de sources France Travail
+  // pour des SIRET encore valides. On ne déclenche le nettoyage que si l'écart entre le nombre de SIRET du
+  // fichier et le nombre de documents FRANCE_TRAVAIL déjà en base reste dans une marge de ±20%.
+  const minExpectedCount = previousFranceTravailCount * (1 - MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
+  const maxExpectedCount = previousFranceTravailCount * (1 + MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
+  const isWithinMargin = previousFranceTravailCount === 0 || (sirets.size >= minExpectedCount && sirets.size <= maxExpectedCount)
+
+  if (errors === 0 && sirets.size > 0 && isWithinMargin) {
+    const { removed, franceTravailSourceRemoved } = await removeFranceTravailSourceForMissingSirets(sirets)
+    logger.info(`updateHandiEngagement: ${removed} entrées supprimées, ${franceTravailSourceRemoved} sources France Travail retirées (SIRET absents du fichier)`)
+  } else {
+    logger.warn(
+      `updateHandiEngagement: contrôle inverse ignoré (errors=${errors}, sirets=${sirets.size}, previousFranceTravailCount=${previousFranceTravailCount}, isWithinMargin=${isWithinMargin})`
+    )
+  }
 
   logger.info(`updateHandiEngagement: mise à jour des offres dans jobs_partners`)
   await refreshEntrepriseEngagementJobsPartners()
