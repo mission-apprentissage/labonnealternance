@@ -175,3 +175,6 @@ _temp/
 
 # Mot de passe mongot local généré depuis le vault par yarn setup (env:init)
 .infra/local/mongot_password
+
+# Rapport généré par ui/scripts/perf-budget.mjs --out
+perf-budget-report.md
