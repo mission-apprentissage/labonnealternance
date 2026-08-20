@@ -21,6 +21,7 @@ on:
 
 jobs:
   npm-packages-check:
+    name: NPM dependency check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
@@ -39,6 +40,7 @@ jobs:
         run: mna-npm-check/npm-check.sh -p .
 
   build:
+    name: Build & push image
     if: ${{ success() }}
     needs: ["npm-packages-check"]
     concurrency:

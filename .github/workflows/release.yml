@@ -8,6 +8,7 @@ jobs:
     uses: "./.github/workflows/ci.yml"
 
   npm-packages-check:
+    name: NPM dependency check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
@@ -26,6 +27,7 @@ jobs:
         run: mna-npm-check/npm-check.sh -p .
 
   release:
+    name: Bump & release version
     if: ${{ success() }}
     needs: ["npm-packages-check"]
     concurrency:
@@ -83,6 +85,7 @@ jobs:
         run: echo "VERSION=$(git describe --tags --abbrev=0 | cut -c2-)" >> "$GITHUB_OUTPUT"
 
   build-ui-recette:
+    name: Build UI image (recette)
     needs: ["release"]
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     runs-on: ubuntu-latest
@@ -132,6 +135,7 @@ jobs:
           CI: true
 
   docker-scout-server:
+    name: Docker Scout scan (server)
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     needs: ["release"]
     runs-on: ubuntu-latest
@@ -159,6 +163,7 @@ jobs:
           category: Docker Server
 
   docker-scout-ui:
+    name: Docker Scout scan (UI)
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     needs: ["release"]
     runs-on: ubuntu-latest
@@ -201,6 +206,7 @@ jobs:
       OPENPGP_PRIVATE_SUBKEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
 
   sentry:
+    name: Upload sourcemaps to Sentry
     needs: ["release"]
     runs-on: ubuntu-latest
     steps:
