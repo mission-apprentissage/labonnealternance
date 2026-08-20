@@ -5,6 +5,7 @@ import type { ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 import { getCompanySize } from "./get-company-size"
+import HiringCountBox from "./HiringCountBox"
 import ItemDistanceToCenter from "./ItemDistanceToCenter"
 import ItemGoogleSearchLink from "./ItemGoogleSearchLink"
 import ItemLocalisation from "./ItemLocalisation"
@@ -33,6 +34,7 @@ export const EmployeurPresentationBlock = ({
   cityOnly?: boolean
 }) => {
   const isHandicapEngaged = Boolean(item?.job?.elligibleHandicap || item?.company?.elligibleHandicap)
+  const hiringCount3Years = item?.company?.hiringCount3Years
 
   return (
     <Box sx={{ mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
@@ -44,6 +46,12 @@ export const EmployeurPresentationBlock = ({
         {isHandicapEngaged && (
           <Box sx={{ mb: fr.spacing("4v") }}>
             <LbaJobEngagement />
+          </Box>
+        )}
+
+        {typeof hiringCount3Years === "number" && (
+          <Box sx={{ mb: fr.spacing("4v") }}>
+            <HiringCountBox hiringCount3Years={hiringCount3Years} />
           </Box>
         )}
 
