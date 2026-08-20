@@ -159,6 +159,89 @@ export const createJob = async ({
 }
 
 /**
+ * Envoie le mail de délégation à chaque CFA concerné, puis le mail de confirmation récapitulatif au recruteur.
+ * Utilisé à la fois à la création des délégations (si le compte est déjà validé) et lors du rattrapage
+ * différé (`checkForJobActivations`, une fois le compte réellement validé).
+ *
+ * @param preloadedFormations Résultat déjà chargé de `getCatalogueFormations` pour ces délégations (évite un
+ * second aller-retour catalogue quand l'appelant, `createJobDelegations`, l'a déjà fait pour construire les
+ * délégations). Absent depuis `checkForJobActivations`, qui ne dispose pas de cette donnée et doit la relire.
+ */
+const notifyCfaDelegations = async (
+  offer: IJobsPartnersOfferPrivate,
+  delegations: IDelegation[],
+  managingUser: IUserWithAccount,
+  preloadedFormations?: Awaited<ReturnType<typeof getCatalogueFormations>>
+): Promise<void> => {
+  if (!delegations.length) return
+
+  const etablissementIds = delegations.map((delegation) => delegation.etablissement_id).filter((id): id is string => Boolean(id))
+  const formations =
+    preloadedFormations ??
+    (await getCatalogueFormations(
+      {
+        $or: [{ etablissement_gestionnaire_id: { $in: etablissementIds } }, { etablissement_formateur_id: { $in: etablissementIds } }],
+        catalogue_published: true,
+      },
+      {
+        etablissement_gestionnaire_id: 1,
+        etablissement_formateur_id: 1,
+        etablissement_formateur_entreprise_raison_sociale: 1,
+        etablissement_formateur_adresse: 1,
+        etablissement_formateur_code_postal: 1,
+        etablissement_formateur_localite: 1,
+      }
+    ))
+
+  // le récap (raison sociale/adresse) vient d'une relecture du catalogue, qui peut ne plus retrouver la formation
+  // (dépubliée, etc.) si ce rattrapage tourne longtemps après la sélection initiale du CFA. On ne doit pas pour autant
+  // faire dépendre l'envoi du mail de confirmation de la réussite de ce lookup : seul le mail CFA (basé sur les
+  // email/siret déjà persistés sur la délégation) doit conditionner l'envoi de la confirmation.
+  const sentDelegations: ISentDelegation[] = []
+  await Promise.all(
+    delegations.map(async (delegation) => {
+      const { etablissement_id: etablissementId, siret_code, email } = delegation
+      await sendDelegationMailToCFA(email, offer, siret_code)
+      const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
+      if (!formation) {
+        sentryCaptureException(
+          internal("Unexpected: no formation found for sent delegation, récap envoyé sans le détail de l'établissement", { jobId: offer._id, etablissementId })
+        )
+      }
+      const { etablissement_formateur_entreprise_raison_sociale, etablissement_formateur_adresse, etablissement_formateur_code_postal, etablissement_formateur_localite } =
+        formation ?? {}
+      sentDelegations.push({
+        raison_sociale: etablissement_formateur_entreprise_raison_sociale || "",
+        siret_code,
+        adresse_etablissement: formation ? `${etablissement_formateur_adresse}, ${etablissement_formateur_code_postal} ${etablissement_formateur_localite}` : "",
+      })
+    })
+  )
+
+  const jobTitle = offer.offer_title
+  const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${offer._id}/${encodeURIComponent(jobTitle)}`)
+  await mailer.sendEmail({
+    to: managingUser.email,
+    subject: `Votre offre a été partagée à ${sentDelegations.length} école(s)`,
+    template: getStaticFilePath("./templates/mail-mer-confirmation.mjml.ejs"),
+    data: {
+      first_name: managingUser.first_name,
+      last_name: managingUser.last_name,
+      email: managingUser.email,
+      phone: managingUser.phone,
+      job_title: jobTitle,
+      job_url: jobUrl,
+      delegations: sentDelegations,
+      images: {
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+      },
+      publicEmail: config.publicEmail,
+    },
+  })
+}
+
+/**
  * Create job delegations
  */
 export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: ObjectId; etablissementCatalogueIds: string[] }): Promise<void> => {
@@ -228,48 +311,12 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       return []
     }
   })
-  const sentDelegations: ISentDelegation[] = []
-  if (shouldSentMailToCfa && delegations.length) {
-    await Promise.all(
-      delegations.map(async (delegation) => {
-        const { etablissement_id: etablissementId, siret_code } = delegation
-        await sendDelegationMailToCFA(delegation.email, offer, siret_code)
-        const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
-        if (!formation) {
-          throw internal("Unexpected: no formation found", { jobId, etablissementId })
-        }
-        const { etablissement_formateur_entreprise_raison_sociale, etablissement_formateur_adresse, etablissement_formateur_code_postal, etablissement_formateur_localite } =
-          formation
-        sentDelegations.push({
-          raison_sociale: etablissement_formateur_entreprise_raison_sociale || "",
-          siret_code,
-          adresse_etablissement: `${etablissement_formateur_adresse}, ${etablissement_formateur_code_postal} ${etablissement_formateur_localite}`,
-        })
-      })
-    )
-  }
-  if (sentDelegations.length) {
-    const jobTitle = offer.offer_title
-    const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${offer._id}/${encodeURIComponent(jobTitle)}`)
-    await mailer.sendEmail({
-      to: managingUser.email,
-      subject: `Votre offre a été partagée à ${sentDelegations.length} école(s)`,
-      template: getStaticFilePath("./templates/mail-mer-confirmation.mjml.ejs"),
-      data: {
-        first_name: managingUser.first_name,
-        last_name: managingUser.last_name,
-        email: managingUser.email,
-        phone: managingUser.phone,
-        job_title: jobTitle,
-        job_url: jobUrl,
-        delegations: sentDelegations,
-        images: {
-          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-        },
-        publicEmail: config.publicEmail,
-      },
-    })
+  // les mails (CFA + confirmation recruteur) ne doivent partir qu'une fois le compte réellement validé :
+  // rôle GRANTED sur l'entreprise ET adresse email du recruteur confirmée.
+  if (shouldSentMailToCfa && isUserEmailChecked(managingUser)) {
+    // `formations` a déjà été chargé ci-dessus pour construire les délégations : il couvre les mêmes établissements
+    // et projette déjà tous les champs nécessaires au récap (cf. notifyCfaDelegations), pas besoin de le relire.
+    await notifyCfaDelegations(offer, delegations, managingUser, formations)
   }
 
   const newDelegations = offer.delegations?.concat(delegations) ?? delegations
@@ -800,7 +847,7 @@ export const checkForJobActivations = async (userId: ObjectId, entrepriseId: Obj
   await asyncForEach(awaitingJobs, async (job) => {
     const extendedOffer = await activateAndExtendOffre(job._id)
     const delegations = extendedOffer.delegations ?? []
-    await Promise.all(delegations.map(async (delegation) => sendDelegationMailToCFA(delegation.email, extendedOffer, delegation.siret_code)))
+    await notifyCfaDelegations(extendedOffer, delegations, userOpt)
   })
 }
 

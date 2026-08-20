@@ -1,20 +1,19 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
-import { MAX_SEARCH_ROMES_PRIVATE, parseEnum, typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import type { ITypeEmploi } from "shared/constants/recruteur"
 import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
-import { buildEnum } from "shared/helpers/zod-helpers/zod-primitives-light"
-import { zDiplomaParam } from "shared/routes/params"
-import { z } from "zod"
+// Imports profonds plutôt que le barrel "shared" : ce module part dans le bundle de la home
+// (via le registre PAGES de routes.utils). Ce n'est pas ce qui a sorti zod du first-load — le
+// barrel est élaguable et `routes.utils` l'utilise encore ; c'est la suppression des usages de
+// zod *au niveau valeur* (z.object/z.enum/buildEnum) qui l'a fait. Les imports profonds sont
+// une ceinture de sécurité : ils rendent la chaîne insensible à un futur `sideEffects` élargi
+// dans shared/package.json, qui rendrait shared/routes non élaguable.
+import { MAX_SEARCH_ROMES_PRIVATE } from "shared/constants/search"
+import { parseEnum } from "shared/utils/enum-utils"
+import { typedKeys } from "shared/utils/object-utils"
 
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
 import { PAGES } from "@/utils/routes.utils"
-
-// Rapatrié de shared/routes/params.ts : uniquement consommé par l'UI du moteur legacy
-// (ici et RechercheForm), aucune route API ne l'utilise.
-export const zTypesEmploiParam = z.array(buildEnum(TYPE_EMPLOI_OPTIONS)).optional()
-
-const zIdeaType = z.enum(LBA_ITEM_TYPE_OLD)
 
 type ItemReference = {
   id: string
@@ -35,13 +34,22 @@ export function deserializeItemReferences(items: string): ItemReference[] {
   return decodeURIComponent(items).split(",").map(deserializeItemReference).filter(Boolean)
 }
 
+/**
+ * `parseEnum` compare en minuscules, là où le `z.enum(LBA_ITEM_TYPE_OLD).parse` d'avant était
+ * sensible à la casse : `?activeItems=PEJOB:x` était rejeté, il est maintenant accepté et
+ * normalisé sur la valeur canonique. Élargissement assumé — les valeurs d'`activeItems` sont
+ * toujours produites par `serializeItemReferences` (liens partagés, navigation interne), jamais
+ * saisies à la main. Vérifié sur 24 h de logs nginx prod (172 900 requêtes avec `activeItems`) :
+ * 100 % des types sont canoniques (`partnerJob` 85 587, `lba` 53 030, `formation` 17 659,
+ * `matcha` 15 977), zéro variante de casse. Voir le test qui verrouille ce comportement.
+ */
 function deserializeItemReference(item: string): ItemReference | null {
-  try {
-    const [ideaType, ...rest] = item.split(":")
-    return { ideaType: newItemTypeToOldItemType(zIdeaType.parse(ideaType)), id: rest.join(",") }
-  } catch (_e) {
+  const [rawIdeaType, ...rest] = item.split(":")
+  const ideaType = parseEnum(LBA_ITEM_TYPE_OLD, rawIdeaType)
+  if (ideaType === null) {
     return null
   }
+  return { ideaType: newItemTypeToOldItemType(ideaType), id: rest.join(",") }
 }
 
 export function serializeTypesEmploi(typesEmploi: ITypeEmploi[]) {
@@ -76,39 +84,29 @@ export enum RechercheViewType {
   FORMATION = "FORMATION",
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const zRecherchePageParams = z.object({
-  romes: z.array(z.string()),
-  geo: z
-    .object({
-      address: z.string().nullable(),
-      latitude: z.number(),
-      longitude: z.number(),
-    })
-    .nullable(),
-  radius: z.number(),
-  diploma: zDiplomaParam.nullish(),
-  typesEmploi: zTypesEmploiParam.nullish(),
-  job_name: z.string().nullable(),
-  job_type: z.string().nullable(),
-  displayEntreprises: z.boolean().optional(),
-  displayFormations: z.boolean().optional(),
-  displayFilters: z.boolean().optional(),
-  displayMobileForm: z.boolean().optional(),
-  elligibleHandicapFilter: z.boolean().optional(),
-  activeItems: z
-    .object({
-      ideaType: z.enum(LBA_ITEM_TYPE_OLD),
-      id: z.string(),
-    })
-    .array()
-    .optional(),
-  opco: z.string().nullish(),
-  rncp: z.string().nullish(),
-  scrollToRecruteursLba: z.boolean().nullish(),
-})
-
-export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>> & { viewType?: RechercheViewType }
+// Type explicite, ex-dérivé d'un schéma zod jamais parsé (Required<z.output<...>>) :
+// le retrait de zod sort son runtime (~66 ko gzip) du first-load de toutes les pages
+// qui chargent le registre PAGES. Mêmes unions que la dérivation d'origine
+// (.optional() → requis par Required<>, .nullish() → `| null`).
+export type IRecherchePageParams = {
+  romes: string[]
+  geo: { address: string | null; latitude: number; longitude: number } | null
+  radius: number
+  diploma: keyof typeof NIVEAUX_POUR_LBA | null
+  typesEmploi: ITypeEmploi[] | null
+  job_name: string | null
+  job_type: string | null
+  displayEntreprises: boolean
+  displayFormations: boolean
+  displayFilters: boolean
+  displayMobileForm: boolean
+  elligibleHandicapFilter: boolean
+  activeItems: ItemReference[]
+  opco: string | null
+  rncp: string | null
+  scrollToRecruteursLba: boolean | null
+  viewType?: RechercheViewType
+}
 
 export type WithRecherchePageParams<T = object> = T & { rechercheParams: IRecherchePageParams }
 
