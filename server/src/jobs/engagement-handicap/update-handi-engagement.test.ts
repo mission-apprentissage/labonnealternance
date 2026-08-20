@@ -120,8 +120,7 @@ describe("updateHandiEngagement", () => {
 
   it("ne fait rien si le fichier S3 est vide", async () => {
     // given
-    // @ts-expect-error : simule un flux S3 absent (Body manquant côté SDK)
-    vi.mocked(s3ReadAsStream).mockResolvedValue(undefined)
+    mockNdjson([])
     // when
     await updateHandiEngagement()
     // then
