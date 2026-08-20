@@ -10,7 +10,7 @@ import { validateSIRET } from "shared/validators/siret-validator"
 import { logger } from "@/common/logger"
 import { s3ReadAsStream } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { groupStreamData } from "@/common/utils/stream-utils"
+import { groupStreamData, ndjsonToObjectStream } from "@/common/utils/stream-utils"
 
 const S3_KEY = "siretlist/lba_deca_contrats_par_annee.ndjson"
 const BULK_WRITE_BATCH_SIZE = 10_000
@@ -20,38 +20,6 @@ const BULK_WRITE_BATCH_SIZE = 10_000
 type DecaContratsParAnneeDocument = {
   siret: string
   contrats_par_annee: Record<string, number>
-}
-
-// Découpe un flux d'octets ndjson en objets JS, ligne par ligne, sans jamais charger le fichier entier en mémoire.
-const ndjsonToObjectStream = (onParseError: (err: unknown, line: string) => void): Transform => {
-  let buffer = ""
-  return new Transform({
-    readableObjectMode: true,
-    transform(chunk: Buffer, _encoding, callback) {
-      buffer += chunk.toString("utf8")
-      const lines = buffer.split("\n")
-      buffer = lines.pop() ?? ""
-      for (const line of lines) {
-        if (!line.trim()) continue
-        try {
-          this.push(JSON.parse(line))
-        } catch (err) {
-          onParseError(err, line)
-        }
-      }
-      callback()
-    },
-    flush(callback) {
-      if (buffer.trim()) {
-        try {
-          this.push(JSON.parse(buffer))
-        } catch (err) {
-          onParseError(err, buffer)
-        }
-      }
-      callback()
-    },
-  })
 }
 
 export const importDecaContratsParAnnee = async () => {

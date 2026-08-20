@@ -67,6 +67,47 @@ export function groupStreamData<TInput>(options: GroupDataOptions<TInput> = {}):
   )
 }
 
+/**
+ * Découpe un flux d'octets ndjson (une entrée JSON par ligne) en objets JS, ligne par ligne, sans jamais
+ * charger le fichier entier en mémoire. Tolère les fins de ligne CRLF (`\r\n`) comme LF (`\n`).
+ *
+ * @param onParseError Appelé pour chaque ligne non vide qui n'est pas un JSON valide ; la ligne est alors
+ * ignorée sans interrompre le flux.
+ * @returns Un Transform en readableObjectMode, à utiliser dans un `pipeline(sourceStream, ndjsonToObjectStream(...), ...)`
+ */
+export function ndjsonToObjectStream(onParseError: (err: unknown, line: string) => void): Transform {
+  let buffer = ""
+
+  const parseLine = (this_: Transform, rawLine: string) => {
+    const line = rawLine.endsWith("\r") ? rawLine.slice(0, -1) : rawLine
+    if (!line.trim()) return
+    try {
+      this_.push(JSON.parse(line))
+    } catch (err) {
+      onParseError(err, line)
+    }
+  }
+
+  return new Transform({
+    readableObjectMode: true,
+    transform(chunk: Buffer, _encoding, callback) {
+      buffer += chunk.toString("utf8")
+      const lines = buffer.split("\n")
+      buffer = lines.pop() ?? ""
+      for (const line of lines) {
+        parseLine(this, line)
+      }
+      callback()
+    },
+    flush(callback) {
+      if (buffer.trim()) {
+        parseLine(this, buffer)
+      }
+      callback()
+    },
+  })
+}
+
 export function stringToStream(str: string) {
   const stream = new Readable()
   stream.push(str)
