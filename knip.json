@@ -2,9 +2,9 @@
   "workspaces": {
     "server": {
       "entry": [
-        "src/main.ts!",
-        "src/dev.ts",
-        "src/migrations/*.ts!"
+        "src/index.ts!",
+        "src/migrations/*.ts!",
+        "tests/utils/globalSetup.ts"
       ],
       "project": [
         "src/**/*.ts!",
@@ -25,7 +25,7 @@
     },
     "ui": {
       "project": [
-        "./**/*.{ts,tsx}",
+        "./**/*.{ts,tsx,scss,sass}",
         "!.next"
       ],
       "paths": {
@@ -43,6 +43,9 @@
       "commitlint": true,
       "project": [
         "!.husky/commitlint.config.js"
+      ],
+      "ignore": [
+        ".yarn/**"
       ]
     }
   }
