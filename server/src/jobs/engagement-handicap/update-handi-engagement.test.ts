@@ -3,27 +3,28 @@ import { ObjectId } from "mongodb"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
-import { s3ReadAsString } from "@/common/utils/aws-utils"
+import { s3ReadAsStream } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { stringToStream } from "@/common/utils/stream-utils"
 import { updateHandiEngagement } from "./update-handi-engagement"
 
-// Mock S3 pour fournir le contenu ndjson sans appel AWS réel
+// Mock S3 pour fournir le flux ndjson sans appel AWS réel
 vi.mock("@/common/utils/aws-utils", () => ({
-  s3ReadAsString: vi.fn(),
+  s3ReadAsStream: vi.fn(),
 }))
 
 const SIRET_1 = apiEntrepriseEtablissementFixture.dinum.data.siret
 const SIRET_2 = "42476141900045"
 
 const mockNdjson = (docs: object[]) => {
-  vi.mocked(s3ReadAsString).mockResolvedValue(docs.map((doc) => JSON.stringify(doc)).join("\n"))
+  vi.mocked(s3ReadAsStream).mockResolvedValue(stringToStream(docs.map((doc) => JSON.stringify(doc)).join("\n")))
 }
 
 useMongo()
 
 describe("updateHandiEngagement", () => {
   beforeEach(async () => {
-    vi.mocked(s3ReadAsString).mockReset()
+    vi.mocked(s3ReadAsStream).mockReset()
     return async () => {
       await getDbCollection("referentiel_engagement_entreprise").deleteMany({})
       await getDbCollection("jobs_partners").deleteMany({})
@@ -42,7 +43,7 @@ describe("updateHandiEngagement", () => {
     expect(doc?.sources).toEqual([EntrepriseEngagementSources.FRANCE_TRAVAIL])
   })
 
-  it("Cas 2 - ne modifie rien quand le SIRET est déjà présent avec la source FRANCE_TRAVAIL", async () => {
+  it("Cas 2 - ne duplique pas la source quand le SIRET est déjà présent avec la source FRANCE_TRAVAIL", async () => {
     // given
     const before = new Date("2020-01-01")
     await getDbCollection("referentiel_engagement_entreprise").insertOne({
@@ -57,9 +58,11 @@ describe("updateHandiEngagement", () => {
     // when
     await updateHandiEngagement()
     // then
+    // Le traitement applique désormais un upsert unique ($addToSet) quel que soit l'état préalable du
+    // document : updated_at est donc rafraîchi même quand la source était déjà présente.
     const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: SIRET_1 })
     expect(doc?.sources).toEqual([EntrepriseEngagementSources.FRANCE_TRAVAIL])
-    expect(doc?.updated_at.getTime()).toBe(before.getTime())
+    expect(doc?.updated_at.getTime()).toBeGreaterThan(before.getTime())
   })
 
   it("Cas 3 - complète les sources avec FRANCE_TRAVAIL quand le SIRET n'a que la source LBA, sans écraser l'existant", async () => {
@@ -107,7 +110,7 @@ describe("updateHandiEngagement", () => {
 
   it("ignore les lignes ndjson non parsables sans interrompre le traitement des autres lignes", async () => {
     // given
-    vi.mocked(s3ReadAsString).mockResolvedValue(["not-json", JSON.stringify({ siret: SIRET_2 })].join("\n"))
+    vi.mocked(s3ReadAsStream).mockResolvedValue(stringToStream(["not-json", JSON.stringify({ siret: SIRET_2 })].join("\n")))
     // when
     await updateHandiEngagement()
     // then
@@ -118,7 +121,8 @@ describe("updateHandiEngagement", () => {
 
   it("ne fait rien si le fichier S3 est vide", async () => {
     // given
-    vi.mocked(s3ReadAsString).mockResolvedValue(undefined)
+    // @ts-expect-error : simule un flux S3 absent (Body manquant côté SDK)
+    vi.mocked(s3ReadAsStream).mockResolvedValue(undefined)
     // when
     await updateHandiEngagement()
     // then
@@ -128,7 +132,7 @@ describe("updateHandiEngagement", () => {
 
   it("ne fait rien si la lecture S3 échoue (fichier introuvable / erreur S3)", async () => {
     // given
-    vi.mocked(s3ReadAsString).mockRejectedValue(new Error("S3 error"))
+    vi.mocked(s3ReadAsStream).mockRejectedValue(new Error("S3 error"))
     // when
     await updateHandiEngagement()
     // then

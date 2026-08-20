@@ -1,13 +1,22 @@
+import { createInterface } from "node:readline"
+import type { Readable } from "node:stream"
+
+import type { AnyBulkWriteOperation } from "mongodb"
+import { ObjectId } from "mongodb"
+import type { IReferentielEngagementEntreprise } from "shared/models/referentiel-engagement-entreprise.model"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { validateSIRET } from "shared/validators/siret-validator"
 
 import { logger } from "@/common/logger"
-import { s3ReadAsString } from "@/common/utils/aws-utils"
+import { s3ReadAsStream } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { refreshEntrepriseEngagementJobsPartners } from "@/jobs/engagement-handicap/refresh-entreprise-engagement-jobs-partners"
-import { getEntrepriseHandiEngagement, upsertEntrepriseHandiEngagement } from "@/services/referentiel-engagement-entreprise.service"
 
 const S3_KEY = "siretlist/lba_handi_engage_flag.ndjson"
+
+// Nombre d'opérations upsert accumulées avant l'envoi d'un bulkWrite : borne la mémoire et le nombre
+// d'aller-retours MongoDB tout en conservant des lots de taille raisonnable.
+const BULK_WRITE_BATCH_SIZE = 500
 
 // Marge acceptée entre le nombre de SIRET du fichier téléchargé et le nombre de documents
 // FRANCE_TRAVAIL déjà en base, avant d'autoriser le nettoyage des sources obsolètes.
@@ -16,6 +25,32 @@ const MISSING_SIRETS_CLEANUP_MARGIN_RATIO = 0.2
 // Le fichier ndjson est supposé contenir une entrée `{ siret: string, ... }` par ligne.
 // Hypothèse à vérifier sur un échantillon réel du fichier : nom du champ = "siret" (lowercase).
 type HandiEngageFlagDocument = { siret: string }
+
+type BulkUpsertOp = AnyBulkWriteOperation<IReferentielEngagementEntreprise>
+
+type BulkUpsertCounters = { upsertedCount: number; modifiedCount: number }
+
+// Un seul cas d'upsert, que le SIRET soit nouveau, déjà à jour ou à compléter avec la source FRANCE_TRAVAIL :
+// $addToSet ajoute la source sans doublon et sans écraser d'éventuelles autres sources, $setOnInsert
+// n'initialise le document qu'à la création. Un SIRET déjà à jour est donc réécrit (updated_at rafraîchi)
+// même quand rien ne change réellement : ce coût est accepté pour éviter un aller-retour findOne par SIRET.
+const buildUpsertOp = (siret: string, now: Date): BulkUpsertOp => ({
+  updateOne: {
+    filter: { siret, engagement: "handicap" },
+    update: {
+      $addToSet: { sources: EntrepriseEngagementSources.FRANCE_TRAVAIL },
+      $set: { updated_at: now },
+      $setOnInsert: { _id: new ObjectId(), created_at: now, siret, engagement: "handicap" },
+    },
+    upsert: true,
+  },
+})
+
+const flushBulkOps = async (ops: BulkUpsertOp[]): Promise<BulkUpsertCounters> => {
+  if (ops.length === 0) return { upsertedCount: 0, modifiedCount: 0 }
+  const result = await getDbCollection("referentiel_engagement_entreprise").bulkWrite(ops, { ordered: false })
+  return { upsertedCount: result.upsertedCount, modifiedCount: result.modifiedCount }
+}
 
 // SIRET présents en référentiel avec la source FRANCE_TRAVAIL mais absents du fichier S3 téléchargé :
 // - source FRANCE_TRAVAIL seule → l'entrée est supprimée
@@ -51,26 +86,34 @@ export const updateHandiEngagement = async () => {
     sources: EntrepriseEngagementSources.FRANCE_TRAVAIL,
   })
 
-  let content: string | undefined
+  let stream: Readable | undefined
   try {
-    content = await s3ReadAsString("storage", S3_KEY)
+    stream = await s3ReadAsStream("storage", S3_KEY)
   } catch (err) {
     logger.error({ err }, `updateHandiEngagement: échec de la lecture du fichier S3 (${S3_KEY})`)
     return
   }
 
-  if (!content) {
+  if (!stream) {
     logger.warn(`updateHandiEngagement: fichier vide ou introuvable (${S3_KEY})`)
     return
   }
 
-  let created = 0
-  let alreadyUpToDate = 0
-  let completed = 0
+  const now = new Date()
   let errors = 0
   const sirets = new Set<string>()
+  const counters: BulkUpsertCounters = { upsertedCount: 0, modifiedCount: 0 }
+  let pendingOps: BulkUpsertOp[] = []
 
-  for (const line of content.split("\n")) {
+  const addCounters = (batch: BulkUpsertCounters) => {
+    counters.upsertedCount += batch.upsertedCount
+    counters.modifiedCount += batch.modifiedCount
+  }
+
+  // Lecture ligne à ligne en streaming (pas de chargement du fichier entier en mémoire) et écriture par
+  // lots via bulkWrite (pas d'aller-retour MongoDB par SIRET).
+  const lines = createInterface({ input: stream, crlfDelay: Infinity })
+  for await (const line of lines) {
     if (!line.trim()) continue
     try {
       const { siret } = JSON.parse(line) as HandiEngageFlagDocument
@@ -80,28 +123,19 @@ export const updateHandiEngagement = async () => {
       if (sirets.has(siret)) continue
       sirets.add(siret)
 
-      const existing = await getEntrepriseHandiEngagement(siret)
-
-      if (!existing) {
-        // Cas 1 - Nouveau SIRET : absent du référentiel → création (created_at = maintenant, engagement = "handicap")
-        await upsertEntrepriseHandiEngagement({ siret, sources: [EntrepriseEngagementSources.FRANCE_TRAVAIL] })
-        created++
-      } else if (existing.sources.includes(EntrepriseEngagementSources.FRANCE_TRAVAIL)) {
-        // Cas 2 - Déjà à jour : source France Travail déjà présente → rien à faire
-        alreadyUpToDate++
-      } else {
-        // Cas 3 - Source à compléter : présent (ex. source LBA) mais sans France Travail → on l'ajoute sans écraser les sources existantes
-        const sources = [...new Set([...existing.sources, EntrepriseEngagementSources.FRANCE_TRAVAIL])]
-        await upsertEntrepriseHandiEngagement({ siret, sources })
-        completed++
+      pendingOps.push(buildUpsertOp(siret, now))
+      if (pendingOps.length >= BULK_WRITE_BATCH_SIZE) {
+        addCounters(await flushBulkOps(pendingOps))
+        pendingOps = []
       }
     } catch (err) {
       logger.error({ err, line }, "updateHandiEngagement: ligne ndjson non traitable")
       errors++
     }
   }
+  addCounters(await flushBulkOps(pendingOps))
 
-  logger.info(`updateHandiEngagement: ${created} créés, ${alreadyUpToDate} déjà à jour, ${completed} sources complétées, ${errors} erreurs`)
+  logger.info(`updateHandiEngagement: ${counters.upsertedCount} créés, ${counters.modifiedCount} mis à jour (source déjà à jour ou complétée), ${errors} erreurs`)
 
   // Garde-fou : un fichier tronqué ou incomplet pourrait entraîner la suppression de sources France Travail
   // pour des SIRET encore valides. On ne déclenche le nettoyage que si l'écart entre le nombre de SIRET du
