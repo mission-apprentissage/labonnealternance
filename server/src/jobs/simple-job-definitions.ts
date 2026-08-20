@@ -230,8 +230,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: importDecaContratsParAnnee,
-    description: "Télécharge et logue le référentiel des contrats d'alternance par année depuis S3 (siretlist/lba_deca_contrats_par_annee.ndjson)",
-  },
+    description: "Télécharge et importe (upsert) le référentiel des contrats d'alternance par année depuis S3 (siretlist/lba_deca_contrats_par_annee.ndjson)",
+  }
   // IMPORT RAW AND COMPUTED JOBS PARTNERS
   {
     fct: processRhAlternance,
