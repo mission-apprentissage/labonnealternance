@@ -38,11 +38,11 @@ type BulkUpsertCounters = { upsertedCount: number; modifiedCount: number }
 // même quand rien ne change réellement : ce coût est accepté pour éviter un aller-retour findOne par SIRET.
 const buildUpsertOp = (siret: string, now: Date): BulkUpsertOp => ({
   updateOne: {
-    filter: { siret, engagement: "handicap" },
+    filter: { siret },
     update: {
       $addToSet: { sources: EntrepriseEngagementSources.FRANCE_TRAVAIL },
-      $set: { updated_at: now },
-      $setOnInsert: { _id: new ObjectId(), created_at: now, siret, engagement: "handicap" },
+      $set: { updated_at: now, engagement: "handicap" },
+      $setOnInsert: { _id: new ObjectId(), created_at: now, siret },
     },
     upsert: true,
   },
