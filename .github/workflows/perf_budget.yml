@@ -1,4 +1,4 @@
-name: Perf Budget
+name: Performance budget
 
 on:
   pull_request:
