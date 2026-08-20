@@ -1,10 +1,11 @@
 import { getDistance } from "geolib"
-import type { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
+import type { IFormationCatalogue } from "shared/models/index"
 import { URL } from "url"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config.js"
 import { getCommuneByCodeInsee, getCommuneByCodePostal } from "./referentiel/commune/commune.referentiel.service"
+import { loadRomeLabelByCode, resolveRomeLabels } from "./search/search-items.service"
 
 interface IWish {
   id: string
@@ -50,12 +51,22 @@ const getFormationCoordinates = (formation: IFormationCatalogue): { latitude: st
   return { latitude: latitude.toString(), longitude: longitude.toString() }
 }
 
+// Préfère le libellé ROME (signal le plus boosté côté recherche, cf. rome_labels) et ne retombe
+// sur l'intitulé de formation que si aucun code ROME n'est résolu, pour éviter les 0 résultat
+// sur les intitulés longs (au-delà de 4 termes utiles, 75% de couverture est exigée).
+const getFormationSearchLabel = (formation: IFormationCatalogue, romeLabelByCode: Map<string, string>): string | null => {
+  const [romeLabel] = resolveRomeLabels(formation.rome_codes, romeLabelByCode)
+  return romeLabel ?? formation.intitule_long ?? null
+}
+
 const getFormations = (
   query: object,
   projection: object = {
-    etablissement_formateur_localite: 1,
+    localite: 1,
     intitule_long: 1,
     lieu_formation_geopoint: 1,
+    rome_codes: 1,
+    cle_ministere_educatif: 1,
     _id: 0,
   }
 ) => getDbCollection("formationcatalogues").find(query, { projection }).toArray()
@@ -128,82 +139,98 @@ const getPrdvLink = async (wish: IWish, eligibleCles?: Set<string>): Promise<str
   return ""
 }
 
-async function getWishCommune(wish: IWish): Promise<IReferentielCommune | null> {
-  if (wish.code_insee) {
-    const commune = await getCommuneByCodeInsee(wish.code_insee)
-    if (commune) return commune
+type ICommuneCoords = { latitude: string | null; longitude: string | null; lieuLabel: string | null }
+
+async function findWishCommune(wish: IWish): Promise<ICommuneCoords> {
+  const resolve = async (): Promise<{ centre: { coordinates: [number, number] }; nom: string } | null> => {
+    if (wish.code_insee) {
+      const commune = await getCommuneByCodeInsee(wish.code_insee)
+      if (commune) return commune
+    }
+
+    if (wish.code_postal) {
+      const commune = await getCommuneByCodePostal(wish.code_postal)
+      if (commune) return commune
+    }
+
+    const code = wish.code_insee || wish.code_postal
+
+    if (code) {
+      const generalPostCode = code.replace(/\d{3}$/, "000")
+      const byCodeInsee = await getCommuneByCodeInsee(generalPostCode)
+      if (byCodeInsee) return byCodeInsee
+      const byCodePostal = await getCommuneByCodePostal(generalPostCode)
+      if (byCodePostal) return byCodePostal
+    }
+
+    return null
   }
 
-  if (wish.code_postal) {
-    const commune = await getCommuneByCodePostal(wish.code_postal)
-    if (commune) return commune
-  }
-
-  const code = wish.code_insee || wish.code_postal
-
-  if (code) {
-    const generalPostCode = code.replace(/\d{3}$/, "000")
-    const byCodeInsee = await getCommuneByCodeInsee(generalPostCode)
-    if (byCodeInsee) return byCodeInsee
-    const byCodePostal = await getCommuneByCodePostal(generalPostCode)
-    if (byCodePostal) return byCodePostal
-  }
-
-  return null
+  const commune = await resolve()
+  if (!commune) return { latitude: null, longitude: null, lieuLabel: null }
+  // GeoJSON coordinates are in [longitude, latitude] format
+  return { latitude: commune.centre.coordinates[1].toString(), longitude: commune.centre.coordinates[0].toString(), lieuLabel: commune.nom }
 }
 
-export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>): Promise<string> => {
-  // Try getting formations first
-  const formations = await getTrainingsFromParameters(wish, formationsByCle)
+// Ordre stable indépendant de l'ordre naturel Mongo : évite qu'un choix arbitraire entre
+// plusieurs formations candidates ne change silencieusement d'un run à l'autre.
+const sortFormationsDeterministically = (formations: IFormationCatalogue[]): IFormationCatalogue[] =>
+  [...formations].sort((a, b) => (a.cle_ministere_educatif ?? "").localeCompare(b.cle_ministere_educatif ?? ""))
 
+export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>, romeLabelByCode?: Map<string, string>): Promise<string> => {
+  const formations = await getTrainingsFromParameters(wish, formationsByCle)
   const utmParams = wish.utm_data ? wish.utm_data : defaultUtmData
 
-  // Extract postcode and get coordinates if available
-  const commune = await getWishCommune(wish)
-  // GeoJSON coordinates are in [longitude, latitude] format
-  const wLon: string | null = commune?.centre.coordinates[0].toString() ?? null
-  const wLat: string | null = commune?.centre.coordinates[1].toString() ?? null
-  const wLieuLabel: string | null = commune?.nom ?? null
+  // Résolue au plus une fois par vœu, seulement si un des cas ci-dessous en a besoin.
+  let communePromise: Promise<ICommuneCoords> | null = null
+  const getWishCommune = () => (communePromise ??= findWishCommune(wish))
 
   if (!formations?.length) {
     // No formation found: fall back to a location-only search
-    if (wLat && wLon) {
-      return buildEmploiUrl({ params: { lieu_label: wLieuLabel, latitude: wLat, longitude: wLon, radius: "60", ...utmParams } })
+    const { latitude, longitude, lieuLabel } = await getWishCommune()
+    if (latitude && longitude) {
+      return buildEmploiUrl({ params: { lieu_label: lieuLabel, latitude, longitude, radius: "60", source: "training_links", ...utmParams } })
     }
-    return buildEmploiUrl({ baseUrl: config.publicUrl, params: { ...utmParams } })
+    return buildEmploiUrl({ baseUrl: config.publicUrl, params: { source: "training_links", ...utmParams } })
   }
+
+  const sortedFormations = sortFormationsDeterministically(formations)
+  let formation = sortedFormations[0]
 
   // Pick the formation closest to the wish's location when several match
-  let formation = formations[0]
-  if (formations.length > 1 && wLat && wLon) {
-    formation = formations.reduce(
-      (closest, current) => {
-        const { latitude: cLat, longitude: cLon } = getFormationCoordinates(current)
-        if (!cLat || !cLon) return closest
-        const currentDist = getDistance({ latitude: wLat, longitude: wLon }, { latitude: cLat, longitude: cLon })
-        return currentDist < closest.distance! ? { ...current, distance: currentDist } : closest
-      },
-      { distance: Infinity, ...formation }
-    )
+  if (sortedFormations.length > 1) {
+    const { latitude: wLat, longitude: wLon } = await getWishCommune()
+    if (wLat && wLon) {
+      formation = sortedFormations.reduce(
+        (closest, current) => {
+          const { latitude: cLat, longitude: cLon } = getFormationCoordinates(current)
+          if (!cLat || !cLon) return closest
+          const currentDist = getDistance({ latitude: wLat, longitude: wLon }, { latitude: cLat, longitude: cLon })
+          return currentDist < closest.distance! ? { ...current, distance: currentDist } : closest
+        },
+        { distance: Infinity, ...formation }
+      )
+    }
   }
 
-  const { latitude, longitude } = getFormationCoordinates(formation)
+  // latitude/longitude et lieu_label doivent toujours venir de la même source : soit la
+  // formation retenue (lieu_formation_geopoint + localite), soit la commune du vœu en repli —
+  // jamais un mélange qui afficherait un lieu différent de celui réellement recherché.
+  const formationCoords = getFormationCoordinates(formation)
+  const { latitude, longitude, lieuLabel } =
+    formationCoords.latitude && formationCoords.longitude ? { ...formationCoords, lieuLabel: formation.localite ?? null } : await getWishCommune()
+
+  const q = getFormationSearchLabel(formation, romeLabelByCode ?? (await loadRomeLabelByCode()))
+
   return buildEmploiUrl({
-    params: {
-      q: formation.intitule_long,
-      lieu_label: formation.etablissement_formateur_localite,
-      latitude: latitude ?? wLat,
-      longitude: longitude ?? wLon,
-      radius: "60",
-      ...utmParams,
-    },
+    params: { q, lieu_label: lieuLabel, latitude, longitude, radius: "60", source: "training_links", ...utmParams },
   })
 }
 
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
   const cles = [...new Set(params.map((w) => w.cle_ministere_educatif).filter(Boolean) as string[])]
 
-  const [eligibleTrainings, allFormations] = await Promise.all([
+  const [eligibleTrainings, allFormations, romeLabelByCode] = await Promise.all([
     cles.length
       ? getDbCollection("eligible_trainings_for_appointments")
           .find({ cle_ministere_educatif: { $in: cles }, lieu_formation_email: { $ne: null, $exists: true, $not: /^$/ } }, { projection: { _id: 0, cle_ministere_educatif: 1 } })
@@ -213,10 +240,11 @@ export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
       ? getDbCollection("formationcatalogues")
           .find(
             { cle_ministere_educatif: { $in: cles } },
-            { projection: { etablissement_formateur_localite: 1, intitule_long: 1, lieu_formation_geopoint: 1, cle_ministere_educatif: 1, _id: 0 } }
+            { projection: { localite: 1, intitule_long: 1, lieu_formation_geopoint: 1, rome_codes: 1, cle_ministere_educatif: 1, _id: 0 } }
           )
           .toArray()
       : Promise.resolve([]),
+    loadRomeLabelByCode(),
   ])
 
   const eligibleCles = new Set(eligibleTrainings.map((f) => f.cle_ministere_educatif as string))
@@ -230,7 +258,7 @@ export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
 
   const results: ILinks[] = []
   await asyncForEach(params, async (training) => {
-    const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training, eligibleCles), getLBALink(training, formationsByCle)])
+    const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training, eligibleCles), getLBALink(training, formationsByCle, romeLabelByCode)])
     results.push({ id: training.id, lien_prdv, lien_lba })
   })
 

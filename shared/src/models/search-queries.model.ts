@@ -22,7 +22,9 @@ export const ZSearchQuery = z.object({
   // puisque ce log n'était appelé qu'après un succès — ce champ comble ce trou).
   status: z.enum(["ok", "degraded", "error"]).describe("Issue de la recherche : succès normal, succès après repli, ou échec"),
   nb_hits: z.number().nullable().describe("Nombre de résultats retournés (null si status=error)"),
-  source: z.enum(["suggestion", "free_text"]).describe("Suggestion d'autocomplete sélectionnée vs texte libre"),
+  source: z
+    .enum(["suggestion", "free_text", "training_links"])
+    .describe("Suggestion d'autocomplete sélectionnée vs texte libre vs lien généré côté serveur (traininglinks, vœux Parcoursup)"),
   filters: z
     .object({
       type: z.string().nullable(),
