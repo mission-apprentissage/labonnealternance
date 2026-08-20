@@ -66,7 +66,7 @@
     "dotenv": "^17.2.3",
     "gitleaks-secret-scanner": "^2.1.1",
     "husky": "^9.1.7",
-    "knip": "^5.67.1",
+    "knip": "^6.32.2",
     "lint-staged": "^16.2.6",
     "semantic-release": "^25.0.1",
     "semantic-release-slack-bot": "^4.0.2",
