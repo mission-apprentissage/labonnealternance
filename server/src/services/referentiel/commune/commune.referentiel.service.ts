@@ -91,14 +91,12 @@ export async function getNearestCommuneByGeoPoint(geo: IGeoPoint): Promise<IRefe
   return commune
 }
 
-export async function getCommuneByCodeInsee(code: string): Promise<IReferentielCommune | null> {
-  return await getDbCollection("referentiel.communes").findOne({
-    code,
-  })
+type ICommuneCentreLabel = Pick<IReferentielCommune, "centre" | "nom">
+
+export async function getCommuneByCodeInsee(code: string): Promise<ICommuneCentreLabel | null> {
+  return await getDbCollection("referentiel.communes").findOne({ code }, { projection: { centre: 1, nom: 1 } })
 }
 
-export async function getCommuneByCodePostal(codePostal: string): Promise<IReferentielCommune | null> {
-  return await getDbCollection("referentiel.communes").findOne({
-    codesPostaux: codePostal,
-  })
+export async function getCommuneByCodePostal(codePostal: string): Promise<ICommuneCentreLabel | null> {
+  return await getDbCollection("referentiel.communes").findOne({ codesPostaux: codePostal }, { projection: { centre: 1, nom: 1 } })
 }

@@ -1,0 +1,75 @@
+name: Perf Budget
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "ui/**"
+      - "shared/**"
+      - "yarn.lock"
+      - ".github/workflows/perf_budget.yml"
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: "perf-budget-${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  perf-budget:
+    name: Budget de performance
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      # `shared` est résolu depuis ./dist/src (shared/package.json) : sans ce build, le build UI échoue.
+      # Même ordre que le stage builder_ui du Dockerfile.
+      - name: Build shared
+        run: yarn workspace shared build
+
+      - name: Build UI
+        run: yarn workspace ui build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          # `production` : on mesure ce que les usagers téléchargent réellement.
+          NEXT_PUBLIC_ENV: production
+          # Requis par ui/config.public.ts (getVersion lève sinon). Valeur constante et non un SHA :
+          # la version est inlinée dans le bundle, une valeur variable rendrait la mesure non reproductible.
+          NEXT_PUBLIC_VERSION: 0.0.0-perf-budget
+          __SENTRY_DEBUG__: false
+          __RRWEB_EXCLUDE_IFRAME__: true
+          __RRWEB_EXCLUDE_SHADOW_DOM__: true
+          __SENTRY_EXCLUDE_REPLAY_WORKER__: true
+          NODE_OPTIONS: --max-old-space-size=3072
+
+      # --report-only : un dépassement de seuil n'échoue pas (mode informatif). Une erreur de
+      # mesure échoue quand même — retirer ce flag pour rendre les seuils bloquants.
+      - name: Mesure du budget de performance
+        run: node ui/scripts/perf-budget.mjs --report-only --out=perf-budget-report.md
+
+      - name: Add job summary
+        if: always()
+        run: cat perf-budget-report.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      # Pas de PR à commenter sur l'événement merge_group. Étape ignorée si la mesure a échoué.
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          file-path: perf-budget-report.md
+          comment-tag: perf_budget
+          mode: upsert

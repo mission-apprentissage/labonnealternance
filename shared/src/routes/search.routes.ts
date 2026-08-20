@@ -64,7 +64,10 @@ export const zSearchRoutes = {
         radius: ZRadiusParam.pipe(z.number().min(0).max(200).optional()).default(30),
         page: z.coerce.number<number>().min(0).default(0).describe("Index de page (0-based)"),
         hitsPerPage: z.coerce.number<number>().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
-        source: z.enum(["suggestion", "free_text"]).optional().describe("Origine de la requête côté UI (télémétrie autocomplete, sans effet sur les résultats)"),
+        source: z
+          .enum(["suggestion", "free_text", "training_links"])
+          .optional()
+          .describe("Origine de la requête (télémétrie autocomplete UI, ou lien généré côté serveur par traininglinks pour les vœux Parcoursup — sans effet sur les résultats)"),
         internal: z
           .enum(["true", "false"])
           .transform((v) => v === "true")

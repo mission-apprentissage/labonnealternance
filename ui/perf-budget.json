@@ -1,0 +1,27 @@
+{
+  "$comment": "Budgets du first-load, contrôlés par ui/scripts/perf-budget.mjs (issue #5191). Seuils en octets gzip (niveau ci-dessous), sauf globalMaxFirstLoadJsRaw en octets non compressés. null = budget non renseigné : la mesure est affichée mais rien n'est contrôlé. Pour relever un seuil, reporter la mesure affichée par le job et justifier la hausse en description de PR.",
+  "$measured": {
+    "$comment": "Mesures de référence ayant servi à fixer les seuils (build de production, NEXT_PUBLIC_ENV=production, NEXT_PUBLIC_VERSION constante). Le script les re-dérive à chaque exécution : un écart se lit dans la colonne Marge.",
+    "commit": "23457dcc1",
+    "/ firstLoadJsGzip": 503681,
+    "/ firstLoadCssGzip": 65059,
+    "/recherche firstLoadJsGzip": 605176,
+    "globalMaxFirstLoadJsRaw": 2457682
+  },
+  "gzipLevel": 9,
+  "routes": {
+    "/": {
+      "firstLoadJsGzip": 524288,
+      "firstLoadCssGzip": 67584
+    },
+    "/recherche": {
+      "firstLoadJsGzip": 624640
+    }
+  },
+  "globalMaxFirstLoadJsRaw": 2560000,
+  "forbiddenOnFirstLoad": {
+    "/": [
+      "libphonenumber-js"
+    ]
+  }
+}

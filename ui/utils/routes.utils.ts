@@ -756,8 +756,8 @@ export const PAGES = {
       },
       title: props.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
     }),
-    espaceProOffreImpression: (jobId: string) => ({
-      getPath: () => `/espace-pro/offre/impression/${jobId}`,
+    espaceProOffreImpression: (jobId: string, source?: "cfa-sharing") => ({
+      getPath: () => generateUri("/espace-pro/offre/impression/:jobId", { params: { jobId }, querystring: removeUndefinedFields({ source }) }),
       title: "Imprimer mon offre",
     }),
     genericRecherche({ rechercheParams, mode }: { rechercheParams: Partial<IRecherchePageParams> | null; mode: IRechercheMode }): IPage {

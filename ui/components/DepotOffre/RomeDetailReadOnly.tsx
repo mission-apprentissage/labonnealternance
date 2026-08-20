@@ -13,6 +13,10 @@ const CompetencesGroupDiv = styled.div`
     font-weight: 700;
     margin-bottom: 12px;
   }
+
+  li {
+    margin-left: 24px;
+  }
 `
 
 export const RomeDetailReadOnly = ({
@@ -25,10 +29,12 @@ export const RomeDetailReadOnly = ({
   appellation: string
 }) => {
   return (
-    <Box sx={{ border: "1px solid #000091", p: fr.spacing("5v"), mb: fr.spacing("5v") }}>
-      <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>
-        {appellation}
+    <Box>
+      <Typography component="h4" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("6v") }}>
+        Description de l’offre
       </Typography>
+      <Typography sx={{ fontSize: "12px", mb: fr.spacing("6v") }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
+      <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("4v") }}>{appellation}</Typography>
       <Accordion defaultExpanded={true} id="metier" label="Descriptif du métier">
         {definition}
       </Accordion>
@@ -69,10 +75,6 @@ export const RomeDetailReadOnly = ({
       <Accordion id="accessibilite" label="À qui ce métier est-il accessible ?">
         <Typography>{acces_metier}</Typography>
       </Accordion>
-
-      <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px", mt: fr.spacing("4v") }}>
-        La fiche métier se base sur la classification ROME de France Travail
-      </Typography>
     </Box>
   )
 }
