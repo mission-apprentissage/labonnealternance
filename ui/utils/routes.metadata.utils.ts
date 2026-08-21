@@ -1,8 +1,6 @@
 import "server-only"
 import type { Metadata } from "next"
 import type { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/index"
-import { buildRechercheMetadata } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.metadata.utils_LEGACY"
-import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import type { PAGES } from "@/utils/routes.utils"
 
 // Registre des métadonnées SEO des pages, séparé de PAGES (routes.utils.ts) et server-only :
@@ -311,18 +309,6 @@ export const METADATA = {
       userId?: string
       raison_sociale?: string
     }): Metadata => ({ title: `${offerId === "creation" ? "Création d'une offre" : "Edition d'une offre"} - La bonne alternance` }),
-    successEditionOffre: ({
-      userType,
-      establishment_id,
-      user_id,
-    }: {
-      userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"
-      establishment_id?: string
-      user_id?: string
-    }): Metadata => ({}),
-    recherche: (rechercheParams: Partial<IRecherchePageParams> | null): Metadata => buildRechercheMetadata(rechercheParams, "default"),
-    rechercheFormation: (rechercheParams: Partial<IRecherchePageParams> | null): Metadata => buildRechercheMetadata(rechercheParams, "formation"),
-    rechercheEmploi: (rechercheParams: Partial<IRecherchePageParams> | null): Metadata => buildRechercheMetadata(rechercheParams, "emploi"),
     backCfaEntrepriseCreationDetail: (siret: string): Metadata => ({
       title: `Création entreprise ${siret} - La bonne alternance`,
     }),
