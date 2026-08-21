@@ -3,16 +3,10 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import { Box, List, ListItem, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useContext, useEffect } from "react"
-import type { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import type { ILbaItemLbaCompanyJson } from "shared"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailServices/EmployeurPresentationBlock"
 import { getCompanyGoogleSearchLink } from "@/components/ItemDetail/ItemDetailServices/get-company-google-search-link"
-import { getCompanySize } from "@/components/ItemDetail/ItemDetailServices/get-company-size"
-import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
-import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
-import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
-import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { notifyJobDetailViewV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
@@ -61,7 +55,6 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
           </Box>
         </Stack>
       </Box>
-      <Box sx={{ mb: fr.spacing("4v") }}>{recruteurLba?.company?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
       <EmployeurPresentationBlock
         title={`Présentation de l'entreprise ${recruteurLba?.company?.name ?? ""}`}
@@ -168,15 +161,6 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             </ListItem>
           </List>
         </Accordion>
-
-        <Box sx={{ mt: fr.spacing("4v") }}>
-          <ReportJobLink
-            itemId={recruteurLba?.company?.siret}
-            type={LBA_ITEM_TYPE.RECRUTEURS_LBA}
-            linkLabelNotReported="Signaler l’entreprise"
-            linkLabelReported="Entreprise signalée"
-          />
-        </Box>
       </Box>
     </Box>
   )
