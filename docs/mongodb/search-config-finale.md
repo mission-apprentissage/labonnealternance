@@ -1,7 +1,7 @@
 # Configuration finale du moteur de recherche (MongoDB Search)
 
 > Source de vérité unique de la configuration de recherche de La Bonne Alternance.
-> Alignée sur le code : `shared/src/models/searchItems.model.ts`, `server/src/jobs/search/generateSearchItemsCollection.ts`, `server/src/services/search/search.service.ts`, `server/src/common/utils/mongodbUtils.ts`.
+> Alignée sur le code : `shared/src/models/search-items.model.ts`, `server/src/jobs/search/generate-search-items-collection.ts`, `server/src/services/search/search.service.ts`, `server/src/common/utils/mongodb-utils.ts`.
 > Pour le contexte de la décision (pourquoi cette architecture), voir [analyse-search-analyzers.md](./analyse-search-analyzers.md).
 
 ---
@@ -106,7 +106,7 @@ Les facettes (`$searchMeta`) comptent les documents (pas de score) → le boosti
 
 ### Index de recherche (`createSearchIndexes`)
 
-`createSearchIndexes` (`mongodbUtils.ts`) :
+`createSearchIndexes` (`mongodb-utils.ts`) :
 - index absent → `createSearchIndex`
 - **index présent → `updateSearchIndex(name, definition)`** (applique tout changement d'analyzer/champ ; idempotent)
 

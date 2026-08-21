@@ -2,13 +2,13 @@
 
 ## Context
 
-The job [server/src/jobs/offrePartenaire/blockJobsPartnersFromCfaList.ts](server/src/jobs/offrePartenaire/blockJobsPartnersFromCfaList.ts) blocks partner offers when a blacklisted CFA is detected in one of these fields:
+The job [server/src/jobs/offre-partenaire/block-jobs-partners-from-cfa-list.ts](../../server/src/jobs/offre-partenaire/block-jobs-partners-from-cfa-list.ts) blocks partner offers when a blacklisted CFA is detected in one of these fields:
 
 - `workplace_name`
 - `offer_description`
 - `workplace_description`
 
-The matching logic currently lives in [server/src/jobs/offrePartenaire/isCompanyInBlockedCfaList.ts](server/src/jobs/offrePartenaire/isCompanyInBlockedCfaList.ts).
+The matching logic currently lives in [server/src/jobs/offre-partenaire/is-company-in-blocked-cfa-list.ts](../../server/src/jobs/offre-partenaire/is-company-in-blocked-cfa-list.ts).
 
 ## Current Implementation
 
@@ -56,7 +56,7 @@ A compiled regex would be simpler to introduce, but with a blacklist of this siz
 If optimization becomes necessary:
 
 1. Add a small server-side Aho-Corasick matcher utility.
-2. Keep `cfaCompanyList` unchanged in [server/src/jobs/offrePartenaire/isCompanyInBlockedCfaList.ts](server/src/jobs/offrePartenaire/isCompanyInBlockedCfaList.ts).
+2. Keep `cfaCompanyList` unchanged in [server/src/jobs/offre-partenaire/is-company-in-blocked-cfa-list.ts](../../server/src/jobs/offre-partenaire/is-company-in-blocked-cfa-list.ts).
 3. Keep the current normalization pipeline unchanged.
 4. Build the automaton once at module load.
 5. Replace the current linear substring scan with the matcher.
