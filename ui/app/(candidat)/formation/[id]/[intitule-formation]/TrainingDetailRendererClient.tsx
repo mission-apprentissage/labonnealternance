@@ -189,7 +189,6 @@ function TrainingDetailPage({
             ref={headerRef}
             sx={{
               filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-              borderRadius: { xs: 0, lg: fr.spacing("2v") },
               boxShadow: { xs: "unset", lg: "0 4px 12px 0 rgba(0, 0, 18, 0.16)" },
               padding: "10px 20px 0px 20px",
               backgroundColor: "white",
@@ -243,7 +242,7 @@ function TrainingDetailPage({
               </Box>
             </Box>
           </Box>
-          <Box sx={{ mx: { md: 0, lg: fr.spacing("6v") } }}>
+          <Box>
             <TrainingDetail training={selectedItem} />
             <AideApprentissage />
           </Box>

@@ -250,7 +250,6 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
             ref={headerRef}
             sx={{
               filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-              borderRadius: { xs: 0, lg: fr.spacing("2v") },
               boxShadow: { xs: "unset", lg: "0 4px 12px 0 rgba(0, 0, 18, 0.16)" },
               padding: "10px 20px 0px 20px",
               backgroundColor: "white",
@@ -331,7 +330,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
           </Box>
 
           <Box id="detail-content-container" />
-          <Box sx={{ mx: { md: 0, lg: fr.spacing("6v") } }}>
+          <Box>
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && (isCfaEntreprise || isGeiq) && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire && !isCfaEntreprise && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
