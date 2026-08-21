@@ -1,11 +1,20 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
+import { s3ReadAsStream } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { stringToStream } from "@/common/utils/stream-utils"
 import { importDecaContratsParAnnee } from "./import-deca-contrats-par-annee"
 
+vi.mock("@/common/utils/aws-utils", () => ({
+  s3ReadAsStream: vi.fn(),
+}))
+
 describe("importDecaContratsParAnnee", () => {
   useMongo()
+
+  afterEach(() => {
+    vi.mocked(s3ReadAsStream).mockReset()
+  })
 
   it("importe les documents valides mais fait échouer le job (throw) dès qu'une ligne est rejetée, pour ne pas sortir en succès silencieux", async () => {
     const lines = [
@@ -34,6 +43,19 @@ describe("importDecaContratsParAnnee", () => {
 
   it("ne fait pas échouer le job quand toutes les lignes sont valides", async () => {
     const counters = await importDecaContratsParAnnee(stringToStream(JSON.stringify({ siret: "42476141900045", contrats_par_annee: { "2023": 2 } }) + "\n"))
+    expect(counters).toEqual({ total: 1, upserted: 1, errors: 0 })
+  })
+
+  it("retombe sur la lecture S3 quand le 1er argument n'est pas un Readable (régression : le runner générique des jobs simples appelle fct(job.payload), qui n'est pas forcément undefined)", async () => {
+    const s3Stream = stringToStream(JSON.stringify({ siret: "42476141900045", contrats_par_annee: { "2023": 2 } }) + "\n")
+    vi.mocked(s3ReadAsStream).mockResolvedValueOnce(s3Stream)
+
+    // Simule jobs.ts:478 (`handler: async (job) => fct(job.payload)`) où job.payload est un objet
+    // quelconque, pas un stream : avant le fix, cet objet était passé directement à pipeline() et
+    // faisait planter le job avec "The 'body' argument must be ... Received an instance of Object".
+    const counters = await importDecaContratsParAnnee({ notAStream: true } as any)
+
+    expect(s3ReadAsStream).toHaveBeenCalledWith("storage", "siretlist/lba_deca_contrats_par_annee.ndjson")
     expect(counters).toEqual({ total: 1, upserted: 1, errors: 0 })
   })
 

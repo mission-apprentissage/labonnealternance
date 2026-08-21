@@ -1,5 +1,4 @@
-import type { Readable } from "node:stream"
-import { Transform } from "node:stream"
+import { Readable, Transform } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import type { AnyBulkWriteOperation } from "mongodb"
@@ -40,7 +39,11 @@ export const importDecaContratsParAnnee = async (sourceFileReadStream?: Readable
 
   let sourceStream: Readable
   try {
-    sourceStream = sourceFileReadStream ?? (await s3ReadAsStream("storage", S3_KEY))
+    // Le runner générique des jobs simples appelle systématiquement fct(job.payload) (jobs.ts), quel que
+    // soit le job — job.payload peut donc arriver ici sous forme d'objet quelconque (pas forcément
+    // undefined). On ne réutilise ce paramètre que s'il s'agit réellement d'un Readable (cas des tests,
+    // qui injectent un stream explicite), sinon on retombe sur la lecture S3 habituelle.
+    sourceStream = sourceFileReadStream instanceof Readable ? sourceFileReadStream : await s3ReadAsStream("storage", S3_KEY)
   } catch (err) {
     logger.error({ err }, `importDecaContratsParAnnee: échec de la lecture du fichier S3 (${S3_KEY})`)
     sentryCaptureException(err)
