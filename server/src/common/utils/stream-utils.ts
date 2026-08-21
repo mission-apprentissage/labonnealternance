@@ -1,6 +1,7 @@
 import type Stream from "node:stream"
 import type { TransformCallback, TransformOptions } from "node:stream"
 import { Transform } from "node:stream"
+import { StringDecoder } from "node:string_decoder"
 import { Readable } from "stream"
 
 type AccumulateDataOptions<TAcc> = TransformOptions & { accumulator?: TAcc }
@@ -76,6 +77,11 @@ export function groupStreamData<TInput>(options: GroupDataOptions<TInput> = {}):
  * @returns Un Transform en readableObjectMode, à utiliser dans un `pipeline(sourceStream, ndjsonToObjectStream(...), ...)`
  */
 export function ndjsonToObjectStream(onParseError: (err: unknown, line: string) => void): Transform {
+  // StringDecoder (et non chunk.toString("utf8")) : un caractère UTF-8 multi-octets (ex. "É") peut être
+  // coupé en deux chunks par le stream source. Décoder chaque chunk indépendamment corromprait alors ce
+  // caractère en deux U+FFFD (silencieusement valides pour JSON.parse) ; le decoder retient l'octet de fin
+  // incomplet et le recolle au chunk suivant avant de décoder.
+  const decoder = new StringDecoder("utf8")
   let buffer = ""
 
   const parseLine = (this_: Transform, rawLine: string) => {
@@ -91,7 +97,7 @@ export function ndjsonToObjectStream(onParseError: (err: unknown, line: string) 
   return new Transform({
     readableObjectMode: true,
     transform(chunk: Buffer, _encoding, callback) {
-      buffer += chunk.toString("utf8")
+      buffer += decoder.write(chunk)
       const lines = buffer.split("\n")
       buffer = lines.pop() ?? ""
       for (const line of lines) {
@@ -100,6 +106,7 @@ export function ndjsonToObjectStream(onParseError: (err: unknown, line: string) 
       callback()
     },
     flush(callback) {
+      buffer += decoder.end()
       if (buffer.trim()) {
         parseLine(this, buffer)
       }
