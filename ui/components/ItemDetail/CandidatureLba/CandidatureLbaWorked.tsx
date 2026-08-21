@@ -79,7 +79,6 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
                     .recherche({
                       ...rechercheParams,
                       scrollToRecruteursLba: true,
-                      activeItems: undefined,
                     })
                     .getPath() +
                     "&" +

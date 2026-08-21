@@ -5,22 +5,18 @@ import { ObjectId } from "mongodb"
 import type { IApplication, IRecruteurLbaUpdateEvent } from "shared"
 import { ERecruteurLbaUpdateEventType, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { OPCOS_LABEL } from "shared/constants/recruteur"
+import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ILbaCompanyForAdminSearch, ILbaCompanyForContactUpdate, ILbaCompanySearchField } from "shared/routes/update-lba-company.routes"
 import { validateSIRET } from "shared/validators/siret-validator"
 import { encryptMailWithIV } from "@/common/utils/encrypt-string"
-import type { IApiError } from "@/common/utils/error-manager"
-import { manageApiError } from "@/common/utils/error-manager"
 import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
-import { isAllowedSource } from "@/common/utils/is-allowed-source"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { generateApplicationToken } from "./app-links.service"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByCompanyCount } from "./application.service"
-import type { TLbaItemResult } from "./job-opportunity.service.types"
 import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
@@ -29,124 +25,6 @@ const setDistance = (distance: number | null | undefined) => {
     return roundDistance(distance / 1000)
   }
   return null
-}
-
-/**
- * Adaptation au modèle LBA d'une société issue de l'algo
- * To remove once V1 is decommissioned
- */
-const transformCompany = ({
-  company,
-  contactAllowedOrigin,
-  applicationCountByCompany,
-}: {
-  company: IJobsPartnersOfferPrivateWithDistance
-  caller?: string | null
-  contactAllowedOrigin: boolean
-  applicationCountByCompany: IApplicationCount[]
-}): ILbaItemLbaCompany => {
-  const contact: {
-    email?: string
-    iv?: string
-    phone?: string | null
-  } = encryptMailWithIV({ value: company.apply_email || "" })
-
-  if (contactAllowedOrigin) {
-    contact.phone = company.apply_phone
-  }
-
-  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
-
-  const resultCompany: ILbaItemLbaCompany = {
-    ideaType: LBA_ITEM_TYPE_OLD.LBA,
-    status: company.offer_status,
-    // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
-    id: company.workplace_siret!,
-    title: company.workplace_brand || company.workplace_legal_name,
-    contact: {
-      ...contact,
-      hasEmail: company.apply_email ? true : false,
-    },
-    place: {
-      distance: setDistance(company.distance),
-      fullAddress: company.workplace_address_label,
-      longitude: company.workplace_geopoint.coordinates[0],
-      latitude: company.workplace_geopoint.coordinates[1],
-      city: company.workplace_address_city,
-      address: company.workplace_address_label,
-    },
-    company: {
-      name: company.workplace_legal_name,
-      siret: company.workplace_siret,
-      size: company.workplace_size,
-      url: company.workplace_website,
-      opco: {
-        label: company.workplace_opco,
-        url: null,
-      },
-      elligibleHandicap: company.contract_is_disabled_elligible,
-    },
-    nafs: [
-      {
-        code: company.workplace_naf_code,
-        label: company.workplace_naf_label,
-      },
-    ],
-    applicationCount: applicationCount?.count || 0,
-    url: null,
-    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
-  }
-
-  return resultCompany
-}
-
-/**
- * Adaptation au modèle LBA d'une société issue de l'algo avec les données minimales nécessaires pour l'ui LBA
- * To remove once V1 is decommissioned
- */
-const transformCompanyWithMinimalData = ({
-  company,
-  applicationCountByCompany,
-}: {
-  company: IJobsPartnersOfferPrivateWithDistance
-  applicationCountByCompany: IApplicationCount[]
-}): ILbaItemLbaCompany => {
-  // format différent selon accès aux bonnes boîtes par recherche ou par siret
-
-  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
-  const resultCompany: ILbaItemLbaCompany = {
-    ideaType: LBA_ITEM_TYPE_OLD.LBA,
-    status: company.offer_status,
-    id: company.workplace_siret!,
-    title: company.workplace_brand || company.workplace_legal_name,
-    place: {
-      distance: setDistance(company.distance),
-      fullAddress: company.workplace_address_label,
-      longitude: company.workplace_geopoint.coordinates[0],
-      latitude: company.workplace_geopoint.coordinates[1],
-      city: company.workplace_address_city,
-      address: company.workplace_address_label,
-    },
-    company: {
-      name: company.workplace_legal_name,
-      siret: company.workplace_siret,
-      elligibleHandicap: company.contract_is_disabled_elligible,
-    },
-    nafs: [
-      {
-        label: company.workplace_naf_label,
-      },
-    ],
-    applicationCount: applicationCount?.count || 0,
-    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
-    contact: {
-      hasEmail: company.apply_email ? true : false,
-    },
-  }
-
-  return resultCompany
 }
 
 /**
@@ -204,44 +82,6 @@ const transformCompanyV2 = ({
   return resultCompany
 }
 
-/**
- * Transformer au format unifié une liste de sociétés issues de l'algo
- */
-const transformCompanies = ({
-  companies = [],
-  referer,
-  caller,
-  applicationCountByCompany,
-  isMinimalData,
-}: {
-  companies: IJobsPartnersRecruteurAlgoPrivate[]
-  referer?: string
-  caller?: string | null
-  applicationCountByCompany: IApplicationCount[]
-  isMinimalData: boolean
-}): { results: ILbaItemLbaCompany[] } => {
-  const transformedCompanies: { results: ILbaItemLbaCompany[] } = { results: [] }
-
-  if (companies?.length) {
-    transformedCompanies.results = companies.map((company) => {
-      const contactAllowedOrigin = isAllowedSource({ referer, caller })
-      return isMinimalData
-        ? transformCompanyWithMinimalData({
-            company,
-            applicationCountByCompany,
-          })
-        : transformCompany({
-            company,
-            contactAllowedOrigin,
-            caller,
-            applicationCountByCompany,
-          })
-    })
-  }
-
-  return transformedCompanies
-}
-
 type IRecruteursLbaSearchParams = {
   geo: { latitude: number; longitude: number; radius: number } | null
   romes: string[] | null
@@ -295,158 +135,6 @@ export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements, p
     ])
     .toArray()
 }
-
-/**
- * Retourne des sociétés issues de l'algo matchant les critères en paramètres
- */
-const getCompanies = async ({
-  romes,
-  latitude,
-  longitude,
-  radius,
-  companyLimit,
-  caller,
-  opco,
-  opcoUrl,
-  elligibleHandicapFilter,
-  api = "jobV1",
-}: {
-  romes?: string
-  latitude?: number
-  longitude?: number
-  radius?: number
-  companyLimit: number
-  caller?: string | null
-  opco?: string
-  opcoUrl?: string
-  api: string
-  elligibleHandicapFilter?: boolean
-}): Promise<IJobsPartnersRecruteurAlgoPrivate[] | IApiError> => {
-  try {
-    const distance = radius || 10
-
-    const query: Filter<IJobsPartnersRecruteurAlgoPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }
-
-    if (romes) {
-      query.offer_rome_codes = { $in: romes?.split(",") }
-    }
-
-    if (opco) {
-      query.workplace_opco = { $in: [opco.toUpperCase(), OPCOS_LABEL[opco?.toUpperCase()]] } // KBA : field opco_short_name does not exist anymore, to be removed once V1 decomissioned
-    }
-
-    // TODO 20250212 obsolete, to check if still used
-    if (opcoUrl) {
-      query.opco_url = opcoUrl.toLowerCase()
-    }
-    if (elligibleHandicapFilter) {
-      query.contract_is_disabled_elligible = true
-    }
-
-    let companies: IJobsPartnersRecruteurAlgoPrivate[] = []
-
-    if (latitude && longitude) {
-      companies = (await getDbCollection("jobs_partners")
-        .aggregate([
-          {
-            $geoNear: {
-              near: { type: "Point", coordinates: [longitude, latitude] },
-              distanceField: "distance",
-              key: "workplace_geopoint",
-              maxDistance: distance * 1000,
-              query,
-            },
-          },
-          {
-            $limit: companyLimit,
-          },
-        ])
-        .toArray()) as IJobsPartnersRecruteurAlgoPrivate[]
-    } else {
-      companies = (await getDbCollection("jobs_partners")
-        .aggregate([
-          {
-            $match: query,
-          },
-          {
-            $sample: {
-              size: companyLimit,
-            },
-          },
-        ])
-        .toArray()) as IJobsPartnersRecruteurAlgoPrivate[]
-    }
-
-    if (!latitude) {
-      companies.sort((a, b) => {
-        if (!a?.workplace_legal_name) return -1
-        if (!b?.workplace_legal_name) return 1
-        return a.workplace_legal_name.toLowerCase().localeCompare(b.workplace_legal_name.toLowerCase())
-      })
-    }
-
-    return companies
-  } catch (error) {
-    sentryCaptureException(error)
-    return manageApiError({ error, api_path: api, caller, errorTitle: `getting recruteurs_lba from jobs_partners collection (${api})` })
-  }
-}
-
-/**
- * Retourne des sociétés issues de l'algo au format unifié LBA
- * Les sociétés retournées sont celles matchant les critères en paramètres
- */
-export const getSomeCompanies = async ({
-  romes,
-  latitude,
-  longitude,
-  radius,
-  referer,
-  caller,
-  opco,
-  opcoUrl,
-  api = "jobV1",
-  isMinimalData,
-  elligibleHandicapFilter,
-}: {
-  romes?: string
-  latitude?: number
-  longitude?: number
-  radius?: number
-  referer?: string
-  caller?: string | null
-  opco?: string
-  opcoUrl?: string
-  api?: string
-  isMinimalData: boolean
-  elligibleHandicapFilter?: boolean
-}): Promise<TLbaItemResult<ILbaItemLbaCompany>> => {
-  const hasLocation = latitude === undefined ? false : true
-  const currentRadius = hasLocation ? radius : 21000
-  const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
-
-  const companies = await getCompanies({
-    romes,
-    latitude,
-    longitude,
-    radius: currentRadius,
-    companyLimit,
-    caller,
-    api,
-    opco,
-    opcoUrl,
-    elligibleHandicapFilter,
-  })
-
-  if (!("error" in companies) && companies instanceof Array) {
-    const sirets = companies.map(({ workplace_siret }) => workplace_siret)
-    const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-    return transformCompanies({ companies, referer, caller, applicationCountByCompany, isMinimalData })
-  } else {
-    return companies
-  }
-}
-
 /**
  * Retourne une société issue de l'algo identifiée par sont SIRET pour le front
  */

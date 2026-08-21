@@ -7,11 +7,14 @@ import { useSwipeable } from "react-swipeable"
 import { buildHitDetailUrl, parseSearchPageParams } from "../_utils/search.params.utils"
 import { useSearchResults } from "./use-search-results"
 
-export interface IBetaDetailNavigation {
+export interface IDetailNavigation {
   swipeHandlers: ReturnType<typeof useSwipeable>
   goPrev?: () => void
   goNext?: () => void
-  handleClose: () => void
+  /** null quand la page n'a pas été ouverte depuis le moteur de recherche : le call-site fournit son propre repli */
+  handleClose: (() => void) | null
+  /** Position 1-based de l'item courant dans les résultats de recherche (télémétrie), null hors contexte recherche */
+  position: number | null
 }
 
 /**
@@ -20,21 +23,22 @@ export interface IBetaDetailNavigation {
  * même recherche (cache react-query partagé avec la page de résultats → généralement
  * instantané) pour naviguer entre les résultats, et « fermer » revient sur `from`.
  *
- * Renvoie `null` quand la page n'a pas été ouverte depuis le moteur de recherche : les pages
- * de détail retombent alors sur la navigation legacy (useBuildNavigation + /recherche).
+ * Sans `?from=` (lien partagé, entrée SEO, lien espace-pro), il n'y a pas de contexte de
+ * liste : pas de précédent/suivant, et `handleClose` est null — les pages de détail
+ * fournissent leur propre repli (retour à /recherche).
  */
-export function useBetaDetailNavigation(): IBetaDetailNavigation | null {
+export function useDetailNavigation(): IDetailNavigation {
   const router = useRouter()
   const routeParams = useParams()
   const searchParams = useSearchParams()
 
   const from = searchParams?.get("from") ?? null
-  const isFromBeta = from !== null && from.startsWith("/recherche")
+  const isFromSearch = from !== null && from.startsWith("/recherche")
 
-  const betaSearchParams = useMemo(() => new URLSearchParams(isFromBeta ? (from.split("?")[1] ?? "") : ""), [isFromBeta, from])
-  const params = useMemo(() => parseSearchPageParams(betaSearchParams), [betaSearchParams])
+  const fromSearchParams = useMemo(() => new URLSearchParams(isFromSearch ? (from.split("?")[1] ?? "") : ""), [isFromSearch, from])
+  const params = useMemo(() => parseSearchPageParams(fromSearchParams), [fromSearchParams])
 
-  const result = useSearchResults(params, { enabled: isFromBeta })
+  const result = useSearchResults(params, { enabled: isFromSearch })
 
   // Le segment [id] des pages de détail EST le url_id des hits (posé par buildHitDetailUrl,
   // qui l'encode — useParams renvoie le segment brut, encore encodé).
@@ -46,13 +50,14 @@ export function useBetaDetailNavigation(): IBetaDetailNavigation | null {
     // segment non décodable : on compare la valeur brute
   }
 
-  const { goPrev, goNext } = useMemo(() => {
-    if (!isFromBeta || !from) return {}
+  const { goPrev, goNext, position } = useMemo(() => {
+    if (!isFromSearch || !from) return { position: null }
     const hits = result.data?.pages.flatMap((page) => page.hits) ?? []
-    if (hits.length <= 1) return {}
     const currentIndex = currentUrlId ? hits.findIndex((hit) => hit.url_id === currentUrlId) : 0
-    if (currentIndex === -1) return {}
-    // Même convention que le legacy (useBuildNavigation) : navigation circulaire sur la liste.
+    if (currentIndex === -1) return { position: null }
+    const position = hits.length > 0 ? currentIndex + 1 : null
+    if (hits.length <= 1) return { position }
+    // Navigation circulaire sur la liste des résultats.
     const goToIndex = (index: number) => {
       const hit = hits[index]
       if (!hit) return undefined
@@ -61,8 +66,9 @@ export function useBetaDetailNavigation(): IBetaDetailNavigation | null {
     return {
       goNext: goToIndex((currentIndex + 1) % hits.length),
       goPrev: goToIndex(currentIndex === 0 ? hits.length - 1 : currentIndex - 1),
+      position,
     }
-  }, [isFromBeta, from, result.data, currentUrlId, router])
+  }, [isFromSearch, from, result.data, currentUrlId, router])
 
   const swipeHandlers = useSwipeable({
     onSwiped: (eventData) => {
@@ -71,12 +77,11 @@ export function useBetaDetailNavigation(): IBetaDetailNavigation | null {
     },
   })
 
-  if (!isFromBeta || !from) return null
-
   return {
     swipeHandlers,
     goPrev,
     goNext,
-    handleClose: () => router.push(from),
+    handleClose: isFromSearch && from ? () => router.push(from) : null,
+    position,
   }
 }

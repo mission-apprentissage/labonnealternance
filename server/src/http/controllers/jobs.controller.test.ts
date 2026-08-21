@@ -11,28 +11,6 @@ describe("jobs.controller", () => {
   useMongo()
   const httpClient = useServer()
 
-  describe("GET /v1/_private/jobs/min", () => {
-    it("retourne 400 avec wrong_parameters si caller et romes sont absents", async () => {
-      const response = await httpClient().inject({ method: "GET", path: "/api/v1/_private/jobs/min" })
-
-      expect(response.statusCode).toBe(400)
-      expect(response.json().error).toBe("wrong_parameters")
-    })
-
-    it("retourne 200 avec la structure attendue pour des paramètres valides", async () => {
-      const response = await httpClient().inject({
-        method: "GET",
-        path: "/api/v1/_private/jobs/min?romes=F1603&caller=test-caller",
-      })
-
-      expect(response.statusCode).toBe(200)
-      const body = response.json()
-      expect(body).toHaveProperty("partnerJobs")
-      expect(body).toHaveProperty("lbaJobs")
-      expect(body).toHaveProperty("lbaCompanies")
-    })
-  })
-
   describe("GET /_private/jobs/:source/:id", () => {
     it("retourne 400 si la source est invalide", async () => {
       const response = await httpClient().inject({

@@ -3,7 +3,6 @@ import { Box, Typography } from "@mui/material"
 import { JOB_START_TYPE } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { isCfaEntreprise } from "shared/services/is-cfa-entreprise"
-import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
 import { CustomTooltip } from "@/app/(espace-pro)/_components/CustomTooltip"
 import { LbaJobEngagementTag } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagementTag"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
@@ -12,6 +11,7 @@ import { TagEmploiFormation } from "@/components/ItemDetail/TagEmploiFormation"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { TagRecrutementUrgent } from "@/components/ItemDetail/TagRecrutementUrgent"
+import type { ILbaItem } from "@/utils/lba-item.types"
 
 export function LbaItemTags({
   item,
