@@ -11,6 +11,7 @@ import { z } from "zod"
 import { logger } from "@/common/logger"
 import { s3ReadAsStream } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { groupStreamData, ndjsonToObjectStream } from "@/common/utils/stream-utils"
 
 const S3_KEY = "siretlist/lba_deca_contrats_par_annee.ndjson"
@@ -34,15 +35,16 @@ const ZDecaContratsParAnneeDocument = z.strictObject({
 })
 type DecaContratsParAnneeDocument = z.infer<typeof ZDecaContratsParAnneeDocument>
 
-export const importDecaContratsParAnnee = async () => {
+export const importDecaContratsParAnnee = async (sourceFileReadStream?: Readable) => {
   logger.info(`importDecaContratsParAnnee: téléchargement de ${S3_KEY}`)
 
   let sourceStream: Readable
   try {
-    sourceStream = await s3ReadAsStream("storage", S3_KEY)
+    sourceStream = sourceFileReadStream ?? (await s3ReadAsStream("storage", S3_KEY))
   } catch (err) {
     logger.error({ err }, `importDecaContratsParAnnee: échec de la lecture du fichier S3 (${S3_KEY})`)
-    return
+    sentryCaptureException(err)
+    throw err
   }
 
   const now = new Date()
@@ -98,6 +100,7 @@ export const importDecaContratsParAnnee = async () => {
           counters.upserted += succeeded
           counters.errors += failed
           logger.error({ err }, `importDecaContratsParAnnee: échec partiel d'un bulkWrite (${failed}/${operations.length} opérations en échec)`)
+          sentryCaptureException(err)
         }
       }
 
@@ -109,8 +112,20 @@ export const importDecaContratsParAnnee = async () => {
     await pipeline(sourceStream, parseStream, groupStreamData<DecaContratsParAnneeDocument>({ size: BULK_WRITE_BATCH_SIZE }), bulkUpsertStream)
   } catch (err) {
     logger.error({ err }, "importDecaContratsParAnnee: échec du pipeline de traitement")
+    sentryCaptureException(err)
     throw err
   }
 
   logger.info(`importDecaContratsParAnnee: terminé. total=${counters.total}, upserted=${counters.upserted}, errors=${counters.errors}`)
+
+  // Un mode dégradé (fichier renommé, droits S3 perdus, lignes massivement rejetées) ne doit jamais sortir
+  // en succès silencieux : le runner de jobs (jobs.ts) ne regarde que l'absence d'exception pour conclure
+  // au succès, indépendamment du contenu des logs.
+  if (counters.errors > 0) {
+    const err = new Error(`importDecaContratsParAnnee: ${counters.errors}/${counters.total} document(s) rejeté(s) sur ${S3_KEY}`)
+    sentryCaptureException(err)
+    throw err
+  }
+
+  return counters
 }

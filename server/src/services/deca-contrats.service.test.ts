@@ -53,4 +53,68 @@ describe("getHiringCountLastFullYears", () => {
     const result = await getHiringCountLastFullYears(SIRET, new Date("2026-08-20"))
     expect(result).toBe(0)
   })
+
+  // Documents historiques possibles malgré la validation zod à l'import (écrits avant son ajout, ou en
+  // base malgré le validationAction "warn" en prod) : le service doit rester défensif plutôt que planter.
+  // bypassDocumentValidation: en environnement de test, le validateur JSON schema de la collection est en
+  // mode "error" (mongodb-utils.ts, validationAction "warn" uniquement en prod) : ces documents malformés
+  // seraient normalement rejetés à l'insertion. On force leur écriture pour reproduire fidèlement un
+  // document historique déjà présent en base (écrit avant l'ajout de la validation zod à l'import, ou
+  // en base malgré le mode "warn" en prod).
+  it("retourne 0 quand contrats_par_annee est absent du document", async () => {
+    await getDbCollection("deca_contrats").insertOne(
+      {
+        _id: new ObjectId(),
+        siret: SIRET,
+        created_at: new Date(),
+        updated_at: new Date(),
+      } as any,
+      { bypassDocumentValidation: true }
+    )
+
+    await expect(getHiringCountLastFullYears(SIRET, new Date("2026-08-20"))).resolves.toBe(0)
+  })
+
+  it("retourne 0 quand contrats_par_annee est null", async () => {
+    await getDbCollection("deca_contrats").insertOne(
+      {
+        _id: new ObjectId(),
+        siret: SIRET,
+        contrats_par_annee: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+      } as any,
+      { bypassDocumentValidation: true }
+    )
+
+    await expect(getHiringCountLastFullYears(SIRET, new Date("2026-08-20"))).resolves.toBe(0)
+  })
+
+  it("ignore une valeur de type string pour une année (0 pour cette année, pas de crash ni de concaténation)", async () => {
+    await getDbCollection("deca_contrats").insertOne(
+      {
+        _id: new ObjectId(),
+        siret: SIRET,
+        contrats_par_annee: { "2023": "72", "2024": 3 },
+        created_at: new Date(),
+        updated_at: new Date(),
+      } as any,
+      { bypassDocumentValidation: true }
+    )
+
+    // "72" ignorée (0) ; seule 2024 (3) compte -> pas de concaténation "0" + "72" -> "072"
+    await expect(getHiringCountLastFullYears(SIRET, new Date("2026-08-20"))).resolves.toBe(3)
+  })
+
+  it("ignore une valeur négative pour une année", async () => {
+    await getDbCollection("deca_contrats").insertOne({
+      _id: new ObjectId(),
+      siret: SIRET,
+      contrats_par_annee: { "2023": -5, "2024": 3 },
+      created_at: new Date(),
+      updated_at: new Date(),
+    })
+
+    await expect(getHiringCountLastFullYears(SIRET, new Date("2026-08-20"))).resolves.toBe(3)
+  })
 })
