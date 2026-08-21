@@ -241,6 +241,11 @@ const sentryConfig = {
   project: "lba-ui",
   sentryUrl: "https://sentry.apprentissage.beta.gouv.fr/",
 
+  // Le tracing client est volontairement retiré (issue #5186) : sans ce flag, chaque build
+  // afficherait « ACTION REQUIRED » en demandant de réexporter onRouterTransitionStart depuis
+  // instrumentation-client.ts — soit exactement ce que la décision d'équipe a supprimé.
+  suppressOnRouterTransitionStartWarning: true,
+
   // Only print logs for uploading source maps in CI
   silent: false,
 
