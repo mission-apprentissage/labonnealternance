@@ -28,6 +28,12 @@ init({
     reportingObserverIntegration({ types: ["crash"] }),
   ],
   sendDefaultPii: true,
+  denyUrls: [
+    // Scripts injectés par des extensions/WebViews tiers, jamais servis par LBA (aucun
+    // "executors" dans le code ni le build Next — frames type app:///executors/200.js,
+    // ex. TypeError "reading 'M_ID'", Sentry LBA-UI-5CVZZZZZZG4T4, ~2 300 events/7j).
+    /\/executors\/\d+\.js/,
+  ],
   ignoreErrors: [
     "AbortError",
     // Erreurs provenant d'extensions navigateur tierces (MetaMask, gestionnaires d'onglets…),
