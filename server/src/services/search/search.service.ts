@@ -5,6 +5,7 @@ import { JOB_START_TYPE } from "shared/models/job.model"
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { retryOnTransientSearchCancellation } from "@/services/search/search-transient-retry"
 
 const HIGHLIGHT_MAX_PASSAGES = 5
 const HIGHLIGHT_MAX_CHARS = 300
@@ -672,76 +673,82 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
   const chipCountCompounds = buildChipCountCompounds(params, simplifyQuery)
   const chipCountKeys = Object.keys(chipCountCompounds) as (keyof typeof chipCountCompounds)[]
 
-  const [rows, chipCountArrays, ...metaArrays] = await Promise.all([
-    getDbCollection("search_items")
-      .aggregate<SearchRow>(
-        [
-          {
-            $search: {
-              index: "search_items_index",
-              compound,
-              sort: buildSortStage(params),
-              highlight: {
-                // rome_labels inclus : les recruteurs n'ont pas de description → preview via les intitulés métier.
-                path: ["title", "description", "rome_labels"],
-                maxNumPassages: HIGHLIGHT_MAX_PASSAGES,
-              },
-              count: { type: "total" },
-            },
-          },
-          {
-            $addFields: {
-              highlights: { $meta: "searchHighlights" },
-              _meta: "$$SEARCH_META",
-            },
-          },
-          { $skip: page * hitsPerPage },
-          { $limit: hitsPerPage },
-        ],
-        SEARCH_AGGREGATE_OPTIONS
-      )
-      .toArray(),
-
-    // Compteurs des chips booléennes (handi, urgent, candidature simplifiée) — un $searchMeta chacun.
-    Promise.all(
-      chipCountKeys.map((key) =>
+  // Retry unique si mongot annule une des requêtes (transitoire — cf. search-transient-retry.ts) ;
+  // relancer l'ensemble est sans risque, ce ne sont que des lectures.
+  const [rows, chipCountArrays, ...metaArrays] = await retryOnTransientSearchCancellation(
+    () =>
+      Promise.all([
         getDbCollection("search_items")
-          .aggregate<{ count?: { total?: number } }>(
+          .aggregate<SearchRow>(
             [
               {
-                $searchMeta: {
+                $search: {
                   index: "search_items_index",
-                  compound: chipCountCompounds[key],
+                  compound,
+                  sort: buildSortStage(params),
+                  highlight: {
+                    // rome_labels inclus : les recruteurs n'ont pas de description → preview via les intitulés métier.
+                    path: ["title", "description", "rome_labels"],
+                    maxNumPassages: HIGHLIGHT_MAX_PASSAGES,
+                  },
                   count: { type: "total" },
                 },
               },
+              {
+                $addFields: {
+                  highlights: { $meta: "searchHighlights" },
+                  _meta: "$$SEARCH_META",
+                },
+              },
+              { $skip: page * hitsPerPage },
+              { $limit: hitsPerPage },
             ],
             SEARCH_AGGREGATE_OPTIONS
           )
-          .toArray()
-      )
-    ),
+          .toArray(),
 
-    // Une requête $searchMeta par groupe de facettes (faceting disjonctif).
-    ...facetGroups.map((group) =>
-      getDbCollection("search_items")
-        .aggregate<FacetMetaRow>(
-          [
-            {
-              $searchMeta: {
-                index: "search_items_index",
-                facet: {
-                  operator: { compound: group.compound },
-                  facets: Object.fromEntries(group.keys.map((key) => [key, FACET_FIELD_DEFS[key]])),
+        // Compteurs des chips booléennes (handi, urgent, candidature simplifiée) — un $searchMeta chacun.
+        Promise.all(
+          chipCountKeys.map((key) =>
+            getDbCollection("search_items")
+              .aggregate<{ count?: { total?: number } }>(
+                [
+                  {
+                    $searchMeta: {
+                      index: "search_items_index",
+                      compound: chipCountCompounds[key],
+                      count: { type: "total" },
+                    },
+                  },
+                ],
+                SEARCH_AGGREGATE_OPTIONS
+              )
+              .toArray()
+          )
+        ),
+
+        // Une requête $searchMeta par groupe de facettes (faceting disjonctif).
+        ...facetGroups.map((group) =>
+          getDbCollection("search_items")
+            .aggregate<FacetMetaRow>(
+              [
+                {
+                  $searchMeta: {
+                    index: "search_items_index",
+                    facet: {
+                      operator: { compound: group.compound },
+                      facets: Object.fromEntries(group.keys.map((key) => [key, FACET_FIELD_DEFS[key]])),
+                    },
+                  },
                 },
-              },
-            },
-          ],
-          SEARCH_AGGREGATE_OPTIONS
-        )
-        .toArray()
-    ),
-  ])
+              ],
+              SEARCH_AGGREGATE_OPTIONS
+            )
+            .toArray()
+        ),
+      ]),
+    { q: params.q }
+  )
 
   return { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys }
 }
@@ -823,27 +830,32 @@ export async function searchItems(params: ISearchFilters): Promise<{
 
 // Autocomplétion sur le contenu indexé (title + rome_labels, edgeGram).
 async function suggestFromItems(q: string, limit: number): Promise<string[]> {
-  const rows = await getDbCollection("search_items")
-    .aggregate<{ title: string; rome_labels: string[] | null }>(
-      [
-        {
-          $search: {
-            index: "search_items_index",
-            compound: {
-              should: [
-                { autocomplete: { query: q, path: "title", fuzzy: { maxEdits: 1 }, score: { boost: { value: 2 } } } },
-                { autocomplete: { query: q, path: "rome_labels", fuzzy: { maxEdits: 1 } } },
-              ],
-              minimumShouldMatch: 1,
+  // Même retry anti-annulation mongot que la recherche principale (cf. search-transient-retry.ts).
+  const rows = await retryOnTransientSearchCancellation(
+    () =>
+      getDbCollection("search_items")
+        .aggregate<{ title: string; rome_labels: string[] | null }>(
+          [
+            {
+              $search: {
+                index: "search_items_index",
+                compound: {
+                  should: [
+                    { autocomplete: { query: q, path: "title", fuzzy: { maxEdits: 1 }, score: { boost: { value: 2 } } } },
+                    { autocomplete: { query: q, path: "rome_labels", fuzzy: { maxEdits: 1 } } },
+                  ],
+                  minimumShouldMatch: 1,
+                },
+              },
             },
-          },
-        },
-        { $limit: limit * 5 },
-        { $project: { _id: 0, title: 1, rome_labels: 1 } },
-      ],
-      SEARCH_AGGREGATE_OPTIONS
-    )
-    .toArray()
+            { $limit: limit * 5 },
+            { $project: { _id: 0, title: 1, rome_labels: 1 } },
+          ],
+          SEARCH_AGGREGATE_OPTIONS
+        )
+        .toArray(),
+    { q, source: "suggest" }
+  )
   return rows.flatMap((row) => [row.title, ...(row.rome_labels ?? [])])
 }
 

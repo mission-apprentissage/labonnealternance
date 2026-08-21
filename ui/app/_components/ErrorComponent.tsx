@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
-import * as Sentry from "@sentry/nextjs"
+import { captureException, type FallbackRender, ErrorBoundary as SentryErrorBoundary } from "@sentry/nextjs"
 import Image from "next/image"
 import type { PropsWithChildren } from "react"
 import { useEffect } from "react"
@@ -47,7 +47,7 @@ export function ErrorComponent({ error }: ErrorProps) {
       window.location.reload()
       return
     }
-    Sentry.captureException(error)
+    captureException(error)
     console.error(error)
   }, [error])
 
@@ -114,7 +114,7 @@ export function ErrorComponent({ error }: ErrorProps) {
   )
 }
 
-const fallbackRender: Sentry.FallbackRender = ({ error }) => {
+const fallbackRender: FallbackRender = ({ error }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <ErrorComponent error={error} />
@@ -123,5 +123,5 @@ const fallbackRender: Sentry.FallbackRender = ({ error }) => {
 }
 
 export function ErrorBoundary({ children }: PropsWithChildren) {
-  return <Sentry.ErrorBoundary fallback={fallbackRender}>{children}</Sentry.ErrorBoundary>
+  return <SentryErrorBoundary fallback={fallbackRender}>{children}</SentryErrorBoundary>
 }
