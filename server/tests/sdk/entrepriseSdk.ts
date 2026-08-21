@@ -63,6 +63,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
       origin: "lba",
       opco,
       idcc: "3248",
+      handiEngagement: "non",
       type: ENTREPRISE,
     })
     const { formulaire, user } = creationResponse.json() as CreationResponse

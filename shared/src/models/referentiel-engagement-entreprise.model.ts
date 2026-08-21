@@ -11,6 +11,12 @@ export enum EntrepriseEngagementSources {
   LES_ENTREPRISE_S_ENGAGENT = "les",
 }
 
+// Choix de l'entreprise, lors de la création de compte, de valoriser (ou non) son engagement en faveur
+// de l'emploi des personnes en situation de handicap. Cf. HandiEngagementSelect côté UI et
+// updateEntrepriseHandiEngagement côté service, qui alimente ce référentiel (source LBA) sur "oui".
+export const HANDI_ENGAGEMENT_VALUES = ["oui", "non"] as const
+export type HandiEngagement = (typeof HANDI_ENGAGEMENT_VALUES)[number]
+
 export const ZReferentielEngagementEntreprise = z.strictObject({
   _id: zObjectId,
   siret: z.string(),

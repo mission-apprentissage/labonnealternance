@@ -12,6 +12,7 @@ import type { IEtablissementGouvData } from "shared/models/cache-infos-siret.mod
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last-status-event"
@@ -38,7 +39,7 @@ import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from
 import mailer from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
 import type { UserAndOrganization } from "./organization.service"
-import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
+import { updateEntrepriseHandiEngagement, updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./role-management.service"
 import { saveUserTrafficSourceIfAny } from "./traffic-source.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./user-recruteur.service"
@@ -465,8 +466,20 @@ export const entrepriseOnboardingWorkflow = {
       origin,
       opco,
       idcc,
+      handiEngagement,
       source,
-    }: { siret: string; last_name: string; first_name: string; phone?: string; email: string; origin?: string | null; opco: OPCOS_LABEL; idcc?: string; source: ITrackingCookies },
+    }: {
+      siret: string
+      last_name: string
+      first_name: string
+      phone?: string
+      email: string
+      origin?: string | null
+      opco: OPCOS_LABEL
+      idcc?: string
+      handiEngagement: HandiEngagement
+      source: ITrackingCookies
+    },
     { isUserValidated = false }: { isUserValidated?: boolean } = {}
   ): Promise<IBusinessError | { formulaire: { establishment_id: string; opco: OPCOS_LABEL }; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
@@ -487,6 +500,7 @@ export const entrepriseOnboardingWorkflow = {
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
+    await updateEntrepriseHandiEngagement(siret, handiEngagement)
     await getDbCollection("jobs_partners").updateMany(
       { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret },
       { $set: { workplace_opco: opcoResult.opco, workplace_idcc: opcoResult.idcc } }

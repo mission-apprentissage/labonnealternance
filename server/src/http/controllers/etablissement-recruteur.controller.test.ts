@@ -76,6 +76,7 @@ describe("POST /etablissement/creation", () => {
     origin: "Labonnealternance",
     opco: OPCOS_LABEL.AKTO,
     idcc: "3248",
+    handiEngagement: "non",
     type: ENTREPRISE,
   } as const
 

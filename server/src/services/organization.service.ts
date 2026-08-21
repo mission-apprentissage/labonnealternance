@@ -6,6 +6,8 @@ import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
+import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, isEnum } from "shared/utils/index"
@@ -29,6 +31,33 @@ export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco
     return { opco, idcc }
   }
   return { opco: entreprise.opco, idcc: entreprise.idcc }
+}
+
+/**
+ * Enregistre le choix de l'entreprise, exprimé à la création de compte, de valoriser (ou non) son
+ * engagement en faveur de l'emploi des personnes en situation de handicap.
+ *
+ * Seul un choix "oui" a un effet : il alimente `referentiel_engagement_entreprise` (source LBA), qui
+ * rend l'entreprise visible comme handi-engagée sur les fiches recruteurs LBA et sert de base au
+ * compteur d'alternants recrutés (cf. deca-contrats.service.ts, recruteur-lba.service.ts). Un choix "non"
+ * n'écrit rien : il n'existe pas de champ dédié sur `entreprises`, ce référentiel est la seule source de
+ * vérité pour cet engagement.
+ */
+export const updateEntrepriseHandiEngagement = async (siret: string, handiEngagement: HandiEngagement) => {
+  if (handiEngagement !== "oui") {
+    return
+  }
+
+  const now = new Date()
+  await getDbCollection("referentiel_engagement_entreprise").updateOne(
+    { siret },
+    {
+      $addToSet: { sources: EntrepriseEngagementSources.LBA },
+      $set: { updated_at: now, engagement: "handicap" },
+      $setOnInsert: { _id: new ObjectId(), created_at: now, siret },
+    },
+    { upsert: true }
+  )
 }
 
 /**

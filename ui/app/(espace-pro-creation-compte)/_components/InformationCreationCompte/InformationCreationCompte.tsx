@@ -10,9 +10,11 @@ import { useContext } from "react"
 import { assertUnreachable, parseEnum } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
+import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import CustomInput from "@/app/_components/CustomInput"
 import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/InformationOpco"
+import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { AUTHTYPE } from "@/common/contants"
@@ -58,6 +60,7 @@ const Formulaire = ({
       validateOnMount={true}
       initialValues={{
         opco: opco ?? "",
+        ...(type === AUTHTYPE.ENTREPRISE ? { handiEngagement: "" } : {}),
         last_name: "",
         first_name: "",
         phone: "",
@@ -70,6 +73,7 @@ const Formulaire = ({
         phone: phoneValidation().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
+        handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(["oui", "non"], "champ obligatoire").required("champ obligatoire") : Yup.string(),
       })}
       onSubmit={onSubmit}
     >
@@ -111,6 +115,15 @@ const Formulaire = ({
                   </Box>
                   {shouldSelectOpco && (
                     <OpcoSelect name="opco" onChange={async (newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
+                  )}
+                  {type === AUTHTYPE.ENTREPRISE && (
+                    <HandiEngagementSelect
+                      name="handiEngagement"
+                      onChange={async (newValue) => setFieldValue("handiEngagement", newValue)}
+                      value={values.handiEngagement as HandiEngagement | ""}
+                      errors={errors}
+                      touched={touched}
+                    />
                   )}
                   <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
                     {!widget?.isWidget && (
