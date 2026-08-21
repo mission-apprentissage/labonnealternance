@@ -101,7 +101,9 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
 
     const parseResult = ZApiGeolocationResponse.safeParse(response)
     if (!parseResult.success) {
-      console.error("error parsing geolocation api response", { address: rawAddress, error: parseResult.error })
+      // sentryCaptureException et non console.error : la capture console sérialisait l'objet en
+      // "[object Object]" (Sentry LBA-SERVER-5J7KF4ZZZT824) et perdait la cause réelle.
+      sentryCaptureException(parseResult.error, { extra: { cause: "error parsing geolocation api response", address: rawAddress } })
       return null
     }
 
@@ -127,7 +129,9 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
 
     return firstFeature
   } catch (error) {
-    console.error("Error fetching or processing geolocation data:", { address: rawAddress, error })
+    // sentryCaptureException et non console.error : la capture console sérialisait l'objet en
+    // "[object Object]" (Sentry LBA-SERVER-P8YDWKZZZE60) — l'AxiosError (statut, URL) était perdue.
+    sentryCaptureException(error, { extra: { cause: "Error fetching or processing geolocation data", address: rawAddress } })
     return null
   }
 }
