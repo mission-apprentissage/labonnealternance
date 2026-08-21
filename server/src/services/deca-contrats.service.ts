@@ -18,9 +18,14 @@ export const getHiringCountLastFullYears = async (siret: string, referenceDate: 
   if (!doc) return null
 
   const currentYear = referenceDate.getFullYear()
+  const contrats = doc.contrats_par_annee ?? {}
   let total = 0
   for (let yearsAgo = 1; yearsAgo <= HIRING_COUNT_YEARS_SPAN; yearsAgo++) {
-    total += doc.contrats_par_annee[String(currentYear - yearsAgo)] ?? 0
+    // Défense en profondeur : un document historique (écrit avant la validation zod à l'import,
+    // ou en base malgré le validationAction "warn" en prod) peut porter une valeur de type ou de
+    // signe inattendu plutôt qu'un entier positif.
+    const value = contrats[String(currentYear - yearsAgo)]
+    total += typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : 0
   }
   return total
 }
