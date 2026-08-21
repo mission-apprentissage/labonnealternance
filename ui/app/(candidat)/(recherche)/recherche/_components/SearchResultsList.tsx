@@ -3,6 +3,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Skeleton } from "@mui/material"
 import Image from "next/image"
+import { useLayoutEffect, useRef } from "react"
 import { RADIUS_MAX } from "../_hooks/use-auto-radius"
 import type { useSearchResults } from "../_hooks/use-search-results"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
@@ -13,6 +14,12 @@ type InfiniteResult = ReturnType<typeof useSearchResults>
 interface SearchResultsListProps {
   result: InfiniteResult
   params: ISearchPageParams
+  /**
+   * url_id de la carte à ramener en vue au premier rendu où elle est disponible (retour
+   * depuis une fiche détail fermée — cf. useDetailNavigation/withActiveHit). Undefined/null
+   * en usage normal.
+   */
+  scrollToHitId?: string | null
 }
 
 function LoadingSkeletons() {
@@ -25,8 +32,26 @@ function LoadingSkeletons() {
   )
 }
 
-export function SearchResultsList({ result, params }: SearchResultsListProps) {
+export function SearchResultsList({ result, params, scrollToHitId }: SearchResultsListProps) {
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = result
+
+  const cardRefs = useRef(new Map<string, HTMLElement>())
+  const hasScrolledRef = useRef(false)
+
+  // Retour depuis une fiche détail : re-scroller sur la carte consultée plutôt que de revenir
+  // en haut de liste. useLayoutEffect (avant la peinture du navigateur) + behavior "instant" :
+  // aucune animation à traversée de liste ni flash du haut — la toute première image peinte
+  // après le montage est déjà à la bonne position, même avec beaucoup de résultats chargés
+  // (« Voir plus »). Pas de tableau de deps : l'effet est ré-essayé à chaque rendu jusqu'à ce
+  // que la carte existe (chargement asynchrone des résultats) ; hasScrolledRef le rend inerte
+  // une fois la carte trouvée, ou si elle n'est jamais chargée (repli silencieux, cf. hook).
+  useLayoutEffect(() => {
+    if (!scrollToHitId || hasScrolledRef.current) return
+    const card = cardRefs.current.get(scrollToHitId)
+    if (!card) return
+    hasScrolledRef.current = true
+    card.scrollIntoView({ block: "center", behavior: "instant" })
+  })
 
   if (isLoading) return <LoadingSkeletons />
 
@@ -64,7 +89,20 @@ export function SearchResultsList({ result, params }: SearchResultsListProps) {
     <Box>
       <Box>
         {allHits.map((hit, index) => (
-          <SearchHitCard key={String(hit._id)} hit={hit} currentParams={params} position={index + 1} />
+          <SearchHitCard
+            key={String(hit._id)}
+            hit={hit}
+            currentParams={params}
+            position={index + 1}
+            cardRef={
+              hit.url_id
+                ? (node) => {
+                    if (node) cardRefs.current.set(hit.url_id!, node)
+                    else cardRefs.current.delete(hit.url_id!)
+                  }
+                : undefined
+            }
+          />
         ))}
       </Box>
 

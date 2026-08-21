@@ -4,7 +4,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useMemo } from "react"
 import { useSwipeable } from "react-swipeable"
 
-import { buildHitDetailUrl, parseSearchPageParams } from "../_utils/search.params.utils"
+import { buildHitDetailUrl, parseSearchPageParams, withActiveHit } from "../_utils/search.params.utils"
 import { useSearchResults } from "./use-search-results"
 
 export interface IDetailNavigation {
@@ -108,11 +108,20 @@ export function useDetailNavigation(): IDetailNavigation {
     },
   })
 
+  // « Fermer » revient sur la liste, en y rescrollant sur la carte consultée (via
+  // withActiveHit — cf. SearchResultsList) plutôt que de reperdre la position en haut.
+  // Sans currentUrlId identifiable, pas de référence à ajouter : retour simple sur `from`,
+  // avec le scroll-to-top par défaut du routeur (pas de cible à restaurer de toute façon).
+  // Avec une référence, `scroll: false` est impératif : par défaut Next remonte en haut de
+  // page à chaque navigation, ce qui écraserait le scroll restauré par SearchResultsList
+  // (les deux s'exécutent dans le même commit — le sien, en tant qu'ancêtre, après le nôtre).
+  const closeUrl = from !== null ? (currentUrlId ? withActiveHit(from, currentUrlId) : from) : null
+
   return {
     swipeHandlers,
     goPrev,
     goNext,
-    handleClose: from !== null ? () => router.push(from) : null,
+    handleClose: closeUrl !== null ? () => router.push(closeUrl, currentUrlId ? { scroll: false } : undefined) : null,
     position,
   }
 }

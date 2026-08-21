@@ -30,6 +30,8 @@ interface SearchHitCardProps {
   currentParams: ISearchPageParams
   /** Position 1-based dans la liste de résultats (télémétrie). */
   position: number
+  /** Callback ref sur le conteneur de la carte — utilisé par SearchResultsList pour y rescroller au retour d'une fiche détail. */
+  cardRef?: (node: HTMLElement | null) => void
 }
 
 const isAlgoCompany = (hit: Hit) => hit.is_algo_company === true
@@ -84,7 +86,7 @@ function CandidatureCount({ hit }: { hit: Hit }) {
   )
 }
 
-export function SearchHitCard({ hit, currentParams, position }: SearchHitCardProps) {
+export function SearchHitCard({ hit, currentParams, position, cardRef }: SearchHitCardProps) {
   const currentSearchUrl = buildSearchUrl(currentParams)
   const detailUrl = buildHitDetailUrl({ sub_type: hit.sub_type ?? "", url_id: hit.url_id ?? "", title: hit.title ?? "" }, currentSearchUrl)
 
@@ -124,7 +126,7 @@ export function SearchHitCard({ hit, currentParams, position }: SearchHitCardPro
   // Même composition que LbaItemCard (legacy) : wrapper zIndex + CardStyling (padding de
   // contenu 16px) + Card DSFR — hauteur et padding identiques aux cartes de /recherche.
   return (
-    <Box sx={{ my: fr.spacing("2v"), ".fr-card__title a::before": { zIndex: "unset" } }}>
+    <Box ref={cardRef} sx={{ my: fr.spacing("2v"), ".fr-card__title a::before": { zIndex: "unset" } }}>
       <CardStyling>
         <Card
           background
