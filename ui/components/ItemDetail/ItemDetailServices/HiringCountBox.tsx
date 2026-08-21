@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
-export const HiringCountBox = ({ hiringCount3Years }: { hiringCount3Years: number }) => (
+const HiringCountBox = ({ hiringCount3Years }: { hiringCount3Years: number }) => (
   <Box
     sx={{
       display: "flex",
