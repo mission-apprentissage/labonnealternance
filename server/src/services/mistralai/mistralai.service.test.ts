@@ -46,6 +46,12 @@ describe("sendMistralMessages — backoff sur 429", () => {
     expect(vi.mocked(sleep).mock.calls.map(([ms]) => ms)).toEqual([7_000])
   })
 
+  it("caps an aberrant Retry-After at 120s", async () => {
+    completeMock.mockRejectedValueOnce(rateLimitError({ "retry-after": "3600" })).mockResolvedValueOnce(successResponse)
+    await expect(sendMistralMessages({ messages: [...MESSAGES] })).resolves.toBe('{"pong":true}')
+    expect(vi.mocked(sleep).mock.calls.map(([ms]) => ms)).toEqual([120_000])
+  })
+
   it("falls back to the fixed delays on a non-numeric Retry-After (near-miss: HTTP date)", async () => {
     completeMock.mockRejectedValueOnce(rateLimitError({ "retry-after": "Wed, 21 Aug 2026 09:00:00 GMT" })).mockResolvedValueOnce(successResponse)
     await expect(sendMistralMessages({ messages: [...MESSAGES] })).resolves.toBe('{"pong":true}')

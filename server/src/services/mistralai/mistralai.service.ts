@@ -25,9 +25,10 @@ const RATE_LIMIT_RETRY_DELAYS_MS = [2_000, 10_000, 60_000]
 const isMistralRateLimitError = (error: unknown): error is Error & { headers?: Headers } => error instanceof Error && (error as { statusCode?: unknown }).statusCode === 429
 
 const getRateLimitRetryDelayMs = (error: Error & { headers?: Headers }, attempt: number): number => {
-  // Retry-After numérique uniquement (une date HTTP → NaN → paliers fixes).
+  // Retry-After numérique uniquement (une date HTTP → NaN → paliers fixes), plafonné à 120s :
+  // un header aberrant ne doit pas endormir un job une heure par tentative.
   const retryAfterSeconds = Number(error.headers?.get?.("retry-after"))
-  if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) return retryAfterSeconds * 1_000
+  if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) return Math.min(retryAfterSeconds * 1_000, 120_000)
   return RATE_LIMIT_RETRY_DELAYS_MS[attempt]
 }
 
