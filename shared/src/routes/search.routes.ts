@@ -65,9 +65,11 @@ export const zSearchRoutes = {
         page: z.coerce.number<number>().min(0).default(0).describe("Index de page (0-based)"),
         hitsPerPage: z.coerce.number<number>().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
         source: z
-          .enum(["suggestion", "free_text", "training_links"])
+          .enum(["suggestion", "free_text", "training_links", "external_sites"])
           .optional()
-          .describe("Origine de la requête (télémétrie autocomplete UI, ou lien généré côté serveur par traininglinks pour les vœux Parcoursup — sans effet sur les résultats)"),
+          .describe(
+            "Origine de la requête (télémétrie autocomplete UI, lien généré côté serveur par traininglinks pour les vœux Parcoursup, ou lien de recherche personnalisé posé par un site externe — sans effet sur les résultats)"
+          ),
         internal: z
           .enum(["true", "false"])
           .transform((v) => v === "true")

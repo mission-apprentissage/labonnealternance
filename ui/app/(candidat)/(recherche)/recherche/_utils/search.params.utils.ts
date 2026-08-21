@@ -33,8 +33,8 @@ export const DEFAULT_SEARCH_MODE: SearchMode = "emplois"
 export type SortOption = "proximity" | "date" | "applications" | "start_date"
 const SORT_OPTIONS: SortOption[] = ["proximity", "date", "applications", "start_date"]
 
-export type QSource = "suggestion" | "free_text" | "training_links"
-const Q_SOURCES: QSource[] = ["suggestion", "free_text", "training_links"]
+export type QSource = "suggestion" | "free_text" | "training_links" | "external_sites"
+const Q_SOURCES: QSource[] = ["suggestion", "free_text", "training_links", "external_sites"]
 
 /**
  * Les filtres multi-valeurs utilisent des paramètres répétés dans l'URL :

@@ -47,7 +47,7 @@ type SearchQuerystring = {
   latitude?: number
   longitude?: number
   radius?: number
-  source?: "suggestion" | "free_text" | "training_links"
+  source?: "suggestion" | "free_text" | "training_links" | "external_sites"
 }
 
 // Arrondi à 1 décimale (~11 km) : suffisant pour "quelle zone cherche quoi", inexploitable
