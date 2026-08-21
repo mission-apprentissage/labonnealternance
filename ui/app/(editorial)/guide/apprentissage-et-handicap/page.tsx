@@ -15,9 +15,10 @@ import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternan
 import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  ...PAGES.static.guideApprentissageEtHandicap.getMetadata(),
+  ...METADATA.static.guideApprentissageEtHandicap(),
   alternates: { canonical: PAGES.static.guideApprentissageEtHandicap.getPath() },
 }
 
@@ -68,6 +69,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
       redirectionInterne={<RedirectionInterne source={source} />}
       allerPlusLoinItems={getAllerPlusLoinItems(source)}
       page={PAGES.static.guideApprentissageEtHandicap}
+      metadata={metadata}
     >
       <InfoSection>
         <Box>

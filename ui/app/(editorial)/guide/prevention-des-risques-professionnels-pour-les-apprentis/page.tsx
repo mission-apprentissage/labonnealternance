@@ -10,9 +10,10 @@ import { ARTICLES } from "@/app/(editorial)/guide/const"
 import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternant/const"
 import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  ...PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getMetadata(),
+  ...METADATA.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis(),
   alternates: { canonical: PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getPath() },
 }
 
@@ -58,6 +59,7 @@ const PreventionDesRisquesProfessionnelsPourLesApprentisPage = async ({ searchPa
       allerPlusLoinItems={getAllerPlusLoinItems(source)}
       parentPage={PAGES.static.guideRecruteur}
       page={PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis}
+      metadata={metadata}
     >
       <Section title="Obligations des employeurs d’apprentis">
         <Paragraph>L’employeur a une obligation légale de sécurité envers tous ses salariés, y compris les apprentis. À ce titre, il doit :</Paragraph>

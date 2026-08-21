@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { ApiError, apiGet } from "@/utils/api.utils"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import DetailRendezVousRendererClient from "./DetailRendezVousRendererClient"
 export const metadata: Metadata = {
-  title: PAGES.static.detailRendezVousApprentissage.getMetadata().title,
+  title: METADATA.static.detailRendezVousApprentissage().title,
 }
 
 export default async function DetailRendezVousPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ token: string }> }) {

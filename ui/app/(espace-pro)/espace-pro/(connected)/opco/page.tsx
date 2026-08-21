@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import OpcoPage from "./OpcoPage"
 export const metadata: Metadata = {
-  title: PAGES.static.backOpcoHome.getMetadata().title,
+  title: METADATA.static.backOpcoHome().title,
 }
 
 export default async function Page() {

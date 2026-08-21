@@ -12,8 +12,9 @@ import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection
 import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur()
 
 const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur]
@@ -34,6 +35,7 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
       ]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur}
+      metadata={metadata}
     >
       <Section title="Où trouver des entreprises qui recrutent ?">
         <Paragraph>

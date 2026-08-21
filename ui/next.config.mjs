@@ -95,6 +95,16 @@ const nextConfig = {
     },
     // Uniquement pour les tests Playwright instant() en local/CI, jamais en production réelle.
     exposeTestingApiInProductionBuild: process.env.PLAYWRIGHT_TEST_MODE === "1",
+    // Abaisse le seuil sous lequel Turbopack fusionne un chunk avec ses voisins (défaut 50 ko).
+    // À 50 ko, un même groupe de modules partagé entre deux chunk groups clients (ex. error.tsx
+    // et le groupe page) est fusionné différemment de chaque côté → deux chunks au contenu
+    // différent → pas de partage par hash → double téléchargement (~37,6 ko bruts sur la home,
+    // issue #5214). À 20 ko, le groupe reste un chunk autonome identique des deux côtés.
+    // Réglage sensible et non monotone : 30_000 est PIRE que le défaut (+10 ko gzip sur /).
+    // Toute modification doit être validée par le job Performance budget.
+    turbopackChunking: {
+      minChunkSize: 20_000,
+    },
   },
   output: "standalone",
   compress: false, // disable default gzip compression by nextJS, done by Nginx
