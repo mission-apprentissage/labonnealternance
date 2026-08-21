@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { OffresPartenairesList } from "./OffresPartenairesList"
 export const metadata: Metadata = {
-  title: PAGES.static.backAdminGestionDesOffresPartenaires.getMetadata().title,
+  title: METADATA.static.backAdminGestionDesOffresPartenaires().title,
 }
 
 export default async function GestionDesOffresPartenaires() {

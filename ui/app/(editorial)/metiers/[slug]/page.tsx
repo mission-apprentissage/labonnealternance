@@ -9,6 +9,7 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import type { IStaticMetiers, IStaticVilles } from "@/utils/get-static-data"
 import { getStaticMetiers, getStaticVilles } from "@/utils/get-static-data"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 const getTowns = () => {
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!metier) {
     return { title: "Métier introuvable - La bonne alternance" }
   }
-  return PAGES.dynamic.metierJobById(metier.name).getMetadata()
+  return METADATA.dynamic.metierJobById(metier.name)
 }
 
 export default async function MetiersByJobId({ params }: { params: Promise<{ slug: string }> }) {

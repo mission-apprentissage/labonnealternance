@@ -9,10 +9,11 @@ import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection
 import { ARTICLES } from "@/app/(editorial)/guide-cfa/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getSession } from "@/utils/get-session"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { BandeauAuthentificationCfa } from "../BandeauAuthentificationCfa"
 
-export const metadata: Metadata = PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getMetadata()
+export const metadata: Metadata = METADATA.static.guideCfaLaCarteEtudiantDesMetiers()
 
 const LaCarteEtudiantDesMetiersPage = () => {
   return (
@@ -44,6 +45,7 @@ const LaCarteEtudiantDesMetiersContent = async () => {
       allerPlusLoinItems={[]}
       parentPage={PAGES.static.guideCfa}
       page={PAGES.static.guideCfaLaCarteEtudiantDesMetiers}
+      metadata={metadata}
     >
       <Section>
         <Paragraph>

@@ -9,8 +9,9 @@ import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection
 import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { ARTICLES } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideRecruteurJeSuisEmployeurPublic.getMetadata()
+export const metadata: Metadata = METADATA.static.guideRecruteurJeSuisEmployeurPublic()
 
 const JeSuisEmployeurPublicPage = () => {
   const pages = [PAGES.static.guideRecruteur, PAGES.static.guideRecruteurJeSuisEmployeurPublic]
@@ -42,6 +43,7 @@ const JeSuisEmployeurPublicPage = () => {
       sourceAllerPlusLoin="guide-recruteur"
       parentPage={PAGES.static.guideRecruteur}
       page={PAGES.static.guideRecruteurJeSuisEmployeurPublic}
+      metadata={metadata}
     >
       <Section title="Démarches à suivre">
         <Paragraph>

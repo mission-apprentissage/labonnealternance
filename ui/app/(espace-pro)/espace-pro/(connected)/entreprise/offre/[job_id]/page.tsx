@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 import { getSession } from "@/utils/get-session"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PageWithParams } from "./PageWithParams"
 
 export async function generateMetadata({ params }: { params: Promise<{ job_id: string }> }): Promise<Metadata> {
   const { job_id } = await params
   return {
-    title: PAGES.dynamic.backEntrepriseEditionOffre({ job_id }).getMetadata().title,
+    title: METADATA.dynamic.backEntrepriseEditionOffre({ job_id }).title,
   }
 }
 

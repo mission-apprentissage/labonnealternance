@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { fetchNotionPage } from "@/services/fetch-notion-page"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { AccessibilitePage } from "./AccessibilitePage"
 
 export const metadata: Metadata = {
-  title: PAGES.static.accessibilite.getMetadata().title,
-  description: PAGES.static.accessibilite.getMetadata().description,
+  title: METADATA.static.accessibilite().title,
+  description: METADATA.static.accessibilite().description,
 }
 
 const Page = async () => {

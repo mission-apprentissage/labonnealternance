@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { fetchNotionPage } from "@/services/fetch-notion-page"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import MentionLegalesRendererClient from "./MentionLegalesRendererClient"
 
 export const metadata: Metadata = {
-  title: PAGES.static.mentionsLegales.getMetadata().title,
-  description: PAGES.static.mentionsLegales.getMetadata().description,
+  title: METADATA.static.mentionsLegales().title,
+  description: METADATA.static.mentionsLegales().description,
 }
 
 export default async function MentionsLegales() {
