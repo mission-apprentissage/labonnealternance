@@ -6,6 +6,7 @@ import { useContext, useEffect } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailServices/EmployeurPresentationBlock"
 import { getCompanyGoogleSearchLink } from "@/components/ItemDetail/ItemDetailServices/get-company-google-search-link"
 import { getCompanySize } from "@/components/ItemDetail/ItemDetailServices/get-company-size"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
@@ -61,64 +62,22 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
         </Stack>
       </Box>
       <Box sx={{ mb: fr.spacing("4v") }}>{recruteurLba?.company?.elligibleHandicap && <LbaJobEngagement />}</Box>
+
+      <EmployeurPresentationBlock
+        title={`Présentation de l'entreprise ${recruteurLba?.company?.name ?? ""}`}
+        item={recruteurLba}
+        emptyStateText=""
+        cityOnly
+        showPhone={false}
+        showGoogleSearch={true}
+      />
+
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("6v") }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment candidater ?
         </Typography>
 
         <Accordion label="1. Renseignez-vous sur l’entreprise" defaultExpanded>
-          <Box
-            sx={{
-              bgcolor: "#f6f6f6",
-              mb: fr.spacing("4v"),
-              p: fr.spacing("4v"),
-            }}
-          >
-            <Stack spacing={1}>
-              <ItemLocalisation item={recruteurLba} />
-              <Typography>
-                <Typography
-                  component="span"
-                  sx={{
-                    fontWeight: 700,
-                  }}
-                >
-                  Taille de l'entreprise :{" "}
-                </Typography>
-                <Typography component="span">{getCompanySize(recruteurLba)}</Typography>
-              </Typography>
-              <Typography>
-                <Typography
-                  component="span"
-                  sx={{
-                    fontWeight: 700,
-                  }}
-                >
-                  Secteur d'activité :{" "}
-                </Typography>
-                <Typography component="span">{(recruteurLba?.nafs as ILbaItemNaf[])?.[0].label}</Typography>
-              </Typography>
-              {recruteurLba?.contact?.phone && (
-                <Typography>
-                  <Typography
-                    component="span"
-                    sx={{
-                      fontWeight: 700,
-                    }}
-                  >
-                    Téléphone :{" "}
-                  </Typography>
-                  <Typography component="span">
-                    <DsfrLink href={`tel:${recruteurLba.contact.phone}`} aria-label="Appeler la société au téléphone">
-                      {recruteurLba.contact.phone}
-                    </DsfrLink>
-                  </Typography>
-                </Typography>
-              )}
-              <ItemGoogleSearchLink item={recruteurLba} />
-            </Stack>
-          </Box>
-
           <Typography>
             Avant de candidater, il est indispensable de prendre le temps de vous renseigner sur les activités de l'entreprise.{" "}
             <DsfrLink href={getCompanyGoogleSearchLink(recruteurLba)} aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre">
