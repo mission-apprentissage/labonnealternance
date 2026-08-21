@@ -32,6 +32,8 @@ interface SearchHitCardProps {
   position: number
   /** Callback ref sur le conteneur de la carte — utilisé par SearchResultsList pour y rescroller au retour d'une fiche détail. */
   cardRef?: (node: HTMLElement | null) => void
+  /** Halo temporaire signalant la carte consultée au retour d'une fiche détail (cf. SearchResultsList). */
+  isHighlighted?: boolean
 }
 
 const isAlgoCompany = (hit: Hit) => hit.is_algo_company === true
@@ -86,7 +88,7 @@ function CandidatureCount({ hit }: { hit: Hit }) {
   )
 }
 
-export function SearchHitCard({ hit, currentParams, position, cardRef }: SearchHitCardProps) {
+export function SearchHitCard({ hit, currentParams, position, cardRef, isHighlighted }: SearchHitCardProps) {
   const currentSearchUrl = buildSearchUrl(currentParams)
   const detailUrl = buildHitDetailUrl({ sub_type: hit.sub_type ?? "", url_id: hit.url_id ?? "", title: hit.title ?? "" }, currentSearchUrl)
 
@@ -126,7 +128,33 @@ export function SearchHitCard({ hit, currentParams, position, cardRef }: SearchH
   // Même composition que LbaItemCard (legacy) : wrapper zIndex + CardStyling (padding de
   // contenu 16px) + Card DSFR — hauteur et padding identiques aux cartes de /recherche.
   return (
-    <Box ref={cardRef} sx={{ my: fr.spacing("2v"), ".fr-card__title a::before": { zIndex: "unset" } }}>
+    <Box
+      ref={cardRef}
+      sx={{
+        my: fr.spacing("2v"),
+        borderRadius: "8px",
+        // Halo signalant, au retour d'une fiche détail, la carte qui vient d'être consultée
+        // (cf. SearchResultsList) : ombre floue bleu écume (color-mix) plutôt qu'un contour
+        // net, en box-shadow pour ne pas déplacer les cartes voisines. Impulsion en cloche
+        // (~gaussienne) : keyframes symétriques à pic central + ease-in-out par segment —
+        // l'intensité monte et retombe en douceur, sans plateau, en 0,5 s. Le state ne sert
+        // qu'à déclencher ; son reset côté liste (≥ la durée) permet de rejouer l'animation
+        // à la consultation suivante. `both` fige l'état final transparent : aucun saut
+        // quand `animation` repasse à none. Ombre statique sans animation pour
+        // prefers-reduced-motion.
+        "@keyframes shadow-pulse-highlight": {
+          "0%": { boxShadow: "0 0 0 0 transparent" },
+          "50%": { boxShadow: `0 0 10px 0 color-mix(in srgb, ${fr.colors.decisions.border.plain.blueEcume.default} 55%, transparent)` },
+          "100%": { boxShadow: "0 0 0 0 transparent" },
+        },
+        animation: isHighlighted ? "shadow-pulse-highlight .5s ease-in-out both" : "none",
+        "@media (prefers-reduced-motion: reduce)": {
+          animation: "none",
+          boxShadow: isHighlighted ? `0 0 10px 0 color-mix(in srgb, ${fr.colors.decisions.border.plain.blueEcume.default} 55%, transparent)` : "none",
+        },
+        ".fr-card__title a::before": { zIndex: "unset" },
+      }}
+    >
       <CardStyling>
         <Card
           background
