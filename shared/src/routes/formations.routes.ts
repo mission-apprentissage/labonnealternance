@@ -1,6 +1,6 @@
 import { z } from "../helpers/zod-with-open-api.js"
 import { zFormationCatalogueSchema } from "../models/formation.model.js"
-import { ZLbaItemFormation, ZLbaItemFormation2, ZLbaItemFormationResult } from "../models/lba-item.model.js"
+import { ZLbaItemFormation2, ZLbaItemFormationResult } from "../models/lba-item.model.js"
 import { ZLbacError } from "../models/lbac-error.model.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
@@ -47,22 +47,6 @@ export const zFormationsRoutes = {
         "200": ZLbaItemFormationResult,
         "400": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZLbacError]),
-      },
-      securityScheme: null,
-    },
-    "/v1/_private/formations/min": {
-      method: "get",
-      path: "/v1/_private/formations/min",
-      querystring: z.object({
-        romes: zRomesParams("romeDomain"),
-        latitude: ZLatitudeParam,
-        longitude: ZLongitudeParam,
-        radius: ZRadiusParam.default(30),
-        diploma: zDiplomaParam,
-      }),
-      headers: zRefererHeaders,
-      response: {
-        "200": ZLbaItemFormation.array(),
       },
       securityScheme: null,
     },

@@ -124,13 +124,3 @@ export const RECRUITER_USER_ORIGIN = {
   "Portaildel'alternance": "Portail de l'alternance",
   "1jeune1solution": "1 jeune 1 solution",
 }
-
-export const TYPE_EMPLOI_OPTIONS = {
-  alternance: "Offre d'emploi en alternance",
-  formation_incluse: "Offre d'emploi avec formation incluse",
-  candidatures_spontanees: "Candidatures spontanées",
-} as const
-
-export type ITypeEmploiKey = keyof typeof TYPE_EMPLOI_OPTIONS
-
-export type ITypeEmploi = (typeof TYPE_EMPLOI_OPTIONS)[ITypeEmploiKey]

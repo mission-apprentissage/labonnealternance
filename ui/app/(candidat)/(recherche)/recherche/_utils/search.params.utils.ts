@@ -179,3 +179,17 @@ export function buildHitDetailUrl(hit: { sub_type: string; url_id: string; title
 
   return `/emploi/${hit.sub_type}/${encodeURIComponent(hit.url_id)}/${slug}?from=${from}`
 }
+
+/**
+ * Paramètre transitoire posé sur l'URL de retour à la fermeture d'une fiche détail (cf.
+ * useDetailNavigation), pour que la liste rescrolle sur la carte consultée au lieu de revenir
+ * en haut. Volontairement absent de `ISearchPageParams`/`buildSearchUrl` : il ne doit jamais
+ * être réémis par une navigation normale (filtre, tri…), seulement consommé une fois puis
+ * disparaître de l'URL.
+ */
+export const ACTIVE_HIT_PARAM = "active_hit"
+
+export function withActiveHit(searchUrl: string, hitUrlId: string): string {
+  const separator = searchUrl.includes("?") ? "&" : "?"
+  return `${searchUrl}${separator}${ACTIVE_HIT_PARAM}=${encodeURIComponent(hitUrlId)}`
+}
