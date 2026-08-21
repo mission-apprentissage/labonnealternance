@@ -1,7 +1,7 @@
 import { notFound } from "@hapi/boom"
 import type { ObjectId } from "mongodb"
 import { TRAINING_REMOTE_TYPE } from "shared/constants/index"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import type { ILbaItemPartnerJob } from "shared/models/index"
 import { JOB_STATUS_ENGLISH, JobCollectionName, traductionJobStatus } from "shared/models/index"
 import type { IJobsPartnersOfferPrivateWithDistance } from "shared/models/jobs-partners.model"
@@ -18,27 +18,18 @@ import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
-function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance, version: "V1" | "V2" = "V1", applicationCountMap?: null | Map<string, number>): ILbaItemPartnerJob {
+function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance, applicationCountMap?: null | Map<string, number>): ILbaItemPartnerJob {
   const romes = partnerJob.offer_rome_codes.map((code) => ({ code, label: null }))
   const longitude = partnerJob.workplace_geopoint.coordinates[0]
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
   const id = partnerJob._id.toString()
 
   const recipient_id =
-    version === "V1"
-      ? getRecipientID(JobCollectionName.partners, id)
-      : partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA
-        ? getRecipientID(JobCollectionName.recruiters, id)
-        : getRecipientID(JobCollectionName.partners, id)
+    partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? getRecipientID(JobCollectionName.recruiters, id) : getRecipientID(JobCollectionName.partners, id)
 
   const resultJob: ILbaItemPartnerJob = {
     id,
-    ideaType:
-      version === "V1"
-        ? LBA_ITEM_TYPE_OLD.PARTNER_JOB
-        : partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA
-          ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-          : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+    ideaType: partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     title: partnerJob.offer_title,
     token: generateApplicationToken({ jobId: id }),
     recipient_id,
@@ -116,7 +107,7 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
   const applicationCountByJob = await getApplicationByJobCount([jobId])
   const applicationCountMap = new Map(applicationCountByJob.map(({ _id, count }) => [_id, count]))
 
-  const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountMap)
+  const partnerJob = transformPartnerJob(rawPartnerJob, applicationCountMap)
   return partnerJob
 }
 

@@ -18,6 +18,42 @@ export interface IDetailNavigation {
 }
 
 /**
+ * Valide le paramètre `?from=` d'une page de détail : seule une URL interne de la page de
+ * résultats est acceptée. Tout le reste (absent, URL absolue externe, autre chemin interne)
+ * est rejeté — `from` est réinjecté tel quel dans `router.push`, ce garde est ce qui empêche
+ * une redirection arbitraire via un lien forgé.
+ */
+export function getSearchUrlFromParam(from: string | null): string | null {
+  return from !== null && from.startsWith("/recherche") ? from : null
+}
+
+export type INavigationTargets = {
+  position: number | null
+  prevIndex: number | null
+  nextIndex: number | null
+}
+
+/**
+ * Calcule, dans la liste des résultats, la position de l'item courant et les index
+ * précédent/suivant (navigation circulaire). Sans `currentUrlId` (conséquence historique
+ * des liens partagés « recherche France entière »), la navigation démarre du premier
+ * résultat mais `position` reste null : l'item affiché n'est pas identifié dans la liste.
+ * Item absent de la liste → pas de navigation.
+ */
+export function computeNavigationTargets(hits: Array<{ url_id?: string | null }>, currentUrlId: string | null): INavigationTargets {
+  const none: INavigationTargets = { position: null, prevIndex: null, nextIndex: null }
+  const currentIndex = currentUrlId ? hits.findIndex((hit) => hit.url_id === currentUrlId) : 0
+  if (currentIndex === -1 || hits.length === 0) return none
+  const position = currentUrlId ? currentIndex + 1 : null
+  if (hits.length <= 1) return { ...none, position }
+  return {
+    position,
+    nextIndex: (currentIndex + 1) % hits.length,
+    prevIndex: currentIndex === 0 ? hits.length - 1 : currentIndex - 1,
+  }
+}
+
+/**
  * Navigation des pages de détail quand on ARRIVE DU MOTEUR DE RECHERCHE : les cartes de
  * /recherche posent `?from=<url de recherche>` sur l'URL de détail. Le hook rejoue la
  * même recherche (cache react-query partagé avec la page de résultats → généralement
@@ -32,13 +68,12 @@ export function useDetailNavigation(): IDetailNavigation {
   const routeParams = useParams()
   const searchParams = useSearchParams()
 
-  const from = searchParams?.get("from") ?? null
-  const isFromSearch = from !== null && from.startsWith("/recherche")
+  const from = getSearchUrlFromParam(searchParams?.get("from") ?? null)
 
-  const fromSearchParams = useMemo(() => new URLSearchParams(isFromSearch ? (from.split("?")[1] ?? "") : ""), [isFromSearch, from])
+  const fromSearchParams = useMemo(() => new URLSearchParams(from !== null ? (from.split("?")[1] ?? "") : ""), [from])
   const params = useMemo(() => parseSearchPageParams(fromSearchParams), [fromSearchParams])
 
-  const result = useSearchResults(params, { enabled: isFromSearch })
+  const result = useSearchResults(params, { enabled: from !== null })
 
   // Le segment [id] des pages de détail EST le url_id des hits (posé par buildHitDetailUrl,
   // qui l'encode — useParams renvoie le segment brut, encore encodé).
@@ -51,24 +86,20 @@ export function useDetailNavigation(): IDetailNavigation {
   }
 
   const { goPrev, goNext, position } = useMemo(() => {
-    if (!isFromSearch || !from) return { position: null }
+    if (from === null) return { position: null }
     const hits = result.data?.pages.flatMap((page) => page.hits) ?? []
-    const currentIndex = currentUrlId ? hits.findIndex((hit) => hit.url_id === currentUrlId) : 0
-    if (currentIndex === -1) return { position: null }
-    const position = hits.length > 0 ? currentIndex + 1 : null
-    if (hits.length <= 1) return { position }
-    // Navigation circulaire sur la liste des résultats.
-    const goToIndex = (index: number) => {
-      const hit = hits[index]
+    const targets = computeNavigationTargets(hits, currentUrlId)
+    const goToIndex = (index: number | null) => {
+      const hit = index === null ? undefined : hits[index]
       if (!hit) return undefined
       return () => router.push(buildHitDetailUrl({ sub_type: hit.sub_type ?? "", url_id: hit.url_id ?? "", title: hit.title ?? "" }, from))
     }
     return {
-      goNext: goToIndex((currentIndex + 1) % hits.length),
-      goPrev: goToIndex(currentIndex === 0 ? hits.length - 1 : currentIndex - 1),
-      position,
+      goNext: goToIndex(targets.nextIndex),
+      goPrev: goToIndex(targets.prevIndex),
+      position: targets.position,
     }
-  }, [isFromSearch, from, result.data, currentUrlId, router])
+  }, [from, result.data, currentUrlId, router])
 
   const swipeHandlers = useSwipeable({
     onSwiped: (eventData) => {
@@ -81,7 +112,7 @@ export function useDetailNavigation(): IDetailNavigation {
     swipeHandlers,
     goPrev,
     goNext,
-    handleClose: isFromSearch && from ? () => router.push(from) : null,
+    handleClose: from !== null ? () => router.push(from) : null,
     position,
   }
 }
