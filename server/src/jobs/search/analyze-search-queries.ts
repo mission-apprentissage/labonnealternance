@@ -67,10 +67,11 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
       // status=error exclu : nb_hits est alors null (recherche non aboutie, aucun signal de
       // pertinence) — l'inclure gonflerait `total` sans jamais compter dans `zero_hits_count`,
       // ce qui ferait paraître le terme plus pertinent qu'il ne l'est (cf. #5166). Même logique
-      // pour source=training_links : trafic synthétique (liens générés côté serveur pour les
-      // vœux Parcoursup), pas des recherches organiques — l'inclure biaiserait les stats qui
+      // pour source=training_links / external_sites : trafic synthétique (liens générés côté
+      // serveur pour les vœux Parcoursup, ou liens de recherche personnalisés posés par des
+      // sites tiers), pas des recherches organiques — l'inclure biaiserait les stats qui
       // nourrissent le moteur de suggestion avec du volume qui ne reflète pas l'usage réel.
-      { $match: { created_at: { $gte: since }, status: { $ne: "error" }, source: { $ne: "training_links" } } },
+      { $match: { created_at: { $gte: since }, status: { $ne: "error" }, source: { $nin: ["training_links", "external_sites"] } } },
       {
         $group: {
           _id: "$q_normalized",

@@ -179,6 +179,30 @@ describe("search.controller", () => {
         expect(doc).toMatchObject({ status: "ok", nb_hits: 0 })
       })
 
+      it("logue source par défaut à free_text quand non fourni", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=sansSource&page=0" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("sansSource")
+        expect(doc).toMatchObject({ source: "free_text" })
+      })
+
+      it.each([
+        ["training_links", "requeteTrainingLinks"],
+        ["external_sites", "requeteExternalSites"],
+      ] as const)("accepte et logue source=%s", async (source, q) => {
+        const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?q=${q}&page=0&source=${source}` })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery(q)
+        expect(doc).toMatchObject({ source })
+      })
+
+      it("rejette une valeur de source inconnue (400)", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=sourceInvalide&page=0&source=bogus" })
+        expect(response.statusCode).toBe(400)
+      })
+
       it("ne logue pas une requête interne ni une page > 0", async () => {
         const response1 = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=interne&page=0&internal=true" })
         const response2 = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=page1&page=1" })
