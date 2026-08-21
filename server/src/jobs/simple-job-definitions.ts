@@ -17,6 +17,7 @@ import { removeBrevoContacts } from "./anonymization/remove-brevo-contacts"
 import { processApplications } from "./applications/process-applications"
 import { processRecruiterIntentions } from "./applications/process-recruiter-intentions"
 import { obfuscateCollections } from "./database/obfuscate-collections"
+import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
 import { buildMappingRomeRNCP } from "./domaines-metiers/build-mapping-rome-rncp"
 import {
@@ -226,6 +227,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: updateDiplomeMetier,
     description: "Mise à jour des diplômes et romes associés",
+  },
+  {
+    fct: importDecaContratsParAnnee,
+    description: "Télécharge et importe (upsert) le référentiel des contrats d'alternance par année depuis S3 (siretlist/lba_deca_contrats_par_annee.ndjson)",
   },
   // IMPORT RAW AND COMPUTED JOBS PARTNERS
   {

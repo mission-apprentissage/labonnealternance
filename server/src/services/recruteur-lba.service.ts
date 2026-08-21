@@ -20,6 +20,7 @@ import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { generateApplicationToken } from "./app-links.service"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByCompanyCount } from "./application.service"
+import { getHiringCountLastFullYears } from "./deca-contrats.service"
 import type { TLbaItemResult } from "./job-opportunity.service.types"
 import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
@@ -155,9 +156,11 @@ const transformCompanyWithMinimalData = ({
 const transformCompanyV2 = ({
   company,
   applicationCountByCompany,
+  hiringCount3Years,
 }: {
   company: IJobsPartnersOfferPrivateWithDistance
   applicationCountByCompany: IApplicationCount[]
+  hiringCount3Years?: number | null
 }): ILbaItemLbaCompany => {
   const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
 
@@ -188,6 +191,9 @@ const transformCompanyV2 = ({
         url: null,
       },
       elligibleHandicap: company.contract_is_disabled_elligible,
+      // N'apparaît que sur la fiche détail (getRecruteurLbaFromDB) : absent (pas juste `undefined`) des
+      // résultats de recherche, qui n'en ont pas besoin et n'appellent pas deca-contrats.service pour ça.
+      ...(hiringCount3Years !== undefined ? { hiringCount3Years } : {}),
     },
     nafs: [
       {
@@ -461,9 +467,11 @@ export const getRecruteurLbaFromDB = async (siret: string): Promise<ILbaItemLbaC
   }
 
   const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
+  const hiringCount3Years = lbaCompany.workplace_siret ? await getHiringCountLastFullYears(lbaCompany.workplace_siret) : null
   const company = transformCompanyV2({
     company: lbaCompany,
     applicationCountByCompany,
+    hiringCount3Years,
   })
 
   return company
