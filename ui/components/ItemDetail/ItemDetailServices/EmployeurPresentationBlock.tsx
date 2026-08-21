@@ -1,7 +1,7 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
-import type { ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemLbaCompanyJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 import { getCompanySize } from "./get-company-size"
@@ -25,7 +25,7 @@ export const EmployeurPresentationBlock = ({
   cityOnly = false,
 }: {
   title: string
-  item: ILbaItemPartnerJobJson
+  item: ILbaItemPartnerJobJson | ILbaItemLbaCompanyJson
   description?: string | null
   emptyStateText?: string
   showPhone?: boolean
@@ -33,7 +33,7 @@ export const EmployeurPresentationBlock = ({
   showGoogleSearch?: boolean
   cityOnly?: boolean
 }) => {
-  const isHandicapEngaged = Boolean(item?.job?.elligibleHandicap || item?.company?.elligibleHandicap)
+  const isHandicapEngaged = Boolean(("job" in item && item.job?.elligibleHandicap) || item?.company?.elligibleHandicap)
   const hiringCount3Years = item?.company?.hiringCount3Years
 
   return (
