@@ -2,16 +2,19 @@
 // The config you add here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import { captureConsoleIntegration, captureRouterTransitionStart, extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
+import { extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
 
 import { shouldReloadOnce } from "@/utils/reload-guard.utils"
 
 import { publicConfig } from "./config.public"
 
+// Pas de tracing client (issue #5186, décision d'équipe 2026-08) : à 0,1 % de sample il
+// n'apportait presque rien, et son retrait permet le tree-shaking du module tracing via le flag
+// __SENTRY_TRACING__ (voir compiler.define dans next.config.mjs). Conséquences assumées : plus de
+// transactions pageload/navigation client, plus de propagation des trace headers vers l'API.
+// Le tracing serveur (sentry.server.config.ts / lba-server) est inchangé.
 init({
   dsn: publicConfig.sentry_dsn,
-  tracesSampleRate: publicConfig.env === "production" ? 0.001 : 1.0,
-  tracePropagationTargets: [/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/, publicConfig.baseUrl, publicConfig.apiEndpoint, /^\//],
   environment: publicConfig.env,
   enabled: !publicConfig.sentryDisabled,
   release: publicConfig.version,
@@ -19,7 +22,8 @@ init({
   // replaysOnErrorSampleRate: 1.0,
   // replaysSessionSampleRate: 0.1,
   integrations: [
-    captureConsoleIntegration({ levels: ["error"] }),
+    // captureConsoleIntegration retirée (issue #5186) : 2 issues / 14 événements / 0 utilisateur
+    // en 90 jours de prod, et le seul cas capté était un TypeError mieux traité en vraie exception.
     extraErrorDataIntegration({ depth: 8 }),
     httpClientIntegration({}),
     // "deprecation"/"intervention" ne rapportent que des avertissements passifs du navigateur
@@ -54,8 +58,6 @@ init({
     return event
   },
 })
-
-export const onRouterTransitionStart = captureRouterTransitionStart
 
 // Pendant un déploiement (rolling update Docker Swarm), un onglet resté ouvert peut garder en
 // mémoire des chunks JS de l'ancien build : le routeur y navigue ensuite vers des modules qui

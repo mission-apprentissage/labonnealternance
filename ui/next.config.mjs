@@ -78,6 +78,14 @@ const nextConfig = {
   bundlePagesRouterDependencies: true,
   serverExternalPackages: ["react-pdf"],
   poweredByHeader: false,
+  compiler: {
+    // Text-replacé (JSON.stringify → il faut le booléen, la chaîne "false" serait truthy) dans le
+    // bundle : @sentry/nextjs n'enregistre browserTracingIntegration que si ce flag n'est pas
+    // remplacé par false — le module tracing est alors tree-shaké (issue #5186). Le flag n'existe
+    // que dans le build client du SDK (vérifié : absent de @sentry/node et @sentry/vercel-edge),
+    // le tracing serveur/edge (sentry.server.config.ts, sentry.edge.config.ts) n'est pas affecté.
+    define: { __SENTRY_TRACING__: false },
+  },
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {
@@ -232,6 +240,11 @@ const sentryConfig = {
   org: "sentry",
   project: "lba-ui",
   sentryUrl: "https://sentry.apprentissage.beta.gouv.fr/",
+
+  // Le tracing client est volontairement retiré (issue #5186) : sans ce flag, chaque build
+  // afficherait « ACTION REQUIRED » en demandant de réexporter onRouterTransitionStart depuis
+  // instrumentation-client.ts — soit exactement ce que la décision d'équipe a supprimé.
+  suppressOnRouterTransitionStartWarning: true,
 
   // Only print logs for uploading source maps in CI
   silent: false,
