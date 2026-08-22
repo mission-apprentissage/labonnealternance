@@ -265,9 +265,14 @@ const sentryConfig = {
   // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
 
-  // Automatically annotate React components to show their full name in breadcrumbs and session replay
-  reactComponentAnnotation: {
-    enabled: true,
+  // Formes non dépréciées depuis Sentry 10.x : reactComponentAnnotation et le tree-shaking
+  // du logger (ex-disableLogger) vivent sous `webpack`. hideSourceMaps a été retiré du SDK
+  // (la rétention des sourcemaps est pilotée par `sourcemaps` ci-dessous).
+  webpack: {
+    // Automatically annotate React components to show their full name in breadcrumbs and session replay
+    reactComponentAnnotation: { enabled: true },
+    // Automatically tree-shake Sentry logger statements to reduce bundle size
+    treeshake: { removeDebugLogging: true },
   },
 
   // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
@@ -275,12 +280,6 @@ const sentryConfig = {
   // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
   // side errors will fail.
   // tunnelRoute: "/monitoring",
-
-  // Hides source maps from generated client bundles
-  hideSourceMaps: false,
-
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
 
   sourcemaps: {
     disable: false,
