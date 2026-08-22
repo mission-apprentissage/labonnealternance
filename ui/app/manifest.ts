@@ -4,7 +4,7 @@ import type { MetadataRoute } from "next"
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "La bonne alternance",
-    short_name: "LBA",
+    short_name: "La bonne alternance",
     description: "La bonne alternance vous aide à trouver un emploi en alternance et une formation en apprentissage. Service public gratuit, des milliers d'offres en France.",
     id: "/",
     scope: "/",
