@@ -68,7 +68,13 @@ l'analyse en mode production stricte.
 
 ## Baseline sur `main` (knip 6.32.2)
 
-432 findings, `exit 1`. Répartition :
+432 findings, `exit 1`. Historique des mesures : 441 à la mesure initiale ; 437 sur le main du
+2026-08-22 (`3bf30bcc4`) — la dérive (−2 exports, −2 types) vient des PR intermédiaires, pas d'un
+nettoyage knip ; 432 après la suppression d'`AutocompleteAsync` (−2 fichiers, −2 dependencies,
+−1 devDependency, cf. ci-dessous).
+
+Répartition (attribution par préfixe de chemin, recalculée via `yarn knip --reporter json` — la
+sortie texte tronque les chemins longs et fait mal compter les colonnes) :
 
 | Catégorie | Total | `server` | `shared` | `ui` | racine |
 | --- | --- | --- | --- | --- | --- |
@@ -78,8 +84,8 @@ l'analyse en mode production stricte.
 | Unlisted dependencies | 13 | 1 | 1 | 11 | 0 |
 | Unlisted binaries | 7 | 1 | 0 | 0 | 6 |
 | Unresolved imports | 3 | 0 | 0 | 0 | 3 |
-| Unused exports | 248 | 118 | 97 | 33 | 0 |
-| Unused exported types | 116 | 32 | 77 | 7 | 0 |
+| Unused exports | 248 | 115 | 102 | 31 | 0 |
+| Unused exported types | 116 | 34 | 78 | 4 | 0 |
 | Unused exported enum members | 8 | 0 | 8 | 0 | 0 |
 | Duplicate exports | 5 | 2 | 1 | 2 | 0 |
 
@@ -172,8 +178,8 @@ Limitation knip : dans un `vitest.config.ts` utilisant `test.projects`, knip ré
 
 Backlog à traiter par workspace, hors périmètre de ce correctif. Deux remarques :
 
-- `shared` est configuré avec `includeEntryExports: true` et tous ses fichiers en `entry` : ses 97
-  exports + 77 types signalés sont des exports d'un paquet interne consommés par personne — c'est
+- `shared` est configuré avec `includeEntryExports: true` et tous ses fichiers en `entry` : ses 102
+  exports + 78 types signalés sont des exports d'un paquet interne consommés par personne — c'est
   le comportement voulu, pas un artefact.
 - Les 5 `duplicate exports` sont des fichiers qui exportent la même valeur en nommé **et** en
   `default` — correction mécanique.
