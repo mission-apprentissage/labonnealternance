@@ -68,30 +68,38 @@ l'analyse en mode production stricte.
 
 ## Baseline sur `main` (knip 6.32.2)
 
-441 findings, `exit 1`. Répartition :
+432 findings, `exit 1`. Historique des mesures : 441 à la mesure initiale ; 437 sur le main du
+2026-08-22 (`3bf30bcc4`) — la dérive (−2 exports, −2 types) vient des PR intermédiaires, pas d'un
+nettoyage knip ; 432 après la suppression d'`AutocompleteAsync` (−2 fichiers, −2 dependencies,
+−1 devDependency, cf. ci-dessous).
+
+Répartition (attribution par préfixe de chemin, recalculée via `yarn knip --reporter json` — la
+sortie texte tronque les chemins longs et fait mal compter les colonnes) :
 
 | Catégorie | Total | `server` | `shared` | `ui` | racine |
 | --- | --- | --- | --- | --- | --- |
-| Unused files | 15 | 4 | 0 | 11 | 0 |
-| Unused dependencies | 8 | 3 | 2 | 3 | 0 |
-| Unused devDependencies | 14 | 2 | 0 | 3 | 9 |
+| Unused files | 13 | 4 | 0 | 9 | 0 |
+| Unused dependencies | 6 | 3 | 2 | 1 | 0 |
+| Unused devDependencies | 13 | 2 | 0 | 2 | 9 |
 | Unlisted dependencies | 13 | 1 | 1 | 11 | 0 |
 | Unlisted binaries | 7 | 1 | 0 | 0 | 6 |
 | Unresolved imports | 3 | 0 | 0 | 0 | 3 |
-| Unused exports | 250 | 118 | 97 | 35 | 0 |
-| Unused exported types | 118 | 32 | 77 | 9 | 0 |
+| Unused exports | 248 | 115 | 102 | 31 | 0 |
+| Unused exported types | 116 | 34 | 78 | 4 | 0 |
 | Unused exported enum members | 8 | 0 | 8 | 0 | 0 |
 | Duplicate exports | 5 | 2 | 1 | 2 | 0 |
 
-### Unused files (15)
+### Unused files (13)
+
+`ui/app/_components/FormComponents/AutocompleteAsync.tsx` et `InputFormField.tsx` (atteignable
+uniquement via lui) ont été supprimés depuis, avec leurs 3 dépendances mortes par ricochet
+(`@uidotdev/usehooks`, `autosuggest-highlight`, `@types/autosuggest-highlight`).
 
 - `server/src/common/utils/log-message.ts`
 - `server/src/jobs/domaines-metiers/domaine-metiers-fix-romes.ts`
 - `server/src/jobs/one-time-job/resync-lba-jobs-partners-stats.ts`
 - `server/src/services/ftjob.service.ts`
 - `ui/app/_components/ClientOnly.tsx`
-- `ui/app/_components/FormComponents/AutocompleteAsync.tsx`
-- `ui/app/_components/FormComponents/InputFormField.tsx`
 - `ui/app/_components/FormComponents/SelectFormField.tsx`
 - `ui/app/(espace-pro)/_components/ConnectionActions.tsx`
 - `ui/app/(espace-pro)/_components/promoRessources.tsx`
@@ -101,9 +109,10 @@ l'analyse en mode production stricte.
 - `ui/services/fetch-lba-company-details.ts`
 - `ui/utils/get-item-id.ts`
 
-### Unused dependencies (8) et devDependencies (14)
+### Unused dependencies (6) et devDependencies (13)
 
-Les 22 findings ont été vérifiés un par un au `grep` sur les sources. Classement :
+Les findings ont été vérifiés un par un au `grep` sur les sources (22 à l'origine ; les 3 « mortes
+par ricochet » de `AutocompleteAsync.tsx` ont été supprimées avec lui, cf. ci-dessus). Classement :
 
 **Réellement mortes — supprimables** (12) : aucune occurrence hors `package.json`.
 `bunyan`, `memoizee`, `openai` (seule trace : une clé de config `config.openai`, aucun import),
@@ -113,10 +122,6 @@ Les 22 findings ont été vérifiés un par un au `grep` sur les sources. Classe
 `@semantic-release/changelog` et `@semantic-release/git` (ni l'un ni l'autre n'est dans les
 `plugins` de `release.config.js` — attention au faux positif de `grep` sur
 `@semantic-release/github`).
-
-**Mortes par ricochet d'un fichier mort** (3) — à supprimer avec le fichier :
-`@uidotdev/usehooks`, `autosuggest-highlight` et `@types/autosuggest-highlight`, importés
-uniquement par `ui/app/_components/FormComponents/AutocompleteAsync.tsx`, lui-même non atteignable.
 
 **Mal placées** (4) — utilisées, mais déclarées dans le mauvais workspace :
 `zod-mongodb-schema` (déclaré dans `shared`, importé dans
@@ -169,12 +174,12 @@ Limitation knip : dans un `vitest.config.ts` utilisant `test.projects`, knip ré
 `globalSetup` par rapport au fichier de config (la racine) au lieu du `root` de chaque projet
 (`./server`, `./ui`). Les 3 chemins sont corrects côté vitest. Faux positifs.
 
-### Unused exports (250), types (118), enum members (8), duplicate exports (5)
+### Unused exports (248), types (116), enum members (8), duplicate exports (5)
 
 Backlog à traiter par workspace, hors périmètre de ce correctif. Deux remarques :
 
-- `shared` est configuré avec `includeEntryExports: true` et tous ses fichiers en `entry` : ses 97
-  exports + 77 types signalés sont des exports d'un paquet interne consommés par personne — c'est
+- `shared` est configuré avec `includeEntryExports: true` et tous ses fichiers en `entry` : ses 102
+  exports + 78 types signalés sont des exports d'un paquet interne consommés par personne — c'est
   le comportement voulu, pas un artefact.
 - Les 5 `duplicate exports` sont des fichiers qui exportent la même valeur en nommé **et** en
   `default` — correction mécanique.
@@ -186,16 +191,17 @@ Liste complète : `yarn knip --exports`.
 Le job `tests` de `.github/workflows/ci.yml` fait `typecheck` + `biome ci` + `vitest`. Aucun des
 trois ne voit un fichier non importé ni une dépendance orpheline : c'est bien un angle mort.
 
-**En l'état, `yarn knip` ne peut pas être ajouté en gate bloquant** : 441 findings, `exit 1`
+**En l'état, `yarn knip` ne peut pas être ajouté en gate bloquant** : 432 findings, `exit 1`
 immédiat. Et knip 6 n'a pas de baseline native (cf. plus haut), donc pas de moyen de ne faire
 échouer que sur les *nouveaux* findings sans écrire un script maison.
 
 Trois options, par ordre de préférence :
 
 1. **Nettoyer puis brancher (recommandé).** Le volume actionnable est faible : 12 dépendances
-   réellement mortes + 3 mortes par ricochet (1 PR), 15 fichiers orphelins (1 PR), 4 dépendances à
-   déplacer et 6 à déclarer (1 PR). Restent les ~380 exports/types, à traiter par workspace. Une
-   fois à zéro, le step ci-dessous devient un gate honnête.
+   réellement mortes (1 PR), 13 fichiers orphelins (1 PR), 4 dépendances à déplacer et 6 à
+   déclarer (1 PR) — les 3 dépendances mortes par ricochet et 2 des fichiers ont déjà été
+   supprimés. Restent les ~370 exports/types, à traiter par workspace. Une fois à zéro, le step
+   ci-dessous devient un gate honnête.
 
 2. **Brancher tout de suite mais scopé aux catégories nettoyées au fur et à mesure**, en
    élargissant `--include` PR après PR. Premier palier possible dès que les fichiers orphelins et
