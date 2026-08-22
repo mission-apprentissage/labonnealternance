@@ -30,6 +30,8 @@ export const metadata: Metadata = {
     apple: [{ url: "/favicon/apple-touch-icon.png", sizes: "180x180" }],
   },
   appleWebApp: {
+    // émis par Next 16 comme mobile-web-app-capable, le successeur standardisé de apple-mobile-web-app-capable
+    capable: true,
     title: "La bonne alternance",
     statusBarStyle: "default",
   },
