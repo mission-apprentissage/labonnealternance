@@ -175,7 +175,10 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   )
 
   const renderOption = useCallback(
-    (htmlAttributes: React.HTMLAttributes<HTMLLIElement>, option: T, { inputValue }: AutocompleteRenderOptionState) => {
+    // key AVANT le spread, et retiré des props MUI : `key` après un spread fait retomber SWC
+    // sur createElement — les enfants du li deviendraient un tableau non marqué statique et
+    // React exigerait un key sur chacun (cf. SearchBar.tsx).
+    ({ key: _muiKey, ...htmlAttributes }: React.HTMLAttributes<HTMLLIElement> & { key?: React.Key }, option: T, { inputValue }: AutocompleteRenderOptionState) => {
       const key = getOptionKey(option)
       const label = getOptionLabel(option)
 
@@ -185,8 +188,8 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
       return (
         <Box
           component={"li"}
-          {...htmlAttributes}
           key={key}
+          {...htmlAttributes}
           sx={{
             px: fr.spacing("4v"),
             py: fr.spacing("2v"),
