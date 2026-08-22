@@ -70,6 +70,15 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   }, [pendingScrollHitId, result.data])
 
   const [panel, setPanel] = useState<MobilePanel>(null)
+  // Champ en cours de saisie dans la modale « Modifier la recherche » : SearchBar passe en
+  // « écran de saisie » (suggestions inline plein écran) — le reste du formulaire est masqué.
+  const [searchFieldActive, setSearchFieldActive] = useState(false)
+  const closeSearchPanel = () => {
+    setPanel(null)
+    // Fermeture possible pendant une saisie (croix, Escape) : sans reset, la prochaine
+    // ouverture masquerait type de recherche et bouton.
+    setSearchFieldActive(false)
+  }
 
   // Bandeau desktop collé ou non : sentinelle observée juste au-dessus du sticky — dès
   // qu'elle sort du viewport par le haut, le bandeau est collé (fond blanc pleine largeur).
@@ -347,22 +356,37 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
         </Box>
 
         {panel === "search" && (
-          <SearchMobilePanel title="Modifier la recherche" onClose={() => setPanel(null)}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-              <SearchBar layout="column" initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
-              <RadioButtons
-                legend="Type de recherche"
-                options={SEARCH_MODE_OPTIONS.map((option) => ({
-                  label: option.label,
-                  hintText: option.hint,
-                  nativeInputProps: { checked: params.mode === option.value, onChange: () => handleModeChange(option.value) },
-                }))}
+          <SearchMobilePanel title="Modifier la recherche" hideHeader={searchFieldActive} onClose={closeSearchPanel}>
+            {/* height 100% pendant la saisie : les suggestions inline de SearchBar remplissent
+                l'espace du panneau (borné au viewport visible, donc au-dessus du clavier). */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v"), height: searchFieldActive ? "100%" : undefined }}>
+              <SearchBar
+                layout="column"
+                inlineSuggestions
+                onActiveFieldChange={(field) => setSearchFieldActive(field !== null)}
+                initialQ={params.q}
+                initialLieuLabel={params.lieu_label}
+                onSubmit={handleSearch}
+                onLieuChange={handleLieuChange}
               />
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
-                <Button priority="primary" iconId="fr-icon-search-line" onClick={() => setPanel(null)} style={{ width: "100%", justifyContent: "center" }}>
-                  Rechercher
-                </Button>
-              </Box>
+              {/* Masqués pendant la saisie : l'écran est réservé au champ actif + suggestions. */}
+              {!searchFieldActive && (
+                <>
+                  <RadioButtons
+                    legend="Type de recherche"
+                    options={SEARCH_MODE_OPTIONS.map((option) => ({
+                      label: option.label,
+                      hintText: option.hint,
+                      nativeInputProps: { checked: params.mode === option.value, onChange: () => handleModeChange(option.value) },
+                    }))}
+                  />
+                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
+                    <Button priority="primary" iconId="fr-icon-search-line" onClick={closeSearchPanel} style={{ width: "100%", justifyContent: "center" }}>
+                      Rechercher
+                    </Button>
+                  </Box>
+                </>
+              )}
             </Box>
           </SearchMobilePanel>
         )}

@@ -79,12 +79,22 @@ export function SearchHomeForm() {
   const [lieu, setLieu] = useState<Lieu | null>(null)
   const [mode, setMode] = useState<SearchMode>(DEFAULT_SEARCH_MODE)
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false)
+  // Champ (métier/lieu) en cours de saisie dans la modale : SearchBar passe en « écran de
+  // saisie » (suggestions inline plein écran) — le reste du formulaire est masqué.
+  const [mobileFieldActive, setMobileFieldActive] = useState(false)
+
+  const closeMobilePanel = () => {
+    setMobilePanelOpen(false)
+    // La modale peut se fermer pendant une saisie (croix, Escape) : sans reset, la
+    // prochaine ouverture masquerait type de recherche et bouton.
+    setMobileFieldActive(false)
+  }
 
   const launchSearch = (query: string, source: QSource) => {
     // cacheComponents (<Activity>) garde cette instance montée — pas démontée — pendant la
     // navigation : sans fermeture explicite, la modale serait encore ouverte en revenant
     // sur l'accueil (logo LBA, bouton retour).
-    setMobilePanelOpen(false)
+    closeMobilePanel()
     // Même événement que le formulaire home legacy, enrichi de search_engine.
     pushMatomoEvent({
       event: MATOMO_EVENTS.SEARCH_LAUNCHED,
@@ -184,22 +194,38 @@ export function SearchHomeForm() {
       {/* Même design que la modale de la page de résultats (SearchPageClient, panel "search") ;
           seul le comportement diffère : ici le bouton lance la recherche (application différée). */}
       {mobilePanelOpen && (
-        <SearchMobilePanel title="Votre recherche" onClose={() => setMobilePanelOpen(false)}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-            <SearchBar layout="column" initialQ={q} initialLieuLabel={lieu?.label} onSubmit={fillQ} onQChange={handleQChange} onLieuChange={setLieu} />
-            <RadioButtons
-              legend="Type de recherche"
-              options={SEARCH_MODE_OPTIONS.map((option) => ({
-                label: option.label,
-                hintText: option.hint,
-                nativeInputProps: { checked: mode === option.value, onChange: () => handleModeChange(option.value) },
-              }))}
+        <SearchMobilePanel title="Votre recherche" hideHeader={mobileFieldActive} onClose={closeMobilePanel}>
+          {/* height 100% pendant la saisie : les suggestions inline de SearchBar remplissent
+              l'espace du panneau (borné au viewport visible, donc au-dessus du clavier). */}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v"), height: mobileFieldActive ? "100%" : undefined }}>
+            <SearchBar
+              layout="column"
+              inlineSuggestions
+              onActiveFieldChange={(field) => setMobileFieldActive(field !== null)}
+              initialQ={q}
+              initialLieuLabel={lieu?.label}
+              onSubmit={fillQ}
+              onQChange={handleQChange}
+              onLieuChange={setLieu}
             />
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
-              <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, qSource)} style={{ width: "100%", justifyContent: "center" }}>
-                Rechercher
-              </Button>
-            </Box>
+            {/* Masqués pendant la saisie : l'écran est réservé au champ actif + suggestions. */}
+            {!mobileFieldActive && (
+              <>
+                <RadioButtons
+                  legend="Type de recherche"
+                  options={SEARCH_MODE_OPTIONS.map((option) => ({
+                    label: option.label,
+                    hintText: option.hint,
+                    nativeInputProps: { checked: mode === option.value, onChange: () => handleModeChange(option.value) },
+                  }))}
+                />
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
+                  <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, qSource)} style={{ width: "100%", justifyContent: "center" }}>
+                    Rechercher
+                  </Button>
+                </Box>
+              </>
+            )}
           </Box>
         </SearchMobilePanel>
       )}
