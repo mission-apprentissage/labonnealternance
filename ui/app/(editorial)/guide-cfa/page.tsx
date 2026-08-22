@@ -86,6 +86,9 @@ const guideCfaPage = () => {
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["accompagner-vos-alternants"]} />
             </Grid>
+            <Grid size={{ md: 3, xs: 12 }}>
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["rediger-son-offre-d-alternance"]} source="guide-cfa" />
+            </Grid>
           </Grid>
           <Grid container size={12} spacing={fr.spacing("4v")}>
             <Grid size={12} my={fr.spacing("6v")}>
