@@ -398,12 +398,15 @@ export function SearchBar({
             onQChange?.(value.value)
             handleSubmit(value.value, value.kind === "suggestion" ? "suggestion" : "free_text")
           }}
-          renderOption={(props, option) =>
+          // key AVANT le spread, et retiré des props MUI : `key` après un spread fait
+          // retomber SWC sur createElement — les enfants du li deviennent un tableau
+          // non marqué statique et React exige alors un key sur chacun (warning).
+          renderOption={({ key: _muiKey, ...optionProps }, option) =>
             option.kind === "free_text" ? (
               <Box
                 component="li"
-                {...props}
                 key="__free_text__"
+                {...optionProps}
                 sx={{
                   minHeight: 60,
                   px: "16px !important",
@@ -427,8 +430,8 @@ export function SearchBar({
             ) : (
               <Box
                 component="li"
-                {...props}
                 key={option.value}
+                {...optionProps}
                 sx={{ minHeight: 40, px: "16px !important", fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}
               >
                 {/* Span unique : le li MUI est en display:flex — des fragments texte séparés y perdent leurs espaces de bord. */}
@@ -541,9 +544,15 @@ export function SearchBar({
             }
             selectLieu(value)
           }}
-          renderOption={(props, option, { index }) =>
+          // key avant le spread et hors des props MUI — même raison que le champ métier.
+          renderOption={({ key: _muiKey, ...optionProps }, option, { index }) =>
             "kind" in option ? (
-              <Box component="li" {...props} key="__france_entiere__" sx={{ minHeight: 60, px: "16px !important", display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
+              <Box
+                component="li"
+                key="__france_entiere__"
+                {...optionProps}
+                sx={{ minHeight: 60, px: "16px !important", display: "flex", alignItems: "center", gap: fr.spacing("2v") }}
+              >
                 <Box component="span" className={fr.cx("fr-icon-map-pin-2-line", "fr-icon--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default }} aria-hidden="true" />
                 <Box>
                   <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>France entière</Box>
@@ -551,7 +560,7 @@ export function SearchBar({
                 </Box>
               </Box>
             ) : (
-              <Box component="li" {...props} key={option.label} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
+              <Box component="li" key={option.label} {...optionProps} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
                 <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>{highlightMatch(option.label, lieuInput)}</Box>
                 {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
               </Box>
