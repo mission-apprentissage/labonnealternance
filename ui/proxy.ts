@@ -87,7 +87,10 @@ export async function proxy(request: NextRequest) {
     if (user) {
       return redirectAfterAuthentication(user, request)
     }
-    return
+    // même sans session, ne pas laisser passer un x-session forgé par le client
+    const anonymousHeaders = new Headers(request.headers)
+    anonymousHeaders.delete("x-session")
+    return NextResponse.next({ request: { headers: anonymousHeaders } })
   }
   const session = await getSession(request)
   const user = session?.user
@@ -96,6 +99,8 @@ export async function proxy(request: NextRequest) {
   }
 
   const requestHeaders = new Headers(request.headers)
+  // seul le proxy a le droit de poser x-session : un client ne doit pas pouvoir le forger
+  requestHeaders.delete("x-session")
   if (session) {
     requestHeaders.set("x-session", JSON.stringify(session))
   }
