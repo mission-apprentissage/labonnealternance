@@ -81,6 +81,10 @@ export function SearchHomeForm() {
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false)
 
   const launchSearch = (query: string, source: QSource) => {
+    // cacheComponents (<Activity>) garde cette instance montée — pas démontée — pendant la
+    // navigation : sans fermeture explicite, la modale serait encore ouverte en revenant
+    // sur l'accueil (logo LBA, bouton retour).
+    setMobilePanelOpen(false)
     // Même événement que le formulaire home legacy, enrichi de search_engine.
     pushMatomoEvent({
       event: MATOMO_EVENTS.SEARCH_LAUNCHED,
