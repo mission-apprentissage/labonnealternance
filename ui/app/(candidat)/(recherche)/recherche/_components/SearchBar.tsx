@@ -372,8 +372,11 @@ export function SearchBar({
           blurOnSelect={inlineSuggestions}
           onFocus={() => changeActiveField("metier")}
           onBlur={() => changeActiveField(null)}
-          onOpen={metierListbox.onOpen}
-          onClose={metierListbox.onClose}
+          // Mode inline : le cap de hauteur du listbox ne sert plus (la hauteur vient du
+          // flex de l'écran de saisie) — ne pas armer le hook (listeners visualViewport +
+          // setState à chaque resize/scroll pendant l'animation du clavier).
+          onOpen={inlineSuggestions ? undefined : metierListbox.onOpen}
+          onClose={inlineSuggestions ? undefined : metierListbox.onClose}
           inputValue={inputValue}
           onInputChange={(_e, value, reason) => {
             // "reset" est déclenché par la sélection d'une option — ne pas écraser la saisie
@@ -506,8 +509,9 @@ export function SearchBar({
           }}
           slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
           blurOnSelect={inlineSuggestions}
-          onOpen={lieuListbox.onOpen}
-          onClose={lieuListbox.onClose}
+          // Mode inline : cap listbox inutile — hook non armé (cf. champ métier).
+          onOpen={inlineSuggestions ? undefined : lieuListbox.onOpen}
+          onClose={inlineSuggestions ? undefined : lieuListbox.onClose}
           inputValue={lieuInput}
           value={lieuValue}
           onFocus={() => changeActiveField("lieu")}

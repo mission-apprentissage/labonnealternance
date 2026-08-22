@@ -22,8 +22,8 @@ export function useVisualViewportSize(): VisualViewportSize {
     if (!vv) return
     const update = () => setSize({ height: Math.round(vv.height), offsetTop: Math.round(vv.offsetTop) })
     update()
-    vv.addEventListener("resize", update)
-    vv.addEventListener("scroll", update)
+    vv.addEventListener("resize", update, { passive: true })
+    vv.addEventListener("scroll", update, { passive: true })
     return () => {
       vv.removeEventListener("resize", update)
       vv.removeEventListener("scroll", update)

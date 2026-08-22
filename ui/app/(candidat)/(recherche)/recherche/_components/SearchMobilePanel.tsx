@@ -42,15 +42,15 @@ export function SearchMobilePanel({ title, ariaLabel, hideHeader = false, onClos
       aria-label={title ?? ariaLabel}
       sx={{
         position: "fixed",
-        top: 0,
+        // Suivi du viewport VISUEL, pas `inset: 0` : le clavier virtuel recouvre le bas du
+        // layout viewport — un panneau pleine hauteur y laisserait la liste de suggestions
+        // et le footer masqués. top : iOS décale le viewport visuel (offsetTop) pour amener
+        // le champ focus en vue — décalage via `top` et non `transform`, déjà utilisé par
+        // l'animation d'ouverture (conflit pendant sa lecture).
+        top: viewport.offsetTop ? `${viewport.offsetTop}px` : 0,
         left: 0,
         right: 0,
-        // Hauteur bornée au viewport VISUEL, pas `bottom: 0` : le clavier virtuel recouvre
-        // le bas du layout viewport — un panneau pleine hauteur y laisserait la liste de
-        // suggestions et le footer masqués. translateY : iOS décale le viewport visuel
-        // (offsetTop) pour amener le champ focus en vue.
         height: viewport.height !== null ? `${viewport.height}px` : "100%",
-        transform: viewport.offsetTop ? `translateY(${viewport.offsetTop}px)` : undefined,
         // Sous le niveau "modal" (1300) pour que les dropdowns des Autocomplete
         // (MUI Popper) et de l'autocomplete Entreprise (downshift) passent devant.
         zIndex: 1250,
