@@ -8,14 +8,15 @@ interface Props {
   value: HandiEngagement | ""
   errors: FormikErrors<any>
   touched: FormikTouched<any>
+  disabled?: boolean
 }
 
-export const HandiEngagementSelect = ({ name, onChange, value, errors, touched }: Props) => {
+export const HandiEngagementSelect = ({ name, onChange, value, errors, touched, disabled = false }: Props) => {
   return (
     <Select
       label="Valoriser mon engagement pour l’emploi des personnes en situation de handicap"
       hint="Nous transmettons vos coordonnées à France Travail pour qu'un conseiller puisse vous recontacter."
-      nativeSelectProps={{ name, value, required: true, onChange: (e) => onChange?.(e.target.value as HandiEngagement) }}
+      nativeSelectProps={{ name, value, required: true, disabled, onChange: (e) => onChange?.(e.target.value as HandiEngagement) }}
       state={errors?.handiEngagement && touched?.handiEngagement ? "error" : "default"}
       stateRelatedMessage={errors?.handiEngagement && touched?.handiEngagement ? (errors.handiEngagement as string) : undefined}
     >

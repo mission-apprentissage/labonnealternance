@@ -4,15 +4,17 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { Form, Formik } from "formik"
+import { Form, Formik, useFormikContext } from "formik"
 import { useRouter } from "next/navigation"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { assertUnreachable, parseEnum } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
+import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import CustomInput from "@/app/_components/CustomInput"
+import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/InformationOpco"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
@@ -23,9 +25,29 @@ import { AnimationContainer } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { infosOpcos } from "@/theme/components/logos/infos-opcos"
-import { getEntrepriseOpco } from "@/utils/api"
+import { getEntrepriseInformation, getEntrepriseOpco } from "@/utils/api"
 import { ApiError, apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+
+/**
+ * Synchronise values.handiEngagement avec l'état dérivé de get-entreprise (masqué/verrouillé), qui ne
+ * peut être connu qu'après résolution de la requête, donc après le montage initial de Formik. Rendu
+ * comme un composant à part (plutôt qu'un useEffect dans le render-prop de <Formik>) pour que le hook
+ * reste au top level d'un vrai composant, et non nesté dans une closure.
+ */
+const HandiEngagementValueSync = ({ hide, locked }: { hide: boolean; locked: boolean }) => {
+  const { values, setFieldValue } = useFormikContext<{ handiEngagement?: string }>()
+
+  useEffect(() => {
+    if (hide && values.handiEngagement !== "non") {
+      setFieldValue("handiEngagement", "non")
+    } else if (locked && values.handiEngagement !== "oui") {
+      setFieldValue("handiEngagement", "oui")
+    }
+  }, [hide, locked])
+
+  return null
+}
 
 const Formulaire = ({
   onSubmit,
@@ -55,6 +77,22 @@ const Formulaire = ({
 
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
+  // Même queryKey que InformationLegaleEntreprise (rendu juste en dessous) : partage le cache React
+  // Query, pas d'appel réseau dupliqué.
+  const { data: entrepriseInfosResult } = useQuery({
+    queryKey: ["get-entreprise", establishment_siret],
+    queryFn: () => getEntrepriseInformation(establishment_siret, { skipUpdate: true }),
+    enabled: Boolean(establishment_siret && type === AUTHTYPE.ENTREPRISE),
+  })
+  const entrepriseInfos =
+    entrepriseInfosResult && "data" in entrepriseInfosResult && entrepriseInfosResult.data && "siret" in entrepriseInfosResult.data && entrepriseInfosResult.data
+  const engagementHandicapOrigin = entrepriseInfos?.engagementHandicapOrigin
+  // France Travail a déjà recensé l'entreprise : on ne redemande pas son consentement, le champ est masqué.
+  const hideHandiEngagement = engagementHandicapOrigin === EntrepriseEngagementSources.FRANCE_TRAVAIL
+  // Un "oui" déjà enregistré via La bonne alternance est irréversible depuis cet écran (one way ticket) :
+  // le champ reste visible (transparence) mais verrouillé sur "oui".
+  const isHandiEngagementLocked = engagementHandicapOrigin === EntrepriseEngagementSources.LBA
+
   return (
     <Formik
       validateOnMount={true}
@@ -79,8 +117,10 @@ const Formulaire = ({
     >
       {({ values, isValid, isSubmitting, setFieldValue, errors, touched }) => {
         const infosOpco = infosOpcos.find((x) => x.nom === values.opco)
+
         return (
           <Form>
+            {type === AUTHTYPE.ENTREPRISE && <HandiEngagementValueSync hide={hideHandiEngagement} locked={isHandiEngagementLocked} />}
             <FormulaireLayout
               type={type}
               left={
@@ -116,13 +156,14 @@ const Formulaire = ({
                   {shouldSelectOpco && (
                     <OpcoSelect name="opco" onChange={async (newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
                   )}
-                  {type === AUTHTYPE.ENTREPRISE && (
+                  {type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
                     <HandiEngagementSelect
                       name="handiEngagement"
                       onChange={async (newValue) => setFieldValue("handiEngagement", newValue)}
                       value={values.handiEngagement as HandiEngagement | ""}
                       errors={errors}
                       touched={touched}
+                      disabled={isHandiEngagementLocked}
                     />
                   )}
                   <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
@@ -148,6 +189,7 @@ const Formulaire = ({
                 <>
                   <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} viewerType={viewerType} />
                   {infosOpco && <InformationOpco isUpdatable={shouldSelectOpco} infosOpco={infosOpco} resetOpcoChoice={async () => setFieldValue("opco", "")} />}
+                  <InformationHandiEngagement />
                 </>
               }
             />

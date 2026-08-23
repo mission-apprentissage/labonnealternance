@@ -8,7 +8,7 @@ import type { InfosOpco } from "@/theme/components/logos/infos-opcos"
 
 export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { isUpdatable: boolean; resetOpcoChoice: () => void; infosOpco: InfosOpco }) => {
   return (
-    <Box sx={{ backgroundColor: "#F5F5FE", p: fr.spacing("3v"), mt: fr.spacing("3v") }}>
+    <Box sx={{ backgroundColor: "#F5F5FE", p: fr.spacing("6v"), mt: fr.spacing("6v") }}>
       <Stack
         direction="column"
         sx={{
