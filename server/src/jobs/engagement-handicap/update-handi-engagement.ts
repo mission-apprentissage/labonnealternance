@@ -105,13 +105,6 @@ export const updateHandiEngagement = async ({ force = false }: UpdateHandiEngage
     throw err
   }
 
-  if (!stream) {
-    logger.warn(`updateHandiEngagement: fichier vide ou introuvable (${S3_KEY})`)
-    const err = new Error(`updateHandiEngagement: fichier vide ou introuvable (${S3_KEY})`)
-    sentryCaptureException(err)
-    throw err
-  }
-
   const now = new Date()
   let errors = 0
   const sirets = new Set<string>()
@@ -139,7 +132,7 @@ export const updateHandiEngagement = async ({ force = false }: UpdateHandiEngage
         pendingOps = []
       }
     } catch (err) {
-      logger.error({ err, line }, "updateHandiEngagement: ligne ndjson non traitable")
+      logger.error({ err, line }, "updateHandiEngagement: error parsing line or upserting documents")
       errors++
     }
   }
