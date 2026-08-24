@@ -8,18 +8,19 @@ import { Form, Formik } from "formik"
 import type { IUserWithAccountFields } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
-import { EntrepriseEngagementSources, HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
+import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import CustomInput from "@/app/_components/CustomInput"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
+import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { useToast } from "@/app/hooks/useToast"
 import { AUTHTYPE } from "@/common/contants"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { ArrowRightLine } from "@/theme/components/icons"
-import { getEntrepriseInformation, getUser, updateUserWithAccountFields } from "@/utils/api"
+import { getUser, updateUserWithAccountFields } from "@/utils/api"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import ModificationCompteEmail from "./ModificationCompteEmail"
 
@@ -42,21 +43,12 @@ export default function CompteRenderer() {
     throwOnError: true,
   })
 
-  const needsEntrepriseInfo = Boolean(data?.establishment_siret && data?.type === AUTHTYPE.ENTREPRISE)
-  const { data: entrepriseInfosResult } = useQuery({
-    queryKey: ["get-entreprise", data?.establishment_siret],
-    queryFn: () => getEntrepriseInformation(data!.establishment_siret, { skipUpdate: true }),
-    enabled: needsEntrepriseInfo,
-  })
-  // error est le discriminant du type retourné par getEntrepriseInformation : plus simple et plus sûr
-  // que de vérifier structurellement la présence de "data" puis de "siret" dans ce "data".
-  const entrepriseInfos = entrepriseInfosResult?.error === false ? entrepriseInfosResult.data : undefined
-  const engagementHandicapOrigin = entrepriseInfos?.engagementHandicapOrigin
-  // France Travail a déjà recensé l'entreprise : on ne redemande pas son consentement, champ et bloc masqués.
-  const hideHandiEngagement = engagementHandicapOrigin === EntrepriseEngagementSources.FRANCE_TRAVAIL
-  // Un "oui" déjà enregistré via La bonne alternance est irréversible depuis cet écran (one way ticket) :
-  // le champ reste visible mais verrouillé sur "oui", et le bloc de sensibilisation n'a plus lieu d'être.
-  const isHandiEngagementLocked = engagementHandicapOrigin === EntrepriseEngagementSources.LBA
+  const {
+    needsEntrepriseInfo,
+    hideHandiEngagement,
+    isHandiEngagementLocked,
+    isPending: isEntrepriseInfoPending,
+  } = useHandiEngagementState(data?.establishment_siret, data?.type === AUTHTYPE.ENTREPRISE)
 
   const userMutation = useMutation({
     mutationFn: async ({ values }: { values: IUpdateUserWithAccountFields; isChangingEmail: boolean }) => {
@@ -93,7 +85,6 @@ export default function CompteRenderer() {
     },
   })
 
-  const isEntrepriseInfoPending = needsEntrepriseInfo && entrepriseInfosResult === undefined
   if (isLoading || isEntrepriseInfoPending) {
     return <LoadingEmptySpace label="Chargement en cours" />
   }

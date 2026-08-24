@@ -11,7 +11,7 @@ import { assertUnreachable, parseEnum } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
-import { EntrepriseEngagementSources, HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
+import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import CustomInput from "@/app/_components/CustomInput"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
@@ -19,13 +19,14 @@ import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
+import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { AUTHTYPE } from "@/common/contants"
 import { personNameValidation, phoneValidation } from "@/common/validation/field-validations"
 import { AnimationContainer } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { infosOpcos } from "@/theme/components/logos/infos-opcos"
-import { getEntrepriseInformation, getEntrepriseOpco } from "@/utils/api"
+import { getEntrepriseOpco } from "@/utils/api"
 import { ApiError, apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -77,21 +78,7 @@ const Formulaire = ({
 
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
-  // Même queryKey que InformationLegaleEntreprise (rendu juste en dessous) : partage le cache React
-  // Query, pas d'appel réseau dupliqué.
-  const { data: entrepriseInfosResult } = useQuery({
-    queryKey: ["get-entreprise", establishment_siret],
-    queryFn: () => getEntrepriseInformation(establishment_siret, { skipUpdate: true }),
-    enabled: Boolean(establishment_siret && type === AUTHTYPE.ENTREPRISE),
-  })
-  const entrepriseInfos =
-    entrepriseInfosResult && "data" in entrepriseInfosResult && entrepriseInfosResult.data && "siret" in entrepriseInfosResult.data && entrepriseInfosResult.data
-  const engagementHandicapOrigin = entrepriseInfos?.engagementHandicapOrigin
-  // France Travail a déjà recensé l'entreprise : on ne redemande pas son consentement, le champ est masqué.
-  const hideHandiEngagement = engagementHandicapOrigin === EntrepriseEngagementSources.FRANCE_TRAVAIL
-  // Un "oui" déjà enregistré via La bonne alternance est irréversible depuis cet écran (one way ticket) :
-  // le champ reste visible (transparence) mais verrouillé sur "oui".
-  const isHandiEngagementLocked = engagementHandicapOrigin === EntrepriseEngagementSources.LBA
+  const { hideHandiEngagement, isHandiEngagementLocked } = useHandiEngagementState(establishment_siret, type === AUTHTYPE.ENTREPRISE)
 
   return (
     <Formik
