@@ -90,7 +90,9 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
   const rawQSource = search.get("search_source") ?? search.get("source")
 
   return {
-    q: search.get("q") || undefined,
+    // Trim : un `q` d'espaces doit compter comme une absence, sinon il passe la branche indexable
+    // de buildRecherchePageMetadata (canonical auto-référent `?q=+`, titre cassé) au lieu du noindex.
+    q: search.get("q")?.trim() || undefined,
     q_source: Q_SOURCES.includes(rawQSource as QSource) ? (rawQSource as QSource) : undefined,
     lieu_label: search.get("lieu_label") || undefined,
     mode: SEARCH_MODES.includes(search.get("mode") as SearchMode) ? (search.get("mode") as SearchMode) : DEFAULT_SEARCH_MODE,
@@ -161,6 +163,22 @@ export function buildSearchPageTitle(params: ISearchPageParams): string {
     }
   }
   return `${base}${context} | La bonne alternance`
+}
+
+/**
+ * Canonical auto-référent d'une page de résultats du nouveau moteur (`q`) : chemin + le métier
+ * recherché (et le `mode` s'il n'est pas la valeur par défaut). Débarrassé du bruit d'URL (géo,
+ * filtres, pagination, tri, toggles) pour consolider les variantes d'une même recherche métier sur
+ * une page indexable unique. Indispensable depuis le noindex de `/recherche` nue (#5034) : sans
+ * canonical propre, les pages `?q=` héritent du canonical racine (`"./"` → `/recherche`) et seraient
+ * dé-indexées avec elle. Sans `q`, renvoie `/recherche` (la page nue, cible de noindex).
+ */
+export function buildSearchPageCanonical(params: ISearchPageParams): string {
+  if (!params.q) return "/recherche"
+  const query = new URLSearchParams()
+  query.set("q", params.q)
+  if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
+  return `/recherche?${query.toString()}`
 }
 
 /**

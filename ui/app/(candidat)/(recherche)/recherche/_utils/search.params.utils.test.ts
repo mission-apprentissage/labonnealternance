@@ -21,6 +21,14 @@ describe("is_algo_company multi-valeurs (type d'offres d'emploi)", () => {
   })
 })
 
+describe("parse de `q` (trim au parse : un métier d'espaces n'est pas une intention)", () => {
+  it("trim les espaces parasites, et un `q` fait d'espaces devient une absence", () => {
+    expect(parseSearchPageParams(new URLSearchParams("q=%20boulanger%20")).q).toBe("boulanger")
+    expect(parseSearchPageParams(new URLSearchParams("q=%20")).q).toBeUndefined()
+    expect(parseSearchPageParams(new URLSearchParams("q=")).q).toBeUndefined()
+  })
+})
+
 describe("search_source (origine de q)", () => {
   it("parse search_source, valeurs inconnues ignorées", () => {
     expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=suggestion")).q_source).toBe("suggestion")
