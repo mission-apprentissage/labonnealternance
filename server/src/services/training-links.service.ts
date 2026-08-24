@@ -189,9 +189,9 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
     // No formation found: fall back to a location-only search
     const { latitude, longitude, lieuLabel } = await getWishCommune()
     if (latitude && longitude) {
-      return buildEmploiUrl({ params: { lieu_label: lieuLabel, latitude, longitude, radius: "60", source: "training_links", ...utmParams } })
+      return buildEmploiUrl({ params: { lieu_label: lieuLabel, latitude, longitude, radius: "60", search_source: "training_links", ...utmParams } })
     }
-    return buildEmploiUrl({ baseUrl: config.publicUrl, params: { source: "training_links", ...utmParams } })
+    return buildEmploiUrl({ baseUrl: config.publicUrl, params: { search_source: "training_links", ...utmParams } })
   }
 
   const sortedFormations = sortFormationsDeterministically(formations)
@@ -223,7 +223,7 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
   const q = getFormationSearchLabel(formation, romeLabelByCode ?? (await loadRomeLabelByCode()))
 
   return buildEmploiUrl({
-    params: { q, lieu_label: lieuLabel, latitude, longitude, radius: "60", source: "training_links", ...utmParams },
+    params: { q, lieu_label: lieuLabel, latitude, longitude, radius: "60", search_source: "training_links", ...utmParams },
   })
 }
 

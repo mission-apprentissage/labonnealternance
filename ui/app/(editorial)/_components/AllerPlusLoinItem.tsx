@@ -5,7 +5,9 @@ export const AllerPlusLoinItem = ({ title, imageUrl, description, path, source }
     border
     enlargeLink
     size="medium"
-    linkProps={{ href: `${path}${source ? `?source=${source}` : ""}` }}
+    // guide_source et non source : « source » est un paramètre réservé de Plausible (attribution
+    // d'acquisition), une URL interne qui le porte polluerait les stats.
+    linkProps={{ href: `${path}${source ? `?guide_source=${source}` : ""}` }}
     title={title}
     desc={description}
     imageUrl={imageUrl}

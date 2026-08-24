@@ -56,7 +56,10 @@ const DecouvrirLAlternancePage = async ({ searchParams }: { searchParams: Promis
     "Il existe deux dispositifs de formation en alternance : le contrat d’apprentissage et le contrat de professionnalisation.",
   ]
 
-  const source = new URLSearchParams(await searchParams).get("source") || undefined
+  // guide_source a remplacé source (paramètre réservé de Plausible) ; l'ancien nom reste lu en
+  // repli pour les liens externes/favoris antérieurs au renommage.
+  const params = new URLSearchParams(await searchParams)
+  const source = params.get("guide_source") || params.get("source") || undefined
 
   return (
     <LayoutArticle

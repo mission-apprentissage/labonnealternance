@@ -47,7 +47,10 @@ const PreventionDesRisquesProfessionnelsPourLesApprentisPage = async ({ searchPa
     "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail, de machines, d’outils et de substances parfois dangereuses. Une meilleure connaissance des dangers professionnels, une anticipation des situations à risque permet à l’apprenti de prévenir ces risques professionnels.",
   ]
 
-  const source = new URLSearchParams(await searchParams).get("source") || undefined
+  // guide_source a remplacé source (paramètre réservé de Plausible) ; l'ancien nom reste lu en
+  // repli pour les liens externes/favoris antérieurs au renommage.
+  const params = new URLSearchParams(await searchParams)
+  const source = params.get("guide_source") || params.get("source") || undefined
 
   return (
     <LayoutArticle

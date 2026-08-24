@@ -179,27 +179,37 @@ describe("search.controller", () => {
         expect(doc).toMatchObject({ status: "ok", nb_hits: 0 })
       })
 
-      it("logue source par défaut à free_text quand non fourni", async () => {
+      it("logue search_source par défaut à free_text quand non fourni", async () => {
         const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=sansSource&page=0" })
         expect(response.statusCode).toBe(200)
 
         const doc = await waitForLoggedQuery("sansSource")
-        expect(doc).toMatchObject({ source: "free_text" })
+        expect(doc).toMatchObject({ search_source: "free_text" })
       })
 
       it.each([
         ["training_links", "requeteTrainingLinks"],
         ["external_sites", "requeteExternalSites"],
-      ] as const)("accepte et logue source=%s", async (source, q) => {
-        const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?q=${q}&page=0&source=${source}` })
+      ] as const)("accepte et logue search_source=%s", async (searchSource, q) => {
+        const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?q=${q}&page=0&search_source=${searchSource}` })
         expect(response.statusCode).toBe(200)
 
         const doc = await waitForLoggedQuery(q)
-        expect(doc).toMatchObject({ source })
+        expect(doc).toMatchObject({ search_source: searchSource })
       })
 
-      it("rejette une valeur de source inconnue (400)", async () => {
-        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=sourceInvalide&page=0&source=bogus" })
+      // Alias déprécié : liens émis avant le renommage (campagne traininglinks du 2026-08-24)
+      // et bundles UI pré-renommage (version skew au déploiement).
+      it("accepte l'alias déprécié source= et le logue en search_source", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=aliasLegacy&page=0&source=training_links" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("aliasLegacy")
+        expect(doc).toMatchObject({ search_source: "training_links" })
+      })
+
+      it("rejette une valeur de search_source inconnue (400)", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=sourceInvalide&page=0&search_source=bogus" })
         expect(response.statusCode).toBe(400)
       })
 

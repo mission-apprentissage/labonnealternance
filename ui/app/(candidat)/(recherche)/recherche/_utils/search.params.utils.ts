@@ -83,9 +83,15 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
   const longitude = getFloat("longitude")
   const hasGeoPair = latitude !== undefined && longitude !== undefined
 
+  // « source » est l'ancien nom de « search_source », abandonné parce que c'est un paramètre
+  // réservé de Plausible (attribution d'acquisition). Le repli reste nécessaire tant que des
+  // liens externes le portent : campagne traininglinks du 2026-08-24, liens posés par des sites
+  // tiers. search_source prime si les deux sont présents.
+  const rawQSource = search.get("search_source") ?? search.get("source")
+
   return {
     q: search.get("q") || undefined,
-    q_source: Q_SOURCES.includes(search.get("source") as QSource) ? (search.get("source") as QSource) : undefined,
+    q_source: Q_SOURCES.includes(rawQSource as QSource) ? (rawQSource as QSource) : undefined,
     lieu_label: search.get("lieu_label") || undefined,
     mode: SEARCH_MODES.includes(search.get("mode") as SearchMode) ? (search.get("mode") as SearchMode) : DEFAULT_SEARCH_MODE,
     type_filter_label: getMulti("type_filter_label"),
@@ -111,7 +117,7 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/recherche
   const query = new URLSearchParams()
 
   if (params.q) query.set("q", params.q)
-  if (params.q && params.q_source) query.set("source", params.q_source)
+  if (params.q && params.q_source) query.set("search_source", params.q_source)
   if (params.lieu_label) query.set("lieu_label", params.lieu_label)
   if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
 
