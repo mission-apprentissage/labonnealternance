@@ -68,6 +68,14 @@ export default function CompteRenderer() {
       client.invalidateQueries({
         queryKey: ["user"],
       })
+      // Un "oui" vient potentiellement d'être enregistré dans referentiel_engagement_entreprise : sans ce
+      // refetch, isHandiEngagementLocked reste basé sur l'ancienne valeur et le champ ne se désactive pas
+      // immédiatement après le save.
+      if (needsEntrepriseInfo) {
+        client.invalidateQueries({
+          queryKey: ["get-entreprise", data?.establishment_siret],
+        })
+      }
 
       toast({
         title: "Mise à jour enregistrée avec succès",
