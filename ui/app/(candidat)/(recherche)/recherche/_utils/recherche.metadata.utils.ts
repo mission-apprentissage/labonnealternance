@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 import { buildRechercheMetadata } from "./recherche.metadata.utils_LEGACY"
 import { IRechercheMode, parseRecherchePageParams } from "./recherche.route.utils"
-import { buildSearchPageTitle, parseSearchPageParams } from "./search.params.utils"
+import { buildSearchPageCanonical, buildSearchPageTitle, parseSearchPageParams } from "./search.params.utils"
 
 /**
  * Métadonnées SEO de /recherche (nouveau moteur, schéma `q`), avec repli sur le moteur legacy.
@@ -29,14 +29,18 @@ const NOINDEX_FOLLOW: Metadata["robots"] = { index: false, follow: true }
 export function buildRecherchePageMetadata(search: URLSearchParams): Metadata {
   const params = parseSearchPageParams(search)
 
-  // Nouveau moteur `q` : vraie intention de recherche → indexable (robots hérité du défaut du site).
+  // Nouveau moteur `q` : vraie intention de recherche → indexable. Canonical auto-référent OBLIGATOIRE :
+  // sans lui, la page hérite du canonical racine (`"./"` → `/recherche`) et serait dé-indexée avec la
+  // page nue passée en noindex ci-dessous.
   if (params.q) {
-    return { title: buildSearchPageTitle(params) }
+    return { title: buildSearchPageTitle(params), alternates: { canonical: buildSearchPageCanonical(params) } }
   }
 
   // URL legacy à métier réel (`job_name`) : vraie intention, 2ᵉ source de trafic → indexable, titre restauré.
+  // `.trim()` : un `job_name` vide ou fait d'espaces produirait un titre générique (le consommateur le trim)
+  // tout en échappant au noindex — on l'exclut donc de la branche « métier réel ».
   const legacyParams = parseRecherchePageParams(search, IRechercheMode.DEFAULT)
-  if (legacyParams?.job_name) {
+  if (legacyParams?.job_name?.trim()) {
     return buildRechercheMetadata(legacyParams, "default")
   }
 

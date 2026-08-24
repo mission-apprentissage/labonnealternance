@@ -4,6 +4,7 @@ import { buildRecherchePageMetadata } from "./recherche.metadata.utils"
 
 const titleOf = (qs: string) => buildRecherchePageMetadata(new URLSearchParams(qs)).title
 const robotsOf = (qs: string) => buildRecherchePageMetadata(new URLSearchParams(qs)).robots
+const canonicalOf = (qs: string) => buildRecherchePageMetadata(new URLSearchParams(qs)).alternates?.canonical
 
 describe("buildRecherchePageMetadata — repli SSR sur les URL du moteur legacy (?job_name=)", () => {
   it("restaure le titre métier legacy exact pour une URL ?job_name= sans géo", () => {
@@ -61,5 +62,29 @@ describe("buildRecherchePageMetadata — noindex chirurgical des pages /recherch
 
   it("laisse INDEXÉE (robots hérité) une page du nouveau moteur `q`", () => {
     expect(robotsOf("q=boulanger")).toBeUndefined()
+  })
+
+  it("passe en noindex un job_name fait d'espaces (échappait au garde-fou sans trim)", () => {
+    // Sans `.trim()`, cette URL de marque reste index,follow alors que ?job_name=&romes=K2101 passe en noindex.
+    expect(robotsOf("job_name=%20&romes=K2101")).toEqual({ index: false, follow: true })
+  })
+})
+
+describe("buildRecherchePageMetadata — canonical auto-référent (découple les pages indexables de /recherche nue noindexée, #5034)", () => {
+  it("pose un canonical auto-référent incluant `q` sur les pages du nouveau moteur", () => {
+    // Sans ce canonical, `?q=` hériterait du canonical racine (`/recherche`, noindexé) et serait dé-indexée avec.
+    expect(canonicalOf("q=boulanger")).toBe("/recherche?q=boulanger")
+  })
+
+  it("garde le `mode` non-défaut dans le canonical `q` (formations ≠ emplois)", () => {
+    expect(canonicalOf("q=boulanger&mode=formations")).toBe("/recherche?q=boulanger&mode=formations")
+  })
+
+  it("strippe le bruit d'URL (filtres, pagination, géo) du canonical `q`", () => {
+    expect(canonicalOf("q=boulanger&contract_type=Apprentissage&page=2&lat=45.75&lon=4.85&address=Lyon")).toBe("/recherche?q=boulanger")
+  })
+
+  it("garde le canonical métier legacy auto-référent sur les pages `job_name` réel", () => {
+    expect(canonicalOf("job_name=Data analyst&romes=M1403")).toBe("/recherche?romes=M1403&job_name=Data+analyst")
   })
 })

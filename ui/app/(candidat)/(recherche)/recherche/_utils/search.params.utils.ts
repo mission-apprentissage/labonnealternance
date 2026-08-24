@@ -158,6 +158,22 @@ export function buildSearchPageTitle(params: ISearchPageParams): string {
 }
 
 /**
+ * Canonical auto-référent d'une page de résultats du nouveau moteur (`q`) : chemin + le métier
+ * recherché (et le `mode` s'il n'est pas la valeur par défaut). Débarrassé du bruit d'URL (géo,
+ * filtres, pagination, tri, toggles) pour consolider les variantes d'une même recherche métier sur
+ * une page indexable unique. Indispensable depuis le noindex de `/recherche` nue (#5034) : sans
+ * canonical propre, les pages `?q=` héritent du canonical racine (`"./"` → `/recherche`) et seraient
+ * dé-indexées avec elle. Sans `q`, renvoie `/recherche` (la page nue, cible de noindex).
+ */
+export function buildSearchPageCanonical(params: ISearchPageParams): string {
+  if (!params.q) return "/recherche"
+  const query = new URLSearchParams()
+  query.set("q", params.q)
+  if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
+  return `/recherche?${query.toString()}`
+}
+
+/**
  * Texte du H1 SEO de la page de résultats : « Alternance {métier}{ à {lieu}} ».
  * Retourne `null` sans métier saisi (`q`) — la page n'a alors pas de H1 dynamique à afficher.
  */
