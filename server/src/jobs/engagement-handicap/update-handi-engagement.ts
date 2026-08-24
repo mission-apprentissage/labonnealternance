@@ -100,7 +100,9 @@ export const updateHandiEngagement = async () => {
 
   if (!stream) {
     logger.warn(`updateHandiEngagement: fichier vide ou introuvable (${S3_KEY})`)
-    return
+    const err = new Error(`updateHandiEngagement: fichier vide ou introuvable (${S3_KEY})`)
+    sentryCaptureException(err)
+    throw err
   }
 
   const now = new Date()
