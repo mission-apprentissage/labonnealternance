@@ -18,7 +18,7 @@ import { getUserFromRequest } from "@/security/authentication.service"
 import { buildEstablishmentId } from "@/services/etablissement.service"
 import { getFormulaireWithRomeDetail } from "@/services/formulaire.service"
 import { updateEntrepriseHandiEngagement } from "@/services/organization.service"
-import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/role-management.service"
+import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, getGrantedRoles, roleToUserType } from "@/services/role-management.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -307,13 +307,14 @@ export default (server: Server) => {
       }
 
       if (handiEngagement) {
-        // Résolution du siret à partir du rôle de l'utilisateur connecté (jamais depuis un paramètre
-        // fourni par le client) : on ne peut agir que sur sa propre entreprise.
-        const roleManagement = await getDbCollection("rolemanagements").findOne({
-          user_id: new ObjectId(userId),
-          authorized_type: AccessEntityType.ENTREPRISE,
-        })
-        const entreprise = roleManagement ? await getDbCollection("entreprises").findOne({ _id: new ObjectId(roleManagement.authorized_id) }) : null
+        // Résolution du siret à partir du rôle ENTREPRISE de l'utilisateur CONNECTÉ (jamais depuis :userId,
+        // que cette route autorise aussi un admin ou un opco à cibler pour modifier un autre compte) : on ne
+        // peut agir que sur sa propre entreprise. Seuls les rôles GRANTED sont retenus (getGrantedRoles),
+        // pour ignorer un rôle révoqué qui traînerait encore en base après un changement d'entreprise.
+        const requestUser = getUserFromRequest(req, zRoutes.put["/user/:userId"]).value
+        const grantedRoles = await getGrantedRoles(requestUser._id.toString())
+        const entrepriseRole = grantedRoles.find((role) => role.authorized_type === AccessEntityType.ENTREPRISE)
+        const entreprise = entrepriseRole ? await getDbCollection("entreprises").findOne({ _id: new ObjectId(entrepriseRole.authorized_id) }) : null
         if (entreprise) {
           await updateEntrepriseHandiEngagement(entreprise.siret, handiEngagement)
         }
