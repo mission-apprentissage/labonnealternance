@@ -84,7 +84,9 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
   const hasGeoPair = latitude !== undefined && longitude !== undefined
 
   return {
-    q: search.get("q") || undefined,
+    // Trim : un `q` d'espaces doit compter comme une absence, sinon il passe la branche indexable
+    // de buildRecherchePageMetadata (canonical auto-référent `?q=+`, titre cassé) au lieu du noindex.
+    q: search.get("q")?.trim() || undefined,
     q_source: Q_SOURCES.includes(search.get("source") as QSource) ? (search.get("source") as QSource) : undefined,
     lieu_label: search.get("lieu_label") || undefined,
     mode: SEARCH_MODES.includes(search.get("mode") as SearchMode) ? (search.get("mode") as SearchMode) : DEFAULT_SEARCH_MODE,

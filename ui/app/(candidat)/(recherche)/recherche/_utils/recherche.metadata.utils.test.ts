@@ -68,6 +68,12 @@ describe("buildRecherchePageMetadata — noindex chirurgical des pages /recherch
     // Sans `.trim()`, cette URL de marque reste index,follow alors que ?job_name=&romes=K2101 passe en noindex.
     expect(robotsOf("job_name=%20&romes=K2101")).toEqual({ index: false, follow: true })
   })
+
+  it("passe en noindex un `q` fait d'espaces (même near-miss que job_name, côté nouveau moteur)", () => {
+    // Sans trim de `q` au parse, cette URL serait indexable avec un canonical auto-référent `?q=+`
+    // et un titre cassé (« Offres en alternance -   sur la France entière »).
+    expect(robotsOf("q=%20")).toEqual({ index: false, follow: true })
+  })
 })
 
 describe("buildRecherchePageMetadata — canonical auto-référent (découple les pages indexables de /recherche nue noindexée, #5034)", () => {
@@ -86,5 +92,10 @@ describe("buildRecherchePageMetadata — canonical auto-référent (découple le
 
   it("garde le canonical métier legacy auto-référent sur les pages `job_name` réel", () => {
     expect(canonicalOf("job_name=Data analyst&romes=M1403")).toBe("/recherche?romes=M1403&job_name=Data+analyst")
+  })
+
+  it("consolide un `q` à espaces parasites sur le canonical de la forme propre", () => {
+    // `?q=boulanger%20` doit canonicaliser vers `?q=boulanger`, pas s'auto-canoniser en `?q=boulanger+`.
+    expect(canonicalOf("q=%20boulanger%20")).toBe("/recherche?q=boulanger")
   })
 })
