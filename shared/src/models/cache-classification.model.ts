@@ -19,17 +19,6 @@ const ZClassitifationJobsPartners = z.object({
 })
 export type IClassificationJobsPartners = z.output<typeof ZClassitifationJobsPartners>
 
-export const ZClassificationBatchResponse = z
-  .object({
-    id: z.string(),
-    label: z.enum(["publish", "unpublish"]),
-    scores: ZClassitifationJobsPartners.shape.scores,
-    model: z.string(),
-  })
-  .array()
-
-export type IClassificationBatchResponse = z.output<typeof ZClassificationBatchResponse>
-
 export default {
   zod: ZClassitifationJobsPartners,
   indexes: [

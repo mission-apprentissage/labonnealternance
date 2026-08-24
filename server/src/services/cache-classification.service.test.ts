@@ -5,6 +5,7 @@ import { generateJobsPartnersFull } from "shared/fixtures/job-partners.fixture"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { describe, expect, it, vi } from "vitest"
 import { CLASSIFICATION_MISTRAL_MODEL } from "@/common/apis/classification/classification-mistral.client"
+import { mistralClassificationResponse } from "@/common/apis/classification/classification-mistral.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 import type { TJobClassification } from "./cache-classification.service"
@@ -18,9 +19,6 @@ vi.mock("job-processor", async (importOriginal) => {
 vi.mock("@/services/mistralai/mistralai.service", () => ({
   sendMistralMessages: vi.fn(),
 }))
-
-const mistralResponse = (results: { id: string; label: "publish" | "unpublish"; scores?: { publish: number; unpublish: number } }[]) =>
-  JSON.stringify({ results: results.map((result) => ({ scores: { publish: 0.4, unpublish: 0.6 }, ...result })) })
 
 const insertCacheClassification = async (data: { partner_label: string; partner_job_id: string; classification: string; human_verification?: "publish" | "unpublish" | null }) => {
   await getDbCollection("cache_classification").insertOne({
@@ -54,7 +52,7 @@ describe("getClassification", () => {
   }
 
   it("appelle le provider avec les offres non cachées (ids = index) et retourne son label", async () => {
-    vi.mocked(sendMistralMessages).mockResolvedValue(mistralResponse([{ id: "0", label: "unpublish" }]))
+    vi.mocked(sendMistralMessages).mockResolvedValue(mistralClassificationResponse([{ id: "0", label: "unpublish" }]))
 
     expect(await getClassification([payload])).toEqual(["unpublish"])
 
@@ -99,7 +97,7 @@ describe("getClassification", () => {
     })
 
     // Seule l'offre non cachée part au provider ; elle garde son index d'origine ("1") comme id.
-    vi.mocked(sendMistralMessages).mockResolvedValue(mistralResponse([{ id: "1", label: "unpublish" }]))
+    vi.mocked(sendMistralMessages).mockResolvedValue(mistralClassificationResponse([{ id: "1", label: "unpublish" }]))
 
     const result = await getClassification([cachedPayload, payload])
     expect(result[0]).toBe("unpublish")
@@ -118,7 +116,7 @@ describe("getClassification", () => {
     ]
 
     vi.mocked(sendMistralMessages).mockResolvedValue(
-      mistralResponse([
+      mistralClassificationResponse([
         { id: "0", label: "publish", scores: { publish: 0.9, unpublish: 0.1 } },
         { id: "1", label: "unpublish", scores: { publish: 0.1, unpublish: 0.9 } },
       ])
@@ -129,7 +127,7 @@ describe("getClassification", () => {
 
   it("stocke model et created_at dans le cache à l'enregistrement d'une classification", async () => {
     const before = new Date()
-    vi.mocked(sendMistralMessages).mockResolvedValue(mistralResponse([{ id: "0", label: "unpublish" }]))
+    vi.mocked(sendMistralMessages).mockResolvedValue(mistralClassificationResponse([{ id: "0", label: "unpublish" }]))
 
     await getClassification([payload])
 

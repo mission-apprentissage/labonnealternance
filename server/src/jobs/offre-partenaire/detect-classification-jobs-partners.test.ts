@@ -3,6 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import GEIQ_WHITELIST from "shared/constants/geiq"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { mistralClassificationResponse } from "@/common/apis/classification/classification-mistral.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detect-classification-jobs-partners"
@@ -14,10 +15,6 @@ vi.mock("@/services/classification/classification-mistral-batch.service", () => 
 vi.mock("@/services/mistralai/mistralai.service", () => ({
   sendMistralMessages: vi.fn(),
 }))
-
-// Les offres envoyées au provider sont identifiées par leur index dans le lot ("0", "1", ...) —
-// un id absent de la réponse fait échouer tout le lot (getMistralClassificationBatch).
-const mistralResponse = (results: { id: string; label: "publish" | "unpublish"; scores: { publish: number; unpublish: number } }[]) => JSON.stringify({ results })
 
 const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({})
 
@@ -31,7 +28,7 @@ describe("detect-classification-jobs-partners", () => {
   useMongo()
 
   beforeEach(() => {
-    vi.mocked(sendMistralMessages).mockResolvedValue(mistralResponse([{ id: "0", label: "publish", scores: { publish: 0.6, unpublish: 0.4 } }]))
+    vi.mocked(sendMistralMessages).mockResolvedValue(mistralClassificationResponse([{ id: "0", label: "publish", scores: { publish: 0.6, unpublish: 0.4 } }]))
     return async () => {
       await getDbCollection("computed_jobs_partners").deleteMany({})
     }
@@ -124,7 +121,7 @@ describe("detect-classification-jobs-partners", () => {
 
   it("should set business_error to CFA when classification is 'unpublish'", async () => {
     // given
-    vi.mocked(sendMistralMessages).mockResolvedValue(mistralResponse([{ id: "0", label: "unpublish", scores: { publish: 0.3, unpublish: 0.7 } }]))
+    vi.mocked(sendMistralMessages).mockResolvedValue(mistralClassificationResponse([{ id: "0", label: "unpublish", scores: { publish: 0.3, unpublish: 0.7 } }]))
     await givenSomeComputedJobPartners([
       {
         partner_job_id,

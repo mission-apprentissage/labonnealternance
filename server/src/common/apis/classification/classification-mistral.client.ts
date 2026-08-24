@@ -1,7 +1,6 @@
 import { setTimeout as sleep } from "node:timers/promises"
 
 import { internal } from "@hapi/boom"
-import type { IClassificationBatchResponse } from "shared/models/cache-classification.model"
 import { z } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
@@ -14,6 +13,13 @@ export type IClassificationBatchPayload = {
   workplace_description?: string
   offer_title?: string
   offer_description?: string
+}[]
+
+export type IClassificationBatchResponse = {
+  id: string
+  label: "publish" | "unpublish"
+  scores: { publish: number; unpublish: number }
+  model: string
 }[]
 
 export const CLASSIFICATION_MISTRAL_MODEL = "mistral-small-latest"
