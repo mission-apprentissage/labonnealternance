@@ -2,9 +2,10 @@ import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
+import { saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
@@ -280,5 +281,86 @@ describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () 
     expect.soft(updatedManagedOffer?.workplace_opco).toBe(OPCOS_LABEL.CONSTRUCTYS)
     expect.soft(unchangedExternalOffer?.workplace_opco).toBe(OPCOS_LABEL.AKTO)
     expect.soft(unchangedOtherManagedOffer?.workplace_opco).toBe(OPCOS_LABEL.AKTO)
+  })
+})
+
+describe("Modification du compte par l'entreprise elle-même (PUT /user/:userId, self-service)", () => {
+  beforeEach(async () => {
+    return async () => {
+      await getDbCollection("entreprises").deleteMany({})
+      await getDbCollection("userswithaccounts").deleteMany({})
+      await getDbCollection("rolemanagements").deleteMany({})
+      await getDbCollection("referentiel_engagement_entreprise").deleteMany({})
+    }
+  })
+
+  useMongo()
+  const httpClient = useServer()
+
+  it("enregistre l'engagement handicap (source lba) quand l'entreprise choisit \"oui\"", async () => {
+    const entrepriseUser = await saveEntrepriseUserTest({ email: "compteentreprise1@mail.com", status: validatedUserStatus }, {}, { siret: "89557430766546" })
+    const loggedUser = await logUser(httpClient, "compteentreprise1")
+
+    const response = await httpClient().inject({
+      method: "PUT",
+      path: `/api/user/${entrepriseUser.user._id.toString()}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        first_name: entrepriseUser.user.first_name,
+        last_name: entrepriseUser.user.last_name,
+        email: entrepriseUser.user.email,
+        phone: entrepriseUser.user.phone,
+        handiEngagement: "oui",
+      },
+    })
+    expect.soft(response.statusCode).toBe(200)
+
+    const referentiel = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: entrepriseUser.entreprise.siret })
+    expect.soft(referentiel?.sources).toEqual([EntrepriseEngagementSources.LBA])
+  })
+
+  it("n'écrit rien dans referentiel_engagement_entreprise quand l'entreprise choisit \"non\"", async () => {
+    const entrepriseUser = await saveEntrepriseUserTest({ email: "compteentreprise2@mail.com", status: validatedUserStatus }, {}, { siret: "10392947668876" })
+    const loggedUser = await logUser(httpClient, "compteentreprise2")
+
+    const response = await httpClient().inject({
+      method: "PUT",
+      path: `/api/user/${entrepriseUser.user._id.toString()}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        first_name: entrepriseUser.user.first_name,
+        last_name: entrepriseUser.user.last_name,
+        email: entrepriseUser.user.email,
+        phone: entrepriseUser.user.phone,
+        handiEngagement: "non",
+      },
+    })
+    expect.soft(response.statusCode).toBe(200)
+
+    const referentiel = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: entrepriseUser.entreprise.siret })
+    expect.soft(referentiel).toBeNull()
+  })
+
+  it("ne touche pas au référentiel quand handiEngagement est omis (mise à jour du seul contact)", async () => {
+    const entrepriseUser = await saveEntrepriseUserTest({ email: "compteentreprise3@mail.com", status: validatedUserStatus }, {}, { siret: "77298992300012" })
+    const loggedUser = await logUser(httpClient, "compteentreprise3")
+
+    const response = await httpClient().inject({
+      method: "PUT",
+      path: `/api/user/${entrepriseUser.user._id.toString()}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        first_name: "Nouveauprenom",
+        last_name: entrepriseUser.user.last_name,
+        email: entrepriseUser.user.email,
+        phone: entrepriseUser.user.phone,
+      },
+    })
+    expect.soft(response.statusCode).toBe(200)
+
+    const referentiel = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: entrepriseUser.entreprise.siret })
+    expect.soft(referentiel).toBeNull()
+    const updatedUser = await getDbCollection("userswithaccounts").findOne({ _id: entrepriseUser.user._id })
+    expect.soft(updatedUser?.first_name).toBe("Nouveauprenom")
   })
 })

@@ -17,6 +17,7 @@ import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
 import { buildEstablishmentId } from "@/services/etablissement.service"
 import { getFormulaireWithRomeDetail } from "@/services/formulaire.service"
+import { updateEntrepriseHandiEngagement } from "@/services/organization.service"
 import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/role-management.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
@@ -298,11 +299,26 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const result = await updateUserWithAccountFields(userId, req.body)
+      const { handiEngagement, ...userFields } = req.body
+      const result = await updateUserWithAccountFields(userId, userFields)
 
       if ("error" in result) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
+
+      if (handiEngagement) {
+        // Résolution du siret à partir du rôle de l'utilisateur connecté (jamais depuis un paramètre
+        // fourni par le client) : on ne peut agir que sur sa propre entreprise.
+        const roleManagement = await getDbCollection("rolemanagements").findOne({
+          user_id: new ObjectId(userId),
+          authorized_type: AccessEntityType.ENTREPRISE,
+        })
+        const entreprise = roleManagement ? await getDbCollection("entreprises").findOne({ _id: new ObjectId(roleManagement.authorized_id) }) : null
+        if (entreprise) {
+          await updateEntrepriseHandiEngagement(entreprise.siret, handiEngagement)
+        }
+      }
+
       return res.status(200).send({})
     }
   )

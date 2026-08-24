@@ -10,7 +10,6 @@ import type {
   IRecruiterJson,
   IResponse,
   IRoutes,
-  IUserWithAccountFields,
 } from "shared"
 import { removeUndefinedFields } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
@@ -132,7 +131,7 @@ export const setJobPartnerClassification = async (id: string, classification: "p
 /**
  * KBA 20230511 : (migration db) : casting des valueurs coté collection recruiter, car les champs ne sont plus identiques avec la collection userRecruteur.
  */
-export const updateUserWithAccountFields = async (userId: string, user: IUserWithAccountFields) => {
+export const updateUserWithAccountFields = async (userId: string, user: IBody<IRoutes["put"]["/user/:userId"]>) => {
   await apiPut("/user/:userId", { params: { userId }, body: user })
 }
 

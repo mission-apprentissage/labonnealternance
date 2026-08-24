@@ -161,8 +161,6 @@ const Formulaire = ({
                       name="handiEngagement"
                       onChange={async (newValue) => setFieldValue("handiEngagement", newValue)}
                       value={values.handiEngagement as HandiEngagement | ""}
-                      errors={errors}
-                      touched={touched}
                       disabled={isHandiEngagementLocked}
                     />
                   )}
