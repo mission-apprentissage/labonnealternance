@@ -11,6 +11,7 @@ import { z } from "zod"
 import { logger } from "@/common/logger"
 import { s3ReadAsStream } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { refreshEntrepriseEngagementJobsPartners } from "@/jobs/engagement-handicap/refresh-entreprise-engagement-jobs-partners"
 
 const S3_KEY = "siretlist/lba_handi_engage_flag.ndjson"
