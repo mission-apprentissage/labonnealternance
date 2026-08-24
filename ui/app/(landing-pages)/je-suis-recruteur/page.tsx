@@ -301,7 +301,7 @@ const JeSuisRecruteurPage = () => {
                 <Card
                   title="Je m'informe sur l'alternance"
                   desc="Les réponses à vos questions pour tout savoir sur l’alternance"
-                  linkProps={{ href: `${PAGES.static.guideDecouvrirLAlternance.getPath()}?source=guide-recruteur` }}
+                  linkProps={{ href: `${PAGES.static.guideDecouvrirLAlternance.getPath()}?guide_source=guide-recruteur` }}
                   imageUrl="/images/guides/decouvrir-l-alternance.svg"
                   imageAlt=""
                   horizontal

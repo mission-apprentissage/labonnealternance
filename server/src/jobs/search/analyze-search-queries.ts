@@ -67,18 +67,18 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
       // status=error exclu : nb_hits est alors null (recherche non aboutie, aucun signal de
       // pertinence) — l'inclure gonflerait `total` sans jamais compter dans `zero_hits_count`,
       // ce qui ferait paraître le terme plus pertinent qu'il ne l'est (cf. #5166). Même logique
-      // pour source=training_links / external_sites : trafic synthétique (liens générés côté
+      // pour search_source=training_links / external_sites : trafic synthétique (liens générés côté
       // serveur pour les vœux Parcoursup, ou liens de recherche personnalisés posés par des
       // sites tiers), pas des recherches organiques — l'inclure biaiserait les stats qui
       // nourrissent le moteur de suggestion avec du volume qui ne reflète pas l'usage réel.
-      { $match: { created_at: { $gte: since }, status: { $ne: "error" }, source: { $nin: ["training_links", "external_sites"] } } },
+      { $match: { created_at: { $gte: since }, status: { $ne: "error" }, search_source: { $nin: ["training_links", "external_sites"] } } },
       {
         $group: {
           _id: "$q_normalized",
           total: { $sum: 1 },
           days: { $addToSet: { $dateTrunc: { date: "$created_at", unit: "day" } } },
           zero_hits_count: { $sum: { $cond: [{ $eq: ["$nb_hits", 0] }, 1, 0] } },
-          free_text_count: { $sum: { $cond: [{ $eq: ["$source", "free_text"] }, 1, 0] } },
+          free_text_count: { $sum: { $cond: [{ $eq: ["$search_source", "free_text"] }, 1, 0] } },
           median_nb_hits: { $median: { input: "$nb_hits", method: "approximate" } },
           // Forme brute représentative (toutes les variantes partagent la même normalisation ;
           // l'IA reçoit celle-ci et corrige l'orthographe/casse via `canonical`).

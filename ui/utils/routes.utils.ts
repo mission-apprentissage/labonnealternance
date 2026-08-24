@@ -469,8 +469,10 @@ export const PAGES = {
       },
       title: props.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
     }),
-    espaceProOffreImpression: (jobId: string, source?: "cfa-sharing") => ({
-      getPath: () => generateUri("/espace-pro/offre/impression/:jobId", { params: { jobId }, querystring: removeUndefinedFields({ source }) }),
+    // print_source et non source : « source » est un paramètre réservé de Plausible (attribution
+    // d'acquisition). La page d'impression lit encore l'ancien nom en repli.
+    espaceProOffreImpression: (jobId: string, printSource?: "cfa-sharing") => ({
+      getPath: () => generateUri("/espace-pro/offre/impression/:jobId", { params: { jobId }, querystring: removeUndefinedFields({ print_source: printSource }) }),
       title: "Imprimer mon offre",
     }),
     genericRecherche({ rechercheParams, mode }: { rechercheParams: Partial<IRecherchePageParams> | null; mode: IRechercheMode }): IPage {
