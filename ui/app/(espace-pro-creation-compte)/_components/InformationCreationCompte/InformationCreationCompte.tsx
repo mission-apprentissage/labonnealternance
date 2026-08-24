@@ -187,7 +187,7 @@ const Formulaire = ({
                 <>
                   <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} viewerType={viewerType} />
                   {infosOpco && <InformationOpco isUpdatable={shouldSelectOpco} infosOpco={infosOpco} resetOpcoChoice={async () => setFieldValue("opco", "")} />}
-                  <InformationHandiEngagement />
+                  {!hideHandiEngagement && <InformationHandiEngagement />}
                 </>
               }
             />
