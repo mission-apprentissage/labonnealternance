@@ -498,6 +498,10 @@ export const entrepriseOnboardingWorkflow = {
       siretResponse = { error: true, message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}` }
       sentryCaptureException(err)
     }
+    // Séquentiel volontairement : updateEntrepriseHandiEngagement ne doit être écrit que si la chaîne
+    // entreprise/opco a réussi (invariant métier — pas d'entreprise "handi-engagée" orpheline sans compte
+    // créé). Techniquement les deux write paths sont indépendants (aucune donnée partagée), mais on
+    // préfère garantir l'ordre plutôt que gagner une latence marginale sur ce chemin de création de compte.
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
     await updateEntrepriseHandiEngagement(siret, handiEngagement)

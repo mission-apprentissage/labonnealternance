@@ -1,5 +1,5 @@
 import { internal } from "@hapi/boom"
-import { ObjectId } from "mongodb"
+import { MongoServerError, ObjectId } from "mongodb"
 import type { CFA } from "shared/constants/index"
 import { ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import type { ICFA } from "shared/models/cfa.model"
@@ -7,7 +7,7 @@ import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
-import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
+import { EntrepriseEngagementSources, HANDI_ENGAGEMENT_OUI } from "shared/models/referentiel-engagement-entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, isEnum } from "shared/utils/index"
@@ -44,20 +44,29 @@ export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco
  * vérité pour cet engagement.
  */
 export const updateEntrepriseHandiEngagement = async (siret: string, handiEngagement: HandiEngagement) => {
-  if (handiEngagement !== "oui") {
+  if (handiEngagement !== HANDI_ENGAGEMENT_OUI) {
     return
   }
 
   const now = new Date()
-  await getDbCollection("referentiel_engagement_entreprise").updateOne(
-    { siret },
-    {
-      $addToSet: { sources: EntrepriseEngagementSources.LBA },
-      $set: { updated_at: now, engagement: "handicap" },
-      $setOnInsert: { _id: new ObjectId(), created_at: now, siret },
-    },
-    { upsert: true }
-  )
+  const filter = { siret }
+  const update = {
+    $addToSet: { sources: EntrepriseEngagementSources.LBA },
+    $set: { updated_at: now, engagement: "handicap" as const },
+    $setOnInsert: { _id: new ObjectId(), created_at: now, siret },
+  }
+  try {
+    await getDbCollection("referentiel_engagement_entreprise").updateOne(filter, update, { upsert: true })
+  } catch (err) {
+    // E11000 : deux requêtes concurrentes sans document existant pour ce siret peuvent toutes deux tenter
+    // l'insert de l'upsert ; l'index unique sur siret en fait échouer une. Le document existe désormais
+    // (créé par l'autre requête) : on retombe sur un simple update, sans upsert.
+    if (err instanceof MongoServerError && err.code === 11000) {
+      await getDbCollection("referentiel_engagement_entreprise").updateOne(filter, update)
+    } else {
+      throw err
+    }
+  }
 }
 
 /**

@@ -8,7 +8,7 @@ import { Form, Formik } from "formik"
 import type { IUserWithAccountFields } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
-import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
+import { EntrepriseEngagementSources, HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import CustomInput from "@/app/_components/CustomInput"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
@@ -122,7 +122,9 @@ export default function CompteRenderer() {
           // Requis uniquement quand le champ est effectivement affiché et modifiable : masqué (source France
           // Travail) ou verrouillé (déjà "oui" via La bonne alternance), sa valeur est déjà figée par ailleurs.
           handiEngagement:
-            data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement ? Yup.string().oneOf(["oui", "non"], "champ obligatoire").required("champ obligatoire") : Yup.string(),
+            data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement
+              ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire")
+              : Yup.string(),
         })}
         onSubmit={async (values, { setSubmitting }) => {
           setSubmitting(true)

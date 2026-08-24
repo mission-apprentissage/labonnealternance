@@ -11,7 +11,7 @@ import { assertUnreachable, parseEnum } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
-import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
+import { EntrepriseEngagementSources, HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import CustomInput from "@/app/_components/CustomInput"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
@@ -111,7 +111,7 @@ const Formulaire = ({
         phone: phoneValidation().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
-        handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(["oui", "non"], "champ obligatoire").required("champ obligatoire") : Yup.string(),
+        handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire") : Yup.string(),
       })}
       onSubmit={onSubmit}
     >
