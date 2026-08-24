@@ -42,10 +42,11 @@ export default function CompteRenderer() {
     throwOnError: true,
   })
 
+  const needsEntrepriseInfo = Boolean(data?.establishment_siret && data?.type === AUTHTYPE.ENTREPRISE)
   const { data: entrepriseInfosResult } = useQuery({
     queryKey: ["get-entreprise", data?.establishment_siret],
     queryFn: () => getEntrepriseInformation(data!.establishment_siret, { skipUpdate: true }),
-    enabled: Boolean(data?.establishment_siret && data.type === AUTHTYPE.ENTREPRISE),
+    enabled: needsEntrepriseInfo,
   })
   // error est le discriminant du type retourné par getEntrepriseInformation : plus simple et plus sûr
   // que de vérifier structurellement la présence de "data" puis de "siret" dans ce "data".
@@ -84,7 +85,8 @@ export default function CompteRenderer() {
     },
   })
 
-  if (isLoading) {
+  const isEntrepriseInfoPending = needsEntrepriseInfo && entrepriseInfosResult === undefined
+  if (isLoading || isEntrepriseInfoPending) {
     return <LoadingEmptySpace label="Chargement en cours" />
   }
 
