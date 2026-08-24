@@ -14,10 +14,11 @@ import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTi
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { ArrowRightLine } from "@/theme/components/icons"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  title: PAGES.static.alternanceDiplomes.getMetadata().title,
-  description: PAGES.static.alternanceDiplomes.getMetadata().description,
+  title: METADATA.static.alternanceDiplomes().title,
+  description: METADATA.static.alternanceDiplomes().description,
 }
 
 const faqItems = [
@@ -55,7 +56,7 @@ const faqItems = [
 
 export default function AlternanceDiplomes() {
   const url = PAGES.static.alternanceDiplomes.getPath()
-  const meta = PAGES.static.alternanceDiplomes.getMetadata?.() ?? { title: PAGES.static.alternanceDiplomes.title, description: "" }
+  const meta = METADATA.static.alternanceDiplomes()
   const metaTitle = typeof meta.title === "string" ? meta.title : PAGES.static.alternanceDiplomes.title
   const metaDescription = typeof meta.description === "string" ? meta.description : ""
   const breadcrumbs = [

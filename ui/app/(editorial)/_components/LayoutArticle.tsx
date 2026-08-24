@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Divider, Grid, Typography } from "@mui/material"
+import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -19,6 +20,7 @@ export const LayoutArticle = ({
   sourceAllerPlusLoin,
   parentPage,
   page,
+  metadata,
 }: {
   pages: IPage[]
   title: ReactNode
@@ -37,12 +39,15 @@ export const LayoutArticle = ({
   sourceAllerPlusLoin?: string
   parentPage?: IPage
   page: IPage
+  // metadata de la page (celle exportée pour Next) : IPage ne porte plus les métadonnées SEO,
+  // qui vivent dans le registre METADATA server-only (issue #5214)
+  metadata: Metadata
 }) => (
   <>
     <SchemaOrg
       type="Article"
-      title={page.getMetadata().title as string}
-      description={page.getMetadata().description}
+      title={metadata.title as string}
+      description={metadata.description}
       url={page.getPath()}
       breadcrumbs={[
         { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },

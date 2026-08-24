@@ -13,9 +13,10 @@ import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternan
 import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  ...PAGES.static.guideDecouvrirLAlternance.getMetadata(),
+  ...METADATA.static.guideDecouvrirLAlternance(),
   alternates: { canonical: PAGES.static.guideDecouvrirLAlternance.getPath() },
 }
 
@@ -66,6 +67,7 @@ const DecouvrirLAlternancePage = async ({ searchParams }: { searchParams: Promis
       allerPlusLoinItems={getAllerPlusLoinItems(source)}
       redirectionInterne={<RedirectionInterne source={source} />}
       page={PAGES.static.guideDecouvrirLAlternance}
+      metadata={metadata}
     >
       <Section title="Qui peut être alternant ?">
         <Paragraph>Les conditions pour être alternant diffèrent selon le type de contrat choisi.</Paragraph>

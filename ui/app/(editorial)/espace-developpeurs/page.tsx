@@ -6,10 +6,11 @@ import type { Metadata } from "next"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  title: PAGES.static.EspaceDeveloppeurs.getMetadata().title,
-  description: PAGES.static.EspaceDeveloppeurs.getMetadata().description,
+  title: METADATA.static.EspaceDeveloppeurs().title,
+  description: METADATA.static.EspaceDeveloppeurs().description,
 }
 
 export default function EspaceDeveloppeurs() {

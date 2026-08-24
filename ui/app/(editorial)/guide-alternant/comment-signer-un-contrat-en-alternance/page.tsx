@@ -11,8 +11,9 @@ import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideAlternantCommentSignerUnContratEnAlternance.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternantCommentSignerUnContratEnAlternance()
 
 const CommentSignerUnContratEnAlternancePage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantCommentSignerUnContratEnAlternance]
@@ -31,6 +32,7 @@ const CommentSignerUnContratEnAlternancePage = () => {
       allerPlusLoinItems={[ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"], ARTICLES["la-rupture-de-contrat"], ARTICLES["se-faire-accompagner"]]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantCommentSignerUnContratEnAlternance}
+      metadata={metadata}
     >
       <Section title="Pour un contrat d'apprentissage">
         <Paragraph>

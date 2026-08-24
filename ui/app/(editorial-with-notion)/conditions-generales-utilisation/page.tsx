@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { fetchNotionPage } from "@/services/fetch-notion-page"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import CGURendererClient from "./CGURendererClient"
 
 export const metadata: Metadata = {
-  title: PAGES.static.cgu.getMetadata().title,
-  description: PAGES.static.cgu.getMetadata().description,
+  title: METADATA.static.cgu().title,
+  description: METADATA.static.cgu().description,
 }
 
 export default async function CGU() {

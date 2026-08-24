@@ -10,8 +10,9 @@ import { TableArticle } from "@/app/(editorial)/_components/TableArticle"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideAlternantLaRuptureDeContrat.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternantLaRuptureDeContrat()
 
 const LaRuptureDeContratPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantLaRuptureDeContrat]
@@ -34,6 +35,7 @@ const LaRuptureDeContratPage = () => {
       ]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantLaRuptureDeContrat}
+      metadata={metadata}
     >
       <Section title="Peut-on rompre un contrat d'apprentissage ?">
         <Paragraph>

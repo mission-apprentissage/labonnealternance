@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import { LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
-import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
+import type { ILbaItem } from "@/utils/lba-item.types"
 import { localStorageGet } from "@/utils/local-storage"
 
 const blueApplicationTag = (icon, text) => (

@@ -95,6 +95,16 @@ const nextConfig = {
     },
     // Uniquement pour les tests Playwright instant() en local/CI, jamais en production réelle.
     exposeTestingApiInProductionBuild: process.env.PLAYWRIGHT_TEST_MODE === "1",
+    // Abaisse le seuil sous lequel Turbopack fusionne un chunk avec ses voisins (défaut 50 ko).
+    // À 50 ko, un même groupe de modules partagé entre deux chunk groups clients (ex. error.tsx
+    // et le groupe page) est fusionné différemment de chaque côté → deux chunks au contenu
+    // différent → pas de partage par hash → double téléchargement (~37,6 ko bruts sur la home,
+    // issue #5214). À 20 ko, le groupe reste un chunk autonome identique des deux côtés.
+    // Réglage sensible et non monotone : 30_000 est PIRE que le défaut (+10 ko gzip sur /).
+    // Toute modification doit être validée par le job Performance budget.
+    turbopackChunking: {
+      minChunkSize: 20_000,
+    },
   },
   output: "standalone",
   compress: false, // disable default gzip compression by nextJS, done by Nginx
@@ -255,9 +265,14 @@ const sentryConfig = {
   // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
 
-  // Automatically annotate React components to show their full name in breadcrumbs and session replay
-  reactComponentAnnotation: {
-    enabled: true,
+  // Formes non dépréciées depuis Sentry 10.x : reactComponentAnnotation et le tree-shaking
+  // du logger (ex-disableLogger) vivent sous `webpack`. hideSourceMaps a été retiré du SDK
+  // (la rétention des sourcemaps est pilotée par `sourcemaps` ci-dessous).
+  webpack: {
+    // Automatically annotate React components to show their full name in breadcrumbs and session replay
+    reactComponentAnnotation: { enabled: true },
+    // Automatically tree-shake Sentry logger statements to reduce bundle size
+    treeshake: { removeDebugLogging: true },
   },
 
   // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
@@ -265,12 +280,6 @@ const sentryConfig = {
   // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
   // side errors will fail.
   // tunnelRoute: "/monitoring",
-
-  // Hides source maps from generated client bundles
-  hideSourceMaps: false,
-
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
 
   sourcemaps: {
     disable: false,

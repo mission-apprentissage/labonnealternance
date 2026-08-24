@@ -9,10 +9,11 @@ import { metierData } from "@/app/(editorial)/alternance/_components/metier_data
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  title: PAGES.static.planDuSite.getMetadata().title,
-  description: PAGES.static.planDuSite.getMetadata().description,
+  title: METADATA.static.planDuSite().title,
+  description: METADATA.static.planDuSite().description,
 }
 
 export default function PlanDuSite() {

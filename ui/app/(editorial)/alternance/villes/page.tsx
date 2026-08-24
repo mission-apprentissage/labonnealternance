@@ -14,10 +14,11 @@ import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTi
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { ArrowRightLine } from "@/theme/components/icons"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  title: PAGES.static.alternanceVilles.getMetadata().title,
-  description: PAGES.static.alternanceVilles.getMetadata().description,
+  title: METADATA.static.alternanceVilles().title,
+  description: METADATA.static.alternanceVilles().description,
 }
 
 const faqItems = [
@@ -55,7 +56,7 @@ const faqItems = [
 
 export default function AlternanceVilles() {
   const url = PAGES.static.alternanceVilles.getPath()
-  const meta = PAGES.static.alternanceVilles.getMetadata?.() ?? { title: PAGES.static.alternanceVilles.title, description: "" }
+  const meta = METADATA.static.alternanceVilles()
   const breadcrumbs = [
     { name: "Accueil", url: "/" },
     { name: "Alternance dans les grandes villes", url },

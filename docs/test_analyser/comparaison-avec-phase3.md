@@ -1,6 +1,6 @@
 # Expérience — Comparaison avec / sans Phase 3 (autocomplétion)
 
-**Statut :** protocole prêt — à exécuter sur les 2 previews.
+**Statut (2026-08-21) :** protocole jamais exécuté. Les previews des branches `feat/lba-3249-*` citées ci-dessous n'existent plus (branches mergées/supprimées) — à re-scoper sur de nouvelles previews avant toute reprise du chantier moteur de recherche.
 
 ## Objectif
 
