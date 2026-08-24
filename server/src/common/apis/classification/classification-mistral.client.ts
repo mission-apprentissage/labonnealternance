@@ -1,14 +1,20 @@
 import { setTimeout as sleep } from "node:timers/promises"
 
 import { internal } from "@hapi/boom"
-import type { IClassificationLabBatchResponse } from "shared/models/cache-classification.model"
+import type { IClassificationBatchResponse } from "shared/models/cache-classification.model"
 import { z } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
-import type { IGetLabClassificationBatch } from "./classification.client"
+export type IClassificationBatchPayload = {
+  id: string
+  workplace_name?: string
+  workplace_description?: string
+  offer_title?: string
+  offer_description?: string
+}[]
 
 export const CLASSIFICATION_MISTRAL_MODEL = "mistral-small-latest"
 // Un lot de 50 descriptions complètes produit un JSON de sortie volumineux (un objet par job) :
@@ -29,7 +35,7 @@ Exemples :
 Ignore le HTML. Traite tous les id fournis, un seul résultat par id, dans l'ordre reçu.
 Réponds STRICTEMENT en JSON : {"results": [{"id": "...", "label": "publish"|"unpublish", "scores": {"publish": 0.0, "unpublish": 0.0}}]}`
 
-const buildClassificationMessages = (jobs: IGetLabClassificationBatch): Message[] => [
+const buildClassificationMessages = (jobs: IClassificationBatchPayload): Message[] => [
   { role: "system", content: CLASSIFICATION_SYSTEM_PROMPT },
   { role: "user", content: JSON.stringify(jobs) },
 ]
@@ -56,12 +62,12 @@ const parseMistralClassificationContent = (content: string): z.output<typeof ZMi
   return validation.success ? validation.data.results : null
 }
 
-const callMistralClassification = async (jobs: IGetLabClassificationBatch) => {
+const callMistralClassification = async (jobs: IClassificationBatchPayload) => {
   const content = await sendMistralMessages({ messages: buildClassificationMessages(jobs), model: CLASSIFICATION_MISTRAL_MODEL, maxTokens: CLASSIFICATION_MAX_TOKENS })
   return { content, parsed: content === null ? null : parseMistralClassificationContent(content) }
 }
 
-export const getMistralClassificationBatch = async (jobs: IGetLabClassificationBatch): Promise<IClassificationLabBatchResponse> => {
+export const getMistralClassificationBatch = async (jobs: IClassificationBatchPayload): Promise<IClassificationBatchResponse> => {
   let { content, parsed } = await callMistralClassification(jobs)
   if (content === null) {
     // sendMistralMessages ne distingue pas erreur réseau/5xx/429 d'une absence de contenu : on
