@@ -13,9 +13,10 @@ import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternan
 import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  ...PAGES.static.guideDecouvrirLAlternance.getMetadata(),
+  ...METADATA.static.guideDecouvrirLAlternance(),
   alternates: { canonical: PAGES.static.guideDecouvrirLAlternance.getPath() },
 }
 
@@ -55,7 +56,10 @@ const DecouvrirLAlternancePage = async ({ searchParams }: { searchParams: Promis
     "Il existe deux dispositifs de formation en alternance : le contrat d’apprentissage et le contrat de professionnalisation.",
   ]
 
-  const source = new URLSearchParams(await searchParams).get("source") || undefined
+  // guide_source a remplacé source (paramètre réservé de Plausible) ; l'ancien nom reste lu en
+  // repli pour les liens externes/favoris antérieurs au renommage.
+  const params = new URLSearchParams(await searchParams)
+  const source = params.get("guide_source") || params.get("source") || undefined
 
   return (
     <LayoutArticle
@@ -66,6 +70,7 @@ const DecouvrirLAlternancePage = async ({ searchParams }: { searchParams: Promis
       allerPlusLoinItems={getAllerPlusLoinItems(source)}
       redirectionInterne={<RedirectionInterne source={source} />}
       page={PAGES.static.guideDecouvrirLAlternance}
+      metadata={metadata}
     >
       <Section title="Qui peut être alternant ?">
         <Paragraph>Les conditions pour être alternant diffèrent selon le type de contrat choisi.</Paragraph>

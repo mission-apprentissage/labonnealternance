@@ -1,7 +1,7 @@
 import { getDistance } from "geolib"
 import type { IFormationCatalogue } from "shared/models/index"
 import { URL } from "url"
-import { asyncForEach } from "@/common/utils/async-utils"
+import { asyncForEachGrouped } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config.js"
 import { getCommuneByCodeInsee, getCommuneByCodePostal } from "./referentiel/commune/commune.referentiel.service"
@@ -189,9 +189,9 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
     // No formation found: fall back to a location-only search
     const { latitude, longitude, lieuLabel } = await getWishCommune()
     if (latitude && longitude) {
-      return buildEmploiUrl({ params: { lieu_label: lieuLabel, latitude, longitude, radius: "60", source: "training_links", ...utmParams } })
+      return buildEmploiUrl({ params: { lieu_label: lieuLabel, latitude, longitude, radius: "60", search_source: "training_links", ...utmParams } })
     }
-    return buildEmploiUrl({ baseUrl: config.publicUrl, params: { source: "training_links", ...utmParams } })
+    return buildEmploiUrl({ baseUrl: config.publicUrl, params: { search_source: "training_links", ...utmParams } })
   }
 
   const sortedFormations = sortFormationsDeterministically(formations)
@@ -223,7 +223,7 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
   const q = getFormationSearchLabel(formation, romeLabelByCode ?? (await loadRomeLabelByCode()))
 
   return buildEmploiUrl({
-    params: { q, lieu_label: lieuLabel, latitude, longitude, radius: "60", source: "training_links", ...utmParams },
+    params: { q, lieu_label: lieuLabel, latitude, longitude, radius: "60", search_source: "training_links", ...utmParams },
   })
 }
 
@@ -256,10 +256,12 @@ export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
     formationsByCle.get(cle)!.push(formation)
   }
 
-  const results: ILinks[] = []
-  await asyncForEach(params, async (training) => {
+  // Traitement par groupes parallèles : chaque vœu ne fait que des lectures Mongo et les
+  // structures partagées sont en lecture seule. L'écriture indexée préserve l'ordre d'entrée.
+  const results: ILinks[] = new Array(params.length)
+  await asyncForEachGrouped(params, 10, async (training, index) => {
     const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training, eligibleCles), getLBALink(training, formationsByCle, romeLabelByCode)])
-    results.push({ id: training.id, lien_prdv, lien_lba })
+    results[index] = { id: training.id, lien_prdv, lien_lba }
   })
 
   return results

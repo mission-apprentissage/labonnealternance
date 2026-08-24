@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { fetchNotionPage } from "@/services/fetch-notion-page"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import FAQRendererClient from "./FAQRendererClient"
 
 export const metadata: Metadata = {
-  title: PAGES.static.faq.getMetadata().title,
-  description: PAGES.static.faq.getMetadata().description,
+  title: METADATA.static.faq().title,
+  description: METADATA.static.faq().description,
 }
 
 export default async function FAQ({ searchParams }: { searchParams: Promise<Record<string, string>> }) {

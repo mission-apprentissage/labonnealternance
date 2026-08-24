@@ -2,9 +2,10 @@ import type { Metadata } from "next"
 import { CFA } from "shared/constants/recruteur"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import CompteRenderer from "@/app/(espace-pro)/espace-pro/(connected)/_components/CompteRenderer"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  title: PAGES.dynamic.compte({ userType: CFA }).getMetadata().title,
+  title: METADATA.dynamic.compte({ userType: CFA }).title,
 }
 
 export default function Page() {

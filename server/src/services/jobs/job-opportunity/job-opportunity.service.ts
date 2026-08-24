@@ -2,7 +2,7 @@ import Boom, { badRequest, internal, notFound } from "@hapi/boom"
 import type { IApiAlternanceTokenData } from "api-alternance-sdk"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob } from "shared"
+import type { IGeoPoint, IJob, IJobCollectionName } from "shared"
 import { assertUnreachable, JOB_STATUS_ENGLISH, JobCollectionName, parseEnum } from "shared"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -25,154 +25,16 @@ import type {
 import { JOB_PUBLISHING_STATUS, jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobRecruiterApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { treeifyError } from "zod"
 import { logger } from "@/common/logger"
-import type { IApiError } from "@/common/utils/error-manager"
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { trackApiCall } from "@/common/utils/send-tracking-event"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { isNormalizedStringInSetOrArray } from "@/common/utils/string-utils"
 import config from "@/config"
 import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
 import type { FTJob } from "@/services/ftjob.service.types"
-import type { TJobSearchQuery, TLbaItemResult } from "@/services/job-opportunity.service.types"
-import type { ILbaItemLbaCompany } from "@/services/lbaitem.shared.service.types"
-import { getPartnerJobs } from "@/services/partner-job.service"
-import { jobsQueryValidatorPrivate } from "@/services/query-validator.service"
-import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteur-lba.service"
+import { getRecruteursLbaFromDB } from "@/services/recruteur-lba.service"
 import { getEntrepriseEngagementFranceTravail } from "@/services/referentiel-engagement-entreprise.service"
 import type { JobOpportunityRequestContext } from "./job-opportunity-request-context"
-
-// TODO : QUICK FIX & TO REFACTO WITH JOBS PARTNER RETURN MODEL
-export const getJobsFromApiPrivate = async ({
-  romes,
-  referer,
-  caller,
-  latitude,
-  longitude,
-  radius,
-  diploma,
-  opco,
-  api = "jobV1/jobs",
-  isMinimalData,
-  elligibleHandicapFilter,
-}: {
-  romes?: string
-  referer?: string
-  caller?: string | null
-  latitude?: number
-  longitude?: number
-  radius?: number
-  diploma?: INiveauDiplomeEuropeen
-  opco?: string
-  api?: string
-  isMinimalData: boolean
-  elligibleHandicapFilter?: boolean
-}): Promise<
-  | IApiError
-  | {
-      lbaJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
-      partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-    }
-> => {
-  try {
-    const finalRadius = radius ?? 0
-
-    const [lbaCompanies, lbaJobs, partnerJobs] = await Promise.all([
-      getSomeCompanies({
-        romes,
-        latitude,
-        longitude,
-        radius: finalRadius,
-        referer,
-        caller,
-        api,
-        opco,
-        isMinimalData,
-        elligibleHandicapFilter,
-      }),
-      getPartnerJobs({
-        romes,
-        latitude,
-        longitude,
-        radius: finalRadius,
-        api,
-        caller,
-        diploma,
-        opco,
-        isMinimalData,
-        force_partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-        elligibleHandicapFilter,
-      }),
-      getPartnerJobs({
-        romes,
-        latitude,
-        longitude,
-        radius: finalRadius,
-        api,
-        caller,
-        diploma,
-        opco,
-        isMinimalData,
-        elligibleHandicapFilter,
-      }),
-    ])
-
-    return { lbaJobs, lbaCompanies, partnerJobs }
-  } catch (err) {
-    if (caller) {
-      // biome-ignore lint/nursery/noFloatingPromises: migration
-      trackApiCall({ caller, api_path: api, response: "Error" })
-    }
-    throw err
-  }
-}
-
-/**
- * TODO : REFACTO AVEC VALIDATION ZOD & SCHEMA DE RETOUR JOBS PARTNERS
- */
-export const getJobsQueryPrivate = async (
-  query: TJobSearchQuery
-): Promise<
-  | IApiError
-  | {
-      lbaJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
-      partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-    }
-> => {
-  const parameterControl = await jobsQueryValidatorPrivate(query)
-
-  if ("error" in parameterControl) {
-    return parameterControl
-  }
-
-  const result = await getJobsFromApiPrivate({ romes: parameterControl.romes, ...query })
-
-  if ("error" in result) {
-    return result
-  }
-
-  let job_count = 0
-
-  if ("lbaCompanies" in result && result.lbaCompanies && "results" in result.lbaCompanies) {
-    job_count += result.lbaCompanies.results.length
-  }
-
-  if ("lbaJobs" in result && result.lbaJobs && "results" in result.lbaJobs) {
-    job_count += result.lbaJobs.results.length
-  }
-
-  if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {
-    job_count += result.partnerJobs.results.length
-  }
-
-  if (query.caller) {
-    await trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
-  }
-
-  return result
-}
 
 export const getJobsPartnersFromDB = async ({
   romes,
@@ -509,7 +371,7 @@ async function findLbaJobOpportunities({ romes, geo, target_diploma_level, depar
   )
 }
 
-export async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV3QueryResolved> {
+async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV3QueryResolved> {
   const { romes, rncp, latitude, longitude, radius, partners_to_exclude, ...rest } = query
 
   const geo = latitude === null || longitude === null ? null : { latitude, longitude, radius }

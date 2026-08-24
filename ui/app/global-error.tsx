@@ -1,6 +1,6 @@
 "use client"
 
-import * as Sentry from "@sentry/nextjs"
+import { captureException } from "@sentry/nextjs"
 import Image from "next/image"
 import { useEffect } from "react"
 
@@ -10,7 +10,7 @@ import "./global-error.css"
 
 export default function GlobalError({ error }: ErrorProps) {
   useEffect(() => {
-    Sentry.captureException(error)
+    captureException(error)
     console.error(error)
   }, [error])
 

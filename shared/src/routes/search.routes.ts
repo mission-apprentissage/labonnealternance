@@ -64,10 +64,19 @@ export const zSearchRoutes = {
         radius: ZRadiusParam.pipe(z.number().min(0).max(200).optional()).default(30),
         page: z.coerce.number<number>().min(0).default(0).describe("Index de page (0-based)"),
         hitsPerPage: z.coerce.number<number>().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
-        source: z
-          .enum(["suggestion", "free_text", "training_links"])
+        search_source: z
+          .enum(["suggestion", "free_text", "training_links", "external_sites"])
           .optional()
-          .describe("Origine de la requête (télémétrie autocomplete UI, ou lien généré côté serveur par traininglinks pour les vœux Parcoursup — sans effet sur les résultats)"),
+          .describe(
+            "Origine de la requête (télémétrie autocomplete UI, lien généré côté serveur par traininglinks pour les vœux Parcoursup, ou lien de recherche personnalisé posé par un site externe — sans effet sur les résultats)"
+          ),
+        // Alias déprécié de search_source (renommé : « source » est un paramètre réservé de
+        // Plausible, mais seul le nom dans l'URL de page compte pour le tracker — pas les appels
+        // API). Encore émis volontairement par l'UI courante pour une release (un serveur
+        // pré-renommage rejetterait search_source, clé inconnue du strictObject), et présent dans
+        // les liens traininglinks émis avant le renommage (dernière campagne : 2026-08-24).
+        // search_source prime si les deux sont fournis.
+        source: z.enum(["suggestion", "free_text", "training_links", "external_sites"]).optional().describe("Déprécié : utiliser search_source"),
         internal: z
           .enum(["true", "false"])
           .transform((v) => v === "true")

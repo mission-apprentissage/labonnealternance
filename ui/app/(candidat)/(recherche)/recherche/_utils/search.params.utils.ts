@@ -33,8 +33,8 @@ export const DEFAULT_SEARCH_MODE: SearchMode = "emplois"
 export type SortOption = "proximity" | "date" | "applications" | "start_date"
 const SORT_OPTIONS: SortOption[] = ["proximity", "date", "applications", "start_date"]
 
-export type QSource = "suggestion" | "free_text" | "training_links"
-const Q_SOURCES: QSource[] = ["suggestion", "free_text", "training_links"]
+export type QSource = "suggestion" | "free_text" | "training_links" | "external_sites"
+const Q_SOURCES: QSource[] = ["suggestion", "free_text", "training_links", "external_sites"]
 
 /**
  * Les filtres multi-valeurs utilisent des paramètres répétés dans l'URL :
@@ -83,11 +83,17 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
   const longitude = getFloat("longitude")
   const hasGeoPair = latitude !== undefined && longitude !== undefined
 
+  // « source » est l'ancien nom de « search_source », abandonné parce que c'est un paramètre
+  // réservé de Plausible (attribution d'acquisition). Le repli reste nécessaire tant que des
+  // liens externes le portent : campagne traininglinks du 2026-08-24, liens posés par des sites
+  // tiers. search_source prime si les deux sont présents.
+  const rawQSource = search.get("search_source") ?? search.get("source")
+
   return {
     // Trim : un `q` d'espaces doit compter comme une absence, sinon il passe la branche indexable
     // de buildRecherchePageMetadata (canonical auto-référent `?q=+`, titre cassé) au lieu du noindex.
     q: search.get("q")?.trim() || undefined,
-    q_source: Q_SOURCES.includes(search.get("source") as QSource) ? (search.get("source") as QSource) : undefined,
+    q_source: Q_SOURCES.includes(rawQSource as QSource) ? (rawQSource as QSource) : undefined,
     lieu_label: search.get("lieu_label") || undefined,
     mode: SEARCH_MODES.includes(search.get("mode") as SearchMode) ? (search.get("mode") as SearchMode) : DEFAULT_SEARCH_MODE,
     type_filter_label: getMulti("type_filter_label"),
@@ -113,7 +119,7 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/recherche
   const query = new URLSearchParams()
 
   if (params.q) query.set("q", params.q)
-  if (params.q && params.q_source) query.set("source", params.q_source)
+  if (params.q && params.q_source) query.set("search_source", params.q_source)
   if (params.lieu_label) query.set("lieu_label", params.lieu_label)
   if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
 
@@ -196,4 +202,18 @@ export function buildHitDetailUrl(hit: { sub_type: string; url_id: string; title
   }
 
   return `/emploi/${hit.sub_type}/${encodeURIComponent(hit.url_id)}/${slug}?from=${from}`
+}
+
+/**
+ * Paramètre transitoire posé sur l'URL de retour à la fermeture d'une fiche détail (cf.
+ * useDetailNavigation), pour que la liste rescrolle sur la carte consultée au lieu de revenir
+ * en haut. Volontairement absent de `ISearchPageParams`/`buildSearchUrl` : il ne doit jamais
+ * être réémis par une navigation normale (filtre, tri…), seulement consommé une fois puis
+ * disparaître de l'URL.
+ */
+export const ACTIVE_HIT_PARAM = "active_hit"
+
+export function withActiveHit(searchUrl: string, hitUrlId: string): string {
+  const separator = searchUrl.includes("?") ? "&" : "?"
+  return `${searchUrl}${separator}${ACTIVE_HIT_PARAM}=${encodeURIComponent(hitUrlId)}`
 }

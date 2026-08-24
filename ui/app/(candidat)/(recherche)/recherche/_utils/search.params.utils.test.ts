@@ -29,6 +29,30 @@ describe("parse de `q` (trim au parse : un métier d'espaces n'est pas une inten
   })
 })
 
+describe("search_source (origine de q)", () => {
+  it("parse search_source, valeurs inconnues ignorées", () => {
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=suggestion")).q_source).toBe("suggestion")
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=bogus")).q_source).toBeUndefined()
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger")).q_source).toBeUndefined()
+  })
+
+  it("accepte l'ancien nom source= en repli (liens émis avant le renommage, ex. campagne traininglinks du 2026-08-24)", () => {
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&source=training_links")).q_source).toBe("training_links")
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&source=external_sites")).q_source).toBe("external_sites")
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&source=bogus")).q_source).toBeUndefined()
+    // search_source prime si les deux sont présents
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=suggestion&source=training_links")).q_source).toBe("suggestion")
+    // Précédence non consultée à dessein : un search_source présent mais invalide n'est pas
+    // réinterprété via le repli — on ne devine pas l'intention d'une URL incohérente.
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=bogus&source=training_links")).q_source).toBeUndefined()
+  })
+
+  it("buildSearchUrl émet search_source (jamais source, réservé par Plausible)", () => {
+    const url = buildSearchUrl({ ...base, q: "boulanger", q_source: "suggestion" })
+    expect(url).toBe("/recherche?q=boulanger&search_source=suggestion")
+  })
+})
+
 describe("buildSearchPageTitle", () => {
   it("sans métier : titre de base seul, quel que soit le lieu", () => {
     expect(buildSearchPageTitle(base)).toBe("Offres en alternance | La bonne alternance")

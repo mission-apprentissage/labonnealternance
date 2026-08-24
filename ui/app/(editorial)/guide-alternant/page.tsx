@@ -14,9 +14,10 @@ import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { ARTICLES } from "./const"
-export const metadata: Metadata = PAGES.static.guideAlternant.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternant()
 
 const GuideAlternantPage = () => {
   return (
@@ -27,8 +28,8 @@ const GuideAlternantPage = () => {
     >
       <SchemaOrg
         type="WebPage"
-        title={PAGES.static.guideAlternant.getMetadata().title}
-        description={PAGES.static.guideAlternant.getMetadata().description}
+        title={METADATA.static.guideAlternant().title}
+        description={METADATA.static.guideAlternant().description}
         url={PAGES.static.guideAlternant.getPath()}
         breadcrumbs={[
           { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },

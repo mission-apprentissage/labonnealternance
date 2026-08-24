@@ -9,8 +9,9 @@ import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideAlternantLesAidesFinancieresEtMaterielles.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternantLesAidesFinancieresEtMaterielles()
 
 const LesAidesFinancieresEtMateriellesPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantLesAidesFinancieresEtMaterielles]
@@ -29,6 +30,7 @@ const LesAidesFinancieresEtMateriellesPage = () => {
       allerPlusLoinItems={[ARTICLES["comprendre-la-remuneration"], ARTICLES["preparer-son-projet-en-alternance"], ARTICLES["se-faire-accompagner"]]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantLesAidesFinancieresEtMaterielles}
+      metadata={metadata}
     >
       <Section title="Vous cherchez un logement pour votre alternance ?">
         <Paragraph>Plusieurs solutions et aides existent :</Paragraph>

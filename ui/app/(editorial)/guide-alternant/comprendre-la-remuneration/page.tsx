@@ -12,11 +12,12 @@ import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 const remunerationPage = PAGES.static.guideAlternantComprendreLaRemuneration
 
-export const metadata: Metadata = remunerationPage.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternantComprendreLaRemuneration()
 
 // Miroir texte brut de la FAQ visible ci-dessous, pour le JSON-LD FAQPage (aide à obtenir les rich results / PAA).
 const FAQ_ITEMS = [
@@ -291,11 +292,12 @@ const ComprendreLaRemunerationPage = () => {
       ]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantComprendreLaRemuneration}
+      metadata={metadata}
     >
       <SchemaOrg
         type="FAQPage"
         title={remunerationPage.title}
-        description={remunerationPage.getMetadata().description ?? ""}
+        description={metadata.description ?? ""}
         url={remunerationPage.getPath()}
         breadcrumbs={[]}
         omitBreadcrumb

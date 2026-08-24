@@ -3,9 +3,7 @@ import { ObjectId } from "mongodb"
 import type { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
 import type { Server } from "@/http/server"
-import { getJobsQueryPrivate } from "@/services/jobs/job-opportunity/job-opportunity.service"
 import { addOffreDetailView } from "@/services/lbajob.service"
 import { getPartnerJobByIdV2 } from "@/services/partner-job.service"
 import { getRecruteurLbaFromDB } from "@/services/recruteur-lba.service"
@@ -18,37 +16,6 @@ const config = {
 }
 
 export default (server: Server) => {
-  server.get(
-    "/v1/_private/jobs/min",
-    {
-      schema: zRoutes.get["/v1/_private/jobs/min"],
-      config,
-    },
-    async (req, res) => {
-      const { referer } = req.headers
-      const { romes, rncp, caller, latitude, longitude, radius, insee, diploma, opco, elligibleHandicapFilter } = req.query
-      const result = await getJobsQueryPrivate({
-        romes,
-        rncp,
-        caller,
-        referer,
-        latitude,
-        longitude,
-        radius,
-        insee,
-        diploma: INiveauDiplomeEuropeen.fromParam(diploma),
-        opco,
-        isMinimalData: true,
-        elligibleHandicapFilter: elligibleHandicapFilter === "true",
-      })
-
-      if ("error" in result) {
-        return res.status(result.error === "wrong_parameters" ? 400 : 500).send(result)
-      }
-      return res.status(200).send(result)
-    }
-  )
-
   server.get(
     "/_private/jobs/:source/:id",
     {

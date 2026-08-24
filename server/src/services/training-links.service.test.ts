@@ -43,7 +43,7 @@ describe("getLBALink", () => {
     expect(url.searchParams.get("latitude")).toBe("48.86")
     expect(url.searchParams.get("longitude")).toBe("2.35")
     expect(url.searchParams.get("radius")).toBe("60")
-    expect(url.searchParams.get("source")).toBe("training_links")
+    expect(url.searchParams.get("search_source")).toBe("training_links")
     expect(url.searchParams.get("utm_source")).toBe("lba")
     expect(url.searchParams.has("romes")).toBe(false)
     expect(url.searchParams.has("lat")).toBe(false)
@@ -145,7 +145,7 @@ describe("getLBALink", () => {
     expect(url.searchParams.get("lieu_label")).toBe("Paris")
     expect(url.searchParams.get("latitude")).toBe("48.8589")
     expect(url.searchParams.get("longitude")).toBe("2.347")
-    expect(url.searchParams.get("source")).toBe("training_links")
+    expect(url.searchParams.get("search_source")).toBe("training_links")
     expect(url.searchParams.has("q")).toBe(false)
   })
 
@@ -156,7 +156,7 @@ describe("getLBALink", () => {
     expect(url.origin).toBe("http://localhost:3000")
     expect(url.pathname).toBe("/")
     expect(url.searchParams.get("utm_source")).toBe("lba")
-    expect(url.searchParams.get("source")).toBe("training_links")
+    expect(url.searchParams.get("search_source")).toBe("training_links")
     expect(url.searchParams.has("mode")).toBe(false)
     expect(url.searchParams.has("q")).toBe(false)
     expect(url.searchParams.has("latitude")).toBe(false)
@@ -187,5 +187,33 @@ describe("getTrainingLinks", () => {
 
     const w4Url = new URL(w4.lien_lba)
     expect(w4Url.pathname).toBe("/")
+  })
+
+  it("returns one result per wish, in input order, across parallel groups", async () => {
+    await saveRome("D1102", "Boulangerie - viennoiserie")
+    await saveFormation({
+      cle_ministere_educatif: "CLE1",
+      intitule_long: "Bac Pro Boulanger",
+      rome_codes: ["D1102"],
+      localite: "Paris 6e",
+      lieu_formation_geopoint: { type: "Point", coordinates: [2.35, 48.86] },
+    })
+
+    // Plus que la taille d'un groupe parallèle (10), en alternant vœux résolus (durée variable :
+    // lookups formation + rome) et vœux vides (immédiats) pour désynchroniser les complétions
+    const wishes = Array.from({ length: 25 }, (_, i) => (i % 2 === 0 ? { id: `w${i}`, cle_ministere_educatif: "CLE1" } : { id: `w${i}` }))
+
+    const results = await getTrainingLinks(wishes)
+
+    expect(results.map((r) => r.id)).toEqual(wishes.map((w) => w.id))
+
+    for (const [i, result] of results.entries()) {
+      const url = new URL(result.lien_lba)
+      if (i % 2 === 0) {
+        expect(url.searchParams.get("q")).toBe("Boulangerie - viennoiserie")
+      } else {
+        expect(url.pathname).toBe("/")
+      }
+    }
   })
 })

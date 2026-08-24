@@ -1,4 +1,4 @@
-name: PR CI and Preview
+name: Pull Request Checks
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, closed]
@@ -9,7 +9,7 @@ jobs:
     uses: "./.github/workflows/ci.yml"
 
   deploy_comment:
-    name: Add deploy comment
+    name: Preview instructions
     runs-on: ubuntu-latest
     steps:
       - name: Comment PR Preview

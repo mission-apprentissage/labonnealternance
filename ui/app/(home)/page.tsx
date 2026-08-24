@@ -5,6 +5,7 @@ import type { Metadata } from "next"
 import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
 import { GrandsGroupesCandidat } from "@/app/(home)/_components/GrandsGroupesCandidat"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { AlgoHome } from "./_components/AlgoHome"
 import { CalculRemuneration } from "./_components/CalculRemuneration"
@@ -14,8 +15,8 @@ import { HowTo } from "./_components/HowTo"
 import { InformationsAlternance } from "./_components/InformationsAlternance"
 
 export const metadata: Metadata = {
-  title: PAGES.static.home.getMetadata().title,
-  description: PAGES.static.home.getMetadata().description,
+  title: METADATA.static.home().title,
+  description: METADATA.static.home().description,
 }
 
 export default function HomePage() {
@@ -23,8 +24,8 @@ export default function HomePage() {
     <>
       <SchemaOrg
         type="WebPage"
-        title={PAGES.static.home.getMetadata().title}
-        description={PAGES.static.home.getMetadata().description}
+        title={METADATA.static.home().title}
+        description={METADATA.static.home().description}
         url={PAGES.static.home.getPath()}
         breadcrumbs={[{ name: PAGES.static.home.title, url: PAGES.static.home.getPath() }]}
       />

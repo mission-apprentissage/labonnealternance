@@ -1,18 +1,18 @@
-import type { Metadata } from "next"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
 import type { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/index"
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generate-uri"
-import { buildRechercheMetadata } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.metadata.utils_LEGACY"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { buildRecherchePageParams, IRechercheMode } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
+// Ce module est embarqué dans les bundles client (header, footer, error boundary…) : ne rien
+// y ajouter qui ne serve qu'au serveur. Les métadonnées SEO (title/description) vivent dans
+// routes.metadata.utils.ts (registre METADATA, server-only) — issue #5214.
 export interface IPage {
   getPath: (args?: any) => string
   title: string
   index?: boolean
-  getMetadata?: (args?: any) => Metadata
 }
 
 interface INotionPage extends IPage {
@@ -32,586 +32,307 @@ export const PAGES = {
       getPath: () => `/` as string,
       title: "Accueil",
       index: true,
-      getMetadata: () => ({
-        title: "La bonne alternance | Trouvez votre alternance, formation et emploi",
-        description:
-          "Trouvez votre alternance parmi des milliers d’offres d’emploi et de formations. Recherchez par métier et par ville, candidatez en ligne ou en spontané. Service public gratuit.",
-      }),
     },
     authentification: {
       getPath: () => `/espace-pro/authentification` as string,
       title: "Authentification",
       index: false,
-      getMetadata: () => ({
-        title: "Authentification - La bonne alternance",
-        description: "Connectez-vous à votre compte La bonne alternance pour accéder à vos offres d’alternance.",
-      }),
     },
     aPropos: {
       getPath: () => `/a-propos` as string,
       title: "À propos",
       index: false,
-      getMetadata: () => ({
-        title: "À propos de La bonne alternance - Notre mission et engagement",
-        description: "Apprenez-en plus sur La bonne alternance, notre mission et notre engagement pour faciliter votre recherche d’alternance.",
-      }),
     },
     cgu: {
       getPath: () => `/conditions-generales-utilisation` as string,
       title: "Conditions générales d'utilisation",
       index: false,
-      getMetadata: () => ({
-        title: "Conditions générales d'utilisation - La bonne alternance",
-        description: "Consultez les conditions générales d’utilisation de La bonne alternance pour comprendre nos règles et engagements.",
-      }),
     },
     faq: {
       getPath: () => `/faq` as string,
       title: "FAQ",
       index: false,
-      getMetadata: () => ({
-        title: "FAQ - Réponses à vos questions sur l'alternance",
-        description: "Trouvez des réponses aux questions fréquentes sur l’alternance, nos services et le fonctionnement du site.",
-      }),
     },
     mentionsLegales: {
       getPath: () => `/mentions-legales` as string,
       title: "Mentions légales",
       index: false,
-      getMetadata: () => ({
-        title: "Mentions légales - La bonne alternance",
-        description: "Consultez les mentions légales de La bonne alternance pour en savoir plus sur nos obligations légales et notre responsabilité.",
-      }),
     },
     politiqueConfidentialite: {
       getPath: () => `/politique-de-confidentialite` as string,
       title: "Politique de confidentialité - La bonne alternance",
       index: false,
-      getMetadata: () => ({
-        title: "Politique de confidentialité - Protection de vos données",
-        description: "Découvrez comment nous protégeons vos données personnelles et respectons votre vie privée sur La bonne alternance.",
-      }),
     },
     metiers: {
       getPath: () => `/metiers` as string,
       title: "Métiers",
       index: false,
-      // Le « 77 » correspond au nombre de secteurs listés dans ui/config/metiers.txt (compteur en dur, cf. note ci-dessous).
-      getMetadata: () => ({
-        title: "Métiers en alternance : 77 secteurs | La bonne alternance",
-        description: "La liste des 77 secteurs qui recrutent en alternance : RH, communication, vente, BTP, santé, informatique… Offres d'emploi et formations du CAP au Master.",
-      }),
     },
-    // Note : les compteurs des meta ci-dessous sont en dur volontairement.
-    // routes.utils est importé par de nombreux composants client ; importer les
-    // tableaux _data juste pour un .length les embarquerait dans les bundles client.
-    // À mettre à jour lors d'un changement de palier (30/30/10 → 100). Les pages hub
-    // (Server Components) affichent, elles, le décompte dynamique via {data.length}.
     alternanceMetiers: {
       getPath: () => `/alternance/metiers` as string,
       title: "Métiers en alternance",
       index: true,
-      getMetadata: () => ({
-        title: "30 métiers en alternance qui recrutent | La bonne alternance",
-        description: "Découvrez 30 métiers accessibles en alternance avec offres, salaires moyens et formations. Tertiaire, numérique, médico-social, artisanat.",
-      }),
     },
     alternanceVilles: {
       getPath: () => `/alternance/villes` as string,
       title: "Alternance dans les grandes villes",
       index: true,
-      getMetadata: () => ({
-        title: "Alternance dans 30 grandes villes | La bonne alternance",
-        description: "Trouvez votre alternance dans 30 grandes villes françaises. Offres, entreprises qui recrutent, logement, transports et vie d'alternant.",
-      }),
     },
     alternanceDiplomes: {
       getPath: () => `/alternance/diplomes` as string,
       title: "Diplômes en alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Diplômes en alternance : BTS, BUT, Licence Pro | LBA",
-        description: "Explorez 10 diplômes accessibles en alternance (BTS, BUT, Licence Pro, CAP, Titres Pro). Programme, durée, salaire et débouchés.",
-      }),
     },
     codeSources: {
       getPath: () => `https://github.com/mission-apprentissage/labonnealternance` as string,
       title: "Sources",
       index: false,
-      getMetadata: () => ({
-        title: "Nos sources de données - La bonne alternance",
-        description: "Découvrez les sources de données que nous utilisons pour vous proposer les meilleures offres d’alternance.",
-      }),
     },
     blog: {
       getPath: () => `https://labonnealternance.sites.beta.gouv.fr/?utm_source=lba&utm_medium=website&utm_campaign=lba_footer` as string,
       title: "Blog",
       index: false,
-      getMetadata: () => ({
-        title: "Blog - Conseils et actualités sur l'alternance",
-        description: "Lisez nos articles sur l’alternance, les conseils de carrière et les tendances du marché pour optimiser votre recherche.",
-      }),
     },
     ressources: {
       getPath: () => `/ressources` as string,
       title: "Ressources",
       index: false,
-      getMetadata: () => ({
-        title: "Ressources pour réussir votre alternance - La bonne alternance",
-        description: "Accédez à des guides et outils pratiques pour maximiser vos chances de trouver une alternance et réussir votre parcours.",
-      }),
     },
     guideDecouvrirLAlternance: {
       getPath: () => `/guide/decouvrir-l-alternance` as string,
       title: "Découvrir l'alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Découvrir l'alternance | Contrats, conditions et durée",
-        description: "Apprentissage ou professionnalisation : conditions d'accès, durée, rythme, coût de la formation et conditions de travail. Tout comprendre en 5 min.",
-      }),
     },
     guideApprentissageEtHandicap: {
       getPath: () => `/guide/apprentissage-et-handicap` as string,
       title: "Apprentissage & handicap",
       index: true,
-      getMetadata: () => ({
-        title: "Apprentissage et handicap | Droits, aides et aménagements",
-        description: "Alternance et situation de handicap : conditions d'accès, aménagements de formation, rémunération et aides spécifiques (AGEFIPH, FIPHFP). Guide 2026.",
-      }),
     },
     guidePreventionDesRisquesProfessionnelsPourLesApprentis: {
       getPath: () => `/guide/prevention-des-risques-professionnels-pour-les-apprentis` as string,
       title: "La prévention des risques professionnels pour les apprentis",
       index: true,
-      getMetadata: () => ({
-        title: "La prévention des risques professionnels | Guide pour les apprentis, les CFA et les recruteurs",
-        description: "Obligations des employeurs, accueil en entreprise et rôle des CFA dans la prévention des risques professionnels pour les apprentis.",
-      }),
     },
     guideAlternant: {
       getPath: () => `/guide-alternant` as string,
       title: "Je m'informe sur l'alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Guide de l'alternant 2026 | Tout savoir sur l'alternance",
-        description: "Informations, conseils et outils pour réussir votre alternance : contrats, rémunération, aides, formation et recherche d'employeur. Guide complet.",
-      }),
     },
     guideAlternantPreparerSonProjetEnAlternance: {
       getPath: () => `/guide-alternant/preparer-son-projet-en-alternance` as string,
       title: "Préparer son projet en alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Préparer son projet en alternance | Les 5 étapes clés",
-        description: "Les 5 étapes pour réussir votre entrée en alternance : choix du métier, du contrat, recherche d’entreprise, de formation et aides disponibles.",
-      }),
     },
     guideAlternantSeFaireAccompagner: {
       getPath: () => `/guide-alternant/se-faire-accompagner` as string,
       title: "Des professionnels pour vous accompagner",
       index: true,
-      getMetadata: () => ({
-        title: "Accompagnement alternance | Missions locales et mentorat",
-        description: "Missions locales, cellules régionales, mentorat, 1jeune1solution : tous les dispositifs gratuits pour vous aider à trouver votre alternance.",
-      }),
     },
     guideAlternantLaRuptureDeContrat: {
       getPath: () => `/guide-alternant/la-rupture-de-contrat` as string,
       title: "Rupture d'un contrat d'alternance : guide complet",
       index: true,
-      getMetadata: () => ({
-        title: "Rupture de contrat en alternance | Guide complet 2026",
-        description: "Comment rompre un contrat d'apprentissage ou de professionnalisation ? Procédures, délais, droits et obligations. Guide pratique pour les alternants.",
-      }),
     },
     guideAlternantComprendreLaRemuneration: {
       getPath: () => `/guide-alternant/comprendre-la-remuneration` as string,
       title: "Comprendre la rémunération en alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Salaire en alternance 2026 : grille et barèmes officiels",
-        description:
-          "Grille de salaire en alternance 2026 : de 27 % à 100 % du SMIC selon l'âge et l'année de contrat. Apprentissage et professionnalisation, calcul brut/net et exonérations.",
-      }),
     },
     guideAlternantCommentSignerUnContratEnAlternance: {
       getPath: () => `/guide-alternant/comment-signer-un-contrat-en-alternance` as string,
       title: "Comment signer un contrat en alternance ?",
       index: true,
-      getMetadata: () => ({
-        title: "Signer un contrat en alternance | Démarches et Cerfa",
-        description: "Guide complet pour signer votre contrat d'apprentissage ou de professionnalisation : formulaires Cerfa, informations requises et étapes clés.",
-      }),
     },
     guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur: {
       getPath: () => `/guide-alternant/role-et-missions-du-maitre-d-apprentissage-ou-tuteur` as string,
       title: "Le rôle et les missions du maître d'apprentissage ou tuteur",
       index: true,
-      getMetadata: () => ({
-        title: "Maître d'apprentissage et tuteur | Rôle et missions",
-        description: "Quel est le rôle du maître d'apprentissage ou tuteur en alternance ? Conditions, missions d'accompagnement et recours en cas de difficulté.",
-      }),
     },
     guideAlternantAProposDesFormations: {
       getPath: () => `/guide-alternant/a-propos-des-formations` as string,
       title: "À propos des formations",
       index: true,
-      getMetadata: () => ({
-        title: "Bien choisir sa formation en alternance | Conseils pratiques",
-        description: "Taux de réussite, insertion professionnelle, certification Qualiopi : les critères clés pour choisir votre formation en alternance.",
-      }),
     },
     guideAlternantConseilsEtAstucesPourTrouverUnEmployeur: {
       getPath: () => `/guide-alternant/conseils-et-astuces-pour-trouver-un-employeur` as string,
       title: "Conseils et astuces pour trouver un employeur",
       index: true,
-      getMetadata: () => ({
-        title: "Trouver un employeur en alternance | Conseils et astuces",
-        description: "Salons, candidatures spontanées, CV, préparation aux entretiens : nos conseils pratiques pour décrocher votre contrat en alternance.",
-      }),
     },
     guideAlternantLesAidesFinancieresEtMaterielles: {
       getPath: () => `/guide-alternant/les-aides-financieres-et-materielles` as string,
       title: "Les aides financières et matérielles pour les alternants",
       index: true,
-      getMetadata: () => ({
-        title: "Aides alternant 2026 | Logement, transport et aides financières",
-        description: "APL, Mobili-Jeune, Avance Loca-Pass, aides transport : toutes les aides financières et matérielles pour les alternants. Simulateur inclus.",
-      }),
     },
     jeSuisCFA: {
       getPath: () => `/je-suis-cfa` as string,
       title: "Je suis CFA",
       index: true,
-      getMetadata: () => ({
-        title: "CFA et organismes de formation | La bonne alternance",
-        description: "Diffusez gratuitement les offres de vos entreprises partenaires, recevez des candidatures et gérez la carte étudiant des métiers. Service public.",
-      }),
     },
     guideCfa: {
       getPath: () => `/guide-cfa` as string,
       title: "Je m'informe sur l'alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Guide CFA | Ressources organismes de formation en alternance",
-        description: "Outils, liens utiles et documents pour les CFA : catalogue des formations, Vade-mecum, Cerfa, guides handicap et aides aux contrats.",
-      }),
     },
     guideCfaLaCarteEtudiantDesMetiers: {
       getPath: () => `/guide-cfa/la-carte-etudiant-des-metiers` as string,
       title: "Téléchargement de la carte d'étudiant des métiers",
       index: true,
-      getMetadata: () => ({
-        title: "Carte étudiant des métiers | Délivrance et avantages",
-        description: "Délivrance de la carte d'étudiant des métiers par les CFA : obligations, délais (30 jours), avantages et réductions pour les alternants.",
-      }),
     },
     guideCfaAccompagnerVosAlternants: {
       getPath: () => `/guide-cfa/accompagner-vos-alternants` as string,
       title: "Accompagner vos alternants dans leurs démarches de candidatures",
       index: true,
-      getMetadata: () => ({
-        title: "Guide CFA | Accompagner vos alternants",
-        description: "Comment les candidatures spontanées augmentent les chances de trouver son futur employeur.",
-      }),
     },
     jeSuisRecruteur: {
       getPath: () => `/je-suis-recruteur` as string,
       title: "Je suis recruteur",
       index: true,
-      getMetadata: () => ({
-        title: "Recruteur alternance | Publiez vos offres gratuitement",
-        description: "Diffusez gratuitement vos offres d'alternance sur La bonne alternance, 1jeune1solution et Parcoursup. Recevez des candidatures en quelques clics.",
-      }),
     },
     guideRecruteur: {
       getPath: () => `/guide-recruteur` as string,
       title: "Je m'informe sur l'alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Guide recruteur alternance 2026 | Ressources employeurs",
-        description: "Informations et outils pour recruter en alternance : contrats, Cerfa, aides à l'embauche, OPCO et prévention des risques. Guide complet employeur.",
-      }),
     },
     guideRecruteurJeSuisEmployeurPublic: {
       getPath: () => `/guide-recruteur/je-suis-employeur-public` as string,
       title: "Je suis employeur public",
       index: true,
-      getMetadata: () => ({
-        title: "Apprentissage dans la fonction publique | Guide employeur public",
-        description: "Recrutement d'apprentis dans le secteur public : financement, démarches administratives spécifiques et dispositifs de titularisation.",
-      }),
     },
     guideRecruteurCerfaApprentissageEtProfessionnalisation: {
       getPath: () => `/guide-recruteur/cerfa-apprentissage-et-professionnalisation` as string,
       title: "Cerfa apprentissage et professionnalisation : le guide complet",
       index: true,
-      getMetadata: () => ({
-        title: "Cerfa apprentissage et professionnalisation | Guide complet 2026",
-        description: "Comment remplir le Cerfa d'apprentissage ou de professionnalisation ? Formulaires, délais OPCO et documents requis. Guide employeur.",
-      }),
     },
     guideRecruteurAidesALEmbaucheEnAlternance: {
       getPath: () => `/guide-recruteur/aides-a-l-embauche-en-alternance` as string,
       title: "Aides à l'embauche en alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Aides à l'embauche en alternance 2026 | Jusqu'à 6 000 €",
-        description: "Aide unique, aide exceptionnelle jusqu'à 6 000 €, exonérations : toutes les aides financières pour recruter un alternant en 2026.",
-      }),
     },
     salaireAlternant: {
       getPath: () => `/salaire-alternant` as string,
       title: "Salaire alternant",
       index: true,
-      getMetadata: () => ({
-        title: "Simulateur salaire alternance 2026 | Calcul gratuit brut et net",
-        description:
-          "Calculez votre salaire net en alternance en 2 clics. Indiquez votre âge, type de contrat et durée : le simulateur affiche votre rémunération mensuelle brut et net.",
-      }),
     },
     EspaceDeveloppeurs: {
       getPath: () => `/espace-developpeurs` as string,
       title: "Espace développeurs",
       index: false,
-      getMetadata: () => ({
-        title: "Espace développeurs - Transparence et qualité des offres - La bonne alternance",
-        description: "En savoir plus sur notre API et nos données pour développer vos propres outils et services d’alternance.",
-      }),
     },
     contact: {
       getPath: () => `/contact` as string,
       title: "Contact",
       index: false,
-      getMetadata: () => ({
-        title: "Contactez-nous - La bonne alternance",
-        description: "Besoin d’aide ou d’informations ? Contactez notre équipe pour toute question relative à votre recherche d’alternance.",
-      }),
     },
     statistiques: {
       getPath: () => `/statistiques` as string,
       title: "Statistiques",
       index: false,
-      getMetadata: () => ({
-        title: "Statistiques - La bonne alternance",
-        description: "Consultez nos statistiques et analyses sur le marché de l’alternance en France.",
-      }),
     },
     barometre: {
       getPath: () => `/barometre` as string,
       title: "Baromètre de l’alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Baromètre de l’alternance T1 2026 - La bonne alternance",
-        description:
-          "Baromètre T1 2026 de l’alternance : offres, candidatures, métiers les plus recherchés, secteurs qui recrutent, tensions par région. Données La bonne alternance.",
-        keywords: [
-          "baromètre alternance",
-          "marché de l’alternance",
-          "alternance T1 2026",
-          "candidatures alternance",
-          "offres apprentissage",
-          "métiers en alternance",
-          "secteurs qui recrutent en alternance",
-          "tensions alternance par région",
-          "La bonne alternance",
-        ],
-        openGraph: {
-          title: "Baromètre de l’alternance T1 2026 - La bonne alternance",
-          description:
-            "Baromètre T1 2026 de l’alternance : offres, candidatures, métiers les plus recherchés, secteurs qui recrutent, tensions par région. Données La bonne alternance.",
-          url: `/barometre`,
-          siteName: "La bonne alternance",
-          locale: "fr_FR",
-          type: "article",
-          images: [
-            {
-              url: "/favicon/android-chrome-512x512.png",
-              width: 512,
-              height: 512,
-              alt: "La bonne alternance",
-            },
-          ],
-        },
-      }),
     },
     accesRecruteur: {
       getPath: () => `/acces-recruteur` as string,
       title: "Recruteur",
       index: false,
-      getMetadata: () => ({
-        title: "Accès recruteur - La bonne alternance",
-        description: "Diffusez simplement et gratuitement vos offres en alternance.",
-      }),
     },
     organismeDeFormation: {
       getPath: () => `/organisme-de-formation` as string,
       title: "Organisme de formation",
       index: false,
-      getMetadata: () => ({
-        title: "Accès Organisme de formation - La bonne alternance",
-        description: "Diffusez simplement et gratuitement vos offres en alternance.",
-      }),
     },
     espaceProCreationEntreprise: {
       getPath: () => `/espace-pro/creation/entreprise` as string,
       title: "Créer un compte entreprise",
-      getMetadata: () => ({
-        title: "Créer un compte recruteur - La bonne alternance",
-        description: "Créer un compte recruteur pour diffuser simplement et gratuitement vos offres en alternance.",
-      }),
     },
     espaceProCreationCfa: {
       getPath: () => `/espace-pro/creation/cfa` as string,
       title: "Créer un compte d'organisme de formation",
-      getMetadata: () => ({
-        title: "Créer un compte d'organisme de formation - La bonne alternance",
-        description: "Créer un compte d'organisme de formation pour diffuser simplement et gratuitement les offres en alternance de vos entreprises partenaires.",
-      }),
     },
     backCfaHome: {
       getPath: () => `/espace-pro/cfa` as string,
       title: "Accueil CFA",
-      getMetadata: () => ({
-        title: "Accueil espace CFA - La bonne alternance",
-      }),
     },
     espaceProCfaCarteDEtudiantDesMetiers: {
       getPath: () => `/espace-pro/cfa/carte-d-etudiant-des-metiers` as string,
       title: "Carte d'étudiant des métiers",
       index: true,
-      getMetadata: () => ({
-        title: "Carte d'étudiant des métiers - La bonne alternance",
-        description: "Téléchargez la carte d'étudiant des métiers",
-      }),
     },
     backCfaCreationEntreprise: {
       getPath: () => `/espace-pro/cfa/creation-entreprise` as string,
       title: "Création d'entreprise",
-      getMetadata: () => ({
-        title: "Création d'entreprise partenaire - La bonne alternance",
-      }),
     },
     backAdminHome: {
       getPath: () => `/espace-pro/administration/users` as string,
       title: "Accueil administration",
-      getMetadata: () => ({
-        title: "Accueil espace administration - La bonne alternance",
-      }),
     },
     backAdminGestionDesEntreprises: {
       getPath: () => `/espace-pro/administration/gestion-des-entreprises` as string,
       title: "Gestion des entreprises",
-      getMetadata: () => ({
-        title: "Gestion des entreprises - La bonne alternance",
-      }),
     },
     backAdminGestionDesAdministrateurs: {
       getPath: () => `/espace-pro/administration/gestion-des-administrateurs` as string,
       title: "Gestion des administrateurs",
-      getMetadata: () => ({
-        title: "Gestion des administrateurs - La bonne alternance",
-      }),
     },
     backAdminGestionDesRecruteurs: {
       getPath: () => `/espace-pro/administration/recruteurs` as string,
       title: "Gestion des recruteurs",
-      getMetadata: () => ({
-        title: "Gestion des recruteurs - La bonne alternance",
-      }),
     },
     backAdminGestionDesOffresPartenaires: {
       getPath: () => `/espace-pro/administration/offres-partenaires` as string,
       title: "Offres partenaires",
-      getMetadata: () => ({
-        title: "Offres partenaires - La bonne alternance",
-      }),
     },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
-      getMetadata: () => ({
-        title: "Accueil espace OPCO - La bonne alternance",
-      }),
     },
     backHomeEntreprise: {
       getPath: () => `/espace-pro/entreprise` as string,
       title: "Accueil entreprise",
-      getMetadata: () => ({
-        title: "Accueil espace recruteur - La bonne alternance",
-      }),
     },
     backEntrepriseCreationOffre: {
       getPath: () => `/espace-pro/entreprise/creation-offre` as string,
       title: "Nouvelle offre",
-      getMetadata: () => ({
-        title: "Nouvelle offre - La bonne alternance",
-      }),
     },
     rendezVousApprentissageRecherche: {
       getPath: () => `/espace-pro/administration/rendez-vous-apprentissage` as string,
       title: "Recherche etablissement rendez-vous apprentissage",
-      getMetadata: () => ({
-        title: "Recherche etablissement rendez-vous apprentissage - La bonne alternance",
-      }),
     },
     backCreateCFAEnAttente: {
       getPath: () => "/espace-pro/authentification/en-attente" as string,
       title: "Création de compte CFA en attente",
-      getMetadata: () => ({
-        title: "Création de compte CFA en attente - La bonne alternance",
-      }),
     },
     desinscription: {
       getPath: () => `/desinscription` as string,
       title: "Désinscription candidatures spontanées",
       index: false,
-      getMetadata: () => ({
-        title: "Désinscription candidatures spontanées - La bonne alternance",
-        description: "Désinscrivez vous de l'envoi de candidatures spontanées.",
-      }),
     },
     accessibilite: {
       getPath: () => `/accessibilite` as string,
       title: "Déclaration d'accessibilité",
       index: true,
-      getMetadata: () => ({
-        title: "Déclaration d'accessibilité - La bonne alternance",
-        description: "Politique de confidentialité, traitement des données à caractère personnel sur le site de La bonne alternance.",
-      }),
     },
     planDuSite: {
       getPath: () => `/plan-du-site` as string,
       title: "Plan du site",
       index: false,
-      getMetadata: () => ({
-        title: "Plan du site - La bonne alternance",
-        description: "Découvrez l'ensemble des pages et services disponibles sur La bonne alternance.",
-      }),
     },
     adminProcessor: {
       getPath: () => `/espace-pro/administration/processeur` as string,
       index: false,
       title: "Statut du processeur",
-      getMetadata: () => ({
-        title: "Statut du processeur - La bonne alternance",
-      }),
     },
     postuler: {
       getPath: () => `/postuler` as string,
       title: "Postuler",
       index: false,
-      getMetadata: () => ({
-        title: "Postuler à l'offre - La bonne alternance",
-      }),
     },
     detailRendezVousApprentissage: {
       title: "Détail du rendez-vous d'apprentissage",
       getPath: () => `/detail-rendez-vous` as string,
       index: false,
-      getMetadata: () => ({
-        title: "Détail du rendez-vous d'apprentissage - La bonne alternance",
-      }),
     },
   },
   dynamic: {
@@ -631,22 +352,16 @@ export const PAGES = {
         }
       },
       index: false,
-      getMetadata: () => ({ title: "Informations de contact - La bonne alternance" }),
       title: "Informations de contact",
     }),
     metierJobById: (metier: string): IPage => ({
       getPath: () => `/metiers/${metier}` as string,
       index: false,
-      getMetadata: () => ({
-        title: `${metier} en alternance - Découvrez les opportunités`,
-        description: `Explorez les différents métiers accessibles en ${metier} en alternance et trouvez celui qui correspond à votre projet professionnel.`,
-      }),
       title: metier,
     }),
     modificationEntreprise: (userType: string, establishment_id?: string): IPage => ({
       getPath: () => (userType === "CFA" ? `/espace-pro/cfa/entreprise/${establishment_id}/informations` : "/espace-pro/entreprise/compte"),
       index: false,
-      getMetadata: () => ({ title: "Modification entreprise - La bonne alternance" }),
       title: "Modification entreprise",
     }),
     offreUpsert: ({
@@ -680,7 +395,6 @@ export const PAGES = {
           }
         },
         index: false,
-        getMetadata: () => ({ title: `${isCreation ? "Création d'une offre" : "Edition d'une offre"} - La bonne alternance` }),
         title: isCreation ? "Création d'une offre" : "Edition d'une offre",
       }
     },
@@ -707,7 +421,6 @@ export const PAGES = {
         getPath: () => path,
         title: "Success édition offre",
         index: false,
-        getMetadata: () => ({}),
       }
     },
     espaceProCreationDetail: (props: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
@@ -756,8 +469,10 @@ export const PAGES = {
       },
       title: props.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
     }),
-    espaceProOffreImpression: (jobId: string, source?: "cfa-sharing") => ({
-      getPath: () => generateUri("/espace-pro/offre/impression/:jobId", { params: { jobId }, querystring: removeUndefinedFields({ source }) }),
+    // print_source et non source : « source » est un paramètre réservé de Plausible (attribution
+    // d'acquisition). La page d'impression lit encore l'ancien nom en repli.
+    espaceProOffreImpression: (jobId: string, printSource?: "cfa-sharing") => ({
+      getPath: () => generateUri("/espace-pro/offre/impression/:jobId", { params: { jobId }, querystring: removeUndefinedFields({ print_source: printSource }) }),
       title: "Imprimer mon offre",
     }),
     genericRecherche({ rechercheParams, mode }: { rechercheParams: Partial<IRecherchePageParams> | null; mode: IRechercheMode }): IPage {
@@ -775,7 +490,6 @@ export const PAGES = {
       return {
         getPath: () => `/recherche${search ? `?${search}` : ""}` as string,
         index: false,
-        getMetadata: () => buildRechercheMetadata(rechercheParams, "default"),
         title: "Offres en alternance",
       }
     },
@@ -785,7 +499,6 @@ export const PAGES = {
       return {
         getPath: () => `/recherche-formation${search ? `?${search}` : ""}` as string,
         index: false,
-        getMetadata: () => buildRechercheMetadata(rechercheParams, "formation"),
         title: "Formations en alternance",
       }
     },
@@ -795,7 +508,6 @@ export const PAGES = {
       return {
         getPath: () => `/recherche-emploi${search ? `?${search}` : ""}` as string,
         index: false,
-        getMetadata: () => buildRechercheMetadata(rechercheParams, "emploi"),
         title: "Offres en alternance",
       }
     },
@@ -820,30 +532,18 @@ export const PAGES = {
     backCfaEntrepriseCreationDetail: (siret: string): IPage => ({
       getPath: () => `/espace-pro/cfa/creation-entreprise/${siret}` as string,
       title: siret,
-      getMetadata: () => ({
-        title: `Création entreprise ${siret} - La bonne alternance`,
-      }),
     }),
     backCfaPageEntreprise: (establishment_id: string, establishmentLabel?: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}` as string,
       title: establishmentLabel ?? "Entreprise",
-      getMetadata: () => ({
-        title: `${establishmentLabel ?? "Entreprise"} - La bonne alternance`,
-      }),
     }),
     backCfaPageInformations: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/informations` as string,
       title: "Informations de contact",
-      getMetadata: () => ({
-        title: "Informations de contact entreprise - La bonne alternance",
-      }),
     }),
     backCfaEntrepriseCreationOffre: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
       title: "Création d'une offre",
-      getMetadata: () => ({
-        title: "Création d'une offre - La bonne alternance",
-      }),
     }),
     backAdminRecruteursATraiter: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
       const searchParams = new URLSearchParams()
@@ -855,59 +555,35 @@ export const PAGES = {
       return {
         getPath: () => `/espace-pro/administration/users?${searchParams}` as string,
         title: "Gestion des recruteurs",
-        getMetadata: () => ({
-          title: "Gestion des recruteurs - La bonne alternance",
-        }),
       }
     },
     backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
-      getMetadata: () => ({
-        title: `${user_label ?? "Entreprise"} - La bonne alternance`,
-      }),
     }),
     backAdminUserCfaEntreprise: ({ user_id, establishment_id, user_label }: { user_id: string; establishment_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/administration/users/${user_id}/cfa/${establishment_id}` as string,
       title: user_label ?? "Entreprise",
-      getMetadata: () => ({
-        title: `${user_label ?? "Entreprise"} - La bonne alternance`,
-      }),
     }),
     backEntrepriseEditionOffre: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}` as string,
       title: job_id ? "Edition d'une offre" : "Création d'une offre",
-      getMetadata: () => ({
-        title: `${job_id ? "Edition d'une offre" : "Création d'une offre"} - La bonne alternance`,
-      }),
     }),
     backEntrepriseMiseEnRelation: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}/mise-en-relation` as string,
       title: "Mise en relation avec des organismes de formation",
-      getMetadata: () => ({
-        title: "Mise en relation avec des organismes de formation - La bonne alternance",
-      }),
     }),
     backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/opco/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
-      getMetadata: () => ({
-        title: `${user_label ?? "Entreprise"} - La bonne alternance`,
-      }),
     }),
     backEditAdministrator: ({ userId }: { userId: string }): IPage => ({
       getPath: () => `/espace-pro/administration/gestion-des-administrateurs/user/${userId}` as string,
       title: "Modification d'administrateur",
-      getMetadata: () => ({
-        title: "Modification d'administrateur - La bonne alternance",
-      }),
     }),
     backCreateCFAConfirmation: ({ email }: { email: string }): IPage => ({
       getPath: () => `/espace-pro/authentification/confirmation?email=${email}` as string,
       title: "Confirmation de création de compte",
-      getMetadata: () => ({
-        title: "Confirmation de création de compte - La bonne alternance",
-      }),
     }),
     backHome: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "ADMIN" | "OPCO" }): IPage => {
       switch (userType) {
@@ -926,9 +602,6 @@ export const PAGES = {
     rendezVousApprentissageDetail: ({ siret }: { siret: string }): IPage => ({
       getPath: () => `/espace-pro/administration/rendez-vous-apprentissage/${siret}` as string,
       title: `Détail etablissement ${siret}`,
-      getMetadata: () => ({
-        title: `Détail etablissement ${siret} - La bonne alternance`,
-      }),
     }),
     prdvUnsubscribeOptout: ({ id }: { id: string }): IPage => ({
       getPath: () => `/optout/unsubscribe/${id}` as string,
@@ -938,33 +611,21 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/processeur/job/${name}`,
       index: false,
       title: `Job ${name}`,
-      getMetadata: () => ({
-        title: `Job ${name} - La bonne alternance`,
-      }),
     }),
     adminProcessorJobInstance: (props: { name: string; id: string }): IPage => ({
       getPath: () => `/espace-pro/administration/processeur/job/${props.name}/${props.id}`,
       index: false,
       title: `Tâche Job ${props.id}`,
-      getMetadata: () => ({
-        title: `Tâche Job ${props.id} - La bonne alternance`,
-      }),
     }),
     adminProcessorCron: (name: string): IPage => ({
       getPath: () => `/espace-pro/administration/processeur/cron/${name}`,
       index: false,
       title: `CRON ${name}`,
-      getMetadata: () => ({
-        title: `CRON ${name} - La bonne alternance`,
-      }),
     }),
     adminProcessorCronTask: (props: { name: string; id: string }): IPage => ({
       getPath: () => `/espace-pro/administration/processeur/cron/${props.name}/${props.id}`,
       index: false,
       title: `Tâche CRON ${props.id}`,
-      getMetadata: () => ({
-        title: `Tâche CRON ${props.id} - La bonne alternance`,
-      }),
     }),
     seoVille: (villeSlug: string, villeLabel?: string): IPage => ({
       getPath: () => `/alternance/ville/${villeSlug}`,

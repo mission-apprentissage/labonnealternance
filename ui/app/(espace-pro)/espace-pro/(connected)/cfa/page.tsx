@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import CfaHome from "@/app/(espace-pro)/espace-pro/(connected)/_components/CfaHome"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 export const metadata: Metadata = {
-  title: PAGES.static.backCfaHome.getMetadata().title,
+  title: METADATA.static.backCfaHome().title,
 }
 
 export default function CfaPage() {

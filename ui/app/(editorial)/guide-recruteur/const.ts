@@ -1,3 +1,4 @@
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 export const IMAGE_BASE_PATH = "/images/guides/guide-recruteur/"
@@ -6,7 +7,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
   ["je-suis-employeur-public"]: {
     id: "je-suis-employeur-public",
     title: PAGES.static.guideRecruteurJeSuisEmployeurPublic.title,
-    description: PAGES.static.guideRecruteurJeSuisEmployeurPublic.getMetadata().description,
+    description: METADATA.static.guideRecruteurJeSuisEmployeurPublic().description,
     imageUrl: `${IMAGE_BASE_PATH}je-suis-employeur-public.svg`,
     path: PAGES.static.guideRecruteurJeSuisEmployeurPublic.getPath(),
     updatedAt: "26/03/2026",
@@ -14,7 +15,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
   ["cerfa-apprentissage-et-professionnalisation"]: {
     id: "cerfa-apprentissage-et-professionnalisation",
     title: PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation.title,
-    description: PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation.getMetadata().description,
+    description: METADATA.static.guideRecruteurCerfaApprentissageEtProfessionnalisation().description,
     imageUrl: `${IMAGE_BASE_PATH}cerfa-apprentissage-et-professionnalisation.svg`,
     path: PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation.getPath(),
     updatedAt: "26/03/2026",

@@ -47,7 +47,10 @@ type SearchQuerystring = {
   latitude?: number
   longitude?: number
   radius?: number
-  source?: "suggestion" | "free_text" | "training_links"
+  search_source?: "suggestion" | "free_text" | "training_links" | "external_sites"
+  // Alias déprécié (cf. search.routes.ts) : encore envoyé volontairement par l'UI courante
+  // (transition anti-version-skew) et par les liens traininglinks émis avant le 2026-08-24.
+  source?: "suggestion" | "free_text" | "training_links" | "external_sites"
 }
 
 // Arrondi à 1 décimale (~11 km) : suffisant pour "quelle zone cherche quoi", inexploitable
@@ -73,7 +76,7 @@ export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOu
       q_normalized,
       status: outcome.status,
       nb_hits: outcome.nbHits,
-      source: query.source ?? "free_text",
+      search_source: query.search_source ?? query.source ?? "free_text",
       filters: {
         type: query.type ?? null,
         type_filter_label: query.type_filter_label?.length ?? 0,

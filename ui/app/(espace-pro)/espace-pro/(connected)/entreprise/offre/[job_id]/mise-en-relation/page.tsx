@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 import MiseEnRelation from "@/app/(espace-pro)/_components/MiseEnRelation"
 import { getSession } from "@/utils/get-session"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 
 export async function generateMetadata({ params }: { params: Promise<{ job_id: string }> }): Promise<Metadata> {
   const { job_id } = await params
   return {
-    title: PAGES.dynamic.backEntrepriseMiseEnRelation({ job_id }).getMetadata().title,
+    title: METADATA.dynamic.backEntrepriseMiseEnRelation({ job_id }).title,
   }
 }
 
