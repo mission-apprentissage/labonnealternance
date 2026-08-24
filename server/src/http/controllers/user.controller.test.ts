@@ -286,12 +286,10 @@ describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () 
 
 describe("Modification du compte par l'entreprise elle-même (PUT /user/:userId, self-service)", () => {
   beforeEach(async () => {
-    return async () => {
-      await getDbCollection("entreprises").deleteMany({})
-      await getDbCollection("userswithaccounts").deleteMany({})
-      await getDbCollection("rolemanagements").deleteMany({})
-      await getDbCollection("referentiel_engagement_entreprise").deleteMany({})
-    }
+    await getDbCollection("entreprises").deleteMany({})
+    await getDbCollection("userswithaccounts").deleteMany({})
+    await getDbCollection("rolemanagements").deleteMany({})
+    await getDbCollection("referentiel_engagement_entreprise").deleteMany({})
   })
 
   useMongo()
