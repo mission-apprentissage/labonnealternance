@@ -7,18 +7,23 @@ import { useEffect, useRef, useState } from "react"
 
 import { apiPost } from "@/utils/api.utils"
 
-type TriggerableJob = "processApplications" | "processRecruiterIntentions" | "processJobPartnersForApi" | "importCatalogueFormationJob"
+type TriggerableJob = "processApplications" | "processRecruiterIntentions" | "processJobPartnersForApi" | "importCatalogueFormationJob" | "updateHandiEngagementForce"
 
-const JOBS: { name: TriggerableJob; label: string }[] = [
+const JOBS: { name: TriggerableJob; label: string; confirmMessage?: string }[] = [
   { name: "processApplications", label: "Traitement des candidatures" },
   { name: "processRecruiterIntentions", label: "Émission des intentions recruteurs" },
   { name: "processJobPartnersForApi", label: "Traitement des offres partenaires (API)" },
   { name: "importCatalogueFormationJob", label: "Import catalogue des formations" },
+  {
+    name: "updateHandiEngagementForce",
+    label: "Mise à jour de l'engagement handicap (force)",
+    confirmMessage: "Ce job ignore le garde-fou de marge ±20% et peut supprimer des entrées du référentiel d'engagement handicap. Confirmer le déclenchement ?",
+  },
 ]
 
 const COOLDOWN_MS = 10_000
 
-function TriggerButton({ name, label }: { name: TriggerableJob; label: string }) {
+function TriggerButton({ name, label, confirmMessage }: { name: TriggerableJob; label: string; confirmMessage?: string }) {
   const [cooldown, setCooldown] = useState(false)
   const cooldownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -37,9 +42,14 @@ function TriggerButton({ name, label }: { name: TriggerableJob; label: string })
     },
   })
 
+  const handleClick = () => {
+    if (confirmMessage && !window.confirm(confirmMessage)) return
+    mutation.mutate()
+  }
+
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
-      <Button priority="primary" size="small" disabled={cooldown || mutation.isPending} onClick={() => mutation.mutate()}>
+      <Button priority="primary" size="small" disabled={cooldown || mutation.isPending} onClick={handleClick}>
         {label}
       </Button>
       {mutation.isError && <Typography sx={{ fontSize: "12px", color: "#CE0500" }}>Erreur lors du déclenchement du job</Typography>}
@@ -56,7 +66,7 @@ export function ProcessorTriggerButtons() {
       </Typography>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {JOBS.map((job) => (
-          <TriggerButton key={job.name} name={job.name} label={job.label} />
+          <TriggerButton key={job.name} name={job.name} label={job.label} confirmMessage={job.confirmMessage} />
         ))}
       </Box>
     </Box>

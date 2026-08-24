@@ -255,6 +255,18 @@ describe("updateHandiEngagement", () => {
       expect(remaining.map((d) => d.siret).sort()).toEqual([...EXISTING].sort())
     })
 
+    it("avec force=true, nettoie même en dehors de la marge ±20% (déclenchement manuel)", async () => {
+      // given : même scénario que le cas précédent (perte de 3 SIRET sur 10, soit -30%, hors marge)
+      await seedExistingFranceTravailDocs()
+      const fileSirets = EXISTING.slice(0, 7)
+      mockNdjson(fileSirets.map((siret) => ({ siret })))
+      // when : le garde-fou est explicitement contourné
+      await updateHandiEngagement({ force: true })
+      // then : le nettoyage s'exécute malgré l'écart de -30%, les 3 SIRET absents du fichier sont supprimés
+      const remaining = await getDbCollection("referentiel_engagement_entreprise").find({}).toArray()
+      expect(remaining.map((d) => d.siret).sort()).toEqual([...fileSirets].sort())
+    })
+
     it("nettoie quand le fichier gagne exactement 20% de SIRET (limite haute incluse : 12/10)", async () => {
       // given : previousFranceTravailCount = 10. Le fichier contient 9 des 10 SIRET existants (1 disparaît)
       // et 3 nouveaux SIRET, soit 12 au total (+20% pile par rapport à 10)

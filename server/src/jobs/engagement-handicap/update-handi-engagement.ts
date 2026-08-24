@@ -81,8 +81,15 @@ const removeFranceTravailSourceForMissingSirets = async (sirets: Set<string>) =>
   return { removed, franceTravailSourceRemoved }
 }
 
-export const updateHandiEngagement = async () => {
-  logger.info(`updateHandiEngagement: téléchargement de ${S3_KEY}`)
+type UpdateHandiEngagementOptions = {
+  // Ignore le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO) et force le nettoyage
+  // des sources France Travail obsolètes. Réservé à un déclenchement manuel, quand l'écart constaté
+  // est confirmé légitime (ex. mise à jour majeure du fichier source).
+  force?: boolean
+}
+
+export const updateHandiEngagement = async ({ force = false }: UpdateHandiEngagementOptions = {}) => {
+  logger.info(`updateHandiEngagement: téléchargement de ${S3_KEY}${force ? " (mode force : garde-fou de marge ignoré)" : ""}`)
 
   const previousFranceTravailCount = await getDbCollection("referentiel_engagement_entreprise").countDocuments({
     engagement: "handicap",
@@ -145,7 +152,11 @@ export const updateHandiEngagement = async () => {
   // fichier et le nombre de documents FRANCE_TRAVAIL déjà en base reste dans une marge de ±20%.
   const minExpectedCount = previousFranceTravailCount * (1 - MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
   const maxExpectedCount = previousFranceTravailCount * (1 + MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
-  const isWithinMargin = previousFranceTravailCount === 0 || (sirets.size >= minExpectedCount && sirets.size <= maxExpectedCount)
+  const isWithinMargin = previousFranceTravailCount === 0 || force || (sirets.size >= minExpectedCount && sirets.size <= maxExpectedCount)
+
+  if (force) {
+    logger.warn(`updateHandiEngagement: garde-fou de marge ±20% ignoré (force=true) : previousFranceTravailCount=${previousFranceTravailCount}, sirets=${sirets.size}`)
+  }
 
   if (errors === 0 && sirets.size > 0 && isWithinMargin) {
     const { removed, franceTravailSourceRemoved } = await removeFranceTravailSourceForMissingSirets(sirets)

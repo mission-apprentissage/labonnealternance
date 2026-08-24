@@ -391,7 +391,7 @@ export async function setupJobProcessor() {
           },
           "update-handi-engagement": {
             cron_string: "45 4 * * SAT",
-            handler: updateHandiEngagement,
+            handler: async () => updateHandiEngagement(),
           },
         },
     jobs: {
@@ -401,6 +401,12 @@ export async function setupJobProcessor() {
           await recreateIndexes({ drop })
           return
         },
+      },
+      "update-handi-engagement:force": {
+        // Déclenchement manuel : ignore le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
+        // pour forcer le nettoyage des sources France Travail obsolètes, quand l'écart constaté est
+        // confirmé légitime (ex. mise à jour majeure du fichier source).
+        handler: async () => updateHandiEngagement({ force: true }),
       },
       "api:user:create": {
         handler: async (job) => {
