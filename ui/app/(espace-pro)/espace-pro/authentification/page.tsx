@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import AuthentificationPage from "./AuthentificationPage"
 export const metadata: Metadata = {
-  title: PAGES.static.authentification.getMetadata().title,
-  description: PAGES.static.authentification.getMetadata().description,
+  title: METADATA.static.authentification().title,
+  description: METADATA.static.authentification().description,
 }
 
 const Page = async () => {

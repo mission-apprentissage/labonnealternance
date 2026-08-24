@@ -58,7 +58,7 @@ Lorsqu'il n'y a pas de migrations, le déploiement s'effectue sans interruption 
 
 Le déploiement se base sur la commande [docker stack deploy](https://docs.docker.com/engine/reference/commandline/stack_deploy/).
 
-Dans le fichier [docker-compose.yml](../.infra/docker-compose.yml) qui décrit la stack déployée par Docker Swarm, on trouve les configurations suivantes:
+Dans le fichier [docker-compose.production.yml](../../.infra/docker-compose.production.yml) qui décrit la stack déployée par Docker Swarm (un fichier par environnement : production, recette, preview), on trouve les configurations suivantes:
 
 - `deploy.update_config.parallelism=1`: lors de l'application d'une mise à jour du service, Docker Swarm exécute la mise à jour conteneur par conteneur.
 - `deploy.replicas=2`: certains services sont répliqués sur plusieurs conteneurs. Ainsi, lors de l'application de la mise à jour (qui nécessite l'arrêt du conteneur), il existe toujours au moins un conteneur assurant le service.
@@ -217,4 +217,4 @@ Il est possible d'accéder à l'interface via [https://cfas-recette.apprentissag
 
 ## Preview
 
-Pour plus d'informations concernant l'environnement de recette veuillez vous référer à la [documentation dédiée](./infrastructure/preview.md).
+Pour plus d'informations concernant les environnements de preview, veuillez vous référer au [plan de migration des previews](../migration-preview/plan-migration-preview.md).

@@ -12,11 +12,8 @@ import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { isCfaEntreprise } from "shared/services/is-cfa-entreprise"
 import { Footer } from "@/app/_components/Footer"
-import { useBetaDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-beta-detail-navigation"
-import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
-import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
+import { useDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-detail-navigation"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { useBuildNavigation } from "@/app/hooks/use-build-navigation"
 import { useFormationPrdvTracker } from "@/app/hooks/use-formation-prdv-tracker"
 import { useIsWidget } from "@/app/hooks/use-is-widget"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -46,23 +43,20 @@ const dontBreakOutCssParameters = {
 }
 
 export default function TrainingDetailRendererClient({ training, rechercheParams }: { rechercheParams: IRecherchePageParams; training: ILbaItemFormation2Json }) {
-  const result = useRechercheResults(rechercheParams)
   const { appliedDate, setPrdvDone } = useFormationPrdvTracker(training.id)
 
-  return <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.displayedItems} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
+  return <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
 }
 
 function TrainingDetailPage({
   selectedItem,
   appliedDate,
-  resultList,
   rechercheParams,
   onRdvSuccess,
 }: {
   rechercheParams: IRecherchePageParams
   selectedItem: ILbaItemFormation2Json
   appliedDate: string | null
-  resultList: IUseRechercheResults["displayedItems"]
   onRdvSuccess: () => void
 }) {
   const kind: LBA_ITEM_TYPE = selectedItem?.type
@@ -73,12 +67,11 @@ function TrainingDetailPage({
   const theme = useTheme()
   const isWidget = useIsWidget()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
-  const legacyNavigation = useBuildNavigation({ items: resultList, currentItemId: selectedItem.id, rechercheParams: rechercheParams })
   // Ouverture depuis le moteur de recherche (?from=/recherche…) : précédent/suivant naviguent
-  // dans les résultats de /recherche et « fermer » y retourne, au lieu du fallback legacy.
-  const betaNavigation = useBetaDetailNavigation()
-  const { swipeHandlers, goNext, goPrev } = betaNavigation ?? legacyNavigation
-  const handleClose = betaNavigation ? betaNavigation.handleClose : () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath(), { scroll: false })
+  // dans les résultats de /recherche et « fermer » y retourne. Sans ?from=, pas de contexte
+  // de liste : pas de précédent/suivant, « fermer » retombe sur /recherche.
+  const { swipeHandlers, goNext, goPrev, handleClose: closeToSearch } = useDetailNavigation()
+  const handleClose = closeToSearch ?? (() => router.push(PAGES.dynamic.recherche(rechercheParams).getPath(), { scroll: false }))
 
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,
@@ -196,7 +189,6 @@ function TrainingDetailPage({
             ref={headerRef}
             sx={{
               filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-              borderRadius: { xs: 0, lg: fr.spacing("2v") },
               boxShadow: { xs: "unset", lg: "0 4px 12px 0 rgba(0, 0, 18, 0.16)" },
               padding: "10px 20px 0px 20px",
               backgroundColor: "white",
@@ -250,7 +242,7 @@ function TrainingDetailPage({
               </Box>
             </Box>
           </Box>
-          <Box sx={{ mx: { md: 0, lg: fr.spacing("6v") } }}>
+          <Box>
             <TrainingDetail training={selectedItem} />
             <AideApprentissage />
           </Box>

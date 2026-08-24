@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { fetchNotionPage } from "@/services/fetch-notion-page"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import PolitiqueDeConfidentialiteRendererClient from "./PDCRendererClient"
 
 export const metadata: Metadata = {
-  title: PAGES.static.politiqueConfidentialite.getMetadata().title,
-  description: PAGES.static.politiqueConfidentialite.getMetadata().description,
+  title: METADATA.static.politiqueConfidentialite().title,
+  description: METADATA.static.politiqueConfidentialite().description,
 }
 
 export default async function PolitiqueDeConfidentialite() {

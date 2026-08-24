@@ -1,16 +1,19 @@
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import nock from "nock"
 import GEIQ_WHITELIST from "shared/constants/geiq"
-import type { IClassificationLabBatchResponse } from "shared/models/cache-classification.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { mistralClassificationResponse } from "@/common/apis/classification/classification-mistral.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import config from "@/config"
+import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detect-classification-jobs-partners"
 
 vi.mock("@/services/classification/classification-mistral-batch.service", () => ({
   submitClassificationRequests: vi.fn(),
+}))
+
+vi.mock("@/services/mistralai/mistralai.service", () => ({
+  sendMistralMessages: vi.fn(),
 }))
 
 const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({})
@@ -25,15 +28,7 @@ describe("detect-classification-jobs-partners", () => {
   useMongo()
 
   beforeEach(() => {
-    const apiResponse: IClassificationLabBatchResponse = [
-      {
-        id: partner_job_id,
-        label: "publish",
-        model: "model",
-        scores: { publish: 0.6, unpublish: 0.4 },
-      },
-    ]
-    nock(config.labonnealternanceLab.baseUrl).post("/model/scores").reply(200, apiResponse)
+    vi.mocked(sendMistralMessages).mockResolvedValue(mistralClassificationResponse([{ id: "0", label: "publish", scores: { publish: 0.6, unpublish: 0.4 } }]))
     return async () => {
       await getDbCollection("computed_jobs_partners").deleteMany({})
     }
@@ -126,16 +121,7 @@ describe("detect-classification-jobs-partners", () => {
 
   it("should set business_error to CFA when classification is 'unpublish'", async () => {
     // given
-    nock.cleanAll()
-    const unpublishResponse: IClassificationLabBatchResponse = [
-      {
-        id: "0",
-        label: "unpublish",
-        model: "model",
-        scores: { publish: 0.3, unpublish: 0.7 },
-      },
-    ]
-    nock(config.labonnealternanceLab.baseUrl).post("/model/scores").reply(200, unpublishResponse)
+    vi.mocked(sendMistralMessages).mockResolvedValue(mistralClassificationResponse([{ id: "0", label: "unpublish", scores: { publish: 0.3, unpublish: 0.7 } }]))
     await givenSomeComputedJobPartners([
       {
         partner_job_id,
@@ -173,9 +159,7 @@ describe("detect-classification-jobs-partners", () => {
   })
 
   it("should route the whole batch to Mistral batch (CLASSIFICATION_PENDING) when candidate volume exceeds the sync threshold", async () => {
-    // given: > 500 candidats (seuil sync/batch), pas de mock nock nécessaire : la voie batch ne
-    // doit appeler ni l'API Lab ni l'API Mistral synchrone.
-    nock.cleanAll()
+    // given: > 500 candidats (seuil sync/batch) : la voie batch ne doit pas appeler l'API Mistral synchrone.
     const { submitClassificationRequests } = await import("@/services/classification/classification-mistral-batch.service")
     const jobs = Array.from({ length: 501 }, (_, i) => ({
       partner_job_id: `bulk-${i}`,
@@ -193,5 +177,6 @@ describe("detect-classification-jobs-partners", () => {
     expect(submitClassificationRequests).toHaveBeenCalledTimes(1)
     const docs = vi.mocked(submitClassificationRequests).mock.calls[0][0]
     expect(docs).toHaveLength(501)
+    expect(sendMistralMessages).not.toHaveBeenCalled()
   }, 15_000)
 })

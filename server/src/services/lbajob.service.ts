@@ -1,9 +1,8 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import type { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob } from "shared"
+import type { IJob, IRecruiter, IReferentielRomeForJob } from "shared"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import type { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 
 export type IJobResult = {
   recruiter: Omit<IRecruiter, "jobs">
@@ -22,35 +21,6 @@ export const getCity = (recruiter) => {
   }
 
   return city
-}
-
-/**
- * tri des ofres selon l'ordre alphabétique du titre (primaire) puis du nom de société (secondaire)
- */
-export function sortLbaJobs(jobs: Partial<ILbaItemLbaJob | ILbaItemPartnerJob>[]) {
-  jobs.sort((a, b) => {
-    if (a && b) {
-      if (a.title && b.title) {
-        if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
-          return -1
-        }
-        if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
-          return 1
-        }
-      }
-
-      if (a.company?.name && b.company?.name) {
-        if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
-          return -1
-        }
-        if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
-          return 1
-        }
-      }
-    }
-
-    return 0
-  })
 }
 
 /**

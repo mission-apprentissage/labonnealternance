@@ -9,8 +9,9 @@ import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur()
 
 const RoleEtMissionsDuMaitreDApprentissageOuTuteurPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur]
@@ -29,6 +30,7 @@ const RoleEtMissionsDuMaitreDApprentissageOuTuteurPage = () => {
       allerPlusLoinItems={[ARTICLES["comprendre-la-remuneration"], ARTICLES["la-rupture-de-contrat"], ARTICLES["se-faire-accompagner"]]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur}
+      metadata={metadata}
     >
       <Section>
         <Paragraph>

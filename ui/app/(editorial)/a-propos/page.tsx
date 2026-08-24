@@ -46,10 +46,11 @@ import tbd from "@/public/images/logosPartenaires/partenaire-tdb.webp"
 import toulouseMetropole from "@/public/images/logosPartenaires/partenaire-toulouse-metropole.webp"
 import veritone from "@/public/images/logosPartenaires/partenaire-veritone.webp"
 
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  title: PAGES.static.aPropos.getMetadata().title,
-  description: PAGES.static.aPropos.getMetadata().description,
+  title: METADATA.static.aPropos().title,
+  description: METADATA.static.aPropos().description,
 }
 
 export default function APropos() {

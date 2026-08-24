@@ -7,10 +7,11 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  title: PAGES.static.contact.getMetadata().title,
-  description: PAGES.static.contact.getMetadata().description,
+  title: METADATA.static.contact().title,
+  description: METADATA.static.contact().description,
 }
 
 export default function Contact() {

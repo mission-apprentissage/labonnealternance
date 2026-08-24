@@ -1,19 +1,15 @@
 import { notFound } from "@hapi/boom"
 import type { ObjectId } from "mongodb"
-import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
-import type { OPCOS_LABEL } from "shared/constants/index"
 import { TRAINING_REMOTE_TYPE } from "shared/constants/index"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import type { ILbaItemPartnerJob } from "shared/models/index"
 import { JOB_STATUS_ENGLISH, JobCollectionName, traductionJobStatus } from "shared/models/index"
-import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
+import type { IJobsPartnersOfferPrivateWithDistance } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { isCfaEntreprise } from "shared/services/is-cfa-entreprise"
 import { isGeiqEntreprise } from "shared/services/is-geiq-entreprise"
-import { manageApiError } from "@/common/utils/error-manager"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { generateApplicationToken } from "./app-links.service"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByJobCount, PARTNERS_WITH_APPLICATION_API } from "./application.service"
@@ -36,7 +32,7 @@ export const transformPartnerJobs = ({
 }) => {
   const applicationCountMap = applicationCountByJob ? new Map(applicationCountByJob.map(({ _id, count }) => [_id, count])) : null
   return partnerJobs.flatMap((partnerJob) =>
-    isMinimalData ? transformPartnerJobWithMinimalData(partnerJob, applicationCountMap) : transformPartnerJob(partnerJob, "V2", applicationCountMap)
+    isMinimalData ? transformPartnerJobWithMinimalData(partnerJob, applicationCountMap) : transformPartnerJob(partnerJob, applicationCountMap)
   )
 }
 
@@ -45,7 +41,6 @@ export const transformPartnerJobs = ({
  */
 function transformPartnerJob(
   partnerJob: IJobsPartnersOfferPrivateWithDistance,
-  version: "V1" | "V2" = "V1",
   applicationCountMap?: null | Map<string, number>,
   hiringCount3Years?: number | null
 ): ILbaItemPartnerJob {
@@ -55,20 +50,11 @@ function transformPartnerJob(
   const id = partnerJob._id.toString()
 
   const recipient_id =
-    version === "V1"
-      ? getRecipientID(JobCollectionName.partners, id)
-      : partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA
-        ? getRecipientID(JobCollectionName.recruiters, id)
-        : getRecipientID(JobCollectionName.partners, id)
+    partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? getRecipientID(JobCollectionName.recruiters, id) : getRecipientID(JobCollectionName.partners, id)
 
   const resultJob: ILbaItemPartnerJob = {
     id,
-    ideaType:
-      version === "V1"
-        ? LBA_ITEM_TYPE_OLD.PARTNER_JOB
-        : partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA
-          ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-          : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+    ideaType: partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     title: partnerJob.offer_title,
     token: generateApplicationToken({ jobId: id }),
     recipient_id,
@@ -139,139 +125,6 @@ function transformPartnerJob(
   return resultJob
 }
 
-/**
- * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
- */
-function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivateWithDistance, applicationCountMap: null | Map<string, number>): ILbaItemPartnerJob {
-  const longitude = partnerJob.workplace_geopoint.coordinates[0]
-  const latitude = partnerJob.workplace_geopoint.coordinates[1]
-  const id = partnerJob._id.toString()
-
-  const resultJob: ILbaItemPartnerJob = {
-    ideaType: partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
-    id,
-    title: partnerJob.offer_title,
-    place: {
-      //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
-      distance: partnerJob?.distance != null && partnerJob?.distance >= 0 ? roundDistance((partnerJob?.distance ?? 0) / 1000) : null,
-      fullAddress: partnerJob.is_delegated ? partnerJob.cfa_address_label : partnerJob.workplace_address_label,
-      city: partnerJob.workplace_address_city,
-      latitude,
-      longitude,
-    },
-    company: {
-      siret: partnerJob.is_delegated ? partnerJob.cfa_siret : partnerJob.workplace_siret,
-      name: (partnerJob.is_delegated ? partnerJob.cfa_legal_name : (partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name)) ?? UNKNOWN_COMPANY,
-      opco: { label: partnerJob.workplace_opco, url: null },
-      mandataire: partnerJob.is_delegated,
-      elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
-      isGeiq: isGeiqEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
-    },
-    job: {
-      creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
-      elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
-      isCfaEntreprise: isCfaEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
-      startType: partnerJob.contract_start_type,
-    },
-    contact: {
-      hasEmail: partnerJob.apply_email || PARTNERS_WITH_APPLICATION_API.includes(partnerJob.partner_label) ? true : false,
-    },
-    // KBA 20250131 Quick fix, to remove once return type LBA_ITEM is merge when all jobs comes only from JOBS_PARTNERS COLLECTION
-    token: "",
-    recipient_id: "",
-  }
-
-  if (applicationCountMap && resultJob.contact?.hasEmail) {
-    resultJob.applicationCount = applicationCountMap.get(id) ?? 0
-  }
-
-  return resultJob
-}
-
-/**
- * @description Retourne les offres d'emploi partner correspondantes aux critères de recherche
- */
-export const getPartnerJobs = async ({
-  romes = "",
-  radius = 10,
-  latitude,
-  longitude,
-  api,
-  opco,
-  opcoUrl,
-  diploma,
-  caller,
-  isMinimalData,
-  force_partner_label,
-  elligibleHandicapFilter,
-}: {
-  romes?: string
-  radius?: number
-  latitude?: number
-  longitude?: number
-  api: string
-  opco?: string
-  opcoUrl?: string
-  diploma?: INiveauDiplomeEuropeen
-  caller?: string | null
-  isMinimalData: boolean
-  force_partner_label?: JOBPARTNERS_LABEL
-  elligibleHandicapFilter?: boolean
-}) => {
-  if (radius === 0) {
-    radius = 10
-  }
-  try {
-    const hasLocation = Boolean(latitude)
-
-    const distance = hasLocation ? radius : 21000
-
-    const params = {
-      caller,
-      romes: romes?.split(","),
-      distance,
-      lat: hasLocation ? (latitude as number) : FRANCE_LATITUDE,
-      lon: hasLocation ? (longitude as number) : FRANCE_LONGITUDE,
-      niveau: diploma,
-      isMinimalData,
-      opco,
-    }
-
-    const opcoParam = (params.opco ?? null) as OPCOS_LABEL | null
-
-    const resolvedQuery = await resolveQuery({
-      latitude: params.lat,
-      longitude: params.lon,
-      radius: params.distance,
-      target_diploma_level: params.niveau,
-      romes: params.romes,
-      rncp: null,
-      opco: opcoParam,
-      elligibleHandicapFilter: elligibleHandicapFilter ?? false,
-    })
-
-    const rawPartnerJobs = await getJobsPartnersFromDBForUI({ ...resolvedQuery, force_partner_label })
-
-    const ids = rawPartnerJobs.map(({ _id }) => _id)
-    const applicationCountByJob = await getApplicationByJobCount(ids)
-    let partnerJobs: ILbaItemPartnerJob[] = transformPartnerJobs({ partnerJobs: rawPartnerJobs, isMinimalData, applicationCountByJob })
-
-    // filtrage sur l'opco
-    if (opco && partnerJobs) {
-      partnerJobs = await filterJobsByOpco({ opco, opcoUrl, jobs: partnerJobs })
-    }
-
-    if (!hasLocation) {
-      sortLbaJobs(partnerJobs)
-    }
-
-    return { results: partnerJobs }
-  } catch (error) {
-    sentryCaptureException(error)
-    return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from partner job (${api})` })
-  }
-}
-
 export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPartnerJob> => {
   const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
 
@@ -287,7 +140,8 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
   // cfa_siret quand is_delegated est vrai.
   const hiringCount3Years = rawPartnerJob.workplace_siret ? await getHiringCountLastFullYears(rawPartnerJob.workplace_siret) : null
 
-  const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountMap, hiringCount3Years)
+  const partnerJob = transformPartnerJob(rawPartnerJob, applicationCountMap, hiringCount3Years)
+
   return partnerJob
 }
 

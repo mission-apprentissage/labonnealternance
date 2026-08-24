@@ -34,7 +34,6 @@ export const ValorisationCandidatureSpontanee = ({
       const path = PAGES.dynamic
         .recherche({
           ...recherchePageParams,
-          activeItems: null,
           scrollToRecruteursLba: true,
         })
         .getPath()

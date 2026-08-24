@@ -67,7 +67,20 @@ yarn release:interactive
 
 ## Deploiement de l'application
 
-See [Deployment](../deploy.md)
+### Depuis Github Actions
+
+Lancer la Github Action [Deployment](../../.github/workflows/_deploy.yml) (`workflow_dispatch`) en renseignant :
+
+- `environment` : environnement cible (`production`, `recette` ou `pentest`)
+- `app_version` : version de l'application (`latest` par défaut)
+
+### Déploiement manuel
+
+```bash
+yarn deploy <nom-de-lenvironnement> --user <nom_utilisateur> --extra-vars=app_version=<app_image_version>
+```
+
+Les options `--user` et `--extra-vars` sont facultatives.
 
 ## Gestion des secrets
 

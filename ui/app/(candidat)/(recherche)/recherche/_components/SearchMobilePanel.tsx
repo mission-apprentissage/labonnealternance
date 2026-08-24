@@ -7,12 +7,19 @@ import type { ReactNode } from "react"
 
 import { useDialogA11y } from "../_hooks/use-dialog-a11y"
 import { useLockBodyScroll } from "../_hooks/use-lock-body-scroll"
+import { useVisualViewportSize } from "../_hooks/use-visual-viewport-size"
 
 interface SearchMobilePanelProps {
   /** Sans titre : header réduit au bouton « Fermer » aligné à droite (modale de la home). */
   title?: string
   /** Libellé accessibilité quand `title` est absent. */
   ariaLabel?: string
+  /**
+   * Masque le header (titre + Fermer) — écran de saisie : le champ focus doit être tout en
+   * haut pour maximiser l'espace des suggestions au-dessus du clavier. `display: none`
+   * (pas de démontage) : le focus trap ignore déjà les éléments non visibles.
+   */
+  hideHeader?: boolean
   onClose: () => void
   children: ReactNode
   footer?: ReactNode
@@ -22,9 +29,10 @@ interface SearchMobilePanelProps {
  * Panneau mobile plein écran (recherche / filtres). Remplace le `Drawer`
  * unique du POC. Head titre + croix, body scrollable, footer sticky optionnel.
  */
-export function SearchMobilePanel({ title, ariaLabel, onClose, children, footer }: SearchMobilePanelProps) {
+export function SearchMobilePanel({ title, ariaLabel, hideHeader = false, onClose, children, footer }: SearchMobilePanelProps) {
   useLockBodyScroll()
   const dialogRef = useDialogA11y(onClose)
+  const viewport = useVisualViewportSize()
 
   return (
     <Box
@@ -34,7 +42,15 @@ export function SearchMobilePanel({ title, ariaLabel, onClose, children, footer 
       aria-label={title ?? ariaLabel}
       sx={{
         position: "fixed",
-        inset: 0,
+        // Suivi du viewport VISUEL, pas `inset: 0` : le clavier virtuel recouvre le bas du
+        // layout viewport — un panneau pleine hauteur y laisserait la liste de suggestions
+        // et le footer masqués. top : iOS décale le viewport visuel (offsetTop) pour amener
+        // le champ focus en vue — décalage via `top` et non `transform`, déjà utilisé par
+        // l'animation d'ouverture (conflit pendant sa lecture).
+        top: viewport.offsetTop ? `${viewport.offsetTop}px` : 0,
+        left: 0,
+        right: 0,
+        height: viewport.height !== null ? `${viewport.height}px` : "100%",
         // Sous le niveau "modal" (1300) pour que les dropdowns des Autocomplete
         // (MUI Popper) et de l'autocomplete Entreprise (downshift) passent devant.
         zIndex: 1250,
@@ -50,7 +66,7 @@ export function SearchMobilePanel({ title, ariaLabel, onClose, children, footer 
       <Box
         sx={{
           flex: "0 0 auto",
-          display: "flex",
+          display: hideHeader ? "none" : "flex",
           alignItems: "center",
           justifyContent: title ? "space-between" : "flex-end",
           px: fr.spacing("4v"),
