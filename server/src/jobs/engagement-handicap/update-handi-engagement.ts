@@ -93,7 +93,8 @@ export const updateHandiEngagement = async () => {
     stream = await s3ReadAsStream("storage", S3_KEY)
   } catch (err) {
     logger.error({ err }, `updateHandiEngagement: échec de la lecture du fichier S3 (${S3_KEY})`)
-    return
+    sentryCaptureException(err)
+    throw err
   }
 
   if (!stream) {
