@@ -47,6 +47,14 @@ init({
     /SCDynimacBridge/,
     "No Listener: tabs:outgoing.message.ready",
     "Invalid call to runtime.sendMessage",
+    // Une extension navigateur (traducteur, gestionnaire de mots de passe…) mute le DOM en
+    // parallèle du commit React, qui perd ensuite la référence du nœud pendant son cleanup.
+    // Stack 100 % interne à react-dom-client.production.js (commitMutationEffectsOnFiber /
+    // commitDeletionEffectsOnFiber), aucune frame applicative. Chronique depuis fin juin/début
+    // juillet 2026, sans lien avec un déploiement (Sentry LBA-UI-5CVZZZZZZG3V9 ~1350 events,
+    // LBA-UI-5CVZZZZZZG3XY ~320 events, vérifié 2026-08-25).
+    "The object can not be found here.",
+    "Cannot read properties of null (reading 'removeChild')",
   ],
   beforeSend(event) {
     // Hydratation error comes from DSFR
