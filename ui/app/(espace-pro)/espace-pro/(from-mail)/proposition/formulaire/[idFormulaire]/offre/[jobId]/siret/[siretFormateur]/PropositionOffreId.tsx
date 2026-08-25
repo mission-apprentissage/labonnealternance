@@ -65,9 +65,6 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
 
   const downloadQRCode = () => {
     const qrCodeUrl = new URL(`${publicConfig.baseUrl}${PAGES.dynamic.espaceProOffreImpression(job._id.toString(), "cfa-sharing").getPath()}`)
-    qrCodeUrl.searchParams.set("utm_source", "lba")
-    qrCodeUrl.searchParams.set("utm_medium", "email")
-    qrCodeUrl.searchParams.set("utm_campaign", "mer-cfa-entreprise")
     window.open(qrCodeUrl.toString(), "_blank", "noopener,noreferrer")
   }
 
