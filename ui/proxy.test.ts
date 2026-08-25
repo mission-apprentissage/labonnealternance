@@ -73,7 +73,7 @@ describe("proxy - session confirmée invalide (401)", () => {
 })
 
 describe("proxy - aucun cookie de session", () => {
-  it("ne redirige pas vers l'authentification avec un message d'erreur trompeur", async () => {
+  it("redirige vers l'authentification sans message d'erreur trompeur ni sessionRetry", async () => {
     const request = new NextRequest(new URL("/espace-pro/cfa", BASE_URL))
 
     const response = await proxy(request)
