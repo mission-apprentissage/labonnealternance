@@ -4,6 +4,7 @@ on:
   workflow_call:
 jobs:
   npm-packages-check:
+    name: NPM dependency check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project

@@ -1,0 +1,219 @@
+// Import profond et non via le barrel "shared" : ce module part dans le bundle de la home.
+
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { toKebabCase } from "shared/utils/string-utils"
+
+export interface ISearchPageParams {
+  q?: string
+  q_source?: QSource // origine de q : suggestion d'autocomplete sélectionnée vs texte libre (télémétrie)
+  lieu_label?: string // label affiché dans le champ lieu (ex: "Paris 75001")
+  mode: SearchMode // type de recherche (défaut : emplois uniquement)
+  type_filter_label?: string[] // filtre par libellé de type (ex: "Formation à distance")
+  contract_type?: string[]
+  level?: string[]
+  activity_sector?: string[]
+  organization_name?: string
+  start_date?: string // date de début de contrat souhaitée (YYYY-MM-DD)
+  urgent?: boolean // recrutement urgent (start_type=des_que_possible)
+  handi?: boolean // employeur handi-engagé (is_disabled_elligible=true)
+  smart_apply?: boolean // candidature simplifiée disponible
+  is_algo_company?: boolean[] // types d'offres cochés : true = entreprises à contacter, false = offres d'emploi ; les deux cochés = sélection affichée mais aucun filtre API (équivaut à « tout »)
+  sort?: SortOption // tri des résultats (défaut : pertinence)
+  latitude?: number
+  longitude?: number
+  radius: number
+  page: number
+  hitsPerPage: number
+}
+
+export type SearchMode = "emplois" | "formations" | "emplois_formation"
+export const SEARCH_MODES: SearchMode[] = ["emplois", "formations", "emplois_formation"]
+export const DEFAULT_SEARCH_MODE: SearchMode = "emplois"
+
+export type SortOption = "proximity" | "date" | "applications" | "start_date"
+const SORT_OPTIONS: SortOption[] = ["proximity", "date", "applications", "start_date"]
+
+export type QSource = "suggestion" | "free_text" | "training_links" | "external_sites"
+const Q_SOURCES: QSource[] = ["suggestion", "free_text", "training_links", "external_sites"]
+
+/**
+ * Les filtres multi-valeurs utilisent des paramètres répétés dans l'URL :
+ *   ?contract_type=Apprentissage&contract_type=Professionnalisation
+ *
+ * URLSearchParams encode/décode chaque valeur individuellement → pas de conflit
+ * avec des virgules ou caractères spéciaux dans les libellés.
+ */
+export function parseSearchPageParams(search: URLSearchParams): ISearchPageParams {
+  function getMulti(key: string): string[] | undefined {
+    const vals = search.getAll(key)
+    return vals.length ? vals : undefined
+  }
+
+  // Parsing numérique gardé : une URL malformée (latitude=abc) produirait NaN, que tous les
+  // checks `!== undefined` traitent comme valide — le NaN serait re-sérialisé dans l'URL à
+  // chaque navigation sans jamais se réparer. Non fini → undefined / valeur par défaut.
+  function getFloat(key: string): number | undefined {
+    const raw = search.get(key)
+    if (!raw) return undefined
+    const value = parseFloat(raw)
+    return Number.isFinite(value) ? value : undefined
+  }
+
+  function getInt(key: string, fallback: number): number {
+    const raw = search.get(key)
+    if (!raw) return fallback
+    const value = parseInt(raw, 10)
+    return Number.isFinite(value) ? value : fallback
+  }
+
+  function getBool(key: string): boolean | undefined {
+    const val = search.get(key)
+    if (val === "true") return true
+    if (val === "false") return false
+    return undefined
+  }
+
+  function getBoolMulti(key: string): boolean[] | undefined {
+    const vals = [...new Set(search.getAll(key).filter((v) => v === "true" || v === "false"))].map((v) => v === "true")
+    return vals.length ? vals : undefined
+  }
+
+  // Une coordonnée sans l'autre est inutilisable (hasGeo exige la paire) : on droppe les deux.
+  const latitude = getFloat("latitude")
+  const longitude = getFloat("longitude")
+  const hasGeoPair = latitude !== undefined && longitude !== undefined
+
+  // « source » est l'ancien nom de « search_source », abandonné parce que c'est un paramètre
+  // réservé de Plausible (attribution d'acquisition). Le repli reste nécessaire tant que des
+  // liens externes le portent : campagne traininglinks du 2026-08-24, liens posés par des sites
+  // tiers. search_source prime si les deux sont présents.
+  const rawQSource = search.get("search_source") ?? search.get("source")
+
+  return {
+    // Trim : un `q` d'espaces doit compter comme une absence, sinon il passe la branche indexable
+    // de buildRecherchePageMetadata (canonical auto-référent `?q=+`, titre cassé) au lieu du noindex.
+    q: search.get("q")?.trim() || undefined,
+    q_source: Q_SOURCES.includes(rawQSource as QSource) ? (rawQSource as QSource) : undefined,
+    lieu_label: search.get("lieu_label") || undefined,
+    mode: SEARCH_MODES.includes(search.get("mode") as SearchMode) ? (search.get("mode") as SearchMode) : DEFAULT_SEARCH_MODE,
+    type_filter_label: getMulti("type_filter_label"),
+    contract_type: getMulti("contract_type"),
+    level: getMulti("level"),
+    activity_sector: getMulti("activity_sector"),
+    organization_name: search.get("organization_name") || undefined,
+    start_date: search.get("start_date") || undefined,
+    urgent: getBool("urgent"),
+    handi: getBool("handi"),
+    smart_apply: getBool("smart_apply"),
+    is_algo_company: getBoolMulti("is_algo_company"),
+    sort: SORT_OPTIONS.includes(search.get("sort") as SortOption) ? (search.get("sort") as SortOption) : undefined,
+    latitude: hasGeoPair ? latitude : undefined,
+    longitude: hasGeoPair ? longitude : undefined,
+    radius: getInt("radius", 20),
+    page: getInt("page", 0),
+    hitsPerPage: getInt("hitsPerPage", 20),
+  }
+}
+
+export function buildSearchUrl(params: ISearchPageParams, basePath = "/recherche"): string {
+  const query = new URLSearchParams()
+
+  if (params.q) query.set("q", params.q)
+  if (params.q && params.q_source) query.set("search_source", params.q_source)
+  if (params.lieu_label) query.set("lieu_label", params.lieu_label)
+  if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
+
+  for (const val of params.type_filter_label ?? []) query.append("type_filter_label", val)
+  for (const val of params.contract_type ?? []) query.append("contract_type", val)
+  for (const val of params.level ?? []) query.append("level", val)
+  for (const val of params.activity_sector ?? []) query.append("activity_sector", val)
+
+  if (params.organization_name) query.set("organization_name", params.organization_name)
+  if (params.start_date) query.set("start_date", params.start_date)
+  if (params.urgent !== undefined) query.set("urgent", params.urgent.toString())
+  if (params.handi !== undefined) query.set("handi", params.handi.toString())
+  if (params.smart_apply !== undefined) query.set("smart_apply", params.smart_apply.toString())
+  for (const val of params.is_algo_company ?? []) query.append("is_algo_company", val.toString())
+  if (params.sort) query.set("sort", params.sort)
+  if (params.latitude !== undefined) query.set("latitude", params.latitude.toString())
+  if (params.longitude !== undefined) query.set("longitude", params.longitude.toString())
+  if (params.radius !== 20) query.set("radius", params.radius.toString())
+  if (params.page !== 0) query.set("page", params.page.toString())
+  if (params.hitsPerPage !== 20) query.set("hitsPerPage", params.hitsPerPage.toString())
+
+  const qs = query.toString()
+  return `${basePath}${qs ? `?${qs}` : ""}`
+}
+
+/**
+ * Titre de la page de résultats, aligné sur le comportement du moteur legacy
+ * (buildSearchTitle + PAGES.dynamic.recherche/rechercheFormation dans routes.utils.ts) :
+ * contexte « - {métier} à {lieu} » ajouté seulement si un métier est saisi ; sans géo,
+ * « sur la France entière » ; géo sans label de lieu → pas de mention de lieu.
+ */
+export function buildSearchPageTitle(params: ISearchPageParams): string {
+  const base = params.mode === "formations" ? "Formations en alternance" : "Offres en alternance"
+  let context = ""
+  if (params.q) {
+    context = ` - ${params.q}`
+    if (params.lieu_label) {
+      context += ` à ${params.lieu_label}`
+    } else if (params.latitude === undefined) {
+      context += " sur la France entière"
+    }
+  }
+  return `${base}${context} | La bonne alternance`
+}
+
+/**
+ * Canonical auto-référent d'une page de résultats du nouveau moteur (`q`) : chemin + le métier
+ * recherché (et le `mode` s'il n'est pas la valeur par défaut). Débarrassé du bruit d'URL (géo,
+ * filtres, pagination, tri, toggles) pour consolider les variantes d'une même recherche métier sur
+ * une page indexable unique. Indispensable depuis le noindex de `/recherche` nue (#5034) : sans
+ * canonical propre, les pages `?q=` héritent du canonical racine (`"./"` → `/recherche`) et seraient
+ * dé-indexées avec elle. Sans `q`, renvoie `/recherche` (la page nue, cible de noindex).
+ */
+export function buildSearchPageCanonical(params: ISearchPageParams): string {
+  if (!params.q) return "/recherche"
+  const query = new URLSearchParams()
+  query.set("q", params.q)
+  if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
+  return `/recherche?${query.toString()}`
+}
+
+/**
+ * Texte du H1 SEO de la page de résultats : « Alternance {métier}{ à {lieu}} ».
+ * Retourne `null` sans métier saisi (`q`) — la page n'a alors pas de H1 dynamique à afficher.
+ */
+export function buildRechercheH1(params: Pick<ISearchPageParams, "q" | "lieu_label">): string | null {
+  const q = params.q?.trim() || null
+  if (!q) return null
+
+  const lieu = params.lieu_label?.trim() || null
+  return `Alternance ${q}${lieu ? ` à ${lieu}` : ""}`
+}
+
+export function buildHitDetailUrl(hit: { sub_type: string; url_id: string; title: string }, currentSearchUrl: string): string {
+  const slug = toKebabCase(hit.title || "offre")
+  const from = encodeURIComponent(currentSearchUrl)
+
+  if (hit.sub_type === LBA_ITEM_TYPE.FORMATION) {
+    return `/formation/${encodeURIComponent(hit.url_id)}/${slug}?from=${from}`
+  }
+
+  return `/emploi/${hit.sub_type}/${encodeURIComponent(hit.url_id)}/${slug}?from=${from}`
+}
+
+/**
+ * Paramètre transitoire posé sur l'URL de retour à la fermeture d'une fiche détail (cf.
+ * useDetailNavigation), pour que la liste rescrolle sur la carte consultée au lieu de revenir
+ * en haut. Volontairement absent de `ISearchPageParams`/`buildSearchUrl` : il ne doit jamais
+ * être réémis par une navigation normale (filtre, tri…), seulement consommé une fois puis
+ * disparaître de l'URL.
+ */
+export const ACTIVE_HIT_PARAM = "active_hit"
+
+export function withActiveHit(searchUrl: string, hitUrlId: string): string {
+  const separator = searchUrl.includes("?") ? "&" : "?"
+  return `${searchUrl}${separator}${ACTIVE_HIT_PARAM}=${encodeURIComponent(hitUrlId)}`
+}

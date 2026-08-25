@@ -1,0 +1,235 @@
+"use client"
+
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, ButtonBase, ClickAwayListener, Grow, Paper, Popper } from "@mui/material"
+import { type KeyboardEvent, type ReactNode, useId, useRef, useState } from "react"
+
+/**
+ * Chip pill de filtre (design « Nouvelle recherche »). Deux comportements :
+ * - avec `popperContent` : dropdown (caret) ouvrant un panneau flottant — fermeture clic extérieur / Échap ;
+ * - sans : toggle on/off via `onToggle`.
+ *
+ * La sélection est signalée par l'inversion du fond (pas de badge ✓) et le libellé
+ * porte la valeur active (ex. « BTS, DEUST (Bac+2) », « Offres d'emploi en alternance, +1 »).
+ *
+ * RGAA : à l'ouverture, le focus est déplacé sur le premier élément atteignable du panneau
+ * (Tab seul ne suffisait pas — le Popper MUI ne gère aucun focus par défaut). Une fois dans
+ * le panneau, ↑/↓/Home/End déplacent le focus entre les éléments (cases, lignes de choix,
+ * champ de saisie), quel que soit le contenu passé en `popperContent`.
+ */
+interface SearchFilterChipProps {
+  label: string
+  /** Libellé affiché quand le filtre est actif (défaut : `label`). */
+  activeLabel?: string
+  active: boolean
+  disabled?: boolean
+  /** Contenu du panneau flottant — présence = variante dropdown. */
+  popperContent?: ReactNode
+  /** Variante toggle : bascule à chaque clic. */
+  onToggle?: () => void
+  /**
+   * Variante déclencheur de modale (chips mobile « Filtres (n) » / « Tri ») : caret sans
+   * popper, `onToggle` ouvre la modale — pas d'aria-pressed ni de pastille de sélection.
+   */
+  dialogTrigger?: boolean
+  /** Notifie l'ouverture/fermeture du dropdown (télémétrie « ouvert sans application »). */
+  onOpenChange?: (open: boolean) => void
+}
+
+// Éléments atteignables au clavier dans un panneau (cases DSFR, lignes de choix custom,
+// champ de saisie) — sert au focus initial à l'ouverture et à la navigation par flèches.
+// offsetParent === null exclut les éléments cachés (display: none, non rendus).
+const FOCUSABLE_SELECTOR = 'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((el) => el.offsetParent !== null)
+}
+
+const CHIP_COLORS = {
+  default: {
+    bg: fr.colors.decisions.background.contrast.blueFrance.default,
+    bgHover: fr.colors.decisions.background.contrast.blueFrance.hover,
+    text: fr.colors.decisions.text.actionHigh.blueFrance.default,
+  },
+  active: {
+    bg: fr.colors.decisions.background.actionHigh.blueFrance.default,
+    bgHover: fr.colors.decisions.background.actionHigh.blueFrance.hover,
+    text: "#FFFFFF",
+  },
+  disabled: {
+    bg: fr.colors.decisions.background.disabled.grey.default,
+    text: fr.colors.decisions.text.disabled.grey.default,
+  },
+}
+
+export function SearchFilterChip({ label, activeLabel, active, disabled = false, popperContent, onToggle, dialogTrigger = false, onOpenChange }: SearchFilterChipProps) {
+  const [open, setOpen] = useState(false)
+  const anchorRef = useRef<HTMLButtonElement>(null)
+  const popperContentRef = useRef<HTMLDivElement>(null)
+  const popperId = useId()
+  const isDropdown = popperContent !== undefined
+
+  // Notification hors de l'updater React (StrictMode double-invoque les updaters).
+  const setOpenNotified = (next: boolean) => {
+    if (next !== open) onOpenChange?.(next)
+    setOpen(next)
+  }
+
+  const close = () => setOpenNotified(false)
+
+  const handleClick = () => {
+    if (isDropdown) setOpenNotified(!open)
+    else onToggle?.()
+  }
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && open) {
+      event.stopPropagation()
+      close()
+      anchorRef.current?.focus()
+      return
+    }
+
+    // Navigation flèches à l'intérieur du panneau ouvert — capté ici car cet handler est
+    // posé à la fois sur le déclencheur et sur le Paper (les touches remontent par bubbling
+    // depuis les cases/lignes du contenu).
+    if (!open || !isDropdown) return
+
+    const target = event.target as HTMLElement | null
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) {
+      const inputType = target instanceof HTMLInputElement ? target.type : undefined
+      if (inputType !== "checkbox" && inputType !== "radio") return
+    }
+
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp" && event.key !== "Home" && event.key !== "End") return
+    const container = popperContentRef.current
+    if (!container) return
+    const focusables = getFocusableElements(container)
+    if (!focusables.length) return
+    event.preventDefault()
+
+    const currentIndex = focusables.indexOf(document.activeElement as HTMLElement)
+    const lastIndex = focusables.length - 1
+    let nextIndex = 0
+    if (event.key === "ArrowDown") nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % focusables.length
+    else if (event.key === "ArrowUp") nextIndex = currentIndex < 0 ? lastIndex : (currentIndex - 1 + focusables.length) % focusables.length
+    else if (event.key === "End") nextIndex = lastIndex
+    focusables[nextIndex].focus()
+  }
+
+  const palette = active ? CHIP_COLORS.active : CHIP_COLORS.default
+
+  return (
+    <Box sx={{ position: "relative", display: "inline-flex" }}>
+      <ButtonBase
+        ref={anchorRef}
+        disabled={disabled}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        aria-expanded={isDropdown ? open : undefined}
+        aria-haspopup={isDropdown ? "true" : dialogTrigger ? "dialog" : undefined}
+        aria-controls={isDropdown && open ? popperId : undefined}
+        aria-pressed={!isDropdown && !dialogTrigger ? active : undefined}
+        sx={{
+          height: 32,
+          borderRadius: "16px",
+          px: "12px",
+          py: "4px",
+          gap: "4px",
+          fontSize: "0.875rem",
+          lineHeight: "24px",
+          whiteSpace: "nowrap",
+          backgroundColor: disabled ? CHIP_COLORS.disabled.bg : palette.bg,
+          color: disabled ? CHIP_COLORS.disabled.text : palette.text,
+          "&:hover": disabled ? undefined : { backgroundColor: palette.bgHover },
+          "&:focus-visible": {
+            outline: "2px solid #0a76f6",
+            outlineOffset: 2,
+            borderRadius: 0,
+          },
+        }}
+      >
+        {active ? (activeLabel ?? label) : label}
+        {(isDropdown || dialogTrigger) && (
+          <Box component="span" className={fr.cx(open ? "fr-icon-arrow-up-s-line" : "fr-icon-arrow-down-s-line", "fr-icon--sm")} aria-hidden="true" />
+        )}
+      </ButtonBase>
+      {/* Pastille de sélection des toggles (design Figma) : déborde du coin haut-droit.
+          Décorative — l'état est déjà porté par aria-pressed. */}
+      {!isDropdown && !dialogTrigger && active && (
+        <Box
+          aria-hidden="true"
+          sx={{
+            position: "absolute",
+            top: "-6px",
+            right: "-2px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 16,
+            height: 16,
+            borderRadius: "50%",
+            backgroundColor: "#FFFFFF",
+            color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+            pointerEvents: "none",
+          }}
+          className={fr.cx("fr-icon-checkbox-circle-line", "fr-icon--sm")}
+        />
+      )}
+      {isDropdown && (
+        // disablePortal : par défaut MUI monte le Popper en fin de <body>, ce qui sort le
+        // panneau de l'ordre de tabulation du formulaire (Tab en sortie atterrit ailleurs
+        // dans la page). En le laissant à sa place dans l'arbre, la tabulation qui quitte le
+        // panneau retombe naturellement sur l'élément suivant du bandeau (chip suivant).
+        <Popper id={popperId} open={open} anchorEl={anchorRef.current} placement="bottom-start" transition disablePortal sx={{ zIndex: (theme) => theme.zIndex.modal }}>
+          {({ TransitionProps }) => (
+            <Grow
+              {...TransitionProps}
+              style={{ transformOrigin: "top left" }}
+              // Focus posé sur le premier élément atteignable une fois le panneau réellement
+              // affiché (pas avant : le contenu doit être monté et visible pour être focusable).
+              // TransitionProps (Popper) n'expose que onEnter/onExited — pas de callback à chaîner ici.
+              onEntered={() => {
+                const first = popperContentRef.current && getFocusableElements(popperContentRef.current)[0]
+                first?.focus()
+              }}
+            >
+              <Paper onKeyDown={handleKeyDown} elevation={0} sx={{ mt: "4px", borderRadius: "4px", py: "8px", minWidth: 240, boxShadow: "0 6px 18px rgba(0,0,18,0.16)" }}>
+                <ClickAwayListener onClickAway={close}>
+                  <Box ref={popperContentRef}>{popperContent}</Box>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      )}
+    </Box>
+  )
+}
+
+/**
+ * Ligne d'option mono-choix pour le popper d'une chip (ex. Niveau d'études) :
+ * pas de radio en desktop, l'option sélectionnée est signalée par le fond contrasté.
+ */
+export function SearchChipOptionRow({ label, selected, onSelect }: { label: string; selected: boolean; onSelect: () => void }) {
+  return (
+    <ButtonBase
+      onClick={onSelect}
+      aria-pressed={selected}
+      sx={{
+        display: "flex",
+        width: "100%",
+        justifyContent: "flex-start",
+        textAlign: "left",
+        px: "16px",
+        py: "8px",
+        fontSize: "1rem",
+        color: fr.colors.decisions.text.default.grey.default,
+        backgroundColor: selected ? fr.colors.decisions.background.contrast.blueFrance.default : undefined,
+        "&:hover": { backgroundColor: selected ? fr.colors.decisions.background.contrast.blueFrance.hover : fr.colors.decisions.background.default.grey.hover },
+      }}
+    >
+      {label}
+    </ButtonBase>
+  )
+}

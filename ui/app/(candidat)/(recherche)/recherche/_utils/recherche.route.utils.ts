@@ -1,111 +1,37 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
-import { MAX_SEARCH_ROMES_PRIVATE, parseEnum, typedKeys } from "shared"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import type { ITypeEmploi } from "shared/constants/recruteur"
-import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
-import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/params"
-import { z } from "zod"
+import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
+// Imports profonds plutôt que le barrel "shared" : ce module part dans le bundle de la home
+// (via le registre PAGES de routes.utils). Ce n'est pas ce qui a sorti zod du first-load — le
+// barrel est élaguable et `routes.utils` l'utilise encore ; c'est la suppression des usages de
+// zod *au niveau valeur* (z.object/z.enum/buildEnum) qui l'a fait. Les imports profonds sont
+// une ceinture de sécurité : ils rendent la chaîne insensible à un futur `sideEffects` élargi
+// dans shared/package.json, qui rendrait shared/routes non élaguable.
+import { MAX_SEARCH_ROMES_PRIVATE } from "shared/constants/search"
+import { typedKeys } from "shared/utils/object-utils"
 
-import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
-import { PAGES } from "@/utils/routes.utils"
-
-const zIdeaType = z.enum(LBA_ITEM_TYPE_OLD)
-
-type ItemReference = {
-  id: string
-  ideaType: LBA_ITEM_TYPE_OLD
+/**
+ * Paramètres d'URL du moteur de recherche legacy (`?job_name=…&romes=…`).
+ *
+ * Le moteur legacy est décommissionné : ce module ne sert plus qu'à
+ * - produire les métadonnées SEO des URL legacy encore indexées (repli `?job_name=`,
+ *   cf. `recherche.metadata.utils`) ;
+ * - construire des liens `/recherche` au format legacy depuis le registre PAGES
+ *   (pages éditoriales, retour à la liste des fiches détail ouvertes hors moteur) ;
+ * - alimenter le formulaire de recherche des fiches détail (job_name, geo, radius).
+ */
+export type IRecherchePageParams = {
+  romes: string[]
+  geo: { address: string | null; latitude: number; longitude: number } | null
+  radius: number
+  diploma: keyof typeof NIVEAUX_POUR_LBA | null
+  job_name: string | null
+  displayEntreprises: boolean
+  displayFormations: boolean
+  displayFilters: boolean
+  opco: string | null
+  rncp: string | null
+  scrollToRecruteursLba: boolean | null
 }
-
-export type ItemReferenceLike = Readonly<Partial<ItemReference> | Pick<ILbaItem, "id" | "ideaType">>
-
-export function serializeItemReferences(items: ItemReferenceLike[]) {
-  return items.map(serializeItemReference).join(",")
-}
-
-function serializeItemReference(item: ItemReferenceLike) {
-  return encodeURIComponent(`${newItemTypeToOldItemType(item.ideaType)}:${item.id}`)
-}
-
-export function deserializeItemReferences(items: string): ItemReference[] {
-  return decodeURIComponent(items).split(",").map(deserializeItemReference).filter(Boolean)
-}
-
-function deserializeItemReference(item: string): ItemReference | null {
-  try {
-    const [ideaType, ...rest] = item.split(":")
-    return { ideaType: newItemTypeToOldItemType(zIdeaType.parse(ideaType)), id: rest.join(",") }
-  } catch (_e) {
-    return null
-  }
-}
-
-export function serializeTypesEmploi(typesEmploi: ITypeEmploi[]) {
-  return typesEmploi.join(",")
-}
-
-function deserializeTypesEmploi(typesEmploiRaw: string | null): ITypeEmploi[] {
-  if (!typesEmploiRaw) return []
-  return (typesEmploiRaw?.split(",") ?? []).flatMap((typeEmploi) => {
-    const enumValue = parseEnum(TYPE_EMPLOI_OPTIONS, typeEmploi)
-    return enumValue ? [enumValue] : []
-  })
-}
-
-export function getItemReference(item: ItemReferenceLike): ItemReference {
-  return {
-    id: item.id,
-    ideaType: newItemTypeToOldItemType(item.ideaType),
-  }
-}
-
-function areItemReferencesEqual(a: ItemReferenceLike, b: ItemReferenceLike) {
-  return a.id === b.id && newItemTypeToOldItemType(a.ideaType) === newItemTypeToOldItemType(b.ideaType)
-}
-
-export function isItemReferenceInList(item: ItemReferenceLike, list: ItemReferenceLike[]) {
-  return list.some((ref) => areItemReferencesEqual(ref, item))
-}
-
-export enum RechercheViewType {
-  EMPLOI = "EMPLOI",
-  FORMATION = "FORMATION",
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const zRecherchePageParams = z.object({
-  romes: z.array(z.string()),
-  geo: z
-    .object({
-      address: z.string().nullable(),
-      latitude: z.number(),
-      longitude: z.number(),
-    })
-    .nullable(),
-  radius: z.number(),
-  diploma: zDiplomaParam.nullish(),
-  typesEmploi: zTypesEmploiParam.nullish(),
-  job_name: z.string().nullable(),
-  job_type: z.string().nullable(),
-  displayEntreprises: z.boolean().optional(),
-  displayFormations: z.boolean().optional(),
-  displayFilters: z.boolean().optional(),
-  displayMobileForm: z.boolean().optional(),
-  elligibleHandicapFilter: z.boolean().optional(),
-  activeItems: z
-    .object({
-      ideaType: z.enum(LBA_ITEM_TYPE_OLD),
-      id: z.string(),
-    })
-    .array()
-    .optional(),
-  opco: z.string().nullish(),
-  rncp: z.string().nullish(),
-  scrollToRecruteursLba: z.boolean().nullish(),
-})
-
-export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>> & { viewType?: RechercheViewType }
-
-export type WithRecherchePageParams<T = object> = T & { rechercheParams: IRecherchePageParams }
 
 const normalizeRomes = (romes: string[]) => romes.slice(0, MAX_SEARCH_ROMES_PRIVATE)
 
@@ -142,14 +68,8 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
   if (rechercheParams.diploma) {
     query.set("diploma", rechercheParams.diploma)
   }
-  if (rechercheParams.typesEmploi?.length > 0) {
-    query.set("typesEmploi", serializeTypesEmploi(rechercheParams.typesEmploi))
-  }
   if (rechercheParams.job_name) {
     query.set("job_name", rechercheParams.job_name)
-  }
-  if (rechercheParams?.activeItems?.length > 0) {
-    query.set("activeItems", serializeItemReferences(rechercheParams.activeItems))
   }
   if (rechercheParams?.opco) {
     query.set("opco", rechercheParams.opco)
@@ -171,12 +91,6 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
     }
   }
 
-  if (rechercheParams.displayMobileForm === true) {
-    query.set("displayMobileForm", "true")
-  }
-  if (rechercheParams.elligibleHandicapFilter === true) {
-    query.set("elligibleHandicapFilter", "true")
-  }
   if (rechercheParams.scrollToRecruteursLba) {
     query.set("scrollToRecruteursLba", "true")
   }
@@ -190,7 +104,6 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   }
 
   const romes = normalizeRomes(search.get("romes")?.split(",") ?? [])
-  const activeItems = deserializeItemReferences(search.get("activeItems") ?? "")
 
   const rawLat = search.get("lat")
   const rawLon = search.get("lon")
@@ -206,15 +119,11 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
 
   const radius = parseInt(search.get("radius") ?? "30", 10)
   const diploma = typedKeys(NIVEAUX_POUR_LBA).find((x) => x === search.get("diploma")) || null
-  const typesEmploi = deserializeTypesEmploi(search.get("typesEmploi"))
   const job_name = search.get("job_name") || null
-  const job_type = search.get("job_type") || null
 
   const opco = search.get("opco") || null
   const rncp = search.get("rncp") || null
 
-  const displayMobileForm = search.get("displayMobileForm") === "true"
-  const elligibleHandicapFilter = search.get("elligibleHandicapFilter") === "true"
   const scrollToRecruteursLba = search.get("scrollToRecruteursLba") === "true"
 
   const commonProps = {
@@ -222,11 +131,6 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     geo,
     diploma,
     job_name,
-    job_type,
-    typesEmploi,
-    displayMobileForm,
-    elligibleHandicapFilter,
-    activeItems,
     opco,
     rncp,
     radius,
@@ -261,40 +165,4 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     displayFormations,
     displayFilters,
   }
-}
-
-export function detectModeFromParams({ displayFilters, displayEntreprises, displayFormations }: IRecherchePageParams): IRechercheMode {
-  if (displayFilters) {
-    return IRechercheMode.DEFAULT
-  }
-
-  if (!displayEntreprises && displayFormations) {
-    return IRechercheMode.FORMATIONS_ONLY
-  }
-
-  if (displayEntreprises && !displayFormations) {
-    return IRechercheMode.JOBS_ONLY
-  }
-
-  return IRechercheMode.DEFAULT
-}
-
-export function getResultItemUrl(item: ItemReferenceLike, searchParams: Partial<IRecherchePageParams> = {}): string {
-  const type = oldItemTypeToNewItemType(item.ideaType)
-  if (type === LBA_ITEM_TYPE.FORMATION) {
-    return PAGES.dynamic
-      .formationDetail({
-        jobId: item.id,
-        ...searchParams,
-      })
-      .getPath()
-  }
-
-  return PAGES.dynamic
-    .jobDetail({
-      type: type,
-      jobId: item.id,
-      ...searchParams,
-    })
-    .getPath()
 }

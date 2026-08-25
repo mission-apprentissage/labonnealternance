@@ -1,6 +1,7 @@
-import type { IPointGeometry } from "shared"
-import { ZPointGeometry } from "shared"
-import { z } from "zod"
+// Import type-only (effacé à la compilation) : ce service part dans le bundle de la
+// home (autocomplete du SearchBar) — aucun runtime zod/shared ne doit y entrer, les
+// réponses de la BAN sont typées par assertion et jamais validées ici.
+import type { IPointGeometry } from "shared/models/address.model"
 
 import { simplifiedItems } from "./arrondissements"
 
@@ -16,15 +17,12 @@ type AddressFeature = {
 
 type Coordinates = [number, number]
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const zAddressItem = z.object({
-  value: ZPointGeometry,
-  insee: z.string(),
-  zipcode: z.string(),
-  label: z.string(),
-})
-
-type IAddressItem = z.output<typeof zAddressItem>
+type IAddressItem = {
+  value: IPointGeometry
+  insee: string
+  zipcode: string
+  label: string
+}
 
 export async function searchAddress(value: string, type?: string, signal?: AbortSignal): Promise<IAddressItem[]> {
   if (value && value.length > 2) {
@@ -72,7 +70,10 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
 
       return simplifiedItems(returnedItems)
     } catch (err) {
-      console.error("Fetch addresses cancelled : ", err)
+      // Requête supplantée par une saisie plus récente (React Query annule via signal à chaque
+      // frappe) : flux normal de l'autocomplétion, pas une erreur à faire remonter.
+      if (signal?.aborted) return []
+      console.error("Fetch addresses failed : ", err)
       return []
     }
   } else return []

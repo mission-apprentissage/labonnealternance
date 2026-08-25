@@ -6,6 +6,7 @@ import { ZPointFeature, ZPointGeometry } from "shared/models/index"
 import { joinNonNullStrings } from "shared/utils/index"
 import z from "zod"
 import getApiClient from "@/common/apis/client"
+import { logger } from "@/common/logger"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { getGeolocationFromCache, saveGeolocationInCache } from "./cache-geolocation.service"
 
@@ -101,7 +102,11 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
 
     const parseResult = ZApiGeolocationResponse.safeParse(response)
     if (!parseResult.success) {
-      console.error("error parsing geolocation api response", { address: rawAddress, error: parseResult.error })
+      // sentryCaptureException et non console.error : la capture console sérialisait l'objet en
+      // "[object Object]" (Sentry LBA-SERVER-5J7KF4ZZZT824) et perdait la cause réelle.
+      // logger.error en complément : garde le canal des logs locaux (stdout/Loki des jobs).
+      logger.error({ address: rawAddress, err: parseResult.error.message }, "error parsing geolocation api response")
+      sentryCaptureException(parseResult.error, { extra: { cause: "error parsing geolocation api response", address: rawAddress } })
       return null
     }
 
@@ -127,7 +132,11 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
 
     return firstFeature
   } catch (error) {
-    console.error("Error fetching or processing geolocation data:", { address: rawAddress, error })
+    // sentryCaptureException et non console.error : la capture console sérialisait l'objet en
+    // "[object Object]" (Sentry LBA-SERVER-P8YDWKZZZE60) — l'AxiosError (statut, URL) était perdue.
+    // logger.error en complément : garde le canal des logs locaux (stdout/Loki des jobs).
+    logger.error({ address: rawAddress, err: error instanceof Error ? error.message : String(error) }, "Error fetching or processing geolocation data")
+    sentryCaptureException(error, { extra: { cause: "Error fetching or processing geolocation data", address: rawAddress } })
     return null
   }
 }

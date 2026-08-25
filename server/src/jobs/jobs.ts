@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb"
 import { getLoggerWithContext, logger } from "@/common/logger"
 import { getDatabase } from "@/common/utils/mongodb-utils"
 import config from "@/config"
+import { applyPendingClassificationBatches } from "@/services/classification/classification-mistral-batch.service"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import {
@@ -65,7 +66,7 @@ import { opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiter-offer-expiration-reminder-job"
 import { resetApiKey } from "./recruiters/reset-api-key"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
-import { rollbackSearchSuggestions } from "./search/analyze-search-queries"
+import { analyzeSearchQueries, rollbackSearchSuggestions } from "./search/analyze-search-queries"
 import { fillSearchItemsCollection } from "./search/generate-search-items-collection"
 import { updateSEO } from "./seo/update-seo"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simple-job-definitions"
@@ -257,6 +258,12 @@ export async function setupJobProcessor() {
             handler: controlSearchItemsDrift,
             tag: "main",
           },
+          "Analyse mensuelle des recherches utilisateurs (autocomplete + synonymes)": {
+            cron_string: "0 7 1 * *",
+            handler: analyzeSearchQueries,
+            tag: "slave",
+            maxRuntimeInMinutes: 60,
+          },
           "Génération continue des keywords search_items (cache + API immédiate)": {
             cron_string: "*/30 * * * *",
             handler: async () => generateSearchItemsKeywordsContinuous(),
@@ -272,6 +279,12 @@ export async function setupJobProcessor() {
           "Ramasse des batchs Mistral keywords": {
             cron_string: "10 * * * *",
             handler: applyPendingMistralBatches,
+            tag: "slave",
+          },
+          // Décalé de 10 min par rapport à la ramasse keywords pour étaler la charge Mongo.
+          "Ramasse des batchs Mistral classification jobs_partners": {
+            cron_string: "20 * * * *",
+            handler: applyPendingClassificationBatches,
             tag: "slave",
           },
           "export des offres LBA sur S3": {

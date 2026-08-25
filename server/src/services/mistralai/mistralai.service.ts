@@ -12,6 +12,26 @@ const mistral = new Mistral({
 
 export type Message = { role: "system"; content: string } | { role: "user"; content: string } | { role: "assistant"; content: string } | { role: "tool"; content: string }
 
+// 429 Mistral (rate limit) : transitoire par nature — la capture immédiate générait ~100 events/jour
+// de pur bruit Sentry (LBA-SERVER-5J7KF4ZZZT9JV) alors qu'un backoff suffit. Les quotas sont des
+// fenêtres À LA MINUTE (vérifié empiriquement sur /v1/chat/completions : en-têtes
+// x-ratelimit-{limit,remaining}-{tokens,req}-minute ; pas de X-RateLimit-Remaining global,
+// contrairement à ce que suggère la doc) : on honore Retry-After s'il est présent sur le 429,
+// sinon paliers fixes dont le dernier (60s) garantit une fenêtre de quota fraîche. Tous les
+// appelants sont des jobs de fond : la latence ajoutée est sans enjeu. La capture Sentry ne part
+// qu'une fois les retries épuisés — la dégradation (retour null) reste observable.
+const RATE_LIMIT_RETRY_DELAYS_MS = [2_000, 10_000, 60_000]
+
+const isMistralRateLimitError = (error: unknown): error is Error & { headers?: Headers } => error instanceof Error && (error as { statusCode?: unknown }).statusCode === 429
+
+const getRateLimitRetryDelayMs = (error: Error & { headers?: Headers }, attempt: number): number => {
+  // Retry-After numérique uniquement (une date HTTP → NaN → paliers fixes), plafonné à 120s :
+  // un header aberrant ne doit pas endormir un job une heure par tentative.
+  const retryAfterSeconds = Number(error.headers?.get?.("retry-after"))
+  if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) return Math.min(retryAfterSeconds * 1_000, 120_000)
+  return RATE_LIMIT_RETRY_DELAYS_MS[attempt]
+}
+
 export const sendMistralMessages = async ({
   messages,
   randomSeed,
@@ -25,29 +45,45 @@ export const sendMistralMessages = async ({
   maxTokens?: number
   responseFormat?: { type: "text" | "json_object" }
 }): Promise<string | null> => {
-  try {
-    const response = await mistral.chat.complete({
-      model,
-      messages,
-      maxTokens,
-      ...(randomSeed ? { randomSeed } : {}),
-      responseFormat,
-    })
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const response = await mistral.chat.complete({
+        model,
+        messages,
+        maxTokens,
+        ...(randomSeed ? { randomSeed } : {}),
+        responseFormat,
+      })
 
-    if (!response.choices?.length || !response.choices[0].message) {
-      logger.info({ response }, "No response from Mistral")
+      if (!response.choices?.length || !response.choices[0].message) {
+        logger.info({ response }, "No response from Mistral")
+        return null
+      }
+      const message = response.choices[0].message.content as string
+      if (!message) {
+        logger.info({ response }, "No content from Mistral")
+        return null
+      }
+      return message
+    } catch (error) {
+      if (isMistralRateLimitError(error) && attempt < RATE_LIMIT_RETRY_DELAYS_MS.length) {
+        const delayMs = getRateLimitRetryDelayMs(error, attempt)
+        logger.warn(
+          {
+            attempt,
+            delayMs,
+            remainingTokensMinute: error.headers?.get?.("x-ratelimit-remaining-tokens-minute") ?? null,
+            remainingReqMinute: error.headers?.get?.("x-ratelimit-remaining-req-minute") ?? null,
+          },
+          "Mistral 429 — retry après backoff"
+        )
+        await sleep(delayMs)
+        continue
+      }
+      sentryCaptureException(error)
+      console.error(error)
       return null
     }
-    const message = response.choices[0].message.content as string
-    if (!message) {
-      logger.info({ response }, "No content from Mistral")
-      return null
-    }
-    return message
-  } catch (error) {
-    sentryCaptureException(error)
-    console.error(error)
-    return null
   }
 }
 

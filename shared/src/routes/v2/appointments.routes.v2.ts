@@ -36,7 +36,7 @@ export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApiWithR
 
 export const ZAppointmentResponseAvailable = z.strictObject({
   etablissement_formateur_entreprise_raison_sociale: z.string().nullable().describe("Raison social de l'établissement formateur"),
-  intitule_long: z.string().describe("Intitulé long de la formation"),
+  intitule_long: z.string().nullable().describe("Intitulé long de la formation"),
   lieu_formation_adresse: z.string().describe("Adresse du lieu de formation"),
   code_postal: z.string().describe("Code postal du lieu de formation"),
   etablissement_formateur_siret: extensions.siret.nullable().describe("Numéro SIRET de l'établissement formateur"),

@@ -13,9 +13,10 @@ import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { ARTICLES } from "./const"
-export const metadata: Metadata = PAGES.static.guideRecruteur.getMetadata()
+export const metadata: Metadata = METADATA.static.guideRecruteur()
 
 const GuideRecruteurPage = () => {
   return (
@@ -26,8 +27,8 @@ const GuideRecruteurPage = () => {
     >
       <SchemaOrg
         type="WebPage"
-        title={PAGES.static.guideRecruteur.getMetadata().title}
-        description={PAGES.static.guideRecruteur.getMetadata().description}
+        title={METADATA.static.guideRecruteur().title}
+        description={METADATA.static.guideRecruteur().description}
         url={PAGES.static.guideRecruteur.getPath()}
         breadcrumbs={[
           { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },

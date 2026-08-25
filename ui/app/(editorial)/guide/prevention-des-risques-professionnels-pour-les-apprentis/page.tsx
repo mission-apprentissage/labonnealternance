@@ -10,9 +10,10 @@ import { ARTICLES } from "@/app/(editorial)/guide/const"
 import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternant/const"
 import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  ...PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getMetadata(),
+  ...METADATA.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis(),
   alternates: { canonical: PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getPath() },
 }
 
@@ -46,7 +47,10 @@ const PreventionDesRisquesProfessionnelsPourLesApprentisPage = async ({ searchPa
     "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail, de machines, d’outils et de substances parfois dangereuses. Une meilleure connaissance des dangers professionnels, une anticipation des situations à risque permet à l’apprenti de prévenir ces risques professionnels.",
   ]
 
-  const source = new URLSearchParams(await searchParams).get("source") || undefined
+  // guide_source a remplacé source (paramètre réservé de Plausible) ; l'ancien nom reste lu en
+  // repli pour les liens externes/favoris antérieurs au renommage.
+  const params = new URLSearchParams(await searchParams)
+  const source = params.get("guide_source") || params.get("source") || undefined
 
   return (
     <LayoutArticle
@@ -58,6 +62,7 @@ const PreventionDesRisquesProfessionnelsPourLesApprentisPage = async ({ searchPa
       allerPlusLoinItems={getAllerPlusLoinItems(source)}
       parentPage={PAGES.static.guideRecruteur}
       page={PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis}
+      metadata={metadata}
     >
       <Section title="Obligations des employeurs d’apprentis">
         <Paragraph>L’employeur a une obligation légale de sécurité envers tous ses salariés, y compris les apprentis. À ce titre, il doit :</Paragraph>

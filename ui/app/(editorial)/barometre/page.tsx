@@ -7,6 +7,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 import { BarChartHorizontal } from "./_components/BarChartHorizontal"
@@ -32,7 +33,7 @@ import {
   topSecteursSpontanees,
 } from "./_data/t1-2026"
 export const metadata: Metadata = {
-  ...PAGES.static.barometre.getMetadata(),
+  ...METADATA.static.barometre(),
   alternates: {
     canonical: PAGES.static.barometre.getPath(),
   },
@@ -76,8 +77,8 @@ export default function BarometrePage() {
     <Box>
       <SchemaOrg
         type="Article"
-        title={PAGES.static.barometre.getMetadata().title as string}
-        description={PAGES.static.barometre.getMetadata().description as string}
+        title={METADATA.static.barometre().title as string}
+        description={METADATA.static.barometre().description as string}
         url={PAGES.static.barometre.getPath()}
         breadcrumbs={[
           { name: "Accueil", url: PAGES.static.home.getPath() },

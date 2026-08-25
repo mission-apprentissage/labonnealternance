@@ -2,11 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Grid } from "@mui/material"
 
 import type { Metadata } from "next"
-import { Suspense } from "react"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
 import { GrandsGroupesCandidat } from "@/app/(home)/_components/GrandsGroupesCandidat"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { AlgoHome } from "./_components/AlgoHome"
 import { CalculRemuneration } from "./_components/CalculRemuneration"
@@ -16,17 +15,17 @@ import { HowTo } from "./_components/HowTo"
 import { InformationsAlternance } from "./_components/InformationsAlternance"
 
 export const metadata: Metadata = {
-  title: PAGES.static.home.getMetadata().title,
-  description: PAGES.static.home.getMetadata().description,
+  title: METADATA.static.home().title,
+  description: METADATA.static.home().description,
 }
 
-export default function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+export default function HomePage() {
   return (
     <>
       <SchemaOrg
         type="WebPage"
-        title={PAGES.static.home.getMetadata().title}
-        description={PAGES.static.home.getMetadata().description}
+        title={METADATA.static.home().title}
+        description={METADATA.static.home().description}
         url={PAGES.static.home.getPath()}
         breadcrumbs={[{ name: PAGES.static.home.title, url: PAGES.static.home.getPath() }]}
       />
@@ -65,9 +64,7 @@ export default function HomePage({ searchParams }: { searchParams: Promise<Recor
             <HomeCircleImageDecoration size="high" />
           </Box>
           <Box sx={{ position: "relative", display: "grid", padding: { xs: 0, md: fr.spacing("12v") }, gap: fr.spacing("8v"), gridTemplateColumns: "1fr" }}>
-            <Suspense fallback={null}>
-              <HomeRechercheOptInWithParams searchParams={searchParams} />
-            </Suspense>
+            <HomeRechercheOptIn />
             <HowTo />
           </Box>
         </Box>
@@ -90,9 +87,4 @@ export default function HomePage({ searchParams }: { searchParams: Promise<Recor
       </Container>
     </>
   )
-}
-
-async function HomeRechercheOptInWithParams({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
-  const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
-  return <HomeRechercheOptIn rechercheParams={rechercheParams} />
 }

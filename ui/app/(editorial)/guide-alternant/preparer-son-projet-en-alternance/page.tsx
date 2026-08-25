@@ -11,8 +11,9 @@ import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideAlternantPreparerSonProjetEnAlternance.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternantPreparerSonProjetEnAlternance()
 
 const PreparerSonProjetEnAlternancePage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantPreparerSonProjetEnAlternance]
@@ -31,6 +32,7 @@ const PreparerSonProjetEnAlternancePage = () => {
       allerPlusLoinItems={[ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"], ARTICLES["comment-signer-un-contrat-en-alternance"], ARTICLES["se-faire-accompagner"]]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantPreparerSonProjetEnAlternance}
+      metadata={metadata}
     >
       <Section>
         <Paragraph bold>Les étapes clés :</Paragraph>
@@ -278,10 +280,7 @@ const PreparerSonProjetEnAlternancePage = () => {
         </Paragraph>
         <Paragraph>
           Pour vous aider dans votre recherche, vous pouvez utiliser le catalogue des formations disponible sur{" "}
-          <DsfrLink
-            href={PAGES.dynamic.recherche({ displayEntreprises: false }).getPath()}
-            aria-label="Consultez les offres de formation en alternance sur le moteur de recherche de La Bonne Alternance"
-          >
+          <DsfrLink href="/recherche?mode=formations" aria-label="Consultez les offres de formation en alternance sur le moteur de recherche de La Bonne Alternance">
             cette page
           </DsfrLink>
           .

@@ -24,10 +24,10 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
   // il rend les navigations CLIENT (clic + prefetch) instantanées, mais pas un rechargement complet
   // (MPA/reload), qui repart toujours d'un cache vide. Le test doit donc simuler un vrai clic depuis
   // une page de résultats, pas un `page.reload()`.
-  // romes=M1602 (développement informatique) renvoie des résultats stables dans la base de dev locale.
+  // Pas de filtre texte : le premier résultat du tri par défaut suffit (pas d'assertion sur son contenu).
 
   test("cliquer sur un résultat de recherche vers une fiche offre est instantané", async ({ page }) => {
-    await page.goto("/recherche-emploi?romes=M1602")
+    await page.goto("/recherche?mode=emplois")
     const offerLink = page.locator("a[href^='/emploi/']").first()
     await expect(offerLink).toBeVisible()
     // Attente déterministe (plutôt qu'un délai fixe) : le survol déclenche/confirme le prefetch
@@ -42,7 +42,7 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
   })
 
   test("cliquer sur un résultat de recherche vers une fiche formation est instantané", async ({ page }) => {
-    await page.goto("/recherche-formation?romes=M1602")
+    await page.goto("/recherche?mode=formations")
     const formationLink = page.locator("a[href^='/formation/']").first()
     await expect(formationLink).toBeVisible()
     await formationLink.hover()

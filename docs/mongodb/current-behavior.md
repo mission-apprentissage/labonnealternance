@@ -1,7 +1,7 @@
-# Comportement du moteur de recherche — `/v1/search` & `/beta/recherche`
+# Comportement du moteur de recherche — `/v1/search` & `/recherche`
 
 > Moteur de recherche MongoDB Search (mongot) au-dessus de la collection `search_items`.
-> Couvre : le **tri** des résultats, le champ **distance**, la **géo**, et le fonctionnement de la page **`/beta/recherche`**.
+> Couvre : le **tri** des résultats, le champ **distance**, la **géo**, et le fonctionnement de la page **`/recherche`**.
 
 ---
 
@@ -21,7 +21,7 @@ Le tri est **configurable** via le paramètre `sort` (`buildSortStage` / `buildC
 
 ### ⚠️ Tri par défaut sans texte (`q` absent)
 
-Quand il n'y a **pas de `q`** (cas de `/beta/recherche` tant qu'aucun métier n'est saisi) **et** que le tri reste au défaut, le `compound` ne contient que des clauses **`filter`** qui **ne contribuent pas au score** → `searchScore` est **constant**. Le tri se résume alors à `smart_apply` puis `application_count`. Les tris explicites `date` et `proximity` restent eux pleinement opérants.
+Quand il n'y a **pas de `q`** (cas de `/recherche` tant qu'aucun métier n'est saisi) **et** que le tri reste au défaut, le `compound` ne contient que des clauses **`filter`** qui **ne contribuent pas au score** → `searchScore` est **constant**. Le tri se résume alors à `smart_apply` puis `application_count`. Les tris explicites `date` et `proximity` restent eux pleinement opérants.
 
 ---
 
@@ -56,38 +56,53 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 
 ---
 
-## 5. Pages `/beta/recherche`
+## 5. Page `/recherche`
 
 ### Routes
 
 | Route | Vue | Statut |
 |---|---|---|
-| `/beta/recherche` | Page mono-colonne (bandeau recherche + chips + liste de cartes) | Redesign actif |
+| `/recherche` | Page mono-colonne (bandeau recherche + chips + liste de cartes) | Redesign actif |
 | ~~split layout~~ | Vue scindée liste/détail (panneaux `SearchDetailPanel` & co) | **Abandonnée** (retour aux cartes + page détail, comme le legacy) |
 | ~~`/search/filter-only`~~ | Variante « une ligne » sans champ Métier | **Supprimée** (non retenue) |
 | ~~`/search`~~ | Ancienne page non scindée | **Supprimée** |
 
 ### Plomberie
 
-- **État piloté par l'URL** : `ISearchPageParams` + `buildSearchUrl`/`parseSearchPageParams` ([`search.params.utils.ts`](../../ui/app/beta/_utils/search.params.utils.ts)). `buildSearchUrl` pointe par défaut vers `/beta/recherche`. Nouveaux params : `mode` (type de recherche), `start_date`, `urgent`, `handi`, `smart_apply`, `is_algo_company`. Le param `selected` (split) a été retiré.
-- **Données + pagination** : `useSearchResults` ([`useSearchResults.ts`](../../ui/app/beta/_hooks/useSearchResults.ts)) — TanStack `useInfiniteQuery`, pagination par `pageParam`, chargement à la demande via le **bouton « Voir plus de résultats »** (RGAA — [`SearchResultsList.tsx`](../../ui/app/beta/_components/SearchResultsList.tsx)).
+- **État piloté par l'URL** : `ISearchPageParams` + `buildSearchUrl`/`parseSearchPageParams` ([`search.params.utils.ts`](../../ui/app/(candidat)/(recherche)/recherche/_utils/search.params.utils.ts)). `buildSearchUrl` pointe par défaut vers `/recherche`. Nouveaux params : `mode` (type de recherche), `start_date`, `urgent`, `handi`, `smart_apply`, `is_algo_company`. Le param `selected` (split) a été retiré.
+- **Données + pagination** : `useSearchResults` ([`use-search-results.ts`](../../ui/app/(candidat)/(recherche)/recherche/_hooks/use-search-results.ts)) — TanStack `useInfiniteQuery`, pagination par `pageParam`, chargement à la demande via le **bouton « Voir plus de résultats »** (RGAA — [`SearchResultsList.tsx`](../../ui/app/(candidat)/(recherche)/recherche/_components/SearchResultsList.tsx)).
 - **Type de recherche** : `SearchTypeRechercheSelect` (Emplois uniquement [défaut] / Formations uniquement / Emplois avec formation incluse) → param `mode`. Un changement de mode **réinitialise les filtres** (et le tri s'il n'existe pas dans le nouveau mode).
-- **Filtres** : `SearchFilterChip` (chips pill + poppers, application immédiate), rangée conditionnée par le mode ([`SearchFilters.tsx`](../../ui/app/beta/_components/SearchFilters.tsx)) — Type d'offres (`is_algo_company`, multi : les 2 cases cochables ensemble — la sélection persiste en URL mais aucun filtre n'est envoyé à l'API, équivalent à « tout »), Date de début (`start_date`, une date future désactive « Recrutement urgent »), Niveau (mono-choix, sans « Indifférent »), Type de contrat, Employeur handi-engagé (compteur `counts.is_disabled_elligible`), Recrutement urgent (`start_type=des_que_possible`), Candidature simplifiée (`smart_apply`) ; mode Formations : Niveau + Formations à distance. Un filtre qui n'affinerait pas la recherche est **désactivé** : booléens dont le compteur vaut 0 (viderait la liste) ou nbHits (tous les résultats le satisfont déjà) — sauf s'il est actif (toujours démontable) — et chips Contrat/Niveau sans options. Lien « Réinitialiser les filtres » (visible si filtres actifs, ne touche ni q/lieu/mode ni le tri).
+- **Filtres** : `SearchFilterChip` (chips pill + poppers, application immédiate), rangée conditionnée par le mode ([`SearchFilters.tsx`](../../ui/app/(candidat)/(recherche)/recherche/_components/SearchFilters.tsx)) — Type d'offres (`is_algo_company`, multi : les 2 cases cochables ensemble — la sélection persiste en URL mais aucun filtre n'est envoyé à l'API, équivalent à « tout »), Date de début (`start_date`, une date future désactive « Recrutement urgent »), Niveau (mono-choix, sans « Indifférent »), Type de contrat, Employeur handi-engagé (compteur `counts.is_disabled_elligible`), Recrutement urgent (`start_type=des_que_possible`), Candidature simplifiée (`smart_apply`) ; mode Formations : Niveau + Formations à distance. Un filtre qui n'affinerait pas la recherche est **désactivé** : booléens dont le compteur vaut 0 (viderait la liste) ou nbHits (tous les résultats le satisfont déjà) — sauf s'il est actif (toujours démontable) — et chips Contrat/Niveau sans options. Lien « Réinitialiser les filtres » (visible si filtres actifs, ne touche ni q/lieu/mode ni le tri).
 - **Cartes** : `SearchHitCard` au rendu legacy (Card DSFR, badges via les composants feuilles `Tag*`, distance, date de publication, compteur de candidatures, encart « déjà postulé » via `ItemDetailApplicationsStatus` — clés localStorage partagées avec le legacy). Navigation vers la page détail via `buildHitDetailUrl`.
 - **Tri** : `SearchSortSelect` (label « Trier par » au-dessus) : Les plus pertinentes / Proximité (désactivée sans géo) / Les offres les plus récentes / Les offres avec le moins de candidatures / Date de début de contrat. Mode Formations : pertinence + proximité seulement. Compteur « X résultats » à droite de la ligne de tri.
 - **État vide** : illustration legacy (`dosearch.svg`) + message, affiché seulement après épuisement de l'auto-rayon (100 km).
 - **Mobile** : barre résumé sticky 2 lignes (`SearchMobileSummaryBar` : mot clé / « lieu - type de recherche », loupe) ouvrant la modale Recherche (SearchBar colonne + radios type de recherche + Rechercher + lien de sortie) ; chips « Filtres (n) » et « Tri » ouvrant leurs modales — Filtres : sections empilées à application immédiate + bouton sticky « Voir les N résultats » (niveau en radios avec « Indifférent » = aucun filtre) ; Tri : bottom-sheet à application **différée** (bouton « Appliquer »). Bascule desktop/mobile en **CSS breakpoints (`lg` 992px)**, **pas de `useMediaQuery`** (évite le flash d'hydratation).
 - **Footer** : `Footer` DSFR rendu sous la page.
-- **Titre de page (`<title>`)** : ajusté à la recherche comme le legacy (`generateMetadata` + [`buildSearchPageTitle`](../../ui/app/beta/_utils/search.params.utils.ts)) : `Offres en alternance - {métier} à {lieu} | La bonne alternance` (« Formations en alternance » en mode formations ; « sur la France entière » sans géo ; pas de contexte sans métier). Mis à jour à chaque `router.replace` (re-fetch RSC).
+- **Titre de page (`<title>`)** : ajusté à la recherche comme le legacy (`generateMetadata` + [`buildSearchPageTitle`](../../ui/app/(candidat)/(recherche)/recherche/_utils/search.params.utils.ts)) : `Offres en alternance - {métier} à {lieu} | La bonne alternance` (« Formations en alternance » en mode formations ; « sur la France entière » sans géo ; pas de contexte sans métier). Mis à jour à chaque `router.replace` (re-fetch RSC).
 
-### Coexistence legacy ↔ nouveau moteur (opt-in)
+### Moteur unique — l'ancien moteur n'existe plus
 
-- **Flag localStorage `lba-new-search-optin`** (hook [`useNewSearchOptIn`](../../ui/app/beta/_hooks/useNewSearchOptIn.ts)), lu après le mount uniquement — le SSR rend toujours le legacy (pas de mismatch d'hydratation).
-- **Home** ([`HomeRechercheOptIn`](../../ui/app/(home)/_components/HomeRechercheOptIn.tsx)) : formulaire legacy + encart « Nouvelle recherche ! … Tester → » ; opt-in → formulaire du nouveau moteur **sans filtres** ([`SearchHomeForm`](../../ui/app/beta/_components/SearchHomeForm.tsx) : champs + type de recherche + Rechercher → `/beta/recherche`) + lien de sortie. **Recherche réinitialisée à chaque bascule** (aucune traduction de params).
-- **Lien « Revenir au moteur de recherche principal »** ([`ExitNewSearchLink`](../../ui/app/beta/_components/ExitNewSearchLink.tsx)) : désactive le flag + télémétrie ; depuis les résultats → `/recherche` vierge ; sur la home → réaffiche le legacy sur place.
-- **Entrées** : le menu « Je recherche une alternance » suit le flag (`/beta/recherche` si opt-in) ; la quick access « Recherche avancée » du header a été retirée.
-- **Télémétrie tri & conversion (23/07)** : `search_sort_changed` (sort_value/previous_sort_value en vocabulaire stable — « relevance » = défaut —, results_count post-application via la même mécanique pendingRef que les filtres ; le reset de tri au changement de mode n'émet pas d'événement) ; `job_offer_clicked` enrichi du contexte de recherche (`active_filters` = filter_name actifs joints par virgule ou « none », `active_filters_count`, `sort_value`) pour relier filtres/tri → consultation → candidature.
-- **Télémétrie** : événements Matomo `new_search_optin` / `new_search_optout` avec `search_engine` (`production` / `beta-v1`, cf. `SEARCH_ENGINES` dans [`matomoUtils.ts`](../../ui/utils/matomoUtils.ts)) et `pathname` de la page d'origine. Tracking des cartes distinguant le moteur : second temps.
+Il n'y a **plus qu'un moteur de recherche**. L'ancien (« legacy ») a été retiré du service puis son
+code supprimé (#5183) : plus d'opt-in, plus de flag, plus de bascule, plus de coexistence. `/recherche`
+sert directement le moteur décrit ci-dessus, pour tout le monde.
+
+Ce qui a disparu avec le legacy : la bannière d'opt-in et le lien « Revenir au moteur de recherche
+principal », les événements Matomo `new_search_optin` / `new_search_optout`, l'ensemble des composants
+et hooks `*_LEGACY` du moteur, et les pages non routées `recherche-emploi/` et `recherche-formation/`
+(les redirections de `next.config.mjs` couvrent ces URLs : `/recherche?mode=emplois` et
+`?mode=formations`).
+
+Ce qui est **conservé volontairement** : [`recherche.metadata.utils_LEGACY.ts`](<../../ui/app/(candidat)/(recherche)/recherche/_utils/recherche.metadata.utils_LEGACY.ts>),
+le repli SEO des URLs legacy indexées (`?job_name=…&romes=…`), en attendant le mapping complet
+legacy → `q` (#5033/#5034).
+
+Vestiges de vocabulaire à normaliser (aucun impact fonctionnel, mais trompeurs à la lecture) :
+
+- `SEARCH_ENGINES = { PRODUCTION: "production", BETA: "beta-v1" }` dans [`matomo-utils.ts`](../../ui/utils/matomo-utils.ts) distingue encore deux moteurs en télémétrie : le moteur en service émet `beta-v1`, et un CTA éditorial émet `production`. À unifier si on veut des séries Matomo lisibles.
+- [`HomeRechercheOptIn`](<../../ui/app/(home)/_components/HomeRechercheOptIn.tsx>) n'est plus qu'un wrapper qui rend `<SearchHomeForm />` — le nom vient de l'époque de l'opt-in.
+- Le flag localStorage `lba-new-search-optin` n'est plus lu par personne ; il reste inerte dans les navigateurs qui l'avaient positionné.
+
+**Télémétrie tri & conversion (23/07)** : `search_sort_changed` (sort_value/previous_sort_value en vocabulaire stable — « relevance » = défaut —, results_count post-application via la même mécanique pendingRef que les filtres ; le reset de tri au changement de mode n'émet pas d'événement) ; `job_offer_clicked` enrichi du contexte de recherche (`active_filters` = filter_name actifs joints par virgule ou « none », `active_filters_count`, `sort_value`) pour relier filtres/tri → consultation → candidature.
 
 ### Champ Lieu
 
@@ -97,7 +112,7 @@ Autocomplete BAN (≥ 2 caractères), `autoHighlight` (Entrée = 1ʳᵉ suggesti
 
 - **Le champ rayon/distance est retiré de l'UI.**
 - Défaut `radius = 20` km. À chaque **nouveau lieu**, on repart de **20**.
-- [`useAutoRadius`](../../ui/app/beta/_hooks/useAutoRadius.ts) : si un lieu est défini et que la recherche renvoie **0 résultat**, élargit le rayon par **paliers de 20 km jusqu'à 100** (20 → 40 → … → 100). Le bouton « Voir plus de résultats » gère ensuite le chargement progressif.
+- [`use-auto-radius.ts`](../../ui/app/(candidat)/(recherche)/recherche/_hooks/use-auto-radius.ts) : si un lieu est défini et que la recherche renvoie **0 résultat**, élargit le rayon par **paliers de 20 km jusqu'à 100** (20 → 40 → … → 100). Le bouton « Voir plus de résultats » gère ensuite le chargement progressif.
 
 ---
 
@@ -126,7 +141,7 @@ Automatisée de bout en bout ([`searchItemsKeywords.service.ts`](../../server/sr
 
 ## Limitations connues
 
-- **Recall des recruteurs algo** : le legacy matche les recruteurs par code ROME (métier saisi → ROME → recruteurs) ; le nouveau moteur matche par texte (`rome_labels`/`keywords`). Un intitulé hors vocabulaire ROME (« chargé de déploiement », « product manager », « agriculteur ») ne remonte pas les recruteurs pertinents — ticket dédié (pont sémantique métier→ROME ou enrichissement Mistral des keywords recruteurs).
+- **Recall des recruteurs algo** : le moteur matche les recruteurs **par texte** (`rome_labels`/`keywords`), là où l'ancien moteur (supprimé) matchait par code ROME (métier saisi → ROME → recruteurs). Un intitulé hors vocabulaire ROME (« chargé de déploiement », « product manager », « agriculteur ») ne remonte donc pas les recruteurs pertinents — ticket dédié (pont sémantique métier→ROME ou enrichissement Mistral des keywords recruteurs).
 
 - **Tri par défaut sans `q`** (cf. §1) : ni « plus proche » ni « plus récent » d'abord. Les tris explicites `proximity` et `date` lèvent cette limite, mais ne sont appliqués que si l'utilisateur les sélectionne.
 - Le `radius` par défaut de l'API reste `30` ([`search.routes.ts`](../../shared/src/routes/search.routes.ts)) ; côté front les vues forcent `20` et l'auto-élargissement.

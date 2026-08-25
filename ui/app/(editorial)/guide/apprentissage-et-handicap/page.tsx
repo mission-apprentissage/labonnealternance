@@ -15,9 +15,10 @@ import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternan
 import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  ...PAGES.static.guideApprentissageEtHandicap.getMetadata(),
+  ...METADATA.static.guideApprentissageEtHandicap(),
   alternates: { canonical: PAGES.static.guideApprentissageEtHandicap.getPath() },
 }
 
@@ -57,7 +58,10 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
     "Pour faciliter la formation du jeune travailleur en situation de handicap, certaines règles du contrat d’apprentissage sont aménagées comme la durée du contrat, le temps de travail, le déroulement de la formation ou encore la limite d’âge.",
   ]
 
-  const source = new URLSearchParams(await searchParams).get("source") || undefined
+  // guide_source a remplacé source (paramètre réservé de Plausible) ; l'ancien nom reste lu en
+  // repli pour les liens externes/favoris antérieurs au renommage.
+  const params = new URLSearchParams(await searchParams)
+  const source = params.get("guide_source") || params.get("source") || undefined
 
   return (
     <LayoutArticle
@@ -68,6 +72,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
       redirectionInterne={<RedirectionInterne source={source} />}
       allerPlusLoinItems={getAllerPlusLoinItems(source)}
       page={PAGES.static.guideApprentissageEtHandicap}
+      metadata={metadata}
     >
       <InfoSection>
         <Box>

@@ -14,9 +14,10 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { getSession } from "@/utils/get-session"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.jeSuisCFA.getMetadata()
+export const metadata: Metadata = METADATA.static.jeSuisCFA()
 
 async function DepotCtaButtons() {
   const { user } = await getSession()
@@ -76,8 +77,8 @@ const JeSuisCFAPage = () => {
     >
       <SchemaOrg
         type="WebPage"
-        title={PAGES.static.jeSuisCFA.getMetadata().title}
-        description={PAGES.static.jeSuisCFA.getMetadata().description}
+        title={METADATA.static.jeSuisCFA().title}
+        description={METADATA.static.jeSuisCFA().description}
         url={PAGES.static.jeSuisCFA.getPath()}
         breadcrumbs={[
           { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },

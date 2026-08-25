@@ -1,98 +1,49 @@
 import type { Metadata } from "next"
-import { MAX_SEARCH_ROMES_PRIVATE } from "shared"
 
-import type { IRecherchePageParams } from "./recherche.route.utils"
-
-export type IRechercheMetaKind = "default" | "emploi" | "formation"
-
-const SUFFIX = " | La bonne alternance"
-
-const BASE_PATH_BY_KIND: Record<IRechercheMetaKind, string> = {
-  default: "/recherche",
-  emploi: "/recherche-emploi",
-  formation: "/recherche-formation",
-}
+import { buildRechercheMetadata } from "./recherche.metadata.utils_LEGACY"
+import { IRechercheMode, parseRecherchePageParams } from "./recherche.route.utils"
+import { buildSearchPageCanonical, buildSearchPageTitle, parseSearchPageParams } from "./search.params.utils"
 
 /**
- * Construit un canonical stable pour une page de recherche : chemin du mode + uniquement les
- * paramètres qui définissent une recherche distincte et indexable (`romes`, `job_name`, et
- * l'`address` quand une ville est renseignée — les SERP géolocalisées ont leur propre trafic).
- * Exclut tout le bruit d'URL : `s` (timestamp), `lat`/`lon`, `display`, `page`/`itemId`,
- * `activeItems`, toggles UI, `utm_*`.
- * Applique la même limitation que `buildRecherchePageParams` (MAX_SEARCH_ROMES_PRIVATE) pour
- * garantir que le canonical correspond à l'URL réellement servie.
+ * Métadonnées SEO de /recherche (nouveau moteur, schéma `q`), avec repli sur le moteur legacy.
+ *
+ * Depuis la bascule du nouveau moteur (qui ne lit que `q`, plus `job_name`/`romes`), les URL
+ * indexées par Google au format legacy (`?job_name=…&romes=…`) — 2ᵉ source de trafic organique
+ * (~213k clics/an, requêtes « alternance {métier} ») — ne sont plus reconnues et servent toutes
+ * le même `<title>` générique dupliqué en SSR, cassant le match titre↔requête qui portait le trafic.
+ *
+ * Tant que le mapping complet legacy→`q` (résultats + H1 en SSR) n'est pas fait (#5033), on restaure
+ * ici le titre/description/canonical métier EXACTS que la page legacy produisait pour ces URL — donc
+ * zéro churn côté Google. Le repli ne s'active que si `job_name` est renseigné.
+ *
+ * Noindex chirurgical (#5034) : les pages sans métier réel (`/recherche` nue, `romes=` seul, `job_name`
+ * vide type `romes=K2101`) n'ont pas d'intention propre — GSC montre qu'elles ressortent quasi
+ * exclusivement sur des requêtes de MARQUE (« la bonne alternance » + typos), déjà servies par l'accueil.
+ * On les passe donc en `index:false, follow:true` pour consolider l'autorité sur l'accueil sans couper la
+ * circulation du jus interne. Règle pilotée par la structure d'URL (pas de `q` ET pas de `job_name` réel),
+ * qui isole exactement ces pages sans jamais toucher aux URL à `job_name` réel (~213k clics/an) ni au
+ * nouveau moteur `q`. Réversible : retirer la directive ré-indexe en quelques semaines de re-crawl.
  */
-function buildRechercheCanonical(rechercheParams: Partial<IRecherchePageParams> | null, kind: IRechercheMetaKind): string {
-  const basePath = BASE_PATH_BY_KIND[kind]
-  const params = new URLSearchParams()
-  const romes = rechercheParams?.romes?.slice(0, MAX_SEARCH_ROMES_PRIVATE)
-  const hasRomes = Boolean(romes && romes.length > 0)
-  if (hasRomes) {
-    params.set("romes", romes!.join(","))
-  }
-  const jobName = rechercheParams?.job_name?.trim()
-  if (jobName) {
-    params.set("job_name", jobName)
-  }
-  // Géo incluse uniquement pour une recherche métier + ville, ET avec lat/lon : le parseur de
-  // recherche ne reconstruit la géo que si lat ET lon sont présents (address seule est ignorée),
-  // donc un canonical à `address` seule pointerait vers une page non géolocalisée (chaîne incohérente).
-  // Une recherche ville seule est volontairement consolidée (les pages /alternance/ville/* la couvrent).
-  const geo = rechercheParams?.geo
-  const address = geo?.address?.trim()
-  const hasMetier = Boolean(jobName) || hasRomes
-  if (hasMetier && geo && address) {
-    params.set("lat", String(geo.latitude))
-    params.set("lon", String(geo.longitude))
-    params.set("address", address)
-  }
-  const query = params.toString()
-  return query ? `${basePath}?${query}` : basePath
-}
+const NOINDEX_FOLLOW: Metadata["robots"] = { index: false, follow: true }
 
-/**
- * Construit le title + meta description + canonical SEO d'une page de recherche.
- * Met le métier (et la ville) en tête du title et ajoute un CTA dans la description.
- * `kind` : "default" (offres + formations), "emploi" (offres d'emploi), "formation" (formations).
- */
-export function buildRechercheMetadata(rechercheParams: Partial<IRecherchePageParams> | null, kind: IRechercheMetaKind): Metadata {
-  const jobName = rechercheParams?.job_name?.trim() || null
-  const address = rechercheParams?.geo?.address?.trim() || null
-  // Distingue 3 cas de géo : adresse libellée (" à Lyon") · géo sans libellé (recherche
-  // par rayon lat/lon sans param `address` → aucun lieu ajouté) · aucune géo (" en France").
-  const hasGeo = rechercheParams?.geo != null
-  const lieuTitle = address ? ` à ${address}` : ""
-  const lieuDesc = address ? ` à ${address}` : hasGeo ? "" : " en France"
+export function buildRecherchePageMetadata(search: URLSearchParams): Metadata {
+  const params = parseSearchPageParams(search)
 
-  const alternates = { canonical: buildRechercheCanonical(rechercheParams, kind) }
-
-  let title: string
-  let description: string
-
-  if (kind === "formation") {
-    if (jobName) {
-      title = `Formations en alternance ${jobName}${lieuTitle}${SUFFIX}`
-      description = `Toutes les formations en apprentissage ${jobName}${lieuDesc}. Comparez les programmes et postulez gratuitement sur le service public de l'alternance.`
-    } else {
-      title = `Formations en alternance${SUFFIX}`
-      description = "Trouvez votre formation en apprentissage près de chez vous. Comparez les programmes par métier et par ville, postulez gratuitement."
-    }
-    return { title, description, alternates }
+  // Nouveau moteur `q` : vraie intention de recherche → indexable. Canonical auto-référent OBLIGATOIRE :
+  // sans lui, la page hérite du canonical racine (`"./"` → `/recherche`) et serait dé-indexée avec la
+  // page nue passée en noindex ci-dessous.
+  if (params.q) {
+    return { title: buildSearchPageTitle(params), alternates: { canonical: buildSearchPageCanonical(params) } }
   }
 
-  const isEmploi = kind === "emploi"
-  const offreLabel = isEmploi ? "offres d'emploi" : "offres et formations"
-  const descOffreLabel = isEmploi ? "offres d'emploi en alternance" : "offres et formations en alternance"
-
-  if (jobName) {
-    title = `Alternance ${jobName}${lieuTitle} : ${offreLabel}${SUFFIX}`
-    description = `Toutes les ${descOffreLabel} ${jobName}${lieuDesc}. Postulez gratuitement sur le service public de l'alternance.`
-  } else {
-    title = `${isEmploi ? "Offres d'emploi en alternance" : "Offres et formations en alternance"}${SUFFIX}`
-    description = isEmploi
-      ? "Trouvez votre alternance parmi des milliers d'offres d'emploi près de chez vous. Filtrez par métier, ville et type de contrat, postulez gratuitement."
-      : "Trouvez votre alternance parmi des milliers d'offres et de formations près de chez vous. Filtrez par métier, ville et type de contrat."
+  // URL legacy à métier réel (`job_name`) : vraie intention, 2ᵉ source de trafic → indexable, titre restauré.
+  // `.trim()` : un `job_name` vide ou fait d'espaces produirait un titre générique (le consommateur le trim)
+  // tout en échappant au noindex — on l'exclut donc de la branche « métier réel ».
+  const legacyParams = parseRecherchePageParams(search, IRechercheMode.DEFAULT)
+  if (legacyParams?.job_name?.trim()) {
+    return buildRechercheMetadata(legacyParams, "default")
   }
 
-  return { title, description, alternates }
+  // Page sans intention propre (marque, redondante avec l'accueil) → noindex ciblé (#5034).
+  return { title: buildSearchPageTitle(params), robots: NOINDEX_FOLLOW }
 }

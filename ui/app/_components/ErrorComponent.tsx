@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
-import * as Sentry from "@sentry/nextjs"
+import { captureException, type FallbackRender, ErrorBoundary as SentryErrorBoundary } from "@sentry/nextjs"
 import Image from "next/image"
 import type { PropsWithChildren } from "react"
 import { useEffect } from "react"
@@ -10,30 +10,10 @@ import { useEffect } from "react"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { ApiError } from "@/utils/api.utils"
-
-function wasPageReloaded(): boolean {
-  const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined
-  return navigationEntry?.type === "reload"
-}
+import { shouldReloadOnce } from "@/utils/reload-guard.utils"
 
 function shouldReloadChunkError(): boolean {
-  const storageKey = "lba:lastChunkReload"
-  const reloadThrottleMs = 30000
-  const now = Date.now()
-
-  try {
-    const storedValue = window.sessionStorage.getItem(storageKey)
-    const lastReload = storedValue ? Number(storedValue) : 0
-
-    if (!lastReload || Number.isNaN(lastReload) || now - lastReload > reloadThrottleMs) {
-      window.sessionStorage.setItem(storageKey, String(now))
-      return true
-    }
-
-    return false
-  } catch {
-    return !wasPageReloaded()
-  }
+  return shouldReloadOnce("lba:staleDeploymentReload", 30000)
 }
 
 function getErrorDescription(error: unknown): string | null {
@@ -67,7 +47,7 @@ export function ErrorComponent({ error }: ErrorProps) {
       window.location.reload()
       return
     }
-    Sentry.captureException(error)
+    captureException(error)
     console.error(error)
   }, [error])
 
@@ -134,7 +114,7 @@ export function ErrorComponent({ error }: ErrorProps) {
   )
 }
 
-const fallbackRender: Sentry.FallbackRender = ({ error }) => {
+const fallbackRender: FallbackRender = ({ error }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <ErrorComponent error={error} />
@@ -143,5 +123,5 @@ const fallbackRender: Sentry.FallbackRender = ({ error }) => {
 }
 
 export function ErrorBoundary({ children }: PropsWithChildren) {
-  return <Sentry.ErrorBoundary fallback={fallbackRender}>{children}</Sentry.ErrorBoundary>
+  return <SentryErrorBoundary fallback={fallbackRender}>{children}</SentryErrorBoundary>
 }

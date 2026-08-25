@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Button, CircularProgress, Typography } from "@mui/material"
-import * as Sentry from "@sentry/nextjs"
+import { captureMessage, setTag } from "@sentry/nextjs"
 import { useState } from "react"
 import type { DropzoneOptions } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
@@ -68,23 +68,26 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
       const { errors, file } = fileRejection ?? {}
       const [error] = errors
       const { message } = error ?? {}
-      Sentry.setTag("errorType", "envoi_PJ_candidature")
+      setTag("errorType", "envoi_PJ_candidature")
       if (errors.some((error) => error.code === "file-invalid-type")) {
         const fileExtension = getFileExtension(file.name)
-        Sentry.setTag("file-extension", fileExtension)
+        setTag("file-extension", fileExtension)
       }
       if (errors.some((error) => error.code === "file-too-large")) {
         const sizeInMo = Math.round(file.size / 1024 / 1024)
-        Sentry.setTag("file-size-in-mo", sizeInMo)
+        setTag("file-size-in-mo", sizeInMo)
       }
       if (fileRejections.length > 1) {
-        Sentry.setTag("multiple-files", "true")
+        setTag("multiple-files", "true")
       }
-      Sentry.captureException(new Error(message))
-      Sentry.setTag("errorType", undefined)
-      Sentry.setTag("file-extension", undefined)
-      Sentry.setTag("file-size-in-mo", undefined)
-      Sentry.setTag("multiple-files", undefined)
+      // Rejet de fichier (taille, type, nombre) : validation attendue du dropzone déclenchée par
+      // le choix de l'utilisateur, pas un défaut applicatif — captureMessage/info conserve la
+      // télémétrie (tags ci-dessus) sans polluer le triage des erreurs.
+      captureMessage(message, "info")
+      setTag("errorType", undefined)
+      setTag("file-extension", undefined)
+      setTag("file-size-in-mo", undefined)
+      setTag("multiple-files", undefined)
     },
   })
 

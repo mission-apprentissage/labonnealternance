@@ -17,7 +17,7 @@
 
 - Le dossier `/.infra` contient la configuration de l'instructure.
 - Le dossier `/.github` contient l'ensemble des Github Actions.
-- Le dossier `/server` contient l'ensemble de l'application coté serveur, à savoir l'API Node Express.
+- Le dossier `/server` contient l'ensemble de l'application coté serveur, à savoir l'API Node Fastify.
 - Le dossier `/shared` contient le code partagé entre l'ui et le server
 - Le dossier `/ui` contient l'ensemble de l'application coté front, à savoir le code NextJs.
 - Le fichier `/docker-compose.yml` va définir la configuration des services de l'application, _pour plus d'informations sur Docker cf: https://docs.docker.com/_

@@ -351,8 +351,8 @@ yarn test --update
 ## Aller plus loin
 
 - [Datasouces](./docs/DATASOURCES.md)
-- [Déploiement](./docs/deploy.md)
+- [Déploiement](./docs/infrastructure/manage.md#deploiement-de-lapplication)
 - [Développement](./docs/developpement/developpement.md)
-- [Debugging](./docs/developpement/debug.md)
+- [Debugging](./docs/developpement/developpement.md#debugger-sous-vscode)
 - [Infrastructure](./docs/infrastructure.md)
 - [Sécurité](./docs/securite.md)

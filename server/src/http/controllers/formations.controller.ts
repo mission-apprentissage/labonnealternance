@@ -1,4 +1,3 @@
-import { badRequest, internal } from "@hapi/boom"
 import { zRoutes } from "shared"
 import { INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
 
@@ -57,38 +56,6 @@ export default (server: Server) => {
         })
       }
       return res.send(result)
-    }
-  )
-
-  server.get(
-    "/v1/_private/formations/min",
-    {
-      schema: zRoutes.get["/v1/_private/formations/min"],
-      config,
-    },
-    async (req, res) => {
-      const { referer } = req.headers
-      const { romes, latitude, longitude, radius, diploma } = req.query
-      const result = await getFormationsQuery({
-        romes,
-        longitude,
-        latitude,
-        radius,
-        diploma: INiveauDiplomeEuropeen.fromParam(diploma),
-        referer,
-        isMinimalData: true,
-        isPrivate: true,
-      })
-
-      if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          throw badRequest("wrong_parameters", { error_messages: result.error_messages ?? [] })
-        }
-
-        throw internal("Failed to fetch formations min", { error: result.error })
-      }
-
-      return res.send(result.results)
     }
   )
 

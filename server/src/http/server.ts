@@ -13,7 +13,6 @@ import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/is-origin-local"
 import config from "@/config"
-import jobsEtFormationsController from "@/http/controllers/jobs-et-formations.controller"
 import { initBrevoWebhooks } from "@/services/brevo.service"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "./controllers/_private/geo.private.controller"
@@ -24,7 +23,6 @@ import formationsRoute from "./controllers/admin/formations.controller"
 import jobsPartnersAdminRoute from "./controllers/admin/jobs-partners.controller"
 import application from "./controllers/application.controller"
 import appointmentRequestRoute from "./controllers/appointment-request.controller"
-import { classificationRoutes } from "./controllers/classification.controller"
 import { coreRoutes } from "./controllers/core.controller"
 import emailsRoute from "./controllers/emails.controller"
 import etablissementRoute from "./controllers/etablissement.controller"
@@ -123,7 +121,6 @@ export async function bind(app: Server) {
       jobsV1Route(typedSubApp)
       formationsV1Route(typedSubApp)
       formationsRegionV1Route(typedSubApp)
-      jobsEtFormationsController(typedSubApp)
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
       seoRouteController(typedSubApp)
@@ -158,9 +155,6 @@ export async function bind(app: Server) {
       jobsApiV3Routes(typedSubApp)
       applicationRouteV2(typedSubApp)
       appointmentRequestRouteV2(typedSubApp)
-
-      /** model training */
-      classificationRoutes(typedSubApp)
 
       /**
        * Search

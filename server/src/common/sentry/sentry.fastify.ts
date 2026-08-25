@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/node"
-import type { FastifyRequest } from "fastify"
+import type { FastifyError, FastifyRequest } from "fastify"
 import { assertUnreachable } from "shared"
 
 import type { Server } from "@/http/server"
@@ -55,7 +55,16 @@ function extractUserData(request: FastifyRequest): UserData {
 
 export function initSentryFastify(app: Server) {
   // Setup official Fastify error handler
-  Sentry.setupFastifyErrorHandler(app)
+  // shouldHandleError capture cet handler AVANT le passage par errorMiddleware/boomify : sans lui,
+  // les erreurs de validation Fastify (querystring/body, statusCode 400, ex. FST_ERR_VALIDATION)
+  // remontent brutes et échappent au filtre beforeSend de sentry.ts (qui ne sait reconnaître que
+  // les erreurs déjà Boom-ifiées) — bruit constaté sur GET /api/v1/formations et /api/v3/jobs/search.
+  Sentry.setupFastifyErrorHandler(app, {
+    shouldHandleError: (error) => {
+      const statusCode = (error as FastifyError).statusCode
+      return statusCode === undefined || statusCode >= 500
+    },
+  })
 
   // Custom user data hook
   app.addHook("onRequest", async (request, _reply) => {

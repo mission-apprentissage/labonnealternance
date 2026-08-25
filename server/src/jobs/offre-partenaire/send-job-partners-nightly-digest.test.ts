@@ -129,4 +129,38 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(payload.error).toBe(true)
     expect(payload.message).toContain("Process computed and import to Jobs Partners")
   })
+
+  it("résume les erreurs imbriquées au lieu de dumper le JSON complet (cas réel de recette)", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      cronTask({
+        name: "Process computed and import to Jobs Partners",
+        status: "finished",
+        result: {
+          filled: {
+            blockJobsPartnersFromFluxCompanyList: { total: 40945, success: 40945, error: 0 },
+            fillSiretInfosForPartners: { total: 15334, success: 15299, error: 35 },
+            fillRomeForPartners: { total: 7223, success: 4294, error: 2929 },
+            blockBadRomeJobsPartners: { modifiedCount: 13 },
+            detectDuplicateJobPartners: { executionDurationInSeconds: 29, executionDurationError: false },
+            validateComputedJobPartners: { total: 22524, success: 19729, error: 2795 },
+          },
+          imported: { total: 19729, success: 19729, error: 0 },
+        },
+      }),
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    // un dump JSON complet contiendrait cette clé (step sans erreur) : sa présence trahirait un retour en arrière
+    expect(payload.message).not.toContain("blockJobsPartnersFromFluxCompanyList")
+    // les compteurs à 0 et le flag executionDurationError=false ne doivent pas apparaître
+    expect(payload.message).not.toContain('"error":0')
+    expect(payload.message).not.toContain("executionDurationError")
+    // seules les 3 vraies anomalies doivent ressortir, avec leur ratio
+    expect(payload.message).toContain("filled.fillSiretInfosForPartners.error : 35/15334")
+    expect(payload.message).toContain("filled.fillRomeForPartners.error : 2929/7223")
+    expect(payload.message).toContain("filled.validateComputedJobPartners.error : 2795/22524")
+  })
 })

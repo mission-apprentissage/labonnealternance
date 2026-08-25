@@ -11,7 +11,7 @@ type ItemListEntry = {
 }
 
 type SchemaOrgProps = {
-  type: "WebSite" | "WebPage" | "CollectionPage" | "Article" | "FAQPage" | "ItemList"
+  type: "WebSite" | "WebPage" | "CollectionPage" | "Article" | "FAQPage" | "ItemList" | "Course"
   title: string
   description: string
   url: string
@@ -22,6 +22,8 @@ type SchemaOrgProps = {
   keywords?: string[]
   articleSection?: string
   itemList?: ItemListEntry[]
+  courseCredential?: string
+  courseDuration?: string
   omitBreadcrumb?: boolean
 }
 
@@ -37,6 +39,8 @@ export const SchemaOrg = ({
   keywords,
   articleSection,
   itemList,
+  courseCredential,
+  courseDuration,
   omitBreadcrumb,
 }: SchemaOrgProps) => {
   const schemas: object[] = []
@@ -71,7 +75,7 @@ export const SchemaOrg = ({
         "@type": "SearchAction",
         target: {
           "@type": "EntryPoint",
-          urlTemplate: `${BASE_URL}/recherche?job={search_term_string}`,
+          urlTemplate: `${BASE_URL}/recherche?q={search_term_string}`,
         },
         "query-input": "required name=search_term_string",
       },
@@ -160,8 +164,31 @@ export const SchemaOrg = ({
         "@type": "ListItem",
         position: index + 1,
         name: item.name,
-        url: `${BASE_URL}${item.url}`,
+        url: item.url.startsWith("http") ? item.url : `${BASE_URL}${item.url}`,
       })),
+    })
+  }
+
+  if (type === "Course") {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "Course",
+      name: title,
+      description,
+      url: `${BASE_URL}${url}`,
+      provider: {
+        "@type": "GovernmentOrganization",
+        name: "Délégation générale à l'emploi et à la formation professionnelle (DGEFP)",
+        url: "https://travail-emploi.gouv.fr",
+      },
+      ...(courseCredential ? { educationalCredentialAwarded: courseCredential } : {}),
+      ...(courseDuration ? { timeRequired: courseDuration } : {}),
+      hasCourseInstance: {
+        "@type": "CourseInstance",
+        // L'alternance combine formation en école et travail en entreprise.
+        courseMode: "blended",
+      },
+      inLanguage: "fr",
     })
   }
 

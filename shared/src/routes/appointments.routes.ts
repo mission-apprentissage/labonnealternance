@@ -52,7 +52,7 @@ const zContextCreateSchema = z.union([
 
 const zAppointmentRequestContextCreateFormAvailableResponseSchema = z.strictObject({
   etablissement_formateur_entreprise_raison_sociale: ZEtablissement.shape.raison_sociale,
-  intitule_long: z.string(),
+  intitule_long: z.string().nullable(),
   lieu_formation_adresse: z.string(),
   code_postal: z.string(),
   etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,

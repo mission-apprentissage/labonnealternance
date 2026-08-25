@@ -10,8 +10,9 @@ import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideAlternantSeFaireAccompagner.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternantSeFaireAccompagner()
 
 const SeFaireAccompagnerPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantSeFaireAccompagner]
@@ -34,6 +35,7 @@ const SeFaireAccompagnerPage = () => {
       ]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantSeFaireAccompagner}
+      metadata={metadata}
     >
       <Section title="Pourquoi se faire accompagner ?">
         <Paragraph>
@@ -208,7 +210,7 @@ const SeFaireAccompagnerPage = () => {
               Pays de la Loire
             </DsfrLink>,
             <DsfrLink
-              href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-region-occita"
+              href="https://demarche.numerique.gouv.fr/commencer/apprentissage-volet-recherche-2026"
               aria-label="Contacter la cellule apprentissage Provence-Alpes-Côte d'Azur (PACA)"
             >
               Provence-Alpes-Côte d'Azur (PACA)

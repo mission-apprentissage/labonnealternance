@@ -3,6 +3,7 @@ import { validatePhone } from "../../validators/phone-validator.js"
 import { validateSIRET } from "../../validators/siret-validator.js"
 import { removeUrlsFromText } from "../common.js"
 import { z } from "../zod-with-open-api.js"
+import { buildEnum, latitude, longitude } from "./zod-primitives-light.js"
 
 // Fonction générique pour créer une projection MongoDB avec exclusion de champs
 export const createProjectionFromZod = <T extends z.ZodObject<any>>(schema: T, excludeFields: (keyof z.infer<T>)[]): Record<string, 1> => {
@@ -80,13 +81,9 @@ export const extensions = {
       key: z.string().nullish(),
       content: z.array(z.string()).nullish(),
     }),
-  buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>) => {
-    const values = Object.values(enumObject)
-    if (!values.length) {
-      throw new Error("inattendu : enum vide")
-    }
-    return z.enum([values[0], ...values.slice(1)])
-  },
+  // Extraits dans zod-primitives-light.ts (importable côté client sans libphonenumber),
+  // ré-exposés ici pour ne pas casser les ~40 importeurs existants de `extensions`.
+  buildEnum,
   romeCode: () => z.string().trim().regex(CODE_ROME_REGEX, "Code ROME invalide"),
   romeCodeArray: () =>
     z
@@ -97,14 +94,8 @@ export const extensions = {
         message: "One or more ROME codes are invalid. Expected format is 'D1234'.",
       }),
   rncpCode: () => z.string().trim().regex(RNCP_REGEX, "Code RNCP invalide"),
-  latitude: ({ coerce }: { coerce: boolean }) => {
-    const base = coerce ? z.coerce.number<number>() : z.number()
-    return base.min(-90, "Latitude doit être comprise entre -90 et 90").max(90, "Latitude doit être comprise entre -90 et 90")
-  },
-  longitude: ({ coerce }: { coerce: boolean }) => {
-    const base = coerce ? z.coerce.number<number>() : z.number()
-    return base.min(-180, "Longitude doit être comprise entre -180 et 180").max(180, "Longitude doit être comprise entre -180 et 180")
-  },
+  latitude,
+  longitude,
   inseeCode: () => z.string().trim().regex(CODE_INSEE_REGEX, "Code INSEE invalide"),
   zipCode: () => z.string().trim().regex(CODE_POSTAL_REGEX, "Code postal invalide"),
   url: () => z.string().regex(/^(https?:\/\/)?(http?:\/\/)?(www\.)?([a-zA-Z0-9-]+)(\.[a-zA-Z0-9-]+)+(\.[a-zA-Z]{2,6})(:[0-9]{1,5})?(\/.*)?$/, "URL invalide"),

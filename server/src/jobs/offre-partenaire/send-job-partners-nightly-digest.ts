@@ -9,52 +9,76 @@ const MAX_MESSAGE_LENGTH = 35_000 // marge sous la limite Slack (~40k caractère
 
 export const JOB_PARTNERS_DIGEST_JOB_NAME = "Bilan nocturne offres partenaires"
 
+// Jobs de la pipeline jobs_partners enregistrés directement dans jobs.ts, donc absents du map
+// `importers` ci-dessous mais dont le digest doit quand même surveiller les anomalies.
+const ADDITIONAL_MONITORED_JOB_NAMES = ["Traitement des recruteur LBA par la pipeline jobs partners"]
+
 // Calculé à l'appel (pas au chargement du module) : jobs-partners.importer.ts importe ce fichier pour enregistrer
 // son propre CronDef, donc `importers` n'est pas encore initialisé tant que ce module est en cours de chargement.
-const getJobPartnersNightlyJobNames = () => Object.keys(importers).filter((name) => name !== JOB_PARTNERS_DIGEST_JOB_NAME)
+const getJobPartnersNightlyJobNames = () => [...new Set([...Object.keys(importers), ...ADDITIONAL_MONITORED_JOB_NAMES])].filter((name) => name !== JOB_PARTNERS_DIGEST_JOB_NAME)
 
-const hasNonZeroErrorCount = (value: unknown): boolean => {
-  if (value == null) return false
-  if (Array.isArray(value)) return value.some(hasNonZeroErrorCount)
-  if (typeof value === "object") {
-    return Object.entries(value as Record<string, unknown>).some(([key, val]) => {
-      if (/error/i.test(key)) {
-        if (typeof val === "number") return val > 0
-        if (typeof val === "boolean") return val === true
+type ErrorSignal = { path: string; detail: string }
+
+// Parcourt récursivement un résultat de job (souvent imbriqué : { filled: { step1: {total,success,error}, ... } })
+// et n'en extrait que les champs *error* non nuls, avec leur chemin et leur total si disponible.
+// Évite de dumper le JSON complet (souvent illisible sur Slack) pour ne montrer que ce qui compte.
+const findErrorSignals = (value: unknown, path: string[] = []): ErrorSignal[] => {
+  if (value == null || typeof value !== "object") return []
+  if (Array.isArray(value)) return value.flatMap((item, i) => findErrorSignals(item, [...path, String(i)]))
+
+  const record = value as Record<string, unknown>
+  const signals: ErrorSignal[] = []
+
+  for (const [key, val] of Object.entries(record)) {
+    if (/error/i.test(key)) {
+      if (typeof val === "number" && val > 0) {
+        const total = typeof record.total === "number" ? `/${record.total}` : ""
+        signals.push({ path: [...path, key].join("."), detail: `${val}${total}` })
+      } else if (typeof val === "boolean" && val) {
+        signals.push({ path: [...path, key].join("."), detail: "signalé" })
       }
-      return hasNonZeroErrorCount(val)
-    })
+    } else {
+      signals.push(...findErrorSignals(val, [...path, key]))
+    }
   }
-  return false
+  return signals
 }
 
 const isAnomalous = (job: IJobsCronTask): boolean => {
   // "running" à l'heure du digest : le job aurait dû se terminer avant (cf. timing du cron) — signe d'un job bloqué
   if (job.status === "errored" || job.status === "killed" || job.status === "running") return true
-  return hasNonZeroErrorCount(job.output?.result)
+  return findErrorSignals(job.output?.result).length > 0
 }
 
 const jobTimestamp = (job: IJobsCronTask): number => (job.ended_at ?? job.started_at ?? new Date(0)).getTime()
 
-const describeAnomaly = (job: IJobsCronTask): string => {
+// headline : résumé tenant sur une ligne, toujours sûr à afficher entre parenthèses.
+// details : liste optionnelle de sous-puces (une par champ *error*), affichée après la parenthèse fermante.
+type AnomalyDescription = { headline: string; details?: string }
+
+const describeAnomaly = (job: IJobsCronTask): AnomalyDescription => {
   const duration = job.output?.duration ?? "?"
   if (job.status === "running") {
-    return `toujours en cours, démarré à ${job.started_at?.toISOString() ?? "?"}`
+    return { headline: `toujours en cours, démarré à ${job.started_at?.toISOString() ?? "?"}` }
   }
   if (job.status === "errored" || job.status === "killed") {
-    return `${job.status}, ${duration} : ${job.output?.error ?? "erreur inconnue"}`
+    return { headline: `${job.status}, ${duration} : ${job.output?.error ?? "erreur inconnue"}` }
   }
-  return `${duration} : ${JSON.stringify(job.output?.result)}`
+  const signals = findErrorSignals(job.output?.result)
+  if (signals.length === 0) return { headline: `${duration} : anomalie non détaillée` }
+  const details = signals.map(({ path, detail }) => `\n    ◦ ${path} : ${detail}`).join("")
+  return { headline: duration, details }
 }
 
 // Un même job (ex. "Process missing Rome...", ~65 exécutions/jour) peut échouer en boucle sur la fenêtre :
 // on regroupe par nom pour garder un digest lisible plutôt qu'une ligne par exécution en anomalie.
 const formatAnomalyGroup = (name: string, jobsForName: IJobsCronTask[]): string => {
   const [mostRecent] = [...jobsForName].sort((a, b) => jobTimestamp(b) - jobTimestamp(a))
+  const { headline, details = "" } = describeAnomaly(mostRecent)
   if (jobsForName.length === 1) {
-    return `• ${name} (${describeAnomaly(mostRecent)})`
+    return `• ${name} (${headline})${details}`
   }
-  return `• ${name} : ${jobsForName.length} exécutions en anomalie sur la période (dernière : ${describeAnomaly(mostRecent)})`
+  return `• ${name} : ${jobsForName.length} exécutions en anomalie sur la période (dernière : ${headline})${details}`
 }
 
 const groupByName = (jobs: IJobsCronTask[]): [string, IJobsCronTask[]][] => {

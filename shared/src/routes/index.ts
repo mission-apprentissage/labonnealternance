@@ -7,7 +7,6 @@ import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
 import { zPrivateSeoRoutes } from "./_private/seo.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
-import { zClassificationRoute } from "./classification.routes.js"
 import type { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
 import { zCoreRoutes } from "./core.routes.js"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligible-trainings-for-appointment.routes.js"
@@ -18,7 +17,6 @@ import { zV1FormationsParRegion } from "./formations-par-region.routes.js"
 import { zFormulaireRoute } from "./formulaire.route.js"
 import { zInserJeunesRoutes } from "./inserjeunes.routes.js"
 import { zV1JobsRoutes } from "./jobs.routes.js"
-import { zV1JobsEtFormationsRoutes } from "./jobs-et-formations.routes.js"
 import { zJobsPartnersAdminRoutes } from "./jobs-partners-admin.routes.js"
 import { zLoginRoutes } from "./login.routes.js"
 import { zMetiersRoutes } from "./metiers.routes.js"
@@ -53,7 +51,6 @@ const zRoutesGetP2 = {
 } as const
 
 const zRoutesGetP3 = {
-  ...zV1JobsEtFormationsRoutes.get,
   ...zAppointmentsRoute.get,
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationsRoutes.get,
@@ -73,7 +70,6 @@ const zRoutesGetP5 = {
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
   ...zJobsRoutesV3.get,
-  ...zClassificationRoute.get,
   ...zSearchRoutes.get,
   ...zJobsPartnersAdminRoutes.get,
 } as const

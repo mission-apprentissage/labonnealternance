@@ -1,107 +1,101 @@
 import { describe, expect, it } from "vitest"
 
-import { buildRechercheMetadata } from "./recherche.metadata.utils"
-import { buildRecherchePageParams, IRechercheMode } from "./recherche.route.utils"
+import { buildRecherchePageMetadata } from "./recherche.metadata.utils"
 
-const withJobAndCity = { job_name: "Data analyst", geo: { address: "Lyon", latitude: 45.75, longitude: 4.85 } }
-const withJobOnly = { job_name: "Data analyst", geo: null }
-const empty = { job_name: null, geo: null }
+const titleOf = (qs: string) => buildRecherchePageMetadata(new URLSearchParams(qs)).title
+const robotsOf = (qs: string) => buildRecherchePageMetadata(new URLSearchParams(qs)).robots
+const canonicalOf = (qs: string) => buildRecherchePageMetadata(new URLSearchParams(qs)).alternates?.canonical
 
-describe("buildRechercheMetadata", () => {
-  describe("default (offres + formations)", () => {
-    it("met le métier et la ville en tête du title", () => {
-      const { title } = buildRechercheMetadata(withJobAndCity, "default")
-      expect(title).toBe("Alternance Data analyst à Lyon : offres et formations | La bonne alternance")
-    })
-
-    it("gère le métier seul (France entière) dans la description", () => {
-      const { title, description } = buildRechercheMetadata(withJobOnly, "default")
-      expect(title).toBe("Alternance Data analyst : offres et formations | La bonne alternance")
-      expect(description).toBe("Toutes les offres et formations en alternance Data analyst en France. Postulez gratuitement sur le service public de l'alternance.")
-    })
-
-    it("retombe sur un title générique sans métier", () => {
-      const { title } = buildRechercheMetadata(empty, "default")
-      expect(title).toBe("Offres et formations en alternance | La bonne alternance")
-    })
-
-    it("traite un job_name vide comme une absence de métier", () => {
-      const { title } = buildRechercheMetadata({ job_name: "  ", geo: null }, "default")
-      expect(title).toBe("Offres et formations en alternance | La bonne alternance")
-    })
-
-    it("gère des params null", () => {
-      const { title } = buildRechercheMetadata(null, "default")
-      expect(title).toBe("Offres et formations en alternance | La bonne alternance")
-    })
+describe("buildRecherchePageMetadata — repli SSR sur les URL du moteur legacy (?job_name=)", () => {
+  it("restaure le titre métier legacy exact pour une URL ?job_name= sans géo", () => {
+    // 2ᵉ source de trafic organique : sans ce repli, le nouveau moteur (schéma `q`) sert un titre générique.
+    expect(titleOf("display=list&job_name=Auxiliaire de puériculture&romes=J1304")).toBe("Alternance Auxiliaire de puériculture : offres et formations | La bonne alternance")
   })
 
-  describe("emploi (offres d'emploi uniquement)", () => {
-    it("cible les offres d'emploi avec un CTA dans la description", () => {
-      const { title, description } = buildRechercheMetadata(withJobAndCity, "emploi")
-      expect(title).toBe("Alternance Data analyst à Lyon : offres d'emploi | La bonne alternance")
-      expect(description).toBe("Toutes les offres d'emploi en alternance Data analyst à Lyon. Postulez gratuitement sur le service public de l'alternance.")
-    })
+  it("ajoute la ville quand l'URL legacy porte une géo libellée (lat/lon/address)", () => {
+    expect(titleOf("job_name=Plomberie&romes=F1603&lat=45.75&lon=4.85&address=Lyon")).toBe("Alternance Plomberie à Lyon : offres et formations | La bonne alternance")
   })
 
-  describe("formation (formations uniquement)", () => {
-    it("cible les formations", () => {
-      const { title, description } = buildRechercheMetadata(withJobAndCity, "formation")
-      expect(title).toBe("Formations en alternance Data analyst à Lyon | La bonne alternance")
-      expect(description).toBe(
-        "Toutes les formations en apprentissage Data analyst à Lyon. Comparez les programmes et postulez gratuitement sur le service public de l'alternance."
-      )
-    })
+  it("restaure aussi description et canonical métier (parité avec la page legacy, zéro churn)", () => {
+    const meta = buildRecherchePageMetadata(new URLSearchParams("job_name=Data analyst&romes=M1403"))
+    expect(meta.description).toContain("Data analyst")
+    expect(meta.alternates?.canonical).toBe("/recherche?romes=M1403&job_name=Data+analyst")
   })
 
-  describe("recherche géo-restreinte sans libellé d'adresse (lat/lon sans address)", () => {
-    const geoSansAdresse = { job_name: "Data analyst", geo: { address: null, latitude: 45.75, longitude: 4.85 } }
-
-    it("n'ajoute pas de lieu au title et n'écrit pas « en France » dans la description", () => {
-      const { title, description } = buildRechercheMetadata(geoSansAdresse, "default")
-      expect(title).toBe("Alternance Data analyst : offres et formations | La bonne alternance")
-      expect(description).toBe("Toutes les offres et formations en alternance Data analyst. Postulez gratuitement sur le service public de l'alternance.")
-    })
+  it("laisse le titre générique quand job_name est VIDE (page de marque, ex. romes=K2101) — pas de faux titre métier", () => {
+    // Garde-fou : ces pages sont candidates au noindex ciblé (#5034), elles ne doivent pas se voir attribuer un métier.
+    expect(titleOf("display=list&job_name=&romes=K2101")).toBe("Offres en alternance | La bonne alternance")
   })
 
-  describe("canonical (déduplication des paramètres parasites)", () => {
-    it("métier + ville : garde job_name + lat/lon + address pour reproduire fidèlement la SERP géo", () => {
-      expect(buildRechercheMetadata(withJobAndCity, "default").alternates?.canonical).toBe("/recherche?job_name=Data+analyst&lat=45.75&lon=4.85&address=Lyon")
-    })
+  it("laisse le titre générique pour une recherche par romes seul (comportement legacy inchangé)", () => {
+    expect(titleOf("display=list&romes=J1410")).toBe("Offres en alternance | La bonne alternance")
+  })
 
-    it("inclut romes + job_name dans un ordre stable", () => {
-      const params = { job_name: "Data analyst", romes: ["M1403"], geo: null }
-      expect(buildRechercheMetadata(params, "default").alternates?.canonical).toBe("/recherche?romes=M1403&job_name=Data+analyst")
-    })
+  it("laisse le titre générique pour /recherche nue", () => {
+    expect(titleOf("")).toBe("Offres en alternance | La bonne alternance")
+  })
 
-    it("droppe la géo sans libellé (recherche par rayon lat/lon sans address)", () => {
-      const geoSansAdresse = { job_name: "Data analyst", geo: { address: null, latitude: 45.75, longitude: 4.85 } }
-      expect(buildRechercheMetadata(geoSansAdresse, "default").alternates?.canonical).toBe("/recherche?job_name=Data+analyst")
-    })
+  it("le nouveau moteur (`q`) reste prioritaire et n'utilise pas le repli legacy", () => {
+    expect(titleOf("q=boulanger")).toBe("Offres en alternance - boulanger sur la France entière | La bonne alternance")
+    // q présent gagne même si un job_name legacy traîne dans l'URL
+    expect(titleOf("q=boulanger&job_name=Plombier")).toBe("Offres en alternance - boulanger sur la France entière | La bonne alternance")
+  })
+})
 
-    it("ville seule (sans métier) : consolide vers le chemin nu (évite dup-title et cannibalisation des pages ville)", () => {
-      const villeSeule = { job_name: null, geo: { address: "Lyon", latitude: 45.75, longitude: 4.85 } }
-      expect(buildRechercheMetadata(villeSeule, "default").alternates?.canonical).toBe("/recherche")
-    })
+describe("buildRecherchePageMetadata — noindex chirurgical des pages /recherche sans intention propre (#5034)", () => {
+  it("passe /recherche nue en noindex (redondante avec l'accueil : ~98 % de requêtes de marque)", () => {
+    // La page nue capte les requêtes « la bonne alternance » déjà servies par l'accueil → on consolide dessus.
+    expect(robotsOf("")).toEqual({ index: false, follow: true })
+  })
 
-    it("pointe vers le bon chemin selon le mode", () => {
-      expect(buildRechercheMetadata(withJobOnly, "emploi").alternates?.canonical).toBe("/recherche-emploi?job_name=Data+analyst")
-      expect(buildRechercheMetadata(withJobOnly, "formation").alternates?.canonical).toBe("/recherche-formation?job_name=Data+analyst")
-    })
+  it("passe en noindex une page à job_name VIDE (page de marque, ex. romes=K2101)", () => {
+    expect(robotsOf("display=list&job_name=&romes=K2101")).toEqual({ index: false, follow: true })
+  })
 
-    it("retombe sur le chemin nu sans critère de recherche", () => {
-      expect(buildRechercheMetadata(empty, "default").alternates?.canonical).toBe("/recherche")
-    })
+  it("passe en noindex une recherche par romes seul, sans métier libellé", () => {
+    expect(robotsOf("display=list&romes=J1410")).toEqual({ index: false, follow: true })
+  })
 
-    it("limite les romes à MAX_SEARCH_ROMES_PRIVATE pour être cohérent avec l'URL servie", () => {
-      const manyRomes = Array.from({ length: 200 }, (_, i) => `A${String(i).padStart(4, "0")}`)
-      const params = { job_name: null, romes: manyRomes, geo: null }
-      const canonical = buildRechercheMetadata(params, "default").alternates?.canonical as string
-      const url = new URL(canonical, "https://example.com")
-      const romesInCanonical = url.searchParams.get("romes")?.split(",") ?? []
-      const searchParams = new URLSearchParams(buildRecherchePageParams(params, IRechercheMode.DEFAULT))
-      const romesInServedUrl = searchParams.get("romes")?.split(",") ?? []
-      expect(romesInCanonical).toHaveLength(romesInServedUrl.length)
-    })
+  it("laisse INDEXÉE (robots hérité) une page à job_name réel — 2ᵉ source de trafic, ~213k clics/an", () => {
+    expect(robotsOf("display=list&job_name=Auxiliaire de puériculture&romes=J1304")).toBeUndefined()
+  })
+
+  it("laisse INDEXÉE (robots hérité) une page du nouveau moteur `q`", () => {
+    expect(robotsOf("q=boulanger")).toBeUndefined()
+  })
+
+  it("passe en noindex un job_name fait d'espaces (échappait au garde-fou sans trim)", () => {
+    // Sans `.trim()`, cette URL de marque reste index,follow alors que ?job_name=&romes=K2101 passe en noindex.
+    expect(robotsOf("job_name=%20&romes=K2101")).toEqual({ index: false, follow: true })
+  })
+
+  it("passe en noindex un `q` fait d'espaces (même near-miss que job_name, côté nouveau moteur)", () => {
+    // Sans trim de `q` au parse, cette URL serait indexable avec un canonical auto-référent `?q=+`
+    // et un titre cassé (« Offres en alternance -   sur la France entière »).
+    expect(robotsOf("q=%20")).toEqual({ index: false, follow: true })
+  })
+})
+
+describe("buildRecherchePageMetadata — canonical auto-référent (découple les pages indexables de /recherche nue noindexée, #5034)", () => {
+  it("pose un canonical auto-référent incluant `q` sur les pages du nouveau moteur", () => {
+    // Sans ce canonical, `?q=` hériterait du canonical racine (`/recherche`, noindexé) et serait dé-indexée avec.
+    expect(canonicalOf("q=boulanger")).toBe("/recherche?q=boulanger")
+  })
+
+  it("garde le `mode` non-défaut dans le canonical `q` (formations ≠ emplois)", () => {
+    expect(canonicalOf("q=boulanger&mode=formations")).toBe("/recherche?q=boulanger&mode=formations")
+  })
+
+  it("strippe le bruit d'URL (filtres, pagination, géo) du canonical `q`", () => {
+    expect(canonicalOf("q=boulanger&contract_type=Apprentissage&page=2&lat=45.75&lon=4.85&address=Lyon")).toBe("/recherche?q=boulanger")
+  })
+
+  it("garde le canonical métier legacy auto-référent sur les pages `job_name` réel", () => {
+    expect(canonicalOf("job_name=Data analyst&romes=M1403")).toBe("/recherche?romes=M1403&job_name=Data+analyst")
+  })
+
+  it("consolide un `q` à espaces parasites sur le canonical de la forme propre", () => {
+    // `?q=boulanger%20` doit canonicaliser vers `?q=boulanger`, pas s'auto-canoniser en `?q=boulanger+`.
+    expect(canonicalOf("q=%20boulanger%20")).toBe("/recherche?q=boulanger")
   })
 })

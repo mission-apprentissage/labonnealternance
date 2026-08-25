@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import CreationEntrepriseDetailPage from "./CreationEntrepriseDetailPage"
 export async function generateMetadata({ params }: { params: Promise<{ siret: string }> }): Promise<Metadata> {
   const { siret } = await params
   return {
-    title: PAGES.dynamic.backCfaEntrepriseCreationDetail(siret).getMetadata().title,
+    title: METADATA.dynamic.backCfaEntrepriseCreationDetail(siret).title,
   }
 }
 

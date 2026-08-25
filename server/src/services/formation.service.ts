@@ -639,7 +639,6 @@ export const getFormationsQuery = async ({
   referer,
   api = "formationV1",
   isMinimalData,
-  isPrivate = false,
 }: {
   romes?: string
   longitude?: number
@@ -652,9 +651,8 @@ export const getFormationsQuery = async ({
   referer?: string
   api?: string
   isMinimalData: boolean
-  isPrivate?: boolean
 }): Promise<IApiError | { results: ILbaItemFormation[] }> => {
-  const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer }, isPrivate)
+  const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer })
 
   if ("error" in parameterControl) {
     return parameterControl

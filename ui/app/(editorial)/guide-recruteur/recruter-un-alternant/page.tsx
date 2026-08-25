@@ -21,8 +21,9 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { getSession } from "@/utils/get-session"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideRecruteurRecruterUnAlternant.getMetadata()
+export const metadata: Metadata = METADATA.static.guideRecruteurRecruterUnAlternant()
 
 const faqItems: { question: string; answer: string; answerNode?: ReactNode; link?: { href: string; label: string } }[] = [
   {
@@ -130,6 +131,7 @@ const RecruterUnAlternantPage = () => {
       sourceAllerPlusLoin="guide-recruteur"
       parentPage={PAGES.static.guideRecruteur}
       page={page}
+      metadata={metadata}
     >
       <SchemaOrg
         type="FAQPage"
