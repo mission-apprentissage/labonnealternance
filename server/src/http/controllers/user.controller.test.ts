@@ -2,7 +2,7 @@ import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
+import { entrepriseStatusEventFactory, saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
@@ -296,7 +296,11 @@ describe("Modification du compte par l'entreprise elle-même (PUT /user/:userId,
   const httpClient = useServer()
 
   it("enregistre l'engagement handicap (source lba) quand l'entreprise choisit \"oui\"", async () => {
-    const entrepriseUser = await saveEntrepriseUserTest({ email: "compteentreprise1@mail.com", status: validatedUserStatus }, {}, { siret: "89557430766546" })
+    const entrepriseUser = await saveEntrepriseUserTest(
+      { email: "compteentreprise1@mail.com", status: validatedUserStatus },
+      {},
+      { siret: "89557430766546", status: [entrepriseStatusEventFactory()] }
+    )
     const loggedUser = await logUser(httpClient, "compteentreprise1")
 
     const response = await httpClient().inject({
@@ -318,7 +322,11 @@ describe("Modification du compte par l'entreprise elle-même (PUT /user/:userId,
   })
 
   it("n'écrit rien dans referentiel_engagement_entreprise quand l'entreprise choisit \"non\"", async () => {
-    const entrepriseUser = await saveEntrepriseUserTest({ email: "compteentreprise2@mail.com", status: validatedUserStatus }, {}, { siret: "10392947668876" })
+    const entrepriseUser = await saveEntrepriseUserTest(
+      { email: "compteentreprise2@mail.com", status: validatedUserStatus },
+      {},
+      { siret: "10392947668876", status: [entrepriseStatusEventFactory()] }
+    )
     const loggedUser = await logUser(httpClient, "compteentreprise2")
 
     const response = await httpClient().inject({
@@ -340,7 +348,11 @@ describe("Modification du compte par l'entreprise elle-même (PUT /user/:userId,
   })
 
   it("ne touche pas au référentiel quand handiEngagement est omis (mise à jour du seul contact)", async () => {
-    const entrepriseUser = await saveEntrepriseUserTest({ email: "compteentreprise3@mail.com", status: validatedUserStatus }, {}, { siret: "77298992300012" })
+    const entrepriseUser = await saveEntrepriseUserTest(
+      { email: "compteentreprise3@mail.com", status: validatedUserStatus },
+      {},
+      { siret: "77298992300012", status: [entrepriseStatusEventFactory()] }
+    )
     const loggedUser = await logUser(httpClient, "compteentreprise3")
 
     const response = await httpClient().inject({
