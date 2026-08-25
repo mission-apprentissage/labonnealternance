@@ -4,13 +4,12 @@ import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IApplication, IRecruteurLbaUpdateEvent } from "shared"
 import { ERecruteurLbaUpdateEventType, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ILbaCompanyForAdminSearch, ILbaCompanyForContactUpdate, ILbaCompanySearchField } from "shared/routes/update-lba-company.routes"
 import { validateSIRET } from "shared/validators/siret-validator"
-import { encryptMailWithIV } from "@/common/utils/encrypt-string"
 import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
@@ -18,7 +17,6 @@ import { generateApplicationToken } from "./app-links.service"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByCompanyCount } from "./application.service"
 import { getHiringCountLastFullYears } from "./deca-contrats.service"
-import type { TLbaItemResult } from "./job-opportunity.service.types"
 import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
@@ -70,9 +68,7 @@ const transformCompanyV2 = ({
         url: null,
       },
       elligibleHandicap: company.contract_is_disabled_elligible,
-      // N'apparaît que sur la fiche détail (getRecruteurLbaFromDB) : absent (pas juste `undefined`) des
-      // résultats de recherche, qui n'en ont pas besoin et n'appellent pas deca-contrats.service pour ça.
-      ...(hiringCount3Years !== undefined ? { hiringCount3Years } : {}),
+      hiringCount3Years,
     },
     nafs: [
       {
