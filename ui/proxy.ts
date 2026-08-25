@@ -73,6 +73,20 @@ const isUnallowedPathForUser = (user: IUserRecruteurPublic, pathname: string) =>
   )
 }
 
+// Un cookie lba_session invalide/expiré doit être purgé avant de renvoyer vers l'authentification :
+// sinon la prochaine requête retente les mêmes appels /auth/session et /auth/access, et une
+// réponse instable (JWT proche de l'expiration) peut faire rebondir l'utilisateur en boucle
+// entre la page protégée et /espace-pro/authentification (cf. issue #5245).
+const redirectToInvalidSession = (request: NextRequest) => {
+  const hadSessionCookie = Boolean(request.cookies.get("lba_session"))
+  const url = new URL(hadSessionCookie ? "/espace-pro/authentification?error=true" : "/espace-pro/authentification", request.url)
+  const response = NextResponse.redirect(url)
+  if (hadSessionCookie) {
+    response.cookies.delete("lba_session")
+  }
+  return response
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl
 
@@ -82,6 +96,7 @@ export async function proxy(request: NextRequest) {
     if (token) {
       return await verifyAuthentication(token, request)
     }
+    const hadSessionCookie = Boolean(request.cookies.get("lba_session"))
     const session = await getSession(request)
     const user = session?.user
     if (user) {
@@ -90,12 +105,21 @@ export async function proxy(request: NextRequest) {
     // même sans session, ne pas laisser passer un x-session forgé par le client
     const anonymousHeaders = new Headers(request.headers)
     anonymousHeaders.delete("x-session")
-    return NextResponse.next({ request: { headers: anonymousHeaders } })
+    const response = NextResponse.next({ request: { headers: anonymousHeaders } })
+    if (hadSessionCookie) {
+      response.cookies.delete("lba_session")
+    }
+    return response
   }
   const session = await getSession(request)
   const user = session?.user
-  if (isConnectionRequired(pathname) && (!user || isUnallowedPathForUser(user, pathname))) {
-    return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
+  if (isConnectionRequired(pathname)) {
+    if (!user) {
+      return redirectToInvalidSession(request)
+    }
+    if (isUnallowedPathForUser(user, pathname)) {
+      return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
+    }
   }
 
   const requestHeaders = new Headers(request.headers)
