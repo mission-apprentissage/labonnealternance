@@ -107,13 +107,19 @@ describe("getHiringCountLastFullYears", () => {
   })
 
   it("ignore une valeur négative pour une année", async () => {
-    await getDbCollection("deca_contrats").insertOne({
-      _id: new ObjectId(),
-      siret: SIRET,
-      contrats_par_annee: { "2023": -5, "2024": 3 },
-      created_at: new Date(),
-      updated_at: new Date(),
-    })
+    // Depuis la consolidation du schéma (ZDecaContrats.contrats_par_annee est maintenant .nonnegative()),
+    // une valeur négative est rejetée par le validateur Mongo lui-même : ce cas ne peut plus survenir que
+    // sur un document historique écrit avant ce durcissement, d'où le bypassDocumentValidation.
+    await getDbCollection("deca_contrats").insertOne(
+      {
+        _id: new ObjectId(),
+        siret: SIRET,
+        contrats_par_annee: { "2023": -5, "2024": 3 },
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      { bypassDocumentValidation: true }
+    )
 
     await expect(getHiringCountLastFullYears(SIRET, new Date("2026-08-20"))).resolves.toBe(3)
   })

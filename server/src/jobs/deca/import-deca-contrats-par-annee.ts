@@ -4,8 +4,9 @@ import { pipeline } from "node:stream/promises"
 import type { AnyBulkWriteOperation } from "mongodb"
 import { MongoBulkWriteError, ObjectId } from "mongodb"
 import type { IDecaContrats } from "shared/models/deca-contrats.model"
+import { ZDecaContrats } from "shared/models/deca-contrats.model"
 import { validateSIRET } from "shared/validators/siret-validator"
-import { z } from "zod"
+import type { z } from "zod"
 
 import { logger } from "@/common/logger"
 import { s3ReadAsStream } from "@/common/utils/aws-utils"
@@ -15,24 +16,13 @@ import { groupStreamData, ndjsonToObjectStream } from "@/common/utils/stream-uti
 
 const S3_KEY = "siretlist/lba_deca_contrats_par_annee.ndjson"
 const BULK_WRITE_BATCH_SIZE = 10_000
-// Plage plausible pour une année de contrat DECA : suffisamment large pour couvrir l'historique
-// et quelques années futures, sans laisser passer une clé aberrante (ex: un total mal placé).
-const MIN_VALID_YEAR = 2000
-const MAX_VALID_YEAR = 2100
 
 // Format constaté (fichier DECA - Dépôt des Contrats d'Alternance) : une entrée par ligne, ex.
 // { "siret": "00552017600016", "contrats_par_annee": { "2023": 2 } }
-const ZDecaContratsParAnneeDocument = z.strictObject({
-  siret: z.string(),
-  contrats_par_annee: z.record(
-    z
-      .string()
-      .regex(/^\d{4}$/, "l'année doit être une chaîne à 4 chiffres")
-      .refine((year) => Number(year) >= MIN_VALID_YEAR && Number(year) <= MAX_VALID_YEAR, `l'année doit être comprise entre ${MIN_VALID_YEAR} et ${MAX_VALID_YEAR}`),
-    z.number().int().nonnegative()
-  ),
-})
-type DecaContratsParAnneeDocument = z.infer<typeof ZDecaContratsParAnneeDocument>
+// _id/created_at/updated_at n'existent pas côté fichier source : on ne valide que les champs qu'il porte
+// réellement, avec les mêmes règles (année/valeurs) que le modèle Mongo cible, pas un schéma dupliqué.
+const ZDecaContratsInput = ZDecaContrats.pick({ siret: true, contrats_par_annee: true })
+type DecaContratsInput = z.infer<typeof ZDecaContratsInput>
 
 export const importDecaContratsParAnnee = async (sourceFileReadStream?: Readable) => {
   logger.info(`importDecaContratsParAnnee: téléchargement de ${S3_KEY}`)
@@ -62,7 +52,7 @@ export const importDecaContratsParAnnee = async (sourceFileReadStream?: Readable
   // sur un fichier de plusieurs centaines de milliers de lignes (cf. import-recruteurs-lba-raw.ts).
   const bulkUpsertStream = new Transform({
     objectMode: true,
-    async transform(documents: DecaContratsParAnneeDocument[], _encoding, callback) {
+    async transform(documents: DecaContratsInput[], _encoding, callback) {
       counters.total += documents.length
       if (counters.total % 50_000 === 0) {
         logger.info(`importDecaContratsParAnnee: ${counters.total} documents traités`)
@@ -70,7 +60,7 @@ export const importDecaContratsParAnnee = async (sourceFileReadStream?: Readable
 
       const operations: AnyBulkWriteOperation<IDecaContrats>[] = []
       for (const document of documents) {
-        const parseResult = ZDecaContratsParAnneeDocument.safeParse(document)
+        const parseResult = ZDecaContratsInput.safeParse(document)
         if (!parseResult.success || !validateSIRET(parseResult.data.siret)) {
           counters.errors++
           logger.error(
@@ -112,7 +102,7 @@ export const importDecaContratsParAnnee = async (sourceFileReadStream?: Readable
   })
 
   try {
-    await pipeline(sourceStream, parseStream, groupStreamData<DecaContratsParAnneeDocument>({ size: BULK_WRITE_BATCH_SIZE }), bulkUpsertStream)
+    await pipeline(sourceStream, parseStream, groupStreamData<DecaContratsInput>({ size: BULK_WRITE_BATCH_SIZE }), bulkUpsertStream)
   } catch (err) {
     logger.error({ err }, "importDecaContratsParAnnee: échec du pipeline de traitement")
     sentryCaptureException(err)
