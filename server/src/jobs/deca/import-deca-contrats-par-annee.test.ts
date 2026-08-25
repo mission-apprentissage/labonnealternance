@@ -33,7 +33,9 @@ describe("importDecaContratsParAnnee", () => {
 
     // Le document valide est tout de même upserté avant que l'échec global ne soit remonté : seul le
     // statut final du job (throw) signale l'anomalie, pas une absence d'écriture.
-    await expect(importDecaContratsParAnnee(stringToStream(lines.join("\n") + "\n"))).rejects.toThrow(/4\/4 document\(s\) rejeté\(s\)/)
+    // 4 rejets de validation (errors) + 1 ligne non-JSON (jsonErrors) sur 5 lignes au total (4 documents
+    // ayant atteint l'étape par-document + 1 ligne jamais parsée, sommée dans le total via jsonErrors).
+    await expect(importDecaContratsParAnnee(stringToStream(lines.join("\n") + "\n"))).rejects.toThrow(/4\/5 document\(s\) rejeté\(s\)/)
 
     const documents = await getDbCollection("deca_contrats")
       .find({}, { projection: { _id: 0, created_at: 0, updated_at: 0 } })
@@ -43,7 +45,7 @@ describe("importDecaContratsParAnnee", () => {
 
   it("ne fait pas échouer le job quand toutes les lignes sont valides", async () => {
     const counters = await importDecaContratsParAnnee(stringToStream(JSON.stringify({ siret: "42476141900045", contrats_par_annee: { "2023": 2 } }) + "\n"))
-    expect(counters).toEqual({ total: 1, upserted: 1, errors: 0 })
+    expect(counters).toEqual({ total: 1, upserted: 1, errors: 0, jsonErrors: 0 })
   })
 
   it("retombe sur la lecture S3 quand le 1er argument n'est pas un Readable (régression : le runner générique des jobs simples appelle fct(job.payload), qui n'est pas forcément undefined)", async () => {
@@ -56,7 +58,7 @@ describe("importDecaContratsParAnnee", () => {
     const counters = await importDecaContratsParAnnee({ notAStream: true } as any)
 
     expect(s3ReadAsStream).toHaveBeenCalledWith("storage", "siretlist/lba_deca_contrats_par_annee.ndjson")
-    expect(counters).toEqual({ total: 1, upserted: 1, errors: 0 })
+    expect(counters).toEqual({ total: 1, upserted: 1, errors: 0, jsonErrors: 0 })
   })
 
   it("propage (throw) l'échec de lecture du flux source, sans sortir en succès", async () => {
@@ -75,7 +77,7 @@ describe("importDecaContratsParAnnee", () => {
 
     const counters = await importDecaContratsParAnnee(stringToStream(JSON.stringify({ siret: "42476141900045", contrats_par_annee: { "2023": 2, "2024": 5 } }) + "\n"))
 
-    expect(counters).toEqual({ total: 1, upserted: 1, errors: 0 })
+    expect(counters).toEqual({ total: 1, upserted: 1, errors: 0, jsonErrors: 0 })
     const documents = await getDbCollection("deca_contrats").find({}).toArray()
     expect(documents).toHaveLength(1)
     expect(documents[0].contrats_par_annee).toEqual({ "2023": 2, "2024": 5 })
