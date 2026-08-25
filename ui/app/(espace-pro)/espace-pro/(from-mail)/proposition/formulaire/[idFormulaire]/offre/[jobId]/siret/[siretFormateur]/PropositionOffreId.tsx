@@ -55,7 +55,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
    * @return {Promise<void>}
    */
   const copyInClipboard = () => {
-    const jobUrl = `${PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId: job._id }).getPath()}?utm_source=lba&utm_medium=email&utm_campaign=mer-cfa-entreprise`
+    const jobUrl = `${PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId: job._id }).getPath()}?utm_source=lba&utm_medium=website&utm_campaign=mer-cfa-entreprise`
     navigator.clipboard.writeText(`${publicConfig.baseUrl}${jobUrl}`)
     toast({
       title: "Lien copié.",

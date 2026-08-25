@@ -131,7 +131,7 @@ export default function PrintableJobPage() {
             type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
             jobId,
           })
-          .getPath()}?utm_source=lba-phygital&utm_medium=phygital&utm_campaign=${utmCampaign}`}
+          .getPath()}&utm_source=lba-phygital&utm_medium=phygital&utm_campaign=${utmCampaign}`}
         size={128}
         style={{ margin: "auto", height: "auto", maxWidth: "128x", width: "128px" }}
         viewBox={`0 0 128 128`}
