@@ -1,4 +1,5 @@
 import env from "env-var"
+import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS } from "shared/constants/session"
 
 const config = {
   version: env.get("PUBLIC_VERSION").required().asString(),
@@ -58,14 +59,9 @@ const config = {
       publicKey: env.get("LBA_API_APPRENTISSAGE_PUBLIC_KEY").required().asString(),
     },
     session: {
-      cookieName: "lba_session",
-      cookie: {
-        maxAge: 30 * 24 * 3600000,
-        httpOnly: true,
-        sameSite: "lax" as const,
-        path: "/",
-        secure: true,
-      },
+      cookieName: SESSION_COOKIE_NAME,
+      // maxAge en secondes : @fastify/cookie sérialise la valeur telle quelle dans Max-Age
+      cookie: SESSION_COOKIE_OPTIONS,
     },
   },
   diagoriente: {
