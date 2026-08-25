@@ -15,7 +15,8 @@ export const createSession = async (data: TCreateSession) => {
     _id: new ObjectId(),
     updated_at: now,
     created_at: now,
-    expires_at: new Date(now.getTime() + config.auth.session.cookie.maxAge),
+    // maxAge est en secondes (unité du Set-Cookie), getTime() en millisecondes
+    expires_at: new Date(now.getTime() + config.auth.session.cookie.maxAge * 1000),
   }
   const { insertedId } = await getDbCollection("sessions").insertOne(sessionObj)
 

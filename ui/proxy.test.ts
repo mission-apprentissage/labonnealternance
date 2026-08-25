@@ -3,6 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { proxy } from "./proxy"
 
+// apiPost (flux magic link) lit les headers de la requête Next via next/headers, indisponible hors
+// scope requête dans vitest : on fournit des headers vides, sans incidence sur les autres tests.
+vi.mock("next/headers", () => ({ headers: async () => new Headers() }))
+
 const BASE_URL = "http://localhost:3000"
 const SOME_JWT = "some.jwt.token"
 
@@ -137,5 +141,52 @@ describe("proxy - panne API ambiguë (ni confirmée invalide, ni confirmée vali
     // vers /espace-pro/cfa. La page d'authentification s'affiche simplement, sans purge.
     expect(secondResponse.headers.get("location")).toBeNull()
     expect(secondResponse.cookies.get("lba_session")).toBeUndefined()
+  })
+})
+
+describe("proxy - connexion par magic link (pose du cookie de session)", () => {
+  it("pose le cookie avec les attributs alignés sur config.auth.session.cookie côté serveur", async () => {
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url.includes("/login/verification")) {
+        return new Response(JSON.stringify({ user: { _id: "u1", type: "CFA" }, sessionToken: SOME_JWT }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      }
+      throw new Error(`appel inattendu: ${url}`)
+    })
+    const request = new NextRequest(new URL("/espace-pro/authentification?token=magic-token", BASE_URL))
+
+    const response = await proxy(request)
+
+    expect(response.status).toBe(307)
+    expect(new URL(response.headers.get("location")!).pathname).toBe("/espace-pro/cfa")
+
+    const cookie = response.cookies.get("lba_session")
+    // Valeurs volontairement en dur (pas importées de shared/constants/session) : le test doit
+    // casser si SESSION_COOKIE_OPTIONS change, pour forcer une décision explicite.
+    expect(cookie).toMatchObject({
+      value: SOME_JWT,
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      // 30 jours, en secondes (unité du Max-Age)
+      maxAge: 30 * 24 * 3600,
+    })
+  })
+
+  it("la purge émet un Set-Cookie qui matche l'identité du cookie posé (nom + path)", async () => {
+    fetchMock.mockImplementation(async () => new Response(null, { status: 401 }))
+    const request = requestWithSessionCookie("/espace-pro/cfa")
+
+    const response = await proxy(request)
+
+    // Un cookie est supprimé par le navigateur si nom + domaine + path correspondent :
+    // le cookie est posé avec path=/, la purge doit donc porter path=/ et une expiration passée.
+    const setCookie = response.headers.get("set-cookie")!
+    expect(setCookie.toLowerCase()).toContain("lba_session=;")
+    expect(setCookie.toLowerCase()).toContain("path=/")
+    expect(setCookie.toLowerCase()).toMatch(/max-age=0|expires=thu, 01 jan 1970/)
   })
 })

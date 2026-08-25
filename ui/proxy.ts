@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
+import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS } from "shared/constants/session"
 
 import { publicConfig } from "./config.public"
 import { apiPost } from "./utils/api.utils"
@@ -28,13 +29,13 @@ type SessionCheckResult =
   | { kind: "unavailable" }
 
 async function checkSession(request: NextRequest): Promise<SessionCheckResult> {
-  const sessionCookie = request.cookies.get("lba_session")
+  const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME)
   if (!sessionCookie) {
     return { kind: "no-cookie" }
   }
 
   const headers = new Headers()
-  headers.append("cookie", `lba_session=${sessionCookie.value}`)
+  headers.append("cookie", `${SESSION_COOKIE_NAME}=${sessionCookie.value}`)
 
   // Best would be: jwt.decode(sessionCookie.value)
 
@@ -70,7 +71,7 @@ const verifyAuthentication = async (token: string, request: NextRequest) => {
       },
     })
     const response = await redirectAfterAuthentication(user, request)
-    response.cookies.set("lba_session", sessionToken)
+    response.cookies.set(SESSION_COOKIE_NAME, sessionToken, SESSION_COOKIE_OPTIONS)
 
     return response
   } catch (_) {
@@ -104,7 +105,7 @@ const redirectToAuthentication = (request: NextRequest, options: { purgeCookie: 
   }
   const response = NextResponse.redirect(url)
   if (options.purgeCookie) {
-    response.cookies.delete("lba_session")
+    response.cookies.delete(SESSION_COOKIE_NAME)
   }
   return response
 }
@@ -115,7 +116,7 @@ const renderAuthenticationPage = (request: NextRequest, options: { purgeCookie: 
   anonymousHeaders.delete("x-session")
   const response = NextResponse.next({ request: { headers: anonymousHeaders } })
   if (options.purgeCookie) {
-    response.cookies.delete("lba_session")
+    response.cookies.delete(SESSION_COOKIE_NAME)
   }
   return response
 }
