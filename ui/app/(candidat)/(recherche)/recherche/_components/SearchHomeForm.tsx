@@ -142,6 +142,7 @@ export function SearchHomeForm() {
 
   return (
     <Box
+      id="search-form"
       sx={{
         padding: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
         backgroundColor: fr.colors.decisions.background.default.grey.default,
@@ -155,7 +156,7 @@ export function SearchHomeForm() {
       <RechercheFormTitle />
 
       {/* Mobile : faux champ + bouton loupe → modale plein écran (métier, lieu, type de recherche). */}
-      <Box sx={{ display: { xs: "block", md: "none" } }}>
+      <Box aria-hidden={true} sx={{ display: { xs: "block", md: "none" } }}>
         <Box component="span" sx={{ display: "block", fontSize: "1rem", fontWeight: 700, color: fr.colors.decisions.text.default.grey.default, mb: fr.spacing("1v") }}>
           Que recherchez-vous ?
         </Box>
