@@ -60,8 +60,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
         title={`Présentation de l'entreprise ${recruteurLba?.company?.name ?? ""}`}
         item={recruteurLba}
         emptyStateText=""
-        cityOnly
-        showPhone={false}
+        showPhone
         showGoogleSearch={true}
       />
 

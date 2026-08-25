@@ -42,13 +42,15 @@ export const EmployeurPresentationBlock = ({
         {title}
       </Typography>
 
-      <Box
-        sx={{
-          whiteSpace: "pre-wrap",
-          mb: fr.spacing("6v"),
-        }}
-        dangerouslySetInnerHTML={{ __html: description || emptyStateText }}
-      />
+      {(description || emptyStateText) && (
+        <Box
+          sx={{
+            whiteSpace: "pre-wrap",
+            mb: fr.spacing("6v"),
+          }}
+          dangerouslySetInnerHTML={{ __html: description || emptyStateText }}
+        />
+      )}
 
       {isHandicapEngaged && (
         <Box sx={{ mb: fr.spacing("6v") }}>
