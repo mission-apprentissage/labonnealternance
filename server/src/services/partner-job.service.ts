@@ -11,30 +11,9 @@ import { isGeiqEntreprise } from "shared/services/is-geiq-entreprise"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { generateApplicationToken } from "./app-links.service"
-import type { IApplicationCount } from "./application.service"
 import { getApplicationByJobCount, PARTNERS_WITH_APPLICATION_API } from "./application.service"
 import { getHiringCountLastFullYears } from "./deca-contrats.service"
-import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/job-opportunity/job-opportunity.service"
-import { sortLbaJobs } from "./lbajob.service"
-import { filterJobsByOpco } from "./opco.service"
-
-/**
- * Converti les offres issues de la mongo en objet de type ILbaItem
- */
-export const transformPartnerJobs = ({
-  partnerJobs,
-  isMinimalData,
-  applicationCountByJob,
-}: {
-  partnerJobs: IJobsPartnersOfferPrivate[]
-  isMinimalData: boolean
-  applicationCountByJob: null | IApplicationCount[]
-}) => {
-  const applicationCountMap = applicationCountByJob ? new Map(applicationCountByJob.map(({ _id, count }) => [_id, count])) : null
-  return partnerJobs.flatMap((partnerJob) =>
-    isMinimalData ? transformPartnerJobWithMinimalData(partnerJob, applicationCountMap) : transformPartnerJob(partnerJob, applicationCountMap)
-  )
-}
+import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
