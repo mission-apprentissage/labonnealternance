@@ -1,5 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared"
+import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
@@ -41,6 +42,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
     await getDbCollection("search_items").deleteMany({})
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("referentielromes").deleteMany({})
+    await getDbCollection("applications").deleteMany({})
   })
 
   const seedRome = async () => {
@@ -75,6 +77,43 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
         rome_labels: ["Études et développement informatique"],
         keywords: null,
       })
+    })
+
+    it("compte les candidatures d'une offre via job_id (ObjectId ↔ ObjectId)", async () => {
+      const job = generateJobsPartnersOfferPrivate({ apply_email: "recruteur@entreprise.fr" })
+      const autreJob = generateJobsPartnersOfferPrivate({})
+      await getDbCollection("jobs_partners").insertMany([job, autreJob])
+      await getDbCollection("applications").insertMany([
+        generateApplicationFixture({ job_id: job._id }),
+        generateApplicationFixture({ job_id: job._id }),
+        // Near-miss : candidature d'une autre offre — ne doit pas être comptée.
+        generateApplicationFixture({ job_id: autreJob._id }),
+      ])
+
+      await upsertJobPartnersToSearchItems([job._id, autreJob._id])
+
+      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      expect(doc?.application_count).toBe(2)
+      const autreDoc = await getDbCollection("search_items").findOne({ _id: autreJob._id })
+      expect(autreDoc?.application_count).toBe(1)
+    })
+
+    it("compte les candidatures d'un recruteur LBA via le siret", async () => {
+      const recruteur = generateJobsPartnersOfferPrivate({
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        workplace_siret: "42476141900045",
+      })
+      await getDbCollection("jobs_partners").insertOne(recruteur)
+      await getDbCollection("applications").insertMany([
+        generateApplicationFixture({ company_siret: "42476141900045", job_id: null }),
+        // Near-miss : autre siret — ne doit pas être comptée.
+        generateApplicationFixture({ company_siret: "34268752200066", job_id: null }),
+      ])
+
+      await upsertJobPartnersToSearchItems([recruteur._id])
+
+      const doc = await getDbCollection("search_items").findOne({ _id: recruteur._id })
+      expect(doc?.application_count).toBe(1)
     })
 
     it("préserve les keywords Mistral lors d'un ré-upsert", async () => {

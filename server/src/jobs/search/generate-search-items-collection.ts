@@ -11,6 +11,7 @@ import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { limitStream } from "@/common/utils/stream-utils"
 import type { IJobPartnerForSearchItem } from "@/services/search/search-items.service"
 import {
+  applicationCountByJobIdStages,
   buildFormationSearchItem,
   buildJobOfferSearchItem,
   buildRecruteurSearchItem,
@@ -85,25 +86,7 @@ export const fillSearchItemsCollection = async () => {
         offer_status: JOB_STATUS_ENGLISH.ACTIVE,
       },
     },
-    {
-      $lookup: {
-        from: "applications",
-        let: { jobIdStr: { $toString: "$_id" } },
-        pipeline: [
-          {
-            $match: {
-              $expr: { $eq: ["$job_id", "$$jobIdStr"] },
-            },
-          },
-        ],
-        as: "applications",
-      },
-    },
-    {
-      $addFields: {
-        application_count: { $size: "$applications" },
-      },
-    },
+    ...applicationCountByJobIdStages,
     {
       $project: {
         ...jobsProjection,

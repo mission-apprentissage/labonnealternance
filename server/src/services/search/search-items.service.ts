@@ -400,21 +400,23 @@ export const buildRecruteurSearchItem = (job: IJobPartnerForSearchItem, ctx: Sea
 
 // ─── Synchronisation incrémentale jobs_partners → search_items ─────────────────────────────
 
+/**
+ * Stages partagés nightly/sync : comptage des candidatures d'une offre. applications.job_id est
+ * un ObjectId depuis la migration 20251014154807 : jointure directe ObjectId↔ObjectId (comparer
+ * à $toString(_id) ne matchait plus rien → compteur à 0).
+ */
+export const applicationCountByJobIdStages = [
+  { $lookup: { from: "applications", localField: "_id", foreignField: "job_id", as: "applications" } },
+  { $addFields: { application_count: { $size: "$applications" } } },
+]
+
 /** Pipelines de récupération des jobs_partners avec leurs champs dérivés (application_count, rome_codes recruteurs). */
 const fetchJobPartnersForSync = async (ids: ObjectId[]): Promise<{ offers: IJobPartnerForSearchItem[]; recruteurs: IJobPartnerForSearchItem[] }> => {
   const [offers, recruteurs] = await Promise.all([
     getDbCollection("jobs_partners")
       .aggregate<IJobPartnerForSearchItem>([
         { $match: { _id: { $in: ids }, partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA } } },
-        {
-          $lookup: {
-            from: "applications",
-            let: { jobIdStr: { $toString: "$_id" } },
-            pipeline: [{ $match: { $expr: { $eq: ["$job_id", "$$jobIdStr"] } } }],
-            as: "applications",
-          },
-        },
-        { $addFields: { application_count: { $size: "$applications" } } },
+        ...applicationCountByJobIdStages,
         { $project: { ...jobsProjection, application_count: 1, offer_status: 1 } },
       ])
       .toArray(),
