@@ -54,6 +54,23 @@ init({
       return null
     }
 
+    // Une extension navigateur (traducteur, gestionnaire de mots de passe…) mute le DOM en
+    // parallèle du commit React, qui perd ensuite la référence du nœud pendant son cleanup.
+    // On ne filtre que si TOUTES les frames sont internes à react-dom-client.production.js
+    // (aucune frame applicative) : un `ignoreErrors` sur le seul texte matcherait aussi
+    // "The object can not be found here." (message générique WebKit pour n'importe quelle
+    // NotFoundError, pas seulement removeChild) ou un futur vrai bug applicatif qui produirait
+    // le même message par coïncidence. Chronique depuis fin juin/début juillet 2026, sans lien
+    // avec un déploiement (Sentry LBA-UI-5CVZZZZZZG3V9 ~1350 events, LBA-UI-5CVZZZZZZG3XY
+    // ~320 events, vérifié 2026-08-25).
+    const exception = event.exception?.values?.[0]
+    const isRemoveChildMessage = exception?.value === "The object can not be found here." || exception?.value?.includes("reading 'removeChild'")
+    if (isRemoveChildMessage) {
+      const frames = exception?.stacktrace?.frames ?? []
+      const hasNoApplicationFrame = frames.every((frame) => !frame.filename || frame.filename === "[native code]" || /react-dom-client\.production\.js$/.test(frame.filename))
+      if (hasNoApplicationFrame) return null
+    }
+
     console.info(event)
     return event
   },
