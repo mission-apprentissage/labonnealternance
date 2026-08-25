@@ -9,19 +9,36 @@ import { PAGES } from "./utils/routes.utils"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
-async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurPublic | null; access: ComputedUserAccess | null } | null> {
+// Marqueur de rebond posé sur la redirection espace-pro protégée → authentification quand la
+// session n'a pas pu être confirmée invalide (panne API, pas de 401). S'il est déjà présent quand
+// on atterrit sur /espace-pro/authentification, on ne fait plus jamais confiance à un résultat
+// "session valide" pour rebondir une nouvelle fois vers la page protégée : un signal instable
+// (JWT proche de l'expiration, API auth flaky) ne doit jamais produire plus d'un aller-retour
+// (cf. issue #5245).
+const SESSION_RETRY_PARAM = "sessionRetry"
+
+type SessionCheckResult =
+  | { kind: "no-cookie" }
+  | { kind: "ok"; user: IUserRecruteurPublic; access: ComputedUserAccess }
+  // 401 renvoyé explicitement par /auth/session ou /auth/access : le token est bien rejeté, sans
+  // ambiguïté. Sûr de purger le cookie.
+  | { kind: "invalid" }
+  // Panne de l'API (5xx, réseau, timeout...) : impossible de savoir si la session est valide.
+  // Ne jamais purger le cookie ni afficher "session expirée" sur la seule foi de ce signal.
+  | { kind: "unavailable" }
+
+async function checkSession(request: NextRequest): Promise<SessionCheckResult> {
+  const sessionCookie = request.cookies.get("lba_session")
+  if (!sessionCookie) {
+    return { kind: "no-cookie" }
+  }
+
+  const headers = new Headers()
+  headers.append("cookie", `lba_session=${sessionCookie.value}`)
+
+  // Best would be: jwt.decode(sessionCookie.value)
+
   try {
-    const sessionCookie = request.cookies.get("lba_session")
-
-    if (!sessionCookie) {
-      return null
-    }
-
-    const headers = new Headers()
-    headers.append("cookie", `lba_session=${sessionCookie.value}`)
-
-    // Best would be: jwt.decode(sessionCookie.value)
-
     const [sessionRequest, accessRequest] = await Promise.all([
       fetch(`${removeAtEnd(publicConfig.apiEndpoint, "/")}/auth/session`, {
         headers,
@@ -31,13 +48,17 @@ async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurP
       }),
     ])
 
-    if (!sessionRequest.ok || !accessRequest.ok) {
-      return null
+    if (sessionRequest.status === 401 || accessRequest.status === 401) {
+      return { kind: "invalid" }
     }
 
-    return { user: await sessionRequest.json(), access: await accessRequest.json() }
+    if (!sessionRequest.ok || !accessRequest.ok) {
+      return { kind: "unavailable" }
+    }
+
+    return { kind: "ok", user: await sessionRequest.json(), access: await accessRequest.json() }
   } catch (_) {
-    return null
+    return { kind: "unavailable" }
   }
 }
 
@@ -73,15 +94,27 @@ const isUnallowedPathForUser = (user: IUserRecruteurPublic, pathname: string) =>
   )
 }
 
-// Un cookie lba_session invalide/expiré doit être purgé avant de renvoyer vers l'authentification :
-// sinon la prochaine requête retente les mêmes appels /auth/session et /auth/access, et une
-// réponse instable (JWT proche de l'expiration) peut faire rebondir l'utilisateur en boucle
-// entre la page protégée et /espace-pro/authentification (cf. issue #5245).
-const redirectToInvalidSession = (request: NextRequest) => {
-  const hadSessionCookie = Boolean(request.cookies.get("lba_session"))
-  const url = new URL(hadSessionCookie ? "/espace-pro/authentification?error=true" : "/espace-pro/authentification", request.url)
+const redirectToAuthentication = (request: NextRequest, options: { purgeCookie: boolean; error: boolean; retry: boolean }) => {
+  const url = new URL("/espace-pro/authentification", request.url)
+  if (options.error) {
+    url.searchParams.set("error", "true")
+  }
+  if (options.retry) {
+    url.searchParams.set(SESSION_RETRY_PARAM, "true")
+  }
   const response = NextResponse.redirect(url)
-  if (hadSessionCookie) {
+  if (options.purgeCookie) {
+    response.cookies.delete("lba_session")
+  }
+  return response
+}
+
+const renderAuthenticationPage = (request: NextRequest, options: { purgeCookie: boolean }) => {
+  // même sans session, ne pas laisser passer un x-session forgé par le client
+  const anonymousHeaders = new Headers(request.headers)
+  anonymousHeaders.delete("x-session")
+  const response = NextResponse.next({ request: { headers: anonymousHeaders } })
+  if (options.purgeCookie) {
     response.cookies.delete("lba_session")
   }
   return response
@@ -89,44 +122,52 @@ const redirectToInvalidSession = (request: NextRequest) => {
 
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl
+  const query = new URLSearchParams(search)
 
   if (pathname === "/espace-pro/authentification") {
-    const query = new URLSearchParams(search)
     const token = query.get("token")
     if (token) {
       return await verifyAuthentication(token, request)
     }
-    const hadSessionCookie = Boolean(request.cookies.get("lba_session"))
-    const session = await getSession(request)
-    const user = session?.user
-    if (user) {
-      return redirectAfterAuthentication(user, request)
+
+    const result = await checkSession(request)
+
+    if (result.kind === "ok") {
+      if (query.get(SESSION_RETRY_PARAM)) {
+        // On vient de rebondir depuis une route protégée qui n'a pas pu confirmer la session
+        // (panne API ambiguë) : même si elle semble valide ici, ne pas rebondir une nouvelle fois,
+        // le signal est instable. L'utilisateur devra se reconnecter manuellement une fois l'API
+        // stabilisée.
+        return renderAuthenticationPage(request, { purgeCookie: false })
+      }
+      return redirectAfterAuthentication(result.user, request)
     }
-    // même sans session, ne pas laisser passer un x-session forgé par le client
-    const anonymousHeaders = new Headers(request.headers)
-    anonymousHeaders.delete("x-session")
-    const response = NextResponse.next({ request: { headers: anonymousHeaders } })
-    if (hadSessionCookie) {
-      response.cookies.delete("lba_session")
-    }
-    return response
+
+    return renderAuthenticationPage(request, { purgeCookie: result.kind === "invalid" })
   }
-  const session = await getSession(request)
-  const user = session?.user
+
+  const result = await checkSession(request)
+
   if (isConnectionRequired(pathname)) {
-    if (!user) {
-      return redirectToInvalidSession(request)
-    }
-    if (isUnallowedPathForUser(user, pathname)) {
-      return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
+    if (result.kind === "ok") {
+      if (isUnallowedPathForUser(result.user, pathname)) {
+        return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
+      }
+    } else if (result.kind === "invalid") {
+      return redirectToAuthentication(request, { purgeCookie: true, error: true, retry: false })
+    } else if (result.kind === "unavailable") {
+      const alreadyRetried = Boolean(query.get(SESSION_RETRY_PARAM))
+      return redirectToAuthentication(request, { purgeCookie: false, error: false, retry: !alreadyRetried })
+    } else {
+      return redirectToAuthentication(request, { purgeCookie: false, error: false, retry: false })
     }
   }
 
   const requestHeaders = new Headers(request.headers)
   // seul le proxy a le droit de poser x-session : un client ne doit pas pouvoir le forger
   requestHeaders.delete("x-session")
-  if (session) {
-    requestHeaders.set("x-session", JSON.stringify(session))
+  if (result.kind === "ok") {
+    requestHeaders.set("x-session", JSON.stringify({ user: result.user, access: result.access }))
   }
 
   return NextResponse.next({

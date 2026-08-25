@@ -4,13 +4,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { proxy } from "./proxy"
 
 const BASE_URL = "http://localhost:3000"
-const INVALID_JWT = "invalid.jwt.token"
+const SOME_JWT = "some.jwt.token"
 
 const fetchMock = vi.fn()
 
 beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock)
-  fetchMock.mockImplementation(async () => new Response(null, { status: 401 }))
 })
 
 afterEach(() => {
@@ -20,20 +19,26 @@ afterEach(() => {
 
 function requestWithSessionCookie(path: string): NextRequest {
   const request = new NextRequest(new URL(path, BASE_URL))
-  request.cookies.set("lba_session", INVALID_JWT)
+  request.cookies.set("lba_session", SOME_JWT)
   return request
 }
 
-describe("proxy - session invalide", () => {
+describe("proxy - session confirmée invalide (401)", () => {
+  beforeEach(() => {
+    fetchMock.mockImplementation(async () => new Response(null, { status: 401 }))
+  })
+
   it("redirige une seule fois de /espace-pro/cfa vers /espace-pro/authentification, purge le cookie et signale l'erreur", async () => {
     const request = requestWithSessionCookie("/espace-pro/cfa")
 
     const response = await proxy(request)
 
+    expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(response.status).toBe(307)
     const location = new URL(response.headers.get("location")!)
     expect(location.pathname).toBe("/espace-pro/authentification")
     expect(location.searchParams.get("error")).toBe("true")
+    expect(location.searchParams.get("sessionRetry")).toBeNull()
 
     const setCookie = response.cookies.get("lba_session")
     expect(setCookie?.value).toBe("")
@@ -42,7 +47,6 @@ describe("proxy - session invalide", () => {
   it("ne redirige pas une deuxième fois vers /espace-pro/cfa une fois le cookie purgé (pas de boucle)", async () => {
     const firstRequest = requestWithSessionCookie("/espace-pro/cfa")
     const firstResponse = await proxy(firstRequest)
-    expect(fetchMock).toHaveBeenCalledTimes(2)
     const redirectLocation = new URL(firstResponse.headers.get("location")!)
 
     // Le navigateur suit la redirection sans plus jamais envoyer le cookie purgé.
@@ -54,18 +58,84 @@ describe("proxy - session invalide", () => {
     // Pas de redirection : la page d'authentification doit s'afficher (avec son message d'erreur).
     expect(secondResponse.status).not.toBe(307)
     expect(secondResponse.headers.get("location")).toBeNull()
-    // La session n'ayant plus de cookie, getSession() ne doit plus appeler l'API auth/session ou auth/access.
+    // La session n'ayant plus de cookie, checkSession() ne doit plus appeler l'API auth/session ou auth/access.
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it("ne redirige pas vers l'authentification quand aucun cookie de session n'est présent (pas de message d'erreur trompeur)", async () => {
+  it("purge aussi le cookie quand on atterrit directement sur /espace-pro/authentification avec un cookie invalide", async () => {
+    const request = requestWithSessionCookie("/espace-pro/authentification")
+
+    const response = await proxy(request)
+
+    expect(response.headers.get("location")).toBeNull()
+    expect(response.cookies.get("lba_session")?.value).toBe("")
+  })
+})
+
+describe("proxy - aucun cookie de session", () => {
+  it("ne redirige pas vers l'authentification avec un message d'erreur trompeur", async () => {
     const request = new NextRequest(new URL("/espace-pro/cfa", BASE_URL))
+
+    const response = await proxy(request)
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(response.status).toBe(307)
+    const location = new URL(response.headers.get("location")!)
+    expect(location.searchParams.get("error")).toBeNull()
+    expect(location.searchParams.get("sessionRetry")).toBeNull()
+    expect(response.cookies.get("lba_session")).toBeUndefined()
+  })
+})
+
+describe("proxy - panne API ambiguë (ni confirmée invalide, ni confirmée valide)", () => {
+  it("ne purge pas le cookie et n'affiche pas 'session expirée' sur un simple 500", async () => {
+    fetchMock.mockImplementation(async () => new Response(null, { status: 500 }))
+    const request = requestWithSessionCookie("/espace-pro/cfa")
 
     const response = await proxy(request)
 
     expect(response.status).toBe(307)
     const location = new URL(response.headers.get("location")!)
     expect(location.searchParams.get("error")).toBeNull()
+    expect(location.searchParams.get("sessionRetry")).toBe("true")
+    // Le cookie n'est pas purgé : on ne sait pas s'il est réellement invalide.
     expect(response.cookies.get("lba_session")).toBeUndefined()
+  })
+
+  it("ne purge pas le cookie non plus sur une erreur réseau (fetch qui rejette)", async () => {
+    fetchMock.mockImplementation(async () => {
+      throw new Error("fetch failed: ECONNRESET")
+    })
+    const request = requestWithSessionCookie("/espace-pro/cfa")
+
+    const response = await proxy(request)
+
+    expect(response.status).toBe(307)
+    expect(response.cookies.get("lba_session")).toBeUndefined()
+    const location = new URL(response.headers.get("location")!)
+    expect(location.searchParams.get("sessionRetry")).toBe("true")
+  })
+
+  it("ne rebondit pas une deuxième fois vers la page protégée même si la session semble valide au second essai (pas de boucle)", async () => {
+    fetchMock.mockImplementationOnce(async () => new Response(null, { status: 500 })).mockImplementationOnce(async () => new Response(null, { status: 500 }))
+    const firstRequest = requestWithSessionCookie("/espace-pro/cfa")
+    const firstResponse = await proxy(firstRequest)
+    const redirectLocation = new URL(firstResponse.headers.get("location")!)
+    expect(redirectLocation.searchParams.get("sessionRetry")).toBe("true")
+
+    // Le cookie n'a pas été purgé : le navigateur le renvoie sur le second hop, et cette fois
+    // l'API répond que la session est bien valide (flakiness typique décrite dans l'issue #5245).
+    const secondRequest = requestWithSessionCookie(`${redirectLocation.pathname}${redirectLocation.search}`)
+    fetchMock.mockReset()
+    fetchMock.mockImplementation(
+      async (url: string) => new Response(url.endsWith("/auth/session") ? JSON.stringify({ _id: "u1", type: "CFA" }) : JSON.stringify({}), { status: 200 })
+    )
+
+    const secondResponse = await proxy(secondRequest)
+
+    // Le signal était instable : on ne fait pas confiance à ce "succès" pour rebondir à nouveau
+    // vers /espace-pro/cfa. La page d'authentification s'affiche simplement, sans purge.
+    expect(secondResponse.headers.get("location")).toBeNull()
+    expect(secondResponse.cookies.get("lba_session")).toBeUndefined()
   })
 })
