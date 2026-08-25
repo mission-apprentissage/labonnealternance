@@ -12,6 +12,7 @@ import { limitStream } from "@/common/utils/stream-utils"
 import type { IJobPartnerForSearchItem } from "@/services/search/search-items.service"
 import {
   applicationCountByJobIdStages,
+  applicationCountBySiretLookupStage,
   buildFormationSearchItem,
   buildJobOfferSearchItem,
   buildRecruteurSearchItem,
@@ -101,14 +102,7 @@ export const fillSearchItemsCollection = async () => {
         offer_status: JOB_STATUS_ENGLISH.ACTIVE,
       },
     },
-    {
-      $lookup: {
-        from: "applications",
-        localField: "workplace_siret",
-        foreignField: "company_siret",
-        as: "applications",
-      },
-    },
+    applicationCountBySiretLookupStage,
     {
       $lookup: {
         from: "raw_recruteurslba",
@@ -146,9 +140,7 @@ export const fillSearchItemsCollection = async () => {
             },
           },
         },
-        application_count: {
-          $size: "$applications",
-        },
+        application_count: { $ifNull: [{ $first: "$applications.count" }, 0] },
       },
     },
     {
