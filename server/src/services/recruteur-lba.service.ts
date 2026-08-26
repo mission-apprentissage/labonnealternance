@@ -4,19 +4,19 @@ import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IApplication, IRecruteurLbaUpdateEvent } from "shared"
 import { ERecruteurLbaUpdateEventType, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ILbaCompanyForAdminSearch, ILbaCompanyForContactUpdate, ILbaCompanySearchField } from "shared/routes/update-lba-company.routes"
 import { validateSIRET } from "shared/validators/siret-validator"
-import { encryptMailWithIV } from "@/common/utils/encrypt-string"
 import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { generateApplicationToken } from "./app-links.service"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByCompanyCount } from "./application.service"
+import { getHiringCountLastFullYears } from "./deca-contrats.service"
 import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
@@ -33,9 +33,11 @@ const setDistance = (distance: number | null | undefined) => {
 const transformCompanyV2 = ({
   company,
   applicationCountByCompany,
+  hiringCount3Years,
 }: {
   company: IJobsPartnersOfferPrivateWithDistance
   applicationCountByCompany: IApplicationCount[]
+  hiringCount3Years?: number | null
 }): ILbaItemLbaCompany => {
   const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
 
@@ -66,6 +68,7 @@ const transformCompanyV2 = ({
         url: null,
       },
       elligibleHandicap: company.contract_is_disabled_elligible,
+      hiringCount3Years,
     },
     nafs: [
       {
@@ -149,9 +152,11 @@ export const getRecruteurLbaFromDB = async (siret: string): Promise<ILbaItemLbaC
   }
 
   const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
+  const hiringCount3Years = lbaCompany.workplace_siret ? await getHiringCountLastFullYears(lbaCompany.workplace_siret) : null
   const company = transformCompanyV2({
     company: lbaCompany,
     applicationCountByCompany,
+    hiringCount3Years,
   })
 
   return company

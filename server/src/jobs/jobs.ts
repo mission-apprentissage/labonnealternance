@@ -28,6 +28,7 @@ import { relanceCandidatsInactifs } from "./applications/relance-candidats-inact
 import { relanceIncitationSpontanee } from "./applications/relance-incitation-spontanee"
 import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
+import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formations-catalogue/update-parcoursup-and-affelnet-info-on-formation-catalogue"
@@ -387,6 +388,10 @@ export async function setupJobProcessor() {
           "maj-diplome-metier": {
             cron_string: "0 8 * * SUN",
             handler: updateDiplomeMetier,
+          },
+          "Mise à jour mensuelle des contrats DECA": {
+            cron_string: "15 5 1 * *",
+            handler: async () => importDecaContratsParAnnee(),
           },
         },
     jobs: {

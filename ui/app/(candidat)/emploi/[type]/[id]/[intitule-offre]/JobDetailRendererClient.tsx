@@ -128,8 +128,13 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
   const reportItemId = (() => {
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) return (selectedItem as ILbaItemLbaJobJson).job?.id ?? null
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) return (selectedItem as ILbaItemPartnerJobJson).id
+    if (kind === LBA_ITEM_TYPE.RECRUTEURS_LBA) return (selectedItem as ILbaItemLbaCompanyJson).company?.siret ?? null
     return null
   })()
+  const reportLinkLabels =
+    kind === LBA_ITEM_TYPE.RECRUTEURS_LBA
+      ? { notReported: "Signaler l'entreprise", reported: "Entreprise signalée" }
+      : { notReported: "Signaler l'offre", reported: "Offre signalée" }
   const handleClose = closeToSearch ?? (() => router.push(PAGES.dynamic.recherche(rechercheParams).getPath()))
 
   const [firstNaf] = (selectedItem.nafs ?? []) as ILbaItemNaf[]
@@ -231,8 +236,8 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
                     <ReportJobLink
                       itemId={reportItemId}
                       type={kind as LBA_ITEM_TYPE}
-                      linkLabelNotReported="Signaler l'offre"
-                      linkLabelReported="Offre signalée"
+                      linkLabelNotReported={reportLinkLabels.notReported}
+                      linkLabelReported={reportLinkLabels.reported}
                       sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
                     />
                   )}
@@ -319,8 +324,8 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
                     <ReportJobLink
                       itemId={reportItemId}
                       type={kind as LBA_ITEM_TYPE}
-                      linkLabelNotReported="Signaler l'offre"
-                      linkLabelReported="Offre signalée"
+                      linkLabelNotReported={reportLinkLabels.notReported}
+                      linkLabelReported={reportLinkLabels.reported}
                       sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
                     />
                   )}

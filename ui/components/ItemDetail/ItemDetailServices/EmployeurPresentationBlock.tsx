@@ -1,10 +1,11 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
-import type { ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemLbaCompanyJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 import { getCompanySize } from "./get-company-size"
+import HiringCountBox from "./HiringCountBox"
 import ItemDistanceToCenter from "./ItemDistanceToCenter"
 import ItemGoogleSearchLink from "./ItemGoogleSearchLink"
 import ItemLocalisation from "./ItemLocalisation"
@@ -24,7 +25,7 @@ export const EmployeurPresentationBlock = ({
   cityOnly = false,
 }: {
   title: string
-  item: ILbaItemPartnerJobJson
+  item: ILbaItemPartnerJobJson | ILbaItemLbaCompanyJson
   description?: string | null
   emptyStateText?: string
   showPhone?: boolean
@@ -32,23 +33,38 @@ export const EmployeurPresentationBlock = ({
   showGoogleSearch?: boolean
   cityOnly?: boolean
 }) => {
-  const isHandicapEngaged = Boolean(item?.job?.elligibleHandicap || item?.company?.elligibleHandicap)
+  const isHandicapEngaged = Boolean(("job" in item && item.job?.elligibleHandicap) || item?.company?.elligibleHandicap)
+  const hiringCount3Years = item?.company?.hiringCount3Years
 
   return (
     <Box sx={{ mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
+      <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        {title}
+      </Typography>
+
+      {(description || emptyStateText) && (
+        <Box
+          sx={{
+            whiteSpace: "pre-wrap",
+            mb: fr.spacing("6v"),
+          }}
+          dangerouslySetInnerHTML={{ __html: description || emptyStateText }}
+        />
+      )}
+
+      {isHandicapEngaged && (
+        <Box sx={{ mb: fr.spacing("6v") }}>
+          <LbaJobEngagement />
+        </Box>
+      )}
+
+      {typeof hiringCount3Years === "number" && hiringCount3Years > 0 && (
+        <Box sx={{ mb: fr.spacing("4v") }}>
+          <HiringCountBox hiringCount3Years={hiringCount3Years} />
+        </Box>
+      )}
+
       <Stack spacing={fr.spacing("2v")} sx={{ mb: fr.spacing("4v") }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          {title}
-        </Typography>
-
-        {isHandicapEngaged && (
-          <Box sx={{ mb: fr.spacing("4v") }}>
-            <LbaJobEngagement />
-          </Box>
-        )}
-
-        <div dangerouslySetInnerHTML={{ __html: description || emptyStateText }} />
-
         {cityOnly ? (
           <div>
             <strong>Localisation :</strong> {item?.place?.city}

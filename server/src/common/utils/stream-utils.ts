@@ -1,6 +1,7 @@
 import type Stream from "node:stream"
 import type { TransformCallback, TransformOptions } from "node:stream"
 import { Transform } from "node:stream"
+import { StringDecoder } from "node:string_decoder"
 import { Readable } from "stream"
 
 type AccumulateDataOptions<TAcc> = TransformOptions & { accumulator?: TAcc }
@@ -65,6 +66,53 @@ export function groupStreamData<TInput>(options: GroupDataOptions<TInput> = {}):
       accumulator: [],
     }
   )
+}
+
+/**
+ * Découpe un flux d'octets ndjson (une entrée JSON par ligne) en objets JS, ligne par ligne, sans jamais
+ * charger le fichier entier en mémoire. Tolère les fins de ligne CRLF (`\r\n`) comme LF (`\n`).
+ *
+ * @param onParseError Appelé pour chaque ligne non vide qui n'est pas un JSON valide ; la ligne est alors
+ * ignorée sans interrompre le flux.
+ * @returns Un Transform en readableObjectMode, à utiliser dans un `pipeline(sourceStream, ndjsonToObjectStream(...), ...)`
+ */
+export function ndjsonToObjectStream(onParseError: (err: unknown, line: string) => void): Transform {
+  // StringDecoder (et non chunk.toString("utf8")) : un caractère UTF-8 multi-octets (ex. "É") peut être
+  // coupé en deux chunks par le stream source. Décoder chaque chunk indépendamment corromprait alors ce
+  // caractère en deux U+FFFD (silencieusement valides pour JSON.parse) ; le decoder retient l'octet de fin
+  // incomplet et le recolle au chunk suivant avant de décoder.
+  const decoder = new StringDecoder("utf8")
+  let buffer = ""
+
+  const parseLine = (this_: Transform, rawLine: string) => {
+    const line = rawLine.endsWith("\r") ? rawLine.slice(0, -1) : rawLine
+    if (!line.trim()) return
+    try {
+      this_.push(JSON.parse(line))
+    } catch (err) {
+      onParseError(err, line)
+    }
+  }
+
+  return new Transform({
+    readableObjectMode: true,
+    transform(chunk: Buffer, _encoding, callback) {
+      buffer += decoder.write(chunk)
+      const lines = buffer.split("\n")
+      buffer = lines.pop() ?? ""
+      for (const line of lines) {
+        parseLine(this, line)
+      }
+      callback()
+    },
+    flush(callback) {
+      buffer += decoder.end()
+      if (buffer.trim()) {
+        parseLine(this, buffer)
+      }
+      callback()
+    },
+  })
 }
 
 export function stringToStream(str: string) {

@@ -11,14 +11,18 @@ import { isGeiqEntreprise } from "shared/services/is-geiq-entreprise"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { generateApplicationToken } from "./app-links.service"
-import type { IApplicationCount } from "./application.service"
 import { getApplicationByJobCount, PARTNERS_WITH_APPLICATION_API } from "./application.service"
+import { getHiringCountLastFullYears } from "./deca-contrats.service"
 import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
-function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance, applicationCountMap?: null | Map<string, number>): ILbaItemPartnerJob {
+function transformPartnerJob(
+  partnerJob: IJobsPartnersOfferPrivateWithDistance,
+  applicationCountMap?: null | Map<string, number>,
+  hiringCount3Years?: number | null
+): ILbaItemPartnerJob {
   const romes = partnerJob.offer_rome_codes.map((code) => ({ code, label: null }))
   const longitude = partnerJob.workplace_geopoint.coordinates[0]
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
@@ -53,6 +57,9 @@ function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance, 
       mandataire: partnerJob.is_delegated,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
       isGeiq: isGeiqEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
+      // N'apparaît que sur la fiche détail (getPartnerJobByIdV2) : absent (pas juste `undefined`) des
+      // résultats de recherche, qui n'en ont pas besoin et n'appellent pas deca-contrats.service pour ça.
+      ...(hiringCount3Years !== undefined ? { hiringCount3Years } : {}),
     },
     job: {
       id: partnerJob.partner_job_id,
@@ -107,7 +114,13 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
   const applicationCountByJob = await getApplicationByJobCount([jobId])
   const applicationCountMap = new Map(applicationCountByJob.map(({ _id, count }) => [_id, count]))
 
-  const partnerJob = transformPartnerJob(rawPartnerJob, applicationCountMap)
+  // Le compteur d'alternants recrutés se rattache à l'entreprise employeuse (workplace_siret), pas au
+  // CFA délégataire de la candidature : à la différence de company.siret plus haut, on ne bascule pas sur
+  // cfa_siret quand is_delegated est vrai.
+  const hiringCount3Years = rawPartnerJob.workplace_siret ? await getHiringCountLastFullYears(rawPartnerJob.workplace_siret) : null
+
+  const partnerJob = transformPartnerJob(rawPartnerJob, applicationCountMap, hiringCount3Years)
+
   return partnerJob
 }
 
