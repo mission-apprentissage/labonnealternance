@@ -2,6 +2,7 @@ import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import { notFound } from "next/navigation"
+import { buildTrainingUrl } from "shared/metier/lbaitemutils"
 import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { TrainingSchema } from "@/components/ItemDetail/TrainingSchema"
@@ -34,8 +35,22 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 
   if (!formation) return { title: "Offre de formation introuvable" }
 
+  // `training`/`title` sont nullish dans le schéma partagé et toKebabCase(null) throw :
+  // sans titre, on omet la canonical plutôt que de faire échouer generateMetadata.
+  const trainingTitle = formation?.training?.title
+
   return {
-    title: `Formation de ${formation?.training?.title} - La bonne alternance`,
+    title: trainingTitle ? `Formation de ${trainingTitle} - La bonne alternance` : "Formation en alternance - La bonne alternance",
+    ...(trainingTitle
+      ? {
+          alternates: {
+            // URL canonique sans query params : une même formation accessible avec des paramètres de recherche
+            // ou de tracking différents ne doit compter que comme une seule page pour les moteurs.
+            // Relative, résolue en absolu par le metadataBase du layout racine (convention du codebase).
+            canonical: buildTrainingUrl(idParam, trainingTitle),
+          },
+        }
+      : {}),
   }
 }
 
