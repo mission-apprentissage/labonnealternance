@@ -256,7 +256,7 @@ export function Footer({ isWidget = false }: { isWidget?: boolean }) {
                 href={GOOGLE_PREFERRED_SOURCE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                title="Ajouter La bonne alternance à vos sources préférées sur Google - nouvelle fenêtre"
+                aria-label="Ajouter La bonne alternance à vos sources préférées sur Google - nouvelle fenêtre"
               >
                 Ajouter à vos sources préférées sur Google
               </a>
