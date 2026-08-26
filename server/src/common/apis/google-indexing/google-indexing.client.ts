@@ -85,14 +85,15 @@ export const publishUrlNotification = async (url: string, type: GoogleIndexingNo
     await axiosClient.post(GOOGLE_INDEXING_PUBLISH_ENDPOINT, { url, type }, { headers: { Authorization: `Bearer ${accessToken}` } })
     return "published"
   } catch (err: any) {
+    // Erreur dédiée plutôt que l'objet Axios, dans les deux branches : celui-ci porte
+    // `config.headers.Authorization` (le Bearer token), que extraErrorDataIntegration
+    // sérialiserait tel quel dans Sentry (sendDefaultPii actif, pas de beforeSend filtrant).
+    const context = { extra: { url, type, status: err.response?.status, responseData: err.response?.data } }
     if (err.response?.status === 429) {
-      // Erreur dédiée plutôt que l'objet Axios : trace le quota épuisé dans Sentry sans
-      // remonter la requête complète (header Authorization). Le job s'arrête au premier 429,
-      // donc au plus une capture par run.
-      sentryCaptureException(new Error("google-indexing: quota quotidien épuisé (HTTP 429)"), { extra: { url, type, responseData: err.response?.data } })
+      sentryCaptureException(new Error("google-indexing: quota quotidien épuisé (HTTP 429)"), context)
       return "quota_exhausted"
     }
-    sentryCaptureException(err, { extra: { url, type, responseData: err.response?.data } })
+    sentryCaptureException(new Error(`google-indexing: échec de publication (${err.message ?? "erreur inconnue"})`), context)
     return "error"
   }
 }
