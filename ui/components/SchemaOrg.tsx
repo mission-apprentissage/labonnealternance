@@ -1,4 +1,8 @@
+import { JsonLdScript } from "@/components/JsonLdScript"
+import { publicConfig } from "@/config.public"
+
 const BASE_URL = "https://labonnealternance.apprentissage.beta.gouv.fr"
+const ORGANIZATION_ID = `${BASE_URL}/#organization`
 
 type BreadcrumbItem = {
   name: string
@@ -60,6 +64,33 @@ export const SchemaOrg = ({
   }
 
   if (type === "WebSite") {
+    // Nœud organisation autonome décrivant l'entité « La bonne alternance » elle-même :
+    // c'est lui que les knowledge graphs des moteurs et les IA utilisent pour identifier le service.
+    // `sameAs` ne référence que des pages officielles vérifiées de l'entité.
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "GovernmentOrganization",
+      "@id": ORGANIZATION_ID,
+      name: "La bonne alternance",
+      url: BASE_URL,
+      description,
+      logo: {
+        "@type": "ImageObject",
+        url: `${BASE_URL}/images/logo_LBA.svg`,
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        email: publicConfig.publicEmail,
+        contactType: "customer support",
+        availableLanguage: "fr",
+      },
+      parentOrganization: {
+        "@type": "GovernmentOrganization",
+        name: "Délégation générale à l'emploi et à la formation professionnelle (DGEFP)",
+        url: "https://travail-emploi.gouv.fr",
+      },
+      sameAs: ["https://beta.gouv.fr/startups/la-bonne-alternance.html", "https://github.com/mission-apprentissage/labonnealternance"],
+    })
     schemas.push({
       "@context": "https://schema.org",
       "@type": "WebSite",
@@ -67,9 +98,7 @@ export const SchemaOrg = ({
       url: BASE_URL,
       description,
       publisher: {
-        "@type": "GovernmentOrganization",
-        name: "Délégation générale à l'emploi et à la formation professionnelle (DGEFP)",
-        url: "https://travail-emploi.gouv.fr",
+        "@id": ORGANIZATION_ID,
       },
       potentialAction: {
         "@type": "SearchAction",
@@ -213,8 +242,7 @@ export const SchemaOrg = ({
   return (
     <>
       {schemas.map((schema, index) => (
-        // On échappe le caractère inférieur en séquence unicode pour qu'un libellé contenant une balise fermante de script ne puisse pas casser le script (XSS script-breakout).
-        <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }} />
+        <JsonLdScript key={index} schema={schema} />
       ))}
     </>
   )
