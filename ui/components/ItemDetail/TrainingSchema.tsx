@@ -101,8 +101,13 @@ const buildProvider = (formation: ILbaItemFormation2Json) => {
 
 // Pour les formations, la rue est portée par `place.address` (cf. transformFormationV2,
 // server/src/services/formation.service.ts) — `numberAndStreet` n'y est jamais renseigné.
+// `place.address` y est construit par interpolation de template (`${...}`) : quand la donnée
+// source est absente, on récupère la chaîne littérale "undefined", jamais `null`/`undefined`
+// lui-même — il faut donc l'exclure explicitement en plus du test de falsy.
+const isUsableStreet = (value?: string | null): value is string => Boolean(value) && value !== "undefined"
+
 const buildAddress = (place: { address?: string | null; numberAndStreet?: string | null; city?: string | null; zipCode?: string | null }) => {
-  const street = place.address || place.numberAndStreet
+  const street = [place.address, place.numberAndStreet].find(isUsableStreet)
   return {
     "@type": "PostalAddress",
     ...(street ? { streetAddress: street } : {}),
