@@ -207,6 +207,13 @@ const config = {
     url: env.get("TALEEZ_API_URL").required().asString(),
     partnerKey: env.get("TALEEZ_API_PARTNER_KEY").required().asString(),
   },
+  // Compte de service Google Indexing API (propriétaire délégué de la propriété Search Console).
+  // Volontairement non `required()` : le job pingGoogleIndexing est no-op tant que les
+  // variables ne sont pas dans le vault, sans bloquer les déploiements.
+  googleIndexing: {
+    clientEmail: env.get("LBA_GOOGLE_INDEXING_CLIENT_EMAIL").asString(),
+    privateKey: env.get("LBA_GOOGLE_INDEXING_PRIVATE_KEY").asString(),
+  },
 }
 
 export default config
