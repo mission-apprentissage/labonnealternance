@@ -70,6 +70,7 @@ import { resetApiKey } from "./recruiters/reset-api-key"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
 import { analyzeSearchQueries, rollbackSearchSuggestions } from "./search/analyze-search-queries"
 import { fillSearchItemsCollection } from "./search/generate-search-items-collection"
+import { pingGoogleIndexing } from "./seo/ping-google-indexing"
 import { pingIndexNow } from "./seo/ping-indexnow"
 import { updateSEO } from "./seo/update-seo"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simple-job-definitions"
@@ -141,6 +142,12 @@ export async function setupJobProcessor() {
           "Notification IndexNow des offres modifiées": {
             cron_string: "10,40 * * * *",
             handler: async () => pingIndexNow(),
+            tag: "slave",
+          },
+          // Même logique de décalage que IndexNow, séquencé 5 min après pour lisser les appels sortants.
+          "Notification Google Indexing API des offres modifiées": {
+            cron_string: "15,45 * * * *",
+            handler: async () => pingGoogleIndexing(),
             tag: "slave",
           },
           "Envoi des mails de relance pour l'expiration des offres à J+7": {
