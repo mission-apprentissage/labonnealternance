@@ -13,7 +13,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
  * avale l'erreur — quelques entrées de log perdues, la recherche elle-même n'est pas impactée.
  */
 export const up = async () => {
-  const result = await getDbCollection("search_queries").updateMany({ source: { $exists: true } }, { $rename: { source: "search_source" } })
+  const result = await getDbCollection("search_queries").updateMany({ source: { $exists: true } }, { $rename: { source: "search_source" } }, { bypassDocumentValidation: true })
   logger.info(`rename-search-queries-source: ${result.modifiedCount} document(s) renommé(s)`)
 }
 
