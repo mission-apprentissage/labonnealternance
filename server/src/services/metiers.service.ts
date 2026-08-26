@@ -1,13 +1,12 @@
 import { badRequest } from "@hapi/boom"
 import { matchSorter } from "match-sorter"
-import type { IAppellationRome, IAppellationsRomes, IDiplomesMetiers, IDomainesMetiers, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "shared"
+import type { IAppellationRome, IAppellationsRomes, IDiplomesMetiers, IDomainesMetiers, IMetierEnrichi, IMetiersEnrichis } from "shared"
 import { removeAccents, removeRegexChars } from "shared/utils/index"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import config from "@/config"
-import { getRomesFromCatalogue } from "./catalogue.service"
 import { expandRomesV3toV4 } from "./rome.service"
 
 let globalCacheMetiers: IDomainesMetiers[] = []
@@ -320,38 +319,4 @@ const removeDuplicateDiplomas = (diplomas) => {
   })
 
   return labelsAndRomesForDiplomas
-}
-
-/**
- * Récupère la liste des métiers associés à une formation en paramètre identifiée par son CFD
- * @param {string} cfd
- * @returns {Promise<IMetiers>}
- */
-export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMetiers> => {
-  const { romes } = await getRomesFromCatalogue({ cfd })
-  const metiers = await getMetiersFromRomes(romes)
-  return metiers
-}
-
-/**
- * Récupère la liste des métiers dans la table domaines / métiers correspondant à un tableau de codes ROME
- * @param {string[]} romes
- * @returns {IMetiers}
- */
-const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
-  const metiers = (await getCacheMetiers())
-    .filter((metier) => metier.codes_romes.some((rome) => romes.includes(rome)))
-    .map((metier: { sous_domaine: string }) => metier.sous_domaine)
-    .sort()
-
-  return { metiers }
-}
-
-/**
- * Récupère la liste de tous les métiers dans la table domaines / métiers
- * @returns {IMetiers}
- */
-export const getTousLesMetiers = async (): Promise<IMetiers> => {
-  const metiers = (await getCacheMetiers()).map((metier: { sous_domaine: string }) => metier.sous_domaine).sort()
-  return { metiers }
 }

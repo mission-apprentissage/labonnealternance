@@ -2,26 +2,14 @@ import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
 import { z } from "../helpers/zod-with-open-api.js"
 import { typedKeys } from "../utils/object-utils.js"
 
-// Paramètres de l'API publique V1 (jobs.routes, formations.routes, geo.routes,
-// formations-par-region.routes, search.routes) : ne rien retirer ici sans vérifier
-// le contrat d'API. Les paramètres propres à l'UI du moteur de recherche legacy
-// vivent dans ui/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils.ts.
-
-export const zCallerParam = z
-  .string()
-
-  .optional()
-
-export const zGetFormationOptions = z
-  .literal("with_description")
-
-  .optional()
+// Paramètres de l'API publique V1 (jobs.routes, geo.routes, search.routes) :
+// ne rien retirer ici sans vérifier le contrat d'API. Les paramètres propres
+// à l'UI du moteur de recherche legacy vivent dans
+// ui/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils.ts.
 
 export const zRefererHeaders = z.looseObject({
   referer: z.string().optional(),
 })
-
-export const zRomesParams = (imcompatibleWith: "romeDomain" | "rncp") => z.string().optional()
 
 export const zRncpsParams = z.string().optional()
 

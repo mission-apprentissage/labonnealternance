@@ -1,9 +1,7 @@
 import { zRoutes } from "shared"
-import { INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
 
-import { trackApiCall } from "@/common/utils/send-tracking-event"
 import type { Server } from "@/http/server"
-import { getFormationDetailByCleME, getFormationQuery, getFormationsQuery } from "@/services/formation.service"
+import { getFormationDetailByCleME } from "@/services/formation.service"
 
 const config = {
   rateLimit: {
@@ -13,83 +11,6 @@ const config = {
 }
 
 export default (server: Server) => {
-  server.get(
-    "/v1/formations",
-    {
-      schema: zRoutes.get["/v1/formations"],
-      config,
-    },
-    async (req, res) => {
-      const { referer } = req.headers
-      const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
-      const result = await getFormationsQuery({
-        romes,
-        longitude,
-        latitude,
-        radius,
-        diploma: INiveauDiplomeEuropeen.fromParam(diploma),
-        romeDomain,
-        caller,
-        options,
-        referer,
-        isMinimalData: false,
-      })
-
-      if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else {
-          res.status(500)
-        }
-
-        return res.send(result)
-      }
-
-      if (caller && "results" in result) {
-        // biome-ignore lint/nursery/noFloatingPromises: migration
-        trackApiCall({
-          caller: caller,
-          api_path: "formationV1",
-          training_count: result.results?.length,
-          result_count: result.results?.length,
-          response: "OK",
-        })
-      }
-      return res.send(result)
-    }
-  )
-
-  server.get(
-    "/v1/formations/formation/:id",
-    {
-      schema: zRoutes.get["/v1/formations/formation/:id"],
-      config,
-    },
-    async (req, res) => {
-      const { id } = req.params
-      const { caller } = req.query
-      try {
-        const result = await getFormationQuery({ id })
-        if (caller) {
-          // biome-ignore lint/nursery/noFloatingPromises: migration
-          trackApiCall({
-            caller,
-            api_path: "formationV1/formation",
-            training_count: 1,
-            result_count: 1,
-            response: "OK",
-          })
-        }
-        return res.send(result)
-      } catch (err) {
-        if (caller) {
-          await trackApiCall({ caller, api_path: "formationV1/formation", response: "Error" })
-        }
-        throw err
-      }
-    }
-  )
-
   server.get(
     "/_private/formations/:id",
     {

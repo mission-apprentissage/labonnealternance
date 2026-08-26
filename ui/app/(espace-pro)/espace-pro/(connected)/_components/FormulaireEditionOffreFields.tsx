@@ -30,7 +30,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
   const handleJobSearch = async (search: string) => {
     if (search.trim().length !== 0) {
       try {
-        const result = (await apiGet(`/v1/metiers/intitule`, { querystring: { label: search } })) as IAppellationsRomes
+        const result = await apiGet(`/_private/metiers/intitule`, { querystring: { label: search } })
         return result.coupleAppellationRomeMetier
       } catch (error: any) {
         throw new Error(error)
