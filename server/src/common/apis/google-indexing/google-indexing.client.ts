@@ -86,6 +86,10 @@ export const publishUrlNotification = async (url: string, type: GoogleIndexingNo
     return "published"
   } catch (err: any) {
     if (err.response?.status === 429) {
+      // Erreur dédiée plutôt que l'objet Axios : trace le quota épuisé dans Sentry sans
+      // remonter la requête complète (header Authorization). Le job s'arrête au premier 429,
+      // donc au plus une capture par run.
+      sentryCaptureException(new Error("google-indexing: quota quotidien épuisé (HTTP 429)"), { extra: { url, type, responseData: err.response?.data } })
       return "quota_exhausted"
     }
     sentryCaptureException(err, { extra: { url, type, responseData: err.response?.data } })
