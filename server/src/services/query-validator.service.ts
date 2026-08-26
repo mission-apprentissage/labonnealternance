@@ -1,9 +1,8 @@
 import { MAX_SEARCH_ROMES } from "shared"
 import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 import { isOriginLocal } from "@/common/utils/is-origin-local"
-import { regionCodeToDepartmentList } from "@/common/utils/region-insee-codes"
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
-import type { TFormationSearchQuery, TJobSearchQuery } from "./job-opportunity.service.types"
+import type { TJobSearchQuery } from "./job-opportunity.service.types"
 
 /**
  * Contrôle le format d'un code RNCP
@@ -49,88 +48,6 @@ const validateRomesOrRncp = async (query: Omit<TJobSearchQuery, "isMinimalData">
     }
   } else {
     error_messages.push("romes or rncp : You must specify at least 1 rome code or a rncp code.")
-  }
-}
-
-/**
- * Contrôle que les paramètres de codes ROME ou de domaine ROME respectent les critères requis
- * ajoute les erreurs dans error_messages
- * @param {string} romes une liste de codes ROME séparés par des virgules
- * @param {string} romeDomain un domaine ROME (lettre du code ROME ou lettre + premiers chiffres du code ROME)
- * @param {string[]} error_messages un tableau de messages d'erreur
- * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
- * @param {boolean} optional flag indiquant si la présence de codes ROME ou d'un domaine ROME est optionnelle
- * @returns {undefined}
- */
-const validateRomeOrDomain = (
-  { romes, romeDomain, romeLimit = MAX_SEARCH_ROMES, optional }: { romes: string | undefined; romeDomain: string | undefined; romeLimit?: number; optional?: boolean },
-  error_messages: string[]
-) => {
-  if (!optional && !romes && !romeDomain) {
-    error_messages.push("romes, romeDomain : You must define at least 1 rome code OR a single romeDomain.")
-  } else if (romes && romeDomain) {
-    error_messages.push("romes, romeDomain : You must define either romes OR romeDomain, not both.")
-  } else if (romes) {
-    if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
-    if (!/^[a-zA-Z][0-9]{4}(,[a-zA-Z][0-9]{4})*$/.test(romes))
-      error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
-  } else if (romeDomain) {
-    if (!/^[a-zA-Z][0-9]{2}$/.test(romeDomain) && !/^[a-zA-Z]$/.test(romeDomain))
-      error_messages.push("romeDomain : Badly formatted romeDomain. Rome domain must be one letter or one letter followed by 2 digit number. ex : A or A12")
-  }
-}
-
-/**
- * Contrôle que les paramètres optionnels de codes ROME ou de domaine ROME respectent les critères requis
- * @param {string} romes une liste de codes ROME séparés par des virgules
- * @param {string} romeDomain un domaine ROME (lettre du code ROME ou lettre + premiers chiffres du code ROME)
- * @param {string[]} error_messages un tableau de messages d'erreur
- * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
- * @returns {undefined}
- */
-const validateOptionalRomeOrDomain = (
-  { romes, romeDomain, romeLimit = MAX_SEARCH_ROMES }: { romes: string | undefined; romeDomain: string | undefined; romeLimit?: number },
-  error_messages: string[]
-) => {
-  validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages)
-}
-
-/**
- * Contrôle que les paramètres optionnels de region ou de departement respectent les critères requis
- * @param {string} region le code insee de région française
- * @param {string} departement le numéro de département
- * @param {string[]} error_messages un tableau de messages d'erreur
- * @returns {undefined}
- */
-const validateOptionalRegion = ({ region, departement }: { region: string | undefined; departement: string | undefined }, error_messages: string[]) => {
-  if (region && departement) {
-    error_messages.push("region, departement : You must define either region OR departement, not both.")
-  } else if (departement) {
-    if (!/^[0-9]{2,3}$/.test(departement))
-      error_messages.push("departement : Badly formatted departement. departement must be a two digit number or three digit number for overseas departments. ex : 01 or 974")
-  } else if (region) {
-    if (!/^[0-9]{2}$/.test(region)) error_messages.push("region : Badly formatted region. region must be a two digit number. ex : 01")
-
-    if (Object.keys(regionCodeToDepartmentList).indexOf(region) < 0)
-      error_messages.push("region : Badly formatted region. region must be one of the allowed values as described in the api online doc.")
-  }
-}
-
-/**
- * Contrôle que les paramètres de région/département et de romes/romeDomain sont correctements renseignés
- * @param {string} region le code insee de région française
- * @param {string} departement le numéro de département
- * @param {string} romes une liste de codes ROME séparés par des virgules
- * @param {string} romeDomain un domaine ROME (lettre du code ROME ou lettre + premiers chiffres du code ROME)
- * @param {string[]} error_messages un tableau de messages d'erreur
- * @returns {undefined}
- */
-const validateRegionOrRome = (
-  { region, departement, romes, romeDomain }: { region: string | undefined; departement: string | undefined; romes: string | undefined; romeDomain: string | undefined },
-  error_messages: string[]
-) => {
-  if (!(region || departement) && !(romes || romeDomain)) {
-    error_messages.push("region, departement, romes, romeDomain : You must assign a value to at least one of these parameters.")
   }
 }
 
@@ -222,59 +139,4 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 
   return { result: "passed", romes: query.romes }
-}
-
-/**
- * Ensemble de contrôles complexes sur la requête de recherche de formations
- * @param {TFormationSearchQuery} query paramètres de la requête
- */
-export const formationsQueryValidator = async (
-  query: Omit<TFormationSearchQuery, "isMinimalData">
-): Promise<{ result: "passed"; romes: string | undefined } | { error: "wrong_parameters"; error_messages: string[] }> => {
-  const error_messages = []
-
-  // présence d'identifiant de la source : caller
-  validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
-
-  validateRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: MAX_SEARCH_ROMES }, error_messages)
-
-  // coordonnées gps optionnelles : latitude et longitude
-  if (query.latitude || query.longitude) {
-    validateLatitude(query.latitude, error_messages)
-    validateLongitude(query.longitude, error_messages)
-
-    // rayon de recherche : radius
-    validateRadius(query.radius, error_messages)
-  }
-
-  if (error_messages.length) return { error: "wrong_parameters", error_messages }
-
-  return { result: "passed", romes: query.romes }
-}
-
-/**
- * Ensemble de contrôles complexes sur la requête de recherche de formations par région
- * @param {TFormationSearchQuery} query paramètres de la requête
- * @returns {{ result: "passed" } | { error: string; error_messages: string[] }}
- */
-export const formationsRegionQueryValidator = (
-  query: Omit<TFormationSearchQuery, "isMinimalData">
-): { result: "passed" } | { error: "wrong_parameters"; error_messages: string[] } => {
-  const error_messages = []
-
-  // présence d'identifiant de la source : caller
-  validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
-
-  // codes ROME : romes ou romeDomain optionnels dans ce contexte
-  validateOptionalRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: MAX_SEARCH_ROMES }, error_messages)
-
-  // region. Soit département soit région soit aucune des deux = France entière
-  validateOptionalRegion({ region: query.region, departement: query.departement }, error_messages)
-
-  // region ou rome obligatoires (règle : si pas de region donc France entière rome devient obligatoire)
-  validateRegionOrRome({ region: query.region, departement: query.departement, romes: query.romes, romeDomain: query.romeDomain }, error_messages)
-
-  if (error_messages.length) return { error: "wrong_parameters", error_messages }
-
-  return { result: "passed" }
 }

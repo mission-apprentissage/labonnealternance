@@ -4,6 +4,7 @@ import type { core } from "zod"
 
 import { zProcessorAdminRoutes } from "./_private/admin/processor.admin.routes.js"
 import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
+import { zPrivateMetiersRoutes } from "./_private/metiers.routes.js"
 import { zPrivateSeoRoutes } from "./_private/seo.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
@@ -13,13 +14,11 @@ import { zEligibleTrainingsForAppointmentRoutes } from "./eligible-trainings-for
 import { zEmailsRoutes } from "./emails.routes.js"
 import { zEtablissementRoutes } from "./etablissement.routes.js"
 import { zFormationsRoutes } from "./formations.routes.js"
-import { zV1FormationsParRegion } from "./formations-par-region.routes.js"
 import { zFormulaireRoute } from "./formulaire.route.js"
 import { zInserJeunesRoutes } from "./inserjeunes.routes.js"
 import { zV1JobsRoutes } from "./jobs.routes.js"
 import { zJobsPartnersAdminRoutes } from "./jobs-partners-admin.routes.js"
 import { zLoginRoutes } from "./login.routes.js"
-import { zMetiersRoutes } from "./metiers.routes.js"
 import { zPartnersRoutes } from "./partners.routes.js"
 import { zRecruiterRoutes } from "./recruiters.routes.js"
 import { zReportedCompanyRoutes } from "./reported-company.routes.js"
@@ -38,8 +37,8 @@ import { zJobsRoutesV3 } from "./v3/jobs/jobs.routes.v3.js"
 const zRoutesGetP1 = {
   ...zCoreRoutes.get,
   ...zEtablissementRoutes.get,
-  ...zMetiersRoutes.get,
   ...zPrivateGeoRoutes.get,
+  ...zPrivateMetiersRoutes.get,
   ...zPrivateSeoRoutes.get,
   ...zProcessorAdminRoutes.get,
 } as const
@@ -60,7 +59,6 @@ const zRoutesGetP4 = {
   ...zRomeRoutes.get,
   ...zUpdateLbaCompanyRoutes.get,
   ...zUserRecruteurRoutes.get,
-  ...zV1FormationsParRegion.get,
   ...zPartnersRoutes.get,
   ...zLoginRoutes.get,
   ...zInserJeunesRoutes.get,
