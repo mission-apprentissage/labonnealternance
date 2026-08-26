@@ -343,6 +343,8 @@ export default {
     [{ offer_expiration: 1 }, {}],
     // Cron delta de synchronisation search_items (syncSearchItemsDelta).
     [{ updated_at: 1 }, {}],
+    // Cron delta de notification IndexNow (pingIndexNow) : branche « offres nouvellement créées » du $or.
+    [{ created_at: 1 }, {}],
     // Tri par défaut de la liste admin (/admin/jobs-partners) : évite un $sort en mémoire sur toute la collection
     // quand le filtre partner_label n'est pas assez sélectif pour qu'un index composé serve le tri.
     [{ offer_creation: -1 }, {}],

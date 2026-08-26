@@ -70,6 +70,7 @@ import { resetApiKey } from "./recruiters/reset-api-key"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
 import { analyzeSearchQueries, rollbackSearchSuggestions } from "./search/analyze-search-queries"
 import { fillSearchItemsCollection } from "./search/generate-search-items-collection"
+import { pingIndexNow } from "./seo/ping-indexnow"
 import { updateSEO } from "./seo/update-seo"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simple-job-definitions"
 import { updateBrevoBlockedEmails } from "./update-brevo-blocked-emails/update-brevo-blocked-emails"
@@ -135,6 +136,12 @@ export async function setupJobProcessor() {
             cron_string: "20 0 * * *",
             handler: generateSitemap,
             tag: "main",
+          },
+          // Décalé de 10 min après l'expiration des offres (*/30) pour capter ses bumps de updated_at.
+          "Notification IndexNow des offres modifiées": {
+            cron_string: "10,40 * * * *",
+            handler: async () => pingIndexNow(),
+            tag: "slave",
           },
           "Envoi des mails de relance pour l'expiration des offres à J+7": {
             cron_string: "20 9 * * *",

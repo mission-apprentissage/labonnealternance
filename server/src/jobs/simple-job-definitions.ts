@@ -100,6 +100,7 @@ import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-erro
 import { importReferentielRome } from "./referentiel-rome/referentiel-rome"
 import { analyzeSearchQueries } from "./search/analyze-search-queries"
 import { fillSearchItemsCollection } from "./search/generate-search-items-collection"
+import { pingIndexNow } from "./seo/ping-indexnow"
 import { updateSEO } from "./seo/update-seo"
 
 type SimpleJobDefinition = {
@@ -333,6 +334,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: generateSitemap,
     description: "Génère le sitemap pour les offres",
+  },
+  {
+    fct: pingIndexNow,
+    description: "Soumet à IndexNow les URLs des offres modifiées récemment (updated_at, fenêtre 60 min par défaut)",
+    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à soumettre (défaut : now − 60 min)" }],
   },
   {
     fct: generateFranceTravailAccess,
