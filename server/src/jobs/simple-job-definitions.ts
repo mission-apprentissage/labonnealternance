@@ -33,6 +33,7 @@ import {
   refreshReferentielEngagementFranceTravail,
   refreshReferentielEtEntrepriseEngagement,
 } from "./engagement-handicap/refresh-entreprise-engagement-jobs-partners"
+import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formations-catalogue/update-parcoursup-and-affelnet-info-on-formation-catalogue"
 import { generateFranceTravailAccess } from "./france-travail/generate-france-travail-access"
@@ -524,6 +525,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: refreshReferentielEtEntrepriseEngagement,
     description: "Rafraîchissement du référentiel d'engagement handicap et des offres actives de jobs_partners",
+  },
+  {
+    fct: updateHandiEngagement,
+    description: "Télécharge le référentiel handi-engagement depuis S3 (siretlist/lba_handi_engage_flag.ndjson) et met à jour le référentiel d'engagement handicap",
   },
   {
     fct: cleanClosedCompanies,

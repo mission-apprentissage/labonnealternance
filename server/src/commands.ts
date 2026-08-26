@@ -237,6 +237,12 @@ program
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
+  .command("update-handi-engagement:force")
+  .description("Force la mise à jour de l'engagement handicap en ignorant le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("update-handi-engagement:force"))
+
+program
   .command("remove:duplicates:recruiters")
   .description("Remove duplicate recruiters based on SIRET and EMAIL")
   .option("-q, --queued", "Run job asynchronously", false)
