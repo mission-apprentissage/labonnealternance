@@ -1,3 +1,4 @@
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 export const IMAGE_BASE_PATH = "/images/guides/guide-alternant/"
@@ -6,7 +7,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
   ["preparer-son-projet-en-alternance"]: {
     id: "preparer-son-projet-en-alternance",
     title: PAGES.static.guideAlternantPreparerSonProjetEnAlternance.title,
-    description: PAGES.static.guideAlternantPreparerSonProjetEnAlternance.getMetadata().description,
+    description: METADATA.static.guideAlternantPreparerSonProjetEnAlternance().description,
     imageUrl: `${IMAGE_BASE_PATH}preparer-son-projet-en-alternance.svg`,
     path: PAGES.static.guideAlternantPreparerSonProjetEnAlternance.getPath(),
     updatedAt: "26/03/2026",
@@ -14,7 +15,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
   ["se-faire-accompagner"]: {
     id: "se-faire-accompagner",
     title: PAGES.static.guideAlternantSeFaireAccompagner.title,
-    description: PAGES.static.guideAlternantSeFaireAccompagner.getMetadata().description,
+    description: METADATA.static.guideAlternantSeFaireAccompagner().description,
     imageUrl: `${IMAGE_BASE_PATH}se-faire-accompagner.svg`,
     path: PAGES.static.guideAlternantSeFaireAccompagner.getPath(),
     updatedAt: "20/07/2026",
@@ -22,7 +23,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
   ["la-rupture-de-contrat"]: {
     id: "la-rupture-de-contrat",
     title: PAGES.static.guideAlternantLaRuptureDeContrat.title,
-    description: PAGES.static.guideAlternantLaRuptureDeContrat.getMetadata().description,
+    description: METADATA.static.guideAlternantLaRuptureDeContrat().description,
     imageUrl: `${IMAGE_BASE_PATH}la-rupture-de-contrat.svg`,
     path: PAGES.static.guideAlternantLaRuptureDeContrat.getPath(),
     updatedAt: "20/07/2026",
@@ -30,7 +31,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
   ["comprendre-la-remuneration"]: {
     id: "comprendre-la-remuneration",
     title: PAGES.static.guideAlternantComprendreLaRemuneration.title,
-    description: PAGES.static.guideAlternantComprendreLaRemuneration.getMetadata().description,
+    description: METADATA.static.guideAlternantComprendreLaRemuneration().description,
     imageUrl: `${IMAGE_BASE_PATH}comprendre-la-remuneration.svg`,
     path: PAGES.static.guideAlternantComprendreLaRemuneration.getPath(),
     updatedAt: "12/08/2026",
@@ -38,7 +39,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
   ["comment-signer-un-contrat-en-alternance"]: {
     id: "comment-signer-un-contrat-en-alternance",
     title: PAGES.static.guideAlternantCommentSignerUnContratEnAlternance.title,
-    description: PAGES.static.guideAlternantCommentSignerUnContratEnAlternance.getMetadata().description,
+    description: METADATA.static.guideAlternantCommentSignerUnContratEnAlternance().description,
     imageUrl: `${IMAGE_BASE_PATH}comment-signer-un-contrat-en-alternance.svg`,
     path: PAGES.static.guideAlternantCommentSignerUnContratEnAlternance.getPath(),
     updatedAt: "26/03/2026",
@@ -46,7 +47,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
   ["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"]: {
     id: "role-et-missions-du-maitre-d-apprentissage-ou-tuteur",
     title: PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.title,
-    description: PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.getMetadata().description,
+    description: METADATA.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur().description,
     imageUrl: `${IMAGE_BASE_PATH}role-et-missions-du-maitre-d-apprentissage-ou-tuteur.svg`,
     path: PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.getPath(),
     updatedAt: "26/03/2026",

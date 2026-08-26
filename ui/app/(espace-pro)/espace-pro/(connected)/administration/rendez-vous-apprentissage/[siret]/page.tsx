@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getEligibleTrainingsForAppointments, getEtablissement } from "@/utils/api"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import RendezVousApprentissageDetailRendererClient from "./RendezVousApprentissageDetailRendererClient"
 export async function generateMetadata({ params }: { params: Promise<{ siret: string }> }): Promise<Metadata> {
   const { siret } = await params
   return {
-    title: PAGES.dynamic.rendezVousApprentissageDetail({ siret }).getMetadata().title,
+    title: METADATA.dynamic.rendezVousApprentissageDetail({ siret }).title,
   }
 }
 

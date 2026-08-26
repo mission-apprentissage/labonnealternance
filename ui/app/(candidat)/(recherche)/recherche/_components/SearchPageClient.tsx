@@ -13,7 +13,7 @@ import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-u
 import { useAutoRadius } from "../_hooks/use-auto-radius"
 import { useSearchResults } from "../_hooks/use-search-results"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
-import { buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
+import { ACTIVE_HIT_PARAM, buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
 import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
 import { diffFilterChanges, diffSortChange, searchTypeOf } from "../_utils/search.tracking.utils"
 import { SearchBar } from "./SearchBar"
@@ -38,7 +38,47 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const result = useSearchResults(params)
   const router = useRouter()
 
+  // Retour depuis une fiche détail fermée (?active_hit=…, posé par useDetailNavigation) : à
+  // capturer dans un state pour survivre au router.replace qui retire le paramètre de l'URL
+  // une fois consommé (cf. effet plus bas). Un `useState(() => …)` capté « au montage » ne
+  // suffit PAS ici : le routeur App Router peut réutiliser cette instance de SearchPageClient
+  // depuis son cache de navigation au lieu de la remonter en revenant sur /recherche — la
+  // valeur initiale de useState ne serait alors jamais réévaluée. On capture donc `active_hit`
+  // en ajustant l'état PENDANT le rendu (pattern React officiel, cf. « adjusting state during
+  // rendering ») dès qu'il change par rapport à la dernière valeur vue, plutôt qu'au montage
+  // ou dans un effet — un effet tournerait après la peinture et provoquerait le flash qu'on
+  // cherche justement à éviter.
+  const rawActiveHit = rawSearchParams?.get(ACTIVE_HIT_PARAM) ?? null
+  const [seenActiveHit, setSeenActiveHit] = useState(rawActiveHit)
+  const [pendingScrollHitId, setPendingScrollHitId] = useState<string | null>(null)
+  if (rawActiveHit !== seenActiveHit) {
+    setSeenActiveHit(rawActiveHit)
+    if (rawActiveHit) setPendingScrollHitId(rawActiveHit)
+  }
+
+  // Une fois les résultats disponibles (donc la carte visée soit rendue, soit absente des
+  // pages déjà chargées — dans les deux cas on ne retente pas), on nettoie l'URL : le
+  // paramètre est à usage unique, il ne doit pas survivre à un partage de lien ou reparaître
+  // après un filtre. `scroll: false` impératif : sans lui, ce `replace` ramène la page en
+  // haut (comportement par défaut du routeur), effaçant le scroll qu'on vient de restaurer.
+  useEffect(() => {
+    if (!pendingScrollHitId || !result.data) return
+    setPendingScrollHitId(null)
+    router.replace(buildSearchUrl(params), { scroll: false })
+    // `params`/`router` volontairement absents des deps : `params` est un objet recréé à
+    // chaque rendu (le mettre en dep ferait tourner l'effet en boucle), `router` est stable.
+  }, [pendingScrollHitId, result.data])
+
   const [panel, setPanel] = useState<MobilePanel>(null)
+  // Champ en cours de saisie dans la modale « Modifier la recherche » : SearchBar passe en
+  // « écran de saisie » (suggestions inline plein écran) — le reste du formulaire est masqué.
+  const [searchFieldActive, setSearchFieldActive] = useState(false)
+  const closeSearchPanel = () => {
+    setPanel(null)
+    // Fermeture possible pendant une saisie (croix, Escape) : sans reset, la prochaine
+    // ouverture masquerait type de recherche et bouton.
+    setSearchFieldActive(false)
+  }
 
   // Bandeau desktop collé ou non : sentinelle observée juste au-dessus du sticky — dès
   // qu'elle sort du viewport par le haut, le bandeau est collé (fond blanc pleine largeur).
@@ -278,7 +318,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             </Box>
 
             <Box role="region" id="search-content-container" tabIndex={-1} aria-label="Résultats de la recherche">
-              <SearchResultsList result={result} params={params} />
+              <SearchResultsList result={result} params={params} scrollToHitId={pendingScrollHitId} />
             </Box>
           </DefaultContainer>
         </Box>
@@ -311,27 +351,42 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
           </Box>
 
           <Box role="region" id="search-content-container-mobile" tabIndex={-1} aria-label="Résultats de la recherche" sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
-            <SearchResultsList result={result} params={params} />
+            <SearchResultsList result={result} params={params} scrollToHitId={pendingScrollHitId} />
           </Box>
         </Box>
 
         {panel === "search" && (
-          <SearchMobilePanel title="Modifier la recherche" onClose={() => setPanel(null)}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-              <SearchBar layout="column" initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
-              <RadioButtons
-                legend="Type de recherche"
-                options={SEARCH_MODE_OPTIONS.map((option) => ({
-                  label: option.label,
-                  hintText: option.hint,
-                  nativeInputProps: { checked: params.mode === option.value, onChange: () => handleModeChange(option.value) },
-                }))}
+          <SearchMobilePanel title="Modifier la recherche" hideHeader={searchFieldActive} onClose={closeSearchPanel}>
+            {/* height 100% pendant la saisie : les suggestions inline de SearchBar remplissent
+                l'espace du panneau (borné au viewport visible, donc au-dessus du clavier). */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v"), height: searchFieldActive ? "100%" : undefined }}>
+              <SearchBar
+                layout="column"
+                inlineSuggestions
+                onActiveFieldChange={(field) => setSearchFieldActive(field !== null)}
+                initialQ={params.q}
+                initialLieuLabel={params.lieu_label}
+                onSubmit={handleSearch}
+                onLieuChange={handleLieuChange}
               />
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
-                <Button priority="primary" iconId="fr-icon-search-line" onClick={() => setPanel(null)} style={{ width: "100%", justifyContent: "center" }}>
-                  Rechercher
-                </Button>
-              </Box>
+              {/* Masqués pendant la saisie : l'écran est réservé au champ actif + suggestions. */}
+              {!searchFieldActive && (
+                <>
+                  <RadioButtons
+                    legend="Type de recherche"
+                    options={SEARCH_MODE_OPTIONS.map((option) => ({
+                      label: option.label,
+                      hintText: option.hint,
+                      nativeInputProps: { checked: params.mode === option.value, onChange: () => handleModeChange(option.value) },
+                    }))}
+                  />
+                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
+                    <Button priority="primary" iconId="fr-icon-search-line" onClick={closeSearchPanel} style={{ width: "100%", justifyContent: "center" }}>
+                      Rechercher
+                    </Button>
+                  </Box>
+                </>
+              )}
             </Box>
           </SearchMobilePanel>
         )}

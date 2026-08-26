@@ -9,7 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
  * (déclenché après chaque migrations:up) lève une exception Sentry fatal.
  */
 export const up = async () => {
-  const result = await getDbCollection("search_queries").updateMany({ status: { $exists: false } }, { $set: { status: "ok" } })
+  const result = await getDbCollection("search_queries").updateMany({ status: { $exists: false } }, { $set: { status: "ok" } }, { bypassDocumentValidation: true })
   logger.info(`backfill-search-queries-status: ${result.modifiedCount} document(s) mis à jour`)
 }
 

@@ -75,7 +75,7 @@ export const SchemaOrg = ({
         "@type": "SearchAction",
         target: {
           "@type": "EntryPoint",
-          urlTemplate: `${BASE_URL}/recherche?job={search_term_string}`,
+          urlTemplate: `${BASE_URL}/recherche?q={search_term_string}`,
         },
         "query-input": "required name=search_term_string",
       },

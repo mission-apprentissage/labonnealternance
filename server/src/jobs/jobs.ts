@@ -28,6 +28,7 @@ import { relanceCandidatsInactifs } from "./applications/relance-candidats-inact
 import { relanceIncitationSpontanee } from "./applications/relance-incitation-spontanee"
 import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
+import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
 import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
@@ -392,6 +393,10 @@ export async function setupJobProcessor() {
           "update-handi-engagement": {
             cron_string: "45 4 * * SAT",
             handler: async () => updateHandiEngagement(),
+          },
+          "Mise à jour mensuelle des contrats DECA": {
+            cron_string: "15 5 1 * *",
+            handler: async () => importDecaContratsParAnnee(),
           },
         },
     jobs: {

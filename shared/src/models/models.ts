@@ -18,6 +18,7 @@ import cfaModel from "./cfa.model.js"
 import type { IModelDescriptor } from "./common.js"
 import credentialsModel from "./credentials.model.js"
 import customEmailETFAModel from "./custom-email-etfa.model.js"
+import decaContratsModel from "./deca-contrats.model.js"
 import diplomesMetiersModel from "./diplomes-metiers.model.js"
 import domainesMetiersModel from "./domaines-metiers.model.js"
 import elligibleTrainingModel from "./elligible-training.model.js"
@@ -102,6 +103,7 @@ const modelDescriptorMap = {
   [cacheClassificationModel.collectionName]: cacheClassificationModel,
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
+  [decaContratsModel.collectionName]: decaContratsModel,
   [diplomesMetiersModel.collectionName]: diplomesMetiersModel,
   [domainesMetiersModel.collectionName]: domainesMetiersModel,
   [elligibleTrainingModel.collectionName]: elligibleTrainingModel,

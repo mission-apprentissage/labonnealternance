@@ -12,8 +12,9 @@ import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection
 import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideAlternantAProposDesFormations.getMetadata()
+export const metadata: Metadata = METADATA.static.guideAlternantAProposDesFormations()
 
 const AProposDesFormationsPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantAProposDesFormations]
@@ -30,6 +31,7 @@ const AProposDesFormationsPage = () => {
       allerPlusLoinItems={[ARTICLES_PARTAGES["decouvrir-l-alternance"], ARTICLES["conseils-et-astuces-pour-trouver-un-employeur"], ARTICLES["se-faire-accompagner"]]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantAProposDesFormations}
+      metadata={metadata}
     >
       <Section title="Vérifiez les résultats de l'établissement">
         <ParagraphList

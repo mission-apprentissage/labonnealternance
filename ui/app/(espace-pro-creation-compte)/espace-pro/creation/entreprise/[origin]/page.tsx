@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import CreationWithOriginPage from "./CreationWithOriginPage"
 export const metadata: Metadata = {
-  title: PAGES.static.espaceProCreationEntreprise.getMetadata().title,
-  description: PAGES.static.espaceProCreationEntreprise.getMetadata().description,
+  title: METADATA.static.espaceProCreationEntreprise().title,
+  description: METADATA.static.espaceProCreationEntreprise().description,
 }
 
 const Page = async () => {

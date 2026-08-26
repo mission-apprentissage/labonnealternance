@@ -1,0 +1,34 @@
+{
+  "$comment": "Budgets du first-load, contrôlés par ui/scripts/perf-budget.mjs (issue #5191). Seuils en octets gzip (niveau ci-dessous), sauf globalMaxFirstLoadJsRaw en octets non compressés. null = budget non renseigné : la mesure est affichée mais rien n'est contrôlé. Pour relever un seuil, reporter la mesure affichée par le job et justifier la hausse en description de PR.",
+  "$measured": {
+    "$comment": "Mesures de référence ayant servi à fixer les seuils (build de production, NEXT_PUBLIC_ENV=production, NEXT_PUBLIC_VERSION constante). Le script les re-dérive à chaque exécution : un écart se lit dans la colonne Marge. Seuils JS abaissés après la déduplication inter-chunks (turbopackChunking.minChunkSize) et le découpage server-only des métadonnées de routes.utils (issue #5214 : −21 ko gzip sur la home), même marge ~4 % qu'à l'origine (#5191).",
+    "commit": "branche issue #5214 (PR de dédup first-load)",
+    "/ firstLoadJsGzip": 395785,
+    "/ firstLoadCssGzip": 64977,
+    "/recherche firstLoadJsGzip": 580882,
+    "globalMaxFirstLoadJsRaw": 2282393
+  },
+  "gzipLevel": 9,
+  "routes": {
+    "/": {
+      "firstLoadJsGzip": 411648,
+      "firstLoadCssGzip": 67584
+    },
+    "/recherche": {
+      "firstLoadJsGzip": 604160
+    }
+  },
+  "globalMaxFirstLoadJsRaw": 2373632,
+  "$commentForbidden": "forbiddenOnFirstLoad — @mui/x-data-grid et job-processor : réservés à l'espace pro/admin (page processeur), issue #5188. libphonenumber-js : issue #5191.",
+  "forbiddenOnFirstLoad": {
+    "/": [
+      "libphonenumber-js",
+      "@mui/x-data-grid",
+      "job-processor"
+    ],
+    "/recherche": [
+      "@mui/x-data-grid",
+      "job-processor"
+    ]
+  }
+}

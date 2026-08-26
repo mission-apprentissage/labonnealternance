@@ -12,8 +12,9 @@ import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection
 import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { ARTICLES } from "@/app/(editorial)/guide-cfa/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.guideCfaAccompagnerVosAlternants.getMetadata()
+export const metadata: Metadata = METADATA.static.guideCfaAccompagnerVosAlternants()
 
 const AccompagnerVosAlternantsPage = async () => {
   const pages = [PAGES.static.guideCfa, PAGES.static.guideCfaAccompagnerVosAlternants]
@@ -35,6 +36,7 @@ const AccompagnerVosAlternantsPage = async () => {
       parentPage={PAGES.static.guideCfa}
       redirectionInterne={<RedirectionInterne source="guide-cfa" />}
       page={PAGES.static.guideCfaAccompagnerVosAlternants}
+      metadata={metadata}
     >
       <Section title="Comment La bonne alternance identifie ces entreprises auprès desquelles adresser des candidatures spontanées">
         <Paragraph>

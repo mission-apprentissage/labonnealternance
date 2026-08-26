@@ -2,16 +2,19 @@
 // The config you add here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import { captureConsoleIntegration, captureRouterTransitionStart, extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
+import { extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
 
 import { shouldReloadOnce } from "@/utils/reload-guard.utils"
 
 import { publicConfig } from "./config.public"
 
+// Pas de tracing client (issue #5186, décision d'équipe 2026-08) : à 0,1 % de sample il
+// n'apportait presque rien, et son retrait permet le tree-shaking du module tracing via le flag
+// __SENTRY_TRACING__ (voir compiler.define dans next.config.mjs). Conséquences assumées : plus de
+// transactions pageload/navigation client, plus de propagation des trace headers vers l'API.
+// Le tracing serveur (sentry.server.config.ts / lba-server) est inchangé.
 init({
   dsn: publicConfig.sentry_dsn,
-  tracesSampleRate: publicConfig.env === "production" ? 0.001 : 1.0,
-  tracePropagationTargets: [/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/, publicConfig.baseUrl, publicConfig.apiEndpoint, /^\//],
   environment: publicConfig.env,
   enabled: !publicConfig.sentryDisabled,
   release: publicConfig.version,
@@ -19,7 +22,8 @@ init({
   // replaysOnErrorSampleRate: 1.0,
   // replaysSessionSampleRate: 0.1,
   integrations: [
-    captureConsoleIntegration({ levels: ["error"] }),
+    // captureConsoleIntegration retirée (issue #5186) : 2 issues / 14 événements / 0 utilisateur
+    // en 90 jours de prod, et le seul cas capté était un TypeError mieux traité en vraie exception.
     extraErrorDataIntegration({ depth: 8 }),
     httpClientIntegration({}),
     // "deprecation"/"intervention" ne rapportent que des avertissements passifs du navigateur
@@ -28,6 +32,12 @@ init({
     reportingObserverIntegration({ types: ["crash"] }),
   ],
   sendDefaultPii: true,
+  denyUrls: [
+    // Scripts injectés par des extensions/WebViews tiers, jamais servis par LBA (aucun
+    // "executors" dans le code ni le build Next — frames type app:///executors/200.js,
+    // ex. TypeError "reading 'M_ID'", Sentry LBA-UI-5CVZZZZZZG4T4, ~2 300 events/7j).
+    /\/executors\/\d+\.js/,
+  ],
   ignoreErrors: [
     "AbortError",
     // Erreurs provenant d'extensions navigateur tierces (MetaMask, gestionnaires d'onglets…),
@@ -44,12 +54,27 @@ init({
       return null
     }
 
+    // Une extension navigateur (traducteur, gestionnaire de mots de passe…) mute le DOM en
+    // parallèle du commit React, qui perd ensuite la référence du nœud pendant son cleanup.
+    // On ne filtre que si TOUTES les frames sont internes à react-dom-client.production.js
+    // (aucune frame applicative) : un `ignoreErrors` sur le seul texte matcherait aussi
+    // "The object can not be found here." (message générique WebKit pour n'importe quelle
+    // NotFoundError, pas seulement removeChild) ou un futur vrai bug applicatif qui produirait
+    // le même message par coïncidence. Chronique depuis fin juin/début juillet 2026, sans lien
+    // avec un déploiement (Sentry LBA-UI-5CVZZZZZZG3V9 ~1350 events, LBA-UI-5CVZZZZZZG3XY
+    // ~320 events, vérifié 2026-08-25).
+    const exception = event.exception?.values?.[0]
+    const isRemoveChildMessage = exception?.value === "The object can not be found here." || exception?.value?.includes("reading 'removeChild'")
+    if (isRemoveChildMessage) {
+      const frames = exception?.stacktrace?.frames ?? []
+      const hasNoApplicationFrame = frames.every((frame) => !frame.filename || frame.filename === "[native code]" || /react-dom-client\.production\.js$/.test(frame.filename))
+      if (hasNoApplicationFrame) return null
+    }
+
     console.info(event)
     return event
   },
 })
-
-export const onRouterTransitionStart = captureRouterTransitionStart
 
 // Pendant un déploiement (rolling update Docker Swarm), un onglet resté ouvert peut garder en
 // mémoire des chunks JS de l'ancien build : le routeur y navigue ensuite vers des modules qui

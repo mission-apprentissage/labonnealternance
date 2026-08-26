@@ -14,6 +14,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { getSession } from "@/utils/get-session"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 export const cardSx = {
@@ -24,7 +25,7 @@ export const cardSx = {
   textAlign: "center",
 }
 
-export const metadata: Metadata = PAGES.static.jeSuisRecruteur.getMetadata()
+export const metadata: Metadata = METADATA.static.jeSuisRecruteur()
 
 async function DepotCtaButtons() {
   const { user } = await getSession()
@@ -52,8 +53,8 @@ const JeSuisRecruteurPage = () => {
       >
         <SchemaOrg
           type="WebPage"
-          title={PAGES.static.jeSuisRecruteur.getMetadata().title}
-          description={PAGES.static.jeSuisRecruteur.getMetadata().description}
+          title={METADATA.static.jeSuisRecruteur().title}
+          description={METADATA.static.jeSuisRecruteur().description}
           url={PAGES.static.jeSuisRecruteur.getPath()}
           breadcrumbs={[
             { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },
@@ -300,7 +301,7 @@ const JeSuisRecruteurPage = () => {
                 <Card
                   title="Je m'informe sur l'alternance"
                   desc="Les réponses à vos questions pour tout savoir sur l’alternance"
-                  linkProps={{ href: `${PAGES.static.guideDecouvrirLAlternance.getPath()}?source=guide-recruteur` }}
+                  linkProps={{ href: `${PAGES.static.guideDecouvrirLAlternance.getPath()}?guide_source=guide-recruteur` }}
                   imageUrl="/images/guides/decouvrir-l-alternance.svg"
                   imageAlt=""
                   horizontal

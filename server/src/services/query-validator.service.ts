@@ -1,4 +1,4 @@
-import { MAX_SEARCH_ROMES, MAX_SEARCH_ROMES_PRIVATE } from "shared"
+import { MAX_SEARCH_ROMES } from "shared"
 import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 import { isOriginLocal } from "@/common/utils/is-origin-local"
 import { regionCodeToDepartmentList } from "@/common/utils/region-insee-codes"
@@ -192,38 +192,6 @@ export const validateCaller = ({ caller, referer }: { caller: string | null | un
 /**
  * Ensemble de contrôles complexes sur la requête de recherche d'opportunités d'emploi
  */
-export const jobsQueryValidatorPrivate = async (query: TJobSearchQuery): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
-  const error_messages = []
-  const { caller, referer, latitude, longitude, insee, radius } = query
-
-  // présence d'identifiant de la source : caller
-  validateCaller({ caller, referer }, error_messages)
-
-  // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
-  await validateRomesOrRncp(query, error_messages, MAX_SEARCH_ROMES_PRIVATE)
-
-  // coordonnées gps optionnelles : latitude et longitude
-  if (latitude || longitude) {
-    validateLatitude(latitude, error_messages)
-    validateLongitude(longitude, error_messages)
-
-    // rayon de recherche : radius
-    validateRadius(radius, error_messages)
-
-    // code INSEE : insee
-    if (caller) {
-      validateInsee(insee, error_messages)
-    }
-  }
-
-  if (error_messages.length) return { error: "wrong_parameters", error_messages }
-
-  return { result: "passed", romes: query.romes }
-}
-
-/**
- * Ensemble de contrôles complexes sur la requête de recherche d'opportunités d'emploi
- */
 export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
   const error_messages = []
   const { caller, referer, latitude, longitude, insee, radius, sources } = query
@@ -261,15 +229,14 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
  * @param {TFormationSearchQuery} query paramètres de la requête
  */
 export const formationsQueryValidator = async (
-  query: Omit<TFormationSearchQuery, "isMinimalData">,
-  isPrivate?: boolean
+  query: Omit<TFormationSearchQuery, "isMinimalData">
 ): Promise<{ result: "passed"; romes: string | undefined } | { error: "wrong_parameters"; error_messages: string[] }> => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
   validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
 
-  validateRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: isPrivate ? MAX_SEARCH_ROMES_PRIVATE : MAX_SEARCH_ROMES }, error_messages)
+  validateRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: MAX_SEARCH_ROMES }, error_messages)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (query.latitude || query.longitude) {
@@ -310,42 +277,4 @@ export const formationsRegionQueryValidator = (
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 
   return { result: "passed" }
-}
-
-/**
- * Ensemble de contrôles complexes sur la requête de recherche de formations et emploi
- * @param {TFormationSearchQuery} query paramètres de la requête
- * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
- */
-export const jobsEtFormationsQueryValidator = async (
-  query: Omit<TFormationSearchQuery, "isMinimalData">
-): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
-  const error_messages = []
-
-  // présence d'identifiant de la source : caller
-  validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
-
-  // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
-  await validateRomesOrRncp(query, error_messages)
-
-  // coordonnées gps optionnelles : latitude et longitude
-  if (query.latitude || query.longitude) {
-    validateLatitude(query.latitude, error_messages)
-    validateLongitude(query.longitude, error_messages)
-
-    // rayon de recherche : radius
-    validateRadius(query.radius, error_messages)
-  }
-
-  // code INSEE : insee
-  if (query.longitude) {
-    validateInsee(query.insee, error_messages)
-  }
-
-  // source mal formée si présente
-  validateApiSources(query.sources, error_messages)
-
-  if (error_messages.length) return { error: "wrong_parameters", error_messages }
-
-  return { result: "passed", romes: query.romes }
 }

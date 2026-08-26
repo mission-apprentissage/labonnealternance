@@ -3,11 +3,8 @@ import { addJob } from "job-processor"
 import type { IClassificationJobsPartners } from "shared/models/cache-classification.model"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
-import type { IGetLabClassificationBatch } from "@/common/apis/classification/classification.client"
-import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import { getMistralClassificationBatch } from "@/common/apis/classification/classification-mistral.client"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import config from "@/config"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 export type TJobClassification = {
@@ -26,10 +23,6 @@ const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(ICl
     return results.find((result) => result.partner_label === job.partner_label && result.partner_job_id === job.partner_job_id) ?? null
   })
 }
-
-/** Bascule de provider pilotée par LBA_CLASSIFICATION_PROVIDER (rollback rapide sans redéploiement). */
-const classifyBatch = (payload: IGetLabClassificationBatch) =>
-  config.classification.provider === "mistral" ? getMistralClassificationBatch(payload) : getLabClassificationBatch(payload)
 
 export const getClassification = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
   const cachedClassifications = await getClassificationFromDB(jobs)
@@ -53,7 +46,7 @@ export const getClassification = async (jobs: TJobClassification[]): Promise<(st
     offer_description: job.offer_description,
   }))
 
-  const classificationsFromProvider = await classifyBatch(classificationPayload)
+  const classificationsFromProvider = await getMistralClassificationBatch(classificationPayload)
   const classificationsById = new Map(classificationsFromProvider.map((result) => [result.id, result]))
 
   const now = new Date()

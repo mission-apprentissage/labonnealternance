@@ -53,13 +53,11 @@ export const FormulaireEditionOffreStep1 = ({
   establishment_id,
   onSubmit,
   formValues,
-  totalSteps = 3,
 }: {
   offre?: IJob
   establishment_id?: string
   onSubmit?: (values: any) => void
   formValues: any
-  totalSteps?: number
 }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
   const initRome = rome_code?.at(0)
@@ -207,9 +205,17 @@ export const FormulaireEditionOffreStep1 = ({
                   },
                 })}
               >
-                Étape 1/{totalSteps} : Description de l'offre
+                Étape 1 : Description de l'offre
               </Typography>
-              <Typography component="h2" sx={{ fontWeight: 700 }}>
+              <Typography
+                component="h2"
+                sx={{
+                  fontSize: { xs: "22px !important", md: "32px !important" },
+                  lineHeight: { xs: "28px !important", md: "40px !important" },
+                  mb: fr.spacing("6v"),
+                  fontWeight: 700,
+                }}
+              >
                 Votre offre
               </Typography>
               <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>

@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest"
 
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
-import type { IGetLabClassificationBatch } from "./classification.client"
+
+import type { IClassificationBatchPayload } from "./classification-mistral.client"
 import { CLASSIFICATION_MISTRAL_MODEL, getMistralClassificationBatch } from "./classification-mistral.client"
 
 vi.mock("@/services/mistralai/mistralai.service", () => ({
@@ -11,7 +12,7 @@ vi.mock("@/services/mistralai/mistralai.service", () => ({
 vi.mock("@/common/utils/sentry-utils")
 
 describe("getMistralClassificationBatch", () => {
-  const jobs: IGetLabClassificationBatch = [{ id: "0", workplace_name: "CFA Test", offer_title: "Développeur" }]
+  const jobs: IClassificationBatchPayload = [{ id: "0", workplace_name: "CFA Test", offer_title: "Développeur" }]
 
   it("parses a valid Mistral response and injects the model", async () => {
     vi.mocked(sendMistralMessages).mockResolvedValue('{"results":[{"id":"0","label":"unpublish","scores":{"publish":0.2,"unpublish":0.8}}]}')

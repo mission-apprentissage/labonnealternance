@@ -89,7 +89,7 @@ describe("fill-computed-jobs-partners", () => {
           business_error: null,
         },
       ])
-      // when — no lab API nock needed: OPCO EP is filtered out by the query so getData is never called
+      // when — no Mistral mock needed: OPCO EP is filtered out by the query so getData is never called
       await detectClassificationJobsPartners({})
       // then
       const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
