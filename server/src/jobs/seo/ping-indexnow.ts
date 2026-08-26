@@ -48,8 +48,9 @@ export const buildIndexNowPayloads = (urls: string[], publicUrl: string): IndexN
 /**
  * Cron delta : soumet à IndexNow les URLs des offres dont l'état public a réellement changé
  * depuis `since` (défaut : 60 min) — offres nouvellement créées, et passages en
- * ANNULEE/POURVUE (la page devient 404 ; les jobs d'expiration/annulation bumpent
- * `updated_at` en changeant `offer_status`).
+ * ANNULEE/POURVUE (la page reste en 200 mais son contenu change significativement — le bouton
+ * de candidature disparaît, cf. PartnerJobPostuler — ce qui justifie la re-notification ; les
+ * jobs d'expiration/annulation bumpent `updated_at` en changeant `offer_status`).
  *
  * On ne filtre PAS sur `updated_at` seul : les imports de masse le bumpent sur des documents
  * inchangés (cf. import-from-computed-to-jobs-partners), ce qui re-soumettrait tout le corpus
