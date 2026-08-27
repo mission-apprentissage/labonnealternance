@@ -40,7 +40,12 @@ export async function getEtablissementFromGouvSafe(siret: string): Promise<IEtab
     if ([404, 422, 429].includes(status)) {
       return null
     }
-    sentryCaptureException(error)
+    // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.params.token` (la clé
+    // d'API entreprise, transmise en query string), que extraErrorDataIntegration sérialiserait
+    // tel quel dans Sentry.
+    sentryCaptureException(new Error(`api-entreprise: échec de récupération de l'établissement (${error.message ?? "erreur inconnue"})`), {
+      extra: { siret, status, responseData: error?.response?.data },
+    })
     if ([502, 503, 504].includes(status)) {
       return null
     }
