@@ -122,7 +122,7 @@ const config = {
     serverIps: (
       {
         production: ["54.38.65.110"],
-        recette: ["162.19.79.129"],
+        recette: ["162.19.79.129", "54.38.65.110"],
         local: [],
         pentest: [],
         preview: [],
