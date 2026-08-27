@@ -27,12 +27,12 @@ export const metadata: Metadata = METADATA.static.guideRecruteurRecruterUnAltern
 
 const faqItems: { question: string; answer: string; answerNode?: ReactNode; link?: { href: string; label: string } }[] = [
   {
-    question: "Quelles aides pour recruter un alternant en 2026 ?",
+    question: "Quelles aides pour recruter un apprenti en 2026 ?",
     answer:
       "Pour un contrat d'apprentissage conclu depuis le 8 mars 2026 et dont l'exécution débute avant le 1er janvier 2027, l'entreprise perçoit une aide à l'embauche pouvant atteindre 5 000 € la première année. Le montant dépend de la taille de l'entreprise et du niveau du diplôme préparé : jusqu'à 5 000 € pour une entreprise de moins de 250 salariés (diplôme jusqu'au bac), et 6 000 € pour l'embauche d'un apprenti en situation de handicap, quelle que soit la taille de l'entreprise. L'aide est versée chaque mois par l'Agence de services et de paiement (ASP). Montants fixés par le décret n° 2026-168 du 6 mars 2026 (source : service-public.fr).",
   },
   {
-    question: "Combien coûte un alternant pour l'employeur ?",
+    question: "Combien coûte un apprenti pour l'employeur ?",
     answer:
       "La rémunération légale d'un apprenti va de 27 % du SMIC (moins de 18 ans, 1re année) à 100 % du SMIC (26 ans et plus), soit d'environ 504 € à 1 867 € brut par mois sur la base du SMIC en vigueur (1 867,02 € au 1er juin 2026). Le coût réel est nettement réduit la première année grâce à l'aide à l'embauche (jusqu'à 5 000 €), et le salaire de l'apprenti est exonéré de cotisations salariales jusqu'à 50 % du SMIC (933,51 € au 1er juin 2026). Pour une estimation précise du coût net, utilisez le simulateur de l'URSSAF.",
     link: {
@@ -46,9 +46,9 @@ const faqItems: { question: string; answer: string; answerNode?: ReactNode; link
       "Toute entreprise du secteur privé, association ou employeur public peut recruter un apprenti. L'apprenti doit avoir entre 16 et 29 ans révolus (dès 15 ans si la classe de 3e est achevée, sans limite d'âge pour les personnes reconnues en situation de handicap, les sportifs de haut niveau et les porteurs d'un projet de création ou reprise d'entreprise). L'employeur doit désigner un maître d'apprentissage justifiant de la qualification et de l'expérience requises.",
   },
   {
-    question: "Comment recruter un alternant, étape par étape ?",
+    question: "Comment recruter un apprenti, étape par étape ?",
     answer:
-      "1. Définissez le poste et le diplôme préparé. 2. Désignez un maître d'apprentissage. 3. Trouvez un candidat — vous pouvez déposer gratuitement votre offre sur La bonne alternance. 4. Rapprochez-vous du centre de formation qui préparera l'alternant. 5. Signez le contrat d'apprentissage (Cerfa FA13) ou de professionnalisation ; votre OPCO peut vous accompagner dans cette démarche. 6. Transmettez le contrat à votre OPCO au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en charge les frais de formation.",
+      "1. Définissez le poste et le diplôme préparé. 2. Désignez un maître d'apprentissage. 3. Trouvez un candidat — vous pouvez déposer gratuitement votre offre sur La bonne alternance. 4. Rapprochez-vous du centre de formation qui préparera l'apprenti. 5. Signez le contrat d'apprentissage (Cerfa FA13) ou de professionnalisation ; votre OPCO peut vous accompagner dans cette démarche. 6. Transmettez le contrat à votre OPCO au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en charge les frais de formation.",
     answerNode: (
       <ParagraphList
         ordered
@@ -65,7 +65,7 @@ const faqItems: { question: string; answer: string; answerNode?: ReactNode; link
             </DsfrLink>
             .
           </>,
-          "Rapprochez-vous du centre de formation qui préparera l'alternant.",
+          "Rapprochez-vous du centre de formation qui préparera l'apprenti.",
           "Signez le contrat d'apprentissage (Cerfa FA13) ou de professionnalisation ; votre OPCO peut vous accompagner dans cette démarche.",
           "Transmettez le contrat à votre OPCO au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en charge les frais de formation.",
         ]}
@@ -73,7 +73,7 @@ const faqItems: { question: string; answer: string; answerNode?: ReactNode; link
     ),
   },
   {
-    question: "Quand faut-il recruter un alternant pour la rentrée ?",
+    question: "Quand faut-il recruter un apprenti pour la rentrée ?",
     answer:
       "Les recrutements en alternance se concentrent entre juin et novembre, autour de la rentrée de septembre-octobre, mais vous pouvez recruter toute l'année : le contrat d'apprentissage peut débuter jusqu'à 3 mois avant ou après le début du cycle de formation. Pour sécuriser l'aide à l'embauche 2026, le contrat doit être conclu depuis le 8 mars 2026 et son exécution débuter avant le 1er janvier 2027 : mieux vaut donc anticiper votre recrutement de rentrée.",
   },
@@ -116,14 +116,14 @@ const RecruterUnAlternantPage = () => {
   const page = PAGES.static.guideRecruteurRecruterUnAlternant
 
   const descriptionParts = [
-    "Recruter un alternant, c'est former un futur collaborateur tout en bénéficiant d'une aide à l'embauche pouvant atteindre 5 000 € la première année.",
-    "Aides à l'embauche 2026, coût réel d'un alternant, conditions et démarches pas à pas : voici tout ce qu'un employeur doit savoir pour recruter en alternance. La bonne alternance, le service public de l'alternance, vous permet de déposer votre offre gratuitement et de recevoir directement les candidatures.",
+    "Recruter un apprenti, c'est former un futur collaborateur tout en bénéficiant d'une aide à l'embauche pouvant atteindre 5 000 € la première année.",
+    "Aides à l'embauche 2026, coût réel d'un apprenti, conditions et démarches pas à pas : voici tout ce qu'un employeur doit savoir pour recruter en alternance. La bonne alternance, le service public de l'alternance, vous permet de déposer votre offre gratuitement et de recevoir directement les candidatures.",
   ]
 
   return (
     <LayoutArticle
       pages={pages}
-      title="Recruter un alternant : aides à l'embauche, coût et démarches"
+      title="Recruter un apprenti : aides à l'embauche, coût et démarches"
       updatedAt={<UpdatedAtSection date={ARTICLES["recruter-un-alternant"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       redirectionInterne={<RedirectionInterne source="guide-recruteur" />}
@@ -135,8 +135,8 @@ const RecruterUnAlternantPage = () => {
     >
       <SchemaOrg
         type="FAQPage"
-        title="Questions fréquentes des employeurs sur le recrutement d'un alternant"
-        description="Aides à l'embauche, coût, conditions et démarches pour recruter un alternant en 2026."
+        title="Questions fréquentes des employeurs sur le recrutement d'un apprenti"
+        description="Aides à l'embauche, coût, conditions et démarches pour recruter un apprenti en 2026."
         url={page.getPath()}
         breadcrumbs={[
           { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },
@@ -154,15 +154,15 @@ const RecruterUnAlternantPage = () => {
       <Summary
         links={[
           { text: "Aides à l'embauche 2026", linkProps: { href: "#aides" } },
-          { text: "Conditions pour recruter un alternant", linkProps: { href: "#conditions" } },
-          { text: "Coût réel d'un alternant", linkProps: { href: "#cout-reel" } },
-          { text: "Comment recruter un alternant : les étapes", linkProps: { href: "#comment-recruter" } },
+          { text: "Conditions pour recruter un apprenti", linkProps: { href: "#conditions" } },
+          { text: "Coût réel d'un apprenti", linkProps: { href: "#cout-reel" } },
+          { text: "Comment recruter un apprenti : les étapes", linkProps: { href: "#comment-recruter" } },
           { text: "Où trouver un candidat", linkProps: { href: "#trouver-un-candidat" } },
           { text: "Questions fréquentes des employeurs", linkProps: { href: "#faq" } },
         ]}
       />
 
-      <Section id="aides" title="Aides à l'embauche d'un alternant en 2026">
+      <Section id="aides" title="Aides à l'embauche d'un apprenti en 2026">
         <Paragraph>
           L'aide financière proposée par le gouvernement à l'embauche d'un apprenti a vocation à soutenir le recours à ce mode de formation insérant. Elle concerne les contrats
           d'apprentissage conclus <strong>depuis le 8 mars 2026</strong> et dont l'exécution débute <strong>avant le 1er janvier 2027</strong> : l'entreprise perçoit alors une aide
@@ -184,8 +184,8 @@ const RecruterUnAlternantPage = () => {
         />
         <Paragraph variant="body2" color={fr.colors.decisions.text.mention.grey.default}>
           Montants fixés par le décret n° 2026-168 du 6 mars 2026, pour les contrats d'apprentissage conclus depuis le 8 mars 2026 et dont l'exécution débute avant le 1er janvier
-          2027. Aide versée par l'ASP la première année du contrat. Pour les entreprises de 250 salariés et plus, l'aide est soumise à une condition d'effectif d'alternants et
-          n'est pas cumulable avec l'aide unique. L'aide « apprenti en situation de handicap » est cumulable avec les aides spécifiques de l'AGEFIPH. Voir aussi{" "}
+          2027. Aide versée par l'ASP la première année du contrat. Pour les entreprises de 250 salariés et plus, l'aide est soumise à une condition d'effectif d'apprentis et n'est
+          pas cumulable avec l'aide unique. L'aide « apprenti en situation de handicap » est cumulable avec les aides spécifiques de l'AGEFIPH. Voir aussi{" "}
           <DsfrLink
             href="https://travail-emploi.gouv.fr/laide-aux-employeurs-qui-recrutent-en-apprentissage"
             size="sm"
@@ -209,7 +209,7 @@ const RecruterUnAlternantPage = () => {
         </InfoSection>
       </Section>
 
-      <Section id="conditions" title="Conditions pour recruter un alternant">
+      <Section id="conditions" title="Conditions pour recruter un apprenti">
         <Paragraph>
           <strong>Quel employeur ?</strong> Toute entreprise du secteur privé, association, profession libérale ou employeur public peut recruter un apprenti. Aucune condition de
           taille ni d'ancienneté n'est requise.
@@ -225,7 +225,7 @@ const RecruterUnAlternantPage = () => {
         </Paragraph>
       </Section>
 
-      <Section id="cout-reel" title="Coût réel d'un alternant pour l'employeur">
+      <Section id="cout-reel" title="Coût réel d'un apprenti pour l'employeur">
         <Paragraph>
           La rémunération légale d'un apprenti est un pourcentage du SMIC, qui augmente avec l'âge et l'année de formation. L'aide à l'embauche et les exonérations de cotisations
           réduisent le coût réel supporté par l'entreprise.
@@ -266,16 +266,16 @@ const RecruterUnAlternantPage = () => {
         </Paragraph>
       </Section>
 
-      <Section id="comment-recruter" title="Comment recruter un alternant : les étapes">
-        <Paragraph>De la définition du poste à la transmission du contrat à l'OPCO, voici le parcours complet pour recruter un alternant.</Paragraph>
+      <Section id="comment-recruter" title="Comment recruter un apprenti : les étapes">
+        <Paragraph>De la définition du poste à la transmission du contrat à l'OPCO, voici le parcours complet pour recruter un apprenti.</Paragraph>
         <ParagraphList
           ordered
           listItems={[
             <>
-              <strong>Définissez le poste et le diplôme préparé</strong> : missions confiées à l'alternant et niveau de formation visé.
+              <strong>Définissez le poste et le diplôme préparé</strong> : missions confiées à l'apprenti et niveau de formation visé.
             </>,
             <>
-              <strong>Désignez un maître d'apprentissage</strong> pour encadrer l'alternant en entreprise.
+              <strong>Désignez un maître d'apprentissage</strong> pour encadrer l'apprenti en entreprise.
             </>,
             <>
               <strong>Trouvez un candidat</strong> :{" "}
@@ -288,11 +288,11 @@ const RecruterUnAlternantPage = () => {
               pour recevoir des candidatures ciblées.
             </>,
             <>
-              <strong>Rapprochez-vous du centre de formation</strong> qui préparera l'alternant au diplôme.
+              <strong>Rapprochez-vous du centre de formation</strong> qui préparera l'apprenti au diplôme.
             </>,
             <>
-              <strong>Signez le contrat</strong> d'apprentissage (Cerfa FA13) ou de professionnalisation avec l'alternant et le centre de formation. Votre OPCO peut vous
-              accompagner dans cette démarche —{" "}
+              <strong>Signez le contrat</strong> d'apprentissage (Cerfa FA13) ou de professionnalisation avec l'apprenti et le centre de formation. Votre OPCO peut vous accompagner
+              dans cette démarche —{" "}
               <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr/" aria-label="Trouver mon OPCO sur le site de France compétences">
                 trouver mon OPCO
               </DsfrLink>

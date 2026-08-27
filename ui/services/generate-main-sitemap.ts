@@ -106,13 +106,13 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
       title: "Guide du recruteur",
       priority: 0.9,
       pages: [
-        { path: "/guide-recruteur", label: "Guide du recruteur", description: "Tout savoir sur le recrutement d'un alternant pour une entreprise." },
+        { path: "/guide-recruteur", label: "Guide du recruteur", description: "Tout savoir sur le recrutement d'un apprenti pour une entreprise." },
         {
           path: "/guide-recruteur/recruter-un-alternant",
-          label: "Recruter un alternant",
-          description: "Aides à l'embauche 2026, coût réel, conditions et démarches pour recruter un alternant. Dépôt d'offre gratuit pour les employeurs.",
+          label: "Recruter un apprenti",
+          description: "Aides à l'embauche 2026, coût réel, conditions et démarches pour recruter un apprenti. Dépôt d'offre gratuit pour les employeurs.",
         },
-        { path: "/guide-recruteur/je-suis-employeur-public", label: "Je suis employeur public", description: "Recruter un alternant dans la fonction publique." },
+        { path: "/guide-recruteur/je-suis-employeur-public", label: "Je suis employeur public", description: "Recruter un apprenti dans la fonction publique." },
         {
           path: "/guide-recruteur/cerfa-apprentissage-et-professionnalisation",
           label: "Cerfa apprentissage et professionnalisation",

@@ -158,9 +158,9 @@ export const METADATA = {
       description: "Comment remplir le Cerfa d'apprentissage ou de professionnalisation ? Formulaires, délais OPCO et documents requis. Guide employeur.",
     }),
     guideRecruteurRecruterUnAlternant: () => ({
-      title: "Recruter un alternant : aides 2026, coût et démarches | LBA",
+      title: "Recruter un apprenti : aides 2026, coût et démarches | LBA",
       description:
-        "Aides à l'embauche 2026 (jusqu'à 5 000 €), coût réel, conditions et démarches pour recruter un alternant. Déposez votre offre gratuitement sur le service public.",
+        "Aides à l'embauche 2026 (jusqu'à 5 000 €), coût réel, conditions et démarches pour recruter un apprenti. Déposez votre offre gratuitement sur le service public.",
     }),
     salaireAlternant: () => ({
       title: "Simulateur salaire alternance 2026 | Calcul gratuit brut et net",

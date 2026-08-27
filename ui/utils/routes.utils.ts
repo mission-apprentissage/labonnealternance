@@ -205,7 +205,7 @@ export const PAGES = {
     },
     guideRecruteurRecruterUnAlternant: {
       getPath: () => `/guide-recruteur/recruter-un-alternant` as string,
-      title: "Recruter un alternant",
+      title: "Recruter un apprenti",
       index: true,
     },
     salaireAlternant: {
