@@ -33,6 +33,7 @@ import {
   refreshReferentielEngagementFranceTravail,
   refreshReferentielEtEntrepriseEngagement,
 } from "./engagement-handicap/refresh-entreprise-engagement-jobs-partners"
+import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formations-catalogue/update-parcoursup-and-affelnet-info-on-formation-catalogue"
 import { generateFranceTravailAccess } from "./france-travail/generate-france-travail-access"
@@ -99,6 +100,8 @@ import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-erro
 import { importReferentielRome } from "./referentiel-rome/referentiel-rome"
 import { analyzeSearchQueries } from "./search/analyze-search-queries"
 import { fillSearchItemsCollection } from "./search/generate-search-items-collection"
+import { pingGoogleIndexing } from "./seo/ping-google-indexing"
+import { pingIndexNow } from "./seo/ping-indexnow"
 import { updateSEO } from "./seo/update-seo"
 
 type SimpleJobDefinition = {
@@ -334,6 +337,16 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Génère le sitemap pour les offres",
   },
   {
+    fct: pingIndexNow,
+    description: "Soumet à IndexNow les URLs des offres modifiées récemment (updated_at, fenêtre 60 min par défaut)",
+    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à soumettre (défaut : now − 60 min)" }],
+  },
+  {
+    fct: pingGoogleIndexing,
+    description: "Notifie la Google Indexing API des offres du périmètre modifiées récemment (fenêtre 60 min par défaut)",
+    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des changements à notifier (défaut : now − 60 min)" }],
+  },
+  {
     fct: generateFranceTravailAccess,
     description: "Génère les tokens d'accès à France Travail et les sauvegarde en DB",
   },
@@ -524,6 +537,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: refreshReferentielEtEntrepriseEngagement,
     description: "Rafraîchissement du référentiel d'engagement handicap et des offres actives de jobs_partners",
+  },
+  {
+    fct: updateHandiEngagement,
+    description: "Télécharge le référentiel handi-engagement depuis S3 (siretlist/lba_handi_engage_flag.ndjson) et met à jour le référentiel d'engagement handicap",
   },
   {
     fct: cleanClosedCompanies,

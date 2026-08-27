@@ -30,6 +30,7 @@ import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
+import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formations-catalogue/update-parcoursup-and-affelnet-info-on-formation-catalogue"
 import { generateFranceTravailAccess } from "./france-travail/generate-france-travail-access"
@@ -69,6 +70,8 @@ import { resetApiKey } from "./recruiters/reset-api-key"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
 import { analyzeSearchQueries, rollbackSearchSuggestions } from "./search/analyze-search-queries"
 import { fillSearchItemsCollection } from "./search/generate-search-items-collection"
+import { pingGoogleIndexing } from "./seo/ping-google-indexing"
+import { pingIndexNow } from "./seo/ping-indexnow"
 import { updateSEO } from "./seo/update-seo"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simple-job-definitions"
 import { updateBrevoBlockedEmails } from "./update-brevo-blocked-emails/update-brevo-blocked-emails"
@@ -134,6 +137,18 @@ export async function setupJobProcessor() {
             cron_string: "20 0 * * *",
             handler: generateSitemap,
             tag: "main",
+          },
+          // Décalé de 10 min après l'expiration des offres (*/30) pour capter ses bumps de updated_at.
+          "Notification IndexNow des offres modifiées": {
+            cron_string: "10,40 * * * *",
+            handler: async () => pingIndexNow(),
+            tag: "slave",
+          },
+          // Même logique de décalage que IndexNow, séquencé 5 min après pour lisser les appels sortants.
+          "Notification Google Indexing API des offres modifiées": {
+            cron_string: "15,45 * * * *",
+            handler: async () => pingGoogleIndexing(),
+            tag: "slave",
           },
           "Envoi des mails de relance pour l'expiration des offres à J+7": {
             cron_string: "20 9 * * *",
@@ -389,6 +404,10 @@ export async function setupJobProcessor() {
             cron_string: "0 8 * * SUN",
             handler: updateDiplomeMetier,
           },
+          "update-handi-engagement": {
+            cron_string: "45 4 * * SAT",
+            handler: async () => updateHandiEngagement(),
+          },
           "Mise à jour mensuelle des contrats DECA": {
             cron_string: "15 5 1 * *",
             handler: async () => importDecaContratsParAnnee(),
@@ -401,6 +420,12 @@ export async function setupJobProcessor() {
           await recreateIndexes({ drop })
           return
         },
+      },
+      "update-handi-engagement:force": {
+        // Déclenchement manuel : ignore le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
+        // pour forcer le nettoyage des sources France Travail obsolètes, quand l'écart constaté est
+        // confirmé légitime (ex. mise à jour majeure du fichier source).
+        handler: async () => updateHandiEngagement({ force: true }),
       },
       "api:user:create": {
         handler: async (job) => {

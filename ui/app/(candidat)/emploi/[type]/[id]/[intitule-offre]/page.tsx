@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache"
 import { notFound } from "next/navigation"
 import type { ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
@@ -26,8 +27,24 @@ export async function generateMetadata({ params }): Promise<Metadata> {
       title = `Offre d'emploi ${job?.title}`
       break
   }
+  // `id` arrive percent-encodé dans params et buildJobUrlPath ré-encode : on décode d'abord
+  // pour éviter un double encodage. Repli sur l'id brut si le segment n'est pas décodable
+  // (ex : `%` isolé) plutôt que de faire échouer generateMetadata sur une URIError.
+  let decodedId: string
+  try {
+    decodedId = decodeURIComponent(id)
+  } catch {
+    decodedId = id
+  }
+
   return {
     title: `${title} - La bonne alternance`,
+    alternates: {
+      // URL canonique sans query params : une même offre accessible avec des paramètres de recherche
+      // ou de tracking différents ne doit compter que comme une seule page pour les moteurs.
+      // Relative, résolue en absolu par le metadataBase du layout racine (convention du codebase).
+      canonical: buildJobUrlPath(type, decodedId, job.title || undefined),
+    },
   }
 }
 

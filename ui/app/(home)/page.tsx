@@ -29,6 +29,16 @@ export default function HomePage() {
         url={PAGES.static.home.getPath()}
         breadcrumbs={[{ name: PAGES.static.home.title, url: PAGES.static.home.getPath() }]}
       />
+      {/* Nœuds site + organisation (émis uniquement sur la home) : c'est par eux que les
+          moteurs et les IA identifient l'entité « La bonne alternance ». */}
+      <SchemaOrg
+        type="WebSite"
+        title={METADATA.static.home().title}
+        description={METADATA.static.home().description}
+        url={PAGES.static.home.getPath()}
+        breadcrumbs={[]}
+        omitBreadcrumb
+      />
       <Container
         component="main"
         sx={{
