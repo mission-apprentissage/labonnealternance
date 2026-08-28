@@ -123,15 +123,15 @@ export const getPublicUserRecruteurProps = async (
 ): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current"> | { error: string }> => {
   const mainRole = await getMainRoleManagement(userId, includeUserAwaitingValidation)
   if (!mainRole) {
-    return { error: `inattendu : aucun role trouvé pour user id=${userId}` }
+    return { error: "inattendu : aucun role trouvé pour l'utilisateur" }
   }
   const type = roleToUserType(mainRole)
   if (!type) {
-    return { error: `inattendu : aucun type trouvé pour user id=${userId}` }
+    return { error: "inattendu : aucun type trouvé pour l'utilisateur" }
   }
   const status_current = roleToStatus(mainRole)
   if (!status_current) {
-    return { error: `inattendu : aucun status trouvé pour user id=${userId}` }
+    return { error: "inattendu : aucun status trouvé pour l'utilisateur" }
   }
   const commonFields = {
     type,
@@ -166,7 +166,9 @@ export const getPublicUserRecruteurPropsOrError = async (
 ): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
   const result = await getPublicUserRecruteurProps(userId, includeUserAwaitingValidation)
   if ("error" in result) {
-    throw internal(result.error)
+    // userId hors du message : interpolé, il crée une issue Sentry par utilisateur et casse le
+    // regroupement (6 issues pour 2 bugs, cf. LBA-SERVER-5J7KF4ZZZTAFH / -TAHJ / -TAN3).
+    throw internal(result.error, { userId: userId.toString() })
   }
   return result
 }
