@@ -31,14 +31,15 @@ const AMELIORER_IA_MAX_USAGES = 2
 type FreeTextFieldName = "job_description" | "job_employer_description"
 
 const AmeliorerIaButton = ({ fieldName, establishmentId }: { fieldName: FreeTextFieldName; establishmentId?: string }) => {
-  const { values, setFieldValue } = useFormikContext<any>()
+  const { values, setFieldValue, errors } = useFormikContext<any>()
   const [remaining, setRemaining] = useState(AMELIORER_IA_MAX_USAGES)
   const [loading, setLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
   const text: string = values[fieldName] ?? ""
+  const isFieldInvalid = Boolean(errors[fieldName])
 
   const handleClick = async () => {
-    if (!establishmentId || loading || remaining <= 0 || !text.trim()) return
+    if (!establishmentId || loading || remaining <= 0 || !text.trim() || isFieldInvalid) return
     setLoading(true)
     setHasError(false)
     try {
@@ -85,7 +86,7 @@ const AmeliorerIaButton = ({ fieldName, establishmentId }: { fieldName: FreeText
         size="small"
         iconId="ri-magic-line"
         iconPosition="left"
-        disabled={!establishmentId || loading || remaining <= 0 || !text.trim()}
+        disabled={!establishmentId || loading || remaining <= 0 || !text.trim() || isFieldInvalid}
         onClick={handleClick}
       >
         {loading ? (
