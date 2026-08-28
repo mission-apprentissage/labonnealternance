@@ -5,13 +5,24 @@ import nock from "nock"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { generateCacheInfoSiretForSiret } from "shared/fixtures/cache-info-siret.fixture"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
-import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { entriesToTypedRecord } from "shared/utils/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import * as blockJobsPartnersFromCfaListModule from "./block-jobs-partners-from-cfa-list"
 import { blockJobsPartnersFromCfaList } from "./block-jobs-partners-from-cfa-list"
+import * as detectClassificationJobsPartnersModule from "./detect-classification-jobs-partners"
 import { detectClassificationJobsPartners } from "./detect-classification-jobs-partners"
 import { fillComputedJobsPartners } from "./fill-computed-jobs-partners"
+
+vi.mock("./block-jobs-partners-from-cfa-list", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./block-jobs-partners-from-cfa-list")>()
+  return { ...actual, blockJobsPartnersFromCfaList: vi.fn(actual.blockJobsPartnersFromCfaList) }
+})
+vi.mock("./detect-classification-jobs-partners", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./detect-classification-jobs-partners")>()
+  return { ...actual, detectClassificationJobsPartners: vi.fn(actual.detectClassificationJobsPartners) }
+})
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 const filledFields = [
@@ -39,6 +50,8 @@ describe("fill-computed-jobs-partners", () => {
     vi.setSystemTime(now)
 
     nock("https://entreprise.api.gouv.fr").get(/.*/).reply(404)
+    vi.mocked(blockJobsPartnersFromCfaListModule.blockJobsPartnersFromCfaList).mockClear()
+    vi.mocked(detectClassificationJobsPartnersModule.detectClassificationJobsPartners).mockClear()
 
     return async () => {
       vi.useRealTimers()
@@ -46,6 +59,42 @@ describe("fill-computed-jobs-partners", () => {
       await getDbCollection("computed_jobs_partners").deleteMany({})
       await getDbCollection("cache_siret").deleteMany({})
     }
+  })
+
+  describe("skipCfaAndClassificationDetection", () => {
+    it("should not run blockJobsPartnersFromCfaList nor detectClassificationJobsPartners when skipCfaAndClassificationDetection is true", async () => {
+      // given: a workplace_name that would normally be blocked by the CFA blocklist
+      await givenSomeComputedJobPartners([
+        {
+          workplace_name: "ISCOD",
+          business_error: null,
+        },
+      ])
+      // when
+      await fillComputedJobsPartners({ skipCfaAndClassificationDetection: true })
+      // then
+      expect.soft(blockJobsPartnersFromCfaListModule.blockJobsPartnersFromCfaList).not.toHaveBeenCalled()
+      expect.soft(detectClassificationJobsPartnersModule.detectClassificationJobsPartners).not.toHaveBeenCalled()
+      const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+      expect.soft(job.business_error).toBeNull()
+    })
+
+    it("should run blockJobsPartnersFromCfaList and detectClassificationJobsPartners when skipCfaAndClassificationDetection is not set", async () => {
+      // given: a workplace_name that is blocked by the CFA blocklist
+      await givenSomeComputedJobPartners([
+        {
+          workplace_name: "ISCOD",
+          business_error: null,
+        },
+      ])
+      // when
+      await fillComputedJobsPartners()
+      // then
+      expect.soft(blockJobsPartnersFromCfaListModule.blockJobsPartnersFromCfaList).toHaveBeenCalledTimes(1)
+      expect.soft(detectClassificationJobsPartnersModule.detectClassificationJobsPartners).toHaveBeenCalledTimes(1)
+      const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+      expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.CFA_BLACKLISTED)
+    })
   })
 
   it("should not enrich when siret is missing", async () => {
