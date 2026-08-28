@@ -535,6 +535,26 @@ const DELTA_DEFAULT_WINDOW_MS = 10 * 60 * 1000
 const DELTA_CHUNK_SIZE = 500
 
 /**
+ * Synchronise une liste d'_id jobs_partners vers search_items : contexte de build chargé UNE fois
+ * pour tout l'appel (pas par chunk : 2 agrégations full-scan sinon) et découpage en chunks, pour
+ * ne pas charger des dizaines de milliers de documents d'un coup. Point d'entrée commun au cron
+ * delta et aux appelants qui connaissent déjà les _id qu'ils ont écrits (import des offres API).
+ */
+export const syncJobPartnersToSearchItemsInChunks = async (ids: ObjectId[]): Promise<{ upserted: number; removed: number }> => {
+  const ctx = ids.length ? await loadSearchItemBuildContext() : undefined
+
+  let upserted = 0
+  let removed = 0
+  for (let i = 0; i < ids.length; i += DELTA_CHUNK_SIZE) {
+    const result = await upsertJobPartnersToSearchItems(ids.slice(i, i + DELTA_CHUNK_SIZE), ctx)
+    upserted += result.upserted
+    removed += result.removed
+  }
+
+  return { upserted, removed }
+}
+
+/**
  * Cron delta : synchronise les jobs_partners modifiés depuis `since` (défaut : 10 min).
  * Couvre les écritures de masse (expiration, imports, dédoublonnage…) qui bumpent
  * `updated_at` — les suppressions physiques, invisibles ici, sont traitées par les appels
@@ -550,16 +570,7 @@ export const syncSearchItemsDelta = async (payload?: { since?: Date | string }) 
     .map((doc) => doc._id)
     .toArray()
 
-  // Contexte chargé UNE fois pour tout le run (pas par chunk : 2 agrégations full-scan sinon).
-  const ctx = ids.length ? await loadSearchItemBuildContext() : undefined
-
-  let upserted = 0
-  let removed = 0
-  for (let i = 0; i < ids.length; i += DELTA_CHUNK_SIZE) {
-    const result = await upsertJobPartnersToSearchItems(ids.slice(i, i + DELTA_CHUNK_SIZE), ctx)
-    upserted += result.upserted
-    removed += result.removed
-  }
+  const { upserted, removed } = await syncJobPartnersToSearchItemsInChunks(ids)
 
   logger.info(`syncSearchItemsDelta: ${ids.length} jobs_partners modifiés depuis ${since.toISOString()} — ${upserted} upserts, ${removed} retraits`)
   return { scanned: ids.length, upserted, removed }

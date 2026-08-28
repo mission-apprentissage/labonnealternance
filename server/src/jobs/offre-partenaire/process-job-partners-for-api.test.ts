@@ -1,6 +1,7 @@
-import { createComputedJobPartner } from "@tests/utils/jobsPartners.test.utils"
+import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { resetSearchItemBuildContextCache } from "@/services/search/search-items.service"
@@ -46,6 +47,33 @@ describe("process-job-partners-for-api", () => {
     const searchItem = await getDbCollection("search_items").findOne({ _id: computed._id })
     expect.soft(searchItem?.type).toBe("offre")
     expect.soft(searchItem?.title).toBe("TEST SANDBOX - ne pas traiter")
+  })
+
+  it("n'indexe pas ce qu'un autre job écrit pendant le run", async () => {
+    // Garde-fou du ciblage par _id : une borne `updated_at` absorberait tout ce que l'expiration,
+    // le dédoublonnage ou un import de flux écrit en parallèle, et ce cron hériterait de leur
+    // volume (jusqu'à 4 min mesurées sur le cron delta pendant les imports nocturnes).
+    const autreJob = await createJobPartner({
+      partner_job_id: "ecrit_par_un_autre_job",
+      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      updated_at: new Date(),
+    })
+
+    await createComputedJobPartner({
+      partner_label: "Mission Apprentissage",
+      partner_job_id: "api_offer_3",
+      validated: true,
+      business_error: null,
+      updated_at: new Date(),
+    })
+
+    await processJobPartnersForApi()
+
+    expect.soft(await getDbCollection("search_items").countDocuments({ _id: autreJob._id })).toBe(0)
+    // L'offre du run, elle, est bien indexée.
+    const importee = await getDbCollection("jobs_partners").findOne({ partner_job_id: "api_offer_3" })
+    expect.soft(await getDbCollection("search_items").countDocuments({ _id: importee!._id })).toBe(1)
   })
 
   it("n'indexe pas les offres que l'import a écartées", async () => {

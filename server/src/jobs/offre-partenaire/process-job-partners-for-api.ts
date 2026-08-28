@@ -5,7 +5,7 @@ import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { syncSearchItemsDelta } from "@/services/search/search-items.service"
+import { syncJobPartnersToSearchItemsInChunks } from "@/services/search/search-items.service"
 import { fillComputedJobsPartners } from "./fill-computed-jobs-partners"
 import { fillLbaUrl } from "./fill-lba-url"
 import { importFromComputedToJobsPartners } from "./import-from-computed-to-jobs-partners"
@@ -13,21 +13,28 @@ import { importFromComputedToJobsPartners } from "./import-from-computed-to-jobs
 const excludedJobPartnersFromApi = Object.values(JOBPARTNERS_LABEL)
 
 /**
- * Indexe dans search_items ce que le run vient d'écrire dans jobs_partners, sans attendre le cron
- * delta : les deux crons n'ont aucun rendez-vous, et lancés sur la même minute le delta lit
+ * Indexe dans search_items les offres que le run vient d'écrire dans jobs_partners, sans attendre
+ * le cron delta : les deux crons n'ont aucun rendez-vous, et lancés sur la même minute le delta lit
  * jobs_partners AVANT le commit de l'import (observé en recette le 28/08/2026 : import terminé à
  * 10:00:49, delta démarré à 10:00:23 → « 0 modifiés », offre visible seulement à 10:15).
  *
- * Réutilise syncSearchItemsDelta plutôt que de collecter les _id dans la boucle d'import : la
- * borne `updated_at` désigne exactement les documents écrits par ce run, et on hérite du
- * découpage en chunks et du contexte de build partagé. Le cron delta reste le rattrapage.
+ * Indexation ciblée sur les _id importés, et non sur une fenêtre `updated_at` : une fenêtre
+ * absorberait tout ce qu'un AUTRE job écrit pendant ce run, donc jusqu'à 4 min de travail mesurées
+ * pendant les imports de masse nocturnes — de quoi allonger ce cron au-delà de son intervalle de
+ * 5 min et faire skipper des runs (concurrency exclusive), soit exactement la latence de
+ * publication qu'on cherche à réduire. Le cron delta reste le rattrapage.
  *
  * L'indexation ne doit pas faire échouer le run : l'import est déjà commité en base, et une erreur
  * ici serait rejouée par le cron delta puis par la réconciliation nightly.
  */
-const syncImportedJobsToSearchItems = async (since: Date) => {
+const syncImportedJobsToSearchItems = async (jobPartnerIds: ObjectId[]) => {
+  // La plupart des runs n'importent rien : pas de ligne de log toutes les 5 min pour 0 offre.
+  if (!jobPartnerIds.length) {
+    return
+  }
   try {
-    await syncSearchItemsDelta({ since })
+    const { upserted, removed } = await syncJobPartnersToSearchItemsInChunks(jobPartnerIds)
+    logger.info(`processJobPartnersForApi: indexation search_items de ${jobPartnerIds.length} offres importées — ${upserted} upserts, ${removed} retraits`)
   } catch (err) {
     sentryCaptureException(err)
   }
@@ -35,7 +42,6 @@ const syncImportedJobsToSearchItems = async (since: Date) => {
 
 export const processJobPartnersForApi = async () => {
   logger.info("début de processJobPartnersForApi")
-  const runStartedAt = new Date()
   const processId: string = new ObjectId().toString()
   const last2Days = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
   await getDbCollection("computed_jobs_partners").updateMany(
@@ -44,22 +50,27 @@ export const processJobPartnersForApi = async () => {
   )
 
   const filter = { currently_processed_id: processId }
+  let importedIds: ObjectId[] = []
   await fillComputedJobsPartners({ addedMatchFilter: filter })
-  await importFromComputedToJobsPartners(filter)
+  await importFromComputedToJobsPartners(filter, (ids) => {
+    importedIds = ids
+  })
   await fillLbaUrl()
   await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
   await getDbCollection("computed_jobs_partners").updateMany(filter, { $set: { currently_processed_id: null } })
-  await syncImportedJobsToSearchItems(runStartedAt)
+  await syncImportedJobsToSearchItems(importedIds)
   logger.info("fin de processJobPartnersForApi")
 }
 
 export const processJobPartnersWithFilter = async (filter: Filter<IComputedJobsPartners>) => {
   logger.info({ filter }, "début de processJobPartnersWithFilter")
-  const runStartedAt = new Date()
+  let importedIds: ObjectId[] = []
   await fillComputedJobsPartners({ addedMatchFilter: filter })
-  await importFromComputedToJobsPartners(filter)
+  await importFromComputedToJobsPartners(filter, (ids) => {
+    importedIds = ids
+  })
   await fillLbaUrl()
   await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
-  await syncImportedJobsToSearchItems(runStartedAt)
+  await syncImportedJobsToSearchItems(importedIds)
   logger.info({ filter }, "fin de processJobPartnersWithFilter")
 }
