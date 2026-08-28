@@ -12,14 +12,18 @@ const fields = ["workplace_description", "workplace_name", "offer_description", 
  * les quatre, les autres sont réécrits quand même). Une chaîne vide neutralise tous les fallbacks
  * `??` en aval — en particulier fillSiretInfosForPartners, qui ne remplissait plus workplace_name
  * depuis l'enseigne / la raison sociale du SIRET, puisque `"" ?? x` vaut "".
- * Un champ absent — ou dont il ne reste rien après sanitization (espaces ou balises seules) — reste
- * donc null : « pas de texte exploitable » se représente par null, jamais par "".
+ *
+ * Un champ absent reste donc null. En revanche un champ renseigné dont il ne reste rien après
+ * sanitization (espaces ou balises seules) garde sa chaîne vide, volontairement : offer_title et
+ * offer_description sont NON-nullables dans jobs_partners, et y écrire null fait échouer la
+ * validation d'une offre qui passait avec "" — l'offre ne serait plus importée du tout. Le "" est
+ * traité comme une valeur absente côté lecture, où les chaînes de repli utilisent `||`.
  */
 const sanitizeNullableTextField = (text: string | null | undefined): string | null => {
   if (text == null) {
     return null
   }
-  return sanitizeTextField(text, true) || null
+  return sanitizeTextField(text, true)
 }
 
 export const formatTextFieldsJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {

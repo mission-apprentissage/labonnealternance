@@ -3,6 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { formatTextFieldsJobsPartners } from "./format-text-fields-jobs-partners"
+import { validateComputedJobPartners } from "./validate-computed-job-partners"
 
 describe("format-text-fields-jobs-partners", () => {
   useMongo()
@@ -35,8 +36,26 @@ describe("format-text-fields-jobs-partners", () => {
     expect.soft(job.offer_title).toBe("Développeur web en alternance")
   })
 
-  it("normalise à null un champ déjà à la chaîne vide", async () => {
-    // Le corpus importé avant ce correctif contient des "" : le job ne doit pas les perpétuer.
+  it("laisse la chaîne vide d'un champ renseigné qui se vide à la sanitization", async () => {
+    // Garde-fou : écrire null ici ferait échouer la validation zod de jobs_partners, qui refuse
+    // null sur offer_description (non-nullable) mais accepte "" — l'offre ne serait plus importée.
+    // Un "" est traité comme absent côté lecture, où les chaînes de repli utilisent `||`.
+    await givenSomeComputedJobPartners([
+      {
+        offer_title: "Développeur web en alternance",
+        offer_description: "<img src=x>",
+        workplace_name: "   ",
+      },
+    ])
+
+    await formatTextFieldsJobsPartners({})
+
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(job.offer_description).toBe("")
+    expect.soft(job.workplace_name).toBe("")
+  })
+
+  it("laisse tel quel un champ déjà à la chaîne vide", async () => {
     await givenSomeComputedJobPartners([
       {
         offer_title: "Développeur web en alternance",
@@ -47,21 +66,26 @@ describe("format-text-fields-jobs-partners", () => {
     await formatTextFieldsJobsPartners({})
 
     const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
-    expect(job.workplace_name).toBe(null)
+    expect(job.workplace_name).toBe("")
   })
 
-  it("normalise à null un champ dont il ne reste rien après sanitization", async () => {
+  it("laisse une offre dont la description se vide franchir la validation", async () => {
+    // La conséquence réelle du garde-fou ci-dessus : avec null, la validation refuse l'offre
+    // (offer_description est non-nullable) et elle n'est plus importée dans jobs_partners.
     await givenSomeComputedJobPartners([
       {
         offer_title: "Développeur web en alternance",
-        workplace_name: "   ",
+        offer_description: "<script>alert(1)</script>",
+        offer_rome_codes: ["M1805"],
       },
     ])
 
     await formatTextFieldsJobsPartners({})
+    await validateComputedJobPartners({})
 
     const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
-    expect(job.workplace_name).toBe(null)
+    expect.soft(job.errors).toEqual([])
+    expect.soft(job.validated).toBe(true)
   })
 
   it("sanitize les champs renseignés sans les vider", async () => {
