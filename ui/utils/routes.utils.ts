@@ -117,10 +117,6 @@ export const PAGES = {
       getPath: () => `/guide/rediger-son-offre-d-alternance` as string,
       title: "Bien rédiger son offre d'alternance",
       index: true,
-      getMetadata: () => ({
-        title: "Bien rédiger son offre d'alternance | Charte de rédaction",
-        description: "Règles obligatoires, bonnes pratiques et modération : tout savoir pour rédiger une offre d'alternance claire, conforme et attractive.",
-      }),
     },
     guideAlternant: {
       getPath: () => `/guide-alternant` as string,

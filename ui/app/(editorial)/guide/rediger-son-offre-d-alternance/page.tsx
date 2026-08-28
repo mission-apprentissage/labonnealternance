@@ -10,10 +10,11 @@ import { ARTICLES } from "@/app/(editorial)/guide/const"
 import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
-  ...PAGES.static.guideRedigerSonOffreDAlternance.getMetadata(),
+  ...METADATA.static.guideRedigerSonOffreDAlternance(),
   alternates: { canonical: PAGES.static.guideRedigerSonOffreDAlternance.getPath() },
 }
 
@@ -58,6 +59,7 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
       allerPlusLoinItems={getAllerPlusLoinItems(source)}
       redirectionInterne={<RedirectionInterne source={source} />}
       page={PAGES.static.guideRedigerSonOffreDAlternance}
+      metadata={metadata}
     >
       <Section title="Le volet réglementaire">
         <Paragraph>Certains critères pour bien rédiger votre offre sont réglementaires et obligatoires :</Paragraph>

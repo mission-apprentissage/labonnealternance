@@ -32,7 +32,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
   ["rediger-son-offre-d-alternance"]: {
     id: "rediger-son-offre-d-alternance",
     title: PAGES.static.guideRedigerSonOffreDAlternance.title,
-    description: PAGES.static.guideRedigerSonOffreDAlternance.getMetadata().description,
+    description: METADATA.static.guideRedigerSonOffreDAlternance().description,
     path: PAGES.static.guideRedigerSonOffreDAlternance.getPath(),
     updatedAt: "03/08/2026",
   },
