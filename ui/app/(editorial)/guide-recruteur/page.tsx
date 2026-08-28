@@ -75,6 +75,9 @@ const GuideRecruteurPage = () => {
             }}
           >
             <Grid size={{ md: 3, xs: 12 }}>
+              <AllerPlusLoinItem {...ARTICLES["recruter-un-alternant"]} />
+            </Grid>
+            <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES_PARTAGES["decouvrir-l-alternance"]} source="guide-recruteur" />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>

@@ -6,6 +6,26 @@ import { fillFieldsForComputedPartnersFactory } from "./fill-fields-for-partners
 
 const fields = ["workplace_description", "workplace_name", "offer_description", "offer_title"] as const satisfies (keyof IComputedJobsPartners)[]
 
+/**
+ * sanitizeTextField normalise null/undefined en "" : appliqué tel quel, il écrasait par une chaîne
+ * vide les champs absents du document (le filtre ci-dessous ne sélectionne qu'un champ non nul sur
+ * les quatre, les autres sont réécrits quand même). Une chaîne vide neutralise tous les fallbacks
+ * `??` en aval — en particulier fillSiretInfosForPartners, qui ne remplissait plus workplace_name
+ * depuis l'enseigne / la raison sociale du SIRET, puisque `"" ?? x` vaut "".
+ *
+ * Un champ absent reste donc null. En revanche un champ renseigné dont il ne reste rien après
+ * sanitization (espaces ou balises seules) garde sa chaîne vide, volontairement : offer_title et
+ * offer_description sont NON-nullables dans jobs_partners, et y écrire null fait échouer la
+ * validation d'une offre qui passait avec "" — l'offre ne serait plus importée du tout. Le "" est
+ * traité comme une valeur absente côté lecture, où les chaînes de repli utilisent `||`.
+ */
+const sanitizeNullableTextField = (text: string | null | undefined): string | null => {
+  if (text == null) {
+    return null
+  }
+  return sanitizeTextField(text, true)
+}
+
 export const formatTextFieldsJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const job = COMPUTED_ERROR_SOURCE.SANITIZE_TEXT_FIELDS
   return fillFieldsForComputedPartnersFactory({
@@ -21,10 +41,10 @@ export const formatTextFieldsJobsPartners = async ({ addedMatchFilter }: FillCom
         const { _id, workplace_description, offer_description, offer_title, workplace_name } = document
         const result: Pick<IComputedJobsPartners, (typeof fields)[number] | "_id"> = {
           _id,
-          workplace_description: sanitizeTextField(workplace_description, true),
-          workplace_name: sanitizeTextField(workplace_name, true),
-          offer_description: sanitizeTextField(offer_description, true),
-          offer_title: sanitizeTextField(offer_title, true),
+          workplace_description: sanitizeNullableTextField(workplace_description),
+          workplace_name: sanitizeNullableTextField(workplace_name),
+          offer_description: sanitizeNullableTextField(offer_description),
+          offer_title: sanitizeNullableTextField(offer_title),
         }
         return result
       })

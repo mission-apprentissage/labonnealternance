@@ -219,14 +219,35 @@ export function Footer({ isWidget = false }: { isWidget?: boolean }) {
       )}
       <div className="fr-container">
         <div className="fr-footer__body">
-          <div className="fr-footer__brand fr-enlarge-link">
-            <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
-            <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href as string} title={DsfrHeaderProps.homeLinkProps.title}>
+          <div className="fr-footer__brand fr-enlarge-link" style={{ flex: "1 1 450px" }}>
+            <a
+              href={DsfrHeaderProps.homeLinkProps.href as string}
+              title={DsfrHeaderProps.homeLinkProps.title}
+              style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "flex-end" }}
+            >
+              <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
               {/** biome-ignore lint/performance/noImgElement: migration */}
-              <img className="fr-footer__logo" src="/images/france_relance.svg" width="56" height="56" alt="France relance" style={{ width: "3.5rem", height: "auto" }} />
+              <img
+                className="fr-footer__logo"
+                src="/images/logo_LBA.svg"
+                width="145"
+                height="37"
+                style={{ width: "145px", height: "auto", marginLeft: "auto" }}
+                alt="La bonne alternance"
+              />
+
+              {/** biome-ignore lint/performance/noImgElement: migration */}
+              <img
+                className="fr-footer__logo"
+                src="/images/logo_numerique_gouv.svg"
+                width="195"
+                height="55"
+                style={{ width: "195px", height: "auto" }}
+                alt="Un service proposé par numerique.gouv"
+              />
             </a>
           </div>
-          <div className="fr-footer__content">
+          <div className="fr-footer__content" style={{ flex: "1 1 450px" }}>
             <p className="fr-footer__content-desc">{isWidget ? widgetDescription : description}</p>
             <ul className="fr-footer__content-list">
               <li className="fr-footer__content-item">

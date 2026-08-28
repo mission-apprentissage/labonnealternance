@@ -20,7 +20,9 @@ const getReminderCompanyName = ({
   workplace_brand,
   workplace_legal_name,
 }: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => {
-  return workplace_name ?? workplace_brand ?? workplace_legal_name ?? ""
+  // Chaîne de repli en `||` : workplace_name est sanitizé côté pipeline et peut valoir "" (cf.
+  // formatTextFieldsJobsPartners), ce qui court-circuiterait le repli sur brand / raison sociale.
+  return workplace_name || workplace_brand || workplace_legal_name || ""
 }
 
 const sendExpirationEmails = async (expiredJobs: IJobsPartnersOfferPrivate[]) => {

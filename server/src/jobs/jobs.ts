@@ -99,9 +99,10 @@ export async function setupJobProcessor() {
             tag: "main",
           },
           "Traitement complet des jobs_partners par API": {
-            cron_string: "*/10 * * * *",
+            cron_string: "*/5 * * * *",
             handler: processJobPartnersForApi,
             tag: "slave",
+            concurrency: { mode: "exclusive" },
           },
           "Expiration des offres jobs_partners": {
             cron_string: "*/30 * * * *",
@@ -255,10 +256,18 @@ export async function setupJobProcessor() {
             handler: config.env === "production" ? async () => exportJobsToFranceTravail() : async () => Promise.resolve(0),
             tag: "main",
           },
+          // Les offres déposées par API sont indexées directement en fin de processJobPartnersForApi :
+          // ce cron ne porte plus leur latence, il couvre les écritures de masse des AUTRES chemins
+          // (expiration */30, annulation, dédoublonnage, imports de flux) et sert de rattrapage.
+          // Maintenu à 5 min pour le retrait : une offre expirée ou annulée reste sinon proposée en
+          // recherche jusqu'au run suivant. Runs à vide à 30-50 ms, 2 à 3 s en régime nominal.
+          // concurrency exclusive : jusqu'à 4 min pendant les imports de masse nocturnes (mesuré le
+          // 28/08/2026 à 03:35 UTC) — au-delà de l'intervalle, deux runs se chevaucheraient.
           "Sync delta search_items (jobs_partners modifiés)": {
-            cron_string: "*/15 * * * *",
+            cron_string: "*/5 * * * *",
             handler: async () => syncSearchItemsDelta(),
             tag: "slave",
+            concurrency: { mode: "exclusive" },
           },
           // Après processComputedAndImportToJobPartners (départ 00:01, maxRuntime 300 min → fin
           // au plus tard ~05:00) : rattrape ce que la sync incrémentale a manqué et purge les

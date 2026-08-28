@@ -52,34 +52,45 @@ export const refreshReferentielEngagementFranceTravail = async () => {
   }
 }
 
-export const refreshEntrepriseEngagementJobsPartners = async () => {
-  const matchFilter = { offer_status: JOB_STATUS_ENGLISH.ACTIVE }
+const buildEngagementFranceTravailLookupStage = () => ({
+  $lookup: {
+    from: "referentiel_engagement_entreprise",
+    let: { siret: "$workplace_siret" },
+    pipeline: [
+      {
+        $match: {
+          $expr: {
+            $and: [{ $ne: ["$$siret", null] }, { $eq: ["$siret", "$$siret"] }, { $in: [EntrepriseEngagementSources.FRANCE_TRAVAIL, "$sources"] }],
+          },
+        },
+      },
+      { $limit: 1 },
+    ],
+    as: "_engagement_match",
+  },
+})
+
+/**
+ * Passe à true les offres actives dont le siret est désormais présent dans le référentiel d'engagement
+ * (source FRANCE_TRAVAIL) alors qu'elles n'étaient pas encore marquées éligibles.
+ */
+export const activateEntrepriseEngagementJobsPartners = async () => {
+  const matchFilter = {
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    contract_is_disabled_elligible: false,
+    workplace_siret: { $exists: true, $ne: null },
+  }
   const toUpdateCount = await getDbCollection("jobs_partners").countDocuments(matchFilter)
-  logger.info(`refreshEntrepriseEngagementJobsPartners: ${toUpdateCount} documents à traiter`)
+  logger.info(`activateEntrepriseEngagementJobsPartners: ${toUpdateCount} documents à traiter`)
 
   await getDbCollection("jobs_partners")
     .aggregate([
       { $match: matchFilter },
-      {
-        $lookup: {
-          from: "referentiel_engagement_entreprise",
-          let: { siret: "$workplace_siret" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [{ $ne: ["$$siret", null] }, { $eq: ["$siret", "$$siret"] }, { $in: [EntrepriseEngagementSources.FRANCE_TRAVAIL, "$sources"] }],
-                },
-              },
-            },
-            { $limit: 1 },
-          ],
-          as: "_engagement_match",
-        },
-      },
+      buildEngagementFranceTravailLookupStage(),
+      { $match: { "_engagement_match.0": { $exists: true } } },
       {
         $set: {
-          contract_is_disabled_elligible: { $gt: [{ $size: "$_engagement_match" }, 0] },
+          contract_is_disabled_elligible: true,
           updated_at: "$$NOW",
         },
       },
@@ -95,7 +106,51 @@ export const refreshEntrepriseEngagementJobsPartners = async () => {
     ])
     .toArray()
 
-  logger.info("refreshEntrepriseEngagementJobsPartners: terminé")
+  logger.info("activateEntrepriseEngagementJobsPartners: terminé")
+}
+
+/**
+ * Passe à false les offres actives dont le siret n'est plus présent dans le référentiel d'engagement
+ * (source FRANCE_TRAVAIL) alors qu'elles étaient marquées éligibles.
+ */
+export const deactivateEntrepriseEngagementJobsPartners = async () => {
+  const matchFilter = {
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    contract_is_disabled_elligible: true,
+    workplace_siret: { $exists: true, $ne: null },
+  }
+  const toUpdateCount = await getDbCollection("jobs_partners").countDocuments(matchFilter)
+  logger.info(`deactivateEntrepriseEngagementJobsPartners: ${toUpdateCount} documents à traiter`)
+
+  await getDbCollection("jobs_partners")
+    .aggregate([
+      { $match: matchFilter },
+      buildEngagementFranceTravailLookupStage(),
+      { $match: { "_engagement_match.0": { $exists: false } } },
+      {
+        $set: {
+          contract_is_disabled_elligible: false,
+          updated_at: "$$NOW",
+        },
+      },
+      { $unset: "_engagement_match" },
+      {
+        $merge: {
+          into: "jobs_partners",
+          on: "_id",
+          whenMatched: "merge",
+          whenNotMatched: "discard",
+        },
+      },
+    ])
+    .toArray()
+
+  logger.info("deactivateEntrepriseEngagementJobsPartners: terminé")
+}
+
+export const refreshEntrepriseEngagementJobsPartners = async () => {
+  await activateEntrepriseEngagementJobsPartners()
+  await deactivateEntrepriseEngagementJobsPartners()
 }
 
 export const refreshReferentielEtEntrepriseEngagement = async () => {

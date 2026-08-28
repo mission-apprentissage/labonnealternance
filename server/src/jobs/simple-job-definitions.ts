@@ -419,8 +419,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: syncSearchItemsDelta,
-    description: "Synchronise vers search_items les jobs_partners modifiés récemment (updated_at, fenêtre 30 min par défaut)",
-    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à synchroniser (défaut : now − 30 min)" }],
+    description: "Synchronise vers search_items les jobs_partners modifiés récemment (updated_at, fenêtre 10 min par défaut)",
+    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à synchroniser (défaut : now − 10 min)" }],
   },
   {
     fct: controlSearchItemsDrift,

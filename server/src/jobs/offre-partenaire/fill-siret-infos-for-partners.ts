@@ -57,7 +57,10 @@ export const fillSiretInfosForPartners = async ({ addedMatchFilter }: FillComput
         workplace_brand: document.workplace_brand ?? establishment_enseigne,
         workplace_naf_code: document.workplace_naf_code ?? naf_code,
         workplace_naf_label: document.workplace_naf_label ?? naf_label,
-        workplace_name: document.workplace_name ?? establishment_enseigne ?? establishment_raison_sociale,
+        // `||` et non `??` : workplace_name passe par formatTextFieldsJobsPartners, qui a longtemps
+        // écrit "" sur les champs texte absents — le corpus déjà importé en contient. Une chaîne vide
+        // doit valoir « absent », sinon l'enseigne / la raison sociale du SIRET n'est jamais reprise.
+        workplace_name: document.workplace_name || establishment_enseigne || establishment_raison_sociale,
         workplace_address_label: document.workplace_address_label ?? address ?? null,
         workplace_address_street_label: document.workplace_address_street_label ?? address_street_label ?? null,
         workplace_address_city: document.workplace_address_city ?? address_detail?.libelle_commune ?? null,
