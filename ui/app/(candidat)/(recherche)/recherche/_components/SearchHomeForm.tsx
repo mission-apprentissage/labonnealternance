@@ -180,7 +180,7 @@ export function SearchHomeForm() {
         </Box>
       </Box>
 
-      {/* Desktop : rangée champs + type de recherche + bouton. */}
+      {/* Grand écran : rangée champs + type de recherche + bouton. */}
       <Box sx={{ display: { xs: "none", lg: "flex" }, flexDirection: "row", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
         <Box sx={{ flex: 1 }}>
           <SearchBar layout="row" onSubmit={fillQ} onQChange={handleQChange} onLieuChange={setLieu} />
