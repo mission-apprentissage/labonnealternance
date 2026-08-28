@@ -5,6 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box, CircularProgress, Typography } from "@mui/material"
+import { captureException } from "@sentry/nextjs"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { Formik, useFormikContext } from "formik"
@@ -33,19 +34,26 @@ const AmeliorerIaButton = ({ fieldName, establishmentId }: { fieldName: FreeText
   const { values, setFieldValue } = useFormikContext<any>()
   const [remaining, setRemaining] = useState(AMELIORER_IA_MAX_USAGES)
   const [loading, setLoading] = useState(false)
+  const [hasError, setHasError] = useState(false)
   const text: string = values[fieldName] ?? ""
 
   const handleClick = async () => {
     if (!establishmentId || loading || remaining <= 0 || !text.trim()) return
     setLoading(true)
+    setHasError(false)
     try {
       const result = await ameliorerTexteOffre(establishmentId, fieldName, text)
       if (result && "text" in result && result.text) {
         setFieldValue(fieldName, result.text)
         setRemaining((r) => r - 1)
+      } else {
+        setHasError(true)
       }
-    } catch {
-      // Échec de l'appel IA (timeout, erreur API) : le recruteur peut poursuivre son dépôt sans blocage.
+    } catch (error) {
+      // Échec de l'appel IA (timeout, erreur API) : le recruteur peut poursuivre son dépôt sans blocage,
+      // mais doit être informé que rien n'a changé (sinon le clic paraît sans effet).
+      captureException(error)
+      setHasError(true)
     } finally {
       setLoading(false)
     }
@@ -55,7 +63,7 @@ const AmeliorerIaButton = ({ fieldName, establishmentId }: { fieldName: FreeText
     <Box
       sx={{
         border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-        borderTop: "none",
+        borderBottom: "none",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -65,7 +73,9 @@ const AmeliorerIaButton = ({ fieldName, establishmentId }: { fieldName: FreeText
       }}
     >
       <Typography sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>
-        Notre IA peut améliorer votre texte jusqu'à {AMELIORER_IA_MAX_USAGES} fois (orthographe, structure, formulation)
+        {hasError
+          ? "L'amélioration a échoué, veuillez réessayer."
+          : `Notre IA peut améliorer votre texte jusqu'à ${AMELIORER_IA_MAX_USAGES} fois (orthographe, structure, formulation)`}
       </Typography>
       <Button
         type="button"
@@ -121,13 +131,21 @@ const JobDescriptionField = ({ establishmentId }: { establishmentId?: string }) 
   const { values, setFieldValue, errors } = useFormikContext<any>()
   return (
     <Box sx={{ mt: fr.spacing("4v"), "& .fr-input-group": { mb: 0 } }}>
+      <label className={fr.cx("fr-label")} htmlFor="job_description">
+        Description du poste
+        <span className={fr.cx("fr-hint-text")}>
+          Décrivez les missions et responsabilités du poste. Les coordonnées, adresses e-mails et liens externes ne seront pas affichés aux candidats. La taille du champ est
+          limitée à {JOB_DESCRIPTION_MAX} caractères.
+        </span>
+      </label>
+      <AmeliorerIaButton fieldName="job_description" establishmentId={establishmentId} />
       <Input
-        label="Description du poste"
-        hintText={`Décrivez les missions et responsabilités du poste. Les coordonnées, adresses e-mails et liens externes ne seront pas affichés aux candidats. La taille du champ est limitée à ${JOB_DESCRIPTION_MAX} caractères.`}
+        label=""
         state={errors.job_description ? "error" : "default"}
         stateRelatedMessage={errors.job_description as string}
         textArea
         nativeTextAreaProps={{
+          id: "job_description",
           name: "job_description",
           value: values.job_description,
           maxLength: JOB_DESCRIPTION_MAX,
@@ -136,7 +154,6 @@ const JobDescriptionField = ({ establishmentId }: { establishmentId?: string }) 
           onChange: (e) => setFieldValue("job_description", e.target.value),
         }}
       />
-      <AmeliorerIaButton fieldName="job_description" establishmentId={establishmentId} />
     </Box>
   )
 }
@@ -145,13 +162,21 @@ const EmployerDescriptionField = ({ establishmentId }: { establishmentId?: strin
   const { values, setFieldValue, errors } = useFormikContext<any>()
   return (
     <Box sx={{ "& .fr-input-group": { mb: 0 } }}>
+      <label className={fr.cx("fr-label")} htmlFor="job_employer_description">
+        Présentation de l'entreprise (Facultatif)
+        <span className={fr.cx("fr-hint-text")}>
+          Décrivez les activités et les spécificités de l'entreprise. Les coordonnées, adresses e-mails et liens externes ne seront pas affichés aux candidats. La taille du champ
+          est limitée à {EMPLOYER_DESCRIPTION_MAX} caractères.
+        </span>
+      </label>
+      <AmeliorerIaButton fieldName="job_employer_description" establishmentId={establishmentId} />
       <Input
-        label="Présentation de l'entreprise (Facultatif)"
-        hintText={`Décrivez les activités et les spécificités de l'entreprise. Les coordonnées, adresses e-mails et liens externes ne seront pas affichés aux candidats. La taille du champ est limitée à ${EMPLOYER_DESCRIPTION_MAX} caractères.`}
+        label=""
         state={errors.job_employer_description ? "error" : "default"}
         stateRelatedMessage={errors.job_employer_description as string}
         textArea
         nativeTextAreaProps={{
+          id: "job_employer_description",
           name: "job_employer_description",
           value: values.job_employer_description,
           maxLength: EMPLOYER_DESCRIPTION_MAX,
@@ -161,7 +186,6 @@ const EmployerDescriptionField = ({ establishmentId }: { establishmentId?: strin
           onChange: (e) => setFieldValue("job_employer_description", e.target.value),
         }}
       />
-      <AmeliorerIaButton fieldName="job_employer_description" establishmentId={establishmentId} />
     </Box>
   )
 }
