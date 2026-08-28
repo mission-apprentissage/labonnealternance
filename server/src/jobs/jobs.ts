@@ -99,9 +99,10 @@ export async function setupJobProcessor() {
             tag: "main",
           },
           "Traitement complet des jobs_partners par API": {
-            cron_string: "*/10 * * * *",
+            cron_string: "*/5 * * * *",
             handler: processJobPartnersForApi,
             tag: "slave",
+            concurrency: { mode: "exclusive" },
           },
           "Expiration des offres jobs_partners": {
             cron_string: "*/30 * * * *",
