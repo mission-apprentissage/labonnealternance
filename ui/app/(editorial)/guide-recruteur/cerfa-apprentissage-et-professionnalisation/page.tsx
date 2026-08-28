@@ -32,6 +32,7 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       redirectionInterne={<RedirectionInterne source="guide-recruteur" />}
       allerPlusLoinItems={[
+        ARTICLES["recruter-un-alternant"],
         ARTICLES["je-suis-employeur-public"],
         ARTICLES_PARTAGES["apprentissage-et-handicap"],
         ARTICLES_PARTAGES["prevention-des-risques-professionnels-pour-les-apprentis"],

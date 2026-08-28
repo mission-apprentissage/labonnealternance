@@ -10,7 +10,7 @@ import { getStaticMetiers } from "@/utils/get-static-data"
 import { getHostFromHeader } from "@/utils/request-utils"
 
 // Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
-export const mainSitemapLastModificationDate = new Date("2026-08-06T00:00:00.000Z")
+export const mainSitemapLastModificationDate = new Date("2026-08-11T00:00:00.000Z")
 
 // Une page référencée à la fois dans le sitemap et dans le llms.txt.
 // `label` et `description` ne servent qu'au llms.txt (le sitemap n'utilise que le path).
@@ -106,8 +106,13 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
       title: "Guide du recruteur",
       priority: 0.9,
       pages: [
-        { path: "/guide-recruteur", label: "Guide du recruteur", description: "Tout savoir sur le recrutement d'un alternant pour une entreprise." },
-        { path: "/guide-recruteur/je-suis-employeur-public", label: "Je suis employeur public", description: "Recruter un alternant dans la fonction publique." },
+        { path: "/guide-recruteur", label: "Guide du recruteur", description: "Tout savoir sur le recrutement d'un apprenti pour une entreprise." },
+        {
+          path: "/guide-recruteur/recruter-un-alternant",
+          label: "Recruter un apprenti",
+          description: "Aides à l'embauche 2026, coût réel, conditions et démarches pour recruter un apprenti. Dépôt d'offre gratuit pour les employeurs.",
+        },
+        { path: "/guide-recruteur/je-suis-employeur-public", label: "Je suis employeur public", description: "Recruter un apprenti dans la fonction publique." },
         {
           path: "/guide-recruteur/cerfa-apprentissage-et-professionnalisation",
           label: "Cerfa apprentissage et professionnalisation",
