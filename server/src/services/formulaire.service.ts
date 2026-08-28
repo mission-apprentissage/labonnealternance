@@ -557,13 +557,13 @@ const getRecruiterFromJobsPartnerFilter = async ({
     getDbCollection("userswithaccounts").findOne({ _id: userId }),
   ])
   if (!mainRole) {
-    throw internal(`inattendu: mainRole vide pour userId=${userId}, siret=${siret}`)
+    throw internal("inattendu: mainRole vide", { userId: userId.toString(), siret })
   }
   if (!entreprise) {
-    throw internal(`inattendu: entreprise vide pour userId=${userId}, siret=${siret}`)
+    throw internal("inattendu: entreprise vide", { userId: userId.toString(), siret })
   }
   if (!user) {
-    throw internal(`inattendu: user vide pour userId=${userId}, siret=${siret}`)
+    throw internal("inattendu: user vide", { userId: userId.toString(), siret })
   }
   let cfa: ICFA | null = null
   if (mainRole.authorized_type === AccessEntityType.CFA) {
