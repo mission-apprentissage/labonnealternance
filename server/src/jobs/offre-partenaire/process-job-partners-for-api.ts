@@ -36,6 +36,10 @@ const syncImportedJobsToSearchItems = async (jobPartnerIds: ObjectId[]) => {
     const { upserted, removed } = await syncJobPartnersToSearchItemsInChunks(jobPartnerIds)
     logger.info(`processJobPartnersForApi: indexation search_items de ${jobPartnerIds.length} offres importées — ${upserted} upserts, ${removed} retraits`)
   } catch (err) {
+    // Loggué en plus de Sentry : le run sort en succès, donc sans cette ligne la dégradation est
+    // indiscernable d'un bon run dans les logs — or c'est là qu'on diagnostique la latence
+    // d'indexation. Les offres restent rattrapées par le cron delta puis par le nightly.
+    logger.error({ err, count: jobPartnerIds.length }, "processJobPartnersForApi: indexation search_items en échec, rattrapage laissé au cron delta")
     sentryCaptureException(err)
   }
 }
