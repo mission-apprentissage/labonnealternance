@@ -526,13 +526,16 @@ export const syncJobPartnersToSearchItemsInBackground = (ids: ObjectId[]): void 
   upsertJobPartnersToSearchItems(ids).catch((err) => sentryCaptureException(err))
 }
 
-// Fenêtre du delta : 2× l'intervalle du cron (15 min) — un run raté est rattrapé par le
-// suivant, les upserts sont idempotents, et le nightly réconcilie l'ensemble.
-const DELTA_DEFAULT_WINDOW_MS = 30 * 60 * 1000
+// Fenêtre du delta : 2× l'intervalle du cron (5 min) — un run raté est rattrapé par le
+// suivant, les upserts sont idempotents, et le nightly réconcilie l'ensemble. À garder aligné
+// sur l'intervalle : une fenêtre plus large ne protège pas davantage (un run raté reste couvert)
+// mais réécrit chaque document autant de fois qu'il y a de runs dans la fenêtre — ce qui pesait
+// pendant les imports de masse nocturnes.
+const DELTA_DEFAULT_WINDOW_MS = 10 * 60 * 1000
 const DELTA_CHUNK_SIZE = 500
 
 /**
- * Cron delta : synchronise les jobs_partners modifiés depuis `since` (défaut : 30 min).
+ * Cron delta : synchronise les jobs_partners modifiés depuis `since` (défaut : 10 min).
  * Couvre les écritures de masse (expiration, imports, dédoublonnage…) qui bumpent
  * `updated_at` — les suppressions physiques, invisibles ici, sont traitées par les appels
  * explicites et la purge des orphelins du nightly.

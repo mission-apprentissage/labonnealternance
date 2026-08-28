@@ -1,7 +1,7 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
@@ -43,6 +43,64 @@ describe("jobs.controller", () => {
 
         expect(response.statusCode).toBe(200)
         expect(response.json().id).toBe(job._id.toString())
+      })
+    })
+
+    describe(`source: ${LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}`, () => {
+      it("retourne la raison sociale quand workplace_name est une chaîne vide", async () => {
+        // Faux positif du `??` : "" n'est pas nullish, la fiche détail affichait un employeur vide
+        // alors que la carte de résultat (buildJobOfferSearchItem, en `||`) affichait bien le nom.
+        const job = generateJobsPartnersOfferPrivate({
+          partner_label: "Mission Apprentissage",
+          workplace_name: "",
+          workplace_brand: null,
+          workplace_legal_name: "DIRECTION INTERMINISTERIELLE DU NUMERIQUE",
+        })
+        await getDbCollection("jobs_partners").insertOne(job)
+
+        const response = await httpClient().inject({
+          method: "GET",
+          path: `/api/_private/jobs/${LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}/${job._id.toString()}`,
+        })
+
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(response.json().company.name).toBe("DIRECTION INTERMINISTERIELLE DU NUMERIQUE")
+      })
+
+      it("retourne le nom par défaut quand tous les noms sont vides ou absents", async () => {
+        const job = generateJobsPartnersOfferPrivate({
+          partner_label: "Mission Apprentissage",
+          workplace_name: "",
+          workplace_brand: "",
+          workplace_legal_name: null,
+        })
+        await getDbCollection("jobs_partners").insertOne(job)
+
+        const response = await httpClient().inject({
+          method: "GET",
+          path: `/api/_private/jobs/${LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}/${job._id.toString()}`,
+        })
+
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(response.json().company.name).toBe(UNKNOWN_COMPANY)
+      })
+
+      it("privilégie workplace_name quand il est renseigné", async () => {
+        const job = generateJobsPartnersOfferPrivate({
+          partner_label: "Mission Apprentissage",
+          workplace_name: "Nom customisé",
+          workplace_brand: "Enseigne",
+          workplace_legal_name: "Raison sociale",
+        })
+        await getDbCollection("jobs_partners").insertOne(job)
+
+        const response = await httpClient().inject({
+          method: "GET",
+          path: `/api/_private/jobs/${LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}/${job._id.toString()}`,
+        })
+
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(response.json().company.name).toBe("Nom customisé")
       })
     })
 
