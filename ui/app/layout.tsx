@@ -1,6 +1,6 @@
 //import { Alert, AlertTitle } from "@mui/material"
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import type { PropsWithChildren } from "react"
 import { setupZodErrorMap } from "shared/helpers/zod-helpers/setup-zod-error-map"
 import { HeadLaBonneAlternance } from "@/components/head"
@@ -11,20 +11,36 @@ import RootTemplate from "./client_only_providers"
 import { DsfrProvider, StartDsfrOnHydration } from "./dsfr-setup"
 import { DsfrHead, getHtmlAttributes } from "./dsfr-setup/server-only-index"
 
-import "react-notion-x/src/styles.css"
 import "@/public/styles/application.css"
 import "@/public/styles/fonts.css"
-import "@/public/styles/notion.css"
 import "@/styles/search.css"
 
 export const metadata: Metadata = {
   metadataBase: new URL(publicConfig.baseUrl),
-  manifest: "/favicon/site.webmanifest",
   description: "La bonne alternance vous aide à trouver un emploi en alternance et une formation en apprentissage. Service public gratuit, des milliers d'offres en France.",
   robots: getRobotsMetadata(publicConfig.disableRobots),
   alternates: {
     canonical: "./",
   },
+  icons: {
+    icon: [
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/favicon/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  appleWebApp: {
+    // émis par Next 16 comme mobile-web-app-capable, le successeur standardisé de apple-mobile-web-app-capable
+    capable: true,
+    title: "La bonne alternance",
+    statusBarStyle: "default",
+  },
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#000091",
 }
 
 setupZodErrorMap()
@@ -36,7 +52,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html {...getHtmlAttributes({ lang })}>
       <head>
         <HeadLaBonneAlternance />
-        <DsfrHead preloadFonts={["Marianne-Regular", "Marianne-Bold"]} doDisableFavicon={true} />
+        {/* Marianne-Medium est aussi préchargée : sans elle, la police n'est découverte
+            qu'après le parse du CSS DSFR et devient la plus longue chaîne critique (~1,3 s mobile) */}
+        <DsfrHead preloadFonts={["Marianne-Regular", "Marianne-Medium", "Marianne-Bold"]} doDisableFavicon={true} />
         <Matomo />
       </head>
       <body>

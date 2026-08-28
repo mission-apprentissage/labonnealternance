@@ -121,7 +121,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "FUMISTE",
       "OPTION RAMONEUR",
       "OPTION POELIER-ATRIER",
       "foropa"
@@ -338,7 +337,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "FINITIONS",
       "AMENAGEMENT DES BATIMENTS : CONCEPTION ET REALISATION",
       "fabcr",
       "fadbcer"
@@ -477,7 +475,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "QUALITE",
       "LOGISTIQUE INDUSTRIELLE ET ORGANISATION : MANAGEMENT DE LA PRODUCTION",
       "qliomp",
       "qlieomdlp"
@@ -715,7 +712,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GENIE INDUSTRIEL ET MAINTENANCE : MANAGEMENT",
-      "METHODES",
       "MAINTENANCE INNOVANTE",
       "gimmmmi",
       "giemmmmi"
@@ -892,7 +888,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INGENIEUR DIPLOME DE L'ECOLE SUPERIEURE DE CHIMIE",
-      "PHYSIQUE",
       "ELECTRONIQUE DE LYON",
       "SPECIALITE GENIE DES PROCEDES",
       "idescpelsgp",
@@ -1024,7 +1019,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DIPLOME GRADE MASTER DE PARIS DAUPHINE : CONTROLE",
-      "AUDIT",
       "REPORTING FINANCIER",
       "dgmpdcarf",
       "dgmdpdcarf"
@@ -1133,8 +1127,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AGENT DE MEDIATION",
-      "INFORMATION",
-      "SERVICES",
       "amis",
       "admis"
     ]
@@ -1143,9 +1135,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHIMIE ANALYTIQUE",
-      "CONTROLE",
-      "QUALITE",
-      "ENVIRONNEMENT",
       "cacqe"
     ]
   },
@@ -1439,7 +1428,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ANALYSE",
       "QUALITE ET CONTROLE DES MATERIAUX PRODUITS",
       "aqcmp",
       "aqecdmp"
@@ -1849,7 +1837,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "LANGUES",
       "LITTERATURES ET CIVILISATIONS ETRANGERES ET REGIONALES",
       "llcer",
       "lleceer"
@@ -1890,9 +1877,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ELECTRONIQUE",
       "ENERGIE ELECTRIQUE",
-      "AUTOMATIQUE",
       "eeea"
     ]
   },
@@ -2190,7 +2175,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "INNOVATION",
       "ENTREPRISE ET SOCIETE",
       "ies",
       "iees"
@@ -2304,7 +2288,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DEVELOPPEMENT",
       "ANIMATION DES TERRITOIRES RURAUX",
       "datr",
       "dadtr"
@@ -2451,7 +2434,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GESTION ADMINISTRATIVE ET COMMERCIALE DES ORGANISATIONS : MANAGEMENT DES ACTIVITES CULTURELLES",
-      "ARTISTIQUES",
       "SPORTIVES ET DE TOURISME",
       "gacomacast",
       "gaecdomdacasedt"
@@ -2761,7 +2743,6 @@
     "synonyms": [
       "INGENIEUR DIPLOME DE L'ECOLE NATIONALE VETERINAIRE",
       "AGROALIMENTAIRE ET DE L'ALIMENTATION",
-      "NANTES-ATLANTIQUE",
       "idenvaana",
       "iddlenvaedlana"
     ]
@@ -3174,7 +3155,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ANALYSE",
       "CONDUITE ET STRATEGIE DE L'ENTREPRISE AGRICOLE",
       "acsea",
       "acesdlea"
@@ -3449,7 +3429,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ARTS",
       "LETTRES ET CIVILISATIONS",
       "alc",
       "alec"
@@ -3516,8 +3495,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GESTION DE PRODUCTION",
-      "LOGISTIQUE",
-      "ACHATS",
       "gpla",
       "gdpla"
     ]
@@ -3525,7 +3502,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ANIMATION",
       "GESTION ET ORGANISATION DES ACTIVITES PHYSIQUES ET SPORTIVES",
       "agoaps",
       "ageodapes"
@@ -4431,7 +4407,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "INSTALLATEUR",
       "DEPANNEUR EN FROID ET CONDITIONNEMENT D'AIR",
       "idfca",
       "idefecda"
@@ -4456,7 +4431,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INGENIEUR DIPLOME DE L'ECOLE SUPERIEURE DE CHIMIE",
-      "PHYSIQUE",
       "ELECTRONIQUE DE LYON",
       "SPECIALITE INFORMATIQUE ET CYBERSECURITE",
       "idescpelsic",
@@ -5016,7 +4990,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CARTOGRAPHIE",
       "TOPOGRAPHIE ET SYSTEMES D'INFORMATION GEOGRAPHIQUE",
       "ctsig",
       "ctesdig"
@@ -5276,7 +5249,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AGRICULTURE BIOLOGIQUE : PRODUCTION",
-      "CONSEIL",
       "CERTIFICATION ET COMMERCIALISATION",
       "abpccc",
       "abpccec"
@@ -5554,7 +5526,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "QUALITE",
       "LOGISTIQUE INDUSTRIELLE ET ORGANISATION : MANAGEMENT DE LA TRANSFORMATION DIGITALE",
       "qliomtd",
       "qlieomdltd"
@@ -5580,8 +5551,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AMENAGEMENT PAYSAGER : CONCEPTION",
-      "GESTION",
-      "ENTRETIEN",
       "apcge"
     ]
   },
@@ -6023,7 +5992,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "QUALITE",
       "LOGISTIQUE INDUSTRIELLE ET ORGANISATION : ORGANISATION ET SUPPLY CHAIN",
       "qlioosc",
       "qlieooesc"
@@ -6393,7 +6361,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "AGRICULTURE",
       "NUMERIQUE ET TECHNOLOGIES EMBARQUEES",
       "ante",
       "anete"
@@ -6887,7 +6854,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ENCADREMENT SECTEUR SPORTIF OPTION ACTIVITES DE LA FORME - HALTEROPHILIE",
-      "MUSCULATION",
       "essoafhm",
       "essoadlfhm"
     ]
@@ -7193,9 +7159,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CYBERSECURITE",
       "INFORMATIQUE ET RESEAUX",
-      "ELECTRONIQUE",
       "cire",
       "ciere"
     ]
@@ -7363,7 +7327,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INGENIEUR DIPLOME DE L'ECOLE SUPERIEURE DE CHIMIE",
-      "PHYSIQUE",
       "ELECTRONIQUE DE LYON",
       "SPECIALITE INFORMATIQUE ET RESEAUX",
       "idescpelsir",
@@ -7422,16 +7385,13 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "AUDIOVISUEL",
       "MEDIAS INTERACTIFS NUMERIQUES",
-      "JEUX",
       "aminj"
     ]
   },
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CONTROLE",
       "RAYONNEMENT IONISANTS",
       "APPLICATION TECHNIQUE DE PROTECTION",
       "criatp",
@@ -7985,7 +7945,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE DE PRODUCTIONS LEGUMIERES",
-      "FRUITIERES",
       "FLORALES ET DE PEPINIERES",
       "rplffp",
       "rdplffedp"
@@ -8019,7 +7978,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE QUALITE",
-      "SANTE",
       "SECURITE ENVIRONNEMENT",
       "rqsse"
     ]
@@ -8140,8 +8098,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "GEOGRAPHIE",
-      "AMENAGEMENT",
       "ENVIRONNEMENT ET DEVELOPPEMENT",
       "gaed",
       "gaeed"
@@ -8440,7 +8396,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE L'INDUSTRIE : MECATRONIQUE",
-      "ROBOTIQUE",
       "mimr",
       "mdlimr"
     ]
@@ -8449,7 +8404,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MATHEMATIQUES APPLIQUEES",
-      "STATISTIQUE",
       "mas"
     ]
   },
@@ -8592,7 +8546,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE LA SANTE : NUTRITION",
-      "ALIMENTATION",
       "msna",
       "mdlsna"
     ]
@@ -8641,7 +8594,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ACTION",
       "COMMERCIALISATION DES SERVICES SPORTIFS",
       "acss",
       "acdss"
@@ -8772,9 +8724,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CYBERSECURITE",
       "INFORMATIQUE ET RESEAUX",
-      "ELECTRONIQUE",
       "OPTION B ELECTRONIQUE ET RESEAUX",
       "cireober",
       "ciereobeer"
@@ -9286,8 +9236,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ASSURANCE",
-      "BANQUE",
       "FINANCE : CHARGE DE CLIENTELE",
       "abfcc",
       "abfcdc"
@@ -9386,7 +9334,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ACCOMPAGNEMENT",
       "SOINS ET SERVICES A LA PERSONNE",
       "assp",
       "asesalp"
@@ -9453,8 +9400,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INFORMATIQUE : REALISATION D'APPLICATIONS / CONCEPTION",
-      "DEVELOPPEMENT",
-      "VALIDATION",
       "ira/cdv",
       "irda/cdv"
     ]
@@ -9778,7 +9723,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ORGANISATION",
       "MANAGEMENT DES SERVICES DE L'AUTOMOBILE",
       "omsa",
       "omdsdla"
@@ -10107,7 +10051,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MAITRISE DE L'ENERGIE",
-      "ELECTRICITE",
       "DEVELOPPEMENT DURABLE",
       "meedd",
       "mdleedd"
@@ -10141,7 +10084,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MAINTENANCE ET TECHNOLOGIE : ELECTRONIQUE",
-      "INSTRUMENTATION",
       "mtei",
       "metei"
     ]
@@ -10249,8 +10191,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MECANICIEN CONDUCTEUR DES SCIERIES ET DES INDUSTRIES MECANIQUES DU BOIS OP. B : MECANICIEN AFFUTEUR DE SCIAGE",
-      "TRANCHAGE",
-      "DEROULAGE",
       "mcsimbobmastd",
       "mcdsedimdbobmadstd"
     ]
@@ -10313,9 +10253,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CYBERSECURITE",
       "INFORMATIQUE ET RESEAUX",
-      "ELECTRONIQUE",
       "OPTION A INFORMATIQUE ET RESEAUX",
       "cireoir",
       "ciereoaier"
@@ -10382,7 +10320,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCIENCES DE LA TERRE ET DES PLANETES",
-      "ENVIRONNEMENT",
       "stpe",
       "sdltedpe"
     ]
@@ -10759,14 +10696,12 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CALCUL HAUTE PERFORMANCE",
-      "SIMULATION",
       "chps"
     ]
   },
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PACKAGING",
       "EMBALLAGE ET CONDITIONNEMENT : ECO-CONCEPTION HOMOLOGATION SUPPLY CHAIN",
       "pecechsc",
       "peecechsc"
@@ -10935,7 +10870,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE L'ELECTRONIQUE : MICROELECTRONIQUE",
-      "OPTRONIQUE",
       "memo",
       "mdlemo"
     ]
@@ -10960,7 +10894,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "BIOCHIMIE",
       "BIOLOGIE MOLECULAIRE",
       "bbm"
     ]
@@ -11222,7 +11155,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PRODUCTION",
       "TRANSFORMATION ET COMMERCIALISATION DES PRODUITS FERMIERS",
       "ptcpf",
       "ptecdpf"
@@ -11248,7 +11180,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "COMPOSITES",
       "PLASTIQUES CHAUDRONNES",
       "cpc"
     ]
@@ -11591,8 +11522,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHIMIE : ANALYSE",
-      "CONTROLE-QUALITE",
-      "ENVIRONNEMENT",
       "cacqe"
     ]
   },
@@ -12124,8 +12053,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "TECHNIQUES",
-      "PATRIMOINE",
       "TERRITOIRES DE L'INDUSTRIE : HISTOIRE",
       "VALORISATION DIDACTIQUE",
       "tptihvd",
@@ -12143,8 +12070,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ASISTANCE",
-      "CONSEIL",
       "VENTE A DISTANCE",
       "acvd",
       "acvad"
@@ -12177,8 +12102,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ASSURANCE",
-      "BANQUE",
       "FINANCE : SUPPORTS OPERATIONNELS",
       "abfso"
     ]
@@ -12234,7 +12157,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CIVILISATIONS",
       "CULTURES ET SOCIETES",
       "ccs",
       "cces"
@@ -12283,7 +12205,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PACKAGING",
       "EMBALLAGE ET CONDITIONNEMENT : ECO-CONCEPTION ET INDUSTRIALISATION",
       "pececi",
       "peececei"
@@ -12590,7 +12511,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "JUSTICE",
       "PROCES ET PROCEDURES",
       "jpp",
       "jpep"
@@ -12607,7 +12527,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ARCHEOLOGIE",
       "SCIENCES POUR L'ARCHEOLOGIE",
       "aspa",
       "aspla"
@@ -12897,7 +12816,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "BIODIVERSITE",
       "ECOLOGIE ET EVOLUTION",
       "bee",
       "beee"
@@ -13027,7 +12945,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "FACONNAGE DE PRODUITS IMPRIMES",
-      "ROUTAGE",
       "fpir",
       "fdpir"
     ]
@@ -13240,7 +13157,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ANALYSES BIOLOGIQUES",
-      "BIOTECHNOLOGIQUES",
       "AGRICOLES ET ENVIRONNEMENTALES",
       "abbae",
       "abbaee"
@@ -13307,7 +13223,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "QUALITE",
       "LOGISTIQUE INDUSTRIELLE ET ORGANISATION : QUALITE ET MANAGEMENT INTEGRES",
       "qlioqmi",
       "qlieoqemi"
@@ -13349,7 +13264,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INGENIEUR DIPLOME DE L'INSTITUT SUPERIEUR DES SCIENCES AGRONOMIQUES",
-      "AGROALIMENTAIRES",
       "HORTICOLES ET DU PAYSAGE",
       "idissaahp",
       "iddlisdsaahedp"

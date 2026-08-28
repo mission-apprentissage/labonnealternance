@@ -400,28 +400,41 @@ export const buildRecruteurSearchItem = (job: IJobPartnerForSearchItem, ctx: Sea
 
 // ─── Synchronisation incrémentale jobs_partners → search_items ─────────────────────────────
 
+/**
+ * Stages partagés nightly/sync : comptage des candidatures d'une offre. applications.job_id est
+ * un ObjectId : jointure directe ObjectId↔ObjectId (comparer à $toString(_id) ne matchait plus
+ * rien → compteur à 0). Le $count dans le pipeline du $lookup évite de matérialiser les documents
+ * candidature en mémoire — seul le compteur remonte.
+ */
+export const applicationCountByJobIdStages = [
+  { $lookup: { from: "applications", localField: "_id", foreignField: "job_id", as: "applications", pipeline: [{ $count: "count" }] } },
+  { $addFields: { application_count: { $ifNull: [{ $first: "$applications.count" }, 0] } } },
+]
+
+/**
+ * Stage de comptage des candidatures d'un recruteur LBA par siret (candidature spontanée) : ce
+ * volume n'est PAS plafonné (contrairement aux offres, cf. checkMaxApplicationCount qui exclut
+ * explicitement RECRUTEURS_LBA) — d'où le $count dans le pipeline pour ne jamais matérialiser un
+ * tableau de candidatures potentiellement volumineux pour un siret très sollicité.
+ */
+export const applicationCountBySiretLookupStage = {
+  $lookup: { from: "applications", localField: "workplace_siret", foreignField: "company_siret", as: "applications", pipeline: [{ $count: "count" }] },
+}
+
 /** Pipelines de récupération des jobs_partners avec leurs champs dérivés (application_count, rome_codes recruteurs). */
 const fetchJobPartnersForSync = async (ids: ObjectId[]): Promise<{ offers: IJobPartnerForSearchItem[]; recruteurs: IJobPartnerForSearchItem[] }> => {
   const [offers, recruteurs] = await Promise.all([
     getDbCollection("jobs_partners")
       .aggregate<IJobPartnerForSearchItem>([
         { $match: { _id: { $in: ids }, partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA } } },
-        {
-          $lookup: {
-            from: "applications",
-            let: { jobIdStr: { $toString: "$_id" } },
-            pipeline: [{ $match: { $expr: { $eq: ["$job_id", "$$jobIdStr"] } } }],
-            as: "applications",
-          },
-        },
-        { $addFields: { application_count: { $size: "$applications" } } },
+        ...applicationCountByJobIdStages,
         { $project: { ...jobsProjection, application_count: 1, offer_status: 1 } },
       ])
       .toArray(),
     getDbCollection("jobs_partners")
       .aggregate<IJobPartnerForSearchItem>([
         { $match: { _id: { $in: ids }, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
-        { $lookup: { from: "applications", localField: "workplace_siret", foreignField: "company_siret", as: "applications" } },
+        applicationCountBySiretLookupStage,
         { $lookup: { from: "raw_recruteurslba", localField: "workplace_siret", foreignField: "siret", as: "rawR" } },
         {
           // rome_codes : priorité au classement de raw_recruteurslba (codes ordonnés par
@@ -434,7 +447,7 @@ const fetchJobPartnersForSync = async (ids: ObjectId[]): Promise<{ offers: IJobP
                 in: { $slice: [{ $cond: [{ $gt: [{ $size: "$$fromRaw" }, 0] }, "$$fromRaw", { $ifNull: ["$offer_rome_codes", []] }] }, 6] },
               },
             },
-            application_count: { $size: "$applications" },
+            application_count: { $ifNull: [{ $first: "$applications.count" }, 0] },
           },
         },
         { $project: { ...jobsProjection, application_count: 1, rome_codes: 1, offer_status: 1 } },
@@ -513,13 +526,16 @@ export const syncJobPartnersToSearchItemsInBackground = (ids: ObjectId[]): void 
   upsertJobPartnersToSearchItems(ids).catch((err) => sentryCaptureException(err))
 }
 
-// Fenêtre du delta : 2× l'intervalle du cron (15 min) — un run raté est rattrapé par le
-// suivant, les upserts sont idempotents, et le nightly réconcilie l'ensemble.
-const DELTA_DEFAULT_WINDOW_MS = 30 * 60 * 1000
+// Fenêtre du delta : 2× l'intervalle du cron (5 min) — un run raté est rattrapé par le
+// suivant, les upserts sont idempotents, et le nightly réconcilie l'ensemble. À garder aligné
+// sur l'intervalle : une fenêtre plus large ne protège pas davantage (un run raté reste couvert)
+// mais réécrit chaque document autant de fois qu'il y a de runs dans la fenêtre — ce qui pesait
+// pendant les imports de masse nocturnes.
+const DELTA_DEFAULT_WINDOW_MS = 10 * 60 * 1000
 const DELTA_CHUNK_SIZE = 500
 
 /**
- * Cron delta : synchronise les jobs_partners modifiés depuis `since` (défaut : 30 min).
+ * Cron delta : synchronise les jobs_partners modifiés depuis `since` (défaut : 10 min).
  * Couvre les écritures de masse (expiration, imports, dédoublonnage…) qui bumpent
  * `updated_at` — les suppressions physiques, invisibles ici, sont traitées par les appels
  * explicites et la purge des orphelins du nightly.

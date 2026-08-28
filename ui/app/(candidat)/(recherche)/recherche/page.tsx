@@ -1,7 +1,9 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+import { RechercheSeoContent } from "./_components/RechercheSeoContent"
 import { SearchPageClient } from "./_components/SearchPageClient"
-import { buildSearchPageTitle, parseSearchPageParams } from "./_utils/search.params.utils"
+import { buildRecherchePageMetadata } from "./_utils/recherche.metadata.utils"
+import { parseSearchPageParams } from "./_utils/search.params.utils"
 
 type Props = {
   searchParams: Promise<Record<string, string>>
@@ -9,10 +11,10 @@ type Props = {
 
 // Titre ajusté à la recherche (métier / lieu / mode), comme le moteur legacy.
 // Les navigations client (router.replace) re-fetchent le payload RSC → Next met à jour
-// document.title à chaque recherche.
+// document.title à chaque recherche. Repli sur les URL legacy `?job_name=` (cf. util) pour ne
+// pas servir un titre générique aux pages métier indexées par Google.
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const params = parseSearchPageParams(new URLSearchParams(await searchParams))
-  return { title: buildSearchPageTitle(params) }
+  return buildRecherchePageMetadata(new URLSearchParams(await searchParams))
 }
 
 export default async function RecherchePage({ searchParams }: Props) {
@@ -20,8 +22,11 @@ export default async function RecherchePage({ searchParams }: Props) {
   const params = parseSearchPageParams(urlSearchParams)
 
   return (
-    <Suspense>
-      <SearchPageClient initialParams={params} />
-    </Suspense>
+    <>
+      <RechercheSeoContent params={params} />
+      <Suspense>
+        <SearchPageClient initialParams={params} />
+      </Suspense>
+    </>
   )
 }

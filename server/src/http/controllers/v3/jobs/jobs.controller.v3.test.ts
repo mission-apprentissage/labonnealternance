@@ -1,6 +1,5 @@
 import { mockDiagoriente } from "@tests/mocks/mockDiagoriente"
 import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
-import { mockLab } from "@tests/mocks/mockLab"
 import { jobsV3Sdk, processComputedToJobsPartners } from "@tests/sdk/jobsV3Sdk"
 import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
@@ -25,6 +24,21 @@ import { certificationFixtures } from "@/services/external/api-alternance/certif
 
 vi.mock("@/common/apis/france-travail/france-travail.client")
 vi.mock("@/common/apis/api-entreprise/api-entreprise.client")
+
+// Remplace l'ancien mock HTTP du serveur lab (décommissionné) : la classification passe par
+// Mistral, mocké à la même frontière que dans cache-classification.service.test.ts. Répond
+// "publish" pour chaque offre reçue, comme le faisait le mock lab.
+vi.mock("@/services/mistralai/mistralai.service", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@/services/mistralai/mistralai.service")>()
+  return {
+    ...mod,
+    sendMistralMessages: vi.fn(async ({ messages }: { messages: { role: string; content: string }[] }) => {
+      const userMessage = messages.find((message) => message.role === "user")
+      const items = JSON.parse(userMessage!.content) as { id: string }[]
+      return JSON.stringify({ results: items.map(({ id }) => ({ id, label: "publish", scores: { publish: 0.9, unpublish: 0.1 } })) })
+    }),
+  }
+})
 
 const httpClient = useServer()
 const jobsSdk = jobsV3Sdk(httpClient)
@@ -84,12 +98,10 @@ useMongo()
 
 beforeAll(async () => {
   nock.disableNetConnect()
-  const mockLabInstance = mockLab()
   const { tokenMock, classificationMock } = mockDiagoriente()
 
   return () => {
     nock.enableNetConnect()
-    mockLabInstance.persist(false)
     tokenMock.persist(false)
     classificationMock.persist(false)
     nock.cleanAll()

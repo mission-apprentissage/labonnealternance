@@ -1,4 +1,5 @@
 import env from "env-var"
+import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS } from "shared/constants/session"
 
 const config = {
   version: env.get("PUBLIC_VERSION").required().asString(),
@@ -58,23 +59,15 @@ const config = {
       publicKey: env.get("LBA_API_APPRENTISSAGE_PUBLIC_KEY").required().asString(),
     },
     session: {
-      cookieName: "lba_session",
-      cookie: {
-        maxAge: 30 * 24 * 3600000,
-        httpOnly: true,
-        sameSite: "lax" as const,
-        path: "/",
-        secure: true,
-      },
+      cookieName: SESSION_COOKIE_NAME,
+      // maxAge en secondes : @fastify/cookie sérialise la valeur telle quelle dans Max-Age
+      cookie: SESSION_COOKIE_OPTIONS,
     },
   },
   diagoriente: {
     clientId: env.get("LBA_DIAGORIENTE_CLIENT_ID").required().asString(),
     clientSecret: env.get("LBA_DIAGORIENTE_CLIENT_SECRET").required().asString(),
     authUrl: "https://analytics-auth.atlantis.diagotech.dev/realms/esi-auth-keycloack/protocol/openid-connect/token",
-  },
-  labonnealternanceLab: {
-    baseUrl: "https://lab.apprentissage.beta.gouv.fr",
   },
   franceTravailDepotOffres: {
     login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),
@@ -213,6 +206,13 @@ const config = {
   taleez: {
     url: env.get("TALEEZ_API_URL").required().asString(),
     partnerKey: env.get("TALEEZ_API_PARTNER_KEY").required().asString(),
+  },
+  // Compte de service Google Indexing API (propriétaire délégué de la propriété Search Console).
+  // Volontairement non `required()` : le job pingGoogleIndexing est no-op tant que les
+  // variables ne sont pas dans le vault, sans bloquer les déploiements.
+  googleIndexing: {
+    clientEmail: env.get("LBA_GOOGLE_INDEXING_CLIENT_EMAIL").asString(),
+    privateKey: env.get("LBA_GOOGLE_INDEXING_PRIVATE_KEY").asString(),
   },
 }
 

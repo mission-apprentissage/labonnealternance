@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import PostulerPage from "./PostulerPage"
 export const metadata: Metadata = {
-  title: PAGES.static.postuler.getMetadata().title,
+  title: METADATA.static.postuler().title,
 }
 
 const Page = async () => {

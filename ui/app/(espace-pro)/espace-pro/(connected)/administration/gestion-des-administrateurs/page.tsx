@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import GestionDesAdministrateurs from "./gestionDesAdministrateurs"
 export const metadata: Metadata = {
-  title: PAGES.static.backAdminGestionDesAdministrateurs.getMetadata().title,
+  title: METADATA.static.backAdminGestionDesAdministrateurs().title,
 }
 
 export default async function AdministrationGestionAdministrateurs() {

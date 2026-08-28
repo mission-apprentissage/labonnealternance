@@ -15,8 +15,19 @@ export const ZSearchQuery = z.object({
   _id: zObjectId,
   q: z.string().max(200).describe("Requête brute saisie (tronquée à 200 caractères, PII pré-filtrées)"),
   q_normalized: z.string().describe("Clé d'agrégation : termes tokenizeQuery normalisés, joints par espace"),
-  nb_hits: z.number().describe("Nombre de résultats retournés"),
-  source: z.enum(["suggestion", "free_text"]).describe("Suggestion d'autocomplete sélectionnée vs texte libre"),
+  // "degraded" : searchItems a dû retenter sans fuzzy/synonymes suite à maxClauseCount dépassé
+  // (cf. #5153) — succès quand même, mais signal à part du "ok" pour repérer les requêtes qui
+  // stressent le moteur. "error" : searchItems a levé une exception non récupérée ; nb_hits est
+  // alors null (avant #5153/#5166, la quasi-totalité des échecs n'étaient jamais logués du tout
+  // puisque ce log n'était appelé qu'après un succès — ce champ comble ce trou).
+  status: z.enum(["ok", "degraded", "error"]).describe("Issue de la recherche : succès normal, succès après repli, ou échec"),
+  nb_hits: z.number().nullable().describe("Nombre de résultats retournés (null si status=error)"),
+  // Renommé depuis `source` (migration 20260824) : « source » est un paramètre réservé de
+  // Plausible (attribution d'acquisition) — le nom est banni de toute la chaîne (URL, API, base)
+  // pour ne pas polluer les stats. L'URL et l'API acceptent encore l'ancien nom en alias.
+  search_source: z
+    .enum(["suggestion", "free_text", "training_links", "external_sites"])
+    .describe("Suggestion d'autocomplete sélectionnée vs texte libre vs lien généré côté serveur (traininglinks, vœux Parcoursup) vs lien personnalisé posé par un site externe"),
   filters: z
     .object({
       type: z.string().nullable(),

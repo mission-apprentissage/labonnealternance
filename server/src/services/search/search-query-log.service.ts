@@ -10,6 +10,12 @@ import { normalizeTerm, tokenizeQuery } from "./search.service"
  * Contraintes : appelé en fire-and-forget depuis le contrôleur /v1/search (jamais d'await),
  * ne doit JAMAIS throw ni ralentir la réponse. RGPD : pas d'IP / user / referer, requêtes
  * contenant des PII jamais loggées, géo arrondie à ~11 km. Cf. searchQueries.model.ts.
+ *
+ * Appelé aussi bien sur succès que sur échec de searchItems (cf. search.controller.ts) : avant
+ * #5153, les requêtes qui plantaient n'étaient jamais loguées (le log n'existait que sur le
+ * chemin de succès), rendant impossible toute analyse a posteriori des échecs réels via
+ * `search_queries` — seul Sentry gardait la trace. `status` distingue désormais succès normal,
+ * succès après repli maxClauseCount ("degraded"), et échec ("error", nb_hits alors null).
  */
 
 // Détection PII dans le texte libre : email, téléphone FR, longues séquences de chiffres
@@ -41,14 +47,19 @@ type SearchQuerystring = {
   latitude?: number
   longitude?: number
   radius?: number
-  source?: "suggestion" | "free_text"
+  search_source?: "suggestion" | "free_text" | "training_links" | "external_sites"
+  // Alias déprécié (cf. search.routes.ts) : encore envoyé volontairement par l'UI courante
+  // (transition anti-version-skew) et par les liens traininglinks émis avant le 2026-08-24.
+  source?: "suggestion" | "free_text" | "training_links" | "external_sites"
 }
 
 // Arrondi à 1 décimale (~11 km) : suffisant pour "quelle zone cherche quoi", inexploitable
 // pour ré-identifier une personne.
 const roundCoord = (value: number) => Math.round(value * 10) / 10
 
-export async function logSearchQuery(query: SearchQuerystring, nbHits: number): Promise<void> {
+type SearchOutcome = { status: "ok" | "degraded"; nbHits: number } | { status: "error"; nbHits: null }
+
+export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOutcome): Promise<void> {
   try {
     const q = query.q?.trim().slice(0, 200)
     if (!q || containsPii(q)) return
@@ -63,8 +74,9 @@ export async function logSearchQuery(query: SearchQuerystring, nbHits: number): 
       _id: new ObjectId(),
       q,
       q_normalized,
-      nb_hits: nbHits,
-      source: query.source ?? "free_text",
+      status: outcome.status,
+      nb_hits: outcome.nbHits,
+      search_source: query.search_source ?? query.source ?? "free_text",
       filters: {
         type: query.type ?? null,
         type_filter_label: query.type_filter_label?.length ?? 0,

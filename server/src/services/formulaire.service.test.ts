@@ -1,9 +1,10 @@
 import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
 import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveDbEntity, saveEntrepriseUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { AccessEntityType, AccessStatus, removeAccents } from "shared"
+import { AccessEntityType, AccessStatus, JOB_STATUS_ENGLISH, removeAccents } from "shared"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -12,12 +13,26 @@ import { generateRoleManagementFixture, generateRoleManagementStatusEventFixture
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
 import type { ICFA } from "shared/models/cfa.model"
+import type { IFormationCatalogue } from "shared/models/formation.model"
+import { zFormationCatalogueSchema } from "shared/models/formation.model"
 import type { IEntreprise, IJobCreate, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { JOB_START_TYPE } from "shared/models/job.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { createJob, getCompetencesRomeFromPartnerJob, getFormulairesForCfaManagedEnterprises } from "./formulaire.service"
+import { checkForJobActivations, createJob, createJobDelegations, getCompetencesRomeFromPartnerJob, getFormulairesForCfaManagedEnterprises } from "./formulaire.service"
+import mailer from "./mailer.service"
+
+// Mock mailer service to avoid sending actual emails during tests
+vi.mock("@/services/mailer.service", () => {
+  return {
+    default: {
+      sendEmail: vi.fn().mockResolvedValue({ messageId: "test-message-id", accepted: ["test@example.com"] }),
+      renderEmail: vi.fn().mockResolvedValue("<html>Test Email</html>"),
+    },
+  }
+})
 
 // createJob/patchOffre appellent Mistral pour modérer job_description/job_employer_description (cf #5006) :
 // on mocke pour ne jamais dépendre du réseau/d'une clé API dans les tests, quel que soit le contenu des fixtures.
@@ -26,6 +41,10 @@ vi.mock("@/services/mistralai/mistralai.service", () => ({
 }))
 
 useMongo()
+
+beforeEach(() => {
+  vi.mocked(mailer.sendEmail).mockClear()
+})
 
 describe("createJob", () => {
   let user: IUserWithAccount
@@ -400,5 +419,143 @@ describe("getFormulairesForCfaManagedEnterprises", () => {
     const recruiters = await getFormulairesForCfaManagedEnterprises(adminUserId, cfa._id, true)
 
     expect(recruiters).toEqual([])
+  })
+})
+
+// mails (CFA + confirmation recruteur) déclenchés une fois le compte réellement validé : cf. le commentaire dans createJobDelegations.
+const saveFormationCatalogue = (data: Partial<IFormationCatalogue>) =>
+  saveDbEntity(zFormationCatalogueSchema, (item) => getDbCollection("formationcatalogues").insertOne(item), { catalogue_published: true, ...data })
+
+const saveJob = async (user: IUserWithAccount, entreprise: IEntreprise, overrides: Partial<IJobsPartnersOfferPrivate> = {}) => {
+  const job = generateJobsPartnersOfferPrivate({
+    managed_by: user._id,
+    workplace_siret: entreprise.siret,
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    ...overrides,
+  })
+  await getDbCollection("jobs_partners").insertOne(job)
+  return job
+}
+
+const ENTREPRISE_SIRET = "11000001500013"
+const CFA_SIRET = "13002526500013"
+
+describe("createJobDelegations", () => {
+  it("should create the delegation, notify the CFA and send the recruiter a recap mail when the account is already validated", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+    const job = await saveJob(user, entreprise)
+    const etablissementId = new ObjectId().toString()
+    await saveFormationCatalogue({
+      etablissement_formateur_id: etablissementId,
+      etablissement_formateur_siret: CFA_SIRET,
+      etablissement_formateur_courriel: "cfa@mail.fr",
+      etablissement_formateur_entreprise_raison_sociale: "Mon CFA",
+      etablissement_formateur_adresse: "1 rue du Test",
+      etablissement_formateur_code_postal: "75001",
+      etablissement_formateur_localite: "Paris",
+    })
+
+    await createJobDelegations({ jobId: job._id, etablissementCatalogueIds: [etablissementId] })
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
+    expect(updatedJob?.delegations).toEqual([{ email: "cfa@mail.fr", siret_code: CFA_SIRET, etablissement_id: etablissementId }])
+    expect(updatedJob?.job_delegation_count).toBe(1)
+
+    expect(mailer.sendEmail).toHaveBeenCalledTimes(2)
+    expect(mailer.sendEmail).toHaveBeenCalledWith(expect.objectContaining({ to: "cfa@mail.fr", subject: "Une entreprise recrute dans votre domaine" }))
+    expect(mailer.sendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: user.email,
+        subject: "Votre offre a été partagée à 1 école(s)",
+        data: expect.objectContaining({
+          delegations: [{ raison_sociale: "Mon CFA", siret_code: CFA_SIRET, adresse_etablissement: "1 rue du Test, 75001 Paris" }],
+        }),
+      })
+    )
+  })
+
+  it("should create the delegation but send no mail when the recruiter's role is not GRANTED yet", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, { status: [] }, { siret: ENTREPRISE_SIRET })
+    const job = await saveJob(user, entreprise)
+    const etablissementId = new ObjectId().toString()
+    await saveFormationCatalogue({ etablissement_formateur_id: etablissementId, etablissement_formateur_siret: CFA_SIRET, etablissement_formateur_courriel: "cfa@mail.fr" })
+
+    await createJobDelegations({ jobId: job._id, etablissementCatalogueIds: [etablissementId] })
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
+    expect(updatedJob?.delegations).toHaveLength(1)
+    expect(mailer.sendEmail).not.toHaveBeenCalled()
+  })
+
+  it("should create the delegation but send no mail when the recruiter's email is not confirmed yet", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: [] }, {}, { siret: ENTREPRISE_SIRET })
+    const job = await saveJob(user, entreprise)
+    const etablissementId = new ObjectId().toString()
+    await saveFormationCatalogue({ etablissement_formateur_id: etablissementId, etablissement_formateur_siret: CFA_SIRET, etablissement_formateur_courriel: "cfa@mail.fr" })
+
+    await createJobDelegations({ jobId: job._id, etablissementCatalogueIds: [etablissementId] })
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
+    expect(updatedJob?.delegations).toHaveLength(1)
+    expect(mailer.sendEmail).not.toHaveBeenCalled()
+  })
+
+  it("should silently skip an etablissementCatalogueId with no matching published formation", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+    const job = await saveJob(user, entreprise)
+
+    await createJobDelegations({ jobId: job._id, etablissementCatalogueIds: [new ObjectId().toString()] })
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
+    expect(updatedJob?.delegations).toEqual([])
+    expect(mailer.sendEmail).not.toHaveBeenCalled()
+  })
+})
+
+describe("checkForJobActivations", () => {
+  const cfaDelegation = { email: "cfa@mail.fr", siret_code: CFA_SIRET, etablissement_id: "etab-1" }
+
+  it("should activate the awaiting job and send the CFA + recap mail once the account is fully validated", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+    const job = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE, delegations: [cfaDelegation] })
+
+    await checkForJobActivations(user._id, entreprise._id)
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
+    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+
+    expect(mailer.sendEmail).toHaveBeenCalledTimes(2)
+    expect(mailer.sendEmail).toHaveBeenCalledWith(expect.objectContaining({ to: "cfa@mail.fr", subject: "Une entreprise recrute dans votre domaine" }))
+    expect(mailer.sendEmail).toHaveBeenCalledWith(expect.objectContaining({ to: user.email, subject: "Votre offre a été partagée à 1 école(s)" }))
+  })
+
+  it("should do nothing when the recruiter's email is not confirmed yet", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: [] }, {}, { siret: ENTREPRISE_SIRET })
+    const job = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE, delegations: [cfaDelegation] })
+
+    await checkForJobActivations(user._id, entreprise._id)
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
+    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_ATTENTE)
+    expect(mailer.sendEmail).not.toHaveBeenCalled()
+  })
+
+  it("should do nothing when the role is not GRANTED for this entreprise", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, { status: [] }, { siret: ENTREPRISE_SIRET })
+    const job = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE, delegations: [cfaDelegation] })
+
+    await checkForJobActivations(user._id, entreprise._id)
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
+    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_ATTENTE)
+    expect(mailer.sendEmail).not.toHaveBeenCalled()
+  })
+
+  it("should do nothing when there is no awaiting job for this entreprise", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+    await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+
+    await expect(checkForJobActivations(user._id, entreprise._id)).resolves.toBeUndefined()
+    expect(mailer.sendEmail).not.toHaveBeenCalled()
   })
 })

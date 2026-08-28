@@ -11,6 +11,11 @@ import { type KeyboardEvent, type ReactNode, useId, useRef, useState } from "rea
  *
  * La sélection est signalée par l'inversion du fond (pas de badge ✓) et le libellé
  * porte la valeur active (ex. « BTS, DEUST (Bac+2) », « Offres d'emploi en alternance, +1 »).
+ *
+ * RGAA : à l'ouverture, le focus est déplacé sur le premier élément atteignable du panneau
+ * (Tab seul ne suffisait pas — le Popper MUI ne gère aucun focus par défaut). Une fois dans
+ * le panneau, ↑/↓/Home/End déplacent le focus entre les éléments (cases, lignes de choix,
+ * champ de saisie), quel que soit le contenu passé en `popperContent`.
  */
 interface SearchFilterChipProps {
   label: string
@@ -29,6 +34,15 @@ interface SearchFilterChipProps {
   dialogTrigger?: boolean
   /** Notifie l'ouverture/fermeture du dropdown (télémétrie « ouvert sans application »). */
   onOpenChange?: (open: boolean) => void
+}
+
+// Éléments atteignables au clavier dans un panneau (cases DSFR, lignes de choix custom,
+// champ de saisie) — sert au focus initial à l'ouverture et à la navigation par flèches.
+// offsetParent === null exclut les éléments cachés (display: none, non rendus).
+const FOCUSABLE_SELECTOR = 'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((el) => el.offsetParent !== null)
 }
 
 const CHIP_COLORS = {
@@ -51,6 +65,7 @@ const CHIP_COLORS = {
 export function SearchFilterChip({ label, activeLabel, active, disabled = false, popperContent, onToggle, dialogTrigger = false, onOpenChange }: SearchFilterChipProps) {
   const [open, setOpen] = useState(false)
   const anchorRef = useRef<HTMLButtonElement>(null)
+  const popperContentRef = useRef<HTMLDivElement>(null)
   const popperId = useId()
   const isDropdown = popperContent !== undefined
 
@@ -72,7 +87,34 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
       event.stopPropagation()
       close()
       anchorRef.current?.focus()
+      return
     }
+
+    // Navigation flèches à l'intérieur du panneau ouvert — capté ici car cet handler est
+    // posé à la fois sur le déclencheur et sur le Paper (les touches remontent par bubbling
+    // depuis les cases/lignes du contenu).
+    if (!open || !isDropdown) return
+
+    const target = event.target as HTMLElement | null
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) {
+      const inputType = target instanceof HTMLInputElement ? target.type : undefined
+      if (inputType !== "checkbox" && inputType !== "radio") return
+    }
+
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp" && event.key !== "Home" && event.key !== "End") return
+    const container = popperContentRef.current
+    if (!container) return
+    const focusables = getFocusableElements(container)
+    if (!focusables.length) return
+    event.preventDefault()
+
+    const currentIndex = focusables.indexOf(document.activeElement as HTMLElement)
+    const lastIndex = focusables.length - 1
+    let nextIndex = 0
+    if (event.key === "ArrowDown") nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % focusables.length
+    else if (event.key === "ArrowUp") nextIndex = currentIndex < 0 ? lastIndex : (currentIndex - 1 + focusables.length) % focusables.length
+    else if (event.key === "End") nextIndex = lastIndex
+    focusables[nextIndex].focus()
   }
 
   const palette = active ? CHIP_COLORS.active : CHIP_COLORS.default
@@ -135,12 +177,26 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
         />
       )}
       {isDropdown && (
-        <Popper id={popperId} open={open} anchorEl={anchorRef.current} placement="bottom-start" transition sx={{ zIndex: (theme) => theme.zIndex.modal }}>
+        // disablePortal : par défaut MUI monte le Popper en fin de <body>, ce qui sort le
+        // panneau de l'ordre de tabulation du formulaire (Tab en sortie atterrit ailleurs
+        // dans la page). En le laissant à sa place dans l'arbre, la tabulation qui quitte le
+        // panneau retombe naturellement sur l'élément suivant du bandeau (chip suivant).
+        <Popper id={popperId} open={open} anchorEl={anchorRef.current} placement="bottom-start" transition disablePortal sx={{ zIndex: (theme) => theme.zIndex.modal }}>
           {({ TransitionProps }) => (
-            <Grow {...TransitionProps} style={{ transformOrigin: "top left" }}>
+            <Grow
+              {...TransitionProps}
+              style={{ transformOrigin: "top left" }}
+              // Focus posé sur le premier élément atteignable une fois le panneau réellement
+              // affiché (pas avant : le contenu doit être monté et visible pour être focusable).
+              // TransitionProps (Popper) n'expose que onEnter/onExited — pas de callback à chaîner ici.
+              onEntered={() => {
+                const first = popperContentRef.current && getFocusableElements(popperContentRef.current)[0]
+                first?.focus()
+              }}
+            >
               <Paper onKeyDown={handleKeyDown} elevation={0} sx={{ mt: "4px", borderRadius: "4px", py: "8px", minWidth: 240, boxShadow: "0 6px 18px rgba(0,0,18,0.16)" }}>
                 <ClickAwayListener onClickAway={close}>
-                  <Box>{popperContent}</Box>
+                  <Box ref={popperContentRef}>{popperContent}</Box>
                 </ClickAwayListener>
               </Paper>
             </Grow>

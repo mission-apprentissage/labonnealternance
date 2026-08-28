@@ -4,13 +4,18 @@ import { apiGet } from "@/utils/api.utils"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 
-function paramsToQuerystring(params: ISearchPageParams) {
+export function paramsToQuerystring(params: ISearchPageParams) {
   const qs: Record<string, unknown> = {
     radius: params.radius,
     hitsPerPage: params.hitsPerPage,
   }
   if (params.q) qs.q = params.q
-  // Télémétrie moteur de suggestion : origine de q (suggestion sélectionnée vs texte libre)
+  // Télémétrie moteur de suggestion : origine de q (suggestion sélectionnée vs texte libre).
+  // Envoyé sous l'ancien nom `source` pour UNE release : un serveur pré-renommage rejetterait
+  // `search_source` (clé inconnue du strictObject → 400) si l'UI bascule avant lui pendant le
+  // déploiement. À basculer vers `search_source` à la release suivante, une fois l'API déployée
+  // partout. Seule l'URL de PAGE (search.params.utils.ts) devait perdre `source` pour Plausible —
+  // les appels API ne sont pas lus par le tracker.
   if (params.q && params.q_source) qs.source = params.q_source
   // Toujours envoyé : le mode par défaut « emplois » exclut les formations et les offres CFA/GEIQ côté API
   qs.mode = params.mode

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { ISearchPageParams } from "./search.params.utils"
-import { buildSearchPageTitle, buildSearchUrl, parseSearchPageParams } from "./search.params.utils"
+import { buildRechercheH1, buildSearchPageTitle, buildSearchUrl, parseSearchPageParams } from "./search.params.utils"
 
 const base: ISearchPageParams = { mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 }
 
@@ -18,6 +18,38 @@ describe("is_algo_company multi-valeurs (type d'offres d'emploi)", () => {
     const url = buildSearchUrl({ ...base, is_algo_company: [false, true] })
     expect(url).toBe("/recherche?is_algo_company=false&is_algo_company=true")
     expect(parseSearchPageParams(new URL(url, "https://x").searchParams).is_algo_company).toEqual([false, true])
+  })
+})
+
+describe("parse de `q` (trim au parse : un métier d'espaces n'est pas une intention)", () => {
+  it("trim les espaces parasites, et un `q` fait d'espaces devient une absence", () => {
+    expect(parseSearchPageParams(new URLSearchParams("q=%20boulanger%20")).q).toBe("boulanger")
+    expect(parseSearchPageParams(new URLSearchParams("q=%20")).q).toBeUndefined()
+    expect(parseSearchPageParams(new URLSearchParams("q=")).q).toBeUndefined()
+  })
+})
+
+describe("search_source (origine de q)", () => {
+  it("parse search_source, valeurs inconnues ignorées", () => {
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=suggestion")).q_source).toBe("suggestion")
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=bogus")).q_source).toBeUndefined()
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger")).q_source).toBeUndefined()
+  })
+
+  it("accepte l'ancien nom source= en repli (liens émis avant le renommage, ex. campagne traininglinks du 2026-08-24)", () => {
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&source=training_links")).q_source).toBe("training_links")
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&source=external_sites")).q_source).toBe("external_sites")
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&source=bogus")).q_source).toBeUndefined()
+    // search_source prime si les deux sont présents
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=suggestion&source=training_links")).q_source).toBe("suggestion")
+    // Précédence non consultée à dessein : un search_source présent mais invalide n'est pas
+    // réinterprété via le repli — on ne devine pas l'intention d'une URL incohérente.
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=bogus&source=training_links")).q_source).toBeUndefined()
+  })
+
+  it("buildSearchUrl émet search_source (jamais source, réservé par Plausible)", () => {
+    const url = buildSearchUrl({ ...base, q: "boulanger", q_source: "suggestion" })
+    expect(url).toBe("/recherche?q=boulanger&search_source=suggestion")
   })
 })
 
@@ -47,6 +79,28 @@ describe("buildSearchPageTitle", () => {
 
   it("mode emplois_formation : base « Offres en alternance » (offres CFA/GEIQ)", () => {
     expect(buildSearchPageTitle({ ...base, mode: "emplois_formation" })).toBe("Offres en alternance | La bonne alternance")
+  })
+})
+
+describe("buildRechercheH1", () => {
+  it("compose métier + lieu", () => {
+    expect(buildRechercheH1({ q: "Data analyst", lieu_label: "Lyon" })).toBe("Alternance Data analyst à Lyon")
+  })
+
+  it("gère le métier seul (sans lieu)", () => {
+    expect(buildRechercheH1({ q: "Data analyst" })).toBe("Alternance Data analyst")
+  })
+
+  it("ignore un lieu vide", () => {
+    expect(buildRechercheH1({ q: "Data analyst", lieu_label: "  " })).toBe("Alternance Data analyst")
+  })
+
+  it("retourne null sans métier", () => {
+    expect(buildRechercheH1({})).toBeNull()
+  })
+
+  it("traite un métier vide comme une absence", () => {
+    expect(buildRechercheH1({ q: "  " })).toBeNull()
   })
 })
 

@@ -1,6 +1,5 @@
 import querystring from "node:querystring"
 
-import { notFound } from "@hapi/boom"
 import type { AxiosInstance } from "axios"
 import axios from "axios"
 import { sortBy } from "lodash-es"
@@ -287,38 +286,6 @@ export const getParcoursupAndAffelnetPerimetreFromCatalogueME = async (): Promis
   } catch (error: any) {
     sentryCaptureException(error)
   }
-}
-
-export const getRomesFromCatalogue = async ({
-  cfd,
-  siret,
-}: {
-  cfd?: string
-  siret?: string
-}): Promise<{
-  romes: string[]
-}> => {
-  const query: { cfd?: string; etablissement_formateur_siret?: string } = {}
-
-  if (cfd) query.cfd = cfd
-  if (siret) query.etablissement_formateur_siret = siret
-
-  const formationsFromDb = await getDbCollection("formationcatalogues").find(query)
-
-  const romes: Set<string> = new Set()
-
-  formationsFromDb.forEach((formation) => {
-    if (formation.rome_codes) {
-      formation.rome_codes.forEach((rome) => romes.add(rome))
-    }
-  })
-
-  const result = { romes: [...romes] }
-
-  if (!result.romes.length) {
-    throw notFound("No training found")
-  }
-  return result
 }
 
 export const getEmailFromCatalogueField = (email: string | null | undefined) => {

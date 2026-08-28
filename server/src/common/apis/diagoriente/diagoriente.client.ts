@@ -52,19 +52,37 @@ const getDiagorienteToken = async (access: IAuthParams): Promise<string> => {
     }, validation.data.expires_in * 1000)
     return validation.data.access_token
   } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.data` (le client_id/
+    // client_secret envoyés en corps de requête), que extraErrorDataIntegration sérialiserait
+    // tel quel dans Sentry (sendDefaultPii actif).
+    sentryCaptureException(new Error(`diagoriente: échec d'obtention du token (${error.message ?? "erreur inconnue"})`), {
+      extra: { status: error.response?.status, responseData: error.response?.data },
+    })
     throw internal("impossible d'obtenir un token pour l'API Diagoriente")
   }
 }
 export const getDiagorienteRomeClassification = async (data: IDiagorienteClassificationSchema[]): Promise<IDiagorienteClassificationResponseSchema> => {
   if (data.length > 100) throw internal("Trop de données à envoyer à l'API Diagoriente, limiter la requête à 100 éléments")
   const token = await getDiagorienteToken(authParams)
-  const { data: response } = await axiosClient.post("https://semafor.diagoriente.fr/classify/SousDomaines", data, {
-    timeout: 70_000,
-    headers: { Authorization: `Bearer ${token}` },
-    params: { as_of: DIAGORIENTE_AS_OF_DATE },
-  })
-  const validation = ZDiagorienteClassificationResponseSchema.safeParse(response)
+  let responseData: unknown
+  try {
+    const apiResponse = await axiosClient.post("https://semafor.diagoriente.fr/classify/SousDomaines", data, {
+      timeout: 70_000,
+      headers: { Authorization: `Bearer ${token}` },
+      params: { as_of: DIAGORIENTE_AS_OF_DATE },
+    })
+    responseData = apiResponse.data
+  } catch (error: any) {
+    // Erreur dédiée plutôt que l'AxiosError brut, qui porte `config.headers.Authorization` (le
+    // Bearer token) : par cohérence avec getDiagorienteToken ci-dessus, et pour ne pas dépendre
+    // du comportement de l'appelant (aujourd'hui fillRomeForPartners avale l'erreur dans un Error
+    // générique avant tout appel Sentry, mais rien ne garantit qu'un futur appelant fasse de même).
+    sentryCaptureException(new Error(`diagoriente: échec de classification (${error.message ?? "erreur inconnue"})`), {
+      extra: { status: error.response?.status, responseData: error.response?.data },
+    })
+    throw internal("impossible d'obtenir une classification depuis l'API Diagoriente")
+  }
+  const validation = ZDiagorienteClassificationResponseSchema.safeParse(responseData)
   if (!validation.success) throw internal("getRomeClassificationFromDiagoriente: format de réponse non valide", { error: validation.error })
   return validation.data
 }

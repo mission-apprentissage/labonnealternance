@@ -6,8 +6,9 @@ import Image from "next/image"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrIcon } from "@/components/DsfrIcon"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
-export const metadata: Metadata = PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getMetadata()
+export const metadata: Metadata = METADATA.static.espaceProCfaCarteDEtudiantDesMetiers()
 
 const CarteDEtudiantDesMetiersPage = () => (
   <Box

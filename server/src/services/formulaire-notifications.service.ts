@@ -53,6 +53,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobsPartner
       offerButton:
         createViewDelegationLink(email, establishment_id, offre._id.toString(), siret) +
         "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
+      qrUrl: `${config.publicUrl}/espace-pro/offre/impression/${offre._id}?print_source=cfa-sharing`,
       createAccountButton: `${config.publicUrl}/organisme-de-formation?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_creer-compte`,
       policyUrl: `${config.publicUrl}/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_politique-confidentialite`,
       publicEmail: config.publicEmail,
@@ -68,7 +69,9 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
   const { email, last_name, first_name } = user
   const { is_delegated, workplace_name, workplace_siret, cfa_siret, cfa_legal_name, workplace_legal_name, workplace_brand } = job
   const raisonSocialeEntreprise = workplace_name || workplace_legal_name || workplace_brand
-  const establishmentTitle = workplace_name ?? workplace_siret
+  // `||` comme la ligne au-dessus : workplace_name peut valoir "" (champ sanitizé côté pipeline),
+  // auquel cas le mail partait avec une raison sociale vide au lieu du SIRET.
+  const establishmentTitle = workplace_name || workplace_siret
   // Send mail with action links to manage offers
   await mailer.sendEmail({
     to: email,

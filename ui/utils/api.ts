@@ -1,4 +1,5 @@
 import { captureException } from "@sentry/nextjs"
+import { unstable_rethrow } from "next/navigation"
 import type {
   IBody,
   IJobCreate,
@@ -166,6 +167,7 @@ export const getCfaInformation = async (siret: string) => {
     const data = await apiGet("/etablissement/cfa/:siret", { params: { siret } })
     return { statusCode: 200, data, error: false }
   } catch (error) {
+    unstable_rethrow(error)
     if (error instanceof ApiError && error.context?.statusCode >= 400) {
       const { errorData, statusCode, message } = error.context
       if (error.context.statusCode >= 500) {
@@ -193,6 +195,7 @@ export const getEntrepriseInformation = async (
     )
     return { statusCode: 200, data, error: false }
   } catch (error: unknown) {
+    unstable_rethrow(error)
     if (error instanceof ApiError && error.context?.statusCode >= 400) {
       const { errorData, statusCode, message } = error.context
       if (error.context.statusCode >= 500) {
@@ -210,6 +213,7 @@ export const getEntrepriseOpco = async (siret: string) => {
     const data = await apiGet("/etablissement/entreprise/:siret/opco", { params: { siret } }, { timeout: 7000 })
     return data
   } catch (error) {
+    unstable_rethrow(error)
     captureException(error)
     return null
   }
@@ -220,6 +224,12 @@ export const getPrdvContext = async (cleMinistereEducatif: string, referrer: str
     const data = await apiGet("/_private/appointment", { querystring: { cleMinistereEducatif, referrer: referrer || "lba" } }, { timeout: 7000 })
     return data
   } catch (error) {
+    // Rend la main à Next avant tout traitement applicatif. Avec `cacheComponents`, un fetch non
+    // mis en cache pendant le prerender renvoie une promesse suspendue qui rejette quand le
+    // prerender s'interrompt (digest HANGING_PROMISE_REJECTION) : capturée ici, elle produisait un
+    // event Sentry par requête sur /rdva — 20 467 sur 5 jours, 80 % du volume d'erreurs de l'UI
+    // (LBA-UI-5CVZZZZZZG501). unstable_rethrow relaie aussi notFound() et redirect().
+    unstable_rethrow(error)
     const isExpectedError = error instanceof ApiError && error.context.statusCode >= 400 && error.context.statusCode < 500
     if (isExpectedError) {
       return null

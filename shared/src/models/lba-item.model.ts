@@ -146,6 +146,12 @@ const ZLbaItemCompany = z.strictObject({
   opco: ZLbaItemOpco.nullish(), // partner -> workplace_opco
   elligibleHandicap: z.boolean().nullish(),
   isGeiq: z.boolean().nullish(), // issu de la liste GEIQ cf shared/src/services/is-geiq-entreprise.ts
+  hiringCount3Years: z
+    .number()
+    .nullish()
+    .describe(
+      "Nombre d'alternants recrutés (contrats DECA) sur les 3 années civiles pleines précédentes, par SIRET. null si le SIRET est inconnu de la collection deca_contrats (à distinguer de 0 contrat sur la période)."
+    ),
 })
 
 export type ILbaItemCompany = z.output<typeof ZLbaItemCompany>

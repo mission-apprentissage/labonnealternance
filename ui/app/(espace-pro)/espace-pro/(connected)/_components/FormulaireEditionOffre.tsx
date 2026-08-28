@@ -6,7 +6,8 @@ import { useEffect, useState } from "react"
 import type { IJob } from "shared"
 import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep1"
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
-import { FormulaireEditionOffreStep3FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3FtSupport"
+import { FormulaireEditionOffreStep3 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3CFA"
+import { FormulaireEditionOffreStep4FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep4FtSupport"
 import { getFormulaire, getFormulaireByToken } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
@@ -47,12 +48,19 @@ export const FormulaireEditionOffre = ({
   onChangeScreen?: () => void
 }) => {
   const { token } = useSearchParamsRecord() as { token?: string }
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1)
   const [formValues, setFormValues] = useState<any>({})
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }, [currentStep])
+
+  // certaines routes réutilisent le même composant entre deux offres (ou entre édition et création) sans le remonter :
+  // on réinitialise explicitement l'étape courante et les valeurs saisies dès que l'offre éditée change (y compris vers "aucune offre" pour une création)
+  useEffect(() => {
+    setCurrentStep(1)
+    setFormValues({})
+  }, [offre?._id])
 
   const pathname = usePathname()
 
@@ -65,7 +73,6 @@ export const FormulaireEditionOffre = ({
   if (!establishment_id) return <></>
 
   const isFtEligible = isEligibleForFtSupport(pathname, formulaire)
-  const totalSteps = isFtEligible ? 3 : 2
 
   return (
     <>
@@ -84,39 +91,83 @@ export const FormulaireEditionOffre = ({
           }}
           offre={offre}
           establishment_id={establishment_id}
-          totalSteps={totalSteps}
         />
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2
-          onSubmit={(values) => {
-            if (!isFtEligible) {
+          onSubmit={({ etablissements, ...values }) => {
+            const hasCfa = Boolean(etablissements?.length)
+            if (hasCfa) {
+              // des CFA à proximité sont disponibles : l'étape 3 permet de choisir lesquels contacter
+              setFormValues({ ...formValues, ...values, etablissements })
+              setCurrentStep(3)
+              onChangeScreen?.()
+            } else if (isFtEligible) {
+              // pas de CFA à proximité mais éligible à l'accompagnement France Travail : l'étape 3 est sautée
+              setFormValues({ ...formValues, ...values, etablissements, cfaCountProposed: 0, cfaCountSelected: 0 })
+              setCurrentStep(4)
+              onChangeScreen?.()
+            } else {
+              // ni CFA à proximité, ni éligibilité France Travail : l'offre est créée directement
               const finalValues = { ...formValues, ...values, ft_support: false }
               pushMatomoEvent({
                 event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
-                step_name: "screening_questions",
+                step_name: "cfa_share",
                 has_screening_questions: finalValues.to_applicant_questions?.length > 0,
                 ft_eligible: isFtEligible,
                 description_mode: finalValues.job_description ? "custom" : "structured",
               })
+              pushMatomoEvent({
+                event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
+                cfa_count_proposed: 0,
+                cfa_count_selected: 0,
+              })
               handleSave(finalValues)
-            } else {
-              setFormValues({ ...formValues, ...values })
-              setCurrentStep(3)
-              onChangeScreen?.()
             }
           }}
           offre={offre}
+          romeCode={formValues?.rome_code?.[0] ?? offre?.rome_code?.[0]}
+          geoCoordinates={formulaire?.geo_coordinates}
+          isFtEligible={isFtEligible}
           onCancel={() => {
             setCurrentStep(1)
             onChangeScreen?.()
           }}
-          isFtEligible={isFtEligible}
-          totalSteps={totalSteps}
         />
-      ) : currentStep === 3 && isFtEligible ? (
-        <FormulaireEditionOffreStep3FtSupport
+      ) : currentStep === 3 ? (
+        <FormulaireEditionOffreStep3
           onSubmit={(values) => {
-            const finalValues = { ...formValues, ...values }
+            if (!isFtEligible) {
+              const { cfaCountProposed, cfaCountSelected, etablissements, ...finalValues } = { ...formValues, ...values, ft_support: false }
+              pushMatomoEvent({
+                event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
+                step_name: "cfa_share",
+                has_screening_questions: finalValues.to_applicant_questions?.length > 0,
+                ft_eligible: isFtEligible,
+              })
+              pushMatomoEvent({
+                event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
+                cfa_count_proposed: cfaCountProposed,
+                cfa_count_selected: cfaCountSelected,
+              })
+              handleSave(finalValues)
+            } else {
+              setFormValues({ ...formValues, ...values })
+              setCurrentStep(4)
+              onChangeScreen?.()
+            }
+          }}
+          offre={offre}
+          etablissements={formValues?.etablissements ?? []}
+          onCancel={() => {
+            setCurrentStep(2)
+            onChangeScreen?.()
+          }}
+          isFtEligible={isFtEligible}
+        />
+      ) : currentStep === 4 && isFtEligible ? (
+        <FormulaireEditionOffreStep4FtSupport
+          onSubmit={(values) => {
+            const { cfaCountProposed, cfaCountSelected, etablissements, ...finalValues } = { ...formValues, ...values }
             pushMatomoEvent({
               event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
               step_name: "ft_support",
@@ -128,11 +179,16 @@ export const FormulaireEditionOffre = ({
               event: MATOMO_EVENTS.JOB_CREATION_FT_PARTNERSHIP_STEP,
               ft_partnership: finalValues.ft_support,
             })
+            pushMatomoEvent({
+              event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
+              cfa_count_proposed: cfaCountProposed,
+              cfa_count_selected: cfaCountSelected,
+            })
             handleSave(finalValues)
           }}
           offre={offre}
           onCancel={() => {
-            setCurrentStep(2)
+            setCurrentStep(3)
             onChangeScreen?.()
           }}
         />

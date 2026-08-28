@@ -14,10 +14,11 @@ import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTi
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { ArrowRightLine } from "@/theme/components/icons"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = {
-  title: PAGES.static.alternanceMetiers.getMetadata().title,
-  description: PAGES.static.alternanceMetiers.getMetadata().description,
+  title: METADATA.static.alternanceMetiers().title,
+  description: METADATA.static.alternanceMetiers().description,
 }
 
 const faqItems = [
@@ -50,7 +51,7 @@ const faqItems = [
 
 export default function AlternanceMetiers() {
   const url = PAGES.static.alternanceMetiers.getPath()
-  const meta = PAGES.static.alternanceMetiers.getMetadata?.() ?? { title: PAGES.static.alternanceMetiers.title, description: "" }
+  const meta = METADATA.static.alternanceMetiers()
   const breadcrumbs = [
     { name: "Accueil", url: "/" },
     { name: "Métiers en alternance", url },

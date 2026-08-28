@@ -7,11 +7,8 @@ import React, { useEffect, useRef, useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
-import { useBetaDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-beta-detail-navigation"
-import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
-import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-recherche-results"
+import { useDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-detail-navigation"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { useBuildNavigation } from "@/app/hooks/use-build-navigation"
 import { useIsWidget } from "@/app/hooks/use-is-widget"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
@@ -36,7 +33,6 @@ import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/m
 import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
-  const result = useRechercheResults(rechercheParams)
   const { setFormValues } = React.useContext(DisplayContext)
 
   React.useEffect(() => {
@@ -47,7 +43,7 @@ export default function JobDetailRendererClient({ job, rechercheParams }: { job:
     })
   }, [rechercheParams.job_name, rechercheParams.geo?.latitude, rechercheParams.geo?.longitude, rechercheParams.radius])
 
-  return <JobDetail selectedItem={job} resultList={result.displayedItems} rechercheParams={rechercheParams} />
+  return <JobDetail selectedItem={job} rechercheParams={rechercheParams} />
 }
 
 function CandidatureStickyBar({ selectedItem }: { selectedItem: ILbaItemJobsGlobal }) {
@@ -80,15 +76,7 @@ function CandidatureStickyBar({ selectedItem }: { selectedItem: ILbaItemJobsGlob
   )
 }
 
-function JobDetail({
-  selectedItem,
-  resultList,
-  rechercheParams,
-}: {
-  rechercheParams: IRecherchePageParams
-  selectedItem: ILbaItemJobsGlobal
-  resultList: IUseRechercheResults["displayedItems"]
-}) {
+function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecherchePageParams; selectedItem: ILbaItemJobsGlobal }) {
   const router = useRouter()
   const theme = useTheme()
   const isWidget = useIsWidget()
@@ -111,31 +99,26 @@ function JobDetail({
     return () => window.removeEventListener("resize", updateHeaderHeight)
   }, [])
 
+  // Ouverture depuis le moteur de recherche (?from=/recherche…) : précédent/suivant naviguent
+  // dans les résultats de /recherche et « fermer » y retourne. Sans ?from=, pas de contexte
+  // de liste : pas de précédent/suivant, « fermer » retombe sur /recherche.
+  const { swipeHandlers, goNext, goPrev, handleClose: closeToSearch, position } = useDetailNavigation()
+
   useEffect(() => {
     if (lastTrackedItemIdRef.current === selectedItem.id) return
     lastTrackedItemIdRef.current = selectedItem.id
-    const position = resultList.findIndex((item) => item.id === selectedItem.id) + 1
     pushMatomoEvent({
       event: MATOMO_EVENTS.JOB_OFFER_VIEWED,
       job_offer_id: selectedItem.id,
       job_offer_type: getMatomoJobOfferType(selectedItem.ideaType),
       job_offer_company: selectedItem.company?.name || "non_renseigné",
       job_offer_name: selectedItem.title || "non_renseigné",
-      position_in_list: position > 0 ? position : undefined,
+      position_in_list: position ?? undefined,
       has_contact: Boolean((selectedItem as any).contact?.hasEmail || (selectedItem as any).contact?.url || (selectedItem as any).contact?.phone),
       search_job_name: rechercheParams.job_name || "non_renseigné",
       search_address: rechercheParams.geo?.address || "non_renseigné",
     })
-  }, [selectedItem.id, resultList, rechercheParams.job_name, rechercheParams.geo?.address])
-  const legacyNavigation = useBuildNavigation({
-    items: resultList,
-    currentItemId: selectedItem.id,
-    rechercheParams: rechercheParams,
-  })
-  // Ouverture depuis le moteur de recherche (?from=/recherche…) : précédent/suivant naviguent
-  // dans les résultats de /recherche et « fermer » y retourne, au lieu du fallback legacy.
-  const betaNavigation = useBetaDetailNavigation()
-  const { swipeHandlers, goNext, goPrev } = betaNavigation ?? legacyNavigation
+  }, [selectedItem.id, position, rechercheParams.job_name, rechercheParams.geo?.address])
 
   const kind = selectedItem.ideaType
   const isMandataire = Boolean(selectedItem?.company?.mandataire)
@@ -145,9 +128,14 @@ function JobDetail({
   const reportItemId = (() => {
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) return (selectedItem as ILbaItemLbaJobJson).job?.id ?? null
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) return (selectedItem as ILbaItemPartnerJobJson).id
+    if (kind === LBA_ITEM_TYPE.RECRUTEURS_LBA) return (selectedItem as ILbaItemLbaCompanyJson).company?.siret ?? null
     return null
   })()
-  const handleClose = betaNavigation ? betaNavigation.handleClose : () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
+  const reportLinkLabels =
+    kind === LBA_ITEM_TYPE.RECRUTEURS_LBA
+      ? { notReported: "Signaler l'entreprise", reported: "Entreprise signalée" }
+      : { notReported: "Signaler l'offre", reported: "Offre signalée" }
+  const handleClose = closeToSearch ?? (() => router.push(PAGES.dynamic.recherche(rechercheParams).getPath()))
 
   const [firstNaf] = (selectedItem.nafs ?? []) as ILbaItemNaf[]
   const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && firstNaf ? firstNaf.label : selectedItem.title
@@ -248,8 +236,8 @@ function JobDetail({
                     <ReportJobLink
                       itemId={reportItemId}
                       type={kind as LBA_ITEM_TYPE}
-                      linkLabelNotReported="Signaler l'offre"
-                      linkLabelReported="Offre signalée"
+                      linkLabelNotReported={reportLinkLabels.notReported}
+                      linkLabelReported={reportLinkLabels.reported}
                       sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
                     />
                   )}
@@ -267,7 +255,6 @@ function JobDetail({
             ref={headerRef}
             sx={{
               filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-              borderRadius: { xs: 0, lg: fr.spacing("2v") },
               boxShadow: { xs: "unset", lg: "0 4px 12px 0 rgba(0, 0, 18, 0.16)" },
               padding: "10px 20px 0px 20px",
               backgroundColor: "white",
@@ -337,8 +324,8 @@ function JobDetail({
                     <ReportJobLink
                       itemId={reportItemId}
                       type={kind as LBA_ITEM_TYPE}
-                      linkLabelNotReported="Signaler l'offre"
-                      linkLabelReported="Offre signalée"
+                      linkLabelNotReported={reportLinkLabels.notReported}
+                      linkLabelReported={reportLinkLabels.reported}
                       sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
                     />
                   )}
@@ -348,7 +335,7 @@ function JobDetail({
           </Box>
 
           <Box id="detail-content-container" />
-          <Box sx={{ mx: { md: 0, lg: fr.spacing("6v") } }}>
+          <Box>
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && (isCfaEntreprise || isGeiq) && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire && !isCfaEntreprise && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}

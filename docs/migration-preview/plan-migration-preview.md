@@ -207,7 +207,7 @@ Retirer du flux preview ce qui ne sera plus nécessaire une fois le runtime par 
 9. [../../docker-bake.json](../../docker-bake.json) : source de vérité du schéma de tags des images Docker.
 10. [../../.bin/scripts/app-build.sh](../../.bin/scripts/app-build.sh) : build local actuel, à déprécier pour le flux preview cible.
 11. [../../.bin/shared/scripts/app-deploy.sh](../../.bin/shared/scripts/app-deploy.sh) : routage du déploiement preview via Ansible, à conserver mais simplifier lorsque le build sort de la VM.
-12. [../infrastructure/preview.md](../infrastructure/preview.md) : documentation à réécrire pour refléter la réalité opérationnelle et la cible.
+12. Documentation preview à écrire dans `docs/infrastructure/` pour refléter la réalité opérationnelle et la cible (l'ancien stub `preview.md`, vide depuis 2023, a été supprimé).
 
 ## Vérifications recommandées
 

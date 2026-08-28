@@ -3,6 +3,8 @@ import { processEnedis } from "@/jobs/offre-partenaire/enedis/process-enedis"
 import { processMissingRomeAndImportToJobPartners } from "@/jobs/offre-partenaire/process-missing-rome-and-import-to-job-partners"
 import { analyzeCfaBlockList } from "@/jobs/one-time-job/analyze-cfa-block-list"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { reviewJobPartnersClassification } from "@/services/cache-classification.service"
+import { applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import { applyPendingMistralBatches, generateSearchItemsKeywordsContinuous, submitSearchItemsKeywordsBatch } from "@/services/search/search-items-keywords.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -14,6 +16,7 @@ import { removeBrevoContacts } from "./anonymization/remove-brevo-contacts"
 import { processApplications } from "./applications/process-applications"
 import { processRecruiterIntentions } from "./applications/process-recruiter-intentions"
 import { obfuscateCollections } from "./database/obfuscate-collections"
+import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
 import { buildMappingRomeRNCP } from "./domaines-metiers/build-mapping-rome-rncp"
 import {
@@ -30,6 +33,7 @@ import {
   refreshReferentielEngagementFranceTravail,
   refreshReferentielEtEntrepriseEngagement,
 } from "./engagement-handicap/refresh-entreprise-engagement-jobs-partners"
+import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formations-catalogue/update-parcoursup-and-affelnet-info-on-formation-catalogue"
 import { generateFranceTravailAccess } from "./france-travail/generate-france-travail-access"
@@ -65,7 +69,7 @@ import {
   processComputedAndImportToJobPartners,
   validateComputedJobPartnersFlux,
 } from "./offre-partenaire/process-job-partners"
-import { processJobPartnersForApi } from "./offre-partenaire/process-job-partners-for-api"
+import { processJobPartnersForApi, processJobPartnersWithFilter } from "./offre-partenaire/process-job-partners-for-api"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offre-partenaire/recruteur-lba/import-recruteurs-lba-raw"
 import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offre-partenaire/recruteur-lba/process-recruteurs-lba"
 import { processRhAlternance } from "./offre-partenaire/rh-alternance/process-rh-alternance"
@@ -96,6 +100,8 @@ import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-erro
 import { importReferentielRome } from "./referentiel-rome/referentiel-rome"
 import { analyzeSearchQueries } from "./search/analyze-search-queries"
 import { fillSearchItemsCollection } from "./search/generate-search-items-collection"
+import { pingGoogleIndexing } from "./seo/ping-google-indexing"
+import { pingIndexNow } from "./seo/ping-indexnow"
 import { updateSEO } from "./seo/update-seo"
 
 type SimpleJobDefinition = {
@@ -224,6 +230,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: updateDiplomeMetier,
     description: "Mise à jour des diplômes et romes associés",
   },
+  {
+    fct: importDecaContratsParAnnee,
+    description: "Télécharge et importe (upsert) le référentiel des contrats d'alternance par année depuis S3 (siretlist/lba_deca_contrats_par_annee.ndjson)",
+  },
   // IMPORT RAW AND COMPUTED JOBS PARTNERS
   {
     fct: processRhAlternance,
@@ -327,6 +337,16 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Génère le sitemap pour les offres",
   },
   {
+    fct: pingIndexNow,
+    description: "Soumet à IndexNow les URLs des offres modifiées récemment (updated_at, fenêtre 60 min par défaut)",
+    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à soumettre (défaut : now − 60 min)" }],
+  },
+  {
+    fct: pingGoogleIndexing,
+    description: "Notifie la Google Indexing API des offres du périmètre modifiées récemment (fenêtre 60 min par défaut)",
+    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des changements à notifier (défaut : now − 60 min)" }],
+  },
+  {
     fct: generateFranceTravailAccess,
     description: "Génère les tokens d'accès à France Travail et les sauvegarde en DB",
   },
@@ -399,8 +419,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: syncSearchItemsDelta,
-    description: "Synchronise vers search_items les jobs_partners modifiés récemment (updated_at, fenêtre 30 min par défaut)",
-    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à synchroniser (défaut : now − 30 min)" }],
+    description: "Synchronise vers search_items les jobs_partners modifiés récemment (updated_at, fenêtre 10 min par défaut)",
+    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à synchroniser (défaut : now − 10 min)" }],
   },
   {
     fct: controlSearchItemsDrift,
@@ -519,6 +539,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Rafraîchissement du référentiel d'engagement handicap et des offres actives de jobs_partners",
   },
   {
+    fct: updateHandiEngagement,
+    description: "Télécharge le référentiel handi-engagement depuis S3 (siretlist/lba_handi_engage_flag.ndjson) et met à jour le référentiel d'engagement handicap",
+  },
+  {
     fct: cleanClosedCompanies,
     description: "Traite les recruteurs dont l'entreprise a fermé en les archivant et en désactivant les comptes associés",
   },
@@ -529,6 +553,28 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: detectClassificationJobsPartners,
     description: "Analyse la classification des offres partenaires",
+  },
+  {
+    fct: processJobPartnersWithFilter,
+    description: "Ré-exécute la chaîne de traitement des jobs_partners pour un filtre donné (ex. reprise après classification batch)",
+  },
+  {
+    fct: submitClassificationBatch,
+    description: "Soumet un batch Mistral de classification jobs_partners pour un filtre donné, suivi dans mistral_batch_jobs",
+  },
+  {
+    fct: applyPendingClassificationBatches,
+    description: "Ramasse les batchs Mistral de classification jobs_partners terminés (téléchargement + application + reprise du pipeline)",
+  },
+  {
+    fct: reviewJobPartnersClassification,
+    description:
+      "Corrige manuellement en masse la classification d'offres d'un même partenaire (complète l'écran admin, qui traite un id à la fois) et republie/dépublie en conséquence",
+    cliOptions: [
+      { flags: "--classification <publish|unpublish>", description: "Classification humaine à appliquer" },
+      { flags: "--partnerLabel <label>", description: "Partenaire concerné (ex. Hellowork)" },
+      { flags: "--partnerJobIds <ids>", description: "Liste de partner_job_id séparés par des virgules" },
+    ],
   },
   {
     fct: deduplicateHellowork,

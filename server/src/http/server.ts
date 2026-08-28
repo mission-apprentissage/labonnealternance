@@ -13,10 +13,10 @@ import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/is-origin-local"
 import config from "@/config"
-import jobsEtFormationsController from "@/http/controllers/jobs-et-formations.controller"
 import { initBrevoWebhooks } from "@/services/brevo.service"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "./controllers/_private/geo.private.controller"
+import { metiersRouteController } from "./controllers/_private/metiers.private.controller"
 import { seoRouteController } from "./controllers/_private/seo.private.controller"
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligible-trainings-for-appointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
@@ -24,18 +24,15 @@ import formationsRoute from "./controllers/admin/formations.controller"
 import jobsPartnersAdminRoute from "./controllers/admin/jobs-partners.controller"
 import application from "./controllers/application.controller"
 import appointmentRequestRoute from "./controllers/appointment-request.controller"
-import { classificationRoutes } from "./controllers/classification.controller"
 import { coreRoutes } from "./controllers/core.controller"
 import emailsRoute from "./controllers/emails.controller"
 import etablissementRoute from "./controllers/etablissement.controller"
 import etablissementsRecruteurRoute from "./controllers/etablissement-recruteur.controller"
-import formationsRegionV1Route from "./controllers/formation-region.controller"
-import formationsV1Route from "./controllers/formations.controller"
+import formationsPrivateRoute from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
 import inserjeunesRoute from "./controllers/inserjeunes.controller"
 import jobsV1Route from "./controllers/jobs.controller"
 import login from "./controllers/login.controller"
-import metiers from "./controllers/metiers.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reported-company.controller"
 import rome from "./controllers/rome.controller"
@@ -114,18 +111,16 @@ export async function bind(app: Server) {
        * LBACandidat
        */
       version(typedSubApp)
-      metiers(typedSubApp)
       partnersRoute(typedSubApp)
       rome(typedSubApp)
       updateLbaCompany(typedSubApp)
       application(typedSubApp)
       unsubscribeLbaCompany(typedSubApp)
       jobsV1Route(typedSubApp)
-      formationsV1Route(typedSubApp)
-      formationsRegionV1Route(typedSubApp)
-      jobsEtFormationsController(typedSubApp)
+      formationsPrivateRoute(typedSubApp)
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
+      metiersRouteController(typedSubApp)
       seoRouteController(typedSubApp)
       inserjeunesRoute(typedSubApp)
 
@@ -158,9 +153,6 @@ export async function bind(app: Server) {
       jobsApiV3Routes(typedSubApp)
       applicationRouteV2(typedSubApp)
       appointmentRequestRouteV2(typedSubApp)
-
-      /** model training */
-      classificationRoutes(typedSubApp)
 
       /**
        * Search

@@ -71,7 +71,12 @@ const getOmogenToken = async (): Promise<string | null> => {
       if (status === 401 || status === 403) {
         tokenFailureCooldownUntil = Date.now() + TOKEN_FAILURE_COOLDOWN_MS
       }
-      sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+      // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.data` (client_secret)
+      // et `config.headers["x-Omogen-api-key"]`, que extraErrorDataIntegration sérialiserait tel
+      // quel dans Sentry.
+      sentryCaptureException(new Error(`inserjeunes: échec d'obtention du token Omogen (${error.message ?? "erreur inconnue"})`), {
+        extra: { status, responseData: error.response?.data },
+      })
       return null
     } finally {
       tokenFetchPromise = null
@@ -126,7 +131,11 @@ export const fetchInserJeunesStats = async (zipcode: string, cfd: string, attemp
     }
 
     if (!SILENT_HTTP_STATUSES.has(status as number)) {
-      sentryCaptureException(error, { extra: { responseData: error.response?.data, zipcode, cfd } })
+      // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.headers.Authorization`
+      // (le Bearer token), que extraErrorDataIntegration sérialiserait tel quel dans Sentry.
+      sentryCaptureException(new Error(`inserjeunes: échec de récupération des stats (${error.message ?? "erreur inconnue"})`), {
+        extra: { status, responseData: error.response?.data, zipcode, cfd },
+      })
     }
     throw internal("Erreur lors de la récupération des données InserJeunes")
   }

@@ -101,6 +101,45 @@ describe("fill-siret-infos-for-partners", () => {
     expect.soft(job.business_error).toEqual(null)
     expect.soft(pick(job, filledFields)).toMatchSnapshot()
   })
+  it("should fill workplace_name from the siret when it is an empty string", async () => {
+    // Faux positif du `??` : "" n'est pas nullish, donc l'enseigne du SIRET n'était jamais reprise.
+    // Le corpus contient des "" écrits par formatTextFieldsJobsPartners avant son correctif.
+    const siret = "42476141900010"
+    await givenSomeComputedJobPartners([
+      {
+        workplace_siret: siret,
+        ...emptyFilledObject,
+        workplace_name: "",
+      },
+    ])
+    await getDbCollection("cache_siret").insertOne(generateCacheInfoSiretForSiret(siret))
+    // when
+    await fillSiretInfosForPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(jobs.length).toBe(1)
+    const [job] = jobs
+    expect.soft(job.errors).toEqual([])
+    expect.soft(job.workplace_name).toBe("Plop brand")
+  })
+
+  it("should keep the partner workplace_name when it is provided", async () => {
+    const siret = "42476141900010"
+    await givenSomeComputedJobPartners([
+      {
+        workplace_siret: siret,
+        ...emptyFilledObject,
+        workplace_name: "Nom fourni par le partenaire",
+      },
+    ])
+    await getDbCollection("cache_siret").insertOne(generateCacheInfoSiretForSiret(siret))
+    // when
+    await fillSiretInfosForPartners()
+    // then
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(job.workplace_name).toBe("Nom fourni par le partenaire")
+  })
+
   it("should add an error in the document when data is not found", async () => {
     // given
     await givenSomeComputedJobPartners([

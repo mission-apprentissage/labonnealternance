@@ -6,6 +6,7 @@ import type { zTriggerableJobs } from "shared/routes/_private/admin/processor.ad
 import type { Server } from "@/http/server"
 import { processApplications } from "@/jobs/applications/process-applications"
 import { processRecruiterIntentions } from "@/jobs/applications/process-recruiter-intentions"
+import { updateHandiEngagement } from "@/jobs/engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "@/jobs/formations-catalogue/formations-catalogue"
 import { processJobPartnersForApi } from "@/jobs/offre-partenaire/process-job-partners-for-api"
 
@@ -16,6 +17,8 @@ const jobHandlers: Record<TriggerableJob, () => Promise<unknown>> = {
   processRecruiterIntentions,
   processJobPartnersForApi,
   importCatalogueFormationJob,
+  // Déclenchement manuel : ignore le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
+  updateHandiEngagementForce: () => updateHandiEngagement({ force: true }),
 }
 
 export function processorAdminRoutes(server: Server) {

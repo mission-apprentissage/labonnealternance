@@ -118,7 +118,11 @@ export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS_LABEL | null>
     }
   } catch (err: any) {
     if (err?.response?.status !== 429) {
-      sentryCaptureException(err)
+      // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.headers["X-Gravitee-
+      // Api-Key"]`, que extraErrorDataIntegration sérialiserait tel quel dans Sentry.
+      sentryCaptureException(new Error(`france-competences: échec de récupération OPCO (${err.message ?? "erreur inconnue"})`), {
+        extra: { status: err?.response?.status, responseData: err?.response?.data },
+      })
     }
     return null
   }

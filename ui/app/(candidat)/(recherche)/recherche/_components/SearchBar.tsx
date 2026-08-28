@@ -1,11 +1,12 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import type { PopperProps } from "@mui/material"
 import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
 import type { ReactNode } from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { searchAddress } from "@/services/base-adresse"
 import { apiGet } from "@/utils/api.utils"
 
@@ -52,6 +53,30 @@ const fieldSx = (error?: boolean) => ({
 
 // Panneau flottant des autocompletes (ombre + radius du design).
 const POPPER_PAPER_SX = { mt: "4px", borderRadius: "4px", py: "8px", boxShadow: "0 6px 18px rgba(0,0,18,0.16)" }
+
+// Mode « écran de saisie » (inlineSuggestions) : même design de liste que le dropdown
+// (radius, ombre, padding, rendu des options), mais le paper se borne à l'espace restant
+// sous le champ (le calc retranche son mt) et la liste scrolle à l'intérieur — le cap
+// 40vh de MUI saute, la hauteur vient du flex de l'écran de saisie.
+const INLINE_PAPER_SX = { ...POPPER_PAPER_SX, maxHeight: "calc(100% - 4px)", display: "flex", flexDirection: "column" } as const
+// overscroll contain : arrivé en butée, le scroll de la liste ne doit pas chaîner vers la
+// page derrière la modale (surtout iOS).
+const INLINE_LISTBOX_SX = { maxHeight: "none", minHeight: 0, overflowY: "auto", overscrollBehavior: "contain" } as const
+
+/**
+ * Slot popper du mode inlineSuggestions : à la place de la couche flottante popper.js, MUI
+ * rend ce conteneur DANS le flux, juste sous le champ — il occupe l'espace restant de
+ * l'écran de saisie (flex) et le clavier virtuel ne peut plus recouvrir la liste. Les props
+ * de positionnement (anchorEl, placement, style de largeur…) sont volontairement ignorées.
+ */
+function InlineSuggestionsContainer({ open, children, className }: PopperProps) {
+  if (!open) return null
+  return (
+    <Box className={className} sx={{ flex: "1 1 auto", minHeight: 0, width: "100%" }}>
+      {typeof children === "function" ? children({ placement: "bottom-start" }) : children}
+    </Box>
+  )
+}
 
 /**
  * Cap la hauteur de la liste de suggestions à l'espace visible SOUS le champ : sur mobile,
@@ -141,15 +166,26 @@ interface SearchBarProps {
   onQChange?: (q: string) => void
   /** "row" : barre desktop ; "column" : panneau mobile ; "responsive" : colonne en xs, rangée en md+ (home). */
   layout?: "row" | "column" | "responsive"
+  /**
+   * Modales mobiles plein écran : au focus d'un champ, la barre passe en « écran de saisie » —
+   * le champ actif reste seul affiché et ses suggestions sont rendues dans le flux dessous
+   * (plus de Popper flottant), donc jamais masquées par le clavier virtuel. Suppose un parent
+   * en flex column avec une hauteur bornée au viewport visible (SearchMobilePanel).
+   */
+  inlineSuggestions?: boolean
+  /** Champ en cours de saisie (mode inlineSuggestions) — permet au parent de masquer le reste du formulaire. */
+  onActiveFieldChange?: (field: "metier" | "lieu" | null) => void
   /** Message d'erreur DSFR sous le champ métier (label + stroke passent en rouge). */
   qError?: string
   /** Message d'erreur DSFR sous le champ lieu. */
   lieuError?: string
 }
 
-function FieldLabel({ children, error }: { children: ReactNode; error?: boolean }) {
+// `id` : nécessaire pour l'association explicite au champ via aria-labelledby
+function FieldLabel({ children, error, id }: { children: ReactNode; error?: boolean; id?: string }) {
   return (
     <Box
+      id={id}
       component="label"
       sx={{
         display: "block",
@@ -164,16 +200,35 @@ function FieldLabel({ children, error }: { children: ReactNode; error?: boolean 
   )
 }
 
-function FieldError({ children }: { children: ReactNode }) {
+// `id` : nécessaire pour l'association explicite au champ via aria-describedby (RGAA 11.10)
+function FieldError({ children, id }: { children: ReactNode; id?: string }) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v"), mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.default.error.default }}>
+    <Box
+      id={id}
+      sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v"), mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.default.error.default }}
+    >
       <Box component="span" className={fr.cx("fr-icon-error-fill", "fr-icon--sm")} aria-hidden="true" />
       {children}
     </Box>
   )
 }
 
-export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange, onQChange, layout = "row", qError, lieuError }: SearchBarProps) {
+export function SearchBar({
+  initialQ = "",
+  initialLieuLabel,
+  onSubmit,
+  onLieuChange,
+  onQChange,
+  layout = "row",
+  inlineSuggestions = false,
+  onActiveFieldChange,
+  qError,
+  lieuError,
+}: SearchBarProps) {
+  const metierLabelId = useId()
+  const lieuLabelId = useId()
+  const metierErrorId = useId()
+  const lieuErrorId = useId()
   const [inputValue, setInputValue] = useState(initialQ)
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
@@ -201,6 +256,16 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
   const metierListbox = useListboxMaxHeight()
   const lieuListbox = useListboxMaxHeight()
 
+  // Champ en cours de saisie de l'écran de saisie mobile — piloté par focus/blur des
+  // Autocomplete (les clics sur les options ne blurent pas : MUI garde le focus dans
+  // l'input, et blurOnSelect le rend après sélection → retour à la vue formulaire).
+  const [activeField, setActiveField] = useState<"metier" | "lieu" | null>(null)
+  const changeActiveField = (field: "metier" | "lieu" | null) => {
+    if (!inlineSuggestions) return
+    setActiveField(field)
+    onActiveFieldChange?.(field)
+  }
+
   const isColumn = layout === "column"
   // Valeurs sx par layout : "responsive" = colonne en xs, rangée en md+ (formulaire home).
   const responsive = layout === "responsive"
@@ -212,6 +277,13 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     lieuFlex: isColumn ? "none" : responsive ? { xs: "none", md: "0 0 320px" } : "0 0 320px",
     fieldWidth: isColumn ? "100%" : responsive ? { xs: "100%", md: "auto" } : undefined,
   } as const
+
+  // Écran de saisie : le wrapper du champ actif devient LA colonne flex qui contient label,
+  // champ et suggestions inline (rendues par MUI juste après le champ) ; l'autre champ est
+  // masqué mais reste monté (il garde son state). Hors écran de saisie, wrappers inchangés.
+  const activeWrapperSx = { flex: "1 1 auto", minHeight: 0, minWidth: 0, width: "100%", display: "flex", flexDirection: "column" } as const
+  const metierWrapperSx = activeField === "metier" ? activeWrapperSx : { flex: rowSx.metierFlex, width: rowSx.fieldWidth, display: activeField === "lieu" ? "none" : undefined }
+  const lieuWrapperSx = activeField === "lieu" ? activeWrapperSx : { flex: rowSx.lieuFlex, width: rowSx.fieldWidth, display: activeField === "metier" ? "none" : undefined }
 
   // Suggestions pour le champ métier — autocomplétion par préfixe (endpoint dédié, min 3 caractères)
   const { data: suggestionData } = useQuery({
@@ -231,7 +303,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
   // Suggestions pour le champ lieu
   const { data: lieuOptions } = useQuery({
     queryKey: ["lieu-suggestions", debouncedLieu],
-    queryFn: () => searchAddress(debouncedLieu),
+    queryFn: ({ signal }) => searchAddress(debouncedLieu, undefined, signal),
     enabled: debouncedLieu.length >= 2,
     staleTime: 1000 * 60 * 5,
     throwOnError: false,
@@ -282,17 +354,29 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
         flexDirection: rowSx.direction,
         gap: rowSx.gap,
         alignItems: rowSx.align,
+        // Écran de saisie : la barre s'étire sur tout l'espace restant du panneau — c'est
+        // cette hauteur que les suggestions inline remplissent.
+        ...(activeField ? { flex: "1 1 auto", minHeight: 0 } : null),
       }}
     >
       {/* Champ métier */}
-      <Box sx={{ flex: rowSx.metierFlex, width: rowSx.fieldWidth }}>
-        <FieldLabel error={Boolean(qError)}>Que recherchez-vous ?</FieldLabel>
+      <Box sx={metierWrapperSx}>
+        <FieldLabel id={metierLabelId} error={Boolean(qError)}>
+          Que recherchez-vous ?
+        </FieldLabel>
         <Autocomplete
           freeSolo
           options={metierOptions}
           getOptionLabel={(o) => (typeof o === "string" ? o : o.value)}
-          onOpen={metierListbox.onOpen}
-          onClose={metierListbox.onClose}
+          slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
+          blurOnSelect={inlineSuggestions}
+          onFocus={() => changeActiveField("metier")}
+          onBlur={() => changeActiveField(null)}
+          // Mode inline : le cap de hauteur du listbox ne sert plus (la hauteur vient du
+          // flex de l'écran de saisie) — ne pas armer le hook (listeners visualViewport +
+          // setState à chaque resize/scroll pendant l'animation du clavier).
+          onOpen={inlineSuggestions ? undefined : metierListbox.onOpen}
+          onClose={inlineSuggestions ? undefined : metierListbox.onClose}
           inputValue={inputValue}
           onInputChange={(_e, value, reason) => {
             // "reset" est déclenché par la sélection d'une option — ne pas écraser la saisie
@@ -314,12 +398,15 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
             onQChange?.(value.value)
             handleSubmit(value.value, value.kind === "suggestion" ? "suggestion" : "free_text")
           }}
-          renderOption={(props, option) =>
+          // key AVANT le spread, et retiré des props MUI : `key` après un spread fait
+          // retomber SWC sur createElement — les enfants du li deviennent un tableau
+          // non marqué statique et React exige alors un key sur chacun (warning).
+          renderOption={({ key: _muiKey, ...optionProps }, option) =>
             option.kind === "free_text" ? (
               <Box
                 component="li"
-                {...props}
                 key="__free_text__"
+                {...optionProps}
                 sx={{
                   minHeight: 60,
                   px: "16px !important",
@@ -343,8 +430,8 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
             ) : (
               <Box
                 component="li"
-                {...props}
                 key={option.value}
+                {...optionProps}
                 sx={{ minHeight: 40, px: "16px !important", fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}
               >
                 {/* Span unique : le li MUI est en display:flex — des fragments texte séparés y perdent leurs espaces de bord. */}
@@ -361,7 +448,10 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               </Box>
             </Box>
           )}
-          slotProps={{ paper: { sx: POPPER_PAPER_SX }, listbox: { sx: { maxHeight: metierListbox.maxHeight } } }}
+          slotProps={{
+            paper: { sx: inlineSuggestions ? INLINE_PAPER_SX : POPPER_PAPER_SX },
+            listbox: { sx: inlineSuggestions ? INLINE_LISTBOX_SX : { maxHeight: metierListbox.maxHeight } },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -372,21 +462,38 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               fullWidth
               sx={fieldSx(Boolean(qError))}
               // Aligné sur la borne API (q max 200) : sans lui, un collage long produit un 400.
-              slotProps={{ htmlInput: { ...params.inputProps, maxLength: 200 } }}
+              slotProps={{
+                htmlInput: {
+                  ...params.inputProps,
+                  maxLength: 200,
+                  "aria-labelledby": metierLabelId,
+                  "aria-describedby": qError ? metierErrorId : undefined,
+                  "aria-invalid": Boolean(qError),
+                },
+              }}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleSubmit(inputValue, "free_text")
+                if (e.key === "Enter") {
+                  handleSubmit(inputValue, "free_text")
+                  // Écran de saisie : Entrée vaut validation du champ — ferme le clavier
+                  // virtuel et revient à la vue formulaire (via le blur → changeActiveField).
+                  if (inlineSuggestions) (e.target as HTMLElement).blur()
+                }
               }}
             />
           )}
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
-        {qError && <FieldError>{qError}</FieldError>}
+        {qError && <FieldError id={metierErrorId}>{qError}</FieldError>}
       </Box>
 
       {/* Champ lieu */}
-      <Box sx={{ flex: rowSx.lieuFlex, width: rowSx.fieldWidth }}>
-        <FieldLabel error={Boolean(lieuError)}>Lieu</FieldLabel>
+      <Box sx={lieuWrapperSx}>
+        <Box sx={{ mb: fr.spacing("1v") }}>
+          <FieldLabel id={lieuLabelId} error={Boolean(lieuError)}>
+            Lieu
+          </FieldLabel>
+        </Box>
         <Autocomplete
           freeSolo
           // autoHighlight : la 1re suggestion est pré-surlignée → Entrée la sélectionne
@@ -403,11 +510,18 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
             if ("kind" in o) return false
             return typeof v === "string" ? o.label === v : !("kind" in v) && o.label === v.label
           }}
-          onOpen={lieuListbox.onOpen}
-          onClose={lieuListbox.onClose}
+          slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
+          blurOnSelect={inlineSuggestions}
+          // Mode inline : cap listbox inutile — hook non armé (cf. champ métier).
+          onOpen={inlineSuggestions ? undefined : lieuListbox.onOpen}
+          onClose={inlineSuggestions ? undefined : lieuListbox.onClose}
           inputValue={lieuInput}
           value={lieuValue}
-          onBlur={handleLieuBlur}
+          onFocus={() => changeActiveField("lieu")}
+          onBlur={() => {
+            changeActiveField(null)
+            handleLieuBlur()
+          }}
           onInputChange={(_e, value, reason) => {
             setLieuInput(value)
             // "clear" = clic sur la croix MUI — on retire le lieu des params
@@ -430,9 +544,15 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
             }
             selectLieu(value)
           }}
-          renderOption={(props, option, { index }) =>
+          // key avant le spread et hors des props MUI — même raison que le champ métier.
+          renderOption={({ key: _muiKey, ...optionProps }, option, { index }) =>
             "kind" in option ? (
-              <Box component="li" {...props} key="__france_entiere__" sx={{ minHeight: 60, px: "16px !important", display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
+              <Box
+                component="li"
+                key="__france_entiere__"
+                {...optionProps}
+                sx={{ minHeight: 60, px: "16px !important", display: "flex", alignItems: "center", gap: fr.spacing("2v") }}
+              >
                 <Box component="span" className={fr.cx("fr-icon-map-pin-2-line", "fr-icon--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default }} aria-hidden="true" />
                 <Box>
                   <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>France entière</Box>
@@ -440,20 +560,39 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
                 </Box>
               </Box>
             ) : (
-              <Box component="li" {...props} key={option.label} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
+              <Box component="li" key={option.label} {...optionProps} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
                 <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>{highlightMatch(option.label, lieuInput)}</Box>
                 {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
               </Box>
             )
           }
-          slotProps={{ paper: { sx: POPPER_PAPER_SX }, listbox: { sx: { maxHeight: lieuListbox.maxHeight } } }}
+          slotProps={{
+            paper: { sx: inlineSuggestions ? INLINE_PAPER_SX : POPPER_PAPER_SX },
+            listbox: { sx: inlineSuggestions ? INLINE_LISTBOX_SX : { maxHeight: lieuListbox.maxHeight } },
+          }}
           renderInput={(params) => (
-            <TextField {...params} inputRef={lieuListbox.inputRef} placeholder="France entière" variant="outlined" size="small" fullWidth sx={fieldSx(Boolean(lieuError))} />
+            <TextField
+              {...params}
+              inputRef={lieuListbox.inputRef}
+              placeholder="France entière"
+              variant="outlined"
+              size="small"
+              fullWidth
+              sx={fieldSx(Boolean(lieuError))}
+              slotProps={{
+                htmlInput: {
+                  ...params.inputProps,
+                  "aria-labelledby": lieuLabelId,
+                  "aria-describedby": lieuError ? lieuErrorId : undefined,
+                  "aria-invalid": Boolean(lieuError),
+                },
+              }}
+            />
           )}
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
-        {lieuError && <FieldError>{lieuError}</FieldError>}
+        {lieuError && <FieldError id={lieuErrorId}>{lieuError}</FieldError>}
       </Box>
     </Box>
   )

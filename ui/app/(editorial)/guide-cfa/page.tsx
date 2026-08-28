@@ -11,10 +11,11 @@ import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHead
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { ARTICLES as ARTICLES_PARTAGES } from "../guide/const"
 import { ARTICLES } from "./const"
-export const metadata: Metadata = PAGES.static.guideCfa.getMetadata()
+export const metadata: Metadata = METADATA.static.guideCfa()
 
 const guideCfaPage = () => {
   return (
@@ -25,8 +26,8 @@ const guideCfaPage = () => {
     >
       <SchemaOrg
         type="WebPage"
-        title={PAGES.static.guideCfa.getMetadata().title}
-        description={PAGES.static.guideCfa.getMetadata().description}
+        title={METADATA.static.guideCfa().title}
+        description={METADATA.static.guideCfa().description}
         url={PAGES.static.guideCfa.getPath()}
         breadcrumbs={[
           { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },

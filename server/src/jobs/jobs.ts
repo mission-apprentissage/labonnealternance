@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb"
 import { getLoggerWithContext, logger } from "@/common/logger"
 import { getDatabase } from "@/common/utils/mongodb-utils"
 import config from "@/config"
+import { applyPendingClassificationBatches } from "@/services/classification/classification-mistral-batch.service"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import {
@@ -27,7 +28,9 @@ import { relanceCandidatsInactifs } from "./applications/relance-candidats-inact
 import { relanceIncitationSpontanee } from "./applications/relance-incitation-spontanee"
 import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
+import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
+import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formations-catalogue/update-parcoursup-and-affelnet-info-on-formation-catalogue"
 import { generateFranceTravailAccess } from "./france-travail/generate-france-travail-access"
@@ -65,8 +68,10 @@ import { opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiter-offer-expiration-reminder-job"
 import { resetApiKey } from "./recruiters/reset-api-key"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
-import { rollbackSearchSuggestions } from "./search/analyze-search-queries"
+import { analyzeSearchQueries, rollbackSearchSuggestions } from "./search/analyze-search-queries"
 import { fillSearchItemsCollection } from "./search/generate-search-items-collection"
+import { pingGoogleIndexing } from "./seo/ping-google-indexing"
+import { pingIndexNow } from "./seo/ping-indexnow"
 import { updateSEO } from "./seo/update-seo"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simple-job-definitions"
 import { updateBrevoBlockedEmails } from "./update-brevo-blocked-emails/update-brevo-blocked-emails"
@@ -94,9 +99,10 @@ export async function setupJobProcessor() {
             tag: "main",
           },
           "Traitement complet des jobs_partners par API": {
-            cron_string: "*/10 * * * *",
+            cron_string: "*/5 * * * *",
             handler: processJobPartnersForApi,
             tag: "slave",
+            concurrency: { mode: "exclusive" },
           },
           "Expiration des offres jobs_partners": {
             cron_string: "*/30 * * * *",
@@ -132,6 +138,18 @@ export async function setupJobProcessor() {
             cron_string: "20 0 * * *",
             handler: generateSitemap,
             tag: "main",
+          },
+          // Décalé de 10 min après l'expiration des offres (*/30) pour capter ses bumps de updated_at.
+          "Notification IndexNow des offres modifiées": {
+            cron_string: "10,40 * * * *",
+            handler: async () => pingIndexNow(),
+            tag: "slave",
+          },
+          // Même logique de décalage que IndexNow, séquencé 5 min après pour lisser les appels sortants.
+          "Notification Google Indexing API des offres modifiées": {
+            cron_string: "15,45 * * * *",
+            handler: async () => pingGoogleIndexing(),
+            tag: "slave",
           },
           "Envoi des mails de relance pour l'expiration des offres à J+7": {
             cron_string: "20 9 * * *",
@@ -238,10 +256,18 @@ export async function setupJobProcessor() {
             handler: config.env === "production" ? async () => exportJobsToFranceTravail() : async () => Promise.resolve(0),
             tag: "main",
           },
+          // Les offres déposées par API sont indexées directement en fin de processJobPartnersForApi :
+          // ce cron ne porte plus leur latence, il couvre les écritures de masse des AUTRES chemins
+          // (expiration */30, annulation, dédoublonnage, imports de flux) et sert de rattrapage.
+          // Maintenu à 5 min pour le retrait : une offre expirée ou annulée reste sinon proposée en
+          // recherche jusqu'au run suivant. Runs à vide à 30-50 ms, 2 à 3 s en régime nominal.
+          // concurrency exclusive : jusqu'à 4 min pendant les imports de masse nocturnes (mesuré le
+          // 28/08/2026 à 03:35 UTC) — au-delà de l'intervalle, deux runs se chevaucheraient.
           "Sync delta search_items (jobs_partners modifiés)": {
-            cron_string: "*/15 * * * *",
+            cron_string: "*/5 * * * *",
             handler: async () => syncSearchItemsDelta(),
             tag: "slave",
+            concurrency: { mode: "exclusive" },
           },
           // Après processComputedAndImportToJobPartners (départ 00:01, maxRuntime 300 min → fin
           // au plus tard ~05:00) : rattrape ce que la sync incrémentale a manqué et purge les
@@ -256,6 +282,12 @@ export async function setupJobProcessor() {
             cron_string: "30 7 * * *",
             handler: controlSearchItemsDrift,
             tag: "main",
+          },
+          "Analyse mensuelle des recherches utilisateurs (autocomplete + synonymes)": {
+            cron_string: "0 7 1 * *",
+            handler: analyzeSearchQueries,
+            tag: "slave",
+            maxRuntimeInMinutes: 60,
           },
           "Génération continue des keywords search_items (cache + API immédiate)": {
             cron_string: "*/30 * * * *",
@@ -272,6 +304,12 @@ export async function setupJobProcessor() {
           "Ramasse des batchs Mistral keywords": {
             cron_string: "10 * * * *",
             handler: applyPendingMistralBatches,
+            tag: "slave",
+          },
+          // Décalé de 10 min par rapport à la ramasse keywords pour étaler la charge Mongo.
+          "Ramasse des batchs Mistral classification jobs_partners": {
+            cron_string: "20 * * * *",
+            handler: applyPendingClassificationBatches,
             tag: "slave",
           },
           "export des offres LBA sur S3": {
@@ -375,6 +413,14 @@ export async function setupJobProcessor() {
             cron_string: "0 8 * * SUN",
             handler: updateDiplomeMetier,
           },
+          "update-handi-engagement": {
+            cron_string: "45 4 * * SAT",
+            handler: async () => updateHandiEngagement(),
+          },
+          "Mise à jour mensuelle des contrats DECA": {
+            cron_string: "15 5 1 * *",
+            handler: async () => importDecaContratsParAnnee(),
+          },
         },
     jobs: {
       "indexes:recreate": {
@@ -383,6 +429,12 @@ export async function setupJobProcessor() {
           await recreateIndexes({ drop })
           return
         },
+      },
+      "update-handi-engagement:force": {
+        // Déclenchement manuel : ignore le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
+        // pour forcer le nettoyage des sources France Travail obsolètes, quand l'écart constaté est
+        // confirmé légitime (ex. mise à jour majeure du fichier source).
+        handler: async () => updateHandiEngagement({ force: true }),
       },
       "api:user:create": {
         handler: async (job) => {

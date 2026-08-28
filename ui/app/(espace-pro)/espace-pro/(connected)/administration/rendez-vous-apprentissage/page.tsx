@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { PAGES } from "@/utils/routes.utils"
+import { METADATA } from "@/utils/routes.metadata.utils"
 import RendezVousApprentissagePage from "./RendezVousApprentissagePage"
 export const metadata: Metadata = {
-  title: PAGES.static.rendezVousApprentissageRecherche.getMetadata().title,
+  title: METADATA.static.rendezVousApprentissageRecherche().title,
 }
 
 export default async function Page() {

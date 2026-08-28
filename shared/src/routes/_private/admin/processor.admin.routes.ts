@@ -2,7 +2,13 @@ import { zProcessorStatus } from "job-processor/dist/core.js"
 import { z } from "zod"
 import type { IRoutesDef } from "../../common.routes.js"
 
-export const zTriggerableJobs = z.enum(["processApplications", "processRecruiterIntentions", "processJobPartnersForApi", "importCatalogueFormationJob"])
+export const zTriggerableJobs = z.enum([
+  "processApplications",
+  "processRecruiterIntentions",
+  "processJobPartnersForApi",
+  "importCatalogueFormationJob",
+  "updateHandiEngagementForce",
+])
 
 export const zProcessorAdminRoutes = {
   get: {

@@ -1,5 +1,7 @@
-import { toKebabCase } from "shared"
+// Import profond et non via le barrel "shared" : ce module part dans le bundle de la home.
+
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { toKebabCase } from "shared/utils/string-utils"
 
 export interface ISearchPageParams {
   q?: string
@@ -31,8 +33,8 @@ export const DEFAULT_SEARCH_MODE: SearchMode = "emplois"
 export type SortOption = "proximity" | "date" | "applications" | "start_date"
 const SORT_OPTIONS: SortOption[] = ["proximity", "date", "applications", "start_date"]
 
-export type QSource = "suggestion" | "free_text"
-const Q_SOURCES: QSource[] = ["suggestion", "free_text"]
+export type QSource = "suggestion" | "free_text" | "training_links" | "external_sites"
+const Q_SOURCES: QSource[] = ["suggestion", "free_text", "training_links", "external_sites"]
 
 /**
  * Les filtres multi-valeurs utilisent des paramètres répétés dans l'URL :
@@ -81,9 +83,17 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
   const longitude = getFloat("longitude")
   const hasGeoPair = latitude !== undefined && longitude !== undefined
 
+  // « source » est l'ancien nom de « search_source », abandonné parce que c'est un paramètre
+  // réservé de Plausible (attribution d'acquisition). Le repli reste nécessaire tant que des
+  // liens externes le portent : campagne traininglinks du 2026-08-24, liens posés par des sites
+  // tiers. search_source prime si les deux sont présents.
+  const rawQSource = search.get("search_source") ?? search.get("source")
+
   return {
-    q: search.get("q") || undefined,
-    q_source: Q_SOURCES.includes(search.get("source") as QSource) ? (search.get("source") as QSource) : undefined,
+    // Trim : un `q` d'espaces doit compter comme une absence, sinon il passe la branche indexable
+    // de buildRecherchePageMetadata (canonical auto-référent `?q=+`, titre cassé) au lieu du noindex.
+    q: search.get("q")?.trim() || undefined,
+    q_source: Q_SOURCES.includes(rawQSource as QSource) ? (rawQSource as QSource) : undefined,
     lieu_label: search.get("lieu_label") || undefined,
     mode: SEARCH_MODES.includes(search.get("mode") as SearchMode) ? (search.get("mode") as SearchMode) : DEFAULT_SEARCH_MODE,
     type_filter_label: getMulti("type_filter_label"),
@@ -109,7 +119,7 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/recherche
   const query = new URLSearchParams()
 
   if (params.q) query.set("q", params.q)
-  if (params.q && params.q_source) query.set("source", params.q_source)
+  if (params.q && params.q_source) query.set("search_source", params.q_source)
   if (params.lieu_label) query.set("lieu_label", params.lieu_label)
   if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
 
@@ -155,6 +165,34 @@ export function buildSearchPageTitle(params: ISearchPageParams): string {
   return `${base}${context} | La bonne alternance`
 }
 
+/**
+ * Canonical auto-référent d'une page de résultats du nouveau moteur (`q`) : chemin + le métier
+ * recherché (et le `mode` s'il n'est pas la valeur par défaut). Débarrassé du bruit d'URL (géo,
+ * filtres, pagination, tri, toggles) pour consolider les variantes d'une même recherche métier sur
+ * une page indexable unique. Indispensable depuis le noindex de `/recherche` nue (#5034) : sans
+ * canonical propre, les pages `?q=` héritent du canonical racine (`"./"` → `/recherche`) et seraient
+ * dé-indexées avec elle. Sans `q`, renvoie `/recherche` (la page nue, cible de noindex).
+ */
+export function buildSearchPageCanonical(params: ISearchPageParams): string {
+  if (!params.q) return "/recherche"
+  const query = new URLSearchParams()
+  query.set("q", params.q)
+  if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
+  return `/recherche?${query.toString()}`
+}
+
+/**
+ * Texte du H1 SEO de la page de résultats : « Alternance {métier}{ à {lieu}} ».
+ * Retourne `null` sans métier saisi (`q`) — la page n'a alors pas de H1 dynamique à afficher.
+ */
+export function buildRechercheH1(params: Pick<ISearchPageParams, "q" | "lieu_label">): string | null {
+  const q = params.q?.trim() || null
+  if (!q) return null
+
+  const lieu = params.lieu_label?.trim() || null
+  return `Alternance ${q}${lieu ? ` à ${lieu}` : ""}`
+}
+
 export function buildHitDetailUrl(hit: { sub_type: string; url_id: string; title: string }, currentSearchUrl: string): string {
   const slug = toKebabCase(hit.title || "offre")
   const from = encodeURIComponent(currentSearchUrl)
@@ -164,4 +202,18 @@ export function buildHitDetailUrl(hit: { sub_type: string; url_id: string; title
   }
 
   return `/emploi/${hit.sub_type}/${encodeURIComponent(hit.url_id)}/${slug}?from=${from}`
+}
+
+/**
+ * Paramètre transitoire posé sur l'URL de retour à la fermeture d'une fiche détail (cf.
+ * useDetailNavigation), pour que la liste rescrolle sur la carte consultée au lieu de revenir
+ * en haut. Volontairement absent de `ISearchPageParams`/`buildSearchUrl` : il ne doit jamais
+ * être réémis par une navigation normale (filtre, tri…), seulement consommé une fois puis
+ * disparaître de l'URL.
+ */
+export const ACTIVE_HIT_PARAM = "active_hit"
+
+export function withActiveHit(searchUrl: string, hitUrlId: string): string {
+  const separator = searchUrl.includes("?") ? "&" : "?"
+  return `${searchUrl}${separator}${ACTIVE_HIT_PARAM}=${encodeURIComponent(hitUrlId)}`
 }

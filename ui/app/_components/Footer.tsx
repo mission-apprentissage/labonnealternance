@@ -6,6 +6,11 @@ import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 import { DsfrHeaderProps } from "./Header"
 
+// Deeplink officiel Google "sources préférées" (sans script tiers) :
+// https://developers.google.com/search/docs/appearance/preferred-sources
+// Le domaine de production est utilisé quel que soit l'environnement, car c'est lui qui est référencé par Google.
+const GOOGLE_PREFERRED_SOURCE_URL = "https://www.google.com/preferences/source?q=labonnealternance.apprentissage.beta.gouv.fr"
+
 type LinkItem = {
   linkProps: {
     href: string
@@ -245,6 +250,17 @@ export function Footer({ isWidget = false }: { isWidget?: boolean }) {
                 </a>
               </li>
             </ul>
+            {!isWidget && (
+              <a
+                className="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-left fr-icon-google-fill fr-mt-2w"
+                href={GOOGLE_PREFERRED_SOURCE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Ajouter La bonne alternance à vos sources préférées sur Google - nouvelle fenêtre"
+              >
+                Ajouter à vos sources préférées sur Google
+              </a>
+            )}
           </div>
         </div>
         <div className="fr-footer__bottom">

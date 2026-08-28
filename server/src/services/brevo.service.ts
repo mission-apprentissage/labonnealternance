@@ -1,10 +1,30 @@
 import brevo, { CreateWebhook } from "@getbrevo/brevo"
+import { internal } from "@hapi/boom"
 import type { ColumnOption } from "csv-stringify"
 import { stringify } from "csv-stringify/sync"
 import dayjs from "shared/helpers/dayjs"
 
 import { logger } from "@/common/logger"
 import config from "@/config"
+
+/**
+ * Décrit une erreur de l'API Brevo sans reprendre l'objet d'erreur brut.
+ *
+ * L'erreur levée par le SDK porte `config.data`, c'est-à-dire le corps CSV complet de la requête —
+ * adresses email nominatives de recruteurs et de candidats. `extraErrorDataIntegration` la
+ * sérialiserait telle quelle dans Sentry (`sendDefaultPii` actif) et aucune clé de ce corps ne
+ * correspond au scrub par nom de `sentry.ts`. Constaté en production sur le job « Export contact
+ * recruteurs vers Brevo » (Sentry LBA-SERVER-5J7KF4ZZZTAAB).
+ *
+ * Même logique que les clients france-travail, diagoriente, inserjeunes et api-entreprise.
+ */
+const describeBrevoError = (error: any): { status: number | undefined; brevoMessage: string | undefined; message: string } => ({
+  // Le SDK Brevo expose selon les appels `response.statusCode` (superagent) ou `response.status`
+  // (axios) — la boucle de retry ci-dessous lit déjà les deux.
+  status: error?.response?.statusCode ?? error?.response?.status,
+  brevoMessage: error?.response?.body?.message ?? error?.response?.data?.message,
+  message: error?.message ?? "erreur inconnue",
+})
 
 const clientBrevo = new brevo.WebhooksApi()
 clientBrevo.setApiKey(brevo.WebhooksApiApiKeys.apiKey, config.smtp.brevoApiKey)
@@ -33,6 +53,20 @@ const hardBounceWebhook = {
 }
 
 /**
+ * Journalise l'échec de création d'un webhook.
+ *
+ * L'ancienne version lisait `error.response.res.text` sans garde : quand `error.response` est
+ * absent (échec réseau, DNS, timeout), le handler de rejet levait lui-même un TypeError que plus
+ * rien ne rattrapait — rejet non rattrapé à chaque démarrage du serveur en production, et une
+ * nouvelle issue Sentry à chaque release puisque le culprit contient le hash du chunk
+ * (LBA-SERVER-5J7KF4ZZZTA8E et 5 issues jumelles).
+ */
+const logBrevoWebhookError = (webhook: string, error: any): void => {
+  const { status, brevoMessage, message } = describeBrevoError(error)
+  logger.error(`Brevo webhook API Error for ${webhook}. status=${status ?? "n/a"} message=${brevoMessage ?? message}`)
+}
+
+/**
  * Initialise les webhooks Brevo au démarrage du docker server. Echoue sans conséquences s'ils existent déjà
  */
 export const initBrevoWebhooks = () => {
@@ -50,7 +84,7 @@ export const initBrevoWebhooks = () => {
         logger.info("Brevo webhook API called successfully for email (appointment, application) status changes. Returned data: " + JSON.stringify(data))
       },
       function (error) {
-        logger.error("Brevo webhook API Error for email (appointment, application) status changes. Returned data: " + error.response.res.text)
+        logBrevoWebhookError("email (appointment, application) status changes", error)
       }
     )
 
@@ -59,7 +93,7 @@ export const initBrevoWebhooks = () => {
       logger.info("Brevo webhook API called successfully for transactional hardbounces. Returned data: " + JSON.stringify(data))
     },
     function (error) {
-      logger.error("Brevo webhook API Error for transactional hardbounces. Returned data: " + error.response.res.text)
+      logBrevoWebhookError("transactional hardbounces", error)
     }
   )
 
@@ -74,7 +108,7 @@ export const initBrevoWebhooks = () => {
         logger.info("Brevo webhook API called successfully for campaign hardbounce detection. Returned data: " + JSON.stringify(data))
       },
       function (error) {
-        logger.error("Brevo webhook API Error for campaign hardbounce detection. Returned data: " + error.response.res.text)
+        logBrevoWebhookError("campaign hardbounce detection", error)
       }
     )
 }
@@ -104,7 +138,15 @@ export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKE
 
   const maxRetries = 5
   let attempt = 0
-  let lastError: Error | null = null
+  let lastError: unknown = null
+
+  // Ne jamais relever l'erreur du SDK telle quelle : elle porte le corps CSV de l'import
+  // (cf. describeBrevoError). On la remplace par un Boom qui ne retient que le statut, le message
+  // renvoyé par Brevo, la liste ciblée et le nombre de contacts.
+  const toImportError = (error: unknown) => {
+    const { status, brevoMessage, message } = describeBrevoError(error)
+    return internal(`brevo: échec de l'import de contacts (${brevoMessage ?? message})`, { account, listId, status, contactCount: contacts.length })
+  }
 
   while (attempt < maxRetries) {
     try {
@@ -132,13 +174,13 @@ export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKE
           await new Promise((resolve) => setTimeout(resolve, delayMs))
         } else {
           logger.error(`Brevo API rate limit reached. Max retries (${maxRetries}) exceeded`)
-          throw error
+          throw toImportError(error)
         }
       } else {
-        throw error
+        throw toImportError(error)
       }
     }
   }
 
-  throw lastError
+  throw toImportError(lastError)
 }

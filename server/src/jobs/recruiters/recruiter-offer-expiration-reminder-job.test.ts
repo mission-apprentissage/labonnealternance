@@ -36,7 +36,13 @@ describe("recruiter-offer-expiration-reminder-job", () => {
     }
   })
 
-  it("utilise un fallback sur workplace_brand si workplace_name est vide", async () => {
+  // Les deux formes d'« absence » de workplace_name doivent mener au même repli. La chaîne vide
+  // est le cas réel du corpus : formatTextFieldsJobsPartners écrivait "" sur les champs texte
+  // absents, et un `??` ne bascule pas sur "".
+  it.for([
+    { label: "null", workplace_name: null },
+    { label: "chaîne vide", workplace_name: "" },
+  ])("utilise un fallback sur workplace_brand si workplace_name vaut $label", async ({ workplace_name }) => {
     const user = await saveUserWithAccount({
       email: "recruteur@email.fr",
       first_name: "Jean",
@@ -48,7 +54,7 @@ describe("recruiter-offer-expiration-reminder-job", () => {
       partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       offer_status: JOB_STATUS_ENGLISH.ACTIVE,
       offer_expiration: dayjs().add(7, "day").add(1, "hour").toDate(),
-      workplace_name: null,
+      workplace_name,
       workplace_brand: "ACME Brand",
       workplace_legal_name: "ACME Legal",
       relance_mail_expiration_J7: null,
