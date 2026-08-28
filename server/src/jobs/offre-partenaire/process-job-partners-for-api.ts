@@ -20,7 +20,7 @@ export const processJobPartnersForApi = async () => {
   )
 
   const filter = { currently_processed_id: processId }
-  await fillComputedJobsPartners({ addedMatchFilter: filter })
+  await fillComputedJobsPartners({ addedMatchFilter: filter, skipCfaAndClassificationDetection: true })
   await importFromComputedToJobsPartners(filter)
   await fillLbaUrl()
   await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
