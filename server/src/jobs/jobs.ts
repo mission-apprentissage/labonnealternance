@@ -98,11 +98,14 @@ export async function setupJobProcessor() {
             handler: async () => processApplications(),
             tag: "main",
           },
+          // Pas de `concurrency: { mode: "exclusive" }` ici : le scheduler de job-processor crée le
+          // cron_task du slot suivant en `pending`, et l'index unique partiel cron_task_exclusive_unique
+          // couvre `pending` — un slot encore en attente bloque donc la création du suivant, qui part en
+          // `skipped` sans check-in Sentry. À 5 min de cadence, un slot sur deux était perdu.
           "Traitement complet des jobs_partners par API": {
             cron_string: "*/5 * * * *",
             handler: processJobPartnersForApi,
             tag: "slave",
-            concurrency: { mode: "exclusive" },
           },
           "Expiration des offres jobs_partners": {
             cron_string: "*/30 * * * *",
@@ -215,10 +218,15 @@ export async function setupJobProcessor() {
             handler: updateParcoursupAndAffelnetInfoOnFormationCatalogue,
             tag: "main",
           },
+          // Durées prod mesurées sur 7 nuits : 68 à 96 min, donc au-delà du maxRuntime par défaut
+          // (60 min) — le monitor Sentry partait en timeout chaque nuit. La marge de check-in tient
+          // compte de l'import catalogue (02:15, maxRuntime 90) qui peut déborder sur le même worker.
           "Synchronise les formations eligibles à la prise de rendez-vous": {
             cron_string: "45 2 * * *",
             handler: syncEtablissementsAndFormations,
             tag: "main",
+            checkinMargin: 30,
+            maxRuntimeInMinutes: 120,
           },
           "Export des offres sur S3 v2": {
             cron_string: "0 3 * * *",
