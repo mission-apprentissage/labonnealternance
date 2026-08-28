@@ -156,7 +156,7 @@ export function SearchHomeForm() {
       <RechercheFormTitle />
 
       {/* Mobile : faux champ + bouton loupe → modale plein écran (métier, lieu, type de recherche). */}
-      <Box aria-hidden={true} sx={{ display: { xs: "block", md: "none" } }}>
+      <Box aria-hidden={true} sx={{ display: { xs: "block", lg: "none" } }}>
         <Box component="span" sx={{ display: "block", fontSize: "1rem", fontWeight: 700, color: fr.colors.decisions.text.default.grey.default, mb: fr.spacing("1v") }}>
           Que recherchez-vous ?
         </Box>
@@ -181,7 +181,7 @@ export function SearchHomeForm() {
       </Box>
 
       {/* Desktop : rangée champs + type de recherche + bouton. */}
-      <Box sx={{ display: { xs: "none", md: "flex" }, flexDirection: "row", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
+      <Box sx={{ display: { xs: "none", lg: "flex" }, flexDirection: "row", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
         <Box sx={{ flex: 1 }}>
           <SearchBar layout="row" onSubmit={fillQ} onQChange={handleQChange} onLieuChange={setLieu} />
         </Box>
