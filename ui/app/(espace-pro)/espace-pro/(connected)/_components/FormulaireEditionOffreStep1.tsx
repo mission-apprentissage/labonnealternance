@@ -62,6 +62,8 @@ const AmeliorerIaButton = ({ fieldName, establishmentId }: { fieldName: FreeText
   return (
     <Box
       sx={{
+        mt: fr.spacing("2v"),
+        backgroundColor: fr.colors.decisions.background.contrast.grey.default,
         border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
         borderBottom: "none",
         display: "flex",
