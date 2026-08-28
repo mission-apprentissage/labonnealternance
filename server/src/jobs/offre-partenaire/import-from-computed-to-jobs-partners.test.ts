@@ -1,5 +1,6 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import type { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -51,6 +52,40 @@ describe("Importing computed_jobs_partners into jobs_partners", () => {
     // les éléments validated et déjà dans jobs partners doivent toujours y être avec les data modifiées à jour
     const existing_3 = await getDbCollection("jobs_partners").findOne({ partner_job_id: "existing_3" })
     expect.soft(existing_3?.offer_description === newDesc)
+  })
+
+  describe("onImported", () => {
+    it("remonte les _id jobs_partners des offres importées, y compris quand ils diffèrent du computed", async () => {
+      // "existing_3" est déjà dans jobs_partners avec son propre _id, et son document computed en a
+      // un autre : c'est l'_id de jobs_partners qu'il faut remonter, sinon l'appelant travaille sur
+      // un _id qui n'existe pas dans la collection (l'indexation search_items le traiterait comme
+      // une offre disparue et tenterait de la retirer de l'index).
+      const existingJobPartner = await getDbCollection("jobs_partners").findOne({ partner_job_id: "existing_3" })
+      const computedOfExisting = await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: "existing_3" })
+      const computedNew = await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: "computed_1" })
+      expect.soft(existingJobPartner!._id.equals(computedOfExisting!._id)).toBe(false)
+
+      let importedIds: ObjectId[] = []
+      await importFromComputedToJobsPartners(undefined, (ids) => {
+        importedIds = ids
+      })
+
+      const asStrings = importedIds.map((id) => id.toString())
+      // Les deux offres validées : la nouvelle (_id du computed) et l'existante (_id de jobs_partners).
+      expect.soft(asStrings).toHaveLength(2)
+      expect.soft(asStrings).toContain(computedNew!._id.toString())
+      expect.soft(asStrings).toContain(existingJobPartner!._id.toString())
+      expect.soft(asStrings).not.toContain(computedOfExisting!._id.toString())
+    })
+
+    it("n'est pas appelé quand aucune offre n'est importée", async () => {
+      await getDbCollection("computed_jobs_partners").updateMany({}, { $set: { validated: false } })
+      const onImported = vi.fn()
+
+      await importFromComputedToJobsPartners(undefined, onImported)
+
+      expect(onImported).not.toHaveBeenCalled()
+    })
   })
 })
 

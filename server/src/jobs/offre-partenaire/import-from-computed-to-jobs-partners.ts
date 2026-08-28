@@ -1,5 +1,5 @@
 import { internal } from "@hapi/boom"
-import type { Filter } from "mongodb"
+import type { Filter, ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
@@ -12,7 +12,17 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { limitStream } from "@/common/utils/stream-utils"
 
-export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+/**
+ * `onImported` reçoit, en fin d'import, les _id **jobs_partners** effectivement écrits — utile aux
+ * appelants qui doivent enchaîner sur ces offres précisément (indexation search_items du cron
+ * offres API). Les _id ne sont matérialisés que si un consommateur est branché : le flux nightly
+ * importe des centaines de milliers de documents et n'a pas à payer la liste.
+ *
+ * Attention, l'_id jobs_partners n'est PAS toujours celui du document computed : l'upsert cible
+ * `{partner_job_id, partner_label}`, donc une offre déjà présente conserve son propre _id et
+ * `$setOnInsert._id` ne s'applique qu'à la création.
+ */
+export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, onImported?: (jobPartnerIds: ObjectId[]) => void | Promise<void>) => {
   logger.info(`import dans jobs_partners commencé`)
   const filters: Filter<IComputedJobsPartners>[] = [{ validated: true, business_error: null }]
   if (addedMatchFilter) {
@@ -22,6 +32,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
   const stream = await getDbCollection("computed_jobs_partners").find({ $and: filters }).stream()
 
   const counters = { total: 0, success: 0, error: 0 }
+  const importedIds: ObjectId[] | null = onImported ? [] : null
   const importDate = new Date()
 
   const transform = limitStream<Omit<IJobsPartnersOfferPrivate, "created_at">>({
@@ -106,6 +117,11 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           { upsert: true }
         )
 
+        // Collecté après l'écriture réussie. L'_id de l'offre est celui du document existant s'il y
+        // en a un, sinon celui posé par $setOnInsert — la projection du findOne ci-dessus renvoie
+        // _id, inclus par défaut.
+        importedIds?.push(existingJob?._id ?? computedJobPartner._id)
+
         const historyEntriesToPush = [
           ...(computedJobPartner?.offer_status_history ?? []),
           ...(existingJob?.offer_status === JOB_STATUS_ENGLISH.ANNULEE && partnerJobToUpsert.offer_status === JOB_STATUS_ENGLISH.ACTIVE
@@ -152,6 +168,10 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
   await pipeline(stream, transform)
 
   logger.info({ counters }, "import dans jobs_partners terminé")
+
+  if (importedIds?.length) {
+    await onImported?.(importedIds)
+  }
 
   return counters
 }
