@@ -1,17 +1,32 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container } from "@mui/material"
+import { Box, Container, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 
 import { useFormationPrdvTracker } from "@/app/hooks/use-formation-prdv-tracker"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import { DemandeDeContactConfirmation } from "@/components/RDV/DemandeDeContactConfirmation"
 import { DemandeDeContactForm } from "@/components/RDV/DemandeDeContactForm"
 import { getPrdvContext } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 
 type PrdvData = NonNullable<Awaited<ReturnType<typeof getPrdvContext>>>
+
+const PrdvIndisponible = () => (
+  <Box id="main-content" tabIndex={-1} sx={{ my: fr.spacing("6v"), mx: fr.spacing("2v") }}>
+    <Typography variant="h1">Ce formulaire n'est plus disponible</Typography>
+    <Typography sx={{ mt: fr.spacing("4v") }}>
+      Le lien que vous avez suivi ne correspond plus à une formation acceptant les demandes de contact. Il a peut-être expiré, ou le centre de formation ne reçoit plus de demandes
+      par ce biais.
+    </Typography>
+    <Typography sx={{ mt: fr.spacing("4v") }}>
+      Vous pouvez <DsfrLink href={PAGES.dynamic.rechercheFormation(null).getPath()}>rechercher une autre formation</DsfrLink> et contacter le centre depuis sa fiche.
+    </Typography>
+  </Box>
+)
 
 type Props = {
   data: PrdvData | null
@@ -61,8 +76,13 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
     return null
   }
 
+  // Contexte introuvable : la clé ministère éducatif est inconnue, expirée, ou le CFA ne prend plus
+  // de rendez-vous. C'est un état fonctionnel attendu, pas une panne. Le `throw` précédent le
+  // faisait remonter à l'ErrorBoundary, qui affichait « Un problème technique est survenu » et
+  // capturait un event Sentry par visite — 343 sur 7 jours, 936 depuis le 07/07
+  // (LBA-UI-5CVZZZZZZG40G).
   if (!data) {
-    throw new Error(`Un problème est survenu lors de l’accès au formulaire de demande au CFA - cleMinistereEducatif: ${cleMinistereEducatif}, referrer: ${referrer}`)
+    return <PrdvIndisponible />
   }
 
   const context = { cle_ministere_educatif: data.cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale: data.etablissement_formateur_entreprise_raison_sociale }
