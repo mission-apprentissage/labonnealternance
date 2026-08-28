@@ -50,7 +50,11 @@ function transformPartnerJob(
     },
     company: {
       siret: partnerJob.is_delegated ? partnerJob.cfa_siret : partnerJob.workplace_siret,
-      name: partnerJob.is_delegated ? partnerJob.cfa_legal_name : (partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name ?? UNKNOWN_COMPANY),
+      // `||` et non `??` sur la chaîne de repli : workplace_name est sanitizé côté pipeline et peut
+      // valoir "" (cf. formatTextFieldsJobsPartners), ce qui court-circuitait tous les replis et
+      // affichait une fiche détail sans employeur, alors que la carte de résultat — qui utilise `||`
+      // dans buildJobOfferSearchItem — affichait bien la raison sociale.
+      name: partnerJob.is_delegated ? partnerJob.cfa_legal_name : partnerJob.workplace_name || partnerJob.workplace_brand || partnerJob.workplace_legal_name || UNKNOWN_COMPANY,
       size: partnerJob.workplace_size,
       opco: { label: partnerJob.workplace_opco, url: null },
       url: partnerJob.workplace_website,
