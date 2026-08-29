@@ -16,6 +16,10 @@ export type IReferentielOnisep = z.output<typeof ZReferentielOnisep>
 
 export default {
   zod: ZReferentielOnisep,
-  indexes: [[{ id_action_ideo2: 1 }, {}]],
+  indexes: [
+    [{ id_action_ideo2: 1 }, {}],
+    // syncEtablissementsAndFormations interroge cette collection par formation du catalogue.
+    [{ cle_ministere_educatif: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

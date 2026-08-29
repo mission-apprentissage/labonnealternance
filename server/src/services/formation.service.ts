@@ -187,7 +187,8 @@ export const getMostFrequentEmailByGestionnaireSiret = async (
           email: { $ne: null },
           etablissement_gestionnaire_siret,
         },
-        { projection: { email: 1 } }
+        // `_id: 0` : sans lui la projection force un FETCH et l'index {etablissement_gestionnaire_siret, email} n'est pas couvrant.
+        { projection: { email: 1, _id: 0 } }
       )
       .toArray()
   } else {
@@ -197,7 +198,7 @@ export const getMostFrequentEmailByGestionnaireSiret = async (
           etablissement_gestionnaire_courriel: { $ne: null },
           etablissement_gestionnaire_siret,
         },
-        { projection: { etablissement_gestionnaire_courriel: 1 } }
+        { projection: { etablissement_gestionnaire_courriel: 1, _id: 0 } }
       )
       .toArray()
   }

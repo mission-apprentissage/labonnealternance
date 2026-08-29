@@ -152,14 +152,14 @@ describe("refresh-entreprise-engagement-jobs-partners", () => {
     expect(job.contract_is_disabled_elligible).toBe(false)
   })
 
-  it("should set contract_is_disabled_elligible=false for active job with null siret", async () => {
+  it("should not touch contract_is_disabled_elligible for active job with null siret", async () => {
     // given
     await createJobPartner({ workplace_siret: null, offer_status: JOB_STATUS_ENGLISH.ACTIVE, contract_is_disabled_elligible: true })
     // when
     await refreshEntrepriseEngagementJobsPartners()
     // then
     const [job] = await getDbCollection("jobs_partners").find({}).toArray()
-    expect(job.contract_is_disabled_elligible).toBe(false)
+    expect(job.contract_is_disabled_elligible).toBe(true)
   })
 
   it("should not update non-active jobs", async () => {
@@ -203,7 +203,8 @@ describe("refresh-entreprise-engagement-jobs-partners", () => {
     const jobs = await getDbCollection("jobs_partners").find({}).sort({ partner_job_id: 1 }).toArray()
     expect.soft(jobs.find((j) => j.partner_job_id === "job-1")?.contract_is_disabled_elligible).toBe(true)
     expect.soft(jobs.find((j) => j.partner_job_id === "job-2")?.contract_is_disabled_elligible).toBe(false)
-    expect.soft(jobs.find((j) => j.partner_job_id === "job-3")?.contract_is_disabled_elligible).toBe(false)
+    // job-3 has a null siret: not "known", so left untouched despite being flagged true
+    expect.soft(jobs.find((j) => j.partner_job_id === "job-3")?.contract_is_disabled_elligible).toBe(true)
     // non-active job untouched
     expect.soft(jobs.find((j) => j.partner_job_id === "job-4")?.contract_is_disabled_elligible).toBe(false)
   })
