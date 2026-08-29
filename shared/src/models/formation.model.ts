@@ -205,6 +205,11 @@ export default {
     [{ catalogue_published: 1, intitule_long: 1 }, {}],
     [{ cfd: 1 }, {}],
     [{ "bcn_mefs_10.mef10": 1 }, {}],
+    // Index couvrants pour getMostFrequentEmailByGestionnaireSiret, appelé par formation dans
+    // syncEtablissementsAndFormations : la requête filtre sur le siret gestionnaire et ne projette
+    // que l'un des deux champs email.
+    [{ etablissement_gestionnaire_siret: 1, email: 1 }, {}],
+    [{ etablissement_gestionnaire_siret: 1, etablissement_gestionnaire_courriel: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
