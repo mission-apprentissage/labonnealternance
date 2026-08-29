@@ -5,8 +5,6 @@ import { removeAccents, removeRegexChars } from "shared/utils/index"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
-import config from "@/config"
 import { expandRomesV3toV4 } from "./rome.service"
 
 let globalCacheMetiers: IDomainesMetiers[] = []
@@ -23,15 +21,7 @@ export const initializeCacheMetiers = async () => {
     logger.info("initializeCacheMetiers on first use")
     globalCacheMetiers = await getDbCollection("domainesmetiers").find({}).toArray()
     cacheMetierLoading = false
-    const roughObjSize = JSON.stringify(globalCacheMetiers).length
-    if (config.env === "production") {
-      // biome-ignore lint/nursery/noFloatingPromises: migration
-      notifyToSlack({
-        subject: `Cache domaines metiers chargé`,
-        message: `Cache domaines metiers chargé. Taille estimée ${roughObjSize} octets`,
-        error: false,
-      })
-    }
+    logger.info({ roughObjSize: JSON.stringify(globalCacheMetiers).length }, "cache domaines metiers chargé")
   }
 }
 
@@ -44,15 +34,7 @@ export const initializeCacheDiplomas = async () => {
       diploma.codes_romes = await expandRomesV3toV4(diploma.codes_romes)
     })
     cacheDiplomaLoading = false
-    const roughObjSize = JSON.stringify(globalCacheDiplomas).length
-    if (config.env === "production") {
-      // biome-ignore lint/nursery/noFloatingPromises: migration
-      notifyToSlack({
-        subject: `Cache diplômes metiers chargé`,
-        message: `Cache diplômes metiers chargé. Taille estimée ${roughObjSize} octets`,
-        error: false,
-      })
-    }
+    logger.info({ roughObjSize: JSON.stringify(globalCacheDiplomas).length }, "cache diplômes metiers chargé")
   }
 }
 
