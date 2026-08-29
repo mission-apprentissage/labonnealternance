@@ -208,9 +208,9 @@ export const PAGES = {
       title: "Cerfa apprentissage et professionnalisation : le guide complet",
       index: true,
     },
-    guideRecruteurAidesALEmbaucheEnAlternance: {
-      getPath: () => `/guide-recruteur/aides-a-l-embauche-en-alternance` as string,
-      title: "Aides à l'embauche en alternance",
+    guideRecruteurRecruterUnAlternant: {
+      getPath: () => `/guide-recruteur/recruter-un-alternant` as string,
+      title: "Recruter un apprenti",
       index: true,
     },
     salaireAlternant: {

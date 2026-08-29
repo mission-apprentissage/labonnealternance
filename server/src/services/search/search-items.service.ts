@@ -517,15 +517,6 @@ export const removeJobPartnersFromSearchItems = async (ids: ObjectId[]): Promise
   return result.deletedCount
 }
 
-/**
- * Variante fire-and-forget pour les actions métier unitaires (création, activation,
- * annulation, pourvue…) : la synchronisation de l'index ne doit JAMAIS faire échouer
- * l'action — erreur capturée Sentry, rattrapage par le cron delta puis le nightly.
- */
-export const syncJobPartnersToSearchItemsInBackground = (ids: ObjectId[]): void => {
-  upsertJobPartnersToSearchItems(ids).catch((err) => sentryCaptureException(err))
-}
-
 // Fenêtre du delta : 2× l'intervalle du cron (5 min) — un run raté est rattrapé par le
 // suivant, les upserts sont idempotents, et le nightly réconcilie l'ensemble. À garder aligné
 // sur l'intervalle : une fenêtre plus large ne protège pas davantage (un run raté reste couvert)
@@ -533,6 +524,46 @@ export const syncJobPartnersToSearchItemsInBackground = (ids: ObjectId[]): void 
 // pendant les imports de masse nocturnes.
 const DELTA_DEFAULT_WINDOW_MS = 10 * 60 * 1000
 const DELTA_CHUNK_SIZE = 500
+
+/**
+ * Point d'entrée UNIQUE de la synchronisation incrémentale vers search_items, quelle que soit la
+ * taille de la liste : cron delta, import des offres API, et actions métier unitaires via la
+ * variante fire-and-forget ci-dessous.
+ *
+ * Deux garanties que les appelants n'ont pas à reproduire : découpage en chunks, pour ne pas
+ * charger des dizaines de milliers de documents d'un coup (`unsubscribeRecruteurLba` passe toutes
+ * les offres des entreprises désinscrites), et contexte de build chargé UNE fois pour tout l'appel
+ * — pas par chunk, sinon 2 agrégations full-scan sur search_items à chaque tranche.
+ *
+ * Contexte mémoïsé (`getSearchItemBuildContext`) et non rechargé : ces agrégations dominent le coût
+ * d'un run utile (mesuré en prod sur le cron delta : 2 à 3 s avec une poignée de documents contre
+ * 30 à 50 ms à vide, contexte non chargé), et ce point d'entrée est désormais appelé toutes les
+ * 5 min par l'import des offres API. La fraîcheur des maps de canonicalisation n'a pas besoin
+ * d'être parfaite : canonicalizeCase les enrichit en mémoire entre deux rechargements. Le batch
+ * nightly, lui, garde le chargement frais — c'est une reconstruction complète.
+ */
+export const syncJobPartnersToSearchItemsInChunks = async (ids: ObjectId[]): Promise<{ upserted: number; removed: number }> => {
+  const ctx = ids.length ? await getSearchItemBuildContext() : undefined
+
+  let upserted = 0
+  let removed = 0
+  for (let i = 0; i < ids.length; i += DELTA_CHUNK_SIZE) {
+    const result = await upsertJobPartnersToSearchItems(ids.slice(i, i + DELTA_CHUNK_SIZE), ctx)
+    upserted += result.upserted
+    removed += result.removed
+  }
+
+  return { upserted, removed }
+}
+
+/**
+ * Variante fire-and-forget pour les actions métier unitaires (création, activation, annulation,
+ * pourvue…) : la synchronisation de l'index ne doit JAMAIS faire échouer l'action — erreur
+ * capturée Sentry, rattrapage par le cron delta puis le nightly.
+ */
+export const syncJobPartnersToSearchItemsInBackground = (ids: ObjectId[]): void => {
+  syncJobPartnersToSearchItemsInChunks(ids).catch((err) => sentryCaptureException(err))
+}
 
 /**
  * Cron delta : synchronise les jobs_partners modifiés depuis `since` (défaut : 10 min).
@@ -550,16 +581,7 @@ export const syncSearchItemsDelta = async (payload?: { since?: Date | string }) 
     .map((doc) => doc._id)
     .toArray()
 
-  // Contexte chargé UNE fois pour tout le run (pas par chunk : 2 agrégations full-scan sinon).
-  const ctx = ids.length ? await loadSearchItemBuildContext() : undefined
-
-  let upserted = 0
-  let removed = 0
-  for (let i = 0; i < ids.length; i += DELTA_CHUNK_SIZE) {
-    const result = await upsertJobPartnersToSearchItems(ids.slice(i, i + DELTA_CHUNK_SIZE), ctx)
-    upserted += result.upserted
-    removed += result.removed
-  }
+  const { upserted, removed } = await syncJobPartnersToSearchItemsInChunks(ids)
 
   logger.info(`syncSearchItemsDelta: ${ids.length} jobs_partners modifiés depuis ${since.toISOString()} — ${upserted} upserts, ${removed} retraits`)
   return { scanned: ids.length, upserted, removed }
