@@ -269,13 +269,18 @@ export async function setupJobProcessor() {
           // (expiration */30, annulation, dédoublonnage, imports de flux) et sert de rattrapage.
           // Maintenu à 5 min pour le retrait : une offre expirée ou annulée reste sinon proposée en
           // recherche jusqu'au run suivant. Runs à vide à 30-50 ms, 2 à 3 s en régime nominal.
-          // concurrency exclusive : jusqu'à 4 min pendant les imports de masse nocturnes (mesuré le
-          // 28/08/2026 à 03:35 UTC) — au-delà de l'intervalle, deux runs se chevaucheraient.
+          // Pas de `concurrency: { mode: "exclusive" }`, pour la même raison que le cron jobs_partners
+          // ci-dessus : mesuré en prod le 29/08/2026, ce cron perdait 127 slots par 24 h en
+          // `noConcurrent_conflict`, soit un sur deux. La cadence effective retombait à 10 min, très
+          // exactement la largeur de DELTA_DEFAULT_WINDOW_MS — plus aucune marge de recouvrement, donc
+          // le moindre retard de démarrage ouvrait un trou rattrapé seulement par la réconciliation
+          // nocturne. Le chevauchement que `exclusive` évitait est sans danger ici : le handler lit
+          // jobs_partners et upsert search_items par _id sans muter la source, deux runs concurrents
+          // sont idempotents.
           "Sync delta search_items (jobs_partners modifiés)": {
             cron_string: "*/5 * * * *",
             handler: async () => syncSearchItemsDelta(),
             tag: "slave",
-            concurrency: { mode: "exclusive" },
           },
           // Après processComputedAndImportToJobPartners (départ 00:01, maxRuntime 300 min → fin
           // au plus tard ~05:00) : rattrape ce que la sync incrémentale a manqué et purge les
