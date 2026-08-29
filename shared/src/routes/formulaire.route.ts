@@ -184,6 +184,25 @@ export const zFormulaireRoute = {
         },
       },
     },
+    "/formulaire/:establishment_id/offre/ameliorer-texte/by-token": {
+      method: "post",
+      path: "/formulaire/:establishment_id/offre/ameliorer-texte/by-token",
+      params: z.object({ establishment_id: z.string() }).strict(),
+      body: z.discriminatedUnion("field", [
+        z.strictObject({ field: z.literal("job_description"), text: z.string().trim().min(1).max(JOB_DESCRIPTION_MAX_LENGTH) }),
+        z.strictObject({ field: z.literal("job_employer_description"), text: z.string().trim().min(1).max(JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH) }),
+      ]),
+      response: {
+        "200": z.object({ text: z.string() }).strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: "recruiter:add_job",
+        resources: {
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
+    },
     "/formulaire/offre/:jobId/delegation": {
       method: "post",
       path: "/formulaire/offre/:jobId/delegation",

@@ -304,6 +304,23 @@ export default (server: Server) => {
   )
 
   /**
+   * Même route qu'au-dessus, mais accessible par lien magique (dépôt simplifié post-inscription,
+   * cf DepotSimplifieCreationOffre) : ce parcours n'authentifie jamais par cookie de session.
+   */
+  server.post(
+    "/formulaire/:establishment_id/offre/ameliorer-texte/by-token",
+    {
+      schema: zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte/by-token"],
+      onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte/by-token"])],
+    },
+    async (req, res) => {
+      const { text } = req.body
+      const improvedText = await moderateFreeText(text)
+      return res.status(200).send({ text: improvedText ?? text })
+    }
+  )
+
+  /**
    * Create offer delegations
    */
   server.post(

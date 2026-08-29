@@ -91,6 +91,7 @@ export const FormulaireEditionOffre = ({
           }}
           offre={offre}
           establishment_id={establishment_id}
+          token={token}
         />
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2

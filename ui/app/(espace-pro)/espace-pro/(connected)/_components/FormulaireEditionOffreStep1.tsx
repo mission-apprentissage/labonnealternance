@@ -18,7 +18,7 @@ import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { ameliorerTexteOffre, getRomeDetail } from "@/utils/api"
+import { ameliorerTexteOffre, ameliorerTexteOffreByToken, getRomeDetail } from "@/utils/api"
 import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 
@@ -30,7 +30,7 @@ const AMELIORER_IA_MAX_USAGES = 2
 
 type FreeTextFieldName = "job_description" | "job_employer_description"
 
-const AmeliorerIaButton = ({ fieldName, establishmentId }: { fieldName: FreeTextFieldName; establishmentId?: string }) => {
+const AmeliorerIaButton = ({ fieldName, establishmentId, token }: { fieldName: FreeTextFieldName; establishmentId?: string; token?: string }) => {
   const { values, setFieldValue, errors } = useFormikContext<any>()
   const [remaining, setRemaining] = useState(AMELIORER_IA_MAX_USAGES)
   const [loading, setLoading] = useState(false)
@@ -43,7 +43,9 @@ const AmeliorerIaButton = ({ fieldName, establishmentId }: { fieldName: FreeText
     setLoading(true)
     setHasError(false)
     try {
-      const result = await ameliorerTexteOffre(establishmentId, fieldName, text)
+      // Le dépôt simplifié post-inscription (cf DepotSimplifieCreationOffre) n'authentifie que par
+      // lien magique : jamais de cookie de session, d'où la route jumelle par-token.
+      const result = token ? await ameliorerTexteOffreByToken(establishmentId, fieldName, text, token) : await ameliorerTexteOffre(establishmentId, fieldName, text)
       if (result && "text" in result && result.text) {
         setFieldValue(fieldName, result.text)
         setRemaining((r) => r - 1)
@@ -130,7 +132,7 @@ const DescriptionModeToggle = ({ mode, onChange }: { mode: DescriptionMode; onCh
   />
 )
 
-const JobDescriptionField = ({ establishmentId }: { establishmentId?: string }) => {
+const JobDescriptionField = ({ establishmentId, token }: { establishmentId?: string; token?: string }) => {
   const { values, setFieldValue, errors } = useFormikContext<any>()
   return (
     <Box sx={{ mt: fr.spacing("4v"), "& .fr-input-group": { mb: 0 } }}>
@@ -141,7 +143,7 @@ const JobDescriptionField = ({ establishmentId }: { establishmentId?: string }) 
           limitée à {JOB_DESCRIPTION_MAX} caractères.
         </span>
       </label>
-      <AmeliorerIaButton fieldName="job_description" establishmentId={establishmentId} />
+      <AmeliorerIaButton fieldName="job_description" establishmentId={establishmentId} token={token} />
       <Input
         label=""
         state={errors.job_description ? "error" : "default"}
@@ -161,7 +163,7 @@ const JobDescriptionField = ({ establishmentId }: { establishmentId?: string }) 
   )
 }
 
-const EmployerDescriptionField = ({ establishmentId }: { establishmentId?: string }) => {
+const EmployerDescriptionField = ({ establishmentId, token }: { establishmentId?: string; token?: string }) => {
   const { values, setFieldValue, errors } = useFormikContext<any>()
   return (
     <Box sx={{ "& .fr-input-group": { mb: 0 } }}>
@@ -172,7 +174,7 @@ const EmployerDescriptionField = ({ establishmentId }: { establishmentId?: strin
           est limitée à {EMPLOYER_DESCRIPTION_MAX} caractères.
         </span>
       </label>
-      <AmeliorerIaButton fieldName="job_employer_description" establishmentId={establishmentId} />
+      <AmeliorerIaButton fieldName="job_employer_description" establishmentId={establishmentId} token={token} />
       <Input
         label=""
         state={errors.job_employer_description ? "error" : "default"}
@@ -198,11 +200,13 @@ export const FormulaireEditionOffreStep1 = ({
   establishment_id,
   onSubmit,
   formValues,
+  token,
 }: {
   offre?: IJob
   establishment_id?: string
   onSubmit?: (values: any) => void
   formValues: any
+  token?: string
 }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
   const initRome = rome_code?.at(0)
@@ -445,7 +449,7 @@ export const FormulaireEditionOffreStep1 = ({
                     La présentation de l'entreprise
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
-                    <EmployerDescriptionField establishmentId={establishment_id} />
+                    <EmployerDescriptionField establishmentId={establishment_id} token={token} />
                   </Box>
 
                   <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
@@ -458,7 +462,7 @@ export const FormulaireEditionOffreStep1 = ({
                   {romeAndAppellation && (
                     <Box sx={{ mt: fr.spacing("6v") }}>
                       <DescriptionModeToggle mode={descriptionMode} onChange={setDescriptionMode} />
-                      {descriptionMode === "custom" && <JobDescriptionField establishmentId={establishment_id} />}
+                      {descriptionMode === "custom" && <JobDescriptionField establishmentId={establishment_id} token={token} />}
                     </Box>
                   )}
 
