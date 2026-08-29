@@ -170,7 +170,9 @@ describe("sync-etablissements-and-formations", () => {
       givenFormation({ cle_ministere_educatif: "cle-ok-2" }),
     ])
 
-    await expect(syncEtablissementsAndFormations()).rejects.toThrow(/formation\(s\) en erreur/)
+    // Message asserté au caractère près : le dénominateur doit être le nombre de formations
+    // parcourues (3), pas `processed + errors` qui compte deux fois celle qui a été rejetée.
+    await expect(syncEtablissementsAndFormations()).rejects.toThrow("syncEtablissementsAndFormations: 1 erreur(s) sur 3 formation(s) parcourue(s)")
 
     // Le cœur de la régression évitée : en lot ordonné, le document rejeté aurait emporté tout ce
     // qui le suit dans le même bulkWrite.

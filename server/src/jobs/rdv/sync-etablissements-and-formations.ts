@@ -72,7 +72,10 @@ export const syncEtablissementsAndFormations = async () => {
   // passage, homogène sur l'ensemble des documents touchés.
   const syncedAt = new Date()
 
-  const stats = { processed: 0, inserted: 0, updated: 0, errors: 0 }
+  // `read` compte les formations sorties du curseur. C'est le seul dénominateur juste : une
+  // formation peut être comptée dans `processed` (son opération a été mise en file) puis dans
+  // `errors` si le lot rejette cette opération, donc `processed + errors` sur-compte.
+  const stats = { read: 0, processed: 0, inserted: 0, updated: 0, errors: 0 }
   let consecutiveErrors = 0
 
   /**
@@ -158,6 +161,7 @@ export const syncEtablissementsAndFormations = async () => {
   const writable = new Writable({
     objectMode: true,
     async write(formation, _encoding, callback) {
+      stats.read++
       try {
         const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
           getDbCollection("eligible_trainings_for_appointments").findOne(
@@ -330,7 +334,7 @@ export const syncEtablissementsAndFormations = async () => {
   // Les erreurs isolées n'avortent plus le run, mais elles doivent rester visibles : le job échoue
   // après avoir traité l'intégralité du catalogue, et le check-in Sentry passe en `error`.
   if (stats.errors > 0) {
-    throw new Error(`syncEtablissementsAndFormations: ${stats.errors} formation(s) en erreur sur ${stats.processed + stats.errors}`)
+    throw new Error(`syncEtablissementsAndFormations: ${stats.errors} erreur(s) sur ${stats.read} formation(s) parcourue(s)`)
   }
 
   return stats
