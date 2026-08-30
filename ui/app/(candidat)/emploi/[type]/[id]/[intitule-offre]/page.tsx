@@ -6,7 +6,7 @@ import type { ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJo
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { IRechercheMode, resolveRecherchePageParams, toURLSearchParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { ApiError, apiGet } from "@/utils/api.utils"
 import JobDetailRendererClient from "./JobDetailRendererClient"
@@ -48,7 +48,14 @@ export async function generateMetadata({ params }): Promise<Metadata> {
   }
 }
 
-export default async function JobOfferPage({ params, searchParams }: { params: Promise<{ type: LBA_ITEM_TYPE; id: string }>; searchParams: Promise<Record<string, string>> }) {
+export default async function JobOfferPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ type: LBA_ITEM_TYPE; id: string }>
+  // Next donne `string | string[]` dès qu'un paramètre est répété dans l'URL.
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   const { type, id } = await params
   const job = await getOffreOption(type, id)
   if (!job) notFound()
@@ -66,7 +73,7 @@ export default async function JobOfferPage({ params, searchParams }: { params: P
       <WidgetAwareHeader />
       <JobDetailRendererClient
         job={job as ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson}
-        rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)}
+        rechercheParams={resolveRecherchePageParams(toURLSearchParams(await searchParams), IRechercheMode.DEFAULT)}
       />
     </>
   )

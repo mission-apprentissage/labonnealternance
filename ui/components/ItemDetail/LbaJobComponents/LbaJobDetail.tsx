@@ -2,13 +2,12 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Stack, Typography } from "@mui/material"
 import Image from "next/image"
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import type { ILbaItemPartnerJobJson } from "shared"
 import { ContratBlock } from "@/components/ItemDetail/ItemDetailServices/ContratBlock"
 import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailServices/EmployeurPresentationBlock"
 import { BAD_DESCRIPTION_LENGTH, JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
-import { DisplayContext } from "@/context/DisplayContextProvider"
 import { notifyJobDetailViewV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import LbaJobAcces from "./LbaJobAcces"
@@ -16,11 +15,9 @@ import LbaJobCompetences from "./LbaJobCompetences"
 import LbaJobQualites from "./LbaJobQualites"
 import LbaJobTechniques from "./LbaJobTechniques"
 
-export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
-  const { formValues } = React.useContext(DisplayContext)
-
+export const LbaJobDetail = ({ job, title, jobSearchedByUser }: { job: ILbaItemPartnerJobJson; title: string; jobSearchedByUser: string | null }) => {
   useEffect(() => {
-    SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.ideaType, info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}` })
+    SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.ideaType, info_fiche: `${job?.job?.id}${jobSearchedByUser ? ` - ${jobSearchedByUser}` : ""}` })
     notifyJobDetailViewV3(job)
   }, [job?.job?.id])
 
