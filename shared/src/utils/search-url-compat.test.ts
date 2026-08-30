@@ -103,7 +103,24 @@ describe("parseSearchUrlFromParam", () => {
     expect(parseSearchUrlFromParam("")).toBeNull()
     expect(parseSearchUrlFromParam("https://evil.example/recherche?q=x")).toBeNull()
     expect(parseSearchUrlFromParam("//evil.example/recherche")).toBeNull()
+    expect(parseSearchUrlFromParam("/\\evil.example/recherche")).toBeNull()
     expect(parseSearchUrlFromParam("/emploi/offres_emploi_lba/1/x")).toBeNull()
+  })
+
+  it("rejette les chemins qui ressemblent à la page de résultats sans en être", () => {
+    // Préfixe voisin : sa query est au format legacy, la lire comme du nouveau format
+    // ferait passer `job_name` pour un paramètre compris — il ne l'est pas.
+    expect(parseSearchUrlFromParam("/recherche-formation?job_name=Boulanger")).toBeNull()
+    expect(parseSearchUrlFromParam("/recherche-emploi")).toBeNull()
+    // Remontée d'arborescence : le routeur normaliserait vers un chemin interne quelconque.
+    expect(parseSearchUrlFromParam("/recherche/../espace-pro/administration")).toBeNull()
+    expect(parseSearchUrlFromParam("/recherche/")).toBeNull()
+  })
+
+  it("accepte la page de résultats nue, avec query ou avec ancre", () => {
+    expect(parseSearchUrlFromParam("/recherche")).not.toBeNull()
+    expect(parseSearchUrlFromParam("/recherche?q=a")).not.toBeNull()
+    expect(parseSearchUrlFromParam("/recherche#resultats")).not.toBeNull()
   })
 
   it("lit la query d'un from valide", () => {

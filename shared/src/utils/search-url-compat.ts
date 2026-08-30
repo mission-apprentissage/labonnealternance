@@ -117,13 +117,21 @@ export const SEARCH_PAGE_PATH = "/recherche"
 
 /**
  * Seul garde du paramètre `from` posé par les cartes de résultats sur les URL de fiche détail
- * (`/emploi/…?from=%2Frecherche%3Fq%3D…`) : seule une URL interne de la page de résultats est
- * acceptée. `from` finit dans une navigation — c'est ce garde qui empêche une redirection
- * arbitraire via un lien forgé, et il ne doit donc exister qu'en un seul exemplaire
- * (cf. `getSearchUrlFromParam`, qui en dérive côté fiches détail).
+ * (`/emploi/…?from=%2Frecherche%3Fq%3D…`) : seule la page de résultats elle-même est acceptée.
+ * `from` finit dans une navigation — c'est ce garde qui empêche une redirection arbitraire via
+ * un lien forgé, et il ne doit donc exister qu'en un seul exemplaire (cf. `getSearchUrlFromParam`,
+ * qui en dérive côté fiches détail).
+ *
+ * Le chemin doit être `/recherche` EXACTEMENT, éventuellement suivi de sa query ou de son ancre.
+ * Un simple `startsWith` laisserait passer deux familles de chemins qui ne sont pas la page de
+ * résultats : les préfixes voisins (`/recherche-formation?job_name=…`, dont la query legacy serait
+ * alors lue comme si elle était au nouveau format) et la remontée d'arborescence
+ * (`/recherche/../…`, que le routeur normalise vers un chemin interne quelconque).
  */
 export function isInternalSearchUrl(from: string | null | undefined): from is string {
-  return typeof from === "string" && from.startsWith(SEARCH_PAGE_PATH)
+  if (typeof from !== "string" || !from.startsWith(SEARCH_PAGE_PATH)) return false
+  const nextChar = from[SEARCH_PAGE_PATH.length]
+  return nextChar === undefined || nextChar === "?" || nextChar === "#"
 }
 
 /** Query du `from` validé, au format du nouveau moteur. `null` si le `from` est rejeté. */

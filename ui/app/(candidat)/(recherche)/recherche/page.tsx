@@ -3,7 +3,7 @@ import { Suspense } from "react"
 import { RechercheSeoContent } from "./_components/RechercheSeoContent"
 import { SearchPageClient } from "./_components/SearchPageClient"
 import { buildRecherchePageMetadata } from "./_utils/recherche.metadata.utils"
-import { parseSearchPageParamsWithLegacy } from "./_utils/search.legacy.utils"
+import { parseSearchPageParamsWithLegacy } from "./_utils/search-legacy-utils"
 
 type Props = {
   searchParams: Promise<Record<string, string>>

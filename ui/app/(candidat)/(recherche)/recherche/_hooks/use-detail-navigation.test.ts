@@ -27,6 +27,15 @@ describe("getSearchUrlFromParam", () => {
     it("rejette une chaîne vide", () => {
       expect(getSearchUrlFromParam("")).toBeNull()
     })
+
+    it("rejette un chemin qui commence par /recherche sans être la page de résultats", () => {
+      expect(getSearchUrlFromParam("/recherche-formation?job_name=Boulanger")).toBeNull()
+      expect(getSearchUrlFromParam("/recherche-emploi")).toBeNull()
+    })
+
+    it("rejette une remontée d'arborescence, que le routeur normaliserait ailleurs", () => {
+      expect(getSearchUrlFromParam("/recherche/../espace-pro/administration")).toBeNull()
+    })
   })
 
   it("accepte l'URL de la page de résultats, avec ou sans query", () => {

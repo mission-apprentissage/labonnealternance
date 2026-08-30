@@ -9,7 +9,7 @@ import React from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
-import { buildRecruteursLbaSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.legacy.utils"
+import { buildRecruteursLbaSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search-legacy-utils"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 
 const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson }) => {

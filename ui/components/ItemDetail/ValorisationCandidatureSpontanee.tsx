@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
-import { buildRecruteursLbaSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.legacy.utils"
+import { buildRecruteursLbaSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search-legacy-utils"
 import { classNames } from "@/utils/class-names"
 import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import { PAGES } from "@/utils/routes.utils"
 import { IRechercheMode, parseRecherchePageParams } from "./recherche.route.utils"
-import { buildRecruteursLbaSearchUrl, parseSearchPageParamsWithLegacy } from "./search.legacy.utils"
+import { buildRecruteursLbaSearchUrl, parseSearchPageParamsWithLegacy } from "./search-legacy-utils"
 
 const BASE = "https://labonnealternance.apprentissage.beta.gouv.fr"
 
