@@ -251,7 +251,7 @@ const jobToFTOfferAddress = (job: DBJob): Partial<FTOffre> | null => {
   }
 }
 
-const getJobsToExport = async ({ ftSupport = false }: { ftSupport?: boolean } = {}) => {
+export const getJobsToExport = async ({ ftSupport = false }: { ftSupport?: boolean } = {}) => {
   const minDate = dayjs().subtract(60, "days").toDate()
 
   const jobPartnerFilter: Filter<IJobsPartnersOfferPrivate> = {
@@ -286,7 +286,7 @@ const getJobsToExport = async ({ ftSupport = false }: { ftSupport?: boolean } = 
         from: "referentielromes",
         localField: "offer_rome_codes",
         foreignField: "rome.code_rome",
-        as: "referentiel-rome",
+        as: "referentielRome",
       },
     },
     {
@@ -378,6 +378,10 @@ export const exportJobsToFranceTravailCsvOnly = async () => {
   const csvPath = new URL("./exportFT.csv", import.meta.url)
   try {
     const jobs = await getJobsToExport()
+    // 0 offre sur le flux principal est toujours anormal en production : on échoue plutôt que d'envoyer un fichier vide à FT.
+    if (jobs.length === 0) {
+      throw new Error("Aucune offre à exporter : l'agrégation a renvoyé 0 résultat, fichier non transmis")
+    }
     await generateCsvFile(csvPath, jobs)
     logger.info("Send CSV file to France Travail")
     if (config.env === "production") {
@@ -402,6 +406,11 @@ export const exportJobsToFranceTravail = async () => {
   try {
     const jobs = await getJobsToExport()
     const jobsConfiee = await getJobsToExport({ ftSupport: true })
+    // 0 offre sur le flux principal est toujours anormal en production : on échoue plutôt que d'envoyer un fichier vide à FT.
+    // Le flux confiée peut en revanche être légitimement vide, il n'est pas gardé.
+    if (jobs.length === 0) {
+      throw new Error("Aucune offre à exporter : l'agrégation a renvoyé 0 résultat, fichier non transmis")
+    }
     await generateCsvFile(csvPath, jobs)
     await generateCsvFileConfiee(csvPathConfiee, jobsConfiee)
     await zipAndSendToFranceTravail(csvPath, csvPathConfiee)
