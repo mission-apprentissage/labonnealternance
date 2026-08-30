@@ -1,13 +1,16 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
-import type { IEntreprise, IReferentielRome } from "shared"
+import { type IEntreprise, type IReferentielRome, JOB_STATUS_ENGLISH } from "shared"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
+import dayjs from "shared/helpers/dayjs"
 import type { ICFA } from "shared/models/cfa.model"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
-import { offerToFTOffer } from "@/jobs/partenaire-export/export-to-france-travail"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { exportJobsToFranceTravail, getJobsToExport, offerToFTOffer } from "@/jobs/partenaire-export/export-to-france-travail"
 
 describe("offerToFTOffer", () => {
   it("should convert a job to an exported offer for FT", async () => {
@@ -113,5 +116,78 @@ describe("offerToFTOffer", () => {
 
     expect(truncated).toHaveLength(450)
     expect(truncated).toBe(`Offre collectée par La bonne alternance : ${longDescription}`.slice(0, 450))
+  })
+})
+
+describe("getJobsToExport", () => {
+  useMongo()
+
+  const insertExportableJob = async (overrides: Partial<IJobsPartnersOfferPrivate> = {}) => {
+    const entreprise = generateEntrepriseFixture({})
+    const referentielRome = generateReferentielRome({})
+    // Les fixtures entreprise et rome portent des identifiants fixes (siret, code_rome) :
+    // upsert pour permettre plusieurs offres partageant la même entreprise et le même ROME sans dupliquer les jointures.
+    await getDbCollection("entreprises").updateOne({ siret: entreprise.siret }, { $setOnInsert: entreprise }, { upsert: true })
+    await getDbCollection("referentielromes").updateOne({ "rome.code_rome": referentielRome.rome.code_rome }, { $setOnInsert: referentielRome }, { upsert: true })
+    const job = generateJobsPartnersOfferPrivate({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      updated_at: new Date(),
+      offer_target_diploma: { european: "3", label: "CAP" },
+      offer_rome_codes: [referentielRome.rome.code_rome],
+      workplace_siret: entreprise.siret,
+      ...overrides,
+    })
+    await getDbCollection("jobs_partners").insertOne(job)
+    return { job, referentielRome }
+  }
+
+  it("retourne les offres exportables avec le champ referentielRome peuplé par la jointure", async () => {
+    const { job, referentielRome } = await insertExportableJob()
+
+    const jobs = await getJobsToExport()
+
+    // Garde-fou de régression : un décalage entre le `as` du $lookup et le champ du $unwind
+    // (ex. "referentiel-rome" vs "$referentielRome") fait renvoyer 0 document à l'agrégation.
+    expect(jobs).toHaveLength(1)
+    expect(jobs[0]._id.toString()).toBe(job._id.toString())
+    expect(jobs[0].referentielRome.rome.code_rome).toBe(referentielRome.rome.code_rome)
+  })
+
+  it("exclut une offre dont le code ROME n'a pas d'entrée dans le référentiel", async () => {
+    const { job } = await insertExportableJob()
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+        updated_at: new Date(),
+        offer_target_diploma: { european: "3", label: "CAP" },
+        offer_rome_codes: ["Z9999"],
+        workplace_siret: job.workplace_siret,
+      })
+    )
+
+    const jobs = await getJobsToExport()
+
+    expect(jobs).toHaveLength(1)
+    expect(jobs[0]._id.toString()).toBe(job._id.toString())
+  })
+
+  it("sépare le flux principal du flux confiée via ft_support", async () => {
+    const { job } = await insertExportableJob()
+    const { job: jobConfiee } = await insertExportableJob({
+      ft_support: true,
+      offer_expiration: dayjs().add(30, "days").toDate(),
+    })
+
+    const jobs = await getJobsToExport()
+    const jobsConfiee = await getJobsToExport({ ftSupport: true })
+
+    expect(jobs.map((j) => j._id.toString())).toEqual([job._id.toString()])
+    expect(jobsConfiee.map((j) => j._id.toString())).toEqual([jobConfiee._id.toString()])
+  })
+
+  it("fait échouer le job (rejet) quand le flux principal est vide, pour que le run soit marqué errored", async () => {
+    await expect(exportJobsToFranceTravail()).rejects.toThrow("Aucune offre à exporter")
   })
 })
