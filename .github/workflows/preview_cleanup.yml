@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: true
           submodules: true
@@ -24,7 +24,7 @@ jobs:
           OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
 
       - name: Setup SOPS
-        uses: nhedger/setup-sops@v2
+        uses: nhedger/setup-sops@v3
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2

@@ -53,7 +53,7 @@ jobs:
     steps:
       - name: Checkout project
         if: ${{ inputs.app_version == 'latest' }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -75,13 +75,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
           persist-credentials: true
 
       - name: Clone mna-npm-check repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: mission-apprentissage/mna-npm-check
           path: mna-npm-check
@@ -100,7 +100,7 @@ jobs:
         run: curl -4 ifconfig.me
 
       - name: Checkout project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
           submodules: true
@@ -112,11 +112,11 @@ jobs:
           OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
 
       - name: Setup SOPS
-        uses: nhedger/setup-sops@v2
+        uses: nhedger/setup-sops@v3
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
-          node-version: 26
+          node-version-file: .node-version
           cache: "yarn"
 
       - name: Install dependencies
@@ -154,26 +154,26 @@ jobs:
         run: echo 'You can get logs using `.bin/mna app:deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`' >> $GITHUB_STEP_SUMMARY
 
       - name: Notify failure on Slack
-        uses: ravsamhq/notify-slack-action@v2
-        if: always()
+        if: failure()
+        continue-on-error: true
+        uses: ./.github/actions/notify-slack
         with:
-          status: ${{ job.status }}
-          notification_title: "Le déploiement ${{ needs.version.outputs.VERSION }} en ${{ inputs.environment }} a échoué"
-          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna app:deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`"
-          notify_when: "failure"
-          mention_groups: "S0693U59FCK"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          status: failure
+          webhook: ${{ secrets.SLACK_WEBHOOK }}
+          title: "Le déploiement ${{ needs.version.outputs.VERSION }} en ${{ inputs.environment }} a échoué"
+          context: ${{ inputs.environment }}
+          details: "You can get error logs using `.bin/mna app:deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`"
+          mention: "S0693U59FCK"
 
       - name: Notify success on Slack
-        uses: ravsamhq/notify-slack-action@v2
-        if: always()
+        if: success()
+        continue-on-error: true
+        uses: ./.github/actions/notify-slack
         with:
-          status: ${{ job.status }}
-          notification_title: "Déploiement ${{ needs.version.outputs.VERSION }} en ${{ inputs.environment }} terminé avec succès"
-          notify_when: "success"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          status: success
+          webhook: ${{ secrets.SLACK_WEBHOOK }}
+          title: "Déploiement ${{ needs.version.outputs.VERSION }} en ${{ inputs.environment }} terminé avec succès"
+          context: ${{ inputs.environment }}
 
       - name: notify sentry that a new version has been deployed
         run: .bin/mna sentry:deploy ${{ inputs.environment }} ${{ needs.version.outputs.VERSION }}
@@ -191,7 +191,7 @@ jobs:
       issues: write
     steps:
       - name: Checkout project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true
