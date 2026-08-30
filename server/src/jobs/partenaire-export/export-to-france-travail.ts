@@ -397,6 +397,8 @@ export const exportJobsToFranceTravailCsvOnly = async () => {
       message: `Echec de l'export des offres France Travail. ${err}`,
       error: true,
     })
+    // Relance pour que le run job-processor soit marqué errored (capture Sentry) au lieu de finished.
+    throw err
   }
 }
 
@@ -424,5 +426,7 @@ export const exportJobsToFranceTravail = async () => {
       message: `Echec de l'export des offres France Travail. ${err}`,
       error: true,
     })
+    // Relance pour que le run job-processor soit marqué errored (capture Sentry) au lieu de finished.
+    throw err
   }
 }

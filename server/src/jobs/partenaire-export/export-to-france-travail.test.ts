@@ -10,7 +10,7 @@ import type { ICFA } from "shared/models/cfa.model"
 import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { getJobsToExport, offerToFTOffer } from "@/jobs/partenaire-export/export-to-france-travail"
+import { exportJobsToFranceTravail, getJobsToExport, offerToFTOffer } from "@/jobs/partenaire-export/export-to-france-travail"
 
 describe("offerToFTOffer", () => {
   it("should convert a job to an exported offer for FT", async () => {
@@ -185,5 +185,9 @@ describe("getJobsToExport", () => {
 
     expect(jobs.map((j) => j._id.toString())).toEqual([job._id.toString()])
     expect(jobsConfiee.map((j) => j._id.toString())).toEqual([jobConfiee._id.toString()])
+  })
+
+  it("fait échouer le job (rejet) quand le flux principal est vide, pour que le run soit marqué errored", async () => {
+    await expect(exportJobsToFranceTravail()).rejects.toThrow("Aucune offre à exporter")
   })
 })
