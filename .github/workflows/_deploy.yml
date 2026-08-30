@@ -155,6 +155,7 @@ jobs:
 
       - name: Notify failure on Slack
         if: failure()
+        continue-on-error: true
         uses: ./.github/actions/notify-slack
         with:
           status: failure
@@ -166,6 +167,7 @@ jobs:
 
       - name: Notify success on Slack
         if: success()
+        continue-on-error: true
         uses: ./.github/actions/notify-slack
         with:
           status: success

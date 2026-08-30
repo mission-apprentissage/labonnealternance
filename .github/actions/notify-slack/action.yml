@@ -94,4 +94,4 @@ runs:
         webhook: ${{ inputs.webhook }}
         webhook-type: incoming-webhook
         payload: ${{ steps.payload.outputs.json }}
-        errors: false
+        errors: true
