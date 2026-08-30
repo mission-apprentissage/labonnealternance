@@ -2,7 +2,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Stack, Typography } from "@mui/material"
 import Image from "next/image"
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import type { ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { ContratBlock } from "@/components/ItemDetail/ItemDetailServices/ContratBlock"
@@ -10,17 +10,14 @@ import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailSe
 import { JobAccordion } from "@/components/ItemDetail/ItemDetailServices/JobAccordion"
 import { JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
-import { DisplayContext } from "@/context/DisplayContextProvider"
 import { notifyJobDetailViewV3, notifyLbaJobDetailView } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-export const GeiqJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
-  const { formValues } = React.useContext(DisplayContext)
-
+export const GeiqJobDetail = ({ job, title, jobSearchedByUser }: { job: ILbaItemPartnerJobJson; title: string; jobSearchedByUser: string | null }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche emploi", {
       partner_label: job.job.partner_label || job.ideaType,
-      info_fiche: `${job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
+      info_fiche: `${job?.id}${jobSearchedByUser ? ` - ${jobSearchedByUser}` : ""}`,
     })
     if (job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
       notifyLbaJobDetailView(job?.job?.id)

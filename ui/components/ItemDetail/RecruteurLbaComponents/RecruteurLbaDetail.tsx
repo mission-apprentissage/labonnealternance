@@ -2,25 +2,22 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import { Box, List, ListItem, Stack, Typography } from "@mui/material"
 import Image from "next/image"
-import { useContext, useEffect } from "react"
+import { useEffect } from "react"
 import type { ILbaItemLbaCompanyJson } from "shared"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailServices/EmployeurPresentationBlock"
 import { getCompanyGoogleSearchLink } from "@/components/ItemDetail/ItemDetailServices/get-company-google-search-link"
-import { DisplayContext } from "@/context/DisplayContextProvider"
 import { notifyJobDetailViewV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompanyJson }) => {
+const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba: ILbaItemLbaCompanyJson; jobSearchedByUser: string | null }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche emploi", {
       partner_label: recruteurLba.ideaType,
-      info_fiche: `${recruteurLba?.company?.siret}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
+      info_fiche: `${recruteurLba?.company?.siret}${jobSearchedByUser ? ` - ${jobSearchedByUser}` : ""}`,
     })
     notifyJobDetailViewV3(recruteurLba)
   }, [recruteurLba?.company?.siret])
-
-  const { formValues } = useContext(DisplayContext)
 
   return (
     <Box sx={{ mx: { xs: 0, md: "auto" } }}>
