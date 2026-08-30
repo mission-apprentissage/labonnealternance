@@ -3,6 +3,7 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useMemo } from "react"
 import { useSwipeable } from "react-swipeable"
+import { isInternalSearchUrl } from "shared/utils/search-url-compat"
 
 import { buildHitDetailUrl, parseSearchPageParams, withActiveHit } from "../_utils/search.params.utils"
 import { useSearchResults } from "./use-search-results"
@@ -20,11 +21,13 @@ export interface IDetailNavigation {
 /**
  * Valide le paramètre `?from=` d'une page de détail : seule une URL interne de la page de
  * résultats est acceptée. Tout le reste (absent, URL absolue externe, autre chemin interne)
- * est rejeté — `from` est réinjecté tel quel dans `router.push`, ce garde est ce qui empêche
- * une redirection arbitraire via un lien forgé.
+ * est rejeté — `from` est réinjecté tel quel dans `router.push`.
+ *
+ * La règle elle-même vit dans `isInternalSearchUrl` (shared), partagée avec le serveur : deux
+ * copies d'un garde anti-redirection finissent par diverger.
  */
 export function getSearchUrlFromParam(from: string | null): string | null {
-  return from !== null && from.startsWith("/recherche") ? from : null
+  return isInternalSearchUrl(from) ? from : null
 }
 
 export type INavigationTargets = {

@@ -9,7 +9,7 @@ Même déclencheur pour les deux listes : **J+7** (jour calendaire J-7, `Europe/
 | Liste | Cible | Message |
 |---|---|---|
 | **A** (`relanceCandidatsInactifs`) | inactif J+7 **ET a ≥1 spontanée** | relance générique |
-| **B** (`relanceIncitationSpontanee`) | inactif J+7 **ET 0 spontanée** | incitation spontanée, CTA `scrollToRecruteursLba=true` |
+| **B** (`relanceIncitationSpontanee`) | inactif J+7 **ET 0 spontanée** | incitation spontanée, CTA `is_algo_company=true` |
 
 Les deux listes sont **disjointes par construction** → un candidat tombe dans exactement une → un seul mail par épisode d'inactivité, sans règle de fréquence globale.
 
@@ -23,7 +23,7 @@ Code : [relance-incitation-spontanee.ts](../server/src/jobs/applications/relance
 
 1. Sélectionne les inactifs J+7 (même fenêtre que la liste A) **sans aucune candidature spontanée**.
 2. Exclut ceux déjà relancés sur cette liste (log `RELANCE_INCITATION_SPONTANEE`).
-3. Construit le lien de recherche via le helper partagé [relance-search-url.ts](../server/src/jobs/applications/relance-search-url.ts) (`buildTaggedSearchUrl`), avec `scrollToRecruteursLba=true` pour scroller vers les entreprises de l'algorithme.
+3. Construit le lien de recherche via le helper partagé [relance-search-url.ts](../server/src/jobs/applications/relance-search-url.ts) (`buildTaggedSearchUrl`), avec `is_algo_company=true` — le filtre « entreprises à contacter » du nouveau moteur, qui remplace l'ancien `scrollToRecruteursLba=true`.
 4. Écrit le log **avant** l'envoi, puis pousse `EMAIL / PRENOM / LIEN_RECHERCHE / METIER` dans la liste Brevo B. Échec Brevo → alerte Slack.
 
 ## Configuration
@@ -36,4 +36,4 @@ Code : [relance-incitation-spontanee.ts](../server/src/jobs/applications/relance
 yarn test run server/src/jobs/applications/relance-incitation-spontanee.test.ts
 ```
 
-Unitaires sur `buildTaggedSearchUrl` (ajout conditionnel de `scrollToRecruteursLba=true` + utm) + intégration (MongoDB réelle, Brevo/Slack mockés) : push des inactifs sans spontanée vers la liste B, exclusion de ceux ayant une spontanée (liste A) et des déjà-relancés.
+Unitaires sur `buildTaggedSearchUrl` (ajout conditionnel de `is_algo_company=true`, traduction des URL legacy, utm) + intégration (MongoDB réelle, Brevo/Slack mockés) : push des inactifs sans spontanée vers la liste B, exclusion de ceux ayant une spontanée (liste A) et des déjà-relancés.
