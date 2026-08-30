@@ -61,7 +61,7 @@
     "@semantic-release/exec": "^7.1.0",
     "@semantic-release/git": "^10.0.1",
     "@types/clamscan": "^2.4.1",
-    "@types/node": "^24.10.0",
+    "@types/node": "^26.4.0",
     "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "gitleaks-secret-scanner": "^2.1.1",

@@ -1,4 +1,4 @@
-FROM platformatic/node-caged:26-slim AS builder_root
+FROM platformatic/node-caged:26.3.1-slim AS builder_root
 WORKDIR /app
 RUN npm install -g corepack@0.34.6 && corepack enable
 COPY .yarn /app/.yarn
@@ -31,7 +31,7 @@ RUN yarn workspace server build
 RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
 
 # Production image, copy all the files and run next
-FROM platformatic/node-caged:26-slim AS server
+FROM platformatic/node-caged:26.3.1-slim AS server
 WORKDIR /app
 
 RUN npm install -g yarn@1.22.22
@@ -94,7 +94,7 @@ RUN --mount=type=cache,target=/app/ui/.next/cache yarn workspace ui build
 
 # Production image — Node 26 + pointer compression (node-caged)
 # Node 22 pin removed: Next.js 16.1.6 streaming issue resolved on Node 25+
-FROM platformatic/node-caged:26-slim AS ui
+FROM platformatic/node-caged:26.3.1-slim AS ui
 WORKDIR /app
 
 RUN apt-get update \
