@@ -16,21 +16,40 @@ vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolv
 
 const BASE_URL = "https://labonnealternance.apprentissage.beta.gouv.fr"
 
+// URL de candidature réelle depuis la bascule du nouveau moteur : fiche détail portant la
+// recherche d'origine dans son `?from=`.
+const NEW_ENGINE_APPLICATION_URL = `${BASE_URL}/emploi/offres_emploi_lba/abc123/boulanger?from=${encodeURIComponent("/recherche?q=Boulanger&lieu_label=Marseille 13001&latitude=43.282&longitude=5.405")}`
+
 describe("buildTaggedSearchUrl (highlightRecruteursLba)", () => {
-  it("ajoute scrollToRecruteursLba=true et l'utm demandé", () => {
-    const result = buildTaggedSearchUrl(`${BASE_URL}/recherche?romes=E1401&scrollToRecruteursLba=false`, {
+  it("coche « entreprises à contacter » (is_algo_company) et pose l'utm demandé", () => {
+    const result = buildTaggedSearchUrl(NEW_ENGINE_APPLICATION_URL, {
       utmCampaign: "relance-incitation-spontanee",
       highlightRecruteursLba: true,
     })
     const url = new URL(result as string)
-    expect(url.searchParams.get("scrollToRecruteursLba")).toBe("true")
+    expect(url.searchParams.get("is_algo_company")).toBe("true")
+    expect(url.searchParams.get("q")).toBe("Boulanger")
     expect(url.searchParams.get("utm_campaign")).toBe("relance-incitation-spontanee")
     expect(url.searchParams.get("utm_source")).toBe("lba-brevo")
   })
 
-  it("n'ajoute pas scrollToRecruteursLba quand l'option est absente", () => {
-    const result = buildTaggedSearchUrl(`${BASE_URL}/recherche?romes=E1401`, { utmCampaign: "x" })
-    expect(new URL(result as string).searchParams.has("scrollToRecruteursLba")).toBe(false)
+  it("n'ajoute pas is_algo_company quand l'option est absente", () => {
+    const result = buildTaggedSearchUrl(NEW_ENGINE_APPLICATION_URL, { utmCampaign: "x" })
+    expect(new URL(result as string).searchParams.has("is_algo_company")).toBe(false)
+  })
+
+  it("écrase le filtre d'origine plutôt que de le dupliquer", () => {
+    const withOffersOnly = `${BASE_URL}/emploi/offres_emploi_lba/abc/x?from=${encodeURIComponent("/recherche?q=Boulanger&is_algo_company=false")}`
+    const url = new URL(buildTaggedSearchUrl(withOffersOnly, { utmCampaign: "x", highlightRecruteursLba: true }) as string)
+    expect(url.searchParams.getAll("is_algo_company")).toEqual(["true"])
+  })
+
+  it("traduit scrollToRecruteursLba d'une URL legacy en is_algo_company", () => {
+    const legacy = `${BASE_URL}/recherche?job_name=Boulanger&romes=E1401&scrollToRecruteursLba=true`
+    const url = new URL(buildTaggedSearchUrl(legacy, { utmCampaign: "x" }) as string)
+    expect(url.searchParams.get("is_algo_company")).toBe("true")
+    expect(url.searchParams.get("q")).toBe("Boulanger")
+    expect(url.searchParams.has("scrollToRecruteursLba")).toBe(false)
   })
 })
 
@@ -40,7 +59,7 @@ const makeApplicant = (over: Parameters<typeof generateApplicantFixture>[0] = {}
 const makeApplication = (applicantId: ObjectId, over: Parameters<typeof generateApplicationFixture>[0] = {}) =>
   generateApplicationFixture({
     applicant_id: applicantId,
-    application_url: `${BASE_URL}/recherche?romes=E1401&lat=43.282&lon=5.405&address=Marseille+13001`,
+    application_url: NEW_ENGINE_APPLICATION_URL,
     job_searched_by_user: "Communication, marketing, publicité",
     ...over,
   })
@@ -60,7 +79,7 @@ describe("relance-incitation-spontanee", () => {
     }
   })
 
-  it("pousse les inactifs J+7 SANS candidature spontanée vers Brevo, avec CTA scrollToRecruteursLba, et logue la relance", async () => {
+  it("pousse les inactifs J+7 SANS candidature spontanée vers Brevo, avec le CTA « entreprises à contacter », et logue la relance", async () => {
     const onlyOffers = makeApplicant({ last_connection: new Date("2026-07-02T12:00:00Z"), firstname: "Inès" })
     await getDbCollection("applicants").insertOne(onlyOffers)
     await getDbCollection("applications").insertOne(makeApplication(onlyOffers._id, { created_at: new Date("2026-07-02T12:00:00Z"), job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA }))
@@ -73,7 +92,7 @@ describe("relance-incitation-spontanee", () => {
     expect(listId).toBe("998")
     expect(rows).toHaveLength(1)
     expect(rows[0].email).toBe(onlyOffers.email)
-    expect(rows[0].lien_recherche).toContain("scrollToRecruteursLba=true")
+    expect(rows[0].lien_recherche).toContain("is_algo_company=true")
     expect(rows[0].lien_recherche).toContain("utm_campaign=relance-incitation-spontanee")
 
     const logs = await getDbCollection("applicants_email_logs").find({ applicant_id: onlyOffers._id, type: EMAIL_LOG_TYPE.RELANCE_INCITATION_SPONTANEE }).toArray()

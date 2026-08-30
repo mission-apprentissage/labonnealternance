@@ -13,9 +13,10 @@ import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-u
 import { useAutoRadius } from "../_hooks/use-auto-radius"
 import { useSearchResults } from "../_hooks/use-search-results"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
-import { ACTIVE_HIT_PARAM, buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
+import { ACTIVE_HIT_PARAM, buildSearchUrl } from "../_utils/search.params.utils"
 import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
 import { diffFilterChanges, diffSortChange, searchTypeOf } from "../_utils/search.tracking.utils"
+import { parseSearchPageParamsWithLegacy } from "../_utils/search-legacy-utils"
 import { SearchBar } from "./SearchBar"
 import { clearedFilters, SearchFilters } from "./SearchFilters"
 import { SearchMobilePanel } from "./SearchMobilePanel"
@@ -33,7 +34,7 @@ type MobilePanel = null | "search" | "filters" | "tri"
 
 export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const rawSearchParams = useSearchParams()
-  const params = rawSearchParams ? parseSearchPageParams(new URLSearchParams(rawSearchParams.toString())) : initialParams
+  const params = rawSearchParams ? parseSearchPageParamsWithLegacy(new URLSearchParams(rawSearchParams.toString())) : initialParams
 
   const result = useSearchResults(params)
   const router = useRouter()

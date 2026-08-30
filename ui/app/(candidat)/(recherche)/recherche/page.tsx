@@ -3,7 +3,7 @@ import { Suspense } from "react"
 import { RechercheSeoContent } from "./_components/RechercheSeoContent"
 import { SearchPageClient } from "./_components/SearchPageClient"
 import { buildRecherchePageMetadata } from "./_utils/recherche.metadata.utils"
-import { parseSearchPageParams } from "./_utils/search.params.utils"
+import { parseSearchPageParamsWithLegacy } from "./_utils/search-legacy-utils"
 
 type Props = {
   searchParams: Promise<Record<string, string>>
@@ -19,7 +19,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function RecherchePage({ searchParams }: Props) {
   const urlSearchParams = new URLSearchParams(await searchParams)
-  const params = parseSearchPageParams(urlSearchParams)
+  const params = parseSearchPageParamsWithLegacy(urlSearchParams)
 
   return (
     <>

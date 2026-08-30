@@ -18,6 +18,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ITrackingCookies } from "shared/models/traffic-sources.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { resolveSearchParamsFromUrl, SEARCH_PAGE_PATH } from "shared/utils/search-url-compat"
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 import { z } from "zod"
@@ -1078,7 +1079,6 @@ export const processApplicationEmails = {
         reminderDate: dayjs(application.created_at).add(10, "days").format("DD/MM/YYYY"),
         attachmentName: application.applicant_attachment_name,
         sendOtherApplicationsUrl: buildSendOtherApplicationsUrl(application, job_origin ?? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
-        recruitingCompaniesUrl: buildRecruitingCompaniesUrl(application),
         job_type: job_origin,
       },
     })
@@ -1097,26 +1097,6 @@ function removeDataUrlPrefix(attachmentData: string) {
     return attachmentData.substring(headerFound.length)
   }
   return attachmentData
-}
-
-function buildRecruitingCompaniesUrl(application: IApplication) {
-  const { application_url } = application
-  if (!application_url) {
-    logger.warn("no application_url")
-    return
-  }
-  const searchParams = new URL(application_url).searchParams
-  searchParams.delete("utm_source")
-  searchParams.delete("utm_medium")
-  searchParams.delete("utm_campaign")
-  searchParams.delete("activeItems")
-  searchParams.delete("scrollToRecruteursLba")
-  searchParams.append("scrollToRecruteursLba", "true")
-  searchParams.append("utm_source", "lba-brevo")
-  searchParams.append("utm_medium", "email")
-  searchParams.append("utm_campaign", "confirmation-envoi-candidature-offre_promo-candidature-spontanee")
-  const result = `${config.publicUrl}/recherche?${searchParams}`
-  return result
 }
 
 const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {
@@ -1196,26 +1176,41 @@ const addUtmParamsToSendOtherApplications = (type: LBA_ITEM_TYPE, searchParams: 
   searchParams.append("utm_campaign", utmCampaign)
 }
 
+// CTA « postulez à d'autres offres » de l'accusé de candidature : rejoue la recherche exacte du
+// candidat. `application_url` est la fiche détail sur laquelle il a candidaté — la recherche
+// d'origine est portée par son `?from=` (nouveau moteur) ou par ses paramètres legacy pour les
+// candidatures d'avant la bascule. Sans recherche exploitable, on retombe sur l'accueil plutôt
+// que d'envoyer sur une page de résultats vide de tout filtre.
 const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM_TYPE) => {
   const { application_url } = application
 
-  if (application_url) {
-    const url = new URL(application_url)
-    if (url.pathname.startsWith("/emploi/")) {
-      url.pathname = "/recherche"
+  const searchParams = application_url ? resolveSearchParamsFromApplicationUrl(application_url) : null
+  if (searchParams) {
+    searchParams.delete("page")
+    // Le CTA promet des candidatures : on force les offres même si la recherche d'origine affichait
+    // aussi des formations (« Emplois avec formations »), auxquelles on ne candidate pas. C'est ce
+    // que faisait l'ancien `displayFormations=false` sur ce lien.
+    searchParams.set("mode", "emplois")
+    for (const utmParam of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+      searchParams.delete(utmParam)
     }
-    if (!url.searchParams.get("displayFormations")) {
-      url.searchParams.append("displayFormations", "false")
-    }
-    url.searchParams.append("utm_source", "lba-brevo-transactionnel")
-    url.searchParams.append("utm_medium", "email")
-    url.searchParams.append("utm_campaign", "accuse-envoi-candidature-lien-recherche")
-    return url.toString()
+    searchParams.set("utm_source", "lba-brevo-transactionnel")
+    searchParams.set("utm_medium", "email")
+    searchParams.set("utm_campaign", "accuse-envoi-candidature-lien-recherche")
+    return `${publicUrl}${SEARCH_PAGE_PATH}?${searchParams.toString()}`
   }
 
-  const searchParams = new URLSearchParams()
-  addUtmParamsToSendOtherApplications(type, searchParams, "accuse-envoi-lien-home")
-  return `${publicUrl}/?${searchParams.toString()}`
+  const homeParams = new URLSearchParams()
+  addUtmParamsToSendOtherApplications(type, homeParams, "accuse-envoi-lien-home")
+  return `${publicUrl}/?${homeParams.toString()}`
+}
+
+const resolveSearchParamsFromApplicationUrl = (application_url: string): URLSearchParams | null => {
+  try {
+    return resolveSearchParamsFromUrl(new URL(application_url))
+  } catch {
+    return null
+  }
 }
 
 const getJobOrCompanyFromApplication = async (application: IApplication) => {

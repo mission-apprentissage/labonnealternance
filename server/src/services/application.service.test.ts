@@ -838,3 +838,82 @@ describe("removeEmailFromLbaCompanies", () => {
     expect(unchanged?.apply_email).toBe(email)
   })
 })
+
+// CTA « postulez à d'autres offres » de l'accusé de candidature : le lien doit rejouer la
+// recherche du candidat, portée par le `?from=` de la fiche détail depuis le nouveau moteur.
+describe("accusé de candidature — lien vers d'autres offres", () => {
+  const mailerSendEmailSpy = vi.mocked(mailer.sendEmail)
+
+  const getCandidatEmailData = () => {
+    const call = mailerSendEmailSpy.mock.calls.find(([args]) => args.template.includes("mail-candidat-"))
+    return call?.[0].data as Record<string, string>
+  }
+
+  const sendFor = async (application_url: string | null) => {
+    const jobId = new ObjectId()
+    const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
+    await getDbCollection("applicants").insertOne(applicant)
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({ _id: jobId, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, apply_email: "company@test.fr", workplace_siret: "12345678901234" })
+    )
+    const application = generateApplicationFixture({
+      applicant_id: applicant._id,
+      job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+      job_id: jobId,
+      company_email: "company@test.fr",
+      company_siret: "12345678901234",
+      application_url,
+      to_company_message_id: null,
+      to_applicant_message_id: null,
+      scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
+    })
+    await getDbCollection("applications").insertOne(application)
+    await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
+  }
+
+  beforeEach(async () => {
+    mailerSendEmailSpy.mockClear()
+    return async () => {
+      await getDbCollection("applications").deleteMany({})
+      await getDbCollection("applicants").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
+    }
+  })
+
+  it("rejoue la recherche d'origine portée par le ?from= de la fiche détail", async () => {
+    const from = encodeURIComponent("/recherche?q=Boulanger&lieu_label=Marseille 13001&latitude=43.282&longitude=5.405&page=3")
+    await sendFor(`https://labonnealternance.apprentissage.beta.gouv.fr/emploi/recruteurs_lba/12345678901234/boulanger?from=${from}&utm_source=lba`)
+
+    const url = new URL(getCandidatEmailData().sendOtherApplicationsUrl)
+    expect(url.pathname).toBe("/recherche")
+    expect(url.searchParams.get("q")).toBe("Boulanger")
+    expect(url.searchParams.get("lieu_label")).toBe("Marseille 13001")
+    expect(url.searchParams.get("latitude")).toBe("43.282")
+    // Repart de la première page, et ne garde pas l'utm capturé dans l'URL d'origine.
+    expect(url.searchParams.has("page")).toBe(false)
+    expect(url.searchParams.get("utm_source")).toBe("lba-brevo-transactionnel")
+    expect(url.searchParams.get("utm_campaign")).toBe("accuse-envoi-candidature-lien-recherche")
+  })
+
+  it("ramène sur les offres seules, même si la recherche d'origine affichait aussi des formations", async () => {
+    const from = encodeURIComponent("/recherche?q=Boulanger&mode=emplois_formation")
+    await sendFor(`https://labonnealternance.apprentissage.beta.gouv.fr/emploi/recruteurs_lba/12345678901234/boulanger?from=${from}`)
+
+    // Le bouton promet des candidatures : rejouer emplois_formation renverrait vers des formations.
+    expect(new URL(getCandidatEmailData().sendOtherApplicationsUrl).searchParams.get("mode")).toBe("emplois")
+  })
+
+  it("retombe sur l'accueil quand la fiche détail ne porte aucune recherche", async () => {
+    await sendFor("https://labonnealternance.apprentissage.beta.gouv.fr/emploi/recruteurs_lba/12345678901234/boulanger")
+
+    const url = new URL(getCandidatEmailData().sendOtherApplicationsUrl)
+    expect(url.pathname).toBe("/")
+    expect(url.searchParams.get("utm_campaign")).toBe("je-candidate-spontanement-accuse-envoi-lien-home")
+  })
+
+  it("retombe sur l'accueil sans application_url", async () => {
+    await sendFor(null)
+
+    expect(new URL(getCandidatEmailData().sendOtherApplicationsUrl).pathname).toBe("/")
+  })
+})

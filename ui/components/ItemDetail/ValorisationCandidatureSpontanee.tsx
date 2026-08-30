@@ -3,9 +3,8 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { buildRecruteursLbaSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search-legacy-utils"
 import { classNames } from "@/utils/class-names"
-import { PAGES } from "@/utils/routes.utils"
 import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 
 export const ValorisationCandidatureSpontanee = ({
@@ -21,23 +20,18 @@ export const ValorisationCandidatureSpontanee = ({
 
   const localOnClick = useMemo(() => {
     if (typeof window === "undefined") return undefined
-    const searchParams = new URL(window.location.href).searchParams
-    const recherchePageParams = parseRecherchePageParams(searchParams, IRechercheMode.DEFAULT)
-    const isClickable = Boolean(recherchePageParams.romes.length) && !disabled
-    if (!isClickable) return undefined
+    // Rejoue la recherche d'origine (?from= du nouveau moteur, ou paramètres legacy d'un lien
+    // encore en circulation) en cochant « entreprises à contacter ». Sans contexte de recherche,
+    // le bloc reste non cliquable : envoyer sur une page de résultats nue n'aiderait personne.
+    const searchUrl = buildRecruteursLbaSearchUrl(window.location.href)
+    if (searchUrl === null || disabled) return undefined
     return () => {
       if (onClick) {
         // Déjà sur la page de recherche : scroll direct sans navigation
         onClick()
         return
       }
-      const path = PAGES.dynamic
-        .recherche({
-          ...recherchePageParams,
-          scrollToRecruteursLba: true,
-        })
-        .getPath()
-      const fakeUrl = new URL("http://localhost" + path)
+      const fakeUrl = new URL("http://localhost" + searchUrl)
       const { searchParams } = fakeUrl
       Object.entries(overridenQueryParams).forEach(([key, value]) => {
         searchParams.delete(key)

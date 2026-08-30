@@ -93,8 +93,10 @@ et hooks `*_LEGACY` du moteur, et les pages non routées `recherche-emploi/` et 
 `?mode=formations`).
 
 Ce qui est **conservé volontairement** : [`recherche.metadata.utils_LEGACY.ts`](<../../ui/app/(candidat)/(recherche)/recherche/_utils/recherche.metadata.utils_LEGACY.ts>),
-le repli SEO des URLs legacy indexées (`?job_name=…&romes=…`), en attendant le mapping complet
-legacy → `q` (#5033/#5034).
+le repli SEO des URLs legacy indexées (`?job_name=…&romes=…`). Le mapping legacy → `q` des
+**résultats** est fait (#5321, cf. [`search-url-compat.ts`](../../shared/src/utils/search-url-compat.ts)) ;
+le repli SEO reste séparé et sert désormais à autre chose : figer les `<title>`/canonical exacts
+que ces URLs indexées produisaient avant la bascule, pour ne pas provoquer de churn côté Google.
 
 Vestiges de vocabulaire à normaliser (aucun impact fonctionnel, mais trompeurs à la lecture) :
 

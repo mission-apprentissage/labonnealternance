@@ -9,15 +9,16 @@ import React from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { buildRecruteursLbaSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search-legacy-utils"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
-import { PAGES } from "@/utils/routes.utils"
 
 const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson }) => {
   const router = useRouter()
 
-  const searchParams = new URL(window.location.href).searchParams
-  const rechercheParams = parseRecherchePageParams(searchParams, IRechercheMode.DEFAULT)
+  // Recherche d'origine à rejouer avec le filtre « entreprises à contacter » : ?from= du
+  // nouveau moteur, ou paramètres legacy pour une fiche ouverte depuis un lien encore en
+  // circulation. null = pas de contexte, on n'affiche pas le CTA.
+  const recruteursLbaSearchUrl = buildRecruteursLbaSearchUrl(window.location.href)
 
   const company = item.company?.name
   const ideaType = item.ideaType
@@ -38,7 +39,7 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
       <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
         Si vous n&apos;avez pas reçu d&apos;email de confirmation d&apos;ici 24 heures, soumettez à nouveau votre candidature
       </Typography>
-      {ideaType !== LBA_ITEM_TYPE.RECRUTEURS_LBA && rechercheParams.romes.length > 0 && (
+      {ideaType !== LBA_ITEM_TYPE.RECRUTEURS_LBA && recruteursLbaSearchUrl !== null && (
         <Box
           sx={{
             display: "flex",
@@ -74,17 +75,8 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
                 utmParams.append("utm_source", "lba")
                 utmParams.append("utm_medium", "website")
                 utmParams.append("utm_campaign", "lba_pop-in-confirmation-envoi-candidature-offre_promo-candidature-spontanee")
-                router.push(
-                  PAGES.dynamic
-                    .recherche({
-                      ...rechercheParams,
-                      scrollToRecruteursLba: true,
-                    })
-                    .getPath() +
-                    "&" +
-                    utmParams,
-                  { scroll: false }
-                )
+                const separator = recruteursLbaSearchUrl.includes("?") ? "&" : "?"
+                router.push(`${recruteursLbaSearchUrl}${separator}${utmParams}`, { scroll: false })
               }}
             >
               Voir les candidatures spontanées
