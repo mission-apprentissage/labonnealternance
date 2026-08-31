@@ -9,6 +9,7 @@ import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
+import { getFlatTableCellBordersSx, getFlatTableResetSx } from "@/app/(espace-pro)/_components/tableStyles"
 import ExportButtonNew from "@/components/espace_pro/ExportButton/ExportButtonNew"
 import { PaginationReactQuery } from "@/components/espace_pro/PaginationReactQuery"
 
@@ -167,13 +168,8 @@ function TableWithPagination({
             <Box
               className="fr-table__content"
               sx={{
-                "& table": { margin: "0 !important" },
-                "& table thead th[role=columnheader]": {
-                  backgroundSize: "100% 1px !important",
-                  backgroundRepeat: "no-repeat !important",
-                  backgroundPosition: "0 100% !important",
-                  backgroundImage: "linear-gradient(0deg, var(--border-plain-grey), var(--border-plain-grey)) !important",
-                },
+                "& table": { margin: "0 !important", ...getFlatTableResetSx() },
+                ...getFlatTableCellBordersSx(),
               }}
             >
               <Box as="table" {...getTableProps()}>
