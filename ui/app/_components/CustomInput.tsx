@@ -11,6 +11,7 @@ import { Warning } from "@/theme/components/icons"
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
   const hasError = Boolean(meta.error && meta.touched && (props.required !== false || field.value))
+  const required = props.required ?? true
   return (
     <Box
       sx={[
@@ -20,8 +21,17 @@ const CustomInput = (props) => {
         props.sx ? { ...props.sx } : {},
       ]}
     >
-      <FormControl sx={{ width: "100%" }} error={hasError} required={props.required ?? true}>
-        {props.label && <FormLabel error={hasError}>{props.label}</FormLabel>}
+      <FormControl sx={{ width: "100%" }} error={hasError} required={required}>
+        {props.label && (
+          // hideAsterisk masque uniquement l'astérisque visuel du label : le FormControl (et donc
+          // l'input natif, via son contexte) reste `required`, ce qui préserve aria-required pour les
+          // lecteurs d'écran (RGAA) — utile quand une mention globale type "Tous les champs sont
+          // obligatoires" rend l'astérisque redondant. La bulle/blocage natifs du navigateur au submit
+          // sont une préoccupation séparée, à traiter par `noValidate` sur le <form> englobant.
+          <FormLabel error={hasError} {...(props.hideAsterisk ? { required: false } : {})}>
+            {props.label}
+          </FormLabel>
+        )}
         {props.info && (
           <Box className={fr.cx("fr-hint-text")} sx={{ pt: fr.spacing("2v") }}>
             {props.info}

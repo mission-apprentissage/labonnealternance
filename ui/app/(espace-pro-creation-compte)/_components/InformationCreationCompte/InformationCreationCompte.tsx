@@ -4,9 +4,9 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { Form, Formik, useFormikContext } from "formik"
+import { Formik, useFormikContext } from "formik"
 import { useRouter } from "next/navigation"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useRef } from "react"
 import { assertUnreachable, parseEnum } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
@@ -24,7 +24,6 @@ import { AUTHTYPE } from "@/common/contants"
 import { personNameValidation, phoneValidation } from "@/common/validation/field-validations"
 import { AnimationContainer } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
-import { ArrowRightLine } from "@/theme/components/icons"
 import { infosOpcos } from "@/theme/components/logos/infos-opcos"
 import { getEntrepriseOpco } from "@/utils/api"
 import { ApiError, apiPost } from "@/utils/api.utils"
@@ -67,6 +66,7 @@ const Formulaire = ({
 }) => {
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const { data: opcoData } = useQuery({
     queryKey: ["getEntrepriseOpco", establishment_siret],
@@ -102,21 +102,41 @@ const Formulaire = ({
       })}
       onSubmit={onSubmit}
     >
-      {({ values, isValid, isSubmitting, setFieldValue, errors, touched }) => {
+      {({ values, isSubmitting, setFieldValue, errors, touched, validateForm, setTouched, submitForm }) => {
         const infosOpco = infosOpcos.find((x) => x.nom === values.opco)
 
+        // Le bouton "Continuer" ne dépend plus de isValid : au clic, on force l'affichage de l'erreur
+        // sur tous les champs invalides (setTouched) puis on scrolle/focus le premier champ en erreur.
+        const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+          e.preventDefault()
+          const formErrors = await validateForm()
+          setTouched(Object.fromEntries(Object.keys(formErrors).map((k) => [k, true])), false)
+          if (Object.keys(formErrors).length > 0 && formRef.current) {
+            const selector = Object.keys(formErrors)
+              .map((name) => `[name="${name}"]`)
+              .join(", ")
+            const firstErrorEl = formRef.current.querySelector<HTMLElement>(selector)
+            if (firstErrorEl) {
+              firstErrorEl.scrollIntoView({ behavior: "smooth", block: "center" })
+              firstErrorEl.focus()
+            }
+            return
+          }
+          submitForm()
+        }
+
         return (
-          <Form>
+          <form ref={formRef} onSubmit={handleSubmit} noValidate>
             {type === AUTHTYPE.ENTREPRISE && <HandiEngagementValueSync hide={hideHandiEngagement} locked={isHandiEngagementLocked} />}
             <FormulaireLayout
               type={type}
               left={
                 <>
-                  <CustomInput required={false} name="last_name" label="Nom" type="text" value={values.last_name} />
-                  <CustomInput required={false} name="first_name" label="Prénom" type="text" value={values.first_name} />
-                  <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
+                  <CustomInput hideAsterisk name="last_name" label="Nom" type="text" value={values.last_name} />
+                  <CustomInput hideAsterisk name="first_name" label="Prénom" type="text" value={values.first_name} />
+                  <CustomInput hideAsterisk name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                   <CustomInput
-                    required={false}
+                    hideAsterisk
                     isDisabled={email ? true : false}
                     name="email"
                     label="Email"
@@ -159,13 +179,9 @@ const Formulaire = ({
                         </Button>
                       </Box>
                     )}
-                    <Button type="submit" disabled={!isValid || isSubmitting}>
-                      {isSubmitting ? (
-                        <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
-                      ) : (
-                        <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
-                      )}
-                      Suivant
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                      Continuer
                     </Button>
                   </Box>
                 </>
@@ -178,7 +194,7 @@ const Formulaire = ({
                 </>
               }
             />
-          </Form>
+          </form>
         )
       }}
     </Formik>

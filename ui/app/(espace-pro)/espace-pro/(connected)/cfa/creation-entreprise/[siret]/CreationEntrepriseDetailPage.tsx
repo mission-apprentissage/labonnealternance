@@ -2,9 +2,10 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Checkbox, CircularProgress, FormControlLabel, Typography } from "@mui/material"
-import { Form, Formik } from "formik"
+import { Box, Checkbox, CircularProgress, FormControl, FormControlLabel, FormHelperText, Typography } from "@mui/material"
+import { Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
+import { useRef } from "react"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -13,7 +14,6 @@ import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connecte
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
 import { personNameValidation, phoneValidation } from "@/common/validation/field-validations"
-import { ArrowRightLine } from "@/theme/components/icons"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -21,6 +21,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const router = useRouter()
   const toast = useToast()
   const { user } = useConnectedSessionClient()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     apiPost("/user/:userId/formulaire", { params: { userId: user._id.toString() }, body: { ...values, establishment_siret } })
@@ -61,49 +62,74 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
       onSubmit={submitForm}
     >
       {(informationForm) => {
+        // Le bouton "Continuer" n'est plus désactivé tant que le formulaire est invalide : au clic, on
+        // force l'affichage de l'erreur sur tous les champs invalides (setTouched) puis on scrolle/focus
+        // le premier champ en erreur, plutôt que de laisser le bouton inerte sans indication visuelle.
+        const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+          e.preventDefault()
+          const errors = await informationForm.validateForm()
+          informationForm.setTouched(Object.fromEntries(Object.keys(errors).map((k) => [k, true])), false)
+          if (Object.keys(errors).length > 0 && formRef.current) {
+            const selector = Object.keys(errors)
+              .map((name) => `[name="${name}"]`)
+              .join(", ")
+            const firstErrorEl = formRef.current.querySelector<HTMLElement>(selector)
+            if (firstErrorEl) {
+              firstErrorEl.scrollIntoView({ behavior: "smooth", block: "center" })
+              firstErrorEl.focus()
+            }
+            return
+          }
+          informationForm.submitForm()
+        }
+
         return (
-          <Form>
-            <CustomInput required={false} name="last_name" label="Nom" type="text" value={informationForm.values.last_name} />
-            <CustomInput required={false} name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
-            <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
-            <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
+          <form ref={formRef} onSubmit={handleSubmit} noValidate>
+            <CustomInput hideAsterisk name="last_name" label="Nom" type="text" value={informationForm.values.last_name} />
+            <CustomInput hideAsterisk name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
+            <CustomInput hideAsterisk name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
+            <CustomInput hideAsterisk name="email" label="Email" type="email" value={informationForm.values.email} />
             <Typography sx={{ color: "#0063CB" }}>
               <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des
               fins de contrôles.
             </Typography>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  onChange={(event) => {
-                    informationForm.setFieldValue("isDeclarationExact", event.target.checked)
-                  }}
-                  checked={informationForm.values.isDeclarationExact}
-                />
-              }
-              label={
-                <Typography>
-                  Je certifie que les informations relatives à l’entreprise partenaire sont exactes et vérifiables, et j’accepte que ces données puissent faire l’objet de contrôles
-                  par La bonne alternance.
-                </Typography>
-              }
-              sx={{ alignItems: "flex-start", mt: fr.spacing("6v") }}
-            />
+            <FormControl error={Boolean(informationForm.touched.isDeclarationExact && informationForm.errors.isDeclarationExact)}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="isDeclarationExact"
+                    onChange={(event) => {
+                      informationForm.setFieldValue("isDeclarationExact", event.target.checked)
+                    }}
+                    checked={informationForm.values.isDeclarationExact}
+                  />
+                }
+                label={
+                  <Typography>
+                    Je certifie que les informations relatives à l’entreprise partenaire sont exactes et vérifiables, et j’accepte que ces données puissent faire l’objet de
+                    contrôles par La bonne alternance.
+                  </Typography>
+                }
+                sx={{ alignItems: "flex-start", mt: fr.spacing("6v") }}
+              />
+              {informationForm.touched.isDeclarationExact && informationForm.errors.isDeclarationExact && (
+                <FormHelperText className={fr.cx("fr-message--error")} sx={{ ml: 0 }}>
+                  {informationForm.errors.isDeclarationExact}
+                </FormHelperText>
+              )}
+            </FormControl>
             <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
               <Box sx={{ mr: fr.spacing("5v") }}>
                 <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
                   Annuler
                 </Button>
               </Box>
-              <Button type="submit" disabled={!informationForm.isValid || informationForm.isSubmitting}>
-                {informationForm.isSubmitting ? (
-                  <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
-                ) : (
-                  <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
-                )}
-                Suivant
+              <Button type="submit" disabled={informationForm.isSubmitting}>
+                {informationForm.isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                Continuer
               </Button>
             </Box>
-          </Form>
+          </form>
         )
       }}
     </Formik>
