@@ -5,13 +5,11 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { resetSearchItemBuildContextCache } from "@/services/search/search-items.service"
-import * as fillComputedJobsPartnersModule from "./fill-computed-jobs-partners"
-import { processJobPartnersForApi, processJobPartnersWithFilter } from "./process-job-partners-for-api"
+import { processJobPartnersForApi } from "./process-job-partners-for-api"
 
 // fillComputedJobsPartners neutralisé : ses étapes appellent les API externes (SIRET, ROME,
 // classification) et ne sont pas le sujet ici — les documents du test sont déjà validés. Le reste
 // de la chaîne (import vers jobs_partners puis indexation search_items) tourne pour de vrai.
-// clearMocks: true (vitest.config.ts) réinitialise l'historique d'appels avant chaque test.
 vi.mock("./fill-computed-jobs-partners", async (importOriginal) => ({
   ...(await importOriginal<typeof import("./fill-computed-jobs-partners")>()),
   fillComputedJobsPartners: vi.fn(async () => ({})),
@@ -92,25 +90,5 @@ describe("process-job-partners-for-api", () => {
 
     expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: "api_offer_2" })).toBe(0)
     expect.soft(await getDbCollection("search_items").countDocuments({ _id: computed._id })).toBe(0)
-  })
-
-  it("appelle fillComputedJobsPartners avec skipCfaAndClassificationDetection à true : les offres reçues via l'API sont certifiées conformes par le partenaire, ces deux contrôles sont redondants pour ce flux", async () => {
-    await processJobPartnersForApi()
-
-    expect(fillComputedJobsPartnersModule.fillComputedJobsPartners).toHaveBeenCalledTimes(1)
-    const [context] = vi.mocked(fillComputedJobsPartnersModule.fillComputedJobsPartners).mock.calls[0]
-    expect(context).toMatchObject({ skipCfaAndClassificationDetection: true })
-  })
-})
-
-describe("processJobPartnersWithFilter", () => {
-  useMongo()
-
-  it("n'active pas skipCfaAndClassificationDetection : ce flux ne bénéficie pas de la garantie de conformité de l'API", async () => {
-    await processJobPartnersWithFilter({})
-
-    expect(fillComputedJobsPartnersModule.fillComputedJobsPartners).toHaveBeenCalledTimes(1)
-    const [context] = vi.mocked(fillComputedJobsPartnersModule.fillComputedJobsPartners).mock.calls[0]
-    expect(context?.skipCfaAndClassificationDetection).toBeUndefined()
   })
 })

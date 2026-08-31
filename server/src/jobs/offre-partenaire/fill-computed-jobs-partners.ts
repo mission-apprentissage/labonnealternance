@@ -20,7 +20,6 @@ import { validateComputedJobPartners } from "./validate-computed-job-partners"
 
 export type FillComputedJobsPartnersContext = {
   addedMatchFilter?: Filter<IComputedJobsPartners>
-  skipCfaAndClassificationDetection?: boolean
 }
 
 export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersContext = {}
@@ -34,8 +33,8 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
     blockJobsPartnersFromExpirationDate: await blockJobsPartnersFromExpirationDate(context),
     fillEntrepriseEngagementComputedJobsPartners: await fillEntrepriseEngagementComputedJobsPartners(context),
     formatTextFieldsJobsPartners: await formatTextFieldsJobsPartners(context),
-    blockJobsPartnersFromCfaList: context.skipCfaAndClassificationDetection ? null : await blockJobsPartnersFromCfaList(context),
-    detectClassificationJobsPartners: context.skipCfaAndClassificationDetection ? null : await detectClassificationJobsPartners(context),
+    blockJobsPartnersFromCfaList: await blockJobsPartnersFromCfaList(context),
+    detectClassificationJobsPartners: await detectClassificationJobsPartners(context),
 
     fillOpcoInfosForPartners: await fillOpcoInfosForPartners(context),
     fillSiretInfosForPartners: await fillSiretInfosForPartners(context),

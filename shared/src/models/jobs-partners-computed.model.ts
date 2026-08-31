@@ -28,6 +28,7 @@ export const PARTNER_WHITELIST: string[] = [
   "Maazi",
   "OPCO EP",
   "Serpe",
+  "Talentplug",
   "Thales",
   "Veritone",
 ]

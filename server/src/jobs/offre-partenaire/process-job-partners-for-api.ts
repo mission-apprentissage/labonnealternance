@@ -54,13 +54,8 @@ export const processJobPartnersForApi = async () => {
   )
 
   const filter = { currently_processed_id: processId }
-
   let importedIds: ObjectId[] = []
-  // skipCfaAndClassificationDetection: les offres reçues par
-  // ce pipeline proviennent exclusivement de partenaires API certifiés conformes en amont
-  // (contractuellement vérifiés), donc le blocklist CFA et la classification anti-fraude Mistral,
-  // pensés pour le flux organique non vérifié, sont redondants ici et volontairement désactivés.
-  await fillComputedJobsPartners({ addedMatchFilter: filter, skipCfaAndClassificationDetection: true })
+  await fillComputedJobsPartners({ addedMatchFilter: filter })
   await importFromComputedToJobsPartners(filter, (ids) => {
     importedIds = ids
   })
