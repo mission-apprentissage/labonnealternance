@@ -40,13 +40,6 @@ export const ZRoleManagement = z.strictObject({
   user_id: zObjectId.describe("ID de l'utilisateur ayant accès"),
   createdAt: z.date(),
   updatedAt: z.date(),
-  engagementHandicapEmail: z
-    .object({
-      date: z.date().describe("date de l'envoi de l'email"),
-      messageId: z.string().describe("id brevo de l'email"),
-    })
-    .nullish()
-    .describe("Présent si l'envoi de l'email de sensibilisation à l'handi-engagement a été envoyé"),
 })
 
 export type IRoleManagement = z.output<typeof ZRoleManagement>

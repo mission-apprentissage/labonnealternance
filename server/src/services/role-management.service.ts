@@ -15,7 +15,6 @@ import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { buildEstablishmentId } from "./etablissement.service"
 import { archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations } from "./formulaire.service"
-import { sendEngagementHandicapEmailIfNeeded } from "./handi-engagement.service"
 import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./user-recruteur.service"
 import { activateUser, hasActiveRoleOnAnotherOrganization } from "./user-with-account.service"
@@ -384,7 +383,6 @@ export const activateUserRole = async ({ userId, organizationId, requestedBy }: 
 
   // validate user email addresse
   await sendWelcomeEmailToUserRecruteur(user, updatedRole)
-  await sendEngagementHandicapEmailIfNeeded(user, updatedRole)
 }
 
 export const isGrantedAndAutoValidatedRole = (role: IRoleManagement): boolean => {
