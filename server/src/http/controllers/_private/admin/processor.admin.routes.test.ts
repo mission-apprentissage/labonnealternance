@@ -1,7 +1,6 @@
 import { createAndLogUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { ObjectId } from "mongodb"
 import { describe, expect, it, vi } from "vitest"
 
 // fixtureStatus déclaré via vi.hoisted : vi.mock est hoisté en tête de fichier par Vitest, une const
