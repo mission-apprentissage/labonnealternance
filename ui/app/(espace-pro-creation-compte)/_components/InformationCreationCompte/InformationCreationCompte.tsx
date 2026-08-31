@@ -22,7 +22,7 @@ import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connecte
 import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { AUTHTYPE } from "@/common/contants"
 import { personNameValidation, phoneValidation } from "@/common/validation/field-validations"
-import { AnimationContainer } from "@/components/espace_pro/index"
+import { AnimationContainer, LoadingEmptySpace } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { infosOpcos } from "@/theme/components/logos/infos-opcos"
 import { getEntrepriseOpco } from "@/utils/api"
@@ -78,7 +78,15 @@ const Formulaire = ({
 
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
-  const { hideHandiEngagement, isHandiEngagementLocked } = useHandiEngagementState(establishment_siret, type === AUTHTYPE.ENTREPRISE)
+  const { hideHandiEngagement, isHandiEngagementLocked, isPending: isEntrepriseInfoPending } = useHandiEngagementState(establishment_siret, type === AUTHTYPE.ENTREPRISE)
+
+  // Sans cette garde, hideHandiEngagement/isHandiEngagementLocked valent leur défaut ("non masqué/non
+  // verrouillé") tant que get-entreprise n'a pas résolu : pour une entreprise déjà recensée France
+  // Travail, le select et l'encart de sensibilisation s'affichent au premier rendu puis disparaissent —
+  // même pattern que CompteRenderer (isLoading || isEntrepriseInfoPending).
+  if (isEntrepriseInfoPending) {
+    return <LoadingEmptySpace label="Chargement en cours" />
+  }
 
   return (
     <Formik
