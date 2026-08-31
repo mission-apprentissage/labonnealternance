@@ -1,6 +1,3 @@
-const TABLE_HEADER_BORDER_COLOR = "#3A3A3A"
-const TABLE_ROW_BORDER_COLOR = "#929292"
-
 /**
  * Hides the DSFR scroll-shadow pseudo-element added on `.fr-table__wrapper` when the table can
  * scroll horizontally. Apply on the `fr-table__wrapper` Box.
@@ -25,11 +22,14 @@ export function getFlatTableResetSx() {
  * Flat DSFR table borders: no per-cell border, a dark rule under the header, a lighter rule under
  * each body row. These are descendant selectors, so they apply unchanged whether `sx` sits directly
  * on the `<table>` or on a container that wraps it.
+ *
+ * Colors use the DSFR grey tokens (`--border-plain-grey` = #3a3a3a, `--border-contrast-grey` =
+ * #929292 in the light theme) instead of hardcoded hex so they follow the DSFR color scheme.
  */
 export function getFlatTableCellBordersSx() {
   return {
     "& th, & td": { border: "none !important", backgroundImage: "none !important" },
-    "& thead": { borderBottom: `1px solid ${TABLE_HEADER_BORDER_COLOR} !important` },
-    "& tbody tr": { borderBottom: `1px solid ${TABLE_ROW_BORDER_COLOR}` },
+    "& thead": { borderBottom: "1px solid var(--border-plain-grey) !important" },
+    "& tbody tr": { borderBottom: "1px solid var(--border-contrast-grey) !important" },
   }
 }

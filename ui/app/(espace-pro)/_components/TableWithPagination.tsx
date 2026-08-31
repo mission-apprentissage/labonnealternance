@@ -9,7 +9,7 @@ import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
-import { getFlatTableCellBordersSx, getFlatTableResetSx } from "@/app/(espace-pro)/_components/tableStyles"
+import { getFlatTableCellBordersSx, getFlatTableResetSx } from "@/app/(espace-pro)/_components/table-styles"
 import ExportButtonNew from "@/components/espace_pro/ExportButton/ExportButtonNew"
 import { PaginationReactQuery } from "@/components/espace_pro/PaginationReactQuery"
 

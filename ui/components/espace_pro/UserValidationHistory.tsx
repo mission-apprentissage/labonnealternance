@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import type { IUserStatusValidationJson } from "shared"
 import Badge from "@/app/(espace-pro)/_components/Badge"
-import { getFlatTableCellBordersSx, getFlatTableResetSx, getFlatTableWrapperSx } from "@/app/(espace-pro)/_components/tableStyles"
+import { getFlatTableCellBordersSx, getFlatTableResetSx, getFlatTableWrapperSx } from "@/app/(espace-pro)/_components/table-styles"
 import LoadingEmptySpace from "./LoadingEmptySpace"
 
 const UserValidationHistory = ({ histories }: { histories: IUserStatusValidationJson[] }) => {
