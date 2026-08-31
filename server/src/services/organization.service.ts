@@ -37,11 +37,8 @@ export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco
  * Enregistre le choix de l'entreprise, exprimé à la création de compte, de valoriser (ou non) son
  * engagement en faveur de l'emploi des personnes en situation de handicap.
  *
- * Seul un choix "oui" a un effet : il alimente `referentiel_engagement_entreprise` (source LBA), qui
- * rend l'entreprise visible comme handi-engagée sur les fiches recruteurs LBA et sert de base au
- * compteur d'alternants recrutés (cf. deca-contrats.service.ts, recruteur-lba.service.ts). Un choix "non"
- * n'écrit rien : il n'existe pas de champ dédié sur `entreprises`, ce référentiel est la seule source de
- * vérité pour cet engagement.
+ * Seul un choix "oui" a un effet : il alimente `referentiel_engagement_entreprise` (source LBA).
+ * L'équipe LBA transmettra l'information à FT pour concrétisation.
  */
 export const updateEntrepriseHandiEngagement = async (siret: string, handiEngagement: HandiEngagement) => {
   if (handiEngagement !== HANDI_ENGAGEMENT_OUI) {
