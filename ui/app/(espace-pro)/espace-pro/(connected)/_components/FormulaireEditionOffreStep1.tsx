@@ -30,76 +30,123 @@ const AMELIORER_IA_MAX_USAGES = 2
 
 type FreeTextFieldName = "job_description" | "job_employer_description"
 
-const AmeliorerIaButton = ({ fieldName, establishmentId, token }: { fieldName: FreeTextFieldName; establishmentId?: string; token?: string }) => {
+/**
+ * Encart d'amélioration IA affiché au-dessus du champ libre, en 4 états : au repos (aide + CTA),
+ * en cours d'appel, proposition à arbitrer, et quota épuisé (CTA désactivé).
+ * L'IA ne réécrit jamais le champ à la place du recruteur : sa version est proposée dans l'encart,
+ * le texte saisi reste intact dans le textarea tant que "Utiliser ce texte" n'a pas été confirmé.
+ */
+const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: FreeTextFieldName; establishmentId?: string; token?: string }) => {
   const { values, setFieldValue, errors } = useFormikContext<any>()
   const [remaining, setRemaining] = useState(AMELIORER_IA_MAX_USAGES)
   const [loading, setLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
+  const [proposal, setProposal] = useState<string | null>(null)
   const text: string = values[fieldName] ?? ""
   const isFieldInvalid = Boolean(errors[fieldName])
+  const canImprove = !loading && remaining > 0 && Boolean(text.trim()) && !isFieldInvalid
 
   const handleClick = async () => {
-    if (!establishmentId || loading || remaining <= 0 || !text.trim() || isFieldInvalid) return
+    if (!establishmentId || !canImprove) return
     setLoading(true)
     setHasError(false)
+    setProposal(null)
+    // décrémenté dès le lancement : le compteur reflète la tentative en cours, et un double-clic
+    // ne peut pas consommer deux fois le même crédit.
+    setRemaining((r) => r - 1)
     try {
       // Le dépôt simplifié post-inscription (cf DepotSimplifieCreationOffre) n'authentifie que par
       // lien magique : jamais de cookie de session, d'où la route jumelle par-token.
       const result = token ? await ameliorerTexteOffreByToken(establishmentId, fieldName, text, token) : await ameliorerTexteOffre(establishmentId, fieldName, text)
       if (result && "text" in result && result.text) {
-        setFieldValue(fieldName, result.text)
-        setRemaining((r) => r - 1)
+        setProposal(result.text)
       } else {
         setHasError(true)
+        setRemaining((r) => Math.min(r + 1, AMELIORER_IA_MAX_USAGES))
       }
     } catch (error) {
       // Échec de l'appel IA (timeout, erreur API) : le recruteur peut poursuivre son dépôt sans blocage,
-      // mais doit être informé que rien n'a changé (sinon le clic paraît sans effet).
+      // mais doit être informé que rien n'a changé (sinon le clic paraît sans effet) et récupérer son
+      // crédit — une panne de notre côté ne doit pas lui coûter une tentative.
       captureException(error)
       setHasError(true)
+      setRemaining((r) => Math.min(r + 1, AMELIORER_IA_MAX_USAGES))
     } finally {
       setLoading(false)
     }
   }
 
+  const isProposalOpen = proposal !== null
+  const paddingX = fr.spacing("3v")
+  const paddingY = fr.spacing("2v")
+  const separator = `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`
+
   return (
     <Box
       sx={{
         mt: fr.spacing("2v"),
-        backgroundColor: fr.colors.decisions.background.contrast.grey.default,
-        border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-        borderBottom: "none",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        px: fr.spacing("3v"),
-        py: fr.spacing("2v"),
+        backgroundColor: isProposalOpen || loading ? fr.colors.decisions.background.alt.blueFrance.default : fr.colors.decisions.background.contrast.grey.default,
+        border: `1px solid ${isProposalOpen ? fr.colors.decisions.border.actionHigh.blueFrance.default : fr.colors.decisions.border.default.grey.default}`,
+        // au repos, l'encart est soudé au textarea : pas de double filet entre les deux
+        ...(isProposalOpen ? {} : { borderBottom: "none" }),
       }}
     >
-      <Typography sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>
-        {hasError
-          ? "L'amélioration a échoué, veuillez réessayer."
-          : `Notre IA peut améliorer votre texte jusqu'à ${AMELIORER_IA_MAX_USAGES} fois (orthographe, structure, formulation)`}
-      </Typography>
-      <Button
-        type="button"
-        priority="tertiary"
-        size="small"
-        iconId="ri-magic-line"
-        iconPosition="left"
-        disabled={!establishmentId || loading || remaining <= 0 || !text.trim() || isFieldInvalid}
-        onClick={handleClick}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: fr.spacing("2v"),
+          flexWrap: "wrap",
+          px: paddingX,
+          py: paddingY,
+        }}
       >
-        {loading ? (
-          <>
-            <CircularProgress size={14} sx={{ mr: fr.spacing("2v"), verticalAlign: "middle" }} />
-            Amélioration en cours…
-          </>
-        ) : (
-          `Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`
-        )}
-      </Button>
+        <Typography
+          aria-live="polite"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: fr.spacing("2v"),
+            fontSize: isProposalOpen ? "0.875rem" : "0.75rem",
+            fontWeight: isProposalOpen ? 700 : 400,
+            color: isProposalOpen ? fr.colors.decisions.text.title.grey.default : fr.colors.decisions.text.mention.grey.default,
+          }}
+        >
+          {loading && <CircularProgress size={14} />}
+          {isProposalOpen
+            ? "Proposition de l'IA - quelle version souhaitez-vous conserver ?"
+            : loading
+              ? "Amélioration en cours"
+              : hasError
+                ? "L'amélioration a échoué, veuillez réessayer."
+                : `Notre IA peut améliorer votre texte jusqu'à ${AMELIORER_IA_MAX_USAGES} fois (orthographe, structure, formulation)`}
+        </Typography>
+        <Button type="button" priority="tertiary" size="small" iconId="ri-magic-line" iconPosition="left" disabled={!establishmentId || !canImprove} onClick={handleClick}>
+          {`Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`}
+        </Button>
+      </Box>
+      {isProposalOpen && (
+        <>
+          <Typography sx={{ borderTop: separator, px: paddingX, py: paddingY, whiteSpace: "pre-wrap" }}>{proposal}</Typography>
+          <Box sx={{ borderTop: separator, px: paddingX, py: paddingY, display: "flex", gap: fr.spacing("3v"), flexWrap: "wrap" }}>
+            <Button
+              type="button"
+              iconId="ri-check-line"
+              iconPosition="left"
+              onClick={() => {
+                setFieldValue(fieldName, proposal)
+                setProposal(null)
+              }}
+            >
+              Utiliser ce texte
+            </Button>
+            <Button type="button" priority="secondary" iconId="ri-delete-bin-line" iconPosition="left" onClick={() => setProposal(null)}>
+              Conserver mon texte
+            </Button>
+          </Box>
+        </>
+      )}
     </Box>
   )
 }
@@ -143,7 +190,7 @@ const JobDescriptionField = ({ establishmentId, token }: { establishmentId?: str
           limitée à {JOB_DESCRIPTION_MAX} caractères.
         </span>
       </label>
-      <AmeliorerIaButton fieldName="job_description" establishmentId={establishmentId} token={token} />
+      <AmeliorerIaPanel fieldName="job_description" establishmentId={establishmentId} token={token} />
       <Input
         label=""
         state={errors.job_description ? "error" : "default"}
@@ -174,7 +221,7 @@ const EmployerDescriptionField = ({ establishmentId, token }: { establishmentId?
           est limitée à {EMPLOYER_DESCRIPTION_MAX} caractères.
         </span>
       </label>
-      <AmeliorerIaButton fieldName="job_employer_description" establishmentId={establishmentId} token={token} />
+      <AmeliorerIaPanel fieldName="job_employer_description" establishmentId={establishmentId} token={token} />
       <Input
         label=""
         state={errors.job_employer_description ? "error" : "default"}
