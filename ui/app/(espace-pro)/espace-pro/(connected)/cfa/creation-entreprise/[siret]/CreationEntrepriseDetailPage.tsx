@@ -124,7 +124,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                   Annuler
                 </Button>
               </Box>
-              <Button type="submit" disabled={informationForm.isSubmitting}>
+              <Button type="submit" aria-label="Continuer la création de l'entreprise" disabled={informationForm.isSubmitting}>
                 {informationForm.isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
                 Continuer
               </Button>

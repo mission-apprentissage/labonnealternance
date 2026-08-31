@@ -179,7 +179,7 @@ const Formulaire = ({
                         </Button>
                       </Box>
                     )}
-                    <Button type="submit" disabled={isSubmitting}>
+                    <Button aria-label="Continuer la création du compte" type="submit" disabled={isSubmitting}>
                       {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
                       Continuer
                     </Button>

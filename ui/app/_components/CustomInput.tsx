@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, FormControl, FormHelperText, FormLabel, Input, Typography } from "@mui/material"
 import { useField } from "formik"
 import parse from "html-react-parser"
+import { useId } from "react"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -12,6 +13,12 @@ const CustomInput = (props) => {
   const [field, meta] = useField(props)
   const hasError = Boolean(meta.error && meta.touched && (props.required !== false || field.value))
   const required = props.required ?? true
+  // Association explicite label ↔ input et input ↔ message d'erreur (RGAA) : FormLabel/Input sont ici
+  // des éléments frères dans FormControl, pas l'un dans l'autre, donc sans htmlFor/id/aria-describedby
+  // ils ne sont liés par aucune API d'accessibilité — seulement par leur proximité visuelle.
+  const generatedId = useId()
+  const inputId = props.id ?? generatedId
+  const errorId = `${inputId}-error`
   return (
     <Box
       sx={[
@@ -28,7 +35,7 @@ const CustomInput = (props) => {
           // lecteurs d'écran (RGAA) — utile quand une mention globale type "Tous les champs sont
           // obligatoires" rend l'astérisque redondant. La bulle/blocage natifs du navigateur au submit
           // sont une préoccupation séparée, à traiter par `noValidate` sur le <form> englobant.
-          <FormLabel error={hasError} {...(props.hideAsterisk ? { required: false } : {})}>
+          <FormLabel htmlFor={inputId} error={hasError} {...(props.hideAsterisk ? { required: false } : {})}>
             {props.label}
           </FormLabel>
         )}
@@ -37,11 +44,12 @@ const CustomInput = (props) => {
             {props.info}
           </Box>
         )}
-        <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} />
+        <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} id={inputId} aria-describedby={hasError ? errorId : undefined} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
         {hasError &&
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
             <Box
+              id={errorId}
               sx={{
                 ml: fr.spacing("2v"),
               }}
@@ -55,7 +63,7 @@ const CustomInput = (props) => {
               </DsfrLink>
             </Box>
           ) : (
-            <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-start" }}>
+            <Box id={errorId} sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-start" }}>
               <Typography className={fr.cx("fr-message--error")}>
                 {parse(meta.error || "")}
                 {meta.error?.includes("a été refusé") && (
