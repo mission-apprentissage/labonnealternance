@@ -4,6 +4,7 @@ import { z } from "../helpers/zod-with-open-api.js"
 
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
+import { HANDI_ENGAGEMENT_VALUES } from "./referentiel-engagement-entreprise.model.js"
 import { ZValidationUtilisateur } from "./user-with-account.model.js"
 
 export enum AccessEntityType {
@@ -40,6 +41,10 @@ export const ZRoleManagement = z.strictObject({
   user_id: zObjectId.describe("ID de l'utilisateur ayant accès"),
   createdAt: z.date(),
   updatedAt: z.date(),
+  handiEngagement: z
+    .enum(HANDI_ENGAGEMENT_VALUES)
+    .nullish()
+    .describe("Choix (ENTREPRISE) déclaré à la création du compte de valoriser l'engagement handicap referentiel_engagement_entreprise"),
 })
 
 export type IRoleManagement = z.output<typeof ZRoleManagement>

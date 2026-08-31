@@ -16,11 +16,12 @@ import config from "@/config"
 import { buildEstablishmentId } from "./etablissement.service"
 import { archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations } from "./formulaire.service"
 import mailer from "./mailer.service"
+import { applyPendingHandiEngagementIfGranted } from "./organization.service"
 import { sendWelcomeEmailToUserRecruteur } from "./user-recruteur.service"
 import { activateUser, hasActiveRoleOnAnotherOrganization } from "./user-with-account.service"
 
 export const modifyPermissionToUser = async (
-  props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id">,
+  props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id"> & Partial<Pick<IRoleManagement, "handiEngagement">>,
   eventProps: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 ): Promise<IRoleManagement> => {
   const now = new Date()
@@ -30,6 +31,9 @@ export const modifyPermissionToUser = async (
   }
   const { authorized_id, authorized_type, user_id } = props
   const role = await getDbCollection("rolemanagements").findOne({ authorized_id, authorized_type, user_id })
+
+  let updatedRole: IRoleManagement
+  let becameGranted: boolean
 
   if (role) {
     const lastEvent = getLastStatusEvent(role.status)
@@ -44,7 +48,8 @@ export const modifyPermissionToUser = async (
     if (!newRole) {
       throw internal("inattendu")
     }
-    return newRole
+    updatedRole = newRole
+    becameGranted = lastEvent?.status !== AccessStatus.GRANTED && eventProps.status === AccessStatus.GRANTED
   } else {
     const newRole: IRoleManagement = {
       ...props,
@@ -54,8 +59,19 @@ export const modifyPermissionToUser = async (
       createdAt: now,
     }
     await getDbCollection("rolemanagements").insertOne(newRole)
-    return newRole
+    updatedRole = newRole
+    becameGranted = eventProps.status === AccessStatus.GRANTED
   }
+
+  // Point de passage unique de toute transition réelle vers GRANTED (création directe, auto-validation,
+  // activation admin/OPCO) : c'est ici, et seulement ici, qu'un engagement handicap déclaré à la création
+  // du compte (cf. ZRoleManagement.handiEngagement) devient effectif dans referentiel_engagement_entreprise
+  // — jamais avant qu'un compte soit réellement validé.
+  if (becameGranted) {
+    await applyPendingHandiEngagementIfGranted(updatedRole)
+  }
+
+  return updatedRole
 }
 
 export const getGrantedRoles = async (userId: string) => {

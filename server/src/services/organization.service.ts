@@ -8,6 +8,7 @@ import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
 import { EntrepriseEngagementSources, HANDI_ENGAGEMENT_OUI } from "shared/models/referentiel-engagement-entreprise.model"
+import type { IRoleManagement } from "shared/models/role-management.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, isEnum } from "shared/utils/index"
@@ -64,6 +65,26 @@ export const updateEntrepriseHandiEngagement = async (siret: string, handiEngage
       throw err
     }
   }
+}
+
+/**
+ * Appelée par modifyPermissionToUser à chaque transition réelle d'un rôle vers GRANTED (quel que soit le
+ * chemin : auto-validation, activation admin/OPCO, création directe).
+ *
+ * `role.handiEngagement` est le choix déclaré à la création du compte (cf. ZRoleManagement), jamais
+ * réécrit depuis — on ne l'applique au référentiel qu'ici, une fois le rôle effectivement validé, pour ne
+ * pas enregistrer un engagement pour un compte jamais activé (cf. updateEntrepriseHandiEngagement, qui
+ * est elle-même un no-op si `handiEngagement` n'est pas "oui").
+ */
+export const applyPendingHandiEngagementIfGranted = async (role: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "handiEngagement">) => {
+  if (role.authorized_type !== AccessEntityType.ENTREPRISE || !role.handiEngagement) {
+    return
+  }
+  const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id) })
+  if (!entreprise) {
+    return
+  }
+  await updateEntrepriseHandiEngagement(entreprise.siret, role.handiEngagement)
 }
 
 /**

@@ -39,7 +39,7 @@ import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from
 import mailer from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
 import type { UserAndOrganization } from "./organization.service"
-import { updateEntrepriseHandiEngagement, updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
+import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./role-management.service"
 import { saveUserTrafficSourceIfAny } from "./traffic-source.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./user-recruteur.service"
@@ -498,23 +498,21 @@ export const entrepriseOnboardingWorkflow = {
       siretResponse = { error: true, message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}` }
       sentryCaptureException(err)
     }
-    // Séquentiel volontairement : updateEntrepriseHandiEngagement ne doit être écrit que si la chaîne
-    // entreprise/opco a réussi (invariant métier — pas d'entreprise "handi-engagée" orpheline sans compte
-    // créé). Techniquement les deux write paths sont indépendants (aucune donnée partagée), mais on
-    // préfère garantir l'ordre plutôt que gagner une latence marginale sur ce chemin de création de compte.
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
-    await updateEntrepriseHandiEngagement(siret, handiEngagement)
     await getDbCollection("jobs_partners").updateMany(
       { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret },
       { $set: { workplace_opco: opcoResult.opco, workplace_idcc: opcoResult.idcc } }
     )
 
     let validated = false
+    // handiEngagement est posé ici sur le rôle (déclaration), mais n'est appliqué à
+    // referentiel_engagement_entreprise que lorsque ce rôle passe réellement à GRANTED
     const { user: managingUser } = await createOrganizationUser({
       userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail, last_action_date: new Date() },
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
+      handiEngagement,
     })
     await saveUserTrafficSourceIfAny({ user_id: managingUser._id, type: TrafficType.ENTREPRISE, source })
 
