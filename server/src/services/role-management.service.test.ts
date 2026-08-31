@@ -6,15 +6,9 @@ import { generateRoleManagementFixture } from "shared/fixtures/role-management.f
 import type { IRoleManagement } from "shared/models/index"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import * as organizationServiceModule from "./organization.service"
 import { isGrantedAndAutoValidatedRole, modifyPermissionToUser } from "./role-management.service"
-
-vi.mock("./organization.service", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./organization.service")>()
-  return { ...actual, applyPendingHandiEngagementIfGranted: vi.fn(actual.applyPendingHandiEngagementIfGranted) }
-})
 
 const roleWithEventsFactory = (events: IRoleManagement["status"]) => {
   return generateRoleManagementFixture({
@@ -92,9 +86,13 @@ describe("role-management.service", () => {
   describe("modifyPermissionToUser", () => {
     useMongo()
 
-    beforeEach(() => {
-      vi.mocked(organizationServiceModule.applyPendingHandiEngagementIfGranted).mockClear()
-    })
+    // Vérifié sur l'état DB (referentiel_engagement_entreprise), pas sur un spy de
+    // applyPendingHandiEngagementIfGranted : en présence du cycle d'imports
+    // role-management.service.ts → organization.service.ts → etablissement.service.ts →
+    // role-management.service.ts, un vi.mock("./organization.service") côté test n'est pas garanti
+    // d'être la même instance de module que celle liée par role-management.service.ts au chargement
+    // (observé : le mock reste à 0 appel alors que l'écriture réelle a bien lieu). L'état DB est
+    // la source de vérité, indépendante de cette subtilité de résolution de module.
 
     it("applique handiEngagement au référentiel dès la création directe d'un rôle GRANTED (branche insert)", async () => {
       const entreprise = await saveEntreprise({ siret: "42476141900045" })
@@ -104,9 +102,8 @@ describe("role-management.service", () => {
         { status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "création par clef API" }
       )
 
-      expect.soft(organizationServiceModule.applyPendingHandiEngagementIfGranted).toHaveBeenCalledTimes(1)
       const referentiel = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: "42476141900045" })
-      expect.soft(referentiel?.sources).toEqual([EntrepriseEngagementSources.LBA])
+      expect(referentiel?.sources).toEqual([EntrepriseEngagementSources.LBA])
     })
 
     it("n'applique rien tant qu'un rôle existant reste AWAITING_VALIDATION, puis applique au passage réel à GRANTED (branche update)", async () => {
@@ -117,7 +114,6 @@ describe("role-management.service", () => {
         { user_id: userId, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE, handiEngagement: "oui" },
         { status: AccessStatus.AWAITING_VALIDATION, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "création de compte" }
       )
-      expect.soft(organizationServiceModule.applyPendingHandiEngagementIfGranted).not.toHaveBeenCalled()
       expect.soft(await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: "42476141900045" })).toBeNull()
 
       await modifyPermissionToUser(
@@ -125,7 +121,6 @@ describe("role-management.service", () => {
         { status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.MANUAL, reason: "validation admin" }
       )
 
-      expect.soft(organizationServiceModule.applyPendingHandiEngagementIfGranted).toHaveBeenCalledTimes(1)
       const referentiel = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: "42476141900045" })
       expect.soft(referentiel?.sources).toEqual([EntrepriseEngagementSources.LBA])
     })
@@ -136,13 +131,14 @@ describe("role-management.service", () => {
       const roleProps = { user_id: userId, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }
 
       await modifyPermissionToUser({ ...roleProps, handiEngagement: "oui" }, { status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "création" })
-      expect.soft(organizationServiceModule.applyPendingHandiEngagementIfGranted).toHaveBeenCalledTimes(1)
+      const afterFirstGrant = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: "42476141900045" })
 
       await modifyPermissionToUser(roleProps, { status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.MANUAL, reason: "reconfirmation" })
+      const afterReaffirmation = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: "42476141900045" })
 
-      // toujours 1 : le early-return sur statut inchangé (lastEvent === eventProps.status) empêche tout
-      // second appel, il ne doit donc pas y avoir de second write vers le référentiel.
-      expect.soft(organizationServiceModule.applyPendingHandiEngagementIfGranted).toHaveBeenCalledTimes(1)
+      // updated_at inchangé : le early-return sur statut inchangé (lastEvent === eventProps.status)
+      // empêche tout second appel au hook, donc tout second $set du référentiel.
+      expect.soft(afterReaffirmation?.updated_at).toEqual(afterFirstGrant?.updated_at)
     })
 
     it("n'applique rien quand le rôle transitionne vers un statut autre que GRANTED", async () => {
@@ -156,7 +152,6 @@ describe("role-management.service", () => {
       )
       await modifyPermissionToUser(roleProps, { status: AccessStatus.DENIED, validation_type: VALIDATION_UTILISATEUR.MANUAL, reason: "refus" })
 
-      expect.soft(organizationServiceModule.applyPendingHandiEngagementIfGranted).not.toHaveBeenCalled()
       expect.soft(await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: "42476141900045" })).toBeNull()
     })
 
@@ -168,9 +163,6 @@ describe("role-management.service", () => {
         { status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "création" }
       )
 
-      // le hook est bien invoqué à chaque passage GRANTED (comportement générique, indépendant du type
-      // d'entité) : c'est applyPendingHandiEngagementIfGranted elle-même qui no-op sans handiEngagement.
-      expect.soft(organizationServiceModule.applyPendingHandiEngagementIfGranted).toHaveBeenCalledTimes(1)
       expect.soft(await getDbCollection("referentiel_engagement_entreprise").countDocuments({})).toBe(0)
     })
 
@@ -180,7 +172,6 @@ describe("role-management.service", () => {
         { status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "création" }
       )
 
-      expect.soft(organizationServiceModule.applyPendingHandiEngagementIfGranted).toHaveBeenCalledTimes(1)
       expect.soft(await getDbCollection("referentiel_engagement_entreprise").countDocuments({})).toBe(0)
     })
   })

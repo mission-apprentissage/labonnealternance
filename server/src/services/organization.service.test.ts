@@ -3,8 +3,9 @@ import { ObjectId } from "mongodb"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { AccessEntityType } from "shared/models/role-management.model"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import * as sentryUtils from "@/common/utils/sentry-utils"
 import { applyPendingHandiEngagementIfGranted, updateEntrepriseHandiEngagement } from "./organization.service"
 
 const SIRET = "42476141900045"
@@ -95,9 +96,13 @@ describe("applyPendingHandiEngagementIfGranted", () => {
     expect(await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: SIRET })).toBeNull()
   })
 
-  it("ne plante pas et n'écrit rien si l'entreprise référencée par authorized_id n'existe pas (near-miss)", async () => {
+  it("ne plante pas, n'écrit rien, mais capture l'anomalie si l'entreprise référencée par authorized_id n'existe pas (near-miss)", async () => {
+    // biome-ignore lint/suspicious/noEmptyBlockStatements: test
+    const sentrySpy = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
+
     await applyPendingHandiEngagementIfGranted({ authorized_id: new ObjectId().toString(), authorized_type: AccessEntityType.ENTREPRISE, handiEngagement: "oui" })
 
     expect(await getDbCollection("referentiel_engagement_entreprise").countDocuments({})).toBe(0)
+    expect(sentrySpy).toHaveBeenCalledTimes(1)
   })
 })

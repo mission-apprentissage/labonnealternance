@@ -14,6 +14,7 @@ import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, isEnum } from "shared/utils/index"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import type { getEntrepriseDataFromSiret } from "./etablissement.service"
 import { autoValidateUserRoleOnCompany, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { checkForJobActivations } from "./formulaire.service"
@@ -82,6 +83,10 @@ export const applyPendingHandiEngagementIfGranted = async (role: Pick<IRoleManag
   }
   const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id) })
   if (!entreprise) {
+    // Ne devrait jamais arriver : l'entreprise est créée avant le rôle (cf. entrepriseOnboardingWorkflow.create).
+    sentryCaptureException(
+      internal("applyPendingHandiEngagementIfGranted: entreprise introuvable pour un rôle GRANTED avec handiEngagement déclaré", { authorized_id: role.authorized_id })
+    )
     return
   }
   await updateEntrepriseHandiEngagement(entreprise.siret, role.handiEngagement)
