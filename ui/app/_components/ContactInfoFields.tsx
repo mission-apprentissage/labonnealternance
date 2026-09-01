@@ -22,7 +22,7 @@ export const ContactInfoFields = ({ emailDisabled = false, emailInfo }: { emailD
       <CustomInput hideAsterisk name="last_name" label="Nom" type="text" />
       <CustomInput hideAsterisk name="first_name" label="Prénom" type="text" />
       <CustomInput hideAsterisk name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" />
-      <CustomInput hideAsterisk isDisabled={emailDisabled} name="email" label="Email" type="email" info={emailInfo} />
+      <CustomInput hideAsterisk disabled={emailDisabled} name="email" label="Email" type="email" info={emailInfo} />
     </>
   )
 }

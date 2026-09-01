@@ -21,7 +21,7 @@ export const TwoColumnFormLayout = ({ left, right, buttons }: { left: ReactNode;
     <>
       <Box sx={{ display: "grid", gridTemplateRows: "1fr", gridTemplateColumns: { xs: "1fr", md: "4fr 5fr" }, gap: fr.spacing("6v") }}>
         <Box sx={{ gridRowStart: { xs: "auto", md: 2 } }}>{left}</Box>
-        <Box sx={{ gridRowStart: { xs: "auto", md: 2 }, pt: { xs: fr.spacing("4v"), md: 0 }, minW: "0" }}>{right}</Box>
+        <Box sx={{ gridRowStart: { xs: "auto", md: 2 }, pt: { xs: fr.spacing("4v"), md: 0 }, minWidth: "0" }}>{right}</Box>
       </Box>
       <Divider
         sx={{
