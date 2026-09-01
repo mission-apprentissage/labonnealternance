@@ -25,6 +25,13 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
  * `updated_at` n'est PAS touché : le cron « Sync delta search_items » resynchronise les
  * jobs_partners modifiés sur une fenêtre de 10 minutes, et bumper l'horodatage de tout le corpus
  * d'un coup lui ferait avaler la collection entière.
+ *
+ * `bypassDocumentValidation` est indispensable : hors production la collection est en
+ * `validationLevel: strict` + `validationAction: error` (cf. `configureDbSchemaValidation`), et un
+ * document historique qui ne respecte plus le schéma courant fait échouer TOUTE mise à jour, même
+ * un `$set` sans rapport. Sans ce flag, le premier déploiement en recette a planté (code 121
+ * « Document failed validation » sur ~93 % d'un lot de 1000) ; en production le même écart n'aurait
+ * produit qu'un warn, ce qui aurait masqué le problème.
  */
 
 const BATCH_SIZE = 1000
@@ -49,7 +56,7 @@ export const up = async () => {
 
   const flushBatch = async () => {
     if (!batch.length) return
-    const result = await collection.bulkWrite(batch, { ordered: false })
+    const result = await collection.bulkWrite(batch, { ordered: false, bypassDocumentValidation: true })
     updated += result.modifiedCount
     batch = []
   }
