@@ -338,11 +338,7 @@ export default function DetailEntreprise({
                         )}
                         <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
                           <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? (
-                              <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
-                            ) : (
-                              <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
-                            )}
+                            {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
                             Enregistrer
                           </Button>
                         </Box>
