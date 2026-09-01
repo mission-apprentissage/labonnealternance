@@ -15,6 +15,7 @@ import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-en
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/InformationOpco"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
@@ -121,10 +122,20 @@ const Formulaire = ({
         return (
           <form ref={formRef} onSubmit={handleSubmit} noValidate>
             {type === AUTHTYPE.ENTREPRISE && <HandiEngagementValueSync hide={hideHandiEngagement} locked={isHandiEngagementLocked} />}
-            <FormulaireLayout
-              type={type}
+            <TwoColumnFormLayout
               left={
                 <>
+                  <Typography
+                    component="h2"
+                    sx={{ fontWeight: 700, fontSize: { xs: "24px !important", md: "32px !important" }, lineHeight: { xs: "32px !important", md: "40px !important" } }}
+                  >
+                    {type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}
+                  </Typography>
+                  <Typography sx={{ fontSize: "20px", pt: fr.spacing("2v"), pb: fr.spacing("4v") }}>
+                    {type === AUTHTYPE.ENTREPRISE
+                      ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
+                      : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
+                  </Typography>
                   <ContactInfoFields
                     emailDisabled={Boolean(email)}
                     emailInfo={
@@ -155,19 +166,6 @@ const Formulaire = ({
                       disabled={isHandiEngagementLocked}
                     />
                   )}
-                  <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
-                    {!widget?.isWidget && (
-                      <Box sx={{ mr: fr.spacing("5v") }}>
-                        <Button type="button" priority="secondary" onClick={() => router.back()}>
-                          Annuler
-                        </Button>
-                      </Box>
-                    )}
-                    <Button aria-label="Continuer la création du compte" type="submit" disabled={isSubmitting}>
-                      {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
-                      Continuer
-                    </Button>
-                  </Box>
                 </>
               }
               right={
@@ -177,39 +175,26 @@ const Formulaire = ({
                   {!hideHandiEngagement && <InformationHandiEngagement />}
                 </>
               }
+              buttons={
+                <>
+                  {!widget?.isWidget && (
+                    <Box sx={{ mr: fr.spacing("5v") }}>
+                      <Button type="button" priority="secondary" onClick={() => router.back()}>
+                        Annuler
+                      </Button>
+                    </Box>
+                  )}
+                  <Button aria-label="Continuer la création du compte" type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                    Continuer
+                  </Button>
+                </>
+              }
             />
           </form>
         )
       }}
     </Formik>
-  )
-}
-
-const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right: React.ReactNode; type: string }) => {
-  return (
-    <Box
-      sx={{
-        rowGap: fr.spacing("8v"),
-        columnGap: fr.spacing("8v"),
-        display: "grid",
-        gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" },
-        gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" },
-        mt: 0,
-      }}
-    >
-      <Box>
-        <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
-          {type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}
-        </Typography>
-        <Typography sx={{ fontSize: "20px", pt: fr.spacing("2v"), pb: fr.spacing("4v") }}>
-          {type === AUTHTYPE.ENTREPRISE
-            ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
-            : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
-        </Typography>
-        <Box>{left}</Box>
-      </Box>
-      <Box>{right}</Box>
-    </Box>
   )
 }
 

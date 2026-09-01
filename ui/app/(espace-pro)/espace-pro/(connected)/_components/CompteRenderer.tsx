@@ -13,6 +13,7 @@ import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-en
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
@@ -144,47 +145,56 @@ export default function CompteRenderer() {
           return (
             <>
               <ModificationCompteEmail {...ModificationEmailPopup} />
-              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(2, 1fr)" }, gap: fr.spacing("4v"), marginBottom: fr.spacing("4v") }}>
-                <Box>
-                  <Typography component="h2" sx={{ fontWeight: 700 }}>
-                    Vos informations de contact
-                  </Typography>
-                  <Typography
-                    sx={{
-                      mt: fr.spacing("2v"),
-                      fontSize: "20px",
-                    }}
-                  >
-                    {user.type === AUTHTYPE.ENTREPRISE
-                      ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
-                      : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
-                  </Typography>
-                  {user.type === AUTHTYPE.CFA && <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>}
-                  <Box sx={{ mt: fr.spacing("6v") }}>
-                    <form ref={formRef} onSubmit={handleSubmit} noValidate>
-                      <ContactInfoFields />
-                      {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
-                        <HandiEngagementSelect
-                          name="handiEngagement"
-                          onChange={(newValue) => setFieldValue("handiEngagement", newValue)}
-                          value={values.handiEngagement as HandiEngagement | ""}
-                          disabled={isHandiEngagementLocked}
-                        />
+              <form ref={formRef} onSubmit={handleSubmit} noValidate>
+                <TwoColumnFormLayout
+                  left={
+                    <>
+                      <Typography
+                        component="h2"
+                        sx={{ fontWeight: 700, fontSize: { xs: "24px !important", md: "32px !important" }, lineHeight: { xs: "32px !important", md: "40px !important" } }}
+                      >
+                        Vos informations de contact
+                      </Typography>
+                      <Typography
+                        sx={{
+                          mt: fr.spacing("2v"),
+                          fontSize: "20px",
+                        }}
+                      >
+                        {user.type === AUTHTYPE.ENTREPRISE
+                          ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
+                          : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
+                      </Typography>
+                      {user.type === AUTHTYPE.CFA && (
+                        <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>
                       )}
-                      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("10v"), mb: fr.spacing("4v") }}>
-                        <Button type="submit" disabled={isSubmitting}>
-                          {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
-                          Enregistrer
-                        </Button>
+                      <Box sx={{ mt: fr.spacing("6v") }}>
+                        <ContactInfoFields />
+                        {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
+                          <HandiEngagementSelect
+                            name="handiEngagement"
+                            onChange={(newValue) => setFieldValue("handiEngagement", newValue)}
+                            value={values.handiEngagement as HandiEngagement | ""}
+                            disabled={isHandiEngagementLocked}
+                          />
+                        )}
                       </Box>
-                    </form>
-                  </Box>
-                </Box>
-                <Box>
-                  <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
-                  {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && !isHandiEngagementLocked && <InformationHandiEngagement />}
-                </Box>
-              </Box>
+                    </>
+                  }
+                  right={
+                    <>
+                      <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
+                      {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && !isHandiEngagementLocked && <InformationHandiEngagement />}
+                    </>
+                  }
+                  buttons={
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                      Enregistrer
+                    </Button>
+                  }
+                />
+              </form>
             </>
           )
         }}

@@ -12,6 +12,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
@@ -71,23 +72,41 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
 
         return (
           <form ref={formRef} onSubmit={handleSubmit} noValidate>
-            <ContactInfoFields />
-            <Typography sx={{ color: "#0063CB" }}>
-              <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des
-              fins de contrôles.
-            </Typography>
-            <DeclarationExactCheckbox />
-            <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
-              <Box sx={{ mr: fr.spacing("5v") }}>
-                <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-                  Annuler
-                </Button>
-              </Box>
-              <Button type="submit" aria-label="Continuer la création de l'entreprise" disabled={informationForm.isSubmitting}>
-                {informationForm.isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
-                Continuer
-              </Button>
-            </Box>
+            <TwoColumnFormLayout
+              left={
+                <>
+                  <Typography
+                    component="h2"
+                    sx={{ fontWeight: 700, fontSize: { xs: "24px !important", md: "32px !important" }, lineHeight: { xs: "32px !important", md: "40px !important" } }}
+                  >
+                    Informations de contact
+                  </Typography>
+                  <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>
+                    Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
+                  </Typography>
+                  <ContactInfoFields />
+                  <Typography sx={{ color: "#0063CB" }}>
+                    <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes
+                    à des fins de contrôles.
+                  </Typography>
+                  <DeclarationExactCheckbox />
+                </>
+              }
+              right={<InformationLegaleEntreprise siret={establishment_siret} type={ENTREPRISE} viewerType={CFA} />}
+              buttons={
+                <>
+                  <Box sx={{ mr: fr.spacing("5v") }}>
+                    <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+                      Annuler
+                    </Button>
+                  </Box>
+                  <Button type="submit" aria-label="Continuer la création de l'entreprise" disabled={informationForm.isSubmitting}>
+                    {informationForm.isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                    Continuer
+                  </Button>
+                </>
+              }
+            />
           </form>
         )
       }}
@@ -99,22 +118,7 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
-      <Box sx={{ display: "grid", gridTemplateRows: "1fr", gridTemplateColumns: { xs: "1fr", md: "4fr 5fr" }, gap: fr.spacing("6v") }}>
-        <Box sx={{ gridRowStart: { xs: "auto", md: 2 } }}>
-          <Box>
-            <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
-              Informations de contact
-            </Typography>
-            <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>
-              Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
-            </Typography>
-          </Box>
-          <Formulaire siret={siret} />
-        </Box>
-        <Box sx={{ gridRowStart: { xs: "auto", md: 2 }, pt: { xs: fr.spacing("4v"), md: 0 }, minW: "0" }}>
-          <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} viewerType={CFA} />
-        </Box>
-      </Box>
+      <Formulaire siret={siret} />
     </>
   )
 }

@@ -34,7 +34,12 @@ const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret:
 
   return (
     <BorderedBox>
-      <Typography fontWeight={700} component="h2" mb={2}>
+      <Typography
+        fontWeight={700}
+        component="h2"
+        mb={2}
+        sx={{ fontSize: { xs: "20px !important", md: "24px !important" }, lineHeight: { xs: "28px !important", md: "32px !important" } }}
+      >
         {type === ENTREPRISE ? "Informations de l'entreprise" : "Informations légales"}
       </Typography>
       {!raisonSociale && (
