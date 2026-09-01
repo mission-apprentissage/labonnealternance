@@ -482,7 +482,7 @@ export const FormulaireEditionOffreStep1 = ({
                       <Typography sx={{ fontSize: "0.8125rem" }}>
                         Consultez notre charte pour une offre rapidement acceptée et publiée. Notre équipe modère les contenus : toute description non conforme à la réglementation
                         pourra entraîner la suppression de l'offre, la désactivation du compte et faire l'objet d'un signalement aux autorités compétentes.{" "}
-                        <DsfrLink href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur" size="sm">
+                        <DsfrLink href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur" size="sm" external={true}>
                           Découvrir la charte
                         </DsfrLink>
                       </Typography>
