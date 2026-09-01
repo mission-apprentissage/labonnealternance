@@ -5,7 +5,7 @@ import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Input from "@codegouvfr/react-dsfr/Input"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import Select from "@codegouvfr/react-dsfr/Select"
-import { Box, FormControl, FormLabel, Link, Typography } from "@mui/material"
+import { Box, FormControl, FormLabel, Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useField, useFormikContext } from "formik"
 import { useParams } from "next/navigation"
@@ -81,8 +81,12 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
           />
           {/* CustomInput, utilisé par DropdownCombobox, masque les erreurs des champs déclarés
               required={false} tant qu'ils sont vides : le message obligatoire n'y remonte jamais.
-              On l'affiche donc ici, comme pour job_type plus bas. */}
-          {Boolean(errors.rome_label && touched.rome_label) && <Typography className={fr.cx("fr-message--error")}>{errors.rome_label as string}</Typography>}
+              On l'affiche donc ici, en reprenant la structure du composant Input DSFR
+              (fr-messages-group > p.fr-message.fr-message--error) pour un rendu identique aux
+              autres champs — fr-message porte la taille, fr-message--error la couleur et l'icône. */}
+          <div className={fr.cx("fr-messages-group")} aria-live="polite">
+            {Boolean(errors.rome_label && touched.rome_label) && <p className={fr.cx("fr-message", "fr-message--error")}>{errors.rome_label as string}</p>}
+          </div>
         </FormControl>
         {values.rome_label && (
           <Box sx={{ mt: fr.spacing("4v") }}>
