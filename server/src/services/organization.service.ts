@@ -9,6 +9,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, isEnum } from "shared/utils/index"
+import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { getEntrepriseDataFromSiret } from "./etablissement.service"
@@ -105,8 +106,11 @@ export const upsertEntrepriseData = async (
         workplace_geopoint: siretResponse.geopoint,
         workplace_legal_name: establishment_raison_sociale,
         workplace_size: siretResponse.establishment_size,
-        workplace_naf_code: siretResponse.naf_code,
-        workplace_naf_label: siretResponse.naf_label,
+        // issue #5344 : ces offres n'ont pas de passage par computed_jobs_partners, la
+        // normalisation du NAF doit donc se faire ici. `entreprises.naf_code` n'est pas touché : il
+        // est comparé tel quel à « 78.20Z » côté espace-pro.
+        workplace_naf_code: normalizeNafCode(siretResponse.naf_code),
+        workplace_naf_label: normalizeNafLabel(siretResponse.naf_label),
       },
     }
   )
