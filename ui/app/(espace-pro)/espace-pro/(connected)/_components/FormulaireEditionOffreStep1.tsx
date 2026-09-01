@@ -461,31 +461,27 @@ export const FormulaireEditionOffreStep1 = ({
 
                 {/* Colonne droite : présentation + description de l'offre + Rome/InfosDiffusion */}
                 <Box>
-                  <Box sx={{ display: "flex", alignItems: "flex-start", gap: fr.spacing("2v"), mb: fr.spacing("3v") }}>
-                    <Typography
-                      className={`ri-information-line ${fr.cx("fr-icon--sm")}`}
-                      sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.active.blueFrance.default, flexShrink: 0 }}
-                    />
-                    <Typography sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.active.blueFrance.default }}>
-                      Notre équipe modère les contenus. Toute description non conforme à la réglementation pourra entrainer la suppression de l'offre, la désactivation du compte et
-                      faire l'objet d'un signalement aux autorités compétentes.
-                    </Typography>
-                  </Box>
                   <Box
                     sx={{
                       backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+                      border: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
                       p: fr.spacing("3v"),
                       mb: fr.spacing("4v"),
                       display: "flex",
                       gap: fr.spacing("3v"),
-                      alignItems: "center",
+                      alignItems: "flex-start",
                     }}
                   >
-                    <Typography className={`ri-certificate-line ${fr.cx("fr-icon--sm")}`} sx={{ color: fr.colors.decisions.text.active.blueFrance.default, flexShrink: 0 }} />
+                    <Typography
+                      className={`ri-information-line ${fr.cx("fr-icon--sm")}`}
+                      aria-hidden="true"
+                      sx={{ color: fr.colors.decisions.text.active.blueFrance.default, flexShrink: 0 }}
+                    />
                     <Box>
                       <Typography sx={{ fontSize: "0.875rem", fontWeight: 600, mb: fr.spacing("1v") }}>Comment bien rédiger votre offre ?</Typography>
                       <Typography sx={{ fontSize: "0.8125rem" }}>
-                        Consultez notre charte pour une offre rapidement acceptée et publiée.{" "}
+                        Consultez notre charte pour une offre rapidement acceptée et publiée. Notre équipe modère les contenus : toute description non conforme à la réglementation
+                        pourra entraîner la suppression de l'offre, la désactivation du compte et faire l'objet d'un signalement aux autorités compétentes.{" "}
                         <DsfrLink href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur" size="sm">
                           Découvrir la charte
                         </DsfrLink>
