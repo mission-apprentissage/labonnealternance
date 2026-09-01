@@ -8,6 +8,8 @@ import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(conn
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
 import { FormulaireEditionOffreStep3 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3CFA"
 import { FormulaireEditionOffreStep4FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep4FtSupport"
+import { AUTHTYPE } from "@/common/contants"
+import { useAuth } from "@/context/UserContext"
 import { getFormulaire, getFormulaireByToken } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
@@ -48,6 +50,10 @@ export const FormulaireEditionOffre = ({
   onChangeScreen?: () => void
 }) => {
   const { token } = useSearchParamsRecord() as { token?: string }
+  // ce composant est aussi monté hors contexte connecté (dépôt simplifié par token, sans compte) : useAuth() ne lève pas d'exception dans ce cas
+  const { user } = useAuth()
+  // un compte CFA ne doit pas se voir proposer l'étape de mise en relation avec d'autres CFA
+  const isCfaAccount = user?.type === AUTHTYPE.CFA
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1)
   const [formValues, setFormValues] = useState<any>({})
 
@@ -95,7 +101,7 @@ export const FormulaireEditionOffre = ({
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2
           onSubmit={({ etablissements, ...values }) => {
-            const hasCfa = Boolean(etablissements?.length)
+            const hasCfa = Boolean(etablissements?.length) && !isCfaAccount
             if (hasCfa) {
               // des CFA à proximité sont disponibles : l'étape 3 permet de choisir lesquels contacter
               setFormValues({ ...formValues, ...values, etablissements })
@@ -127,12 +133,13 @@ export const FormulaireEditionOffre = ({
           romeCode={formValues?.rome_code?.[0] ?? offre?.rome_code?.[0]}
           geoCoordinates={formulaire?.geo_coordinates}
           isFtEligible={isFtEligible}
+          skipCfaStep={isCfaAccount}
           onCancel={() => {
             setCurrentStep(1)
             onChangeScreen?.()
           }}
         />
-      ) : currentStep === 3 ? (
+      ) : currentStep === 3 && !isCfaAccount ? (
         <FormulaireEditionOffreStep3
           onSubmit={(values) => {
             if (!isFtEligible) {
