@@ -116,6 +116,62 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       expect(doc?.application_count).toBe(1)
     })
 
+    it("indexe une offre déléguée sous le nom du CFA, pas celui de l'entreprise d'accueil", async () => {
+      const job = generateJobsPartnersOfferPrivate({
+        is_delegated: true,
+        cfa_legal_name: "CFA des Métiers du Numérique",
+        cfa_siret: "42476141900045",
+        cfa_address_label: "12 rue de la Formation 75011 Paris",
+        workplace_name: "Boulangerie du Marché",
+        workplace_brand: "Aux Bons Pains",
+        workplace_legal_name: "SARL BOULANGERIE DU MARCHE",
+        workplace_address_label: "3 place du Four 75012 Paris",
+      })
+      await getDbCollection("jobs_partners").insertOne(job)
+
+      await upsertJobPartnersToSearchItems([job._id])
+
+      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      expect(doc?.organization_name).toBe("CFA des Métiers du Numérique")
+      expect(doc?.type_filter_label).toBe("Offres d'emploi postées par des écoles")
+      // L'adresse de l'entreprise d'accueil la réidentifierait : c'est celle du CFA qui est indexée.
+      expect(doc?.address).toBe("12 rue de la Formation 75011 Paris")
+      // Le geopoint reste celui de l'entreprise — pertinence géographique et distance affichée.
+      expect(doc?.location?.coordinates).toEqual(job.workplace_geopoint.coordinates)
+    })
+
+    it("n'affiche aucun nom plutôt que celui de l'entreprise quand le CFA d'une offre déléguée est inconnu", async () => {
+      const job = generateJobsPartnersOfferPrivate({
+        is_delegated: true,
+        cfa_legal_name: null,
+        workplace_name: "Boulangerie du Marché",
+        workplace_legal_name: "SARL BOULANGERIE DU MARCHE",
+      })
+      await getDbCollection("jobs_partners").insertOne(job)
+
+      await upsertJobPartnersToSearchItems([job._id])
+
+      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      expect(doc?.organization_name).toBe("")
+    })
+
+    it("near-miss : cfa_legal_name renseigné sur une offre NON déléguée → nom de l'entreprise conservé", async () => {
+      const job = generateJobsPartnersOfferPrivate({
+        is_delegated: false,
+        cfa_legal_name: "CFA des Métiers du Numérique",
+        cfa_address_label: "12 rue de la Formation 75011 Paris",
+        workplace_name: "Boulangerie du Marché",
+        workplace_address_label: "3 place du Four 75012 Paris",
+      })
+      await getDbCollection("jobs_partners").insertOne(job)
+
+      await upsertJobPartnersToSearchItems([job._id])
+
+      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      expect(doc?.organization_name).toBe("Boulangerie du Marché")
+      expect(doc?.address).toBe("3 place du Four 75012 Paris")
+    })
+
     it("préserve les keywords Mistral lors d'un ré-upsert", async () => {
       const job = generateJobsPartnersOfferPrivate({ offer_title: "Titre initial" })
       await getDbCollection("jobs_partners").insertOne(job)
