@@ -1,6 +1,10 @@
 include includes/proxy.conf;
 
+# `add_header` n'est pas cumulatif : redéclarer le moindre en-tête ici fait perdre tous ceux
+# hérités de conf.d/headers.conf. Cette liste doit donc rester alignée sur celle de l'image du
+# reverse proxy, à l'exception de X-Frame-Options, vidé exprès pour autoriser l'iframe.
 add_header Strict-Transport-Security "max-age=31536000; includeSubdomains" always;
 add_header X-Frame-Options "";
 add_header X-Content-Type-Options "nosniff" always;
 add_header Referrer-Policy "no-referrer-when-downgrade";
+add_header X-Cache-Status $upstream_cache_status always;
