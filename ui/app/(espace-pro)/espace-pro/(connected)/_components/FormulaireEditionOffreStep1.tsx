@@ -84,11 +84,11 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   return (
     <Box
       sx={{
+        // encart autonome : détaché du hint au-dessus comme du textarea en dessous
         mt: fr.spacing("2v"),
+        mb: fr.spacing("2v"),
         backgroundColor: isProposalOpen || loading ? fr.colors.decisions.background.alt.blueFrance.default : fr.colors.decisions.background.contrast.grey.default,
         border: `1px solid ${isProposalOpen ? fr.colors.decisions.border.actionHigh.blueFrance.default : fr.colors.decisions.border.default.grey.default}`,
-        // au repos, l'encart est soudé au textarea : pas de double filet entre les deux
-        ...(isProposalOpen ? {} : { borderBottom: "none" }),
       }}
     >
       <Box
