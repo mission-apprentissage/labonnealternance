@@ -70,10 +70,18 @@ export const FormulaireEditionOffreStep4FtSupport = ({ offre, onSubmit, onCancel
             }}
           >
             <Box sx={{ flex: 1 }}>
+              <Typography
+                fontWeight={700}
+                fontSize={{ xs: "18px !important", md: "20px !important" }}
+                lineHeight={{ xs: "28px !important", md: "32px !important" }}
+                mb={fr.spacing("5v")}
+              >
+                Souhaitez-vous être accompagné(e) par France Travail Pro ?
+              </Typography>
               <FtSupportCheckbox />
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography fontSize="20px" lineHeight="32px" mb={fr.spacing("5v")}>
+              <Typography fontSize={{ xs: "18px !important", md: "20px !important" }} lineHeight={{ xs: "28px !important", md: "32px !important" }} mb={fr.spacing("5v")}>
                 Pour faciliter vos recrutements en alternance, le conseiller pro France Travail peut vous aider à :
               </Typography>
               <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }, gap: fr.spacing("2v") }}>
