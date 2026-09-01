@@ -13,7 +13,8 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
 import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
-import CustomInput from "@/app/_components/CustomInput"
+import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/InformationOpco"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
@@ -113,25 +114,9 @@ const Formulaire = ({
       {({ values, isSubmitting, setFieldValue, errors, touched, validateForm, setTouched, submitForm }) => {
         const infosOpco = infosOpcos.find((x) => x.nom === values.opco)
 
-        // Le bouton "Continuer" ne dépend plus de isValid : au clic, on force l'affichage de l'erreur
-        // sur tous les champs invalides (setTouched) puis on scrolle/focus le premier champ en erreur.
-        const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-          e.preventDefault()
-          const formErrors = await validateForm()
-          setTouched(Object.fromEntries(Object.keys(formErrors).map((k) => [k, true])), false)
-          if (Object.keys(formErrors).length > 0 && formRef.current) {
-            const selector = Object.keys(formErrors)
-              .map((name) => `[name="${name}"]`)
-              .join(", ")
-            const firstErrorEl = formRef.current.querySelector<HTMLElement>(selector)
-            if (firstErrorEl) {
-              firstErrorEl.scrollIntoView({ behavior: "smooth", block: "center" })
-              firstErrorEl.focus()
-            }
-            return
-          }
-          submitForm()
-        }
+        // Le bouton "Continuer" ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui force
+        // l'affichage de l'erreur sur tous les champs invalides et scrolle/focus le premier.
+        const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
 
         return (
           <form ref={formRef} onSubmit={handleSubmit} noValidate>
@@ -140,18 +125,9 @@ const Formulaire = ({
               type={type}
               left={
                 <>
-                  <CustomInput hideAsterisk name="last_name" label="Nom" type="text" value={values.last_name} />
-                  <CustomInput hideAsterisk name="first_name" label="Prénom" type="text" value={values.first_name} />
-                  <CustomInput hideAsterisk name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                  <CustomInput
-                    hideAsterisk
-                    isDisabled={email ? true : false}
-                    name="email"
-                    label="Email"
-                    type="email"
-                    pb={fr.spacing("2v")}
-                    value={values.email}
-                    info={
+                  <ContactInfoFields
+                    emailDisabled={Boolean(email)}
+                    emailInfo={
                       email
                         ? "L’email que nous utilisons est fourni par votre Carif Oref, et permet de vous connecter. Vous pourrez le modifier dans votre espace personnel."
                         : "Privilégiez votre adresse professionnelle"
@@ -230,7 +206,6 @@ const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right:
             ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
             : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
         </Typography>
-        {type === AUTHTYPE.ENTREPRISE && <Typography sx={{ pb: fr.spacing("4v") }}>Tous les champs sont obligatoires.</Typography>}
         <Box>{left}</Box>
       </Box>
       <Box>{right}</Box>

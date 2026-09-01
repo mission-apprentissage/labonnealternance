@@ -2,16 +2,19 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Alert, Box, Checkbox, CircularProgress, FormControlLabel, Typography } from "@mui/material"
+import { Alert, Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
-import { Form, Formik } from "formik"
+import { Formik } from "formik"
 import { useRouter } from "next/navigation"
+import { useRef } from "react"
 import type { INewSuperUser, IUserStatusValidationJson } from "shared"
 import { EntrepriseErrorCodes } from "shared/constants/error-codes"
 import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
-import CustomInput from "@/app/_components/CustomInput"
+import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
+import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
@@ -47,6 +50,7 @@ export default function DetailEntreprise({
   const router = useRouter()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const toast = useToast()
   const { user } = useConnectedSessionClient()
@@ -269,7 +273,13 @@ export default function DetailEntreprise({
             setSubmitting(false)
           }}
         >
-          {({ values, isSubmitting, isValid, setFieldValue, errors, touched }) => {
+          {(formik) => {
+            const { values, isSubmitting, setFieldValue, errors, touched } = formik
+            // Le bouton "Enregistrer" ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui
+            // force l'affichage de l'erreur sur tous les champs invalides et scrolle/focus le premier
+            // plutôt que de bloquer la sauvegarde tant que l'OPCO ou la déclaration ne sont pas remplis.
+            const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
+
             return (
               <>
                 <ConfirmationModificationOpco
@@ -298,11 +308,8 @@ export default function DetailEntreprise({
                         mt: fr.spacing("8v"),
                       }}
                     >
-                      <Form>
-                        <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
-                        <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
-                        <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                        <CustomInput name="email" label="Email" type="email" value={values.email} />
+                      <form ref={formRef} onSubmit={handleSubmit} noValidate>
+                        <ContactInfoFields />
                         {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
                           <OpcoSelect
                             value={values.opco}
@@ -321,23 +328,7 @@ export default function DetailEntreprise({
                               <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par
                               nos équipes à des fins de contrôles.
                             </Typography>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  onChange={(event) => {
-                                    setFieldValue("isDeclarationExact", event.target.checked)
-                                  }}
-                                  checked={values.isDeclarationExact}
-                                />
-                              }
-                              label={
-                                <Typography>
-                                  Je certifie que les informations relatives à l’entreprise partenaire sont exactes et vérifiables, et j’accepte que ces données puissent faire
-                                  l’objet de contrôles par La bonne alternance.
-                                </Typography>
-                              }
-                              sx={{ mt: fr.spacing("6v") }}
-                            />
+                            <DeclarationExactCheckbox />
                           </>
                         )}
                         {userMutation.error && (
@@ -346,7 +337,7 @@ export default function DetailEntreprise({
                           </Alert>
                         )}
                         <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
-                          <Button type="submit" disabled={!isValid || isSubmitting}>
+                          <Button type="submit" disabled={isSubmitting}>
                             {isSubmitting ? (
                               <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
                             ) : (
@@ -355,7 +346,7 @@ export default function DetailEntreprise({
                             Enregistrer
                           </Button>
                         </Box>
-                      </Form>
+                      </form>
                     </Box>
                   </Box>
                   <Box>

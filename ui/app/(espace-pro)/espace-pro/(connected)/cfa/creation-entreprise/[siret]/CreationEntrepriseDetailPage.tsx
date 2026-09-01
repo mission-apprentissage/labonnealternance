@@ -2,14 +2,16 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Checkbox, CircularProgress, FormControl, FormControlLabel, FormHelperText, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
 import { useRef } from "react"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import CustomInput from "@/app/_components/CustomInput"
+import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
+import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
@@ -62,65 +64,19 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
       onSubmit={submitForm}
     >
       {(informationForm) => {
-        // Le bouton "Continuer" n'est plus désactivé tant que le formulaire est invalide : au clic, on
-        // force l'affichage de l'erreur sur tous les champs invalides (setTouched) puis on scrolle/focus
-        // le premier champ en erreur, plutôt que de laisser le bouton inerte sans indication visuelle.
-        const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-          e.preventDefault()
-          const errors = await informationForm.validateForm()
-          informationForm.setTouched(Object.fromEntries(Object.keys(errors).map((k) => [k, true])), false)
-          if (Object.keys(errors).length > 0 && formRef.current) {
-            const selector = Object.keys(errors)
-              .map((name) => `[name="${name}"]`)
-              .join(", ")
-            const firstErrorEl = formRef.current.querySelector<HTMLElement>(selector)
-            if (firstErrorEl) {
-              firstErrorEl.scrollIntoView({ behavior: "smooth", block: "center" })
-              firstErrorEl.focus()
-            }
-            return
-          }
-          informationForm.submitForm()
-        }
+        // Le bouton "Continuer" n'est plus désactivé tant que le formulaire est invalide : cf.
+        // createSubmitWithFocusOnError, qui force l'affichage de l'erreur sur tous les champs invalides
+        // et scrolle/focus le premier plutôt que de laisser le bouton inerte sans indication visuelle.
+        const handleSubmit = createSubmitWithFocusOnError(formRef, informationForm)
 
         return (
           <form ref={formRef} onSubmit={handleSubmit} noValidate>
-            <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.mention.grey.default, my: fr.spacing("6v") }}>
-              Tous les champs sont obligatoires.
-            </Typography>
-            <CustomInput hideAsterisk name="last_name" label="Nom" type="text" value={informationForm.values.last_name} />
-            <CustomInput hideAsterisk name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
-            <CustomInput hideAsterisk name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
-            <CustomInput hideAsterisk name="email" label="Email" type="email" value={informationForm.values.email} />
+            <ContactInfoFields />
             <Typography sx={{ color: "#0063CB" }}>
               <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des
               fins de contrôles.
             </Typography>
-            <FormControl error={Boolean(informationForm.touched.isDeclarationExact && informationForm.errors.isDeclarationExact)}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="isDeclarationExact"
-                    onChange={(event) => {
-                      informationForm.setFieldValue("isDeclarationExact", event.target.checked)
-                    }}
-                    checked={informationForm.values.isDeclarationExact}
-                  />
-                }
-                label={
-                  <Typography>
-                    Je certifie que les informations relatives à l’entreprise partenaire sont exactes et vérifiables, et j’accepte que ces données puissent faire l’objet de
-                    contrôles par La bonne alternance.
-                  </Typography>
-                }
-                sx={{ alignItems: "flex-start", mt: fr.spacing("6v") }}
-              />
-              {informationForm.touched.isDeclarationExact && informationForm.errors.isDeclarationExact && (
-                <FormHelperText className={fr.cx("fr-message--error")} sx={{ ml: 0 }}>
-                  {informationForm.errors.isDeclarationExact}
-                </FormHelperText>
-              )}
-            </FormControl>
+            <DeclarationExactCheckbox />
             <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
               <Box sx={{ mr: fr.spacing("5v") }}>
                 <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>

@@ -11,7 +11,8 @@ import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
 import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
-import CustomInput from "@/app/_components/CustomInput"
+import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
@@ -20,7 +21,6 @@ import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { useToast } from "@/app/hooks/useToast"
 import { AUTHTYPE } from "@/common/contants"
 import { LoadingEmptySpace } from "@/components/espace_pro"
-import { ArrowRightLine } from "@/theme/components/icons"
 import { getUser, updateUserWithAccountFields } from "@/utils/api"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import ModificationCompteEmail from "./ModificationCompteEmail"
@@ -133,29 +133,13 @@ export default function CompteRenderer() {
           setSubmitting(false)
         }}
       >
-        {({ values, isSubmitting, setFieldValue, validateForm, setTouched, submitForm }) => {
-          // Le bouton "Enregistrer" ne dépend plus de isValid : au clic, on force l'affichage de
-          // l'erreur sur tous les champs invalides (setTouched) puis on scrolle/focus le premier champ
-          // en erreur, plutôt que de bloquer la sauvegarde du reste du formulaire (ex: téléphone/email)
-          // tant que handiEngagement n'a pas de valeur — même pattern que CreationEntrepriseDetailPage
-          // et InformationCreationCompte.
-          const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault()
-            const errors = await validateForm()
-            setTouched(Object.fromEntries(Object.keys(errors).map((k) => [k, true])), false)
-            if (Object.keys(errors).length > 0 && formRef.current) {
-              const selector = Object.keys(errors)
-                .map((name) => `[name="${name}"]`)
-                .join(", ")
-              const firstErrorEl = formRef.current.querySelector<HTMLElement>(selector)
-              if (firstErrorEl) {
-                firstErrorEl.scrollIntoView({ behavior: "smooth", block: "center" })
-                firstErrorEl.focus()
-              }
-              return
-            }
-            submitForm()
-          }
+        {(formik) => {
+          const { values, isSubmitting, setFieldValue } = formik
+          // Le bouton "Enregistrer" ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui
+          // force l'affichage de l'erreur sur tous les champs invalides et scrolle/focus le premier
+          // plutôt que de bloquer la sauvegarde du reste du formulaire (ex: téléphone/email) tant que
+          // handiEngagement n'a pas de valeur.
+          const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
 
           return (
             <>
@@ -176,15 +160,9 @@ export default function CompteRenderer() {
                       : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
                   </Typography>
                   {user.type === AUTHTYPE.CFA && <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>}
-                  <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.mention.grey.default, my: fr.spacing("6v") }}>
-                    Tous les champs sont obligatoires.
-                  </Typography>
                   <Box sx={{ mt: fr.spacing("6v") }}>
                     <form ref={formRef} onSubmit={handleSubmit} noValidate>
-                      <CustomInput hideAsterisk name="last_name" label="Nom" type="text" value={values.last_name} />
-                      <CustomInput hideAsterisk name="first_name" label="Prénom" type="test" value={values.first_name} />
-                      <CustomInput hideAsterisk name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                      <CustomInput hideAsterisk name="email" label="Email" type="email" value={values.email} />
+                      <ContactInfoFields />
                       {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
                         <HandiEngagementSelect
                           name="handiEngagement"
