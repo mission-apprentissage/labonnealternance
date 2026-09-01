@@ -108,13 +108,23 @@
     # mode maintenance, le renouvellement SSL et le setup Metabase — un prix sans rapport avec
     # l'enjeu, puisque la garantie de correction est la conf nginx, pas cette purge. On trace
     # donc le cas dans la sortie ansible plutôt que de le masquer.
+    # Non bloquant ne veut pas dire silencieux : le code retour et la sortie d'erreur sont
+    # affichés, et l'absence de conteneur est signalée. « cannot delete … No such file » est la
+    # course attendue avec nginx ; tout autre message signale un problème sur le conteneur.
     - name: "Purge du cache du Reverse Proxy"
       shell:
         chdir: /opt/app
         cmd: |
-          for containerId in $(sudo docker ps -q -f name=lba_reverse_proxy); do
-            sudo docker exec "$containerId" find /tmp/nginx_cache -mindepth 1 -delete \
-              || echo "Purge partielle sur $containerId : des entrées ont été supprimées par nginx pendant le parcours."
+          containers=$(sudo docker ps -q -f name=lba_reverse_proxy)
+          if [ -z "$containers" ]; then
+            echo "AVERTISSEMENT : aucun conteneur lba_reverse_proxy trouvé, le cache n'a pas été purgé."
+          fi
+          for containerId in $containers; do
+            sortie=$(sudo docker exec "$containerId" find /tmp/nginx_cache -mindepth 1 -delete 2>&1)
+            code=$?
+            if [ "$code" -ne 0 ]; then
+              echo "AVERTISSEMENT : purge incomplète sur $containerId (code $code) : $(echo "$sortie" | head -3)"
+            fi
           done
 
     - name: "Reload du Reverse Proxy"
