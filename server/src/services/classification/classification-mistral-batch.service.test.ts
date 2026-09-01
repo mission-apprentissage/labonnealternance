@@ -100,6 +100,10 @@ describe("classification-mistral-batch.service", () => {
 
       expect(jobIds).toEqual(["lot-1"])
       expect(await getDbCollection("mistral_batch_jobs").countDocuments({})).toBe(1)
+      // Symétrique de l'alerte sur job terminal en échec : les 2 offres du lot perdu restent PENDING.
+      expect(notifyToSlack).toHaveBeenCalledOnce()
+      expect(vi.mocked(notifyToSlack).mock.calls[0][0]).toMatchObject({ error: true })
+      expect(vi.mocked(notifyToSlack).mock.calls[0][0].message).toContain("2 offre(s)")
     })
   })
 
@@ -140,7 +144,7 @@ describe("classification-mistral-batch.service", () => {
       const updated = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
       expect(updated?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CFA)
       expect(updated?.jobs_in_success).toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
-      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } } })
+      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } }, queued: true })
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-ok" })
       expect(tracked).toMatchObject({ status: "applied", applied_count: 1, error: null })
       // Application complète en SUCCESS : pas d'alerte.
@@ -192,7 +196,7 @@ describe("classification-mistral-batch.service", () => {
       expect(appliedDoc?.jobs_in_success).toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
       const missingDoc = await getDbCollection("computed_jobs_partners").findOne({ _id: missing._id })
       expect(missingDoc?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING)
-      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [answered._id] } } })
+      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [answered._id] } }, queued: true })
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-timeout" })
       expect(tracked).toMatchObject({ status: "applied", applied_count: 1, error: "TIMEOUT_EXCEEDED" })
       // Application partielle : signalée, sans être une erreur bloquante.
@@ -267,7 +271,7 @@ describe("classification-mistral-batch.service", () => {
       const released = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
       expect(released?.business_error).toBeNull()
       expect(released?.jobs_in_success).not.toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
-      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } } })
+      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } }, queued: true })
     })
 
     it("ne débloque pas une offre pendante récente", async () => {
@@ -295,7 +299,7 @@ describe("classification-mistral-batch.service", () => {
       expect(updated?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CFA)
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-untracked" })
       expect(tracked).toMatchObject({ status: "applied", request_count: 1, applied_count: 1, error: "RUNNING" })
-      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } } })
+      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } }, queued: true })
     })
 
     it("sans fichier de sortie, ne touche à rien et le dit", async () => {

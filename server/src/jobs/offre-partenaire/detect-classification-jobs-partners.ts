@@ -47,7 +47,11 @@ type CandidateKey = Pick<IComputedJobsPartners, "_id" | "partner_label" | "partn
  * documents servis par le cache.
  */
 const applyCachedClassifications = async (candidateFilter: Filter<IComputedJobsPartners>): Promise<number> => {
-  const cursor = getDbCollection("computed_jobs_partners").find(candidateFilter, { projection: { _id: 1, partner_label: 1, partner_job_id: 1 } })
+  // Parcours par _id : flush() modifie business_error et jobs_in_success, tous deux indexés — un
+  // parcours appuyé sur l'un de ces index pourrait revoir un document déjà mis à jour.
+  const cursor = getDbCollection("computed_jobs_partners")
+    .find(candidateFilter, { projection: { _id: 1, partner_label: 1, partner_job_id: 1 } })
+    .sort({ _id: 1 })
   const now = new Date()
   let applied = 0
   let group: CandidateKey[] = []

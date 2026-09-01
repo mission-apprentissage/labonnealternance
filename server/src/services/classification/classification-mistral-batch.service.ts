@@ -146,12 +146,23 @@ const submitOneChunk = async (docs: ClassificationCandidate[]): Promise<string |
 export const submitClassificationRequests = async (docs: ClassificationCandidate[], { chunkSize = BATCH_CHUNK_SIZE }: { chunkSize?: number } = {}): Promise<string[]> => {
   if (!docs.length) return []
   const jobIds: string[] = []
+  let failedDocs = 0
   for (const part of chunk(docs, chunkSize)) {
     const jobId = await submitOneChunk(part)
     if (jobId) jobIds.push(jobId)
+    else failedDocs += part.length
   }
   if (jobIds.length > 1) {
     logger.info(`submitClassificationRequests: ${docs.length} offre(s) réparties sur ${jobIds.length} batch(s) de ${chunkSize} max`)
+  }
+  if (failedDocs) {
+    // Symétrique de l'alerte sur job terminal en échec : ces offres restent CLASSIFICATION_PENDING
+    // six heures avant que le filet ne les relance, autant le savoir tout de suite.
+    await notifyToSlack({
+      subject: "Batch Mistral classification jobs_partners : soumission en échec",
+      message: `${failedDocs} offre(s) n'ont pu être soumises à Mistral (${jobIds.length} lot(s) soumis avec succès). Elles restent CLASSIFICATION_PENDING jusqu'au filet de sécurité, qui relancera leur traitement.`,
+      error: true,
+    })
   }
   return jobIds
 }
@@ -172,10 +183,14 @@ const PENDING_TIMEOUT_MS = 6 * 60 * 60 * 1000
 
 /** Relance la chaîne de traitement (fill → validation → import) sur des computed précis. Passe
  * par addJob (nom enregistré dans simple-job-definitions.ts) plutôt qu'un import direct, pour ne
- * pas créer de cycle avec detectClassificationJobsPartners (qui importe ce module). */
+ * pas créer de cycle avec detectClassificationJobsPartners (qui importe ce module).
+ * `queued: true` : sans lui, addJob exécute le job inline dans la ramasse horaire — un run de
+ * 14 min mesuré en prod le 28/08 — et le cron, sans maxRuntimeInMinutes explicite, est tué au
+ * bout de 60 min s'il cumule plusieurs lots plus le filet. Le worker prend le relais en quelques
+ * secondes, comme pour updateClassificationAndSynchronise. */
 const requeueProcessing = async (ids: ObjectId[]) => {
   if (!ids.length) return
-  await addJob({ name: "processJobPartnersWithFilter", payload: { _id: { $in: ids } } })
+  await addJob({ name: "processJobPartnersWithFilter", payload: { _id: { $in: ids } }, queued: true })
 }
 
 const releaseStuckPendingClassifications = async () => {
