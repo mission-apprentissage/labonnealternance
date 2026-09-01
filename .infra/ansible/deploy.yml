@@ -90,6 +90,33 @@
       async: 1800
       poll: 10
 
+    # Ceinture-bretelles. Le vrai correctif est dans l'image du reverse proxy
+    # (mission-apprentissage/infra, conf.d/cache.conf) : nginx ne stocke plus les réponses
+    # document de Next, qui portent un `Cache-Control: s-maxage=31536000` destiné à un CDN purgé
+    # à chaque déploiement. Sans ça, le HTML d'une page reste servi un an alors que les chunks JS
+    # qu'il référence sont renommés à chaque build → 404 sur les chunks, ChunkLoadError, page
+    # jamais hydratée (incident du 2026-09-01 sur /1jeune1solution-recruteurs).
+    # Cette purge ne remplace pas le correctif : elle ne couvre pas un `docker service update`
+    # manuel, seulement les déploiements passant par ce playbook. Elle borne la fenêtre
+    # d'exposition en cas de régression de la conf nginx.
+    # `rm -rf /tmp/nginx_cache/*` échoue en « Argument list too long » : le cache est stocké à
+    # plat (proxy_cache_path sans `levels=`), d'où le `find -delete`.
+    # La purge est volontairement non bloquante. `find -delete` retourne 1 dès qu'une entrée
+    # disparaît pendant le parcours, ce que nginx fait en continu sur un proxy qui sert du
+    # trafic (reproduit : 5 échecs sur 10 essais avec purges concurrentes). Un échec ferait
+    # échouer la tâche après `update-stack.sh`, donc sauterait `reload-proxy.sh`, la sortie du
+    # mode maintenance, le renouvellement SSL et le setup Metabase — un prix sans rapport avec
+    # l'enjeu, puisque la garantie de correction est la conf nginx, pas cette purge. On trace
+    # donc le cas dans la sortie ansible plutôt que de le masquer.
+    - name: "Purge du cache du Reverse Proxy"
+      shell:
+        chdir: /opt/app
+        cmd: |
+          for containerId in $(sudo docker ps -q -f name=lba_reverse_proxy); do
+            sudo docker exec "$containerId" find /tmp/nginx_cache -mindepth 1 -delete \
+              || echo "Purge partielle sur $containerId : des entrées ont été supprimées par nginx pendant le parcours."
+          done
+
     - name: "Reload du Reverse Proxy"
       shell:
         chdir: /opt/app
