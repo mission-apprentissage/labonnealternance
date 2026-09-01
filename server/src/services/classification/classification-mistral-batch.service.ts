@@ -286,9 +286,12 @@ const checkAndApplyTrackedJob = async (tracked: IMistralBatchJob, { force = fals
     const { applied, requested } = await applyBatchOutput(job.outputFile, tracked.request_count)
     const appliedAt = now()
     const partial = job.status !== "SUCCESS" || applied < requested
+    // `error` trace le partiel en base même en SUCCESS (réponses absentes ou inexploitables) :
+    // applied_count < request_count seul ne dit pas si l'écart était attendu.
+    const error = !partial ? null : job.status === "SUCCESS" ? `PARTIAL ${applied}/${requested}` : job.status
     await getDbCollection("mistral_batch_jobs").updateOne(
       { _id: tracked._id },
-      { $set: { status: "applied", applied_count: applied, applied_at: appliedAt, checked_at: appliedAt, error: job.status === "SUCCESS" ? null : job.status } }
+      { $set: { status: "applied", applied_count: applied, applied_at: appliedAt, checked_at: appliedAt, error } }
     )
     logger.info(`applyPendingClassificationBatches: job ${tracked.job_id} appliqué (${applied}/${requested} réponses, statut Mistral ${job.status})`)
     if (partial) {
@@ -351,13 +354,17 @@ export const applyClassificationBatch = async (payload?: { jobId?: string }) => 
     throw new Error("applyClassificationBatch: --jobId requis (identifiant du job batch Mistral)")
   }
 
+  const job = await getMistralBatchJob(jobId)
   const existing = await getDbCollection("mistral_batch_jobs").findOne({ job_id: jobId })
+  // Un job jamais suivi (soumission interrompue) n'a pas de request_count en base : on le prend
+  // chez Mistral pour que applied_count reste comparable à request_count.
+  const requestCount = existing?.request_count || job.totalRequests || 0
   const tracked: IMistralBatchJob = existing ?? {
     _id: new ObjectId(),
     job_id: jobId,
     kind: "jobs_partners_classification",
     status: "submitted",
-    request_count: 0,
+    request_count: requestCount,
     applied_count: null,
     error: null,
     submitted_at: now(),
@@ -369,13 +376,11 @@ export const applyClassificationBatch = async (payload?: { jobId?: string }) => 
     logger.warn(`applyClassificationBatch: job ${jobId} non suivi jusqu'ici, suivi créé`)
   }
 
-  const job = await getMistralBatchJob(jobId)
   if (!job.outputFile) {
     logger.warn(`applyClassificationBatch: job ${jobId} en ${job.status}, aucun fichier de sortie disponible — rien appliqué`)
-    return { status: job.status, applied: 0, requested: tracked.request_count }
+    return { status: job.status, applied: 0, requested: requestCount }
   }
 
-  const requestCount = tracked.request_count || job.totalRequests || 0
   await checkAndApplyTrackedJob({ ...tracked, request_count: requestCount }, { force: true })
   const updated = await getDbCollection("mistral_batch_jobs").findOne({ job_id: jobId })
   return { status: job.status, applied: updated?.applied_count ?? 0, requested: requestCount }

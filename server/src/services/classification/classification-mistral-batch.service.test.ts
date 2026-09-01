@@ -200,6 +200,28 @@ describe("classification-mistral-batch.service", () => {
       expect(vi.mocked(notifyToSlack).mock.calls[0][0]).toMatchObject({ error: false })
     })
 
+    it("job SUCCESS avec une réponse manquante : appliqué, le partiel est tracé dans error, alerte non bloquante", async () => {
+      // Mistral peut terminer en SUCCESS avec des lignes absentes ou inexploitables : applied_count
+      // seul ne dit pas si l'écart était attendu, `error` le trace explicitement.
+      const [answered, missing] = await givenSomeComputedJobPartners([
+        { partner_job_id: "ok-answered", business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() },
+        { partner_job_id: "ok-missing", business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() },
+      ])
+      await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-success-partial", 2))
+      vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "SUCCESS", outputFile: "file-1" } as never)
+      vi.mocked(downloadMistralBatchOutput).mockResolvedValue(new Map([[answered._id.toString(), publishOutput]]))
+
+      const counters = await applyPendingClassificationBatches()
+
+      expect(counters.applied).toBe(1)
+      const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-success-partial" })
+      expect(tracked).toMatchObject({ status: "applied", applied_count: 1, error: "PARTIAL 1/2" })
+      const missingDoc = await getDbCollection("computed_jobs_partners").findOne({ _id: missing._id })
+      expect(missingDoc?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING)
+      expect(notifyToSlack).toHaveBeenCalledOnce()
+      expect(vi.mocked(notifyToSlack).mock.calls[0][0]).toMatchObject({ error: false })
+    })
+
     it("job en échec terminal sans sortie : statut failed + alerte Slack, le document reste bloqué (repris par le filet de sécurité)", async () => {
       const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() }])
       await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-ko"))
@@ -272,7 +294,7 @@ describe("classification-mistral-batch.service", () => {
       const updated = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
       expect(updated?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CFA)
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-untracked" })
-      expect(tracked).toMatchObject({ status: "applied", applied_count: 1, error: "RUNNING" })
+      expect(tracked).toMatchObject({ status: "applied", request_count: 1, applied_count: 1, error: "RUNNING" })
       expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } } })
     })
 

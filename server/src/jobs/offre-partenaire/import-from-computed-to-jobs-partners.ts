@@ -108,11 +108,14 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
         // décidées ailleurs — seuil de candidatures (application.service), détecteur de doublons,
         // classification humaine, admin — ne doivent pas être écrasées par une simple réapparition
         // dans le fichier partenaire (observé en prod : PASS rouvrait chaque nuit ses offres fermées
-        // au seuil de 80 candidatures). Historique vide = offre annulée avant la traçabilité :
-        // on conserve le comportement historique (réactivation).
+        // au seuil de 80 candidatures). La garde ne mord que sur une preuve positive : la dernière
+        // transition tracée est bien l'annulation courante ET elle ne vient pas du flux. Historique
+        // vide, ou annulation posée sans entrée d'historique (dernière transition ACTIVE) : on ne
+        // sait pas qui a annulé, on conserve le comportement historique (réactivation).
         const lastTransition = existingJob?.offer_status_history?.at(-1)
+        const lastCancellation = lastTransition?.status === JOB_STATUS_ENGLISH.ANNULEE ? lastTransition : undefined
         const isReactivation = existingJob?.offer_status === JOB_STATUS_ENGLISH.ANNULEE && partnerJobToUpsert.offer_status === JOB_STATUS_ENGLISH.ACTIVE
-        if (isReactivation && lastTransition && lastTransition.granted_by !== REACTIVATION_ALLOWED_GRANTED_BY) {
+        if (isReactivation && lastCancellation && lastCancellation.granted_by !== REACTIVATION_ALLOWED_GRANTED_BY) {
           partnerJobToUpsert.offer_status = JOB_STATUS_ENGLISH.ANNULEE
         }
 

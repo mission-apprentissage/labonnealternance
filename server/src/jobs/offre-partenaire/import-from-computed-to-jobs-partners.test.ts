@@ -195,6 +195,22 @@ describe("offer_status_history lors de l'import", () => {
     expect.soft(job?.offer_status_history.filter(({ reason }) => reason === "réactivée par le flux source")).toHaveLength(0)
   })
 
+  it("réactive une offre annulée sans entrée d'historique (dernière transition tracée : une réactivation)", async () => {
+    // Tous les chemins d'annulation ne tracent pas encore l'historique : sans preuve de l'origine,
+    // la garde ne doit pas geler l'offre — comportement historique conservé.
+    await createJobPartner({
+      partner_job_id: "cancelled_untracked_1",
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      offer_status_history: [{ date: new Date(), status: JOB_STATUS_ENGLISH.ACTIVE, reason: "réactivée par le flux source", granted_by: "import-from-computed-to-jobs-partners" }],
+    })
+    await createComputedJobPartner({ partner_job_id: "cancelled_untracked_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
+
+    await importFromComputedToJobsPartners({})
+
+    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "cancelled_untracked_1" })
+    expect.soft(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
+  })
+
   it("réactive une offre annulée par la détection de retrait quand elle réapparaît dans le flux", async () => {
     await createJobPartner({
       partner_job_id: "removed_then_back_1",
