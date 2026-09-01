@@ -12,9 +12,13 @@ import { buildSearchPageCanonical, buildSearchPageTitle, parseSearchPageParams }
  * (~213k clics/an, requêtes « alternance {métier} ») — ne sont plus reconnues et servent toutes
  * le même `<title>` générique dupliqué en SSR, cassant le match titre↔requête qui portait le trafic.
  *
- * Tant que le mapping complet legacy→`q` (résultats + H1 en SSR) n'est pas fait (#5033), on restaure
- * ici le titre/description/canonical métier EXACTS que la page legacy produisait pour ces URL — donc
- * zéro churn côté Google. Le repli ne s'active que si `job_name` est renseigné.
+ * Depuis #5321, ces URL sont de nouveau comprises côté résultats et H1 : `parseSearchPageParamsWithLegacy`
+ * traduit `job_name`/`lat`/`lon`/`diploma` vers le schéma `q`. Les MÉTADONNÉES restent volontairement à
+ * l'écart de cette traduction — d'où l'appel à `parseSearchPageParams` SANS repli ci-dessous. La raison
+ * n'est plus « en attendant » mais permanente : on restaure ici le titre/description/canonical métier
+ * EXACTS que la page legacy produisait pour ces URL, donc zéro churn côté Google. Faire passer ces URL
+ * par la branche `q` changerait leurs titres du jour au lendemain. Le repli ne s'active que si
+ * `job_name` est renseigné.
  *
  * Noindex chirurgical (#5034) : les pages sans métier réel (`/recherche` nue, `romes=` seul, `job_name`
  * vide type `romes=K2101`) n'ont pas d'intention propre — GSC montre qu'elles ressortent quasi

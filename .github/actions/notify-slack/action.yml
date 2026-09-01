@@ -1,0 +1,97 @@
+name: Notify Slack
+description: Publie le statut d'un job sur un webhook entrant Slack.
+
+inputs:
+  status:
+    description: Statut du job (success, failure, cancelled, skipped).
+    required: true
+  webhook:
+    description: URL du webhook entrant Slack.
+    required: true
+  title:
+    description: Titre de la notification, affiché au-dessus du message.
+    required: true
+  context:
+    description: "Libellé de contexte affiché entre crochets (ex: production)."
+    required: false
+    default: ""
+  details:
+    description: Ligne complémentaire en markdown Slack, ajoutée sous le message.
+    required: false
+    default: ""
+  mention:
+    description: "ID de groupe Slack à mentionner, ou !channel. Vide = pas de mention."
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Build Slack payload
+      id: payload
+      shell: bash
+      env:
+        STATUS: ${{ inputs.status }}
+        TITLE: ${{ inputs.title }}
+        CONTEXT: ${{ inputs.context }}
+        DETAILS: ${{ inputs.details }}
+        MENTION: ${{ inputs.mention }}
+        WORKFLOW: ${{ github.workflow }}
+        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        BRANCH: ${{ github.ref_name }}
+        SHA: ${{ github.sha }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        set -euo pipefail
+
+        case "$STATUS" in
+          success)   emoji=":heavy_check_mark:"; label="passed";    color="good" ;;
+          failure)   emoji=":x:";                label="failed";    color="danger" ;;
+          cancelled) emoji=":x:";                label="cancelled"; color="danger" ;;
+          skipped)   emoji=":fast_forward:";     label="skipped";   color="#4a4a4a" ;;
+          *)         emoji=":large_orange_diamond:"; label="passed with warnings"; color="warning" ;;
+        esac
+
+        # Reproduit le format historique : [contexte] *workflow* statut in <branche> on <sha court>
+        prefix=""
+        if [ -n "$CONTEXT" ]; then prefix="*[${CONTEXT}]* "; fi
+        text="${emoji} ${prefix}*${WORKFLOW}* ${label} in <${REPO_URL}/tree/${BRANCH}|${BRANCH}> on <${REPO_URL}/commit/${SHA}|${SHA:0:7}>"
+
+        if [ -n "$DETAILS" ]; then text="${text}"$'\n'"${DETAILS}"; fi
+
+        # Un groupe Slack se mentionne <!subteam^ID>, les alias globaux <!channel>
+        if [ -n "$MENTION" ]; then
+          case "$MENTION" in
+            !*) mention="<${MENTION}>" ;;
+            *)  mention="<!subteam^${MENTION}>" ;;
+          esac
+          text="${text}"$'\n'"${mention}"
+        fi
+
+        payload=$(jq -nc \
+          --arg text "$text" \
+          --arg title "$TITLE" \
+          --arg color "$color" \
+          --arg run_url "$RUN_URL" \
+          '{attachments: [{
+             fallback: $title,
+             pretext: $title,
+             text: $text,
+             color: $color,
+             mrkdwn_in: ["text"],
+             footer: "<\($run_url)|Voir le run>"
+           }]}')
+
+        {
+          echo "json<<SLACK_PAYLOAD_EOF"
+          echo "$payload"
+          echo "SLACK_PAYLOAD_EOF"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Send to Slack
+      uses: slackapi/slack-github-action@v4
+      with:
+        webhook: ${{ inputs.webhook }}
+        webhook-type: incoming-webhook
+        payload: ${{ steps.payload.outputs.json }}
+        errors: true

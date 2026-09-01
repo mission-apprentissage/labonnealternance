@@ -35,6 +35,12 @@ import { PAGES } from "@/utils/routes.utils"
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const { setFormValues } = React.useContext(DisplayContext)
 
+  // `rechercheParams` est résolu par resolveRecherchePageParams : sur une fiche ouverte depuis
+  // le moteur, job_name/geo/radius viennent du `?from=` (les cartes ne posent plus job_name,
+  // lat ni lon sur l'URL de la fiche), sinon des paramètres legacy. Sans cette résolution,
+  // formValues restait { job: null, location: null } — d'où un `job_searched_by_user` vide sur
+  // les candidatures, la distance au lieu de recherche masquée et les dimensions métier/lieu
+  // perdues côté Plausible et Matomo.
   React.useEffect(() => {
     setFormValues({
       job: rechercheParams.job_name ? { label: rechercheParams.job_name } : null,
@@ -336,13 +342,21 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
 
           <Box id="detail-content-container" />
           <Box>
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && (isCfaEntreprise || isGeiq) && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire && !isCfaEntreprise && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
-            {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (isCfaEntreprise || isGeiq) && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && (
+              <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} jobSearchedByUser={rechercheParams.job_name} />
+            )}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && (isCfaEntreprise || isGeiq) && (
+              <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} jobSearchedByUser={rechercheParams.job_name} />
+            )}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire && !isCfaEntreprise && (
+              <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} jobSearchedByUser={rechercheParams.job_name} />
+            )}
+            {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} jobSearchedByUser={rechercheParams.job_name} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (isCfaEntreprise || isGeiq) && (
+              <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} jobSearchedByUser={rechercheParams.job_name} />
+            )}
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !isCfaEntreprise && !isGeiq && (
-              <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />
+              <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} jobSearchedByUser={rechercheParams.job_name} />
             )}
 
             <AideApprentissage />

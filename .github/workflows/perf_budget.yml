@@ -26,11 +26,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
-          node-version: 26
+          node-version-file: .node-version
           cache: "yarn"
 
       - name: Install dependencies
@@ -68,8 +68,11 @@ jobs:
       # Pas de PR à commenter sur l'événement merge_group. Étape ignorée si la mesure a échoué.
       - name: Comment PR
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         uses: thollander/actions-comment-pull-request@v3
         with:
           file-path: perf-budget-report.md
           comment-tag: perf_budget
           mode: upsert
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true

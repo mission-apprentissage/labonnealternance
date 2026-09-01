@@ -15,24 +15,48 @@ vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolv
 
 const BASE_URL = "https://labonnealternance.apprentissage.beta.gouv.fr"
 
+// URL de candidature réelle depuis la bascule du nouveau moteur : fiche détail portant la
+// recherche d'origine dans son `?from=`.
+const NEW_ENGINE_APPLICATION_URL = `${BASE_URL}/emploi/offres_emploi_lba/abc123/boulanger?from=${encodeURIComponent("/recherche?q=Boulanger&lieu_label=Marseille 13001&latitude=43.282&longitude=5.405&page=2")}&utm_source=old`
+
 describe("buildRelanceSearchUrl", () => {
-  it("réécrit et re-tague une URL de recherche exploitable", () => {
-    const result = buildRelanceSearchUrl(`${BASE_URL}/recherche?romes=E1401,E1402&lat=43.282&lon=5.405&address=Marseille+13001&utm_source=old`)
+  it("rejoue la recherche portée par le ?from= d'une fiche détail du nouveau moteur", () => {
+    const result = buildRelanceSearchUrl(NEW_ENGINE_APPLICATION_URL)
     expect(result).not.toBeNull()
     const url = new URL(result as string)
     expect(url.pathname).toBe("/recherche")
-    expect(url.searchParams.get("romes")).toBe("E1401,E1402")
-    expect(url.searchParams.get("address")).toBe("Marseille 13001")
+    expect(url.searchParams.get("q")).toBe("Boulanger")
+    expect(url.searchParams.get("lieu_label")).toBe("Marseille 13001")
+    expect(url.searchParams.get("latitude")).toBe("43.282")
     expect(url.searchParams.get("utm_source")).toBe("lba-brevo")
     expect(url.searchParams.get("utm_campaign")).toBe("relance-candidat-inactif")
   })
 
-  it("réécrit un pathname /emploi/ vers /recherche", () => {
-    const result = buildRelanceSearchUrl(`${BASE_URL}/emploi/abc?romes=E1401`)
-    expect(new URL(result as string).pathname).toBe("/recherche")
+  it("repart de la première page de résultats", () => {
+    expect(new URL(buildRelanceSearchUrl(NEW_ENGINE_APPLICATION_URL) as string).searchParams.has("page")).toBe(false)
   })
 
-  it("retourne null si aucun métier (romes/rncp) exploitable", () => {
+  it("traduit une URL de recherche legacy (candidature d'avant la bascule)", () => {
+    const result = buildRelanceSearchUrl(`${BASE_URL}/recherche?romes=E1401,E1402&job_name=Boulanger&lat=43.282&lon=5.405&address=Marseille+13001&utm_source=old`)
+    const url = new URL(result as string)
+    expect(url.pathname).toBe("/recherche")
+    expect(url.searchParams.get("q")).toBe("Boulanger")
+    expect(url.searchParams.get("lieu_label")).toBe("Marseille 13001")
+    expect(url.searchParams.get("latitude")).toBe("43.282")
+    // Les codes ROME ne sont pas compris par le nouveau moteur : ils ne doivent pas survivre.
+    expect(url.searchParams.has("romes")).toBe(false)
+    expect(url.searchParams.get("utm_source")).toBe("lba-brevo")
+  })
+
+  it("retourne null quand la fiche détail ne porte aucune recherche", () => {
+    expect(buildRelanceSearchUrl(`${BASE_URL}/emploi/offres_emploi_lba/abc123/boulanger?utm_source=lba`)).toBeNull()
+  })
+
+  it("retourne null pour un romes seul : aucun libellé métier à rejouer", () => {
+    expect(buildRelanceSearchUrl(`${BASE_URL}/recherche?romes=E1401`)).toBeNull()
+  })
+
+  it("retourne null pour un lieu sans coordonnées", () => {
     expect(buildRelanceSearchUrl(`${BASE_URL}/recherche?address=Marseille`)).toBeNull()
   })
 
@@ -43,7 +67,7 @@ describe("buildRelanceSearchUrl", () => {
   })
 
   it("retire aussi utm_content et utm_term capturés dans l'URL d'origine", () => {
-    const result = buildRelanceSearchUrl(`${BASE_URL}/recherche?romes=E1401&utm_content=abc&utm_term=xyz`)
+    const result = buildRelanceSearchUrl(`${BASE_URL}/recherche?q=Boulanger&utm_content=abc&utm_term=xyz`)
     const url = new URL(result as string)
     expect(url.searchParams.has("utm_content")).toBe(false)
     expect(url.searchParams.has("utm_term")).toBe(false)
@@ -57,7 +81,7 @@ const makeApplicant = (over: Parameters<typeof generateApplicantFixture>[0] = {}
 const makeApplication = (applicantId: ObjectId, over: Parameters<typeof generateApplicationFixture>[0] = {}) =>
   generateApplicationFixture({
     applicant_id: applicantId,
-    application_url: `${BASE_URL}/recherche?romes=E1401&lat=43.282&lon=5.405&address=Marseille+13001`,
+    application_url: NEW_ENGINE_APPLICATION_URL,
     job_searched_by_user: "Communication, marketing, publicité",
     ...over,
   })
@@ -94,6 +118,7 @@ describe("relance-candidats-inactifs", () => {
     expect(rows[0].firstname).toBe("Inès")
     expect(rows[0].metier).toBe("Communication, marketing, publicité")
     expect(rows[0].lien_recherche).toContain("/recherche?")
+    expect(rows[0].lien_recherche).toContain("q=Boulanger")
     expect(rows[0].lien_recherche).toContain("utm_campaign=relance-candidat-inactif")
 
     const logs = await getDbCollection("applicants_email_logs").find({ applicant_id: inWindow._id, type: EMAIL_LOG_TYPE.RELANCE_INACTIVITE }).toArray()
