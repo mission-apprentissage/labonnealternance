@@ -36,6 +36,8 @@ export const up = async () => {
   // apostrophe typographique, espaces) n'est pas exprimable fidèlement en regex MongoDB, et un
   // filtre qui sous-sélectionne laisserait des lignes non corrigées sans que rien ne le signale.
   // On balaie donc tous les documents portant un NAF et on n'écrit que les valeurs qui changent.
+  // `$ne: null` exclut aussi bien le null explicite que le champ absent (mesuré) — et de toute
+  // façon la validation de schéma de jobs_partners refuse un document sans ces deux champs.
   const cursor = collection.find(
     { $or: [{ workplace_naf_code: { $ne: null } }, { workplace_naf_label: { $ne: null } }] },
     { projection: { _id: 1, workplace_naf_code: 1, workplace_naf_label: 1 } }

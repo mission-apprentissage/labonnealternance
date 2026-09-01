@@ -1,6 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
-import { beforeEach, describe, expect, it } from "vitest"
+import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { up } from "@/migrations/20260901163000-normalize-naf-jobs-partners"
 
@@ -10,13 +10,8 @@ import { up } from "@/migrations/20260901163000-normalize-naf-jobs-partners"
  * serait donc ramassé comme une migration.
  */
 describe("migration normalize-naf-jobs-partners", () => {
+  // useMongo() vide déjà toutes les collections en beforeEach
   useMongo()
-
-  beforeEach(() => {
-    return async () => {
-      await getDbCollection("jobs_partners").deleteMany({})
-    }
-  })
 
   it("réécrit les NAF hétérogènes et laisse les autres intacts", async () => {
     await getDbCollection("jobs_partners").insertMany([
