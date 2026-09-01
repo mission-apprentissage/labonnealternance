@@ -7,6 +7,10 @@ import { importFromStreamInXml } from "./import-from-stream-in-xml"
 
 // certains partenaires servent un fichier .gz sans header content-encoding : axios ne le décompresse pas, il faut le faire nous-mêmes
 export const isGzipPayload = (headers: Record<string, unknown>): boolean => {
+  // un content-encoding gzip est déjà traité par axios, décompresser une seconde fois casserait le stream
+  if (/gzip/i.test(String(headers["content-encoding"] ?? ""))) {
+    return false
+  }
   const contentType = String(headers["content-type"] ?? "")
   const contentDisposition = String(headers["content-disposition"] ?? "")
   return /application\/(x-)?gzip/i.test(contentType) || /filename\*?=[^;]*\.gz\b/i.test(contentDisposition)

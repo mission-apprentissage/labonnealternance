@@ -1,7 +1,11 @@
 import { Readable } from "node:stream"
 import { gzipSync } from "node:zlib"
-import { describe, expect, it } from "vitest"
-import { gunzipIfNeeded, isGzipPayload } from "./import-from-url-in-xml"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import nock from "nock"
+import { beforeEach, describe, expect, it } from "vitest"
+
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { gunzipIfNeeded, importFromUrlInXml, isGzipPayload } from "./import-from-url-in-xml"
 
 const readAll = async (stream: NodeJS.ReadableStream) => {
   const chunks: Buffer[] = []
@@ -27,6 +31,8 @@ describe("isGzipPayload", () => {
     { "content-type": "text/xml; charset=utf-8" },
     // content-encoding est déjà pris en charge par axios : y toucher décompresserait deux fois
     { "content-type": "text/xml", "content-encoding": "gzip" },
+    { "content-type": "application/gzip", "content-encoding": "gzip" },
+    { "content-type": "application/octet-stream", "content-disposition": 'attachment; filename="flux.xml.gz"', "content-encoding": "gzip" },
     // un nom de fichier qui contient .gz sans être une extension ne doit pas déclencher la décompression
     { "content-type": "application/octet-stream", "content-disposition": "attachment; filename=flux.gzip-archive.xml" },
     {},
@@ -55,5 +61,53 @@ describe("gunzipIfNeeded", () => {
       },
     })
     await expect(readAll(gunzipIfNeeded(source, { "content-type": "application/gzip" }))).rejects.toThrow("connexion interrompue")
+  })
+})
+
+describe("importFromUrlInXml", () => {
+  useMongo()
+
+  const xml = '<?xml version="1.0" encoding="UTF-8"?><root><job><job_id><![CDATA[a]]></job_id></job><job><job_id><![CDATA[b]]></job_id></job></root>'
+
+  const importFromTestUrl = () =>
+    importFromUrlInXml({
+      url: "https://flux.test/offres",
+      destinationCollection: "raw_hellowork",
+      offerXmlTag: "job",
+      partnerLabel: "test",
+      conflictingOpeningTagWithoutAttributes: true,
+    })
+
+  beforeEach(() => {
+    nock.cleanAll()
+    return async () => {
+      nock.cleanAll()
+      await getDbCollection("raw_hellowork").deleteMany({})
+    }
+  })
+
+  // le flux Hellowork servi sur download.holeest.com : un .gz que seul importFromUrlInXml peut décompresser avant le parser
+  it("should decompress a gzip flux before parsing it", async () => {
+    nock("https://flux.test")
+      .get("/offres")
+      .reply(200, gzipSync(Buffer.from(xml)), {
+        "content-type": "application/gzip",
+        "content-disposition": 'attachment; filename="bonnealternance.xml.gz"',
+      })
+
+    await expect(importFromTestUrl()).resolves.toEqual({ offerInsertCount: 2, offerErrorCount: 0 })
+    expect(await getDbCollection("raw_hellowork").countDocuments({})).toBe(2)
+    expect(nock.isDone()).toBe(true)
+  })
+
+  it("should import a plain xml flux unchanged", async () => {
+    nock("https://flux.test").get("/offres").reply(200, xml, {
+      "content-type": "application/octet-stream",
+      "content-disposition": "attachment; filename=flux.xml",
+    })
+
+    await expect(importFromTestUrl()).resolves.toEqual({ offerInsertCount: 2, offerErrorCount: 0 })
+    expect(await getDbCollection("raw_hellowork").countDocuments({})).toBe(2)
+    expect(nock.isDone()).toBe(true)
   })
 })

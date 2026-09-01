@@ -11,6 +11,7 @@ import { sentryCaptureException } from "@/common/utils/sentry-utils"
 const XML_PREVIEW_LENGTH = 500
 // en dessous de ce ratio par rapport à l'import précédent, l'import passe mais on veut le savoir
 const SUSPICIOUS_SHRINK_RATIO = 0.5
+const SUSPICIOUS_SHRINK_PERCENT = Math.round((1 - SUSPICIOUS_SHRINK_RATIO) * 100)
 
 function logError(error: any) {
   logger.error(error)
@@ -141,7 +142,7 @@ export const importFromStreamInXml = async ({
   logger.info({ deletedCount }, "deleted old data")
 
   if (previousCount > 0 && offerInsertCount < previousCount * SUSPICIOUS_SHRINK_RATIO) {
-    const shrinkError = internal(`import ${importName} : le nombre d'offres a chuté de plus de ${(1 - SUSPICIOUS_SHRINK_RATIO) * 100}% par rapport à l'import précédent`, {
+    const shrinkError = internal(`import ${importName} : le nombre d'offres a chuté de plus de ${SUSPICIOUS_SHRINK_PERCENT}% par rapport à l'import précédent`, {
       destinationCollection,
       previousCount,
       offerInsertCount,

@@ -76,16 +76,17 @@ const warnOnceOnUnknownValue = (field: string, value: string) => {
   logger.warn({ field, value }, "valeur Hellowork non reconnue, champ ignoré")
 }
 
+// Object.hasOwn et pas `in` ni un simple accès : la valeur vient du flux, "toString" ou "constructor" remonteraient une fonction du prototype
 function getRemote(job: IHelloWorkJob): TRAINING_REMOTE_TYPE | null {
   if (!job.remote) return null
-  const remote = teletravailMapping[job.remote]
-  if (!remote) warnOnceOnUnknownValue("remote", job.remote)
-  return remote ?? null
+  if (Object.hasOwn(teletravailMapping, job.remote)) return teletravailMapping[job.remote]
+  warnOnceOnUnknownValue("remote", job.remote)
+  return null
 }
 
 function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_target_diploma"] {
   if (job.education == null) return null
-  if (job.education in diplomaMapping) return diplomaMapping[job.education]
+  if (Object.hasOwn(diplomaMapping, job.education)) return diplomaMapping[job.education]
   warnOnceOnUnknownValue("education", job.education)
   return null
 }

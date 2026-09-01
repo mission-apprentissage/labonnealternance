@@ -143,7 +143,7 @@ describe("helloWorkJobToJobsPartners", () => {
   })
 
   // les valeurs hors vocabulaire doivent rester ignorées : c'est ce qui distingue un mapping correct d'un mapping qui ne matche jamais
-  it.each(["Sans diplôme", "RJ/Qualif/Inconnu", "bep/cap", "BEP / CAP", ""])("should ignore the unmapped education %j", (education) => {
+  it.each(["Sans diplôme", "RJ/Qualif/Inconnu", "bep/cap", "BEP / CAP", "", "toString", "constructor"])("should ignore the unmapped education %j", (education) => {
     expect(helloWorkJobToJobsPartners(buildHelloWorkJob({ education })).offer_target_diploma).toBeNull()
   })
 
@@ -159,7 +159,7 @@ describe("helloWorkJobToJobsPartners", () => {
     })
   })
 
-  it.each(["Non éligible", "Non_eligible", "pas de télétravail", "Pas de teletravail", ""])("should ignore the unmapped remote %j", (remote) => {
+  it.each(["Non éligible", "Non_eligible", "pas de télétravail", "Pas de teletravail", "", "toString", "constructor"])("should ignore the unmapped remote %j", (remote) => {
     expect(helloWorkJobToJobsPartners(buildHelloWorkJob({ remote })).contract_remote).toBeNull()
   })
 })
