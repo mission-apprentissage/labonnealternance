@@ -5,7 +5,7 @@ import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Input from "@codegouvfr/react-dsfr/Input"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import Select from "@codegouvfr/react-dsfr/Select"
-import { Box, FormControl, FormLabel, Link } from "@mui/material"
+import { Box, FormControl, FormLabel, Link, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import { useField, useFormikContext } from "formik"
 import { useParams } from "next/navigation"
@@ -47,7 +47,16 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
   if (section === "offer") {
     return (
       <>
-        <FormControl required={true} sx={{ width: "100%" }}>
+        <FormControl
+          required={true}
+          error={Boolean(errors.rome_label && touched.rome_label)}
+          sx={{
+            width: "100%",
+            // CustomInput isole son propre FormControl : l'état error ne descend pas jusqu'à son
+            // label, qu'on colore ici pour aligner le champ sur les autres champs en erreur.
+            ...(errors.rome_label && touched.rome_label ? { "& .MuiFormLabel-root": { color: fr.colors.decisions.text.default.error.default } } : {}),
+          }}
+        >
           <DropdownCombobox
             label="Métier"
             handleSearch={debounce(handleJobSearch, 300)}
@@ -70,6 +79,10 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
             placeholder="Rechercher un métier"
             dataTestId="offre-metier"
           />
+          {/* CustomInput, utilisé par DropdownCombobox, masque les erreurs des champs déclarés
+              required={false} tant qu'ils sont vides : le message obligatoire n'y remonte jamais.
+              On l'affiche donc ici, comme pour job_type plus bas. */}
+          {Boolean(errors.rome_label && touched.rome_label) && <Typography className={fr.cx("fr-message--error")}>{errors.rome_label as string}</Typography>}
         </FormControl>
         {values.rome_label && (
           <Box sx={{ mt: fr.spacing("4v") }}>
