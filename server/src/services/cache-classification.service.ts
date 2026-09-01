@@ -24,6 +24,34 @@ const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(ICl
   })
 }
 
+/**
+ * Lecture du cache par couples (partner_label, partner_job_id), un `$in` par partenaire — servi par
+ * l'index {partner_job_id, partner_label}. Clé de la Map : `${partner_label}::${partner_job_id}`.
+ * La classification humaine prime sur celle du modèle, comme dans getClassification.
+ */
+export const getCachedClassificationsByPairs = async (pairs: { partner_label: string; partner_job_id: string }[]): Promise<Map<string, string>> => {
+  const result = new Map<string, string>()
+  if (!pairs.length) return result
+
+  const idsByPartner = new Map<string, string[]>()
+  for (const { partner_label, partner_job_id } of pairs) {
+    const ids = idsByPartner.get(partner_label) ?? []
+    ids.push(partner_job_id)
+    idsByPartner.set(partner_label, ids)
+  }
+
+  for (const [partner_label, partner_job_ids] of idsByPartner) {
+    const cached = await getDbCollection("cache_classification")
+      .find({ partner_label, partner_job_id: { $in: partner_job_ids } }, { projection: { partner_label: 1, partner_job_id: 1, classification: 1, human_verification: 1 } })
+      .toArray()
+    for (const entry of cached) {
+      result.set(`${entry.partner_label}::${entry.partner_job_id}`, entry.human_verification ?? entry.classification)
+    }
+  }
+
+  return result
+}
+
 export const getClassification = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
   const cachedClassifications = await getClassificationFromDB(jobs)
   const notFoundJobs = jobs.flatMap((job, index) => {

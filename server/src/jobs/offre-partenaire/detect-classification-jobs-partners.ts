@@ -1,10 +1,10 @@
-import type { Filter } from "mongodb"
+import type { AnyBulkWriteOperation, Filter } from "mongodb"
 import GEIQ_WHITELIST from "shared/constants/geiq"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR, PARTNER_WHITELIST } from "shared/models/jobs-partners-computed.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { getClassification } from "@/services/cache-classification.service"
+import { getCachedClassificationsByPairs, getClassification } from "@/services/cache-classification.service"
 import { submitClassificationRequests } from "@/services/classification/classification-mistral-batch.service"
 import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 import { buildComputedPartnersCandidateFilter, fillFieldsForComputedPartnersFactory } from "./fill-fields-for-partners-factory"
@@ -24,7 +24,70 @@ const CLASSIFICATION_FILLED_FIELDS = ["business_error"] as const satisfies (keyo
 // pénalisé si tout passait en synchrone dans le même cron : on bascule l'intégralité du lot
 // détecté vers le batch Mistral, en bloquant explicitement la publication (business_error
 // CLASSIFICATION_PENDING) en attendant le résultat — cf. classification-mistral-batch.service.ts.
+//
+// Ce seuil ne s'applique qu'aux offres ABSENTES de cache_classification : les offres déjà
+// classées une nuit précédente sont servies par le cache avant tout comptage (voir
+// applyCachedClassifications). Sans cette étape, computed_jobs_partners étant reconstruit chaque
+// nuit, la totalité du catalogue non whitelisté (~20 000 offres mesurées en prod le 01/09/2026)
+// repartait en batch chaque nuit, était annulée par cancelRemovedJobsPartners à 00h35 (pipeline
+// « business_error non nul ») et n'était republiée qu'au retour du batch — 1 à 6 h de coupure
+// quotidienne, et une coupure complète dès que Mistral ne répondait pas.
 const SYNC_BATCH_THRESHOLD = 500
+
+// Taille des groupes de lecture du cache : un `$in` de 1 000 partner_job_id par partenaire est
+// servi par l'index {partner_job_id, partner_label} sans faire exploser la taille de la requête.
+const CACHE_LOOKUP_GROUP_SIZE = 1_000
+
+type CandidateKey = Pick<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id">
+
+/**
+ * Applique aux candidats les classifications déjà connues dans cache_classification, sans appel
+ * Mistral : pousse CLASSIFICATION dans jobs_in_success (le document n'est plus candidat) et pose
+ * business_error CFA si la classification retenue est « unpublish ». Retourne le nombre de
+ * documents servis par le cache.
+ */
+const applyCachedClassifications = async (candidateFilter: Filter<IComputedJobsPartners>): Promise<number> => {
+  const cursor = getDbCollection("computed_jobs_partners").find(candidateFilter, { projection: { _id: 1, partner_label: 1, partner_job_id: 1 } })
+  const now = new Date()
+  let applied = 0
+  let group: CandidateKey[] = []
+
+  const flush = async () => {
+    if (!group.length) return
+    const cached = await getCachedClassificationsByPairs(group)
+    const ops: AnyBulkWriteOperation<IComputedJobsPartners>[] = []
+    for (const candidate of group) {
+      const label = cached.get(`${candidate.partner_label}::${candidate.partner_job_id}`)
+      if (!label) continue
+      ops.push({
+        updateOne: {
+          filter: { _id: candidate._id },
+          update: {
+            $set: {
+              business_error: label === "unpublish" ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
+              updated_at: now,
+            },
+            $pull: { errors: { source: COMPUTED_ERROR_SOURCE.CLASSIFICATION } },
+            $addToSet: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION },
+          },
+        },
+      })
+    }
+    if (ops.length) {
+      await getDbCollection("computed_jobs_partners").bulkWrite(ops, { ordered: false })
+      applied += ops.length
+    }
+    group = []
+  }
+
+  for await (const candidate of cursor) {
+    group.push(candidate as CandidateKey)
+    if (group.length >= CACHE_LOOKUP_GROUP_SIZE) await flush()
+  }
+  await flush()
+
+  return applied
+}
 
 export const detectClassificationJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const filters: Filter<IComputedJobsPartners>[] = [{ partner_label: { $nin: PARTNER_WHITELIST } }, { workplace_siret: { $nin: GEIQ_WHITELIST } }]
@@ -41,6 +104,13 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter }: Fil
     addedMatchFilter: { $and: filters },
   })
 
+  // 1. Cache d'abord : les offres déjà classées sortent du périmètre sans appel externe.
+  const fromCache = await applyCachedClassifications(candidateFilter)
+  if (fromCache) {
+    logger.info(`detectClassificationJobsPartners: ${fromCache} document(s) servi(s) par cache_classification`)
+  }
+
+  // 2. Ne reste que l'inconnu : sync en dessous du seuil, batch au-dessus.
   const candidateCount = await getDbCollection("computed_jobs_partners").countDocuments(candidateFilter)
 
   if (candidateCount > SYNC_BATCH_THRESHOLD) {
@@ -55,11 +125,11 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter }: Fil
       { _id: { $in: ids } },
       { $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() } }
     )
-    await submitClassificationRequests(toDefer)
-    return { total: ids.length, success: 0, error: 0 }
+    const jobIds = await submitClassificationRequests(toDefer)
+    return { total: fromCache + ids.length, success: fromCache, error: 0, from_cache: fromCache, batched: ids.length, batches: jobIds.length }
   }
 
-  return fillFieldsForComputedPartnersFactory({
+  const sync = await fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.CLASSIFICATION,
     sourceFields: CLASSIFICATION_SOURCE_FIELDS,
     filledFields: CLASSIFICATION_FILLED_FIELDS,
@@ -92,4 +162,6 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter }: Fil
       })
     },
   })
+
+  return { ...sync, total: sync.total + fromCache, success: sync.success + fromCache, from_cache: fromCache, batched: 0, batches: 0 }
 }

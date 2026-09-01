@@ -22,6 +22,9 @@ import { limitStream } from "@/common/utils/stream-utils"
  * `{partner_job_id, partner_label}`, donc une offre déjà présente conserve son propre _id et
  * `$setOnInsert._id` ne s'applique qu'à la création.
  */
+/** Seule origine d'annulation qu'une réapparition dans le flux invalide légitimement. */
+const REACTIVATION_ALLOWED_GRANTED_BY = "cancel-removed-jobs-partners"
+
 export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, onImported?: (jobPartnerIds: ObjectId[]) => void | Promise<void>) => {
   logger.info(`import dans jobs_partners commencé`)
   const filters: Filter<IComputedJobsPartners>[] = [{ validated: true, business_error: null }]
@@ -97,8 +100,21 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
 
         const existingJob = await getDbCollection("jobs_partners").findOne(
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
-          { projection: { offer_status: 1 } }
+          { projection: { offer_status: 1, offer_status_history: { $slice: -1 } } }
         )
+
+        // Une offre annulée ne peut être réactivée par le flux que si c'est le flux qui l'avait
+        // annulée (disparue puis revenue, ou business_error transitoire levé). Les fermetures
+        // décidées ailleurs — seuil de candidatures (application.service), détecteur de doublons,
+        // classification humaine, admin — ne doivent pas être écrasées par une simple réapparition
+        // dans le fichier partenaire (observé en prod : PASS rouvrait chaque nuit ses offres fermées
+        // au seuil de 80 candidatures). Historique vide = offre annulée avant la traçabilité :
+        // on conserve le comportement historique (réactivation).
+        const lastTransition = existingJob?.offer_status_history?.at(-1)
+        const isReactivation = existingJob?.offer_status === JOB_STATUS_ENGLISH.ANNULEE && partnerJobToUpsert.offer_status === JOB_STATUS_ENGLISH.ACTIVE
+        if (isReactivation && lastTransition && lastTransition.granted_by !== REACTIVATION_ALLOWED_GRANTED_BY) {
+          partnerJobToUpsert.offer_status = JOB_STATUS_ENGLISH.ANNULEE
+        }
 
         await getDbCollection("jobs_partners").updateOne(
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },

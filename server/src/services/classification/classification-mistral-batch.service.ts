@@ -4,6 +4,7 @@ import type { AnyBulkWriteOperation, Filter } from "mongodb"
 import type { IClassificationJobsPartners } from "shared/models/cache-classification.model"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
+import type { IMistralBatchJob } from "shared/models/mistral-batch-jobs.model"
 import { z } from "zod"
 import { CLASSIFICATION_MISTRAL_MODEL } from "@/common/apis/classification/classification-mistral.client"
 import { logger } from "@/common/logger"
@@ -20,12 +21,28 @@ import { downloadMistralBatchOutput, getMistralBatchJob, submitMistralBatch } fr
  * la publication. `customId` = `_id` de computed_jobs_partners (un document par requête, pas de
  * regroupement par 50 comme en sync : on doit retrouver le document précis à débloquer).
  *
- * Filet de sécurité : toute offre restée `CLASSIFICATION_PENDING` plus de PENDING_TIMEOUT_MS est
- * débloquée par `applyPendingClassificationBatches`, indépendamment du suivi du job batch — couvre
- * aussi bien un job jamais enregistré (soumis mais insertOne échoué) qu'un job en échec terminal.
+ * Trois garde-fous, tirés de l'incident des 30–31/08/2026 (batch de 20 681 requêtes bloqué à
+ * 99,4 % pendant plus de 24 h, catalogue partenaire à l'arrêt) :
+ * - les soumissions sont découpées en lots indépendants (BATCH_CHUNK_SIZE), suivis séparément :
+ *   une requête coincée ne bloque plus que son lot ;
+ * - `timeout_hours` est court (CLASSIFICATION_BATCH_TIMEOUT_HOURS) et la ramasse applique la
+ *   sortie de tout job terminal qui en a une, SUCCESS ou non — les résultats acquis servent, les
+ *   requêtes manquantes restent CLASSIFICATION_PENDING et repartent au lot suivant ;
+ * - le filet de sécurité (PENDING_TIMEOUT_MS) ne se contente plus de lever le marquage : il
+ *   relance la chaîne de traitement sur les offres libérées, sinon celles qui ont un code ROME
+ *   n'étaient reprises par personne avant la nuit suivante.
  */
 
 const now = () => new Date()
+
+/** Un batch de ~20 000 requêtes est otage de sa pire requête ; 2 000 borne le rayon d'un blocage. */
+const BATCH_CHUNK_SIZE = 2_000
+
+/** 10 batchs sur 12 mesurés en prod reviennent en moins de 70 min ; au-delà, mieux vaut récupérer
+ * le partiel et resoumettre le reste que d'attendre le défaut Mistral de 24 h. */
+const CLASSIFICATION_BATCH_TIMEOUT_HOURS = 2
+
+const TERMINAL_STATUSES = new Set(["SUCCESS", "FAILED", "TIMEOUT_EXCEEDED", "CANCELLED"])
 
 const BATCH_SYSTEM_PROMPT = `Tu classes une offre d'alternance transmise par un partenaire. Détecte si elle est publiée par un CFA ou un organisme de formation qui se présente LUI-MÊME comme l'employeur (CFA "déguisé"), qui doit être dépubliée.
 Retourne :
@@ -78,14 +95,20 @@ const CLASSIFICATION_PROJECTION = { _id: 1, workplace_name: 1, workplace_descrip
 
 type ClassificationCandidate = { _id: ObjectId } & ClassificationSourceDoc
 
-/** Soumet directement des documents déjà chargés (évite un second aller-retour Mongo quand
- * l'appelant les a déjà en main — ex. le routage sync/batch de detectClassificationJobsPartners,
- * qui a besoin des mêmes champs pour compter les candidats avant de décider de la bascule). */
-export const submitClassificationRequests = async (docs: ClassificationCandidate[]): Promise<string | null> => {
-  if (!docs.length) return null
+const chunk = <T>(items: T[], size: number): T[][] => {
+  const chunks: T[][] = []
+  for (let i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size))
+  return chunks
+}
 
+const submitOneChunk = async (docs: ClassificationCandidate[]): Promise<string | null> => {
   const requests = docs.map((doc) => ({ customId: doc._id.toString(), messages: buildBatchMessages(doc) }))
-  const jobId = await submitMistralBatch({ requests, model: CLASSIFICATION_MISTRAL_MODEL, inputFileName: `jobs_partners_classification_${now().getTime()}.jsonl` })
+  const jobId = await submitMistralBatch({
+    requests,
+    model: CLASSIFICATION_MISTRAL_MODEL,
+    timeoutHours: CLASSIFICATION_BATCH_TIMEOUT_HOURS,
+    inputFileName: `jobs_partners_classification_${now().getTime()}.jsonl`,
+  })
 
   if (!jobId) {
     logger.error(`submitClassificationRequests: échec de soumission (${requests.length} requêtes) — les offres restent CLASSIFICATION_PENDING, débloquées par le filet de sécurité`)
@@ -116,11 +139,28 @@ export const submitClassificationRequests = async (docs: ClassificationCandidate
   return jobId
 }
 
+/** Soumet directement des documents déjà chargés (évite un second aller-retour Mongo quand
+ * l'appelant les a déjà en main — ex. le routage sync/batch de detectClassificationJobsPartners,
+ * qui a besoin des mêmes champs pour compter les candidats avant de décider de la bascule).
+ * Découpe en lots indépendants ; retourne les ids des jobs effectivement créés. */
+export const submitClassificationRequests = async (docs: ClassificationCandidate[], { chunkSize = BATCH_CHUNK_SIZE }: { chunkSize?: number } = {}): Promise<string[]> => {
+  if (!docs.length) return []
+  const jobIds: string[] = []
+  for (const part of chunk(docs, chunkSize)) {
+    const jobId = await submitOneChunk(part)
+    if (jobId) jobIds.push(jobId)
+  }
+  if (jobIds.length > 1) {
+    logger.info(`submitClassificationRequests: ${docs.length} offre(s) réparties sur ${jobIds.length} batch(s) de ${chunkSize} max`)
+  }
+  return jobIds
+}
+
 /** Soumet un batch Mistral (fire-and-forget, suivi dans mistral_batch_jobs) pour les
  * computed_jobs_partners matchant `filter` — usage manuel (backfill/rattrapage via addJob). Le
  * routage automatique de detectClassificationJobsPartners appelle submitClassificationRequests
  * directement avec les documents déjà chargés, pour ne pas les refetcher ici. */
-export const submitClassificationBatch = async (filter: Filter<IComputedJobsPartners>): Promise<string | null> => {
+export const submitClassificationBatch = async (filter: Filter<IComputedJobsPartners>): Promise<string[]> => {
   const docs = await getDbCollection("computed_jobs_partners").find(filter, { projection: CLASSIFICATION_PROJECTION }).toArray()
   return submitClassificationRequests(docs)
 }
@@ -130,21 +170,155 @@ export const submitClassificationBatch = async (filter: Filter<IComputedJobsPart
 // sans avoir besoin de retrouver précisément quel job batch la couvrait.
 const PENDING_TIMEOUT_MS = 6 * 60 * 60 * 1000
 
-const releaseStuckPendingClassifications = async () => {
-  const staleBefore = new Date(Date.now() - PENDING_TIMEOUT_MS)
-  const result = await getDbCollection("computed_jobs_partners").updateMany(
-    { business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: { $lt: staleBefore } },
-    { $set: { business_error: null, updated_at: now() }, $pull: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION } }
-  )
-  if (result.modifiedCount) {
-    logger.warn(`releaseStuckPendingClassifications: ${result.modifiedCount} offre(s) débloquée(s) après plus de ${PENDING_TIMEOUT_MS / 3_600_000}h en CLASSIFICATION_PENDING`)
-  }
-  return result.modifiedCount
+/** Relance la chaîne de traitement (fill → validation → import) sur des computed précis. Passe
+ * par addJob (nom enregistré dans simple-job-definitions.ts) plutôt qu'un import direct, pour ne
+ * pas créer de cycle avec detectClassificationJobsPartners (qui importe ce module). */
+const requeueProcessing = async (ids: ObjectId[]) => {
+  if (!ids.length) return
+  await addJob({ name: "processJobPartnersWithFilter", payload: { _id: { $in: ids } } })
 }
 
-/** Cron de ramasse (horaire) : débloque les offres restées pendantes trop longtemps, puis
- * télécharge et applique la sortie des jobs batch terminés. Reprise garantie à travers les
- * redéploiements — tout job soumis finit ramassé ou expiré par le filet de sécurité. */
+const releaseStuckPendingClassifications = async () => {
+  const staleBefore = new Date(Date.now() - PENDING_TIMEOUT_MS)
+  const staleFilter = { business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: { $lt: staleBefore } }
+  const stuck = await getDbCollection("computed_jobs_partners")
+    .find(staleFilter, { projection: { _id: 1 } })
+    .toArray()
+  if (!stuck.length) return 0
+
+  const ids = stuck.map((doc) => doc._id)
+  await getDbCollection("computed_jobs_partners").updateMany(
+    { _id: { $in: ids } },
+    { $set: { business_error: null, updated_at: now() }, $pull: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION } }
+  )
+  logger.warn(
+    `releaseStuckPendingClassifications: ${ids.length} offre(s) débloquée(s) après plus de ${PENDING_TIMEOUT_MS / 3_600_000}h en CLASSIFICATION_PENDING — chaîne de traitement relancée`
+  )
+  // Sans cette relance, une offre libérée mais déjà dotée d'un code ROME n'était reprise par aucun
+  // job avant la nuit suivante (processMissingRome ne prend que les sans-ROME) : 16 147 offres
+  // Hellowork et France Travail bloquées ainsi en prod le 01/09/2026. Au retraitement, les offres
+  // déjà classées sont servies par cache_classification ; seules les inconnues repartent.
+  await requeueProcessing(ids)
+  return ids.length
+}
+
+type ApplyOutcome = { applied: number; requested: number }
+
+/** Télécharge la sortie d'un job Mistral et l'applique aux computed correspondants (cache +
+ * business_error + jobs_in_success), puis relance la chaîne de traitement sur ces offres. Les
+ * requêtes absentes de la sortie (job partiel) ne sont pas touchées : elles restent
+ * CLASSIFICATION_PENDING et seront libérées par le filet de sécurité. */
+const applyBatchOutput = async (outputFile: string, requestCount: number): Promise<ApplyOutcome> => {
+  const outputs = await downloadMistralBatchOutput(outputFile)
+
+  const parsedByDocId = new Map<string, z.output<typeof ZBatchClassificationContent>>()
+  for (const [customId, content] of outputs) {
+    const parsed = parseBatchClassificationContent(content)
+    if (!parsed || !/^[0-9a-f]{24}$/i.test(customId)) continue
+    parsedByDocId.set(customId, parsed)
+  }
+
+  const docIds = [...parsedByDocId.keys()].map((id) => new ObjectId(id))
+  const docs = docIds.length
+    ? await getDbCollection("computed_jobs_partners")
+        .find({ _id: { $in: docIds } }, { projection: { partner_label: 1, partner_job_id: 1 } })
+        .toArray()
+    : []
+
+  const cacheOps: AnyBulkWriteOperation<IClassificationJobsPartners>[] = []
+  const computedOps: AnyBulkWriteOperation<IComputedJobsPartners>[] = []
+  const appliedIds: ObjectId[] = []
+  const appliedAt = now()
+
+  for (const doc of docs) {
+    const parsed = parsedByDocId.get(doc._id.toString())
+    if (!parsed) continue
+
+    cacheOps.push({
+      updateOne: {
+        filter: { partner_label: doc.partner_label, partner_job_id: doc.partner_job_id },
+        update: {
+          $set: { classification: parsed.label, scores: parsed.scores, model: `mistral:${CLASSIFICATION_MISTRAL_MODEL}`, created_at: appliedAt },
+          $setOnInsert: { _id: new ObjectId() },
+        },
+        upsert: true,
+      },
+    })
+    computedOps.push({
+      updateOne: {
+        filter: { _id: doc._id },
+        update: {
+          $set: { business_error: parsed.label === "unpublish" ? JOB_PARTNER_BUSINESS_ERROR.CFA : null, updated_at: appliedAt },
+          // $addToSet (pas $pull) : la classification a réellement été obtenue, comme le
+          // chemin sync (fillFieldsForComputedPartnersFactory) qui pousse CLASSIFICATION
+          // dans jobs_in_success sur tout succès quel que soit le label. Un $pull laisserait
+          // les offres "publish" (business_error: null) éligibles au filtre de candidature
+          // de detectClassificationJobsPartners re-déclenché juste après par
+          // processJobPartnersWithFilter → boucle de resoumission Mistral à chaque ramasse.
+          $addToSet: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION },
+        },
+      },
+    })
+    appliedIds.push(doc._id)
+  }
+
+  if (cacheOps.length) await getDbCollection("cache_classification").bulkWrite(cacheOps, { ordered: false })
+  if (computedOps.length) await getDbCollection("computed_jobs_partners").bulkWrite(computedOps, { ordered: false })
+  await requeueProcessing(appliedIds)
+
+  return { applied: appliedIds.length, requested: requestCount }
+}
+
+type BatchCheckResult = "applied" | "stillRunning" | "failed"
+
+/**
+ * Vérifie un job suivi et agit selon son état Mistral :
+ * - une sortie existe et le job est terminal (ou `force`) → application, statut `applied`, `error`
+ *   renseigné si le statut Mistral n'est pas SUCCESS (application partielle tracée) ;
+ * - terminal sans sortie → `failed` + alerte, les offres restent PENDING jusqu'au filet ;
+ * - sinon → on repassera.
+ */
+const checkAndApplyTrackedJob = async (tracked: IMistralBatchJob, { force = false }: { force?: boolean } = {}): Promise<BatchCheckResult> => {
+  const job = await getMistralBatchJob(tracked.job_id)
+  const isTerminal = TERMINAL_STATUSES.has(job.status)
+
+  if (job.outputFile && (isTerminal || force)) {
+    const { applied, requested } = await applyBatchOutput(job.outputFile, tracked.request_count)
+    const appliedAt = now()
+    const partial = job.status !== "SUCCESS" || applied < requested
+    await getDbCollection("mistral_batch_jobs").updateOne(
+      { _id: tracked._id },
+      { $set: { status: "applied", applied_count: applied, applied_at: appliedAt, checked_at: appliedAt, error: job.status === "SUCCESS" ? null : job.status } }
+    )
+    logger.info(`applyPendingClassificationBatches: job ${tracked.job_id} appliqué (${applied}/${requested} réponses, statut Mistral ${job.status})`)
+    if (partial) {
+      await notifyToSlack({
+        subject: "Batch Mistral classification jobs_partners appliqué partiellement",
+        message: `Job ${tracked.job_id} en ${job.status} : ${applied}/${requested} réponses appliquées. Les offres manquantes restent CLASSIFICATION_PENDING et seront relancées par le filet de sécurité.`,
+        error: false,
+      })
+    }
+    return "applied"
+  }
+
+  if (isTerminal) {
+    await getDbCollection("mistral_batch_jobs").updateOne({ _id: tracked._id }, { $set: { status: "failed", error: job.status, checked_at: now() } })
+    await notifyToSlack({
+      subject: "Batch Mistral classification jobs_partners en échec",
+      message: `Le job batch ${tracked.job_id} (${tracked.request_count} requêtes) est terminé en ${job.status} sans fichier de sortie — les offres concernées restent bloquées (CLASSIFICATION_PENDING) jusqu'au filet de sécurité, qui relancera leur traitement.`,
+      error: true,
+    })
+    return "failed"
+  }
+
+  // QUEUED / RUNNING / … : on repassera.
+  await getDbCollection("mistral_batch_jobs").updateOne({ _id: tracked._id }, { $set: { checked_at: now() } })
+  return "stillRunning"
+}
+
+/** Cron de ramasse (horaire) : débloque les offres restées pendantes trop longtemps (et relance
+ * leur traitement), puis télécharge et applique la sortie des jobs batch terminés. Reprise
+ * garantie à travers les redéploiements — tout job soumis finit ramassé ou expiré par le filet. */
 export const applyPendingClassificationBatches = async () => {
   await releaseStuckPendingClassifications()
 
@@ -153,96 +327,7 @@ export const applyPendingClassificationBatches = async () => {
 
   for (const pending of pendingJobs) {
     try {
-      const job = await getMistralBatchJob(pending.job_id)
-
-      if (job.status === "SUCCESS" && job.outputFile) {
-        const outputs = await downloadMistralBatchOutput(job.outputFile)
-
-        const parsedByDocId = new Map<string, z.output<typeof ZBatchClassificationContent>>()
-        for (const [customId, content] of outputs) {
-          const parsed = parseBatchClassificationContent(content)
-          if (!parsed || !/^[0-9a-f]{24}$/i.test(customId)) continue
-          parsedByDocId.set(customId, parsed)
-        }
-
-        const docIds = [...parsedByDocId.keys()].map((id) => new ObjectId(id))
-        const docs = docIds.length
-          ? await getDbCollection("computed_jobs_partners")
-              .find({ _id: { $in: docIds } }, { projection: { partner_label: 1, partner_job_id: 1 } })
-              .toArray()
-          : []
-
-        const cacheOps: AnyBulkWriteOperation<IClassificationJobsPartners>[] = []
-        const computedOps: AnyBulkWriteOperation<IComputedJobsPartners>[] = []
-        const appliedIds: ObjectId[] = []
-        const appliedAt = now()
-
-        for (const doc of docs) {
-          const parsed = parsedByDocId.get(doc._id.toString())
-          if (!parsed) continue
-
-          cacheOps.push({
-            updateOne: {
-              filter: { partner_label: doc.partner_label, partner_job_id: doc.partner_job_id },
-              update: {
-                $set: { classification: parsed.label, scores: parsed.scores, model: `mistral:${CLASSIFICATION_MISTRAL_MODEL}`, created_at: appliedAt },
-                $setOnInsert: { _id: new ObjectId() },
-              },
-              upsert: true,
-            },
-          })
-          computedOps.push({
-            updateOne: {
-              filter: { _id: doc._id },
-              update: {
-                $set: { business_error: parsed.label === "unpublish" ? JOB_PARTNER_BUSINESS_ERROR.CFA : null, updated_at: appliedAt },
-                // $addToSet (pas $pull) : la classification a réellement été obtenue, comme le
-                // chemin sync (fillFieldsForComputedPartnersFactory) qui pousse CLASSIFICATION
-                // dans jobs_in_success sur tout succès quel que soit le label. Un $pull laisserait
-                // les offres "publish" (business_error: null) éligibles au filtre de candidature
-                // de detectClassificationJobsPartners re-déclenché juste après par
-                // processJobPartnersWithFilter → fillComputedJobsPartners → boucle de
-                // resoumission Mistral à chaque ramasse pour les gros lots "publish".
-                $addToSet: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION },
-              },
-            },
-          })
-          appliedIds.push(doc._id)
-        }
-
-        if (cacheOps.length) await getDbCollection("cache_classification").bulkWrite(cacheOps, { ordered: false })
-        if (computedOps.length) await getDbCollection("computed_jobs_partners").bulkWrite(computedOps, { ordered: false })
-        if (appliedIds.length) {
-          // Ré-exécute la chaîne de traitement (validation + import vers jobs_partners) pour les
-          // seules offres concernées, business_error déjà recalculé ci-dessus. Passe par addJob
-          // (nom enregistré dans simple-job-definitions.ts) plutôt qu'un import direct, pour ne pas
-          // créer de cycle avec detectClassificationJobsPartners (qui importe ce module).
-          await addJob({ name: "processJobPartnersWithFilter", payload: { _id: { $in: appliedIds } } })
-        }
-
-        await getDbCollection("mistral_batch_jobs").updateOne(
-          { _id: pending._id },
-          { $set: { status: "applied", applied_count: appliedIds.length, applied_at: appliedAt, checked_at: appliedAt } }
-        )
-        counters.applied++
-        logger.info(`applyPendingClassificationBatches: job ${pending.job_id} appliqué (${appliedIds.length}/${pending.request_count} réponses)`)
-        continue
-      }
-
-      if (["FAILED", "TIMEOUT_EXCEEDED", "CANCELLED"].includes(job.status) || (job.status === "SUCCESS" && !job.outputFile)) {
-        await getDbCollection("mistral_batch_jobs").updateOne({ _id: pending._id }, { $set: { status: "failed", error: job.status, checked_at: now() } })
-        counters.failed++
-        await notifyToSlack({
-          subject: "Batch Mistral classification jobs_partners en échec",
-          message: `Le job batch ${pending.job_id} (${pending.request_count} requêtes) est terminé en ${job.status} — les offres concernées restent bloquées (CLASSIFICATION_PENDING) jusqu'au filet de sécurité.`,
-          error: true,
-        })
-        continue
-      }
-
-      // QUEUED / RUNNING / … : on repassera.
-      await getDbCollection("mistral_batch_jobs").updateOne({ _id: pending._id }, { $set: { checked_at: now() } })
-      counters.stillRunning++
+      counters[await checkAndApplyTrackedJob(pending)]++
     } catch (err) {
       sentryCaptureException(err)
     }
@@ -252,4 +337,46 @@ export const applyPendingClassificationBatches = async () => {
     logger.info(`applyPendingClassificationBatches: ${counters.applied} appliqués, ${counters.stillRunning} en cours, ${counters.failed} en échec (${pendingJobs.length} suivis)`)
   }
   return counters
+}
+
+/**
+ * Levier d'incident (`yarn cli applyClassificationBatch --jobId <id>`) : applique la sortie d'un
+ * job Mistral précis dès qu'elle existe, quel que soit son statut Mistral et l'état de son suivi
+ * — y compris un job jamais enregistré dans mistral_batch_jobs (soumission interrompue) ou déjà
+ * marqué `failed` par la ramasse. Sans sortie disponible, ne touche à rien et le dit.
+ */
+export const applyClassificationBatch = async (payload?: { jobId?: string }) => {
+  const jobId = payload?.jobId?.trim()
+  if (!jobId) {
+    throw new Error("applyClassificationBatch: --jobId requis (identifiant du job batch Mistral)")
+  }
+
+  const existing = await getDbCollection("mistral_batch_jobs").findOne({ job_id: jobId })
+  const tracked: IMistralBatchJob = existing ?? {
+    _id: new ObjectId(),
+    job_id: jobId,
+    kind: "jobs_partners_classification",
+    status: "submitted",
+    request_count: 0,
+    applied_count: null,
+    error: null,
+    submitted_at: now(),
+    checked_at: null,
+    applied_at: null,
+  }
+  if (!existing) {
+    await getDbCollection("mistral_batch_jobs").insertOne(tracked)
+    logger.warn(`applyClassificationBatch: job ${jobId} non suivi jusqu'ici, suivi créé`)
+  }
+
+  const job = await getMistralBatchJob(jobId)
+  if (!job.outputFile) {
+    logger.warn(`applyClassificationBatch: job ${jobId} en ${job.status}, aucun fichier de sortie disponible — rien appliqué`)
+    return { status: job.status, applied: 0, requested: tracked.request_count }
+  }
+
+  const requestCount = tracked.request_count || job.totalRequests || 0
+  await checkAndApplyTrackedJob({ ...tracked, request_count: requestCount }, { force: true })
+  const updated = await getDbCollection("mistral_batch_jobs").findOne({ job_id: jobId })
+  return { status: job.status, applied: updated?.applied_count ?? 0, requested: requestCount }
 }
