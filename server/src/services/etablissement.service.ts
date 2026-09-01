@@ -15,6 +15,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last-status-event"
+import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import { getEtablissementFromGouvSafe } from "@/common/apis/api-entreprise/api-entreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/france-competences/france-competences-client"
 import { logger } from "@/common/logger"
@@ -581,8 +582,9 @@ export const entrepriseOnboardingWorkflow = {
     }
 
     const jobsPartnersUpdate: Partial<IJobsPartnersOfferPrivate> = {
-      workplace_naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
-      workplace_naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
+      // issue #5344 : cf. organization.service.ts, ces offres ne passent pas par computed
+      workplace_naf_label: "naf_label" in siretResponse ? normalizeNafLabel(siretResponse.naf_label) : undefined,
+      workplace_naf_code: "naf_code" in siretResponse ? normalizeNafCode(siretResponse.naf_code) : undefined,
     }
     const opco = opcoResult?.opco
     const opcoLabel = opco ? parseEnum(OPCOS_LABEL, opco) : null

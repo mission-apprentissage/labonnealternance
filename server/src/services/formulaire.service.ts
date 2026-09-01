@@ -29,6 +29,7 @@ import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/m
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
+import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import type z from "zod"
 import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/async-utils"
@@ -1196,8 +1197,9 @@ async function jobCreateToJobsPartner({
 
     workplace_opco: entreprise.opco ?? null,
     workplace_idcc: entreprise.idcc ?? null,
-    workplace_naf_code: entreprise.naf_code ?? null,
-    workplace_naf_label: entreprise.naf_label ?? null,
+    // issue #5344 : cf. organization.service.ts, ces offres ne passent pas par computed
+    workplace_naf_code: normalizeNafCode(entreprise.naf_code),
+    workplace_naf_label: normalizeNafLabel(entreprise.naf_label),
     workplace_size: entrepriseDataOpt?.establishment_size ?? null,
     offer_origin: origin ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,

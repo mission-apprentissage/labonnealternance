@@ -15,8 +15,8 @@ describe("format-text-fields-jobs-partners", () => {
   })
 
   it("laisse à null les champs texte absents du document", async () => {
-    // Cas du bug : le filtre du job sélectionne un document dès qu'UN des quatre champs est
-    // renseigné, mais les trois autres étaient réécrits à "" — ce qui neutralisait ensuite le
+    // Cas du bug : le filtre du job sélectionne un document dès qu'UN des champs listés est
+    // renseigné, mais les autres étaient réécrits à "" — ce qui neutralisait ensuite le
     // repli `??` de fillSiretInfosForPartners sur l'enseigne / la raison sociale du SIRET.
     await givenSomeComputedJobPartners([
       {
@@ -106,5 +106,83 @@ describe("format-text-fields-jobs-partners", () => {
     // Les balises de mise en forme sont conservées (keepFormat), le lien est retiré.
     expect.soft(job.workplace_description).toBe("<p>Une <strong>vraie</strong> entreprise</p>")
     expect.soft(job.offer_description).toBe("Postulez ici")
+  })
+
+  it("homogénéise le code et le libellé NAF (issue #5344)", async () => {
+    await givenSomeComputedJobPartners([
+      {
+        offer_title: "Développeur web en alternance",
+        workplace_naf_code: "6202A",
+        workplace_naf_label: "FABRICATION D'AUTRES PRODUITS LAITIERS",
+      },
+    ])
+
+    await formatTextFieldsJobsPartners({})
+
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(job.workplace_naf_code).toBe("62.02A")
+    expect.soft(job.workplace_naf_label).toBe("Fabrication d'autres produits laitiers")
+  })
+
+  it("laisse à null un NAF absent", async () => {
+    await givenSomeComputedJobPartners([
+      {
+        offer_title: "Développeur web en alternance",
+        workplace_naf_code: null,
+        workplace_naf_label: null,
+      },
+    ])
+
+    await formatTextFieldsJobsPartners({})
+
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(job.workplace_naf_code).toBe(null)
+    expect.soft(job.workplace_naf_label).toBe(null)
+  })
+
+  it("retire les coordonnées en clair des descriptions (issue #5227)", async () => {
+    await givenSomeComputedJobPartners([
+      {
+        offer_title: "Développeur web en alternance",
+        offer_description: "<p>Envoyez votre CV à recrutement@acme.fr ou appelez le 06 12 34 56 78.</p>",
+        workplace_description: "ACME, contact rh@acme.fr",
+      },
+    ])
+
+    await formatTextFieldsJobsPartners({})
+
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    // la mise en forme est conservée, seules les coordonnées disparaissent
+    expect.soft(job.offer_description).toBe("<p>Envoyez votre CV à ou appelez le.</p>")
+    expect.soft(job.workplace_description).toBe("ACME, contact")
+  })
+
+  it("détecte un email masqué par une entité HTML", async () => {
+    // sanitizeTextField décode les entités avant le passage des regex
+    await givenSomeComputedJobPartners([
+      {
+        offer_title: "Développeur web en alternance",
+        offer_description: "Contact : recrutement&#64;acme.fr",
+      },
+    ])
+
+    await formatTextFieldsJobsPartners({})
+
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect(job.offer_description).toBe("Contact :")
+  })
+
+  it("ne touche pas aux nombres des descriptions qui ne sont pas des téléphones", async () => {
+    await givenSomeComputedJobPartners([
+      {
+        offer_title: "Développeur web en alternance",
+        offer_description: "SIRET 01234567800012, rémunération 12 500 € brut, début le 01/09/2026",
+      },
+    ])
+
+    await formatTextFieldsJobsPartners({})
+
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect(job.offer_description).toBe("SIRET 01234567800012, rémunération 12 500 € brut, début le 01/09/2026")
   })
 })
