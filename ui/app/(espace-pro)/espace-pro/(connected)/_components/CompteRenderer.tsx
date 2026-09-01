@@ -4,7 +4,8 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Form, Formik } from "formik"
+import { Formik } from "formik"
+import { useRef } from "react"
 import type { IUserWithAccountFields } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
@@ -36,6 +37,7 @@ export default function CompteRenderer() {
   const client = useQueryClient()
   const toast = useToast()
   const ModificationEmailPopup = useDisclosure()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ["user"],
@@ -99,7 +101,8 @@ export default function CompteRenderer() {
           first_name: data.first_name,
           phone: data.phone,
           email: data.email,
-          ...(data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement ? { handiEngagement: isHandiEngagementLocked ? "oui" : "" } : {}),
+          // "non" par défaut tant que ce n'est pas verrouillé sur "oui"
+          ...(data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement ? { handiEngagement: isHandiEngagementLocked ? "oui" : "non" } : {}),
         }}
         validationSchema={Yup.object().shape({
           last_name: Yup.string().required("champ obligatoire"),
@@ -130,7 +133,30 @@ export default function CompteRenderer() {
           setSubmitting(false)
         }}
       >
-        {({ values, isSubmitting, isValid, setFieldValue }) => {
+        {({ values, isSubmitting, setFieldValue, validateForm, setTouched, submitForm }) => {
+          // Le bouton "Enregistrer" ne dépend plus de isValid : au clic, on force l'affichage de
+          // l'erreur sur tous les champs invalides (setTouched) puis on scrolle/focus le premier champ
+          // en erreur, plutôt que de bloquer la sauvegarde du reste du formulaire (ex: téléphone/email)
+          // tant que handiEngagement n'a pas de valeur — même pattern que CreationEntrepriseDetailPage
+          // et InformationCreationCompte.
+          const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault()
+            const errors = await validateForm()
+            setTouched(Object.fromEntries(Object.keys(errors).map((k) => [k, true])), false)
+            if (Object.keys(errors).length > 0 && formRef.current) {
+              const selector = Object.keys(errors)
+                .map((name) => `[name="${name}"]`)
+                .join(", ")
+              const firstErrorEl = formRef.current.querySelector<HTMLElement>(selector)
+              if (firstErrorEl) {
+                firstErrorEl.scrollIntoView({ behavior: "smooth", block: "center" })
+                firstErrorEl.focus()
+              }
+              return
+            }
+            submitForm()
+          }
+
           return (
             <>
               <ModificationCompteEmail {...ModificationEmailPopup} />
@@ -150,12 +176,15 @@ export default function CompteRenderer() {
                       : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
                   </Typography>
                   {user.type === AUTHTYPE.CFA && <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>}
-                  <Box sx={{ mt: fr.spacing("4v") }}>
-                    <Form>
-                      <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
-                      <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
-                      <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                      <CustomInput name="email" label="Email" type="email" value={values.email} />
+                  <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.mention.grey.default, my: fr.spacing("6v") }}>
+                    Tous les champs sont obligatoires.
+                  </Typography>
+                  <Box sx={{ mt: fr.spacing("6v") }}>
+                    <form ref={formRef} onSubmit={handleSubmit} noValidate>
+                      <CustomInput hideAsterisk name="last_name" label="Nom" type="text" value={values.last_name} />
+                      <CustomInput hideAsterisk name="first_name" label="Prénom" type="test" value={values.first_name} />
+                      <CustomInput hideAsterisk name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
+                      <CustomInput hideAsterisk name="email" label="Email" type="email" value={values.email} />
                       {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
                         <HandiEngagementSelect
                           name="handiEngagement"
@@ -165,16 +194,12 @@ export default function CompteRenderer() {
                         />
                       )}
                       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("10v"), mb: fr.spacing("4v") }}>
-                        <Button type="submit" disabled={!isValid || isSubmitting}>
-                          {isSubmitting ? (
-                            <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
-                          ) : (
-                            <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
-                          )}
+                        <Button type="submit" disabled={isSubmitting}>
+                          {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
                           Enregistrer
                         </Button>
                       </Box>
-                    </Form>
+                    </form>
                   </Box>
                 </Box>
                 <Box>

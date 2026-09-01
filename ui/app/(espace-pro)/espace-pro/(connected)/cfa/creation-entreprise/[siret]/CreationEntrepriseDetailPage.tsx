@@ -85,6 +85,9 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
 
         return (
           <form ref={formRef} onSubmit={handleSubmit} noValidate>
+            <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.mention.grey.default, my: fr.spacing("6v") }}>
+              Tous les champs sont obligatoires.
+            </Typography>
             <CustomInput hideAsterisk name="last_name" label="Nom" type="text" value={informationForm.values.last_name} />
             <CustomInput hideAsterisk name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
             <CustomInput hideAsterisk name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
@@ -140,19 +143,19 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
-      <Box sx={{ display: "grid", gridTemplateRows: "1fr", gridTemplateColumns: { xs: "1fr", sm: "4fr 5fr" }, gap: fr.spacing("6v") }}>
-        <Box>
-          <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
-            Informations de contact
-          </Typography>
-          <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>
-            Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
-          </Typography>
-        </Box>
-        <Box sx={{ gridRowStart: { xs: "auto", sm: 2 } }}>
+      <Box sx={{ display: "grid", gridTemplateRows: "1fr", gridTemplateColumns: { xs: "1fr", md: "4fr 5fr" }, gap: fr.spacing("6v") }}>
+        <Box sx={{ gridRowStart: { xs: "auto", md: 2 } }}>
+          <Box>
+            <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
+              Informations de contact
+            </Typography>
+            <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>
+              Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
+            </Typography>
+          </Box>
           <Formulaire siret={siret} />
         </Box>
-        <Box sx={{ gridRowStart: { xs: "auto", sm: 2 }, pt: { xs: fr.spacing("4v"), sm: fr.spacing("8v") }, minW: "0" }}>
+        <Box sx={{ gridRowStart: { xs: "auto", md: 2 }, pt: { xs: fr.spacing("4v"), md: 0 }, minW: "0" }}>
           <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} viewerType={CFA} />
         </Box>
       </Box>
