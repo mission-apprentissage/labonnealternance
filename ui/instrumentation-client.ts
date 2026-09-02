@@ -5,6 +5,7 @@
 import { extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
 
 import { shouldReloadOnce } from "@/utils/reload-guard.utils"
+import { isHeadlessBrowserUserAgent } from "@/utils/sentry-filters.utils"
 
 import { publicConfig } from "./config.public"
 
@@ -64,6 +65,14 @@ init({
     /Object Not Found Matching Id:\d+, MethodName:update, ParamCount:\d+/,
   ],
   beforeSend(event) {
+    // Navigateurs sans interface (Puppeteer, Playwright, scrapers) : leurs erreurs ne concernent
+    // aucun utilisateur et le filtre « web crawlers » de Sentry ne les connaît pas. Ex. « Wrong
+    // assertion encountered » dans react-dsfr (LBA-UI-1G1) : 97 events HeadlessChrome sur 240
+    // en 30 jours, vérifié 2026-09-02.
+    if (typeof navigator !== "undefined" && isHeadlessBrowserUserAgent(navigator.userAgent)) {
+      return null
+    }
+
     // Hydratation error comes from DSFR
     if (event.extra?.arguments && Array.isArray(event.extra?.arguments) && event.extra?.arguments?.includes("https://react.dev/link/hydration-mismatch")) {
       return null
