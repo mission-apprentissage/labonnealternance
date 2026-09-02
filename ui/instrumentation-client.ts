@@ -37,6 +37,11 @@ init({
     // "executors" dans le code ni le build Next — frames type app:///executors/200.js,
     // ex. TypeError "reading 'M_ID'", Sentry LBA-UI-5CVZZZZZZG4T4, ~2 300 events/7j).
     /\/executors\/\d+\.js/,
+    // Scripts de contenu des extensions Safari (macOS/iOS) : WebKit masque leur URL réelle
+    // derrière ce pseudo-schéma. Ex. "Zotero Connector: Failed to send message…"
+    // (LBA-UI-5CVZZZZZZG2T4, ~1 470 events) et "Error: No response" (LBA-UI-5CVZZZZZZG2ZN,
+    // ~1 050 events), aucune frame LBA.
+    /^webkit-masked-url:\/\/hidden\//,
   ],
   ignoreErrors: [
     "AbortError",
@@ -47,6 +52,16 @@ init({
     /SCDynimacBridge/,
     "No Listener: tabs:outgoing.message.ready",
     "Invalid call to runtime.sendMessage",
+    // Firefox iOS (WKWebView, UA "Mobile Safari") injecte ses propres scripts dans chaque page ;
+    // quand ils plantent, l'erreur est attribuée au document LBA ("global code", ligne 1) sans
+    // aucune frame applicative. Le code LBA ne lit jamais `innerText`. Sentry LBA-UI-1FM
+    // (~1 180 events) et LBA-UI-2G1 (~1 690 events), mêmes sessions.
+    "Can't find variable: __firefox__",
+    "null is not an object (evaluating 'r.innerText')",
+    // Script injecté par le scanner de liens Microsoft (Outlook SafeLinks / Defender) quand il
+    // pré-visite les URLs de nos emails (formulaire-intention, desinscription…). Jamais de
+    // stacktrace, 0 utilisateur, ~13 700 events depuis février 2026 (Sentry LBA-UI-2FT).
+    /Object Not Found Matching Id:\d+, MethodName:update, ParamCount:\d+/,
   ],
   beforeSend(event) {
     // Hydratation error comes from DSFR
