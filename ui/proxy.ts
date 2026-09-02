@@ -18,6 +18,13 @@ const removeAtEnd = (url: string, removed: string): string => (url.endsWith(remo
 // (cf. issue #5245).
 const SESSION_RETRY_PARAM = "sessionRetry"
 
+// Un préchargement Next (<Link prefetch>, segment cache) n'est pas une navigation : rediriger un
+// utilisateur connecté vers son accueil depuis /espace-pro/authentification n'a aucun sens dans ce
+// cas, et produit une boucle 307 ↔ 307 quand la page d'origine affiche un lien « Connexion » (le
+// navigateur suit la redirection, Next re-redirige pour rétablir le paramètre _rsc, et le routeur
+// relance le préchargement — incident du 2026-09-02). On sert alors la page telle quelle.
+const isPrefetchRequest = (request: NextRequest): boolean => request.headers.has("next-router-prefetch") || request.headers.has("next-router-segment-prefetch")
+
 type SessionCheckResult =
   | { kind: "no-cookie" }
   | { kind: "ok"; user: IUserRecruteurPublic; access: ComputedUserAccess }
@@ -110,6 +117,22 @@ const redirectToAuthentication = (request: NextRequest, options: { purgeCookie: 
   return response
 }
 
+// Laisse passer la requête vers le rendu Next en lui transmettant la session résolue par le proxy.
+const passThroughWithSession = (request: NextRequest, result: SessionCheckResult) => {
+  const requestHeaders = new Headers(request.headers)
+  // seul le proxy a le droit de poser x-session : un client ne doit pas pouvoir le forger
+  requestHeaders.delete("x-session")
+  if (result.kind === "ok") {
+    requestHeaders.set("x-session", JSON.stringify({ user: result.user, access: result.access }))
+  }
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  })
+}
+
 const renderAuthenticationPage = (request: NextRequest, options: { purgeCookie: boolean }) => {
   // même sans session, ne pas laisser passer un x-session forgé par le client
   const anonymousHeaders = new Headers(request.headers)
@@ -134,6 +157,10 @@ export async function proxy(request: NextRequest) {
     const result = await checkSession(request)
 
     if (result.kind === "ok") {
+      if (isPrefetchRequest(request)) {
+        // La session est transmise au rendu pour que le header préchargé affiche bien l'utilisateur.
+        return passThroughWithSession(request, result)
+      }
       if (query.get(SESSION_RETRY_PARAM)) {
         // On vient de rebondir depuis une route protégée qui n'a pas pu confirmer la session
         // (panne API ambiguë) : même si elle semble valide ici, ne pas rebondir une nouvelle fois,
@@ -164,18 +191,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const requestHeaders = new Headers(request.headers)
-  // seul le proxy a le droit de poser x-session : un client ne doit pas pouvoir le forger
-  requestHeaders.delete("x-session")
-  if (result.kind === "ok") {
-    requestHeaders.set("x-session", JSON.stringify({ user: result.user, access: result.access }))
-  }
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  })
+  return passThroughWithSession(request, result)
 }
 
 const excludedStartPaths = [
