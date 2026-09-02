@@ -18,6 +18,13 @@ const removeAtEnd = (url: string, removed: string): string => (url.endsWith(remo
 // (cf. issue #5245).
 const SESSION_RETRY_PARAM = "sessionRetry"
 
+// Un préchargement Next (<Link prefetch>, segment cache) n'est pas une navigation : rediriger un
+// utilisateur connecté vers son accueil depuis /espace-pro/authentification n'a aucun sens dans ce
+// cas, et produit une boucle 307 ↔ 307 quand la page d'origine affiche un lien « Connexion » (le
+// navigateur suit la redirection, Next re-redirige pour rétablir le paramètre _rsc, et le routeur
+// relance le préchargement — incident du 2026-09-02). On sert alors la page telle quelle.
+const isPrefetchRequest = (request: NextRequest): boolean => request.headers.has("next-router-prefetch") || request.headers.has("next-router-segment-prefetch")
+
 type SessionCheckResult =
   | { kind: "no-cookie" }
   | { kind: "ok"; user: IUserRecruteurPublic; access: ComputedUserAccess }
@@ -134,6 +141,9 @@ export async function proxy(request: NextRequest) {
     const result = await checkSession(request)
 
     if (result.kind === "ok") {
+      if (isPrefetchRequest(request)) {
+        return renderAuthenticationPage(request, { purgeCookie: false })
+      }
       if (query.get(SESSION_RETRY_PARAM)) {
         // On vient de rebondir depuis une route protégée qui n'a pas pu confirmer la session
         // (panne API ambiguë) : même si elle semble valide ici, ne pas rebondir une nouvelle fois,
