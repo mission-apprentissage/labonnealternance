@@ -4,7 +4,7 @@ import { Box, Stack, Typography } from "@mui/material"
 export const InformationHandiEngagement = () => {
   return (
     <Box sx={{ backgroundColor: "#F5F5FE", p: fr.spacing("6v"), mt: fr.spacing("6v") }}>
-      <Typography sx={{ fontWeight: "700", fontSize: { xs: "18px", md: "20px" }, lineHeight: { xs: "28px", md: "32px" } }}>
+      <Typography component="h2" sx={{ fontWeight: "700", fontSize: { xs: "18px", md: "20px" }, lineHeight: { xs: "28px", md: "32px" } }}>
         Engagez-vous en faveur de l’emploi des personnes en situation de handicap
       </Typography>
       <Typography sx={{ mt: fr.spacing("4v") }}>

@@ -16,9 +16,11 @@ export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { i
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Typography sx={{ fontWeight: "700", fontSize: { xs: "18px", md: "20px" }, lineHeight: { xs: "28px", md: "32px" } }}>Votre OPCO</Typography>
+          <Typography component="h2" sx={{ fontWeight: "700", fontSize: { xs: "18px", md: "20px" }, lineHeight: { xs: "28px", md: "32px" } }}>
+            Votre OPCO
+          </Typography>
           {isUpdatable && (
-            <Button type="button" priority="tertiary no outline" onClick={resetOpcoChoice}>
+            <Button type="button" priority="tertiary no outline" title="Modifier votre OPCO" onClick={resetOpcoChoice}>
               Modifier
               <Edit2Fill sx={{ ml: fr.spacing("2v"), width: "14px" }} />
             </Button>
