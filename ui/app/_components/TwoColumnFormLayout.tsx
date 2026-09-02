@@ -24,6 +24,7 @@ export const TwoColumnFormLayout = ({ left, right, buttons }: { left: ReactNode;
         <Box sx={{ gridRowStart: { xs: "auto", md: 2 }, pt: { xs: fr.spacing("4v"), md: 0 }, minWidth: "0" }}>{right}</Box>
       </Box>
       <Divider
+        aria-hidden="true"
         sx={{
           height: 0,
           background: "none",
