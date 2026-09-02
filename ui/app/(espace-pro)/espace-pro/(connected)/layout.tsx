@@ -1,11 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
-import { cookies, headers } from "next/headers"
+import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
-import { SESSION_COOKIE_NAME } from "shared/constants/session"
+import { SESSION_COOKIE_NAME, SESSION_RETRY_PARAM } from "shared/constants/session"
 import { AuthWatcher } from "@/app/_components/AuthWatcher"
 import { Footer } from "@/app/_components/Footer"
 import { UserContextProvider } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
@@ -39,14 +39,16 @@ async function ConnectedShell({ children }: PropsWithChildren) {
     // Si on arrive ici, le proxy a laissé passer une route protégée mais la session n'est pas
     // lisible dans ce rendu. Deux précautions (incident du 2026-09-02, boucle 307 ↔ 307) :
     // 1. tracer l'incohérence, sans contenu de session, pour pouvoir l'analyser dans Loki ;
-    // 2. marquer le rebond avec sessionRetry pour que le proxy affiche la page de connexion au
-    //    lieu de renvoyer vers l'espace pro, ce qui rebouclerait sur ce même redirect.
-    const [headerStore, cookieStore] = await Promise.all([headers(), cookies()])
+    // 2. marquer le rebond avec SESSION_RETRY_PARAM pour que le proxy affiche la page de connexion
+    //    au lieu de renvoyer vers l'espace pro, ce qui rebouclerait sur ce même redirect.
+    // Le cookie est lu dans le header brut pour ne pas ajouter l'API dynamique cookies() ici.
+    const headerStore = await headers()
+    const rawCookies = headerStore.get("cookie") ?? ""
     console.error("[espace-pro] session absente dans le layout connecté", {
       hasSessionHeader: headerStore.has("x-session"),
-      hasSessionCookie: cookieStore.has(SESSION_COOKIE_NAME),
+      hasSessionCookie: rawCookies.split(";").some((cookie) => cookie.trim().startsWith(`${SESSION_COOKIE_NAME}=`)),
     })
-    redirect("/espace-pro/authentification?sessionRetry=true")
+    redirect(`/espace-pro/authentification?${SESSION_RETRY_PARAM}=true`)
   }
 
   return (

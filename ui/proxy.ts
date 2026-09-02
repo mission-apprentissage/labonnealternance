@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
-import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS } from "shared/constants/session"
+import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, SESSION_RETRY_PARAM } from "shared/constants/session"
 
 import { publicConfig } from "./config.public"
 import { apiPost } from "./utils/api.utils"
@@ -10,13 +10,13 @@ import { PAGES } from "./utils/routes.utils"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
-// Marqueur de rebond posé sur la redirection espace-pro protégée → authentification quand la
-// session n'a pas pu être confirmée invalide (panne API, pas de 401). S'il est déjà présent quand
-// on atterrit sur /espace-pro/authentification, on ne fait plus jamais confiance à un résultat
-// "session valide" pour rebondir une nouvelle fois vers la page protégée : un signal instable
-// (JWT proche de l'expiration, API auth flaky) ne doit jamais produire plus d'un aller-retour
-// (cf. issue #5245).
-const SESSION_RETRY_PARAM = "sessionRetry"
+// SESSION_RETRY_PARAM (shared/constants/session) : marqueur de rebond posé sur la redirection
+// espace-pro protégée → authentification quand la session n'a pas pu être confirmée invalide (panne
+// API, pas de 401), et par le layout connecté quand la session est illisible dans le rendu. S'il est
+// déjà présent quand on atterrit sur /espace-pro/authentification, on ne fait plus jamais confiance
+// à un résultat "session valide" pour rebondir une nouvelle fois vers la page protégée : un signal
+// instable (JWT proche de l'expiration, API auth flaky) ne doit jamais produire plus d'un
+// aller-retour (cf. issue #5245).
 
 // Un préchargement Next (<Link prefetch>, segment cache) n'est pas une navigation : rediriger un
 // utilisateur connecté vers son accueil depuis /espace-pro/authentification n'a aucun sens dans ce
