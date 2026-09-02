@@ -43,5 +43,10 @@ export const getRomesInfosFromDiagoriente = async (queries: IDiagorienteClassifi
       }))
     )
   }
-  return queries.map((_query) => cachedRomes[_query.id] ?? mappedApiResponse.find(({ id }) => id === _query.id)?.code_rome ?? null)
+  // Indexation par POSITION : cachedRomes est aligné sur `queries`, pas indexé par `id`. L'ancien
+  // `cachedRomes[_query.id]` (id = _id Mongo) valait toujours undefined, donc dès qu'un groupe de 100
+  // contenait une seule requête hors cache, toutes ses requêtes en cache ressortaient à null et
+  // partaient en erreur « data not found » — mesuré en prod : 856 des 2 174 offres du nightly du
+  // 02/09/2026, toutes reservies depuis le cache à 06h03 sans appel API.
+  return queries.map((query, index) => cachedRomes[index] ?? mappedApiResponse.find(({ id }) => id === query.id)?.code_rome ?? null)
 }

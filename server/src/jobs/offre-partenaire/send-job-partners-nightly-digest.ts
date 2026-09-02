@@ -70,7 +70,7 @@ const describeAnomaly = (job: IJobsCronTask): AnomalyDescription => {
   return { headline: duration, details }
 }
 
-// Un même job (ex. "Process missing Rome...", ~65 exécutions/jour) peut échouer en boucle sur la fenêtre :
+// Un même job (ex. "Process missing Rome...", ~96 exécutions/jour) peut échouer en boucle sur la fenêtre :
 // on regroupe par nom pour garder un digest lisible plutôt qu'une ligne par exécution en anomalie.
 const formatAnomalyGroup = (name: string, jobsForName: IJobsCronTask[]): string => {
   const [mostRecent] = [...jobsForName].sort((a, b) => jobTimestamp(b) - jobTimestamp(a))

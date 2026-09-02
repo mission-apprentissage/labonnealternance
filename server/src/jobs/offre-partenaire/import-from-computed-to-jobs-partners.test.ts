@@ -177,6 +177,55 @@ describe("offer_status_history lors de l'import", () => {
     expect.soft(job?.offer_status_history.filter(({ reason }) => reason === "réactivée par le flux source")).toHaveLength(0)
   })
 
+  it("ne réactive pas une offre fermée pour une autre raison que sa disparition du flux", async () => {
+    // Observé en prod le 01/09/2026 : PASS rouvrait chaque nuit ses offres fermées au seuil de 80
+    // candidatures (application.service), Jobteaser ses doublons, parce que la réapparition dans le
+    // flux suffisait à réactiver. Une décision de fermeture prise ailleurs doit survivre au flux.
+    await createJobPartner({
+      partner_job_id: "closed_threshold_1",
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      offer_status_history: [{ date: new Date(), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "seuil de candidatures atteint", granted_by: "application.service" }],
+    })
+    await createComputedJobPartner({ partner_job_id: "closed_threshold_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
+
+    await importFromComputedToJobsPartners({})
+
+    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "closed_threshold_1" })
+    expect.soft(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(job?.offer_status_history.filter(({ reason }) => reason === "réactivée par le flux source")).toHaveLength(0)
+  })
+
+  it("réactive une offre annulée sans entrée d'historique (dernière transition tracée : une réactivation)", async () => {
+    // Tous les chemins d'annulation ne tracent pas encore l'historique : sans preuve de l'origine,
+    // la garde ne doit pas geler l'offre — comportement historique conservé.
+    await createJobPartner({
+      partner_job_id: "cancelled_untracked_1",
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      offer_status_history: [{ date: new Date(), status: JOB_STATUS_ENGLISH.ACTIVE, reason: "réactivée par le flux source", granted_by: "import-from-computed-to-jobs-partners" }],
+    })
+    await createComputedJobPartner({ partner_job_id: "cancelled_untracked_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
+
+    await importFromComputedToJobsPartners({})
+
+    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "cancelled_untracked_1" })
+    expect.soft(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
+  })
+
+  it("réactive une offre annulée par la détection de retrait quand elle réapparaît dans le flux", async () => {
+    await createJobPartner({
+      partner_job_id: "removed_then_back_1",
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      offer_status_history: [{ date: new Date(), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "supprimée du flux source", granted_by: "cancel-removed-jobs-partners" }],
+    })
+    await createComputedJobPartner({ partner_job_id: "removed_then_back_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
+
+    await importFromComputedToJobsPartners({})
+
+    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "removed_then_back_1" })
+    expect.soft(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(job?.offer_status_history.filter(({ reason }) => reason === "réactivée par le flux source")).toHaveLength(1)
+  })
+
   it("copie les entrées offer_status_history depuis computed_jobs_partners", async () => {
     const historyEntry = { date: new Date(), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "supprimée du flux source", granted_by: "cancel-removed-jobs-partners" }
     await createComputedJobPartner({ partner_job_id: "with_history_1", validated: true, offer_status_history: [historyEntry] })

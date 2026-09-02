@@ -4,7 +4,7 @@ import { processMissingRomeAndImportToJobPartners } from "@/jobs/offre-partenair
 import { analyzeCfaBlockList } from "@/jobs/one-time-job/analyze-cfa-block-list"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { reviewJobPartnersClassification } from "@/services/cache-classification.service"
-import { applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
+import { applyClassificationBatch, applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
 import { applyPendingMistralBatches, generateSearchItemsKeywordsContinuous, submitSearchItemsKeywordsBatch } from "@/services/search/search-items-keywords.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -69,7 +69,7 @@ import {
   processComputedAndImportToJobPartners,
   validateComputedJobPartnersFlux,
 } from "./offre-partenaire/process-job-partners"
-import { processJobPartnersForApi, processJobPartnersWithFilter } from "./offre-partenaire/process-job-partners-for-api"
+import { processJobPartnersForApi, processJobPartnersWithFilter, reprocessJobPartners } from "./offre-partenaire/process-job-partners-for-api"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offre-partenaire/recruteur-lba/import-recruteurs-lba-raw"
 import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offre-partenaire/recruteur-lba/process-recruteurs-lba"
 import { processRhAlternance } from "./offre-partenaire/rh-alternance/process-rh-alternance"
@@ -565,6 +565,16 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: applyPendingClassificationBatches,
     description: "Ramasse les batchs Mistral de classification jobs_partners terminés (téléchargement + application + reprise du pipeline)",
+  },
+  {
+    fct: applyClassificationBatch,
+    description: "Levier d'incident : applique la sortie d'un job batch Mistral précis dès qu'elle existe, quel que soit son statut ou son suivi",
+    cliOptions: [{ flags: "--jobId <id>", description: "Identifiant du job batch côté Mistral" }],
+  },
+  {
+    fct: reprocessJobPartners,
+    description: "Levier d'incident : relance la chaîne de traitement (fill → validation → import) sur un filtre JSON de computed_jobs_partners",
+    cliOptions: [{ flags: "--filter <json>", description: `Filtre Mongo en JSON, ex. '{"partner_label":"Hellowork","validated":false}' (pas d'ObjectId)` }],
   },
   {
     fct: reviewJobPartnersClassification,

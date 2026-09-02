@@ -8,7 +8,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import { downloadMistralBatchOutput, getMistralBatchJob, submitMistralBatch } from "@/services/mistralai/mistralai.service"
 
-import { applyPendingClassificationBatches, submitClassificationBatch } from "./classification-mistral-batch.service"
+import { applyClassificationBatch, applyPendingClassificationBatches, submitClassificationBatch, submitClassificationRequests } from "./classification-mistral-batch.service"
 
 const { addJobMock } = vi.hoisted(() => ({ addJobMock: vi.fn() }))
 vi.mock("job-processor", async (importOriginal) => {
@@ -16,15 +16,24 @@ vi.mock("job-processor", async (importOriginal) => {
   return { ...mod, addJob: addJobMock }
 })
 
-vi.mock("@/services/mistralai/mistralai.service", () => ({
-  submitMistralBatch: vi.fn(),
-  getMistralBatchJob: vi.fn(),
-  downloadMistralBatchOutput: vi.fn(),
-}))
+// importOriginal : le service consomme BATCH_TERMINAL_STATUSES du module réel, seuls les appels
+// réseau sont remplacés.
+vi.mock("@/services/mistralai/mistralai.service", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@/services/mistralai/mistralai.service")>()
+  return {
+    ...mod,
+    submitMistralBatch: vi.fn(),
+    getMistralBatchJob: vi.fn(),
+    downloadMistralBatchOutput: vi.fn(),
+  }
+})
 
 vi.mock("@/common/utils/slack-utils", () => ({
   notifyToSlack: vi.fn(),
 }))
+
+const publishOutput = '{"label":"publish","scores":{"publish":0.9,"unpublish":0.1}}'
+const unpublishOutput = '{"label":"unpublish","scores":{"publish":0.1,"unpublish":0.9}}'
 
 describe("classification-mistral-batch.service", () => {
   useMongo()
@@ -41,9 +50,9 @@ describe("classification-mistral-batch.service", () => {
       const [job] = await givenSomeComputedJobPartners([{ offer_title: "Vendeur", workplace_name: "CFA Test" }])
       vi.mocked(submitMistralBatch).mockResolvedValue("mistral-job-1")
 
-      const jobId = await submitClassificationBatch({ _id: job._id })
+      const jobIds = await submitClassificationBatch({ _id: job._id })
 
-      expect(jobId).toBe("mistral-job-1")
+      expect(jobIds).toEqual(["mistral-job-1"])
       const requests = vi.mocked(submitMistralBatch).mock.calls[0][0].requests
       expect(requests).toHaveLength(1)
       expect(requests[0].customId).toBe(job._id.toString())
@@ -52,20 +61,65 @@ describe("classification-mistral-batch.service", () => {
     })
 
     it("ne soumet rien si le filtre ne matche aucun document", async () => {
-      const jobId = await submitClassificationBatch({ _id: new ObjectId() })
+      const jobIds = await submitClassificationBatch({ _id: new ObjectId() })
 
-      expect(jobId).toBeNull()
+      expect(jobIds).toEqual([])
       expect(submitMistralBatch).not.toHaveBeenCalled()
+    })
+
+    it("transmet un timeout court à Mistral : un batch bloqué doit expirer, pas attendre 24 h", async () => {
+      // Incident des 30–31/08/2026 : un batch de 20 681 requêtes bloqué à 99,4 % pendant plus de
+      // 24 h, sans fichier de sortie tant que le statut n'est pas terminal. Le défaut Mistral
+      // (24 h) laissait le catalogue à l'arrêt ; 10 batchs sur 12 mesurés reviennent en < 70 min.
+      const [job] = await givenSomeComputedJobPartners([{ offer_title: "Vendeur" }])
+      vi.mocked(submitMistralBatch).mockResolvedValue("mistral-job-1")
+
+      await submitClassificationBatch({ _id: job._id })
+
+      expect(vi.mocked(submitMistralBatch).mock.calls[0][0].timeoutHours).toBe(2)
+    })
+  })
+
+  describe("submitClassificationRequests", () => {
+    it("découpe en lots indépendants, un suivi par lot : une requête coincée ne bloque plus que son lot", async () => {
+      const jobs = await givenSomeComputedJobPartners(Array.from({ length: 5 }, (_, i) => ({ partner_job_id: `chunk-${i}`, offer_title: `Offre ${i}` })))
+      vi.mocked(submitMistralBatch).mockResolvedValueOnce("lot-1").mockResolvedValueOnce("lot-2").mockResolvedValueOnce("lot-3")
+
+      const jobIds = await submitClassificationRequests(jobs, { chunkSize: 2 })
+
+      expect(jobIds).toEqual(["lot-1", "lot-2", "lot-3"])
+      const sizes = vi.mocked(submitMistralBatch).mock.calls.map(([{ requests }]) => requests.length)
+      expect(sizes).toEqual([2, 2, 1])
+      const tracked = await getDbCollection("mistral_batch_jobs").find({}).sort({ job_id: 1 }).toArray()
+      expect(tracked.map(({ job_id, request_count }) => ({ job_id, request_count }))).toEqual([
+        { job_id: "lot-1", request_count: 2 },
+        { job_id: "lot-2", request_count: 2 },
+        { job_id: "lot-3", request_count: 1 },
+      ])
+    })
+
+    it("un lot dont la soumission échoue n'est ni suivi ni compté, les autres passent", async () => {
+      const jobs = await givenSomeComputedJobPartners(Array.from({ length: 4 }, (_, i) => ({ partner_job_id: `chunk-ko-${i}`, offer_title: `Offre ${i}` })))
+      vi.mocked(submitMistralBatch).mockResolvedValueOnce("lot-1").mockResolvedValueOnce(null)
+
+      const jobIds = await submitClassificationRequests(jobs, { chunkSize: 2 })
+
+      expect(jobIds).toEqual(["lot-1"])
+      expect(await getDbCollection("mistral_batch_jobs").countDocuments({})).toBe(1)
+      // Symétrique de l'alerte sur job terminal en échec : les 2 offres du lot perdu restent PENDING.
+      expect(notifyToSlack).toHaveBeenCalledOnce()
+      expect(vi.mocked(notifyToSlack).mock.calls[0][0]).toMatchObject({ error: true })
+      expect(vi.mocked(notifyToSlack).mock.calls[0][0].message).toContain("2 offre(s)")
     })
   })
 
   describe("applyPendingClassificationBatches", () => {
-    const trackedJob = (jobId: string) => ({
+    const trackedJob = (jobId: string, requestCount = 1) => ({
       _id: new ObjectId(),
       job_id: jobId,
       kind: "jobs_partners_classification" as const,
       status: "submitted" as const,
-      request_count: 1,
+      request_count: requestCount,
       applied_count: null,
       error: null,
       submitted_at: new Date(),
@@ -86,7 +140,7 @@ describe("classification-mistral-batch.service", () => {
       ])
       await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-ok"))
       vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "SUCCESS", outputFile: "file-1" } as never)
-      vi.mocked(downloadMistralBatchOutput).mockResolvedValue(new Map([[job._id.toString(), '{"label":"unpublish","scores":{"publish":0.1,"unpublish":0.9}}']]))
+      vi.mocked(downloadMistralBatchOutput).mockResolvedValue(new Map([[job._id.toString(), unpublishOutput]]))
 
       const counters = await applyPendingClassificationBatches()
 
@@ -96,9 +150,11 @@ describe("classification-mistral-batch.service", () => {
       const updated = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
       expect(updated?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CFA)
       expect(updated?.jobs_in_success).toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
-      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } } })
+      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } }, queued: true })
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-ok" })
-      expect(tracked).toMatchObject({ status: "applied", applied_count: 1 })
+      expect(tracked).toMatchObject({ status: "applied", applied_count: 1, error: null })
+      // Application complète en SUCCESS : pas d'alerte.
+      expect(notifyToSlack).not.toHaveBeenCalled()
     })
 
     it("job terminé (publish) : jobs_in_success contient CLASSIFICATION — pas de boucle de resoumission", async () => {
@@ -109,7 +165,7 @@ describe("classification-mistral-batch.service", () => {
       const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING }])
       await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-ok-publish"))
       vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "SUCCESS", outputFile: "file-1" } as never)
-      vi.mocked(downloadMistralBatchOutput).mockResolvedValue(new Map([[job._id.toString(), '{"label":"publish","scores":{"publish":0.9,"unpublish":0.1}}']]))
+      vi.mocked(downloadMistralBatchOutput).mockResolvedValue(new Map([[job._id.toString(), publishOutput]]))
 
       await applyPendingClassificationBatches()
 
@@ -126,7 +182,57 @@ describe("classification-mistral-batch.service", () => {
       expect(stillCandidate).toBe(0)
     })
 
-    it("job en échec terminal : statut failed + alerte Slack, le document reste bloqué (repris par le filet de sécurité)", async () => {
+    it("job expiré (TIMEOUT_EXCEEDED) avec fichier de sortie : le partiel est appliqué, les réponses manquantes restent PENDING", async () => {
+      // Un batch de 20 000 requêtes est otage de sa pire requête : les 99,4 % traités doivent
+      // servir. Les offres sans réponse restent CLASSIFICATION_PENDING et seront relancées par le
+      // filet de sécurité — jamais annulées, jamais abandonnées.
+      const [answered, missing] = await givenSomeComputedJobPartners([
+        { partner_job_id: "answered", offer_title: "Répondue", business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() },
+        { partner_job_id: "missing", offer_title: "Coincée", business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() },
+      ])
+      await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-timeout", 2))
+      vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "TIMEOUT_EXCEEDED", outputFile: "file-partial" } as never)
+      vi.mocked(downloadMistralBatchOutput).mockResolvedValue(new Map([[answered._id.toString(), publishOutput]]))
+
+      const counters = await applyPendingClassificationBatches()
+
+      expect(counters).toMatchObject({ applied: 1, failed: 0 })
+      const appliedDoc = await getDbCollection("computed_jobs_partners").findOne({ _id: answered._id })
+      expect(appliedDoc?.business_error).toBeNull()
+      expect(appliedDoc?.jobs_in_success).toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
+      const missingDoc = await getDbCollection("computed_jobs_partners").findOne({ _id: missing._id })
+      expect(missingDoc?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING)
+      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [answered._id] } }, queued: true })
+      const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-timeout" })
+      expect(tracked).toMatchObject({ status: "applied", applied_count: 1, error: "TIMEOUT_EXCEEDED" })
+      // Application partielle : signalée, sans être une erreur bloquante.
+      expect(notifyToSlack).toHaveBeenCalledOnce()
+      expect(vi.mocked(notifyToSlack).mock.calls[0][0]).toMatchObject({ error: false })
+    })
+
+    it("job SUCCESS avec une réponse manquante : appliqué, le partiel est tracé dans error, alerte non bloquante", async () => {
+      // Mistral peut terminer en SUCCESS avec des lignes absentes ou inexploitables : applied_count
+      // seul ne dit pas si l'écart était attendu, `error` le trace explicitement.
+      const [answered, missing] = await givenSomeComputedJobPartners([
+        { partner_job_id: "ok-answered", business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() },
+        { partner_job_id: "ok-missing", business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() },
+      ])
+      await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-success-partial", 2))
+      vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "SUCCESS", outputFile: "file-1" } as never)
+      vi.mocked(downloadMistralBatchOutput).mockResolvedValue(new Map([[answered._id.toString(), publishOutput]]))
+
+      const counters = await applyPendingClassificationBatches()
+
+      expect(counters.applied).toBe(1)
+      const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-success-partial" })
+      expect(tracked).toMatchObject({ status: "applied", applied_count: 1, error: "PARTIAL 1/2" })
+      const missingDoc = await getDbCollection("computed_jobs_partners").findOne({ _id: missing._id })
+      expect(missingDoc?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING)
+      expect(notifyToSlack).toHaveBeenCalledOnce()
+      expect(vi.mocked(notifyToSlack).mock.calls[0][0]).toMatchObject({ error: false })
+    })
+
+    it("job en échec terminal sans sortie : statut failed + alerte Slack, le document reste bloqué (repris par le filet de sécurité)", async () => {
       const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() }])
       await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-ko"))
       vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "FAILED", outputFile: null } as never)
@@ -135,13 +241,34 @@ describe("classification-mistral-batch.service", () => {
 
       expect(counters.failed).toBe(1)
       expect(notifyToSlack).toHaveBeenCalledOnce()
+      expect(vi.mocked(notifyToSlack).mock.calls[0][0]).toMatchObject({ error: true })
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-ko" })
       expect(tracked).toMatchObject({ status: "failed", error: "FAILED" })
       const stillPending = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
       expect(stillPending?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING)
+      expect(addJobMock).not.toHaveBeenCalled()
     })
 
-    it("filet de sécurité : débloque une offre pendante depuis plus de 6h, même sans job suivi", async () => {
+    it("job encore en cours sans sortie : rien n'est appliqué, on repassera", async () => {
+      // Cas réel du 31/08/2026 : RUNNING avec 20 560/20 681 requêtes traitées et output_file null.
+      const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() }])
+      await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-running"))
+      vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "RUNNING", outputFile: null, completedRequests: 20_560, totalRequests: 20_681 } as never)
+
+      const counters = await applyPendingClassificationBatches()
+
+      expect(counters).toMatchObject({ applied: 0, stillRunning: 1, failed: 0 })
+      const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-running" })
+      expect(tracked).toMatchObject({ status: "submitted" })
+      expect(tracked?.checked_at).not.toBeNull()
+      const stillPending = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
+      expect(stillPending?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING)
+    })
+
+    it("filet de sécurité : débloque une offre pendante depuis plus de 6h, même sans job suivi, ET relance son traitement", async () => {
+      // Avant : la libération remettait business_error à null sans rien relancer. Une offre déjà
+      // dotée d'un code ROME n'était alors reprise par aucun job avant la nuit suivante — 16 147
+      // offres Hellowork et France Travail bloquées ainsi en prod le 01/09/2026.
       const staleDate = new Date(Date.now() - 7 * 60 * 60 * 1000)
       const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: staleDate }])
 
@@ -150,6 +277,7 @@ describe("classification-mistral-batch.service", () => {
       const released = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
       expect(released?.business_error).toBeNull()
       expect(released?.jobs_in_success).not.toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
+      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } }, queued: true })
     })
 
     it("ne débloque pas une offre pendante récente", async () => {
@@ -159,6 +287,60 @@ describe("classification-mistral-batch.service", () => {
 
       const untouched = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
       expect(untouched?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING)
+      expect(addJobMock).not.toHaveBeenCalled()
+    })
+
+    it("filet de sécurité : la relance est découpée en jobs de 2 000 _id, pas un seul payload géant", async () => {
+      // 20 681 offres libérées d'un coup après l'incident du 31/08/2026 : un seul job porterait un
+      // payload de ~530 Ko, rejoué dans la ligne de log d'ouverture de processJobPartnersWithFilter.
+      const staleDate = new Date(Date.now() - 7 * 60 * 60 * 1000)
+      const jobs = await givenSomeComputedJobPartners(
+        Array.from({ length: 2_001 }, (_, i) => ({ partner_job_id: `stale-${i}`, business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: staleDate }))
+      )
+
+      await applyPendingClassificationBatches()
+
+      expect(await getDbCollection("computed_jobs_partners").countDocuments({ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING })).toBe(0)
+      expect(addJobMock).toHaveBeenCalledTimes(2)
+      const sizes = addJobMock.mock.calls.map(([{ payload }]) => payload._id.$in.length)
+      expect(sizes).toEqual([2_000, 1])
+      const requeued = new Set(addJobMock.mock.calls.flatMap(([{ payload }]) => payload._id.$in.map(String)))
+      expect(requeued).toEqual(new Set(jobs.map(({ _id }) => _id.toString())))
+    }, 15_000)
+  })
+
+  describe("applyClassificationBatch (levier d'incident)", () => {
+    it("applique un job non suivi dès qu'un fichier de sortie existe, quel que soit le statut Mistral", async () => {
+      // Nuit du 30/08/2026 : traitement tué pendant la soumission, aucun suivi enregistré.
+      const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING }])
+      vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "RUNNING", outputFile: "file-force", totalRequests: 1 } as never)
+      vi.mocked(downloadMistralBatchOutput).mockResolvedValue(new Map([[job._id.toString(), unpublishOutput]]))
+
+      const result = await applyClassificationBatch({ jobId: "job-untracked" })
+
+      expect(result).toMatchObject({ status: "RUNNING", applied: 1, requested: 1 })
+      const updated = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
+      expect(updated?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CFA)
+      const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-untracked" })
+      expect(tracked).toMatchObject({ status: "applied", request_count: 1, applied_count: 1, error: "RUNNING" })
+      expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } }, queued: true })
+    })
+
+    it("sans fichier de sortie, ne touche à rien et le dit", async () => {
+      const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING }])
+      vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "RUNNING", outputFile: null } as never)
+
+      const result = await applyClassificationBatch({ jobId: "job-no-output" })
+
+      expect(result).toMatchObject({ status: "RUNNING", applied: 0 })
+      expect(downloadMistralBatchOutput).not.toHaveBeenCalled()
+      expect(addJobMock).not.toHaveBeenCalled()
+      const untouched = await getDbCollection("computed_jobs_partners").findOne({ _id: job._id })
+      expect(untouched?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING)
+    })
+
+    it("exige un jobId", async () => {
+      await expect(applyClassificationBatch({})).rejects.toThrow(/--jobId requis/)
     })
   })
 })
