@@ -19,6 +19,9 @@ const CustomInput = (props) => {
   const generatedId = useId()
   const inputId = props.id ?? generatedId
   const errorId = `${inputId}-error`
+  const hintId = `${inputId}-hint`
+  // L'indication (format attendu…) et le message d'erreur sont tous deux lus avec le champ (RGAA 11.10)
+  const describedBy = [props.info ? hintId : null, hasError ? errorId : null].filter(Boolean).join(" ") || undefined
   return (
     <Box
       sx={[
@@ -40,11 +43,11 @@ const CustomInput = (props) => {
           </FormLabel>
         )}
         {props.info && (
-          <Box className={fr.cx("fr-hint-text")} sx={{ pt: fr.spacing("2v") }}>
+          <Box id={hintId} className={fr.cx("fr-hint-text")} sx={{ pt: fr.spacing("2v") }}>
             {props.info}
           </Box>
         )}
-        <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} id={inputId} aria-describedby={hasError ? errorId : undefined} />
+        <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} id={inputId} aria-describedby={describedBy} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
         {hasError &&
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
