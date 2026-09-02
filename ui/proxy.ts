@@ -117,6 +117,22 @@ const redirectToAuthentication = (request: NextRequest, options: { purgeCookie: 
   return response
 }
 
+// Laisse passer la requête vers le rendu Next en lui transmettant la session résolue par le proxy.
+const passThroughWithSession = (request: NextRequest, result: SessionCheckResult) => {
+  const requestHeaders = new Headers(request.headers)
+  // seul le proxy a le droit de poser x-session : un client ne doit pas pouvoir le forger
+  requestHeaders.delete("x-session")
+  if (result.kind === "ok") {
+    requestHeaders.set("x-session", JSON.stringify({ user: result.user, access: result.access }))
+  }
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  })
+}
+
 const renderAuthenticationPage = (request: NextRequest, options: { purgeCookie: boolean }) => {
   // même sans session, ne pas laisser passer un x-session forgé par le client
   const anonymousHeaders = new Headers(request.headers)
@@ -142,7 +158,8 @@ export async function proxy(request: NextRequest) {
 
     if (result.kind === "ok") {
       if (isPrefetchRequest(request)) {
-        return renderAuthenticationPage(request, { purgeCookie: false })
+        // La session est transmise au rendu pour que le header préchargé affiche bien l'utilisateur.
+        return passThroughWithSession(request, result)
       }
       if (query.get(SESSION_RETRY_PARAM)) {
         // On vient de rebondir depuis une route protégée qui n'a pas pu confirmer la session
@@ -174,18 +191,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const requestHeaders = new Headers(request.headers)
-  // seul le proxy a le droit de poser x-session : un client ne doit pas pouvoir le forger
-  requestHeaders.delete("x-session")
-  if (result.kind === "ok") {
-    requestHeaders.set("x-session", JSON.stringify({ user: result.user, access: result.access }))
-  }
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  })
+  return passThroughWithSession(request, result)
 }
 
 const excludedStartPaths = [

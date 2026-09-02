@@ -170,7 +170,7 @@ describe("proxy - utilisateur connecté sur /espace-pro/authentification", () =>
     expect(new URL(response.headers.get("location")!).pathname).toBe("/espace-pro/entreprise")
   })
 
-  it("ne redirige pas un préchargement de lien (Next-Router-Prefetch) : sert la page, sans purge (pas de boucle)", async () => {
+  it("ne redirige pas un préchargement de lien (Next-Router-Prefetch) : sert la page avec la session, sans purge (pas de boucle)", async () => {
     const request = requestWithSessionCookie("/espace-pro/authentification?_rsc=abc")
     request.headers.set("rsc", "1")
     request.headers.set("next-router-prefetch", "1")
@@ -180,6 +180,19 @@ describe("proxy - utilisateur connecté sur /espace-pro/authentification", () =>
     expect(response.status).not.toBe(307)
     expect(response.headers.get("location")).toBeNull()
     expect(response.cookies.get("lba_session")).toBeUndefined()
+    // Le rendu préchargé reçoit la session : le header affiche l'utilisateur connecté, pas « Connexion ».
+    expect(response.headers.get("x-middleware-request-x-session")).toContain('"_id":"u1"')
+  })
+
+  it("un préchargement d'une route protégée par un utilisateur autorisé passe toujours, avec la session", async () => {
+    const request = requestWithSessionCookie("/espace-pro/entreprise?_rsc=abc")
+    request.headers.set("rsc", "1")
+    request.headers.set("next-router-prefetch", "1")
+
+    const response = await proxy(request)
+
+    expect(response.headers.get("location")).toBeNull()
+    expect(response.headers.get("x-middleware-request-x-session")).toContain('"_id":"u1"')
   })
 
   it("ne redirige pas non plus un préchargement par segment (Next-Router-Segment-Prefetch)", async () => {
