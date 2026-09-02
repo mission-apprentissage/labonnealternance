@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { IJob } from "shared"
 import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep1"
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
@@ -57,8 +57,16 @@ export const FormulaireEditionOffre = ({
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1)
   const [formValues, setFormValues] = useState<any>({})
 
+  // au changement d'étape, le bouton qui portait le focus est démonté : sans repositionnement, le focus retombe sur <body>
+  // et un utilisateur au clavier ou au lecteur d'écran ne perçoit pas la nouvelle étape (RGAA 12.8). On le place sur le titre de l'étape.
+  const stepContainerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" })
+    const heading = stepContainerRef.current?.querySelector<HTMLElement>("h1")
+    if (heading) {
+      heading.tabIndex = -1
+      heading.focus({ preventScroll: true })
+    }
   }, [currentStep])
 
   // certaines routes réutilisent le même composant entre deux offres (ou entre édition et création) sans le remonter :
@@ -81,7 +89,7 @@ export const FormulaireEditionOffre = ({
   const isFtEligible = isEligibleForFtSupport(pathname, formulaire)
 
   return (
-    <>
+    <div ref={stepContainerRef}>
       {currentStep === 1 ? (
         <FormulaireEditionOffreStep1
           formValues={formValues}
@@ -198,6 +206,6 @@ export const FormulaireEditionOffre = ({
           }}
         />
       ) : null}
-    </>
+    </div>
   )
 }
