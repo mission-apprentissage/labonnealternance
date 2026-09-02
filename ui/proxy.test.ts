@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server"
+import { SESSION_RETRY_PARAM } from "shared/constants/session"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { proxy } from "./proxy"
@@ -118,6 +119,22 @@ describe("proxy - panne API ambiguë (ni confirmée invalide, ni confirmée vali
     expect(response.cookies.get("lba_session")).toBeUndefined()
     const location = new URL(response.headers.get("location")!)
     expect(location.searchParams.get("sessionRetry")).toBe("true")
+  })
+
+  it("sert la page de connexion, sans rebond, sur l'URL exacte émise par le filet de sécurité du layout connecté", async () => {
+    // Contrat avec ui/app/(espace-pro)/espace-pro/(connected)/layout.tsx : quand getSession() est vide
+    // alors que le proxy a laissé passer, le layout redirige vers cette URL. Le proxy doit l'afficher
+    // même si la session lui paraît valide, sinon la boucle 307 ↔ 307 du 2026-09-02 revient.
+    fetchMock.mockImplementation(
+      async (url: string) => new Response(url.endsWith("/auth/session") ? JSON.stringify({ _id: "u1", type: "ENTREPRISE" }) : JSON.stringify({}), { status: 200 })
+    )
+    const request = requestWithSessionCookie(`/espace-pro/authentification?${SESSION_RETRY_PARAM}=true`)
+
+    const response = await proxy(request)
+
+    expect(response.status).not.toBe(307)
+    expect(response.headers.get("location")).toBeNull()
+    expect(response.cookies.get("lba_session")).toBeUndefined()
   })
 
   it("ne rebondit pas une deuxième fois vers la page protégée même si la session semble valide au second essai (pas de boucle)", async () => {
