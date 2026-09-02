@@ -16,11 +16,17 @@ vi.mock("job-processor", async (importOriginal) => {
   return { ...mod, addJob: addJobMock }
 })
 
-vi.mock("@/services/mistralai/mistralai.service", () => ({
-  submitMistralBatch: vi.fn(),
-  getMistralBatchJob: vi.fn(),
-  downloadMistralBatchOutput: vi.fn(),
-}))
+// importOriginal : le service consomme BATCH_TERMINAL_STATUSES du module réel, seuls les appels
+// réseau sont remplacés.
+vi.mock("@/services/mistralai/mistralai.service", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@/services/mistralai/mistralai.service")>()
+  return {
+    ...mod,
+    submitMistralBatch: vi.fn(),
+    getMistralBatchJob: vi.fn(),
+    downloadMistralBatchOutput: vi.fn(),
+  }
+})
 
 vi.mock("@/common/utils/slack-utils", () => ({
   notifyToSlack: vi.fn(),
@@ -283,6 +289,24 @@ describe("classification-mistral-batch.service", () => {
       expect(untouched?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING)
       expect(addJobMock).not.toHaveBeenCalled()
     })
+
+    it("filet de sécurité : la relance est découpée en jobs de 2 000 _id, pas un seul payload géant", async () => {
+      // 20 681 offres libérées d'un coup après l'incident du 31/08/2026 : un seul job porterait un
+      // payload de ~530 Ko, rejoué dans la ligne de log d'ouverture de processJobPartnersWithFilter.
+      const staleDate = new Date(Date.now() - 7 * 60 * 60 * 1000)
+      const jobs = await givenSomeComputedJobPartners(
+        Array.from({ length: 2_001 }, (_, i) => ({ partner_job_id: `stale-${i}`, business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: staleDate }))
+      )
+
+      await applyPendingClassificationBatches()
+
+      expect(await getDbCollection("computed_jobs_partners").countDocuments({ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING })).toBe(0)
+      expect(addJobMock).toHaveBeenCalledTimes(2)
+      const sizes = addJobMock.mock.calls.map(([{ payload }]) => payload._id.$in.length)
+      expect(sizes).toEqual([2_000, 1])
+      const requeued = new Set(addJobMock.mock.calls.flatMap(([{ payload }]) => payload._id.$in.map(String)))
+      expect(requeued).toEqual(new Set(jobs.map(({ _id }) => _id.toString())))
+    }, 15_000)
   })
 
   describe("applyClassificationBatch (levier d'incident)", () => {

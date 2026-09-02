@@ -217,6 +217,23 @@ describe("detect-classification-jobs-partners", () => {
     expect(classifiedCount).toBe(501)
   }, 15_000)
 
+  it("sert plus de 1 000 offres depuis le cache en plusieurs groupes de lecture, sans aucun appel Mistral", async () => {
+    // Au-delà de CACHE_LOOKUP_GROUP_SIZE (1 000), le curseur est vidé en cours d'itération pendant que
+    // les groupes précédents ont déjà modifié business_error et jobs_in_success : chaque offre doit
+    // être servie exactement une fois (ordre nominal en prod : ~20 000 offres déjà classées par nuit).
+    const jobs = await givenSomeComputedJobPartners(Array.from({ length: 1_001 }, (_, i) => ({ partner_job_id: `cached-${i}`, offer_title, workplace_name })))
+    await getDbCollection("cache_classification").insertMany(jobs.map((job, i) => cacheEntry(job, i % 10 === 0 ? "unpublish" : "publish")))
+
+    const result = await detectClassificationJobsPartners()
+
+    expect.soft(result).toMatchObject({ total: 1_001, success: 1_001, from_cache: 1_001, batched: 0, batches: 0 })
+    expect.soft(sendMistralMessages).not.toHaveBeenCalled()
+    expect.soft(submitClassificationRequests).not.toHaveBeenCalled()
+    expect.soft(await getDbCollection("computed_jobs_partners").countDocuments({ jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION })).toBe(1_001)
+    expect.soft(await getDbCollection("computed_jobs_partners").countDocuments({ business_error: JOB_PARTNER_BUSINESS_ERROR.CFA })).toBe(101)
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING })).toBe(0)
+  }, 15_000)
+
   it("should route the whole batch to Mistral batch (CLASSIFICATION_PENDING) when candidate volume exceeds the sync threshold", async () => {
     // given: > 500 candidats (seuil sync/batch) : la voie batch ne doit pas appeler l'API Mistral synchrone.
     const jobs = Array.from({ length: 501 }, (_, i) => ({

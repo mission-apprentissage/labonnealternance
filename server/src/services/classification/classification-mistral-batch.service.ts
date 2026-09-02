@@ -12,7 +12,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import type { Message } from "@/services/mistralai/mistralai.service"
-import { downloadMistralBatchOutput, getMistralBatchJob, submitMistralBatch } from "@/services/mistralai/mistralai.service"
+import { BATCH_TERMINAL_STATUSES, downloadMistralBatchOutput, getMistralBatchJob, submitMistralBatch } from "@/services/mistralai/mistralai.service"
 
 /**
  * Mode batch de la classification jobs_partners (~50% moins cher que le mode sync, mais
@@ -41,8 +41,6 @@ const BATCH_CHUNK_SIZE = 2_000
 /** 10 batchs sur 12 mesurés en prod reviennent en moins de 70 min ; au-delà, mieux vaut récupérer
  * le partiel et resoumettre le reste que d'attendre le défaut Mistral de 24 h. */
 const CLASSIFICATION_BATCH_TIMEOUT_HOURS = 2
-
-const TERMINAL_STATUSES = new Set(["SUCCESS", "FAILED", "TIMEOUT_EXCEEDED", "CANCELLED"])
 
 const BATCH_SYSTEM_PROMPT = `Tu classes une offre d'alternance transmise par un partenaire. Détecte si elle est publiée par un CFA ou un organisme de formation qui se présente LUI-MÊME comme l'employeur (CFA "déguisé"), qui doit être dépubliée.
 Retourne :
@@ -187,10 +185,14 @@ const PENDING_TIMEOUT_MS = 6 * 60 * 60 * 1000
  * `queued: true` : sans lui, addJob exécute le job inline dans la ramasse horaire — un run de
  * 14 min mesuré en prod le 28/08 — et le cron, sans maxRuntimeInMinutes explicite, est tué au
  * bout de 60 min s'il cumule plusieurs lots plus le filet. Le worker prend le relais en quelques
- * secondes, comme pour updateClassificationAndSynchronise. */
+ * secondes, comme pour updateClassificationAndSynchronise.
+ * Découpée par BATCH_CHUNK_SIZE : le filet après incident peut libérer 20 000 offres d'un coup
+ * (20 681 PENDING le 31/08/2026), soit un payload de ~530 Ko mesuré pour un seul job, rejoué tel
+ * quel dans la ligne de log d'ouverture de processJobPartnersWithFilter. */
 const requeueProcessing = async (ids: ObjectId[]) => {
-  if (!ids.length) return
-  await addJob({ name: "processJobPartnersWithFilter", payload: { _id: { $in: ids } }, queued: true })
+  for (const part of chunk(ids, BATCH_CHUNK_SIZE)) {
+    await addJob({ name: "processJobPartnersWithFilter", payload: { _id: { $in: part } }, queued: true })
+  }
 }
 
 const releaseStuckPendingClassifications = async () => {
@@ -295,7 +297,7 @@ type BatchCheckResult = "applied" | "stillRunning" | "failed"
  */
 const checkAndApplyTrackedJob = async (tracked: IMistralBatchJob, { force = false }: { force?: boolean } = {}): Promise<BatchCheckResult> => {
   const job = await getMistralBatchJob(tracked.job_id)
-  const isTerminal = TERMINAL_STATUSES.has(job.status)
+  const isTerminal = BATCH_TERMINAL_STATUSES.has(job.status)
 
   if (job.outputFile && (isTerminal || force)) {
     const { applied, requested } = await applyBatchOutput(job.outputFile, tracked.request_count)
