@@ -1,17 +1,21 @@
 import { internal } from "@hapi/boom"
-import { ObjectId } from "mongodb"
+import { MongoServerError, ObjectId } from "mongodb"
 import type { CFA } from "shared/constants/index"
 import { ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
+import { EntrepriseEngagementSources, HANDI_ENGAGEMENT_OUI } from "shared/models/referentiel-engagement-entreprise.model"
+import type { IRoleManagement } from "shared/models/role-management.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, isEnum } from "shared/utils/index"
 import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import type { getEntrepriseDataFromSiret } from "./etablissement.service"
 import { autoValidateUserRoleOnCompany, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { checkForJobActivations } from "./formulaire.service"
@@ -30,6 +34,63 @@ export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco
     return { opco, idcc }
   }
   return { opco: entreprise.opco, idcc: entreprise.idcc }
+}
+
+/**
+ * Enregistre le choix de l'entreprise, exprimé à la création de compte, de valoriser (ou non) son
+ * engagement en faveur de l'emploi des personnes en situation de handicap.
+ *
+ * Seul un choix "oui" a un effet : il alimente `referentiel_engagement_entreprise` (source LBA).
+ * L'équipe LBA transmettra l'information à FT pour concrétisation.
+ */
+export const updateEntrepriseHandiEngagement = async (siret: string, handiEngagement: HandiEngagement) => {
+  if (handiEngagement !== HANDI_ENGAGEMENT_OUI) {
+    return
+  }
+
+  const now = new Date()
+  const filter = { siret }
+  const update = {
+    $addToSet: { sources: EntrepriseEngagementSources.LBA },
+    $set: { updated_at: now, engagement: "handicap" as const },
+    $setOnInsert: { _id: new ObjectId(), created_at: now, siret },
+  }
+  try {
+    await getDbCollection("referentiel_engagement_entreprise").updateOne(filter, update, { upsert: true })
+  } catch (err) {
+    // E11000 : deux requêtes concurrentes sans document existant pour ce siret peuvent toutes deux tenter
+    // l'insert de l'upsert ; l'index unique sur siret en fait échouer une. Le document existe désormais
+    // (créé par l'autre requête) : on retombe sur un simple update, sans upsert.
+    if (err instanceof MongoServerError && err.code === 11000) {
+      await getDbCollection("referentiel_engagement_entreprise").updateOne(filter, update)
+    } else {
+      throw err
+    }
+  }
+}
+
+/**
+ * Appelée par modifyPermissionToUser à chaque transition réelle d'un rôle vers GRANTED (quel que soit le
+ * chemin : auto-validation, activation admin/OPCO, création directe).
+ *
+ * `role.handiEngagement` est le choix déclaré à la création du compte (cf. ZRoleManagement), jamais
+ * réécrit depuis — on ne l'applique au référentiel qu'ici, une fois le rôle effectivement validé, pour ne
+ * pas enregistrer un engagement pour un compte jamais activé (cf. updateEntrepriseHandiEngagement, qui
+ * est elle-même un no-op si `handiEngagement` n'est pas "oui").
+ */
+export const applyPendingHandiEngagementIfGranted = async (role: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "handiEngagement">) => {
+  if (role.authorized_type !== AccessEntityType.ENTREPRISE || !role.handiEngagement) {
+    return
+  }
+  const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id) })
+  if (!entreprise) {
+    // Ne devrait jamais arriver : l'entreprise est créée avant le rôle (cf. entrepriseOnboardingWorkflow.create).
+    sentryCaptureException(
+      internal("applyPendingHandiEngagementIfGranted: entreprise introuvable pour un rôle GRANTED avec handiEngagement déclaré", { authorized_id: role.authorized_id })
+    )
+    return
+  }
+  await updateEntrepriseHandiEngagement(entreprise.siret, role.handiEngagement)
 }
 
 /**

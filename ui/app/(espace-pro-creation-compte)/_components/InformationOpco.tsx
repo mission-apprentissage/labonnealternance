@@ -8,7 +8,7 @@ import type { InfosOpco } from "@/theme/components/logos/infos-opcos"
 
 export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { isUpdatable: boolean; resetOpcoChoice: () => void; infosOpco: InfosOpco }) => {
   return (
-    <Box sx={{ backgroundColor: "#F5F5FE", p: fr.spacing("3v"), mt: fr.spacing("3v") }}>
+    <Box sx={{ backgroundColor: "#F5F5FE", p: fr.spacing("6v"), mt: fr.spacing("6v") }}>
       <Stack
         direction="column"
         sx={{
@@ -16,16 +16,11 @@ export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { i
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Typography
-            sx={{
-              fontWeight: "700",
-              fontSize: "20px",
-            }}
-          >
+          <Typography component="h2" sx={{ fontWeight: "700", fontSize: { xs: "18px", md: "20px" }, lineHeight: { xs: "28px", md: "32px" } }}>
             Votre OPCO
           </Typography>
           {isUpdatable && (
-            <Button type="button" priority="tertiary no outline" onClick={resetOpcoChoice}>
+            <Button type="button" priority="tertiary no outline" title="Modifier votre OPCO" onClick={resetOpcoChoice}>
               Modifier
               <Edit2Fill sx={{ ml: fr.spacing("2v"), width: "14px" }} />
             </Button>

@@ -4,26 +4,52 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { Form, Formik } from "formik"
+import { Formik, useFormikContext } from "formik"
 import { useRouter } from "next/navigation"
-import { useContext } from "react"
+import { useContext, useEffect, useRef } from "react"
 import { assertUnreachable, parseEnum } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
+import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
+import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
-import CustomInput from "@/app/_components/CustomInput"
+import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
+import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/InformationOpco"
+import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
+import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { AUTHTYPE } from "@/common/contants"
 import { personNameValidation, phoneValidation } from "@/common/validation/field-validations"
-import { AnimationContainer } from "@/components/espace_pro/index"
+import { AnimationContainer, LoadingEmptySpace } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
-import { ArrowRightLine } from "@/theme/components/icons"
 import { infosOpcos } from "@/theme/components/logos/infos-opcos"
 import { getEntrepriseOpco } from "@/utils/api"
 import { ApiError, apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+
+/**
+ * Synchronise values.handiEngagement avec l'état dérivé de get-entreprise (masqué/verrouillé), qui ne
+ * peut être connu qu'après résolution de la requête, donc après le montage initial de Formik. Rendu
+ * comme un composant à part (plutôt qu'un useEffect dans le render-prop de <Formik>) pour que le hook
+ * reste au top level d'un vrai composant, et non nesté dans une closure.
+ */
+const HandiEngagementValueSync = ({ hide, locked }: { hide: boolean; locked: boolean }) => {
+  const { values, setFieldValue } = useFormikContext<{ handiEngagement?: string }>()
+
+  useEffect(() => {
+    if (hide && values.handiEngagement !== "non") {
+      setFieldValue("handiEngagement", "non")
+    } else if (locked && values.handiEngagement !== "oui") {
+      setFieldValue("handiEngagement", "oui")
+    }
+  }, [hide, locked])
+
+  return null
+}
 
 const Formulaire = ({
   onSubmit,
@@ -42,6 +68,7 @@ const Formulaire = ({
 }) => {
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const { data: opcoData } = useQuery({
     queryKey: ["getEntrepriseOpco", establishment_siret],
@@ -53,11 +80,22 @@ const Formulaire = ({
 
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
+  const { hideHandiEngagement, isHandiEngagementLocked, isPending: isEntrepriseInfoPending } = useHandiEngagementState(establishment_siret, type === AUTHTYPE.ENTREPRISE)
+
+  // Sans cette garde, hideHandiEngagement/isHandiEngagementLocked valent leur défaut ("non masqué/non
+  // verrouillé") tant que get-entreprise n'a pas résolu : pour une entreprise déjà recensée France
+  // Travail, le select et l'encart de sensibilisation s'affichent au premier rendu puis disparaissent —
+  // même pattern que CompteRenderer (isLoading || isEntrepriseInfoPending).
+  if (isEntrepriseInfoPending) {
+    return <LoadingEmptySpace label="Chargement en cours" />
+  }
+
   return (
     <Formik
       validateOnMount={true}
       initialValues={{
         opco: opco ?? "",
+        ...(type === AUTHTYPE.ENTREPRISE ? { handiEngagement: "" } : {}),
         last_name: "",
         first_name: "",
         phone: "",
@@ -70,29 +108,37 @@ const Formulaire = ({
         phone: phoneValidation().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
+        handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire") : Yup.string(),
       })}
       onSubmit={onSubmit}
     >
-      {({ values, isValid, isSubmitting, setFieldValue, errors, touched }) => {
+      {({ values, isSubmitting, setFieldValue, errors, touched, validateForm, setTouched, submitForm }) => {
         const infosOpco = infosOpcos.find((x) => x.nom === values.opco)
+
+        // Le bouton "Continuer" ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui force
+        // l'affichage de l'erreur sur tous les champs invalides et scrolle/focus le premier.
+        const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
+
         return (
-          <Form>
-            <FormulaireLayout
-              type={type}
+          <form ref={formRef} onSubmit={handleSubmit} noValidate>
+            {type === AUTHTYPE.ENTREPRISE && <HandiEngagementValueSync hide={hideHandiEngagement} locked={isHandiEngagementLocked} />}
+            <TwoColumnFormLayout
               left={
                 <>
-                  <CustomInput required={false} name="last_name" label="Nom" type="text" value={values.last_name} />
-                  <CustomInput required={false} name="first_name" label="Prénom" type="text" value={values.first_name} />
-                  <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                  <CustomInput
-                    required={false}
-                    isDisabled={email ? true : false}
-                    name="email"
-                    label="Email"
-                    type="email"
-                    pb={fr.spacing("2v")}
-                    value={values.email}
-                    info={
+                  <Typography
+                    component="h2"
+                    sx={{ fontWeight: 700, fontSize: { xs: "24px !important", md: "32px !important" }, lineHeight: { xs: "32px !important", md: "40px !important" } }}
+                  >
+                    {type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}
+                  </Typography>
+                  <Typography sx={{ fontSize: "20px", pt: fr.spacing("2v"), pb: fr.spacing("4v") }}>
+                    {type === AUTHTYPE.ENTREPRISE
+                      ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
+                      : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
+                  </Typography>
+                  <ContactInfoFields
+                    emailDisabled={Boolean(email)}
+                    emailInfo={
                       email
                         ? "L’email que nous utilisons est fourni par votre Carif Oref, et permet de vous connecter. Vous pourrez le modifier dans votre espace personnel."
                         : "Privilégiez votre adresse professionnelle"
@@ -112,65 +158,43 @@ const Formulaire = ({
                   {shouldSelectOpco && (
                     <OpcoSelect name="opco" onChange={async (newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
                   )}
-                  <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
-                    {!widget?.isWidget && (
-                      <Box sx={{ mr: fr.spacing("5v") }}>
-                        <Button type="button" priority="secondary" onClick={() => router.back()}>
-                          Annuler
-                        </Button>
-                      </Box>
-                    )}
-                    <Button type="submit" disabled={!isValid || isSubmitting}>
-                      {isSubmitting ? (
-                        <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
-                      ) : (
-                        <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
-                      )}
-                      Suivant
-                    </Button>
-                  </Box>
+                  {type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
+                    <HandiEngagementSelect
+                      name="handiEngagement"
+                      onChange={async (newValue) => setFieldValue("handiEngagement", newValue)}
+                      value={values.handiEngagement as HandiEngagement | ""}
+                      disabled={isHandiEngagementLocked}
+                    />
+                  )}
                 </>
               }
               right={
                 <>
                   <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} viewerType={viewerType} />
                   {infosOpco && <InformationOpco isUpdatable={shouldSelectOpco} infosOpco={infosOpco} resetOpcoChoice={async () => setFieldValue("opco", "")} />}
+                  {!hideHandiEngagement && <InformationHandiEngagement />}
+                </>
+              }
+              buttons={
+                <>
+                  {!widget?.isWidget && (
+                    <Box sx={{ mr: fr.spacing("5v") }}>
+                      <Button type="button" priority="secondary" onClick={() => router.back()}>
+                        Annuler
+                      </Button>
+                    </Box>
+                  )}
+                  <Button aria-label="Continuer la création du compte" type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                    Continuer
+                  </Button>
                 </>
               }
             />
-          </Form>
+          </form>
         )
       }}
     </Formik>
-  )
-}
-
-const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right: React.ReactNode; type: string }) => {
-  return (
-    <Box
-      sx={{
-        rowGap: fr.spacing("8v"),
-        columnGap: fr.spacing("8v"),
-        display: "grid",
-        gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" },
-        gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" },
-        mt: 0,
-      }}
-    >
-      <Box>
-        <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
-          {type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}
-        </Typography>
-        <Typography sx={{ fontSize: "20px", pt: fr.spacing("2v"), pb: fr.spacing("4v") }}>
-          {type === AUTHTYPE.ENTREPRISE
-            ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
-            : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
-        </Typography>
-        {type === AUTHTYPE.ENTREPRISE && <Typography sx={{ pb: fr.spacing("4v") }}>Tous les champs sont obligatoires.</Typography>}
-        <Box>{left}</Box>
-      </Box>
-      <Box>{right}</Box>
-    </Box>
   )
 }
 

@@ -3,6 +3,7 @@ import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 import { zObjectId } from "../models/common.js"
 import { ZJob } from "../models/job.model.js"
+import { HANDI_ENGAGEMENT_VALUES } from "../models/referentiel-engagement-entreprise.model.js"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/role-management.model.js"
 import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountFields } from "../models/user-with-account.model.js"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/users-recruteur.model.js"
@@ -235,7 +236,13 @@ export const zUserRecruteurRoutes = {
         first_name: true,
         phone: true,
         email: true,
-      }).strict(),
+      })
+        .extend({
+          // Optionnel : uniquement pertinent pour un utilisateur de type ENTREPRISE (cf. CompteRenderer.tsx).
+          // Le controller résout le siret de l'entreprise à partir du rôle de l'utilisateur connecté.
+          handiEngagement: z.enum(HANDI_ENGAGEMENT_VALUES).optional(),
+        })
+        .strict(),
       response: {
         "200": z.object({}),
         "400": z.union([ZResError, z.strictObject({ error: z.boolean(), reason: z.string() })]),

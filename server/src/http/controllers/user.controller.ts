@@ -10,6 +10,7 @@ import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { HANDI_ENGAGEMENT_OUI } from "shared/models/referentiel-engagement-entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -17,7 +18,8 @@ import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
 import { buildEstablishmentId } from "@/services/etablissement.service"
 import { getFormulaireWithRomeDetail } from "@/services/formulaire.service"
-import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/role-management.service"
+import { updateEntrepriseHandiEngagement } from "@/services/organization.service"
+import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, getGrantedRoles, getOrganizationFromRole, roleToUserType } from "@/services/role-management.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -298,11 +300,31 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const result = await updateUserWithAccountFields(userId, req.body)
+      const { handiEngagement, ...userFields } = req.body
+      const result = await updateUserWithAccountFields(userId, userFields)
 
       if ("error" in result) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
+
+      // "non" est un no-op garanti côté service : on évite les deux aller-retours DB (rôles + entreprise)
+      // pour ce cas, très fréquent (c'est l'option la moins engageante, envoyée à chaque save entreprise).
+      if (handiEngagement === HANDI_ENGAGEMENT_OUI) {
+        // Résolution du siret à partir du rôle ENTREPRISE de l'utilisateur CONNECTÉ (jamais depuis :userId,
+        // que cette route autorise aussi un admin ou un opco à cibler pour modifier un autre compte) : on ne
+        // peut agir que sur sa propre entreprise. Seuls les rôles GRANTED sont retenus (getGrantedRoles),
+        // pour ignorer un rôle révoqué qui traînerait encore en base après un changement d'entreprise.
+        const requestUser = getUserFromRequest(req, zRoutes.put["/user/:userId"]).value
+        const grantedRoles = await getGrantedRoles(requestUser._id.toString())
+        const entrepriseRole = grantedRoles.find((role) => role.authorized_type === AccessEntityType.ENTREPRISE)
+        if (entrepriseRole) {
+          // getOrganizationFromRole throw si le rôle GRANTED pointe vers un document entreprises manquant
+          // (incohérence de données) plutôt que de l'ignorer silencieusement.
+          const entreprise = (await getOrganizationFromRole(entrepriseRole)) as IEntreprise
+          await updateEntrepriseHandiEngagement(entreprise.siret, handiEngagement)
+        }
+      }
+
       return res.status(200).send({})
     }
   )
