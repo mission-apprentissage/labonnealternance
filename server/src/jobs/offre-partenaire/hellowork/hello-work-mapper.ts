@@ -7,6 +7,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { z } from "zod"
 
+import { logger } from "@/common/logger"
 import { blankComputedJobPartner } from "@/jobs/offre-partenaire/fill-computed-jobs-partners"
 
 export const ZHelloWorkJob = z.looseObject({
@@ -37,40 +38,63 @@ export const ZHelloWorkJob = z.looseObject({
 
 export type IHelloWorkJob = z.output<typeof ZHelloWorkJob>
 
+// le flux Hellowork a changé de vocabulaire en cours de route : on garde les deux formes tant que l'ancien flux n'est pas décommissionné
 const teletravailMapping: Record<string, TRAINING_REMOTE_TYPE> = {
   Complet: TRAINING_REMOTE_TYPE.remote,
   Partiel: TRAINING_REMOTE_TYPE.hybrid,
-  Pas_teletravail: TRAINING_REMOTE_TYPE.onsite,
   Occasionnel: TRAINING_REMOTE_TYPE.hybrid,
+  Pas_teletravail: TRAINING_REMOTE_TYPE.onsite,
+  "Pas de télétravail": TRAINING_REMOTE_TYPE.onsite,
+}
+
+const diplomaMapping: Record<string, IComputedJobsPartners["offer_target_diploma"]> = {
+  "RJ/Qualif/BEP_CAP": { european: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+  "RJ/Qualif/Employe_Operateur": { european: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+  "RJ/Qualif/Technicien_B2": { european: "5", label: NIVEAU_DIPLOME_LABEL["5"] },
+  "RJ/Qualif/Technicien": { european: "5", label: NIVEAU_DIPLOME_LABEL["5"] },
+  "RJ/Qualif/Agent_maitrise_B3": { european: "6", label: NIVEAU_DIPLOME_LABEL["6"] },
+  "RJ/Qualif/Agent_maitrise": { european: "6", label: NIVEAU_DIPLOME_LABEL["6"] },
+  "RJ/Qualif/Cadre_dirigeant": { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] },
+  "RJ/Qualif/Ingenieur_B5": { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] },
+  "RJ/Qualif/Ingenieur": { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] },
+  "BEP/CAP": { european: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+  "Employé/Opérateur/Ouvrier Spe/Bac": { european: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+  "Technicien/Employé Bac +2": { european: "5", label: NIVEAU_DIPLOME_LABEL["5"] },
+  "Agent de maîtrise/Bac +3/4": { european: "6", label: NIVEAU_DIPLOME_LABEL["6"] },
+  "Ingénieur/Cadre/Bac +5": { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] },
+  "Cadre dirigeant": { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] },
+  // "Sans diplôme" n'est volontairement pas mappé : ce n'est pas un niveau de diplôme visé
+}
+
+// sans ça une évolution du vocabulaire Hellowork retombe silencieusement sur null, comme ça a été le cas pour education et remote
+const alreadyWarnedValues = new Set<string>()
+
+const warnOnceOnUnknownValue = (field: string, value: string) => {
+  const key = `${field}:${value}`
+  if (alreadyWarnedValues.has(key)) return
+  alreadyWarnedValues.add(key)
+  logger.warn({ field, value }, "valeur Hellowork non reconnue, champ ignoré")
+}
+
+// Object.hasOwn et pas `in` ni un simple accès : la valeur vient du flux, "toString" ou "constructor" remonteraient une fonction du prototype
+function getRemote(job: IHelloWorkJob): TRAINING_REMOTE_TYPE | null {
+  if (!job.remote) return null
+  if (Object.hasOwn(teletravailMapping, job.remote)) return teletravailMapping[job.remote]
+  warnOnceOnUnknownValue("remote", job.remote)
+  return null
 }
 
 function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_target_diploma"] {
   if (job.education == null) return null
-
-  switch (job.education) {
-    case "RJ/Qualif/BEP_CAP":
-    case "RJ/Qualif/Employe_Operateur":
-      return { european: "3", label: NIVEAU_DIPLOME_LABEL["3"] }
-    case "RJ/Qualif/Technicien_B2":
-    case "RJ/Qualif/Technicien":
-      return { european: "5", label: NIVEAU_DIPLOME_LABEL["5"] }
-    case "RJ/Qualif/Agent_maitrise_B3":
-    case "RJ/Qualif/Agent_maitrise":
-      return { european: "6", label: NIVEAU_DIPLOME_LABEL["6"] }
-    case "RJ/Qualif/Cadre_dirigeant":
-    case "RJ/Qualif/Ingenieur_B5":
-    case "RJ/Qualif/Ingenieur":
-      return { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] }
-    default:
-      return null
-  }
+  if (Object.hasOwn(diplomaMapping, job.education)) return diplomaMapping[job.education]
+  warnOnceOnUnknownValue("education", job.education)
+  return null
 }
 
 export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPartners => {
   const {
     contract,
     contract_start_date,
-    remote,
     title,
     description,
     profile,
@@ -100,7 +124,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     partner_job_id: guid,
     contract_start: parseDate(contract_start_date),
     contract_type: contract.toLowerCase() === "alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
-    contract_remote: remote ? (teletravailMapping[remote] ?? null) : null,
+    contract_remote: getRemote(job),
     contract_duration: contractDuration,
     offer_title: title,
     offer_description: description && description.length >= 30 ? description : undefined,

@@ -459,3 +459,279 @@ Rejoindre Exotec, c'est l'opportunité de donner du sens à vos compétences. Gr
   },
 ]
 `;
+
+exports[`import-hello-work > should test the import of the new hellowork flux format 1`] = `
+[
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.hellowork.com/fr-fr/emplois/81643010.html?utm_campaign=alternance+-+bonnealternance+-+automobile&utm_content=fluxbonnealternance&utm_medium=metamoteurs-free&utm_source=bonnealternance&utm_term=81643010",
+    "business_error": null,
+    "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": "onsite",
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2026-08-23T20:12:44.000Z,
+    "offer_description": "Dans le cadre de votre apprentissage au sein de l'atelier, vous assurez l'ensemble des interventions aux côtés de nos carrossiers pour les aider à réaliser la maintenance préventive et corrective de la réception du véhicule jusqu'à sa remise au client.  
+  
+A cette occasion, voici vos missions :  
+  
+- Réparer les carrosseries industrielles, bennes, bâchées ou plateaux fourgons  
+- Prendre soin des équipements, agencer et entretenir le poste de travail et l'outillage  
+- Réaliser tous les contrôles nécessaires  
+- Utiliser les moyens de manutention lourds  
+- Mettre en forme les éléments composites et traiter les surfaces  
+- Respecter les procédures QSE",
+    "offer_desired_skills": [
+      "Dans le cadre de la validation de votre CAP/CQP carrosserie, Bac Pro carrosserie ou un BTS conception et réalisation de carrosserie, n'hésitez pas à postuler !  
+  
+Vous avez un profil polyvalent vous permettant de réaliser des opérations de carrosserie industrielle et du soudage de divers éléments.
+
+Ce poste peut également convenir à un profil motivé, curieux, aimant travailler en équipe et possédant des compétences techniques similaires (Tôlerie, Assemblage de pièces de métal, Soudure...) dans un autre secteur d'activité que le nôtre.",
+    ],
+    "offer_expiration": 2026-10-23T20:12:44.000Z,
+    "offer_multicast": false,
+    "offer_opening_count": 1,
+    "offer_origin": "Flux",
+    "offer_rome_codes": [
+      "I1606",
+    ],
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "3",
+      "label": "CAP, BEP (Infrabac)",
+    },
+    "offer_title": "Alternance - Carrossier Poids Lourds H/F",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "0010f7a9-8e76-452c-9708-29e7329f6608",
+    "partner_label": "Hellowork",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Ris-Orangis",
+    "workplace_address_label": "Ris-Orangis 91130",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "91130",
+    "workplace_brand": null,
+    "workplace_description": "Acteur majeur de la distribution indépendante de pièces détachées et de la réparation automobile et poids lourd, Alliance Automotive Group est filiale du groupe Genuine Parts Company (GPC), coté en bourse aux Etats-Unis.  
+  
+Nous recrutons actuellement notre futur(e) alternant(e) pour l'une de nos filiales : MP TRUCK - TODD PARIS SUD  
+  
+Opportunité basée sur le site à RIS ORANGIS (91)",
+    "workplace_geopoint": {
+      "coordinates": [
+        2.4104270427448506,
+        48.645686774083934,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "Alliance Automotive Group",
+    "workplace_opco": null,
+    "workplace_siret": "53851504000011",
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.hellowork.com/fr-fr/emplois/82648242.html?utm_campaign=alternance+-+bonnealternance+-+service&utm_content=fluxbonnealternance&utm_medium=metamoteurs-free&utm_source=bonnealternance&utm_term=82648242",
+    "business_error": null,
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2026-08-25T08:32:40.000Z,
+    "offer_description": "Missions
+
+Vous souhaitez donner un nouveau sens à votre carrière ?
+
+Votre mission, en tant qu'auxiliaire de vie (ADV) en contrat d'apprentissage ou professionnalisation, vous êtes un véritable partenaire de vie pour les personnes accompagnées. Concrètement, vous serez amené(e) à en binôme :
+
+- Accompagner les personnes en situation de handicap ou âgées dans les actes de la vie quotidienne : lever, coucher, hygiène, mobilité, repas, courses, soutien moral...
+- Adapter votre communication, votre rythme et vos gestes selon les besoins uniques de chaque bénéficiaire, dans le respect de sa dignité et de son intimité.
+- Être attentif(ve) aux attentes de la personne et de ses proches, et contribuer à son bien-être et à son autonomie.
+- Incarner au quotidien notre raison d'être : « Savoir être là », avec écoute, respect et bienveillance.
+
+Profil recherché
+
+Même sans expérience ni diplôme, nous vous accompagnons pas à pas dans votre reconversion vers un métier humain et porteur de sens.Nous recherchons des personnes capables de :
+
+- Faire preuve d'empathie, de patience et de respect
+- Être à l'écoute et savoir s'adapter aux situations imprévues
+- Être fiable, ponctuel(le) et responsable
+
+Contrat et avantages
+
+Contrat et Avantages :
+
+- CDI à temps plein ou partiel, horaires déterminés avec vous en début de contrat et évolution possible selon vos disponibilités
+- Salaire compétitif avec prise en compte de l'expérience et des diplômes..
+- Remboursement des frais de transport en commun à 100%,
+- Prise en charge des indemnités kilométriques (selon règles internes)
+- Prime trimestrielles et prime de cooptation attractives,
+- Mutuelle moderne avec remboursement rapide et accès à un médecin en ligne.
+- Possibilité de développement professionnel et de mobilité nationale.
+- Formation au titre d'Auxiliaire de vie à domicile.  
+Rejoindre Vitalliance, c'est intégrer une équipe engagée, humaine et solidaire.  
+C'est donner du sens à votre métier, et participer à une aventure collective : construire une société plus inclusive et bienveillante.  
+Chez Vitalliance, nous reconnaissons les compétences des personnes en situation de handicap et leu",
+    "offer_desired_skills": [],
+    "offer_expiration": 2026-10-25T08:32:40.000Z,
+    "offer_multicast": false,
+    "offer_opening_count": 1,
+    "offer_origin": "Flux",
+    "offer_rome_codes": [
+      "K1304",
+    ],
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": null,
+    "offer_title": "Aide à Domicile H/F",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "02bd4ecc-07d0-4a68-8d00-ef08294c2fa1",
+    "partner_label": "Hellowork",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Montrabot",
+    "workplace_address_label": "Montrabot 50810",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "50810",
+    "workplace_brand": null,
+    "workplace_description": "À Propos de Nous
+
+Rejoignez Vitalliance, le leader de l'aide à domicile en France ! Avec plus de 180 agences et 10000 collaborateurs.Vitalliance est une société à mission notre raison d'être est :  
+"Prendre soin des personnes en perte d'autonomie et bâtir ensemble une société du mieux vivre à domicile accessible à tous."  
+Notre mot d'ordre : Savoir être là.",
+    "workplace_geopoint": {
+      "coordinates": [
+        -0.9005141493257085,
+        49.10958938396337,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "Vitalliance",
+    "workplace_opco": null,
+    "workplace_siret": "45105338300035",
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.hellowork.com/fr-fr/emplois/77958789.html?utm_campaign=alternance+-+bonnealternance+-+gestion&utm_content=fluxbonnealternance&utm_medium=metamoteurs-free&utm_source=bonnealternance&utm_term=77958789",
+    "business_error": null,
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": "hybrid",
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2026-08-15T20:08:23.000Z,
+    "offer_description": "Plus d'informations sur le site de Biogaran : biogaran.fr
+
+Suivez-nous sur les réseaux sociaux : LinkedIn, Facebook, Instagram
+
+MISSIONS :
+
+Au sein de la Direction Qualité et plus précisément de l'équipe Assurance Qualité fournisseurs, vos missions seront les suivantes :
+
+- Participer à la création et à la mise à jour des cahiers des charges pharmaceutiques avec nos fabricants Principe Actif, et Produit Fini
+- Participer à la création et à la mise à jour des contrats avec les partenaires de Pharmacovigilance
+- Participer au maintien de la base de données des principes actifs et Agrément des fabricants de produits finis
+- Participation à la mise en place ou au maintien des systèmes qualité et de la documentation pour des produits médicaments et non médicaments.
+
+Tout au long de votre alternance vous serez formé et accompagné par votre tuteur ainsi que nos différents référents au sein du Département.
+
+PROFIL RECHERCHÉ :
+
+Vous êtes étudiant(e) en « 5ème année (Pharmacie ou Ingénieur) ou en Master » et souhaitez effectuer cette formation en alternance. Vous êtes reconnu(e) pour votre curiosité, votre rigueur et votre sens de l'organisation. Vous avez de bonnes capacités rédactionnelles, d'analyse et de synthèse.
+
+Vous appréciez travailler en équipe et en transversal. Vous avez démontré une capacité d'adaptation dans un contexte évolutif.
+
+Vous maîtrisez les outils informatiques (Excel, Word, Powerpoint), la pratique de l'anglais écrit et oral au quotidien sera demandée.
+
+Venez rejoindre l'aventure Biogaran et développer vos compétences professionnelles au sein d'un laboratoire à taille humaine, adressez-nous vos CV et lettre de motivation !
+
+POURQUOI REJOINDRE BIOGARAN ?
+
+Biogaran est une entreprise dynamique à taille humaine, ce sont nos collaborateurs qui font la différence. Notre ambition, en adéquation avec nos valeurs, est que vous fassiez l'expérience d'une relation de confiance à long terme et qui vous encourage à exprimer vos qualités ainsi qu'à développer vos compétences.
+
+Oser pour innover, Prendre soin, Se développer par le partage et S'engager pour réussir sont les valeurs qui guident notre action.
+
+Biogaran s'engage pour la diversité en favorisant notamment le pluralisme dans le cadre de nos recrutements.
+
+Travail en mode hybride possible (alternance présence sur site & télétravail).",
+    "offer_desired_skills": [],
+    "offer_expiration": 2026-10-15T20:08:23.000Z,
+    "offer_multicast": false,
+    "offer_opening_count": 1,
+    "offer_origin": "Flux",
+    "offer_rome_codes": [
+      "C1104",
+    ],
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "7",
+      "label": "Master, titre ingénieur, grande école (Bac+5)",
+    },
+    "offer_title": "Alternance - Chef de Projet Assurance Qualité Fournisseurs H/F",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "14b037b0-76c7-4296-96fb-a838355c8ce9",
+    "partner_label": "Hellowork",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Colombes",
+    "workplace_address_label": "Colombes 92700",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "92700",
+    "workplace_brand": null,
+    "workplace_description": "A PROPOS DE BIOGARAN :
+
+Laboratoire pionnier du médicament générique en France, créé en 1996, Biogaran couvre aujourd'hui un vaste spectre de pathologies allant des maux du quotidien aux pathologies les plus lourdes. Avec plus de 1000 références de médicaments et des services destinés à favoriser l'observance, Biogaran joue un rôle majeur dans la santé des Français.  Sur les 12 derniers mois, Biogaran a vendu, en France, 347 millions de boites de médicaments. Cela représente plus d'1 boite de médicaments remboursables sur 8 en France.",
+    "workplace_geopoint": {
+      "coordinates": [
+        2.2345274,
+        48.9099919,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "Biogaran",
+    "workplace_opco": null,
+    "workplace_siret": "40511359800032",
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+]
+`;
