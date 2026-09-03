@@ -1,11 +1,11 @@
 import { Readable } from "node:stream"
-import { gzipSync } from "node:zlib"
+import { brotliCompressSync, gzipSync } from "node:zlib"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { gunzipIfNeeded, importFromUrlInXml, isGzipPayload } from "./import-from-url-in-xml"
+import { gunzipIfNeeded, importFromUrlInXml } from "./import-from-url-in-xml"
 
 const readAll = async (stream: NodeJS.ReadableStream) => {
   const chunks: Buffer[] = []
@@ -15,52 +15,71 @@ const readAll = async (stream: NodeJS.ReadableStream) => {
   return Buffer.concat(chunks).toString()
 }
 
-describe("isGzipPayload", () => {
-  it.each([
-    // headers réellement renvoyés par le nouveau flux Hellowork
-    { "content-type": "application/gzip", "content-disposition": 'attachment; filename="bonnealternance.xml.gz"' },
-    { "content-type": "application/x-gzip" },
-    { "content-type": "application/octet-stream", "content-disposition": "attachment; filename=flux.xml.gz" },
-  ])("should detect a gzip payload from %j", (headers) => {
-    expect(isGzipPayload(headers)).toBe(true)
-  })
-
-  it.each([
-    // headers réellement renvoyés par l'ancien flux Hellowork
-    { "content-type": "application/octet-stream", "content-disposition": "attachment; filename=partnerbonnealternance_hellowork.xml" },
-    { "content-type": "text/xml; charset=utf-8" },
-    // content-encoding est déjà pris en charge par axios : y toucher décompresserait deux fois
-    { "content-type": "text/xml", "content-encoding": "gzip" },
-    { "content-type": "application/gzip", "content-encoding": "gzip" },
-    { "content-type": "application/octet-stream", "content-disposition": 'attachment; filename="flux.xml.gz"', "content-encoding": "gzip" },
-    // un nom de fichier qui contient .gz sans être une extension ne doit pas déclencher la décompression
-    { "content-type": "application/octet-stream", "content-disposition": "attachment; filename=flux.gzip-archive.xml" },
-    {},
-  ])("should not detect a gzip payload from %j", (headers) => {
-    expect(isGzipPayload(headers)).toBe(false)
-  })
-})
-
 describe("gunzipIfNeeded", () => {
   const xml = "<root><job><job_id>1</job_id></job></root>"
 
   it("should decompress a gzip payload", async () => {
-    const stream = Readable.from([gzipSync(Buffer.from(xml))])
-    expect(await readAll(gunzipIfNeeded(stream, { "content-type": "application/gzip" }))).toBe(xml)
+    const { stream, isGzip } = await gunzipIfNeeded(Readable.from([gzipSync(Buffer.from(xml))]))
+    expect(isGzip).toBe(true)
+    expect(await readAll(stream)).toBe(xml)
   })
 
   it("should leave a plain payload untouched", async () => {
-    const stream = Readable.from([Buffer.from(xml)])
-    expect(await readAll(gunzipIfNeeded(stream, { "content-type": "application/octet-stream" }))).toBe(xml)
+    const { stream, isGzip } = await gunzipIfNeeded(Readable.from([Buffer.from(xml)]))
+    expect(isGzip).toBe(false)
+    expect(await readAll(stream)).toBe(xml)
   })
 
-  it("should propagate an error raised by the source stream", async () => {
+  // le magic gzip fait 2 octets : un flux découpé plus finement ne doit pas être pris pour du xml
+  it("should detect gzip even when the first chunk is a single byte", async () => {
+    const gz = gzipSync(Buffer.from(xml))
+    const chunks = [gz.subarray(0, 1), gz.subarray(1, 2), gz.subarray(2)]
+    const { stream, isGzip } = await gunzipIfNeeded(Readable.from(chunks))
+    expect(isGzip).toBe(true)
+    expect(await readAll(stream)).toBe(xml)
+  })
+
+  it("should handle an empty stream without decompressing", async () => {
+    const { stream, isGzip } = await gunzipIfNeeded(Readable.from([]))
+    expect(isGzip).toBe(false)
+    expect(await readAll(stream)).toBe("")
+  })
+
+  // un flux d'un seul octet ne peut pas être du gzip et ne doit pas bloquer sur le peek
+  it("should handle a stream shorter than the gzip magic", async () => {
+    const { stream, isGzip } = await gunzipIfNeeded(Readable.from([Buffer.from("<")]))
+    expect(isGzip).toBe(false)
+    expect(await readAll(stream)).toBe("<")
+  })
+
+  it("should propagate an error raised by the source stream before the peek", async () => {
     const source = new Readable({
       read() {
         this.destroy(new Error("connexion interrompue"))
       },
     })
-    await expect(readAll(gunzipIfNeeded(source, { "content-type": "application/gzip" }))).rejects.toThrow("connexion interrompue")
+    await expect(gunzipIfNeeded(source)).rejects.toThrow("connexion interrompue")
+  })
+
+  it("should propagate an error raised by the source stream after the peek", async () => {
+    const gz = gzipSync(Buffer.from(xml))
+    let sent = false
+    const source = new Readable({
+      read() {
+        if (sent) return this.destroy(new Error("connexion interrompue"))
+        sent = true
+        this.push(gz.subarray(0, 10))
+      },
+    })
+    const { stream, isGzip } = await gunzipIfNeeded(source)
+    expect(isGzip).toBe(true)
+    await expect(readAll(stream)).rejects.toThrow("connexion interrompue")
+  })
+
+  it("should reject a truncated gzip payload instead of yielding partial xml", async () => {
+    const gz = gzipSync(Buffer.from(xml))
+    const { stream } = await gunzipIfNeeded(Readable.from([gz.subarray(0, gz.length - 5)]))
+    await expect(readAll(stream)).rejects.toThrow()
   })
 })
 
@@ -86,25 +105,47 @@ describe("importFromUrlInXml", () => {
     }
   })
 
-  // le flux Hellowork servi sur download.holeest.com : un .gz que seul importFromUrlInXml peut décompresser avant le parser
-  it("should decompress a gzip flux before parsing it", async () => {
-    nock("https://flux.test")
-      .get("/offres")
-      .reply(200, gzipSync(Buffer.from(xml)), {
-        "content-type": "application/gzip",
-        "content-disposition": 'attachment; filename="bonnealternance.xml.gz"',
-      })
+  /**
+   * La décompression se décide sur les octets du flux, pas sur les headers : axios
+   * décompresse un `content-encoding` connu puis supprime le header, et un partenaire
+   * peut servir un `.gz` sous n'importe quel `content-type`. Chaque combinaison
+   * ci-dessous doit aboutir au même xml parsé.
+   */
+  const cases: { name: string; body: () => Buffer | string; headers: Record<string, string> }[] = [
+    {
+      name: "un fichier .gz sans content-encoding (flux Hellowork sur download.holeest.com)",
+      body: () => gzipSync(Buffer.from(xml)),
+      headers: { "content-type": "application/gzip", "content-disposition": 'attachment; filename="bonnealternance.xml.gz"' },
+    },
+    {
+      name: "un fichier .gz annoncé en plus par content-encoding: gzip",
+      body: () => gzipSync(Buffer.from(xml)),
+      headers: { "content-type": "application/gzip", "content-disposition": 'attachment; filename="bonnealternance.xml.gz"', "content-encoding": "gzip" },
+    },
+    {
+      name: "un fichier .gz servi sous un content-type générique",
+      body: () => gzipSync(Buffer.from(xml)),
+      headers: { "content-type": "application/octet-stream" },
+    },
+    {
+      name: "du xml brut (ancien flux Hellowork)",
+      body: () => xml,
+      headers: { "content-type": "application/octet-stream", "content-disposition": "attachment; filename=partnerbonnealternance_hellowork.xml" },
+    },
+    {
+      name: "du xml brut compressé en transport par content-encoding: gzip",
+      body: () => gzipSync(Buffer.from(xml)),
+      headers: { "content-type": "application/xml", "content-encoding": "gzip" },
+    },
+    {
+      name: "du xml brut compressé en transport par content-encoding: br",
+      body: () => brotliCompressSync(Buffer.from(xml)),
+      headers: { "content-type": "application/xml", "content-encoding": "br" },
+    },
+  ]
 
-    await expect(importFromTestUrl()).resolves.toEqual({ offerInsertCount: 2, offerErrorCount: 0 })
-    expect(await getDbCollection("raw_hellowork").countDocuments({})).toBe(2)
-    expect(nock.isDone()).toBe(true)
-  })
-
-  it("should import a plain xml flux unchanged", async () => {
-    nock("https://flux.test").get("/offres").reply(200, xml, {
-      "content-type": "application/octet-stream",
-      "content-disposition": "attachment; filename=flux.xml",
-    })
+  it.each(cases)("should import $name", async ({ body, headers }) => {
+    nock("https://flux.test").get("/offres").reply(200, body(), headers)
 
     await expect(importFromTestUrl()).resolves.toEqual({ offerInsertCount: 2, offerErrorCount: 0 })
     expect(await getDbCollection("raw_hellowork").countDocuments({})).toBe(2)
