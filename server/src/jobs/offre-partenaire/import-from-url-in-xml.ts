@@ -1,4 +1,4 @@
-import { PassThrough, type Readable } from "node:stream"
+import { PassThrough, pipeline, type Readable } from "node:stream"
 import { createGunzip } from "node:zlib"
 import axios from "axios"
 import type { CollectionName } from "shared/models/models"
@@ -33,8 +33,11 @@ const readFirstBytes = (stream: Readable, size: number): Promise<Buffer> =>
       while (length < size) {
         const chunk = stream.read()
         if (chunk === null) return // buffer épuisé : on attend le prochain readable, ou end
-        chunks.push(Buffer.from(chunk))
-        length += chunk.length
+        // on compte les octets du buffer et non la longueur du chunk, qui serait un nombre
+        // de caractères si la source était en mode string
+        const buffer = Buffer.from(chunk)
+        chunks.push(buffer)
+        length += buffer.length
       }
       finish()
     }
@@ -74,18 +77,30 @@ export const gunzipIfNeeded = async (stream: Readable): Promise<{ stream: Readab
   const head = await readFirstBytes(stream, GZIP_MAGIC.length)
   const isGzip = head.subarray(0, GZIP_MAGIC.length).equals(GZIP_MAGIC)
 
+  // pipeline() et non pipe() : il propage les erreurs vers l'aval *et* la destruction vers
+  // l'amont. L'appelant fait son propre pipeline(stream, ...) sur le flux rendu ; sans ça un
+  // parsing en échec ne fermerait plus la socket http, qui resterait ouverte jusqu'au timeout
+  const onPipelineDone = (err: Error | null) => {
+    if (err) output.destroy(err)
+  }
+
+  // la source peut avoir échoué juste après la lecture des premiers octets : output porte déjà
+  // l'erreur, et pipeline() lèverait un « Cannot pipe to a closed or destroyed stream » qui
+  // masquerait la cause réelle
+  if (output.destroyed) {
+    return { stream: output, isGzip }
+  }
+
   if (!isGzip) {
     // les octets lus sont réinjectés avant le reste du flux
     if (head.length) output.write(head)
-    stream.pipe(output)
+    pipeline(stream, output, onPipelineDone)
     return { stream: output, isGzip }
   }
 
   const gunzip = createGunzip()
-  // pipe() ne propage pas les erreurs : ni celles de la source, ni un gzip tronqué
-  gunzip.on("error", (err) => output.destroy(err))
   gunzip.write(head)
-  stream.pipe(gunzip).pipe(output)
+  pipeline(stream, gunzip, output, onPipelineDone)
   return { stream: output, isGzip }
 }
 

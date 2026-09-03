@@ -1,4 +1,4 @@
-import { Readable } from "node:stream"
+import { PassThrough, pipeline, Readable } from "node:stream"
 import { brotliCompressSync, gzipSync } from "node:zlib"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
@@ -80,6 +80,48 @@ describe("gunzipIfNeeded", () => {
     const gz = gzipSync(Buffer.from(xml))
     const { stream } = await gunzipIfNeeded(Readable.from([gz.subarray(0, gz.length - 5)]))
     await expect(readAll(stream)).rejects.toThrow()
+  })
+
+  /**
+   * importFromStreamInXml fait son propre pipeline() sur le flux rendu. Comme celui-ci n'est
+   * pas la source http, la destruction doit remonter jusqu'à elle : sinon un parsing en échec
+   * laisse la socket ouverte jusqu'au timeout réseau, sur tous les flux xml.
+   */
+  describe("when the downstream pipeline fails", () => {
+    // une source qui ne se termine pas d'elle-même, comme une socket http encore ouverte
+    const endlessSource = (prefix: Buffer) => {
+      let first = true
+      return new Readable({
+        read() {
+          if (first) {
+            first = false
+            return this.push(prefix)
+          }
+          this.push(Buffer.alloc(1024, 0x20))
+        },
+      })
+    }
+
+    const consumeAndFail = (stream: Readable) =>
+      new Promise<void>((resolve) => {
+        const failing = new PassThrough({
+          transform(_chunk, _encoding, callback) {
+            callback(new Error("parse xml en échec"))
+          },
+        })
+        pipeline(stream, failing, () => resolve())
+      })
+
+    it.each([
+      { name: "a plain xml flux", prefix: Buffer.from(xml) },
+      { name: "a gzip flux", prefix: gzipSync(Buffer.from(xml)) },
+    ])("should destroy the source of $name", async ({ prefix }) => {
+      const source = endlessSource(prefix)
+      const { stream } = await gunzipIfNeeded(source)
+      await consumeAndFail(stream)
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(source.destroyed).toBe(true)
+    })
   })
 })
 
