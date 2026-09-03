@@ -6,7 +6,7 @@ import { ZReferentielRome, zFormationCatalogueSchema } from "shared/models/index
 import { describe, expect, it } from "vitest"
 import type { z } from "zod"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { getLBALink, getTrainingLinks } from "./training-links.service"
+import { getLBALink, getTrainingLinks, sanitizeWish } from "./training-links.service"
 
 useMongo()
 
@@ -135,6 +135,73 @@ describe("getLBALink", () => {
     expect(url.searchParams.get("lieu_label")).toBe("Paris")
   })
 
+  it("falls back to the formateur's formations when the identifier clause matches nothing", async () => {
+    await saveFormation({
+      cle_ministere_educatif: "CLE_CFA",
+      etablissement_formateur_uai: "0751111B",
+      rncp_code: "RNCP11111",
+      intitule_long: "Formation du CFA",
+      localite: "Paris",
+      lieu_formation_geopoint: { type: "Point", coordinates: [2.35, 48.86] },
+    })
+
+    // RNCP inconnu du catalogue (fiche renouvelée par exemple) : la requête UAI + RNCP est vide,
+    // mais le CFA est connu, on retombe sur ses formations plutôt que sur une recherche sans métier.
+    const link = await getLBALink({ id: "w8", uai_formateur: "0751111B", rncp: "RNCP99999" })
+    const url = new URL(link)
+
+    expect(url.searchParams.get("q")).toBe("Formation du CFA")
+    expect(url.searchParams.get("lieu_label")).toBe("Paris")
+  })
+
+  it("prefers the gestionnaire matching the identifiers over the formateur alone", async () => {
+    await saveFormation({
+      cle_ministere_educatif: "CLE_FORMATEUR",
+      etablissement_formateur_uai: "0752222C",
+      rncp_code: "RNCP00001",
+      intitule_long: "Autre formation du formateur",
+      localite: "Paris",
+      lieu_formation_geopoint: { type: "Point", coordinates: [2.35, 48.86] },
+    })
+    await saveFormation({
+      cle_ministere_educatif: "CLE_GESTIONNAIRE",
+      etablissement_gestionnaire_uai: "0753333D",
+      rncp_code: "RNCP00002",
+      intitule_long: "Formation du gestionnaire",
+      localite: "Lyon",
+      lieu_formation_geopoint: { type: "Point", coordinates: [4.83, 45.75] },
+    })
+
+    const link = await getLBALink({ id: "w9", uai_formateur: "0752222C", uai_formateur_responsable: "0753333D", rncp: "RNCP00002" })
+    const url = new URL(link)
+
+    expect(url.searchParams.get("q")).toBe("Formation du gestionnaire")
+  })
+
+  it("prefers the formateur matching the identifiers over the gestionnaire matching them", async () => {
+    await saveFormation({
+      cle_ministere_educatif: "CLE_FORMATEUR",
+      etablissement_formateur_uai: "0752222C",
+      rncp_code: "RNCP00002",
+      intitule_long: "Formation du formateur",
+      localite: "Paris",
+      lieu_formation_geopoint: { type: "Point", coordinates: [2.35, 48.86] },
+    })
+    await saveFormation({
+      cle_ministere_educatif: "CLE_GESTIONNAIRE",
+      etablissement_gestionnaire_uai: "0753333D",
+      rncp_code: "RNCP00002",
+      intitule_long: "Formation du gestionnaire",
+      localite: "Lyon",
+      lieu_formation_geopoint: { type: "Point", coordinates: [4.83, 45.75] },
+    })
+
+    const link = await getLBALink({ id: "w10", uai_formateur: "0752222C", uai_formateur_responsable: "0753333D", rncp: "RNCP00002" })
+    const url = new URL(link)
+
+    expect(url.searchParams.get("q")).toBe("Formation du formateur")
+  })
+
   it("falls back to a location-only search when no formation matches but the commune is known", async () => {
     await saveCommune()
 
@@ -189,6 +256,46 @@ describe("getTrainingLinks", () => {
     expect(w4Url.pathname).toBe("/")
   })
 
+  it("truncates an 11-character MEF to the 10-digit mef10 indexed in the catalogue", async () => {
+    await saveFormation({
+      cle_ministere_educatif: "CLE_MEF_OK",
+      etablissement_formateur_uai: "0754444E",
+      bcn_mefs_10: [{ mef10: "2412322421" }],
+      intitule_long: "Formation MEF attendu",
+      localite: "Paris",
+      lieu_formation_geopoint: { type: "Point", coordinates: [2.35, 48.86] },
+    })
+    await saveFormation({
+      cle_ministere_educatif: "CLE_MEF_AUTRE",
+      etablissement_formateur_uai: "0754444E",
+      bcn_mefs_10: [{ mef10: "2413361621" }],
+      intitule_long: "Formation MEF autre",
+      localite: "Paris",
+      lieu_formation_geopoint: { type: "Point", coordinates: [2.35, 48.86] },
+    })
+
+    const [result] = await getTrainingLinks([{ id: "w1", uai_formateur: "0754444E", mef: "24123224210" }])
+    const url = new URL(result.lien_lba)
+
+    expect(url.searchParams.get("q")).toBe("Formation MEF attendu")
+  })
+
+  it("nullifies a non-numeric MEF instead of failing and falls back to the formateur's formations", async () => {
+    await saveFormation({
+      cle_ministere_educatif: "CLE_AFFECTATION",
+      etablissement_formateur_uai: "0755555F",
+      bcn_mefs_10: [{ mef10: "2412322421" }],
+      intitule_long: "Formation du CFA",
+      localite: "Paris",
+      lieu_formation_geopoint: { type: "Point", coordinates: [2.35, 48.86] },
+    })
+
+    const [result] = await getTrainingLinks([{ id: "w1", uai_formateur: "0755555F", mef: "AFFECTATION" }])
+    const url = new URL(result.lien_lba)
+
+    expect(url.searchParams.get("q")).toBe("Formation du CFA")
+  })
+
   it("returns one result per wish, in input order, across parallel groups", async () => {
     await saveRome("D1102", "Boulangerie - viennoiserie")
     await saveFormation({
@@ -215,5 +322,29 @@ describe("getTrainingLinks", () => {
         expect(url.pathname).toBe("/")
       }
     }
+  })
+})
+
+describe("sanitizeWish", () => {
+  it("truncates a numeric MEF to 10 digits and keeps a 10-digit MEF as is", () => {
+    expect(sanitizeWish({ id: "w", mef: "24123224210" }).mef).toBe("2412322421")
+    expect(sanitizeWish({ id: "w", mef: " 2412322421 " }).mef).toBe("2412322421")
+  })
+
+  it("nullifies a MEF that is not 10 or 11 digits", () => {
+    expect(sanitizeWish({ id: "w", mef: "AFFECTATION" }).mef).toBeNull()
+    expect(sanitizeWish({ id: "w", mef: "2412322" }).mef).toBeNull()
+    expect(sanitizeWish({ id: "w", mef: "2412322421A" }).mef).toBeNull()
+    expect(sanitizeWish({ id: "w", mef: "" }).mef).toBeNull()
+  })
+
+  it("trims text identifiers and nullifies empty ones without touching the others", () => {
+    const wish = sanitizeWish({ id: "w", cle_ministere_educatif: " CLE1 ", rncp: "", uai_formateur: "0751234A", cfd: undefined })
+
+    expect(wish.id).toBe("w")
+    expect(wish.cle_ministere_educatif).toBe("CLE1")
+    expect(wish.rncp).toBeNull()
+    expect(wish.cfd).toBeNull()
+    expect(wish.uai_formateur).toBe("0751234A")
   })
 })

@@ -1,6 +1,7 @@
 import { getDistance } from "geolib"
 import type { IFormationCatalogue } from "shared/models/index"
 import { URL } from "url"
+import z from "zod"
 import { asyncForEachGrouped } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config.js"
@@ -71,43 +72,72 @@ const getFormations = (
   }
 ) => getDbCollection("formationcatalogues").find(query, { projection }).toArray()
 
+// Normalisation ligne à ligne des identifiants reçus : chaque champ est validé indépendamment et
+// un champ invalide est nullifié, sans faire échouer la ligne ni le lot.
+const zWishText = z.string().trim().min(1)
+
+// Le catalogue indexe bcn_mefs_10.mef10 sur 10 chiffres. Les sources (Affelnet notamment) envoient
+// un MEF à 11 caractères, voire des libellés ("AFFECTATION") : on ne conserve que les 10 premiers
+// chiffres et on nullifie toute valeur non numérique, qui ne pourrait jamais matcher.
+const zWishMef = z
+  .string()
+  .trim()
+  .regex(/^\d{10,11}$/)
+  .transform((mef) => mef.slice(0, 10))
+
+const wishFieldSchemas = {
+  cle_ministere_educatif: zWishText,
+  mef: zWishMef,
+  cfd: zWishText,
+  rncp: zWishText,
+  code_postal: zWishText,
+  code_insee: zWishText,
+  uai_formateur: zWishText,
+  uai_formateur_responsable: zWishText,
+} satisfies Partial<Record<keyof IWish, z.ZodType<string>>>
+
+type ISanitizedWishField = keyof typeof wishFieldSchemas
+
+export const sanitizeWish = (wish: IWish): IWish => {
+  const sanitizedFields = Object.fromEntries(
+    Object.entries(wishFieldSchemas).map(([field, schema]) => {
+      const value = wish[field as ISanitizedWishField]
+      const result = value == null ? null : schema.safeParse(value)
+      return [field, result?.success ? result.data : null]
+    })
+  ) as Record<ISanitizedWishField, string | null>
+
+  return { ...wish, ...sanitizedFields }
+}
+
 const getTrainingsFromParameters = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>): Promise<IFormationCatalogue[]> => {
-  let formations
-  let query: any = { $or: [] }
-
-  if (wish.cfd) {
-    query.$or.push({ cfd: wish.cfd })
-  }
-  if (wish.rncp) {
-    query.$or.push({ rncp_code: wish.rncp })
-  }
-  if (wish.mef) {
-    query.$or.push({ "bcn_mefs_10.mef10": wish.mef })
-  }
-
-  if (!query.$or.length) {
-    query = undefined
-  }
-  // search by cle ME
   if (wish.cle_ministere_educatif) {
-    formations = formationsByCle ? (formationsByCle.get(wish.cle_ministere_educatif) ?? []) : await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
+    const formations = formationsByCle ? (formationsByCle.get(wish.cle_ministere_educatif) ?? []) : await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
+    if (formations.length) return formations
   }
 
-  if (!formations || !formations.length) {
-    // search by uai_formateur
-    if (wish.uai_formateur) {
-      formations = await getFormations({ ...query, etablissement_formateur_uai: wish.uai_formateur })
-    }
+  const identifierClauses: object[] = []
+  if (wish.cfd) identifierClauses.push({ cfd: wish.cfd })
+  if (wish.rncp) identifierClauses.push({ rncp_code: wish.rncp })
+  if (wish.mef) identifierClauses.push({ "bcn_mefs_10.mef10": wish.mef })
+  const identifierQuery = identifierClauses.length ? { $or: identifierClauses } : null
+
+  const uaiQueries: object[] = []
+  if (wish.uai_formateur) uaiQueries.push({ etablissement_formateur_uai: wish.uai_formateur })
+  if (wish.uai_formateur_responsable) uaiQueries.push({ etablissement_gestionnaire_uai: wish.uai_formateur_responsable })
+
+  // Précédence : UAI formateur + identifiants > UAI gestionnaire + identifiants > UAI formateur seul
+  // > UAI gestionnaire seul. Un identifiant absent du catalogue (RNCP renouvelé, MEF inconnu) ne
+  // doit pas empêcher de retomber sur les formations de l'établissement, dont la plus proche du
+  // vœu sera retenue en aval.
+  const candidateQueries = [...(identifierQuery ? uaiQueries.map((uaiQuery) => ({ ...uaiQuery, ...identifierQuery })) : []), ...uaiQueries]
+
+  for (const query of candidateQueries) {
+    const formations = await getFormations(query)
+    if (formations.length) return formations
   }
 
-  if (!formations || !formations.length) {
-    // search by uai_formateur_responsable
-    if (wish.uai_formateur_responsable) {
-      formations = await getFormations({ ...query, etablissement_gestionnaire_uai: wish.uai_formateur_responsable })
-    }
-  }
-
-  return formations || []
+  return []
 }
 
 const getPrdvLink = async (wish: IWish, eligibleCles?: Set<string>): Promise<string> => {
@@ -228,7 +258,8 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
 }
 
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
-  const cles = [...new Set(params.map((w) => w.cle_ministere_educatif).filter(Boolean) as string[])]
+  const wishes = params.map(sanitizeWish)
+  const cles = [...new Set(wishes.map((w) => w.cle_ministere_educatif).filter(Boolean) as string[])]
 
   const [eligibleTrainings, allFormations, romeLabelByCode] = await Promise.all([
     cles.length
@@ -258,8 +289,8 @@ export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
 
   // Traitement par groupes parallèles : chaque vœu ne fait que des lectures Mongo et les
   // structures partagées sont en lecture seule. L'écriture indexée préserve l'ordre d'entrée.
-  const results: ILinks[] = new Array(params.length)
-  await asyncForEachGrouped(params, 10, async (training, index) => {
+  const results: ILinks[] = new Array(wishes.length)
+  await asyncForEachGrouped(wishes, 10, async (training, index) => {
     const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training, eligibleCles), getLBALink(training, formationsByCle, romeLabelByCode)])
     results[index] = { id: training.id, lien_prdv, lien_lba }
   })
