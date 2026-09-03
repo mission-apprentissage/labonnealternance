@@ -82,6 +82,19 @@ describe("gunzipIfNeeded", () => {
     await expect(readAll(stream)).rejects.toThrow()
   })
 
+  it("should reject a payload whose decompressed size exceeds the limit", async () => {
+    // 1 Mo de zéros compresse très bien : ratio suffisant pour dépasser une borne de 1 ko
+    const bomb = gzipSync(Buffer.alloc(1024 * 1024, 0))
+    const { stream, isGzip } = await gunzipIfNeeded(Readable.from([bomb]), 1024)
+    expect(isGzip).toBe(true)
+    await expect(readAll(stream)).rejects.toThrow()
+  })
+
+  it("should not reject a payload that stays under the limit", async () => {
+    const { stream } = await gunzipIfNeeded(Readable.from([gzipSync(Buffer.from(xml))]), 1024)
+    expect(await readAll(stream)).toBe(xml)
+  })
+
   /**
    * importFromStreamInXml fait son propre pipeline() sur le flux rendu. Comme celui-ci n'est
    * pas la source http, la destruction doit remonter jusqu'à elle : sinon un parsing en échec

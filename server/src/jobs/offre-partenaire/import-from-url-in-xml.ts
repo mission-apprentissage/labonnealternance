@@ -1,5 +1,6 @@
-import { PassThrough, pipeline, type Readable } from "node:stream"
+import { PassThrough, pipeline, type Readable, Transform } from "node:stream"
 import { createGunzip } from "node:zlib"
+import { internal } from "@hapi/boom"
 import axios from "axios"
 import type { CollectionName } from "shared/models/models"
 
@@ -8,6 +9,35 @@ import { importFromStreamInXml } from "./import-from-stream-in-xml"
 
 // un membre gzip commence toujours par 1f 8b (RFC 1952), du xml par '<'
 const GZIP_MAGIC = Buffer.from([0x1f, 0x8b])
+
+/**
+ * Borne la décompression : le ratio d'un gzip n'est pas connu d'avance et l'entrée vient d'un
+ * partenaire. Le streaming avec backpressure garde la mémoire bornée, mais un .gz corrompu ou
+ * malveillant ferait tourner l'import et grossir la collection sans limite. Le flux Hellowork
+ * fait ~56 Mo décompressés, la marge est donc large ; au-delà l'import lève et le garde-fou de
+ * importFromStreamInXml conserve les données précédentes.
+ */
+const MAX_DECOMPRESSED_SIZE = 512 * 1024 * 1024
+
+/**
+ * Compte les octets décompressés et coupe au-delà de la borne.
+ *
+ * `maxOutputLength` de zlib ne sert à rien ici : il ne borne que les méthodes one-shot
+ * (gunzipSync, gunzip), pas un stream, dont la sortie est émise par chunks sans buffer unique
+ * à contraindre. Il faut donc compter nous-mêmes.
+ */
+const limitDecompressedSize = (limit: number): Transform => {
+  let total = 0
+  return new Transform({
+    transform(chunk: Buffer, _encoding, callback) {
+      total += chunk.length
+      if (total > limit) {
+        return callback(internal("flux décompressé au-delà de la taille autorisée", { limit, total }))
+      }
+      callback(null, chunk)
+    },
+  })
+}
 
 /**
  * Consomme les premiers octets du flux, sans les remettre en place.
@@ -63,8 +93,11 @@ const readFirstBytes = (stream: Readable, size: number): Promise<Buffer> =>
  * Ne peut pas être appelée deux fois sur le même flux : les octets lus ne sont pas remis
  * dans la source, ils sont réécrits dans le flux rendu. `isGzip` est renvoyé pour
  * l'observabilité plutôt que re-testé par l'appelant.
+ *
+ * `maxDecompressedSize` n'est paramétrable que pour les tests, la valeur de production est
+ * MAX_DECOMPRESSED_SIZE.
  */
-export const gunzipIfNeeded = async (stream: Readable): Promise<{ stream: Readable; isGzip: boolean }> => {
+export const gunzipIfNeeded = async (stream: Readable, maxDecompressedSize: number = MAX_DECOMPRESSED_SIZE): Promise<{ stream: Readable; isGzip: boolean }> => {
   const output = new PassThrough()
   // posé avant la lecture et jamais retiré : une erreur survenant entre la fin de la lecture
   // et le branchement de l'aval doit ressortir sur le flux rendu, pas en exception non capturée
@@ -100,7 +133,7 @@ export const gunzipIfNeeded = async (stream: Readable): Promise<{ stream: Readab
 
   const gunzip = createGunzip()
   gunzip.write(head)
-  pipeline(stream, gunzip, output, onPipelineDone)
+  pipeline(stream, gunzip, limitDecompressedSize(maxDecompressedSize), output, onPipelineDone)
   return { stream: output, isGzip }
 }
 
@@ -120,8 +153,11 @@ export const importFromUrlInXml = async ({
   const response = await axios.get(url, {
     responseType: "stream",
   })
+  // logué avant la lecture des premiers octets : une source qui échoue ou stalle avant d'en
+  // envoyer un seul doit tout de même laisser une trace nommant le partenaire
+  logger.info({ partnerLabel, contentType: response.headers["content-type"] }, "flux téléchargé")
   const { stream, isGzip } = await gunzipIfNeeded(response.data)
-  logger.info({ partnerLabel, contentType: response.headers["content-type"], isGzip }, "flux téléchargé")
+  logger.info({ partnerLabel, isGzip }, "format du flux détecté")
 
   return importFromStreamInXml({ destinationCollection, offerXmlTag, stream, importName: partnerLabel, conflictingOpeningTagWithoutAttributes })
 }
