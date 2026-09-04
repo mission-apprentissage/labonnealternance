@@ -433,6 +433,13 @@ export function generateDepotSimplifieToken(user: IUserWithAccountForAccessToken
         },
       }),
       generateScope({
+        schema: zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte/by-token"],
+        options: {
+          params: { establishment_id },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
         schema: zRoutes.get["/user/status/:userId/by-token"],
         options: {
           params: { userId: user._id.toString() },

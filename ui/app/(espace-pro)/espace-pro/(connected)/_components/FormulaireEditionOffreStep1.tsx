@@ -1,45 +1,239 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
-import { Box, Typography } from "@mui/material"
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
+import { Box, CircularProgress, Typography } from "@mui/material"
+import { captureException } from "@sentry/nextjs"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { Formik, useFormikContext } from "formik"
 import { useState } from "react"
 import type { IJob, IReferentielRomeForJob } from "shared"
-import { JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
+import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails, detectUrls } from "shared/utils/detect-url-and-emails"
 import * as Yup from "yup"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
-import { getRomeDetail } from "@/utils/api"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { ameliorerTexteOffre, ameliorerTexteOffreByToken, getRomeDetail } from "@/utils/api"
 import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
-const EMPLOYER_DESCRIPTION_MAX = 800
+const EMPLOYER_DESCRIPTION_MAX = JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH
+const JOB_DESCRIPTION_MAX = JOB_DESCRIPTION_MAX_LENGTH
+const AMELIORER_IA_MAX_USAGES = 2
 
-const EmployerDescriptionField = () => {
+type FreeTextFieldName = "job_description" | "job_employer_description"
+
+/**
+ * Encart d'amélioration IA affiché au-dessus du champ libre, en 4 états : au repos (aide + CTA),
+ * en cours d'appel, proposition à arbitrer, et quota épuisé (CTA désactivé).
+ * L'IA ne réécrit jamais le champ à la place du recruteur : sa version est proposée dans l'encart,
+ * le texte saisi reste intact dans le textarea tant que "Utiliser ce texte" n'a pas été confirmé.
+ */
+const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: FreeTextFieldName; establishmentId?: string; token?: string }) => {
+  const { values, setFieldValue, errors } = useFormikContext<any>()
+  const [remaining, setRemaining] = useState(AMELIORER_IA_MAX_USAGES)
+  const [loading, setLoading] = useState(false)
+  const [hasError, setHasError] = useState(false)
+  const [proposal, setProposal] = useState<string | null>(null)
+  const text: string = values[fieldName] ?? ""
+  const isFieldInvalid = Boolean(errors[fieldName])
+  const canImprove = !loading && remaining > 0 && Boolean(text.trim()) && !isFieldInvalid
+
+  const handleClick = async () => {
+    if (!establishmentId || !canImprove) return
+    setLoading(true)
+    setHasError(false)
+    setProposal(null)
+    // décrémenté dès le lancement : le compteur reflète la tentative en cours, et un double-clic
+    // ne peut pas consommer deux fois le même crédit.
+    setRemaining((r) => r - 1)
+    try {
+      // Le dépôt simplifié post-inscription (cf DepotSimplifieCreationOffre) n'authentifie que par
+      // lien magique : jamais de cookie de session, d'où la route jumelle par-token.
+      const result = token ? await ameliorerTexteOffreByToken(establishmentId, fieldName, text, token) : await ameliorerTexteOffre(establishmentId, fieldName, text)
+      if (result && "text" in result && result.text) {
+        setProposal(result.text)
+      } else {
+        setHasError(true)
+        setRemaining((r) => Math.min(r + 1, AMELIORER_IA_MAX_USAGES))
+      }
+    } catch (error) {
+      // Échec de l'appel IA (timeout, erreur API) : le recruteur peut poursuivre son dépôt sans blocage,
+      // mais doit être informé que rien n'a changé (sinon le clic paraît sans effet) et récupérer son
+      // crédit — une panne de notre côté ne doit pas lui coûter une tentative.
+      captureException(error)
+      setHasError(true)
+      setRemaining((r) => Math.min(r + 1, AMELIORER_IA_MAX_USAGES))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const isProposalOpen = proposal !== null
+  const paddingX = fr.spacing("3v")
+  const paddingY = fr.spacing("2v")
+  const separator = `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`
+
+  return (
+    <Box
+      sx={{
+        // encart autonome : détaché du hint au-dessus comme du textarea en dessous
+        mt: fr.spacing("2v"),
+        mb: fr.spacing("2v"),
+        backgroundColor: isProposalOpen || loading ? fr.colors.decisions.background.alt.blueFrance.default : fr.colors.decisions.background.contrast.grey.default,
+        border: `1px solid ${isProposalOpen ? fr.colors.decisions.border.actionHigh.blueFrance.default : fr.colors.decisions.border.default.grey.default}`,
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: fr.spacing("2v"),
+          flexWrap: "wrap",
+          px: paddingX,
+          py: paddingY,
+        }}
+      >
+        <Typography
+          aria-live="polite"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: fr.spacing("2v"),
+            fontSize: isProposalOpen ? "0.875rem" : "0.75rem",
+            fontWeight: isProposalOpen ? 700 : 400,
+            color: isProposalOpen ? fr.colors.decisions.text.title.grey.default : fr.colors.decisions.text.mention.grey.default,
+          }}
+        >
+          {loading && <CircularProgress size={14} />}
+          {isProposalOpen
+            ? "Proposition de l'IA - quelle version souhaitez-vous conserver ?"
+            : loading
+              ? "Amélioration en cours"
+              : hasError
+                ? "L'amélioration a échoué, veuillez réessayer."
+                : `Notre IA peut améliorer votre texte jusqu'à ${AMELIORER_IA_MAX_USAGES} fois (orthographe, structure, formulation)`}
+        </Typography>
+        <Button type="button" priority="tertiary" size="small" iconId="ri-magic-line" iconPosition="left" disabled={!establishmentId || !canImprove} onClick={handleClick}>
+          {`Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`}
+        </Button>
+      </Box>
+      {isProposalOpen && (
+        <>
+          <Typography sx={{ borderTop: separator, px: paddingX, py: paddingY, whiteSpace: "pre-wrap" }}>{proposal}</Typography>
+          <Box sx={{ borderTop: separator, px: paddingX, py: paddingY, display: "flex", gap: fr.spacing("3v"), flexWrap: "wrap" }}>
+            <Button
+              type="button"
+              iconId="ri-check-line"
+              iconPosition="left"
+              onClick={() => {
+                setFieldValue(fieldName, proposal)
+                setProposal(null)
+              }}
+            >
+              Utiliser ce texte
+            </Button>
+            <Button type="button" priority="secondary" iconId="ri-delete-bin-line" iconPosition="left" onClick={() => setProposal(null)}>
+              Conserver mon texte
+            </Button>
+          </Box>
+        </>
+      )}
+    </Box>
+  )
+}
+
+type DescriptionMode = "structured" | "custom"
+
+const DescriptionModeToggle = ({ mode, onChange }: { mode: DescriptionMode; onChange: (mode: DescriptionMode) => void }) => (
+  <RadioButtons
+    style={{ marginBottom: 0 }}
+    legend="Mode de rédaction"
+    name="description_mode"
+    options={[
+      {
+        label: "Utiliser la description du métier",
+        hintText: "Description générée à partir de la fiche métier, personnalisable via les compétences.",
+        nativeInputProps: {
+          checked: mode === "structured",
+          onChange: () => onChange("structured"),
+        },
+      },
+      {
+        label: "Personnaliser la description",
+        hintText: "Rédigez vous-même la description du poste.",
+        nativeInputProps: {
+          checked: mode === "custom",
+          onChange: () => onChange("custom"),
+        },
+      },
+    ]}
+  />
+)
+
+const JobDescriptionField = ({ establishmentId, token }: { establishmentId?: string; token?: string }) => {
   const { values, setFieldValue, errors } = useFormikContext<any>()
   return (
-    <Box>
+    <Box sx={{ mt: fr.spacing("4v"), "& .fr-input-group": { mb: 0 } }}>
+      <label className={fr.cx("fr-label")} htmlFor="job_description">
+        Description du poste
+        <span className={fr.cx("fr-hint-text")}>
+          Décrivez les missions et responsabilités du poste. Les coordonnées, adresses e-mails et liens externes ne seront pas affichés aux candidats. La taille du champ est
+          limitée à {JOB_DESCRIPTION_MAX} caractères.
+        </span>
+      </label>
+      <AmeliorerIaPanel fieldName="job_description" establishmentId={establishmentId} token={token} />
       <Input
-        label="Présentation de l'entreprise (Facultatif)"
-        hintText="Décrivez les activités et les spécificités de l'entreprise."
-        state={errors.job_employer_description ? "error" : "info"}
-        stateRelatedMessage={
-          (errors.job_employer_description as string) ??
-          "Notre équipe modère les contenus. Toute description non conforme à la réglementation pourra entrainer la suppression de l'offre, la désactivation du compte et faire l'objet d'un signalement aux autorités compétentes. La taille du champ est limitée à 800 caractères."
-        }
+        label=""
+        state={errors.job_description ? "error" : "default"}
+        stateRelatedMessage={errors.job_description as string}
         textArea
         nativeTextAreaProps={{
+          id: "job_description",
+          name: "job_description",
+          value: values.job_description,
+          maxLength: JOB_DESCRIPTION_MAX,
+          rows: 8,
+          style: { resize: "none" },
+          onChange: (e) => setFieldValue("job_description", e.target.value),
+        }}
+      />
+    </Box>
+  )
+}
+
+const EmployerDescriptionField = ({ establishmentId, token }: { establishmentId?: string; token?: string }) => {
+  const { values, setFieldValue, errors } = useFormikContext<any>()
+  return (
+    <Box sx={{ "& .fr-input-group": { mb: 0 } }}>
+      <label className={fr.cx("fr-label")} htmlFor="job_employer_description">
+        Présentation de l'entreprise (Facultatif)
+        <span className={fr.cx("fr-hint-text")}>
+          Décrivez les activités et les spécificités de l'entreprise. Les coordonnées, adresses e-mails et liens externes ne seront pas affichés aux candidats. La taille du champ
+          est limitée à {EMPLOYER_DESCRIPTION_MAX} caractères.
+        </span>
+      </label>
+      <AmeliorerIaPanel fieldName="job_employer_description" establishmentId={establishmentId} token={token} />
+      <Input
+        label=""
+        state={errors.job_employer_description ? "error" : "default"}
+        stateRelatedMessage={errors.job_employer_description as string}
+        textArea
+        nativeTextAreaProps={{
+          id: "job_employer_description",
           name: "job_employer_description",
           value: values.job_employer_description,
           maxLength: EMPLOYER_DESCRIPTION_MAX,
           rows: 6,
+          placeholder: "Saisissez votre texte ici",
           style: { resize: "none" },
           onChange: (e) => setFieldValue("job_employer_description", e.target.value),
         }}
@@ -53,11 +247,13 @@ export const FormulaireEditionOffreStep1 = ({
   establishment_id,
   onSubmit,
   formValues,
+  token,
 }: {
   offre?: IJob
   establishment_id?: string
   onSubmit?: (values: any) => void
   formValues: any
+  token?: string
 }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
   const initRome = rome_code?.at(0)
@@ -74,12 +270,11 @@ export const FormulaireEditionOffreStep1 = ({
   })
 
   const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? formValues?.competences_rome ?? null)
-  const [competencesDirty, setCompetencesDirty] = useState(Boolean(formValues))
+  const [descriptionMode, setDescriptionMode] = useState<DescriptionMode>(offre?.job_description || formValues?.job_description ? "custom" : "structured")
 
   const onRomeChange = (rome: string, appellation: string) => {
     setRomeAndAppellation({ rome, appellation })
     setSelectedCompetences(null)
-    setCompetencesDirty(true)
   }
 
   const onSelectedCompetencesChange = (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => {
@@ -107,7 +302,6 @@ export const FormulaireEditionOffreStep1 = ({
       }),
     }
     setSelectedCompetences(savedCompetences)
-    setCompetencesDirty(true)
   }
 
   if (!establishment_id) return <></>
@@ -122,6 +316,7 @@ export const FormulaireEditionOffreStep1 = ({
       competences_rome: finalSelectedCompetences,
       offer_title_custom: values.offer_title_custom || null,
       job_employer_description: values.job_employer_description || null,
+      job_description: descriptionMode === "custom" ? values.job_description?.trim() || null : null,
     }
     onSubmit?.(values)
   }
@@ -152,6 +347,7 @@ export const FormulaireEditionOffreStep1 = ({
     job_rythm: offre?.job_rythm ?? "",
     offer_title_custom: offre?.offer_title_custom ?? "",
     job_employer_description: offre?.job_employer_description ?? "",
+    job_description: offre?.job_description ?? "",
     ...formValues,
   }
   initialValues.offer_title_custom = initialValues.offer_title_custom ?? ""
@@ -183,6 +379,16 @@ export const FormulaireEditionOffreStep1 = ({
             .transform((v) => v || undefined)
             .min(30, "La présentation est trop courte (minimum 30 caractères).")
             .max(EMPLOYER_DESCRIPTION_MAX, `La présentation est trop longue (maximum ${EMPLOYER_DESCRIPTION_MAX} caractères).`),
+          job_description: Yup.string()
+            .trim()
+            .transform((v) => v || undefined)
+            .test("required-if-custom", "Champ obligatoire", (value) => descriptionMode !== "custom" || Boolean(value))
+            .test("min-if-custom", "La description est trop courte (minimum 30 caractères).", (value) => descriptionMode !== "custom" || !value || value.length >= 30)
+            .test(
+              "max-if-custom",
+              `La description est trop longue (maximum ${JOB_DESCRIPTION_MAX} caractères).`,
+              (value) => descriptionMode !== "custom" || !value || value.length <= JOB_DESCRIPTION_MAX
+            ),
         })}
         onSubmit={(values: any) => localOnSubmit(values)}
       >
@@ -255,19 +461,53 @@ export const FormulaireEditionOffreStep1 = ({
 
                 {/* Colonne droite : présentation + description de l'offre + Rome/InfosDiffusion */}
                 <Box>
+                  <Box
+                    sx={{
+                      backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+                      border: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
+                      p: fr.spacing("3v"),
+                      mb: fr.spacing("4v"),
+                      display: "flex",
+                      gap: fr.spacing("3v"),
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <Typography
+                      className={`ri-information-line ${fr.cx("fr-icon--sm")}`}
+                      aria-hidden="true"
+                      sx={{ color: fr.colors.decisions.text.active.blueFrance.default, flexShrink: 0 }}
+                    />
+                    <Box>
+                      <Typography sx={{ fontSize: "0.875rem", fontWeight: 600, mb: fr.spacing("1v") }}>Comment bien rédiger votre offre ?</Typography>
+                      <Typography sx={{ fontSize: "0.8125rem" }}>
+                        Consultez notre charte pour une offre rapidement acceptée et publiée. Notre équipe modère les contenus : toute description non conforme à la réglementation
+                        pourra entraîner la suppression de l'offre, la désactivation du compte et faire l'objet d'un signalement aux autorités compétentes.{" "}
+                        <DsfrLink href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur" size="sm" external={true}>
+                          Découvrir la charte
+                        </DsfrLink>
+                      </Typography>
+                    </Box>
+                  </Box>
                   <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
                     La présentation de l'entreprise
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
-                    <EmployerDescriptionField />
+                    <EmployerDescriptionField establishmentId={establishment_id} token={token} />
                   </Box>
 
                   <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
-                    La description de l'offre
+                    La description du poste
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
                     <FormulaireEditionOffreFields section="offer" onRomeChange={onRomeChange} />
                   </Box>
+
+                  {romeAndAppellation && (
+                    <Box sx={{ mt: fr.spacing("6v") }}>
+                      <DescriptionModeToggle mode={descriptionMode} onChange={setDescriptionMode} />
+                      {descriptionMode === "custom" && <JobDescriptionField establishmentId={establishment_id} token={token} />}
+                    </Box>
+                  )}
 
                   <Box sx={{ mt: fr.spacing("4v") }}>
                     {romeAndAppellation ? (
@@ -289,8 +529,8 @@ export const FormulaireEditionOffreStep1 = ({
                   </Box>
                 </Box>
               </Box>
-              <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("8v") }}>
-                <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
+              <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v") }}>
+                <FormulaireEditionOffreButtons offre={offre} />
               </Box>
             </div>
           )
