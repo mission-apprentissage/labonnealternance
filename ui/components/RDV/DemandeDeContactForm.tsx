@@ -41,12 +41,12 @@ export const DemandeDeContactForm = ({
       validateOnChange={false}
       validateOnBlur={true}
       validationSchema={Yup.object({
-        firstname: Yup.string().required("⚠ Le prénom est obligatoire"),
-        lastname: Yup.string().required("⚠ Le nom est obligatoire"),
+        firstname: Yup.string().required("Le prénom est obligatoire"),
+        lastname: Yup.string().required("Le nom est obligatoire"),
         phone: Yup.string()
-          .matches(/^[0-9]{10}$/, "⚠ Numéro de téléphone invalide")
-          .required("⚠ Le numéro de téléphone est obligatoire"),
-        email: Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
+          .matches(/^[0-9]{10}$/, "Numéro de téléphone invalide")
+          .required("Le numéro de téléphone est obligatoire"),
+        email: Yup.string().email("Adresse e-mail invalide").required("L'adresse e-mail est obligatoire"),
         applicantMessageToCfa: Yup.string(),
         applicantType: Yup.mixed().oneOf(Object.values(EApplicantType)),
         applicantReasons: Yup.array(Yup.mixed().oneOf(RdvReasons.map((item) => item.key)))
