@@ -23,6 +23,8 @@ export const referentielCommuneModel = {
   indexes: [
     [{ code: 1 }, { unique: true }],
     [{ codesPostaux: 1 }, {}],
+    // Repli sur la commune principale d'un département (training-links)
+    [{ codeDepartement: 1 }, {}],
     [{ centre: "2dsphere" }, {}],
   ],
   collectionName,

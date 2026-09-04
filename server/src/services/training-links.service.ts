@@ -1,10 +1,11 @@
 import { getDistance } from "geolib"
 import type { IFormationCatalogue } from "shared/models/index"
 import { URL } from "url"
+import z from "zod"
 import { asyncForEachGrouped } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config.js"
-import { getCommuneByCodeInsee, getCommuneByCodePostal } from "./referentiel/commune/commune.referentiel.service"
+import { getCommuneByCodeInsee, getCommuneByCodePostal, getCommunePrincipaleByCodesDepartement } from "./referentiel/commune/commune.referentiel.service"
 import { loadRomeLabelByCode, resolveRomeLabels } from "./search/search-items.service"
 
 interface IWish {
@@ -71,43 +72,74 @@ const getFormations = (
   }
 ) => getDbCollection("formationcatalogues").find(query, { projection }).toArray()
 
+// Normalisation ligne à ligne des identifiants reçus : chaque champ est validé indépendamment et
+// un champ invalide est nullifié, sans faire échouer la ligne ni le lot.
+const zWishText = z.string().trim().min(1)
+
+// Le catalogue indexe bcn_mefs_10.mef10 sur 10 chiffres. Les sources (Affelnet notamment) envoient
+// un MEF à 11 caractères, voire des libellés ("AFFECTATION") : on ne conserve que les 10 premiers
+// chiffres et on nullifie toute valeur non numérique, qui ne pourrait jamais matcher.
+const zWishMef = z
+  .string()
+  .trim()
+  .regex(/^\d{10,11}$/)
+  .transform((mef) => mef.slice(0, 10))
+
+const wishFieldSchemas = {
+  cle_ministere_educatif: zWishText,
+  mef: zWishMef,
+  cfd: zWishText,
+  rncp: zWishText,
+  code_postal: zWishText,
+  code_insee: zWishText,
+  uai_formateur: zWishText,
+  uai_formateur_responsable: zWishText,
+} satisfies Partial<Record<keyof IWish, z.ZodType<string>>>
+
+type ISanitizedWishField = keyof typeof wishFieldSchemas
+
+export const sanitizeWish = (wish: IWish): IWish => {
+  const sanitizedFields = Object.fromEntries(
+    Object.entries(wishFieldSchemas).map(([field, schema]) => {
+      const value = wish[field as ISanitizedWishField]
+      const result = value == null ? null : schema.safeParse(value)
+      return [field, result?.success ? result.data : null]
+    })
+  ) as Record<ISanitizedWishField, string | null>
+
+  return { ...wish, ...sanitizedFields }
+}
+
 const getTrainingsFromParameters = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>): Promise<IFormationCatalogue[]> => {
-  let formations
-  let query: any = { $or: [] }
-
-  if (wish.cfd) {
-    query.$or.push({ cfd: wish.cfd })
-  }
-  if (wish.rncp) {
-    query.$or.push({ rncp_code: wish.rncp })
-  }
-  if (wish.mef) {
-    query.$or.push({ "bcn_mefs_10.mef10": wish.mef })
-  }
-
-  if (!query.$or.length) {
-    query = undefined
-  }
-  // search by cle ME
   if (wish.cle_ministere_educatif) {
-    formations = formationsByCle ? (formationsByCle.get(wish.cle_ministere_educatif) ?? []) : await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
+    const formations = formationsByCle ? (formationsByCle.get(wish.cle_ministere_educatif) ?? []) : await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
+    if (formations.length) return formations
   }
 
-  if (!formations || !formations.length) {
-    // search by uai_formateur
-    if (wish.uai_formateur) {
-      formations = await getFormations({ ...query, etablissement_formateur_uai: wish.uai_formateur })
-    }
+  const identifierClauses: object[] = []
+  if (wish.cfd) identifierClauses.push({ cfd: wish.cfd })
+  if (wish.rncp) identifierClauses.push({ rncp_code: wish.rncp })
+  if (wish.mef) identifierClauses.push({ "bcn_mefs_10.mef10": wish.mef })
+  // Sans identifiant de formation, aucune recherche : l'UAI seul retiendrait un métier arbitraire
+  // parmi ceux de l'établissement.
+  if (!identifierClauses.length) return []
+  const identifierQuery = { $or: identifierClauses }
+
+  const uaiQueries: object[] = []
+  if (wish.uai_formateur) uaiQueries.push({ etablissement_formateur_uai: wish.uai_formateur })
+  if (wish.uai_formateur_responsable) uaiQueries.push({ etablissement_gestionnaire_uai: wish.uai_formateur_responsable })
+
+  // Précédence : UAI formateur + identifiants > UAI gestionnaire + identifiants > identifiants seuls,
+  // sur tout le catalogue. Un établissement qui n'a pas la formation au catalogue ne doit pas
+  // empêcher de retrouver le métier visé.
+  const candidateQueries = [...uaiQueries.map((uaiQuery) => ({ ...uaiQuery, ...identifierQuery })), identifierQuery]
+
+  for (const query of candidateQueries) {
+    const formations = await getFormations(query)
+    if (formations.length) return formations
   }
 
-  if (!formations || !formations.length) {
-    // search by uai_formateur_responsable
-    if (wish.uai_formateur_responsable) {
-      formations = await getFormations({ ...query, etablissement_gestionnaire_uai: wish.uai_formateur_responsable })
-    }
-  }
-
-  return formations || []
+  return []
 }
 
 const getPrdvLink = async (wish: IWish, eligibleCles?: Set<string>): Promise<string> => {
@@ -141,29 +173,49 @@ const getPrdvLink = async (wish: IWish, eligibleCles?: Set<string>): Promise<str
 
 type ICommuneCoords = { latitude: string | null; longitude: string | null; lieuLabel: string | null }
 
+// Un code postal ou INSEE à 4 chiffres a perdu son zéro initial dans un export tableur : "6000" → "06000".
+const normalizeCommuneCode = (code: string | null | undefined): string | null => {
+  const trimmed = code?.trim()
+  if (!trimmed) return null
+  return /^\d{4}$/.test(trimmed) ? `0${trimmed}` : trimmed
+}
+
+// Département(s) à interroger pour un code postal ou INSEE : trois caractères outre-mer (97x, 98x),
+// 2A / 2B pour la Corse (code postal 20xxx ou code INSEE 2Axxx / 2Bxxx), deux chiffres sinon.
+const getCodesDepartement = (code: string): string[] => {
+  if (/^2[AB]/i.test(code)) return [code.slice(0, 2).toUpperCase()]
+  if (code.startsWith("20")) return ["2A", "2B"]
+  if (/^9[78]/.test(code)) return [code.slice(0, 3)]
+  return [code.slice(0, 2)]
+}
+
 async function findWishCommune(wish: IWish): Promise<ICommuneCoords> {
+  const codeInsee = normalizeCommuneCode(wish.code_insee)
+  const codePostal = normalizeCommuneCode(wish.code_postal)
+
   const resolve = async (): Promise<{ centre: { coordinates: [number, number] }; nom: string } | null> => {
-    if (wish.code_insee) {
-      const commune = await getCommuneByCodeInsee(wish.code_insee)
+    if (codeInsee) {
+      const commune = await getCommuneByCodeInsee(codeInsee)
       if (commune) return commune
     }
 
-    if (wish.code_postal) {
-      const commune = await getCommuneByCodePostal(wish.code_postal)
+    if (codePostal) {
+      const commune = await getCommuneByCodePostal(codePostal)
       if (commune) return commune
     }
 
-    const code = wish.code_insee || wish.code_postal
+    const code = codeInsee || codePostal
+    if (!code) return null
 
-    if (code) {
-      const generalPostCode = code.replace(/\d{3}$/, "000")
-      const byCodeInsee = await getCommuneByCodeInsee(generalPostCode)
-      if (byCodeInsee) return byCodeInsee
-      const byCodePostal = await getCommuneByCodePostal(generalPostCode)
-      if (byCodePostal) return byCodePostal
-    }
+    const generalPostCode = code.replace(/\d{3}$/, "000")
+    const byCodeInsee = await getCommuneByCodeInsee(generalPostCode)
+    if (byCodeInsee) return byCodeInsee
+    const byCodePostal = await getCommuneByCodePostal(generalPostCode)
+    if (byCodePostal) return byCodePostal
 
-    return null
+    // Code inconnu du référentiel (CEDEX, code obsolète) et pas de XX000 (Paris, Marseille, Lyon…) :
+    // commune principale du département plutôt qu'un renvoi vers l'accueil.
+    return getCommunePrincipaleByCodesDepartement(getCodesDepartement(code))
   }
 
   const commune = await resolve()
@@ -213,22 +265,20 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
     }
   }
 
-  // latitude/longitude et lieu_label doivent toujours venir de la même source : soit la
-  // formation retenue (lieu_formation_geopoint + localite), soit la commune du vœu en repli —
-  // jamais un mélange qui afficherait un lieu différent de celui réellement recherché.
-  const formationCoords = getFormationCoordinates(formation)
-  const { latitude, longitude, lieuLabel } =
-    formationCoords.latitude && formationCoords.longitude ? { ...formationCoords, lieuLabel: formation.localite ?? null } : await getWishCommune()
-
   const q = getFormationSearchLabel(formation, romeLabelByCode ?? (await loadRomeLabelByCode()))
 
-  return buildEmploiUrl({
-    params: { q, lieu_label: lieuLabel, latitude, longitude, radius: "60", search_source: "training_links", ...utmParams },
-  })
+  // La localisation du lien vient uniquement du vœu (code_insee / code_postal), jamais de la
+  // formation retenue : elle peut être loin du candidat (repli sur les identifiants seuls) alors
+  // qu'il cherche un emploi près de chez lui. Sans commune connue, recherche sur le métier seul.
+  const { latitude, longitude, lieuLabel } = await getWishCommune()
+  const locationParams = latitude && longitude ? { lieu_label: lieuLabel, latitude, longitude, radius: "60" } : {}
+
+  return buildEmploiUrl({ params: { q, ...locationParams, search_source: "training_links", ...utmParams } })
 }
 
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
-  const cles = [...new Set(params.map((w) => w.cle_ministere_educatif).filter(Boolean) as string[])]
+  const wishes = params.map(sanitizeWish)
+  const cles = [...new Set(wishes.map((w) => w.cle_ministere_educatif).filter(Boolean) as string[])]
 
   const [eligibleTrainings, allFormations, romeLabelByCode] = await Promise.all([
     cles.length
@@ -258,8 +308,8 @@ export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
 
   // Traitement par groupes parallèles : chaque vœu ne fait que des lectures Mongo et les
   // structures partagées sont en lecture seule. L'écriture indexée préserve l'ordre d'entrée.
-  const results: ILinks[] = new Array(params.length)
-  await asyncForEachGrouped(params, 10, async (training, index) => {
+  const results: ILinks[] = new Array(wishes.length)
+  await asyncForEachGrouped(wishes, 10, async (training, index) => {
     const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training, eligibleCles), getLBALink(training, formationsByCle, romeLabelByCode)])
     results[index] = { id: training.id, lien_prdv, lien_lba }
   })
