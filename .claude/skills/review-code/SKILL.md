@@ -87,7 +87,7 @@ Allocations inutiles, boucles inefficaces, appels DB répétés (N+1), re-render
 Lisibilité, modularité, nommage, cohérence. Logique dupliquée, fonctions trop longues, conditionnelles complexes.
 
 ### STEP 10 — Accessibilité RGAA (si et seulement si l'UI est impactée)
-Condition : le diff touche au moins un fichier de `ui/app`, `ui/components`, `ui/styles`, `ui/public/styles`, `ui/theme` (hors `*.test.*`, `ui/e2e`, `ui/scripts`, `ui/config*`). Sinon, écrire « STEP 10 : sans objet » et passer.
+Condition : le diff touche au moins un fichier de `ui/app`, `ui/components`, `ui/styles`, `ui/public/styles`, `ui/theme`, ou un fichier de `ui/utils` / `shared` qui produit du texte affiché (libellés, titres de page, messages d'erreur) (hors `*.test.*`, `ui/e2e`, `ui/scripts`, `ui/config*`). Sinon, écrire « STEP 10 : sans objet » et passer.
 Si la condition est remplie, invoquer le skill `review-rgaa` en **mode intégré** sur le même diff : il vérifie les modifications selon RGAA 4.1.2 / WCAG 2.2 AA / WAI-ARIA 1.2, relève les défauts préexistants sur les composants et pages touchés, et chiffre le gain sur le taux de conformité. Ses findings sont numérotés `R1, R2…` ; un `Rn` Bloquant issu du diff compte dans les bloquants de la revue, les préexistants vont dans « Dette accessibilité ».
 
 ---
