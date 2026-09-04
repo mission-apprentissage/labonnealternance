@@ -160,7 +160,7 @@ document.title; document.documentElement.lang
 Object.entries([...document.querySelectorAll('[id]')].reduce((m, e) => (m[e.id] = (m[e.id] || 0) + 1, m), {})).filter(([, n]) => n > 1)
 ```
 
-4. **axe-core** injecté depuis cdnjs (seul CDN autorisé) puis exécuté :
+4. **axe-core** injecté depuis cdnjs (CSP actuelle : cdnjs non autorisé dans `script-src`) puis exécuté :
 
 ```js
 await new Promise((ok, ko) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.2/axe.min.js'; s.onload = ok; s.onerror = ko; document.head.appendChild(s) })
