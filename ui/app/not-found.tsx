@@ -1,3 +1,4 @@
+import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box, Container } from "@mui/material"
 
 import type { Metadata } from "next"
@@ -11,12 +12,21 @@ export const metadata: Metadata = {
 
 export default function NotFoundPage() {
   return (
-    <Box sx={{ minHeight: "100vh", display: "grid", gridTemplateRows: "max-content 1fr min-content" }}>
-      <PublicHeaderStatic />
-      <Container maxWidth="xl">
-        <NotFound />
-      </Container>
-      <Footer />
-    </Box>
+    <>
+      <SkipLinks
+        links={[
+          { label: "Menu", anchor: "#header-links" },
+          { label: "Contenu", anchor: "#content-container" },
+          { label: "Pied de page", anchor: "#footer-links" },
+        ]}
+      />
+      <Box sx={{ minHeight: "100vh", display: "grid", gridTemplateRows: "max-content 1fr min-content" }}>
+        <PublicHeaderStatic />
+        <Container maxWidth="xl" component="main" role="main" id="content-container" tabIndex={-1}>
+          <NotFound />
+        </Container>
+        <Footer />
+      </Box>
+    </>
   )
 }
