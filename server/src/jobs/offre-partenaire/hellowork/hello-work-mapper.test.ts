@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { helloWorkJobToJobsPartners } from "./hello-work-mapper"
+import { helloWorkJobToJobsPartners, type IHelloWorkJob } from "./hello-work-mapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
@@ -114,4 +115,60 @@ describe("helloWorkJobToJobsPartners", () => {
       jobs_in_success: [],
     })
   })
+
+  // les deux vocabulaires observés dans le flux Hellowork : "RJ/Qualif/..." (ancien flux) et les libellés (nouveau flux)
+  describe.each([
+    ["RJ/Qualif/BEP_CAP", "3"],
+    ["RJ/Qualif/Employe_Operateur", "3"],
+    ["RJ/Qualif/Technicien_B2", "5"],
+    ["RJ/Qualif/Technicien", "5"],
+    ["RJ/Qualif/Agent_maitrise_B3", "6"],
+    ["RJ/Qualif/Agent_maitrise", "6"],
+    ["RJ/Qualif/Cadre_dirigeant", "7"],
+    ["RJ/Qualif/Ingenieur_B5", "7"],
+    ["RJ/Qualif/Ingenieur", "7"],
+    ["BEP/CAP", "3"],
+    ["Employé/Opérateur/Ouvrier Spe/Bac", "3"],
+    ["Technicien/Employé Bac +2", "5"],
+    ["Agent de maîtrise/Bac +3/4", "6"],
+    ["Ingénieur/Cadre/Bac +5", "7"],
+    ["Cadre dirigeant", "7"],
+  ])("education %s", (education, expected) => {
+    it(`should map to european level ${expected}`, () => {
+      expect(helloWorkJobToJobsPartners(buildHelloWorkJob({ education })).offer_target_diploma).toEqual({
+        european: expected,
+        label: NIVEAU_DIPLOME_LABEL[expected as keyof typeof NIVEAU_DIPLOME_LABEL],
+      })
+    })
+  })
+
+  // les valeurs hors vocabulaire doivent rester ignorées : c'est ce qui distingue un mapping correct d'un mapping qui ne matche jamais
+  it.each(["Sans diplôme", "RJ/Qualif/Inconnu", "bep/cap", "BEP / CAP", "", "toString", "constructor"])("should ignore the unmapped education %j", (education) => {
+    expect(helloWorkJobToJobsPartners(buildHelloWorkJob({ education })).offer_target_diploma).toBeNull()
+  })
+
+  describe.each([
+    ["Complet", TRAINING_REMOTE_TYPE.remote],
+    ["Partiel", TRAINING_REMOTE_TYPE.hybrid],
+    ["Occasionnel", TRAINING_REMOTE_TYPE.hybrid],
+    ["Pas_teletravail", TRAINING_REMOTE_TYPE.onsite],
+    ["Pas de télétravail", TRAINING_REMOTE_TYPE.onsite],
+  ])("remote %s", (remote, expected) => {
+    it(`should map to ${expected}`, () => {
+      expect(helloWorkJobToJobsPartners(buildHelloWorkJob({ remote })).contract_remote).toBe(expected)
+    })
+  })
+
+  it.each(["Non éligible", "Non_eligible", "pas de télétravail", "Pas de teletravail", "", "toString", "constructor"])("should ignore the unmapped remote %j", (remote) => {
+    expect(helloWorkJobToJobsPartners(buildHelloWorkJob({ remote })).contract_remote).toBeNull()
+  })
+})
+
+const buildHelloWorkJob = (overrides: Partial<IHelloWorkJob>): IHelloWorkJob => ({
+  job_id: "0010f7a9-8e76-452c-9708-29e7329f6608",
+  guid: "0010f7a9-8e76-452c-9708-29e7329f6608",
+  title: "Alternance - Vendeur H/F",
+  url: "https://www.hellowork.com/fr-fr/emplois/12345678.html",
+  contract: "Alternance",
+  ...overrides,
 })
