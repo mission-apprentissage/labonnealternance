@@ -34,8 +34,8 @@ export default function Contact() {
               Vous avez une question sur nos outils ? Consultez notre foire aux questions.
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "center", my: fr.spacing("8v") }}>
-              <Button priority="secondary" aria-label="Accès à la Foire aux questions" size="large">
-                <DsfrLink href={PAGES.static.faq.getPath()}>Consulter la FAQ</DsfrLink>
+              <Button priority="secondary" size="large" linkProps={{ href: PAGES.static.faq.getPath() }}>
+                Consulter la FAQ
               </Button>
             </Box>
             <Typography component="p" sx={{ mb: fr.spacing("4v") }}>

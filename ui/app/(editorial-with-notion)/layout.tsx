@@ -17,14 +17,16 @@ export default function HomeLayout({ children }: PropsWithChildren) {
       <SkipLinks
         links={[
           { label: "Menu", anchor: "#header-links" },
-          { label: "Contenu", anchor: "#editorial-content-container" },
+          { label: "Contenu", anchor: "#main-content" },
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
       <Suspense fallback={<PublicHeaderStatic />}>
         <EditorialWithNotionHeaderWithUser />
       </Suspense>
-      <Box>{children}</Box>
+      <Box component="main" role="main" id="main-content" tabIndex={-1}>
+        {children}
+      </Box>
       <Footer />
     </>
   )
