@@ -2,6 +2,8 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import type { ILbaItemLbaCompanyJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { isOfferActive } from "@/app/(candidat)/(recherche)/recherche/_components/is-offer-active"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 import { getCompanySize } from "./get-company-size"
@@ -35,6 +37,9 @@ export const EmployeurPresentationBlock = ({
 }) => {
   const isHandicapEngaged = Boolean(("job" in item && item.job?.elligibleHandicap) || item?.company?.elligibleHandicap)
   const hiringCount3Years = item?.company?.hiringCount3Years
+  // Offre LBA non active (annulée, pourvue, en attente) : le téléphone du recruteur n'est plus affiché.
+  // Redondant avec le serveur qui renvoie déjà phone: null dans ce cas ; filet de sécurité côté UI.
+  const phone = showPhone && (item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || isOfferActive(item)) ? item?.contact?.phone : null
 
   return (
     <Box sx={{ mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
@@ -84,11 +89,11 @@ export const EmployeurPresentationBlock = ({
           </div>
         )}
 
-        {showPhone && item?.contact?.phone && (
+        {phone && (
           <div>
             <strong>Téléphone : </strong>
-            <DsfrLink href={`tel:${item.contact.phone}`} aria-label="Appeler la société au téléphone">
-              {item.contact.phone}
+            <DsfrLink href={`tel:${phone}`} aria-label="Appeler la société au téléphone">
+              {phone}
             </DsfrLink>
           </div>
         )}

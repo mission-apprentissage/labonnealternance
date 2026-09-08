@@ -3,6 +3,7 @@ import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -43,6 +44,40 @@ describe("jobs.controller", () => {
 
         expect(response.statusCode).toBe(200)
         expect(response.json().id).toBe(job._id.toString())
+      })
+
+      it("remonte le téléphone si l'offre est active", async () => {
+        const job = generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          apply_phone: "0600000000",
+        })
+        await getDbCollection("jobs_partners").insertOne(job)
+
+        const response = await httpClient().inject({
+          method: "GET",
+          path: `/api/_private/jobs/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job._id.toString()}`,
+        })
+
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(response.json().contact.phone).toBe("0600000000")
+      })
+
+      it.each([JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.POURVUE])("ne remonte pas le téléphone si l'offre est %s", async (offer_status) => {
+        const job = generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_status,
+          apply_phone: "0600000000",
+        })
+        await getDbCollection("jobs_partners").insertOne(job)
+
+        const response = await httpClient().inject({
+          method: "GET",
+          path: `/api/_private/jobs/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job._id.toString()}`,
+        })
+
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(response.json().contact.phone).toBeNull()
       })
     })
 

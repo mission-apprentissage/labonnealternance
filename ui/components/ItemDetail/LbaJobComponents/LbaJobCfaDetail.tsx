@@ -4,6 +4,7 @@ import { Box, Link, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useEffect } from "react"
 import type { ILbaItemPartnerJobJson } from "shared"
+import { isOfferActive } from "@/app/(candidat)/(recherche)/recherche/_components/is-offer-active"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ContratBlock } from "@/components/ItemDetail/ItemDetailServices/ContratBlock"
 import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailServices/EmployeurPresentationBlock"
@@ -60,7 +61,7 @@ export const LbaJobCfaDetail = ({ job, title, jobSearchedByUser }: { job: ILbaIt
           peut vous renseigner sur l&apos;offre.
         </Typography>
         <ItemLocalisation item={job as any} />
-        {job?.contact?.phone && (
+        {job?.contact?.phone && isOfferActive(job) && (
           <Stack direction="row" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("4v") }}>
             <Box sx={{ fontWeight: 700, mr: 2 }}>Téléphone :</Box>
             <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
