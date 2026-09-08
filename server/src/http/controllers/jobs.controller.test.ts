@@ -63,7 +63,7 @@ describe("jobs.controller", () => {
         expect.soft(response.json().contact.phone).toBe("0600000000")
       })
 
-      it.each([JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.POURVUE])("ne remonte pas le téléphone si l'offre est %s", async (offer_status) => {
+      it.each([JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.POURVUE, JOB_STATUS_ENGLISH.EN_ATTENTE])("ne remonte pas le téléphone si l'offre est %s", async (offer_status) => {
         const job = generateJobsPartnersOfferPrivate({
           partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
           offer_status,
