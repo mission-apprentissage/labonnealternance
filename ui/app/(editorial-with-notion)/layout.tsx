@@ -24,7 +24,10 @@ export default function HomeLayout({ children }: PropsWithChildren) {
       <Suspense fallback={<PublicHeaderStatic />}>
         <EditorialWithNotionHeaderWithUser />
       </Suspense>
-      <Box component="main" role="main" id="main-content" tabIndex={-1}>
+      {/* Pas de landmark ici : NotionRenderer rend lui-même un <main className="notion-page">, y compris
+          avec fullPage={false} — un wrapper <main> donnerait deux landmarks imbriqués. Ce Box ne porte que
+          la cible du lien d’évitement, commune à toutes les pages du groupe. */}
+      <Box id="main-content" tabIndex={-1}>
         {children}
       </Box>
       <Footer />
