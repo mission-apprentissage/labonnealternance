@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import { notFound } from "next/navigation"
 import { buildTrainingUrl } from "shared/metier/lbaitemutils"
+import { footerId } from "@/app/_components/shell-ids"
 import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { TrainingSchema } from "@/components/ItemDetail/TrainingSchema"
@@ -68,10 +69,10 @@ export default async function FormationPage({ params, searchParams }: { params: 
         links={[
           { label: "En-tête", anchor: "#detail-header" },
           { label: "Contenu", anchor: "#detail-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Pied de page", anchor: `#${footerId("detail-formation")}` },
         ]}
       />
-      <WidgetAwareHeader />
+      <WidgetAwareHeader shell="detail-formation" />
       <TrainingDetailRendererClient training={formation} rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)} />
     </>
   )

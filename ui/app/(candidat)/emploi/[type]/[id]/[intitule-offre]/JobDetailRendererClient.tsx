@@ -382,7 +382,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
       </Container>
       {isCollapsed && <CandidatureStickyBar selectedItem={selectedItem} />}
       {!isMobile && <BackToTopButton />}
-      {!isWidget && <Footer />}
+      {!isWidget && <Footer shell="detail-emploi" />}
     </Box>
   )
 }

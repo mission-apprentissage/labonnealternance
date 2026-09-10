@@ -7,7 +7,7 @@ export default async function WidgetLayout({ children }: { children: React.React
     <Box sx={{ height: "100vh" }}>
       <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%" }}>
         {children}
-        <Footer isWidget={true} />
+        <Footer shell="widget" isWidget={true} />
       </Box>
     </Box>
   )

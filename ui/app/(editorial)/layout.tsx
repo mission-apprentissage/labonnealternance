@@ -4,6 +4,7 @@ import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
+import { footerId, headerId } from "@/app/_components/shell-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function EditorialLayout({ children }: PropsWithChildren) {
@@ -11,23 +12,23 @@ export default function EditorialLayout({ children }: PropsWithChildren) {
     <>
       <SkipLinks
         links={[
-          { label: "Menu", anchor: "#header-links" },
+          { label: "Menu", anchor: `#${headerId("editorial")}` },
           { label: "Contenu", anchor: "#editorial-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Pied de page", anchor: `#${footerId("editorial")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic />}>
+      <Suspense fallback={<PublicHeaderStatic shell="editorial" />}>
         <EditorialHeaderWithUser />
       </Suspense>
       <Box component="main" role="main">
         {children}
       </Box>
-      <Footer />
+      <Footer shell="editorial" />
     </>
   )
 }
 
 async function EditorialHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader user={user} hideConnectionButton={false} />
+  return <PublicHeader shell="editorial" user={user} hideConnectionButton={false} />
 }

@@ -5,6 +5,7 @@ import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
+import { footerId, headerId } from "@/app/_components/shell-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function Layout({ children }: PropsWithChildren) {
@@ -12,18 +13,18 @@ export default function Layout({ children }: PropsWithChildren) {
     <>
       <SkipLinks
         links={[
-          { label: "Menu", anchor: "#header-links" },
+          { label: "Menu", anchor: `#${headerId("formulaire-intention")}` },
           { label: "Contenu", anchor: "#intention-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Pied de page", anchor: `#${footerId("formulaire-intention")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic />}>
+      <Suspense fallback={<PublicHeaderStatic shell="formulaire-intention" />}>
         <IntentionHeaderWithUser />
       </Suspense>
       <Box role="main" sx={{ py: fr.spacing("10v") }} component="main" tabIndex={-1} id="intention-content-container">
         {children}
       </Box>
-      <Footer />
+      <Footer shell="formulaire-intention" />
     </>
   )
 }
@@ -33,5 +34,5 @@ export default function Layout({ children }: PropsWithChildren) {
 // déclenche une boucle de redirections 307 entre le proxy et l'espace pro (incident du 2026-09-02).
 async function IntentionHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader user={user} hideConnectionButton={false} />
+  return <PublicHeader shell="formulaire-intention" user={user} hideConnectionButton={false} />
 }

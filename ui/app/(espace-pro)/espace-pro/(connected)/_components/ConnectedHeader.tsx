@@ -6,6 +6,7 @@ import type { IUserRecruteurPublic } from "shared"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { DsfrHeaderProps } from "@/app/_components/Header"
 import NavigationAdmin from "@/app/_components/Layout/NavigationAdmin"
+import { headerId } from "@/app/_components/shell-ids"
 import { ConnectedHeaderNavigation } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConnectedHeaderNavigation"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -41,6 +42,7 @@ export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
       <WithNav user={user}>
         <DsfrHeader
           {...rest}
+          id={headerId("espace-pro-connecte")}
           quickAccessItems={[
             <HeaderQuickAccessItem
               key="mon_compte"

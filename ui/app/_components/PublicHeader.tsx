@@ -5,8 +5,9 @@ import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
 import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
+import { headerId, type ShellName } from "./shell-ids"
 
-export function PublicHeader({ user, hideConnectionButton = false }: { user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
+export function PublicHeader({ shell, user, hideConnectionButton = false }: { shell: ShellName; user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
   const props = useMemo(() => {
     const extraItems = [
       <HeaderQuickAccessItem
@@ -52,9 +53,10 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
 
     return {
       ...DsfrHeaderProps,
+      id: headerId(shell),
       quickAccessItems: [...(DsfrHeaderProps.quickAccessItems ?? []), ...extraItems],
     }
-  }, [user, hideConnectionButton])
+  }, [shell, user, hideConnectionButton])
 
   return (
     <>
@@ -64,6 +66,6 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
   )
 }
 
-export const PublicHeaderStatic = () => {
-  return <DsfrHeader {...DsfrHeaderProps} navigation={<DsfrHeaderNavigation />} />
+export const PublicHeaderStatic = ({ shell }: { shell: ShellName }) => {
+  return <DsfrHeader {...DsfrHeaderProps} id={headerId(shell)} navigation={<DsfrHeaderNavigation />} />
 }

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation"
 import type { ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
+import { footerId } from "@/app/_components/shell-ids"
 import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
 import { IRechercheMode, resolveRecherchePageParams, toURLSearchParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
@@ -66,11 +67,11 @@ export default async function JobOfferPage({
         links={[
           { label: "En-tête", anchor: "#detail-header" },
           { label: "Contenu", anchor: "#detail-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Pied de page", anchor: `#${footerId("detail-emploi")}` },
         ]}
       />
       <InfoBanner />
-      <WidgetAwareHeader />
+      <WidgetAwareHeader shell="detail-emploi" />
       <JobDetailRendererClient
         job={job as ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson}
         rechercheParams={resolveRecherchePageParams(toURLSearchParams(await searchParams), IRechercheMode.DEFAULT)}

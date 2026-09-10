@@ -415,7 +415,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
           </SearchMobilePanel>
         )}
       </Box>
-      <Footer />
+      <Footer shell="recherche" />
     </>
   )
 }

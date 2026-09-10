@@ -282,7 +282,7 @@ function TrainingDetailPage({
         </Box>
       )}
       {!isMobile && <BackToTopButton />}
-      {!isWidget && <Footer />}
+      {!isWidget && <Footer shell="detail-formation" />}
     </Box>
   )
 }

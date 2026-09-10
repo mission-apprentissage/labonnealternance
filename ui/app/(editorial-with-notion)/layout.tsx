@@ -9,6 +9,7 @@ import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
+import { footerId, headerId } from "@/app/_components/shell-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function HomeLayout({ children }: PropsWithChildren) {
@@ -16,21 +17,21 @@ export default function HomeLayout({ children }: PropsWithChildren) {
     <>
       <SkipLinks
         links={[
-          { label: "Menu", anchor: "#header-links" },
+          { label: "Menu", anchor: `#${headerId("editorial-notion")}` },
           { label: "Contenu", anchor: "#editorial-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Pied de page", anchor: `#${footerId("editorial-notion")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic />}>
+      <Suspense fallback={<PublicHeaderStatic shell="editorial-notion" />}>
         <EditorialWithNotionHeaderWithUser />
       </Suspense>
       <Box>{children}</Box>
-      <Footer />
+      <Footer shell="editorial-notion" />
     </>
   )
 }
 
 async function EditorialWithNotionHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader user={user} hideConnectionButton={true} />
+  return <PublicHeader shell="editorial-notion" user={user} hideConnectionButton={true} />
 }

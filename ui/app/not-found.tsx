@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 export default function NotFoundPage() {
   return (
     <Box sx={{ minHeight: "100vh", display: "grid", gridTemplateRows: "max-content 1fr min-content" }}>
-      <PublicHeaderStatic />
+      <PublicHeaderStatic shell="not-found" />
       <Container maxWidth="xl">
         <NotFound />
       </Container>
-      <Footer />
+      <Footer shell="not-found" />
     </Box>
   )
 }

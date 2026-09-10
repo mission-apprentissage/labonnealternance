@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import type { HeaderProps } from "@codegouvfr/react-dsfr/Header"
 import { Box, Typography } from "@mui/material"
 import NextImage from "next/image"
+import { headerId } from "@/app/_components/shell-ids"
 
 export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
   brandTop: (
@@ -35,5 +36,5 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
       <NextImage width="155" height="40" src="/images/logo_LBA.svg" aria-label="La bonne alternance" alt="La bonne alternance" />
     </Box>,
   ],
-  id: "header-1j1s-links",
+  id: headerId("1jeune1solution"),
 }
