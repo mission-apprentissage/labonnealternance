@@ -5,7 +5,7 @@ import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
-import { footerId, headerId, mainId } from "@/app/_components/shell-ids"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function AuthentificationLayout({ children }: PropsWithChildren) {
@@ -18,7 +18,7 @@ export default function AuthentificationLayout({ children }: PropsWithChildren) 
           { label: "Pied de page", anchor: `#${footerId("espace-pro-authentification")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic shell="espace-pro-authentification" />}>
+      <Suspense fallback={<PublicHeaderStatic zone="espace-pro-authentification" />}>
         <AuthentificationHeaderWithUser />
       </Suspense>
       <Box
@@ -35,12 +35,12 @@ export default function AuthentificationLayout({ children }: PropsWithChildren) 
       >
         {children}
       </Box>
-      <Footer shell="espace-pro-authentification" />
+      <Footer zone="espace-pro-authentification" />
     </>
   )
 }
 
 async function AuthentificationHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader shell="espace-pro-authentification" user={user} />
+  return <PublicHeader zone="espace-pro-authentification" user={user} />
 }

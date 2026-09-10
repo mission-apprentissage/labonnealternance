@@ -5,7 +5,7 @@ import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
-import { footerId, headerId } from "@/app/_components/shell-ids"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function Layout({ children }: PropsWithChildren) {
@@ -14,17 +14,17 @@ export default function Layout({ children }: PropsWithChildren) {
       <SkipLinks
         links={[
           { label: "Menu", anchor: `#${headerId("formulaire-intention")}` },
-          { label: "Contenu", anchor: "#intention-content-container" },
+          { label: "Contenu", anchor: `#${mainId("formulaire-intention")}` },
           { label: "Pied de page", anchor: `#${footerId("formulaire-intention")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic shell="formulaire-intention" />}>
+      <Suspense fallback={<PublicHeaderStatic zone="formulaire-intention" />}>
         <IntentionHeaderWithUser />
       </Suspense>
-      <Box role="main" sx={{ py: fr.spacing("10v") }} component="main" tabIndex={-1} id="intention-content-container">
+      <Box role="main" sx={{ py: fr.spacing("10v") }} component="main" tabIndex={-1} id={mainId("formulaire-intention")}>
         {children}
       </Box>
-      <Footer shell="formulaire-intention" />
+      <Footer zone="formulaire-intention" />
     </>
   )
 }
@@ -34,5 +34,5 @@ export default function Layout({ children }: PropsWithChildren) {
 // déclenche une boucle de redirections 307 entre le proxy et l'espace pro (incident du 2026-09-02).
 async function IntentionHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader shell="formulaire-intention" user={user} hideConnectionButton={false} />
+  return <PublicHeader zone="formulaire-intention" user={user} hideConnectionButton={false} />
 }

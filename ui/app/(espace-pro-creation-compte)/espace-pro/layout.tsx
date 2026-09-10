@@ -5,7 +5,7 @@ import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { DsfrHeaderProps } from "@/app/_components/Header"
-import { footerId, headerId, mainId } from "@/app/_components/shell-ids"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { PAGES } from "@/utils/routes.utils"
 export default async function Layout({ children }: PropsWithChildren) {
@@ -45,7 +45,7 @@ export default async function Layout({ children }: PropsWithChildren) {
           <DepotSimplifieStyling>{children}</DepotSimplifieStyling>
         </Box>
       </Box>
-      <Footer shell="espace-pro-creation" />
+      <Footer zone="espace-pro-creation" />
     </>
   )
 }

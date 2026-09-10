@@ -5,7 +5,7 @@ import ItemDetailLoading from "@/components/ItemDetail/ItemDetailLoading"
 export default function JobDetailLoading() {
   return (
     <>
-      <WidgetAwareHeader shell="detail-emploi" />
+      <WidgetAwareHeader zone="detail-emploi" />
       <ItemDetailLoading type={LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} />
     </>
   )

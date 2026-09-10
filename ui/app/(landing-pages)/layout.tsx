@@ -6,7 +6,7 @@ import { Suspense } from "react"
 
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
-import { footerId, headerId } from "@/app/_components/shell-ids"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function PublicLayout({ children }: PropsWithChildren) {
@@ -15,22 +15,22 @@ export default function PublicLayout({ children }: PropsWithChildren) {
       <SkipLinks
         links={[
           { label: "Menu", anchor: `#${headerId("landing")}` },
-          { label: "Contenu", anchor: "#landing-page-content" },
+          { label: "Contenu", anchor: `#${mainId("landing")}` },
           { label: "Pied de page", anchor: `#${footerId("landing")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic shell="landing" />}>
+      <Suspense fallback={<PublicHeaderStatic zone="landing" />}>
         <LandingHeaderWithUser />
       </Suspense>
-      <Box component="main" role="main" sx={{ marginBottom: fr.spacing("8v") }}>
+      <Box component="main" role="main" id={mainId("landing")} tabIndex={-1} sx={{ marginBottom: fr.spacing("8v") }}>
         {children}
       </Box>
-      <Footer shell="landing" />
+      <Footer zone="landing" />
     </>
   )
 }
 
 async function LandingHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader shell="landing" user={user} />
+  return <PublicHeader zone="landing" user={user} />
 }

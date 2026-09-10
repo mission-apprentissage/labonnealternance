@@ -5,7 +5,7 @@ import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 import { DsfrHeaderProps } from "./Header"
-import { footerId, type ShellName } from "./shell-ids"
+import { footerId, type ZoneName } from "./zone-ids"
 
 // Deeplink officiel Google "sources préférées" (sans script tiers) :
 // https://developers.google.com/search/docs/appearance/preferred-sources
@@ -174,7 +174,7 @@ const linkListContent: LinkCategory[] = [
   },
 ]
 
-export function Footer({ shell, isWidget = false }: { shell: ShellName; isWidget?: boolean }) {
+export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: boolean }) {
   const description =
     "La bonne alternance simplifie les mises en relation entre les trois types d’acteurs candidats, recruteurs et centres de formation, afin de faciliter les entrées en alternance."
   const widgetDescription = (
@@ -188,7 +188,7 @@ export function Footer({ shell, isWidget = false }: { shell: ShellName; isWidget
   const showLinkList = !isWidget
 
   return (
-    <footer className="fr-footer" role="contentinfo" id={footerId(shell)}>
+    <footer className="fr-footer" role="contentinfo" id={footerId(zone)}>
       {showLinkList && (
         <nav className="fr-footer__top" role="navigation" aria-label="Plan du site">
           <h2 className="fr-sr-only">Informations et liens du site</h2>

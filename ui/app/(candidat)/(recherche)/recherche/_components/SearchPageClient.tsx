@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { zoneScopedId } from "@/app/_components/zone-ids"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
 import { useAutoRadius } from "../_hooks/use-auto-radius"
 import { useSearchResults } from "../_hooks/use-search-results"
@@ -296,7 +297,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                   boxShadow: isStuck ? "none" : "0 2px 6px rgba(0,0,18,0.08)",
                 }}
               >
-                <Box id="search-form" tabIndex={-1} sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
+                <Box id={zoneScopedId("recherche", "search-form")} tabIndex={-1} sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
                   <Box sx={{ flex: 1 }}>
                     <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
                   </Box>
@@ -318,7 +319,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               )}
             </Box>
 
-            <Box role="region" id="search-content-container" tabIndex={-1} aria-label="Résultats de la recherche">
+            <Box role="region" id={zoneScopedId("recherche", "search-content-container")} tabIndex={-1} aria-label="Résultats de la recherche">
               <SearchResultsList result={result} params={params} scrollToHitId={pendingScrollHitId} />
             </Box>
           </DefaultContainer>
@@ -327,7 +328,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
         {/* Mobile : barre résumé (2 lignes + chips Filtres/Tri) et liste plein écran */}
         <Box sx={{ display: { xs: "flex", lg: "none" }, flexDirection: "column", flex: 1, minHeight: 0 }}>
           <Box
-            id="search-form-mobile"
+            id={zoneScopedId("recherche", "search-form-mobile")}
             tabIndex={-1}
             sx={{
               position: "sticky",
@@ -351,7 +352,13 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             />
           </Box>
 
-          <Box role="region" id="search-content-container-mobile" tabIndex={-1} aria-label="Résultats de la recherche" sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
+          <Box
+            role="region"
+            id={zoneScopedId("recherche", "search-content-container-mobile")}
+            tabIndex={-1}
+            aria-label="Résultats de la recherche"
+            sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}
+          >
             <SearchResultsList result={result} params={params} scrollToHitId={pendingScrollHitId} />
           </Box>
         </Box>
@@ -415,7 +422,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
           </SearchMobilePanel>
         )}
       </Box>
-      <Footer shell="recherche" />
+      <Footer zone="recherche" />
     </>
   )
 }

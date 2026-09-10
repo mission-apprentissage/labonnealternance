@@ -5,9 +5,9 @@ import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
 import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
-import { headerId, type ShellName } from "./shell-ids"
+import { headerId, type ZoneName } from "./zone-ids"
 
-export function PublicHeader({ shell, user, hideConnectionButton = false }: { shell: ShellName; user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
+export function PublicHeader({ zone, user, hideConnectionButton = false }: { zone: ZoneName; user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
   const props = useMemo(() => {
     const extraItems = [
       <HeaderQuickAccessItem
@@ -53,10 +53,10 @@ export function PublicHeader({ shell, user, hideConnectionButton = false }: { sh
 
     return {
       ...DsfrHeaderProps,
-      id: headerId(shell),
+      id: headerId(zone),
       quickAccessItems: [...(DsfrHeaderProps.quickAccessItems ?? []), ...extraItems],
     }
-  }, [shell, user, hideConnectionButton])
+  }, [zone, user, hideConnectionButton])
 
   return (
     <>
@@ -66,6 +66,6 @@ export function PublicHeader({ shell, user, hideConnectionButton = false }: { sh
   )
 }
 
-export const PublicHeaderStatic = ({ shell }: { shell: ShellName }) => {
-  return <DsfrHeader {...DsfrHeaderProps} id={headerId(shell)} navigation={<DsfrHeaderNavigation />} />
+export const PublicHeaderStatic = ({ zone }: { zone: ZoneName }) => {
+  return <DsfrHeader {...DsfrHeaderProps} id={headerId(zone)} navigation={<DsfrHeaderNavigation />} />
 }

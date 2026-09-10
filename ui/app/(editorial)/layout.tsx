@@ -4,7 +4,7 @@ import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
-import { footerId, headerId } from "@/app/_components/shell-ids"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function EditorialLayout({ children }: PropsWithChildren) {
@@ -13,22 +13,22 @@ export default function EditorialLayout({ children }: PropsWithChildren) {
       <SkipLinks
         links={[
           { label: "Menu", anchor: `#${headerId("editorial")}` },
-          { label: "Contenu", anchor: "#editorial-content-container" },
+          { label: "Contenu", anchor: `#${mainId("editorial")}` },
           { label: "Pied de page", anchor: `#${footerId("editorial")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic shell="editorial" />}>
+      <Suspense fallback={<PublicHeaderStatic zone="editorial" />}>
         <EditorialHeaderWithUser />
       </Suspense>
-      <Box component="main" role="main">
+      <Box component="main" role="main" id={mainId("editorial")} tabIndex={-1}>
         {children}
       </Box>
-      <Footer shell="editorial" />
+      <Footer zone="editorial" />
     </>
   )
 }
 
 async function EditorialHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader shell="editorial" user={user} hideConnectionButton={false} />
+  return <PublicHeader zone="editorial" user={user} hideConnectionButton={false} />
 }

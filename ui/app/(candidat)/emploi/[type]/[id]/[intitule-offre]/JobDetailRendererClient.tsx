@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
+import { mainId, zoneScopedId } from "@/app/_components/zone-ids"
 import { useDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-detail-navigation"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { useIsWidget } from "@/app/hooks/use-is-widget"
@@ -285,7 +286,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
               {getJobPublishedTimeAndApplications({ item: selectedItem })}
               <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />
               <Typography
-                id="detail-header"
+                id={zoneScopedId("detail-emploi", "detail-header")}
                 variant={"h3"}
                 sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
                 dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
@@ -340,7 +341,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
             </Box>
           </Box>
 
-          <Box id="detail-content-container" />
+          <Box id={mainId("detail-emploi")} />
           <Box>
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && (
               <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} jobSearchedByUser={rechercheParams.job_name} />
@@ -382,7 +383,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
       </Container>
       {isCollapsed && <CandidatureStickyBar selectedItem={selectedItem} />}
       {!isMobile && <BackToTopButton />}
-      {!isWidget && <Footer shell="detail-emploi" />}
+      {!isWidget && <Footer zone="detail-emploi" />}
     </Box>
   )
 }

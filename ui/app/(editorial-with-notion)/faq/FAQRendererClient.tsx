@@ -112,7 +112,7 @@ function FAQRendererClientGeneric({
             mb: fr.spacing("2v"),
           }}
         >
-          <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
+          <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
             Questions fréquement posées
           </Typography>
         </Box>

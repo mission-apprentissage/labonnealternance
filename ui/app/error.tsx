@@ -1,7 +1,7 @@
 "use client"
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
-import { footerId, headerId } from "@/app/_components/shell-ids"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import type { ErrorProps } from "./_components/ErrorComponent"
 import { ErrorComponent } from "./_components/ErrorComponent"
 import { Footer } from "./_components/Footer"
@@ -13,14 +13,14 @@ export default function ErrorPage(props: ErrorProps) {
       <SkipLinks
         links={[
           { label: "En-tête", anchor: `#${headerId("error")}` },
-          { label: "Contenu", anchor: "#content-container" },
+          { label: "Contenu", anchor: `#${mainId("error")}` },
           { label: "Pied de page", anchor: `#${footerId("error")}` },
         ]}
       />
       <Box sx={{ minHeight: "100vh", display: "grid", gridTemplateRows: "max-content 1fr min-content" }}>
-        <PublicHeaderStatic shell="error" />
+        <PublicHeaderStatic zone="error" />
         <ErrorComponent {...props} />
-        <Footer shell="error" />
+        <Footer zone="error" />
       </Box>
     </>
   )

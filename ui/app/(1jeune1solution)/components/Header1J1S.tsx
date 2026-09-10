@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import type { HeaderProps } from "@codegouvfr/react-dsfr/Header"
 import { Box, Typography } from "@mui/material"
 import NextImage from "next/image"
-import { headerId } from "@/app/_components/shell-ids"
+import { headerId } from "@/app/_components/zone-ids"
 
 export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
   brandTop: (

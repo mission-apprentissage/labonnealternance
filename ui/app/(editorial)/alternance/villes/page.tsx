@@ -125,7 +125,7 @@ export default function AlternanceVilles() {
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
+          <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
             Trouver une alternance dans les grandes villes
           </Typography>
           <Box

@@ -5,7 +5,7 @@ import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
-import { footerId, headerId, mainId } from "@/app/_components/shell-ids"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function RecruteurLayout({ children }: PropsWithChildren) {
@@ -18,7 +18,7 @@ export default function RecruteurLayout({ children }: PropsWithChildren) {
           { label: "Pied de page", anchor: `#${footerId("espace-pro-from-mail")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic shell="espace-pro-from-mail" />}>
+      <Suspense fallback={<PublicHeaderStatic zone="espace-pro-from-mail" />}>
         <FromMailHeaderWithUser />
       </Suspense>
       <Box component="main" role="main" id={mainId("espace-pro-from-mail")} tabIndex={-1} sx={{ marginBottom: fr.spacing("8v") }}>
@@ -26,12 +26,12 @@ export default function RecruteurLayout({ children }: PropsWithChildren) {
           {children}
         </Container>
       </Box>
-      <Footer shell="espace-pro-from-mail" />
+      <Footer zone="espace-pro-from-mail" />
     </>
   )
 }
 
 async function FromMailHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader shell="espace-pro-from-mail" user={user} />
+  return <PublicHeader zone="espace-pro-from-mail" user={user} />
 }

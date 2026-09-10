@@ -99,7 +99,7 @@ export default function UnJeune1Solution() {
       }}
       maxWidth="xl"
     >
-      <Box id="editorial-1j1s-content-container" tabIndex={-1} sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
+      <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "start" }}>
             <Box>
