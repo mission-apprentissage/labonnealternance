@@ -8,9 +8,9 @@ import { DsfrIcon } from "@/components/DsfrIcon"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
-import { IntensionPageResult } from "./IntensionPageResult"
 import type { IntentionPageFormValues } from "./IntentionPageForm"
 import { IntentionPageForm } from "./IntentionPageForm"
+import { IntentionPageResult } from "./IntentionPageResult"
 
 export type IntentionPageProps = {
   company_recruitment_intention: ApplicationIntention
@@ -265,8 +265,8 @@ export function IntentionPage(props: IntentionPageProps) {
   return (
     <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
       {displayMode === "form" && <IntentionPageContent {...props} onCancel={() => setDisplayMode("canceled")} onSentNow={() => setDisplayMode("sent_now")} />}
-      {displayMode === "canceled" && <IntensionPageResult intention={company_recruitment_intention} canceled={true} />}
-      {displayMode === "sent_now" && <IntensionPageResult intention={company_recruitment_intention} />}
+      {displayMode === "canceled" && <IntentionPageResult intention={company_recruitment_intention} canceled={true} />}
+      {displayMode === "sent_now" && <IntentionPageResult intention={company_recruitment_intention} />}
     </Box>
   )
 }
