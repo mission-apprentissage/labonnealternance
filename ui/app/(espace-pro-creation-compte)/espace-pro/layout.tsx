@@ -53,23 +53,21 @@ export function Header() {
   const { quickAccessItems, ...rest } = DsfrHeaderProps
 
   return (
-    <nav role="navigation" aria-label="Navigation principale">
-      <DsfrHeader
-        {...rest}
-        quickAccessItems={[
-          <HeaderQuickAccessItem
-            key="connexion"
-            quickAccessItem={{
-              iconId: "fr-icon-close-line",
-              text: "Fermer",
-              linkProps: {
-                href: PAGES.static.accesRecruteur.getPath(),
-                "aria-label": "Fermer - retour à l'espace recruteur",
-              },
-            }}
-          />,
-        ]}
-      />
-    </nav>
+    <DsfrHeader
+      {...rest}
+      quickAccessItems={[
+        <HeaderQuickAccessItem
+          key="connexion"
+          quickAccessItem={{
+            iconId: "fr-icon-close-line",
+            text: "Fermer",
+            linkProps: {
+              href: PAGES.static.accesRecruteur.getPath(),
+              "aria-label": "Fermer - retour à l'espace recruteur",
+            },
+          }}
+        />,
+      ]}
+    />
   )
 }
