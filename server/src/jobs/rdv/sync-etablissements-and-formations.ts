@@ -59,6 +59,16 @@ const BULK_SIZE = 500
  */
 const MAX_CONSECUTIVE_ERRORS = 50
 
+/** Cadence des logs de progression : assez rare pour ne pas polluer, assez fréquent pour situer un run qui traîne. */
+const PROGRESS_LOG_EVERY = 10_000
+
+/**
+ * Phases instrumentées du traitement d'une formation. Le temps cumulé par phase est loggé en fin de
+ * run : c'est ce qui dit où part la durée (lectures, résolution des emails, écritures) sans avoir à
+ * rejouer le job à la main sur la prod.
+ */
+type Phase = "lookups" | "emails" | "etfaFlush" | "etablissementsWrite"
+
 type IFormationEmailFields = Pick<IFormationCatalogue, "email" | "etablissement_gestionnaire_courriel" | "etablissement_gestionnaire_siret">
 
 const isSet = (value: unknown) => value !== null && value !== undefined
@@ -77,6 +87,27 @@ export const syncEtablissementsAndFormations = async () => {
   // `errors` si le lot rejette cette opération, donc `processed + errors` sur-compte.
   const stats = { read: 0, processed: 0, inserted: 0, updated: 0, errors: 0 }
   let consecutiveErrors = 0
+
+  const startedAt = performance.now()
+  const timings: Record<Phase, number> = { lookups: 0, emails: 0, etfaFlush: 0, etablissementsWrite: 0 }
+
+  const timed = async <T>(phase: Phase, fn: () => Promise<T>): Promise<T> => {
+    const phaseStart = performance.now()
+    try {
+      return await fn()
+    } finally {
+      timings[phase] += performance.now() - phaseStart
+    }
+  }
+
+  const getTimingSnapshot = () => {
+    const durationMs = Math.round(performance.now() - startedAt)
+    return {
+      durationMs,
+      formationsPerSecond: durationMs > 0 ? Math.round((stats.read / durationMs) * 1000) : null,
+      timings: Object.fromEntries(Object.entries(timings).map(([phase, ms]) => [phase, Math.round(ms)])) as Record<Phase, number>,
+    }
+  }
 
   /**
    * getEmailForRdv ne lit que formationcatalogues et emailblacklists, deux collections que ce job
@@ -134,7 +165,7 @@ export const syncEtablissementsAndFormations = async () => {
     if (etfaOps.length === 0) return
     const ops = etfaOps.splice(0, etfaOps.length)
     try {
-      const result = await getDbCollection("eligible_trainings_for_appointments").bulkWrite(ops, { ordered: false })
+      const result = await timed("etfaFlush", () => getDbCollection("eligible_trainings_for_appointments").bulkWrite(ops, { ordered: false }))
       stats.inserted += result.insertedCount
       stats.updated += result.matchedCount
     } catch (err) {
@@ -162,16 +193,21 @@ export const syncEtablissementsAndFormations = async () => {
     objectMode: true,
     async write(formation, _encoding, callback) {
       stats.read++
+      if (stats.read % PROGRESS_LOG_EVERY === 0) {
+        logger.info({ ...stats, ...getTimingSnapshot() }, "Cron #syncEtablissementsAndFormations en cours.")
+      }
       try {
-        const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
-          getDbCollection("eligible_trainings_for_appointments").findOne(
-            { cle_ministere_educatif: formation.cle_ministere_educatif },
-            { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1 } }
-          ),
-          getDbCollection("etablissements").find({ gestionnaire_siret: formation.etablissement_gestionnaire_siret }, { projection: ETABLISSEMENT_PROJECTION }).toArray(),
-          // Seule l'existence est utilisée en aval.
-          getDbCollection("referentieloniseps").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }, { projection: { _id: 1 } }),
-        ])
+        const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await timed("lookups", () =>
+          Promise.all([
+            getDbCollection("eligible_trainings_for_appointments").findOne(
+              { cle_ministere_educatif: formation.cle_ministere_educatif },
+              { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1 } }
+            ),
+            getDbCollection("etablissements").find({ gestionnaire_siret: formation.etablissement_gestionnaire_siret }, { projection: ETABLISSEMENT_PROJECTION }).toArray(),
+            // Seule l'existence est utilisée en aval.
+            getDbCollection("referentieloniseps").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }, { projection: { _id: 1 } }),
+          ])
+        )
 
         const dateFlags = {
           hasPremiumAffelnetActivation: false,
@@ -191,7 +227,7 @@ export const syncEtablissementsAndFormations = async () => {
         }
 
         const emailArray = etablissements.map((etab) => ({ email: etab.gestionnaire_email }))
-        let gestionnaireEmail = await findFirstNonBlacklistedEmail(emailArray)
+        let gestionnaireEmail = await timed("emails", () => findFirstNonBlacklistedEmail(emailArray))
 
         const referrersToActivate: string[] = []
         if (dateFlags.hasOptOutActivation && !dateFlags.hasOptOutRefusal) {
@@ -209,7 +245,7 @@ export const syncEtablissementsAndFormations = async () => {
         // Un email personnalisé sur la fiche existante n'est jamais réécrit ; sinon on le recalcule.
         const emailRdv = eligibleTrainingsForAppointment?.is_lieu_formation_email_customized
           ? eligibleTrainingsForAppointment.lieu_formation_email
-          : await resolveEmailRdv(formation)
+          : await timed("emails", () => resolveEmailRdv(formation))
 
         // Champs communs à la création et à la mise à jour. Les cinq champs propres à la création
         // (created_at, rco_formation_id, cle_ministere_educatif et les deux sirets) n'en font pas
@@ -261,34 +297,36 @@ export const syncEtablissementsAndFormations = async () => {
         }
 
         if (!gestionnaireEmail) {
-          gestionnaireEmail = await resolveGestionnaireCourriel(formation)
+          gestionnaireEmail = await timed("emails", () => resolveGestionnaireCourriel(formation))
         }
 
         // Écriture volontairement immédiate, contrairement à eligible_trainings_for_appointments :
         // la lecture d'etablissements en tête de boucle voit les gestionnaire_email posés par les
         // formations précédentes du même gestionnaire, et différer casserait cette dépendance.
-        await getDbCollection("etablissements").updateMany(
-          {
-            $and: [
-              {
-                formateur_siret: formation.etablissement_formateur_siret,
-                gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-              },
-            ],
-          },
-          {
-            $set: {
-              gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-              gestionnaire_email: gestionnaireEmail,
-              raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-              formateur_siret: formation.etablissement_formateur_siret,
-              formateur_address: formation.etablissement_formateur_adresse,
-              formateur_zip_code: formation.etablissement_formateur_code_postal,
-              formateur_city: formation.etablissement_formateur_localite,
-              last_catalogue_sync_date: syncedAt,
+        await timed("etablissementsWrite", () =>
+          getDbCollection("etablissements").updateMany(
+            {
+              $and: [
+                {
+                  formateur_siret: formation.etablissement_formateur_siret,
+                  gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+                },
+              ],
             },
-          },
-          { upsert: true }
+            {
+              $set: {
+                gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+                gestionnaire_email: gestionnaireEmail,
+                raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
+                formateur_siret: formation.etablissement_formateur_siret,
+                formateur_address: formation.etablissement_formateur_adresse,
+                formateur_zip_code: formation.etablissement_formateur_code_postal,
+                formateur_city: formation.etablissement_formateur_localite,
+                last_catalogue_sync_date: syncedAt,
+              },
+            },
+            { upsert: true }
+          )
         )
 
         stats.processed++
@@ -327,7 +365,10 @@ export const syncEtablissementsAndFormations = async () => {
     }
   }
 
-  logger.info(stats, "Cron #syncEtablissementsAndFormations done.")
+  // durationMs et le détail par phase sont le relevé de performance du run : c'est la valeur à
+  // comparer d'une nuit à l'autre et à confronter au maxRuntimeInMinutes du monitor Sentry.
+  const timing = getTimingSnapshot()
+  logger.info({ ...stats, ...timing }, "Cron #syncEtablissementsAndFormations done.")
 
   if (runError) throw runError
 
@@ -337,5 +378,5 @@ export const syncEtablissementsAndFormations = async () => {
     throw new Error(`syncEtablissementsAndFormations: ${stats.errors} erreur(s) sur ${stats.read} formation(s) parcourue(s)`)
   }
 
-  return stats
+  return { ...stats, durationMs: timing.durationMs }
 }

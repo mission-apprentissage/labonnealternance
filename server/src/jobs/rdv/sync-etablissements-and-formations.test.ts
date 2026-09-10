@@ -1,10 +1,17 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import type { IFormationCatalogue } from "shared"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { syncEtablissementsAndFormations } from "./sync-etablissements-and-formations"
+
+// Le logger est un Proxy : vi.spyOn ne le voit pas, on remplace le module comme dans brevo.service.test.ts.
+const { loggerInfo } = vi.hoisted(() => ({ loggerInfo: vi.fn() }))
+vi.mock("@/common/logger", async (importOriginal) => {
+  const mod = await importOriginal<{ logger: Record<string, unknown> }>()
+  return { ...mod, logger: { ...mod.logger, info: loggerInfo, error: vi.fn(), warn: vi.fn() } }
+})
 
 const GESTIONNAIRE_SIRET = "11000001500013"
 const FORMATEUR_SIRET = "13002526500013"
@@ -160,6 +167,27 @@ describe("sync-etablissements-and-formations", () => {
 
     const etfa = await getDbCollection("eligible_trainings_for_appointments").findOne({ cle_ministere_educatif: "cle-1" })
     expect(etfa?.referrers).toEqual(["LBA", "JEUNE_1_SOLUTION"])
+  })
+
+  it("mesure la durée du run et la ventile par phase dans le log de fin", async () => {
+    loggerInfo.mockClear()
+    await getDbCollection("formationcatalogues").insertMany([givenFormation({ cle_ministere_educatif: "cle-1" }), givenFormation({ cle_ministere_educatif: "cle-2" })])
+
+    const stats = await syncEtablissementsAndFormations()
+
+    expect(stats.durationMs).toBeGreaterThanOrEqual(0)
+
+    const doneLog = loggerInfo.mock.calls.find(([, message]) => message === "Cron #syncEtablissementsAndFormations done.")
+    expect(doneLog).toBeDefined()
+    const [payload] = doneLog as unknown as [Record<string, unknown>]
+    expect(payload).toMatchObject({ read: 2, processed: 2, durationMs: stats.durationMs })
+    expect(payload.formationsPerSecond === null || typeof payload.formationsPerSecond === "number").toBe(true)
+    // Les quatre phases doivent être présentes même à zéro : c'est ce qui rend les logs comparables d'une nuit à l'autre.
+    expect(Object.keys(payload.timings as object).sort()).toEqual(["emails", "etablissementsWrite", "etfaFlush", "lookups"])
+    for (const ms of Object.values(payload.timings as Record<string, number>)) {
+      expect(Number.isInteger(ms)).toBe(true)
+      expect(ms).toBeGreaterThanOrEqual(0)
+    }
   })
 
   it("écrit les formations valides d'un lot même si l'une d'elles est rejetée, et échoue à la fin", async () => {

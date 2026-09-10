@@ -218,9 +218,11 @@ export async function setupJobProcessor() {
             handler: updateParcoursupAndAffelnetInfoOnFormationCatalogue,
             tag: "main",
           },
-          // Durées prod mesurées sur 7 nuits : 68 à 96 min, donc au-delà du maxRuntime par défaut
-          // (60 min) — le monitor Sentry partait en timeout chaque nuit. La marge de check-in tient
-          // compte de l'import catalogue (02:15, maxRuntime 90) qui peut déborder sur le même worker.
+          // Durées prod mesurées sur 7 nuits avant le passage en bulk (#5325) : 68 à 96 min, donc au-delà
+          // du maxRuntime par défaut (60 min) — le monitor Sentry partait en timeout chaque nuit. La marge
+          // de check-in tient compte de l'import catalogue (02:15, maxRuntime 90) qui peut déborder sur le
+          // même worker. Le job logge désormais sa durée (durationMs, ventilée par phase) en fin de run :
+          // resserrer maxRuntimeInMinutes une fois quelques nuits prod relevées.
           "Synchronise les formations eligibles à la prise de rendez-vous": {
             cron_string: "45 2 * * *",
             handler: syncEtablissementsAndFormations,
