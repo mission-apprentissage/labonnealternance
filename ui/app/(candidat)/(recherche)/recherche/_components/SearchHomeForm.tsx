@@ -17,7 +17,7 @@ import { SearchBar } from "./SearchBar"
 import { SearchMobilePanel } from "./SearchMobilePanel"
 import { SEARCH_MODE_OPTIONS, SearchTypeRechercheSelect } from "./SearchTypeRechercheSelect"
 
-type Lieu = { label: string; latitude: number; longitude: number }
+type Lieu = { label: string; latitude: number; longitude: number; adminArea?: string }
 
 // Placeholder court du faux champ (cf. design mobile) — le champ réel de la modale garde
 // le placeholder long de SearchBar.
@@ -113,6 +113,7 @@ export function SearchHomeForm() {
         lieu_label: lieu?.label,
         latitude: lieu?.latitude,
         longitude: lieu?.longitude,
+        admin_area: lieu?.adminArea,
         mode,
         radius: 20,
         page: 0,

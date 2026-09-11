@@ -25,6 +25,7 @@ import {
   stripHtmlToText,
   upsertSearchItem,
 } from "@/services/search/search-items.service"
+import { resolveAdminCodes } from "@/services/search/search-items-admin-codes"
 
 // Génération des mots-clés Mistral : déplacée dans search-items-keywords.service.ts
 // (cron continu + batch hebdo recruteurs + ramasse des jobs + import manuel).
@@ -164,10 +165,18 @@ export const fillSearchItemsCollection = async () => {
     // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
     // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
     if (existingIds.has(formation._id.toString())) {
+      const built = buildFormationSearchItem(formation, ctx)
       await searchItemsCollection.updateOne(
         { _id: formation._id },
         {
           $set: {
+            // Lieu et organisme : 1 593 offres en prod (0,48 %) étaient affichées à une position
+            // que la source avait corrigée depuis ; la delta ne revoit pas les items dont
+            // updated_at ne bouge plus, seul le nightly peut les rattraper (mesure du 2026-09-11).
+            address: built.address,
+            location: built.location,
+            organization_name: built.organization_name,
+            level: built.level,
             is_disabled_elligible: null,
             start_date: null,
             start_type: null,
@@ -176,6 +185,8 @@ export const fillSearchItemsCollection = async () => {
             is_formation_included: null,
             title: dedupeRepeatedTitle(formation.intitule_rco || ""),
             description: stripHtmlToText(formation.contenu),
+            // Emprise administrative (ban-plateforme#781) : backfill des items antérieurs au champ.
+            ...resolveAdminCodes({ insee: formation.code_commune_insee, zipcode: formation.code_postal, geopoint: formation.lieu_formation_geopoint }, ctx.adminCodes),
           },
         }
       )
@@ -192,10 +203,16 @@ export const fillSearchItemsCollection = async () => {
     // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
     // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
     if (existingIds.has(job._id.toString())) {
+      const built = buildJobOfferSearchItem(job, ctx)
       await searchItemsCollection.updateOne(
         { _id: job._id },
         {
           $set: {
+            address: built.address,
+            location: built.location,
+            organization_name: built.organization_name,
+            level: built.level,
+            activity_sector: built.activity_sector,
             is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
             start_date: sanitizeContractStart(job.contract_start),
             start_type: job.contract_start_type ?? null,
@@ -209,6 +226,7 @@ export const fillSearchItemsCollection = async () => {
             // (déjà calculé par le $lookup du pipeline — gratuit).
             application_count: job.application_count,
             smart_apply: job.apply_email ? true : false,
+            ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
           },
         }
       )
@@ -222,10 +240,17 @@ export const fillSearchItemsCollection = async () => {
     // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
     // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
     if (existingIds.has(job._id.toString())) {
+      const built = buildRecruteurSearchItem(job, ctx)
       await searchItemsCollection.updateOne(
         { _id: job._id },
         {
           $set: {
+            title: built.title,
+            address: built.address,
+            location: built.location,
+            organization_name: built.organization_name,
+            level: built.level,
+            activity_sector: built.activity_sector,
             is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
             start_date: null,
             start_type: null,
@@ -234,6 +259,7 @@ export const fillSearchItemsCollection = async () => {
             is_formation_included: false,
             application_count: job.application_count,
             smart_apply: job.apply_email ? true : false,
+            ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
           },
         }
       )

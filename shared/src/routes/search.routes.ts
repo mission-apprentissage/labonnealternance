@@ -62,6 +62,13 @@ export const zSearchRoutes = {
         latitude: ZLatitudeParam.pipe(z.number().min(-90).max(90).optional()),
         longitude: ZLongitudeParam.pipe(z.number().min(-180).max(180).optional()),
         radius: ZRadiusParam.pipe(z.number().min(0).max(200).optional()).default(30),
+        admin_area: z
+          .string()
+          .regex(/^(region|departement):([0-9]{1,3}|2[AB])$/)
+          .optional()
+          .describe(
+            "Emprise administrative exacte (region:53, departement:44). Prioritaire sur latitude/longitude/radius pour le filtrage ; le tri par proximité garde la paire lat/lon si fournie."
+          ),
         page: z.coerce.number<number>().min(0).default(0).describe("Index de page (0-based)"),
         hitsPerPage: z.coerce.number<number>().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
         search_source: z

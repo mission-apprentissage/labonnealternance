@@ -34,6 +34,11 @@ export const ZSearchItem = z.object({
   description: z.string().describe("Description de l'offre"),
   address: z.string().describe("Adresse complète"),
   location: ZSearchItemLocation.optional().describe("GeoJSON Point pour MongoDB Search"),
+  // Emprise administrative dérivée à la construction (référentiel communes) : permet un filtre
+  // exact par département ou région, là où point + rayon ramène 51 à 82 % de hors-périmètre
+  // (cf. ban-plateforme#781). null quand la commune de l'item n'est pas résolue.
+  departement_code: z.string().nullable().describe("Code INSEE du département du lieu (01…95, 2A, 2B, 971…976)"),
+  region_code: z.string().nullable().describe("Code INSEE de la région du lieu"),
   organization_name: z.string().describe("Nom de l'entreprise"),
   level: z.string().nullable().describe("Niveau de diplôme visé"),
   activity_sector: z.string().nullable().describe("Secteur d'activité"),
@@ -86,6 +91,8 @@ export default {
             is_algo_company: { type: "boolean" },
             is_formation_included: { type: "boolean" },
             location: { type: "geo" },
+            departement_code: { type: "token" },
+            region_code: { type: "token" },
           },
         },
         analyzers: [

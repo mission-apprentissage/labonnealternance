@@ -20,7 +20,8 @@ export function useAutoRadius({
   result: ReturnType<typeof useSearchResults>
   onRadiusChange: (radius: number) => void
 }) {
-  const hasGeo = params.latitude !== undefined && params.longitude !== undefined
+  // Emprise administrative : le rayon n'intervient plus dans le filtre, l'élargir ne changerait rien.
+  const hasGeo = params.latitude !== undefined && params.longitude !== undefined && !params.admin_area
   const nbHits = result.data?.pages.at(-1)?.nbHits ?? 0
   const busy = result.isLoading || result.isFetching
 

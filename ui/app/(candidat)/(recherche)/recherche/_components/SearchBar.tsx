@@ -144,7 +144,7 @@ export function highlightMatch(label: string, input: string): ReactNode {
   )
 }
 
-type LieuOption = { label: string; latitude: number; longitude: number }
+type LieuOption = { label: string; latitude: number; longitude: number; adminArea?: string }
 
 // Option « France entière » du champ lieu : proposée quand le champ est vide (Entrée la
 // sélectionne — autoHighlight), elle retire le lieu de la recherche. Le placeholder
@@ -161,7 +161,7 @@ interface SearchBarProps {
   initialLieuLabel?: string
   /** source : "suggestion" si l'utilisateur a sélectionné une option d'autocomplete, "free_text" sinon (télémétrie moteur de suggestion). */
   onSubmit: (q: string, source: "suggestion" | "free_text") => void
-  onLieuChange: (lieu: { label: string; latitude: number; longitude: number } | null) => void
+  onLieuChange: (lieu: { label: string; latitude: number; longitude: number; adminArea?: string } | null) => void
   /** Saisie courante du champ métier (formulaire home : le bouton Rechercher lit la valeur non validée). */
   onQChange?: (q: string) => void
   /** "row" : barre desktop ; "column" : panneau mobile ; "responsive" : colonne en xs, rangée en md+ (home). */
@@ -303,7 +303,8 @@ export function SearchBar({
   // Suggestions pour le champ lieu
   const { data: lieuOptions } = useQuery({
     queryKey: ["lieu-suggestions", debouncedLieu],
-    queryFn: ({ signal }) => searchAddress(debouncedLieu, undefined, signal),
+    // withAdminAreas : les départements et régions remontent dans les suggestions (index poi).
+    queryFn: ({ signal }) => searchAddress(debouncedLieu, undefined, signal, true),
     enabled: debouncedLieu.length >= 2,
     staleTime: 1000 * 60 * 5,
     throwOnError: false,
@@ -312,6 +313,7 @@ export function SearchBar({
     label: item.label,
     latitude: item.value.coordinates[1],
     longitude: item.value.coordinates[0],
+    adminArea: item.adminArea,
   }))
 
   // Champ vide : seule l'option « France entière » est proposée ; en saisie, les suggestions

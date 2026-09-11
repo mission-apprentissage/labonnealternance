@@ -7,12 +7,24 @@ import { simplifiedItems } from "./arrondissements"
 
 type AddressFeature = {
   properties: {
-    label: string
-    postcode: string
-    citycode: string
+    // Présents sur l'index `address` uniquement. L'index `poi` renvoie `toponym` et
+    // `category` à la place, sans `label` ni `postcode` (cf. ban-plateforme#781) : tout
+    // accès direct à `label` plante sur une feature poi.
+    label?: string
+    postcode?: string
+    citycode?: string | string[]
     population?: number
+    toponym?: string
+    category?: string[]
+    _type?: "address" | "poi"
   }
   geometry: IPointGeometry
+}
+
+/** Catégories `poi` retenues comme emprise de recherche, et leur nom côté API LBA. */
+const ADMIN_CATEGORIES: Record<string, "region" | "departement"> = {
+  région: "region",
+  département: "departement",
 }
 
 type Coordinates = [number, number]
@@ -22,9 +34,16 @@ type IAddressItem = {
   insee: string
   zipcode: string
   label: string
+  /** `"region:53"` / `"departement:44"` : renseigné uniquement pour une entité supra-communale. */
+  adminArea?: string
 }
 
-export async function searchAddress(value: string, type?: string, signal?: AbortSignal): Promise<IAddressItem[]> {
+/**
+ * `withAdminAreas` ajoute l'index `poi` à la requête : les départements et régions remontent
+ * alors dans les suggestions, avec leur code dans `adminArea`. Opt-in tant que le filtrage
+ * par emprise n'est pas généralisé côté API.
+ */
+export async function searchAddress(value: string, type?: string, signal?: AbortSignal, withAdminAreas = false): Promise<IAddressItem[]> {
   if (value && value.length > 2) {
     let term = value
     const limit = 10
@@ -42,7 +61,9 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
     }
     if (type) filter = "&type=" + type
 
-    const addressURL = `https://data.geopf.fr/geocodage/search/?limit=${limit}&q=${term}${filter}`
+    // `index=address,poi` : un seul appel, les deux index scorés ensemble par le service.
+    const index = withAdminAreas ? "&index=address,poi" : ""
+    const addressURL = `https://data.geopf.fr/geocodage/search/?limit=${limit}&q=${term}${filter}${index}`
 
     try {
       const response = await fetch(addressURL, { signal })
@@ -57,14 +78,23 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
       })
 
       const returnedItems = data.features.map((feature) => {
-        let label = feature.properties.label
-        if (label.indexOf(feature.properties.postcode) < 0) label += " " + feature.properties.postcode
+        const { label: addressLabel, postcode, citycode, toponym, category } = feature.properties
+        // `citycode` porte le code commune sur l'index address, et le code département ou
+        // région sur l'index poi : l'API n'expose pas de champ `code` dédié.
+        const code = Array.isArray(citycode) ? citycode[0] : citycode
+        const adminKind = category ? ADMIN_CATEGORIES[category[1]] : undefined
+
+        let label = addressLabel ?? toponym ?? ""
+        // Une entité supra-communale n'a pas de code postal : concaténer produirait
+        // "Bretagne undefined".
+        if (postcode && label.indexOf(postcode) < 0) label += " " + postcode
 
         return {
           value: feature.geometry,
-          insee: feature.properties.citycode,
-          zipcode: feature.properties.postcode,
+          insee: code ?? "",
+          zipcode: postcode ?? "",
           label,
+          ...(adminKind && code ? { adminArea: `${adminKind}:${code}` } : {}),
         }
       })
 
@@ -89,9 +119,9 @@ export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type
     const data: { features: AddressFeature[] } = await response.json()
     const returnedItems: IAddressItem[] = data.features.map((feature) => ({
       value: feature.geometry,
-      insee: feature.properties.citycode,
-      zipcode: feature.properties.postcode,
-      label: feature.properties.label,
+      insee: (Array.isArray(feature.properties.citycode) ? feature.properties.citycode[0] : feature.properties.citycode) ?? "",
+      zipcode: feature.properties.postcode ?? "",
+      label: feature.properties.label ?? feature.properties.toponym ?? "",
     }))
 
     return returnedItems

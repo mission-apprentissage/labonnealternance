@@ -202,12 +202,12 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     navigateSilent({ ...params, q: q || undefined, q_source: q ? source : undefined, page: 0 })
   }
 
-  function handleLieuChange(lieu: { label: string; latitude: number; longitude: number } | null) {
+  function handleLieuChange(lieu: { label: string; latitude: number; longitude: number; adminArea?: string } | null) {
     // Nouveau lieu → on repart du rayon le plus étroit (élargissement auto ensuite).
     if (lieu) {
-      navigateSilent({ ...params, lieu_label: lieu.label, latitude: lieu.latitude, longitude: lieu.longitude, radius: 20, page: 0 })
+      navigateSilent({ ...params, lieu_label: lieu.label, latitude: lieu.latitude, longitude: lieu.longitude, admin_area: lieu.adminArea, radius: 20, page: 0 })
     } else {
-      navigateSilent({ ...params, lieu_label: undefined, latitude: undefined, longitude: undefined, radius: 20, page: 0 })
+      navigateSilent({ ...params, lieu_label: undefined, latitude: undefined, longitude: undefined, admin_area: undefined, radius: 20, page: 0 })
     }
   }
 

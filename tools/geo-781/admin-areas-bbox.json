@@ -1,0 +1,1434 @@
+{
+  "generated_at": "2026-09-11T14:21:00.556Z",
+  "source": "data.geopf.fr geocodage/search returntruegeometry",
+  "areas": [
+    {
+      "kind": "region",
+      "code": "11",
+      "label": "Île-de-France",
+      "bbox": [
+        1.4463,
+        48.12008,
+        3.55903,
+        49.24149
+      ],
+      "covering_radius_km": 88
+    },
+    {
+      "kind": "region",
+      "code": "24",
+      "label": "Centre-Val de Loire",
+      "bbox": [
+        0.05274,
+        46.3469,
+        3.1286,
+        48.94103
+      ],
+      "covering_radius_km": 146
+    },
+    {
+      "kind": "region",
+      "code": "27",
+      "label": "Bourgogne-Franche-Comté",
+      "bbox": [
+        2.8449,
+        46.15607,
+        7.14336,
+        48.40005
+      ],
+      "covering_radius_km": 189
+    },
+    {
+      "kind": "region",
+      "code": "28",
+      "label": "Normandie",
+      "bbox": [
+        -1.95497,
+        48.17989,
+        1.80286,
+        50.0722
+      ],
+      "covering_radius_km": 154
+    },
+    {
+      "kind": "region",
+      "code": "32",
+      "label": "Hauts-de-France",
+      "bbox": [
+        1.38022,
+        48.83721,
+        4.25584,
+        51.08915
+      ],
+      "covering_radius_km": 134
+    },
+    {
+      "kind": "region",
+      "code": "44",
+      "label": "Grand Est",
+      "bbox": [
+        3.38367,
+        47.42034,
+        8.2325,
+        50.1693
+      ],
+      "covering_radius_km": 192
+    },
+    {
+      "kind": "region",
+      "code": "52",
+      "label": "Pays de la Loire",
+      "bbox": [
+        -2.62547,
+        46.26662,
+        0.91665,
+        48.56799
+      ],
+      "covering_radius_km": 155
+    },
+    {
+      "kind": "region",
+      "code": "53",
+      "label": "Bretagne",
+      "bbox": [
+        -5.14116,
+        47.27789,
+        -1.01561,
+        48.9008
+      ],
+      "covering_radius_km": 158
+    },
+    {
+      "kind": "region",
+      "code": "75",
+      "label": "Nouvelle-Aquitaine",
+      "bbox": [
+        -1.79235,
+        42.77786,
+        2.61129,
+        47.17599
+      ],
+      "covering_radius_km": 261
+    },
+    {
+      "kind": "region",
+      "code": "76",
+      "label": "Occitanie",
+      "bbox": [
+        -0.32718,
+        42.33292,
+        4.84557,
+        45.04663
+      ],
+      "covering_radius_km": 228
+    },
+    {
+      "kind": "region",
+      "code": "84",
+      "label": "Auvergne-Rhône-Alpes",
+      "bbox": [
+        2.06288,
+        44.11549,
+        7.18557,
+        46.80429
+      ],
+      "covering_radius_km": 213
+    },
+    {
+      "kind": "region",
+      "code": "93",
+      "label": "Provence-Alpes-Côte d'Azur",
+      "bbox": [
+        4.23022,
+        42.98203,
+        7.71898,
+        45.12684
+      ],
+      "covering_radius_km": 155
+    },
+    {
+      "kind": "region",
+      "code": "94",
+      "label": "Corse",
+      "bbox": [
+        8.53494,
+        41.33364,
+        9.55997,
+        43.02763
+      ],
+      "covering_radius_km": 99
+    },
+    {
+      "kind": "region",
+      "code": "01",
+      "label": "Guadeloupe",
+      "bbox": [
+        -61.8098,
+        15.83202,
+        -61.00203,
+        16.51449
+      ],
+      "covering_radius_km": 47
+    },
+    {
+      "kind": "region",
+      "code": "02",
+      "label": "Martinique",
+      "bbox": [
+        -61.22904,
+        14.38868,
+        -60.80965,
+        14.87872
+      ],
+      "covering_radius_km": 32
+    },
+    {
+      "kind": "region",
+      "code": "03",
+      "label": "Guyane",
+      "bbox": [
+        -54.60242,
+        2.11132,
+        -51.61907,
+        5.74868
+      ],
+      "covering_radius_km": 244
+    },
+    {
+      "kind": "region",
+      "code": "04",
+      "label": "La Réunion",
+      "bbox": [
+        55.21655,
+        -21.38963,
+        55.83663,
+        -20.87188
+      ],
+      "covering_radius_km": 37
+    },
+    {
+      "kind": "region",
+      "code": "06",
+      "label": "Mayotte",
+      "bbox": [
+        45.01848,
+        -13.00542,
+        45.29999,
+        -12.63659
+      ],
+      "covering_radius_km": 25
+    },
+    {
+      "kind": "departement",
+      "code": "01",
+      "label": "Ain",
+      "bbox": [
+        4.72813,
+        45.61122,
+        6.17003,
+        46.5199
+      ],
+      "covering_radius_km": 65
+    },
+    {
+      "kind": "departement",
+      "code": "02",
+      "label": "Aisne",
+      "bbox": [
+        2.95804,
+        48.83721,
+        4.25584,
+        50.0695
+      ],
+      "covering_radius_km": 72
+    },
+    {
+      "kind": "departement",
+      "code": "03",
+      "label": "Allier",
+      "bbox": [
+        2.27679,
+        45.93073,
+        4.00574,
+        46.80429
+      ],
+      "covering_radius_km": 67
+    },
+    {
+      "kind": "departement",
+      "code": "04",
+      "label": "Alpes-de-Haute-Provence",
+      "bbox": [
+        5.4968,
+        43.66833,
+        6.96916,
+        44.65999
+      ],
+      "covering_radius_km": 79
+    },
+    {
+      "kind": "departement",
+      "code": "05",
+      "label": "Hautes-Alpes",
+      "bbox": [
+        5.41836,
+        44.18649,
+        7.07711,
+        45.12684
+      ],
+      "covering_radius_km": 72
+    },
+    {
+      "kind": "departement",
+      "code": "06",
+      "label": "Alpes-Maritimes",
+      "bbox": [
+        6.63547,
+        43.48031,
+        7.71898,
+        44.36129
+      ],
+      "covering_radius_km": 54
+    },
+    {
+      "kind": "departement",
+      "code": "07",
+      "label": "Ardèche",
+      "bbox": [
+        3.8611,
+        44.26434,
+        4.88629,
+        45.36611
+      ],
+      "covering_radius_km": 68
+    },
+    {
+      "kind": "departement",
+      "code": "08",
+      "label": "Ardennes",
+      "bbox": [
+        4.02449,
+        49.22696,
+        5.39425,
+        50.1693
+      ],
+      "covering_radius_km": 58
+    },
+    {
+      "kind": "departement",
+      "code": "09",
+      "label": "Ariège",
+      "bbox": [
+        0.826,
+        42.57147,
+        2.17586,
+        43.31598
+      ],
+      "covering_radius_km": 63
+    },
+    {
+      "kind": "departement",
+      "code": "10",
+      "label": "Aube",
+      "bbox": [
+        3.38367,
+        47.92368,
+        4.86461,
+        48.71672
+      ],
+      "covering_radius_km": 58
+    },
+    {
+      "kind": "departement",
+      "code": "11",
+      "label": "Aude",
+      "bbox": [
+        1.68843,
+        42.6489,
+        3.24016,
+        43.46005
+      ],
+      "covering_radius_km": 68
+    },
+    {
+      "kind": "departement",
+      "code": "12",
+      "label": "Aveyron",
+      "bbox": [
+        1.83977,
+        43.69061,
+        3.45176,
+        44.94144
+      ],
+      "covering_radius_km": 77
+    },
+    {
+      "kind": "departement",
+      "code": "13",
+      "label": "Bouches-du-Rhône",
+      "bbox": [
+        4.23022,
+        43.1574,
+        5.81343,
+        43.92413
+      ],
+      "covering_radius_km": 67
+    },
+    {
+      "kind": "departement",
+      "code": "14",
+      "label": "Calvados",
+      "bbox": [
+        -1.15961,
+        48.75169,
+        0.44649,
+        49.42991
+      ],
+      "covering_radius_km": 66
+    },
+    {
+      "kind": "departement",
+      "code": "15",
+      "label": "Cantal",
+      "bbox": [
+        2.06288,
+        44.61577,
+        3.37126,
+        45.48347
+      ],
+      "covering_radius_km": 63
+    },
+    {
+      "kind": "departement",
+      "code": "16",
+      "label": "Charente",
+      "bbox": [
+        -0.46316,
+        45.19167,
+        0.94711,
+        46.14085
+      ],
+      "covering_radius_km": 69
+    },
+    {
+      "kind": "departement",
+      "code": "17",
+      "label": "Charente-Maritime",
+      "bbox": [
+        -1.56246,
+        45.08874,
+        0.00593,
+        46.37142
+      ],
+      "covering_radius_km": 91
+    },
+    {
+      "kind": "departement",
+      "code": "18",
+      "label": "Cher",
+      "bbox": [
+        1.77367,
+        46.42069,
+        3.07962,
+        47.62911
+      ],
+      "covering_radius_km": 70
+    },
+    {
+      "kind": "departement",
+      "code": "19",
+      "label": "Corrèze",
+      "bbox": [
+        1.22649,
+        44.92028,
+        2.52872,
+        45.76527
+      ],
+      "covering_radius_km": 65
+    },
+    {
+      "kind": "departement",
+      "code": "21",
+      "label": "Côte-d'Or",
+      "bbox": [
+        4.0652,
+        46.89984,
+        5.51865,
+        48.0313
+      ],
+      "covering_radius_km": 66
+    },
+    {
+      "kind": "departement",
+      "code": "22",
+      "label": "Côtes-d'Armor",
+      "bbox": [
+        -3.66587,
+        48.03259,
+        -1.90905,
+        48.9008
+      ],
+      "covering_radius_km": 71
+    },
+    {
+      "kind": "departement",
+      "code": "23",
+      "label": "Creuse",
+      "bbox": [
+        1.37259,
+        45.66355,
+        2.61128,
+        46.45535
+      ],
+      "covering_radius_km": 55
+    },
+    {
+      "kind": "departement",
+      "code": "24",
+      "label": "Dordogne",
+      "bbox": [
+        -0.0416,
+        44.57076,
+        1.44824,
+        45.71476
+      ],
+      "covering_radius_km": 71
+    },
+    {
+      "kind": "departement",
+      "code": "25",
+      "label": "Doubs",
+      "bbox": [
+        5.6987,
+        46.5538,
+        7.06239,
+        47.57969
+      ],
+      "covering_radius_km": 67
+    },
+    {
+      "kind": "departement",
+      "code": "26",
+      "label": "Drôme",
+      "bbox": [
+        4.64689,
+        44.11549,
+        5.83044,
+        45.34396
+      ],
+      "covering_radius_km": 74
+    },
+    {
+      "kind": "departement",
+      "code": "27",
+      "label": "Eure",
+      "bbox": [
+        0.29679,
+        48.66643,
+        1.80286,
+        49.48511
+      ],
+      "covering_radius_km": 67
+    },
+    {
+      "kind": "departement",
+      "code": "28",
+      "label": "Eure-et-Loir",
+      "bbox": [
+        0.75574,
+        47.95382,
+        1.99457,
+        48.94103
+      ],
+      "covering_radius_km": 56
+    },
+    {
+      "kind": "departement",
+      "code": "29",
+      "label": "Finistère",
+      "bbox": [
+        -5.14118,
+        47.70149,
+        -3.38662,
+        48.75354
+      ],
+      "covering_radius_km": 76
+    },
+    {
+      "kind": "departement",
+      "code": "2A",
+      "label": "Corse-du-Sud",
+      "bbox": [
+        8.53494,
+        41.33364,
+        9.40797,
+        42.38157
+      ],
+      "covering_radius_km": 68
+    },
+    {
+      "kind": "departement",
+      "code": "2B",
+      "label": "Haute-Corse",
+      "bbox": [
+        8.57326,
+        41.83221,
+        9.55997,
+        43.02763
+      ],
+      "covering_radius_km": 72
+    },
+    {
+      "kind": "departement",
+      "code": "30",
+      "label": "Gard",
+      "bbox": [
+        3.26245,
+        43.46025,
+        4.84557,
+        44.45966
+      ],
+      "covering_radius_km": 65
+    },
+    {
+      "kind": "departement",
+      "code": "31",
+      "label": "Haute-Garonne",
+      "bbox": [
+        0.44168,
+        42.68916,
+        2.0483,
+        43.92152
+      ],
+      "covering_radius_km": 92
+    },
+    {
+      "kind": "departement",
+      "code": "32",
+      "label": "Gers",
+      "bbox": [
+        -0.28231,
+        43.31088,
+        1.20325,
+        44.08001
+      ],
+      "covering_radius_km": 61
+    },
+    {
+      "kind": "departement",
+      "code": "33",
+      "label": "Gironde",
+      "bbox": [
+        -1.26095,
+        44.19389,
+        0.31512,
+        45.58643
+      ],
+      "covering_radius_km": 95
+    },
+    {
+      "kind": "departement",
+      "code": "34",
+      "label": "Hérault",
+      "bbox": [
+        2.53956,
+        43.2102,
+        4.19455,
+        43.97275
+      ],
+      "covering_radius_km": 72
+    },
+    {
+      "kind": "departement",
+      "code": "35",
+      "label": "Ille-et-Vilaine",
+      "bbox": [
+        -2.28899,
+        47.63167,
+        -1.01561,
+        48.72125
+      ],
+      "covering_radius_km": 69
+    },
+    {
+      "kind": "departement",
+      "code": "36",
+      "label": "Indre",
+      "bbox": [
+        0.86741,
+        46.3469,
+        2.20456,
+        47.27744
+      ],
+      "covering_radius_km": 65
+    },
+    {
+      "kind": "departement",
+      "code": "37",
+      "label": "Indre-et-Loire",
+      "bbox": [
+        0.05274,
+        46.73671,
+        1.36605,
+        47.70987
+      ],
+      "covering_radius_km": 57
+    },
+    {
+      "kind": "departement",
+      "code": "38",
+      "label": "Isère",
+      "bbox": [
+        4.74209,
+        44.69593,
+        6.3593,
+        45.88339
+      ],
+      "covering_radius_km": 80
+    },
+    {
+      "kind": "departement",
+      "code": "39",
+      "label": "Jura",
+      "bbox": [
+        5.25204,
+        46.26069,
+        6.20719,
+        47.30578
+      ],
+      "covering_radius_km": 61
+    },
+    {
+      "kind": "departement",
+      "code": "40",
+      "label": "Landes",
+      "bbox": [
+        -1.5333,
+        43.48741,
+        0.13676,
+        44.53237
+      ],
+      "covering_radius_km": 86
+    },
+    {
+      "kind": "departement",
+      "code": "41",
+      "label": "Loir-et-Cher",
+      "bbox": [
+        0.5806,
+        47.18639,
+        2.24789,
+        48.13324
+      ],
+      "covering_radius_km": 69
+    },
+    {
+      "kind": "departement",
+      "code": "42",
+      "label": "Loire",
+      "bbox": [
+        3.68842,
+        45.23103,
+        4.76038,
+        46.27658
+      ],
+      "covering_radius_km": 65
+    },
+    {
+      "kind": "departement",
+      "code": "43",
+      "label": "Haute-Loire",
+      "bbox": [
+        3.08219,
+        44.74396,
+        4.49082,
+        45.42761
+      ],
+      "covering_radius_km": 61
+    },
+    {
+      "kind": "departement",
+      "code": "44",
+      "label": "Loire-Atlantique",
+      "bbox": [
+        -2.62546,
+        46.86008,
+        -0.94666,
+        47.83594
+      ],
+      "covering_radius_km": 64
+    },
+    {
+      "kind": "departement",
+      "code": "45",
+      "label": "Loiret",
+      "bbox": [
+        1.51238,
+        47.48302,
+        3.12868,
+        48.34495
+      ],
+      "covering_radius_km": 62
+    },
+    {
+      "kind": "departement",
+      "code": "46",
+      "label": "Lot",
+      "bbox": [
+        0.98151,
+        44.20334,
+        2.21089,
+        45.04665
+      ],
+      "covering_radius_km": 54
+    },
+    {
+      "kind": "departement",
+      "code": "47",
+      "label": "Lot-et-Garonne",
+      "bbox": [
+        -0.14069,
+        43.97257,
+        1.07833,
+        44.76567
+      ],
+      "covering_radius_km": 54
+    },
+    {
+      "kind": "departement",
+      "code": "48",
+      "label": "Lozère",
+      "bbox": [
+        2.9812,
+        44.10958,
+        3.99837,
+        44.97575
+      ],
+      "covering_radius_km": 57
+    },
+    {
+      "kind": "departement",
+      "code": "49",
+      "label": "Maine-et-Loire",
+      "bbox": [
+        -1.3542,
+        46.96889,
+        0.23456,
+        47.80999
+      ],
+      "covering_radius_km": 69
+    },
+    {
+      "kind": "departement",
+      "code": "50",
+      "label": "Manche",
+      "bbox": [
+        -1.95497,
+        48.45583,
+        -0.73491,
+        49.72997
+      ],
+      "covering_radius_km": 83
+    },
+    {
+      "kind": "departement",
+      "code": "51",
+      "label": "Marne",
+      "bbox": [
+        3.39589,
+        48.51524,
+        5.03965,
+        49.40782
+      ],
+      "covering_radius_km": 67
+    },
+    {
+      "kind": "departement",
+      "code": "52",
+      "label": "Haute-Marne",
+      "bbox": [
+        4.62661,
+        47.57655,
+        5.89094,
+        48.6893
+      ],
+      "covering_radius_km": 69
+    },
+    {
+      "kind": "departement",
+      "code": "53",
+      "label": "Mayenne",
+      "bbox": [
+        -1.23878,
+        47.7334,
+        -0.04914,
+        48.56799
+      ],
+      "covering_radius_km": 58
+    },
+    {
+      "kind": "departement",
+      "code": "54",
+      "label": "Meurthe-et-Moselle",
+      "bbox": [
+        5.42619,
+        48.34901,
+        7.1232,
+        49.56326
+      ],
+      "covering_radius_km": 86
+    },
+    {
+      "kind": "departement",
+      "code": "55",
+      "label": "Meuse",
+      "bbox": [
+        4.88839,
+        48.40897,
+        5.85421,
+        49.61684
+      ],
+      "covering_radius_km": 68
+    },
+    {
+      "kind": "departement",
+      "code": "56",
+      "label": "Morbihan",
+      "bbox": [
+        -3.7349,
+        47.27789,
+        -2.03534,
+        48.21088
+      ],
+      "covering_radius_km": 76
+    },
+    {
+      "kind": "departement",
+      "code": "57",
+      "label": "Moselle",
+      "bbox": [
+        5.89189,
+        48.5267,
+        7.64003,
+        49.51494
+      ],
+      "covering_radius_km": 83
+    },
+    {
+      "kind": "departement",
+      "code": "58",
+      "label": "Nièvre",
+      "bbox": [
+        2.8449,
+        46.65102,
+        4.23191,
+        47.58828
+      ],
+      "covering_radius_km": 70
+    },
+    {
+      "kind": "departement",
+      "code": "59",
+      "label": "Nord",
+      "bbox": [
+        2.08932,
+        49.96908,
+        4.23126,
+        51.08915
+      ],
+      "covering_radius_km": 93
+    },
+    {
+      "kind": "departement",
+      "code": "60",
+      "label": "Oise",
+      "bbox": [
+        1.68885,
+        49.06053,
+        3.16576,
+        49.76386
+      ],
+      "covering_radius_km": 63
+    },
+    {
+      "kind": "departement",
+      "code": "61",
+      "label": "Orne",
+      "bbox": [
+        -0.86054,
+        48.17989,
+        0.97659,
+        48.97254
+      ],
+      "covering_radius_km": 70
+    },
+    {
+      "kind": "departement",
+      "code": "62",
+      "label": "Pas-de-Calais",
+      "bbox": [
+        1.55537,
+        50.01985,
+        3.18822,
+        51.01051
+      ],
+      "covering_radius_km": 73
+    },
+    {
+      "kind": "departement",
+      "code": "63",
+      "label": "Puy-de-Dôme",
+      "bbox": [
+        2.38806,
+        45.28707,
+        3.98534,
+        46.25659
+      ],
+      "covering_radius_km": 72
+    },
+    {
+      "kind": "departement",
+      "code": "64",
+      "label": "Pyrénées-Atlantiques",
+      "bbox": [
+        -1.79235,
+        42.77786,
+        0.02979,
+        43.59684
+      ],
+      "covering_radius_km": 77
+    },
+    {
+      "kind": "departement",
+      "code": "65",
+      "label": "Hautes-Pyrénées",
+      "bbox": [
+        -0.32718,
+        42.67323,
+        0.64612,
+        43.61332
+      ],
+      "covering_radius_km": 56
+    },
+    {
+      "kind": "departement",
+      "code": "66",
+      "label": "Pyrénées-Orientales",
+      "bbox": [
+        1.72146,
+        42.33292,
+        3.17759,
+        42.91853
+      ],
+      "covering_radius_km": 63
+    },
+    {
+      "kind": "departement",
+      "code": "67",
+      "label": "Bas-Rhin",
+      "bbox": [
+        6.94064,
+        48.12035,
+        8.2325,
+        49.07783
+      ],
+      "covering_radius_km": 65
+    },
+    {
+      "kind": "departement",
+      "code": "68",
+      "label": "Haut-Rhin",
+      "bbox": [
+        6.84101,
+        47.42034,
+        7.62182,
+        48.31118
+      ],
+      "covering_radius_km": 50
+    },
+    {
+      "kind": "departement",
+      "code": "69",
+      "label": "Rhône",
+      "bbox": [
+        4.24386,
+        45.45431,
+        5.16011,
+        46.30645
+      ],
+      "covering_radius_km": 52
+    },
+    {
+      "kind": "departement",
+      "code": "70",
+      "label": "Haute-Saône",
+      "bbox": [
+        5.36697,
+        47.25255,
+        6.82489,
+        48.02414
+      ],
+      "covering_radius_km": 59
+    },
+    {
+      "kind": "departement",
+      "code": "71",
+      "label": "Saône-et-Loire",
+      "bbox": [
+        3.62259,
+        46.15607,
+        5.46529,
+        47.15576
+      ],
+      "covering_radius_km": 73
+    },
+    {
+      "kind": "departement",
+      "code": "72",
+      "label": "Sarthe",
+      "bbox": [
+        -0.44806,
+        47.56841,
+        0.91665,
+        48.48503
+      ],
+      "covering_radius_km": 57
+    },
+    {
+      "kind": "departement",
+      "code": "73",
+      "label": "Savoie",
+      "bbox": [
+        5.6219,
+        45.05168,
+        7.18557,
+        45.93853
+      ],
+      "covering_radius_km": 66
+    },
+    {
+      "kind": "departement",
+      "code": "74",
+      "label": "Haute-Savoie",
+      "bbox": [
+        5.80502,
+        45.68165,
+        7.04447,
+        46.40817
+      ],
+      "covering_radius_km": 50
+    },
+    {
+      "kind": "departement",
+      "code": "75",
+      "label": "Paris",
+      "bbox": [
+        2.22422,
+        48.81556,
+        2.46985,
+        48.90215
+      ],
+      "covering_radius_km": 10
+    },
+    {
+      "kind": "departement",
+      "code": "76",
+      "label": "Seine-Maritime",
+      "bbox": [
+        0.06565,
+        49.25065,
+        1.79078,
+        50.0722
+      ],
+      "covering_radius_km": 65
+    },
+    {
+      "kind": "departement",
+      "code": "77",
+      "label": "Seine-et-Marne",
+      "bbox": [
+        2.39234,
+        48.12008,
+        3.55891,
+        49.11776
+      ],
+      "covering_radius_km": 68
+    },
+    {
+      "kind": "departement",
+      "code": "78",
+      "label": "Yvelines",
+      "bbox": [
+        1.4463,
+        48.43856,
+        2.22914,
+        49.08541
+      ],
+      "covering_radius_km": 43
+    },
+    {
+      "kind": "departement",
+      "code": "79",
+      "label": "Deux-Sèvres",
+      "bbox": [
+        -0.90352,
+        45.96966,
+        0.22039,
+        47.10855
+      ],
+      "covering_radius_km": 66
+    },
+    {
+      "kind": "departement",
+      "code": "80",
+      "label": "Somme",
+      "bbox": [
+        1.38022,
+        49.57178,
+        3.20277,
+        50.36774
+      ],
+      "covering_radius_km": 68
+    },
+    {
+      "kind": "departement",
+      "code": "81",
+      "label": "Tarn",
+      "bbox": [
+        1.5352,
+        43.38227,
+        2.93748,
+        44.20148
+      ],
+      "covering_radius_km": 59
+    },
+    {
+      "kind": "departement",
+      "code": "82",
+      "label": "Tarn-et-Garonne",
+      "bbox": [
+        0.73787,
+        43.76758,
+        2.0009,
+        44.39391
+      ],
+      "covering_radius_km": 53
+    },
+    {
+      "kind": "departement",
+      "code": "83",
+      "label": "Var",
+      "bbox": [
+        5.65591,
+        42.98203,
+        6.93355,
+        43.80888
+      ],
+      "covering_radius_km": 58
+    },
+    {
+      "kind": "departement",
+      "code": "84",
+      "label": "Vaucluse",
+      "bbox": [
+        4.64915,
+        43.65872,
+        5.75734,
+        44.43153
+      ],
+      "covering_radius_km": 57
+    },
+    {
+      "kind": "departement",
+      "code": "85",
+      "label": "Vendée",
+      "bbox": [
+        -2.40073,
+        46.26662,
+        -0.53831,
+        47.08502
+      ],
+      "covering_radius_km": 79
+    },
+    {
+      "kind": "departement",
+      "code": "86",
+      "label": "Vienne",
+      "bbox": [
+        -0.10503,
+        46.04834,
+        1.21322,
+        47.17599
+      ],
+      "covering_radius_km": 75
+    },
+    {
+      "kind": "departement",
+      "code": "87",
+      "label": "Haute-Vienne",
+      "bbox": [
+        0.62924,
+        45.43662,
+        1.91107,
+        46.40158
+      ],
+      "covering_radius_km": 56
+    },
+    {
+      "kind": "departement",
+      "code": "88",
+      "label": "Vosges",
+      "bbox": [
+        5.39363,
+        47.81328,
+        7.19835,
+        48.51362
+      ],
+      "covering_radius_km": 73
+    },
+    {
+      "kind": "departement",
+      "code": "89",
+      "label": "Yonne",
+      "bbox": [
+        2.84844,
+        47.31057,
+        4.3403,
+        48.40005
+      ],
+      "covering_radius_km": 69
+    },
+    {
+      "kind": "departement",
+      "code": "90",
+      "label": "Territoire de Belfort",
+      "bbox": [
+        6.75625,
+        47.43332,
+        7.14336,
+        47.8251
+      ],
+      "covering_radius_km": 23
+    },
+    {
+      "kind": "departement",
+      "code": "91",
+      "label": "Essonne",
+      "bbox": [
+        1.91453,
+        48.28456,
+        2.58565,
+        48.77614
+      ],
+      "covering_radius_km": 34
+    },
+    {
+      "kind": "departement",
+      "code": "92",
+      "label": "Hauts-de-Seine",
+      "bbox": [
+        2.14573,
+        48.72949,
+        2.3369,
+        48.95076
+      ],
+      "covering_radius_km": 13
+    },
+    {
+      "kind": "departement",
+      "code": "93",
+      "label": "Seine-Saint-Denis",
+      "bbox": [
+        2.28833,
+        48.80725,
+        2.60331,
+        49.01233
+      ],
+      "covering_radius_km": 16
+    },
+    {
+      "kind": "departement",
+      "code": "94",
+      "label": "Val-de-Marne",
+      "bbox": [
+        2.30869,
+        48.68763,
+        2.61568,
+        48.86149
+      ],
+      "covering_radius_km": 12
+    },
+    {
+      "kind": "departement",
+      "code": "95",
+      "label": "Val-d'Oise",
+      "bbox": [
+        1.60875,
+        48.90863,
+        2.595,
+        49.24149
+      ],
+      "covering_radius_km": 36
+    },
+    {
+      "kind": "departement",
+      "code": "971",
+      "label": "Guadeloupe",
+      "bbox": [
+        -61.8098,
+        15.83202,
+        -61.00203,
+        16.51449
+      ],
+      "covering_radius_km": 47
+    },
+    {
+      "kind": "departement",
+      "code": "972",
+      "label": "Martinique",
+      "bbox": [
+        -61.22904,
+        14.38868,
+        -60.80965,
+        14.87872
+      ],
+      "covering_radius_km": 32
+    },
+    {
+      "kind": "departement",
+      "code": "973",
+      "label": "Guyane",
+      "bbox": [
+        -54.60242,
+        2.11132,
+        -51.61907,
+        5.74868
+      ],
+      "covering_radius_km": 244
+    },
+    {
+      "kind": "departement",
+      "code": "974",
+      "label": "La Réunion",
+      "bbox": [
+        55.21655,
+        -21.38963,
+        55.83663,
+        -20.87188
+      ],
+      "covering_radius_km": 37
+    },
+    {
+      "kind": "departement",
+      "code": "976",
+      "label": "Mayotte",
+      "bbox": [
+        45.01848,
+        -13.00542,
+        45.29999,
+        -12.63659
+      ],
+      "covering_radius_km": 25
+    }
+  ]
+}

@@ -22,9 +22,17 @@ export interface ISearchPageParams {
   latitude?: number
   longitude?: number
   radius: number
+  /**
+   * Emprise administrative exacte ("region:53", "departement:44") quand le lieu sélectionné est
+   * un département ou une région. L'API filtre dessus et ignore le rayon ; lat/lon restent posés
+   * pour la distance affichée et le tri par proximité.
+   */
+  admin_area?: string
   page: number
   hitsPerPage: number
 }
+
+const ADMIN_AREA_PATTERN = /^(region|departement):([0-9]{1,3}|2[AB])$/
 
 export type SearchMode = "emplois" | "formations" | "emplois_formation"
 export const SEARCH_MODES: SearchMode[] = ["emplois", "formations", "emplois_formation"]
@@ -110,6 +118,7 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     latitude: hasGeoPair ? latitude : undefined,
     longitude: hasGeoPair ? longitude : undefined,
     radius: getInt("radius", 20),
+    admin_area: ADMIN_AREA_PATTERN.test(search.get("admin_area") ?? "") ? search.get("admin_area")! : undefined,
     page: getInt("page", 0),
     hitsPerPage: getInt("hitsPerPage", 20),
   }
@@ -138,6 +147,7 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/recherche
   if (params.latitude !== undefined) query.set("latitude", params.latitude.toString())
   if (params.longitude !== undefined) query.set("longitude", params.longitude.toString())
   if (params.radius !== 20) query.set("radius", params.radius.toString())
+  if (params.admin_area) query.set("admin_area", params.admin_area)
   if (params.page !== 0) query.set("page", params.page.toString())
   if (params.hitsPerPage !== 20) query.set("hitsPerPage", params.hitsPerPage.toString())
 
