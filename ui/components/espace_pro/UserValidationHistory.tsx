@@ -3,6 +3,7 @@ import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import type { IUserStatusValidationJson } from "shared"
 import Badge from "@/app/(espace-pro)/_components/Badge"
+import { getFlatTableCellBordersSx, getFlatTableResetSx, getFlatTableWrapperSx } from "@/app/(espace-pro)/_components/table-styles"
 import LoadingEmptySpace from "./LoadingEmptySpace"
 
 const UserValidationHistory = ({ histories }: { histories: IUserStatusValidationJson[] }) => {
@@ -30,10 +31,16 @@ const UserValidationHistory = ({ histories }: { histories: IUserStatusValidation
         <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>Historique du compte</Typography>
         <Box sx={{ mt: fr.spacing("4v") }}>
           <Box className="fr-table">
-            <Box className="fr-table__wrapper">
+            <Box className="fr-table__wrapper" sx={getFlatTableWrapperSx()}>
               <Box className="fr-table__container">
                 <Box className="fr-table__content">
-                  <Box component="table">
+                  <Box
+                    component="table"
+                    sx={{
+                      ...getFlatTableResetSx(),
+                      ...getFlatTableCellBordersSx(),
+                    }}
+                  >
                     <Box component="caption" sx={{ position: "relative !important", fontWeight: "700", mb: fr.spacing("2v") }}>
                       Historique des changements d'état du compte
                     </Box>

@@ -79,3 +79,36 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     expect.soft(countJobsPartners).toEqual(8)
   })
 })
+
+describe("Une offre dont le computed est en attente de classification n'est pas annulée", () => {
+  beforeEach(() => {
+    return async () => {
+      await getDbCollection("computed_jobs_partners").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
+    }
+  })
+
+  it("CLASSIFICATION_PENDING est un état transitoire de traitement, pas un verdict métier", async () => {
+    // Mesuré en prod le 01/09/2026 : tout le catalogue non whitelisté (Hellowork 5 178, France Travail
+    // 5 531, Meteojob 1 729 offres cette nuit-là) était annulé à 00h35 parce que le batch Mistral
+    // n'avait pas encore répondu, puis réactivé à son retour. Un autre business_error (CFA) reste un
+    // motif d'annulation légitime.
+    await createJobPartner({ partner_job_id: "pending_1", partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createComputedJobPartner({
+      partner_job_id: "pending_1",
+      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+      business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING,
+      validated: false,
+    })
+    await createJobPartner({ partner_job_id: "cfa_1", partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createComputedJobPartner({ partner_job_id: "cfa_1", partner_label: JOBPARTNERS_LABEL.HELLOWORK, business_error: JOB_PARTNER_BUSINESS_ERROR.CFA, validated: false })
+
+    await cancelRemovedJobsPartners({ partner_label: { $in: jobPartnersByFlux } })
+
+    const pending = await getDbCollection("jobs_partners").findOne({ partner_job_id: "pending_1" })
+    expect.soft(pending?.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(pending?.offer_status_history).toHaveLength(0)
+    const cfa = await getDbCollection("jobs_partners").findOne({ partner_job_id: "cfa_1" })
+    expect.soft(cfa?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+  })
+})

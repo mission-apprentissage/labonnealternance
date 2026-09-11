@@ -2,6 +2,7 @@ import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { isEnum } from "shared/utils/index"
+import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 import { getSiretInfos } from "@/services/cache-infos-siret.service"
 import { formatEntrepriseData } from "@/services/etablissement.service"
@@ -55,8 +56,14 @@ export const fillSiretInfosForPartners = async ({ addedMatchFilter }: FillComput
         workplace_size: document.workplace_size ?? establishment_size,
         workplace_legal_name: document.workplace_legal_name ?? establishment_raison_sociale,
         workplace_brand: document.workplace_brand ?? establishment_enseigne,
-        workplace_naf_code: document.workplace_naf_code ?? naf_code,
-        workplace_naf_label: document.workplace_naf_label ?? naf_label,
+        // normalisé ici (issue #5344) et pas seulement dans formatTextFieldsJobsPartners : ce job
+        // tourne APRÈS lui dans fillComputedJobsPartners : le NAF de l'API entreprise ne repasserait
+        // donc jamais par la normalisation (casse du libellé notamment).
+        // Les deux côtés passent par le helper : il mappe "" sur null, donc `??` ne peut pas être
+        // neutralisé par une chaîne vide héritée du corpus (cf. le `||` de workplace_name plus
+        // bas), et il rattrape un document que le job de format aurait sauté.
+        workplace_naf_code: normalizeNafCode(document.workplace_naf_code) ?? normalizeNafCode(naf_code),
+        workplace_naf_label: normalizeNafLabel(document.workplace_naf_label) ?? normalizeNafLabel(naf_label),
         // `||` et non `??` : workplace_name passe par formatTextFieldsJobsPartners, qui a longtemps
         // écrit "" sur les champs texte absents — le corpus déjà importé en contient. Une chaîne vide
         // doit valoir « absent », sinon l'enseigne / la raison sociale du SIRET n'est jamais reprise.

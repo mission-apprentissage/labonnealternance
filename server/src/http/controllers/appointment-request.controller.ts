@@ -143,7 +143,7 @@ export default (server: Server) => {
       ])
 
       if (!formation) {
-        throw internal("Etablissment not found")
+        throw internal("Etablissement not found")
       }
 
       if (!user) {

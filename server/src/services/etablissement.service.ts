@@ -12,9 +12,11 @@ import type { IEtablissementGouvData } from "shared/models/cache-infos-siret.mod
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last-status-event"
+import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import { getEtablissementFromGouvSafe } from "@/common/apis/api-entreprise/api-entreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/france-competences/france-competences-client"
 import { logger } from "@/common/logger"
@@ -465,8 +467,20 @@ export const entrepriseOnboardingWorkflow = {
       origin,
       opco,
       idcc,
+      handiEngagement,
       source,
-    }: { siret: string; last_name: string; first_name: string; phone?: string; email: string; origin?: string | null; opco: OPCOS_LABEL; idcc?: string; source: ITrackingCookies },
+    }: {
+      siret: string
+      last_name: string
+      first_name: string
+      phone?: string
+      email: string
+      origin?: string | null
+      opco: OPCOS_LABEL
+      idcc?: string
+      handiEngagement: HandiEngagement
+      source: ITrackingCookies
+    },
     { isUserValidated = false }: { isUserValidated?: boolean } = {}
   ): Promise<IBusinessError | { formulaire: { establishment_id: string; opco: OPCOS_LABEL }; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
@@ -493,10 +507,13 @@ export const entrepriseOnboardingWorkflow = {
     )
 
     let validated = false
+    // handiEngagement est posé ici sur le rôle (déclaration), mais n'est appliqué à
+    // referentiel_engagement_entreprise que lorsque ce rôle passe réellement à GRANTED
     const { user: managingUser } = await createOrganizationUser({
       userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail, last_action_date: new Date() },
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
+      handiEngagement,
     })
     await saveUserTrafficSourceIfAny({ user_id: managingUser._id, type: TrafficType.ENTREPRISE, source })
 
@@ -581,8 +598,9 @@ export const entrepriseOnboardingWorkflow = {
     }
 
     const jobsPartnersUpdate: Partial<IJobsPartnersOfferPrivate> = {
-      workplace_naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
-      workplace_naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
+      // issue #5344 : cf. organization.service.ts, ces offres ne passent pas par computed
+      workplace_naf_label: "naf_label" in siretResponse ? normalizeNafLabel(siretResponse.naf_label) : undefined,
+      workplace_naf_code: "naf_code" in siretResponse ? normalizeNafCode(siretResponse.naf_code) : undefined,
     }
     const opco = opcoResult?.opco
     const opcoLabel = opco ? parseEnum(OPCOS_LABEL, opco) : null

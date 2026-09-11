@@ -2,16 +2,20 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Alert, Box, Checkbox, CircularProgress, FormControlLabel, Typography } from "@mui/material"
+import { Alert, Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
-import { Form, Formik } from "formik"
+import { Formik } from "formik"
 import { useRouter } from "next/navigation"
+import { useRef } from "react"
 import type { INewSuperUser, IUserStatusValidationJson } from "shared"
 import { EntrepriseErrorCodes } from "shared/constants/error-codes"
 import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
-import CustomInput from "@/app/_components/CustomInput"
+import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
+import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
@@ -20,7 +24,6 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
-import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
@@ -47,6 +50,7 @@ export default function DetailEntreprise({
   const router = useRouter()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const toast = useToast()
   const { user } = useConnectedSessionClient()
@@ -269,7 +273,13 @@ export default function DetailEntreprise({
             setSubmitting(false)
           }}
         >
-          {({ values, isSubmitting, isValid, setFieldValue, errors, touched }) => {
+          {(formik) => {
+            const { values, isSubmitting, setFieldValue, errors, touched } = formik
+            // Le bouton "Enregistrer" ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui
+            // force l'affichage de l'erreur sur tous les champs invalides et scrolle/focus le premier
+            // plutôt que de bloquer la sauvegarde tant que l'OPCO ou la déclaration ne sont pas remplis.
+            const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
+
             return (
               <>
                 <ConfirmationModificationOpco
@@ -279,101 +289,75 @@ export default function DetailEntreprise({
                   previousValue={userRecruteur.opco}
                   newValue={values.opco}
                 />
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: {
-                      xs: "1fr",
-                      lg: "repeat(2, 1fr)",
-                    },
-                    gap: { xs: 0, sm: 2, lg: 5 },
-                  }}
-                >
-                  <Box>
-                    <Typography component="h2" sx={{ fontSize: "20px", fontWeight: "700" }}>
-                      Informations de contact
-                    </Typography>
-                    <Box
-                      sx={{
-                        mt: fr.spacing("8v"),
-                      }}
-                    >
-                      <Form>
-                        <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
-                        <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
-                        <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                        <CustomInput name="email" label="Email" type="email" value={values.email} />
-                        {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
-                          <OpcoSelect
-                            value={values.opco}
-                            name="opco"
-                            errors={errors}
-                            touched={touched}
-                            onChange={(newValue) => {
-                              setFieldValue("opco", newValue)
-                              confirmationModificationOpco.onOpen()
-                            }}
-                          />
-                        )}
-                        {user.type === AUTHTYPE.CFA && (
-                          <>
-                            <Typography sx={{ color: "#0063CB" }}>
-                              <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par
-                              nos équipes à des fins de contrôles.
-                            </Typography>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  onChange={(event) => {
-                                    setFieldValue("isDeclarationExact", event.target.checked)
-                                  }}
-                                  checked={values.isDeclarationExact}
-                                />
-                              }
-                              label={
-                                <Typography>
-                                  Je certifie que les informations relatives à l’entreprise partenaire sont exactes et vérifiables, et j’accepte que ces données puissent faire
-                                  l’objet de contrôles par La bonne alternance.
-                                </Typography>
-                              }
-                              sx={{ mt: fr.spacing("6v") }}
+                <form ref={formRef} onSubmit={handleSubmit} noValidate>
+                  <TwoColumnFormLayout
+                    left={
+                      <>
+                        <Typography
+                          component="h2"
+                          sx={{ fontWeight: 700, fontSize: { xs: "24px !important", md: "32px !important" }, lineHeight: { xs: "32px !important", md: "40px !important" } }}
+                        >
+                          Informations de contact
+                        </Typography>
+                        <Box
+                          sx={{
+                            mt: fr.spacing("8v"),
+                          }}
+                        >
+                          <ContactInfoFields />
+                          {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
+                            <OpcoSelect
+                              value={values.opco}
+                              name="opco"
+                              errors={errors}
+                              touched={touched}
+                              onChange={(newValue) => {
+                                setFieldValue("opco", newValue)
+                                confirmationModificationOpco.onOpen()
+                              }}
                             />
-                          </>
-                        )}
-                        {userMutation.error && (
-                          <Alert sx={{ marginTop: fr.spacing("4v") }} severity="error">
-                            {userMutation.error + ""}
-                          </Alert>
-                        )}
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
-                          <Button type="submit" disabled={!isValid || isSubmitting}>
-                            {isSubmitting ? (
-                              <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
-                            ) : (
-                              <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
-                            )}
-                            Enregistrer
-                          </Button>
+                          )}
+                          {user.type === AUTHTYPE.CFA && (
+                            <>
+                              <Typography sx={{ color: "#0063CB" }}>
+                                <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par
+                                nos équipes à des fins de contrôles.
+                              </Typography>
+                              <DeclarationExactCheckbox />
+                            </>
+                          )}
+                          {userMutation.error && (
+                            <Alert sx={{ marginTop: fr.spacing("4v") }} severity="error">
+                              {userMutation.error + ""}
+                            </Alert>
+                          )}
                         </Box>
-                      </Form>
-                    </Box>
-                  </Box>
-                  <Box>
-                    <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
-                    {user.type !== "CFA" && (
-                      <Box
-                        sx={{
-                          my: fr.spacing("8v"),
-                        }}
-                      >
-                        <FieldWithValue title="Origine" value={userRecruteur.origin} />
-                      </Box>
-                    )}
-                  </Box>
-                </Box>
+                      </>
+                    }
+                    right={
+                      <>
+                        <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
+                        {user.type !== "CFA" && (
+                          <Box
+                            sx={{
+                              my: fr.spacing("8v"),
+                            }}
+                          >
+                            <FieldWithValue title="Origine" value={userRecruteur.origin} />
+                          </Box>
+                        )}
+                      </>
+                    }
+                    buttons={
+                      <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                        Enregistrer
+                      </Button>
+                    }
+                  />
+                </form>
                 {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
                   <>
-                    <hr style={{ marginTop: 24 }} />
                     <Box
                       sx={{
                         my: fr.spacing("12v"),

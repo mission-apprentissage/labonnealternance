@@ -100,3 +100,19 @@ export async function getCommuneByCodeInsee(code: string): Promise<ICommuneCentr
 export async function getCommuneByCodePostal(codePostal: string): Promise<ICommuneCentreLabel | null> {
   return await getDbCollection("referentiel.communes").findOne({ codesPostaux: codePostal }, { projection: { centre: 1, nom: 1 } })
 }
+
+// Commune « principale » d'un ou plusieurs départements : celle qui porte le plus de codes postaux
+// (Paris, Marseille, Lyon, Nice…). Repli quand un code postal n'existe pas dans le référentiel,
+// typiquement un CEDEX, pour conserver une recherche localisée.
+export async function getCommunePrincipaleByCodesDepartement(codesDepartement: string[]): Promise<ICommuneCentreLabel | null> {
+  const [commune] = await getDbCollection("referentiel.communes")
+    .aggregate<ICommuneCentreLabel>([
+      { $match: { codeDepartement: { $in: codesDepartement } } },
+      { $addFields: { nbCodesPostaux: { $size: { $ifNull: ["$codesPostaux", []] } } } },
+      { $sort: { nbCodesPostaux: -1, code: 1 } },
+      { $limit: 1 },
+      { $project: { _id: 0, centre: 1, nom: 1 } },
+    ])
+    .toArray()
+  return commune ?? null
+}

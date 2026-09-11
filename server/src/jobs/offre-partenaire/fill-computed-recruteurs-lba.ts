@@ -7,6 +7,7 @@ import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partn
 import { fillEntrepriseEngagementComputedJobsPartners } from "./fill-entreprise-engagement-computed-jobs-partners"
 import { fillLocationInfosForPartners } from "./fill-location-infos-for-partners"
 import { fillOpcoInfosForPartners } from "./fill-opco-infos-for-partners"
+import { formatTextFieldsJobsPartners } from "./format-text-fields-jobs-partners"
 import {
   clearBlacklistedEmailsRecruteursLba,
   removeMissingRecruteursLbaFromComputedJobPartners,
@@ -26,6 +27,12 @@ export const fillComputedRecruteursLba = async () => {
   await clearBlacklistedEmailsRecruteursLba()
   // reset checks
   await getDbCollection("computed_jobs_partners").updateMany(computedJobFilter, { $set: { business_error: null, jobs_in_success: [], errors: [] } })
+  // Ce pipeline est distinct de fillComputedJobsPartners et n'héritait donc pas de la
+  // normalisation NAF (issue #5344), alors que workplace_naf_label est ici le champ le plus
+  // exposé : titre de carte éditoriale, secteur de la fiche, et slug d'URL via
+  // buildLbaUrlFromJob. Sans effet sur les champs texte, offer_title et offer_description
+  // valant la constante RECRUTEURS_LBA et non du texte libre.
+  await formatTextFieldsJobsPartners(context)
   await fillEntrepriseEngagementComputedJobsPartners(context)
   await fillOpcoInfosForPartners(context)
   await blockBadRomeJobsPartners(context)

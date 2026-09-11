@@ -24,7 +24,12 @@ import { JOB_PARTNERS_DIGEST_JOB_NAME, sendJobPartnersNightlyDigest } from "./se
 const timings = {
   import_source: "0 0 * * *",
   process_computed: "1 0 * * *",
-  process_missing_rome: "*/15 6-22 * * *",
+  // 24 h/24 : borné à 6h-22h, les offres dont le romage échouait au nightly (00h35) attendaient la
+  // première passe de 06h00 pour être validées et importées — 848 offres le 02/09/2026, 1 907 le
+  // 29/08, toutes servies depuis cache_diagoriente en 2 à 3 s. Le job pose son propre verrou
+  // (currently_processed_id) et n'importe que son périmètre : la cohabitation avec le nightly est
+  // la même qu'avec le cron API `*/5` déjà en place.
+  process_missing_rome: "*/15 * * * *",
 }
 
 export const importers: Record<string, CronDef> = {

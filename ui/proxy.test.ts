@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server"
+import { SESSION_RETRY_PARAM } from "shared/constants/session"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { proxy } from "./proxy"
@@ -120,6 +121,22 @@ describe("proxy - panne API ambiguë (ni confirmée invalide, ni confirmée vali
     expect(location.searchParams.get("sessionRetry")).toBe("true")
   })
 
+  it("sert la page de connexion, sans rebond, sur l'URL exacte émise par le filet de sécurité du layout connecté", async () => {
+    // Contrat avec ui/app/(espace-pro)/espace-pro/(connected)/layout.tsx : quand getSession() est vide
+    // alors que le proxy a laissé passer, le layout redirige vers cette URL. Le proxy doit l'afficher
+    // même si la session lui paraît valide, sinon la boucle 307 ↔ 307 du 2026-09-02 revient.
+    fetchMock.mockImplementation(
+      async (url: string) => new Response(url.endsWith("/auth/session") ? JSON.stringify({ _id: "u1", type: "ENTREPRISE" }) : JSON.stringify({}), { status: 200 })
+    )
+    const request = requestWithSessionCookie(`/espace-pro/authentification?${SESSION_RETRY_PARAM}=true`)
+
+    const response = await proxy(request)
+
+    expect(response.status).not.toBe(307)
+    expect(response.headers.get("location")).toBeNull()
+    expect(response.cookies.get("lba_session")).toBeUndefined()
+  })
+
   it("ne rebondit pas une deuxième fois vers la page protégée même si la session semble valide au second essai (pas de boucle)", async () => {
     fetchMock.mockImplementationOnce(async () => new Response(null, { status: 500 })).mockImplementationOnce(async () => new Response(null, { status: 500 }))
     const firstRequest = requestWithSessionCookie("/espace-pro/cfa")
@@ -141,6 +158,79 @@ describe("proxy - panne API ambiguë (ni confirmée invalide, ni confirmée vali
     // vers /espace-pro/cfa. La page d'authentification s'affiche simplement, sans purge.
     expect(secondResponse.headers.get("location")).toBeNull()
     expect(secondResponse.cookies.get("lba_session")).toBeUndefined()
+  })
+})
+
+describe("proxy - utilisateur connecté sur /espace-pro/authentification", () => {
+  beforeEach(() => {
+    fetchMock.mockImplementation(
+      async (url: string) => new Response(url.endsWith("/auth/session") ? JSON.stringify({ _id: "u1", type: "ENTREPRISE" }) : JSON.stringify({}), { status: 200 })
+    )
+  })
+
+  it("redirige une navigation classique vers l'accueil de l'utilisateur", async () => {
+    const request = requestWithSessionCookie("/espace-pro/authentification")
+
+    const response = await proxy(request)
+
+    expect(response.status).toBe(307)
+    expect(new URL(response.headers.get("location")!).pathname).toBe("/espace-pro/entreprise")
+  })
+
+  it("redirige aussi une navigation client (header RSC sans préchargement)", async () => {
+    const request = requestWithSessionCookie("/espace-pro/authentification?_rsc=abc")
+    request.headers.set("rsc", "1")
+
+    const response = await proxy(request)
+
+    expect(response.status).toBe(307)
+    expect(new URL(response.headers.get("location")!).pathname).toBe("/espace-pro/entreprise")
+  })
+
+  it("ne redirige pas un préchargement de lien (Next-Router-Prefetch) : sert la page avec la session, sans purge (pas de boucle)", async () => {
+    const request = requestWithSessionCookie("/espace-pro/authentification?_rsc=abc")
+    request.headers.set("rsc", "1")
+    request.headers.set("next-router-prefetch", "1")
+
+    const response = await proxy(request)
+
+    expect(response.status).not.toBe(307)
+    expect(response.headers.get("location")).toBeNull()
+    expect(response.cookies.get("lba_session")).toBeUndefined()
+    // Le rendu préchargé reçoit la session : le header affiche l'utilisateur connecté, pas « Connexion ».
+    expect(response.headers.get("x-middleware-request-x-session")).toContain('"_id":"u1"')
+  })
+
+  it("un préchargement d'une route protégée par un utilisateur autorisé passe toujours, avec la session", async () => {
+    const request = requestWithSessionCookie("/espace-pro/entreprise?_rsc=abc")
+    request.headers.set("rsc", "1")
+    request.headers.set("next-router-prefetch", "1")
+
+    const response = await proxy(request)
+
+    expect(response.headers.get("location")).toBeNull()
+    expect(response.headers.get("x-middleware-request-x-session")).toContain('"_id":"u1"')
+  })
+
+  it("ne redirige pas non plus un préchargement par segment (Next-Router-Segment-Prefetch)", async () => {
+    const request = requestWithSessionCookie("/espace-pro/authentification?_rsc=abc")
+    request.headers.set("rsc", "1")
+    request.headers.set("next-router-segment-prefetch", "/_tree")
+
+    const response = await proxy(request)
+
+    expect(response.headers.get("location")).toBeNull()
+  })
+
+  it("un préchargement sans session ne change rien : la page d'authentification est servie", async () => {
+    fetchMock.mockReset()
+    const request = new NextRequest(new URL("/espace-pro/authentification?_rsc=abc", BASE_URL))
+    request.headers.set("next-router-prefetch", "1")
+
+    const response = await proxy(request)
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(response.headers.get("location")).toBeNull()
   })
 })
 

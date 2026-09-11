@@ -12,6 +12,7 @@ import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLoc
 import { BAD_DESCRIPTION_LENGTH, JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
 import { notifyJobDetailViewV3 } from "@/utils/api"
+import { isOfferActive } from "@/utils/is-offer-active"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import LbaJobAcces from "./LbaJobAcces"
 import LbaJobCompetences from "./LbaJobCompetences"
@@ -60,7 +61,7 @@ export const LbaJobCfaDetail = ({ job, title, jobSearchedByUser }: { job: ILbaIt
           peut vous renseigner sur l&apos;offre.
         </Typography>
         <ItemLocalisation item={job as any} />
-        {job?.contact?.phone && (
+        {job?.contact?.phone && isOfferActive(job) && (
           <Stack direction="row" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("4v") }}>
             <Box sx={{ fontWeight: 700, mr: 2 }}>Téléphone :</Box>
             <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">

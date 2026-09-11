@@ -34,6 +34,8 @@ const getMailData = async (candidate: IUser, appointment: IAppointment, eligible
   const lbaLink = await getLBALink({
     id: "0",
     cle_ministere_educatif: appointment.cle_ministere_educatif,
+    // getLBALink ne localise le lien qu'à partir du vœu : on lui donne le code postal du lieu de formation.
+    code_postal: eligibleTrainingsForAppointment.lieu_formation_zip_code,
     utm_data: { utm_source: "lba-brevo-transactionnel", utm_medium: "email", utm_campaign: "lba_candidat-rdva-accuse-envoi_promo-emplois" },
   })
   const mailData = {

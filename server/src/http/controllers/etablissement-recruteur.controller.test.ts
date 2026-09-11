@@ -11,10 +11,13 @@ import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { UserEventType } from "shared/models/index"
+import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/api-referentiel-catalogue.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
 
 vi.mock("@/services/mailer.service", () => {
@@ -25,6 +28,14 @@ vi.mock("@/services/mailer.service", () => {
     },
   }
 })
+
+// Sans ce mock, isCompanyValid appelle réellement l'API BAL (bal.apprentissage.beta.gouv.fr) qui, en
+// pratique dans cet environnement, valide le siret/email par défaut du test et auto-valide le rôle
+// (GRANTED) — rendant les tests dépendants d'un réseau externe non maîtrisé. Forcé à false : aucun des
+// tests existants de ce fichier n'asserte sur le statut du rôle, seuls les tests handiEngagement en ont besoin.
+vi.mock("@/services/bal.service", () => ({
+  validationOrganisation: vi.fn().mockResolvedValue({ is_valid: false }),
+}))
 
 describe("POST /etablissement/creation", () => {
   useMongo()
@@ -76,6 +87,7 @@ describe("POST /etablissement/creation", () => {
     origin: "Labonnealternance",
     opco: OPCOS_LABEL.AKTO,
     idcc: "3248",
+    handiEngagement: "non",
     type: ENTREPRISE,
   } as const
 
@@ -180,6 +192,62 @@ describe("POST /etablissement/creation", () => {
 
       expect.soft(response.statusCode).toBe(200)
       expect.soft(vi.mocked(mailer.sendEmail).mock.calls.length).toBe(1)
+    })
+
+    describe("handiEngagement", () => {
+      const trackingSource = { utm_campaign: null, utm_medium: null, utm_source: null, referer: null }
+
+      it("déclare handiEngagement sur le rôle mais n'écrit rien dans referentiel_engagement_entreprise tant que le rôle n'est pas validé", async () => {
+        // Régression : un appel anonyme à cette route ne doit plus, à lui seul, suffire à enregistrer un
+        // engagement handicap pour un siret arbitraire. isCompanyValid (BAL mocké à false ci-dessus,
+        // aucune "bonne boite" en base) échoue donc le rôle créé reste en attente de validation, pas GRANTED.
+        const response = await callCreation({ ...defaultCreationEntreprisePayload, handiEngagement: "oui" })
+        expect.soft(response.statusCode).toBe(200)
+
+        const role = await getDbCollection("rolemanagements").findOne({ authorized_type: AccessEntityType.ENTREPRISE })
+        expect.soft(role?.handiEngagement).toBe("oui")
+        expect.soft(role?.status.at(-1)?.status).toBe(AccessStatus.AWAITING_VALIDATION)
+
+        expect.soft(await getDbCollection("referentiel_engagement_entreprise").countDocuments({})).toBe(0)
+      })
+
+      it("applique l'engagement au référentiel dès que le rôle passe GRANTED (ex: création directement validée)", async () => {
+        const result = await entrepriseOnboardingWorkflow.create(
+          {
+            email: "recruteur-valide@email.com",
+            first_name: "John",
+            last_name: "Doe",
+            siret: "48755980900016",
+            opco: OPCOS_LABEL.AKTO,
+            handiEngagement: "oui",
+            source: trackingSource,
+          },
+          { isUserValidated: true }
+        )
+
+        expect.soft("error" in result).toBe(false)
+
+        const referentiel = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: "48755980900016" })
+        expect.soft(referentiel?.sources).toEqual([EntrepriseEngagementSources.LBA])
+      })
+
+      it("n'écrit rien dans referentiel_engagement_entreprise quand handiEngagement vaut 'non', même une fois le rôle validé", async () => {
+        const result = await entrepriseOnboardingWorkflow.create(
+          {
+            email: "recruteur-non-engage@email.com",
+            first_name: "John",
+            last_name: "Doe",
+            siret: "48755980900016",
+            opco: OPCOS_LABEL.AKTO,
+            handiEngagement: "non",
+            source: trackingSource,
+          },
+          { isUserValidated: true }
+        )
+
+        expect.soft("error" in result).toBe(false)
+        expect.soft(await getDbCollection("referentiel_engagement_entreprise").countDocuments({})).toBe(0)
+      })
     })
   })
   describe("Création de CFA", () => {

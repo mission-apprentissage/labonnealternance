@@ -28,12 +28,15 @@ function transformPartnerJob(
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
   const id = partnerJob._id.toString()
 
-  const recipient_id =
-    partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? getRecipientID(JobCollectionName.recruiters, id) : getRecipientID(JobCollectionName.partners, id)
+  const isLbaOffer = partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA
+  const recipient_id = isLbaOffer ? getRecipientID(JobCollectionName.recruiters, id) : getRecipientID(JobCollectionName.partners, id)
+
+  // Offre LBA non active (annulée, pourvue, en attente) : le téléphone du recruteur ne doit plus être exposé aux candidats.
+  const isPhoneVisible = !isLbaOffer || partnerJob.offer_status === JOB_STATUS_ENGLISH.ACTIVE
 
   const resultJob: ILbaItemPartnerJob = {
     id,
-    ideaType: partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+    ideaType: isLbaOffer ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     title: partnerJob.offer_title,
     token: generateApplicationToken({ jobId: id }),
     recipient_id,
@@ -91,7 +94,7 @@ function transformPartnerJob(
 
     contact: {
       email: "",
-      phone: partnerJob.apply_phone,
+      phone: isPhoneVisible ? partnerJob.apply_phone : null,
       url: partnerJob.apply_url,
       hasEmail: partnerJob.apply_email || PARTNERS_WITH_APPLICATION_API.includes(partnerJob.partner_label) ? true : false,
     },

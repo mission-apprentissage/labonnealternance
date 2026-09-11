@@ -10,7 +10,7 @@ exports[`fill-siret-infos-for-partners > should enrich with api when siret is pr
   "workplace_geopoint": null,
   "workplace_legal_name": "Plop company Inc",
   "workplace_naf_code": "43.22A",
-  "workplace_naf_label": "plombier",
+  "workplace_naf_label": "Plombier",
   "workplace_name": "Plop brand",
   "workplace_size": "3 à 5 salariés",
 }
@@ -26,7 +26,7 @@ exports[`fill-siret-infos-for-partners > should enrich with cache when siret is 
   "workplace_geopoint": null,
   "workplace_legal_name": "Plop company Inc",
   "workplace_naf_code": "43.22A",
-  "workplace_naf_label": "plombier",
+  "workplace_naf_label": "Plombier",
   "workplace_name": "Plop brand",
   "workplace_size": "3 à 5 salariés",
 }

@@ -9,7 +9,7 @@ import { mistralClassificationResponse } from "@/common/apis/classification/clas
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 import type { TJobClassification } from "./cache-classification.service"
-import { getClassification, updateClassificationAndSynchronise } from "./cache-classification.service"
+import { getCachedClassificationsByPairs, getClassification, updateClassificationAndSynchronise } from "./cache-classification.service"
 
 vi.mock("job-processor", async (importOriginal) => {
   const mod = await importOriginal<typeof import("job-processor")>()
@@ -198,5 +198,38 @@ describe("updateClassificationAndSynchronise", () => {
 
     const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: jobPartner._id })
     expect(updatedJob?.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
+  })
+})
+
+describe("getCachedClassificationsByPairs", () => {
+  useMongo()
+
+  it("lit le cache par couple (partner_label, partner_job_id) : un même partner_job_id chez deux partenaires reste distinct", async () => {
+    // Faux positif à éviter : un `$in` sur partner_job_id seul renverrait la classification d'un autre
+    // partenaire pour le même identifiant.
+    await insertCacheClassification({ partner_label: "Hellowork", partner_job_id: "shared-1", classification: "publish" })
+    await insertCacheClassification({ partner_label: "Meteojob", partner_job_id: "shared-1", classification: "unpublish" })
+    await insertCacheClassification({ partner_label: "Hellowork", partner_job_id: "human-1", classification: "publish", human_verification: "unpublish" })
+
+    const cached = await getCachedClassificationsByPairs([
+      { partner_label: "Hellowork", partner_job_id: "shared-1" },
+      { partner_label: "Meteojob", partner_job_id: "shared-1" },
+      { partner_label: "Hellowork", partner_job_id: "human-1" },
+      { partner_label: "Hellowork", partner_job_id: "absent-1" },
+      { partner_label: "Jobteaser", partner_job_id: "shared-1" },
+    ])
+
+    expect(cached).toEqual(
+      new Map([
+        ["Hellowork::shared-1", "publish"],
+        ["Meteojob::shared-1", "unpublish"],
+        // La vérification humaine prime sur la classification du modèle, comme dans getClassification.
+        ["Hellowork::human-1", "unpublish"],
+      ])
+    )
+  })
+
+  it("retourne une Map vide sans entrée demandée", async () => {
+    expect(await getCachedClassificationsByPairs([])).toEqual(new Map())
   })
 })

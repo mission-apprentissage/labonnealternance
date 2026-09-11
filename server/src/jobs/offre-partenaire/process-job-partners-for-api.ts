@@ -92,6 +92,30 @@ export const processJobPartnersForApi = async () => {
   logger.info("fin de processJobPartnersForApi")
 }
 
+/**
+ * Point d'entrée CLI (`yarn cli reprocessJobPartners --filter '{"partner_label":"Hellowork","validated":false}'`)
+ * pour relancer la chaîne de traitement sur un périmètre arbitraire sans redéploiement — levier
+ * d'incident (offres libérées par le filet de sécurité de la classification, reprise après un
+ * traitement nocturne tué). Le filtre est du JSON : pas d'ObjectId possible, cibler par
+ * partner_label / partner_job_id / validated / business_error.
+ */
+export const reprocessJobPartners = async (payload?: { filter?: string }) => {
+  const raw = payload?.filter
+  if (!raw) {
+    throw new Error(`reprocessJobPartners: --filter requis (JSON, ex. '{"partner_label":"Hellowork","validated":false}')`)
+  }
+  let filter: Filter<IComputedJobsPartners>
+  try {
+    filter = JSON.parse(raw)
+  } catch (err) {
+    throw new Error(`reprocessJobPartners: --filter n'est pas un JSON valide (${err instanceof Error ? err.message : String(err)})`)
+  }
+  if (!filter || typeof filter !== "object" || Array.isArray(filter) || !Object.keys(filter).length) {
+    throw new Error("reprocessJobPartners: --filter doit être un objet JSON non vide")
+  }
+  return processJobPartnersWithFilter(filter)
+}
+
 export const processJobPartnersWithFilter = async (filter: Filter<IComputedJobsPartners>) => {
   logger.info({ filter }, "début de processJobPartnersWithFilter")
   let importedIds: ObjectId[] = []

@@ -5,6 +5,7 @@ import { useFlexLayout, useSortBy, useTable } from "react-table"
 import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
+import { getFlatTableCellBordersSx, getFlatTableResetSx, getFlatTableWrapperSx } from "@/app/(espace-pro)/_components/table-styles"
 
 const Table = ({ caption, data, columns }: { caption: string; data: any[]; columns: any }) => {
   const tableData = useMemo(() => data, [data])
@@ -24,10 +25,17 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
 
   return (
     <Box className="fr-table">
-      <Box className="fr-table__wrapper">
+      <Box className="fr-table__wrapper" sx={getFlatTableWrapperSx()}>
         <Box className="fr-table__container">
           <Box className="fr-table__content">
-            <Box component="table" {...getTableProps()}>
+            <Box
+              component="table"
+              {...getTableProps()}
+              sx={{
+                ...getFlatTableResetSx(),
+                ...getFlatTableCellBordersSx(),
+              }}
+            >
               <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v") }} component="caption">
                 {caption}
               </Box>

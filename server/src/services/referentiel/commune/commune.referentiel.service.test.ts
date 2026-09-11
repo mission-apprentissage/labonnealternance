@@ -1,12 +1,12 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "bson"
-import { clichyFixture, levalloisFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
+import { clichyFixture, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import type { IGeoPoint } from "shared/models/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { IGeoApiCommune } from "@/common/apis/geo-api-gouv/geo-api-gouv"
 import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geo-api-gouv/geo-api-gouv"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { getNearestCommuneByGeoPoint, updateReferentielCommune } from "./commune.referentiel.service"
+import { getCommunePrincipaleByCodesDepartement, getNearestCommuneByGeoPoint, updateReferentielCommune } from "./commune.referentiel.service"
 
 vi.mock("@/common/apis/geo-api-gouv/geo-api-gouv")
 
@@ -79,6 +79,43 @@ describe("Commune Referentiel Service", () => {
 
       const commune = await getNearestCommuneByGeoPoint(porteDeClichy)
       expect(commune).toEqual(expect.objectContaining(clichyFixture))
+    })
+  })
+
+  describe("getCommunePrincipaleByCodesDepartement", () => {
+    beforeEach(async () => {
+      await getDbCollection("referentiel.communes").insertMany([
+        { _id: new ObjectId(), ...parisFixture },
+        { _id: new ObjectId(), ...levalloisFixture },
+        { _id: new ObjectId(), ...clichyFixture },
+        { _id: new ObjectId(), ...marseilleFixture },
+        // Même département que Marseille, un seul code postal : ne doit pas être retenue.
+        { _id: new ObjectId(), ...parisFixture, code: "13001", codeDepartement: "13", codesPostaux: ["13100"], nom: "Aix-en-Provence" },
+      ])
+    })
+
+    it("should return the commune with the most postal codes in the departement, with only centre and nom", async () => {
+      const commune = await getCommunePrincipaleByCodesDepartement(["13"])
+
+      expect(commune).toEqual({ centre: marseilleFixture.centre, nom: "Marseille" })
+    })
+
+    it("should break ties on the lowest code insee", async () => {
+      // Clichy (92024) et Levallois-Perret (92044) ont un code postal chacun.
+      const commune = await getCommunePrincipaleByCodesDepartement(["92"])
+
+      expect(commune?.nom).toBe("Clichy")
+    })
+
+    it("should search across several departements (Corse 2A / 2B)", async () => {
+      const commune = await getCommunePrincipaleByCodesDepartement(["2A", "2B", "75"])
+
+      expect(commune?.nom).toBe("Paris")
+    })
+
+    it("should return null when no commune belongs to the departements", async () => {
+      expect(await getCommunePrincipaleByCodesDepartement(["99"])).toBeNull()
+      expect(await getCommunePrincipaleByCodesDepartement([])).toBeNull()
     })
   })
 })

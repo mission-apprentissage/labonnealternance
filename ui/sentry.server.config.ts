@@ -16,5 +16,11 @@ init({
   normalizeDepth: 8,
   sendDefaultPii: true,
   integrations: [captureConsoleIntegration({ levels: ["error"] }), extraErrorDataIntegration({ depth: 8 })],
-  ignoreErrors: ["AbortError"],
+  ignoreErrors: [
+    "AbortError",
+    // Avertissements de dépréciation Node émis par les internes de Next (url.parse, DEP0169…),
+    // remontés par captureConsoleIntegration comme des erreurs alors qu'ils ne sont pas
+    // actionnables côté LBA (Sentry LBA-UI-1B6ZZZZZZW2HZ, ~2 300 events sur 3 environnements).
+    /^\(node:\d+\) \[DEP\d+\] DeprecationWarning/,
+  ],
 })

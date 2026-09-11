@@ -6,7 +6,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { resetSearchItemBuildContextCache } from "@/services/search/search-items.service"
-import { processJobPartnersForApi } from "./process-job-partners-for-api"
+import { processJobPartnersForApi, reprocessJobPartners } from "./process-job-partners-for-api"
 
 // fillComputedJobsPartners neutralisé : ses étapes appellent les API externes (SIRET, ROME,
 // classification) et ne sont pas le sujet ici — les documents du test sont déjà validés. Le reste
@@ -146,5 +146,41 @@ describe("process-job-partners-for-api", () => {
 
     expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: "api_offer_2" })).toBe(0)
     expect.soft(await getDbCollection("search_items").countDocuments({ _id: computed._id })).toBe(0)
+  })
+
+  describe("reprocessJobPartners (levier d'incident CLI)", () => {
+    it("refuse un filtre absent, non JSON, tableau ou vide : un filtre vide relancerait tout computed_jobs_partners", async () => {
+      await expect(reprocessJobPartners()).rejects.toThrow(/--filter requis/)
+      await expect(reprocessJobPartners({ filter: "{partner_label: Hellowork}" })).rejects.toThrow(/n'est pas un JSON valide/)
+      await expect(reprocessJobPartners({ filter: '["Hellowork"]' })).rejects.toThrow(/objet JSON non vide/)
+      await expect(reprocessJobPartners({ filter: "{}" })).rejects.toThrow(/objet JSON non vide/)
+      await expect(reprocessJobPartners({ filter: "null" })).rejects.toThrow(/objet JSON non vide/)
+    })
+
+    it("relance la chaîne sur le seul périmètre du filtre : importé et indexé, le computed validé est consommé", async () => {
+      const inScope = await createComputedJobPartner({
+        partner_label: "Mission Apprentissage",
+        partner_job_id: "reprocess_in_1",
+        offer_title: "TEST SANDBOX - ne pas traiter",
+        validated: true,
+        business_error: null,
+      })
+      const outOfScope = await createComputedJobPartner({
+        partner_label: "Mission Apprentissage",
+        partner_job_id: "reprocess_out_1",
+        offer_title: "TEST SANDBOX - ne pas traiter",
+        validated: true,
+        business_error: null,
+      })
+
+      await reprocessJobPartners({ filter: '{"partner_job_id":"reprocess_in_1"}' })
+
+      expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: "reprocess_in_1" })).toBe(1)
+      expect.soft(await getDbCollection("search_items").countDocuments({ _id: inScope._id })).toBe(1)
+      expect.soft(await getDbCollection("computed_jobs_partners").countDocuments({ _id: inScope._id })).toBe(0)
+      // Hors filtre : ni importé, ni supprimé.
+      expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: "reprocess_out_1" })).toBe(0)
+      expect.soft(await getDbCollection("computed_jobs_partners").countDocuments({ _id: outOfScope._id })).toBe(1)
+    })
   })
 })

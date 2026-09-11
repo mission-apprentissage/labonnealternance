@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, FormControl, FormHelperText, FormLabel, Input, Typography } from "@mui/material"
 import { useField } from "formik"
 import parse from "html-react-parser"
+import { useId } from "react"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -11,6 +12,16 @@ import { Warning } from "@/theme/components/icons"
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
   const hasError = Boolean(meta.error && meta.touched && (props.required !== false || field.value))
+  const required = props.required ?? true
+  // Association explicite label ↔ input et input ↔ message d'erreur (RGAA) : FormLabel/Input sont ici
+  // des éléments frères dans FormControl, pas l'un dans l'autre, donc sans htmlFor/id/aria-describedby
+  // ils ne sont liés par aucune API d'accessibilité — seulement par leur proximité visuelle.
+  const generatedId = useId()
+  const inputId = props.id ?? generatedId
+  const errorId = `${inputId}-error`
+  const hintId = `${inputId}-hint`
+  // L'indication (format attendu…) et le message d'erreur sont tous deux lus avec le champ (RGAA 11.10)
+  const describedBy = [props.info ? hintId : null, hasError ? errorId : null].filter(Boolean).join(" ") || undefined
   return (
     <Box
       sx={[
@@ -20,18 +31,28 @@ const CustomInput = (props) => {
         props.sx ? { ...props.sx } : {},
       ]}
     >
-      <FormControl sx={{ width: "100%" }} error={hasError} required={props.required ?? true}>
-        {props.label && <FormLabel error={hasError}>{props.label}</FormLabel>}
+      <FormControl sx={{ width: "100%" }} error={hasError} required={required}>
+        {props.label && (
+          // hideAsterisk masque uniquement l'astérisque visuel du label : le FormControl (et donc
+          // l'input natif, via son contexte) reste `required`, ce qui préserve aria-required pour les
+          // lecteurs d'écran (RGAA) — utile quand une mention globale type "Tous les champs sont
+          // obligatoires" rend l'astérisque redondant. La bulle/blocage natifs du navigateur au submit
+          // sont une préoccupation séparée, à traiter par `noValidate` sur le <form> englobant.
+          <FormLabel htmlFor={inputId} error={hasError} {...(props.hideAsterisk ? { required: false } : {})}>
+            {props.label}
+          </FormLabel>
+        )}
         {props.info && (
-          <Box className={fr.cx("fr-hint-text")} sx={{ pt: fr.spacing("2v") }}>
+          <Box id={hintId} className={fr.cx("fr-hint-text")} sx={{ pt: fr.spacing("2v") }}>
             {props.info}
           </Box>
         )}
-        <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} />
+        <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} id={inputId} aria-describedby={describedBy} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
         {hasError &&
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
             <Box
+              id={errorId}
               sx={{
                 ml: fr.spacing("2v"),
               }}
@@ -45,7 +66,7 @@ const CustomInput = (props) => {
               </DsfrLink>
             </Box>
           ) : (
-            <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-start" }}>
+            <Box id={errorId} sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-start" }}>
               <Typography className={fr.cx("fr-message--error")}>
                 {parse(meta.error || "")}
                 {meta.error?.includes("a été refusé") && (

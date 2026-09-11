@@ -31,7 +31,6 @@ import {
   verifyRecruiterEmailInUse,
 } from "@/services/etablissement.service"
 import { getFormulairesForCfaManagedEnterprises, jobPartnersToRecruiter } from "@/services/formulaire.service"
-import { sendEngagementHandicapEmailIfNeeded } from "@/services/handi-engagement.service"
 import type { Organization, UserAndOrganization } from "@/services/organization.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
 import { getEntrepriseHandiEngagement } from "@/services/referentiel-engagement-entreprise.service"
@@ -376,7 +375,6 @@ export default (server: Server) => {
         const mainRole = await getMainRoleManagement(user._id, true)
         if (mainRole && isGrantedAndAutoValidatedRole(mainRole)) {
           await sendWelcomeEmailToUserRecruteur(user, mainRole)
-          await sendEngagementHandicapEmailIfNeeded(user, mainRole)
         }
       }
 

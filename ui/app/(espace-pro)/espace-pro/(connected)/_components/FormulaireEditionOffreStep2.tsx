@@ -33,6 +33,7 @@ export const FormulaireEditionOffreStep2 = ({
   romeCode,
   geoCoordinates,
   isFtEligible = true,
+  skipCfaStep = false,
   onSubmit,
   onCancel,
 }: {
@@ -40,6 +41,7 @@ export const FormulaireEditionOffreStep2 = ({
   romeCode?: string
   geoCoordinates?: string | null
   isFtEligible?: boolean
+  skipCfaStep?: boolean
   onSubmit?: (values: any) => void
   onCancel: () => void
 }) => {
@@ -47,10 +49,11 @@ export const FormulaireEditionOffreStep2 = ({
   const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude)
 
   // les CFA disponibles à proximité sont déterminés dès cette étape pour décider si l'étape 3 (contacter les écoles) a lieu d'être affichée
+  // pour un compte CFA, cette étape de mise en relation avec d'autres CFA n'a pas de sens : on n'effectue pas la recherche
   const { data: etablissements, isLoading } = useQuery({
     queryKey: ["etablissements-related-rome", romeCode, geoCoordinates],
     queryFn: () => getRelatedEtablissementsFromRome({ rome: romeCode as string, latitude, longitude, limit: 10 }) as Promise<IEtablissementCatalogueProcheWithDistanceJSON[]>,
-    enabled: Boolean(romeCode) && hasCoordinates,
+    enabled: Boolean(romeCode) && hasCoordinates && !skipCfaStep,
     gcTime: 0,
   })
 

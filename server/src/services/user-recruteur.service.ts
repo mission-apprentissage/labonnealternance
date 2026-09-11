@@ -148,12 +148,17 @@ export const createOrganizationUser = async ({
   organization,
   grantedBy,
   statusEvent,
+  handiEngagement,
 }: {
   userFields: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">
   is_email_checked: boolean
   organization: Organization
   grantedBy?: string
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
+  // Choix (ENTREPRISE) déclaré à la création du compte : posé sur le rôle créé, mais pas encore appliqué
+  // à referentiel_engagement_entreprise — cf. modifyPermissionToUser/applyPendingHandiEngagementIfGranted,
+  // qui ne l'enregistrent que lorsque ce rôle passe réellement à GRANTED.
+  handiEngagement?: IRoleManagement["handiEngagement"]
 }) => {
   const { user, created } = await findOrCreateUserWithAccount(userFields, is_email_checked, grantedBy ?? "")
 
@@ -175,6 +180,7 @@ export const createOrganizationUser = async ({
       user_id: user._id,
       authorized_id: orgId.toString(),
       authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
+      handiEngagement,
     },
     statusEvent ?? {
       reason: "création de compte",

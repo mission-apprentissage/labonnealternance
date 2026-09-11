@@ -58,6 +58,8 @@ export const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>>
   partner_label: 1,
   apply_email: 1,
   is_delegated: 1,
+  cfa_legal_name: 1,
+  cfa_address_label: 1,
   contract_type: 1,
   contract_start: 1,
   contract_start_type: 1,
@@ -81,6 +83,8 @@ type ProjectedJobFields =
   | "partner_label"
   | "apply_email"
   | "is_delegated"
+  | "cfa_legal_name"
+  | "cfa_address_label"
   | "contract_type"
   | "contract_start"
   | "contract_start_type"
@@ -329,6 +333,28 @@ export const buildFormationSearchItem = (formation: IFormationForSearchItem, ctx
   rome_labels: resolveRomeLabels(formation.rome_codes, ctx.romeLabelByCode),
 })
 
+/**
+ * Nom d'organisme affiché sur la carte de résultat, et valeur indexée du champ de facette
+ * `organization_name` (calculé par `search.service` et filtrable par paramètre d'URL ; aucune
+ * liste d'options ne l'expose aujourd'hui dans les filtres de l'interface).
+ *
+ * Offre déléguée = offre déposée par un CFA pour le compte d'une entreprise d'accueil : c'est le
+ * nom du CFA qui doit apparaître, jamais la raison sociale de l'entreprise (cf. issue #5343).
+ * Même règle que la fiche détail (`partner-job.service`) et l'API v3 (`jobs.routes.v3.model`).
+ *
+ * Aucun repli sur les champs `workplace_*` quand `cfa_legal_name` est absent : ce repli
+ * réafficherait exactement le nom que l'on masque. La carte affiche alors « Offre anonyme ».
+ * `||` et non `??` sur la chaîne de repli entreprise : les champs sont sanitizés en amont et
+ * peuvent valoir "" (cf. `formatTextFieldsJobsPartners`), ce qui court-circuiterait un `??`.
+ */
+export const getJobOrganizationName = (
+  job: Pick<IJobPartnerForSearchItem, "is_delegated" | "cfa_legal_name" | "workplace_name" | "workplace_brand" | "workplace_legal_name">,
+  ctx: SearchItemBuildContext
+): string => {
+  const name = job.is_delegated ? job.cfa_legal_name : job.workplace_name || job.workplace_brand || job.workplace_legal_name
+  return canonicalizeCase(ctx.organizationCaseMap, name || "")
+}
+
 export const buildJobOfferSearchItem = (job: IJobPartnerForSearchItem, ctx: SearchItemBuildContext): ISearchItem => ({
   _id: job._id,
   url_id: job._id.toString(),
@@ -347,12 +373,17 @@ export const buildJobOfferSearchItem = (job: IJobPartnerForSearchItem, ctx: Sear
   application_count: job.application_count,
   title: dedupeRepeatedTitle(job.offer_title || ""),
   description: stripHtmlToText(job.offer_description),
-  address: job.workplace_address_label || "",
+  // Offre déléguée : adresse du CFA, comme la fiche détail (`partner-job.service`) — afficher
+  // celle de l'entreprise d'accueil la réidentifierait alors qu'on masque son nom (issue #5343).
+  // `location` reste en revanche le geopoint de l'entreprise : c'est lui qui porte la pertinence
+  // géographique et la distance affichée. Même compromis que la fiche détail, où l'adresse du CFA
+  // cohabite déjà avec les coordonnées de l'entreprise.
+  address: (job.is_delegated ? job.cfa_address_label : job.workplace_address_label) || "",
   location: {
     type: "Point",
     coordinates: [job.workplace_geopoint.coordinates[0], job.workplace_geopoint.coordinates[1]],
   },
-  organization_name: canonicalizeCase(ctx.organizationCaseMap, job.workplace_name || job.workplace_brand || job.workplace_legal_name || ""),
+  organization_name: getJobOrganizationName(job, ctx),
   level: job.offer_target_diploma?.label || "",
   activity_sector: job.workplace_naf_label ? canonicalizeCase(ctx.sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
   keywords: null,

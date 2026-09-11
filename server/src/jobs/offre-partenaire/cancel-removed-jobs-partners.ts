@@ -1,6 +1,7 @@
 import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -105,7 +106,17 @@ export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJob
           {
             $match: {
               $expr: {
-                $and: [{ $eq: ["$partner_label", "$$partnerLabel"] }, { $eq: ["$partner_job_id", "$$partnerJobId"] }, { $ne: ["$business_error", null] }],
+                $and: [
+                  { $eq: ["$partner_label", "$$partnerLabel"] },
+                  { $eq: ["$partner_job_id", "$$partnerJobId"] },
+                  { $ne: ["$business_error", null] },
+                  // CLASSIFICATION_PENDING est un état transitoire de traitement (batch Mistral en
+                  // cours), pas un verdict métier : l'offre garde le statut qu'elle avait. Sans
+                  // cette exclusion, tout le catalogue non whitelisté était annulé chaque nuit à
+                  // 00h35 puis réactivé au retour du batch (mesuré en prod : 5 000 à 6 700
+                  // annulations/nuit chez Hellowork et France Travail).
+                  { $ne: ["$business_error", JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING] },
+                ],
               },
             },
           },
