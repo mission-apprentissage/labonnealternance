@@ -189,7 +189,7 @@ export function Footer({ isWidget = false }: { isWidget?: boolean }) {
   return (
     <footer className="fr-footer" role="contentinfo" id="footer-links">
       {showLinkList && (
-        <nav className="fr-footer__top" role="navigation" aria-label="Plan du site">
+        <nav className="fr-footer__top" role="navigation" aria-label="Liens du pied de page">
           <h2 className="fr-sr-only">Informations et liens du site</h2>
           <div className="fr-container">
             <div className="fr-grid-row fr-grid-row--gutters">

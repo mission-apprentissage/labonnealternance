@@ -8,9 +8,9 @@ import { DsfrIcon } from "@/components/DsfrIcon"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
-import { IntensionPageResult } from "./IntensionPageResult"
 import type { IntentionPageFormValues } from "./IntentionPageForm"
 import { IntentionPageForm } from "./IntentionPageForm"
+import { IntentionPageResult } from "./IntentionPageResult"
 
 export type IntentionPageProps = {
   company_recruitment_intention: ApplicationIntention
@@ -90,7 +90,8 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         {alreadySent ? (
           <>
             <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700 }}>
-              {`✅ Votre réponse a déjà été envoyée au candidat ${applicant_first_name} ${applicant_last_name} le ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })} à ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
+              <span aria-hidden="true">✅</span>{" "}
+              {`Votre réponse a déjà été envoyée au candidat ${applicant_first_name} ${applicant_last_name} le ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })} à ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
             </Typography>
             <Typography sx={{ fontSize: "12px", lineHeight: "20px" }}>Le candidat a reçu le message suivant par e-mail.</Typography>
           </>
@@ -264,8 +265,8 @@ export function IntentionPage(props: IntentionPageProps) {
   return (
     <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
       {displayMode === "form" && <IntentionPageContent {...props} onCancel={() => setDisplayMode("canceled")} onSentNow={() => setDisplayMode("sent_now")} />}
-      {displayMode === "canceled" && <IntensionPageResult intention={company_recruitment_intention} canceled={true} />}
-      {displayMode === "sent_now" && <IntensionPageResult intention={company_recruitment_intention} />}
+      {displayMode === "canceled" && <IntentionPageResult intention={company_recruitment_intention} canceled={true} />}
+      {displayMode === "sent_now" && <IntentionPageResult intention={company_recruitment_intention} />}
     </Box>
   )
 }

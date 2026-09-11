@@ -66,7 +66,6 @@ export default function unJeune1Solution() {
           </Box>
         </Box>
         <Box
-          id="editorial-1j1s-content-container"
           sx={{
             position: "relative",
             display: "grid",
@@ -155,8 +154,8 @@ export default function unJeune1Solution() {
         </Box>
       </Box>
 
-      <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
-        <Typography id="home-content-container" variant="h1">
+      <Box id="editorial-1j1s-content-container" tabIndex={-1} sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
+        <Typography variant="h1">
           La bonne alternance vous connecte
           <br />
           <Box component="span" sx={{ color: "#EA619E" }}>

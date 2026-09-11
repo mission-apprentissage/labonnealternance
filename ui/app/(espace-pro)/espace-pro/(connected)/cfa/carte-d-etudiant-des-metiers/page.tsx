@@ -24,8 +24,24 @@ const CarteDEtudiantDesMetiersPage = () => (
       <Grid container sx={{ mt: { md: fr.spacing("4w"), xs: fr.spacing("2w") } }} spacing={fr.spacing("3w")}>
         <Grid size={{ md: 4, xs: 12 }} display="flex" flexDirection="column">
           <Box display={"flex"} justifyContent={"center"}>
-            <Image fetchPriority="low" src="/images/carte-d-etudiant-des-metiers-recto.svg" width={181} height={121} alt="" unoptimized style={{ height: "100%" }} />
-            <Image fetchPriority="low" src="/images/carte-d-etudiant-des-metiers-verso.svg" width={181} height={121} alt="" unoptimized style={{ height: "100%" }} />
+            <Image
+              fetchPriority="low"
+              src="/images/carte-d-etudiant-des-metiers-recto.svg"
+              width={181}
+              height={121}
+              alt="Aperçu du recto de la carte d'étudiant des métiers"
+              unoptimized
+              style={{ height: "100%" }}
+            />
+            <Image
+              fetchPriority="low"
+              src="/images/carte-d-etudiant-des-metiers-verso.svg"
+              width={181}
+              height={121}
+              alt="Aperçu du verso de la carte d'étudiant des métiers"
+              unoptimized
+              style={{ height: "100%" }}
+            />
           </Box>
           <Button linkProps={{ href: "/ressources/carte-d-etudiant-des-metiers.zip" }} style={{ margin: "auto", marginTop: fr.spacing("3w") }}>
             <DsfrIcon name="fr-icon-download-line" size={16} />

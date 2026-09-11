@@ -16,14 +16,9 @@ import { PAGES } from "@/utils/routes.utils"
 
 type PrdvData = NonNullable<Awaited<ReturnType<typeof getPrdvContext>>>
 
-// Le layout (rdva) déclare un lien d'évitement « Contenu » vers #main-content mais ne rend aucun
-// landmark : c'est à la page de le porter, comme le font les layouts espace-pro. Un seul wrapper
-// pour tous les états rendus — l'écran de confirmation n'en avait aucun jusqu'ici.
-const RdvaMain = ({ children }: PropsWithChildren) => (
-  <Box component="main" role="main" id="main-content" tabIndex={-1} sx={{ my: fr.spacing("6v"), mx: fr.spacing("2v") }}>
-    {children}
-  </Box>
-)
+// Le landmark <main> et l'ancre #main-content du lien d'évitement sont portés par le layout (rdva)
+// pour toutes ses pages (premium, optout, rdva) : ce wrapper ne gère plus que les marges.
+const RdvaMain = ({ children }: PropsWithChildren) => <Box sx={{ my: fr.spacing("6v"), mx: fr.spacing("2v") }}>{children}</Box>
 
 const PrdvIndisponible = () => (
   <>

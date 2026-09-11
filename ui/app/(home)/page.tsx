@@ -51,6 +51,8 @@ export default function HomePage() {
         }}
         maxWidth="xl"
         role="main"
+        id="home-content-container"
+        tabIndex={-1}
       >
         <Box
           component="section"
