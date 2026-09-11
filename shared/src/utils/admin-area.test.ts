@@ -15,6 +15,13 @@ describe("parseAdminArea", () => {
     ["segment en trop", "region:53:extra"],
     ["corse en minuscules", "departement:2a"],
     ["injection", "region:53; drop"],
+    ["département à un chiffre", "departement:2"],
+    ["département 00", "departement:00"],
+    ["département 96", "departement:96"],
+    ["Saint-Barthélemy, collectivité", "departement:977"],
+    ["Saint-Pierre-et-Miquelon, collectivité", "departement:975"],
+    ["région inexistante", "region:12"],
+    ["région 999", "region:999"],
   ])("rejette %s", (_, value) => {
     expect(parseAdminArea(value)).toBeNull()
   })
@@ -29,5 +36,12 @@ describe("parseAdminArea", () => {
     expect(parseAdminArea("departement:2B")).toEqual({ kind: "departement", code: "2B" })
     expect(parseAdminArea("departement:974")).toEqual({ kind: "departement", code: "974" })
     expect(parseAdminArea("region:04")).toEqual({ kind: "region", code: "04" })
+  })
+
+  it("accepte les bornes des séries : 01, 19, 21, 95, 971, 976, et les 18 régions", () => {
+    for (const code of ["01", "19", "21", "95", "971", "976"]) expect(parseAdminArea(`departement:${code}`)?.code).toBe(code)
+    for (const code of ["01", "02", "03", "04", "06", "11", "24", "27", "28", "32", "44", "52", "53", "75", "76", "84", "93", "94"]) {
+      expect(parseAdminArea(`region:${code}`)?.code, code).toBe(code)
+    }
   })
 })

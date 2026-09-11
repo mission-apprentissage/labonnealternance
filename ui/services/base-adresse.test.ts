@@ -74,6 +74,13 @@ describe("searchAddress avec les entités administratives", () => {
     expect(item.adminArea).toBeUndefined()
   })
 
+  it("outre-mer : une seule ligne quand la région et le département portent le même nom, le département", async () => {
+    stubFetch([poi("région", "Guadeloupe", "01"), poi("département", "Guadeloupe", "971"), poi("région", "Bretagne", "53")])
+    const items = await searchAddress("Guad", undefined, undefined, true)
+    expect(items.map((i) => i.displayLabel)).toEqual(["Bretagne (région)", "Guadeloupe (département)"])
+    expect(items[1].adminArea).toBe("departement:971")
+  })
+
   it("une commune de l'index address garde son format historique, sans adminArea ni displayLabel", async () => {
     stubFetch([municipality("Nantes", "44109", "44000", 320000)])
     const [nantes] = await searchAddress("Nantes", undefined, undefined, true)

@@ -11,7 +11,7 @@ type AddressFeature = {
     // `category` à la place, sans `label` ni `postcode` (cf. ban-plateforme#781) : tout
     // accès direct à `label` plante sur une feature poi.
     label?: string
-    postcode?: string
+    postcode?: string | string[]
     citycode?: string | string[]
     population?: number
     toponym?: string
@@ -41,6 +41,17 @@ const COMMUNE_RANK = 2
 const POI_CATEGORIES = "département,région"
 
 const firstOf = (value: string | string[] | undefined): string | undefined => (Array.isArray(value) ? value[0] : value)
+
+/**
+ * Guadeloupe, Martinique, Guyane, La Réunion, Mayotte : la région et le département portent le
+ * même nom et couvrent le même territoire. Proposer les deux, c'est deux lignes « Guadeloupe »
+ * pour un seul choix. On garde le département, dont le code (971…) est celui que tout le monde
+ * connaît ; le filtre renvoie exactement les mêmes résultats.
+ */
+const dedupeSingleDepartmentRegions = (items: IAddressItem[]): IAddressItem[] => {
+  const departementLabels = new Set(items.filter((i) => i.adminArea?.startsWith("departement:")).map((i) => i.label))
+  return items.filter((i) => !(i.adminArea?.startsWith("region:") && departementLabels.has(i.label)))
+}
 
 const adminRank = (feature: AddressFeature): number => (feature.properties.category && ADMIN_CATEGORIES[feature.properties.category[1]]?.rank) ?? COMMUNE_RANK
 
@@ -129,7 +140,7 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
         }
       })
 
-      return simplifiedItems(returnedItems)
+      return simplifiedItems(dedupeSingleDepartmentRegions(returnedItems))
     } catch (err) {
       // Requête supplantée par une saisie plus récente (React Query annule via signal à chaque
       // frappe) : flux normal de l'autocomplétion, pas une erreur à faire remonter.
@@ -151,7 +162,7 @@ export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type
     const returnedItems: IAddressItem[] = data.features.map((feature) => ({
       value: feature.geometry,
       insee: (Array.isArray(feature.properties.citycode) ? feature.properties.citycode[0] : feature.properties.citycode) ?? "",
-      zipcode: feature.properties.postcode ?? "",
+      zipcode: firstOf(feature.properties.postcode) ?? "",
       label: feature.properties.label ?? feature.properties.toponym ?? "",
     }))
 

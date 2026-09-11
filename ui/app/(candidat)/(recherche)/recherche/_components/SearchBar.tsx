@@ -146,6 +146,10 @@ export function highlightMatch(label: string, input: string): ReactNode {
 
 type LieuOption = { label: string; latitude: number; longitude: number; adminArea?: string; displayLabel?: string }
 
+// Identité d'une option lieu : le libellé ne suffit plus depuis que régions et départements sont
+// proposés (une région et une commune peuvent s'appeler « Bretagne »).
+const lieuOptionKey = (o: LieuOption) => o.adminArea ?? o.label
+
 // Option « France entière » du champ lieu : proposée quand le champ est vide (Entrée la
 // sélectionne — autoHighlight), elle retire le lieu de la recherche. Le placeholder
 // « France entière » du champ vide reflète ensuite l'état appliqué.
@@ -511,7 +515,7 @@ export function SearchBar({
           getOptionLabel={(o) => (typeof o === "string" ? o : "kind" in o ? "" : o.label)}
           isOptionEqualToValue={(o, v) => {
             if ("kind" in o) return false
-            return typeof v === "string" ? o.label === v : !("kind" in v) && o.label === v.label
+            return typeof v === "string" ? o.label === v : !("kind" in v) && lieuOptionKey(o) === lieuOptionKey(v)
           }}
           slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
           blurOnSelect={inlineSuggestions}
@@ -563,7 +567,7 @@ export function SearchBar({
                 </Box>
               </Box>
             ) : (
-              <Box component="li" key={option.label} {...optionProps} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
+              <Box component="li" key={lieuOptionKey(option)} {...optionProps} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
                 {/* Libellé de liste (« Bretagne (région) ») distinct du libellé appliqué au champ et à l'URL. */}
                 <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>{highlightMatch(option.displayLabel ?? option.label, lieuInput)}</Box>
                 {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
