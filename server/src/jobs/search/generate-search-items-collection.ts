@@ -277,6 +277,9 @@ export const fillSearchItemsCollection = async () => {
     })
   }
 
+  // Observable en Loki, pas un warn avalé : une correction de données source doit se voir.
+  logger.info({ corrections: ctx.corrections }, "fillSearchItemsCollection: corrections appliquées aux données source")
+
   // Les mots-clés des documents `keywords: null` sont générés par les crons dédiés
   // (generateSearchItemsKeywordsContinuous / submitSearchItemsKeywordsBatch) — cf.
   // searchItemsKeywords.service.ts.

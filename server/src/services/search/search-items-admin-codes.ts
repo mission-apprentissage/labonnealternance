@@ -194,3 +194,38 @@ export const normalizeZipcode = (zipcode: string | null | undefined): string | n
   if (!digits || digits.length > 5) return null
   return digits.padStart(5, "0")
 }
+
+/**
+ * Tolérance autour de la bbox communale, en degrés (~2 km) : absorbe un géocodage posé juste de
+ * l'autre côté de la limite communale, qui n'est pas une erreur à corriger.
+ */
+const BBOX_TOLERANCE_DEG = 0.02
+
+/**
+ * Garde-fou sur le géopoint d'une formation. Le catalogue livre `lieu_formation_geo_coordonnees`
+ * tel quel, LBA ne géocode pas : 85 formations en prod (0,18 %, relevé du 2026-09-11) ont un point
+ * à plus de 30 km de la commune de leur adresse (La Roche-sur-Yon affichée à l'ouest de Nantes,
+ * Angers en plein Nantes…), donc présentées comme locales à des jeunes qui cherchent ailleurs.
+ *
+ * Le critère n'est pas une distance mais l'emprise réelle de la commune : un point à 100 km du
+ * centre de Maripasoula (18 000 km²) est légitime, un point à 30 km du centre de La Roche-sur-Yon
+ * ne l'est pas. Hors de la bbox communale (plus tolérance), on recentre sur le centre de la
+ * commune : position approximative mais dans la bonne ville, plutôt qu'exacte dans la mauvaise.
+ * Sans INSEE résolu, sans bbox, ou sans géopoint : on ne touche à rien.
+ */
+export const snapGeopointToCommune = (
+  source: { insee?: string | null; geopoint?: IPointGeometry | null },
+  index: AdminCodeIndex
+): { location: IPointGeometry | null; snapped: boolean } => {
+  const geopoint = source.geopoint ?? null
+  const insee = normalizeInsee(source.insee)
+  if (!geopoint || !insee) return { location: geopoint, snapped: false }
+  const commune = index.byInsee.get(insee)
+  if (!commune?.bbox || !commune.centre) return { location: geopoint, snapped: false }
+
+  const [minLon, minLat, maxLon, maxLat] = commune.bbox
+  const [lon, lat] = geopoint.coordinates
+  const inside = lon >= minLon - BBOX_TOLERANCE_DEG && lon <= maxLon + BBOX_TOLERANCE_DEG && lat >= minLat - BBOX_TOLERANCE_DEG && lat <= maxLat + BBOX_TOLERANCE_DEG
+  if (inside) return { location: geopoint, snapped: false }
+  return { location: { type: "Point", coordinates: [commune.centre[0], commune.centre[1]] }, snapped: true }
+}
