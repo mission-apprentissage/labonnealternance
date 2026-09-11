@@ -144,7 +144,7 @@ export function highlightMatch(label: string, input: string): ReactNode {
   )
 }
 
-type LieuOption = { label: string; latitude: number; longitude: number; adminArea?: string }
+type LieuOption = { label: string; latitude: number; longitude: number; adminArea?: string; displayLabel?: string }
 
 // Option « France entière » du champ lieu : proposée quand le champ est vide (Entrée la
 // sélectionne — autoHighlight), elle retire le lieu de la recherche. Le placeholder
@@ -314,6 +314,7 @@ export function SearchBar({
     latitude: item.value.coordinates[1],
     longitude: item.value.coordinates[0],
     adminArea: item.adminArea,
+    displayLabel: item.displayLabel,
   }))
 
   // Champ vide : seule l'option « France entière » est proposée ; en saisie, les suggestions
@@ -563,7 +564,8 @@ export function SearchBar({
               </Box>
             ) : (
               <Box component="li" key={option.label} {...optionProps} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
-                <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>{highlightMatch(option.label, lieuInput)}</Box>
+                {/* Libellé de liste (« Bretagne (région) ») distinct du libellé appliqué au champ et à l'URL. */}
+                <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>{highlightMatch(option.displayLabel ?? option.label, lieuInput)}</Box>
                 {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
               </Box>
             )
