@@ -20,6 +20,10 @@ test.describe("navigation instantanée — accueil", () => {
 })
 
 test.describe("navigation instantanée — fiches offre et formation", () => {
+  // L'assertion vise le titre de la fiche, à l'intérieur du landmark, et non le landmark lui-même :
+  // celui-ci est rendu par le layout de segment (ui/app/(candidat)/emploi/layout.tsx) dès l'entrée
+  // dans la route, avant même que la donnée arrive — l'attendre ne prouverait rien sur la navigation.
+  //
   // `use cache: private` (voir plan de migration, Étape 3bis) ne survit qu'en mémoire navigateur :
   // il rend les navigations CLIENT (clic + prefetch) instantanées, mais pas un rechargement complet
   // (MPA/reload), qui repart toujours d'un cache vide. Le test doit donc simuler un vrai clic depuis
@@ -37,7 +41,7 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
 
     await instant(page, async () => {
       await offerLink.click()
-      await expect(page.locator("main")).toBeVisible()
+      await expect(page.locator("main").getByRole("heading", { level: 3 }).first()).toBeVisible()
     })
   })
 
@@ -50,7 +54,7 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
 
     await instant(page, async () => {
       await formationLink.click()
-      await expect(page.locator("main")).toBeVisible()
+      await expect(page.locator("main").getByRole("heading", { level: 3 }).first()).toBeVisible()
     })
   })
 })
