@@ -161,3 +161,58 @@ silence : ne pas activer la sélection UI avant.
 
 À faire avec `node tools/geo-781/bench.mjs "<département>"` plutôt qu'en Compass : la ligne
 `4-code` doit afficher 0 % hors périmètre face au contour officiel.
+
+## Dérive de position dans `search_items` (hors #781, découvert en chemin)
+
+### `search_items` — offres dont la position indexée ne correspond plus à la source
+
+```js
+[
+  { $match: { type: "offre" } },
+  { $lookup: { from: "jobs_partners", localField: "_id", foreignField: "_id", as: "src" } },
+  { $unwind: "$src" },
+  { $project: {
+      location_identique: { $eq: ["$location.coordinates", "$src.workplace_geopoint.coordinates"] },
+      updated_recent: { $gt: ["$src.updated_at", new Date(Date.now() - 30 * 864e5)] }
+  } },
+  { $group: {
+      _id: null,
+      total: { $sum: 1 },
+      location_perimee: { $sum: { $cond: ["$location_identique", 0, 1] } },
+      location_perimee_source_modifiee_30j: { $sum: { $cond: [{ $and: [{ $not: "$location_identique" }, "$updated_recent"] }, 1, 0] } }
+  } },
+  { $project: { _id: 0, mesure: "search_items_location_perimee", total: 1, location_perimee: 1, location_perimee_source_modifiee_30j: 1 } }
+]
+```
+
+Relevé du 2026-09-11 : 1 593 périmées sur 328 606, dont 965 avec une source modifiée depuis
+moins de 30 jours. Le nightly rattrape les premières depuis que son backfill réécrit `location` ;
+les secondes sont le symptôme du trou ci-dessous.
+
+### Cause : `updated_at` horodaté au début de l'import, pas à l'écriture
+
+Si l'hypothèse est juste, les `updated_at` des offres périmées se concentrent sur une poignée de
+valeurs exactes (une par import nocturne, vers 00:01), portées chacune par des centaines d'offres,
+et l'écart entre `updated_at` et l'écriture réelle dépasse la fenêtre de 10 min du delta.
+
+```js
+[
+  { $match: { type: "offre" } },
+  { $lookup: { from: "jobs_partners", localField: "_id", foreignField: "_id", as: "src" } },
+  { $unwind: "$src" },
+  { $match: { $expr: { $ne: ["$location.coordinates", "$src.workplace_geopoint.coordinates"] } } },
+  { $group: { _id: "$src.updated_at", offres: { $sum: 1 }, partenaires: { $addToSet: "$src.partner_label" } } },
+  { $sort: { offres: -1 } },
+  { $group: {
+      _id: null,
+      nb_valeurs_updated_at_distinctes: { $sum: 1 },
+      valeurs: { $push: { updated_at: "$_id", offres: "$offres", partenaires: "$partenaires" } }
+  } },
+  { $project: { _id: 0, mesure: "search_items_perimees_par_updated_at", nb_valeurs_updated_at_distinctes: 1, top: { $slice: ["$valeurs", 10] } } }
+]
+```
+
+Lecture : `nb_valeurs_updated_at_distinctes` très inférieur au nombre d'offres périmées, et des
+`updated_at` à `00:01:xx` dans `top`, confirment que les documents partagent l'horodatage du début
+d'import. Correctif : `updated_at: new Date()` par document dans
+`import-from-computed-to-jobs-partners.ts` et dans la factory `fill-fields-for-partners-factory.ts`.

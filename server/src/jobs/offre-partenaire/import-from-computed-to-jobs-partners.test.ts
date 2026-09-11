@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import * as sentryUtils from "@/common/utils/sentry-utils"
+import { syncSearchItemsDelta } from "@/services/search/search-items.service"
 import { importFromComputedToJobsPartners } from "./import-from-computed-to-jobs-partners"
 
 useMongo()
@@ -238,5 +239,98 @@ describe("offer_status_history lors de l'import", () => {
       reason: historyEntry.reason,
       granted_by: historyEntry.granted_by,
     })
+  })
+})
+
+describe("updated_at posé par l'import et fenêtre du cron delta search_items", () => {
+  useMongo()
+
+  afterEach(async () => {
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+    await getDbCollection("computed_jobs_partners").deleteMany({})
+    await getDbCollection("jobs_partners").deleteMany({})
+    await getDbCollection("search_items").deleteMany({})
+  })
+
+  /**
+   * Reproduction du trou observé en prod le 2026-09-11 : 965 offres modifiées depuis moins de
+   * 30 jours dont la position indexée ne correspondait plus à la source. L'import nocturne dure
+   * ~26 min, le delta lit `updated_at >= now − 10 min` toutes les 5 min : un document écrit plus
+   * de 10 min après le DÉBUT de l'import, mais horodaté à ce début, est déjà hors fenêtre quand
+   * il arrive en base. Le delta ne le voit jamais.
+   *
+   * L'horloge est simulée sur Date seulement (pas les timers, le driver Mongo en dépend) et
+   * avancée de 6 min à chaque lecture de l'existant dans jobs_partners, c'est-à-dire juste avant
+   * chaque écriture, comme le ferait un import long : 1re offre écrite à t0+6, 2e à t0+12. Le
+   * delta qui suit la fin de l'import (t0+12, fenêtre [t0+2, t0+12]) doit voir les deux ; datées
+   * du début de l'import (t0), il n'en voyait aucune.
+   */
+  it("un document écrit tard dans un import long est repris par le delta : updated_at doit dater de l'écriture, pas du début de l'import", async () => {
+    const t0 = new Date("2026-09-11T00:01:00.000Z")
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(t0)
+
+    // Deux offres déjà indexées, dont la source va changer d'adresse pendant l'import.
+    const stale = await Promise.all(
+      ["late_1", "late_2"].map((id) =>
+        createJobPartner({
+          partner_job_id: id,
+          workplace_address_label: "L'Arsenal (65)",
+          workplace_geopoint: { type: "Point", coordinates: [0.07696, 43.24636] },
+          updated_at: new Date("2026-08-01T00:00:00.000Z"),
+        })
+      )
+    )
+    for (const id of ["late_1", "late_2"]) {
+      await createComputedJobPartner({
+        partner_job_id: id,
+        validated: true,
+        workplace_address_label: "l'arsenal 44190 Gétigné",
+        workplace_geopoint: { type: "Point", coordinates: [-1.264835, 47.08357] },
+      })
+    }
+
+    // L'import lit l'offre existante (findOne) puis l'écrit (updateOne) : avancer l'horloge à la
+    // RÉSOLUTION de la lecture place chaque écriture 6 min plus tard que la précédente. Ni à
+    // l'appel de findOne (les deux lectures partent ensemble, l'horloge avancerait deux fois avant
+    // la première écriture), ni sur updateOne (ses arguments, dont l'horodatage, sont évalués
+    // avant l'appel).
+    const getDbCollectionOriginal = mongodbUtils.getDbCollection
+    vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
+      const collection = getDbCollectionOriginal(name)
+      if (name !== "jobs_partners") return collection
+      return new Proxy(collection, {
+        get(target, prop, receiver) {
+          const value = Reflect.get(target, prop, receiver)
+          if (prop === "findOne") {
+            return (...args: unknown[]) =>
+              ((value as (...a: unknown[]) => Promise<unknown>).apply(target, args) as Promise<unknown>).then((found) => {
+                vi.setSystemTime(new Date(Date.now() + 6 * 60_000))
+                return found
+              })
+          }
+          return typeof value === "function" ? value.bind(target) : value
+        },
+      }) as typeof collection
+    })
+
+    await importFromComputedToJobsPartners()
+
+    // Le delta tourne juste après la fin de l'import, avec sa fenêtre par défaut de 10 min.
+    const { scanned } = await syncSearchItemsDelta()
+
+    const written = await getDbCollection("jobs_partners")
+      .find({ partner_job_id: { $in: ["late_1", "late_2"] } })
+      .toArray()
+    // Chaque document est horodaté à sa propre écriture : deux valeurs distinctes, toutes ≥ t0+6.
+    expect(new Set(written.map((d) => d.updated_at.getTime())).size).toBe(2)
+    for (const d of written) expect(d.updated_at.getTime()).toBeGreaterThanOrEqual(t0.getTime() + 6 * 60_000)
+    // Et le delta les a vus tous les deux.
+    expect(scanned).toBe(2)
+    for (const s of stale) {
+      const indexed = await getDbCollection("search_items").findOne({ _id: s._id })
+      expect(indexed?.location?.coordinates).toEqual([-1.264835, 47.08357])
+    }
   })
 })

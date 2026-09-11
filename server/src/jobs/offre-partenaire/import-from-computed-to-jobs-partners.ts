@@ -49,7 +49,6 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
         }
 
         const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
-          updated_at: importDate,
           partner_label: computedJobPartner.partner_label,
           partner_job_id: computedJobPartner.partner_job_id,
           contract_start: computedJobPartner.contract_start ?? null,
@@ -122,7 +121,12 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
         await getDbCollection("jobs_partners").updateOne(
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
           {
-            $set: { ...partnerJobToUpsert },
+            // updated_at horodaté à l'écriture, pas au début de l'import : le cron delta
+            // search_items lit `updated_at >= now − 10 min` toutes les 5 min, et l'import dure
+            // ~26 min. Un document écrit tard mais daté du début arrivait déjà hors fenêtre et
+            // n'était jamais resynchronisé (965 offres à position périmée en prod le 2026-09-11).
+            // `importDate` reste la date du lot pour created_at et l'historique de statut.
+            $set: { ...partnerJobToUpsert, updated_at: new Date() },
             $setOnInsert: {
               created_at: importDate,
               offer_status_history: [],
