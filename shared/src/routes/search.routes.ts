@@ -1,6 +1,7 @@
 import { z } from "../helpers/zod-with-open-api.js"
 import { JOB_START_TYPE } from "../models/job.model.js"
 import { ZSearchItem } from "../models/search-items.model.js"
+import { ADMIN_AREA_PATTERN } from "../utils/admin-area.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam } from "./params.js"
 
@@ -64,7 +65,7 @@ export const zSearchRoutes = {
         radius: ZRadiusParam.pipe(z.number().min(0).max(200).optional()).default(30),
         admin_area: z
           .string()
-          .regex(/^(region|departement):([0-9]{1,3}|2[AB])$/)
+          .regex(ADMIN_AREA_PATTERN)
           .optional()
           .describe(
             "Emprise administrative exacte (region:53, departement:44). Prioritaire sur latitude/longitude/radius pour le filtrage ; le tri par proximité garde la paire lat/lon si fournie."

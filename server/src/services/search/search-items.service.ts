@@ -281,10 +281,12 @@ export type SearchItemBuildContext = {
   sectorCaseMap: Map<string, string>
   adminCodes: AdminCodeIndex
   /**
-   * Compteurs des corrections appliquées aux données source pendant le build, à logger par
-   * l'appelant en fin de run : une correction silencieuse serait indiscernable d'une donnée saine.
+   * Compteurs des corrections et renoncements sur les données source pendant le build, à logger
+   * par l'appelant en fin de run : une correction silencieuse serait indiscernable d'une donnée
+   * saine. Ne concernent que les formations, donc seul le nightly (contexte frais) les fait
+   * bouger ; sur le contexte mémoïsé de la sync delta ils restent à zéro.
    */
-  corrections: { formations_recentrees: number }
+  corrections: { formations_recentrees: number; formations_sans_geopoint: number }
 }
 
 export const loadSearchItemBuildContext = async (): Promise<SearchItemBuildContext> => {
@@ -294,7 +296,7 @@ export const loadSearchItemBuildContext = async (): Promise<SearchItemBuildConte
     buildCanonicalCaseMap("activity_sector"),
     loadAdminCodeIndex(),
   ])
-  return { romeLabelByCode, organizationCaseMap, sectorCaseMap, adminCodes, corrections: { formations_recentrees: 0 } }
+  return { romeLabelByCode, organizationCaseMap, sectorCaseMap, adminCodes, corrections: { formations_recentrees: 0, formations_sans_geopoint: 0 } }
 }
 
 // buildCanonicalCaseMap = 2 agrégations $group sur TOUTE la collection search_items : trop

@@ -123,7 +123,7 @@ const contains = ([minLon, minLat, maxLon, maxLat]: Bbox, [lon, lat]: [number, n
  * Marseille à l'arrondissement ; le référentiel (API Découpage, `/departements/{code}/communes`)
  * ne connaît que la commune. Même département, même région dans les deux cas.
  */
-export const ARRONDISSEMENT_PARENT: Record<string, string> = {
+const ARRONDISSEMENT_PARENT: Record<string, string> = {
   "751": "75056", // Paris 75101–75120
   "693": "69123", // Lyon 69381–69389
   "132": "13055", // Marseille 13201–13216

@@ -16,16 +16,11 @@ import {
   buildFormationSearchItem,
   buildJobOfferSearchItem,
   buildRecruteurSearchItem,
-  dedupeRepeatedTitle,
   formationProjection,
-  isFormationIncluded,
   jobsProjection,
   loadSearchItemBuildContext,
-  sanitizeContractStart,
-  stripHtmlToText,
   upsertSearchItem,
 } from "@/services/search/search-items.service"
-import { resolveAdminCodes } from "@/services/search/search-items-admin-codes"
 
 // Génération des mots-clés Mistral : déplacée dans search-items-keywords.service.ts
 // (cron continu + batch hebdo recruteurs + ramasse des jobs + import manuel).
@@ -161,111 +156,26 @@ export const fillSearchItemsCollection = async () => {
   const processedIds = new Set<string>()
   const searchItemsCollection = getDbCollection("search_items")
 
+  // Un seul chemin par source, item nouveau ou déjà indexé : upsertSearchItem réécrit tous les
+  // champs sauf `keywords` (préservés). L'ancienne variante « déjà en base → $set d'une liste
+  // fermée de champs » a laissé dériver `address` et `location` : 1 593 offres affichées en prod
+  // à une position que la source avait corrigée (2026-09-11). Le coût d'une réécriture complète
+  // est le même qu'un $set partiel : un updateOne par item.
   await processCursorStream(formationsCursor, "formations", processedIds, async (formation) => {
-    // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
-    // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
-    if (existingIds.has(formation._id.toString())) {
-      const built = buildFormationSearchItem(formation, ctx)
-      await searchItemsCollection.updateOne(
-        { _id: formation._id },
-        {
-          $set: {
-            // Lieu et organisme : 1 593 offres en prod (0,48 %) étaient affichées à une position
-            // que la source avait corrigée depuis ; la delta ne revoit pas les items dont
-            // updated_at ne bouge plus, seul le nightly peut les rattraper (mesure du 2026-09-11).
-            address: built.address,
-            location: built.location,
-            organization_name: built.organization_name,
-            level: built.level,
-            is_disabled_elligible: null,
-            start_date: null,
-            start_type: null,
-            is_start_flexible: null,
-            is_algo_company: false,
-            is_formation_included: null,
-            title: dedupeRepeatedTitle(formation.intitule_rco || ""),
-            description: stripHtmlToText(formation.contenu),
-            // Emprise administrative (ban-plateforme#781) : backfill des items antérieurs au champ.
-            ...resolveAdminCodes({ insee: formation.code_commune_insee, zipcode: formation.code_postal, geopoint: formation.lieu_formation_geopoint }, ctx.adminCodes),
-          },
-        }
-      )
+    // Sans géopoint, pas d'item de recherche possible : on le compte plutôt que de laisser une
+    // exception le dire à Sentry. L'item indexé, s'il existe, garde son état précédent.
+    if (!formation.lieu_formation_geopoint) {
+      ctx.corrections.formations_sans_geopoint++
       return
     }
-
-    // upsertSearchItem (pas replaceOne) : préserve les keywords d'un doc inséré par la sync
-    // incrémentale APRÈS le snapshot existingIds (le nightly dure jusqu'à 3 h en parallèle
-    // du cron delta et du cron keywords).
     await upsertSearchItem(buildFormationSearchItem(formation, ctx))
   })
 
   await processCursorStream(jobsCursor, "offres", processedIds, async (job) => {
-    // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
-    // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
-    if (existingIds.has(job._id.toString())) {
-      const built = buildJobOfferSearchItem(job, ctx)
-      await searchItemsCollection.updateOne(
-        { _id: job._id },
-        {
-          $set: {
-            address: built.address,
-            location: built.location,
-            organization_name: built.organization_name,
-            level: built.level,
-            activity_sector: built.activity_sector,
-            is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
-            start_date: sanitizeContractStart(job.contract_start),
-            start_type: job.contract_start_type ?? null,
-            is_start_flexible: job.contract_start_is_flexible ?? null,
-            is_algo_company: false,
-            is_formation_included: isFormationIncluded(job),
-            title: dedupeRepeatedTitle(job.offer_title || ""),
-            description: stripHtmlToText(job.offer_description),
-            // application_count sert au tri (search.service) et rien ne bumpe updated_at à
-            // chaque candidature : le nightly est la voie de rafraîchissement de ce compteur
-            // (déjà calculé par le $lookup du pipeline — gratuit).
-            application_count: job.application_count,
-            smart_apply: job.apply_email ? true : false,
-            ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
-          },
-        }
-      )
-      return
-    }
-
     await upsertSearchItem(buildJobOfferSearchItem(job, ctx))
   })
 
   await processCursorStream(recruteursCursor, "recruteurs", processedIds, async (job) => {
-    // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
-    // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
-    if (existingIds.has(job._id.toString())) {
-      const built = buildRecruteurSearchItem(job, ctx)
-      await searchItemsCollection.updateOne(
-        { _id: job._id },
-        {
-          $set: {
-            title: built.title,
-            address: built.address,
-            location: built.location,
-            organization_name: built.organization_name,
-            level: built.level,
-            activity_sector: built.activity_sector,
-            is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
-            start_date: null,
-            start_type: null,
-            is_start_flexible: null,
-            is_algo_company: true,
-            is_formation_included: false,
-            application_count: job.application_count,
-            smart_apply: job.apply_email ? true : false,
-            ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
-          },
-        }
-      )
-      return
-    }
-
     await upsertSearchItem(buildRecruteurSearchItem(job, ctx))
   })
 

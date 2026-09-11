@@ -133,15 +133,19 @@ serveur n'en dépend plus depuis que le code est indexé.
   transmis jusqu'à l'URL (`admin_area`) puis à l'API. L'élargissement automatique du rayon est
   désactivé quand une emprise est posée.
 
-## Déployer dans le bon ordre
+## Déployer
 
-1. Déployer : `updateSearchIndex` est appliqué au démarrage, mongot reconstruit l'index en
-   arrière-plan. Vérifier `status: READY` avec `[{ $listSearchIndexes: {} }]` (cf. compass.md).
-2. Peupler les codes : `yarn cli fillSearchItemsCollection` (ou attendre le nightly de 6 h).
-   Le job réécrit aussi les items déjà présents : les nouveaux champs sont dans son bloc de
-   backfill. Tant que ce n'est pas fait, `equals` renvoie zéro résultat en silence.
-3. Vérifier la part de `departement_code: null` par type (compass.md, section après déploiement).
-4. Mesurer : `node tools/geo-781/bench.mjs "Nord"`, la ligne 4-code doit être à 0 % hors périmètre.
+La migration `20260911180000-backfill-search-items-admin-codes` fait les deux gestes qui suivent le
+déploiement : mise à jour de la définition de l'index Atlas Search (`updateSearchIndex`, mongot
+reconstruit en arrière-plan) et mise en file de `fillSearchItemsCollection` pour peupler
+`departement_code` / `region_code` sur tous les items. Tant que ces deux étapes ne sont pas
+terminées, un `equals` renvoie zéro résultat en silence.
+
+À vérifier après la MEP, dans Compass sur `search_items` (pipelines dans compass.md) :
+
+1. `search_items_index_status` : `status: READY`, `queryable: true`, `a_les_nouveaux_champs: true`.
+2. `search_items_resolution_post_deploiement` : `champ_absent: 0` par type, une fois le job terminé.
+3. `node tools/geo-781/bench.mjs "Nord"` : la ligne 4-code à 0 % hors périmètre.
 
 ## Limites connues
 
@@ -150,8 +154,6 @@ serveur n'en dépend plus depuis que le code est indexé.
 - Quatre entités dépassent le plafond de 200 km de l'API v3 : Nouvelle-Aquitaine (261 km),
   Occitanie (228), Auvergne-Rhône-Alpes (213), Guyane (244). C'est la raison pour laquelle le
   rayon ne pouvait pas être la solution générale.
-- `search_queries` (log des requêtes) n'enregistre pas encore `admin_area` : la télémétrie ne
-  distingue pas une recherche par département d'une recherche sans lieu.
 - Les items dont la commune n'est pas résolue (CP inconnu du référentiel, CP à cheval sans
   géopoint) ont `departement_code: null` et sortent du filtre par emprise. Ils restent trouvables
   par point + rayon. La part exacte est à relever en production (compass.md).

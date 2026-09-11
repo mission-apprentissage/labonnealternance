@@ -1,11 +1,11 @@
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ISearchItem } from "shared/models/index"
 import { JOB_START_TYPE } from "shared/models/job.model"
-
+import { parseAdminArea } from "shared/utils/admin-area"
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { buildAdminAreaClause, parseAdminArea } from "@/services/geo-administrative/admin-area"
+import { buildAdminAreaClause } from "@/services/geo-administrative/admin-area"
 import { retryOnTransientSearchCancellation } from "@/services/search/search-transient-retry"
 
 const HIGHLIGHT_MAX_PASSAGES = 5
@@ -802,7 +802,10 @@ export async function searchItems(params: ISearchFilters): Promise<{
   const nbHits = rows[0]?._meta?.count?.total ?? 0
   const nbPages = Math.ceil(nbHits / hitsPerPage)
 
-  const hasGeo = latitude !== undefined && longitude !== undefined
+  // Pas de distance affichée pour une recherche par emprise : elle serait mesurée depuis le
+  // centroïde de la région ou du département (« 137 km du lieu de recherche » pour « Bretagne »),
+  // vraie et trompeuse. La paire lat/lon reste utilisée par le tri de proximité.
+  const hasGeo = latitude !== undefined && longitude !== undefined && !parseAdminArea(params.admin_area)
 
   const hits: SearchHit[] = rows.map(({ highlights, _meta: _m, ...doc }) => {
     const itemDoc = doc as ISearchItem

@@ -100,6 +100,7 @@ export function SearchHomeForm() {
       event: MATOMO_EVENTS.SEARCH_LAUNCHED,
       search_job_name: query.trim() || "non_renseigné",
       search_address: lieu?.label || "non_renseigné",
+      search_admin_area: lieu?.adminArea ?? "non_renseigné",
       search_radius: 20,
       search_diploma: "indifferent",
       search_origin: "page_accueil",

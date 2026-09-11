@@ -169,6 +169,9 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       count_company_algo: facets?.sub_type?.[LBA_ITEM_TYPE.RECRUTEURS_LBA] ?? 0,
       search_job_name: params.q || "non_renseigné",
       search_address: params.lieu_label || "non_renseigné",
+      // Emprise administrative (region:53, departement:44) : distingue une recherche « Bretagne »
+      // d'une recherche par point + rayon, que search_address seul ne permet pas.
+      search_admin_area: params.admin_area ?? "non_renseigné",
       search_diploma: params.level?.[0] ?? "indifferent",
       search_engine: SEARCH_ENGINES.BETA,
     })
@@ -193,6 +196,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       event: MATOMO_EVENTS.SEARCH_LAUNCHED,
       search_job_name: q || "non_renseigné",
       search_address: params.lieu_label || "non_renseigné",
+      search_admin_area: params.admin_area ?? "non_renseigné",
       search_radius: params.radius,
       search_diploma: params.level?.[0] ?? "indifferent",
       search_origin: "page_resultat",

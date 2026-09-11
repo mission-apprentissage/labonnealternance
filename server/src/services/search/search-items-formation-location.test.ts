@@ -32,7 +32,7 @@ const buildCtx = (adminCodes: AdminCodeIndex): SearchItemBuildContext => ({
   organizationCaseMap: new Map(),
   sectorCaseMap: new Map(),
   adminCodes,
-  corrections: { formations_recentrees: 0 },
+  corrections: { formations_recentrees: 0, formations_sans_geopoint: 0 },
 })
 
 const formation = (overrides: Partial<IFormationForSearchItem>): IFormationForSearchItem => ({

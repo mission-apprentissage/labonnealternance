@@ -1,6 +1,7 @@
 // Import profond et non via le barrel "shared" : ce module part dans le bundle de la home.
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { ADMIN_AREA_PATTERN } from "shared/utils/admin-area"
 import { toKebabCase } from "shared/utils/string-utils"
 
 export interface ISearchPageParams {
@@ -31,8 +32,6 @@ export interface ISearchPageParams {
   page: number
   hitsPerPage: number
 }
-
-const ADMIN_AREA_PATTERN = /^(region|departement):([0-9]{1,3}|2[AB])$/
 
 export type SearchMode = "emplois" | "formations" | "emplois_formation"
 export const SEARCH_MODES: SearchMode[] = ["emplois", "formations", "emplois_formation"]
