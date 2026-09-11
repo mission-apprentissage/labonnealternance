@@ -16,7 +16,7 @@ export default function Page() {
   return (
     <html lang="en">
       <body>
-        <Suspense fallback={<PublicHeaderStatic />}>
+        <Suspense fallback={<PublicHeaderStatic zone="test-widget" />}>
           <TestWidgetHeaderWithUser />
         </Suspense>
         <Box
@@ -28,7 +28,7 @@ export default function Page() {
         >
           <WidgetTester />
         </Box>
-        <Footer />
+        <Footer zone="test-widget" />
       </body>
     </html>
   )
@@ -36,5 +36,5 @@ export default function Page() {
 
 async function TestWidgetHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader user={user} />
+  return <PublicHeader zone="test-widget" user={user} />
 }

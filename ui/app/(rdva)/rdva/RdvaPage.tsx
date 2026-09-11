@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import type { PropsWithChildren } from "react"
 import { useEffect, useState } from "react"
-
+import { mainId } from "@/app/_components/zone-ids"
 import { useFormationPrdvTracker } from "@/app/hooks/use-formation-prdv-tracker"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
@@ -16,11 +16,11 @@ import { PAGES } from "@/utils/routes.utils"
 
 type PrdvData = NonNullable<Awaited<ReturnType<typeof getPrdvContext>>>
 
-// Le layout (rdva) déclare un lien d'évitement « Contenu » vers #main-content mais ne rend aucun
+// Le layout (rdva) déclare un lien d'évitement « Contenu » vers mainId("rdva") mais ne rend aucun
 // landmark : c'est à la page de le porter, comme le font les layouts espace-pro. Un seul wrapper
 // pour tous les états rendus — l'écran de confirmation n'en avait aucun jusqu'ici.
 const RdvaMain = ({ children }: PropsWithChildren) => (
-  <Box component="main" role="main" id="main-content" tabIndex={-1} sx={{ my: fr.spacing("6v"), mx: fr.spacing("2v") }}>
+  <Box component="main" role="main" id={mainId("rdva")} tabIndex={-1} sx={{ my: fr.spacing("6v"), mx: fr.spacing("2v") }}>
     {children}
   </Box>
 )

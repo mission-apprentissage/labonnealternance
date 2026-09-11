@@ -3,6 +3,7 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import { createContext, type ReactNode, useContext } from "react"
+import { footerId, headerId, zoneScopedId } from "@/app/_components/zone-ids"
 import { useIsWidget as useDetectWidget } from "@/app/hooks/use-is-widget"
 
 const IsWidgetContext = createContext(false)
@@ -16,9 +17,9 @@ export function RechercheLayoutClient({ header, children }: { header: ReactNode;
   // initialValue=true : la recherche est majoritairement embarquée en widget, on évite d'afficher brièvement la nav.
   const isWidget = useDetectWidget(true)
 
-  // En widget, le header (et donc #header-links) n'est pas rendu : le lien "Menu" ciblerait une ancre inexistante.
-  const menuLink = isWidget ? [] : [{ label: "Menu", anchor: "#header-links" }]
-  const footerLink = [{ label: "Pied de page", anchor: "#footer-links" }]
+  // En widget, le header (et donc son id) n'est pas rendu : le lien "Menu" ciblerait une ancre inexistante.
+  const menuLink = isWidget ? [] : [{ label: "Menu", anchor: `#${headerId("recherche")}` }]
+  const footerLink = [{ label: "Pied de page", anchor: `#${footerId("recherche")}` }]
 
   return (
     <>
@@ -28,15 +29,20 @@ export function RechercheLayoutClient({ header, children }: { header: ReactNode;
               n'est lui-même atteignable au clavier que sur son propre breakpoint. */}
       <Box sx={{ display: { xs: "none", lg: "block" } }}>
         <SkipLinks
-          links={[...menuLink, { label: "Recherche", anchor: "#search-form" }, { label: "Résultat de la recherche", anchor: "#search-content-container" }, ...footerLink]}
+          links={[
+            ...menuLink,
+            { label: "Recherche", anchor: `#${zoneScopedId("recherche", "search-form")}` },
+            { label: "Résultat de la recherche", anchor: `#${zoneScopedId("recherche", "search-content-container")}` },
+            ...footerLink,
+          ]}
         />
       </Box>
       <Box sx={{ display: { xs: "block", lg: "none" } }}>
         <SkipLinks
           links={[
             ...menuLink,
-            { label: "Recherche", anchor: "#search-form-mobile" },
-            { label: "Résultat de la recherche", anchor: "#search-content-container-mobile" },
+            { label: "Recherche", anchor: `#${zoneScopedId("recherche", "search-form-mobile")}` },
+            { label: "Résultat de la recherche", anchor: `#${zoneScopedId("recherche", "search-content-container-mobile")}` },
             ...footerLink,
           ]}
         />

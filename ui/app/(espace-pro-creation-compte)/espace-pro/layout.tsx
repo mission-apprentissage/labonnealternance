@@ -5,6 +5,7 @@ import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { DsfrHeaderProps } from "@/app/_components/Header"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { PAGES } from "@/utils/routes.utils"
 export default async function Layout({ children }: PropsWithChildren) {
@@ -12,9 +13,9 @@ export default async function Layout({ children }: PropsWithChildren) {
     <>
       <SkipLinks
         links={[
-          { label: "Menu", anchor: "#header-links" },
-          { label: "Contenu", anchor: "#main-content" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Menu", anchor: `#${headerId("espace-pro-creation")}` },
+          { label: "Contenu", anchor: `#${mainId("espace-pro-creation")}` },
+          { label: "Pied de page", anchor: `#${footerId("espace-pro-creation")}` },
         ]}
       />
       <Header />
@@ -28,7 +29,7 @@ export default async function Layout({ children }: PropsWithChildren) {
         }}
       >
         <Box
-          id="main-content"
+          id={mainId("espace-pro-creation")}
           tabIndex={-1}
           sx={{
             maxWidth: 1200,
@@ -44,7 +45,7 @@ export default async function Layout({ children }: PropsWithChildren) {
           <DepotSimplifieStyling>{children}</DepotSimplifieStyling>
         </Box>
       </Box>
-      <Footer />
+      <Footer zone="espace-pro-creation" />
     </>
   )
 }
@@ -56,6 +57,7 @@ export function Header() {
     <nav role="navigation" aria-label="Navigation principale">
       <DsfrHeader
         {...rest}
+        id={headerId("espace-pro-creation")}
         quickAccessItems={[
           <HeaderQuickAccessItem
             key="connexion"

@@ -7,7 +7,7 @@ export default async function Layout({ children }: PropsWithChildren) {
       <Box role="main" component="main">
         {children}
       </Box>
-      <Footer />
+      <Footer zone="postuler" />
     </>
   )
 }

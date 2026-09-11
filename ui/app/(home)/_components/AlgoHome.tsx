@@ -24,7 +24,7 @@ export const AlgoHome = () => (
           gap: fr.spacing("10v"),
         }}
       >
-        <Typography id="home-content-container" variant="h1">
+        <Typography variant="h1">
           Vous révéler
           <br />
           <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>

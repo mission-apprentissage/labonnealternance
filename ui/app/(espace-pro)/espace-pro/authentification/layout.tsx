@@ -5,6 +5,7 @@ import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function AuthentificationLayout({ children }: PropsWithChildren) {
@@ -12,16 +13,16 @@ export default function AuthentificationLayout({ children }: PropsWithChildren) 
     <>
       <SkipLinks
         links={[
-          { label: "Menu", anchor: "#header-links" },
-          { label: "Contenu", anchor: "#main-content" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Menu", anchor: `#${headerId("espace-pro-authentification")}` },
+          { label: "Contenu", anchor: `#${mainId("espace-pro-authentification")}` },
+          { label: "Pied de page", anchor: `#${footerId("espace-pro-authentification")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic />}>
+      <Suspense fallback={<PublicHeaderStatic zone="espace-pro-authentification" />}>
         <AuthentificationHeaderWithUser />
       </Suspense>
       <Box
-        id="main-content"
+        id={mainId("espace-pro-authentification")}
         tabIndex={-1}
         role="main"
         component="main"
@@ -34,12 +35,12 @@ export default function AuthentificationLayout({ children }: PropsWithChildren) 
       >
         {children}
       </Box>
-      <Footer />
+      <Footer zone="espace-pro-authentification" />
     </>
   )
 }
 
 async function AuthentificationHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader user={user} />
+  return <PublicHeader zone="espace-pro-authentification" user={user} />
 }

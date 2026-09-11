@@ -95,7 +95,6 @@ const JeSuisCFAPage = () => {
             flexDirection={"column"}
             justifyContent={"center"}
             gap={fr.spacing("5v")}
-            id="landing-page-content"
           >
             <Typography variant="h1" component="h1" gutterBottom color={fr.colors.decisions.text.title.blueFrance.default}>
               Vous êtes un organisme de formation
