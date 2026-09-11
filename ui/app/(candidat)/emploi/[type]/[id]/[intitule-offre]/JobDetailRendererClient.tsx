@@ -10,7 +10,6 @@ import { Footer } from "@/app/_components/Footer"
 import { mainId, zoneScopedId } from "@/app/_components/zone-ids"
 import { useDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-detail-navigation"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { useIsWidget } from "@/app/hooks/use-is-widget"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
@@ -86,7 +85,6 @@ function CandidatureStickyBar({ selectedItem }: { selectedItem: ILbaItemJobsGlob
 function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecherchePageParams; selectedItem: ILbaItemJobsGlobal }) {
   const router = useRouter()
   const theme = useTheme()
-  const isWidget = useIsWidget()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -256,7 +254,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
       </Box>
 
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
-        <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
+        <Box sx={{ mb: fr.spacing("12v") }}>
           {/* Header carte — toujours dans le flux, scrolle normalement */}
           <Box
             ref={headerRef}
@@ -286,7 +284,6 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
               {getJobPublishedTimeAndApplications({ item: selectedItem })}
               <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />
               <Typography
-                id={zoneScopedId("detail-emploi", "detail-header")}
                 variant={"h3"}
                 sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
                 dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
@@ -341,7 +338,6 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
             </Box>
           </Box>
 
-          <Box id={mainId("detail-emploi")} />
           <Box>
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && (
               <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} jobSearchedByUser={rechercheParams.job_name} />
@@ -383,7 +379,6 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
       </Container>
       {isCollapsed && <CandidatureStickyBar selectedItem={selectedItem} />}
       {!isMobile && <BackToTopButton />}
-      {!isWidget && <Footer zone="detail-emploi" />}
     </Box>
   )
 }

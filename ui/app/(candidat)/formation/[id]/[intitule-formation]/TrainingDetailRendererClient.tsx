@@ -16,7 +16,6 @@ import { mainId, zoneScopedId } from "@/app/_components/zone-ids"
 import { useDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-detail-navigation"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { useFormationPrdvTracker } from "@/app/hooks/use-formation-prdv-tracker"
-import { useIsWidget } from "@/app/hooks/use-is-widget"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
@@ -66,7 +65,6 @@ function TrainingDetailPage({
 
   const router = useRouter()
   const theme = useTheme()
-  const isWidget = useIsWidget()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   // Ouverture depuis le moteur de recherche (?from=/recherche…) : précédent/suivant naviguent
   // dans les résultats de /recherche et « fermer » y retourne. Sans ?from=, pas de contexte
@@ -184,7 +182,7 @@ function TrainingDetailPage({
       </Box>
 
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
-        <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
+        <Box sx={{ mb: fr.spacing("12v") }}>
           {/* Header carte — toujours dans le flux, scrolle normalement */}
           <Box
             ref={headerRef}
@@ -201,7 +199,7 @@ function TrainingDetailPage({
                 <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
               </Box>
 
-              <Box id={zoneScopedId("detail-formation", "detail-header")} component="p" color="grey.600" mt={1} mb={1}>
+              <Box component="p" color="grey.600" mt={1} mb={1}>
                 <Typography component="span" sx={{ fontWeight: 700 }}>{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Typography>
                 <Typography component="span" fontWeight={400}>
                   &nbsp;propose cette formation
@@ -283,7 +281,6 @@ function TrainingDetailPage({
         </Box>
       )}
       {!isMobile && <BackToTopButton />}
-      {!isWidget && <Footer zone="detail-formation" />}
     </Box>
   )
 }
@@ -308,7 +305,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
   return (
     <>
-      <Box id={mainId("detail-formation")} sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <TrainingDescriptionDetails training={training.training} />
         <Box sx={{ backgroundColor: "#f6f6f6", mt: fr.spacing("6v"), p: 2 }}>
           {training.training.onisepUrl && (

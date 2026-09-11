@@ -70,3 +70,27 @@ test.describe("navigation instantanée — dashboard entreprise", () => {
     })
   })
 })
+
+// Le cache de navigation garde la route précédente montée dans un `<Activity mode="hidden">` :
+// deux ossatures coexistent dans le document dès qu'une navigation change de layout. Quand elles
+// partagent leurs id, le JS du DSFR câble le bouton du menu burger visible sur la modale de la
+// copie masquée et le menu ne s'ouvre plus (issue #5439). Voir ui/app/_components/zone-ids.ts.
+test.describe("identifiants de zone — cache de navigation", () => {
+  test("le menu burger s'ouvre encore après une navigation qui change de layout", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.goto("/salaire-alternant")
+
+    // Ouvrir puis fermer depuis la zone de départ : c'est la séquence qui exposait le défaut.
+    await page.getByRole("button", { name: "Menu" }).click()
+    await expect(page.locator("#header-menu-modal-header-links-landing")).toHaveClass(/fr-modal--opened/)
+    await page.locator("#header-links-landing-mobile-overlay-button-close").click()
+
+    // Traversée de layout : (landing-pages) → (home).
+    await page.getByRole("link", { name: "Accueil - La bonne alternance" }).click()
+    await expect(page).toHaveURL("/")
+
+    await page.getByRole("button", { name: "Menu" }).click()
+    await expect(page.locator("#header-menu-modal-header-links-home")).toHaveClass(/fr-modal--opened/)
+    await expect(page.locator("#header-menu-modal-header-links-home").getByRole("link", { name: "Connexion" })).toBeVisible()
+  })
+})

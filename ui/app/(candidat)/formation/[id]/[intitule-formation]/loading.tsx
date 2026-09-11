@@ -5,7 +5,6 @@ import ItemDetailLoading from "@/components/ItemDetail/ItemDetailLoading"
 export default function FormationDetailLoading() {
   return (
     <>
-      <WidgetAwareHeader zone="detail-formation" />
       <ItemDetailLoading type={LBA_ITEM_TYPE.FORMATION} />
     </>
   )

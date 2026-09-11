@@ -65,14 +65,6 @@ export default async function FormationPage({ params, searchParams }: { params: 
     <>
       {/* Rendu dans le server component pour que le JSON-LD soit présent dans le HTML initial, visible des crawlers sans JavaScript. */}
       <TrainingSchema formation={formation} id={idParam} />
-      <SkipLinks
-        links={[
-          { label: "En-tête", anchor: `#${zoneScopedId("detail-formation", "detail-header")}` },
-          { label: "Contenu", anchor: `#${mainId("detail-formation")}` },
-          { label: "Pied de page", anchor: `#${footerId("detail-formation")}` },
-        ]}
-      />
-      <WidgetAwareHeader zone="detail-formation" />
       <TrainingDetailRendererClient training={formation} rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)} />
     </>
   )

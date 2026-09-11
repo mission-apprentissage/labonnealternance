@@ -63,15 +63,7 @@ export default async function JobOfferPage({
 
   return (
     <>
-      <SkipLinks
-        links={[
-          { label: "En-tête", anchor: `#${zoneScopedId("detail-emploi", "detail-header")}` },
-          { label: "Contenu", anchor: `#${mainId("detail-emploi")}` },
-          { label: "Pied de page", anchor: `#${footerId("detail-emploi")}` },
-        ]}
-      />
       <InfoBanner />
-      <WidgetAwareHeader zone="detail-emploi" />
       <JobDetailRendererClient
         job={job as ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson}
         rechercheParams={resolveRecherchePageParams(toURLSearchParams(await searchParams), IRechercheMode.DEFAULT)}
