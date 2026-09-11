@@ -154,29 +154,50 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
 type DescriptionMode = "structured" | "custom"
 
 const DescriptionModeToggle = ({ mode, onChange }: { mode: DescriptionMode; onChange: (mode: DescriptionMode) => void }) => (
-  <RadioButtons
-    style={{ marginBottom: 0 }}
-    legend="Mode de rédaction"
-    name="description_mode"
-    options={[
-      {
-        label: "Utiliser la description du métier",
-        hintText: "Description générée à partir de la fiche métier, personnalisable via les compétences.",
-        nativeInputProps: {
-          checked: mode === "structured",
-          onChange: () => onChange("structured"),
-        },
+  // Le DSFR n'a pas de variante "cartes de largeur égale" : fr-fieldset--inline aligne en baseline
+  // avec des marges négatives, prévu pour des radios simples. On pilote donc le flex nous-mêmes.
+  <Box
+    sx={{
+      // une carte par ligne tant que le formulaire est en colonne unique, côte à côte au-delà
+      "& .fr-fieldset__content": {
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        alignItems: "stretch",
+        gap: fr.spacing("4v"),
       },
-      {
-        label: "Personnaliser la description",
-        hintText: "Rédigez vous-même la description du poste.",
-        nativeInputProps: {
-          checked: mode === "custom",
-          onChange: () => onChange("custom"),
+      "& .fr-radio-group": { flex: 1 },
+      // Le radio riche n'est pas prévu pour une disposition en ligne : empilé, le DSFR l'espace
+      // (margin-top 0.5rem / bottom 1rem) puis annule la marge haute du premier. Côte à côte, seule
+      // la seconde carte garde ce 0.5rem et descend d'autant. On remet donc les marges verticales à
+      // zéro, en reprenant le chemin DSFR à l'identique : à spécificité égale, il gagnerait.
+      "& .fr-fieldset .fr-fieldset__content .fr-radio-rich": { marginTop: 0, marginBottom: 0 },
+    }}
+  >
+    <RadioButtons
+      legend="Mode de rédaction"
+      name="description_mode"
+      options={[
+        {
+          label: "Utiliser la description du métier",
+          hintText: "Votre offre sera validée automatiquement après sa création",
+          illustration: <span className={fr.cx("fr-icon-flashlight-fill")} aria-hidden="true" />,
+          nativeInputProps: {
+            checked: mode === "structured",
+            onChange: () => onChange("structured"),
+          },
         },
-      },
-    ]}
-  />
+        {
+          label: "Personnaliser la description",
+          hintText: "Votre offre sera soumise à modération",
+          illustration: <span className={fr.cx("fr-icon-quill-pen-fill")} aria-hidden="true" />,
+          nativeInputProps: {
+            checked: mode === "custom",
+            onChange: () => onChange("custom"),
+          },
+        },
+      ]}
+    />
+  </Box>
 )
 
 const JobDescriptionField = ({ establishmentId, token }: { establishmentId?: string; token?: string }) => {
@@ -509,24 +530,27 @@ export const FormulaireEditionOffreStep1 = ({
                     </Box>
                   )}
 
-                  <Box sx={{ mt: fr.spacing("4v") }}>
-                    {romeAndAppellation ? (
-                      <RomeDetailWithQuery
-                        selectedCompetences={{
-                          savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                          savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
-                          savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                        }}
-                        title={values.offer_title_custom || romeAndAppellation.appellation}
-                        rome={romeAndAppellation.rome}
-                        onChange={onSelectedCompetencesChange}
-                      />
-                    ) : (
-                      <Box sx={{ display: ["none", "block"] }}>
-                        <InfosDiffusionOffre />
+                  {romeAndAppellation ? (
+                    // en rédaction libre, le texte du recruteur remplace la fiche métier : on la masque
+                    descriptionMode === "structured" && (
+                      <Box sx={{ mt: fr.spacing("4v") }}>
+                        <RomeDetailWithQuery
+                          selectedCompetences={{
+                            savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                            savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
+                            savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                          }}
+                          title={values.offer_title_custom || romeAndAppellation.appellation}
+                          rome={romeAndAppellation.rome}
+                          onChange={onSelectedCompetencesChange}
+                        />
                       </Box>
-                    )}
-                  </Box>
+                    )
+                  ) : (
+                    <Box sx={{ mt: fr.spacing("4v"), display: ["none", "block"] }}>
+                      <InfosDiffusionOffre />
+                    </Box>
+                  )}
                 </Box>
               </Box>
               <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v") }}>
