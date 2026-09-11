@@ -38,11 +38,18 @@ export type ZoneName =
   | "widget"
 
 /**
+ * Ancres susceptibles d'être ciblées par un lien d'évitement. L'union est fermée pour qu'une
+ * faute de frappe dans un `SkipLinks` échoue au typecheck plutôt qu'à l'exécution, où elle
+ * produirait un lien d'évitement muet.
+ */
+type AnchorName = "footer-links" | "header-links" | "main-content" | "search-content-container" | "search-content-container-mobile" | "search-form" | "search-form-mobile"
+
+/**
  * Suffixe une ancre par sa zone. À utiliser pour toute cible de lien d'évitement, y compris
  * celles rendues par les pages : deux pages d'un même layout coexistent elles aussi dans le
  * document après une navigation, l'ancienne masquée par le cache de navigation.
  */
-export const zoneScopedId = (zone: ZoneName, anchor: string) => `${anchor}-${zone}`
+export const zoneScopedId = (zone: ZoneName, anchor: AnchorName) => `${anchor}-${zone}`
 
 export const headerId = (zone: ZoneName) => zoneScopedId(zone, "header-links")
 
