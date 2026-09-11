@@ -49,12 +49,17 @@ export const LbaJobDetail = ({ job, title, jobSearchedByUser }: { job: ILbaItemP
           Description du métier
         </Typography>
         <JobDescription job={job} />
-        <LbaJobQualites job={job} />
-        <Box sx={{ mb: fr.spacing("8v") }}>
-          <LbaJobCompetences job={job} />
-          <LbaJobTechniques job={job} />
-          <LbaJobAcces job={job} />
-        </Box>
+        {/* description rédigée par le recruteur : elle remplace la fiche métier, on n'affiche pas les deux */}
+        {!validCustomDescription && (
+          <>
+            <LbaJobQualites job={job} />
+            <Box sx={{ mb: fr.spacing("8v") }}>
+              <LbaJobCompetences job={job} />
+              <LbaJobTechniques job={job} />
+              <LbaJobAcces job={job} />
+            </Box>
+          </>
+        )}
       </Box>
 
       <Stack spacing={2} direction="row" sx={{ alignItems: "center", my: fr.spacing("6v"), mx: { xs: 2, sm: 2, md: "auto" } }}>
