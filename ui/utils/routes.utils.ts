@@ -113,6 +113,11 @@ export const PAGES = {
       title: "La prévention des risques professionnels pour les apprentis",
       index: true,
     },
+    guideRedigerSonOffreDAlternance: {
+      getPath: () => `/guide/rediger-son-offre-d-alternance` as string,
+      title: "Bien rédiger son offre d'alternance",
+      index: true,
+    },
     guideAlternant: {
       getPath: () => `/guide-alternant` as string,
       title: "Je m'informe sur l'alternance",

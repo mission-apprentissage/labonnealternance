@@ -30,6 +30,9 @@ export const JOB_START_TYPE = {
 
 export type JOB_START_TYPE = (typeof JOB_START_TYPE)[keyof typeof JOB_START_TYPE]
 
+export const JOB_DESCRIPTION_MAX_LENGTH = 3000
+export const JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH = 800
+
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
   switch (status) {
     case JOB_STATUS.ACTIVE:

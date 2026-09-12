@@ -34,6 +34,12 @@ vi.mock("@/services/mailer.service", () => {
   }
 })
 
+// createJob/patchOffre appellent Mistral pour modérer job_description/job_employer_description (cf #5006) :
+// on mocke pour ne jamais dépendre du réseau/d'une clé API dans les tests, quel que soit le contenu des fixtures.
+vi.mock("@/services/mistralai/mistralai.service", () => ({
+  sendMistralMessages: vi.fn().mockResolvedValue(null),
+}))
+
 useMongo()
 
 beforeEach(() => {

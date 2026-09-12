@@ -28,6 +28,14 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     path: PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getPath(),
     updatedAt: "26/03/2026",
   },
+  ["rediger-son-offre-d-alternance"]: {
+    id: "rediger-son-offre-d-alternance",
+    title: PAGES.static.guideRedigerSonOffreDAlternance.title,
+    description: METADATA.static.guideRedigerSonOffreDAlternance().description,
+    imageUrl: `${IMAGE_BASE_PATH}rediger-son-offre-d-alternance.svg`,
+    path: PAGES.static.guideRedigerSonOffreDAlternance.getPath(),
+    updatedAt: "11/09/2026",
+  },
   ["guide-alternant"]: {
     id: "guide-alternant",
     title: "Ressources alternant",

@@ -105,6 +105,7 @@ export const FormulaireEditionOffre = ({
           }}
           offre={offre}
           establishment_id={establishment_id}
+          token={token}
         />
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2
@@ -128,6 +129,7 @@ export const FormulaireEditionOffre = ({
                 step_name: "cfa_share",
                 has_screening_questions: finalValues.to_applicant_questions?.length > 0,
                 ft_eligible: isFtEligible,
+                description_mode: finalValues.job_description ? "custom" : "structured",
               })
               pushMatomoEvent({
                 event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
@@ -187,6 +189,7 @@ export const FormulaireEditionOffre = ({
               step_name: "ft_support",
               has_screening_questions: finalValues.to_applicant_questions?.length > 0,
               ft_eligible: isFtEligible,
+              description_mode: finalValues.job_description ? "custom" : "structured",
             })
             pushMatomoEvent({
               event: MATOMO_EVENTS.JOB_CREATION_FT_PARTNERSHIP_STEP,

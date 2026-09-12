@@ -84,6 +84,10 @@ export const METADATA = {
       title: "La prévention des risques professionnels | Guide pour les apprentis, les CFA et les recruteurs",
       description: "Obligations des employeurs, accueil en entreprise et rôle des CFA dans la prévention des risques professionnels pour les apprentis.",
     }),
+    guideRedigerSonOffreDAlternance: () => ({
+      title: "Bien rédiger son offre d'alternance | Charte de rédaction",
+      description: "Règles obligatoires, bonnes pratiques et modération : tout savoir pour rédiger une offre d'alternance claire, conforme et attractive.",
+    }),
     guideAlternant: () => ({
       title: "Guide de l'alternant 2026 | Tout savoir sur l'alternance",
       description: "Informations, conseils et outils pour réussir votre alternance : contrats, rémunération, aides, formation et recherche d'employeur. Guide complet.",

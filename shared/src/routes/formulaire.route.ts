@@ -1,7 +1,7 @@
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 import { zObjectId } from "../models/common.js"
-import { JOB_START_TYPE, JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
+import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
 import { ZRecruiter, ZRecruiterWithRomeDetailAndApplicationCount } from "../models/recruiter.model.js"
 import { ZUserWithAccountFields } from "../models/user-with-account.model.js"
 import { ZPersonNameInput } from "../models/users-recruteur.model.js"
@@ -165,6 +165,44 @@ export const zFormulaireRoute = {
         },
       },
     },
+    "/formulaire/:establishment_id/offre/ameliorer-texte": {
+      method: "post",
+      path: "/formulaire/:establishment_id/offre/ameliorer-texte",
+      params: z.object({ establishment_id: z.string() }).strict(),
+      body: z.discriminatedUnion("field", [
+        z.strictObject({ field: z.literal("job_description"), text: z.string().trim().min(1).max(JOB_DESCRIPTION_MAX_LENGTH) }),
+        z.strictObject({ field: z.literal("job_employer_description"), text: z.string().trim().min(1).max(JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH) }),
+      ]),
+      response: {
+        "200": z.object({ text: z.string() }).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:add_job",
+        resources: {
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
+    },
+    "/formulaire/:establishment_id/offre/ameliorer-texte/by-token": {
+      method: "post",
+      path: "/formulaire/:establishment_id/offre/ameliorer-texte/by-token",
+      params: z.object({ establishment_id: z.string() }).strict(),
+      body: z.discriminatedUnion("field", [
+        z.strictObject({ field: z.literal("job_description"), text: z.string().trim().min(1).max(JOB_DESCRIPTION_MAX_LENGTH) }),
+        z.strictObject({ field: z.literal("job_employer_description"), text: z.string().trim().min(1).max(JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH) }),
+      ]),
+      response: {
+        "200": z.object({ text: z.string() }).strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: "recruiter:add_job",
+        resources: {
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
+    },
     "/formulaire/offre/:jobId/delegation": {
       method: "post",
       path: "/formulaire/offre/:jobId/delegation",
@@ -219,6 +257,7 @@ export const zFormulaireRoute = {
         job_duration: true,
         job_rythm: true,
         job_employer_description: true,
+        job_description: true,
         competences_rome: true,
         offer_title_custom: true,
         to_applicant_questions: true,
