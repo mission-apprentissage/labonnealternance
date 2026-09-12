@@ -169,6 +169,9 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       count_company_algo: facets?.sub_type?.[LBA_ITEM_TYPE.RECRUTEURS_LBA] ?? 0,
       search_job_name: params.q || "non_renseigné",
       search_address: params.lieu_label || "non_renseigné",
+      // Emprise administrative (region:53, departement:44) : distingue une recherche « Bretagne »
+      // d'une recherche par point + rayon, que search_address seul ne permet pas.
+      search_admin_area: params.admin_area ?? "non_renseigné",
       search_diploma: params.level?.[0] ?? "indifferent",
       search_engine: SEARCH_ENGINES.BETA,
     })
@@ -193,6 +196,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       event: MATOMO_EVENTS.SEARCH_LAUNCHED,
       search_job_name: q || "non_renseigné",
       search_address: params.lieu_label || "non_renseigné",
+      search_admin_area: params.admin_area ?? "non_renseigné",
       search_radius: params.radius,
       search_diploma: params.level?.[0] ?? "indifferent",
       search_origin: "page_resultat",
@@ -202,12 +206,12 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     navigateSilent({ ...params, q: q || undefined, q_source: q ? source : undefined, page: 0 })
   }
 
-  function handleLieuChange(lieu: { label: string; latitude: number; longitude: number } | null) {
+  function handleLieuChange(lieu: { label: string; latitude: number; longitude: number; adminArea?: string } | null) {
     // Nouveau lieu → on repart du rayon le plus étroit (élargissement auto ensuite).
     if (lieu) {
-      navigateSilent({ ...params, lieu_label: lieu.label, latitude: lieu.latitude, longitude: lieu.longitude, radius: 20, page: 0 })
+      navigateSilent({ ...params, lieu_label: lieu.label, latitude: lieu.latitude, longitude: lieu.longitude, admin_area: lieu.adminArea, radius: 20, page: 0 })
     } else {
-      navigateSilent({ ...params, lieu_label: undefined, latitude: undefined, longitude: undefined, radius: 20, page: 0 })
+      navigateSilent({ ...params, lieu_label: undefined, latitude: undefined, longitude: undefined, admin_area: undefined, radius: 20, page: 0 })
     }
   }
 
@@ -298,7 +302,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               >
                 <Box id="search-form" tabIndex={-1} sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
                   <Box sx={{ flex: 1 }}>
-                    <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
+                    <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} franceEntiereIfEmpty onSubmit={handleSearch} onLieuChange={handleLieuChange} />
                   </Box>
                   <SearchTypeRechercheSelect value={params.mode} onChange={handleModeChange} />
                 </Box>
@@ -367,6 +371,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                 onActiveFieldChange={(field) => setSearchFieldActive(field !== null)}
                 initialQ={params.q}
                 initialLieuLabel={params.lieu_label}
+                franceEntiereIfEmpty
                 onSubmit={handleSearch}
                 onLieuChange={handleLieuChange}
               />

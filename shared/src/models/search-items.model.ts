@@ -34,6 +34,16 @@ export const ZSearchItem = z.object({
   description: z.string().describe("Description de l'offre"),
   address: z.string().describe("Adresse complète"),
   location: ZSearchItemLocation.optional().describe("GeoJSON Point pour MongoDB Search"),
+  // Emprise administrative dérivée à la construction (référentiel communes) : permet un filtre
+  // exact par département ou région, là où point + rayon ramène 51 à 82 % de hors-périmètre
+  // (cf. ban-plateforme#781). null quand la commune de l'item n'est pas résolue.
+  // Optionnels, pas seulement nullables : le validateur de collection est `strict` et refuse
+  // l'écriture hors production. Requis, ils faisaient échouer toute mise à jour partielle d'un
+  // item indexé avant le backfill (cron keywords, anciennes migrations rejouées sur une base
+  // fraîche : déploiement preview de la PR 5461 tombé sur sanitize-offer-titles). Les builders
+  // les posent toujours ; un `equals` sur un champ absent ne matche simplement rien.
+  departement_code: z.string().nullable().optional().describe("Code INSEE du département du lieu (01…95, 2A, 2B, 971…976) ; absent sur un item indexé avant le backfill"),
+  region_code: z.string().nullable().optional().describe("Code INSEE de la région du lieu ; absent sur un item indexé avant le backfill"),
   organization_name: z.string().describe("Nom de l'entreprise"),
   level: z.string().nullable().describe("Niveau de diplôme visé"),
   activity_sector: z.string().nullable().describe("Secteur d'activité"),
@@ -86,6 +96,8 @@ export default {
             is_algo_company: { type: "boolean" },
             is_formation_included: { type: "boolean" },
             location: { type: "geo" },
+            departement_code: { type: "token" },
+            region_code: { type: "token" },
           },
         },
         analyzers: [

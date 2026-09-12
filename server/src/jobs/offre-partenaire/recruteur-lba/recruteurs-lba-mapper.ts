@@ -17,6 +17,7 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     street_name,
     street_number,
     zip_code,
+    insee_city_code,
     email,
     phone,
     company_size,
@@ -42,7 +43,9 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     workplace_address_street_label: street_name,
     workplace_address_zipcode: zip_code,
     workplace_address_label: joinNonNullStrings([street_number, street_name, zip_code, libelleCommuneEtablissement]),
-    workplace_geopoint: getWorkplaceGeolocation(coordonneeLambertAbscisseEtablissement, coordonneeLambertOrdonneeEtablissement, zip_code),
+    // La projection SIRENE dépend du territoire ; sans code postal, le code INSEE porte le même
+    // préfixe (974xx…). Sans lui, un établissement réunionnais retombait en Lambert 93, en mer du Nord.
+    workplace_geopoint: getWorkplaceGeolocation(coordonneeLambertAbscisseEtablissement, coordonneeLambertOrdonneeEtablissement, zip_code ?? insee_city_code),
     workplace_size: company_size,
     apply_email: email,
     apply_phone: phone,

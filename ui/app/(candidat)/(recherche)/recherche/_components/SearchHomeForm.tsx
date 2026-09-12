@@ -5,7 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box, ButtonBase } from "@mui/material"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
@@ -17,7 +17,7 @@ import { SearchBar } from "./SearchBar"
 import { SearchMobilePanel } from "./SearchMobilePanel"
 import { SEARCH_MODE_OPTIONS, SearchTypeRechercheSelect } from "./SearchTypeRechercheSelect"
 
-type Lieu = { label: string; latitude: number; longitude: number }
+type Lieu = { label: string; latitude: number; longitude: number; adminArea?: string }
 
 // Placeholder court du faux champ (cf. design mobile) — le champ réel de la modale garde
 // le placeholder long de SearchBar.
@@ -65,8 +65,9 @@ function MobileFakeField({ value, onOpen }: { value?: string; onOpen: () => void
 /**
  * Formulaire du nouveau moteur affiché sur la page d'accueil pour les utilisateurs ayant
  * opté pour la nouvelle version : champs + type de recherche, SANS filtres (cf. Figma).
- * State local — la recherche ne part vers /recherche qu'au clic sur le bouton
- * Rechercher (Entrée et la sélection d'une suggestion ne font que remplir le champ).
+ * State local — la recherche part vers /recherche au clic sur le bouton Rechercher, sur
+ * Entrée dans un champ (sans suggestion surlignée) ou à l'acceptation d'une suggestion
+ * métier : même comportement que la barre de la page de résultats.
  * En mobile, la saisie passe par une modale plein écran ouverte par un faux champ —
  * champ ancré en haut, suggestions visibles au-dessus du clavier.
  */
@@ -90,16 +91,37 @@ export function SearchHomeForm() {
     setMobileFieldActive(false)
   }
 
+  // Retour sur la home après une recherche : formulaire vierge, comme après un montage à neuf.
+  // Selon le chemin de navigation, cacheComponents remonte la home ou réaffiche l'instance
+  // conservée (<Activity> masquée) avec tout son état — le dernier choix réapparaissait alors
+  // (« France entière » notamment) là où une instance neuve n'en garde rien. Les effets d'une
+  // Activity masquée sont rejoués au réaffichage : c'est le signal de retour. Le reset ne
+  // s'applique qu'après un lancement (searchLaunched), jamais au premier montage.
+  // SearchBar (desktop) garde sa saisie en interne : le changement de key la remonte.
+  const [formKey, setFormKey] = useState(0)
+  const searchLaunched = useRef(false)
+  useEffect(() => {
+    if (!searchLaunched.current) return
+    searchLaunched.current = false
+    setQ("")
+    setQSource("free_text")
+    setLieu(null)
+    setMode(DEFAULT_SEARCH_MODE)
+    setFormKey((k) => k + 1)
+  }, [])
+
   const launchSearch = (query: string, source: QSource) => {
     // cacheComponents (<Activity>) garde cette instance montée — pas démontée — pendant la
     // navigation : sans fermeture explicite, la modale serait encore ouverte en revenant
     // sur l'accueil (logo LBA, bouton retour).
     closeMobilePanel()
+    searchLaunched.current = true
     // Même événement que le formulaire home legacy, enrichi de search_engine.
     pushMatomoEvent({
       event: MATOMO_EVENTS.SEARCH_LAUNCHED,
       search_job_name: query.trim() || "non_renseigné",
       search_address: lieu?.label || "non_renseigné",
+      search_admin_area: lieu?.adminArea ?? "non_renseigné",
       search_radius: 20,
       search_diploma: "indifferent",
       search_origin: "page_accueil",
@@ -113,6 +135,7 @@ export function SearchHomeForm() {
         lieu_label: lieu?.label,
         latitude: lieu?.latitude,
         longitude: lieu?.longitude,
+        admin_area: lieu?.adminArea,
         mode,
         radius: 20,
         page: 0,
@@ -121,17 +144,12 @@ export function SearchHomeForm() {
     )
   }
 
-  /* Comportement voulu (07/2026, susceptible d'évoluer) : Entrée ou la sélection d'une
-     suggestion REMPLIT le champ métier sans déclencher la recherche — seul le bouton
-     Rechercher lance la navigation. Pour revenir au lancement direct, rebrancher
-     launchSearch sur onSubmit. */
-  const fillQ = (query: string, source: QSource) => {
-    setQ(query)
-    setQSource(source)
-  }
-  const handleQChange = (value: string) => {
+  /* 07/2026 : Entrée et la sélection d'une suggestion ne faisaient que remplir le champ, seul
+     le bouton lançait. Abandonné 09/2026 pour aligner la home sur la page de résultats
+     (Entrée = lancer, convention des barres de recherche) et supprimer l'écart de comportement. */
+  const handleQChange = (value: string, source: QSource) => {
     setQ(value)
-    setQSource("free_text")
+    setQSource(source)
   }
 
   // Même événement que le sélecteur de la page de résultats (spec tracking filtres).
@@ -183,7 +201,7 @@ export function SearchHomeForm() {
       {/* Grand écran : rangée champs + type de recherche + bouton. */}
       <Box sx={{ display: { xs: "none", lg: "flex" }, flexDirection: "row", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
         <Box sx={{ flex: 1 }}>
-          <SearchBar layout="row" onSubmit={fillQ} onQChange={handleQChange} onLieuChange={setLieu} />
+          <SearchBar key={formKey} layout="row" onSubmit={launchSearch} onQChange={handleQChange} onLieuChange={setLieu} />
         </Box>
         <SearchTypeRechercheSelect value={mode} onChange={handleModeChange} />
         {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut). */}
@@ -200,12 +218,13 @@ export function SearchHomeForm() {
               l'espace du panneau (borné au viewport visible, donc au-dessus du clavier). */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v"), height: mobileFieldActive ? "100%" : undefined }}>
             <SearchBar
+              key={formKey}
               layout="column"
               inlineSuggestions
               onActiveFieldChange={(field) => setMobileFieldActive(field !== null)}
               initialQ={q}
               initialLieuLabel={lieu?.label}
-              onSubmit={fillQ}
+              onSubmit={launchSearch}
               onQChange={handleQChange}
               onLieuChange={setLieu}
             />

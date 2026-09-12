@@ -53,6 +53,28 @@ describe("search_source (origine de q)", () => {
   })
 })
 
+describe("admin_area (emprise administrative exacte)", () => {
+  it("rejette toute forme qui n'est pas maille:code", () => {
+    for (const bad of ["foo", "region:", "epci:244400404", "departement:nantes", "departement:2a", "region:53:x"]) {
+      expect(parseSearchPageParams(new URLSearchParams(`admin_area=${bad}`)).admin_area, bad).toBeUndefined()
+    }
+  })
+
+  it("accepte région, département, Corse et DROM", () => {
+    expect(parseSearchPageParams(new URLSearchParams("admin_area=region:53")).admin_area).toBe("region:53")
+    expect(parseSearchPageParams(new URLSearchParams("admin_area=departement:2A")).admin_area).toBe("departement:2A")
+    expect(parseSearchPageParams(new URLSearchParams("admin_area=departement:974")).admin_area).toBe("departement:974")
+  })
+
+  it("round-trip URL avec la paire lat/lon conservée pour la distance affichée", () => {
+    const url = buildSearchUrl({ ...base, lieu_label: "Bretagne", latitude: 48.1569, longitude: -3.54511, admin_area: "region:53" })
+    const parsed = parseSearchPageParams(new URL(url, "https://x").searchParams)
+    expect(parsed.admin_area).toBe("region:53")
+    expect(parsed.latitude).toBe(48.1569)
+    expect(parsed.lieu_label).toBe("Bretagne")
+  })
+})
+
 describe("buildSearchPageTitle", () => {
   it("sans métier : titre de base seul, quel que soit le lieu", () => {
     expect(buildSearchPageTitle(base)).toBe("Offres en alternance | La bonne alternance")

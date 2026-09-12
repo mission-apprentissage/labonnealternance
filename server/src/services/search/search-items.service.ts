@@ -2,6 +2,7 @@ import type { ObjectId } from "bson"
 import type { IFormationCatalogue } from "shared"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import type { IPointGeometry } from "shared/models/address.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ISearchItem } from "shared/models/search-items.model"
@@ -10,8 +11,9 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
-
 import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/string-utils"
+import type { AdminCodeIndex } from "./search-items-admin-codes"
+import { loadAdminCodeIndex, resolveAdminCodes, snapGeopointToCommune } from "./search-items-admin-codes"
 
 /**
  * Construction et synchronisation des documents `search_items` (index MongoDB Search).
@@ -33,6 +35,7 @@ export const formationProjection: Partial<Record<keyof IFormationCatalogue, 1>> 
   lieu_formation_geopoint: 1,
   lieu_formation_adresse: 1,
   code_postal: 1,
+  code_commune_insee: 1,
   localite: 1,
   etablissement_formateur_entreprise_raison_sociale: 1,
   entierement_a_distance: 1,
@@ -49,6 +52,7 @@ export const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>>
 
   workplace_legal_name: 1,
   workplace_address_label: 1,
+  workplace_address_zipcode: 1,
   workplace_geopoint: 1,
   workplace_naf_label: 1,
   workplace_siret: 1,
@@ -75,6 +79,7 @@ type ProjectedJobFields =
   | "offer_creation"
   | "workplace_legal_name"
   | "workplace_address_label"
+  | "workplace_address_zipcode"
   | "workplace_geopoint"
   | "workplace_naf_label"
   | "workplace_siret"
@@ -106,6 +111,7 @@ type ProjectedFormationFields =
   | "lieu_formation_geopoint"
   | "lieu_formation_adresse"
   | "code_postal"
+  | "code_commune_insee"
   | "localite"
   | "etablissement_formateur_entreprise_raison_sociale"
   | "entierement_a_distance"
@@ -273,15 +279,24 @@ export type SearchItemBuildContext = {
   romeLabelByCode: Map<string, string>
   organizationCaseMap: Map<string, string>
   sectorCaseMap: Map<string, string>
+  adminCodes: AdminCodeIndex
+  /**
+   * Compteurs des corrections et renoncements sur les données source pendant le build, à logger
+   * par l'appelant en fin de run : une correction silencieuse serait indiscernable d'une donnée
+   * saine. Ne concernent que les formations, donc seul le nightly (contexte frais) les fait
+   * bouger ; sur le contexte mémoïsé de la sync delta ils restent à zéro.
+   */
+  corrections: { formations_recentrees: number; formations_sans_geopoint: number }
 }
 
 export const loadSearchItemBuildContext = async (): Promise<SearchItemBuildContext> => {
-  const [romeLabelByCode, organizationCaseMap, sectorCaseMap] = await Promise.all([
+  const [romeLabelByCode, organizationCaseMap, sectorCaseMap, adminCodes] = await Promise.all([
     loadRomeLabelByCode(),
     buildCanonicalCaseMap("organization_name"),
     buildCanonicalCaseMap("activity_sector"),
+    loadAdminCodeIndex(),
   ])
-  return { romeLabelByCode, organizationCaseMap, sectorCaseMap }
+  return { romeLabelByCode, organizationCaseMap, sectorCaseMap, adminCodes, corrections: { formations_recentrees: 0, formations_sans_geopoint: 0 } }
 }
 
 // buildCanonicalCaseMap = 2 agrégations $group sur TOUTE la collection search_items : trop
@@ -303,7 +318,15 @@ export const resetSearchItemBuildContextCache = (): void => {
   ctxCache = null
 }
 
-export const buildFormationSearchItem = (formation: IFormationForSearchItem, ctx: SearchItemBuildContext): ISearchItem => ({
+export const buildFormationSearchItem = (formation: IFormationForSearchItem, ctx: SearchItemBuildContext): ISearchItem => {
+  // Géopoint hors de l'emprise de la commune INSEE → recentré sur la commune (cf. snapGeopointToCommune).
+  const { location, snapped } = snapGeopointToCommune({ insee: formation.code_commune_insee, geopoint: formation.lieu_formation_geopoint }, ctx.adminCodes)
+  if (snapped) ctx.corrections.formations_recentrees++
+  const point = location ?? formation.lieu_formation_geopoint!
+  return buildFormationSearchItemFrom(formation, point, ctx)
+}
+
+const buildFormationSearchItemFrom = (formation: IFormationForSearchItem, point: IPointGeometry, ctx: SearchItemBuildContext): ISearchItem => ({
   _id: formation._id,
   url_id: formation.cle_ministere_educatif,
   type: "formation",
@@ -324,8 +347,11 @@ export const buildFormationSearchItem = (formation: IFormationForSearchItem, ctx
   address: [formation.lieu_formation_adresse, formation.code_postal, formation.localite].filter(Boolean).join(" "),
   location: {
     type: "Point",
-    coordinates: [formation.lieu_formation_geopoint!.coordinates[0], formation.lieu_formation_geopoint!.coordinates[1]],
+    coordinates: [point.coordinates[0], point.coordinates[1]],
   },
+  // Codes dérivés du géopoint SOURCE, pas du point recentré : l'INSEE prime de toute façon, et le
+  // géopoint ne sert qu'à trancher un CP à cheval.
+  ...resolveAdminCodes({ insee: formation.code_commune_insee, zipcode: formation.code_postal, geopoint: formation.lieu_formation_geopoint }, ctx.adminCodes),
   organization_name: canonicalizeCase(ctx.organizationCaseMap, formation.etablissement_formateur_entreprise_raison_sociale || ""),
   level: convertFormationNiveauDiplome(formation.niveau || ""),
   activity_sector: null,
@@ -383,6 +409,8 @@ export const buildJobOfferSearchItem = (job: IJobPartnerForSearchItem, ctx: Sear
     type: "Point",
     coordinates: [job.workplace_geopoint.coordinates[0], job.workplace_geopoint.coordinates[1]],
   },
+  // Toujours l'entreprise d'accueil, comme `location` : l'emprise suit le lieu de travail.
+  ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
   organization_name: getJobOrganizationName(job, ctx),
   level: job.offer_target_diploma?.label || "",
   activity_sector: job.workplace_naf_label ? canonicalizeCase(ctx.sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
@@ -421,6 +449,7 @@ export const buildRecruteurSearchItem = (job: IJobPartnerForSearchItem, ctx: Sea
       type: "Point",
       coordinates: [job.workplace_geopoint.coordinates[0], job.workplace_geopoint.coordinates[1]],
     },
+    ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
     organization_name: organizationName,
     level: job.offer_target_diploma?.label || "",
     activity_sector: job.workplace_naf_label ? canonicalizeCase(ctx.sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
