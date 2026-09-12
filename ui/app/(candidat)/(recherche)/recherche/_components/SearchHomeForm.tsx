@@ -65,8 +65,9 @@ function MobileFakeField({ value, onOpen }: { value?: string; onOpen: () => void
 /**
  * Formulaire du nouveau moteur affiché sur la page d'accueil pour les utilisateurs ayant
  * opté pour la nouvelle version : champs + type de recherche, SANS filtres (cf. Figma).
- * State local — la recherche ne part vers /recherche qu'au clic sur le bouton
- * Rechercher (Entrée et la sélection d'une suggestion ne font que remplir le champ).
+ * State local — la recherche part vers /recherche au clic sur le bouton Rechercher, sur
+ * Entrée dans un champ (sans suggestion surlignée) ou à l'acceptation d'une suggestion
+ * métier : même comportement que la barre de la page de résultats.
  * En mobile, la saisie passe par une modale plein écran ouverte par un faux champ —
  * champ ancré en haut, suggestions visibles au-dessus du clavier.
  */
@@ -143,17 +144,12 @@ export function SearchHomeForm() {
     )
   }
 
-  /* Comportement voulu (07/2026, susceptible d'évoluer) : Entrée ou la sélection d'une
-     suggestion REMPLIT le champ métier sans déclencher la recherche — seul le bouton
-     Rechercher lance la navigation. Pour revenir au lancement direct, rebrancher
-     launchSearch sur onSubmit. */
-  const fillQ = (query: string, source: QSource) => {
-    setQ(query)
-    setQSource(source)
-  }
-  const handleQChange = (value: string) => {
+  /* 07/2026 : Entrée et la sélection d'une suggestion ne faisaient que remplir le champ, seul
+     le bouton lançait. Abandonné 09/2026 pour aligner la home sur la page de résultats
+     (Entrée = lancer, convention des barres de recherche) et supprimer l'écart de comportement. */
+  const handleQChange = (value: string, source: QSource) => {
     setQ(value)
-    setQSource("free_text")
+    setQSource(source)
   }
 
   // Même événement que le sélecteur de la page de résultats (spec tracking filtres).
@@ -205,7 +201,7 @@ export function SearchHomeForm() {
       {/* Grand écran : rangée champs + type de recherche + bouton. */}
       <Box sx={{ display: { xs: "none", lg: "flex" }, flexDirection: "row", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
         <Box sx={{ flex: 1 }}>
-          <SearchBar key={formKey} layout="row" onSubmit={fillQ} onQChange={handleQChange} onLieuChange={setLieu} />
+          <SearchBar key={formKey} layout="row" onSubmit={launchSearch} onQChange={handleQChange} onLieuChange={setLieu} />
         </Box>
         <SearchTypeRechercheSelect value={mode} onChange={handleModeChange} />
         {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut). */}
@@ -228,7 +224,7 @@ export function SearchHomeForm() {
               onActiveFieldChange={(field) => setMobileFieldActive(field !== null)}
               initialQ={q}
               initialLieuLabel={lieu?.label}
-              onSubmit={fillQ}
+              onSubmit={launchSearch}
               onQChange={handleQChange}
               onLieuChange={setLieu}
             />

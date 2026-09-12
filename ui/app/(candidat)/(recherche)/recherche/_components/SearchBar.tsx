@@ -175,8 +175,8 @@ interface SearchBarProps {
   /** source : "suggestion" si l'utilisateur a sélectionné une option d'autocomplete, "free_text" sinon (télémétrie moteur de suggestion). */
   onSubmit: (q: string, source: "suggestion" | "free_text") => void
   onLieuChange: (lieu: { label: string; latitude: number; longitude: number; adminArea?: string } | null) => void
-  /** Saisie courante du champ métier (formulaire home : le bouton Rechercher lit la valeur non validée). */
-  onQChange?: (q: string) => void
+  /** Saisie courante du champ métier et son origine (formulaire home : le bouton Rechercher lit la valeur non validée). */
+  onQChange?: (q: string, source: "suggestion" | "free_text") => void
   /** "row" : barre desktop ; "column" : panneau mobile ; "responsive" : colonne en xs, rangée en md+ (home). */
   layout?: "row" | "column" | "responsive"
   /**
@@ -310,7 +310,7 @@ export function SearchBar({
   const lieuWrapperSx = activeField === "lieu" ? activeWrapperSx : { flex: rowSx.lieuFlex, width: rowSx.fieldWidth, display: activeField === "metier" ? "none" : undefined }
 
   // Suggestions pour le champ métier — autocomplétion par préfixe (endpoint dédié, min 3 caractères)
-  const { data: suggestionData } = useQuery({
+  const { data: suggestionData, isPending: suggestionsPending } = useQuery({
     queryKey: ["/v1/search/suggest", debouncedInput],
     queryFn: ({ signal }) => apiGet("/v1/search/suggest", { querystring: { q: debouncedInput, limit: 8 } }, { signal }),
     enabled: debouncedInput.length >= 3,
@@ -319,10 +319,21 @@ export function SearchBar({
   })
   const suggestions = suggestionData?.suggestions ?? []
 
-  // Options du dropdown : ligne d'action « Rechercher : {saisie} » + groupe Suggestions.
-  const metierOptions: MetierOption[] = inputValue.trim()
-    ? [{ kind: "free_text", value: inputValue }, ...suggestions.map((s): MetierOption => ({ kind: "suggestion", value: s }))]
-    : []
+  // Options du dropdown : groupe Suggestions puis ligne d'action « Rechercher : {saisie} ».
+  // Les suggestions passent en premier pour qu'autoHighlight surligne la meilleure (Entrée
+  // l'accepte, comme pour le lieu) ; sans suggestion, la ligne d'action est seule et surlignée.
+  // Tant que les suggestions de la saisie courante ne sont pas arrivées, la liste est VIDE
+  // (état loading) : si la ligne d'action était affichée seule puis rejointe par les
+  // suggestions, MUI la « retrouverait » par son libellé et déplacerait son index surligné
+  // interne sans mettre à jour le DOM — Entrée lancerait le texte libre alors que l'écran
+  // surligne la 1ʳᵉ suggestion (useAutocomplete.syncHighlightedIndex, MUI 7.3).
+  const trimmedInput = inputValue.trim()
+  const suggestionsLoading = trimmedInput.length >= 3 && (debouncedInput !== inputValue || suggestionsPending)
+  const metierOptions: MetierOption[] = !trimmedInput
+    ? []
+    : suggestionsLoading
+      ? []
+      : [...suggestions.map((s): MetierOption => ({ kind: "suggestion", value: s })), { kind: "free_text", value: inputValue }]
 
   // Suggestions pour le champ lieu
   const { data: lieuOptions } = useQuery({
@@ -347,12 +358,40 @@ export function SearchBar({
   const showsFranceEntiere = isFranceEntiereLabel(lieuInput)
   const lieuDropdownOptions: LieuDropdownOption[] = lieuInput.trim() && !showsFranceEntiere ? lieuSuggestions : [FRANCE_ENTIERE_OPTION]
 
+  // Origine de la saisie métier courante, pour un lancement depuis le champ lieu ou le bouton
+  // (une suggestion acceptée puis relancée depuis ailleurs reste une « suggestion »).
+  const qSourceRef = useRef<"suggestion" | "free_text">("free_text")
   const handleSubmit = useCallback(
     (value: string, source: "suggestion" | "free_text") => {
+      qSourceRef.current = source
       onSubmit(value, source)
     },
     [onSubmit]
   )
+
+  // Touche Entrée : MUI accepte l'option surlignée (son index interne, pas le DOM) et fait
+  // preventDefault — onChange décide alors (suggestion = remplir, ligne « Rechercher » = lancer,
+  // lieu = appliquer). Sans option surlignée ou liste fermée, MUI ne bloque rien : la soumission
+  // implicite HTML du navigateur déclenche onSubmit ci-dessous, qui lance une fois. Aucun
+  // gestionnaire clavier maison : c'est le pattern combobox de l'APG tel que le navigateur
+  // et MUI l'implémentent.
+  const submitFromField = () => {
+    // Champ lieu : un texte non validé est résolu comme au blur — suggestion exacte (le parent
+    // reçoit le lieu, le lancement attend le prochain Entrée pour lire un état à jour), sinon
+    // libellé appliqué restauré.
+    if (lieuInput.trim() !== appliedLieuLabel.trim()) {
+      const exact = lieuSuggestions.find((option) => normalizeLieu(option.label) === normalizeLieu(lieuInput))
+      if (exact) {
+        selectLieu(exact)
+        return
+      }
+      setLieuInput(appliedLieuLabel)
+    }
+    // Écran de saisie mobile : Entrée vaut validation du champ — ferme le clavier virtuel et
+    // revient à la vue formulaire (via le blur → changeActiveField).
+    if (inlineSuggestions && document.activeElement instanceof HTMLElement) document.activeElement.blur()
+    handleSubmit(inputValue, qSourceRef.current)
+  }
 
   const normalizeLieu = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim()
 
@@ -377,7 +416,28 @@ export function SearchBar({
   }
 
   return (
+    // Formulaire de recherche (landmark `search`) : Entrée dans un champ passe par la soumission
+    // implicite HTML (cf. submitFromField). Elle exige un bouton submit « par défaut » dans le
+    // formulaire (deux champs texte la bloquent sinon) : le bouton caché ci-dessous joue ce
+    // rôle — le bouton Rechercher visible de la home est un bouton simple hors formulaire, et
+    // la page de résultats n'en a pas.
     <Box
+      component="form"
+      role="search"
+      aria-label="Recherche d'offres et de formations"
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault()
+        submitFromField()
+      }}
+      // Cmd+Entrée (macOS) / Ctrl+Entrée : le navigateur ne fait pas de soumission implicite
+      // avec un modificateur — on la déclenche. Après MUI (bulle depuis l'Autocomplete) : s'il a
+      // accepté une option il a fait preventDefault, on ne lance pas par-dessus.
+      onKeyDown={(e) => {
+        if (e.key !== "Enter" || !(e.metaKey || e.ctrlKey) || e.defaultPrevented) return
+        e.preventDefault()
+        e.currentTarget.requestSubmit()
+      }}
       sx={{
         display: "flex",
         flexDirection: rowSx.direction,
@@ -396,6 +456,13 @@ export function SearchBar({
         <Autocomplete
           freeSolo
           options={metierOptions}
+          // Comme le lieu : la 1ʳᵉ option est pré-surlignée, Entrée l'accepte. Pattern APG : une
+          // suggestion acceptée remplit le champ et ferme la liste sans lancer ; liste fermée,
+          // Entrée lance (soumission implicite). Seule la ligne « Rechercher : … » lance
+          // directement — c'est son libellé.
+          autoHighlight
+          loading={suggestionsLoading}
+          loadingText="Recherche de suggestions…"
           getOptionLabel={(o) => (typeof o === "string" ? o : o.value)}
           slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
           blurOnSelect={inlineSuggestions}
@@ -412,25 +479,31 @@ export function SearchBar({
             // avec le libellé de la ligne « Rechercher : … ».
             if (reason === "reset") return
             setInputValue(value)
-            onQChange?.(value)
+            qSourceRef.current = "free_text"
+            onQChange?.(value, "free_text")
             if (value === "") handleSubmit("", "free_text")
           }}
           onChange={(_e, value) => {
-            if (!value) return
-            if (typeof value === "string") {
-              handleSubmit(value, "free_text")
-              return
-            }
+            // Chaîne = createOption de MUI (Entrée sans option surlignée, freeSolo) : MUI ne fait
+            // pas preventDefault, la soumission implicite qui suit lance la recherche — rien ici
+            // (sinon double lancement).
+            if (!value || typeof value === "string") return
             // Reflète la sélection dans le champ (onInputChange ignore le reason "reset",
             // le libellé sélectionné ne serait pas affiché sinon).
             setInputValue(value.value)
-            onQChange?.(value.value)
-            handleSubmit(value.value, value.kind === "suggestion" ? "suggestion" : "free_text")
+            if (value.kind === "free_text") {
+              handleSubmit(value.value, "free_text")
+              return
+            }
+            // Suggestion acceptée : le champ est rempli, la recherche part au prochain Entrée
+            // ou au bouton — avec l'origine « suggestion » (cf. qSourceRef).
+            qSourceRef.current = "suggestion"
+            onQChange?.(value.value, "suggestion")
           }}
           // key AVANT le spread, et retiré des props MUI : `key` après un spread fait
           // retomber SWC sur createElement — les enfants du li deviennent un tableau
           // non marqué statique et React exige alors un key sur chacun (warning).
-          renderOption={({ key: _muiKey, ...optionProps }, option) =>
+          renderOption={({ key: _muiKey, ...optionProps }, option, { index }) =>
             option.kind === "free_text" ? (
               <Box
                 component="li"
@@ -453,7 +526,8 @@ export function SearchBar({
                       {option.value}
                     </Box>
                   </Box>
-                  <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>
+                  {/* L'indice n'est vrai que pour l'option pré-surlignée (cf. autoHighlight). */}
+                  {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
                 </Box>
               </Box>
             ) : (
@@ -461,10 +535,11 @@ export function SearchBar({
                 component="li"
                 key={option.value}
                 {...optionProps}
-                sx={{ minHeight: 40, px: "16px !important", fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}
+                sx={{ minHeight: 40, px: "16px !important", fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default, display: "block !important" }}
               >
-                {/* Span unique : le li MUI est en display:flex — des fragments texte séparés y perdent leurs espaces de bord. */}
-                <Box component="span">{highlightMatch(option.value, inputValue)}</Box>
+                {/* Bloc (pas flex) : libellé + indice Entrée sur la 1ʳᵉ suggestion, comme le champ lieu. */}
+                <Box>{highlightMatch(option.value, inputValue)}</Box>
+                {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
               </Box>
             )
           }
@@ -495,18 +570,12 @@ export function SearchBar({
                 htmlInput: {
                   ...params.inputProps,
                   maxLength: 200,
+                  // Clavier virtuel : touche « rechercher » (loupe) à la place de « retour ».
+                  enterKeyHint: "search",
                   "aria-labelledby": metierLabelId,
                   "aria-describedby": qError ? metierErrorId : undefined,
                   "aria-invalid": Boolean(qError),
                 },
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSubmit(inputValue, "free_text")
-                  // Écran de saisie : Entrée vaut validation du champ — ferme le clavier
-                  // virtuel et revient à la vue formulaire (via le blur → changeActiveField).
-                  if (inlineSuggestions) (e.target as HTMLElement).blur()
-                }
               }}
             />
           )}
@@ -534,6 +603,9 @@ export function SearchBar({
           // Le champ affiche « France entière » : le focus sélectionne le texte pour qu'une
           // saisie le remplace directement (sinon l'usager doit l'effacer à la main).
           selectOnFocus={showsFranceEntiere}
+          // Pattern APG : une option surlignée est acceptée sans lancer (l'usager enchaîne
+          // souvent sur le métier) ; liste fermée, Entrée lance (soumission implicite →
+          // submitFromField, qui résout un éventuel texte non validé).
           options={lieuDropdownOptions}
           // Le reset post-sélection de MUI réécrit l'input avec getOptionLabel : pour
           // « France entière » c'est son libellé qui doit s'afficher (cf. onChange).
@@ -616,6 +688,7 @@ export function SearchBar({
               slotProps={{
                 htmlInput: {
                   ...params.inputProps,
+                  enterKeyHint: "search",
                   "aria-labelledby": lieuLabelId,
                   "aria-describedby": lieuError ? lieuErrorId : undefined,
                   "aria-invalid": Boolean(lieuError),
@@ -628,6 +701,12 @@ export function SearchBar({
         />
         {lieuError && <FieldError id={lieuErrorId}>{lieuError}</FieldError>}
       </Box>
+      {/* Bouton submit par défaut du formulaire (soumission implicite sur Entrée). `hidden` : hors
+          rendu et hors arbre d'accessibilité, non focusable — le lancement visible est le bouton
+          Rechercher de la home ou Entrée. */}
+      <button type="submit" hidden tabIndex={-1}>
+        Rechercher
+      </button>
     </Box>
   )
 }
