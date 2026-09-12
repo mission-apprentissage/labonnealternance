@@ -5,7 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box, ButtonBase } from "@mui/material"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
@@ -90,11 +90,31 @@ export function SearchHomeForm() {
     setMobileFieldActive(false)
   }
 
+  // Retour sur la home après une recherche : formulaire vierge, comme après un montage à neuf.
+  // Selon le chemin de navigation, cacheComponents remonte la home ou réaffiche l'instance
+  // conservée (<Activity> masquée) avec tout son état — le dernier choix réapparaissait alors
+  // (« France entière » notamment) là où une instance neuve n'en garde rien. Les effets d'une
+  // Activity masquée sont rejoués au réaffichage : c'est le signal de retour. Le reset ne
+  // s'applique qu'après un lancement (searchLaunched), jamais au premier montage.
+  // SearchBar (desktop) garde sa saisie en interne : le changement de key la remonte.
+  const [formKey, setFormKey] = useState(0)
+  const searchLaunched = useRef(false)
+  useEffect(() => {
+    if (!searchLaunched.current) return
+    searchLaunched.current = false
+    setQ("")
+    setQSource("free_text")
+    setLieu(null)
+    setMode(DEFAULT_SEARCH_MODE)
+    setFormKey((k) => k + 1)
+  }, [])
+
   const launchSearch = (query: string, source: QSource) => {
     // cacheComponents (<Activity>) garde cette instance montée — pas démontée — pendant la
     // navigation : sans fermeture explicite, la modale serait encore ouverte en revenant
     // sur l'accueil (logo LBA, bouton retour).
     closeMobilePanel()
+    searchLaunched.current = true
     // Même événement que le formulaire home legacy, enrichi de search_engine.
     pushMatomoEvent({
       event: MATOMO_EVENTS.SEARCH_LAUNCHED,
@@ -185,7 +205,7 @@ export function SearchHomeForm() {
       {/* Grand écran : rangée champs + type de recherche + bouton. */}
       <Box sx={{ display: { xs: "none", lg: "flex" }, flexDirection: "row", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
         <Box sx={{ flex: 1 }}>
-          <SearchBar layout="row" onSubmit={fillQ} onQChange={handleQChange} onLieuChange={setLieu} />
+          <SearchBar key={formKey} layout="row" onSubmit={fillQ} onQChange={handleQChange} onLieuChange={setLieu} />
         </Box>
         <SearchTypeRechercheSelect value={mode} onChange={handleModeChange} />
         {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut). */}
@@ -202,6 +222,7 @@ export function SearchHomeForm() {
               l'espace du panneau (borné au viewport visible, donc au-dessus du clavier). */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v"), height: mobileFieldActive ? "100%" : undefined }}>
             <SearchBar
+              key={formKey}
               layout="column"
               inlineSuggestions
               onActiveFieldChange={(field) => setMobileFieldActive(field !== null)}

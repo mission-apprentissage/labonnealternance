@@ -151,9 +151,12 @@ type LieuOption = { label: string; latitude: number; longitude: number; adminAre
 const lieuOptionKey = (o: LieuOption) => o.adminArea ?? o.label
 
 // Option « France entière » du champ lieu : proposée quand le champ est vide (Entrée la
-// sélectionne — autoHighlight), elle retire le lieu de la recherche. Le placeholder
-// « France entière » du champ vide reflète ensuite l'état appliqué.
+// sélectionne — autoHighlight), elle retire le lieu de la recherche. Une fois choisie, son
+// libellé s'affiche dans le champ comme un lieu ordinaire (le critère appliqué est « aucun
+// lieu ») ; le champ vide garde le placeholder qui décrit la saisie attendue (ville,
+// département, région — l'adresse et le code postal sont acceptés sans être annoncés).
 const FRANCE_ENTIERE_OPTION = { kind: "france_entiere", label: "France entière" } as const
+const isFranceEntiereLabel = (s: string) => s.trim() === FRANCE_ENTIERE_OPTION.label
 type LieuDropdownOption = LieuOption | typeof FRANCE_ENTIERE_OPTION
 
 // Option du dropdown métier : la 1ʳᵉ ligne relance la recherche en texte libre, les
@@ -163,6 +166,12 @@ type MetierOption = { kind: "free_text"; value: string } | { kind: "suggestion";
 interface SearchBarProps {
   initialQ?: string
   initialLieuLabel?: string
+  /**
+   * Page de résultats : sans lieu dans l'URL, la recherche porte sur la France entière et le
+   * champ l'affiche (le choix fait sur la home n'a pas de trace dans l'URL, « aucun lieu » = France
+   * entière). La home laisse le champ vide (placeholder) tant qu'aucun choix n'est fait.
+   */
+  franceEntiereIfEmpty?: boolean
   /** source : "suggestion" si l'utilisateur a sélectionné une option d'autocomplete, "free_text" sinon (télémétrie moteur de suggestion). */
   onSubmit: (q: string, source: "suggestion" | "free_text") => void
   onLieuChange: (lieu: { label: string; latitude: number; longitude: number; adminArea?: string } | null) => void
@@ -220,6 +229,7 @@ function FieldError({ children, id }: { children: ReactNode; id?: string }) {
 export function SearchBar({
   initialQ = "",
   initialLieuLabel,
+  franceEntiereIfEmpty = false,
   onSubmit,
   onLieuChange,
   onQChange,
@@ -234,11 +244,12 @@ export function SearchBar({
   const metierErrorId = useId()
   const lieuErrorId = useId()
   const [inputValue, setInputValue] = useState(initialQ)
-  const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
+  const emptyLieuLabel = franceEntiereIfEmpty ? FRANCE_ENTIERE_OPTION.label : ""
+  const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? emptyLieuLabel)
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
   // Libellé du lieu réellement APPLIQUÉ à la recherche — source de vérité pour la
   // restauration au blur (le champ ne doit jamais afficher un texte ≠ critère actif).
-  const [appliedLieuLabel, setAppliedLieuLabel] = useState(initialLieuLabel ?? "")
+  const [appliedLieuLabel, setAppliedLieuLabel] = useState(initialLieuLabel ?? emptyLieuLabel)
 
   // Cache Components (<Activity>) garde l'instance de ce composant montée (masquée, pas
   // démontée) d'une navigation à l'autre — sans ceci, revenir en arrière puis relancer une
@@ -250,9 +261,18 @@ export function SearchBar({
     setInputValue(initialQ)
   }, [initialQ])
   useEffect(() => {
-    setLieuInput(initialLieuLabel ?? "")
-    setAppliedLieuLabel(initialLieuLabel ?? "")
-  }, [initialLieuLabel])
+    // Prop repassée à undefined (« aucun lieu ») : trois origines à distinguer par ce que le
+    // champ affichait — la croix l'a vidé (il reste vide, placeholder), l'option « France
+    // entière » l'a rempli (on garde), ou l'URL a perdu son lieu (retour navigateur : le champ
+    // reflète l'état appliqué, « France entière » sur la page de résultats, vide sur la home).
+    const next = (prev: string) => {
+      if (initialLieuLabel) return initialLieuLabel
+      if (prev === "") return ""
+      return isFranceEntiereLabel(prev) ? prev : emptyLieuLabel
+    }
+    setLieuInput(next)
+    setAppliedLieuLabel(next)
+  }, [initialLieuLabel, emptyLieuLabel])
 
   const debouncedInput = useThrottle(inputValue, 300)
   const debouncedLieu = useThrottle(lieuInput, 300)
@@ -309,7 +329,7 @@ export function SearchBar({
     queryKey: ["lieu-suggestions", debouncedLieu],
     // withAdminAreas : les départements et régions remontent dans les suggestions (index poi).
     queryFn: ({ signal }) => searchAddress(debouncedLieu, undefined, signal, true),
-    enabled: debouncedLieu.length >= 2,
+    enabled: debouncedLieu.length >= 2 && !isFranceEntiereLabel(debouncedLieu),
     staleTime: 1000 * 60 * 5,
     throwOnError: false,
   })
@@ -321,9 +341,11 @@ export function SearchBar({
     displayLabel: item.displayLabel,
   }))
 
-  // Champ vide : seule l'option « France entière » est proposée ; en saisie, les suggestions
-  // BAN (Entrée sélectionne la 1ʳᵉ dans les deux cas, cf. autoHighlight).
-  const lieuDropdownOptions: LieuDropdownOption[] = lieuInput.trim() ? lieuSuggestions : [FRANCE_ENTIERE_OPTION]
+  // Champ vide (ou affichant « France entière ») : seule l'option « France entière » est
+  // proposée ; en saisie, les suggestions BAN (Entrée sélectionne la 1ʳᵉ dans les deux cas,
+  // cf. autoHighlight).
+  const showsFranceEntiere = isFranceEntiereLabel(lieuInput)
+  const lieuDropdownOptions: LieuDropdownOption[] = lieuInput.trim() && !showsFranceEntiere ? lieuSuggestions : [FRANCE_ENTIERE_OPTION]
 
   const handleSubmit = useCallback(
     (value: string, source: "suggestion" | "free_text") => {
@@ -509,10 +531,13 @@ export function SearchBar({
           autoHighlight
           // Ouvre le dropdown au focus : l'option « France entière » est proposée avant toute saisie.
           openOnFocus
+          // Le champ affiche « France entière » : le focus sélectionne le texte pour qu'une
+          // saisie le remplace directement (sinon l'usager doit l'effacer à la main).
+          selectOnFocus={showsFranceEntiere}
           options={lieuDropdownOptions}
-          // Libellé vide pour « France entière » : le reset post-sélection de MUI réécrit
-          // l'input avec getOptionLabel — le champ doit rester vide (placeholder visible).
-          getOptionLabel={(o) => (typeof o === "string" ? o : "kind" in o ? "" : o.label)}
+          // Le reset post-sélection de MUI réécrit l'input avec getOptionLabel : pour
+          // « France entière » c'est son libellé qui doit s'afficher (cf. onChange).
+          getOptionLabel={(o) => (typeof o === "string" ? o : o.label)}
           isOptionEqualToValue={(o, v) => {
             if ("kind" in o) return false
             return typeof v === "string" ? o.label === v : !("kind" in v) && lieuOptionKey(o) === lieuOptionKey(v)
@@ -541,11 +566,12 @@ export function SearchBar({
           }}
           onChange={(_e, value) => {
             if (!value || typeof value === "string") return
-            // « France entière » : retire le lieu (équivalent de la croix, au clavier).
+            // « France entière » : retire le lieu et affiche le libellé dans le champ. La croix
+            // MUI (reason "clear") retire aussi le lieu mais laisse le champ vide (placeholder).
             if ("kind" in value) {
               setLieuValue(null)
-              setLieuInput("")
-              setAppliedLieuLabel("")
+              setLieuInput(FRANCE_ENTIERE_OPTION.label)
+              setAppliedLieuLabel(FRANCE_ENTIERE_OPTION.label)
               onLieuChange(null)
               return
             }
@@ -582,7 +608,7 @@ export function SearchBar({
             <TextField
               {...params}
               inputRef={lieuListbox.inputRef}
-              placeholder="France entière"
+              placeholder="Ville, département ou région"
               variant="outlined"
               size="small"
               fullWidth

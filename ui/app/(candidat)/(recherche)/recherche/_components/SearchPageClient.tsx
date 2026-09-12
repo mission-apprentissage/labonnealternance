@@ -302,7 +302,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               >
                 <Box id="search-form" tabIndex={-1} sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
                   <Box sx={{ flex: 1 }}>
-                    <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
+                    <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} franceEntiereIfEmpty onSubmit={handleSearch} onLieuChange={handleLieuChange} />
                   </Box>
                   <SearchTypeRechercheSelect value={params.mode} onChange={handleModeChange} />
                 </Box>
@@ -371,6 +371,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                 onActiveFieldChange={(field) => setSearchFieldActive(field !== null)}
                 initialQ={params.q}
                 initialLieuLabel={params.lieu_label}
+                franceEntiereIfEmpty
                 onSubmit={handleSearch}
                 onLieuChange={handleLieuChange}
               />
