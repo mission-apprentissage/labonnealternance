@@ -325,9 +325,6 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
             />
           </>
         )}
-        <InfoText>
-          Ces informations aident l’entreprise à étudier votre candidature.{applicant_inscription_formation === true && " La taille des champs est limitée à 200 caractères."}
-        </InfoText>
       </Box>
     </>
   )
