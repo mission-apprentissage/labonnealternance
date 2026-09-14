@@ -9,7 +9,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
-import { ZToApplicantQuestions } from "shared/models/job.model"
+import { JOB_START_TYPE, ZToApplicantQuestions } from "shared/models/job.model"
 import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobs-partners-computed.model"
@@ -501,7 +501,10 @@ async function upsertJobOfferPrivate({
   const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
     contract_start: data.contract.start,
     contract_start_type: data.contract.start_type,
-    contract_start_is_flexible: data.contract.start_is_flexible,
+    // Même normalisation que le formulaire espace-pro (cf. patchOffre) : la flexibilité n'a de sens
+    // qu'autour d'une date visée. Sans ça, "démarrage dès que possible + date flexible" serait
+    // stockable par API alors que le contrat publié annonce l'inverse.
+    contract_start_is_flexible: data.contract.start_type === JOB_START_TYPE.DES_QUE_POSSIBLE ? false : data.contract.start_is_flexible,
     contract_duration: data.contract.duration,
     contract_type: data.contract.type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     contract_remote: data.contract.remote,
