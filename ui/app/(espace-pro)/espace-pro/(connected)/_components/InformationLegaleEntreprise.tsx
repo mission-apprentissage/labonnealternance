@@ -107,14 +107,14 @@ const OrganizationInfoFields = ({
         value={siret}
         tooltip={
           type === ENTREPRISE ? (
-            <InfoTooltip>
+            <InfoTooltip label="Informations sur SIRET">
               La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en suivant{" "}
               <DsfrLink href="https://www.insee.fr/fr/information/2015441" aria-label="Accès au site de l'INSEE - nouvelle fenêtre">
                 la marche à suivre.
               </DsfrLink>
             </InfoTooltip>
           ) : (
-            <InfoTooltip>
+            <InfoTooltip label="Informations sur SIRET">
               La donnée “SIRET Organisme” provient des bases “Carif-Oref”. Si cette information est erronée, merci de le signaler au Carif-Oref de votre région.
             </InfoTooltip>
           )
@@ -153,7 +153,7 @@ const OrganizationInfoFields = ({
           title="Engagement Handicap recensé par"
           value={engagementHandicapLabels[engagementHandicapOrigin]?.label ?? "inconnu"}
           tooltip={
-            <InfoTooltip>
+            <InfoTooltip label="Informations sur Engagement Handicap recensé par">
               {(viewerType === ENTREPRISE && engagementHandicapLabels[engagementHandicapOrigin]?.tooltip) || (
                 <>
                   La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par France
