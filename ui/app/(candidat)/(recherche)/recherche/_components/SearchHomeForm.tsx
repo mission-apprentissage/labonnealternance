@@ -162,6 +162,9 @@ export function SearchHomeForm({ id }: { id: string }) {
   return (
     <Box
       id={id}
+      // Cible du lien d'évitement « Recherche » (voir ui/app/(home)/layout.tsx) : sans
+      // tabindex="-1" le navigateur scrolle jusqu'ici mais laisse le focus sur le lien.
+      tabIndex={-1}
       sx={{
         padding: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
         backgroundColor: fr.colors.decisions.background.default.grey.default,
