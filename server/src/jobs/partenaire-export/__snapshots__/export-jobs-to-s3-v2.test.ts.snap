@@ -12,6 +12,8 @@ exports[`export-jobs-to-s3-v2 > should publish a partenariat job 1`] = `
       "duration": 6,
       "remote": "onsite",
       "start": "2021-01-28T15:00:00.000Z",
+      "start_is_flexible": false,
+      "start_type": "precise_date",
       "type": [
         "Apprentissage",
         "Professionnalisation",
@@ -45,6 +47,7 @@ exports[`export-jobs-to-s3-v2 > should publish a partenariat job 1`] = `
         "label": "Master",
       },
       "title": "Une super offre d'alternance",
+      "to_applicant_questions": null,
       "to_be_acquired_skills": [
         "offer_to_be_acquired_skills",
       ],
@@ -92,6 +95,8 @@ exports[`export-jobs-to-s3-v2 > should publish jobs 1`] = `
       "duration": 6,
       "remote": "onsite",
       "start": "2021-01-28T15:00:00.000Z",
+      "start_is_flexible": false,
+      "start_type": "precise_date",
       "type": [
         "Apprentissage",
         "Professionnalisation",
@@ -125,6 +130,7 @@ exports[`export-jobs-to-s3-v2 > should publish jobs 1`] = `
         "label": "Master",
       },
       "title": "Une super offre d'alternance",
+      "to_applicant_questions": null,
       "to_be_acquired_skills": [
         "offer_to_be_acquired_skills",
       ],
@@ -167,6 +173,8 @@ exports[`export-jobs-to-s3-v2 > should publish jobs 1`] = `
       "duration": 6,
       "remote": "onsite",
       "start": "2021-01-28T15:00:00.000Z",
+      "start_is_flexible": false,
+      "start_type": "precise_date",
       "type": [
         "Apprentissage",
         "Professionnalisation",
@@ -200,6 +208,7 @@ exports[`export-jobs-to-s3-v2 > should publish jobs 1`] = `
         "label": "Master",
       },
       "title": "Une super offre d'alternance",
+      "to_applicant_questions": null,
       "to_be_acquired_skills": [
         "offer_to_be_acquired_skills",
       ],
