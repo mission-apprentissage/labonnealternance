@@ -55,8 +55,6 @@ const dedupeSingleDepartmentRegions = (items: IAddressItem[]): IAddressItem[] =>
 
 const adminRank = (feature: AddressFeature): number => (feature.properties.category && ADMIN_CATEGORIES[feature.properties.category[1]]?.rank) ?? COMMUNE_RANK
 
-type Coordinates = [number, number]
-
 type IAddressItem = {
   value: IPointGeometry
   insee: string
@@ -149,26 +147,4 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
       return []
     }
   } else return []
-}
-
-export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type?: string, signal?: AbortSignal): Promise<IAddressItem[]> => {
-  const addressURL = `https://data.geopf.fr/geocodage/reverse/?lat=${coordinates[1]}&lon=${coordinates[0]}${type ? "&type=" + type : ""}`
-
-  try {
-    const response = await fetch(addressURL, { signal })
-    if (!response.ok) throw new Error("Network response was not ok")
-
-    const data: { features: AddressFeature[] } = await response.json()
-    const returnedItems: IAddressItem[] = data.features.map((feature) => ({
-      value: feature.geometry,
-      insee: (Array.isArray(feature.properties.citycode) ? feature.properties.citycode[0] : feature.properties.citycode) ?? "",
-      zipcode: firstOf(feature.properties.postcode) ?? "",
-      label: feature.properties.label ?? feature.properties.toponym ?? "",
-    }))
-
-    return returnedItems
-  } catch (err) {
-    console.error("Fetch address from coordinates failed: ", err)
-    return []
-  }
 }
