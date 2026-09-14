@@ -12,7 +12,7 @@ export const GrandsGroupesCandidat = () => (
         gap: fr.spacing("10v"),
       }}
     >
-      <Typography id="home-content-container" variant="h1">
+      <Typography variant="h1">
         Retrouvez les offres en alternance
         <br />
         <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>

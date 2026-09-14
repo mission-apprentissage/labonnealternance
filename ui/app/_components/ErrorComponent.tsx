@@ -6,7 +6,7 @@ import { captureException, type FallbackRender, ErrorBoundary as SentryErrorBoun
 import Image from "next/image"
 import type { PropsWithChildren } from "react"
 import { useEffect } from "react"
-
+import { mainId } from "@/app/_components/zone-ids"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { ApiError } from "@/utils/api.utils"
@@ -66,7 +66,7 @@ export function ErrorComponent({ error }: ErrorProps) {
             gap: fr.spacing("8v"),
           }}
         >
-          <Box tabIndex={-1} id="content-container" role="main" sx={{ flex: 1 }}>
+          <Box tabIndex={-1} id={mainId("error")} role="main" sx={{ flex: 1 }}>
             <Typography variant="h1">Erreur</Typography>
 
             <Typography variant="h2">Un problème technique est survenu</Typography>

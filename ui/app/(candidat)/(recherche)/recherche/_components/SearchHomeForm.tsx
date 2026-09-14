@@ -71,7 +71,7 @@ function MobileFakeField({ value, onOpen }: { value?: string; onOpen: () => void
  * En mobile, la saisie passe par une modale plein écran ouverte par un faux champ —
  * champ ancré en haut, suggestions visibles au-dessus du clavier.
  */
-export function SearchHomeForm() {
+export function SearchHomeForm({ id }: { id: string }) {
   const router = useRouter()
   const [q, setQ] = useState("")
   // Source de la valeur du champ métier pour la télémétrie ("suggestion" si elle vient
@@ -161,7 +161,10 @@ export function SearchHomeForm() {
 
   return (
     <Box
-      id="search-form"
+      id={id}
+      // Cible du lien d'évitement « Recherche » (voir ui/app/(home)/layout.tsx) : sans
+      // tabindex="-1" le navigateur scrolle jusqu'ici mais laisse le focus sur le lien.
+      tabIndex={-1}
       sx={{
         padding: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
         backgroundColor: fr.colors.decisions.background.default.grey.default,

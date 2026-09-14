@@ -4,6 +4,7 @@ import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
+import { footerId, mainId } from "@/app/_components/zone-ids"
 import { DsfrHeaderProps1J1S } from "@/app/(1jeune1solution)/components/Header1J1S"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 export default async function UnJeuneUneSolutionLayout({ children }: PropsWithChildren) {
@@ -11,8 +12,8 @@ export default async function UnJeuneUneSolutionLayout({ children }: PropsWithCh
     <>
       <SkipLinks
         links={[
-          { label: "Contenu", anchor: "#editorial-1j1s-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Contenu", anchor: `#${mainId("1jeune1solution")}` },
+          { label: "Pied de page", anchor: `#${footerId("1jeune1solution")}` },
         ]}
       />
       <InfoBanner showInfo={false} showAlert={false} showOK={false} showEnvAlert={true} />
@@ -37,10 +38,10 @@ export default async function UnJeuneUneSolutionLayout({ children }: PropsWithCh
       >
         <DsfrHeader {...DsfrHeaderProps1J1S} />
       </Box>
-      <Box component="main" role="main">
+      <Box component="main" role="main" id={mainId("1jeune1solution")} tabIndex={-1}>
         {children}
       </Box>
-      <Footer />
+      <Footer zone="1jeune1solution" />
     </>
   )
 }

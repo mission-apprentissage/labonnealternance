@@ -13,7 +13,7 @@ export const GrandsGroupesRecruteur = () => (
         gap: fr.spacing("10v"),
       }}
     >
-      <Typography id="home-content-container" variant="h1">
+      <Typography variant="h1">
         Ils nous font
         <br />
         <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>

@@ -49,7 +49,7 @@ export default function StatistiquesClient() {
     <Box>
       <Breadcrumb pages={[PAGES.static.statistiques]} />
       <DefaultContainer>
-        <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+        <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
           Statistiques
         </Typography>
 

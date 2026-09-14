@@ -111,7 +111,7 @@ export default function AlternanceMetiers() {
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
+          <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
             Tous les métiers accessibles en alternance
           </Typography>
           <Box

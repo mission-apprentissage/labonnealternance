@@ -191,7 +191,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
             <HomeCircleImageDecoration size="small" />
           </Box>
           <Box sx={{ position: "relative" }}>
-            <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("10v") }}>
+            <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("10v") }}>
               Alternance{" "}
               <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
                 {data.metier}

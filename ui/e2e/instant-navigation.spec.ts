@@ -1,5 +1,6 @@
 import { instant } from "@next/playwright"
 import { expect, test } from "@playwright/test"
+import { mainId } from "@/app/_components/zone-ids"
 
 // Pilote Cache Components : ces tests verrouillent le gain obtenu sur 4 routes
 // (accueil, fiche offre, fiche formation, dashboard entreprise) contre toute régression future.
@@ -20,6 +21,12 @@ test.describe("navigation instantanée — accueil", () => {
 })
 
 test.describe("navigation instantanée — fiches offre et formation", () => {
+  // L'assertion vise le titre de la fiche, à l'intérieur du landmark, et non le landmark lui-même :
+  // celui-ci est rendu par le layout de segment (ui/app/(candidat)/emploi/layout.tsx) dès l'entrée
+  // dans la route, avant même que la donnée arrive — l'attendre ne prouverait rien sur la navigation.
+  // Le landmark est ciblé par son id de zone et non par `locator("main")` : le cache de navigation
+  // laisse le `main` de /recherche monté (masqué) dans le document, deux landmarks coexistent donc.
+  //
   // `use cache: private` (voir plan de migration, Étape 3bis) ne survit qu'en mémoire navigateur :
   // il rend les navigations CLIENT (clic + prefetch) instantanées, mais pas un rechargement complet
   // (MPA/reload), qui repart toujours d'un cache vide. Le test doit donc simuler un vrai clic depuis
@@ -37,7 +44,12 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
 
     await instant(page, async () => {
       await offerLink.click()
-      await expect(page.locator("main")).toBeVisible()
+      await expect(
+        page
+          .locator(`#${mainId("detail-emploi")}`)
+          .getByRole("heading", { level: 3 })
+          .first()
+      ).toBeVisible()
     })
   })
 
@@ -50,7 +62,12 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
 
     await instant(page, async () => {
       await formationLink.click()
-      await expect(page.locator("main")).toBeVisible()
+      await expect(
+        page
+          .locator(`#${mainId("detail-formation")}`)
+          .getByRole("heading", { level: 3 })
+          .first()
+      ).toBeVisible()
     })
   })
 })
@@ -68,5 +85,29 @@ test.describe("navigation instantanée — dashboard entreprise", () => {
       await page.reload()
       await expect(page.getByRole("main")).toBeVisible()
     })
+  })
+})
+
+// Le cache de navigation garde la route précédente montée dans un `<Activity mode="hidden">` :
+// deux ossatures coexistent dans le document dès qu'une navigation change de layout. Quand elles
+// partagent leurs id, le JS du DSFR câble le bouton du menu burger visible sur la modale de la
+// copie masquée et le menu ne s'ouvre plus (issue #5439). Voir ui/app/_components/zone-ids.ts.
+test.describe("identifiants de zone — cache de navigation", () => {
+  test("le menu burger s'ouvre encore après une navigation qui change de layout", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.goto("/salaire-alternant")
+
+    // Ouvrir puis fermer depuis la zone de départ : c'est la séquence qui exposait le défaut.
+    await page.getByRole("button", { name: "Menu" }).click()
+    await expect(page.locator("#header-menu-modal-header-links-landing")).toHaveClass(/fr-modal--opened/)
+    await page.locator("#header-links-landing-mobile-overlay-button-close").click()
+
+    // Traversée de layout : (landing-pages) → (home).
+    await page.getByRole("link", { name: "Accueil - La bonne alternance" }).click()
+    await expect(page).toHaveURL("/")
+
+    await page.getByRole("button", { name: "Menu" }).click()
+    await expect(page.locator("#header-menu-modal-header-links-home")).toHaveClass(/fr-modal--opened/)
+    await expect(page.locator("#header-menu-modal-header-links-home").getByRole("link", { name: "Connexion" })).toBeVisible()
   })
 })

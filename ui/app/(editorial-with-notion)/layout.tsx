@@ -9,6 +9,7 @@ import type { PropsWithChildren } from "react"
 import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { getSession } from "@/utils/get-session"
 
 export default function HomeLayout({ children }: PropsWithChildren) {
@@ -16,21 +17,23 @@ export default function HomeLayout({ children }: PropsWithChildren) {
     <>
       <SkipLinks
         links={[
-          { label: "Menu", anchor: "#header-links" },
-          { label: "Contenu", anchor: "#editorial-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Menu", anchor: `#${headerId("editorial-notion")}` },
+          { label: "Contenu", anchor: `#${mainId("editorial-notion")}` },
+          { label: "Pied de page", anchor: `#${footerId("editorial-notion")}` },
         ]}
       />
-      <Suspense fallback={<PublicHeaderStatic />}>
+      <Suspense fallback={<PublicHeaderStatic zone="editorial-notion" />}>
         <EditorialWithNotionHeaderWithUser />
       </Suspense>
-      <Box>{children}</Box>
-      <Footer />
+      <Box id={mainId("editorial-notion")} tabIndex={-1}>
+        {children}
+      </Box>
+      <Footer zone="editorial-notion" />
     </>
   )
 }
 
 async function EditorialWithNotionHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader user={user} hideConnectionButton={true} />
+  return <PublicHeader zone="editorial-notion" user={user} hideConnectionButton={true} />
 }

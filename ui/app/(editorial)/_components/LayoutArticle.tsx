@@ -57,7 +57,7 @@ export const LayoutArticle = ({
     />
     <Breadcrumb pages={pages} />
     <DefaultContainer sx={{ marginBottom: fr.spacing("10v") }}>
-      <Grid container spacing={fr.spacing("6v")} id="editorial-content-container">
+      <Grid container spacing={fr.spacing("6v")}>
         <Grid container sx={{ marginBottom: fr.spacing("6v") }}>
           <Grid size={{ md: 2, xs: 0 }}></Grid>
           <Grid size={{ md: 8, xs: 12 }}>
