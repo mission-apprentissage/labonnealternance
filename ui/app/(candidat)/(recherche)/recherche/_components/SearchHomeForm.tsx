@@ -144,9 +144,10 @@ export function SearchHomeForm() {
     )
   }
 
-  /* 07/2026 : Entrée et la sélection d'une suggestion ne faisaient que remplir le champ, seul
-     le bouton lançait. Abandonné 09/2026 pour aligner la home sur la page de résultats
-     (Entrée = lancer, convention des barres de recherche) et supprimer l'écart de comportement. */
+  /* Une suggestion acceptée (Entrée, clic) ne fait que remplir le champ, seul le bouton lance —
+     comme en 07/2026. L'alignement 09/2026 sur « Entrée = lancer » (ligne « Rechercher : … »
+     pré-surlignée) a été retiré : en test, Entrée lançait la recherche là où l'usager voulait
+     sélectionner la suggestion. Entrée ne lance que liste fermée (soumission implicite). */
   const handleQChange = (value: string, source: QSource) => {
     setQ(value)
     setQSource(source)

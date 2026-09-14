@@ -159,10 +159,6 @@ const FRANCE_ENTIERE_OPTION = { kind: "france_entiere", label: "France entière"
 const isFranceEntiereLabel = (s: string) => s.trim() === FRANCE_ENTIERE_OPTION.label
 type LieuDropdownOption = LieuOption | typeof FRANCE_ENTIERE_OPTION
 
-// Option du dropdown métier : la 1ʳᵉ ligne relance la recherche en texte libre, les
-// suivantes sont les suggestions de l'endpoint suggest.
-type MetierOption = { kind: "free_text"; value: string } | { kind: "suggestion"; value: string }
-
 interface SearchBarProps {
   initialQ?: string
   initialLieuLabel?: string
@@ -177,6 +173,12 @@ interface SearchBarProps {
   onLieuChange: (lieu: { label: string; latitude: number; longitude: number; adminArea?: string } | null) => void
   /** Saisie courante du champ métier et son origine (formulaire home : le bouton Rechercher lit la valeur non validée). */
   onQChange?: (q: string, source: "suggestion" | "free_text") => void
+  /**
+   * Page de résultats : une suggestion métier acceptée (Entrée, clic) applique la recherche
+   * aussitôt, comme le lieu — la page n'a pas de bouton Rechercher. Sans cette prop (home), la
+   * suggestion remplit seulement le champ et le bouton lance.
+   */
+  submitOnSuggestion?: boolean
   /** "row" : barre desktop ; "column" : panneau mobile ; "responsive" : colonne en xs, rangée en md+ (home). */
   layout?: "row" | "column" | "responsive"
   /**
@@ -233,6 +235,7 @@ export function SearchBar({
   onSubmit,
   onLieuChange,
   onQChange,
+  submitOnSuggestion = false,
   layout = "row",
   inlineSuggestions = false,
   onActiveFieldChange,
@@ -319,21 +322,16 @@ export function SearchBar({
   })
   const suggestions = suggestionData?.suggestions ?? []
 
-  // Options du dropdown : groupe Suggestions puis ligne d'action « Rechercher : {saisie} ».
-  // Les suggestions passent en premier pour qu'autoHighlight surligne la meilleure (Entrée
-  // l'accepte, comme pour le lieu) ; sans suggestion, la ligne d'action est seule et surlignée.
-  // Tant que les suggestions de la saisie courante ne sont pas arrivées, la liste est VIDE
-  // (état loading) : si la ligne d'action était affichée seule puis rejointe par les
-  // suggestions, MUI la « retrouverait » par son libellé et déplacerait son index surligné
-  // interne sans mettre à jour le DOM — Entrée lancerait le texte libre alors que l'écran
-  // surligne la 1ʳᵉ suggestion (useAutocomplete.syncHighlightedIndex, MUI 7.3).
+  // Options du dropdown : les suggestions de l'endpoint, rien d'autre — pas de ligne d'action
+  // « Rechercher : {saisie} », Entrée ne fait que sélectionner (cf. Autocomplete). autoHighlight
+  // surligne la 1ʳᵉ. Tant que les suggestions de la saisie courante ne sont pas arrivées, la
+  // liste est VIDE (état loading) plutôt que de garder celles de la saisie précédente : une
+  // option commune aux deux listes serait « retrouvée » par MUI via son libellé, qui déplacerait
+  // son index surligné interne sans mettre à jour le DOM — Entrée accepterait une autre option
+  // que celle surlignée à l'écran (useAutocomplete.syncHighlightedIndex, MUI 7.3).
   const trimmedInput = inputValue.trim()
   const suggestionsLoading = trimmedInput.length >= 3 && (debouncedInput !== inputValue || suggestionsPending)
-  const metierOptions: MetierOption[] = !trimmedInput
-    ? []
-    : suggestionsLoading
-      ? []
-      : [...suggestions.map((s): MetierOption => ({ kind: "suggestion", value: s })), { kind: "free_text", value: inputValue }]
+  const metierOptions: string[] = !trimmedInput || suggestionsLoading ? [] : suggestions
 
   // Suggestions pour le champ lieu
   const { data: lieuOptions } = useQuery({
@@ -370,9 +368,10 @@ export function SearchBar({
   )
 
   // Touche Entrée : MUI accepte l'option surlignée (son index interne, pas le DOM) et fait
-  // preventDefault — onChange décide alors (suggestion = remplir, ligne « Rechercher » = lancer,
-  // lieu = appliquer). Sans option surlignée ou liste fermée, MUI ne bloque rien : la soumission
-  // implicite HTML du navigateur déclenche onSubmit ci-dessous, qui lance une fois. Aucun
+  // preventDefault — onChange décide alors (métier = remplir, et appliquer sur la page de
+  // résultats ; lieu = appliquer). Aucune option ne lance la recherche à elle seule. Liste
+  // fermée ou sans suggestion, MUI ne bloque rien : la soumission implicite HTML du navigateur
+  // déclenche onSubmit ci-dessous, qui lance une fois — seul cas où Entrée lance. Aucun
   // gestionnaire clavier maison : c'est le pattern combobox de l'APG tel que le navigateur
   // et MUI l'implémentent.
   const submitFromField = () => {
@@ -456,14 +455,13 @@ export function SearchBar({
         <Autocomplete
           freeSolo
           options={metierOptions}
-          // Comme le lieu : la 1ʳᵉ option est pré-surlignée, Entrée l'accepte. Pattern APG : une
-          // suggestion acceptée remplit le champ et ferme la liste sans lancer ; liste fermée,
-          // Entrée lance (soumission implicite). Seule la ligne « Rechercher : … » lance
-          // directement — c'est son libellé.
+          // Comme le lieu : la 1ʳᵉ suggestion est pré-surlignée, Entrée l'accepte. Pattern APG :
+          // une suggestion acceptée remplit le champ et ferme la liste (page de résultats : elle
+          // applique aussi la recherche, cf. submitOnSuggestion) ; liste fermée, Entrée lance
+          // (soumission implicite).
           autoHighlight
           loading={suggestionsLoading}
           loadingText="Recherche de suggestions…"
-          getOptionLabel={(o) => (typeof o === "string" ? o : o.value)}
           slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
           blurOnSelect={inlineSuggestions}
           onFocus={() => changeActiveField("metier")}
@@ -475,78 +473,48 @@ export function SearchBar({
           onClose={inlineSuggestions ? undefined : metierListbox.onClose}
           inputValue={inputValue}
           onInputChange={(_e, value, reason) => {
-            // "reset" est déclenché par la sélection d'une option — ne pas écraser la saisie
-            // avec le libellé de la ligne « Rechercher : … ».
+            // "reset" est déclenché par la sélection d'une option : c'est onChange qui reflète la
+            // suggestion dans le champ (et fixe son origine), pas ce gestionnaire.
             if (reason === "reset") return
             setInputValue(value)
             qSourceRef.current = "free_text"
             onQChange?.(value, "free_text")
             if (value === "") handleSubmit("", "free_text")
           }}
-          onChange={(_e, value) => {
-            // Chaîne = createOption de MUI (Entrée sans option surlignée, freeSolo) : MUI ne fait
-            // pas preventDefault, la soumission implicite qui suit lance la recherche — rien ici
+          onChange={(_e, value, reason) => {
+            // "createOption" = Entrée sans option surlignée (freeSolo) : MUI ne fait pas
+            // preventDefault, la soumission implicite qui suit lance la recherche — rien ici
             // (sinon double lancement).
-            if (!value || typeof value === "string") return
+            if (reason !== "selectOption" || typeof value !== "string") return
             // Reflète la sélection dans le champ (onInputChange ignore le reason "reset",
             // le libellé sélectionné ne serait pas affiché sinon).
-            setInputValue(value.value)
-            if (value.kind === "free_text") {
-              handleSubmit(value.value, "free_text")
-              return
-            }
-            // Suggestion acceptée : le champ est rempli, la recherche part au prochain Entrée
-            // ou au bouton — avec l'origine « suggestion » (cf. qSourceRef).
+            setInputValue(value)
+            // Suggestion acceptée, origine « suggestion » (cf. qSourceRef). Home : le champ est
+            // rempli, la recherche part au bouton ou au prochain Entrée. Page de résultats : elle
+            // s'applique aussitôt, il n'y a pas de bouton.
             qSourceRef.current = "suggestion"
-            onQChange?.(value.value, "suggestion")
+            onQChange?.(value, "suggestion")
+            if (submitOnSuggestion) handleSubmit(value, "suggestion")
           }}
           // key AVANT le spread, et retiré des props MUI : `key` après un spread fait
           // retomber SWC sur createElement — les enfants du li deviennent un tableau
           // non marqué statique et React exige alors un key sur chacun (warning).
-          renderOption={({ key: _muiKey, ...optionProps }, option, { index }) =>
-            option.kind === "free_text" ? (
-              <Box
-                component="li"
-                key="__free_text__"
-                {...optionProps}
-                sx={{
-                  minHeight: 60,
-                  px: "16px !important",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: fr.spacing("2v"),
-                  backgroundColor: `${fr.colors.decisions.background.contrast.blueFrance.default} !important`,
-                }}
-              >
-                <Box component="span" className={fr.cx("fr-icon-search-line", "fr-icon--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default }} aria-hidden="true" />
-                <Box>
-                  <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>
-                    Rechercher :{" "}
-                    <Box component="span" sx={{ fontWeight: 700 }}>
-                      {option.value}
-                    </Box>
-                  </Box>
-                  {/* L'indice n'est vrai que pour l'option pré-surlignée (cf. autoHighlight). */}
-                  {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
-                </Box>
-              </Box>
-            ) : (
-              <Box
-                component="li"
-                key={option.value}
-                {...optionProps}
-                sx={{ minHeight: 40, px: "16px !important", fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default, display: "block !important" }}
-              >
-                {/* Bloc (pas flex) : libellé + indice Entrée sur la 1ʳᵉ suggestion, comme le champ lieu. */}
-                <Box>{highlightMatch(option.value, inputValue)}</Box>
-                {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
-              </Box>
-            )
-          }
-          groupBy={(option) => (option.kind === "suggestion" ? "Suggestions" : "")}
+          renderOption={({ key: _muiKey, ...optionProps }, option, { index }) => (
+            <Box
+              component="li"
+              key={option}
+              {...optionProps}
+              sx={{ minHeight: 40, px: "16px !important", fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default, display: "block !important" }}
+            >
+              {/* Bloc (pas flex) : libellé + indice Entrée sur la 1ʳᵉ suggestion (pré-surlignée, cf. autoHighlight), comme le champ lieu. */}
+              <Box>{highlightMatch(option, inputValue)}</Box>
+              {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
+            </Box>
+          )}
+          groupBy={() => "Suggestions"}
           renderGroup={(params) => (
             <Box component="li" key={params.key}>
-              {params.group && <Box sx={{ px: "16px", lineHeight: "36px", fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>{params.group}</Box>}
+              <Box sx={{ px: "16px", lineHeight: "36px", fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>{params.group}</Box>
               <Box component="ul" sx={{ p: 0, m: 0, listStyle: "none" }}>
                 {params.children}
               </Box>
