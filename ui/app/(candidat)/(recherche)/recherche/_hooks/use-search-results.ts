@@ -34,6 +34,7 @@ export function paramsToQuerystring(params: ISearchPageParams) {
   if (params.sort) qs.sort = params.sort
   if (params.latitude !== undefined) qs.latitude = params.latitude
   if (params.longitude !== undefined) qs.longitude = params.longitude
+  if (params.admin_area) qs.admin_area = params.admin_area
   return qs
 }
 

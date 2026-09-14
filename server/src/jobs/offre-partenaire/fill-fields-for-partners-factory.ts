@@ -221,7 +221,6 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   logger.info(`${toUpdateCount} documents à traiter`)
 
   const counters = { total: 0, success: 0, error: 0 }
-  const now = new Date()
 
   const sourceStream = getDbCollection("jobs_partners")
     .find(queryFilter, {
@@ -246,7 +245,9 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
         const responses = await getData(documents)
         const dataToWrite = responses.flatMap((response) => {
           const { _id, ...newFields } = response
-          const updates: AnyBulkWriteOperation<IJobsPartnersOfferPrivate>[] = [{ updateOne: { filter: { _id }, update: { $set: { ...newFields, updated_at: now } } } }]
+          // Même règle que l'import computed → jobs_partners : horodatage à l'écriture, sinon un
+          // groupe traité tard dans un run long échappe à la fenêtre du cron delta search_items.
+          const updates: AnyBulkWriteOperation<IJobsPartnersOfferPrivate>[] = [{ updateOne: { filter: { _id }, update: { $set: { ...newFields, updated_at: new Date() } } } }]
           return updates
         })
 
