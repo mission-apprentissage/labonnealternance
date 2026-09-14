@@ -1594,6 +1594,29 @@ describe("createJobOffer", () => {
     expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
   })
 
+  it("should strip markup from to_applicant_questions before storing them", async () => {
+    const data = generateJobOfferApiWriteV3({
+      ...minimalData,
+      offer: { ...minimalData.offer, to_applicant_questions: ["<b>Pourquoi souhaitez-vous nous rejoindre ?</b>"] },
+    })
+
+    const result = await createJobOffer(identity, data)
+
+    const job = await getDbCollection("computed_jobs_partners").findOne({ _id: result })
+    expect(job?.to_applicant_questions).toEqual(["Pourquoi souhaitez-vous nous rejoindre ?"])
+  })
+
+  // Le nettoyage raccourcit la chaîne : une question valide à l'entrée peut devenir trop courte
+  // une fois le balisage retiré, et violerait alors le validateur de la collection.
+  it("should reject a question that becomes too short once markup is stripped", async () => {
+    const data = generateJobOfferApiWriteV3({
+      ...minimalData,
+      offer: { ...minimalData.offer, to_applicant_questions: ["<b>Hi</b>!!"] },
+    })
+
+    await expect(createJobOffer(identity, data)).rejects.toThrow(/to_applicant_questions/)
+  })
+
   it("should support offer.status", async () => {
     const data = generateJobOfferApiWriteV3({ ...minimalData, offer: { ...minimalData.offer, status: JOB_STATUS_ENGLISH.ANNULEE } })
 

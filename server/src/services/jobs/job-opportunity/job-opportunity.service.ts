@@ -9,6 +9,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
+import { ZToApplicantQuestions } from "shared/models/job.model"
 import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobs-partners-computed.model"
@@ -487,8 +488,15 @@ async function upsertJobOfferPrivate({
 
   const offer_target_diploma_european = data.offer.target_diploma?.european ?? null
 
-  // Saisie libre du partenaire : on retire tout balisage avant stockage, et on écarte les questions vidées par le nettoyage.
-  const to_applicant_questions = data.offer.to_applicant_questions?.map((question) => sanitizeToPlainText(question)).filter((question) => question.length > 0) ?? null
+  // Saisie libre du partenaire : on retire tout balisage avant stockage. Le nettoyage raccourcit la chaîne,
+  // une question valide à l'entrée peut donc devenir trop courte une fois nettoyée — on revalide la valeur
+  // réellement stockée plutôt que de laisser passer un document qui violerait le validateur de la collection.
+  const sanitizedQuestions = data.offer.to_applicant_questions?.map((question) => sanitizeToPlainText(question)) ?? null
+  const sanitizedQuestionsResult = ZToApplicantQuestions.safeParse(sanitizedQuestions)
+  if (!sanitizedQuestionsResult.success) {
+    throw badRequest("Invalid to_applicant_questions once markup has been stripped", treeifyError(sanitizedQuestionsResult.error))
+  }
+  const to_applicant_questions = sanitizedQuestionsResult.data ?? null
 
   const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
     contract_start: data.contract.start,

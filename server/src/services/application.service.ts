@@ -245,6 +245,12 @@ const assertAnswersMatchOfferQuestions = (
   if (unknownQuestion) {
     throw badRequest(BusinessErrorCodes.UNKNOWN_RECRUITER_QUESTION, { question: unknownQuestion.question })
   }
+  // Le plafond du schéma porte sur le nombre d'entrées : sans ce contrôle, un appelant pourrait
+  // répondre trois fois à la même question et faire gonfler le mail envoyé au recruteur.
+  const answeredQuestions = new Set(answers.map(({ question }) => question))
+  if (answeredQuestions.size !== answers.length) {
+    throw badRequest(BusinessErrorCodes.DUPLICATE_RECRUITER_ANSWER)
+  }
 }
 
 /**

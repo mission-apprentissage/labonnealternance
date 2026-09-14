@@ -18,6 +18,7 @@ import {
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
+import { APPLICANT_ANSWER_MAX_LENGTH } from "shared/models/applications.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it, vi } from "vitest"
 
@@ -258,6 +259,28 @@ describe("POST /v2/application", () => {
       const response = await post({
         ...baseBody(jobPartner._id.toString()),
         applicant_answers_to_recruiter_questions: [{ question: OFFER_QUESTIONS[0], answer: "Parce que." }],
+      })
+
+      expect(response.statusCode).toBe(400)
+    })
+
+    it("rejects twice the same question", async () => {
+      const response = await post({
+        ...baseBody(jobPartnerWithQuestions._id.toString()),
+        applicant_answers_to_recruiter_questions: [
+          { question: OFFER_QUESTIONS[0], answer: "Une première réponse." },
+          { question: OFFER_QUESTIONS[0], answer: "Une seconde réponse." },
+        ],
+      })
+
+      expect.soft(response.statusCode).toBe(400)
+      expect(response.json().message).toBe("Each question of the job offer can only be answered once")
+    })
+
+    it("rejects an answer longer than the allowed length", async () => {
+      const response = await post({
+        ...baseBody(jobPartnerWithQuestions._id.toString()),
+        applicant_answers_to_recruiter_questions: [{ question: OFFER_QUESTIONS[0], answer: "a".repeat(APPLICANT_ANSWER_MAX_LENGTH + 1) }],
       })
 
       expect(response.statusCode).toBe(400)
