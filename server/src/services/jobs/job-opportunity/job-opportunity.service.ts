@@ -28,7 +28,7 @@ import { logger } from "@/common/logger"
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { isNormalizedStringInSetOrArray } from "@/common/utils/string-utils"
+import { isNormalizedStringInSetOrArray, sanitizeToPlainText } from "@/common/utils/string-utils"
 import config from "@/config"
 import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
 import type { FTJob } from "@/services/ftjob.service.types"
@@ -276,6 +276,8 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
 
         contract: {
           start: null,
+          start_type: null,
+          start_is_flexible: null,
           duration: isNaN(contractDuration) ? null : contractDuration,
           type: contractType ? [contractType] : [],
           remote: null,
@@ -295,6 +297,7 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
           },
           opening_count: offreFT.nombrePostes,
           status: JOB_STATUS_ENGLISH.ACTIVE,
+          to_applicant_questions: null,
         },
 
         // Try to find entreprise SIRET from  offreFT.entreprise.siret ?
@@ -484,8 +487,13 @@ async function upsertJobOfferPrivate({
 
   const offer_target_diploma_european = data.offer.target_diploma?.european ?? null
 
+  // Saisie libre du partenaire : on retire tout balisage avant stockage, et on écarte les questions vidées par le nettoyage.
+  const to_applicant_questions = data.offer.to_applicant_questions?.map((question) => sanitizeToPlainText(question)).filter((question) => question.length > 0) ?? null
+
   const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
     contract_start: data.contract.start,
+    contract_start_type: data.contract.start_type,
+    contract_start_is_flexible: data.contract.start_is_flexible,
     contract_duration: data.contract.duration,
     contract_type: data.contract.type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     contract_remote: data.contract.remote,
@@ -509,6 +517,7 @@ async function upsertJobOfferPrivate({
     offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.LBA_API,
     offer_status: data.offer.status,
     offer_multicast: data.offer.multicast,
+    to_applicant_questions,
 
     workplace_siret: data.workplace.siret,
     workplace_description: data.workplace.description,

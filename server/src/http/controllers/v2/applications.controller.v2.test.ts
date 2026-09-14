@@ -71,6 +71,16 @@ const jobPartner = generateJobsPartnersOfferPrivate({
   created_at: new Date("2024-07-04T23:24:58.995Z"),
 })
 
+const OFFER_QUESTIONS = ["Pourquoi souhaitez-vous rejoindre notre entreprise ?", "Quelles compétences souhaitez-vous développer grâce à cette expérience ?"]
+
+const jobPartnerWithQuestions = generateJobsPartnersOfferPrivate({
+  _id: new ObjectId("64a43d28eeeb7c3b210faf60"),
+  partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+  workplace_siret: "11000001500021",
+  apply_email: "contact-questions@mail.fr",
+  to_applicant_questions: OFFER_QUESTIONS,
+})
+
 const recruiterEmailFixture = "test-application@mail.fr"
 
 const user = generateUserWithAccountFixture({
@@ -100,7 +110,7 @@ const intentionToken = generateApplicationReplyToken(userToken, applicationFixtu
 
 const mockData = async () => {
   await getDbCollection("userswithaccounts").insertOne(user)
-  await getDbCollection("jobs_partners").insertOne(jobPartner)
+  await getDbCollection("jobs_partners").insertMany([jobPartner, jobPartnerWithQuestions])
   await getDbCollection("referentielromes").insertOne(referentielRome)
   await getDbCollection("applicants").insertOne(applicantFixture)
   await getDbCollection("applications").insertOne(applicationFixture)
@@ -195,6 +205,68 @@ describe("POST /v2/application", () => {
 
     expect(s3WriteString).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
       Body: body.applicant_attachment_content,
+    })
+  })
+
+  describe("applicant_answers_to_recruiter_questions", () => {
+    const baseBody = (recipientJobId: string): IApplicationApiPublic => ({
+      applicant_attachment_name: "cv.pdf",
+      applicant_attachment_content: applicationTestFile,
+      applicant_email: "jeam.dupont@mail.com",
+      applicant_first_name: "Jean",
+      applicant_last_name: "Dupont",
+      applicant_phone: "0101010101",
+      recipient_id: getRecipientID(JobCollectionName.partners, recipientJobId),
+    })
+
+    const post = (body: IApplicationApiPublic) => httpClient().inject({ method: "POST", path: "/api/v2/application", body, headers: { authorization: `Bearer ${token}` } })
+
+    it("accepts answers matching the offer questions", async () => {
+      const answers = OFFER_QUESTIONS.map((question) => ({ question, answer: "Parce que votre mission me parle." }))
+      const response = await post({ ...baseBody(jobPartnerWithQuestions._id.toString()), applicant_answers_to_recruiter_questions: answers })
+
+      expect.soft(response.statusCode).toBe(202)
+      const application = await getDbCollection("applications").findOne({ job_id: jobPartnerWithQuestions._id })
+      expect(application?.applicant_answers_to_recruiter_questions).toEqual(answers)
+    })
+
+    it("accepts a subset of the offer questions", async () => {
+      const answers = [{ question: OFFER_QUESTIONS[0], answer: "Pour apprendre le métier." }]
+      const response = await post({ ...baseBody(jobPartnerWithQuestions._id.toString()), applicant_answers_to_recruiter_questions: answers })
+
+      expect(response.statusCode).toBe(202)
+    })
+
+    // Une plateforme partenaire n'affiche pas nos questions dans son propre formulaire : la candidature doit passer sans réponses.
+    it("accepts an application without answers on an offer that has questions", async () => {
+      const response = await post(baseBody(jobPartnerWithQuestions._id.toString()))
+
+      expect(response.statusCode).toBe(202)
+    })
+
+    it("rejects an answer to a question the offer does not ask", async () => {
+      const response = await post({
+        ...baseBody(jobPartnerWithQuestions._id.toString()),
+        applicant_answers_to_recruiter_questions: [{ question: "Quel est votre plat préféré ?", answer: "Le couscous." }],
+      })
+
+      expect.soft(response.statusCode).toBe(400)
+      expect(response.json().message).toBe("Answers must match the questions of the job offer")
+    })
+
+    it("rejects answers sent on an offer without questions", async () => {
+      const response = await post({
+        ...baseBody(jobPartner._id.toString()),
+        applicant_answers_to_recruiter_questions: [{ question: OFFER_QUESTIONS[0], answer: "Parce que." }],
+      })
+
+      expect(response.statusCode).toBe(400)
+    })
+
+    it("accepts an application without answers on an offer without questions", async () => {
+      const response = await post(baseBody(jobPartner._id.toString()))
+
+      expect(response.statusCode).toBe(202)
     })
   })
 
