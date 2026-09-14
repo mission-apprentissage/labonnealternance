@@ -140,15 +140,13 @@ export const CandidatureLbaModalBody = ({
               <MaRechercheDAlternance formik={formik} />
             </Box>
             <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { xs: 0, md: fr.spacing("2v") } }}>
-              <ModalTitle component="h2" sx={{ my: fr.spacing("6v"), color: "#000091" }}>
+              <ModalTitle component="h2" sx={{ mb: fr.spacing("3v"), color: "#000091" }}>
                 Mon message personnalisé
               </ModalTitle>
-              <TextareaInput
-                formik={formik}
-                name="applicant_message"
-                label="Message au responsable du recrutement"
-                infoText="Un message personnalisé augmente vos chances d'obtenir un contact avec le recruteur."
-              />
+              <Box sx={{ mb: fr.spacing("3v") }}>
+                <InfoText>Un message personnalisé augmente vos chances d'obtenir un contact avec le recruteur.</InfoText>
+              </Box>
+              <TextareaInput formik={formik} name="applicant_message" label="Message au responsable du recrutement" />
               <Box sx={{ mt: fr.spacing("4v") }}>
                 <CvFileInput formik={formik} />
               </Box>
@@ -157,26 +155,18 @@ export const CandidatureLbaModalBody = ({
                   <ModalTitle
                     component="h2"
                     sx={{
-                      my: fr.spacing("6v"),
+                      mb: fr.spacing("3v"),
                       color: "#000091",
                     }}
                   >
                     Mes réponses aux questions de l’entreprise
                   </ModalTitle>
+                  <Box sx={{ mb: fr.spacing("3v") }}>
+                    <InfoText>L’entreprise sera attentive aux réponses que vous lui apporterez. Prenez le temps de détailler vos réponses pour le recruteur.</InfoText>
+                  </Box>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
-                    {customQuestions.map((question, index) => (
-                      <TextareaInput
-                        key={question}
-                        formik={formik}
-                        name={question}
-                        label={question}
-                        required
-                        infoText={
-                          index === customQuestions.length - 1
-                            ? "Ces questions permettent à l’entreprise de comprendre vos motivations à la rejoindre, elle sera attentive aux réponses que vous lui apporterez."
-                            : undefined
-                        }
-                      />
+                    {customQuestions.map((question) => (
+                      <TextareaInput key={question} formik={formik} name={question} label={question} required />
                     ))}
                   </Box>
                 </>
@@ -291,9 +281,12 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
 
   return (
     <>
-      <ModalTitle component="h2" sx={{ my: fr.spacing("6v") }}>
+      <ModalTitle component="h2" sx={{ my: fr.spacing("3v") }}>
         Ma recherche d'alternance
       </ModalTitle>
+      <Box sx={{ mb: fr.spacing("3v") }}>
+        <InfoText>Ces informations aident l’entreprise à étudier votre candidature. La taille des champs est limitée à 200 caractères.</InfoText>
+      </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
         <RadioInput
           formik={formik}
@@ -332,9 +325,6 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
             />
           </>
         )}
-        <InfoText>
-          Ces informations aident l’entreprise à étudier votre candidature.{applicant_inscription_formation === true && " La taille des champs est limitée à 200 caractères."}
-        </InfoText>
       </Box>
     </>
   )

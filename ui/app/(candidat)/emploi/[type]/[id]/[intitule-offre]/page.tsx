@@ -1,11 +1,9 @@
-import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import { notFound } from "next/navigation"
 import type { ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
-import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
 import { IRechercheMode, resolveRecherchePageParams, toURLSearchParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { ApiError, apiGet } from "@/utils/api.utils"
@@ -62,15 +60,7 @@ export default async function JobOfferPage({
 
   return (
     <>
-      <SkipLinks
-        links={[
-          { label: "En-tête", anchor: "#detail-header" },
-          { label: "Contenu", anchor: "#detail-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
-        ]}
-      />
       <InfoBanner />
-      <WidgetAwareHeader />
       <JobDetailRendererClient
         job={job as ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson}
         rechercheParams={resolveRecherchePageParams(toURLSearchParams(await searchParams), IRechercheMode.DEFAULT)}

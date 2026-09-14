@@ -121,7 +121,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
             }}
           >
             <Box>
-              <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
+              <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
                 Trouver une alternance
                 <br />
                 <Typography variant="h1" component="span" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>

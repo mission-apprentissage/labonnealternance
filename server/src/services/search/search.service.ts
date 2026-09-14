@@ -1,10 +1,11 @@
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ISearchItem } from "shared/models/index"
 import { JOB_START_TYPE } from "shared/models/job.model"
-
+import { parseAdminArea } from "shared/utils/admin-area"
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { buildAdminAreaClause } from "@/services/geo-administrative/admin-area"
 import { retryOnTransientSearchCancellation } from "@/services/search/search-transient-retry"
 
 const HIGHLIGHT_MAX_PASSAGES = 5
@@ -123,6 +124,12 @@ interface ISearchFilters {
   radius: number
   page: number
   hitsPerPage: number
+  /**
+   * Emprise administrative ("region:53", "departement:44") quand la saisie désigne un département
+   * ou une région (cf. ban-plateforme#781). Prioritaire sur latitude/longitude/radius pour le
+   * filtrage ; la paire lat/lon reste utilisée pour le tri par proximité et la distance affichée.
+   */
+  admin_area?: string
 }
 
 interface ISearchFacets {
@@ -405,6 +412,26 @@ function buildTextBonusClauses(q?: string): object[] {
   ]
 }
 
+/**
+ * Restriction géographique de la recherche. L'emprise administrative prime sur le point + rayon :
+ * un département n'est pas un disque, et le rayon qui le couvre ramène 51 à 82 % de résultats
+ * hors périmètre selon l'entité (mesures dans tools/geo-781). Un `admin_area` mal formé est
+ * ignoré plutôt que rejeté : la route l'a déjà validé, et une valeur inconnue du référentiel
+ * donne simplement zéro résultat sur le token.
+ */
+function buildGeoClause(filters: ISearchFilters): object | null {
+  const adminArea = parseAdminArea(filters.admin_area)
+  if (adminArea) return buildAdminAreaClause(adminArea)
+  const { latitude, longitude, radius } = filters
+  if (latitude === undefined || longitude === undefined) return null
+  return {
+    geoWithin: {
+      circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 },
+      path: "location",
+    },
+  }
+}
+
 function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) {
   const {
     q,
@@ -423,7 +450,6 @@ function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) 
     sort,
     latitude,
     longitude,
-    radius,
   } = filters
   const hasGeo = latitude !== undefined && longitude !== undefined
   const proximity = sort === "proximity" && hasGeo
@@ -448,14 +474,8 @@ function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) 
   // Type d'offres d'emploi : true = entreprises à contacter (candidatures spontanées de
   // l'algo), false = offres d'emploi. Absent = les deux (aucun filtre).
   if (is_algo_company !== undefined) filter.push({ equals: { path: "is_algo_company", value: is_algo_company } })
-  if (hasGeo) {
-    filter.push({
-      geoWithin: {
-        circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 },
-        path: "location",
-      },
-    })
-  }
+  const geoClause = buildGeoClause(filters)
+  if (geoClause) filter.push(geoClause)
 
   // Tri par date : on écarte les docs sans vraie date de publication (formations à
   // publication_date null — un range ne matche que les valeurs date indexées, contrairement à
@@ -568,11 +588,7 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
     start_date,
     smart_apply,
     is_algo_company,
-    latitude,
-    longitude,
-    radius,
   } = filters
-  const hasGeo = latitude !== undefined && longitude !== undefined
   // Même porte de pertinence que la recherche → les counts de facettes reflètent le même result set.
   const gate = buildTextGate(q, simplifyQuery)
   const filter: object[] = []
@@ -590,7 +606,8 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   if (start_date) filter.push(buildStartDateFilter(start_date))
   if (smart_apply) filter.push({ equals: { path: "smart_apply", value: true } })
   if (is_algo_company !== undefined) filter.push({ equals: { path: "is_algo_company", value: is_algo_company } })
-  if (hasGeo) filter.push({ geoWithin: { circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 }, path: "location" } })
+  const geoClause = buildGeoClause(filters)
+  if (geoClause) filter.push(geoClause)
 
   // Mêmes restrictions qu'en recherche pour les tris → les counts de facettes reflètent le result set réel.
   if (filters.sort === "date") {
@@ -785,7 +802,10 @@ export async function searchItems(params: ISearchFilters): Promise<{
   const nbHits = rows[0]?._meta?.count?.total ?? 0
   const nbPages = Math.ceil(nbHits / hitsPerPage)
 
-  const hasGeo = latitude !== undefined && longitude !== undefined
+  // Pas de distance affichée pour une recherche par emprise : elle serait mesurée depuis le
+  // centroïde de la région ou du département (« 137 km du lieu de recherche » pour « Bretagne »),
+  // vraie et trompeuse. La paire lat/lon reste utilisée par le tri de proximité.
+  const hasGeo = latitude !== undefined && longitude !== undefined && !parseAdminArea(params.admin_area)
 
   const hits: SearchHit[] = rows.map(({ highlights, _meta: _m, ...doc }) => {
     const itemDoc = doc as ISearchItem

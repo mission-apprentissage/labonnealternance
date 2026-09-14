@@ -5,7 +5,6 @@ import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import type { PropsWithChildren } from "react"
 import { useEffect, useState } from "react"
-
 import { useFormationPrdvTracker } from "@/app/hooks/use-formation-prdv-tracker"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
@@ -16,7 +15,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 type PrdvData = NonNullable<Awaited<ReturnType<typeof getPrdvContext>>>
 
-// Le landmark <main> et l'ancre #main-content du lien d'évitement sont portés par le layout (rdva)
+// Le landmark <main> et l'ancre mainId("rdva") du lien d'évitement sont portés par le layout (rdva)
 // pour toutes ses pages (premium, optout, rdva) : ce wrapper ne gère plus que les marges.
 const RdvaMain = ({ children }: PropsWithChildren) => <Box sx={{ my: fr.spacing("6v"), mx: fr.spacing("2v") }}>{children}</Box>
 

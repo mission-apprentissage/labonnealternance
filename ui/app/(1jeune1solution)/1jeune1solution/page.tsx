@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, List, ListItem, Typography } from "@mui/material"
 import NextImage from "next/image"
+import { zoneScopedId } from "@/app/_components/zone-ids"
 import Social from "@/app/(1jeune1solution)/components/Social"
 import { SearchHomeForm } from "@/app/(candidat)/(recherche)/recherche/_components/SearchHomeForm"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
@@ -75,7 +76,7 @@ export default function unJeune1Solution() {
             gridTemplateColumns: "1fr",
           }}
         >
-          <SearchHomeForm />
+          <SearchHomeForm id={zoneScopedId("1jeune1solution", "search-form")} />
         </Box>
       </Box>
 
@@ -154,7 +155,7 @@ export default function unJeune1Solution() {
         </Box>
       </Box>
 
-      <Box id="editorial-1j1s-content-container" tabIndex={-1} sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
+      <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
         <Typography variant="h1">
           La bonne alternance vous connecte
           <br />
