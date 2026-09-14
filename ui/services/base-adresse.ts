@@ -15,8 +15,6 @@ type AddressFeature = {
   geometry: IPointGeometry
 }
 
-type Coordinates = [number, number]
-
 type IAddressItem = {
   value: IPointGeometry
   insee: string
@@ -77,26 +75,4 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
       return []
     }
   } else return []
-}
-
-export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type?: string, signal?: AbortSignal): Promise<IAddressItem[]> => {
-  const addressURL = `https://data.geopf.fr/geocodage/reverse/?lat=${coordinates[1]}&lon=${coordinates[0]}${type ? "&type=" + type : ""}`
-
-  try {
-    const response = await fetch(addressURL, { signal })
-    if (!response.ok) throw new Error("Network response was not ok")
-
-    const data: { features: AddressFeature[] } = await response.json()
-    const returnedItems: IAddressItem[] = data.features.map((feature) => ({
-      value: feature.geometry,
-      insee: feature.properties.citycode,
-      zipcode: feature.properties.postcode,
-      label: feature.properties.label,
-    }))
-
-    return returnedItems
-  } catch (err) {
-    console.error("Fetch address from coordinates failed: ", err)
-    return []
-  }
 }
