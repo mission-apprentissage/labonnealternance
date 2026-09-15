@@ -4,7 +4,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveDbEntity, saveEntrepriseUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { AccessEntityType, AccessStatus, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { AccessEntityType, AccessStatus, JOB_CLOSURE_ORIGIN, JOB_STATUS_ENGLISH, removeAccents } from "shared"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -21,7 +21,17 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { checkForJobActivations, createJob, createJobDelegations, getCompetencesRomeFromPartnerJob, getFormulairesForCfaManagedEnterprises } from "./formulaire.service"
+import {
+  ARCHIVE_FORMULAIRE_REASON,
+  archiveFormulaire,
+  checkForJobActivations,
+  closeOffreWithMotif,
+  createJob,
+  createJobDelegations,
+  getCompetencesRomeFromPartnerJob,
+  getFormulairesForCfaManagedEnterprises,
+  provideOffre,
+} from "./formulaire.service"
 import mailer from "./mailer.service"
 
 // Mock mailer service to avoid sending actual emails during tests
@@ -551,5 +561,142 @@ describe("checkForJobActivations", () => {
 
     await expect(checkForJobActivations(user._id, entreprise._id)).resolves.toBeUndefined()
     expect(mailer.sendEmail).not.toHaveBeenCalled()
+  })
+})
+
+describe("traçabilité des clôtures d'offres (issue #5429)", () => {
+  const siret = "42476141900045"
+
+  const insertLbaOffer = async (offer_status: JOB_STATUS_ENGLISH, managed_by: ObjectId, overrides: Partial<IJobsPartnersOfferPrivate> = {}) => {
+    const job = generateJobsPartnersOfferPrivate({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      workplace_siret: siret,
+      managed_by,
+      offer_status,
+      offer_status_history: [],
+      ...overrides,
+    })
+    await getDbCollection("jobs_partners").insertOne(job)
+    return job._id
+  }
+
+  const readOffer = async (id: ObjectId) => {
+    const job = await getDbCollection("jobs_partners").findOne({ _id: id })
+    if (!job) throw new Error(`offre ${id} introuvable`)
+    return job
+  }
+
+  describe("closeOffreWithMotif", () => {
+    it("trace le motif de la modale et l'origine mail transactionnel", async () => {
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId())
+
+      await closeOffreWithMotif({
+        id,
+        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+        origin: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
+        job_status_comment: "Je ne reçois pas de candidature",
+      })
+
+      const job = await readOffer(id)
+      expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+      expect.soft(job.offer_status_history).toHaveLength(1)
+      expect.soft(job.offer_status_history[0]).toMatchObject({
+        status: JOB_STATUS_ENGLISH.ANNULEE,
+        reason: "Je ne reçois pas de candidature",
+        granted_by: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
+      })
+      // Le motif reste aussi dans son champ dédié, relu par l'espace pro.
+      expect.soft(job.job_status_comment).toEqual("Je ne reçois pas de candidature")
+    })
+
+    it("distingue l'acteur d'une clôture faite depuis l'espace pro", async () => {
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId())
+
+      await closeOffreWithMotif({
+        id,
+        offer_status: JOB_STATUS_ENGLISH.POURVUE,
+        origin: JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN,
+        job_status_comment: "J'ai pourvu l'offre avec La bonne alternance",
+      })
+
+      const job = await readOffer(id)
+      expect.soft(job.offer_status_history[0]).toMatchObject({
+        status: JOB_STATUS_ENGLISH.POURVUE,
+        reason: "J'ai pourvu l'offre avec La bonne alternance",
+        granted_by: JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN,
+      })
+    })
+
+    it("conserve les transitions déjà enregistrées", async () => {
+      const previous = { date: new Date("2026-01-01T00:00:00.000Z"), status: JOB_STATUS_ENGLISH.ACTIVE, reason: "réactivée", granted_by: "un-job" }
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId(), { offer_status_history: [previous] })
+
+      await closeOffreWithMotif({
+        id,
+        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+        origin: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
+        job_status_comment: "Je ne suis plus en recherche",
+      })
+
+      const job = await readOffer(id)
+      expect.soft(job.offer_status_history).toHaveLength(2)
+      expect.soft(job.offer_status_history[0]).toMatchObject(previous)
+    })
+  })
+
+  describe("provideOffre", () => {
+    it("trace le passage en pourvue", async () => {
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId())
+
+      await provideOffre(id)
+
+      const job = await readOffer(id)
+      expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.POURVUE)
+      expect.soft(job.offer_status_history).toHaveLength(1)
+      expect.soft(job.offer_status_history[0]).toMatchObject({ status: JOB_STATUS_ENGLISH.POURVUE, granted_by: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR })
+    })
+  })
+
+  describe("archiveFormulaire", () => {
+    it("annule et trace les offres actives et en attente", async () => {
+      const managed_by = new ObjectId()
+      const activeId = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, managed_by)
+      const pendingId = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_ATTENTE, managed_by)
+
+      await archiveFormulaire(managed_by, siret)
+
+      for (const id of [activeId, pendingId]) {
+        const job = await readOffer(id)
+        expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+        expect.soft(job.offer_status_history).toHaveLength(1)
+        expect.soft(job.offer_status_history[0]).toMatchObject({ status: JOB_STATUS_ENGLISH.ANNULEE, reason: ARCHIVE_FORMULAIRE_REASON, granted_by: "archive-formulaire" })
+      }
+    })
+
+    it("laisse intacte une offre pourvue", async () => {
+      // Le filtre portait sur `$ne: ACTIVE` : un recrutement réussi était réécrit en annulation.
+      const managed_by = new ObjectId()
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.POURVUE, managed_by, { job_status_comment: "J'ai pourvu l'offre avec La bonne alternance" })
+
+      await archiveFormulaire(managed_by, siret)
+
+      const job = await readOffer(id)
+      expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.POURVUE)
+      expect.soft(job.job_status_comment).toEqual("J'ai pourvu l'offre avec La bonne alternance")
+      expect.soft(job.offer_status_history).toHaveLength(0)
+    })
+
+    it("ne réécrit pas updated_at d'une offre déjà annulée", async () => {
+      // Ce bump refaisait entrer des annulations anciennes dans les tableaux de bord datés sur updated_at.
+      const managed_by = new ObjectId()
+      const updated_at = new Date("2026-01-15T09:00:00.000Z")
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, managed_by, { updated_at })
+
+      await archiveFormulaire(managed_by, siret)
+
+      const job = await readOffer(id)
+      expect.soft(job.updated_at).toEqual(updated_at)
+      expect.soft(job.offer_status_history).toHaveLength(0)
+    })
   })
 })

@@ -23,6 +23,26 @@ export enum JOB_STATUS_ENGLISH {
   EN_ATTENTE = "Pending",
 }
 
+/**
+ * Qui a clôturé une offre OFFRES_EMPLOI_LBA, et par quel canal. Reporté dans
+ * `offer_status_history[].granted_by`, `reason` portant le motif choisi dans la modale.
+ *
+ * Le canal vient de la route : lien magique d'un mail transactionnel (auth access-token) ou espace
+ * pro connecté (auth cookie-session). Sur l'espace pro, l'acteur est déduit des rôles de la session
+ * (cf. resolveEspaceProClosureOrigin) : les quatre rôles passent par la même route, et ne pas les
+ * distinguer revenait à ranger l'annulation d'un administrateur avec celle du recruteur lui-même.
+ */
+export enum JOB_CLOSURE_ORIGIN {
+  /** PUT /formulaire/offre/:jobId/cancel — le lien est signé pour le gestionnaire de l'offre. */
+  MAIL_RECRUTEUR = "clôture par le recruteur depuis un mail",
+  ESPACE_PRO_RECRUTEUR = "clôture par le recruteur depuis l'espace pro",
+  ESPACE_PRO_CFA = "clôture par le CFA délégataire depuis l'espace pro",
+  ESPACE_PRO_OPCO = "clôture par l'OPCO depuis l'espace pro",
+  ESPACE_PRO_ADMIN = "clôture par un administrateur depuis l'espace pro",
+  /** Repli quand la session n'expose aucun rôle exploitable : le canal reste sûr, pas l'acteur. */
+  ESPACE_PRO_INDETERMINE = "clôture depuis l'espace pro (acteur indéterminé)",
+}
+
 export const JOB_START_TYPE = {
   DES_QUE_POSSIBLE: "des_que_possible",
   PRECISE_DATE: "precise_date",

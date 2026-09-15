@@ -13,6 +13,7 @@ import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink } from "@/services/app-links.service"
+import { changeJobsPartnersStatus } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 
 const getReminderCompanyName = ({
@@ -85,17 +86,11 @@ export const expireJobsPartners = async () => {
   // aux recruteurs gérés par LBA (managed_by renseigné), sans changer le filtre du updateMany ci-dessous.
   const expiringJobs = await getDbCollection("jobs_partners").find(filter).toArray()
 
-  const result = await getDbCollection("jobs_partners").updateMany(filter, {
-    // updated_at : requis par le cron delta search_items (syncSearchItemsDelta).
-    $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now },
-    $push: {
-      offer_status_history: {
-        date: now,
-        status: JOB_STATUS_ENGLISH.ANNULEE,
-        reason: "offre expirée (date dépassée)",
-        granted_by: "expire-jobs-partners",
-      },
-    },
+  const result = await changeJobsPartnersStatus(filter, {
+    status: JOB_STATUS_ENGLISH.ANNULEE,
+    reason: "offre expirée (date dépassée)",
+    grantedBy: "expire-jobs-partners",
+    date: now,
   })
   logger.info(`expireJobsPartners: ${result.modifiedCount} offres expirées`)
 

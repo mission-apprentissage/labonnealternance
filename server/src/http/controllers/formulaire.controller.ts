@@ -1,5 +1,5 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
-import { JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
+import { JOB_CLOSURE_ORIGIN, JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/http-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -24,6 +24,7 @@ import {
   validateDelegatedCompanyPhoneAndEmail,
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
+import { resolveEspaceProClosureOrigin } from "@/services/job-partner-status.service"
 import { getUserRecruteurById } from "@/services/user-recruteur.service"
 import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
 
@@ -421,6 +422,7 @@ export default (server: Server) => {
       const { alreadyClosed } = await closeOffreWithMotif({
         id: jobId,
         offer_status: statusMapping[job_status],
+        origin: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
         job_status_comment,
         job_status_comment_precision,
         job_recruitment_channel,
@@ -431,7 +433,8 @@ export default (server: Server) => {
   )
 
   /**
-   * Permet de passer une offre en statut ANNULER (depuis l'interface d'admin)
+   * Permet de passer une offre en statut ANNULER depuis l'espace pro connecté (session cookie) :
+   * le recruteur sur son tableau de bord comme l'administrateur depuis le back-office.
    */
   server.put(
     "/formulaire/offre/f/:jobId/cancel",
@@ -454,6 +457,7 @@ export default (server: Server) => {
         job_status_comment_precision,
         job_recruitment_channel,
         offer_status: statusMapping[job_status],
+        origin: resolveEspaceProClosureOrigin(req.userAccess),
         id: req.params.jobId,
       })
       return res.status(200).send({ alreadyClosed })

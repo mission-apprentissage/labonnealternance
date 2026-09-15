@@ -34,6 +34,7 @@ import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import type { UserForAccessToken } from "@/security/access-token.service"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
+import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
 import { createCancelJobLink, createCloturerOffreMagicLink, createProvidedJobLink, generateApplicationReplyToken } from "./app-links.service"
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import type { BrevoEventStatus } from "./brevo.service"
@@ -661,17 +662,11 @@ const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
   if (applicationCount + 1 > MAX_APPLICATIONS_PER_OFFER) {
     await getDbCollection("jobs_partners").updateOne(
       { _id: job._id, partner_label: job.partner_label },
-      {
-        $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
-        $push: {
-          offer_status_history: {
-            date: new Date(),
-            status: JOB_STATUS_ENGLISH.ANNULEE,
-            reason: `nombre maximum de candidatures atteint (${MAX_APPLICATIONS_PER_OFFER})`,
-            granted_by: "application.service",
-          },
-        },
-      }
+      buildJobStatusChangeUpdate({
+        status: JOB_STATUS_ENGLISH.ANNULEE,
+        reason: `nombre maximum de candidatures atteint (${MAX_APPLICATIONS_PER_OFFER})`,
+        grantedBy: "application.service",
+      })
     )
     syncJobPartnersToSearchItemsInBackground([job._id])
   }
