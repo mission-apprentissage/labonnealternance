@@ -6,6 +6,10 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const GRANTED_BY = "20260915143000-backfill-offer-status-history-lba-5429"
 
+/** Motif posé par cancelRemovedJobsPartners, impossible à obtenir légitimement sur une offre LBA. */
+const FLUX_REMOVAL_REASON = "supprimée du flux source"
+const JUNE_2026_BUG_REASON = "bug du 06 2026"
+
 /**
  * Reconstitue une trace de clôture sur les offres OFFRES_EMPLOI_LBA closes dont
  * `offer_status_history` est resté vide (issue #5429).
@@ -35,6 +39,15 @@ const GRANTED_BY = "20260915143000-backfill-offer-status-history-lba-5429"
  * Les autres partenaires ne sont pas touchés : leurs annulations passent par des chemins qui
  * tracent déjà (expiration, retrait du flux, doublons), et leurs historiques vides sont des
  * reliquats antérieurs à l'introduction du champ le 13/02/2025.
+ *
+ * Second volet, indépendant : requalifier le motif "supprimée du flux source" porté par des offres
+ * OFFRES_EMPLOI_LBA. Ce motif y est faux par construction — ces offres ne transitent jamais par
+ * computed_jobs_partners, elles ne peuvent donc pas « disparaître d'un flux ». Elles l'ont hérité
+ * d'un run de cancelRemovedJobsPartners lancé sans filtre en juin 2026 : le filtre était alors
+ * optionnel et le job exposé tel quel en CLI, si bien qu'un appel sans argument annulait tout le
+ * catalogue actif, tous partenaires confondus. Corrigé depuis par #4814 (filtre obligatoire, garde
+ * runtime, sous-jobs dédiés), et la donnée partiellement réparée par #4813 — qui n'a réactivé que
+ * les offres non expirées, laissant les autres définitivement closes avec ce motif trompeur.
  */
 export const up = async () => {
   const filter = {
@@ -64,6 +77,25 @@ export const up = async () => {
   ])
 
   logger.info(`backfill offer_status_history : ${modifiedCount}/${total} offres complétées`)
+
+  // Requalification du motif hérité du run sans filtre de juin 2026. Pas de filtre sur offer_status :
+  // les offres réactivées par #4813 portent toujours l'entrée fautive dans leur historique, à côté de
+  // leur entrée de réactivation. arrayFilters requalifie chaque entrée concernée et laisse les autres
+  // intactes — une offre peut avoir été annulée puis réactivée plusieurs fois.
+  const fluxRemovalFilter = {
+    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+    "offer_status_history.reason": FLUX_REMOVAL_REASON,
+  }
+  const fluxRemovalTotal = await getDbCollection("jobs_partners").countDocuments(fluxRemovalFilter)
+  logger.info(`requalification "${FLUX_REMOVAL_REASON}" : ${fluxRemovalTotal} offres concernées`)
+
+  const { modifiedCount: requalified } = await getDbCollection("jobs_partners").updateMany(
+    fluxRemovalFilter,
+    { $set: { "offer_status_history.$[entry].reason": JUNE_2026_BUG_REASON } },
+    { arrayFilters: [{ "entry.reason": FLUX_REMOVAL_REASON }] }
+  )
+
+  logger.info(`requalification "${FLUX_REMOVAL_REASON}" : ${requalified}/${fluxRemovalTotal} offres requalifiées en "${JUNE_2026_BUG_REASON}"`)
 }
 
 // Aucun changement de schéma ni de contrat : un serveur de la version précédente lit sans problème

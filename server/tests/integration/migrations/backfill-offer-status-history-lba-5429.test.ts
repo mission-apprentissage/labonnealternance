@@ -84,6 +84,75 @@ describe("migration backfill-offer-status-history-lba-5429", () => {
     expect.soft(job?.updated_at).toEqual(updated_at)
   })
 
+  describe('requalification du motif "supprimée du flux source"', () => {
+    const fluxRemoval = {
+      date: new Date("2026-06-05T02:15:00.000Z"),
+      status: JOB_STATUS_ENGLISH.ANNULEE,
+      reason: "supprimée du flux source",
+      granted_by: "cancel-removed-jobs-partners",
+    }
+
+    it("requalifie les entrées fautives des offres LBA, y compris celles réactivées depuis", async () => {
+      const reactivation = {
+        date: new Date("2026-06-11T14:35:00.000Z"),
+        status: JOB_STATUS_ENGLISH.ACTIVE,
+        reason: "réactivation suite à désactivation erronée du flux source",
+        granted_by: "20260611143504-restore-jobs-partners-offres-emploi-lba",
+      }
+
+      await getDbCollection("jobs_partners").insertMany([
+        lbaOffer("restee-close", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [fluxRemoval] }),
+        // réactivée par #4813 : l'entrée fautive est toujours là, à côté de la réactivation
+        lbaOffer("reactivee", { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_status_history: [fluxRemoval, reactivation] }),
+      ])
+
+      await up()
+
+      const byId = new Map((await getDbCollection("jobs_partners").find({}).toArray()).map((j) => [j.partner_job_id, j]))
+
+      expect.soft(byId.get("restee-close")?.offer_status_history).toEqual([{ ...fluxRemoval, reason: "bug du 06 2026" }])
+      expect.soft(byId.get("reactivee")?.offer_status_history).toEqual([{ ...fluxRemoval, reason: "bug du 06 2026" }, reactivation])
+    })
+
+    it("ne touche ni aux autres motifs ni aux autres partenaires", async () => {
+      const expiration = {
+        date: new Date("2026-06-05T02:15:00.000Z"),
+        status: JOB_STATUS_ENGLISH.ANNULEE,
+        reason: "offre expirée (date dépassée)",
+        granted_by: "expire-jobs-partners",
+      }
+
+      await getDbCollection("jobs_partners").insertMany([
+        // motif légitime sur une offre LBA
+        lbaOffer("autre-motif", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [expiration] }),
+        // même motif, mais partenaire traité par flux : il y est légitime
+        generateJobsPartnersOfferPrivate({
+          partner_job_id: "flux",
+          partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+          offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+          offer_status_history: [fluxRemoval],
+        }),
+      ])
+
+      await up()
+
+      const byId = new Map((await getDbCollection("jobs_partners").find({}).toArray()).map((j) => [j.partner_job_id, j]))
+
+      expect.soft(byId.get("autre-motif")?.offer_status_history).toEqual([expiration])
+      expect.soft(byId.get("flux")?.offer_status_history).toEqual([fluxRemoval])
+    })
+
+    it("est idempotente", async () => {
+      await getDbCollection("jobs_partners").insertOne(lbaOffer("offre", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [fluxRemoval] }))
+
+      await up()
+      await up()
+
+      const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "offre" })
+      expect.soft(job?.offer_status_history).toEqual([{ ...fluxRemoval, reason: "bug du 06 2026" }])
+    })
+  })
+
   it("est idempotente : un second passage ne rajoute pas de trace", async () => {
     await getDbCollection("jobs_partners").insertOne(lbaOffer("offre", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "Autre" }))
 
