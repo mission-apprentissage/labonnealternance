@@ -62,11 +62,29 @@ export default function EspaceDeveloppeurs() {
                   gap: fr.spacing("8v"),
                 }}
               >
-                <Button priority="secondary" size="large">
-                  <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/explorer">Explorer l'API</DsfrLink>
+                <Button
+                  priority="secondary"
+                  size="large"
+                  linkProps={{
+                    href: "https://api.apprentissage.beta.gouv.fr/fr/explorer",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    title: "Explorer l'API - nouvelle fenêtre",
+                  }}
+                >
+                  Explorer l'API
                 </Button>
-                <Button priority="secondary" size="large">
-                  <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/documentation-technique">Voir la documentation technique</DsfrLink>
+                <Button
+                  priority="secondary"
+                  size="large"
+                  linkProps={{
+                    href: "https://api.apprentissage.beta.gouv.fr/fr/documentation-technique",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    title: "Voir la documentation technique - nouvelle fenêtre",
+                  }}
+                >
+                  Voir la documentation technique
                 </Button>
               </Grid>
               <Typography

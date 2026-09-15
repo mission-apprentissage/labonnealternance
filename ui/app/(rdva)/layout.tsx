@@ -1,4 +1,5 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
+import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -17,7 +18,9 @@ export default async function HomeLayout({ children }: PropsWithChildren) {
       />
       <PublicHeader zone="rdva" />
 
-      <DefaultContainer>{children}</DefaultContainer>
+      <Box component="main" role="main" id={mainId("rdva")} tabIndex={-1}>
+        <DefaultContainer>{children}</DefaultContainer>
+      </Box>
       <Footer zone="rdva" />
     </>
   )

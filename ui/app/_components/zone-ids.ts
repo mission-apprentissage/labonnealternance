@@ -17,6 +17,7 @@
  */
 export type ZoneName =
   | "1jeune1solution"
+  | "1jeune1solution-recruteurs"
   | "detail-emploi"
   | "detail-formation"
   | "detail-rendez-vous"

@@ -118,7 +118,7 @@ function FAQRendererClientGeneric({
         </Box>
         <Grid container>
           <Grid size={{ xs: 12, md: 3 }}>
-            <nav className="fr-sidemenu fr-mt-4w" aria-labelledby="fr-sidemenu-title">
+            <nav className="fr-sidemenu fr-mt-4w" aria-label="Rubriques de la FAQ">
               <div className="fr-sidemenu__inner">
                 <button className="fr-sidemenu__btn" aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
                   Dans cette rubrique
@@ -137,7 +137,8 @@ function FAQRendererClientGeneric({
               </div>
             </nav>
           </Grid>
-          <Grid size={{ xs: 12, md: 9 }}>
+          {/* id = hash du lien de rubrique : la navigation par fragment déplace le focus sur la rubrique affichée (RGAA 12.8) */}
+          <Grid size={{ xs: 12, md: 9 }} id={displayedTab.tabId} tabIndex={-1}>
             <NotionRenderer recordMap={displayedTab.recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} />
           </Grid>
         </Grid>

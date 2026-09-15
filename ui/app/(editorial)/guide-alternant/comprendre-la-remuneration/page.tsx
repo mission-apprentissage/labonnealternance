@@ -509,7 +509,7 @@ const ComprendreLaRemunerationPage = () => {
           l'alternant.
         </Paragraph>
         <Paragraph>
-          👉{" "}
+          <span aria-hidden="true">👉</span>{" "}
           <DsfrLink href={PAGES.static.salaireAlternant.getPath()} aria-label="Accéder au simulateur de rémunération alternant">
             Accéder au simulateur de rémunération
           </DsfrLink>

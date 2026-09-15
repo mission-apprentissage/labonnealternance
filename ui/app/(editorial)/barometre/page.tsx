@@ -177,8 +177,8 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 Maintenir un volume d’offres stable alors que le marché se contracte est — toutes choses étant égales par ailleurs — un signal encourageant&nbsp;: il témoigne
-                  d’une certaine fidélité des recruteurs à la plateforme et d’un ancrage progressif dans les pratiques de recrutement en alternance.
+                  <span aria-hidden="true">👉</span> Maintenir un volume d’offres stable alors que le marché se contracte est — toutes choses étant égales par ailleurs — un signal
+                  encourageant&nbsp;: il témoigne d’une certaine fidélité des recruteurs à la plateforme et d’un ancrage progressif dans les pratiques de recrutement en alternance.
                 </Typography>
               </Callout>
 
@@ -206,9 +206,9 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 Sur La bonne alternance, les offres restent dominées par la restauration et le commerce, mais la présence croissante du tertiaire — comme le conseil, la
-                  gestion et la comptabilité — traduit une diversification progressive des recruteurs qui déposent sur la plateforme. Un signal utile pour mieux orienter les
-                  candidats vers les filières où les opportunités se développent.
+                  <span aria-hidden="true">👉</span> Sur La bonne alternance, les offres restent dominées par la restauration et le commerce, mais la présence croissante du
+                  tertiaire — comme le conseil, la gestion et la comptabilité — traduit une diversification progressive des recruteurs qui déposent sur la plateforme. Un signal
+                  utile pour mieux orienter les candidats vers les filières où les opportunités se développent.
                 </Typography>
               </Callout>
 
@@ -244,7 +244,8 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 Une partie de la hausse des candidatures reflète une meilleure visibilité de La bonne alternance autant qu’une évolution des comportements de recherche.
+                  <span aria-hidden="true">👉</span> Une partie de la hausse des candidatures reflète une meilleure visibilité de La bonne alternance autant qu’une évolution des
+                  comportements de recherche.
                 </Typography>
               </Callout>
 
@@ -256,8 +257,9 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 {strong("L’Île-de-France")} concentre à elle seule {strong("27,5 %")} des offres d’alternance déposées sur La bonne alternance, devant le Grand Est (
-                  {strong("11,7 %")}) et Auvergne-Rhône-Alpes ({strong("10,3 %")}). Ces trois régions regroupent près d’une offre sur deux, soit {strong("49,5 %")} du total.
+                  <span aria-hidden="true">👉</span> {strong("L’Île-de-France")} concentre à elle seule {strong("27,5 %")} des offres d’alternance déposées sur La bonne alternance,
+                  devant le Grand Est ({strong("11,7 %")}) et Auvergne-Rhône-Alpes ({strong("10,3 %")}). Ces trois régions regroupent près d’une offre sur deux, soit{" "}
+                  {strong("49,5 %")} du total.
                 </Typography>
               </Callout>
 
@@ -284,7 +286,7 @@ export default function BarometrePage() {
 
               <Callout variant="list">
                 <Typography component="p" sx={{ m: 0 }}>
-                  📊 Selon{" "}
+                  <span aria-hidden="true">📊</span> Selon{" "}
                   <DsfrLink href="https://www.francetravail.fr/" aria-label="Accéder au site de France Travail - nouvelle fenêtre">
                     France Travail
                   </DsfrLink>{" "}
@@ -335,7 +337,8 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 Dans ce contexte, fluidifier la rencontre entre ces deux réalités devient un enjeu central et c’est précisément là que La bonne alternance a un rôle à jouer.
+                  <span aria-hidden="true">👉</span> Dans ce contexte, fluidifier la rencontre entre ces deux réalités devient un enjeu central et c’est précisément là que La bonne
+                  alternance a un rôle à jouer.
                 </Typography>
               </Callout>
 

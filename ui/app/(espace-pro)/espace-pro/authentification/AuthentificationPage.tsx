@@ -3,12 +3,13 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Divider, Typography } from "@mui/material"
-import { Form, Formik } from "formik"
-import { useState } from "react"
+import { Formik } from "formik"
+import { useRef, useState } from "react"
 import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -16,6 +17,7 @@ import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 export default function Authentification() {
   const { error } = useSearchParamsRecord()
+  const formRef = useRef<HTMLFormElement>(null)
   const hasError = Boolean(error === "true")
 
   const [magicLinkSent, setMagicLinkSent] = useState(false)
@@ -125,12 +127,15 @@ export default function Authentification() {
             )}
             onSubmit={submitEmail}
           >
-            {({ values, isValid, isSubmitting }) => {
+            {({ values, isSubmitting, validateForm, setTouched, submitForm }) => {
+              // Le bouton ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui force l'affichage
+              // de l'erreur et déplace le focus sur le champ invalide (RGAA 11.10, 12.8).
+              const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
               return (
-                <Form autoComplete="off">
-                  <CustomInput required={false} name="email" label="Votre email" type="email" value={values.email} autoFocus />
+                <form ref={formRef} onSubmit={handleSubmit} noValidate autoComplete="off">
+                  <CustomInput name="email" label="Votre email" type="email" value={values.email} autoFocus />
                   <Alerts />
-                  <Button type="submit" disabled={!isValid || isSubmitting} style={{ width: "100%" }}>
+                  <Button type="submit" disabled={isSubmitting} style={{ width: "100%" }}>
                     <Box
                       sx={{
                         margin: "auto",
@@ -139,7 +144,7 @@ export default function Authentification() {
                       Se connecter
                     </Box>
                   </Button>
-                </Form>
+                </form>
               )
             }}
           </Formik>

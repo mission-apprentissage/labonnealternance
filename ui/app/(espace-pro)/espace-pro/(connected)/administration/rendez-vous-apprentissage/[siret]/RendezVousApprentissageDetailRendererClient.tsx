@@ -185,7 +185,9 @@ export default function RendezVousApprentissageDetailRendererClient({
                                 <Box component="td" align="center" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important", width: "350px" }}>
                                   <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
                                     <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
-                                      <InfoTooltip>Désactiver l'écrasement du mail via la synchronisation catalogue</InfoTooltip>
+                                      <InfoTooltip label="Informations sur la désactivation de l'écrasement du mail">
+                                        Désactiver l'écrasement du mail via la synchronisation catalogue
+                                      </InfoTooltip>
                                       <Typography sx={{ ml: fr.spacing("1v"), width: 140 }}>DESACTIVER</Typography>
                                     </Box>
                                     <Checkbox
@@ -198,14 +200,14 @@ export default function RendezVousApprentissageDetailRendererClient({
                                   </Box>
                                   <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
                                     <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
-                                      <InfoTooltip>Publié sur le catalogue</InfoTooltip>
+                                      <InfoTooltip label="Informations sur la publication au catalogue">Publié sur le catalogue</InfoTooltip>
                                       <Typography sx={{ ml: fr.spacing("1v"), width: 150 }}>PUBLIÉ</Typography>
                                     </Box>
                                     <Typography>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Typography>
                                   </Box>
                                   <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
                                     <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
-                                      <InfoTooltip>Dernière synchronisation catalogue</InfoTooltip>
+                                      <InfoTooltip label="Informations sur la synchronisation du catalogue">Dernière synchronisation catalogue</InfoTooltip>
                                       <Typography sx={{ ml: fr.spacing("1v"), width: 150 }}>SYNCHRO</Typography>
                                     </Box>
                                     <Typography>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Typography>

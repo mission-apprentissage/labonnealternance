@@ -324,14 +324,30 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Points de contrôle avant envoi
         </Paragraph>
-        <Paragraph>✅ Le SIRET est actif et correspond à l'établissement d'exécution</Paragraph>
-        <Paragraph>✅ Les dates de début/fin de contrat sont cohérentes</Paragraph>
-        <Paragraph>✅ La date de début de formation est dans la fenêtre autorisée</Paragraph>
-        <Paragraph>✅ La rémunération respecte les minima légaux</Paragraph>
-        <Paragraph>✅ Le maître d'apprentissage remplit les conditions</Paragraph>
-        <Paragraph>✅ Le Cerfa est signé par toutes les parties</Paragraph>
-        <Paragraph>✅ Le CFA a visé le contrat (apprentissage uniquement)</Paragraph>
-        <Paragraph>✅ Le programme de formation est joint (professionnalisation uniquement)</Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le SIRET est actif et correspond à l'établissement d'exécution
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Les dates de début/fin de contrat sont cohérentes
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> La date de début de formation est dans la fenêtre autorisée
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> La rémunération respecte les minima légaux
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le maître d'apprentissage remplit les conditions
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le Cerfa est signé par toutes les parties
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le CFA a visé le contrat (apprentissage uniquement)
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le programme de formation est joint (professionnalisation uniquement)
+        </Paragraph>
       </Section>
       <Section title="Transmission à l'OPCO">
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -345,9 +361,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <TableArticle
           headers={["Canal", "Délai de traitement", "Recommandé"]}
           data={[
-            ["Portail en ligne OPCO", "Le plus rapide", "✅ Oui"],
-            ["Email avec PJ", "Variable", "⚠️ Selon OPCO"],
-            ["Courrier postal", "Le plus lent", "❌ À éviter"],
+            ["Portail en ligne OPCO", "Le plus rapide", "Oui"],
+            ["Email avec PJ", "Variable", "Selon OPCO"],
+            ["Courrier postal", "Le plus lent", "À éviter"],
           ]}
         />
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -490,7 +506,7 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         />
         <Paragraph>
           <Typography fontWeight={"bold"} component={"span"}>
-            Identifier votre OPCO 👉
+            Identifier votre OPCO <span aria-hidden="true">👉</span>
           </Typography>{" "}
           <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr" aria-label="Consulter le site de France Compétences pour identifier votre OPCO">
             quel-est-mon-opco.francecompetences.fr
@@ -499,7 +515,7 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <Paragraph>Saisissez votre SIRET ou le code IDCC de votre convention collective pour trouver l'OPCO compétent.</Paragraph>
         <Paragraph>
           <Typography fontWeight={"bold"} component={"span"}>
-            Vérifier un numéro SIRET 👉
+            Vérifier un numéro SIRET <span aria-hidden="true">👉</span>
           </Typography>{" "}
           <DsfrLink href="https://www.sirene.fr" aria-label="Consulter le site Sirene pour vérifier un numéro SIRET">
             sirene.fr
@@ -508,7 +524,7 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         </Paragraph>
         <Paragraph>
           <Typography fontWeight={"bold"} component={"span"}>
-            Codes diplômes et RNCP 👉
+            Codes diplômes et RNCP <span aria-hidden="true">👉</span>
           </Typography>{" "}
           <DsfrLink
             href="https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1"

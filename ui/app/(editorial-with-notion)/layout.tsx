@@ -25,6 +25,9 @@ export default function HomeLayout({ children }: PropsWithChildren) {
       <Suspense fallback={<PublicHeaderStatic zone="editorial-notion" />}>
         <EditorialWithNotionHeaderWithUser />
       </Suspense>
+      {/* Pas de landmark ici : NotionRenderer rend lui-même un <main className="notion-page">, y compris
+          avec fullPage={false} — un wrapper <main> donnerait deux landmarks imbriqués. Ce Box ne porte que
+          la cible du lien d’évitement, commune à toutes les pages du groupe. */}
       <Box id={mainId("editorial-notion")} tabIndex={-1}>
         {children}
       </Box>
