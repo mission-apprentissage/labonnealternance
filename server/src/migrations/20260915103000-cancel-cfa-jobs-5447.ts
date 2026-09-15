@@ -2,6 +2,7 @@ import type { ObjectId } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import GEIQ_WHITELIST from "shared/constants/geiq"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
+import { jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
 import { PARTNER_WHITELIST } from "shared/models/jobs-partners-computed.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -29,11 +30,14 @@ export const up = async () => {
   const now = new Date()
   const BATCH_SIZE = 500
 
-  // mêmes exclusions que blockJobsPartnersFromCfaList, pour ne pas annuler ce que le pipeline n'aurait jamais bloqué
+  // Mêmes exclusions que blockJobsPartnersFromCfaList, pour ne pas annuler ce que le pipeline n'aurait jamais bloqué.
+  // jobPartnersExcludedFromFlux en plus : OFFRES_EMPLOI_LBA et RECRUTEURS_LBA ne passent ni par le pipeline flux
+  // (process-job-partners) ni par le pipeline API (process-job-partners-for-api, qui exclut tout JOBPARTNERS_LABEL),
+  // donc leurs offres ne sont jamais soumises à la liste de blocage CFA. Les partenaires API, eux, restent inclus.
   const cursor = getDbCollection("jobs_partners").find(
     {
       offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      partner_label: { $nin: PARTNER_WHITELIST },
+      partner_label: { $nin: [...PARTNER_WHITELIST, ...jobPartnersExcludedFromFlux] },
       workplace_siret: { $nin: GEIQ_WHITELIST },
     },
     { projection: { _id: 1, workplace_name: 1, offer_description: 1, workplace_description: 1 } }
@@ -44,8 +48,11 @@ export const up = async () => {
 
   const flush = async () => {
     if (batch.length === 0) return
+    // Garde sur offer_status : "Active" < "Cancelled", donc un document mis à jour avance dans l'index
+    // {offer_status: 1, ...} scanné par le curseur et peut être renvoyé une seconde fois. Sans cette garde,
+    // la seconde passe ajouterait une entrée offer_status_history en double.
     const { modifiedCount } = await getDbCollection("jobs_partners").updateMany(
-      { _id: { $in: batch } },
+      { _id: { $in: batch }, offer_status: JOB_STATUS_ENGLISH.ACTIVE },
       {
         $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now },
         $push: {
