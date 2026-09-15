@@ -13,6 +13,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { generateApplicationToken } from "./app-links.service"
 import { getApplicationByJobCount, PARTNERS_WITH_APPLICATION_API } from "./application.service"
 import { getHiringCountLastFullYears } from "./deca-contrats.service"
+import { buildJobStatusChangeUpdate } from "./job-partner-status.service"
 import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 
 /**
@@ -134,26 +135,23 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
 export const anonymizeLbaJobsPartners = async ({ partner_job_ids }: { partner_job_ids: string[] }) => {
   const jobsPartnersCollection = getDbCollection("jobs_partners")
   const now = new Date()
+  // L'historique était réécrit par un $set, qui effaçait toutes les transitions antérieures de
+  // l'offre — y compris le motif d'une annulation déjà tracée. Le constructeur pousse la trace sans
+  // toucher aux précédentes (issue #5429).
   await jobsPartnersCollection.updateMany(
     { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: { $in: partner_job_ids } },
-    {
-      $set: {
+    buildJobStatusChangeUpdate({
+      status: JOB_STATUS_ENGLISH.ANNULEE,
+      reason: "recruteur anonymisé",
+      grantedBy: "anonymize-lba-jobs-partners",
+      date: now,
+      extraSet: {
         apply_email: null,
         apply_phone: null,
         apply_url: null,
         offer_description: "",
         workplace_description: null,
-        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
-        updated_at: now,
-        offer_status_history: [
-          {
-            status: JOB_STATUS_ENGLISH.ANNULEE,
-            reason: "recruiter has been anonymized",
-            date: now,
-            granted_by: "lba",
-          },
-        ],
       },
-    }
+    })
   )
 }

@@ -2,6 +2,7 @@ import { badRequest } from "@hapi/boom"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
+import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 const config = {
@@ -54,17 +55,11 @@ export default (server: Server) => {
       }
       await getDbCollection("jobs_partners").findOneAndUpdate(
         { _id: id },
-        {
-          $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
-          $push: {
-            offer_status_history: {
-              date: new Date(),
-              status: JOB_STATUS_ENGLISH.ANNULEE,
-              reason: "annulation manuelle par api",
-              granted_by: "jobs.controller.v2",
-            },
-          },
-        }
+        buildJobStatusChangeUpdate({
+          status: JOB_STATUS_ENGLISH.ANNULEE,
+          reason: "annulation manuelle par api",
+          grantedBy: "jobs.controller.v2",
+        })
       )
       syncJobPartnersToSearchItemsInBackground([id])
       return res.status(200).send({})
