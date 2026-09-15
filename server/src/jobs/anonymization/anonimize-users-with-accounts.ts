@@ -26,7 +26,7 @@ const anonymize = async () => {
       partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_ATTENTE] },
     },
-    { status: JOB_STATUS_ENGLISH.ANNULEE, reason: "compte recruteur anonymisé après deux ans d'inactivité", grantedBy: "anonimize-users-with-accounts" }
+    { status: JOB_STATUS_ENGLISH.ANNULEE, reason: "compte recruteur anonymisé RGPD", grantedBy: "anonimize-users-with-accounts" }
   )
   await getDbCollection("jobs_partners").updateMany({ managed_by: { $in: userObjectIds }, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA }, { $set: { managed_by: null } })
 

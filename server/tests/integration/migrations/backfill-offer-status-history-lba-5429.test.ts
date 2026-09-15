@@ -15,76 +15,61 @@ describe("migration backfill-offer-status-history-lba-5429", () => {
   useMongo()
 
   const updated_at = new Date("2026-03-12T08:30:00.000Z")
+  const GRANTED_BY = "20260915143000-backfill-offer-status-history-lba-5429"
 
   const lbaOffer = (partner_job_id: string, overrides = {}) =>
     generateJobsPartnersOfferPrivate({
       partner_job_id,
       partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       offer_status_history: [],
+      job_status_comment: null,
       updated_at,
       ...overrides,
     })
 
-  it("reconstitue une trace sur les offres LBA closes sans historique, et ne touche à rien d'autre", async () => {
-    const existingEntry = {
-      date: new Date("2026-02-01T00:00:00.000Z"),
-      status: JOB_STATUS_ENGLISH.ANNULEE,
-      reason: "offre expirée (date dépassée)",
-      granted_by: "expire-jobs-partners",
-    }
+  const readAll = async () => new Map((await getDbCollection("jobs_partners").find({}).toArray()).map((j) => [j.partner_job_id, j]))
 
-    await getDbCollection("jobs_partners").insertMany([
-      // motif connu : recopié tel quel
-      lbaOffer("avec-motif", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "Je ne reçois pas de candidature" }),
-      // aucun motif n'a jamais été enregistré
-      lbaOffer("sans-motif", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: null }),
-      // pourvue : même chemin de clôture, la mesure d'impact la plus utile du lot
-      lbaOffer("pourvue", { offer_status: JOB_STATUS_ENGLISH.POURVUE, job_status_comment: "J'ai pourvu l'offre avec La bonne alternance" }),
-      // déjà tracée : ne doit pas être écrasée
-      lbaOffer("deja-tracee", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [existingEntry] }),
-      // encore ouverte : hors périmètre
-      lbaOffer("active", { offer_status: JOB_STATUS_ENGLISH.ACTIVE }),
-      // autre partenaire : hors périmètre
-      generateJobsPartnersOfferPrivate({
-        partner_job_id: "autre-partenaire",
-        partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
-        offer_status_history: [],
-      }),
-    ])
-
-    await up()
-
-    const byId = new Map((await getDbCollection("jobs_partners").find({}).toArray()).map((j) => [j.partner_job_id, j]))
-
-    expect
-      .soft(byId.get("avec-motif")?.offer_status_history)
-      .toEqual([
-        { date: updated_at, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "Je ne reçois pas de candidature", granted_by: "20260915143000-backfill-offer-status-history-lba-5429" },
+  describe("volet 1 — offres closes sans motif ni historique", () => {
+    it("pose un libellé explicite plutôt que de laisser un historique vide", async () => {
+      await getDbCollection("jobs_partners").insertMany([
+        lbaOffer("annulee", { offer_status: JOB_STATUS_ENGLISH.ANNULEE }),
+        lbaOffer("pourvue", { offer_status: JOB_STATUS_ENGLISH.POURVUE }),
+        // encore ouverte : hors périmètre
+        lbaOffer("active", { offer_status: JOB_STATUS_ENGLISH.ACTIVE }),
+        // autre partenaire : hors périmètre
+        generateJobsPartnersOfferPrivate({
+          partner_job_id: "autre-partenaire",
+          partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+          offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+          offer_status_history: [],
+        }),
       ])
-    expect.soft(byId.get("sans-motif")?.offer_status_history[0]).toMatchObject({
-      status: JOB_STATUS_ENGLISH.ANNULEE,
-      reason: "motif non enregistré (clôture antérieure au correctif #5429)",
+
+      await up()
+      const byId = await readAll()
+
+      expect
+        .soft(byId.get("annulee")?.offer_status_history)
+        .toEqual([{ date: updated_at, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "motif non enregistré (clôture antérieure au correctif #5429)", granted_by: GRANTED_BY }])
+      expect.soft(byId.get("pourvue")?.offer_status_history[0]).toMatchObject({ status: JOB_STATUS_ENGLISH.POURVUE })
+      expect.soft(byId.get("active")?.offer_status_history).toEqual([])
+      expect.soft(byId.get("autre-partenaire")?.offer_status_history).toEqual([])
     })
-    expect.soft(byId.get("pourvue")?.offer_status_history[0]).toMatchObject({
-      status: JOB_STATUS_ENGLISH.POURVUE,
-      reason: "J'ai pourvu l'offre avec La bonne alternance",
+
+    it("laisse les offres avec un motif au volet 3", async () => {
+      await getDbCollection("jobs_partners").insertOne(lbaOffer("avec-motif", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "Je ne reçois pas de candidature" }))
+
+      await up()
+      const byId = await readAll()
+
+      // une seule entrée, celle du volet 3 — pas de doublon entre les deux volets
+      expect
+        .soft(byId.get("avec-motif")?.offer_status_history)
+        .toEqual([{ date: updated_at, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "Désactivation manuelle", granted_by: GRANTED_BY }])
     })
-    expect.soft(byId.get("deja-tracee")?.offer_status_history).toEqual([existingEntry])
-    expect.soft(byId.get("active")?.offer_status_history).toEqual([])
-    expect.soft(byId.get("autre-partenaire")?.offer_status_history).toEqual([])
   })
 
-  it("ne réécrit pas updated_at, qui sert de date à la trace", async () => {
-    await getDbCollection("jobs_partners").insertOne(lbaOffer("offre", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: null }))
-
-    await up()
-
-    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "offre" })
-    expect.soft(job?.updated_at).toEqual(updated_at)
-  })
-
-  describe('requalification du motif "supprimée du flux source"', () => {
+  describe("volet 2 — requalification du motif « supprimée du flux source »", () => {
     const fluxRemoval = {
       date: new Date("2026-06-05T02:15:00.000Z"),
       status: JOB_STATUS_ENGLISH.ANNULEE,
@@ -92,7 +77,7 @@ describe("migration backfill-offer-status-history-lba-5429", () => {
       granted_by: "cancel-removed-jobs-partners",
     }
 
-    it("requalifie les entrées fautives des offres LBA, y compris celles réactivées depuis", async () => {
+    it("requalifie les entrées fautives, y compris sur les offres réactivées depuis", async () => {
       const reactivation = {
         date: new Date("2026-06-11T14:35:00.000Z"),
         status: JOB_STATUS_ENGLISH.ACTIVE,
@@ -102,13 +87,11 @@ describe("migration backfill-offer-status-history-lba-5429", () => {
 
       await getDbCollection("jobs_partners").insertMany([
         lbaOffer("restee-close", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [fluxRemoval] }),
-        // réactivée par #4813 : l'entrée fautive est toujours là, à côté de la réactivation
         lbaOffer("reactivee", { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_status_history: [fluxRemoval, reactivation] }),
       ])
 
       await up()
-
-      const byId = new Map((await getDbCollection("jobs_partners").find({}).toArray()).map((j) => [j.partner_job_id, j]))
+      const byId = await readAll()
 
       expect.soft(byId.get("restee-close")?.offer_status_history).toEqual([{ ...fluxRemoval, reason: "bug du 06 2026" }])
       expect.soft(byId.get("reactivee")?.offer_status_history).toEqual([{ ...fluxRemoval, reason: "bug du 06 2026" }, reactivation])
@@ -123,9 +106,7 @@ describe("migration backfill-offer-status-history-lba-5429", () => {
       }
 
       await getDbCollection("jobs_partners").insertMany([
-        // motif légitime sur une offre LBA
         lbaOffer("autre-motif", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [expiration] }),
-        // même motif, mais partenaire traité par flux : il y est légitime
         generateJobsPartnersOfferPrivate({
           partner_job_id: "flux",
           partner_label: JOBPARTNERS_LABEL.HELLOWORK,
@@ -135,31 +116,111 @@ describe("migration backfill-offer-status-history-lba-5429", () => {
       ])
 
       await up()
-
-      const byId = new Map((await getDbCollection("jobs_partners").find({}).toArray()).map((j) => [j.partner_job_id, j]))
+      const byId = await readAll()
 
       expect.soft(byId.get("autre-motif")?.offer_status_history).toEqual([expiration])
       expect.soft(byId.get("flux")?.offer_status_history).toEqual([fluxRemoval])
     })
+  })
 
-    it("est idempotente", async () => {
-      await getDbCollection("jobs_partners").insertOne(lbaOffer("offre", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [fluxRemoval] }))
+  describe("volet 3 — reprise de stock des clôtures manuelles", () => {
+    it("trace les offres closes portant un motif, avec le statut du document et la date de updated_at", async () => {
+      await getDbCollection("jobs_partners").insertMany([
+        lbaOffer("annulee", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "Je ne suis plus en recherche" }),
+        lbaOffer("pourvue", { offer_status: JOB_STATUS_ENGLISH.POURVUE, job_status_comment: "J'ai pourvu l'offre avec La bonne alternance" }),
+      ])
 
       await up()
-      await up()
+      const byId = await readAll()
 
-      const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "offre" })
-      expect.soft(job?.offer_status_history).toEqual([{ ...fluxRemoval, reason: "bug du 06 2026" }])
+      expect
+        .soft(byId.get("annulee")?.offer_status_history)
+        .toEqual([{ date: updated_at, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "Désactivation manuelle", granted_by: GRANTED_BY }])
+      expect
+        .soft(byId.get("pourvue")?.offer_status_history)
+        .toEqual([{ date: updated_at, status: JOB_STATUS_ENGLISH.POURVUE, reason: "Désactivation manuelle", granted_by: GRANTED_BY }])
+      // le motif d'origine reste lisible dans son champ dédié
+      expect.soft(byId.get("pourvue")?.job_status_comment).toBe("J'ai pourvu l'offre avec La bonne alternance")
+    })
+
+    it("ajoute la trace sans écraser un historique déjà présent", async () => {
+      const expiration = {
+        date: new Date("2026-05-01T00:00:00.000Z"),
+        status: JOB_STATUS_ENGLISH.ANNULEE,
+        reason: "offre expirée (date dépassée)",
+        granted_by: "expire-jobs-partners",
+      }
+      await getDbCollection("jobs_partners").insertOne(
+        lbaOffer("offre", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "Autre", offer_status_history: [expiration] })
+      )
+
+      await up()
+      const byId = await readAll()
+
+      expect
+        .soft(byId.get("offre")?.offer_status_history)
+        .toEqual([expiration, { date: updated_at, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "Désactivation manuelle", granted_by: GRANTED_BY }])
+    })
+
+    it("n'ajoute rien si l'entrée correspondante existe déjà", async () => {
+      const existing = { date: new Date("2026-04-01T00:00:00.000Z"), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "Désactivation manuelle", granted_by: "un-autre-passage" }
+      await getDbCollection("jobs_partners").insertOne(
+        lbaOffer("offre", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "Autre", offer_status_history: [existing] })
+      )
+
+      await up()
+      const byId = await readAll()
+
+      expect.soft(byId.get("offre")?.offer_status_history).toEqual([existing])
+    })
+
+    it("distingue les statuts : une trace Pourvue ne dispense pas d'une trace Cancelled", async () => {
+      // l'offre a été déclarée pourvue puis annulée : seule la trace du statut courant manque
+      const pourvue = { date: new Date("2026-04-01T00:00:00.000Z"), status: JOB_STATUS_ENGLISH.POURVUE, reason: "Désactivation manuelle", granted_by: "un-autre-passage" }
+      await getDbCollection("jobs_partners").insertOne(
+        lbaOffer("offre", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "Autre", offer_status_history: [pourvue] })
+      )
+
+      await up()
+      const byId = await readAll()
+
+      expect
+        .soft(byId.get("offre")?.offer_status_history)
+        .toEqual([pourvue, { date: updated_at, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "Désactivation manuelle", granted_by: GRANTED_BY }])
+    })
+
+    it("ignore les offres actives et les motifs vides", async () => {
+      await getDbCollection("jobs_partners").insertMany([
+        lbaOffer("active", { offer_status: JOB_STATUS_ENGLISH.ACTIVE, job_status_comment: "Autre" }),
+        lbaOffer("motif-vide", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "" }),
+      ])
+
+      await up()
+      const byId = await readAll()
+
+      expect.soft(byId.get("active")?.offer_status_history).toEqual([])
+      // motif vide : relève du volet 1, pas du volet 3
+      expect.soft(byId.get("motif-vide")?.offer_status_history[0]?.reason).toBe("motif non enregistré (clôture antérieure au correctif #5429)")
     })
   })
 
-  it("est idempotente : un second passage ne rajoute pas de trace", async () => {
-    await getDbCollection("jobs_partners").insertOne(lbaOffer("offre", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "Autre" }))
+  it("est idempotente sur les trois volets", async () => {
+    await getDbCollection("jobs_partners").insertMany([
+      lbaOffer("sans-motif", { offer_status: JOB_STATUS_ENGLISH.ANNULEE }),
+      lbaOffer("avec-motif", { offer_status: JOB_STATUS_ENGLISH.POURVUE, job_status_comment: "Autre" }),
+      lbaOffer("flux", {
+        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+        offer_status_history: [{ date: updated_at, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "supprimée du flux source", granted_by: "cancel-removed-jobs-partners" }],
+      }),
+    ])
 
     await up()
+    const afterFirst = await readAll()
     await up()
+    const afterSecond = await readAll()
 
-    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "offre" })
-    expect.soft(job?.offer_status_history).toHaveLength(1)
+    for (const id of ["sans-motif", "avec-motif", "flux"]) {
+      expect.soft(afterSecond.get(id)?.offer_status_history).toEqual(afterFirst.get(id)?.offer_status_history)
+    }
   })
 })
