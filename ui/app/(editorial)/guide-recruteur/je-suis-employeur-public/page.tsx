@@ -22,13 +22,7 @@ const JeSuisEmployeurPublicPage = () => {
     "Si le cadre juridique du contrat d’apprentissage est similaire dans  la fonction publique, la prise en charge financière et les démarches  administratives diffèrent du secteur privé.",
     <>
       Pour plus d'informations sur l'apprentissage dans la fonction publique, vous pouvez consulter{" "}
-      <DsfrLink
-        href="https://www.fonction-publique.gouv.fr/devenir-agent-public/lapprentissage-dans-la-fonction-publique"
-        aria-label="Consulter le Portail de la fonction publique"
-      >
-        le Portail de la fonction publique
-      </DsfrLink>
-      .
+      <DsfrLink href="https://www.fonction-publique.gouv.fr/devenir-agent-public/lapprentissage-dans-la-fonction-publique">le Portail de la fonction publique</DsfrLink>.
     </>,
   ]
 
@@ -53,10 +47,7 @@ const JeSuisEmployeurPublicPage = () => {
       <Section title="Démarches à suivre">
         <Paragraph>
           Les offres de contrat d'apprentissage dans la fonction publique peuvent être déposées sur{" "}
-          <DsfrLink href="https://www.pass.fonction-publique.gouv.fr/" aria-label="Consulter le site de la Place de l'apprentissage et des stages (PASS)">
-            la Place de l'apprentissage et des stages (PASS)
-          </DsfrLink>
-          .
+          <DsfrLink href="https://www.pass.fonction-publique.gouv.fr/">la Place de l'apprentissage et des stages (PASS)</DsfrLink>.
         </Paragraph>
         <Paragraph>Le contrat d'apprentissage conclu dans une administration est un contrat de droit privé à durée limitée (CDL).</Paragraph>
         <Paragraph>Le contrat est signé par l'employeur et l'apprenti (et par son représentant légal, si l'apprenti est mineur).</Paragraph>
@@ -70,10 +61,8 @@ const JeSuisEmployeurPublicPage = () => {
         </Paragraph>
         <Paragraph>
           Cette transmission se fait par voie dématérialisée en utilisant{" "}
-          <DsfrLink href="https://celia.emploi.gouv.fr/" aria-label="Consulter la plate-forme Célia">
-            la plate-forme de dématérialisation des contrats d'apprentissage de la fonction publique Célia
-          </DsfrLink>
-          . Cette plate-forme permet aux employeurs publics de saisir et générer le Cerfa, puis de transmettre directement le contrat à la DDETS ou à la DDETSPP.
+          <DsfrLink href="https://celia.emploi.gouv.fr/">la plate-forme de dématérialisation des contrats d'apprentissage de la fonction publique Célia</DsfrLink>. Cette
+          plate-forme permet aux employeurs publics de saisir et générer le Cerfa, puis de transmettre directement le contrat à la DDETS ou à la DDETSPP.
         </Paragraph>
       </Section>
       <Section title="Prise en charge financière">
@@ -83,33 +72,20 @@ const JeSuisEmployeurPublicPage = () => {
           listItems={[
             <>
               Pour la fonction publique d’Etat, vous pouvez consulter{" "}
-              <DsfrLink href="https://www.fonction-publique.gouv.fr/devenir-agent-public/lapprentissage-dans-la-fonction-publique" aria-label="Consulter le site de la DGAFP">
-                le site de la DGAFP
-              </DsfrLink>
-              .
+              <DsfrLink href="https://www.fonction-publique.gouv.fr/devenir-agent-public/lapprentissage-dans-la-fonction-publique">le site de la DGAFP</DsfrLink>.
             </>,
             <>
               Pour la fonction publique territoriale, vous pouvez consulter{" "}
-              <DsfrLink href="https://www.cnfpt.fr/se-former/accueillir-apprenti/lapprentissage-collectivites-territoriales/national" aria-label="Consulter le site du CNFPT">
-                le site du CNFPT
-              </DsfrLink>
-              .
+              <DsfrLink href="https://www.cnfpt.fr/se-former/accueillir-apprenti/lapprentissage-collectivites-territoriales/national">le site du CNFPT</DsfrLink>.
             </>,
             <>
-              Pour la fonction publique hospitalière, vous pouvez consulter{" "}
-              <DsfrLink href="https://www.anfh.fr/thematiques/apprentissage" aria-label="Consulter le site de l’ANFH">
-                le site de l’ANFH
-              </DsfrLink>
-              .
+              Pour la fonction publique hospitalière, vous pouvez consulter <DsfrLink href="https://www.anfh.fr/thematiques/apprentissage">le site de l’ANFH</DsfrLink>.
             </>,
           ]}
         />
         <Paragraph>
           Tout agent public qui exerce la fonction de maître d'apprentissage acquiert des{" "}
-          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F34030" aria-label="Consulter les droits à la formation">
-            droits à la formation
-          </DsfrLink>
-          .
+          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F34030">droits à la formation</DsfrLink>.
         </Paragraph>
         <Paragraph>
           Depuis le 1er janvier 2022, le maître d'apprentissage dans la fonction publique d'État bénéficie d'une{" "}
@@ -131,10 +107,7 @@ const JeSuisEmployeurPublicPage = () => {
         </Paragraph>
         <Paragraph>
           Pour en savoir plus, vous pouvez consulter{" "}
-          <DsfrLink href="https://www.fiphfp.fr/employeurs/ressources-employeurs/centre-de-ressources?item=2924" aria-label="Consulter le catalogue des interventions du FIPHFP">
-            le catalogue des interventions du FIPHFP
-          </DsfrLink>
-          .
+          <DsfrLink href="https://www.fiphfp.fr/employeurs/ressources-employeurs/centre-de-ressources?item=2924">le catalogue des interventions du FIPHFP</DsfrLink>.
         </Paragraph>
         <Paragraph fontWeight={"bold"}>Le recrutement et, le cas échéant, la titularisation d'apprentis BOETH dans la fonction publique</Paragraph>
         <Paragraph>

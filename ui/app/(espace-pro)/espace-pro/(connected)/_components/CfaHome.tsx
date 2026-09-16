@@ -122,12 +122,12 @@ function ListeEntreprise() {
             <Link
               underline="hover"
               href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()}
-              aria-label="voir les informations"
               sx={{
                 fontWeight: "700",
               }}
             >
               {establishment_raison_sociale}
+              <span className="fr-sr-only"> - voir les informations</span>
             </Link>
             {establishment_raison_sociale ? (
               siretText
@@ -135,12 +135,12 @@ function ListeEntreprise() {
               <Link
                 underline="hover"
                 href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()}
-                aria-label="voir les informations"
                 sx={{
                   fontWeight: "700",
                 }}
               >
                 {siretText}
+                <span className="fr-sr-only"> - voir les informations</span>
               </Link>
             )}
             <Typography sx={{ color: "redmarianne", fontSize: "14px" }}>{opco}</Typography>
