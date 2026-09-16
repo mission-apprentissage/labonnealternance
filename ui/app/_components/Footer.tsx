@@ -2,6 +2,7 @@ import { Typography } from "@mui/material"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 import { DsfrHeaderProps } from "./Header"
@@ -201,11 +202,13 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
                     {category.links.map((link, linkIndex) => (
                       <li key={linkIndex}>
                         {link.isExternal ? (
-                          <a className="fr-footer__top-link" href={link.linkProps.href as string} target="_blank" rel="noopener noreferrer">
+                          // DsfrLink pose target, rel et la mention « nouvelle fenêtre » (RGAA 6.1).
+                          <DsfrLink className="fr-footer__top-link" href={link.linkProps.href as string}>
                             {link.text}
-                            <span className="fr-sr-only"> - nouvelle fenêtre</span>
-                          </a>
+                          </DsfrLink>
                         ) : (
+                          // Lien interne laissé en <a> : un passage à next/link ferait de ces liens
+                          // une navigation SPA, avec la gestion du focus et du titre que cela implique (RGAA 12.8).
                           <a className="fr-footer__top-link" href={link.linkProps.href as string}>
                             {link.text}
                           </a>
@@ -253,40 +256,30 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
             <p className="fr-footer__content-desc">{isWidget ? widgetDescription : description}</p>
             <ul className="fr-footer__content-list">
               <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://info.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                <DsfrLink className="fr-footer__content-link" href="https://info.gouv.fr/">
                   info.gouv.fr
-                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
-                </a>
+                </DsfrLink>
               </li>
               <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://service-public.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                <DsfrLink className="fr-footer__content-link" href="https://service-public.gouv.fr/">
                   service-public.gouv.fr
-                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
-                </a>
+                </DsfrLink>
               </li>
               <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://legifrance.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                <DsfrLink className="fr-footer__content-link" href="https://legifrance.gouv.fr/">
                   legifrance.gouv.fr
-                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
-                </a>
+                </DsfrLink>
               </li>
               <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://data.gouv.fr" target="_blank" rel="noopener noreferrer">
+                <DsfrLink className="fr-footer__content-link" href="https://data.gouv.fr">
                   data.gouv.fr
-                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
-                </a>
+                </DsfrLink>
               </li>
             </ul>
             {!isWidget && (
-              <a
-                className="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-left fr-icon-google-fill fr-mt-2w"
-                href={GOOGLE_PREFERRED_SOURCE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <DsfrLink className="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-left fr-icon-google-fill fr-mt-2w" href={GOOGLE_PREFERRED_SOURCE_URL}>
                 Ajouter à vos sources préférées sur Google
-                <span className="fr-sr-only"> - nouvelle fenêtre</span>
-              </a>
+              </DsfrLink>
             )}
           </div>
         </div>
