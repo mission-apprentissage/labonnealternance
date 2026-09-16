@@ -153,9 +153,9 @@ export default function RendezVousApprentissageDetailRendererClient({
                                     </Box>
                                     <DsfrLink
                                       href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
-                                      aria-label="La formation du Catalogue - nouvelle fenêtre"
                                     >
                                       Lien catalogue
+                                      <span className="fr-sr-only">{" - La formation du Catalogue"}</span>
                                     </DsfrLink>
                                   </Box>
                                 </Box>

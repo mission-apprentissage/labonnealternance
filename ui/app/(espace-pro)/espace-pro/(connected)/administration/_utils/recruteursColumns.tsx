@@ -55,14 +55,16 @@ export function getRecruteursColumns({
         )
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}?organizationId=${organizationId}`} aria-label="voir les informations">
+            <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}?organizationId=${organizationId}`}>
               {establishment_raison_sociale}
+              <span className="fr-sr-only"> - voir les informations</span>
             </Link>
             {establishment_raison_sociale ? (
               siretText
             ) : (
-              <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}?organizationId=${organizationId}`} aria-label="voir les informations">
+              <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}?organizationId=${organizationId}`}>
                 {siretText}
+                <span className="fr-sr-only"> - voir les informations</span>
               </Link>
             )}
             <Typography sx={{ color: "#666666", maxWidth: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontSize: ".75rem" }}>
