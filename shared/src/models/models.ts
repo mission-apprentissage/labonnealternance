@@ -51,6 +51,7 @@ import rawJoobleModel from "./raw-jooble.model.js"
 import rawKelioModel from "./raw-kelio.model.js"
 import rawLaposteModel from "./raw-laposte.model.js"
 import rawLeboncoinModel from "./raw-leboncoin.model.js"
+import rawLinkedinModel from "./raw-linkedin.model.js"
 import rawMeteojobModel from "./raw-meteojob.model.js"
 import rawMonsterModel from "./raw-monster.model.js"
 import rawNosTalentsNosEmploisModel from "./raw-nos-talents-nos-emplois.model.js"
@@ -145,6 +146,7 @@ const modelDescriptorMap = {
   [cacheInfosSiretModel.collectionName]: cacheInfosSiretModel,
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
   [rawApecModel.collectionName]: rawApecModel,
+  [rawLinkedinModel.collectionName]: rawLinkedinModel,
   [rawAtlasModel.collectionName]: rawAtlasModel,
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawLaposteModel.collectionName]: rawLaposteModel,

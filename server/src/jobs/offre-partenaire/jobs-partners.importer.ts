@@ -15,6 +15,7 @@ import { processJobteaser } from "./jobteaser/process-jobteaser"
 import { processKelio } from "./kelio/process-kelio"
 import { processLaposte } from "./laposte/process-laposte"
 import { processLeboncoin } from "./leboncoin/process-leboncoin"
+import { processLinkedin } from "./linkedin/process-linkedin"
 import { processPass } from "./pass/process-pass"
 import { processComputedAndImportToJobPartners } from "./process-job-partners"
 import { processMissingRomeAndImportToJobPartners } from "./process-missing-rome-and-import-to-job-partners"
@@ -160,6 +161,12 @@ export const importers: Record<string, CronDef> = {
   "Import APEC": {
     cron_string: timings.import_source,
     handler: processApec,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import LinkedIn": {
+    cron_string: timings.import_source,
+    handler: processLinkedin,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
