@@ -1,3 +1,8 @@
+import { randomUUID } from "node:crypto"
+import { createReadStream } from "node:fs"
+import { unlink } from "node:fs/promises"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import Ftp from "basic-ftp"
 import { Client as SFTPClient } from "ssh2"
 import { logger } from "@/common/logger"
@@ -72,8 +77,16 @@ export const normalizeSshPrivateKey = (privateKey: string): string => {
   return normalized.endsWith("\n") ? normalized : `${normalized}\n`
 }
 
+// Téléchargement parallélisé : `fastGet` maintient 64 requêtes SFTP en vol là où
+// `createReadStream` en fait une à la fois. Sur le flux LinkedIn (46 Mo, serveur hors
+// Europe), mesuré à 8,9 s contre 256 s — le RTT domine sur un transfert séquentiel.
+// Le fichier transite par un temporaire, ce qui libère la connexion SSH avant le parsing.
+const FASTGET_OPTIONS = { concurrency: 64, chunkSize: 32768 }
+
 export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConnectOptions): Promise<NodeJS.ReadableStream> => {
-  return new Promise((resolve, reject) => {
+  const localPath = join(tmpdir(), `sftp-${randomUUID()}`)
+
+  await new Promise<void>((resolve, reject) => {
     const conn = new SFTPClient()
 
     conn.on("ready", () => {
@@ -83,16 +96,10 @@ export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConn
           return reject(err)
         }
 
-        const stream = sftp.createReadStream(remotePath)
-
-        stream.on("error", (err: Error) => {
+        sftp.fastGet(remotePath, localPath, FASTGET_OPTIONS, (err) => {
           conn.end()
-          reject(err)
+          return err ? reject(err) : resolve()
         })
-
-        stream.on("close", () => conn.end())
-
-        resolve(stream)
       })
     })
 
@@ -101,4 +108,14 @@ export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConn
     const { privateKey, ...rest } = options
     conn.connect({ port: 22, ...rest, ...(privateKey ? { privateKey: normalizeSshPrivateKey(privateKey) } : {}) })
   })
+
+  const cleanup = () => {
+    unlink(localPath).catch((err) => logger.warn({ err, localPath }, "SFTP: suppression du fichier temporaire impossible"))
+  }
+
+  const stream = createReadStream(localPath)
+  stream.on("close", cleanup)
+  stream.on("error", cleanup)
+
+  return stream
 }
