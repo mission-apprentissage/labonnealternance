@@ -119,10 +119,10 @@ const requalifyFluxRemovalReason = async () => {
  * pas ici à véhiculer le motif — celui-ci reste lisible dans `job_status_comment`, qui n'est pas
  * touché.
  *
- * Pas de filtre sur `partner_label` : le champ n'est écrit que sur les offres OFFRES_EMPLOI_LBA, le
- * périmètre est donc déjà celui-là. Une entrée n'est ajoutée que si l'offre n'a pas déjà la sienne,
- * ce qui rend le volet idempotent et non destructif — les entrées existantes sont conservées, jamais
- * remplacées.
+ * Filtré sur `partner_label: OFFRES_EMPLOI_LBA` : ce champ n'est normalement écrit que sur ces offres,
+ * et ce garde-fou évite de tracer par erreur d'autres partenaires. Une entrée n'est ajoutée que si
+ * l'offre n'a pas déjà la sienne, ce qui rend le volet idempotent et non destructif — les entrées
+ * existantes sont conservées, jamais remplacées.
  */
 const recordManualClosures = async () => {
   for (const status of CLOSED_STATUSES) {
