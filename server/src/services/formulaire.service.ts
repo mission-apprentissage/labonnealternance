@@ -46,7 +46,6 @@ import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-not
 import { buildJobStatusChangeUpdate, changeJobsPartnersStatus } from "./job-partner-status.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
-import { anonymizeLbaJobsPartners } from "./partner-job.service"
 import { getEntrepriseEngagementFranceTravail } from "./referentiel-engagement-entreprise.service"
 import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./role-management.service"
 import { getRomeDetailsFromDB } from "./rome.service"
@@ -1130,14 +1129,6 @@ export function getCompetencesRomeFromPartnerJob(jobPartner: IJobsPartnersOfferP
     savoir_etre_professionnel: savoirEtreProfessionnel,
     savoir_faire: savoirFaire,
     savoirs,
-  }
-}
-
-export const _updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
-  const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
-  const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
-  if (jobIds.length) {
-    await anonymizeLbaJobsPartners({ partner_job_ids: jobIds })
   }
 }
 
