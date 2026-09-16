@@ -34,6 +34,17 @@ export function DsfrLink({
     return new URL(href, publicConfig.baseUrl).hostname !== publicConfig.host
   }, [href, external])
 
+  // RGAA 6.1 : l'icône « lien externe » du DSFR est une icône CSS, donc non restituée.
+  // Le changement de contexte doit être annoncé dans le nom accessible du lien.
+  // Les mailto: et tel: reçoivent target="_blank" sans pour autant ouvrir une page :
+  // on ne les annonce pas.
+  const opensNewWindow = useMemo(() => {
+    if (!isExternal) return false
+    if (typeof href !== "string") return false
+    const { protocol } = new URL(href, publicConfig.baseUrl)
+    return protocol === "http:" || protocol === "https:"
+  }, [isExternal, href])
+
   return (
     <NextLink
       style={{ textUnderlinePosition: "under", ...style }}
@@ -54,6 +65,7 @@ export function DsfrLink({
       {...rest}
     >
       {children}
+      {opensNewWindow && <span className="fr-sr-only"> - nouvelle fenêtre</span>}
     </NextLink>
   )
 }

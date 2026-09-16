@@ -278,7 +278,6 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
                 href={GOOGLE_PREFERRED_SOURCE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Ajouter La bonne alternance à vos sources préférées sur Google - nouvelle fenêtre"
               >
                 Ajouter à vos sources préférées sur Google
               </a>
