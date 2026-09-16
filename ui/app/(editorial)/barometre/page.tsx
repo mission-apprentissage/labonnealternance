@@ -148,9 +148,7 @@ export default function BarometrePage() {
               <Typography component="p" sx={paragraphSx}>
                 Pour la première fois depuis la loi Avenir professionnel de 2018, les entrées en contrat d’apprentissage reculent&nbsp;: {negative("-4,8 %")} en 2025 sur un an. Les
                 formations du supérieur sont les plus exposées, avec {negative("-12,4 %")} de nouvelles entrées en janvier 2026 sur un an (
-                <DsfrLink href="https://dares.travail-emploi.gouv.fr/" aria-label="Accéder au site de la DARES - nouvelle fenêtre">
-                  DARES
-                </DsfrLink>
+                <DsfrLink href="https://dares.travail-emploi.gouv.fr/">DARES</DsfrLink>
                 ).
               </Typography>
 
@@ -161,11 +159,8 @@ export default function BarometrePage() {
 
               <Typography component="p" sx={paragraphSx}>
                 La saisonnalité est clé&nbsp;: le premier trimestre est un trimestre de démarrage, alors que le deuxième trimestre concentre le pic de recrutements, comme le
-                montrent les{" "}
-                <DsfrLink href="https://dares.travail-emploi.gouv.fr/" aria-label="Accéder aux données DARES - nouvelle fenêtre">
-                  données DARES
-                </DsfrLink>
-                . L’évolution du deuxième trimestre sera donc le meilleur indicateur de la tendance 2026.
+                montrent les <DsfrLink href="https://dares.travail-emploi.gouv.fr/">données DARES</DsfrLink>. L’évolution du deuxième trimestre sera donc le meilleur indicateur de
+                la tendance 2026.
               </Typography>
 
               <BarChartVertical
@@ -286,11 +281,8 @@ export default function BarometrePage() {
 
               <Callout variant="list">
                 <Typography component="p" sx={{ m: 0 }}>
-                  <span aria-hidden="true">📊</span> Selon{" "}
-                  <DsfrLink href="https://www.francetravail.fr/" aria-label="Accéder au site de France Travail - nouvelle fenêtre">
-                    France Travail
-                  </DsfrLink>{" "}
-                  et la DARES, seulement {strong("17 %")} des ouvriers utiliseraient un ordinateur quotidiennement au travail, contre {strong("75 %")} des diplômés du supérieur.
+                  <span aria-hidden="true">📊</span> Selon <DsfrLink href="https://www.francetravail.fr/">France Travail</DsfrLink> et la DARES, seulement {strong("17 %")} des
+                  ouvriers utiliseraient un ordinateur quotidiennement au travail, contre {strong("75 %")} des diplômés du supérieur.
                 </Typography>
               </Callout>
 
