@@ -214,6 +214,7 @@ const config = {
     sftpHost: env.get("LINKEDIN_SFTP_HOST").default("sftp.bright.linkedin.com").asString(),
     sftpUsername: env.get("LINKEDIN_SFTP_USERNAME").default("dgefp").asString(),
     sftpPrivateKey: env.get("LINKEDIN_SFTP_PRIVATE_KEY").asString(),
+    sftpPassphrase: env.get("LINKEDIN_SFTP_PASSPHRASE").asString(),
   },
   // Compte de service Google Indexing API (propriétaire délégué de la propriété Search Console).
   // Volontairement non `required()` : le job pingGoogleIndexing est no-op tant que les

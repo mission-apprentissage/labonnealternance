@@ -61,6 +61,8 @@ type SFTPConnectOptions = {
   // Authentification par mot de passe (APEC) ou par clé privée (LinkedIn) : au moins l'une des deux.
   password?: string
   privateKey?: string
+  // Requis uniquement si la clé privée est chiffrée.
+  passphrase?: string
 }
 
 // Les clés privées stockées au vault sont sur une seule ligne (le template .env ne supporte pas
