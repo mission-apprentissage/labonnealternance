@@ -58,7 +58,16 @@ type SFTPConnectOptions = {
   host: string
   port?: number
   username: string
-  password: string
+  // Authentification par mot de passe (APEC) ou par clé privée (LinkedIn) : au moins l'une des deux.
+  password?: string
+  privateKey?: string
+}
+
+// Les clés privées stockées au vault sont sur une seule ligne (le template .env ne supporte pas
+// le multi-ligne) : on restaure les retours à la ligne avant de les passer à ssh2.
+export const normalizeSshPrivateKey = (privateKey: string): string => {
+  const normalized = privateKey.replace(/\\n/g, "\n")
+  return normalized.endsWith("\n") ? normalized : `${normalized}\n`
 }
 
 export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConnectOptions): Promise<NodeJS.ReadableStream> => {
@@ -87,6 +96,7 @@ export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConn
 
     conn.on("error", reject)
 
-    conn.connect({ port: 22, ...options })
+    const { privateKey, ...rest } = options
+    conn.connect({ port: 22, ...rest, ...(privateKey ? { privateKey: normalizeSshPrivateKey(privateKey) } : {}) })
   })
 }

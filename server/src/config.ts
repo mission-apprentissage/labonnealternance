@@ -207,6 +207,14 @@ const config = {
     url: env.get("TALEEZ_API_URL").required().asString(),
     partnerKey: env.get("TALEEZ_API_PARTNER_KEY").required().asString(),
   },
+  // Flux d'offres LinkedIn récupéré par SFTP (auth par clé privée, user `dgefp`).
+  // Volontairement non `required()` tant que l'intégration est en phase de test : absence de
+  // valeur au vault = job no-op, pas de blocage au déploiement.
+  linkedin: {
+    sftpHost: env.get("LINKEDIN_SFTP_HOST").default("sftp.bright.linkedin.com").asString(),
+    sftpUsername: env.get("LINKEDIN_SFTP_USERNAME").default("dgefp").asString(),
+    sftpPrivateKey: env.get("LINKEDIN_SFTP_PRIVATE_KEY").asString(),
+  },
   // Compte de service Google Indexing API (propriétaire délégué de la propriété Search Console).
   // Volontairement non `required()` : le job pingGoogleIndexing est no-op tant que les
   // variables ne sont pas dans le vault, sans bloquer les déploiements.
