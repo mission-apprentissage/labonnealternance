@@ -366,7 +366,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
                 ? `/alternance/ville/${villeSlug}?${UTM_PARAMS}`
                 : `${buildSearchUrl({ mode: "emplois", q: data.metier, radius: 30, page: 0, hitsPerPage: 20, latitude: ville.geopoint.lat, longitude: ville.geopoint.long, lieu_label: ville.nom })}&${UTM_PARAMS}`
               return (
-                <Link key={ville.nom} href={href} style={{ background: "transparent" }} aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}>
+                <Link key={ville.nom} href={href} aria-label={`${ville.nom} - ${ville.job_count} offres en alternance de ${data.metier}`} style={{ background: "transparent" }}>
                   <Box
                     sx={{
                       ...boxCss,
