@@ -42,9 +42,7 @@ const LesAidesFinancieresEtMateriellesPage = () => {
               </Typography>{" "}
               En tant qu'alternant, vous avez droit aux aides au logement (APL, ALS, ALF) versées par la CAF selon votre situation. Un abattement fiscal est appliqué sur vos
               revenus d'apprenti pour le calcul de ces aides. Faites votre demande dès la signature de votre bail (l'aide n'est pas rétroactive).{" "}
-              <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F38630" aria-label="Consulter la liste des aides pour les apprentis">
-                Demander une aide au logement (Service-public.fr)
-              </DsfrLink>
+              <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F38630">Demander une aide au logement (Service-public.fr)</DsfrLink>
             </>,
             <>
               <Typography component="span" fontWeight={"bold"}>
@@ -52,27 +50,19 @@ const LesAidesFinancieresEtMateriellesPage = () => {
               </Typography>{" "}
               il s’agit d’une subvention de 10 à 100 € par mois pendant 11 mois (renouvelable) pour alléger votre loyer si vous avez moins de 30 ans, êtes en alternance dans le
               secteur privé non agricole et que votre salaire est inférieur à 120% du SMIC. Cumulable avec les APL. Vous trouverez plus d’informations sur le site{" "}
-              <DsfrLink href="https://www.actionlogement.fr/l-aide-mobili-jeune/" aria-label="Consulter les détails de l'aide mobili-jeune sur le site Action Logement">
-                Action Logement
-              </DsfrLink>
+              <DsfrLink href="https://www.actionlogement.fr/l-aide-mobili-jeune/">Action Logement</DsfrLink>
             </>,
             <>
               <Typography component={"span"} fontWeight={"bold"}>
                 Avance Loca-Pass® :
               </Typography>{" "}
               Pour financer le dépôt de garantie de votre location, l’avance Loca-pass vous avance sans intérêts. En savoir plus sur l’Avance Loca-Pass{" "}
-              <DsfrLink
-                href="https://www.actionlogement.fr/guides/trouver-un-logement/quelles-aides-au-logement-pour-les-alternants-en-contrat-pro-ou-apprentissage"
-                aria-label="Consulter les aides disponibles sur le site Action Logement"
-              >
+              <DsfrLink href="https://www.actionlogement.fr/guides/trouver-un-logement/quelles-aides-au-logement-pour-les-alternants-en-contrat-pro-ou-apprentissage">
                 (Action Logement)
               </DsfrLink>
             </>,
             <>
-              <DsfrLink
-                href="https://monlogementetudiant.beta.gouv.fr/?utm_source=labonnealternance&utm_medium=referral&utm_campaign=partenariat_backlink&utm_content=conseils_astuces"
-                aria-label="Rechercher un logement étudiant sur le site Mon Logement Étudiant"
-              >
+              <DsfrLink href="https://monlogementetudiant.beta.gouv.fr/?utm_source=labonnealternance&utm_medium=referral&utm_campaign=partenariat_backlink&utm_content=conseils_astuces">
                 Mon Logement Étudiant
               </DsfrLink>{" "}
               a pour objectif de faciliter l'accès aux logements étudiants à vocation sociale, en particulier pour les étudiants boursiers ou en situation de précarité. La
@@ -105,11 +95,9 @@ const LesAidesFinancieresEtMateriellesPage = () => {
       </Section>
       <Section title="Connaître toutes les aides auxquelles vous pouvez prétendre">
         <Paragraph>
-          <DsfrLink href={"https://mes-aides.1jeune1solution.beta.gouv.fr/"} aria-label="Consulter le simulateur Mes-aides">
-            Mes-aides
-          </DsfrLink>{" "}
-          met à disposition un simulateur d’aides pour découvrir simplement toutes les aides auxquelles vous pouvez être éligible (logement, mobilité, santé, emploi etc.). Faites
-          une simulation personnalisée pour connaître toutes les aides auxquelles vous avez droit.
+          <DsfrLink href={"https://mes-aides.1jeune1solution.beta.gouv.fr/"}>Mes-aides</DsfrLink> met à disposition un simulateur d’aides pour découvrir simplement toutes les aides
+          auxquelles vous pouvez être éligible (logement, mobilité, santé, emploi etc.). Faites une simulation personnalisée pour connaître toutes les aides auxquelles vous avez
+          droit.
         </Paragraph>
       </Section>
     </LayoutArticle>
