@@ -69,10 +69,7 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
         <Accordion label="1. Renseignez-vous sur l’entreprise" defaultExpanded>
           <Typography>
             Avant de candidater, il est indispensable de prendre le temps de vous renseigner sur les activités de l'entreprise.{" "}
-            <DsfrLink href={getCompanyGoogleSearchLink(recruteurLba)} aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre">
-              Démarrez une recherche
-            </DsfrLink>{" "}
-            et visitez son site internet. Posez-vous les questions suivantes :
+            <DsfrLink href={getCompanyGoogleSearchLink(recruteurLba)}>Démarrez une recherche</DsfrLink> et visitez son site internet. Posez-vous les questions suivantes :
           </Typography>
           <List sx={{ pl: fr.spacing("6v"), listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
             <ListItem>Est-ce que les activités de l’entreprise correspondent au métier que je souhaite exercer, en lien avec ma formation ?</ListItem>
@@ -90,30 +87,21 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
             Adaptez également votre CV.
             <br />
             <br />
-            Pour cela, le service{" "}
-            <DsfrLink href="https://diagoriente.beta.gouv.fr/" aria-label="Accéder au site de Diagoriente">
-              Diagoriente
-            </DsfrLink>{" "}
-            vous aide à valoriser vos compétences sur votre CV sur la base de vos expériences et vos centres d'intérêt.
+            Pour cela, le service <DsfrLink href="https://diagoriente.beta.gouv.fr/">Diagoriente</DsfrLink> vous aide à valoriser vos compétences sur votre CV sur la base de vos
+            expériences et vos centres d'intérêt.
             <br />
             <br />
             Pour rendre votre CV plus beau et professionnel, vous pouvez utiliser ces outils gratuits :
           </Typography>
           <List sx={{ pl: fr.spacing("6v"), listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
             <ListItem>
-              <DsfrLink href="https://cv.clicnjob.fr/" aria-label="Accéder au site cv.clicnjob.fr">
-                https://cv.clicnjob.fr/
-              </DsfrLink>
+              <DsfrLink href="https://cv.clicnjob.fr/">https://cv.clicnjob.fr/</DsfrLink>
             </ListItem>
             <ListItem>
-              <DsfrLink href="https://cvdesignr.com/fr" aria-label="Accéder au site cvdesignr.com">
-                https://cvdesignr.com/fr
-              </DsfrLink>
+              <DsfrLink href="https://cvdesignr.com/fr">https://cvdesignr.com/fr</DsfrLink>
             </ListItem>
             <ListItem>
-              <DsfrLink href="https://www.canva.com/fr_fr/creer/cv/" aria-label="Accéder au site www.canva.com pour créer un cv">
-                https://www.canva.com/fr_fr/creer/cv/
-              </DsfrLink>
+              <DsfrLink href="https://www.canva.com/fr_fr/creer/cv/">https://www.canva.com/fr_fr/creer/cv/</DsfrLink>
             </ListItem>
           </List>
         </Accordion>
@@ -148,12 +136,7 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
           </Typography>
           <List sx={{ pl: fr.spacing("6v"), listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
             <ListItem>
-              <DsfrLink
-                href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
-                aria-label="Accéder aux site de conseils didask pour préparer un entretient avec un employeur"
-              >
-                Préparer un entretien avec un employeur
-              </DsfrLink>
+              <DsfrLink href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac">Préparer un entretien avec un employeur</DsfrLink>
             </ListItem>
           </List>
         </Accordion>

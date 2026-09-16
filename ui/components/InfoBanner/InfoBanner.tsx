@@ -16,14 +16,7 @@ const blueBannerText = (
       </Typography>
       Partagez vos besoins à l’équipe lors d’un échange de 30 min.{" "}
     </Typography>
-    <Link
-      underline="always"
-      href="https://calendly.com/camille-jeanblanc-beta/la-bonne-alternance"
-      color="inherit"
-      aria-label="Réserver un créneau pour partager vos besoins avec l'équipe de La bonne alternance - nouvelle fenêtre"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <Link underline="always" href="https://calendly.com/camille-jeanblanc-beta/la-bonne-alternance" color="inherit" target="_blank" rel="noopener noreferrer">
       Réserver un créneau
     </Link>
   </Typography>

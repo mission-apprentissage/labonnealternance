@@ -64,8 +64,9 @@ export const LbaJobCfaDetail = ({ job, title, jobSearchedByUser }: { job: ILbaIt
         {job?.contact?.phone && isOfferActive(job) && (
           <Stack direction="row" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("4v") }}>
             <Box sx={{ fontWeight: 700, mr: 2 }}>Téléphone :</Box>
-            <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
+            <DsfrLink href={`tel:${job.contact.phone}`}>
               {job.contact.phone}
+              <span className="fr-sr-only"> - appeler le CFA</span>
             </DsfrLink>
           </Stack>
         )}

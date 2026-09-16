@@ -110,13 +110,13 @@ export const CreationCompteForm = ({
                   description: (
                     <>
                       <Link
-                        aria-label="Contact de l'équipe La bonne alternance par email - nouvelle fenêtre"
                         underline="hover"
                         target="_blank"
                         rel="noopener noreferrer"
                         href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
                       >
                         Contactez-nous
+                        <span className="fr-sr-only">{" - Contact de l'équipe La bonne alternance par email - nouvelle fenêtre"}</span>
                       </Link>{" "}
                       pour obtenir plus d'informations.
                     </>

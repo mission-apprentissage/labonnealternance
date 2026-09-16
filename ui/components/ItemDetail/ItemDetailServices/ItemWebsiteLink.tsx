@@ -16,8 +16,9 @@ export default function ItemWebsiteLink({ item }: { item: ILbaItemFormation2Json
       <Image src="/images/icons/world.svg" alt="" aria-hidden={true} width={24} height={24} style={{ marginRight: "16px" }} />
       <Typography component="span">
         Plus d'info sur l'entreprise{" "}
-        <DsfrLink href={item?.company?.url} aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre">
+        <DsfrLink href={item?.company?.url}>
           {item?.company?.url}
+          <span className="fr-sr-only"> - site de l&apos;entreprise</span>
         </DsfrLink>
       </Typography>
     </Stack>
