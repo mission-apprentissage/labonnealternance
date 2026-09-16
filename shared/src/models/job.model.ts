@@ -33,8 +33,12 @@ export enum JOB_STATUS_ENGLISH {
  * distinguer revenait à ranger l'annulation d'un administrateur avec celle du recruteur lui-même.
  */
 export enum JOB_CLOSURE_ORIGIN {
-  /** PUT /formulaire/offre/:jobId/cancel — le lien est signé pour le gestionnaire de l'offre. */
-  MAIL_RECRUTEUR = "clôture par le recruteur depuis un mail",
+  /**
+   * Routes en access-token : PUT /formulaire/offre/:jobId/cancel et /provided — le lien est signé
+   * pour le gestionnaire de l'offre. Libellé volontairement neutre : le même canal porte l'annulation
+   * et la déclaration « offre pourvue ».
+   */
+  MAIL_RECRUTEUR = "action du recruteur depuis un mail",
   ESPACE_PRO_RECRUTEUR = "clôture par le recruteur depuis l'espace pro",
   ESPACE_PRO_CFA = "clôture par le CFA délégataire depuis l'espace pro",
   ESPACE_PRO_OPCO = "clôture par l'OPCO depuis l'espace pro",

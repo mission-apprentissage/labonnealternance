@@ -14,8 +14,12 @@ export type IJobStatusChange = {
   grantedBy: string
   /** Horodatage partagé par le $set et la trace, pour qu'ils ne divergent pas. Par défaut : maintenant. */
   date?: Date
-  /** Champs métier écrits dans le même update (offer_expiration, managed_by...). Ne peut pas écraser offer_status ni updated_at. */
-  extraSet?: Partial<IJobsPartnersOfferPrivate>
+  /**
+   * Champs métier écrits dans le même update (offer_expiration, managed_by...). Les trois champs que
+   * le constructeur pilote lui-même en sont exclus par le type : les passer serait sans effet, autant
+   * que ce soit une erreur de compilation plutôt qu'un écrasement silencieux.
+   */
+  extraSet?: Omit<Partial<IJobsPartnersOfferPrivate>, "offer_status" | "updated_at" | "offer_status_history">
 }
 
 /**
@@ -24,9 +28,9 @@ export type IJobStatusChange = {
  *
  * Passer par ce constructeur plutôt que de réécrire les deux opérateurs site par site est ce qui
  * garantit qu'une offre ne peut pas changer de statut sans être tracée. Le $push recopié à la main
- * avait été oublié sur quatre chemins — clôture par le recruteur, archivage du formulaire,
- * anonymisation des comptes, anonymisation des offres — d'où des offres Cancelled avec
- * offer_status_history vide, sans aucun motif exploitable pour la mesure d'impact (issue #5429).
+ * avait été oublié sur trois chemins — clôture par le recruteur, archivage du formulaire,
+ * anonymisation des comptes — d'où des offres Cancelled avec offer_status_history vide, sans aucun
+ * motif exploitable pour la mesure d'impact (issue #5429).
  *
  * `updated_at` est toujours rafraîchi : le cron delta search_items (syncSearchItemsDelta) s'en sert
  * pour retirer l'offre de l'index de recherche.

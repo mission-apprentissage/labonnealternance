@@ -20,9 +20,9 @@ const CLOSED_STATUSES = [JOB_STATUS_ENGLISH.POURVUE, JOB_STATUS_ENGLISH.ANNULEE]
  * Remet d'aplomb `offer_status_history` sur les offres déjà closes (issue #5429), en trois volets
  * indépendants.
  *
- * Contexte : quatre chemins changeaient le statut d'une offre sans pousser d'entrée d'historique —
- * clôture par le recruteur, archivage du formulaire, anonymisation des comptes, anonymisation des
- * offres. Le correctif les branche sur `buildJobStatusChangeUpdate`, mais les offres déjà closes
+ * Contexte : trois chemins changeaient le statut d'une offre sans pousser d'entrée d'historique —
+ * clôture par le recruteur, archivage du formulaire, anonymisation des comptes. Le correctif les
+ * branche sur `buildJobStatusChangeUpdate`, mais les offres déjà closes
  * gardent un historique vide : les tableaux de bord ne peuvent pas distinguer « close sans motif
  * connu » de « donnée absente », ce qui est précisément le trou de mesure du ticket.
  *
@@ -49,6 +49,12 @@ export const up = async () => {
  */
 const backfillClosedOffersWithoutComment = async () => {
   // $in: [null, ""] couvre aussi le champ absent : en Mongo, null matche une clé manquante.
+  //
+  // $size: 0 en revanche ne matche que le tableau vide, pas un document sans la clé. C'est assumé :
+  // la migration 20250206000000 a posé offer_status_history: [] sur toute la collection et les
+  // chemins de création le posent explicitement, donc le champ est toujours là. Le volet 3 se
+  // protège quand même de son absence avec un $ifNull parce que l'enjeu n'y est pas le même — ici
+  // le pire cas est une offre non complétée, là-bas c'est un historique effacé.
   const filter = {
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
     offer_status: { $in: [...CLOSED_STATUSES] },
@@ -132,7 +138,9 @@ const recordManualClosures = async () => {
     logger.info(`volet 3 — offres ${status} clôturées manuellement et non tracées : ${total} offres`)
 
     // $ifNull : $concatArrays renvoie null si l'un de ses opérandes l'est, ce qui effacerait
-    // l'historique d'un document où le champ serait absent.
+    // l'historique d'un document où le champ serait absent. Le validateur de collection ne l'interdit
+    // pas en production (validationAction "warn", cf. configureDbSchemaValidation), et la protection
+    // est gratuite face à une perte de donnée.
     const { modifiedCount } = await getDbCollection("jobs_partners").updateMany(filter, [
       {
         $set: {

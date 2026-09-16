@@ -2,6 +2,7 @@ import { JOB_CLOSURE_ORIGIN, JOB_STATUS_ENGLISH } from "shared"
 import type { ComputedUserAccess } from "shared/models/computed-user-access.model"
 import { describe, expect, it } from "vitest"
 
+import type { IJobStatusChange } from "./job-partner-status.service"
 import { buildJobStatusChangeUpdate, resolveEspaceProClosureOrigin } from "./job-partner-status.service"
 
 describe("buildJobStatusChangeUpdate", () => {
@@ -26,10 +27,11 @@ describe("buildJobStatusChangeUpdate", () => {
     const update = buildJobStatusChangeUpdate({
       status: JOB_STATUS_ENGLISH.POURVUE,
       reason: "J'ai pourvu l'offre avec La bonne alternance",
-      grantedBy: "clôture par le recruteur depuis un mail",
+      grantedBy: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
       date,
-      // offer_status et updated_at sont volontairement contradictoires : ils doivent perdre.
-      extraSet: { offer_expiration: date, offer_status: JOB_STATUS_ENGLISH.ACTIVE, updated_at: new Date("2000-01-01T00:00:00.000Z") },
+      // Le type interdit ces trois champs dans extraSet ; le cast force le cas pour vérifier que le
+      // filet runtime tient aussi, au cas où un appelant contournerait le typage.
+      extraSet: { offer_expiration: date, offer_status: JOB_STATUS_ENGLISH.ACTIVE, updated_at: new Date("2000-01-01T00:00:00.000Z") } as IJobStatusChange["extraSet"],
     })
 
     expect(update.$set).toEqual({ offer_expiration: date, offer_status: JOB_STATUS_ENGLISH.POURVUE, updated_at: date })
