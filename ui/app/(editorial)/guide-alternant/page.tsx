@@ -235,11 +235,7 @@ const GuideAlternantPage = () => {
                         },
                       }}
                     >
-                      <DsfrLink
-                        href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"}
-                        external
-                        aria-label="Télécharger le tableau de suivi des candidatures au format PDF"
-                      >
+                      <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"} external>
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - PDF
                       </DsfrLink>
@@ -254,11 +250,7 @@ const GuideAlternantPage = () => {
                         },
                       }}
                     >
-                      <DsfrLink
-                        href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"}
-                        external
-                        aria-label="Télécharger le tableau de suivi des candidatures au format Excel"
-                      >
+                      <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"} external>
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Excel
                       </DsfrLink>
@@ -273,11 +265,7 @@ const GuideAlternantPage = () => {
                         },
                       }}
                     >
-                      <DsfrLink
-                        href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"}
-                        external
-                        aria-label="Télécharger le tableau de suivi des candidatures au format Numbers"
-                      >
+                      <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"} external>
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Numbers
                       </DsfrLink>
@@ -292,11 +280,7 @@ const GuideAlternantPage = () => {
                         },
                       }}
                     >
-                      <DsfrLink
-                        href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"}
-                        external
-                        aria-label="Télécharger le tableau de suivi des candidatures au format LibreOffice"
-                      >
+                      <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"} external>
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Libre office
                       </DsfrLink>
@@ -392,7 +376,7 @@ const GuideAlternantPage = () => {
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
                 <Box>
-                  <DsfrLink href={`${PAGES.static.faq.getPath()}#candidat`} aria-label="Consulter la foire aux questions">
+                  <DsfrLink href={`${PAGES.static.faq.getPath()}#candidat`}>
                     Consulter la FAQ
                     <DsfrIcon name="fr-icon-arrow-right-line" size={16} ml={fr.spacing("2v")} marginRight={"0 !important"} />
                   </DsfrLink>

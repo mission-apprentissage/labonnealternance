@@ -41,8 +41,9 @@ export default function Contact() {
             <Typography component="p" sx={{ mb: fr.spacing("4v") }}>
               Si jamais vous ne trouvez pas votre réponse dans notre FAQ, ou souhaitez nous partager votre avis ou une suggestion d'amélioration sur nos outils, contactez nous par
               email à<br />
-              <DsfrLink aria-label="Envoi d'un email au service candidat de La bonne alternance" href={`mailto:${publicConfig.publicEmail}?subject=Page%20Contact`}>
+              <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Page%20Contact`}>
                 {publicConfig.publicEmail}
+                <span className="fr-sr-only"> - envoyer un email au service candidat de La bonne alternance</span>
               </DsfrLink>
             </Typography>
           </Grid>
