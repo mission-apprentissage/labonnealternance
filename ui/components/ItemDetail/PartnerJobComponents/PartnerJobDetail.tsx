@@ -58,7 +58,7 @@ export const PartnerJobDetail = ({ job, title, jobSearchedByUser }: { job: ILbaI
           <Box sx={{ color: "grey.700" }}>
             Pour convaincre l'entreprise de vous embaucher,{" "}
             <Link href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e" target="_blank" rel="noopener noreferrer" underline="always">
-              on vous donne des conseils ici pour vous aider !
+              on vous donne des conseils ici pour vous aider !<span className="fr-sr-only"> - nouvelle fenêtre</span>
             </Link>
           </Box>
         </Box>

@@ -304,9 +304,7 @@ const RecruterUnAlternantPage = () => {
                   {item.link ? (
                     <>
                       {" "}
-                      <DsfrLink href={item.link.href} aria-label={item.link.label}>
-                        {item.link.label}
-                      </DsfrLink>
+                      <DsfrLink href={item.link.href}>{item.link.label}</DsfrLink>
                     </>
                   ) : null}
                 </Typography>

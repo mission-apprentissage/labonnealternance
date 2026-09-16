@@ -203,6 +203,7 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
                         {link.isExternal ? (
                           <a className="fr-footer__top-link" href={link.linkProps.href as string} target="_blank" rel="noopener noreferrer">
                             {link.text}
+                            <span className="fr-sr-only"> - nouvelle fenêtre</span>
                           </a>
                         ) : (
                           <a className="fr-footer__top-link" href={link.linkProps.href as string}>
@@ -254,21 +255,25 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
               <li className="fr-footer__content-item">
                 <a className="fr-footer__content-link" href="https://info.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   info.gouv.fr
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               </li>
               <li className="fr-footer__content-item">
                 <a className="fr-footer__content-link" href="https://service-public.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   service-public.gouv.fr
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               </li>
               <li className="fr-footer__content-item">
                 <a className="fr-footer__content-link" href="https://legifrance.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   legifrance.gouv.fr
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               </li>
               <li className="fr-footer__content-item">
                 <a className="fr-footer__content-link" href="https://data.gouv.fr" target="_blank" rel="noopener noreferrer">
                   data.gouv.fr
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               </li>
             </ul>
@@ -280,6 +285,7 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
                 rel="noopener noreferrer"
               >
                 Ajouter à vos sources préférées sur Google
+                <span className="fr-sr-only"> - nouvelle fenêtre</span>
               </a>
             )}
           </div>
@@ -312,6 +318,7 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
               Sauf mention contraire, tous les contenus de ce site sont sous{" "}
               <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener noreferrer">
                 licence etalab-2.0
+                <span className="fr-sr-only"> - nouvelle fenêtre</span>
               </a>
             </p>
           </div>

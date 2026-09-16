@@ -303,7 +303,7 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
               formik={formik}
               name="applicant_contract_duration"
               label="Durée du contrat souhaitée"
-              emptyButtonAriaLabel="Vider la durée du contrat souhaitée"
+              emptyButtonHint="Vider la durée du contrat souhaitée"
               options={[6, 12, 18, 24, 36].map((len) => `${len} mois`)}
             />
             <MultiSelect name="applicant_contract_start" label="Début de contrat souhaité" formik={formik} options={contractStartLabels} />
@@ -416,19 +416,7 @@ const FormikInput = ({
   )
 }
 
-const FormikSelect = ({
-  formik,
-  name,
-  label,
-  options,
-  emptyButtonAriaLabel,
-}: {
-  formik: FormikType
-  name: string
-  label: string
-  options: string[]
-  emptyButtonAriaLabel: string
-}) => {
+const FormikSelect = ({ formik, name, label, options, emptyButtonHint }: { formik: FormikType; name: string; label: string; options: string[]; emptyButtonHint: string }) => {
   const value = formik.values[name]
   const touched = formik.touched[name]
   const error = formik.errors[name] as string
@@ -463,9 +451,9 @@ const FormikSelect = ({
         onClick={() => formik.setFieldValue(name, null, true)}
         style={{ textUnderlinePosition: "under", height: "fit-content", alignSelf: "flex-end" }}
         className={fr.cx("fr-link")}
-        aria-label={emptyButtonAriaLabel}
       >
         Réinitialiser
+        <span className="fr-sr-only"> - {emptyButtonHint}</span>
       </a>
     </Box>
   )

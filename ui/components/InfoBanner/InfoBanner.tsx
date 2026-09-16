@@ -18,6 +18,7 @@ const blueBannerText = (
     </Typography>
     <Link underline="always" href="https://calendly.com/camille-jeanblanc-beta/la-bonne-alternance" color="inherit" target="_blank" rel="noopener noreferrer">
       Réserver un créneau
+      <span className="fr-sr-only"> - nouvelle fenêtre</span>
     </Link>
   </Typography>
 )
@@ -49,6 +50,7 @@ const envBannerText = (
     Vos candidatures ne seront pas transmises aux recruteurs ni aux centres de formation. Pour accéder au site La bonne alternance, veuillez cliquer sur ce lien :{" "}
     <Link href="https://labonnealternance.apprentissage.beta.gouv.fr" color="inherit" underline="always" target="_blank" rel="noopener noreferrer">
       La bonne alternance - Trouvez votre alternance
+      <span className="fr-sr-only"> - nouvelle fenêtre</span>
     </Link>
   </Typography>
 )

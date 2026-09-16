@@ -25,6 +25,7 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
           }}
         >
           {lien}
+          <span className="fr-sr-only"> - nouvelle fenêtre</span>
         </Link>
       )}
     </>

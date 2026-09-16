@@ -216,6 +216,7 @@ export default function DetailEntreprise({
                   className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
                 >
                   Annuaire entreprises
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               )}
               {userRecruteur.email && (
@@ -226,6 +227,7 @@ export default function DetailEntreprise({
                   className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
                 >
                   Rechercher l&apos;email
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               )}
               {(userRecruteur.establishment_raison_sociale || userRecruteur.establishment_enseigne) && userRecruteur.address && (
@@ -236,6 +238,7 @@ export default function DetailEntreprise({
                   className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
                 >
                   Google Maps
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               )}
             </Box>
