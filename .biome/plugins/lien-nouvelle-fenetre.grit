@@ -1,0 +1,26 @@
+language js
+
+// RGAA 6.1 — Un lien qui ouvre un nouvel onglet doit l'annoncer dans son nom accessible.
+//
+// L'icône « lien externe » du DSFR est une icône CSS (::after) : elle n'est pas restituée
+// aux technologies d'assistance. Sans mention dans le nom, l'utilisateur de lecteur d'écran
+// change de contexte sans en être averti.
+//
+// Deux façons de se conformer :
+//   - passer par <DsfrLink>, qui pose target, rel et la mention automatiquement ;
+//   - ajouter <span className="fr-sr-only"> - nouvelle fenêtre</span> à l'intérieur du lien.
+//
+// La mention peut aussi venir d'un aria-label ou d'un title portant « nouvelle fenêtre ».
+//
+// L'audit RGAA du 25/11/2025 relevait 207 liens dans ce cas, sur les 27 pages de l'échantillon.
+
+or {
+  `<$tag $props>$children</$tag>`,
+  `<$tag $props />`
+} as $el where {
+  // `some` restreint aux attributs portés directement par l'élément : sans lui, tout
+  // ancêtre dont une prop contient du JSX avec un lien _blank serait signalé à son tour.
+  $props <: some `target="_blank"`,
+  ! $el <: r"(?s).*nouvelle fen[êe]tre.*",
+  register_diagnostic(span=$tag, message="RGAA 6.1 : ce lien ouvre un nouvel onglet sans l'annoncer. Utiliser <DsfrLink>, ou ajouter <span className='fr-sr-only'> - nouvelle fenêtre</span> à l'intérieur du lien.")
+}

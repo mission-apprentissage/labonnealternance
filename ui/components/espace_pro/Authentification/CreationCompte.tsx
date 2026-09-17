@@ -145,9 +145,9 @@ export const CreationCompteForm = ({
                   router.push(PAGES.static.espaceProCreationCfa.getPath())
                 }}
                 underline="hover"
-                target="_blank"
+                // Ce lien n'ouvre pas de nouvel onglet : il bascule l'onglet courant via router.push.
+                // Le target="_blank" qu'il portait annonçait un changement de contexte qui n'a pas lieu (RGAA 6.1).
                 href="#"
-                rel="noopener noreferrer"
                 sx={{ cursor: "pointer" }}
               >
                 veuillez utiliser ce lien
