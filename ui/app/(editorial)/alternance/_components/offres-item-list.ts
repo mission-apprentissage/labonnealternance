@@ -23,7 +23,9 @@ function stripHtmlTags(input: string): string {
 
 // Nom lisible pour le schéma. Pour une candidature spontanée (RECRUTEURS_LBA), il n'y a pas d'intitulé
 // de poste : on retombe sur le secteur/l'entreprise, comme la carte affichée à l'utilisateur.
-function cardName(card: OffreCard): string {
+// Sert aussi de nom accessible au lien de la carte (RGAA 6.1.4) : le titre affiché passe par
+// dangerouslySetInnerHTML, il doit être débarrassé de son balisage avant d'entrer dans un aria-label.
+export function cardName(card: OffreCard): string {
   const raw = card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? card.workplace_naf_label || card.workplace_name : card.offer_title
   return stripHtmlTags(raw ?? "")
 }

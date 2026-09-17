@@ -41,7 +41,9 @@ export default function Authentification() {
           case "DISABLED":
             setFieldError(
               "email",
-              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a href="mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Compte CFA La bonne alternance désactivé")}">support</a>`
+              // Message rendu en HTML par `parse()` dans CustomInput : DsfrLink n'est pas utilisable ici,
+              // la mention de changement de contexte est donc écrite à la main (RGAA 6.1).
+              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a href="mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Compte CFA La bonne alternance désactivé")}">support<span class="fr-sr-only"> - ouvre votre messagerie</span></a>`
             )
             setErrorMessage("Le compte utilisateur est désactivé")
             break

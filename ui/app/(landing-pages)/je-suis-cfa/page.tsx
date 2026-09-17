@@ -42,23 +42,20 @@ async function CarteMetiersCtaButtons() {
   return (
     <Box display={"flex"} flexDirection={{ md: "row", xs: "column" }} gap={fr.spacing("2v")} justifyContent={{ md: "start", xs: "center" }} textAlign={"center"}>
       {isCfaConnected ? (
-        <Button
-          linkProps={{ href: PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() }}
-          aria-label="Accéder à la carte des métiers"
-          priority="primary"
-          style={{ margin: "auto" }}
-        >
+        <Button linkProps={{ href: PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() }} priority="primary" style={{ margin: "auto" }}>
           Télécharger la carte des métiers
         </Button>
       ) : (
         <>
           <Box>
-            <Button linkProps={{ href: PAGES.static.authentification.getPath() }} aria-label="Accéder à la page de connexion" priority="secondary">
+            {/* RGAA 6.1 : les intitulés visibles sont explicites, un aria-label ne ferait que
+                remplacer le nom accessible par un texte qui ne les reprend pas. */}
+            <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
               Me connecter
             </Button>
           </Box>
           <Box>
-            <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} aria-label="Accéder à la page de création de compte" priority="secondary">
+            <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} priority="secondary">
               Me créer un compte
             </Button>
           </Box>
