@@ -2,7 +2,6 @@ import { Typography } from "@mui/material"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 import { DsfrHeaderProps } from "./Header"
@@ -12,6 +11,15 @@ import { footerId, type ZoneName } from "./zone-ids"
 // https://developers.google.com/search/docs/appearance/preferred-sources
 // Le domaine de production est utilisé quel que soit l'environnement, car c'est lui qui est référencé par Google.
 const GOOGLE_PREFERRED_SOURCE_URL = "https://www.google.com/preferences/source?q=labonnealternance.apprentissage.beta.gouv.fr"
+
+// Les liens externes du footer restent en <a> natif : ils n'ont pas besoin de la navigation
+// client, et DsfrLink tirerait next/link dans le first-load de toutes les pages. La mention
+// « nouvelle fenêtre » est donc posée à la main, en littéral pour rester vérifiable par la
+// règle .biome/plugins/lien-nouvelle-fenetre.grit.
+
+// RGAA 6.1 : le lien de marque contient trois textes visibles (brandTop et les alternatives des
+// deux logos). Le title du header n'en couvre que deux, il ne peut donc pas être réutilisé ici.
+const FOOTER_BRAND_TITLE = "République Française - Accueil - La bonne alternance - Un service proposé par numerique.gouv"
 
 type LinkItem = {
   linkProps: {
@@ -202,10 +210,10 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
                     {category.links.map((link, linkIndex) => (
                       <li key={linkIndex}>
                         {link.isExternal ? (
-                          // DsfrLink pose target, rel et la mention « nouvelle fenêtre » (RGAA 6.1).
-                          <DsfrLink className="fr-footer__top-link" href={link.linkProps.href as string}>
+                          <a className="fr-footer__top-link" href={link.linkProps.href as string} target="_blank" rel="noopener noreferrer">
                             {link.text}
-                          </DsfrLink>
+                            <span className="fr-sr-only"> - nouvelle fenêtre</span>
+                          </a>
                         ) : (
                           // Lien interne laissé en <a> : un passage à next/link ferait de ces liens
                           // une navigation SPA, avec la gestion du focus et du titre que cela implique (RGAA 12.8).
@@ -227,7 +235,9 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
           <div className="fr-footer__brand fr-enlarge-link" style={{ flex: "1 1 450px" }}>
             <a
               href={DsfrHeaderProps.homeLinkProps.href as string}
-              title={DsfrHeaderProps.homeLinkProps.title}
+              // RGAA 6.1 : le title doit reprendre tout le contenu du lien, ici trois textes
+              // visibles (brandTop, logo La bonne alternance, logo numerique.gouv).
+              title={FOOTER_BRAND_TITLE}
               style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "flex-end" }}
             >
               <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
@@ -256,30 +266,40 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
             <p className="fr-footer__content-desc">{isWidget ? widgetDescription : description}</p>
             <ul className="fr-footer__content-list">
               <li className="fr-footer__content-item">
-                <DsfrLink className="fr-footer__content-link" href="https://info.gouv.fr/">
+                <a className="fr-footer__content-link" href="https://info.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   info.gouv.fr
-                </DsfrLink>
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
+                </a>
               </li>
               <li className="fr-footer__content-item">
-                <DsfrLink className="fr-footer__content-link" href="https://service-public.gouv.fr/">
+                <a className="fr-footer__content-link" href="https://service-public.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   service-public.gouv.fr
-                </DsfrLink>
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
+                </a>
               </li>
               <li className="fr-footer__content-item">
-                <DsfrLink className="fr-footer__content-link" href="https://legifrance.gouv.fr/">
+                <a className="fr-footer__content-link" href="https://legifrance.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   legifrance.gouv.fr
-                </DsfrLink>
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
+                </a>
               </li>
               <li className="fr-footer__content-item">
-                <DsfrLink className="fr-footer__content-link" href="https://data.gouv.fr">
+                <a className="fr-footer__content-link" href="https://data.gouv.fr" target="_blank" rel="noopener noreferrer">
                   data.gouv.fr
-                </DsfrLink>
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
+                </a>
               </li>
             </ul>
             {!isWidget && (
-              <DsfrLink className="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-left fr-icon-google-fill fr-mt-2w" href={GOOGLE_PREFERRED_SOURCE_URL}>
+              <a
+                className="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-left fr-icon-google-fill fr-mt-2w"
+                href={GOOGLE_PREFERRED_SOURCE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Ajouter à vos sources préférées sur Google
-              </DsfrLink>
+                <span className="fr-sr-only"> - nouvelle fenêtre</span>
+              </a>
             )}
           </div>
         </div>
