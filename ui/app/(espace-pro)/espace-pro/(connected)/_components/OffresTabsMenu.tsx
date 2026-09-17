@@ -42,12 +42,12 @@ export const OffresTabsMenu = ({
     user.type === AUTHTYPE.ENTREPRISE
       ? {
           link: `${publicConfig.baseUrl}/espace-pro/entreprise/offre/${row._id}/mise-en-relation`,
-          ariaLabel: `Lien vers les mises en relation avec des centres de formation pour l'offre ${offerTitle}`,
+          hint: `${offerTitle}`,
           type: "link",
         }
       : {
           link: `${publicConfig.baseUrl}${buildSearchUrl({ mode: "formations", q: offerTitle, radius: 20, page: 0, hitsPerPage: 20, ...(hasGeo ? { latitude: lat, longitude: lon } : {}) })}`,
-          ariaLabel: `Lien vers les formations pour l'offre ${offerTitle} - nouvelle fenêtre`,
+          hint: `${offerTitle}`,
           type: "externalLink",
         }
   const directLink = `${publicConfig.baseUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
@@ -56,7 +56,7 @@ export const OffresTabsMenu = ({
   const actions: PopoverMenuAction[] = [
     {
       label: "Éditer l'offre",
-      ariaLabel: `Éditer l'offre ${offerTitle}`,
+      hint: `${offerTitle}`,
       onClick: () => {
         pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_EDIT_CLICKED })
         router.push(buildOfferEditionUrl(row._id))
@@ -66,7 +66,7 @@ export const OffresTabsMenu = ({
     },
     {
       label: "Prolonger l'offre",
-      ariaLabel: `Prolonger l'offre ${offerTitle}`,
+      hint: `${offerTitle}`,
       onClick: () => {
         pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_EXTEND_CLICKED })
         onOffreProlongationClick(row._id)
@@ -76,7 +76,7 @@ export const OffresTabsMenu = ({
     },
     {
       label: "Voir l'offre en ligne",
-      ariaLabel: `Voir l'offre ${offerTitle} en ligne - nouvelle fenêtre`,
+      hint: `${offerTitle}`,
       link: directLink,
       type: "externalLink",
       onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_VIEW_ONLINE_CLICKED }),
@@ -85,7 +85,7 @@ export const OffresTabsMenu = ({
     row.job_status !== JOB_STATUS.EN_ATTENTE
       ? {
           label: "Imprimer l'offre",
-          ariaLabel: "Lien vers la page d'impression de l'offre",
+          hint: `${offerTitle}`,
           link: `${publicConfig.baseUrl}/espace-pro/offre/impression/${row._id}`,
           onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_PRINT_CLICKED }),
           icon: <DsfrIcon name="fr-icon-printer-line" size={16} />,
@@ -102,7 +102,7 @@ export const OffresTabsMenu = ({
           setCopied(true)
         })
       },
-      ariaLabel: copied ? "Lien de partage de l'offre copié dans le presse-papiers" : `Partager le lien de l'offre ${offerTitle}`,
+      hint: `${offerTitle}`,
       type: "button",
       icon: (
         <Box color={copied ? fr.colors.decisions.text.default.success.default : undefined}>
@@ -115,14 +115,14 @@ export const OffresTabsMenu = ({
           label: "Partager aux CFA à proximité",
           link: cfaOptionParams.link,
           type: cfaOptionParams.type,
-          ariaLabel: cfaOptionParams.ariaLabel,
+          hint: cfaOptionParams.hint,
           onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_CFA_SHARE_CLICKED }),
           icon: <DsfrIcon name="fr-icon-presentation-line" size={16} />,
         } as PopoverMenuAction)
       : null,
     {
       label: "Supprimer l'offre",
-      ariaLabel: `Supprimer l'offre ${offerTitle}`,
+      hint: `${offerTitle}`,
       onClick: (e) => {
         e.preventDefault()
         e.stopPropagation()

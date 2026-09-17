@@ -86,7 +86,7 @@ export function ErrorComponent({ error }: ErrorProps) {
               Si le problème persiste, contactez le support à l’adresse{" "}
               <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Signalement d'un problème technique sur La bonne alternance")}`} external>
                 {publicConfig.publicEmail}
-                <span className="fr-sr-only"> - contacter l&apos;équipe La bonne alternance par email</span>
+                <span className="fr-sr-only"> - support de La bonne alternance</span>
               </DsfrLink>{" "}
               en décrivant votre erreur pour que nous puissions vous répondre.
             </Typography>

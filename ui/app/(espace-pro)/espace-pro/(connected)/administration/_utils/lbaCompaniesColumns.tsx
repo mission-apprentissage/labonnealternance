@@ -23,7 +23,7 @@ export function getLbaCompaniesColumns({ onSelect }: { onSelect: (siret: string)
               actions={[
                 {
                   label: "Éditer les coordonnées",
-                  ariaLabel: `Éditer les coordonnées de la société ${raison_sociale ?? siret}`,
+                  hint: `${raison_sociale ?? siret}`,
                   type: "button",
                   onClick: () => onSelect(siret),
                 },
