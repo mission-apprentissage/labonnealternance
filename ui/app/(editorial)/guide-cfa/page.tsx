@@ -114,9 +114,10 @@ const guideCfaPage = () => {
                   recommandé pour mettre en place une formation en apprentissage (voir page 73 à 77).
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
-                  Le <DsfrLink href="https://www.cfadock.fr/doc/Vade-mecum%20CFA.pdf">Vade-mecum CFA - PDF</DsfrLink> précise les modalités pratiques de gestion des contrats
-                  d’apprentissage. Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le secteur privé et a été élaboré en concertation avec les
-                  têtes de réseau des Centres de Formation pour Apprentis (CFA) et la Direction Générale Emploi et Formation Professionnelle (DGEFP). Vous y retrouverez{" "}
+                  Le <DsfrLink href="https://www.cfadock.fr/docs/Ressources/240201-VADEMECUM_2024-V2.pdf">Vade-mecum CFA - PDF, 3,8 Mo</DsfrLink> précise les modalités pratiques de
+                  gestion des contrats d’apprentissage. Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le secteur privé et a été élaboré en
+                  concertation avec les têtes de réseau des Centres de Formation pour Apprentis (CFA) et la Direction Générale Emploi et Formation Professionnelle (DGEFP). Vous y
+                  retrouverez{" "}
                   <Typography component="span" fontWeight="bold">
                     le modèle de Convention de mobilité
                   </Typography>{" "}

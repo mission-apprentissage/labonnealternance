@@ -226,8 +226,8 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
                 vous avez conclu un contrat avec un employeur public ;
               </>,
               <>
-                <DsfrLink href="https://www.agefiph.fr/sites/default/files/medias/fichiers/2025-02/Metodia_Janvier_2025.pdf">
-                  Consultez l’offre d’aides financières et services de l’Agefiph - PDF
+                <DsfrLink href="https://www.agefiph.fr/sites/default/files/medias/fichiers/2026-01/Agefiph-Metodia_2026-01.pdf">
+                  Consultez l’offre d’aides financières et services de l’Agefiph - PDF, 397 ko
                 </DsfrLink>{" "}
                 si vous avez conclu un contrat avec un employeur privé.
               </>,
