@@ -398,7 +398,7 @@ const ComprendreLaRemunerationPage = () => {
         <Paragraph>
           Un apprenti qui signe un nouveau contrat d'apprentissage après un premier contrat ayant conduit à l'obtention du diplôme bénéficie d'une rémunération au moins égale à
           celle qu'il percevait lors de sa dernière année d'exécution du contrat précédent, sauf si l'application du barème standard en fonction de son âge lui est plus favorable (
-          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033223">article D. 6222-29 du Code du travail – Légifrance</DsfrLink>;{" "}
+          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033223">article D. 6222-29 du Code du travail – Légifrance</DsfrLink> ;{" "}
           <DsfrLink href="https://travail-emploi.gouv.fr/formation-en-alternance/apprentissage-et-formation-en-alternance">
             travail-emploi.gouv.fr – Le contrat d'apprentissage
           </DsfrLink>

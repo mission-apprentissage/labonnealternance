@@ -43,7 +43,7 @@ export default function Contact() {
               email à<br />
               <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Page%20Contact`}>
                 {publicConfig.publicEmail}
-                <span className="fr-sr-only"> - envoyer un email au service candidat de La bonne alternance</span>
+                <span className="fr-sr-only"> - service candidat de La bonne alternance</span>
               </DsfrLink>
             </Typography>
           </Grid>

@@ -147,7 +147,7 @@ const PreparerSonProjetEnAlternancePage = () => {
           professionnelle reconnue (un diplôme ou un titre professionnel enregistré dans le Répertoire national des certifications professionnelles –{" "}
           <DsfrLink href={"https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1"}>
             RNCP
-            <span className="fr-sr-only">{" - Consulter le Répertoire National des Certifications Professionnelles"}</span>
+            <span className="fr-sr-only">{" - Consulter le Répertoire national des certifications professionnelles"}</span>
           </DsfrLink>{" "}
           ) ; un certificat de qualification professionnelle (CQP) ; une qualification reconnue dans les classifications d’une convention collective nationale.
         </Paragraph>

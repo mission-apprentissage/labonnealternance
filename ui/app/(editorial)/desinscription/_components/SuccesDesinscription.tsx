@@ -43,7 +43,7 @@ const SuccesDesinscription = () => (
               Celles ayant diffusé une offre d'emploi sur <DsfrLink href="https://www.francetravail.fr">France Travail</DsfrLink> ou ses{" "}
               <DsfrLink href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html">
                 sites partenaires
-                <span className="fr-sr-only">{" - Accéder au site de France Travail"}</span>
+                <span className="fr-sr-only">{" - Accéder à la liste des sites partenaires de France Travail"}</span>
               </DsfrLink>
             </Typography>
 

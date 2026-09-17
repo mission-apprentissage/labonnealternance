@@ -66,10 +66,11 @@ export default function EspaceDeveloppeurs() {
                     href: "https://api.apprentissage.beta.gouv.fr/fr/explorer",
                     target: "_blank",
                     rel: "noopener noreferrer",
-                    title: "Explorer l'API - nouvelle fenêtre",
                   }}
                 >
                   Explorer l'API
+                  {/* RGAA 6.1 : le target est passé par linkProps, la règle Biome ne le voit pas. */}
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </Button>
                 <Button
                   priority="secondary"
@@ -78,10 +79,11 @@ export default function EspaceDeveloppeurs() {
                     href: "https://api.apprentissage.beta.gouv.fr/fr/documentation-technique",
                     target: "_blank",
                     rel: "noopener noreferrer",
-                    title: "Voir la documentation technique - nouvelle fenêtre",
                   }}
                 >
                   Voir la documentation technique
+                  {/* RGAA 6.1 : le target est passé par linkProps, la règle Biome ne le voit pas. */}
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </Button>
               </Grid>
               <Typography

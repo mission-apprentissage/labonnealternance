@@ -22,6 +22,9 @@ export const DocumentGridItem = ({ title, link, download }: { title: string; lin
             <Box display="flex" flexDirection={"column"} gap={fr.spacing("2v")}>
               <Typography component="span" variant="body1" color={fr.colors.decisions.text.title.blueFrance.default} fontWeight={"bold"}>
                 {title}
+                {/* RGAA 6.1 : avec enlargeLink, ce titre est le nom accessible du lien de la carte.
+                    Les documents consultés en ligne ouvrent un onglet, il faut l'annoncer. */}
+                {!download && <span className="fr-sr-only"> - nouvelle fenêtre</span>}
               </Typography>
             </Box>
           </Box>
