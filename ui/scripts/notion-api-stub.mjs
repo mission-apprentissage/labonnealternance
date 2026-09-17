@@ -15,6 +15,10 @@ import { fileURLToPath } from "node:url"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const FIXTURES = process.env.FIXTURES_DIR ?? join(__dirname, ".notion-fixtures")
 const UPSTREAM = "https://app.notion.com/api/v3"
+// Liste blanche des endpoints appelés par notion-client : le segment d'URL entrant sert à
+// construire la requête sortante, il ne doit jamais être repris tel quel (SSRF). On ne garde
+// que la valeur issue de cette liste, jamais celle reçue.
+const ALLOWED_ENDPOINTS = ["getRecordValues", "getSignedFileUrls", "loadPageChunk", "queryCollection", "search", "syncRecordValuesMain"]
 const PORT = Number(process.env.PORT ?? 4545)
 let mode = process.env.MODE ?? "normal"
 let flakyCount = Number(process.env.FLAKY ?? 2)
@@ -53,7 +57,13 @@ const server = createServer(async (req, res) => {
     return res.end(JSON.stringify({ ok: true, mode, flakyCount }))
   }
 
-  const endpoint = url.pathname.split("/").pop()
+  const requested = url.pathname.split("/").pop()
+  const endpoint = ALLOWED_ENDPOINTS.find((name) => name === requested)
+  if (endpoint === undefined) {
+    res.writeHead(404, { "content-type": "application/json" })
+    return res.end(JSON.stringify({ error: "endpoint inconnu" }))
+  }
+
   const body = await readBody(req)
   hits.push(endpoint)
 
