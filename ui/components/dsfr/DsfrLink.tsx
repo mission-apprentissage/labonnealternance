@@ -4,7 +4,7 @@ import NextLink from "next/link"
 import type { CSSProperties, ReactNode } from "react"
 import { useMemo } from "react"
 
-import { publicConfig } from "@/config.public"
+import { CONTEXT_CHANGE_HINT, isExternalHref, resolveContextChange } from "./link.utils"
 
 export function DsfrLink({
   children,
@@ -25,25 +25,14 @@ export function DsfrLink({
 } & LinkProps) {
   const { href, ...rest } = props
 
-  const isExternal = useMemo(() => {
-    if (typeof external === "boolean") return external
-    if (typeof href !== "string") return false
-    const url = new URL(href, publicConfig.baseUrl)
-    if (url.protocol === "mailto:") return true
-    if (url.protocol !== "http:" && url.protocol !== "https:") return false
-    return new URL(href, publicConfig.baseUrl).hostname !== publicConfig.host
-  }, [href, external])
+  const isExternal = useMemo(() => isExternalHref(href, external), [href, external])
 
   // RGAA 6.1 : l'icône « lien externe » du DSFR est une icône CSS, donc non restituée.
   // Le changement de contexte doit être annoncé dans le nom accessible du lien.
-  // Les mailto: et tel: reçoivent target="_blank" sans pour autant ouvrir une page :
-  // on ne les annonce pas.
-  const opensNewWindow = useMemo(() => {
-    if (!isExternal) return false
-    if (typeof href !== "string") return false
-    const { protocol } = new URL(href, publicConfig.baseUrl)
-    return protocol === "http:" || protocol === "https:"
-  }, [isExternal, href])
+  // Un mailto: ouvre le client de messagerie et non une page : il garde target="_blank"
+  // pour ne pas quitter la page courante, mais s'annonce pour ce qu'il fait.
+  // Un tel: n'est pas externe (cf. isExternalHref) : ni target, ni annonce.
+  const contextChange = useMemo(() => resolveContextChange(href, external), [href, external])
 
   return (
     <NextLink
@@ -65,7 +54,7 @@ export function DsfrLink({
       {...rest}
     >
       {children}
-      {opensNewWindow && <span className="fr-sr-only"> - nouvelle fenêtre</span>}
+      {contextChange !== null && <span className="fr-sr-only">{CONTEXT_CHANGE_HINT[contextChange]}</span>}
     </NextLink>
   )
 }
