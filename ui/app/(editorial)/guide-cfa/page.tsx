@@ -114,7 +114,7 @@ const guideCfaPage = () => {
                   recommandé pour mettre en place une formation en apprentissage (voir page 73 à 77).
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
-                  Le <DsfrLink href="https://www.cfadock.fr/doc/Vade-mecum%20CFA.pdf">Vade-mecum CFA</DsfrLink> précise les modalités pratiques de gestion des contrats
+                  Le <DsfrLink href="https://www.cfadock.fr/doc/Vade-mecum%20CFA.pdf">Vade-mecum CFA - PDF</DsfrLink> précise les modalités pratiques de gestion des contrats
                   d’apprentissage. Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le secteur privé et a été élaboré en concertation avec les
                   têtes de réseau des Centres de Formation pour Apprentis (CFA) et la Direction Générale Emploi et Formation Professionnelle (DGEFP). Vous y retrouverez{" "}
                   <Typography component="span" fontWeight="bold">
@@ -180,11 +180,13 @@ const guideCfaPage = () => {
               <DocumentGridItem
                 title="Convention de réduction ou d’allongement de la durée du contrat d’apprentissage"
                 link="https://www.legifrance.gouv.fr/download/pdf?id=RXAkPiH46HPlfBr9nv5wqIvKSk5AJ5_K4MfKeTuWgLs="
+                format="PDF"
               />
               <DocumentGridItem
                 download="affiche-cfa-avril-2026.pdf"
                 title="Télécharger l’affiche La bonne alternance, à exposer dans votre CFA (format A3)."
                 link="/ressources/affiche-cfa-avril-2026.pdf"
+                format="PDF, 2,7 Mo"
               />
             </Grid>
           </Grid>

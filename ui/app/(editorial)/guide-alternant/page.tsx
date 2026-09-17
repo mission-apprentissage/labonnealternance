@@ -240,7 +240,7 @@ const GuideAlternantPage = () => {
                         Tableau de suivi à imprimer - PDF
                       </DsfrLink>
                       <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
-                        (3.9 Mo)
+                        (3,9 Mo)
                       </Typography>
                     </Box>
                     <Box

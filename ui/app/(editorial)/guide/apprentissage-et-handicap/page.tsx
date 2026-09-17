@@ -227,7 +227,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
               </>,
               <>
                 <DsfrLink href="https://www.agefiph.fr/sites/default/files/medias/fichiers/2025-02/Metodia_Janvier_2025.pdf">
-                  Consultez l’offre d’aides financières et services de l’Agefiph
+                  Consultez l’offre d’aides financières et services de l’Agefiph - PDF
                 </DsfrLink>{" "}
                 si vous avez conclu un contrat avec un employeur privé.
               </>,

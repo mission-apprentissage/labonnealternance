@@ -3,7 +3,18 @@ import Card from "@codegouvfr/react-dsfr/Card"
 import { Box, Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
-export const DocumentGridItem = ({ title, link, download }: { title: string; link: string; download?: string }) => {
+export const DocumentGridItem = ({
+  title,
+  link,
+  download,
+  format,
+}: {
+  title: string
+  link: string
+  download?: string
+  /** Format et poids du document, quand le lien pointe un fichier et non une page (RGAA 13.3/13.4). */
+  format?: string
+}) => {
   return (
     <Grid
       size={{ md: 4, xs: 12 }}
@@ -26,6 +37,11 @@ export const DocumentGridItem = ({ title, link, download }: { title: string; lin
                     Les documents consultés en ligne ouvrent un onglet, il faut l'annoncer. */}
                 {!download && <span className="fr-sr-only"> - nouvelle fenêtre</span>}
               </Typography>
+              {format && (
+                <Typography component="span" variant="caption" color={fr.colors.decisions.text.mention.grey.default}>
+                  {format}
+                </Typography>
+              )}
             </Box>
           </Box>
         }
