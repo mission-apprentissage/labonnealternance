@@ -12,6 +12,14 @@ language js
 //
 // La mention peut aussi venir d'un aria-label ou d'un title portant « nouvelle fenêtre ».
 //
+// La mention doit être écrite en toutes lettres dans le JSX : la règle lit le texte source de
+// l'élément, une constante importée lui est donc invisible.
+//
+// Limite connue : la règle ne voit que les attributs JSX de l'élément. Un target passé dans
+// un objet de props (`linkProps={{ target: "_blank" }}` des composants react-dsfr Button,
+// Card, Tile) lui échappe, de même que le target posé à l'intérieur d'un composant tiers
+// (react-notion-x). Ces cas se contrôlent à la revue.
+//
 // L'audit RGAA du 25/11/2025 relevait 207 liens dans ce cas, sur les 27 pages de l'échantillon.
 
 or {
@@ -20,7 +28,10 @@ or {
 } as $el where {
   // `some` restreint aux attributs portés directement par l'élément : sans lui, tout
   // ancêtre dont une prop contient du JSX avec un lien _blank serait signalé à son tour.
-  $props <: some `target="_blank"`,
+  $props <: some or {
+    `target="_blank"`,
+    `target={"_blank"}`
+  },
   ! $el <: r"(?s).*nouvelle fen[êe]tre.*",
   register_diagnostic(span=$tag, message="RGAA 6.1 : ce lien ouvre un nouvel onglet sans l'annoncer. Utiliser <DsfrLink>, ou ajouter <span className='fr-sr-only'> - nouvelle fenêtre</span> à l'intérieur du lien.")
 }
