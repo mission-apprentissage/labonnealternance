@@ -22,12 +22,18 @@ let flakyCount = Number(process.env.FLAKY ?? 2)
 if (!existsSync(FIXTURES)) mkdirSync(FIXTURES, { recursive: true })
 
 const hits = []
+const countByEndpoint = () => {
+  const counts = {}
+  for (const endpoint of hits) counts[endpoint] = (counts[endpoint] ?? 0) + 1
+  return counts
+}
 
 const readBody = (req) =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     let raw = ""
     req.on("data", (c) => (raw += c))
     req.on("end", () => resolve(raw))
+    req.on("error", reject)
   })
 
 const fixturePath = (endpoint, body) => join(FIXTURES, `${endpoint}-${createHash("sha1").update(body).digest("hex").slice(0, 12)}.json`)
@@ -37,7 +43,7 @@ const server = createServer(async (req, res) => {
 
   if (url.pathname === "/__stats") {
     res.writeHead(200, { "content-type": "application/json" })
-    return res.end(JSON.stringify({ mode, total: hits.length, byEndpoint: hits.reduce((acc, h) => ({ ...acc, [h]: (acc[h] ?? 0) + 1 }), {}) }))
+    return res.end(JSON.stringify({ mode, total: hits.length, byEndpoint: countByEndpoint() }))
   }
   if (url.pathname === "/__reset") {
     hits.length = 0
@@ -85,4 +91,6 @@ const server = createServer(async (req, res) => {
   res.end(payload)
 })
 
-server.listen(PORT, () => console.log(`[stub] http://localhost:${PORT}/api/v3 mode=${mode}`))
+// Uniquement en loopback : ce bouchon relaie vers Notion et écrit sur disque, il n'a rien à faire
+// sur le réseau local.
+server.listen(PORT, "127.0.0.1", () => console.log(`[stub] http://localhost:${PORT}/api/v3 mode=${mode}`))
