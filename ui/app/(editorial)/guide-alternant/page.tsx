@@ -237,11 +237,11 @@ const GuideAlternantPage = () => {
                     >
                       <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"} external>
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
-                        Tableau de suivi à imprimer - PDF
+                        Tableau de suivi à imprimer - PDF {/* RGAA 13.6 : format et poids font partie du nom accessible du lien de téléchargement. */}
+                        <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
+                          (3,9 Mo)
+                        </Typography>
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
-                        (3,9 Mo)
-                      </Typography>
                     </Box>
                     <Box
                       sx={{
@@ -252,11 +252,11 @@ const GuideAlternantPage = () => {
                     >
                       <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"} external>
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
-                        Tableau de suivi à imprimer - Excel
+                        Tableau de suivi à imprimer - Excel{" "}
+                        <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
+                          (12 ko)
+                        </Typography>
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
-                        (12 ko)
-                      </Typography>
                     </Box>
                     <Box
                       sx={{
@@ -267,11 +267,11 @@ const GuideAlternantPage = () => {
                     >
                       <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"} external>
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
-                        Tableau de suivi à imprimer - Numbers
+                        Tableau de suivi à imprimer - Numbers{" "}
+                        <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
+                          (788 ko)
+                        </Typography>
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
-                        (788 ko)
-                      </Typography>
                     </Box>
                     <Box
                       sx={{
@@ -282,11 +282,11 @@ const GuideAlternantPage = () => {
                     >
                       <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"} external>
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
-                        Tableau de suivi à imprimer - Libre office
+                        Tableau de suivi à imprimer - Libre office{" "}
+                        <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
+                          (29 ko)
+                        </Typography>
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
-                        (29 ko)
-                      </Typography>
                     </Box>
                   </Box>
                 </Box>
