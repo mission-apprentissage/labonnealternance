@@ -446,15 +446,26 @@ const FormikSelect = ({ formik, name, label, options, emptyButtonHint }: { formi
         state={displayedErrorOpt ? "error" : "default"}
         stateRelatedMessage={displayedErrorOpt}
       />
-      <a
-        href="#"
+      {/* RGAA 7.1 : réinitialiser un champ est une action, pas un lien. Le <a href="#"> qui
+          l'implémentait n'avait pas de destination et renvoyait en haut de page au clavier.
+          type="button" évite en plus de soumettre le formulaire. */}
+      <button
+        type="button"
         onClick={() => formik.setFieldValue(name, null, true)}
-        style={{ textUnderlinePosition: "under", height: "fit-content", alignSelf: "flex-end" }}
+        style={{
+          textUnderlinePosition: "under",
+          height: "fit-content",
+          alignSelf: "flex-end",
+          background: "none",
+          border: "none",
+          padding: 0,
+          cursor: "pointer",
+        }}
         className={fr.cx("fr-link")}
       >
         Réinitialiser
         <span className="fr-sr-only"> - {emptyButtonHint}</span>
-      </a>
+      </button>
     </Box>
   )
 }
