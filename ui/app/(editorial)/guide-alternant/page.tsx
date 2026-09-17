@@ -228,14 +228,11 @@ const GuideAlternantPage = () => {
                     Pour vous aider dans le suivi de vos candidatures, La bonne alternance vous propose un exemple de tableau :
                   </Typography>
                   <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("3v")}>
-                    <Box
-                      sx={{
-                        "& .fr-link::after": {
-                          display: "none",
-                        },
-                      }}
-                    >
-                      <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"} external>
+                    <Box>
+                      <DsfrLink
+                        href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"}
+                        download="Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"
+                      >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - PDF {/* RGAA 13.6 : format et poids font partie du nom accessible du lien de téléchargement. */}
                         <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
@@ -243,14 +240,11 @@ const GuideAlternantPage = () => {
                         </Typography>
                       </DsfrLink>
                     </Box>
-                    <Box
-                      sx={{
-                        "& .fr-link::after": {
-                          display: "none",
-                        },
-                      }}
-                    >
-                      <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"} external>
+                    <Box>
+                      <DsfrLink
+                        href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"}
+                        download="Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"
+                      >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Excel{" "}
                         <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
@@ -258,14 +252,11 @@ const GuideAlternantPage = () => {
                         </Typography>
                       </DsfrLink>
                     </Box>
-                    <Box
-                      sx={{
-                        "& .fr-link::after": {
-                          display: "none",
-                        },
-                      }}
-                    >
-                      <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"} external>
+                    <Box>
+                      <DsfrLink
+                        href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"}
+                        download="Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"
+                      >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Numbers{" "}
                         <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
@@ -273,14 +264,11 @@ const GuideAlternantPage = () => {
                         </Typography>
                       </DsfrLink>
                     </Box>
-                    <Box
-                      sx={{
-                        "& .fr-link::after": {
-                          display: "none",
-                        },
-                      }}
-                    >
-                      <DsfrLink href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"} external>
+                    <Box>
+                      <DsfrLink
+                        href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"}
+                        download="Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"
+                      >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Libre office{" "}
                         <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>

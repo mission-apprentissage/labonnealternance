@@ -6,6 +6,7 @@ import Image from "next/image"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrIcon } from "@/components/DsfrIcon"
+import { CONTEXT_CHANGE_HINT } from "@/components/dsfr/link.utils"
 import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = METADATA.static.espaceProCfaCarteDEtudiantDesMetiers()
@@ -43,12 +44,17 @@ const CarteDEtudiantDesMetiersPage = () => (
               style={{ height: "100%" }}
             />
           </Box>
-          <Button linkProps={{ href: "/ressources/carte-d-etudiant-des-metiers.zip" }} style={{ margin: "auto", marginTop: fr.spacing("3w") }}>
+          <Button
+            linkProps={{ href: "/ressources/carte-d-etudiant-des-metiers.zip", download: "carte-d-etudiant-des-metiers.zip" }}
+            style={{ margin: "auto", marginTop: fr.spacing("3w") }}
+          >
             <DsfrIcon name="fr-icon-download-line" size={16} />
             Télécharger la carte (ZIP)
             <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
               (2 Mo)
             </Typography>
+            {/* RGAA 6.1 : le lien enregistre un fichier sans ouvrir de fenêtre, il faut l'annoncer. */}
+            <span className="fr-sr-only">{CONTEXT_CHANGE_HINT.download}</span>
           </Button>
         </Grid>
         <Grid size={{ md: 8, xs: 12 }} display={"flex"} flexDirection={"column"} gap={{ md: fr.spacing("3w"), xs: fr.spacing("2w") }}>

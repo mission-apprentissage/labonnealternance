@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Card from "@codegouvfr/react-dsfr/Card"
 import { Box, Grid, Typography } from "@mui/material"
 import Image from "next/image"
+import { CONTEXT_CHANGE_HINT, isHonoredDownload } from "@/components/dsfr/link.utils"
 
 export const DocumentGridItem = ({
   title,
@@ -11,10 +12,13 @@ export const DocumentGridItem = ({
 }: {
   title: string
   link: string
+  /** Nom du fichier enregistré. Même origine uniquement : ailleurs le navigateur ignore l'attribut. */
   download?: string
   /** Format et poids du document, quand le lien pointe un fichier et non une page (RGAA 13.3/13.4). */
   format?: string
 }) => {
+  const isDownload = isHonoredDownload(link, download)
+
   return (
     <Grid
       size={{ md: 4, xs: 12 }}
@@ -34,8 +38,9 @@ export const DocumentGridItem = ({
               <Typography component="span" variant="body1" color={fr.colors.decisions.text.title.blueFrance.default} fontWeight={"bold"}>
                 {title}
                 {/* RGAA 6.1 : avec enlargeLink, ce titre est le nom accessible du lien de la carte.
-                    Les documents consultés en ligne ouvrent un onglet, il faut l'annoncer. */}
-                {!download && <span className="fr-sr-only"> - nouvelle fenêtre</span>}
+                    Un document consulté en ligne ouvre un onglet, un fichier téléchargé n'en ouvre
+                    aucun : on annonce ce que le navigateur fait vraiment. */}
+                <span className="fr-sr-only">{CONTEXT_CHANGE_HINT[isDownload ? "download" : "window"]}</span>
               </Typography>
               {format && (
                 <Typography component="span" variant="caption" color={fr.colors.decisions.text.mention.grey.default}>
@@ -51,7 +56,7 @@ export const DocumentGridItem = ({
         }}
         linkProps={{
           href: link,
-          ...(download ? { download } : { target: "_blank", rel: "noopener noreferrer" }),
+          ...(isDownload ? { download } : { target: "_blank", rel: "noopener noreferrer" }),
         }}
         size="small"
         enlargeLink
