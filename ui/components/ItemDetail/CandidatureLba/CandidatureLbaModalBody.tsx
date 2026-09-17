@@ -199,12 +199,12 @@ export const CandidatureLbaModalBody = ({
               }}
             >
               En remplissant ce formulaire, vous acceptez les{" "}
-              <DsfrLink href="/conditions-generales-utilisation" aria-description="Conditions générales d'utilisation - nouvelle fenêtre" external>
+              <DsfrLink href="/conditions-generales-utilisation" external>
                 Conditions générales d&apos;utilisation
               </DsfrLink>{" "}
               du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}. Pour plus d'informations sur le traitement de vos
               données à caractère personnel, veuillez consulter la{" "}
-              <DsfrLink href="/politique-de-confidentialite" aria-description="politique de confidentialité - nouvelle fenêtre" external>
+              <DsfrLink href="/politique-de-confidentialite" external>
                 Politique de confidentialité
               </DsfrLink>{" "}
               de La bonne alternance.
