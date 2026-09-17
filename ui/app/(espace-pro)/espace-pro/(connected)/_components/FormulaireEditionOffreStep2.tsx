@@ -10,6 +10,8 @@ import { type IJob, ZJobFields } from "shared"
 import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import type z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { publicConfig } from "@/config.public"
 import { getRelatedEtablissementsFromRome } from "@/utils/api"
 
 const questions = [
@@ -110,7 +112,7 @@ export const FormulaireEditionOffreStep2 = ({
               mt: fr.spacing("6v"),
             }}
           >
-            Vous avez une question à suggérer ? Écrivez-nous à <a href="mailto:contact@labonnealternance.apprentissage.beta.fr">contact@labonnealternance.apprentissage.beta.fr</a>
+            Vous avez une question à suggérer ? Écrivez-nous à <DsfrLink href={`mailto:${publicConfig.publicEmail}`}>{publicConfig.publicEmail}</DsfrLink>
           </Typography>
           <Buttons offre={offre} onCancel={onCancel} isFtEligible={isFtEligible} hasCfa={hasCfa} isPendingCfaCheck={isPendingCfaCheck} />
         </>
