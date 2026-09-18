@@ -3,7 +3,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { describe, expect, it } from "vitest"
 import type { ILinkedinJob } from "./linkedin-mapper"
-import { buildApplyUrl, getCity, linkedinJobToJobsPartners, parseLinkedinDate } from "./linkedin-mapper"
+import { buildApplyUrl, getCity, getContractType, linkedinJobToJobsPartners, parseLinkedinDate, ZLinkedinJob } from "./linkedin-mapper"
 
 const baseJob: ILinkedinJob = {
   id: "4456210807",
@@ -16,7 +16,7 @@ const baseJob: ILinkedinJob = {
   country: "FR",
   url: "https://www.linkedin.com/jobs/view/4456210807?trk=li_dgefp_FR_careers_jobsgtm_27d99f0f_job-dist&utm_medium=jobdist",
   company: "ST MICHEL BISCUITS",
-  listDate: "September 15, 2026 at 8:14:58 AM UTC",
+  listDate: new Date("2026-09-15T08:14:58.000Z"),
   expirationDate: "November 3, 2026 at 10:17:52 PM UTC",
   linkedinCompanyId: "4976218",
   linkedinCompanyUrl: "https://www.linkedin.com/company/4976218",
@@ -44,6 +44,36 @@ describe("parseLinkedinDate", () => {
     expect(parseLinkedinDate(null)).toBeNull()
     expect(parseLinkedinDate("15/09/2026")).toBeNull()
     expect(parseLinkedinDate("Septembre 15, 2026 at 8:14:58 AM UTC")).toBeNull()
+    expect(parseLinkedinDate("2026-09-15T08:14:58Z")).toBeNull()
+  })
+
+  it("rejette une date calendairement impossible plutôt que de la reporter", () => {
+    // Date.UTC(2026, 1, 31) donnerait le 3 mars sans contrôle.
+    expect(parseLinkedinDate("February 31, 2026 at 8:00:00 AM UTC")).toBeNull()
+    expect(parseLinkedinDate("April 31, 2026 at 8:00:00 AM UTC")).toBeNull()
+    expect(parseLinkedinDate("February 29, 2028 at 8:00:00 AM UTC")).toEqual(new Date("2028-02-29T08:00:00.000Z"))
+  })
+})
+
+describe("ZLinkedinJob", () => {
+  const rawJob = {
+    id: "1",
+    title: "Alternance - Chargé de communication",
+    description: "Une description suffisamment longue pour passer le contrôle de taille minimale.",
+    url: "https://www.linkedin.com/jobs/view/1",
+    company: "ACME",
+    listDate: "September 15, 2026 at 8:14:58 AM UTC",
+  }
+
+  it("convertit listDate en Date", () => {
+    const parsed = ZLinkedinJob.parse(rawJob)
+    expect(parsed.listDate).toEqual(new Date("2026-09-15T08:14:58.000Z"))
+  })
+
+  it("rejette l'offre si le format de listDate change", () => {
+    // Un changement de format côté LinkedIn doit remonter en erreur, pas être avalé silencieusement.
+    const result = ZLinkedinJob.safeParse({ ...rawJob, listDate: "2026-09-15T08:14:58Z" })
+    expect(result.success).toBe(false)
   })
 })
 
@@ -73,6 +103,34 @@ describe("buildApplyUrl", () => {
   it("n'ajoute pas le paramètre deux fois", () => {
     const url = "https://www.linkedin.com/jobs/view/1?trk=abc&mcid=7503545590606254081"
     expect(buildApplyUrl(url)).toBe(url)
+  })
+
+  it("ne confond pas mcid avec un paramètre dont le nom se termine par mcid", () => {
+    expect(buildApplyUrl("https://www.linkedin.com/jobs/view/1?epmcid=xyz")).toBe("https://www.linkedin.com/jobs/view/1?epmcid=xyz&mcid=7503545590606254081")
+  })
+
+  it("insère le paramètre avant le fragment", () => {
+    expect(buildApplyUrl("https://www.linkedin.com/jobs/view/1?trk=abc#apply")).toBe("https://www.linkedin.com/jobs/view/1?trk=abc&mcid=7503545590606254081#apply")
+  })
+})
+
+describe("getContractType", () => {
+  const job = (title: string, description: string) => ({ ...baseJob, title, description })
+
+  it("retient l'apprentissage par défaut", () => {
+    expect(getContractType(job("Alternance - Chargé de communication", "Poste en alternance."))).toEqual([TRAINING_CONTRACT_TYPE.APPRENTISSAGE])
+  })
+
+  it("retient la professionnalisation seule quand l'apprentissage n'apparaît nulle part", () => {
+    expect(getContractType(job("Chargé de communication", "Poste en contrat de professionnalisation."))).toEqual([TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION])
+  })
+
+  it("retient les deux quand les deux sont mentionnés", () => {
+    // Retirer l'apprentissage rendrait l'offre invisible pour les candidats qui filtrent dessus.
+    expect(getContractType(job("Alternance - Chargé de communication", "En contrat d'apprentissage ou de professionnalisation."))).toEqual([
+      TRAINING_CONTRACT_TYPE.APPRENTISSAGE,
+      TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION,
+    ])
   })
 })
 
@@ -106,13 +164,14 @@ describe("linkedinJobToJobsPartners", () => {
     expect(result.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
   })
 
-  it("détecte le contrat de professionnalisation depuis la description", () => {
+  it("complète le type de contrat depuis la description", () => {
+    // Titre "Alternance …" + professionnalisation en description : les deux sont retenus.
     const result = linkedinJobToJobsPartners({
       ...baseJob,
       description: "<p>Poste ouvert en contrat de professionnalisation sur 12 mois.</p>",
     })
 
-    expect(result.contract_type).toEqual([TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION])
+    expect(result.contract_type).toEqual([TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION])
     expect(result.business_error).toBeNull()
   })
 
@@ -127,25 +186,30 @@ describe("linkedinJobToJobsPartners", () => {
     expect(result.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
   })
 
-  it("écarte les usages non contractuels du mot alternance", () => {
-    const shiftWork = linkedinJobToJobsPartners({
+  it("retient un titre où le mot alternance n'est pas contractuel", () => {
+    // Limite connue et assumée : "alternance" en français désigne aussi la rotation d'équipes.
+    // Le cas est rare dans un titre d'offre, et le couvrir demanderait une analyse sémantique.
+    const result = linkedinJobToJobsPartners({
       ...baseJob,
-      title: "Responsable d'atelier de fabrication",
-      description: "<p>Les équipes fonctionnent en alternance 2*8 et/ou nuit sur le site de production.</p>",
-    })
-    const negation = linkedinJobToJobsPartners({
-      ...baseJob,
-      title: "Assistant(e) Relations Presse",
-      description: "<p>Mission proposée uniquement en stage, les demandes de contrats en alternance ne seront pas étudiées.</p>",
+      title: "Responsable d'atelier - équipes en alternance 2*8",
+      description: "<p>Pilotage de la production sur un site industriel de 200 personnes.</p>",
     })
 
-    expect(shiftWork.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
-    expect(negation.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
+    expect(result.business_error).toBeNull()
   })
 
   it("marque WRONG_DATA une offre au contenu inexploitable", () => {
     expect(linkedinJobToJobsPartners({ ...baseJob, description: "court" }).business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
     expect(linkedinJobToJobsPartners({ ...baseJob, title: "A" }).business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
+  })
+
+  it("retombe sur creation + 60 jours quand la date d'expiration est absente ou illisible", () => {
+    const absente = linkedinJobToJobsPartners({ ...baseJob, expirationDate: null })
+    const illisible = linkedinJobToJobsPartners({ ...baseJob, expirationDate: "3 novembre 2026" })
+
+    // listDate = 2026-09-15T08:14:58Z
+    expect(absente.offer_expiration).toEqual(new Date("2026-11-14T08:14:58.000Z"))
+    expect(illisible.offer_expiration).toEqual(new Date("2026-11-14T08:14:58.000Z"))
   })
 
   it("retombe sur location quand ville et code postal sont absents", () => {

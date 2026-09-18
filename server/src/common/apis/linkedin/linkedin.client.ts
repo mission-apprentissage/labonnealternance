@@ -1,3 +1,4 @@
+import type { Readable } from "node:stream"
 import { logger } from "@/common/logger"
 import { downloadFileFromSFTP } from "@/common/utils/ftp-utils"
 import config from "@/config"
@@ -5,7 +6,7 @@ import config from "@/config"
 // Fichier unique, nom fixe, réécrit quotidiennement par LinkedIn (confirmé par le partenaire).
 const LINKEDIN_REMOTE_FILE = "/upload/feed.xml"
 
-export const getLinkedinJobs = async (): Promise<NodeJS.ReadableStream> => {
+export const getLinkedinJobs = async (): Promise<Readable> => {
   const { sftpHost, sftpUsername, sftpPrivateKey, sftpPassphrase } = config.linkedin
 
   if (!sftpPrivateKey) {
