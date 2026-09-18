@@ -4,7 +4,7 @@ import { chunk } from "lodash-es"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
-import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
 import type { CollectionName } from "shared/models/models"
 import { modelDescriptors } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
@@ -163,6 +163,18 @@ const obfuscateRecruteursLba = async () => {
       },
     }
   )
+}
+
+const reducePartnerJobs = async (limit = 75_000) => {
+  logger.info(`reducing jobs_partners (flux partenaires) to ${limit} latest documents`)
+  const result = await getDbCollection("jobs_partners")
+    .aggregate([{ $match: { partner_label: { $nin: jobPartnersExcludedFromFlux } } }, { $sort: { _id: -1 } }, { $skip: limit }, { $project: { _id: 1 } }])
+    .toArray()
+  const idsToDelete = result.map((val) => val._id)
+  const chunks = chunk(idsToDelete, 1_000)
+  if (chunks.length) {
+    await Promise.all(chunks.map(async (chunk) => await getDbCollection("jobs_partners").deleteMany({ _id: { $in: chunk } })))
+  }
 }
 
 const reduceRecruteursLba = async (limit = 75_000) => {
@@ -353,6 +365,7 @@ export async function obfuscateCollections(): Promise<void> {
 
   await obfuscateApplicants()
   await obfuscateApplications()
+  await reducePartnerJobs()
   await obfuscatePartnerJobs()
   await reduceRecruteursLba()
   await obfuscateRecruteursLba()

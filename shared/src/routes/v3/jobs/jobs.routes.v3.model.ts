@@ -37,7 +37,9 @@ export const zJobRecruiterApiReadV3 = z.object({
   }),
   apply: z.object({
     url: ZJobsPartnersRecruiterApi.shape.apply_url,
-    phone: ZJobsPartnersRecruiterApi.shape.apply_phone,
+    phone: ZJobsPartnersRecruiterApi.shape.apply_phone.describe(
+      "Déprécié : toujours `null`, le téléphone de contact n'est plus diffusé par l'API. Le champ est conservé pour ne pas casser le contrat."
+    ),
     recipient_id: ZJobsPartnersRecruiterApi.shape.apply_recipient_id,
   }),
 })
@@ -269,7 +271,7 @@ function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartner
 function convertToJobApplyReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["apply"] {
   return {
     url: input.apply_url,
-    phone: (input.is_delegated ? input.cfa_apply_phone : input.apply_phone) || null,
+    phone: null,
     recipient_id: input.apply_recipient_id || null,
   }
 }
