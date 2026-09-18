@@ -9,7 +9,6 @@ import "react-dates/lib/css/_datepicker.css"
 import LbaBadge from "@/app/(espace-pro)/_components/Badge"
 import { useToast } from "@/app/hooks/useToast"
 import { dayjs } from "@/common/dayjs"
-import { Disquette } from "@/theme/components/icons"
 import { apiGet, apiPatch } from "@/utils/api.utils"
 
 const EtablissementComponent = ({ id }: { id?: string }) => {
@@ -67,6 +66,11 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
     } catch (_error) {
       putError()
     }
+  }
+
+  const saveEmailDecisionnaire = async () => {
+    // @ts-expect-error: TODO
+    await upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())
   }
 
   if (etablissement === null) {
@@ -177,10 +181,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
               type="email"
             />
             <Box sx={{ ml: fr.spacing("2v") }}>
-              {/*  @ts-expect-error: TODO */}
-              <Button onClick={async () => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
-                <Disquette sx={{ width: "16px", height: "16px" }} />
-              </Button>
+              <Button onClick={saveEmailDecisionnaire} iconId="fr-icon-save-line" title="Enregistrer l'email du gestionnaire" />
             </Box>
           </Box>
         </Box>

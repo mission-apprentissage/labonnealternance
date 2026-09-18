@@ -62,11 +62,9 @@ const getCloseButton = (setBannerContext: any, isClosedStateName: string, color:
       type="button"
       priority="tertiary no outline"
       iconId="fr-icon-close-line"
-      iconPosition="right"
+      title="Masquer ce bandeau"
       onClick={() => setBannerContext(isClosedStateName, true)}
-    >
-      {" "}
-    </Button>
+    />
   )
 }
 
