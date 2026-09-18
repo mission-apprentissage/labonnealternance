@@ -4,7 +4,7 @@ exports[`export-jobs-to-s3-v2 > should publish a partenariat job 1`] = `
 [
   {
     "apply": {
-      "phone": "0123456789",
+      "phone": null,
       "recipient_id": "partners_66c52e00c8f12f66f971106f",
       "url": "https://apply.com",
     },
@@ -84,7 +84,7 @@ exports[`export-jobs-to-s3-v2 > should publish jobs 1`] = `
 [
   {
     "apply": {
-      "phone": "0123456789",
+      "phone": null,
       "recipient_id": "partners_66c52e00c8f12f66f971106f",
       "url": "https://apply.com",
     },
@@ -159,7 +159,7 @@ exports[`export-jobs-to-s3-v2 > should publish jobs 1`] = `
   },
   {
     "apply": {
-      "phone": "0123456789",
+      "phone": null,
       "recipient_id": "partners_66c52e00393b331450d8bedc",
       "url": "https://apply.com",
     },

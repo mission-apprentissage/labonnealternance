@@ -1,10 +1,11 @@
 import { ObjectId } from "bson"
 import { randomUUID } from "crypto"
 import { chunk } from "lodash-es"
+import type { Filter } from "mongodb"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
-import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
 import type { CollectionName } from "shared/models/models"
 import { modelDescriptors } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
@@ -165,15 +166,20 @@ const obfuscateRecruteursLba = async () => {
   )
 }
 
-const reduceRecruteursLba = async (limit = 75_000) => {
-  logger.info(`reducing jobs_partners recruteurs_lba to ${limit} latest documents`)
+const JOBS_PARTNERS_KEPT_DOCUMENTS = 75_000
+const JOBS_PARTNERS_DELETE_CHUNK_SIZE = 1_000
+
+// Le $project précède le $sort : trier les documents complets ferait déborder le tri sur disque
+// dès quelques centaines de milliers d'offres. Les suppressions sont séquentielles pour ne pas
+// saturer le pool de connexions quand le dépassement se compte en centaines de chunks.
+const reduceJobsPartners = async (description: string, match: Filter<IJobsPartnersOfferPrivate>, limit = JOBS_PARTNERS_KEPT_DOCUMENTS) => {
+  logger.info(`reducing jobs_partners ${description} to ${limit} latest documents`)
   const result = await getDbCollection("jobs_partners")
-    .aggregate([{ $match: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } }, { $sort: { _id: -1 } }, { $skip: limit }, { $project: { _id: 1 } }])
+    .aggregate<{ _id: ObjectId }>([{ $match: match }, { $project: { _id: 1 } }, { $sort: { _id: -1 } }, { $skip: limit }])
     .toArray()
   const idsToDelete = result.map((val) => val._id)
-  const chunks = chunk(idsToDelete, 1_000)
-  if (chunks.length) {
-    await Promise.all(chunks.map(async (chunk) => await getDbCollection("jobs_partners").deleteMany({ _id: { $in: chunk } })))
+  for (const ids of chunk(idsToDelete, JOBS_PARTNERS_DELETE_CHUNK_SIZE)) {
+    await getDbCollection("jobs_partners").deleteMany({ _id: { $in: ids } })
   }
 }
 
@@ -353,8 +359,9 @@ export async function obfuscateCollections(): Promise<void> {
 
   await obfuscateApplicants()
   await obfuscateApplications()
+  await reduceJobsPartners("(flux partenaires)", { partner_label: { $nin: jobPartnersExcludedFromFlux } })
   await obfuscatePartnerJobs()
-  await reduceRecruteursLba()
+  await reduceJobsPartners("recruteurs_lba", { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
   await obfuscateRecruteursLba()
 
   await obfuscateEmailBlackList()
