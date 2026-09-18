@@ -6,11 +6,19 @@ import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed
 import z from "zod"
 import { blankComputedJobPartner } from "@/jobs/offre-partenaire/fill-computed-jobs-partners"
 
-// Le flux LinkedIn n'est pas filtré sur l'alternance : sur la première livraison, 9 590 offres
-// dont ~13 % seulement relèvent de l'alternance. Aucun champ ne porte le type de contrat
-// (employmentStatus vaut FULL_TIME / INTERNSHIP / ENTRY_LEVEL / TEMPORARY / PART_TIME / OTHER /
-// VOLUNTEER), la détection se fait donc sur le texte. Tout ce qui ne matche pas est marqué
-// FULL_TIME et ne remonte jamais dans jobs_partners.
+// Le flux LinkedIn ne peut pas être filtré sur l'alternance : LinkedIn n'a pas cette valeur dans
+// sa taxonomie et ne l'expose dans aucun champ (confirmé par le partenaire le 17/09/2026). Le flux
+// est seulement restreint aux experienceLevel INTERNSHIP / ENTRY_LEVEL / ASSOCIATE, ce qui laisse
+// une majorité d'offres d'emploi classiques. La détection se fait donc sur le texte.
+//
+// Le titre seul fait foi, volontairement. Chercher dans la description remonte trois fois plus
+// d'offres mais introduit des faux positifs non filtrables : boilerplate d'entreprise mentionnant
+// l'alternance, sens non contractuel du mot ("alternance 2*8", "en alternance avec la responsable
+// RH"), et négations ("les contrats en alternance ne seront pas étudiés"). Sur un service public,
+// une offre hors périmètre affichée coûte plus cher qu'une offre manquée.
+//
+// Mesuré sur la livraison du 16/09/2026 : 352 offres retenues sur 9 590, aucune dont le titre
+// mentionne aussi CDI, CDD ou intérim.
 const ALTERNANCE_REGEX = /\b(alternan\w*|apprenti\w*|professionnalisation|contrat\s+pro)\b/i
 const PROFESSIONNALISATION_REGEX = /\b(professionnalisation|contrat\s+pro)\b/i
 
@@ -97,15 +105,16 @@ export const buildApplyUrl = (url: string): string => {
 }
 
 export const getContractType = (job: ILinkedinJob): IComputedJobsPartners["contract_type"] => {
-  const haystack = `${job.title} ${job.description}`
-  return PROFESSIONNALISATION_REGEX.test(haystack) ? [TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : [TRAINING_CONTRACT_TYPE.APPRENTISSAGE]
+  // La description sert ici de complément : le type de contrat y est souvent précisé alors que le
+  // titre dit seulement "alternance". Le risque de faux positif est nul, l'offre est déjà retenue.
+  return PROFESSIONNALISATION_REGEX.test(`${job.title} ${job.description}`) ? [TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : [TRAINING_CONTRACT_TYPE.APPRENTISSAGE]
 }
 
 const getBusinessError = (job: ILinkedinJob): JOB_PARTNER_BUSINESS_ERROR | null => {
   if (job.title.trim().length < 3 || job.description.trim().length < 30) {
     return JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
   }
-  if (!ALTERNANCE_REGEX.test(`${job.title} ${job.description}`)) {
+  if (!ALTERNANCE_REGEX.test(job.title)) {
     return JOB_PARTNER_BUSINESS_ERROR.FULL_TIME
   }
   return null

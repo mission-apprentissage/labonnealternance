@@ -106,7 +106,7 @@ describe("linkedinJobToJobsPartners", () => {
     expect(result.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
   })
 
-  it("détecte le contrat de professionnalisation", () => {
+  it("détecte le contrat de professionnalisation depuis la description", () => {
     const result = linkedinJobToJobsPartners({
       ...baseJob,
       description: "<p>Poste ouvert en contrat de professionnalisation sur 12 mois.</p>",
@@ -116,8 +116,35 @@ describe("linkedinJobToJobsPartners", () => {
     expect(result.business_error).toBeNull()
   })
 
+  it("écarte une offre dont seule la description mentionne l'alternance", () => {
+    // Boilerplate d'entreprise : le titre ne parle pas d'alternance, l'offre n'en est pas une.
+    const result = linkedinJobToJobsPartners({
+      ...baseJob,
+      title: "Data Engineer Snowflake",
+      description: "<p>Nous recrutons en CDI, stage et alternance sur toute la France.</p>",
+    })
+
+    expect(result.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
+  })
+
+  it("écarte les usages non contractuels du mot alternance", () => {
+    const shiftWork = linkedinJobToJobsPartners({
+      ...baseJob,
+      title: "Responsable d'atelier de fabrication",
+      description: "<p>Les équipes fonctionnent en alternance 2*8 et/ou nuit sur le site de production.</p>",
+    })
+    const negation = linkedinJobToJobsPartners({
+      ...baseJob,
+      title: "Assistant(e) Relations Presse",
+      description: "<p>Mission proposée uniquement en stage, les demandes de contrats en alternance ne seront pas étudiées.</p>",
+    })
+
+    expect(shiftWork.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
+    expect(negation.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
+  })
+
   it("marque WRONG_DATA une offre au contenu inexploitable", () => {
-    expect(linkedinJobToJobsPartners({ ...baseJob, description: "alternance" }).business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
+    expect(linkedinJobToJobsPartners({ ...baseJob, description: "court" }).business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
     expect(linkedinJobToJobsPartners({ ...baseJob, title: "A" }).business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
   })
 
