@@ -13,6 +13,7 @@ import { logger } from "@/common/logger"
 import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
 import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 import { defaultFillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 
@@ -363,23 +364,11 @@ const buildOperationsForASingleOffer = (offer: TreatedDocument, otherOfferDuplic
     jobPartnerOperations.push({
       updateOne: {
         filter: { _id: offer._id },
-        // updated_at : requis par le cron delta search_items (syncSearchItemsDelta).
-        update: { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() } },
-      },
-    })
-    jobPartnerOperations.push({
-      updateOne: {
-        filter: { _id: offer._id },
-        update: {
-          $push: {
-            offer_status_history: {
-              date: new Date(),
-              status: JOB_STATUS_ENGLISH.ANNULEE,
-              reason: `détectée comme doublon, remplacée par ${JSON.stringify(otherOfferDuplicateObject)}`,
-              granted_by: "détecteur de doublons",
-            },
-          },
-        },
+        update: buildJobStatusChangeUpdate({
+          status: JOB_STATUS_ENGLISH.ANNULEE,
+          reason: `détectée comme doublon, remplacée par ${JSON.stringify(otherOfferDuplicateObject)}`,
+          grantedBy: "détecteur de doublons",
+        }),
       },
     })
   }

@@ -15,6 +15,7 @@ import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink } from "@/services/app-links.service"
 import { getApplicationByJobCount } from "@/services/application.service"
+import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 
 const APPLICATION_COUNT_THRESHOLD = 80
@@ -113,17 +114,12 @@ export const closeJobsPartnersOnApplicationThreshold = async (payload?: { thresh
   await asyncForEach(jobsToClose, async (job) => {
     const found = await getDbCollection("jobs_partners").findOneAndUpdate(
       { _id: job._id },
-      {
-        $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now },
-        $push: {
-          offer_status_history: {
-            date: now,
-            status: JOB_STATUS_ENGLISH.ANNULEE,
-            reason: `seuil de ${threshold} candidatures atteint`,
-            granted_by: "close-jobs-partners-on-application-threshold",
-          },
-        },
-      },
+      buildJobStatusChangeUpdate({
+        status: JOB_STATUS_ENGLISH.ANNULEE,
+        reason: `seuil de ${threshold} candidatures atteint`,
+        grantedBy: "close-jobs-partners-on-application-threshold",
+        date: now,
+      }),
       { returnDocument: "after" }
     )
     if (found) {

@@ -130,30 +130,3 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
 
   return partnerJob
 }
-
-export const anonymizeLbaJobsPartners = async ({ partner_job_ids }: { partner_job_ids: string[] }) => {
-  const jobsPartnersCollection = getDbCollection("jobs_partners")
-  const now = new Date()
-  await jobsPartnersCollection.updateMany(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: { $in: partner_job_ids } },
-    {
-      $set: {
-        apply_email: null,
-        apply_phone: null,
-        apply_url: null,
-        offer_description: "",
-        workplace_description: null,
-        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
-        updated_at: now,
-        offer_status_history: [
-          {
-            status: JOB_STATUS_ENGLISH.ANNULEE,
-            reason: "recruiter has been anonymized",
-            date: now,
-            granted_by: "lba",
-          },
-        ],
-      },
-    }
-  )
-}
