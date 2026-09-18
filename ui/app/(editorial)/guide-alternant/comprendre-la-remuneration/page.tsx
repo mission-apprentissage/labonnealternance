@@ -308,26 +308,17 @@ const ComprendreLaRemunerationPage = () => {
         <ParagraphList
           listItems={[
             <>
-              <DsfrLink href={"https://travail-emploi.gouv.fr/le-contrat-dapprentissage"} aria-label="En savoir plus sur le contrat d'apprentissage">
-                Le contrat d'apprentissage
-              </DsfrLink>
-              , destiné aux jeunes de 16 à 29 ans révolus, ou sans limite d'âge pour les travailleurs handicapés, sportifs de haut niveau et porteurs de projet de création
-              d'entreprise. La rémunération est calculée en pourcentage du SMIC selon l'âge et l'année d'exécution du contrat (
-              <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033238/" aria-label="Consulter l'article D. 6222-26 du Code du travail – Légifrance">
-                article D. 6222-26 du Code du travail – Légifrance
-              </DsfrLink>
+              <DsfrLink href={"https://travail-emploi.gouv.fr/le-contrat-dapprentissage"}>Le contrat d'apprentissage</DsfrLink>, destiné aux jeunes de 16 à 29 ans révolus, ou sans
+              limite d'âge pour les travailleurs handicapés, sportifs de haut niveau et porteurs de projet de création d'entreprise. La rémunération est calculée en pourcentage du
+              SMIC selon l'âge et l'année d'exécution du contrat (
+              <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033238/">article D. 6222-26 du Code du travail – Légifrance</DsfrLink>
               ).
             </>,
             <>
-              <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-de-professionnalisation" aria-label="En savoir plus sur le contrat de professionnalisation">
-                Le contrat de professionnalisation
-              </DsfrLink>
-              , ouvert aux jeunes de 16 à 25 ans révolus souhaitant compléter leur formation initiale et aux demandeurs d'emploi de 26 ans et plus. La rémunération varie selon
-              l'âge et le niveau de qualification initial (
-              <DsfrLink
-                href="https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000018498338/"
-                aria-label="Consulter les articles L. 6325-1 à L. 6325-3 du Code du travail – Légifrance"
-              >
+              <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-de-professionnalisation">Le contrat de professionnalisation</DsfrLink>, ouvert aux jeunes de 16 à 25 ans
+              révolus souhaitant compléter leur formation initiale et aux demandeurs d'emploi de 26 ans et plus. La rémunération varie selon l'âge et le niveau de qualification
+              initial (
+              <DsfrLink href="https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000018498338/">
                 articles L. 6325-1 à L. 6325-3 du Code du travail – Légifrance
               </DsfrLink>
               ).
@@ -355,9 +346,7 @@ const ComprendreLaRemunerationPage = () => {
         <BlocSalaire />
         <Paragraph>
           *du SMIC ou du salaire minimum conventionnel (SMC) de l'emploi occupé si celui-ci est plus favorable (
-          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033238/" aria-label="Consulter l'article D. 6222-26 du Code du travail – Légifrance">
-            article D. 6222-26 du Code du travail – Légifrance
-          </DsfrLink>
+          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033238/">article D. 6222-26 du Code du travail – Légifrance</DsfrLink>
           ).
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -366,10 +355,7 @@ const ComprendreLaRemunerationPage = () => {
         <Paragraph>
           La durée de la formation et donc le nombre d'années de contrat varient selon le diplôme préparé. Voici les rémunérations types selon les parcours les plus courants,
           calculées à partir des pourcentages fixés par l'
-          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033238/" aria-label="Consulter l'article D. 6222-26 du Code du travail – Légifrance">
-            article D. 6222-26 du Code du travail – Légifrance
-          </DsfrLink>
-          .
+          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033238/">article D. 6222-26 du Code du travail – Légifrance</DsfrLink>.
         </Paragraph>
         <Paragraph component={"h4"} variant={"h4"} fontWeight={"bold"}>
           Cas particulier du salaire d'un apprenti en Licence professionnelle
@@ -377,14 +363,8 @@ const ComprendreLaRemunerationPage = () => {
         <Paragraph>
           Une licence professionnelle en apprentissage se prépare en 1 an après un Bac+2. L'apprenti a généralement 20 ou 21 ans. La rémunération minimale correspond à celle fixée
           pour la deuxième année d'exécution du contrat (
-          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041770366" aria-label="Consulter l'article D. 6222-32 du Code du travail – Légifrance">
-            article D. 6222-32 du Code du travail – Légifrance
-          </DsfrLink>{" "}
-          ;{" "}
-          <DsfrLink
-            href="https://travail-emploi.gouv.fr/questions-reponses-la-formation-en-alternance"
-            aria-label="Consulter le site travail-emploi.gouv.fr – Questions-réponses sur la rémunération des apprentis"
-          >
+          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041770366">article D. 6222-32 du Code du travail – Légifrance</DsfrLink> ;{" "}
+          <DsfrLink href="https://travail-emploi.gouv.fr/questions-reponses-la-formation-en-alternance">
             travail-emploi.gouv.fr – Questions-réponses sur la rémunération des apprentis
           </DsfrLink>
           ).
@@ -394,10 +374,7 @@ const ComprendreLaRemunerationPage = () => {
         </Paragraph>
         <Paragraph>
           Certaines situations entraînent une majoration du salaire de l'apprenti par rapport à la grille standard (
-          <DsfrLink
-            href="https://travail-emploi.gouv.fr/questions-reponses-la-formation-en-alternance"
-            aria-label="Consulter le site travail-emploi.gouv.fr – Questions-réponses sur la rémunération des apprentis"
-          >
+          <DsfrLink href="https://travail-emploi.gouv.fr/questions-reponses-la-formation-en-alternance">
             travail-emploi.gouv.fr – Questions-réponses sur la rémunération des apprentis
           </DsfrLink>
           ).
@@ -408,10 +385,7 @@ const ComprendreLaRemunerationPage = () => {
         <Paragraph>
           Lorsque la durée du contrat d'apprentissage est réduite (par exemple pour un apprenti déjà titulaire d'un diplôme en rapport avec la formation), l'apprenti est considéré,
           en ce qui concerne sa rémunération minimale, comme ayant déjà accompli une durée d'apprentissage égale à la différence entre la durée initiale du cycle de formation et la
-          durée réduite (
-          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041769591" aria-label="Consulter l'article D. 6222-28-1 du Code du travail – Légifrance">
-            article D. 6222-28-1 du Code du travail – Légifrance
-          </DsfrLink>
+          durée réduite (<DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041769591">article D. 6222-28-1 du Code du travail – Légifrance</DsfrLink>
           ).
         </Paragraph>
         <Paragraph>
@@ -424,14 +398,8 @@ const ComprendreLaRemunerationPage = () => {
         <Paragraph>
           Un apprenti qui signe un nouveau contrat d'apprentissage après un premier contrat ayant conduit à l'obtention du diplôme bénéficie d'une rémunération au moins égale à
           celle qu'il percevait lors de sa dernière année d'exécution du contrat précédent, sauf si l'application du barème standard en fonction de son âge lui est plus favorable (
-          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033223" aria-label="Consulter l'article D. 6222-29 du Code du travail – Légifrance">
-            article D. 6222-29 du Code du travail – Légifrance
-          </DsfrLink>
-          ;{" "}
-          <DsfrLink
-            href="https://travail-emploi.gouv.fr/formation-en-alternance/apprentissage-et-formation-en-alternance"
-            aria-label="Consulter le site travail-emploi.gouv.fr – Le contrat d'apprentissage"
-          >
+          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033223">article D. 6222-29 du Code du travail – Légifrance</DsfrLink> ;{" "}
+          <DsfrLink href="https://travail-emploi.gouv.fr/formation-en-alternance/apprentissage-et-formation-en-alternance">
             travail-emploi.gouv.fr – Le contrat d'apprentissage
           </DsfrLink>
           ).
@@ -441,10 +409,7 @@ const ComprendreLaRemunerationPage = () => {
         </Paragraph>
         <Paragraph>
           L’employeur peut déduire du salaire de l'apprenti des avantages en nature (nourriture, logement) dans la limite de 75 % de la déduction autorisée pour les autres salariés
-          (
-          <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000018524085" aria-label="Consulter l'article D. 6222-35 du Code du travail – Légifrance">
-            article D. 6222-35 du Code du travail – Légifrance
-          </DsfrLink>
+          (<DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000018524085">article D. 6222-35 du Code du travail – Légifrance</DsfrLink>
           ). Ces déductions ne peuvent pas amener la rémunération en dessous du minimum légal.
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -509,29 +474,21 @@ const ComprendreLaRemunerationPage = () => {
           l'alternant.
         </Paragraph>
         <Paragraph>
-          <span aria-hidden="true">👉</span>{" "}
-          <DsfrLink href={PAGES.static.salaireAlternant.getPath()} aria-label="Accéder au simulateur de rémunération alternant">
-            Accéder au simulateur de rémunération
-          </DsfrLink>
+          <span aria-hidden="true">👉</span> <DsfrLink href={PAGES.static.salaireAlternant.getPath()}>Accéder au simulateur de rémunération</DsfrLink>
         </Paragraph>
       </Section>
       <Section title="Exonération fiscale du salaire des apprentis">
         <Paragraph>
           En application de l'article 81 bis du Code général des impôts (Légifrance), les salaires versés aux apprentis sont exonérés d'impôt sur le revenu dans une limite égale au
           montant annuel du SMIC (
-          <DsfrLink
-            href="https://travail-emploi.gouv.fr/formation-en-alternance/apprentissage-et-formation-en-alternance"
-            aria-label="Consulter le site travail-emploi.gouv.fr – Le contrat d'apprentissage"
-          >
+          <DsfrLink href="https://travail-emploi.gouv.fr/formation-en-alternance/apprentissage-et-formation-en-alternance">
             travail-emploi.gouv.fr – Le contrat d'apprentissage
           </DsfrLink>
           ).
         </Paragraph>
         <Paragraph>
           Les salariés en contrat de professionnalisation sont imposés selon le régime classique de droit commun (
-          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F15478" aria-label="Consulter le site service-public.fr – Contrat de professionnalisation">
-            service-public.fr – Contrat de professionnalisation
-          </DsfrLink>
+          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F15478">service-public.fr – Contrat de professionnalisation</DsfrLink>
           ).
         </Paragraph>
       </Section>
@@ -548,9 +505,7 @@ const ComprendreLaRemunerationPage = () => {
         </Paragraph>
         <Paragraph>
           Depuis le 1er juin 2026, le SMIC s'élève à 1 867,02 € brut par mois, soit 12,31 € brut de l'heure (
-          <DsfrLink href={"https://travail-emploi.gouv.fr/le-smic-salaire-minimum-de-croissance"} aria-label="Consulter le site travail-emploi.gouv.fr – Montant du SMIC">
-            service-public.gouv.fr
-          </DsfrLink>
+          <DsfrLink href={"https://travail-emploi.gouv.fr/le-smic-salaire-minimum-de-croissance"}>service-public.gouv.fr</DsfrLink>
           ). C'est la base de calcul de la rémunération minimale en alternance.
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -574,9 +529,7 @@ const ComprendreLaRemunerationPage = () => {
         <Paragraph>
           Les salaires versés aux apprentis sont exonérés d'impôt sur le revenu dans la limite du montant annuel du SMIC. Les salariés en contrat de professionnalisation sont
           imposés selon le régime de droit commun (
-          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F15478" aria-label="Consulter le site service-public.fr – Contrat de professionnalisation">
-            service-public.fr – Contrat de professionnalisation
-          </DsfrLink>
+          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F15478">service-public.fr – Contrat de professionnalisation</DsfrLink>
           ).
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -599,33 +552,18 @@ const ComprendreLaRemunerationPage = () => {
         <Paragraph>
           Oui. L'alternant perçoit son salaire aussi bien pendant les périodes en entreprise que pendant les périodes de formation en CFA ou organisme de formation : c'est
           l'employeur qui verse l'intégralité du salaire (
-          <DsfrLink href={"https://travail-emploi.gouv.fr/lapprentissage-au-quotidien"} aria-label="Consulter le site travail-emploi.gouv.fr – L'apprentissage au quotidien">
-            travail-emploi.gouv.fr – L'apprentissage au quotidien
-          </DsfrLink>
+          <DsfrLink href={"https://travail-emploi.gouv.fr/lapprentissage-au-quotidien"}>travail-emploi.gouv.fr – L'apprentissage au quotidien</DsfrLink>
           ). Comme tout salarié, il bénéficie aussi de congés payés rémunérés : 5 semaines par an minimum (
-          <DsfrLink href={"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000033020517"} aria-label={"Consulter l'article L. 3141-3 du Code du travail – Légifrance"}>
-            article L. 3141-3 du Code du travail – Légifrance
-          </DsfrLink>
+          <DsfrLink href={"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000033020517"}>article L. 3141-3 du Code du travail – Légifrance</DsfrLink>
           ). Le salaire est maintenu pendant les congés.
         </Paragraph>
         <Paragraph>
-          Pour en savoir plus, rendez-vous sur le site du Ministère du Travail (
-          <DsfrLink href={"https://travail-emploi.gouv.fr"} aria-label="Consulter le site travail-emploi.gouv.fr – Ministère du Travail">
-            travail-emploi.gouv.fr
-          </DsfrLink>
-          ) :
+          Pour en savoir plus, rendez-vous sur le site du Ministère du Travail (<DsfrLink href={"https://travail-emploi.gouv.fr"}>travail-emploi.gouv.fr</DsfrLink>) :
         </Paragraph>
         <ParagraphList
           listItems={[
-            <DsfrLink href={"https://travail-emploi.gouv.fr/lapprentissage-au-quotidien"} aria-label="Consulter le site travail-emploi.gouv.fr – L'apprentissage au quotidien">
-              L'apprentissage au quotidien
-            </DsfrLink>,
-            <DsfrLink
-              href={"https://travail-emploi.gouv.fr/questions-reponses-la-formation-en-alternance"}
-              aria-label="Consulter le site travail-emploi.gouv.fr – Questions-réponses sur la rémunération des apprentis (PDF)"
-            >
-              Questions-réponses sur la rémunération des apprentis
-            </DsfrLink>,
+            <DsfrLink href={"https://travail-emploi.gouv.fr/lapprentissage-au-quotidien"}>L'apprentissage au quotidien</DsfrLink>,
+            <DsfrLink href={"https://travail-emploi.gouv.fr/questions-reponses-la-formation-en-alternance"}>Questions-réponses sur la rémunération des apprentis</DsfrLink>,
           ]}
         />
       </Section>

@@ -20,14 +20,14 @@ export const EntreprisesGereesParCfaMenu = ({
   const actions: PopoverMenuAction[] = [
     {
       label: "Voir les informations",
-      ariaLabel: `Voir les informations de l'entreprise ${row.establishment_raison_sociale}`,
+      hint: `${row.establishment_raison_sociale}`,
       link: `${PAGES.dynamic.backAdminUserCfaEntreprise({ user_id: userId, establishment_id: row.establishment_id }).getPath()}?cfaId=${cfaId}`,
       type: "link",
       icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
     },
     {
       label: "Supprimer l'entreprise",
-      ariaLabel: `Supprimer l'entreprise ${row.establishment_raison_sociale}`,
+      hint: `${row.establishment_raison_sociale}`,
       onClick: () => {
         confirmationSuppression.onOpen()
         setCurrentEntreprise(row)

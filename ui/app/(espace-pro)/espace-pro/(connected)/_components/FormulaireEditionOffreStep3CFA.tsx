@@ -67,7 +67,6 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
               </Typography>
               <Link
                 underline="hover"
-                aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
                 href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
                 sx={{ color: "#000091" }}
                 target="_blank"
@@ -75,6 +74,7 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
                 onClick={() => pushMatomoEvent({ event: MATOMO_EVENTS.CFA_DETAILS_CLICKED, cfa_siret: etablissement.siret })}
               >
                 En savoir plus
+                <span className="fr-sr-only">{" - Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"}</span>
               </Link>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>

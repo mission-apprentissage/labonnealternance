@@ -9,7 +9,8 @@ export type PopoverMenuAction = {
   label: string | React.ReactNode
   onClick?: (any) => void
   link?: string
-  ariaLabel?: string
+  /** Complément lu après le libellé visible, pour distinguer une ligne de l'autre (RGAA 6.1). */
+  hint?: string
   type: "button" | "link" | "externalLink"
   icon?: ReactNode
 } | null
@@ -136,7 +137,6 @@ export const PopoverMenu = ({
                           key={idx}
                           component="a"
                           href={action.link}
-                          aria-label={action.ariaLabel || (action.label as string)}
                           onClick={(event) => {
                             action.onClick?.(event)
                             handleClose(event)
@@ -147,6 +147,8 @@ export const PopoverMenu = ({
                         >
                           {action.icon && <Box sx={{ display: "flex", color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{action.icon}</Box>}
                           {action.label}
+                          {action.hint && <span className="fr-sr-only"> - {action.hint}</span>}
+                          {action.type === "externalLink" && <span className="fr-sr-only"> - nouvelle fenêtre</span>}
                         </MenuItem>
                       )
                     }
@@ -154,7 +156,6 @@ export const PopoverMenu = ({
                     return (
                       <MenuItem
                         key={idx}
-                        aria-label={action.ariaLabel || (action.label as string)}
                         onClick={(event) => {
                           action.onClick?.(event)
                           handleClose(event)
@@ -164,6 +165,7 @@ export const PopoverMenu = ({
                       >
                         {action.icon && <Box sx={{ display: "flex", color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{action.icon}</Box>}
                         {action.label}
+                        {action.hint && <span className="fr-sr-only"> - {action.hint}</span>}
                       </MenuItem>
                     )
                   })}

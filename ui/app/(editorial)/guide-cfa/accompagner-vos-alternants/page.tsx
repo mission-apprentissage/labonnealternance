@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Image from "next/image"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
@@ -117,7 +117,11 @@ const AccompagnerVosAlternantsPage = async () => {
             <Image src="/images/guides/guide-cfa/telechargement_affiche.png" alt="Affiche La bonne alternance" width={139} height={198} />
             <Box sx={{ flex: 1 }}>
               <DsfrLink download="affiche-cfa-avril-2026.pdf" href="/ressources/affiche-cfa-avril-2026.pdf" style={{ color: "#000" }}>
-                Télécharger l’affiche La bonne alternance, à exposer dans votre CFA.
+                Télécharger l’affiche La bonne alternance, à exposer dans votre CFA - PDF{" "}
+                {/* RGAA 13.6 : format et poids font partie du nom accessible du lien de téléchargement. */}
+                <Typography component="span" variant="caption" ml={fr.spacing("2v")}>
+                  (2,7 Mo)
+                </Typography>
               </DsfrLink>
             </Box>
           </Box>

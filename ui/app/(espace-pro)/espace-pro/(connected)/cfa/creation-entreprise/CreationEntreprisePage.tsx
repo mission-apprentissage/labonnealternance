@@ -54,7 +54,7 @@ const InformationEntreprise = () => (
         <br />
         <br />
         Le SIRET de votre entreprise partenaire peut être trouvé sur{" "}
-        <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" external aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
+        <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" external>
           l’annuaire des entreprises
         </DsfrLink>
         .

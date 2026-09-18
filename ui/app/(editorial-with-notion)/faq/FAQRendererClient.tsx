@@ -12,6 +12,7 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { useUrlHash } from "@/app/hooks/use-url-hash"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
+import { NotionExternalLink } from "../_components/NotionExternalLink"
 
 const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
@@ -139,7 +140,14 @@ function FAQRendererClientGeneric({
           </Grid>
           {/* id = hash du lien de rubrique : la navigation par fragment déplace le focus sur la rubrique affichée (RGAA 12.8) */}
           <Grid size={{ xs: 12, md: 9 }} id={displayedTab.tabId} tabIndex={-1}>
-            <NotionRenderer recordMap={displayedTab.recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} />
+            <NotionRenderer
+              recordMap={displayedTab.recordMap}
+              fullPage={false}
+              darkMode={false}
+              disableHeader={true}
+              rootDomain={publicConfig.baseUrl}
+              components={{ Link: NotionExternalLink }}
+            />
           </Grid>
         </Grid>
       </DefaultContainer>

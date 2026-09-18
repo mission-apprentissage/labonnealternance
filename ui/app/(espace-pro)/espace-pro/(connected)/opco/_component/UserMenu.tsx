@@ -20,14 +20,14 @@ export const UserMenu = ({
   const actions: PopoverMenuAction[] = [
     {
       label: "Voir les informations",
-      ariaLabel: `Voir les informations de l'entreprise ${row.establishment_raison_sociale}`,
+      hint: `${row.establishment_raison_sociale}`,
       link: PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath(),
       type: "link",
     },
     tabIndex === "disabled" || tabIndex === "awaiting"
       ? {
           label: "Activer le compte",
-          ariaLabel: `Activer le compte de l'entreprise ${row.establishment_raison_sociale}`,
+          hint: `${row.establishment_raison_sociale}`,
           onClick: () => {
             confirmationActivationUtilisateur.onOpen()
             setCurrentEntreprise(row)
@@ -38,7 +38,7 @@ export const UserMenu = ({
     tabIndex === "active" || tabIndex === "awaiting"
       ? {
           label: "Désactiver le compte",
-          ariaLabel: `Désactiver le compte de l'entreprise ${row.establishment_raison_sociale}`,
+          hint: `${row.establishment_raison_sociale}`,
           onClick: () => {
             confirmationDesactivationUtilisateur.onOpen()
             setCurrentEntreprise(row)

@@ -9,10 +9,12 @@ export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
       FRANÇAISE
     </>
   ),
+  // RGAA 6.1 : sans serviceTitle, react-dsfr place le brandTop « RÉPUBLIQUE FRANÇAISE »
+  // à l'intérieur du lien d'accueil. Le nom accessible doit donc commencer par ce texte visible.
   homeLinkProps: {
     href: "/",
-    title: "Accueil - La bonne alternance",
-    "aria-label": "Accueil - La bonne alternance",
+    title: "République Française - Accueil - La bonne alternance",
+    "aria-label": "République Française - Accueil - La bonne alternance",
   },
   operatorLogo: {
     alt: "La bonne alternance",

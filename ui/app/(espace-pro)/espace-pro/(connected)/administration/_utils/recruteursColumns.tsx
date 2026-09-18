@@ -53,16 +53,23 @@ export function getRecruteursColumns({
             SIRET {establishment_siret} <CustomTag color={type === "CFA" ? "yellow" : "green"}>{type}</CustomTag>
           </Typography>
         )
+        const detailHref = `/espace-pro/administration/users/${_id}?organizationId=${organizationId}`
+        // Sans raison sociale, c'est le SIRET qui porte le lien : un lien dont le seul contenu
+        // serait le complément vocal n'aurait aucun texte visible ni surface cliquable (RGAA 6.1).
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}?organizationId=${organizationId}`} aria-label="voir les informations">
-              {establishment_raison_sociale}
-            </Link>
             {establishment_raison_sociale ? (
-              siretText
-            ) : (
-              <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}?organizationId=${organizationId}`} aria-label="voir les informations">
+              <>
+                <Link fontWeight="700" href={detailHref}>
+                  {establishment_raison_sociale}
+                  <span className="fr-sr-only"> - voir les informations</span>
+                </Link>
                 {siretText}
+              </>
+            ) : (
+              <Link fontWeight="700" href={detailHref}>
+                {siretText}
+                <span className="fr-sr-only"> - voir les informations</span>
               </Link>
             )}
             <Typography sx={{ color: "#666666", maxWidth: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontSize: ".75rem" }}>
