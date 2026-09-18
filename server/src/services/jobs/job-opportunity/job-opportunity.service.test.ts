@@ -870,25 +870,25 @@ describe("findJobsOpportunities", () => {
                 _id: lbaJobs[0]._id,
                 workplace_geopoint: lbaJobs[0].workplace_geopoint,
                 workspace_siret: lbaJobs[0].workplace_siret,
-                apply_phone: lbaJobs[0].apply_phone,
+                apply_phone: null,
               },
               {
                 _id: delegatedJobs[0]._id,
                 workplace_geopoint: delegatedJobs[0].workplace_geopoint,
                 workspace_siret: cfa.siret,
-                apply_phone: delegatedJobs[0].cfa_apply_phone,
+                apply_phone: null,
               },
               {
                 _id: delegatedJobs[1]._id,
                 workplace_geopoint: delegatedJobs[1].workplace_geopoint,
                 workspace_siret: cfa.siret,
-                apply_phone: delegatedJobs[0].cfa_apply_phone,
+                apply_phone: null,
               },
               {
                 _id: partnerJobs[0]._id,
                 workplace_geopoint: parisFixture.centre,
                 workspace_siret: partnerJobs[0].workplace_siret,
-                apply_phone: partnerJobs[0].apply_phone,
+                apply_phone: null,
               },
             ])
           )

@@ -46,6 +46,11 @@ export const CandidatureLbaModalBody = ({
 }) => {
   const customQuestions = "job" in item ? (item.job?.to_applicant_questions ?? []) : []
 
+  // formik interprète le nom d'un champ comme un chemin lodash : un intitulé de question contenant « . » ou « [ »
+  // écrirait la saisie dans une propriété imbriquée, laissant le textarea bloqué sur sa valeur initiale.
+  // on utilise donc un nom de champ indexé, et on rétablit l'intitulé de la question à la soumission.
+  const questionFields = customQuestions.map((question, index) => ({ question, name: `custom_question_${index}` }))
+
   // .trim().min(1) en plus du message de type : formik convertit la chaîne vide en undefined avant validation,
   // mais une réponse composée uniquement d'espaces lui parvient telle quelle.
   const questionZodExtension = Object.fromEntries(
@@ -53,7 +58,7 @@ export const CandidatureLbaModalBody = ({
   )
 
   const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
-  const questionsInitValues = Object.fromEntries(customQuestions.map((question) => [question, applicantAnswersSession?.[question] ?? ""]))
+  const questionsInitValues = Object.fromEntries(questionFields.map(({ question, name }) => [name, applicantAnswersSession?.[question] ?? ""]))
 
   const formik = useFormik({
     initialValues: { ...getInitialSchemaValues(), ...questionsInitValues },
@@ -63,9 +68,9 @@ export const CandidatureLbaModalBody = ({
       finalValues.applicant_answers_to_recruiter_questions = []
       const savedAnswers = {}
 
-      customQuestions.forEach((question) => {
-        delete finalValues[question]
-        const answer = values[question]
+      questionFields.forEach(({ question, name }) => {
+        delete finalValues[name]
+        const answer = values[name]
         finalValues.applicant_answers_to_recruiter_questions.push({
           question,
           answer,
@@ -169,8 +174,8 @@ export const CandidatureLbaModalBody = ({
                     <InfoText>L’entreprise sera attentive aux réponses que vous lui apporterez. Prenez le temps de détailler vos réponses pour le recruteur.</InfoText>
                   </Box>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
-                    {customQuestions.map((question) => (
-                      <TextareaInput key={question} formik={formik} name={question} label={question} required />
+                    {questionFields.map(({ question, name }) => (
+                      <TextareaInput key={name} formik={formik} name={name} label={question} required />
                     ))}
                   </Box>
                 </>
