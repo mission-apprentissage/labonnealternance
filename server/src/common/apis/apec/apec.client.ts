@@ -1,10 +1,11 @@
+import type { Readable } from "node:stream"
 import { logger } from "@/common/logger"
 import { downloadFileFromSFTP } from "@/common/utils/ftp-utils"
 import config from "@/config"
 
 const APEC_REMOTE_FILE = "/Export_offres_LA_BONNE_ALTERNANCE.xml"
 
-export const getApecJobs = async (): Promise<NodeJS.ReadableStream> => {
+export const getApecJobs = async (): Promise<Readable> => {
   logger.info("APEC SFTP: connecting and starting file download")
   return downloadFileFromSFTP(APEC_REMOTE_FILE, {
     host: config.apec.url,
