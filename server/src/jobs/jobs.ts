@@ -87,7 +87,7 @@ export async function setupJobProcessor() {
     crons: ["local", "preview", "pentest"].includes(config.env)
       ? {}
       : {
-          ...importers,
+          ...(config.env === "recette" ? {} : importers),
           "Génération du token France Travail pour la récupération des offres": {
             cron_string: "*/15 * * * *",
             handler: generateFranceTravailAccess,

@@ -214,7 +214,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersO
           recruteurLba.workplace_siret,
           recruteurLba.workplace_legal_name ?? recruteurLba.workplace_brand ?? undefined
         ),
-        phone: recruteurLba.apply_phone,
+        phone: null,
         recipient_id: recruteurLba.apply_email ? getRecipientID(JobCollectionName.partners, recruteurLba._id.toString()) : null,
       },
     })

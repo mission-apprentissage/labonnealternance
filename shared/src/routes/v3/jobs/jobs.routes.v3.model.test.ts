@@ -571,7 +571,7 @@ describe("convertToJobOfferApiReadV3", () => {
       },
       apply: {
         url: "https://postler.com",
-        phone: "0300000000",
+        phone: null,
         recipient_id: null,
       },
       contract: {
