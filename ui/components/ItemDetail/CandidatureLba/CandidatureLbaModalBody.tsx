@@ -54,7 +54,7 @@ export const CandidatureLbaModalBody = ({
   // .trim().min(1) en plus du message de type : formik convertit la chaîne vide en undefined avant validation,
   // mais une réponse composée uniquement d'espaces lui parvient telle quelle.
   const questionZodExtension = Object.fromEntries(
-    customQuestions.map((question) => [question, z.string({ error: "Une réponse est obligatoire" }).trim().min(1, "Une réponse est obligatoire")])
+    questionFields.map(({ name }) => [name, z.string({ error: "Une réponse est obligatoire" }).trim().min(1, "Une réponse est obligatoire")])
   )
 
   const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
