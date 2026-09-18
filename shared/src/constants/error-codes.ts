@@ -15,6 +15,8 @@ export enum BusinessErrorCodes {
   NOTFOUND = "Job or recruiter not found",
   EXPIRED = "Job offer has expired",
   INTERNAL_EMAIL = "Internal error: no contact email found for the corresponding ressource",
+  UNKNOWN_RECRUITER_QUESTION = "Answers must match the questions of the job offer",
+  DUPLICATE_RECRUITER_ANSWER = "Each question of the job offer can only be answered once",
   ROMEO_NOT_FOUND = "Une erreur est survenue lors de la récupération du code ROME à partir du titre de l'offre",
   GEOLOCATION_NOT_FOUND = "Une erreur est survenue lors de la récupération de la géolocalisation à partir de l'adresse de l'entreprise",
   TRAINING_NOT_FOUND = "Formation introuvable",

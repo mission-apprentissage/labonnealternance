@@ -233,6 +233,26 @@ async function validateApplicationFileType(filename: string, base64String: strin
   }
 }
 
+const assertAnswersMatchOfferQuestions = (
+  answers: IApplicationApiPublicOutput["applicant_answers_to_recruiter_questions"],
+  offerQuestions: IJobsPartnersOfferPrivate["to_applicant_questions"]
+) => {
+  if (!answers?.length) {
+    return
+  }
+  const askedQuestions = new Set(offerQuestions ?? [])
+  const unknownQuestion = answers.find(({ question }) => !askedQuestions.has(question))
+  if (unknownQuestion) {
+    throw badRequest(BusinessErrorCodes.UNKNOWN_RECRUITER_QUESTION, { question: unknownQuestion.question })
+  }
+  // Le plafond du schéma porte sur le nombre d'entrées : sans ce contrôle, un appelant pourrait
+  // répondre trois fois à la même question et faire gonfler le mail envoyé au recruteur.
+  const answeredQuestions = new Set(answers.map(({ question }) => question))
+  if (answeredQuestions.size !== answers.length) {
+    throw badRequest(BusinessErrorCodes.DUPLICATE_RECRUITER_ANSWER)
+  }
+}
+
 /**
  * Send an application
  */
@@ -276,6 +296,11 @@ export const sendApplicationV2 = async ({
   if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE || (offer_expiration && dayjs(offer_expiration).add(1, "day").isBefore(dayjs()))) {
     throw badRequest(BusinessErrorCodes.EXPIRED)
   }
+
+  // Les réponses restent facultatives, y compris sur une offre qui pose des questions : une plateforme partenaire
+  // n'affiche pas nos questions dans son propre formulaire de candidature. En revanche, si des réponses sont
+  // transmises, elles doivent porter sur les questions réellement posées par l'offre.
+  assertAnswersMatchOfferQuestions(newApplication.applicant_answers_to_recruiter_questions, job.to_applicant_questions)
 
   const lbaJob: IJobOrCompanyV2 = {
     job,
