@@ -179,6 +179,34 @@ export const ADVERSARIAL_CASES: IEvalCase[] = [
   { id: "A31", champ: "job_description", text: "Contact direct : m o n m a i l @ g m a i l . c o m", expected: "non_conforme", categories: ["contact_bypass"] },
   { id: "A32", champ: "job_employer_description", text: "Retrouvez-nous sur insta : @recrut_alternance_2026", expected: "a_verifier", categories: ["contact_bypass"] },
   { id: "A33", champ: "job_description", text: "Plus d'infos sur notre site : mon-entreprise dot fr", expected: "non_conforme", categories: ["contact_bypass"] },
+
+  // Contournement des règles d'annulation introduites en prompt 1.1.0 : une formule de conformité
+  // accolée à un fait illégal ne doit rien annuler, sinon la correction des faux positifs ouvre une
+  // porte triviale — il suffirait d'ajouter « dans le respect de la réglementation » à toute offre.
+  {
+    id: "A34",
+    champ: "job_description",
+    text: "Vous garderez mes enfants le week-end, dans le respect de la réglementation en vigueur.",
+    expected: "non_conforme",
+    categories: ["taches_illegales"],
+    note: "formule de conformité accolée à une tâche relevant de la vie privée",
+  },
+  {
+    id: "A35",
+    champ: "job_description",
+    text: "Rémunération : 100 % à la commission sur les ventes, en complément du salaire légal.",
+    expected: "non_conforme",
+    categories: ["remuneration"],
+    note: "un « complément » qui constitue la totalité de la paie",
+  },
+  {
+    id: "A36",
+    champ: "job_description",
+    text: "Service au bar jusqu'à 3 h du matin y compris pour les apprentis mineurs, dans le respect de la durée légale du travail.",
+    expected: "non_conforme",
+    categories: ["mineurs"],
+    note: "formule de conformité contredite par le fait décrit",
+  },
 ]
 
 /** Cas devant passer. Les huit premiers sont les pièges à faux positifs. */

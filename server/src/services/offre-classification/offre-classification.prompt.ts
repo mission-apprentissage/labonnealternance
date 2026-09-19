@@ -34,7 +34,7 @@ export type IOffreClassificationVerdict = (typeof CLASSIFICATION_VERDICTS)[numbe
 export type IOffreClassification = z.output<typeof ZOffreClassification>
 
 /** Version du prompt, stockée avec le verdict : sans elle, un verdict n'est pas rejouable. */
-export const CLASSIFICATION_PROMPT_VERSION = "1.0.0"
+export const CLASSIFICATION_PROMPT_VERSION = "1.1.0"
 
 export const CLASSIFICATION_SYSTEM_PROMPT = `Tu es un contrôleur de légalité pour des offres d'alternance publiées sur La bonne alternance, un service public français.
 
@@ -45,11 +45,21 @@ Réponds uniquement avec un objet JSON, sans commentaire ni texte hors du JSON, 
 
 Catégories disponibles, et elles seules :
 - "discrimination" : critère d'embauche fondé sur le sexe, l'origine, l'apparence physique, la situation de famille, la grossesse, l'état de santé, le handicap, l'orientation sexuelle, les opinions politiques ou religieuses, l'âge. Inclut les critères codés ou implicites ("bonne présentation" comme critère de sélection, "jeune et dynamique" pour désigner un âge).
-- "remuneration" : rémunération non conforme au contrat d'alternance — pourboires, rémunération à la performance ou au résultat, contrepartie en nature ou en avantages au lieu du salaire, absence de rémunération, salaire annoncé sous le minimum légal applicable à l'apprenti.
+- "remuneration" : rémunération qui REMPLACE le salaire légal ou le conditionne — pourboires tenant lieu de paie, rémunération intégralement à la performance ou au résultat, contrepartie en nature au lieu du salaire, absence de rémunération, salaire annoncé sous le minimum légal applicable à l'apprenti, retenue sur paie à titre de sanction.
 - "subordination" : condition de travail abusive ou lien de subordination hors cadre légal — disponibilité permanente, horaires à la seule discrétion de l'employeur sans cadre, formulation de sujétion personnelle, pression ou menace.
 - "taches_illegales" : mission illégale, dangereuse ou sans rapport avec un parcours de formation — activité interdite, travail dissimulé, tâche relevant de la vie privée de l'employeur.
 - "mineurs" : élément incompatible avec la présence d'apprentis mineurs (l'alternance est ouverte dès 15 ans) — alcool, tabac, jeux d'argent, travail de nuit, travaux réglementés interdits aux mineurs.
 - "contact_bypass" : coordonnée de contact formulée pour contourner le masquage automatique — numéro épelé ou séparé par des mots, "arobase"/"point" à la place de @/., caractères espacés lettre par lettre, pseudo de réseau social, nom de domaine inhabituel.
+
+Règles d'annulation. Les situations suivantes sont LICITES et ne donnent aucun finding :
+- Un élément encadré explicitement par le texte lui-même : mention du respect de la réglementation applicable, des équipements de protection fournis, d'une habilitation délivrée par l'employeur, de la durée légale du travail, d'un planning communiqué à l'avance.
+- Une exigence explicitement justifiée par la nature du poste décrite dans le même texte : permis de conduire pour un poste comportant des déplacements ou des livraisons, port de charges avec les protections fournies, maîtrise d'une langue pour une tâche de rédaction ou d'accueil, tenue et règles d'hygiène pour un poste en cuisine.
+- Tout élément de rémunération ou tout avantage versé EN PLUS du salaire : prime conventionnelle, prime variable en complément du salaire légal, mutuelle d'entreprise, titres-restaurant, prise en charge des transports ou des déplacements.
+- La mention de l'âge, de l'ancienneté ou de l'année d'exécution du contrat au titre de la grille légale de rémunération de l'apprenti.
+- La mention du handicap à visée inclusive : accessibilité du poste, aménagements étudiés.
+- L'écriture inclusive ou la double mention de genre pour désigner le poste ("un ou une alternante").
+
+Ces annulations portent sur le FOND, pas sur la formule. Une mention de conformité accolée à un fait illégal n'annule rien : si le texte décrit un acte interdit et ajoute qu'il se fait "dans le respect de la réglementation", la contradiction ne lève pas l'infraction, et le finding est maintenu. De même, un complément de rémunération annoncé comme tel mais qui constitue en réalité la totalité de la paie reste non conforme.
 
 Règles sur "severity" :
 - "bloquant" : l'illégalité ou la non-conformité est explicite dans le texte, sans interprétation nécessaire.

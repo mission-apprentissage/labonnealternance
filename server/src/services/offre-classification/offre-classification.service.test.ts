@@ -43,6 +43,19 @@ describe("classifyFreeText", () => {
     expect(systemMessage?.content).toContain("toute réécriture est interdite")
   })
 
+  // Les règles d'annulation du prompt 1.1.0 ont divisé les faux positifs par huit, mais elles
+  // ouvrent un contournement trivial si elles portent sur la formule et non sur le fond : il
+  // suffirait d'accoler « dans le respect de la réglementation » à n'importe quelle offre.
+  it("should keep the anti-bypass clause of the cancellation rules in the system prompt", async () => {
+    vi.mocked(sendMistralMessages).mockResolvedValue(mistralResponse({ verdict: "conforme", findings: [] }))
+    await classifyFreeText("un texte quelconque", "job_description")
+
+    const [{ messages }] = vi.mocked(sendMistralMessages).mock.calls[0]
+    const systemMessage = messages.find(({ role }) => role === "system")
+    expect(systemMessage?.content).toContain("portent sur le FOND, pas sur la formule")
+    expect(systemMessage?.content).toContain("la contradiction ne lève pas l'infraction")
+  })
+
   it("should tag each finding with the field it was found in", async () => {
     vi.mocked(sendMistralMessages).mockResolvedValue(
       mistralResponse({ verdict: "non_conforme", findings: [{ category: "remuneration", severity: "bloquant", verbatim: "des pourboires" }] })
