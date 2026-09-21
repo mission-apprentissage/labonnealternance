@@ -83,6 +83,46 @@ export const normalizeSshPrivateKey = (privateKey: string): string => {
 // Le fichier transite par un temporaire, ce qui libère la connexion SSH avant le parsing.
 const FASTGET_OPTIONS = { concurrency: 64, chunkSize: 32768 }
 
+// ssh2 abandonne le handshake après 20 s par défaut. Le serveur LinkedIn, hors Europe, a dépassé
+// cette borne en preview le 21/09/2026 (erreur à 20,4 s, run suivant OK) : la limite est portée à
+// 60 s, et un second essai couvre le cas d'un serveur indisponible quelques secondes.
+const SFTP_READY_TIMEOUT_MS = 60_000
+const SFTP_CONNECT_ATTEMPTS = 2
+
+const isHandshakeTimeout = (err: unknown): boolean => (err as { level?: string } | null)?.level === "client-timeout"
+
+const connectAndDownload = (remotePath: string, localPath: string, options: SFTPConnectOptions): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    const conn = new SFTPClient()
+
+    conn.on("ready", () => {
+      conn.sftp((err, sftp) => {
+        if (err) {
+          conn.end()
+          return reject(err)
+        }
+
+        sftp.fastGet(remotePath, localPath, FASTGET_OPTIONS, (err) => {
+          conn.end()
+          return err ? reject(err) : resolve()
+        })
+      })
+    })
+
+    conn.on("error", (err) => {
+      conn.end()
+      reject(err)
+    })
+
+    const { privateKey, ...rest } = options
+    conn.connect({
+      port: 22,
+      readyTimeout: SFTP_READY_TIMEOUT_MS,
+      ...rest,
+      ...(privateKey ? { privateKey: normalizeSshPrivateKey(privateKey) } : {}),
+    })
+  })
+
 /**
  * Télécharge un fichier distant et retourne un stream de lecture sur une copie locale.
  *
@@ -104,31 +144,17 @@ export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConn
   const discard = () => rm(localDir, { recursive: true, force: true })
 
   try {
-    await new Promise<void>((resolve, reject) => {
-      const conn = new SFTPClient()
-
-      conn.on("ready", () => {
-        conn.sftp((err, sftp) => {
-          if (err) {
-            conn.end()
-            return reject(err)
-          }
-
-          sftp.fastGet(remotePath, localPath, FASTGET_OPTIONS, (err) => {
-            conn.end()
-            return err ? reject(err) : resolve()
-          })
-        })
-      })
-
-      conn.on("error", (err) => {
-        conn.end()
-        reject(err)
-      })
-
-      const { privateKey, ...rest } = options
-      conn.connect({ port: 22, ...rest, ...(privateKey ? { privateKey: normalizeSshPrivateKey(privateKey) } : {}) })
-    })
+    for (let attempt = 1; ; attempt++) {
+      try {
+        await connectAndDownload(remotePath, localPath, options)
+        break
+      } catch (err) {
+        if (!isHandshakeTimeout(err) || attempt >= SFTP_CONNECT_ATTEMPTS) {
+          throw err
+        }
+        logger.warn({ err, host: options.host, attempt }, "SFTP: handshake expiré, nouvelle tentative")
+      }
+    }
 
     // `fastGet` appelle son callback sans erreur quand le fichier distant est vide (cf. `fastXfer`
     // dans ssh2 : `if (fsize <= 0) return onerror()`, sans argument). Sans ce contrôle, un flux
