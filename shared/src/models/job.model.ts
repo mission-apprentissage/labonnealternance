@@ -70,6 +70,25 @@ export const ZDelegation = z.strictObject({
   etablissement_id: z.string().nullish().describe("Identifiant d'établissement du catalogue correspondant à etablissement_gestionnaire_id ou etablissement_formateur_id"),
 })
 
+export const TO_APPLICANT_QUESTION_MIN_LENGTH = 5
+export const TO_APPLICANT_QUESTION_MAX_LENGTH = 200
+export const TO_APPLICANT_QUESTIONS_MAX_COUNT = 3
+
+// Questions posées par le recruteur au candidat. Définies ici et réutilisées par le modèle jobs_partners
+// pour que la saisie espace-pro et le dépôt par API partagent exactement les mêmes contraintes.
+export const ZToApplicantQuestions = z
+  .array(
+    z
+      .string()
+      .trim()
+      .min(TO_APPLICANT_QUESTION_MIN_LENGTH, `Une question doit contenir au moins ${TO_APPLICANT_QUESTION_MIN_LENGTH} caractères.`)
+      .max(TO_APPLICANT_QUESTION_MAX_LENGTH, `Une question ne peut pas dépasser ${TO_APPLICANT_QUESTION_MAX_LENGTH} caractères.`)
+      .refine((value) => detectUrlAndEmails(value).length === 0, "Les urls et les emails sont interdits")
+  )
+  .max(TO_APPLICANT_QUESTIONS_MAX_COUNT, `Sélectionnez ${TO_APPLICANT_QUESTIONS_MAX_COUNT} questions au maximum`)
+  .nullish()
+  .describe("Questions posées par le recruteur pour le candidat")
+
 export const ZJobFields = z.strictObject({
   rome_label: z.string().nullish().describe("Libellé du métier concerné"),
   rome_appellation_label: z.string().nullish().describe("Libellé de l'appelation ROME"),
@@ -116,7 +135,7 @@ export const ZJobFields = z.strictObject({
     .nullish()
     .refine((value: string | null | undefined) => (value ? detectUrlAndEmails(value).length === 0 : true), "Les urls et les emails sont interdits")
     .describe("Titre de l'offre saisi par le recruteur"),
-  to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
+  to_applicant_questions: ZToApplicantQuestions,
   ft_support: z.boolean().nullish().default(false).describe("Offre transmise à France Travail"),
 })
 

@@ -9,7 +9,7 @@ import type { IDiplomaParam } from "../routes/params.js"
 import { ZPointGeometry } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
-import { JOB_START_TYPE, JOB_STATUS_ENGLISH, ZDelegation } from "./job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH, ZDelegation, ZToApplicantQuestions } from "./job.model.js"
 import { ZComputedJobPartnersDuplicateRef } from "./job-partners-duplicate-ref.js"
 import { zOpcoLabel } from "./opco.model.js"
 
@@ -148,6 +148,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
   offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
   offer_status_history: z.array(ZJobsPartnersOfferHistoryEvent).default([]).describe("Historique de l'offre"),
+  to_applicant_questions: ZToApplicantQuestions,
 
   stats_detail_view: z.number().default(0).describe("Nombre de vues de la page de détail"),
   stats_search_view: z.number().default(0).describe("Nombre de vues sur une page de recherche"),
@@ -205,7 +206,6 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
     applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
     lba_url: z.string().nullable().default(null).optional(),
-    to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({

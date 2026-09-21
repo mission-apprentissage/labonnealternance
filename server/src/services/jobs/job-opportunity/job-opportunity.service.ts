@@ -9,6 +9,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
+import { JOB_START_TYPE, ZToApplicantQuestions } from "shared/models/job.model"
 import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobs-partners-computed.model"
@@ -28,7 +29,7 @@ import { logger } from "@/common/logger"
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { isNormalizedStringInSetOrArray } from "@/common/utils/string-utils"
+import { isNormalizedStringInSetOrArray, sanitizeToPlainText } from "@/common/utils/string-utils"
 import config from "@/config"
 import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
 import type { FTJob } from "@/services/ftjob.service.types"
@@ -276,6 +277,8 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
 
         contract: {
           start: null,
+          start_type: null,
+          start_is_flexible: null,
           duration: isNaN(contractDuration) ? null : contractDuration,
           type: contractType ? [contractType] : [],
           remote: null,
@@ -295,6 +298,7 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
           },
           opening_count: offreFT.nombrePostes,
           status: JOB_STATUS_ENGLISH.ACTIVE,
+          to_applicant_questions: null,
         },
 
         // Try to find entreprise SIRET from  offreFT.entreprise.siret ?
@@ -484,8 +488,23 @@ async function upsertJobOfferPrivate({
 
   const offer_target_diploma_european = data.offer.target_diploma?.european ?? null
 
+  // Saisie libre du partenaire : on retire tout balisage avant stockage. Le nettoyage raccourcit la chaîne,
+  // une question valide à l'entrée peut donc devenir trop courte une fois nettoyée — on revalide la valeur
+  // réellement stockée plutôt que de laisser passer un document qui violerait le validateur de la collection.
+  const sanitizedQuestions = data.offer.to_applicant_questions?.map((question) => sanitizeToPlainText(question)) ?? null
+  const sanitizedQuestionsResult = ZToApplicantQuestions.safeParse(sanitizedQuestions)
+  if (!sanitizedQuestionsResult.success) {
+    throw badRequest("Invalid to_applicant_questions once markup has been stripped", treeifyError(sanitizedQuestionsResult.error))
+  }
+  const to_applicant_questions = sanitizedQuestionsResult.data ?? null
+
   const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
     contract_start: data.contract.start,
+    contract_start_type: data.contract.start_type,
+    // Même normalisation que le formulaire espace-pro (cf. patchOffre) : la flexibilité n'a de sens
+    // qu'autour d'une date visée. Sans ça, "démarrage dès que possible + date flexible" serait
+    // stockable par API alors que le contrat publié annonce l'inverse.
+    contract_start_is_flexible: data.contract.start_type === JOB_START_TYPE.DES_QUE_POSSIBLE ? false : data.contract.start_is_flexible,
     contract_duration: data.contract.duration,
     contract_type: data.contract.type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     contract_remote: data.contract.remote,
@@ -509,6 +528,7 @@ async function upsertJobOfferPrivate({
     offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.LBA_API,
     offer_status: data.offer.status,
     offer_multicast: data.offer.multicast,
+    to_applicant_questions,
 
     workplace_siret: data.workplace.siret,
     workplace_description: data.workplace.description,

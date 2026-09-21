@@ -5,12 +5,14 @@ import { RefusalReasons } from "../constants/application.js"
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
-
 import { assertUnreachable } from "../utils/assert-unreachable.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
+import { TO_APPLICANT_QUESTION_MAX_LENGTH, TO_APPLICANT_QUESTIONS_MAX_COUNT } from "./job.model.js"
 
 const collectionName = "applications" as const
+
+export const APPLICANT_ANSWER_MAX_LENGTH = 2000
 
 export enum ApplicationScanStatus {
   WAITING_FOR_SCAN = "WAITING_FOR_SCAN",
@@ -87,10 +89,14 @@ const ZApplicationOld = z.strictObject({
   applicant_answers_to_recruiter_questions: z
     .array(
       z.object({
-        question: z.string(),
-        answer: z.string(),
+        // La question est reprise à l'identique de l'offre : mêmes bornes que côté offre.
+        question: z.string().min(1).max(TO_APPLICANT_QUESTION_MAX_LENGTH),
+        // Texte libre saisi par le candidat, restitué dans le mail au recruteur : borné pour qu'un
+        // appelant de l'API ne puisse pas y loger un contenu de plusieurs mégaoctets.
+        answer: z.string().max(APPLICANT_ANSWER_MAX_LENGTH, `Une réponse ne peut pas dépasser ${APPLICANT_ANSWER_MAX_LENGTH} caractères.`),
       })
     )
+    .max(TO_APPLICANT_QUESTIONS_MAX_COUNT, `Une offre ne pose jamais plus de ${TO_APPLICANT_QUESTIONS_MAX_COUNT} questions.`)
     .nullish()
     .describe("Réponse du candidat aux questions du recruteur"),
 })
