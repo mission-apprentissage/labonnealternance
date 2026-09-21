@@ -60,6 +60,7 @@ import { processJooble } from "./offre-partenaire/jooble/process-jooble"
 import { processKelio } from "./offre-partenaire/kelio/process-kelio"
 import { processLaposte } from "./offre-partenaire/laposte/process-laposte"
 import { processLeboncoin } from "./offre-partenaire/leboncoin/process-leboncoin"
+import { processLinkedin } from "./offre-partenaire/linkedin/process-linkedin"
 import { processPass } from "./offre-partenaire/pass/process-pass"
 import { processFillRomeStandalone } from "./offre-partenaire/process-fill-rome-standalone"
 import {
@@ -549,6 +550,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processApec,
     description: "Import du flux APEC jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processLinkedin,
+    description: "Import du flux LinkedIn jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: detectClassificationJobsPartners,
