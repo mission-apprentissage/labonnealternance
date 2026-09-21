@@ -165,22 +165,21 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
         </Box>
       )}
       <Box sx={{ p: fr.spacing("4v") }}>
-        {/*  @ts-expect-error: TODO */}
-        <Box onClick={() => emailGestionnaireRef.current.focus()}>
-          <Typography sx={{ fontWeight: 700 }}>
+        <Box>
+          <Typography component="label" htmlFor="emailDecisionnaire" sx={{ fontWeight: 700 }}>
             Email décisionnaire <br />
-            <br />
           </Typography>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ mt: fr.spacing("6v"), display: "flex", alignItems: "center" }}>
             <Input
               sx={{ fontSize: "12px", maxWidth: "400px", width: "100%" }}
               className={fr.cx("fr-input")}
               inputRef={emailGestionnaireRef}
               defaultValue={etablissement?.gestionnaire_email}
               type="email"
+              id="emailDecisionnaire"
             />
             <Box sx={{ ml: fr.spacing("2v") }}>
-              <Button onClick={saveEmailDecisionnaire} iconId="fr-icon-save-line" title="Enregistrer l'email du gestionnaire" />
+              <Button onClick={saveEmailDecisionnaire} iconId="fr-icon-save-line" title="Enregistrer l'Email décisionnaire" />
             </Box>
           </Box>
         </Box>
