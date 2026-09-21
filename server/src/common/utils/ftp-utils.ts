@@ -91,6 +91,12 @@ const FASTGET_OPTIONS = { concurrency: 64, chunkSize: 32768 }
  * sans cela le fichier reste sur disque (plusieurs dizaines de Mo par flux).
  */
 export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConnectOptions): Promise<Readable> => {
+  // Sans identifiant, ssh2 tente l'auth « none » et échoue avec « All configured authentication
+  // methods failed », qui ne dit pas que c'est la configuration qui manque.
+  if (!options.password && !options.privateKey) {
+    throw new Error(`SFTP: aucun identifiant fourni pour ${options.username}@${options.host} (password ou privateKey requis)`)
+  }
+
   // mkdtemp plutôt qu'un nom aléatoire dans /tmp : répertoire en 0700, non lisible par les autres
   // utilisateurs du conteneur.
   const localDir = await mkdtemp(join(tmpdir(), "sftp-"))
