@@ -22,6 +22,7 @@ import {
   setCookie,
 } from "@/tracking/tracking-cookie-utils"
 import { PAGES } from "@/utils/routes.utils"
+import { NotionExternalLink } from "../_components/NotionExternalLink"
 
 const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
@@ -84,6 +85,7 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                   rootDomain={publicConfig.baseUrl}
                   className="notion-body"
                   components={{
+                    Link: NotionExternalLink,
                     nextImage: Image,
                     nextLink: Link,
                   }}

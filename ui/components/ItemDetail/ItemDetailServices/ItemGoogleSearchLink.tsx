@@ -19,8 +19,9 @@ export default function ItemGoogleSearchLink({ item }: { item: ILbaItemFormation
         <Image src="/images/icons/magnifyingglass.svg" alt="" aria-hidden={true} width={24} height={24} style={{ marginRight: fr.spacing("2v") }} />
         <Typography component="span">
           Lancer une recherche Google sur{" "}
-          <DsfrLink href={getCompanyGoogleSearchLink(item)} aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre">
+          <DsfrLink href={getCompanyGoogleSearchLink(item)}>
             {item.company.name}
+            <span className="fr-sr-only"> - recherche Google</span>
           </DsfrLink>
         </Typography>
       </Stack>

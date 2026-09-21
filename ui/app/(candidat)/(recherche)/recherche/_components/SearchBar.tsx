@@ -455,11 +455,13 @@ export function SearchBar({
         <Autocomplete
           freeSolo
           options={metierOptions}
-          // Comme le lieu : la 1ʳᵉ suggestion est pré-surlignée, Entrée l'accepte. Pattern APG :
-          // une suggestion acceptée remplit le champ et ferme la liste (page de résultats : elle
-          // applique aussi la recherche, cf. submitOnSuggestion) ; liste fermée, Entrée lance
-          // (soumission implicite).
-          autoHighlight
+          // PAS d'autoHighlight ici (contrairement au lieu) : le champ métier accepte du texte
+          // libre même sans suggestion correspondante — avec autoHighlight, MUI sélectionne la
+          // 1ʳᵉ suggestion pré-surlignée sur Entrée (reason "selectOption") à la place du texte
+          // tapé, même s'il ne matche aucune option. Une suggestion reste choisissable au clic
+          // ou après navigation flèches (qui la surligne explicitement) ; liste sans surlignage,
+          // Entrée déclenche la soumission implicite HTML avec le texte tapé (freeSolo,
+          // createOption — cf. submitFromField).
           loading={suggestionsLoading}
           loadingText="Recherche de suggestions…"
           slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
@@ -499,16 +501,14 @@ export function SearchBar({
           // key AVANT le spread, et retiré des props MUI : `key` après un spread fait
           // retomber SWC sur createElement — les enfants du li deviennent un tableau
           // non marqué statique et React exige alors un key sur chacun (warning).
-          renderOption={({ key: _muiKey, ...optionProps }, option, { index }) => (
+          renderOption={({ key: _muiKey, ...optionProps }, option) => (
             <Box
               component="li"
               key={option}
               {...optionProps}
               sx={{ minHeight: 40, px: "16px !important", fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default, display: "block !important" }}
             >
-              {/* Bloc (pas flex) : libellé + indice Entrée sur la 1ʳᵉ suggestion (pré-surlignée, cf. autoHighlight), comme le champ lieu. */}
               <Box>{highlightMatch(option, inputValue)}</Box>
-              {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
             </Box>
           )}
           groupBy={() => "Suggestions"}

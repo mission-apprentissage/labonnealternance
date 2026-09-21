@@ -182,27 +182,11 @@ export default function UnJeune1Solution() {
               <Typography sx={{ fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>Nous la diffusons gratuitement au plus près des candidats</Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
                 Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
-                <DsfrLink href={PAGES.static.home.getPath()} aria-label="Consulter le site La bonne alternance">
-                  La bonne alternance
-                </DsfrLink>
-                ,{" "}
-                <DsfrLink href="https://www.francetravail.fr/accueil/" aria-label="Consulter le site de France Travail">
-                  France Travail
-                </DsfrLink>
-                ,{" "}
-                <DsfrLink href="https://parcoursup.fr" aria-label="Consulter le site Parcoursup">
-                  Parcoursup
-                </DsfrLink>
-                ,{" "}
-                <DsfrLink href="https://www.hellowork.com" aria-label="Consulter le site HelloWork">
-                  HelloWork
-                </DsfrLink>{" "}
-                et{" "}
-                <DsfrLink
-                  href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
-                  aria-label="Consulter les autres partenaires de La bonne alternance"
-                >
+                <DsfrLink href={PAGES.static.home.getPath()}>La bonne alternance</DsfrLink>, <DsfrLink href="https://www.francetravail.fr/accueil/">France Travail</DsfrLink>,{" "}
+                <DsfrLink href="https://parcoursup.fr">Parcoursup</DsfrLink>, <DsfrLink href="https://www.hellowork.com">HelloWork</DsfrLink> et{" "}
+                <DsfrLink href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1">
                   bien d'autres
+                  <span className="fr-sr-only">{" - Consulter les autres partenaires de La bonne alternance"}</span>
                 </DsfrLink>
               </Typography>
             </Box>

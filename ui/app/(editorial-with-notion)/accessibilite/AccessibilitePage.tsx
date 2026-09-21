@@ -11,6 +11,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
+import { NotionExternalLink } from "../_components/NotionExternalLink"
 
 const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
@@ -50,6 +51,7 @@ export const AccessibilitePage = ({ recordMap }: { recordMap: ExtendedRecordMap 
                 rootDomain={publicConfig.baseUrl}
                 className="notion-body"
                 components={{
+                  Link: NotionExternalLink,
                   nextImage: Image,
                   nextLink: Link,
                 }}

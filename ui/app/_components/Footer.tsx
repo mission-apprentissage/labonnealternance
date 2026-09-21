@@ -12,6 +12,15 @@ import { footerId, type ZoneName } from "./zone-ids"
 // Le domaine de production est utilisé quel que soit l'environnement, car c'est lui qui est référencé par Google.
 const GOOGLE_PREFERRED_SOURCE_URL = "https://www.google.com/preferences/source?q=labonnealternance.apprentissage.beta.gouv.fr"
 
+// Les liens externes du footer restent en <a> natif : ils n'ont pas besoin de la navigation
+// client, et DsfrLink tirerait next/link dans le first-load de toutes les pages. La mention
+// « nouvelle fenêtre » est donc posée à la main, en littéral pour rester vérifiable par la
+// règle .biome/plugins/lien-nouvelle-fenetre.grit.
+
+// RGAA 6.1 : le lien de marque contient trois textes visibles (brandTop et les alternatives des
+// deux logos). Le title du header n'en couvre que deux, il ne peut donc pas être réutilisé ici.
+const FOOTER_BRAND_TITLE = "République Française - Accueil - La bonne alternance - Un service proposé par numerique.gouv"
+
 type LinkItem = {
   linkProps: {
     href: string
@@ -203,8 +212,11 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
                         {link.isExternal ? (
                           <a className="fr-footer__top-link" href={link.linkProps.href as string} target="_blank" rel="noopener noreferrer">
                             {link.text}
+                            <span className="fr-sr-only"> - nouvelle fenêtre</span>
                           </a>
                         ) : (
+                          // Lien interne laissé en <a> : un passage à next/link ferait de ces liens
+                          // une navigation SPA, avec la gestion du focus et du titre que cela implique (RGAA 12.8).
                           <a className="fr-footer__top-link" href={link.linkProps.href as string}>
                             {link.text}
                           </a>
@@ -223,7 +235,9 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
           <div className="fr-footer__brand fr-enlarge-link" style={{ flex: "1 1 450px" }}>
             <a
               href={DsfrHeaderProps.homeLinkProps.href as string}
-              title={DsfrHeaderProps.homeLinkProps.title}
+              // RGAA 6.1 : le title doit reprendre tout le contenu du lien, ici trois textes
+              // visibles (brandTop, logo La bonne alternance, logo numerique.gouv).
+              title={FOOTER_BRAND_TITLE}
               style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "flex-end" }}
             >
               <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
@@ -254,21 +268,25 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
               <li className="fr-footer__content-item">
                 <a className="fr-footer__content-link" href="https://info.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   info.gouv.fr
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               </li>
               <li className="fr-footer__content-item">
                 <a className="fr-footer__content-link" href="https://service-public.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   service-public.gouv.fr
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               </li>
               <li className="fr-footer__content-item">
                 <a className="fr-footer__content-link" href="https://legifrance.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   legifrance.gouv.fr
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               </li>
               <li className="fr-footer__content-item">
                 <a className="fr-footer__content-link" href="https://data.gouv.fr" target="_blank" rel="noopener noreferrer">
                   data.gouv.fr
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </a>
               </li>
             </ul>
@@ -278,9 +296,9 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
                 href={GOOGLE_PREFERRED_SOURCE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Ajouter La bonne alternance à vos sources préférées sur Google - nouvelle fenêtre"
               >
                 Ajouter à vos sources préférées sur Google
+                <span className="fr-sr-only"> - nouvelle fenêtre</span>
               </a>
             )}
           </div>
@@ -313,6 +331,7 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
               Sauf mention contraire, tous les contenus de ce site sont sous{" "}
               <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener noreferrer">
                 licence etalab-2.0
+                <span className="fr-sr-only"> - nouvelle fenêtre</span>
               </a>
             </p>
           </div>

@@ -61,7 +61,7 @@ export function WidgetTester() {
       </Typography>
       <Typography sx={{ mb: fr.spacing("4v") }}>
         Lien vers la documentation détaillé :{" "}
-        <DsfrLink href="https://www.data.gouv.fr/fr/dataservices/api-la-bonne-alternance/" aria-label="Accès à la documentation - nouvelle fenêtre" external={true}>
+        <DsfrLink href="https://www.data.gouv.fr/fr/dataservices/api-la-bonne-alternance/" external={true}>
           https://www.data.gouv.fr/fr/dataservices/api-la-bonne-alternance/
         </DsfrLink>
       </Typography>

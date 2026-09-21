@@ -59,8 +59,9 @@ export default async function Metiers() {
               return (
                 <Typography key={index} sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
                   <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
-                  <Link className={fr.cx("fr-link", "fr-text--bold")} href={`/metiers/${job.slug}`} aria-label={`Lancement d'une recherche sur le métier ${job.name}`}>
+                  <Link className={fr.cx("fr-link", "fr-text--bold")} href={`/metiers/${job.slug}`}>
                     {job.name}
+                    <span className="fr-sr-only"> - lancer une recherche sur ce métier</span>
                   </Link>
                 </Typography>
               )

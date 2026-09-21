@@ -7,8 +7,15 @@ import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureS
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { publicConfig } from "@/config.public"
 import { getDaysSinceDate } from "@/utils/date-utils"
+import { cardName } from "./offres-item-list"
 
 const CarteOffre = ({ card, utmParams }) => {
+  // RGAA 6.1.4 : avec enlargeLink, react-dsfr rend le titre de la carte à l'intérieur du lien.
+  // L'aria-label remplace donc ce titre dans le nom accessible : il doit le contenir.
+  const titre = cardName(card)
+  const ariaLabel =
+    card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? `${titre} - voir la société ${card.workplace_name}` : `${titre} - voir l'offre d'emploi chez ${card.workplace_name}`
+
   return (
     <CardStyling>
       <Card
@@ -18,10 +25,7 @@ const CarteOffre = ({ card, utmParams }) => {
         enlargeLink
         horizontal
         linkProps={{
-          "aria-label":
-            card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA
-              ? `Voir la société ${card.workplace_name}`
-              : `Voir l'offre d'emploi ${card.offer_title} chez ${card.workplace_name}`,
+          "aria-label": ariaLabel,
           href: `${card?.lba_url?.substring(publicConfig?.baseUrl?.length || 0) || "#"}?${utmParams}`,
           prefetch: false,
         }}
