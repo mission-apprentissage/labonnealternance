@@ -29,7 +29,11 @@ export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode 
         fontSize: ["18px", "20px", "20px", "32px"],
         lineHeight: ["28px", "32px", "32px", "40px"],
       },
-      "& ul": {
+      // :not([role="listbox"]) — cette mise en forme vise les listes de contenu. Sans l'exclusion,
+      // elle s'applique aussi aux listbox des comboboxes (DropdownCombobox, AutocompleteAsync),
+      // qui doivent être des <ul> pour rester valides (RGAA 8.2) : leurs options héritaient alors
+      // de mx: 80px / mb: 40px et la liste déroulante devenait illisible.
+      '& ul:not([role="listbox"])': {
         mx: 0,
         li: {
           fontSize: ["12px", "12px", "12px", "16px"],
