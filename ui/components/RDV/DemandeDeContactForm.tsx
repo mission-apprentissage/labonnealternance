@@ -166,13 +166,13 @@ export const DemandeDeContactForm = ({
             <Box sx={{ width: "95%" }}>
               <Typography variant="body2" sx={{ mb: fr.spacing("4v") }}>
                 En remplissant ce formulaire, vous acceptez les{" "}
-                <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
+                <DsfrLink href="/conditions-generales-utilisation" external>
                   Conditions générales d&apos;utilisation
                 </DsfrLink>{" "}
                 du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {etablissement_formateur_entreprise_raison_sociale}.
                 <br />
                 Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-                <DsfrLink href="/politique-de-confidentialite" external aria-description="politique de confidentialité - nouvelle fenêtre">
+                <DsfrLink href="/politique-de-confidentialite" external>
                   Politique de confidentialité
                 </DsfrLink>{" "}
                 de La bonne alternance.

@@ -295,7 +295,7 @@ export default function AlternanceVilles() {
             }}
           >
             {villeData.map((v) => (
-              <Link key={v.slug} href={PAGES.dynamic.seoVille(v.slug).getPath()} aria-label={`Voir les offres d'alternance à ${v.ville}`} style={cardLinkStyle}>
+              <Link key={v.slug} href={PAGES.dynamic.seoVille(v.slug).getPath()} aria-label={`Alternance à ${v.ville} ${v.cp} - voir les offres`} style={cardLinkStyle}>
                 <Box sx={listicleCardSx}>
                   <Box>
                     <Typography sx={cardTitleSx}>Alternance à {v.ville}</Typography>
@@ -346,7 +346,7 @@ export default function AlternanceVilles() {
               }}
             >
               {metiersHighlight.map((m) => (
-                <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} aria-label={`Voir les offres d'alternance en ${m.metier}`} style={cardLinkStyle}>
+                <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} aria-label={`Alternance ${m.metier} - voir les offres`} style={cardLinkStyle}>
                   <Box sx={listicleCardSx}>
                     <Box>
                       <Typography sx={cardTitleSx}>Alternance {m.metier}</Typography>
@@ -384,7 +384,7 @@ export default function AlternanceVilles() {
               }}
             >
               {diplomesHighlight.map((d) => (
-                <Link key={d.slug} href={PAGES.dynamic.seoDiplome(d.slug).getPath()} aria-label={`Voir les offres d'alternance ${d.titre}`} style={cardLinkStyle}>
+                <Link key={d.slug} href={PAGES.dynamic.seoDiplome(d.slug).getPath()} aria-label={`${d.titre} en alternance - voir les offres`} style={cardLinkStyle}>
                   <Box sx={listicleCardSx}>
                     <Box>
                       <Typography sx={cardTitleSx}>{d.titre} en alternance</Typography>

@@ -228,81 +228,53 @@ const GuideAlternantPage = () => {
                     Pour vous aider dans le suivi de vos candidatures, La bonne alternance vous propose un exemple de tableau :
                   </Typography>
                   <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("3v")}>
-                    <Box
-                      sx={{
-                        "& .fr-link::after": {
-                          display: "none",
-                        },
-                      }}
-                    >
+                    <Box>
                       <DsfrLink
                         href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"}
-                        external
-                        aria-label="Télécharger le tableau de suivi des candidatures au format PDF"
+                        download="Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"
                       >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
-                        Tableau de suivi à imprimer - PDF
+                        Tableau de suivi à imprimer - PDF {/* RGAA 13.6 : format et poids font partie du nom accessible du lien de téléchargement. */}
+                        <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
+                          (3,9 Mo)
+                        </Typography>
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
-                        (3.9 Mo)
-                      </Typography>
                     </Box>
-                    <Box
-                      sx={{
-                        "& .fr-link::after": {
-                          display: "none",
-                        },
-                      }}
-                    >
+                    <Box>
                       <DsfrLink
                         href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"}
-                        external
-                        aria-label="Télécharger le tableau de suivi des candidatures au format Excel"
+                        download="Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"
                       >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
-                        Tableau de suivi à imprimer - Excel
+                        Tableau de suivi à imprimer - Excel{" "}
+                        <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
+                          (12 ko)
+                        </Typography>
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
-                        (12 ko)
-                      </Typography>
                     </Box>
-                    <Box
-                      sx={{
-                        "& .fr-link::after": {
-                          display: "none",
-                        },
-                      }}
-                    >
+                    <Box>
                       <DsfrLink
                         href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"}
-                        external
-                        aria-label="Télécharger le tableau de suivi des candidatures au format Numbers"
+                        download="Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"
                       >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
-                        Tableau de suivi à imprimer - Numbers
+                        Tableau de suivi à imprimer - Numbers{" "}
+                        <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
+                          (788 ko)
+                        </Typography>
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
-                        (788 ko)
-                      </Typography>
                     </Box>
-                    <Box
-                      sx={{
-                        "& .fr-link::after": {
-                          display: "none",
-                        },
-                      }}
-                    >
+                    <Box>
                       <DsfrLink
                         href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"}
-                        external
-                        aria-label="Télécharger le tableau de suivi des candidatures au format LibreOffice"
+                        download="Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"
                       >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
-                        Tableau de suivi à imprimer - Libre office
+                        Tableau de suivi à imprimer - Libre office{" "}
+                        <Typography component={"span"} variant="caption" ml={fr.spacing("2v")}>
+                          (29 ko)
+                        </Typography>
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
-                        (29 ko)
-                      </Typography>
                     </Box>
                   </Box>
                 </Box>
@@ -392,7 +364,7 @@ const GuideAlternantPage = () => {
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
                 <Box>
-                  <DsfrLink href={`${PAGES.static.faq.getPath()}#candidat`} aria-label="Consulter la foire aux questions">
+                  <DsfrLink href={`${PAGES.static.faq.getPath()}#candidat`}>
                     Consulter la FAQ
                     <DsfrIcon name="fr-icon-arrow-right-line" size={16} ml={fr.spacing("2v")} marginRight={"0 !important"} />
                   </DsfrLink>

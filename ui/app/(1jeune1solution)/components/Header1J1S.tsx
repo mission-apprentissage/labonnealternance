@@ -14,10 +14,13 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
       ET DES SOLIDARITÉS
     </>
   ),
+  // RGAA 6.1 : sans serviceTitle, react-dsfr place le brandTop « MINISTÈRE DU TRAVAIL ET DES
+  // SOLIDARITÉS » à l'intérieur du lien d'accueil. Le nom accessible doit donc commencer par ce
+  // texte visible, comme dans app/_components/Header.tsx.
   homeLinkProps: {
     href: "/",
-    title: "Accueil - La bonne alternance",
-    "aria-label": "Accueil - La bonne alternance",
+    title: "Ministère du Travail et des Solidarités - Accueil - La bonne alternance",
+    "aria-label": "Ministère du Travail et des Solidarités - Accueil - La bonne alternance",
   },
   quickAccessItems: [
     <Box

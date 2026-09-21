@@ -10,6 +10,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
+import { NotionExternalLink } from "../_components/NotionExternalLink"
 
 const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
@@ -46,6 +47,7 @@ export default function MentionLegalesRendererClient({ mentionsLegales }: { ment
                   rootDomain={publicConfig.baseUrl}
                   bodyClassName="notion-body"
                   components={{
+                    Link: NotionExternalLink,
                     nextImage: Image,
                     nextLink: Link,
                   }}

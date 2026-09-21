@@ -115,13 +115,9 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
               >
                 Type de contrat
               </FormLabel>
-              <Link
-                href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label="Accès au contrat en alternance - nouvelle fenêtre"
-              >
+              <Link href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704" target="_blank" rel="noreferrer noopener">
                 En savoir plus
+                <span className="fr-sr-only">{" - Accès au contrat en alternance - nouvelle fenêtre"}</span>
               </Link>
             </>
           }

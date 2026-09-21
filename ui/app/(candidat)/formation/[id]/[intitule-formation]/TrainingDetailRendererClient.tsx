@@ -310,20 +310,13 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
             <div>
               <Typography component="span">Descriptif du {training.training.title} sur&nbsp;</Typography>
               <Typography component="span">
-                <DsfrLink href={training.training.onisepUrl} aria-label="Formation sur le site de l'onisep - nouvelle fenêtre">
-                  le site Onisep&nbsp;
-                </DsfrLink>
+                <DsfrLink href={training.training.onisepUrl}>le site Onisep&nbsp;</DsfrLink>
               </Typography>
             </div>
           )}
           <Box sx={{ my: fr.spacing("4v") }}>
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
-            <DsfrLink
-              href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
-              aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA - nouvelle fenêtre"
-            >
-              Préparez votre premier contact avec un CFA&nbsp;
-            </DsfrLink>
+            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Préparez votre premier contact avec un CFA&nbsp;</DsfrLink>
           </Box>
         </Box>
       </Box>
@@ -350,8 +343,9 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
               Téléphone :{" "}
             </Typography>
             <Typography component="span">
-              <DsfrLink href={`tel:${training.contact.phone}`} aria-label="Appeler la société au téléphone">
+              <DsfrLink href={`tel:${training.contact.phone}`}>
                 {training.contact.phone}
+                <span className="fr-sr-only"> - appeler l&apos;organisme de formation</span>
               </DsfrLink>
             </Typography>
           </Typography>
@@ -365,8 +359,9 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
             <Typography component="span">
               En savoir plus sur
-              <DsfrLink href={training.contact.url} aria-label="Site de l'entreprise - nouvelle fenêtre">
+              <DsfrLink href={training.contact.url}>
                 {training.contact.url}
+                <span className="fr-sr-only"> - site de l&apos;organisme de formation</span>
               </DsfrLink>
             </Typography>
           </Box>
@@ -416,12 +411,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
             }}
           >
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
-            <DsfrLink
-              href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
-              aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA - nouvelle fenêtre"
-            >
-              Préparez votre premier contact avec un CFA&nbsp;
-            </DsfrLink>
+            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Préparez votre premier contact avec un CFA&nbsp;</DsfrLink>
           </Box>
         </Box>
       )}

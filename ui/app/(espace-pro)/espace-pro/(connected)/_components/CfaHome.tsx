@@ -117,30 +117,23 @@ function ListeEntreprise() {
       }) => {
         const { establishment_raison_sociale, establishment_siret, establishment_id, opco } = data[id]
         const siretText = <Typography sx={{ color: "#666666", fontSize: "14px" }}>SIRET {establishment_siret}</Typography>
+        const detailHref = PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()
+        // Sans raison sociale, c'est le SIRET qui porte le lien : un lien dont le seul contenu
+        // serait le complément vocal n'aurait aucun texte visible ni surface cliquable (RGAA 6.1).
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Link
-              underline="hover"
-              href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()}
-              aria-label="voir les informations"
-              sx={{
-                fontWeight: "700",
-              }}
-            >
-              {establishment_raison_sociale}
-            </Link>
             {establishment_raison_sociale ? (
-              siretText
-            ) : (
-              <Link
-                underline="hover"
-                href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()}
-                aria-label="voir les informations"
-                sx={{
-                  fontWeight: "700",
-                }}
-              >
+              <>
+                <Link underline="hover" href={detailHref} sx={{ fontWeight: "700" }}>
+                  {establishment_raison_sociale}
+                  <span className="fr-sr-only"> - voir les informations</span>
+                </Link>
                 {siretText}
+              </>
+            ) : (
+              <Link underline="hover" href={detailHref} sx={{ fontWeight: "700" }}>
+                {siretText}
+                <span className="fr-sr-only"> - voir les informations</span>
               </Link>
             )}
             <Typography sx={{ color: "redmarianne", fontSize: "14px" }}>{opco}</Typography>

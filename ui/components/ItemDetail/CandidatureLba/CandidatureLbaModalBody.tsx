@@ -204,12 +204,12 @@ export const CandidatureLbaModalBody = ({
               }}
             >
               En remplissant ce formulaire, vous acceptez les{" "}
-              <DsfrLink href="/conditions-generales-utilisation" aria-description="Conditions générales d'utilisation - nouvelle fenêtre" external>
+              <DsfrLink href="/conditions-generales-utilisation" external>
                 Conditions générales d&apos;utilisation
               </DsfrLink>{" "}
               du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}. Pour plus d'informations sur le traitement de vos
               données à caractère personnel, veuillez consulter la{" "}
-              <DsfrLink href="/politique-de-confidentialite" aria-description="politique de confidentialité - nouvelle fenêtre" external>
+              <DsfrLink href="/politique-de-confidentialite" external>
                 Politique de confidentialité
               </DsfrLink>{" "}
               de La bonne alternance.
@@ -308,7 +308,7 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
               formik={formik}
               name="applicant_contract_duration"
               label="Durée du contrat souhaitée"
-              emptyButtonAriaLabel="Vider la durée du contrat souhaitée"
+              emptyButtonHint="Vider la durée du contrat souhaitée"
               options={[6, 12, 18, 24, 36].map((len) => `${len} mois`)}
             />
             <MultiSelect name="applicant_contract_start" label="Début de contrat souhaité" formik={formik} options={contractStartLabels} />
@@ -421,19 +421,7 @@ const FormikInput = ({
   )
 }
 
-const FormikSelect = ({
-  formik,
-  name,
-  label,
-  options,
-  emptyButtonAriaLabel,
-}: {
-  formik: FormikType
-  name: string
-  label: string
-  options: string[]
-  emptyButtonAriaLabel: string
-}) => {
+const FormikSelect = ({ formik, name, label, options, emptyButtonHint }: { formik: FormikType; name: string; label: string; options: string[]; emptyButtonHint: string }) => {
   const value = formik.values[name]
   const touched = formik.touched[name]
   const error = formik.errors[name] as string
@@ -463,15 +451,26 @@ const FormikSelect = ({
         state={displayedErrorOpt ? "error" : "default"}
         stateRelatedMessage={displayedErrorOpt}
       />
-      <a
-        href="#"
+      {/* RGAA 7.1 : réinitialiser un champ est une action, pas un lien. Le <a href="#"> qui
+          l'implémentait n'avait pas de destination et renvoyait en haut de page au clavier.
+          type="button" évite en plus de soumettre le formulaire. */}
+      <button
+        type="button"
         onClick={() => formik.setFieldValue(name, null, true)}
-        style={{ textUnderlinePosition: "under", height: "fit-content", alignSelf: "flex-end" }}
+        style={{
+          textUnderlinePosition: "under",
+          height: "fit-content",
+          alignSelf: "flex-end",
+          background: "none",
+          border: "none",
+          padding: 0,
+          cursor: "pointer",
+        }}
         className={fr.cx("fr-link")}
-        aria-label={emptyButtonAriaLabel}
       >
         Réinitialiser
-      </a>
+        <span className="fr-sr-only"> - {emptyButtonHint}</span>
+      </button>
     </Box>
   )
 }

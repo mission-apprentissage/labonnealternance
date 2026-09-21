@@ -15,10 +15,7 @@ const AideApprentissage = () => {
       </Typography>
 
       <Typography sx={{ mt: fr.spacing("4v") }}>
-        Accéder à{" "}
-        <DsfrLink href="https://www.1jeune1solution.gouv.fr/mes-aides" aria-label="Accès à l'outil de simulation de 1jeune1solution - nouvelle fenêtre">
-          l'outil de simulation 1jeune1solution
-        </DsfrLink>
+        Accéder à <DsfrLink href="https://www.1jeune1solution.gouv.fr/mes-aides">l'outil de simulation 1jeune1solution</DsfrLink>
       </Typography>
     </Box>
   )

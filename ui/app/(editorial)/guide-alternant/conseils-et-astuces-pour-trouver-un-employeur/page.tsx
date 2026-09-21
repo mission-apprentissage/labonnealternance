@@ -44,25 +44,20 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
         <Paragraph>
           <Typography>Tout au long de l'année, il existe des salons de recrutement (physiques ou virtuels) spécialisés pour l'alternance : renseignez-vous !</Typography>
           <Typography>
-            <DsfrLink href="https://www.letudiant.fr/etudes/salons.html" aria-label="Consulter les salons l’Étudiant">
-              Voir les salons l’Étudiant
-            </DsfrLink>
+            <DsfrLink href="https://www.letudiant.fr/etudes/salons.html">Voir les salons l’Étudiant</DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.studyrama.com/salons" aria-label="Consulter les salons Studyrama">
-              Voir les salons Studyrama
-            </DsfrLink>
+            <DsfrLink href="https://www.studyrama.com/salons">Voir les salons Studyrama</DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://jeunesdavenirs.fr/nos-evenements/" aria-label="Consulter les salons Jeunes d’Avenirs">
-              Voir les salons Jeunes d’Avenirs
-            </DsfrLink>
+            <DsfrLink href="https://jeunesdavenirs.fr/nos-evenements/">Voir les salons Jeunes d’Avenirs</DsfrLink>
           </Typography>
         </Paragraph>
         <Paragraph>
           France Travail recense de nombreux évènements (conférences, salons, job dating, conférences en ligne…) pour vous aider dans vos recherches de contrat.{" "}
-          <DsfrLink href="https://mesevenementsemploi.francetravail.fr/mes-evenements-emploi/evenements" aria-label="Consulter les évènements France Travail">
+          <DsfrLink href="https://mesevenementsemploi.francetravail.fr/mes-evenements-emploi/evenements">
             En savoir plus
+            <span className="fr-sr-only">{" - Consulter les évènements France Travail"}</span>
           </DsfrLink>
         </Paragraph>
         <Paragraph>
@@ -79,18 +74,11 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
         <ParagraphList
           listItems={[
             <>
-              Besoin d'aide pour construire un CV à partir de vos expériences ? Inscrivez-vous gratuitement sur{" "}
-              <DsfrLink href="https://diagoriente.fr/" aria-label="Consulter le site Diagoriente">
-                Diagoriente
-              </DsfrLink>{" "}
-              et laissez-vous guider dans la construction d'un CV pertinent, mettant en lumière vos compétences.{" "}
+              Besoin d'aide pour construire un CV à partir de vos expériences ? Inscrivez-vous gratuitement sur <DsfrLink href="https://diagoriente.fr/">Diagoriente</DsfrLink> et
+              laissez-vous guider dans la construction d'un CV pertinent, mettant en lumière vos compétences.{" "}
             </>,
             <>
-              Besoin d'aide pour concevoir un beau CV ? Vous pouvez le faire gratuitement sur{" "}
-              <DsfrLink href="https://cvdesignr.com/" aria-label="Consulter le site CVdesignr">
-                CVdesignr
-              </DsfrLink>
-              .
+              Besoin d'aide pour concevoir un beau CV ? Vous pouvez le faire gratuitement sur <DsfrLink href="https://cvdesignr.com/">CVdesignr</DsfrLink>.
             </>,
           ]}
         />
@@ -108,18 +96,14 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
         </Paragraph>
         <Paragraph>
           Les employeurs qui embauchent des alternants reçoivent des aides,{" "}
-          <DsfrLink href="https://entreprendre.service-public.gouv.fr/vosdroits/F23556" aria-label="Consulter le dernier décret sur les aides aux employeurs d'alternants">
-            jusqu’à 6000€ selon le dernier décret
-          </DsfrLink>{" "}
-          : c'est un bon argument pour convaincre une entreprise qui ne connaît pas l'alternance de vous embaucher !
+          <DsfrLink href="https://entreprendre.service-public.gouv.fr/vosdroits/F23556">jusqu’à 6000€ selon le dernier décret</DsfrLink> : c'est un bon argument pour convaincre une
+          entreprise qui ne connaît pas l'alternance de vous embaucher !
         </Paragraph>
       </Section>
       <Section title="L'ANAF : le soutien par les pairs">
         <Paragraph>
-          <DsfrLink href="https://www.anaf.fr/" aria-label="Consulter le site de l'ANAF">
-            L'ANAF
-          </DsfrLink>{" "}
-          (Association Nationale des Apprentis de France) peut vous aider à tout moment de votre parcours et répondre à vos questions !
+          <DsfrLink href="https://www.anaf.fr/">L'ANAF</DsfrLink> (Association Nationale des Apprentis de France) peut vous aider à tout moment de votre parcours et répondre à vos
+          questions !
         </Paragraph>
         <Paragraph>L'ANAF est une association gérée par et pour les apprentis et alternants. Elle offre un accompagnement concret sur de nombreux aspects :</Paragraph>
         <ParagraphList

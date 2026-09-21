@@ -63,10 +63,7 @@ const LaRuptureDeContratPage = () => {
         <Paragraph>
           C'est la solution la plus simple. Vous vous mettez d'accord avec votre employeur pour mettre fin au contrat à une date déterminée. Il suffit de signer ensemble un
           document de rupture amiable (
-          <DsfrLink
-            href="https://code.travail.gouv.fr/modeles-de-courriers/rupture-dun-contrat-dapprentissage-dun-commun-accord"
-            aria-label="Consulter le modèle de de document de rupture amiable sur travail.gouv.fr"
-          >
+          <DsfrLink href="https://code.travail.gouv.fr/modeles-de-courriers/rupture-dun-contrat-dapprentissage-dun-commun-accord">
             un modèle est disponible sur le site travail.gouv.fr
           </DsfrLink>
           ), puis sa copie doit être transmise au CFA et à l'OPCO concerné.
@@ -148,10 +145,7 @@ const LaRuptureDeContratPage = () => {
         <Paragraph>
           Après la rupture d'un contrat d'apprentissage, l'alternant a un délai de 6 mois pour retrouver un employeur. Pendant cette période, il conserve le statut de stagiaire de
           la formation professionnelle. Il peut poursuivre sa formation au CFA et bénéficier{" "}
-          <DsfrLink
-            href="https://www.francetravail.fr/candidat/mes-droits-aux-aides-et-allocati/lessentiel-a-savoir-sur-lallocat/ai-je-droit-a-lallocation-chomag.html"
-            aria-label="Consulter les droits aux allocations chômage sur le site France Travail"
-          >
+          <DsfrLink href="https://www.francetravail.fr/candidat/mes-droits-aux-aides-et-allocati/lessentiel-a-savoir-sur-lallocat/ai-je-droit-a-lallocation-chomag.html">
             des allocations chômage
           </DsfrLink>{" "}
           selon certaines conditions. Le CFA doit aussi l'aider à trouver un nouvel employeur.
@@ -222,13 +216,8 @@ const LaRuptureDeContratPage = () => {
         </Paragraph>
         <Paragraph>
           Sources :{" "}
-          <DsfrLink
-            href="https://www.legifrance.gouv.fr/search/code?tab_selection=code&searchField=ALL&query=&page=1&init=true&nomCode=mjXqUg%3D%3D"
-            aria-label="Consulter le code du travail sur le site Légifrance"
-          >
-            code du travail
-          </DsfrLink>
-          , notamment les articles dédiés à l'apprentissage.
+          <DsfrLink href="https://www.legifrance.gouv.fr/search/code?tab_selection=code&searchField=ALL&query=&page=1&init=true&nomCode=mjXqUg%3D%3D">code du travail</DsfrLink>,
+          notamment les articles dédiés à l'apprentissage.
         </Paragraph>
       </Section>
     </LayoutArticle>

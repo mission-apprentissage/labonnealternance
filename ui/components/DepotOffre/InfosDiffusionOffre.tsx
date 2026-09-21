@@ -28,11 +28,9 @@ export const InfosDiffusionOffre = () => {
         }}
       >
         Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants,&nbsp;
-        <DsfrLink
-          aria-label="Liste des partenaires - nouvelle fenêtre"
-          href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
-        >
+        <DsfrLink href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1">
           et bien d’autres
+          <span className="fr-sr-only">{" - Liste des partenaires"}</span>
         </DsfrLink>
         &nbsp;!
       </Typography>
