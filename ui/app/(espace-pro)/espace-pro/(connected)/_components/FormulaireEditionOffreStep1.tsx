@@ -19,6 +19,7 @@ import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ameliorerTexteOffre, ameliorerTexteOffreByToken, getRomeDetail } from "@/utils/api"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 
@@ -45,9 +46,12 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   const text: string = values[fieldName] ?? ""
   const isFieldInvalid = Boolean(errors[fieldName])
   const canImprove = !loading && remaining > 0 && Boolean(text.trim()) && !isFieldInvalid
+  // un panneau par champ libre : sans cette dimension, les deux compteurs se mélangeraient
+  const trackedField = fieldName === "job_description" ? "offer" : "company"
 
   const handleClick = async () => {
     if (!establishmentId || !canImprove) return
+    pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_AI_REWRITE_REQUESTED, field: trackedField, attempt: AMELIORER_IA_MAX_USAGES - remaining + 1 })
     setLoading(true)
     setHasError(false)
     setProposal(null)
@@ -77,6 +81,8 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   }
 
   const isProposalOpen = proposal !== null
+  // le crédit est décrémenté au lancement : le rang de la proposition affichée se déduit du reste
+  const proposalAttempt = AMELIORER_IA_MAX_USAGES - remaining
   const paddingX = fr.spacing("3v")
   const paddingY = fr.spacing("2v")
   const separator = `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`
@@ -137,11 +143,21 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
               onClick={() => {
                 setFieldValue(fieldName, proposal)
                 setProposal(null)
+                pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_AI_REWRITE_RESOLVED, field: trackedField, attempt: proposalAttempt, decision: "accepted" })
               }}
             >
               Utiliser ce texte
             </Button>
-            <Button type="button" priority="secondary" iconId="ri-delete-bin-line" iconPosition="left" onClick={() => setProposal(null)}>
+            <Button
+              type="button"
+              priority="secondary"
+              iconId="ri-delete-bin-line"
+              iconPosition="left"
+              onClick={() => {
+                setProposal(null)
+                pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_AI_REWRITE_RESOLVED, field: trackedField, attempt: proposalAttempt, decision: "rejected" })
+              }}
+            >
               Conserver mon texte
             </Button>
           </Box>
@@ -503,7 +519,12 @@ export const FormulaireEditionOffreStep1 = ({
                       <Typography sx={{ fontSize: "0.8125rem" }}>
                         Consultez notre charte pour une offre rapidement acceptée et publiée. Notre équipe modère les contenus : toute description non conforme à la réglementation
                         pourra entraîner la suppression de l'offre, la désactivation du compte et faire l'objet d'un signalement aux autorités compétentes.{" "}
-                        <DsfrLink href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur" size="sm" external={true}>
+                        <DsfrLink
+                          href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur"
+                          size="sm"
+                          external={true}
+                          onClick={() => pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_GUIDELINES_OPENED, origin: "job_creation_form" })}
+                        >
                           Découvrir la charte
                         </DsfrLink>
                       </Typography>
@@ -525,7 +546,13 @@ export const FormulaireEditionOffreStep1 = ({
 
                   {romeAndAppellation && (
                     <Box sx={{ mt: fr.spacing("6v") }}>
-                      <DescriptionModeToggle mode={descriptionMode} onChange={setDescriptionMode} />
+                      <DescriptionModeToggle
+                        mode={descriptionMode}
+                        onChange={(mode) => {
+                          setDescriptionMode(mode)
+                          pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_DESCRIPTION_MODE_SELECTED, description_mode: mode })
+                        }}
+                      />
                       {descriptionMode === "custom" && <JobDescriptionField establishmentId={establishment_id} token={token} />}
                     </Box>
                   )}
