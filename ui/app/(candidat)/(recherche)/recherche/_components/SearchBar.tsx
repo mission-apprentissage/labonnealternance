@@ -282,7 +282,10 @@ export function SearchBar({
     setAppliedLieuLabel(next)
   }, [initialLieuLabel, emptyLieuLabel])
 
-  const debouncedInput = useThrottle(inputValue, 300)
+  // Saisie métier normalisée (trim) : seuil des 3 caractères, requête et état de chargement
+  // raisonnent tous sur la même valeur — « ab » suivi d'un espace ne déclenche pas de suggestions.
+  const trimmedInput = inputValue.trim()
+  const debouncedInput = useThrottle(trimmedInput, 300)
   const debouncedLieu = useThrottle(lieuInput, 300)
 
   const metierListbox = useListboxMaxHeight()
@@ -336,8 +339,7 @@ export function SearchBar({
   // interne sans mettre à jour le DOM — Entrée accepterait une autre option que celle surlignée
   // à l'écran (useAutocomplete.getPreviousHighlightedOptionIndex, MUI 7.3). La ligne d'action
   // porte le libellé de la saisie et reste à l'index 0 : MUI la retrouve toujours à sa place.
-  const trimmedInput = inputValue.trim()
-  const suggestionsLoading = trimmedInput.length >= 3 && (debouncedInput !== inputValue || suggestionsPending)
+  const suggestionsLoading = trimmedInput.length >= 3 && (debouncedInput !== trimmedInput || suggestionsPending)
   const metierOptions: MetierOption[] = trimmedInput
     ? [{ kind: "free_text", value: inputValue }, ...(suggestionsLoading ? [] : suggestions).map((value): MetierOption => ({ kind: "suggestion", value }))]
     : []
