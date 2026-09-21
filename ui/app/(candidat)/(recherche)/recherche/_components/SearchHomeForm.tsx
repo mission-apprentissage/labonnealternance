@@ -144,10 +144,10 @@ export function SearchHomeForm({ id }: { id: string }) {
     )
   }
 
-  /* Une suggestion acceptée (Entrée, clic) ne fait que remplir le champ, seul le bouton lance —
-     comme en 07/2026. L'alignement 09/2026 sur « Entrée = lancer » (ligne « Rechercher : … »
-     pré-surlignée) a été retiré : en test, Entrée lançait la recherche là où l'usager voulait
-     sélectionner la suggestion. Entrée ne lance que liste fermée (soumission implicite). */
+  /* Une suggestion acceptée (flèches + Entrée, clic) ne fait que remplir le champ, seul le bouton
+     lance — comme en 07/2026. La ligne d'action « Rechercher : {saisie} » (1ʳᵉ, pré-surlignée,
+     comme « France entière » sur le lieu) lance directement : Entrée sur la saisie libre = lancer,
+     liste fermée aussi (soumission implicite). */
   const handleQChange = (value: string, source: QSource) => {
     setQ(value)
     setQSource(source)
