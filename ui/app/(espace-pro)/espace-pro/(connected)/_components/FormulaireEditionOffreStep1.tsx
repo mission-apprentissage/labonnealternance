@@ -20,6 +20,7 @@ import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ameliorerTexteOffre, ameliorerTexteOffreByToken, getRomeDetail } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
+import { AMELIORER_IA_MAX_USAGES, getAiRewriteAttempt } from "./ameliorer-ia.utils"
 import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 
@@ -27,9 +28,14 @@ const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
 const EMPLOYER_DESCRIPTION_MAX = JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH
 const JOB_DESCRIPTION_MAX = JOB_DESCRIPTION_MAX_LENGTH
-const AMELIORER_IA_MAX_USAGES = 2
-
 type FreeTextFieldName = "job_description" | "job_employer_description"
+
+// A2 : table exhaustive plutôt qu'un ternaire — un futur champ libre ne peut pas tomber
+// silencieusement dans la mauvaise dimension, le compilateur l'exige.
+const TRACKED_FIELD: Record<FreeTextFieldName, "offer" | "company"> = {
+  job_description: "offer",
+  job_employer_description: "company",
+}
 
 /**
  * Encart d'amélioration IA affiché au-dessus du champ libre, en 4 états : au repos (aide + CTA),
@@ -42,16 +48,17 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   const [remaining, setRemaining] = useState(AMELIORER_IA_MAX_USAGES)
   const [loading, setLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
-  const [proposal, setProposal] = useState<string | null>(null)
+  const [proposal, setProposal] = useState<{ text: string; attempt: number } | null>(null)
   const text: string = values[fieldName] ?? ""
   const isFieldInvalid = Boolean(errors[fieldName])
   const canImprove = !loading && remaining > 0 && Boolean(text.trim()) && !isFieldInvalid
   // un panneau par champ libre : sans cette dimension, les deux compteurs se mélangeraient
-  const trackedField = fieldName === "job_description" ? "offer" : "company"
+  const trackedField = TRACKED_FIELD[fieldName]
 
   const handleClick = async () => {
     if (!establishmentId || !canImprove) return
-    pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_AI_REWRITE_REQUESTED, field: trackedField, attempt: AMELIORER_IA_MAX_USAGES - remaining + 1 })
+    const attempt = getAiRewriteAttempt(remaining)
+    pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_AI_REWRITE_REQUESTED, field: trackedField, attempt })
     setLoading(true)
     setHasError(false)
     setProposal(null)
@@ -63,7 +70,7 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
       // lien magique : jamais de cookie de session, d'où la route jumelle par-token.
       const result = token ? await ameliorerTexteOffreByToken(establishmentId, fieldName, text, token) : await ameliorerTexteOffre(establishmentId, fieldName, text)
       if (result && "text" in result && result.text) {
-        setProposal(result.text)
+        setProposal({ text: result.text, attempt })
       } else {
         setHasError(true)
         setRemaining((r) => Math.min(r + 1, AMELIORER_IA_MAX_USAGES))
@@ -81,8 +88,6 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   }
 
   const isProposalOpen = proposal !== null
-  // le crédit est décrémenté au lancement : le rang de la proposition affichée se déduit du reste
-  const proposalAttempt = AMELIORER_IA_MAX_USAGES - remaining
   const paddingX = fr.spacing("3v")
   const paddingY = fr.spacing("2v")
   const separator = `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`
@@ -134,16 +139,16 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
       </Box>
       {isProposalOpen && (
         <>
-          <Typography sx={{ borderTop: separator, px: paddingX, py: paddingY, whiteSpace: "pre-wrap" }}>{proposal}</Typography>
+          <Typography sx={{ borderTop: separator, px: paddingX, py: paddingY, whiteSpace: "pre-wrap" }}>{proposal.text}</Typography>
           <Box sx={{ borderTop: separator, px: paddingX, py: paddingY, display: "flex", gap: fr.spacing("3v"), flexWrap: "wrap" }}>
             <Button
               type="button"
               iconId="ri-check-line"
               iconPosition="left"
               onClick={() => {
-                setFieldValue(fieldName, proposal)
+                setFieldValue(fieldName, proposal.text)
+                pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_AI_REWRITE_RESOLVED, field: trackedField, attempt: proposal.attempt, decision: "accepted" })
                 setProposal(null)
-                pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_AI_REWRITE_RESOLVED, field: trackedField, attempt: proposalAttempt, decision: "accepted" })
               }}
             >
               Utiliser ce texte
@@ -154,8 +159,8 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
               iconId="ri-delete-bin-line"
               iconPosition="left"
               onClick={() => {
+                pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_AI_REWRITE_RESOLVED, field: trackedField, attempt: proposal.attempt, decision: "rejected" })
                 setProposal(null)
-                pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_AI_REWRITE_RESOLVED, field: trackedField, attempt: proposalAttempt, decision: "rejected" })
               }}
             >
               Conserver mon texte
@@ -520,7 +525,7 @@ export const FormulaireEditionOffreStep1 = ({
                         Consultez notre charte pour une offre rapidement acceptée et publiée. Notre équipe modère les contenus : toute description non conforme à la réglementation
                         pourra entraîner la suppression de l'offre, la désactivation du compte et faire l'objet d'un signalement aux autorités compétentes.{" "}
                         <DsfrLink
-                          href="/guide/rediger-son-offre-d-alternance?source=guide-recruteur"
+                          href="/guide/rediger-son-offre-d-alternance?guide_source=guide-recruteur"
                           size="sm"
                           external={true}
                           onClick={() => pushMatomoEvent({ event: MATOMO_EVENTS.JOB_CREATION_GUIDELINES_OPENED, origin: "job_creation_form" })}
