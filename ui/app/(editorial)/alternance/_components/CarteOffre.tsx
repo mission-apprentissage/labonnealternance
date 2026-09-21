@@ -67,7 +67,7 @@ const CarteOffre = ({ card, utmParams }) => {
             }}
           >
             <Typography component="span" className={fr.cx("fr-text--sm")} color={fr.colors.decisions.text.actionHigh.grey.default}>
-              <Typography dangerouslySetInnerHTML={{ __html: card.workplace_name || "" }} />
+              <Typography component="span" dangerouslySetInnerHTML={{ __html: card.workplace_name || "" }} />
             </Typography>
             <Typography
               component="span"
