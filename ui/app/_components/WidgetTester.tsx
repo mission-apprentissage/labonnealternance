@@ -99,10 +99,10 @@ export function WidgetTester() {
       </Box>
       <hr />
       <Typography variant="h3">Largeur 360 px - hauteur 640 px</Typography>
-      <WidgetIFrame title="mobile" height={640} width={360} url={widgetUrl} />
+      <WidgetIFrame title="Aperçu mobile du widget" height={640} width={360} url={widgetUrl} />
       <hr />
       <Typography variant="h3">Largeur 100% - hauteur 800 px</Typography>
-      <WidgetIFrame title="desktop" height={800} url={widgetUrl} />
+      <WidgetIFrame title="Aperçu ordinateur du widget" height={800} url={widgetUrl} />
     </Box>
   )
 }
