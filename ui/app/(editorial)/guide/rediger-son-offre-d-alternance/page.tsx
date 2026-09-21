@@ -42,7 +42,8 @@ const getAllerPlusLoinItems = (source?: string): typeof ALLER_PLUS_LOIN_ITEMS_DE
 }
 
 const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: Promise<Record<string, string>> }) => {
-  const source = new URLSearchParams(await searchParams).get("source") || undefined
+  const params = new URLSearchParams(await searchParams)
+  const source = params.get("guide_source") || params.get("source") || undefined
 
   const pages = [source === "guide-cfa" ? PAGES.static.guideCfa : PAGES.static.guideRecruteur, PAGES.static.guideRedigerSonOffreDAlternance]
 
