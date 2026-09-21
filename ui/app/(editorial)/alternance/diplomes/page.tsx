@@ -123,7 +123,7 @@ export default function AlternanceDiplomes() {
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
+          <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
             Tous les diplômes accessibles en alternance
           </Typography>
           <Box
@@ -271,7 +271,7 @@ export default function AlternanceDiplomes() {
             }}
           >
             {diplomeData.map((d) => (
-              <Link key={d.slug} href={PAGES.dynamic.seoDiplome(d.slug).getPath()} aria-label={`Tout savoir sur le ${d.titre} en alternance`} style={cardLinkStyle}>
+              <Link key={d.slug} href={PAGES.dynamic.seoDiplome(d.slug).getPath()} style={cardLinkStyle}>
                 <Box sx={listicleCardSx}>
                   <Box>
                     <Typography sx={cardTitleSx}>{d.titre}</Typography>
@@ -322,7 +322,7 @@ export default function AlternanceDiplomes() {
               }}
             >
               {metiersHighlight.map((m) => (
-                <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} aria-label={`Alternance ${m.metier}`} style={cardLinkStyle}>
+                <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} style={cardLinkStyle}>
                   <Box sx={listicleCardSx}>
                     <Typography sx={cardTitleSx}>{m.metier}</Typography>
                     <ArrowRightLine sx={cardArrowSx} />
@@ -358,7 +358,7 @@ export default function AlternanceDiplomes() {
               }}
             >
               {villesHighlight.map((v) => (
-                <Link key={v.slug} href={PAGES.dynamic.seoVille(v.slug).getPath()} aria-label={`Alternance à ${v.ville}`} style={cardLinkStyle}>
+                <Link key={v.slug} href={PAGES.dynamic.seoVille(v.slug).getPath()} style={cardLinkStyle}>
                   <Box sx={listicleCardSx}>
                     <Typography sx={cardTitleSx}>{v.ville}</Typography>
                     <ArrowRightLine sx={cardArrowSx} />

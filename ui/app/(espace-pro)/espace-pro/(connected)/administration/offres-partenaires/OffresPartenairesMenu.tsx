@@ -27,7 +27,7 @@ export const OffresPartenairesMenu = ({
       ? {
           label: "Voir l'offre",
           type: "externalLink",
-          ariaLabel: `Voir l'offre ${row.offer_title} dans un nouvel onglet`,
+          hint: `${row.offer_title}`,
           link: row.lba_url,
         }
       : null,
@@ -35,7 +35,7 @@ export const OffresPartenairesMenu = ({
       ? {
           label: "Activer l'offre",
           type: "button",
-          ariaLabel: `Activer l'offre ${row.offer_title}`,
+          hint: `${row.offer_title}`,
           onClick: () => activate(row._id),
         }
       : null,
@@ -43,7 +43,7 @@ export const OffresPartenairesMenu = ({
       ? {
           label: "Désactiver l'offre",
           type: "button",
-          ariaLabel: `Désactiver l'offre ${row.offer_title}`,
+          hint: `${row.offer_title}`,
           onClick: () => {
             setCurrentOffer(row)
             confirmationDesactivationOffre.onOpen()
@@ -53,7 +53,7 @@ export const OffresPartenairesMenu = ({
     {
       label: isCfaFlagged ? "Retirer le signalement CFA" : "Signaler comme offre de CFA",
       type: "button",
-      ariaLabel: `${isCfaFlagged ? "Retirer le signalement CFA de" : "Signaler comme offre de CFA"} l'offre ${row.offer_title}`,
+      hint: `${row.offer_title}`,
       onClick: () => {
         setCurrentOffer(row)
         confirmationClassificationOffre.onOpen()

@@ -148,9 +148,7 @@ export default function BarometrePage() {
               <Typography component="p" sx={paragraphSx}>
                 Pour la première fois depuis la loi Avenir professionnel de 2018, les entrées en contrat d’apprentissage reculent&nbsp;: {negative("-4,8 %")} en 2025 sur un an. Les
                 formations du supérieur sont les plus exposées, avec {negative("-12,4 %")} de nouvelles entrées en janvier 2026 sur un an (
-                <DsfrLink href="https://dares.travail-emploi.gouv.fr/" aria-label="Accéder au site de la DARES - nouvelle fenêtre">
-                  DARES
-                </DsfrLink>
+                <DsfrLink href="https://dares.travail-emploi.gouv.fr/">DARES</DsfrLink>
                 ).
               </Typography>
 
@@ -161,11 +159,8 @@ export default function BarometrePage() {
 
               <Typography component="p" sx={paragraphSx}>
                 La saisonnalité est clé&nbsp;: le premier trimestre est un trimestre de démarrage, alors que le deuxième trimestre concentre le pic de recrutements, comme le
-                montrent les{" "}
-                <DsfrLink href="https://dares.travail-emploi.gouv.fr/" aria-label="Accéder aux données DARES - nouvelle fenêtre">
-                  données DARES
-                </DsfrLink>
-                . L’évolution du deuxième trimestre sera donc le meilleur indicateur de la tendance 2026.
+                montrent les <DsfrLink href="https://dares.travail-emploi.gouv.fr/">données DARES</DsfrLink>. L’évolution du deuxième trimestre sera donc le meilleur indicateur de
+                la tendance 2026.
               </Typography>
 
               <BarChartVertical
@@ -177,8 +172,8 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 Maintenir un volume d’offres stable alors que le marché se contracte est — toutes choses étant égales par ailleurs — un signal encourageant&nbsp;: il témoigne
-                  d’une certaine fidélité des recruteurs à la plateforme et d’un ancrage progressif dans les pratiques de recrutement en alternance.
+                  <span aria-hidden="true">👉</span> Maintenir un volume d’offres stable alors que le marché se contracte est — toutes choses étant égales par ailleurs — un signal
+                  encourageant&nbsp;: il témoigne d’une certaine fidélité des recruteurs à la plateforme et d’un ancrage progressif dans les pratiques de recrutement en alternance.
                 </Typography>
               </Callout>
 
@@ -206,9 +201,9 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 Sur La bonne alternance, les offres restent dominées par la restauration et le commerce, mais la présence croissante du tertiaire — comme le conseil, la
-                  gestion et la comptabilité — traduit une diversification progressive des recruteurs qui déposent sur la plateforme. Un signal utile pour mieux orienter les
-                  candidats vers les filières où les opportunités se développent.
+                  <span aria-hidden="true">👉</span> Sur La bonne alternance, les offres restent dominées par la restauration et le commerce, mais la présence croissante du
+                  tertiaire — comme le conseil, la gestion et la comptabilité — traduit une diversification progressive des recruteurs qui déposent sur la plateforme. Un signal
+                  utile pour mieux orienter les candidats vers les filières où les opportunités se développent.
                 </Typography>
               </Callout>
 
@@ -244,7 +239,8 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 Une partie de la hausse des candidatures reflète une meilleure visibilité de La bonne alternance autant qu’une évolution des comportements de recherche.
+                  <span aria-hidden="true">👉</span> Une partie de la hausse des candidatures reflète une meilleure visibilité de La bonne alternance autant qu’une évolution des
+                  comportements de recherche.
                 </Typography>
               </Callout>
 
@@ -256,8 +252,9 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 {strong("L’Île-de-France")} concentre à elle seule {strong("27,5 %")} des offres d’alternance déposées sur La bonne alternance, devant le Grand Est (
-                  {strong("11,7 %")}) et Auvergne-Rhône-Alpes ({strong("10,3 %")}). Ces trois régions regroupent près d’une offre sur deux, soit {strong("49,5 %")} du total.
+                  <span aria-hidden="true">👉</span> {strong("L’Île-de-France")} concentre à elle seule {strong("27,5 %")} des offres d’alternance déposées sur La bonne alternance,
+                  devant le Grand Est ({strong("11,7 %")}) et Auvergne-Rhône-Alpes ({strong("10,3 %")}). Ces trois régions regroupent près d’une offre sur deux, soit{" "}
+                  {strong("49,5 %")} du total.
                 </Typography>
               </Callout>
 
@@ -284,11 +281,8 @@ export default function BarometrePage() {
 
               <Callout variant="list">
                 <Typography component="p" sx={{ m: 0 }}>
-                  📊 Selon{" "}
-                  <DsfrLink href="https://www.francetravail.fr/" aria-label="Accéder au site de France Travail - nouvelle fenêtre">
-                    France Travail
-                  </DsfrLink>{" "}
-                  et la DARES, seulement {strong("17 %")} des ouvriers utiliseraient un ordinateur quotidiennement au travail, contre {strong("75 %")} des diplômés du supérieur.
+                  <span aria-hidden="true">📊</span> Selon <DsfrLink href="https://www.francetravail.fr/">France Travail</DsfrLink> et la DARES, seulement {strong("17 %")} des
+                  ouvriers utiliseraient un ordinateur quotidiennement au travail, contre {strong("75 %")} des diplômés du supérieur.
                 </Typography>
               </Callout>
 
@@ -335,7 +329,8 @@ export default function BarometrePage() {
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
-                  👉 Dans ce contexte, fluidifier la rencontre entre ces deux réalités devient un enjeu central et c’est précisément là que La bonne alternance a un rôle à jouer.
+                  <span aria-hidden="true">👉</span> Dans ce contexte, fluidifier la rencontre entre ces deux réalités devient un enjeu central et c’est précisément là que La bonne
+                  alternance a un rôle à jouer.
                 </Typography>
               </Callout>
 

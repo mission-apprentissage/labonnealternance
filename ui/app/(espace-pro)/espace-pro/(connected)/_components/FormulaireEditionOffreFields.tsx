@@ -47,16 +47,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
   if (section === "offer") {
     return (
       <>
-        <FormControl
-          required={true}
-          error={Boolean(errors.rome_label && touched.rome_label)}
-          sx={{
-            width: "100%",
-            // CustomInput isole son propre FormControl : l'état error ne descend pas jusqu'à son
-            // label, qu'on colore ici pour aligner le champ sur les autres champs en erreur.
-            ...(errors.rome_label && touched.rome_label ? { "& .MuiFormLabel-root": { color: fr.colors.decisions.text.default.error.default } } : {}),
-          }}
-        >
+        <FormControl required={true} sx={{ width: "100%" }}>
           <DropdownCombobox
             label="Métier"
             handleSearch={debounce(handleJobSearch, 300)}
@@ -79,14 +70,6 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
             placeholder="Rechercher un métier"
             dataTestId="offre-metier"
           />
-          {/* CustomInput, utilisé par DropdownCombobox, masque les erreurs des champs déclarés
-              required={false} tant qu'ils sont vides : le message obligatoire n'y remonte jamais.
-              On l'affiche donc ici, en reprenant la structure du composant Input DSFR
-              (fr-messages-group > p.fr-message.fr-message--error) pour un rendu identique aux
-              autres champs — fr-message porte la taille, fr-message--error la couleur et l'icône. */}
-          <div className={fr.cx("fr-messages-group")} aria-live="polite">
-            {Boolean(errors.rome_label && touched.rome_label) && <p className={fr.cx("fr-message", "fr-message--error")}>{errors.rome_label as string}</p>}
-          </div>
         </FormControl>
         {values.rome_label && (
           <Box sx={{ mt: fr.spacing("4v") }}>
@@ -132,13 +115,9 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
               >
                 Type de contrat
               </FormLabel>
-              <Link
-                href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label="Accès au contrat en alternance - nouvelle fenêtre"
-              >
+              <Link href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704" target="_blank" rel="noreferrer noopener">
                 En savoir plus
+                <span className="fr-sr-only">{" - Accès au contrat en alternance - nouvelle fenêtre"}</span>
               </Link>
             </>
           }

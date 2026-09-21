@@ -242,13 +242,13 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
 
                               <Link
                                 underline="hover"
-                                aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
                                 href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
                                 color="inherit"
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
                                 En savoir plus
+                                <span className="fr-sr-only">{" - Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"}</span>
                               </Link>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center" }}>

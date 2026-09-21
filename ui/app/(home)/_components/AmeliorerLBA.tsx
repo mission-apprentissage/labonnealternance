@@ -41,7 +41,6 @@ export const AmeliorerLBA = () => (
 
       <DsfrLink
         href="https://6809b65f.sibforms.com/serve/MUIFALs50AkvIVt1h1ylDrmeRlezs6vM7OgGdozzfuLa1JowHEjViCJ0Ki4qHf4b_p0tbxnozS4VFgGovYCsGOJPJaw69u31xa06qCg9oVHuE9ZFWMFZB8E8jMw5ljqJcwTVaJZhB72piifkEpXObvX-cjoE0aiAh5QXEZvCHCLEi1u7pvt5cjiG8sBK-LDLhuMwr1fIx_vEg0iz"
-        aria-label="M'inscrire au webinaire - nouvelle fenêtre"
         size="lg"
         className={fr.cx("fr-btn", "fr-btn--lg", "fr-btn--secondary", "fr-btn--icon-right")}
       >

@@ -111,7 +111,7 @@ export default function AlternanceMetiers() {
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
+          <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
             Tous les métiers accessibles en alternance
           </Typography>
           <Box
@@ -265,7 +265,7 @@ export default function AlternanceMetiers() {
             }}
           >
             {metierData.map((m) => (
-              <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} aria-label={`Voir les offres d'alternance ${m.metier}`} style={cardLinkStyle}>
+              <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} aria-label={`${m.metier} - voir les offres d'alternance`} style={cardLinkStyle}>
                 <Box sx={listicleCardSx}>
                   <Box>
                     <Typography sx={cardTitleSx}>{m.metier}</Typography>
@@ -315,7 +315,7 @@ export default function AlternanceMetiers() {
               }}
             >
               {villesHighlight.map((v) => (
-                <Link key={v.slug} href={PAGES.dynamic.seoVille(v.slug).getPath()} aria-label={`Voir l'alternance à ${v.ville}`} style={cardLinkStyle}>
+                <Link key={v.slug} href={PAGES.dynamic.seoVille(v.slug).getPath()} aria-label={`Alternance à ${v.ville} - voir les offres`} style={cardLinkStyle}>
                   <Box sx={listicleCardSx}>
                     <Box>
                       <Typography sx={cardTitleSx}>Alternance à {v.ville}</Typography>
@@ -353,7 +353,12 @@ export default function AlternanceMetiers() {
               }}
             >
               {diplomesHighlight.map((d) => (
-                <Link key={d.slug} href={PAGES.dynamic.seoDiplome(d.slug).getPath()} aria-label={`Voir l'alternance ${d.titre}`} style={cardLinkStyle}>
+                <Link
+                  key={d.slug}
+                  href={PAGES.dynamic.seoDiplome(d.slug).getPath()}
+                  aria-label={`${d.titre} ${formatLong(d.intituleLongFormation)} - voir l'alternance pour ce diplôme`}
+                  style={cardLinkStyle}
+                >
                   <Box sx={listicleCardSx}>
                     <Box>
                       <Typography sx={cardTitleSx}>{d.titre}</Typography>

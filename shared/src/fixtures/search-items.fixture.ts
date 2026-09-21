@@ -23,6 +23,9 @@ export function generateSearchItemFixture(data: Partial<ISearchItem> = {}): ISea
     description: "Nous recherchons un développeur web en alternance pour rejoindre notre équipe.",
     address: "126 Rue de l'Université, 75007 Paris",
     location: { type: "Point", coordinates: [2.3522, 48.8566] },
+    // Cohérent avec l'adresse et le géopoint : Paris, Île-de-France.
+    departement_code: "75",
+    region_code: "11",
     organization_name: "Entreprise Test",
     level: "6",
     activity_sector: "Informatique",

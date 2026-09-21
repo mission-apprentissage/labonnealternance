@@ -1,9 +1,7 @@
-import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import { notFound } from "next/navigation"
 import { buildTrainingUrl } from "shared/metier/lbaitemutils"
-import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { TrainingSchema } from "@/components/ItemDetail/TrainingSchema"
 import { ApiError, apiGet } from "@/utils/api.utils"
@@ -64,14 +62,6 @@ export default async function FormationPage({ params, searchParams }: { params: 
     <>
       {/* Rendu dans le server component pour que le JSON-LD soit présent dans le HTML initial, visible des crawlers sans JavaScript. */}
       <TrainingSchema formation={formation} id={idParam} />
-      <SkipLinks
-        links={[
-          { label: "En-tête", anchor: "#detail-header" },
-          { label: "Contenu", anchor: "#detail-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
-        ]}
-      />
-      <WidgetAwareHeader />
       <TrainingDetailRendererClient training={formation} rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)} />
     </>
   )

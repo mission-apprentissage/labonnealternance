@@ -29,9 +29,9 @@ const LaCarteEtudiantDesMetiersContent = async () => {
   const { user } = await getSession()
   const isCfaConnected = user && user.type === AUTHTYPE.CFA
   const linkCarteEtudiantDesMetiers = isCfaConnected ? PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() : PAGES.static.authentification.getPath()
-  const ariaLabelCarteEtudiantDesMetiers = isCfaConnected
-    ? "Accédez à la page de téléchargement de la carte étudiant des métiers"
-    : "Accédez à la page d'authentification pour accéder à votre espace CFA connecté"
+  const hintCarteEtudiantDesMetiers = isCfaConnected
+    ? "page de téléchargement de la carte étudiant des métiers"
+    : "page d'authentification pour accéder à votre espace CFA connecté"
 
   const pages = [PAGES.static.guideCfa, PAGES.static.guideCfaLaCarteEtudiantDesMetiers]
 
@@ -67,8 +67,9 @@ const LaCarteEtudiantDesMetiersContent = async () => {
         />
         <Paragraph>
           Si vous êtes un organisme de formation{" "}
-          <DsfrLink href={linkCarteEtudiantDesMetiers} aria-label={ariaLabelCarteEtudiantDesMetiers}>
+          <DsfrLink href={linkCarteEtudiantDesMetiers}>
             accédez à votre espace connecté
+            <span className="fr-sr-only"> - {hintCarteEtudiantDesMetiers}</span>
           </DsfrLink>{" "}
           pour télécharger le modèle de la carte étudiant des métiers.
         </Paragraph>

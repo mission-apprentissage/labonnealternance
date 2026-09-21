@@ -46,20 +46,14 @@ const AProposDesFormationsPage = () => {
               <Typography component={"span"} fontWeight={"bold"}>
                 L'insertion professionnelle, un indicateur clé :
               </Typography>{" "}
-              Combien de diplômés ont trouvé un emploi dans les 6 mois ? Le site{" "}
-              <DsfrLink href="https://futurpro.inserjeunes.beta.gouv.fr/" aria-label="Consulter le site Futur pro">
-                Futur pro
-              </DsfrLink>{" "}
-              vous permet de consulter ces chiffres et de comparer les formations entre elles. C'est un bon indicateur de la pertinence de la formation.
+              Combien de diplômés ont trouvé un emploi dans les 6 mois ? Le site <DsfrLink href="https://futurpro.inserjeunes.beta.gouv.fr/">Futur pro</DsfrLink> vous permet de
+              consulter ces chiffres et de comparer les formations entre elles. C'est un bon indicateur de la pertinence de la formation.
             </>,
             <>
               <Typography component="span" fontWeight={"bold"}>
                 Renseignez-vous sur votre futur métier :
               </Typography>{" "}
-              Avant de vous lancer, informez-vous sur le secteur qui vous intéresse. Les{" "}
-              <DsfrLink href={"https://www.intercariforef.org/#thematiques"} aria-label="Consulter le site du réseau des Carif-Oref">
-                Carif-Oref
-              </DsfrLink>{" "}
+              Avant de vous lancer, informez-vous sur le secteur qui vous intéresse. Les <DsfrLink href={"https://www.intercariforef.org/#thematiques"}>Carif-Oref</DsfrLink>{" "}
               informent sur les métiers, les formations et le marché du travail pour chaque territoire. Ils mettent à votre disposition des données sur le marché du travail, les
               perspectives d'emploi ainsi que les aides mobilisables propres à chaque région.
             </>,
@@ -111,17 +105,12 @@ const AProposDesFormationsPage = () => {
         <ParagraphList
           listItems={[
             <>
-              <DsfrLink href="https://www.jobirl.com" aria-label="Consulter le site Jobirl">
-                Jobirl
-              </DsfrLink>{" "}
-              vous met en relation avec des professionnels en activité qui acceptent de partager leur expérience. C'est l'occasion de découvrir concrètement un métier, de poser
-              toutes vos questions et de vous constituer un réseau professionnel précieux pour votre avenir.
+              <DsfrLink href="https://www.jobirl.com">Jobirl</DsfrLink> vous met en relation avec des professionnels en activité qui acceptent de partager leur expérience. C'est
+              l'occasion de découvrir concrètement un métier, de poser toutes vos questions et de vous constituer un réseau professionnel précieux pour votre avenir.
             </>,
             <>
-              <DsfrLink href="https://www.myjobglasses.com" aria-label="Consulter le site Myjobglasses">
-                Myjobglasses
-              </DsfrLink>{" "}
-              vous permet de rencontrer des “ambassadeurs métiers” pour vous aider à vous projeter et répondre à vos questions.
+              <DsfrLink href="https://www.myjobglasses.com">Myjobglasses</DsfrLink> vous permet de rencontrer des “ambassadeurs métiers” pour vous aider à vous projeter et répondre
+              à vos questions.
             </>,
           ]}
         />

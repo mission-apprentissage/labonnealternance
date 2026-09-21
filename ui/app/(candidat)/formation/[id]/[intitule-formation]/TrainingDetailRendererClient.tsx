@@ -11,11 +11,9 @@ import type { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { isCfaEntreprise } from "shared/services/is-cfa-entreprise"
-import { Footer } from "@/app/_components/Footer"
 import { useDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-detail-navigation"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { useFormationPrdvTracker } from "@/app/hooks/use-formation-prdv-tracker"
-import { useIsWidget } from "@/app/hooks/use-is-widget"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
@@ -65,7 +63,6 @@ function TrainingDetailPage({
 
   const router = useRouter()
   const theme = useTheme()
-  const isWidget = useIsWidget()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   // Ouverture depuis le moteur de recherche (?from=/recherche…) : précédent/suivant naviguent
   // dans les résultats de /recherche et « fermer » y retourne. Sans ?from=, pas de contexte
@@ -183,7 +180,7 @@ function TrainingDetailPage({
       </Box>
 
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
-        <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
+        <Box sx={{ mb: fr.spacing("12v") }}>
           {/* Header carte — toujours dans le flux, scrolle normalement */}
           <Box
             ref={headerRef}
@@ -200,7 +197,7 @@ function TrainingDetailPage({
                 <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
               </Box>
 
-              <Box id="detail-header" component="p" color="grey.600" mt={1} mb={1}>
+              <Box component="p" color="grey.600" mt={1} mb={1}>
                 <Typography component="span" sx={{ fontWeight: 700 }}>{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Typography>
                 <Typography component="span" fontWeight={400}>
                   &nbsp;propose cette formation
@@ -282,7 +279,6 @@ function TrainingDetailPage({
         </Box>
       )}
       {!isMobile && <BackToTopButton />}
-      {!isWidget && <Footer />}
     </Box>
   )
 }
@@ -307,27 +303,20 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
   return (
     <>
-      <Box id="detail-content-container" sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <TrainingDescriptionDetails training={training.training} />
         <Box sx={{ backgroundColor: "#f6f6f6", mt: fr.spacing("6v"), p: 2 }}>
           {training.training.onisepUrl && (
             <div>
               <Typography component="span">Descriptif du {training.training.title} sur&nbsp;</Typography>
               <Typography component="span">
-                <DsfrLink href={training.training.onisepUrl} aria-label="Formation sur le site de l'onisep - nouvelle fenêtre">
-                  le site Onisep&nbsp;
-                </DsfrLink>
+                <DsfrLink href={training.training.onisepUrl}>le site Onisep&nbsp;</DsfrLink>
               </Typography>
             </div>
           )}
           <Box sx={{ my: fr.spacing("4v") }}>
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
-            <DsfrLink
-              href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
-              aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA - nouvelle fenêtre"
-            >
-              Préparez votre premier contact avec un CFA&nbsp;
-            </DsfrLink>
+            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Préparez votre premier contact avec un CFA&nbsp;</DsfrLink>
           </Box>
         </Box>
       </Box>
@@ -354,8 +343,9 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
               Téléphone :{" "}
             </Typography>
             <Typography component="span">
-              <DsfrLink href={`tel:${training.contact.phone}`} aria-label="Appeler la société au téléphone">
+              <DsfrLink href={`tel:${training.contact.phone}`}>
                 {training.contact.phone}
+                <span className="fr-sr-only"> - appeler l&apos;organisme de formation</span>
               </DsfrLink>
             </Typography>
           </Typography>
@@ -369,8 +359,9 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
             <Typography component="span">
               En savoir plus sur
-              <DsfrLink href={training.contact.url} aria-label="Site de l'entreprise - nouvelle fenêtre">
+              <DsfrLink href={training.contact.url}>
                 {training.contact.url}
+                <span className="fr-sr-only"> - site de l&apos;organisme de formation</span>
               </DsfrLink>
             </Typography>
           </Box>
@@ -420,12 +411,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
             }}
           >
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
-            <DsfrLink
-              href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
-              aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA - nouvelle fenêtre"
-            >
-              Préparez votre premier contact avec un CFA&nbsp;
-            </DsfrLink>
+            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Préparez votre premier contact avec un CFA&nbsp;</DsfrLink>
           </Box>
         </Box>
       )}

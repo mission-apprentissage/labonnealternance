@@ -10,6 +10,8 @@ import { type IJob, ZJobFields } from "shared"
 import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import type z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { publicConfig } from "@/config.public"
 import { getRelatedEtablissementsFromRome } from "@/utils/api"
 
 const questions = [
@@ -18,7 +20,7 @@ const questions = [
   "Qu’auriez-vous envie d’accomplir ou de mener à bien durant cette alternance ?",
   "Quels outils ou méthodes de travail maîtrisez-vous et souhaitez-vous approfondir ?",
   "Quelles compétences souhaitez-vous développer grâce à cette expérience ?",
-  "Avez-vous déjà réalisé une expérience (stage, job, bénévolat) en lien avec ce poste ?",
+  "Décrivez vos expériences passées (stage, job, bénévolat) en lien avec ce poste.",
   "Pourquoi souhaitez-vous effectuer votre alternance dans ce secteur d'activité ?",
 ]
 
@@ -96,7 +98,7 @@ export const FormulaireEditionOffreStep2 = ({
           >
             Vos questions pour les candidats (Facultatif)
           </Typography>
-          <Checkboxs
+          <QuestionsList
             name="to_applicant_questions"
             label="Sélectionnez jusqu’à 3 questions pour mieux comprendre les motivations des candidats."
             options={questions}
@@ -110,7 +112,7 @@ export const FormulaireEditionOffreStep2 = ({
               mt: fr.spacing("6v"),
             }}
           >
-            Vous avez une question à suggérer ? Écrivez-nous à <a href="mailto:contact@labonnealternance.apprentissage.beta.fr">contact@labonnealternance.apprentissage.beta.fr</a>
+            Vous avez une question à suggérer ? Écrivez-nous à <DsfrLink href={`mailto:${publicConfig.publicEmail}`}>{publicConfig.publicEmail}</DsfrLink>
           </Typography>
           <Buttons offre={offre} onCancel={onCancel} isFtEligible={isFtEligible} hasCfa={hasCfa} isPendingCfaCheck={isPendingCfaCheck} />
         </>
@@ -119,7 +121,7 @@ export const FormulaireEditionOffreStep2 = ({
   )
 }
 
-const Checkboxs = ({ name, options, label, infoText }: { name: string; options: string[]; label: string; infoText?: string }) => {
+const QuestionsList = ({ name, options, label, infoText }: { name: string; options: string[]; label: string; infoText?: string }) => {
   const [input, meta, helper] = useField<string[] | undefined>(name)
   const { value = [] } = input
   const { error, touched } = meta
@@ -135,6 +137,11 @@ const Checkboxs = ({ name, options, label, infoText }: { name: string; options: 
 
   return (
     <>
+      {Boolean(infoText) && (
+        <Box sx={{ mb: fr.spacing("3v") }}>
+          <InfoText>{infoText}</InfoText>
+        </Box>
+      )}
       <Checkbox
         legend={label}
         options={options.map((option) => ({
@@ -149,7 +156,6 @@ const Checkboxs = ({ name, options, label, infoText }: { name: string; options: 
         state={displayedErrorOpt ? "error" : "default"}
         stateRelatedMessage={displayedErrorOpt ? `${error}` : undefined}
       />
-      {Boolean(infoText) && <InfoText>{infoText}</InfoText>}
     </>
   )
 }
@@ -159,7 +165,7 @@ const InfoText = ({ children }: { children: React.ReactNode }) => {
     return null
   }
   return (
-    <Box sx={{ marginTop: 0, display: "flex", gap: "4px", alignItems: "flex-start", color: "var(--text-default-info)" }}>
+    <Box sx={{ py: fr.spacing("2v"), display: "flex", gap: "4px", alignItems: "flex-start", color: "var(--text-default-info)" }}>
       <Box sx={{ mt: "2px !important" }} className="fr-info-text" />
       <Typography sx={{ fontSize: "12px", lineHeight: "20px" }}>{children}</Typography>
     </Box>

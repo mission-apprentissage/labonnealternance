@@ -62,7 +62,7 @@ export default function APropos() {
           <Box sx={{ p: fr.spacing("10v"), marginBottom: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
             <Grid container spacing={fr.spacing("2v")}>
               <Grid size={{ xs: 12, md: 3 }}>
-                <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+                <Typography component={"h1"} variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
                   À propos
                 </Typography>
                 <Box
@@ -145,26 +145,18 @@ export default function APropos() {
                   <Box component="ul" sx={{ my: fr.spacing("8v"), pl: fr.spacing("4v"), listStyle: "disc", "& > li": { mb: fr.spacing("6v") } }}>
                     <li>
                       Les formations en apprentissage issues du{" "}
-                      <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/" aria-label="Accéder au catalogue des formations intercarif oref - nouvelle fenêtre">
-                        catalogue des formations en apprentissage du Réseau des Carif-Oref
-                      </DsfrLink>
-                      .
+                      <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/">catalogue des formations en apprentissage du Réseau des Carif-Oref</DsfrLink>.
                     </li>
                     <li>
                       De nombreuses offres d’emploi en alternance : celles postées par les recruteurs directement sur notre plateforme, ainsi que sur les sites de nos partenaires
-                      (via API ou Widget, cf.{" "}
-                      <DsfrLink href="/espace-developpeurs" aria-label="Accès à l'espace développeurs">
-                        Espace développeurs
-                      </DsfrLink>
+                      (via API ou Widget, cf. <DsfrLink href="/espace-developpeurs">Espace développeurs</DsfrLink>
                       ).
                     </li>
                     <li>
                       Nous agrégeons également les offres en alternance de France travail et de ses{" "}
-                      <DsfrLink
-                        href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
-                        aria-label="Accéder à la liste des sites partenaires de France Travail - nouvelle fenêtre"
-                      >
+                      <DsfrLink href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html">
                         sites partenaires
+                        <span className="fr-sr-only">{" - Accéder à la liste des sites partenaires de France Travail"}</span>
                       </DsfrLink>
                       . Des entreprises identifiées comme à fort potentiel d'embauche en alternance sur la base de données publiques. Notre objectif est de faciliter les démarches
                       de candidatures spontanées des candidats, en pré ciblant les entreprises pertinentes.
@@ -198,10 +190,7 @@ export default function APropos() {
                     mb: fr.spacing("4v"),
                   }}
                 >
-                  Vous pouvez consulter nos{" "}
-                  <DsfrLink href="/statistiques" aria-label="Accès aux statistiques">
-                    statistiques
-                  </DsfrLink>
+                  Vous pouvez consulter nos <DsfrLink href="/statistiques">statistiques</DsfrLink>
                 </Typography>
 
                 <Typography
@@ -335,18 +324,9 @@ export default function APropos() {
                   }}
                 >
                   D’abord développé par France travail, La bonne alternance a été repris en 2020 par{" "}
-                  <DsfrLink
-                    href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html"
-                    aria-label="Accéder au site de la mission interministérielle pour l'apprentissage - nouvelle fenêtre"
-                  >
-                    la mission interministérielle pour l'apprentissage
-                  </DsfrLink>
-                  , membre de la communauté{" "}
-                  <DsfrLink href="https://beta.gouv.fr" aria-label="Accéder au site de beta gouv point fr - nouvelle fenêtre">
-                    beta.gouv.fr
-                  </DsfrLink>{" "}
-                  et suit à ce titre une démarche spécifique de conception de services numériques. Depuis 2025, le service est édité par la Délégation générale à l’emploi et à la
-                  formation professionnelle (DGEFP).
+                  <DsfrLink href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html">la mission interministérielle pour l'apprentissage</DsfrLink>, membre de la
+                  communauté <DsfrLink href="https://beta.gouv.fr">beta.gouv.fr</DsfrLink> et suit à ce titre une démarche spécifique de conception de services numériques. Depuis
+                  2025, le service est édité par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP).
                 </Typography>
               </Grid>
             </Grid>

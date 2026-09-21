@@ -15,6 +15,13 @@ const MAX_SEO_OFFERS = 10
  *   n'en a sinon aucun, tout le rendu visible étant piloté par le client `SearchPageClient` ;
  * - les premières offres en vrais liens `<a href>` (maillage interne + contenu indexable).
  * 100 % additif : ne remplace pas le rendu client interactif.
+ *
+ * Le bloc offres est réservé aux robots : `aria-hidden` + `tabIndex={-1}` sur les liens. Sans
+ * cela, ces liens invisibles (sr-only) précèdent le formulaire dans le DOM et captent la
+ * tabulation — une dizaine de Tab « dans le vide » entre le header et « Que recherchez-vous ? »
+ * (cf. issue #5257). Les lecteurs d'écran ont déjà les vraies cartes dans la liste de résultats,
+ * ce doublon ne leur apporte rien. Les robots d'indexation ignorent ces deux attributs.
+ * Le H1, lui, reste exposé aux technologies d'assistance (seul titre de niveau 1 de la page).
  */
 export function RechercheSeoContent({ params }: { params: ISearchPageParams }) {
   const h1 = buildRechercheH1(params)
@@ -50,7 +57,7 @@ async function RechercheSeoOffers({ params }: { params: ISearchPageParams }) {
   const currentSearchUrl = buildSearchUrl(params)
 
   return (
-    <section aria-label="Aperçu des offres en alternance">
+    <section aria-hidden="true">
       <p>
         {data.hits.length} offre{data.hits.length > 1 ? "s" : ""} en alternance{jobName ? ` ${jobName}` : ""}
         {lieu ? ` à ${lieu}` : ""} disponibles. Postulez gratuitement sur le service public de l'alternance.
@@ -58,7 +65,7 @@ async function RechercheSeoOffers({ params }: { params: ISearchPageParams }) {
       <ul>
         {data.hits.map((hit) => (
           <li key={`${hit.sub_type}-${hit.url_id}`}>
-            <a href={buildHitDetailUrl({ sub_type: hit.sub_type ?? "", url_id: hit.url_id ?? "", title: hit.title ?? "" }, currentSearchUrl)}>
+            <a tabIndex={-1} href={buildHitDetailUrl({ sub_type: hit.sub_type ?? "", url_id: hit.url_id ?? "", title: hit.title ?? "" }, currentSearchUrl)}>
               {[hit.title, hit.organization_name, hit.address].filter(Boolean).join(" — ")}
             </a>
           </li>

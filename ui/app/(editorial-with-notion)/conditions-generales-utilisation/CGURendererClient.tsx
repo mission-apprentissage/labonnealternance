@@ -10,6 +10,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
+import { NotionExternalLink } from "../_components/NotionExternalLink"
 
 const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
@@ -28,7 +29,7 @@ export default function CGURendererClient({ recordMap }: { recordMap: ExtendedRe
         >
           <Grid container spacing={0}>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("2v") }}>
+              <Typography component={"h1"} variant="h1" sx={{ mb: fr.spacing("2v") }}>
                 Conditions
                 <br />
                 <Typography component="span" variant="h1">
@@ -54,6 +55,7 @@ export default function CGURendererClient({ recordMap }: { recordMap: ExtendedRe
                   rootDomain={publicConfig.baseUrl}
                   bodyClassName="notion-body"
                   components={{
+                    Link: NotionExternalLink,
                     nextImage: Image,
                     nextLink: Link,
                   }}

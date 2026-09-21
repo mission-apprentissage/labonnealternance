@@ -32,9 +32,15 @@ const focusFirstInvalidField = (errorFieldNames: string[]) => {
   }
 }
 
-export const FormulaireEditionOffreButtons = ({ offre }: { offre?: IJob }) => {
-  const { isSubmitting, submitForm, validateForm, setTouched } = useFormikContext<any>()
+export const FormulaireEditionOffreButtons = ({ offre, competencesDirty }: { offre?: IJob; competencesDirty: boolean }) => {
+  const { isSubmitting, dirty, submitForm, validateForm, setTouched } = useFormikContext<any>()
 
+  // les compétences ROME vivent hors de Formik : `dirty` seul ne les verrait pas changer
+  const finalDirty = dirty || competencesDirty
+
+  // Le bouton ne dépend pas de isValid : au clic, l'erreur est affichée sur tous les champs invalides et le focus
+  // est déplacé sur le premier d'entre eux dans l'ordre du DOM (RGAA 11.10, 12.8), comme createSubmitWithFocusOnError
+  // pour les formulaires qui disposent d'une balise <form>.
   const handleClick = async () => {
     const validationErrors = await validateForm()
     const errorFieldNames = Object.keys(validationErrors)
@@ -52,7 +58,7 @@ export const FormulaireEditionOffreButtons = ({ offre }: { offre?: IJob }) => {
 
   return (
     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-      <Button disabled={isSubmitting} onClick={handleClick} data-testid="creer-offre">
+      <Button disabled={!finalDirty || isSubmitting} onClick={handleClick} data-testid="creer-offre">
         Continuer
       </Button>
     </Box>

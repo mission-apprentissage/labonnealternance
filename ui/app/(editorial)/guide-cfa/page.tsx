@@ -39,7 +39,7 @@ const guideCfaPage = () => {
         <Box sx={{ display: { md: "flex", xs: "none" }, position: "absolute", overflow: "visible" }}>
           <GuideHeaderIllustration />
         </Box>
-        <Box id="editorial-content-container" my={{ md: fr.spacing("4v") }}>
+        <Box my={{ md: fr.spacing("4v") }}>
           <Grid container spacing={fr.spacing("8v")} p={{ md: fr.spacing("6v") }} pt={{ md: fr.spacing("8v") }} sx={{ position: "relative", zIndex: 2 }}>
             <Grid size={{ md: 8, xs: 12 }} gap={fr.spacing("4v")} display={"flex"} flexDirection={"column"}>
               <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }} gutterBottom>
@@ -103,32 +103,24 @@ const guideCfaPage = () => {
               <List sx={{ listStyleType: "disc", ml: fr.spacing("4v"), pl: fr.spacing("4v"), mb: fr.spacing("4v") }} disablePadding dense>
                 <ListItem sx={{ display: "list-item" }}>
                   Pour rechercher une formation en alternance, le{" "}
-                  <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/" aria-label="Consulter le Catalogue des offres de formations en apprentissage">
-                    Catalogue des offres de formations en apprentissage
-                  </DsfrLink>{" "}
-                  du Réseau des Carif-Oref centralise nationalement l'ensemble des offres de formation en apprentissage collectées régionalement par les Carif-Oref.
+                  <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/">Catalogue des offres de formations en apprentissage</DsfrLink> du Réseau des Carif-Oref
+                  centralise nationalement l'ensemble des offres de formation en apprentissage collectées régionalement par les Carif-Oref.
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
-                  Le{" "}
-                  <DsfrLink href="https://travail-emploi.gouv.fr/precis-de-lapprentissage" aria-label="Consulter le Précis de l’apprentissage">
-                    Précis de l’apprentissage
-                  </DsfrLink>{" "}
-                  vous présente des repères sur l’apprentissage. Il est issu des travaux de la DGEFP et d’une consultation des acteurs institutionnels de l’apprentissage. Il répond
-                  à l’objectif d’harmoniser les pratiques des acteurs de l’apprentissage et vise à donner des repères juridiques et des clefs de compréhension autour de bases
-                  documentaires et méthodologiques communes. Vous y retrouverez{" "}
+                  Le <DsfrLink href="https://travail-emploi.gouv.fr/precis-de-lapprentissage">Précis de l’apprentissage</DsfrLink> vous présente des repères sur l’apprentissage. Il
+                  est issu des travaux de la DGEFP et d’une consultation des acteurs institutionnels de l’apprentissage. Il répond à l’objectif d’harmoniser les pratiques des
+                  acteurs de l’apprentissage et vise à donner des repères juridiques et des clefs de compréhension autour de bases documentaires et méthodologiques communes. Vous y
+                  retrouverez{" "}
                   <Typography component="span" fontWeight="bold">
                     le modèle de Convention de formation
                   </Typography>{" "}
                   recommandé pour mettre en place une formation en apprentissage (voir page 73 à 77).
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
-                  Le{" "}
-                  <DsfrLink href="https://www.cfadock.fr/doc/Vade-mecum%20CFA.pdf" aria-label="Consulter le Vade-mecum CFA">
-                    Vade-mecum CFA
-                  </DsfrLink>{" "}
-                  précise les modalités pratiques de gestion des contrats d’apprentissage. Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le
-                  secteur privé et a été élaboré en concertation avec les têtes de réseau des Centres de Formation pour Apprentis (CFA) et la Direction Générale Emploi et Formation
-                  Professionnelle (DGEFP). Vous y retrouverez{" "}
+                  Le <DsfrLink href="https://www.cfadock.fr/docs/Ressources/240201-VADEMECUM_2024-V2.pdf">Vade-mecum CFA - PDF, 3,8 Mo</DsfrLink> précise les modalités pratiques de
+                  gestion des contrats d’apprentissage. Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le secteur privé et a été élaboré en
+                  concertation avec les têtes de réseau des Centres de Formation pour Apprentis (CFA) et la Direction Générale Emploi et Formation Professionnelle (DGEFP). Vous y
+                  retrouverez{" "}
                   <Typography component="span" fontWeight="bold">
                     le modèle de Convention de mobilité
                   </Typography>{" "}
@@ -136,33 +128,22 @@ const guideCfaPage = () => {
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
                   Retrouvez les fiches juridiques et les actualités de la formation professionnelle sur le site{" "}
-                  <DsfrLink href="https://www.centre-inffo.fr/" aria-label="Consulter le site Centre Inffo">
-                    Centre Inffo
-                  </DsfrLink>
-                  , association sous tutelle du ministère en charge de la Formation professionnelle.
+                  <DsfrLink href="https://www.centre-inffo.fr/">Centre Inffo</DsfrLink>, association sous tutelle du ministère en charge de la Formation professionnelle.
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
-                  <DsfrLink href="https://www.francecompetences.fr/" aria-label="Consulter le site France Compétences">
-                    France Compétences
-                  </DsfrLink>{" "}
-                  est l’autorité nationale chargée du financement et de la régulation de la formation professionnelle de l’apprentissage.
+                  <DsfrLink href="https://www.francecompetences.fr/">France Compétences</DsfrLink> est l’autorité nationale chargée du financement et de la régulation de la
+                  formation professionnelle de l’apprentissage.
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
                   Pour découvrir les bonnes pratiques d’une formation en apprentissage pour les établissements d’enseignement supérieur, consultez la{" "}
-                  <DsfrLink
-                    href="https://www.enseignementsup-recherche.gouv.fr/fr/charte-pour-un-accompagnement-responsable-et-de-qualite-des-apprentis-des-etablissements-d-93051"
-                    aria-label="Consulter la Charte pour un accompagnement responsable et de qualité des apprentis"
-                  >
+                  <DsfrLink href="https://www.enseignementsup-recherche.gouv.fr/fr/charte-pour-un-accompagnement-responsable-et-de-qualite-des-apprentis-des-etablissements-d-93051">
                     Charte pour un accompagnement responsable et de qualité des apprentis
                   </DsfrLink>
                   .
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
                   De façon globale, le site référence pour suivre l’actualité et la réglementation sur l’alternance est celui du{" "}
-                  <DsfrLink href="https://travail-emploi.gouv.fr/" aria-label="Consulter le site du Ministère du Travail">
-                    Ministère du Travail
-                  </DsfrLink>
-                  .
+                  <DsfrLink href="https://travail-emploi.gouv.fr/">Ministère du Travail</DsfrLink>.
                 </ListItem>
               </List>
             </Grid>
@@ -203,11 +184,13 @@ const guideCfaPage = () => {
               <DocumentGridItem
                 title="Convention de réduction ou d’allongement de la durée du contrat d’apprentissage"
                 link="https://www.legifrance.gouv.fr/download/pdf?id=RXAkPiH46HPlfBr9nv5wqIvKSk5AJ5_K4MfKeTuWgLs="
+                format="PDF"
               />
               <DocumentGridItem
                 download="affiche-cfa-avril-2026.pdf"
                 title="Télécharger l’affiche La bonne alternance, à exposer dans votre CFA (format A3)."
                 link="/ressources/affiche-cfa-avril-2026.pdf"
+                format="PDF, 2,7 Mo"
               />
             </Grid>
           </Grid>
@@ -255,7 +238,7 @@ const guideCfaPage = () => {
                   Diffusez simplement et gratuitement les offres en alternance de vos partenaires
                 </Typography>
                 <Box>
-                  <DsfrLink href={PAGES.static.home.getPath()} aria-label="Consulter le site La bonne alternance">
+                  <DsfrLink href={PAGES.static.home.getPath()}>
                     Accéder à la page d'accueil
                     <DsfrIcon name="fr-icon-arrow-right-line" size={16} ml={fr.spacing("2v")} marginRight={"0 !important"} />
                   </DsfrLink>
@@ -270,7 +253,7 @@ const guideCfaPage = () => {
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
                 <Box>
-                  <DsfrLink href={`${PAGES.static.faq.getPath()}#cfa`} aria-label="Consulter la foire aux questions">
+                  <DsfrLink href={`${PAGES.static.faq.getPath()}#cfa`}>
                     Consulter la FAQ
                     <DsfrIcon name="fr-icon-arrow-right-line" size={16} ml={fr.spacing("2v")} marginRight={"0 !important"} />
                   </DsfrLink>

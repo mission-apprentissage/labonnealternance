@@ -42,23 +42,20 @@ async function CarteMetiersCtaButtons() {
   return (
     <Box display={"flex"} flexDirection={{ md: "row", xs: "column" }} gap={fr.spacing("2v")} justifyContent={{ md: "start", xs: "center" }} textAlign={"center"}>
       {isCfaConnected ? (
-        <Button
-          linkProps={{ href: PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() }}
-          aria-label="Accéder à la carte des métiers"
-          priority="primary"
-          style={{ margin: "auto" }}
-        >
+        <Button linkProps={{ href: PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() }} priority="primary" style={{ margin: "auto" }}>
           Télécharger la carte des métiers
         </Button>
       ) : (
         <>
           <Box>
-            <Button linkProps={{ href: PAGES.static.authentification.getPath() }} aria-label="Accéder à la page de connexion" priority="secondary">
+            {/* RGAA 6.1 : les intitulés visibles sont explicites, un aria-label ne ferait que
+                remplacer le nom accessible par un texte qui ne les reprend pas. */}
+            <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
               Me connecter
             </Button>
           </Box>
           <Box>
-            <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} aria-label="Accéder à la page de création de compte" priority="secondary">
+            <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} priority="secondary">
               Me créer un compte
             </Button>
           </Box>
@@ -95,7 +92,6 @@ const JeSuisCFAPage = () => {
             flexDirection={"column"}
             justifyContent={"center"}
             gap={fr.spacing("5v")}
-            id="landing-page-content"
           >
             <Typography variant="h1" component="h1" gutterBottom color={fr.colors.decisions.text.title.blueFrance.default}>
               Vous êtes un organisme de formation
@@ -161,8 +157,9 @@ const JeSuisCFAPage = () => {
               </Typography>
               <Typography>
                 Elles sont ensuite nationalement agrégées par le Réseau des Carif-Oref puis automatiquement exposées sur La bonne alternance.{" "}
-                <DsfrLink href={PAGES.static.faq.getPath()} aria-label="Consulter la foire aux questions">
+                <DsfrLink href={PAGES.static.faq.getPath()}>
                   En savoir plus
+                  <span className="fr-sr-only">{" - Consulter la foire aux questions"}</span>
                 </DsfrLink>
               </Typography>
             </Grid>
@@ -177,7 +174,7 @@ const JeSuisCFAPage = () => {
               </Typography>
               <Typography variant="caption">
                 *Vous pouvez à tout moment vous désinscrire de ce service en{" "}
-                <DsfrLink href={PAGES.static.contact.getPath()} aria-label="Consulter la page de contact">
+                <DsfrLink href={PAGES.static.contact.getPath()}>
                   <Typography variant="caption">contactant notre équipe.</Typography>
                 </DsfrLink>
               </Typography>
@@ -313,27 +310,11 @@ const JeSuisCFAPage = () => {
               </Typography>
               <Typography variant="body1" gutterBottom>
                 Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
-                <DsfrLink href={PAGES.static.home.getPath()} aria-label="Consulter le site La bonne alternance">
-                  La bonne alternance
-                </DsfrLink>
-                ,{" "}
-                <DsfrLink href="https://www.francetravail.fr/accueil/" aria-label="Consulter le site de France Travail">
-                  France Travail
-                </DsfrLink>
-                ,{" "}
-                <DsfrLink href="https://parcoursup.fr" aria-label="Consulter le site Parcoursup">
-                  Parcoursup
-                </DsfrLink>
-                ,{" "}
-                <DsfrLink href="https://www.hellowork.com" aria-label="Consulter le site HelloWork">
-                  HelloWork
-                </DsfrLink>{" "}
-                et{" "}
-                <DsfrLink
-                  href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
-                  aria-label="Consulter les autres partenaires de La bonne alternance"
-                >
+                <DsfrLink href={PAGES.static.home.getPath()}>La bonne alternance</DsfrLink>, <DsfrLink href="https://www.francetravail.fr/accueil/">France Travail</DsfrLink>,{" "}
+                <DsfrLink href="https://parcoursup.fr">Parcoursup</DsfrLink>, <DsfrLink href="https://www.hellowork.com">HelloWork</DsfrLink> et{" "}
+                <DsfrLink href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1">
                   bien d’autres
+                  <span className="fr-sr-only">{" - Consulter les autres partenaires de La bonne alternance"}</span>
                 </DsfrLink>
                 .
               </Typography>

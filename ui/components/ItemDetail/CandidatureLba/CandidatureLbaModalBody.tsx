@@ -46,10 +46,15 @@ export const CandidatureLbaModalBody = ({
 }) => {
   const customQuestions = "job" in item ? (item.job?.to_applicant_questions ?? []) : []
 
-  const questionZodExtension = Object.fromEntries(customQuestions.map((question) => [question, z.string({ error: "⚠ Une réponse est obligatoire" })]))
+  // formik interprète le nom d'un champ comme un chemin lodash : un intitulé de question contenant « . » ou « [ »
+  // écrirait la saisie dans une propriété imbriquée, laissant le textarea bloqué sur sa valeur initiale.
+  // on utilise donc un nom de champ indexé, et on rétablit l'intitulé de la question à la soumission.
+  const questionFields = customQuestions.map((question, index) => ({ question, name: `custom_question_${index}` }))
+
+  const questionZodExtension = Object.fromEntries(questionFields.map(({ name }) => [name, z.string({ error: "Une réponse est obligatoire" })]))
 
   const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
-  const questionsInitValues = Object.fromEntries(customQuestions.map((question) => [question, applicantAnswersSession?.[question] ?? ""]))
+  const questionsInitValues = Object.fromEntries(questionFields.map(({ question, name }) => [name, applicantAnswersSession?.[question] ?? ""]))
 
   const formik = useFormik({
     initialValues: { ...getInitialSchemaValues(), ...questionsInitValues },
@@ -59,9 +64,9 @@ export const CandidatureLbaModalBody = ({
       finalValues.applicant_answers_to_recruiter_questions = []
       const savedAnswers = {}
 
-      customQuestions.forEach((question) => {
-        delete finalValues[question]
-        const answer = values[question]
+      questionFields.forEach(({ question, name }) => {
+        delete finalValues[name]
+        const answer = values[name]
         finalValues.applicant_answers_to_recruiter_questions.push({
           question,
           answer,
@@ -140,15 +145,13 @@ export const CandidatureLbaModalBody = ({
               <MaRechercheDAlternance formik={formik} />
             </Box>
             <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { xs: 0, md: fr.spacing("2v") } }}>
-              <ModalTitle component="h2" sx={{ my: fr.spacing("6v"), color: "#000091" }}>
+              <ModalTitle component="h2" sx={{ mb: fr.spacing("3v"), color: "#000091" }}>
                 Mon message personnalisé
               </ModalTitle>
-              <TextareaInput
-                formik={formik}
-                name="applicant_message"
-                label="Message au responsable du recrutement"
-                infoText="Un message personnalisé augmente vos chances d'obtenir un contact avec le recruteur."
-              />
+              <Box sx={{ mb: fr.spacing("3v") }}>
+                <InfoText>Un message personnalisé augmente vos chances d'obtenir un contact avec le recruteur.</InfoText>
+              </Box>
+              <TextareaInput formik={formik} name="applicant_message" label="Message au responsable du recrutement" />
               <Box sx={{ mt: fr.spacing("4v") }}>
                 <CvFileInput formik={formik} />
               </Box>
@@ -157,26 +160,18 @@ export const CandidatureLbaModalBody = ({
                   <ModalTitle
                     component="h2"
                     sx={{
-                      my: fr.spacing("6v"),
+                      mb: fr.spacing("3v"),
                       color: "#000091",
                     }}
                   >
                     Mes réponses aux questions de l’entreprise
                   </ModalTitle>
+                  <Box sx={{ mb: fr.spacing("3v") }}>
+                    <InfoText>L’entreprise sera attentive aux réponses que vous lui apporterez. Prenez le temps de détailler vos réponses pour le recruteur.</InfoText>
+                  </Box>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
-                    {customQuestions.map((question, index) => (
-                      <TextareaInput
-                        key={question}
-                        formik={formik}
-                        name={question}
-                        label={question}
-                        required
-                        infoText={
-                          index === customQuestions.length - 1
-                            ? "Ces questions permettent à l’entreprise de comprendre vos motivations à la rejoindre, elle sera attentive aux réponses que vous lui apporterez."
-                            : undefined
-                        }
-                      />
+                    {questionFields.map(({ question, name }) => (
+                      <TextareaInput key={name} formik={formik} name={name} label={question} required />
                     ))}
                   </Box>
                 </>
@@ -209,12 +204,12 @@ export const CandidatureLbaModalBody = ({
               }}
             >
               En remplissant ce formulaire, vous acceptez les{" "}
-              <DsfrLink href="/conditions-generales-utilisation" aria-description="Conditions générales d'utilisation - nouvelle fenêtre" external>
+              <DsfrLink href="/conditions-generales-utilisation" external>
                 Conditions générales d&apos;utilisation
               </DsfrLink>{" "}
               du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}. Pour plus d'informations sur le traitement de vos
               données à caractère personnel, veuillez consulter la{" "}
-              <DsfrLink href="/politique-de-confidentialite" aria-description="politique de confidentialité - nouvelle fenêtre" external>
+              <DsfrLink href="/politique-de-confidentialite" external>
                 Politique de confidentialité
               </DsfrLink>{" "}
               de La bonne alternance.
@@ -291,9 +286,12 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
 
   return (
     <>
-      <ModalTitle component="h2" sx={{ my: fr.spacing("6v") }}>
+      <ModalTitle component="h2" sx={{ my: fr.spacing("3v") }}>
         Ma recherche d'alternance
       </ModalTitle>
+      <Box sx={{ mb: fr.spacing("3v") }}>
+        <InfoText>Ces informations aident l’entreprise à étudier votre candidature. La taille des champs est limitée à 200 caractères.</InfoText>
+      </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
         <RadioInput
           formik={formik}
@@ -310,7 +308,7 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
               formik={formik}
               name="applicant_contract_duration"
               label="Durée du contrat souhaitée"
-              emptyButtonAriaLabel="Vider la durée du contrat souhaitée"
+              emptyButtonHint="Vider la durée du contrat souhaitée"
               options={[6, 12, 18, 24, 36].map((len) => `${len} mois`)}
             />
             <MultiSelect name="applicant_contract_start" label="Début de contrat souhaité" formik={formik} options={contractStartLabels} />
@@ -332,9 +330,6 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
             />
           </>
         )}
-        <InfoText>
-          Ces informations aident l’entreprise à étudier votre candidature.{applicant_inscription_formation === true && " La taille des champs est limitée à 200 caractères."}
-        </InfoText>
       </Box>
     </>
   )
@@ -426,19 +421,7 @@ const FormikInput = ({
   )
 }
 
-const FormikSelect = ({
-  formik,
-  name,
-  label,
-  options,
-  emptyButtonAriaLabel,
-}: {
-  formik: FormikType
-  name: string
-  label: string
-  options: string[]
-  emptyButtonAriaLabel: string
-}) => {
+const FormikSelect = ({ formik, name, label, options, emptyButtonHint }: { formik: FormikType; name: string; label: string; options: string[]; emptyButtonHint: string }) => {
   const value = formik.values[name]
   const touched = formik.touched[name]
   const error = formik.errors[name] as string
@@ -468,15 +451,26 @@ const FormikSelect = ({
         state={displayedErrorOpt ? "error" : "default"}
         stateRelatedMessage={displayedErrorOpt}
       />
-      <a
-        href="#"
+      {/* RGAA 7.1 : réinitialiser un champ est une action, pas un lien. Le <a href="#"> qui
+          l'implémentait n'avait pas de destination et renvoyait en haut de page au clavier.
+          type="button" évite en plus de soumettre le formulaire. */}
+      <button
+        type="button"
         onClick={() => formik.setFieldValue(name, null, true)}
-        style={{ textUnderlinePosition: "under", height: "fit-content", alignSelf: "flex-end" }}
+        style={{
+          textUnderlinePosition: "under",
+          height: "fit-content",
+          alignSelf: "flex-end",
+          background: "none",
+          border: "none",
+          padding: 0,
+          cursor: "pointer",
+        }}
         className={fr.cx("fr-link")}
-        aria-label={emptyButtonAriaLabel}
       >
         Réinitialiser
-      </a>
+        <span className="fr-sr-only"> - {emptyButtonHint}</span>
+      </button>
     </Box>
   )
 }

@@ -80,10 +80,8 @@ const DecouvrirLAlternancePage = async ({ searchParams }: { searchParams: Promis
             "les jeunes de 16 ans à 29 ans révolus ;",
             <>
               certains publics au-delà de 29 ans : les apprentis préparant un diplôme ou titre supérieur à celui obtenu via un précédent contrat,{" "}
-              <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage-amenage" aria-label="Consulter les informations sur le contrat d'apprentissage aménagé">
-                les personnes en situation de handicap
-              </DsfrLink>
-              , les personnes ayant un projet de création ou de reprise d’entreprise nécessitant le diplôme ou titre visé, les sportifs de haut niveau ;
+              <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage-amenage">les personnes en situation de handicap</DsfrLink>, les personnes ayant un projet de
+              création ou de reprise d’entreprise nécessitant le diplôme ou titre visé, les sportifs de haut niveau ;
             </>,
             "les personnes entrant dans leur 16ème année (15 ans et un jour), si elles ont terminé leur cycle du collège (brevet obtenu ou pas), peuvent commencer à exécuter un contrat d’apprentissage.",
           ]}
@@ -102,10 +100,7 @@ const DecouvrirLAlternancePage = async ({ searchParams }: { searchParams: Promis
         <Paragraph>Les certifications préparées en alternance diffèrent selon le contrat choisi.</Paragraph>
         <Paragraph>
           S’il s’agit d’un contrat d’apprentissage, il doit préparer à un diplôme ou un titre à finalité professionnelle enregistré au RNCP (
-          <DsfrLink
-            href="https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1"
-            aria-label="Consulter le Répertoire National de la Certification Professionnelle"
-          >
+          <DsfrLink href="https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1">
             Répertoire National de la Certification Professionnelle
           </DsfrLink>
           ) éligible à l’apprentissage.

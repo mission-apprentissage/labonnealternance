@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import type { HeaderProps } from "@codegouvfr/react-dsfr/Header"
 import { Box, Typography } from "@mui/material"
 import NextImage from "next/image"
+import { headerId } from "@/app/_components/zone-ids"
 
 export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
   brandTop: (
@@ -13,10 +14,13 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
       ET DES SOLIDARITÉS
     </>
   ),
+  // RGAA 6.1 : sans serviceTitle, react-dsfr place le brandTop « MINISTÈRE DU TRAVAIL ET DES
+  // SOLIDARITÉS » à l'intérieur du lien d'accueil. Le nom accessible doit donc commencer par ce
+  // texte visible, comme dans app/_components/Header.tsx.
   homeLinkProps: {
     href: "/",
-    title: "Accueil - La bonne alternance",
-    "aria-label": "Accueil - La bonne alternance",
+    title: "Ministère du Travail et des Solidarités - Accueil - La bonne alternance",
+    "aria-label": "Ministère du Travail et des Solidarités - Accueil - La bonne alternance",
   },
   quickAccessItems: [
     <Box
@@ -35,5 +39,12 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
       <NextImage width="155" height="40" src="/images/logo_LBA.svg" aria-label="La bonne alternance" alt="La bonne alternance" />
     </Box>,
   ],
-  id: "header-1j1s-links",
+  // Le Header DSFR monte sinon la modale « Paramètres d'affichage » avec les id fixes
+  // fr-theme-modal, fr-theme-modal-hidden-control-button et fr-modal-title-fr-theme-modal :
+  // autant de doublons dès que deux zones coexistent dans le document (cf. zone-ids.ts).
+  // Aucun écran de LBA n'ouvre cette modale — le footer ne propose pas headerFooterDisplayItem
+  // et le thème est fixé à "light" par dsfr-setup — donc on ne la rend pas du tout. À rétablir
+  // en même temps que le bouton, si un jour le choix de thème est exposé.
+  disableDisplay: true,
+  id: headerId("1jeune1solution"),
 }

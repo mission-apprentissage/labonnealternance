@@ -49,33 +49,15 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
               <Typography fontWeight={"bold"} component={"span"}>
                 Contrat en apprentissage :
               </Typography>{" "}
-              plus d’informations sur{" "}
-              <DsfrLink href={"https://travail-emploi.gouv.fr/le-contrat-dapprentissage"} aria-label="consulter le site du Ministère du Travail pour le contrat d'apprentissage">
-                le site du Ministère du Travail
-              </DsfrLink>
-              , et{" "}
-              <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R1319" aria-label="Consulter le site de Service Public pour le contrat d'apprentissage">
-                service public
-              </DsfrLink>
+              plus d’informations sur <DsfrLink href={"https://travail-emploi.gouv.fr/le-contrat-dapprentissage"}>le site du Ministère du Travail</DsfrLink>, et{" "}
+              <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R1319">service public</DsfrLink>
             </>,
             <>
               <Typography fontWeight={"bold"} component={"span"}>
                 Contrat de professionnalisation :
               </Typography>{" "}
-              plus d’informations sur{" "}
-              <DsfrLink
-                href={"https://travail-emploi.gouv.fr/le-contrat-de-professionnalisation"}
-                aria-label="Consulter le site du Ministère du Travail pour le contrat de professionnalisation"
-              >
-                le site du Ministère du Travail
-              </DsfrLink>
-              , et{" "}
-              <DsfrLink
-                href="https://www.service-public.gouv.fr/particuliers/vosdroits/R10338"
-                aria-label="Consulter le site de Service Public pour le contrat de professionnalisation"
-              >
-                service public
-              </DsfrLink>
+              plus d’informations sur <DsfrLink href={"https://travail-emploi.gouv.fr/le-contrat-de-professionnalisation"}>le site du Ministère du Travail</DsfrLink>, et{" "}
+              <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R10338">service public</DsfrLink>
             </>,
           ]}
         />
@@ -111,13 +93,8 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         />
         <Paragraph>
           Pour comprendre la distinction entre les différents types d’employeurs (privé et public), consultez{" "}
-          <DsfrLink
-            href="https://www.formulaires.service-public.gouv.fr/gf/getNotice.do?cerfaNotice=51649&cerfaFormulaire=10103"
-            aria-label="Consulter la notice du cerfa apprentissage"
-          >
-            la notice du cerfa apprentissage
-          </DsfrLink>{" "}
-          (page 2)
+          <DsfrLink href="https://www.formulaires.service-public.gouv.fr/gf/getNotice.do?cerfaNotice=51649&cerfaFormulaire=10103">la notice du cerfa apprentissage</DsfrLink> (page
+          2)
         </Paragraph>
         <Paragraph fontWeight={"bold"}>Employeurs spécifiques (codes) :</Paragraph>
         <ParagraphList
@@ -307,10 +284,7 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
               "SIRET erroné ou inactif",
               "Rejet du contrat",
               <>
-                Vérifier sur{" "}
-                <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" aria-label="Consulter l'annuaire des entreprises">
-                  l’annuaire des entreprises
-                </DsfrLink>
+                Vérifier sur <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/">l’annuaire des entreprises</DsfrLink>
               </>,
             ],
             ["NIR incomplet ou incohérent", "Blocage paiement aides", "Vérifier avec attestation sécu"],
@@ -324,14 +298,30 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Points de contrôle avant envoi
         </Paragraph>
-        <Paragraph>✅ Le SIRET est actif et correspond à l'établissement d'exécution</Paragraph>
-        <Paragraph>✅ Les dates de début/fin de contrat sont cohérentes</Paragraph>
-        <Paragraph>✅ La date de début de formation est dans la fenêtre autorisée</Paragraph>
-        <Paragraph>✅ La rémunération respecte les minima légaux</Paragraph>
-        <Paragraph>✅ Le maître d'apprentissage remplit les conditions</Paragraph>
-        <Paragraph>✅ Le Cerfa est signé par toutes les parties</Paragraph>
-        <Paragraph>✅ Le CFA a visé le contrat (apprentissage uniquement)</Paragraph>
-        <Paragraph>✅ Le programme de formation est joint (professionnalisation uniquement)</Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le SIRET est actif et correspond à l'établissement d'exécution
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Les dates de début/fin de contrat sont cohérentes
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> La date de début de formation est dans la fenêtre autorisée
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> La rémunération respecte les minima légaux
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le maître d'apprentissage remplit les conditions
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le Cerfa est signé par toutes les parties
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le CFA a visé le contrat (apprentissage uniquement)
+        </Paragraph>
+        <Paragraph>
+          <span aria-hidden="true">✅</span> Le programme de formation est joint (professionnalisation uniquement)
+        </Paragraph>
       </Section>
       <Section title="Transmission à l'OPCO">
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -345,9 +335,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <TableArticle
           headers={["Canal", "Délai de traitement", "Recommandé"]}
           data={[
-            ["Portail en ligne OPCO", "Le plus rapide", "✅ Oui"],
-            ["Email avec PJ", "Variable", "⚠️ Selon OPCO"],
-            ["Courrier postal", "Le plus lent", "❌ À éviter"],
+            ["Portail en ligne OPCO", "Le plus rapide", "Oui"],
+            ["Email avec PJ", "Variable", "Selon OPCO"],
+            ["Courrier postal", "Le plus lent", "À éviter"],
           ]}
         />
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -474,48 +464,28 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <Paragraph fontWeight={"bold"}>Télécharger les formulaires</Paragraph>
         <ParagraphList
           listItems={[
-            <DsfrLink
-              href="https://www.service-public.gouv.fr/particuliers/vosdroits/R1319"
-              aria-label="Consulter le site de Service Public pour télécharger le cerfa apprentissage"
-            >
-              Cerfa - Contrat d'apprentissage
-            </DsfrLink>,
-            <DsfrLink
-              href="https://www.service-public.gouv.fr/particuliers/vosdroits/R10338"
-              aria-label="Consulter le site de Service Public pour télécharger le cerfa contrat de professionnalisation"
-            >
-              Cerfa - Contrat de professionnalisation
-            </DsfrLink>,
+            <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R1319">Cerfa - Contrat d'apprentissage</DsfrLink>,
+            <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R10338">Cerfa - Contrat de professionnalisation</DsfrLink>,
           ]}
         />
         <Paragraph>
           <Typography fontWeight={"bold"} component={"span"}>
-            Identifier votre OPCO 👉
+            Identifier votre OPCO <span aria-hidden="true">👉</span>
           </Typography>{" "}
-          <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr" aria-label="Consulter le site de France Compétences pour identifier votre OPCO">
-            quel-est-mon-opco.francecompetences.fr
-          </DsfrLink>
+          <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr">quel-est-mon-opco.francecompetences.fr</DsfrLink>
         </Paragraph>
         <Paragraph>Saisissez votre SIRET ou le code IDCC de votre convention collective pour trouver l'OPCO compétent.</Paragraph>
         <Paragraph>
           <Typography fontWeight={"bold"} component={"span"}>
-            Vérifier un numéro SIRET 👉
+            Vérifier un numéro SIRET <span aria-hidden="true">👉</span>
           </Typography>{" "}
-          <DsfrLink href="https://www.sirene.fr" aria-label="Consulter le site Sirene pour vérifier un numéro SIRET">
-            sirene.fr
-          </DsfrLink>{" "}
-          - Annuaire officiel des entreprises
+          <DsfrLink href="https://www.sirene.fr">sirene.fr</DsfrLink> - Annuaire officiel des entreprises
         </Paragraph>
         <Paragraph>
           <Typography fontWeight={"bold"} component={"span"}>
-            Codes diplômes et RNCP 👉
+            Codes diplômes et RNCP <span aria-hidden="true">👉</span>
           </Typography>{" "}
-          <DsfrLink
-            href="https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1"
-            aria-label="Consulter le site France Compétences pour rechercher des certifications et des diplômes"
-          >
-            France Compétences - RNCP
-          </DsfrLink>
+          <DsfrLink href="https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1">France Compétences - RNCP</DsfrLink>
         </Paragraph>
       </Section>
       <Section title="FAQ technique">

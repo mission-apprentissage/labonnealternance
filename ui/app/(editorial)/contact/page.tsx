@@ -21,7 +21,7 @@ export default function Contact() {
       <DefaultContainer>
         <Grid container spacing={0}>
           <Grid size={{ xs: 12, md: 4 }} sx={{ p: { xs: fr.spacing("4v"), md: fr.spacing("10v") } }}>
-            <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("2v"), color: fr.colors.decisions.text.default.info.default }}>
+            <Typography component={"h1"} variant="h1" sx={{ mb: fr.spacing("2v"), color: fr.colors.decisions.text.default.info.default }}>
               Nous contacter
             </Typography>
             <Box
@@ -34,15 +34,16 @@ export default function Contact() {
               Vous avez une question sur nos outils ? Consultez notre foire aux questions.
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "center", my: fr.spacing("8v") }}>
-              <Button priority="secondary" aria-label="Accès à la Foire aux questions" size="large">
-                <DsfrLink href={PAGES.static.faq.getPath()}>Consulter la FAQ</DsfrLink>
+              <Button priority="secondary" size="large" linkProps={{ href: PAGES.static.faq.getPath() }}>
+                Consulter la FAQ
               </Button>
             </Box>
             <Typography component="p" sx={{ mb: fr.spacing("4v") }}>
               Si jamais vous ne trouvez pas votre réponse dans notre FAQ, ou souhaitez nous partager votre avis ou une suggestion d'amélioration sur nos outils, contactez nous par
               email à<br />
-              <DsfrLink aria-label="Envoi d'un email au service candidat de La bonne alternance" href={`mailto:${publicConfig.publicEmail}?subject=Page%20Contact`}>
+              <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Page%20Contact`}>
                 {publicConfig.publicEmail}
+                <span className="fr-sr-only"> - service candidat de La bonne alternance</span>
               </DsfrLink>
             </Typography>
           </Grid>

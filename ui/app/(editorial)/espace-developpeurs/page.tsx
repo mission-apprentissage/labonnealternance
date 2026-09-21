@@ -25,7 +25,7 @@ export default function EspaceDeveloppeurs() {
         <Box sx={{ p: { xs: fr.spacing("4v"), md: fr.spacing("10v") }, borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Grid container spacing={fr.spacing("6v")}>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("2v"), color: fr.colors.decisions.text.default.info.default }}>
+              <Typography component={"h1"} variant="h1" sx={{ mb: fr.spacing("2v"), color: fr.colors.decisions.text.default.info.default }}>
                 Espace développeurs
               </Typography>
               <Box
@@ -47,11 +47,8 @@ export default function EspaceDeveloppeurs() {
                   mb: fr.spacing("4v"),
                 }}
               >
-                L’espace développeur est un site dédié{" "}
-                <DsfrLink aria-label="Accès au site api.apprentissage - nouvelle fenêtre" href="https://api.apprentissage.beta.gouv.fr">
-                  API Apprentissage
-                </DsfrLink>{" "}
-                , sur lequel vous pourrez utiliser les différents jeux de données proposés, une fois votre compte créé :
+                L’espace développeur est un site dédié <DsfrLink href="https://api.apprentissage.beta.gouv.fr">API Apprentissage</DsfrLink> , sur lequel vous pourrez utiliser les
+                différents jeux de données proposés, une fois votre compte créé :
               </Typography>
 
               <Grid
@@ -62,11 +59,31 @@ export default function EspaceDeveloppeurs() {
                   gap: fr.spacing("8v"),
                 }}
               >
-                <Button priority="secondary" size="large">
-                  <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/explorer">Explorer l'API</DsfrLink>
+                <Button
+                  priority="secondary"
+                  size="large"
+                  linkProps={{
+                    href: "https://api.apprentissage.beta.gouv.fr/fr/explorer",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  }}
+                >
+                  Explorer l'API
+                  {/* RGAA 6.1 : le target est passé par linkProps, la règle Biome ne le voit pas. */}
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </Button>
-                <Button priority="secondary" size="large">
-                  <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/documentation-technique">Voir la documentation technique</DsfrLink>
+                <Button
+                  priority="secondary"
+                  size="large"
+                  linkProps={{
+                    href: "https://api.apprentissage.beta.gouv.fr/fr/documentation-technique",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  }}
+                >
+                  Voir la documentation technique
+                  {/* RGAA 6.1 : le target est passé par linkProps, la règle Biome ne le voit pas. */}
+                  <span className="fr-sr-only"> - nouvelle fenêtre</span>
                 </Button>
               </Grid>
               <Typography
@@ -108,9 +125,7 @@ export default function EspaceDeveloppeurs() {
                 }}
               >
                 La documentation des différentes routes API est à disposition :{" "}
-                <DsfrLink aria-label="Accès à la documentation des routes API - nouvelle fenêtre" href="https://api.apprentissage.beta.gouv.fr/fr/explorer">
-                  https://api.apprentissage.beta.gouv.fr/fr/explorer
-                </DsfrLink>
+                <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/explorer">https://api.apprentissage.beta.gouv.fr/fr/explorer</DsfrLink>
               </Typography>
               <Typography
                 sx={{
@@ -143,11 +158,9 @@ export default function EspaceDeveloppeurs() {
                 }}
               >
                 Pour exploiter le widget,{" "}
-                <DsfrLink
-                  aria-label="Exposez tout ou partie de l'offre de formation et d'emploi en alternance - nouvelle fenêtre"
-                  href="https://api.gouv.fr/guides/widget-la-bonne-alternance"
-                >
+                <DsfrLink href="https://api.gouv.fr/guides/widget-la-bonne-alternance">
                   consultez cette documentation.
+                  <span className="fr-sr-only">{" - Exposez tout ou partie de l'offre de formation et d'emploi en alternance"}</span>
                 </DsfrLink>
               </Typography>
 
@@ -157,8 +170,9 @@ export default function EspaceDeveloppeurs() {
                 }}
               >
                 Pour tester le widget,{" "}
-                <DsfrLink aria-label="Testez le widget - nouvelle fenêtre" href="https://labonnealternance.apprentissage.beta.gouv.fr/test-widget">
+                <DsfrLink href="https://labonnealternance.apprentissage.beta.gouv.fr/test-widget">
                   consultez cette page.
+                  <span className="fr-sr-only">{" - Testez le widget"}</span>
                 </DsfrLink>
               </Typography>
 
@@ -187,9 +201,7 @@ export default function EspaceDeveloppeurs() {
               >
                 Par ailleurs, collectez et partagez les besoins en recrutement en alternance de vos entreprises, afin d’améliorer leur visibilité auprès des candidats à
                 l’alternance via cette API :{" "}
-                <DsfrLink aria-label="Dépôt d'offre" href="https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre">
-                  https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre
-                </DsfrLink>
+                <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre">https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre</DsfrLink>
               </Typography>
               <Typography
                 sx={{

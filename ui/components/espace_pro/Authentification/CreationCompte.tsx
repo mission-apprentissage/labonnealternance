@@ -10,6 +10,7 @@ import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau"
 import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { AUTHTYPE } from "@/common/contants"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InformationsSiret } from "@/components/espace_pro/CreationRecruteur/InformationsSiret"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { publicConfig } from "@/config.public"
@@ -109,15 +110,10 @@ export const CreationCompteForm = ({
                   header: "Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.",
                   description: (
                     <>
-                      <Link
-                        aria-label="Contact de l'équipe La bonne alternance par email - nouvelle fenêtre"
-                        underline="hover"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
-                      >
+                      <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}>
                         Contactez-nous
-                      </Link>{" "}
+                        <span className="fr-sr-only">{" - équipe La bonne alternance"}</span>
+                      </DsfrLink>{" "}
                       pour obtenir plus d'informations.
                     </>
                   ),
@@ -140,14 +136,16 @@ export const CreationCompteForm = ({
             <Typography>
               Pour les organismes de formation,{" "}
               <Link
-                onClick={() => {
+                onClick={(event) => {
+                  event.preventDefault()
                   setIsCfa(false)
                   router.push(PAGES.static.espaceProCreationCfa.getPath())
                 }}
                 underline="hover"
-                target="_blank"
-                href="#"
-                rel="noopener noreferrer"
+                // Ce lien n'ouvre pas de nouvel onglet : il bascule l'onglet courant via router.push.
+                // Le target="_blank" qu'il portait annonçait un changement de contexte qui n'a pas lieu (RGAA 6.1).
+                // Le href porte la destination réelle, pour que le lien reste utilisable hors JavaScript.
+                href={PAGES.static.espaceProCreationCfa.getPath()}
                 sx={{ cursor: "pointer" }}
               >
                 veuillez utiliser ce lien

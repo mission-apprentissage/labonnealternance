@@ -107,14 +107,15 @@ const OrganizationInfoFields = ({
         value={siret}
         tooltip={
           type === ENTREPRISE ? (
-            <InfoTooltip>
+            <InfoTooltip label="Informations sur le SIRET Organisme">
               La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en suivant{" "}
-              <DsfrLink href="https://www.insee.fr/fr/information/2015441" aria-label="Accès au site de l'INSEE - nouvelle fenêtre">
+              <DsfrLink href="https://www.insee.fr/fr/information/2015441">
                 la marche à suivre.
+                <span className="fr-sr-only">{" - Accès au site de l'INSEE"}</span>
               </DsfrLink>
             </InfoTooltip>
           ) : (
-            <InfoTooltip>
+            <InfoTooltip label="Informations sur le SIRET Organisme">
               La donnée “SIRET Organisme” provient des bases “Carif-Oref”. Si cette information est erronée, merci de le signaler au Carif-Oref de votre région.
             </InfoTooltip>
           )
@@ -153,13 +154,14 @@ const OrganizationInfoFields = ({
           title="Engagement Handicap recensé par"
           value={engagementHandicapLabels[engagementHandicapOrigin]?.label ?? "inconnu"}
           tooltip={
-            <InfoTooltip>
+            <InfoTooltip label="Informations sur l'Engagement Handicap">
               {(viewerType === ENTREPRISE && engagementHandicapLabels[engagementHandicapOrigin]?.tooltip) || (
                 <>
                   La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par France
                   Travail, Cap emploi et leurs partenaires.{" "}
-                  <DsfrLink href="/faq?engagement-handicap=1" external aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre">
+                  <DsfrLink href="/faq?engagement-handicap=1" external>
                     En savoir plus
+                    <span className="fr-sr-only">{" - Employeur handi-engagé avec France Travail"}</span>
                   </DsfrLink>
                 </>
               )}
@@ -187,8 +189,9 @@ const engagementHandicapLabels: Record<
       <>
         La bonne alternance mène des travaux visant à valoriser les entreprises engagées en faveur de l’emploi des personnes en situation de handicap. Votre entreprise a déjà par
         le passé publié des offres mentionnant votre engagement.{" "}
-        <DsfrLink href="/faq?engagement-handicap=1" external aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre">
+        <DsfrLink href="/faq?engagement-handicap=1" external>
           En savoir plus
+          <span className="fr-sr-only">{" - Employeur handi-engagé avec France Travail"}</span>
         </DsfrLink>
       </>
     ),

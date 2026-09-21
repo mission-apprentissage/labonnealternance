@@ -41,12 +41,12 @@ export const DemandeDeContactForm = ({
       validateOnChange={false}
       validateOnBlur={true}
       validationSchema={Yup.object({
-        firstname: Yup.string().required("⚠ Le prénom est obligatoire"),
-        lastname: Yup.string().required("⚠ Le nom est obligatoire"),
+        firstname: Yup.string().required("Le prénom est obligatoire"),
+        lastname: Yup.string().required("Le nom est obligatoire"),
         phone: Yup.string()
-          .matches(/^[0-9]{10}$/, "⚠ Numéro de téléphone invalide")
-          .required("⚠ Le numéro de téléphone est obligatoire"),
-        email: Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
+          .matches(/^[0-9]{10}$/, "Numéro de téléphone invalide")
+          .required("Le numéro de téléphone est obligatoire"),
+        email: Yup.string().email("Adresse e-mail invalide").required("L'adresse e-mail est obligatoire"),
         applicantMessageToCfa: Yup.string(),
         applicantType: Yup.mixed().oneOf(Object.values(EApplicantType)),
         applicantReasons: Yup.array(Yup.mixed().oneOf(RdvReasons.map((item) => item.key)))
@@ -166,13 +166,13 @@ export const DemandeDeContactForm = ({
             <Box sx={{ width: "95%" }}>
               <Typography variant="body2" sx={{ mb: fr.spacing("4v") }}>
                 En remplissant ce formulaire, vous acceptez les{" "}
-                <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
+                <DsfrLink href="/conditions-generales-utilisation" external>
                   Conditions générales d&apos;utilisation
                 </DsfrLink>{" "}
                 du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {etablissement_formateur_entreprise_raison_sociale}.
                 <br />
                 Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-                <DsfrLink href="/politique-de-confidentialite" external aria-description="politique de confidentialité - nouvelle fenêtre">
+                <DsfrLink href="/politique-de-confidentialite" external>
                   Politique de confidentialité
                 </DsfrLink>{" "}
                 de La bonne alternance.

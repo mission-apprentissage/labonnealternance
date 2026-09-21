@@ -23,7 +23,7 @@ export default async function Metiers() {
       <Breadcrumb pages={[PAGES.static.metiers]} />
       <DefaultContainer>
         <Box sx={{ p: fr.spacing("10v"), marginBottom: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-          <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
+          <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
             Tous les emplois
             <Typography component="span" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default }}>
               et formations en alternance
@@ -59,8 +59,9 @@ export default async function Metiers() {
               return (
                 <Typography key={index} sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
                   <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
-                  <Link className={fr.cx("fr-link", "fr-text--bold")} href={`/metiers/${job.slug}`} aria-label={`Lancement d'une recherche sur le métier ${job.name}`}>
+                  <Link className={fr.cx("fr-link", "fr-text--bold")} href={`/metiers/${job.slug}`}>
                     {job.name}
+                    <span className="fr-sr-only"> - lancer une recherche sur ce métier</span>
                   </Link>
                 </Typography>
               )

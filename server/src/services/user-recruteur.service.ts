@@ -411,6 +411,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount, ro
       email: sanitizeTextField(user.email),
       establishment_name: organization.raison_sociale,
       publicEmail: config.publicEmail,
+      isCfa,
     },
   })
 }

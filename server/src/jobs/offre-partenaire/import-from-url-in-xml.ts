@@ -1,6 +1,7 @@
 import axios from "axios"
 import type { CollectionName } from "shared/models/models"
 
+import { logger } from "@/common/logger"
 import { importFromStreamInXml } from "./import-from-stream-in-xml"
 
 export const importFromUrlInXml = async ({
@@ -18,8 +19,13 @@ export const importFromUrlInXml = async ({
 }) => {
   const response = await axios.get(url, {
     responseType: "stream",
+    // le flux Hellowork répond 406 « This feed is gzip-compressed » sans cet en-tête. axios
+    // l'envoie déjà par défaut et décompresse lui-même la réponse, mais un import critique ne
+    // doit pas reposer sur un défaut de librairie
+    headers: { "Accept-Encoding": "gzip, deflate, br" },
   })
   const stream = response.data
+  logger.info({ partnerLabel, contentType: response.headers["content-type"] }, "flux téléchargé")
 
   return importFromStreamInXml({ destinationCollection, offerXmlTag, stream, importName: partnerLabel, conflictingOpeningTagWithoutAttributes })
 }
