@@ -12,7 +12,6 @@ import { dayjs } from "@/common/dayjs"
 import { apiGet, apiPatch } from "@/utils/api.utils"
 
 const EtablissementComponent = ({ id }: { id?: string }) => {
-  const emailGestionnaireFocusRef = createRef()
   const emailGestionnaireRef = createRef()
 
   const [etablissement, setEtablissement]: [any, (t: any) => void] = useState(undefined)
@@ -167,7 +166,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
       )}
       <Box sx={{ p: fr.spacing("4v") }}>
         {/*  @ts-expect-error: TODO */}
-        <Box onClick={() => emailGestionnaireFocusRef.current.focus()}>
+        <Box onClick={() => emailGestionnaireRef.current.focus()}>
           <Typography sx={{ fontWeight: 700 }}>
             Email décisionnaire <br />
             <br />
