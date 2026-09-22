@@ -58,7 +58,9 @@ export const up = async () => {
   logger.info(`mistral_batch_jobs : ${batches.modifiedCount} job(s) passés au kind search_jobs_keywords`)
 
   for (const { into, match } of CORPUS_FILTERS) {
-    await getDbCollection("search_items")
+    // Collection hors modèles depuis sa suppression : accès non typé, absente sur une base fraîche.
+    await getDatabase()
+      .collection("search_items")
       .aggregate([{ $match: match }, { $merge: { into, on: "_id", whenMatched: "keepExisting", whenNotMatched: "insert" } }], { bypassDocumentValidation: true })
       .toArray()
     logger.info(`${into} : ${await getDbCollection(into).estimatedDocumentCount()} documents après copie depuis search_items`)

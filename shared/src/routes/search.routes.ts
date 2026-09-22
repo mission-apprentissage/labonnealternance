@@ -1,6 +1,6 @@
 import { z } from "../helpers/zod-with-open-api.js"
 import { JOB_START_TYPE } from "../models/job.model.js"
-import { ZSearchItem } from "../models/search-items.model.js"
+import { ZSearchItem } from "../models/search-corpus.model.js"
 import { ADMIN_AREA_PATTERN } from "../utils/admin-area.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam } from "./params.js"

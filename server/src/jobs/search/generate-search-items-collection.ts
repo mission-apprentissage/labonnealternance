@@ -57,12 +57,12 @@ const processCursorStream = async <T extends { _id: ObjectId }>(
   logger.info(`fillSearchItemsCollection: ${label} — ${count} documents traités`)
 }
 
-/** `search_items` et ses collections par mode, alimentées en double écriture (#5389). */
-const SEARCH_INDEX_COLLECTIONS = ["search_items", "search_jobs", "search_jobs_with_training", "search_trainings"] as const
+/** Une collection par mode de recherche, cf. getSearchCorpusCollection. */
+const SEARCH_INDEX_COLLECTIONS = ["search_jobs", "search_jobs_with_training", "search_trainings"] as const
 
 /**
  * Réconciliation complète des sources (formations, offres actives, recruteurs) vers
- * `search_items` et les collections par mode. Sert de batch initial ET de réconciliation nightly (cron ~06:00, après
+ * les collections par mode. Sert de batch initial ET de réconciliation nightly (cron ~06:00, après
  * processComputedAndImportToJobPartners) : rattrape tout ce que la sync incrémentale
  * (appels explicites + cron delta, cf. search-items.service.ts) aurait manqué, et purge
  * les documents orphelins (disparus des sources — suppressions physiques comprises).
