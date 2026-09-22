@@ -745,9 +745,16 @@ export const closeOffreWithMotif = async ({
   job_recruitment_channel?: string
 }): Promise<{ alreadyClosed: boolean }> => {
   const now = new Date()
-  // returnDocument: "before" pour savoir si l'offre était déjà clôturée avant cette requête
-  // (ex: lien de clôture cliqué deux fois) — la mise à jour est appliquée dans tous les cas,
-  // le motif reste une donnée utile même sur une offre déjà close.
+  const offerFilter = { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id }
+
+  // `offer_status: { $ne: offer_status }` restreint l'écriture aux transitions réelles. Un lien de
+  // clôture cliqué deux fois arrivait sinon jusqu'au $push et comptait la même clôture deux fois
+  // dans les tableaux de bord de l'issue #5429 — le trou de mesure que cette écriture est censée
+  // combler. Conséquence assumée : sur un second passage vers le même statut, le motif n'est plus
+  // réécrit. Changer d'avis reste possible tant que le statut change (annulée puis pourvue).
+  //
+  // returnDocument: "before" pour distinguer une clôture d'une offre déjà close : `alreadyClosed`
+  // pilote l'écran de confirmation côté recruteur.
   //
   // Le motif est écrit deux fois, et ce n'est pas redondant : job_status_comment porte le dernier
   // motif connu de l'offre (relu par l'espace pro), offer_status_history en garde la trace datée,
@@ -756,7 +763,7 @@ export const closeOffreWithMotif = async ({
   // `reason` reçoit le motif brut de la modale pour rester regroupable tel quel ; la précision
   // libre du motif "Autre" et le canal de recrutement gardent leurs champs dédiés.
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
+    { ...offerFilter, offer_status: { $ne: offer_status } },
     buildJobStatusChangeUpdate({
       status: offer_status,
       reason: job_status_comment,
@@ -768,9 +775,17 @@ export const closeOffreWithMotif = async ({
       returnDocument: "before",
     }
   )
+
   if (!found) {
-    throw new Error(`could not find lba offer with id=${id}`)
+    // Deux causes possibles, à ne pas confondre : l'offre n'existe pas, ou elle porte déjà ce
+    // statut. Le second cas est le double-clic, et doit rendre la même réponse qu'avant le filtre.
+    const existing = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { _id: 1 } })
+    if (!existing) {
+      throw new Error(`could not find lba offer with id=${id}`)
+    }
+    return { alreadyClosed: true }
   }
+
   syncJobPartnersToSearchItemsInBackground([id])
   return { alreadyClosed: found.offer_status !== JOB_STATUS_ENGLISH.ACTIVE }
 }
