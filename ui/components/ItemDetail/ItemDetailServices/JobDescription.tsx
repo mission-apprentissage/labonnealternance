@@ -9,7 +9,8 @@ export const BAD_DESCRIPTION_LENGTH = 50
 const DescriptionSection = ({ title, children }: { title: string; children: string }) => (
   <Box>
     <Typography sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>{title}</Typography>
-    <Typography sx={{ whiteSpace: "pre-wrap", mb: fr.spacing("4v") }} dangerouslySetInnerHTML={{ __html: children }} />
+    {/* component="div" : la description partenaire contient du HTML de bloc (<p>, <ul>) — un <p> l'invaliderait */}
+    <Typography component="div" sx={{ whiteSpace: "pre-wrap", mb: fr.spacing("4v") }} dangerouslySetInnerHTML={{ __html: children }} />
   </Box>
 )
 

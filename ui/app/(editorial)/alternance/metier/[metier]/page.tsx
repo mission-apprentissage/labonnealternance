@@ -231,7 +231,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
               Le métier de <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()},</span> en alternance
             </Typography>
             <Box component="hr" sx={hrSx} />
-            <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.description }} />
+            <Typography component="div" sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.description }} />
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
