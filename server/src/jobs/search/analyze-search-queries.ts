@@ -6,6 +6,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { sendMistralBatch } from "@/services/mistralai/mistralai.service"
+import type { SearchMode } from "@/services/search/search.service"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
 import { normalizeQuery } from "@/services/search/search-query-log.service"
 
@@ -98,13 +99,18 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
     .toArray()
 }
 
+// Suggestions et synonymes servent tous les modes : un candidat se juge sur l'ensemble des corpus.
+const SEARCH_MODES: SearchMode[] = ["emplois", "emplois_formation", "formations"]
+
 /** Le candidat est-il déjà couvert par l'autocomplete existant (title/rome_labels + suggestions actives) ? */
 async function isAlreadySuggested(stats: IQueryStats): Promise<boolean> {
-  const { suggestions } = await suggestSearchTerms({ q: stats.top_raw_q, limit: 5 })
-  return suggestions.some((s) => {
-    const normalized = normalizeQuery(s)
-    return normalized === stats.q_normalized || normalized.startsWith(`${stats.q_normalized} `) || stats.q_normalized.startsWith(`${normalized} `)
-  })
+  const results = await Promise.all(SEARCH_MODES.map((mode) => suggestSearchTerms({ q: stats.top_raw_q, limit: 5, mode })))
+  return results
+    .flatMap(({ suggestions }) => suggestions)
+    .some((s) => {
+      const normalized = normalizeQuery(s)
+      return normalized === stats.q_normalized || normalized.startsWith(`${stats.q_normalized} `) || stats.q_normalized.startsWith(`${normalized} `)
+    })
 }
 
 export const analyzeSearchQueries = async () => {
@@ -210,8 +216,8 @@ export const analyzeSearchQueries = async () => {
     if (synonymVerdict.verdict === "pass" && !synonymCapped) {
       const target = parsed.synonym_of!.trim()
       // Y4 — vérification empirique : la forme cible doit réellement produire des résultats.
-      const control = await searchItems({ q: target, radius: 30, page: 0, hitsPerPage: 1 })
-      if (control.nbHits === 0) {
+      const controls = await Promise.all(SEARCH_MODES.map((mode) => searchItems({ q: target, mode, radius: 30, page: 0, hitsPerPage: 1 })))
+      if (controls.every((control) => control.nbHits === 0)) {
         countReason("synonym_target_no_hits")
         await persistDecision(stats, parsed, "rejected", "synonym_target_no_hits", runId, now)
         continue

@@ -201,7 +201,7 @@ export function SearchHomeForm({ id }: { id: string }) {
       {/* Grand écran : rangée champs + type de recherche + bouton. */}
       <Box sx={{ display: { xs: "none", lg: "flex" }, flexDirection: "row", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
         <Box sx={{ flex: 1 }}>
-          <SearchBar key={formKey} layout="row" onSubmit={launchSearch} onQChange={handleQChange} onLieuChange={setLieu} />
+          <SearchBar key={formKey} mode={mode} layout="row" onSubmit={launchSearch} onQChange={handleQChange} onLieuChange={setLieu} />
         </Box>
         <SearchTypeRechercheSelect value={mode} onChange={handleModeChange} />
         {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut). */}
@@ -219,6 +219,7 @@ export function SearchHomeForm({ id }: { id: string }) {
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v"), height: mobileFieldActive ? "100%" : undefined }}>
             <SearchBar
               key={formKey}
+              mode={mode}
               layout="column"
               inlineSuggestions
               onActiveFieldChange={(field) => setMobileFieldActive(field !== null)}

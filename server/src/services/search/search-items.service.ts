@@ -520,7 +520,7 @@ type SearchCorpusCollection = (typeof SEARCH_JOBS_COLLECTIONS)[number] | "search
 /** Collections qui portent des `keywords` Mistral : `search_items` et les deux corpus d'offres. */
 export const KEYWORDS_COLLECTIONS = ["search_items", ...SEARCH_JOBS_COLLECTIONS] as const
 
-/** Collection du mode de recherche qui sert l'item, cf. `buildModeFilter` dans search.service.ts. */
+/** Collection du mode de recherche qui sert l'item, lue par search.service.ts (SEARCH_CORPORA). */
 export const getSearchCorpusCollection = (doc: Pick<ISearchItem, "type" | "is_formation_included">): SearchCorpusCollection => {
   if (doc.type === "formation") return "search_trainings"
   return doc.is_formation_included ? "search_jobs_with_training" : "search_jobs"

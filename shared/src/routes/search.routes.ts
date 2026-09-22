@@ -12,11 +12,11 @@ export const zSearchRoutes = {
       path: "/v1/search",
       querystring: z.strictObject({
         q: z.string().max(200).optional().describe("Texte libre de recherche (fuzzy, analyse française, 200 caractères max)"),
-        type: z.string().optional().describe("Type de résultat : offre ou formation"),
+        type: z.string().optional().describe("Déprécié : sans `mode`, type=formation équivaut à mode=formations, toute autre valeur à mode=emplois"),
         mode: z
           .enum(["emplois", "formations", "emplois_formation"])
           .optional()
-          .describe("Type de recherche : emplois (offres hors CFA/GEIQ), formations, ou emplois avec formation incluse (offres CFA/GEIQ)"),
+          .describe("Type de recherche : emplois (offres hors CFA/GEIQ), formations, ou emplois avec formation incluse (offres CFA/GEIQ). Défaut : emplois"),
         type_filter_label: z
           .union([z.array(z.string()), z.string().transform((v) => [v])])
           .optional()
@@ -134,6 +134,7 @@ export const zSearchRoutes = {
       querystring: z.strictObject({
         q: z.string().trim().min(3).max(200).describe("Texte de saisie (autocomplétion par préfixe, 3 à 200 caractères après trim)"),
         limit: z.coerce.number<number>().min(1).max(20).default(8).describe("Nombre de suggestions (max 20)"),
+        mode: z.enum(["emplois", "formations", "emplois_formation"]).default("emplois").describe("Type de recherche : les suggestions viennent du seul corpus de ce mode"),
       }),
       headers: z.looseObject({ referer: z.string().optional() }),
       response: {
