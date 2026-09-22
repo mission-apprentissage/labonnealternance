@@ -12,8 +12,9 @@ import { getDatabase } from "@/common/utils/mongodb-utils"
  * par `obfuscateCollections` (qui liste bien `anonymized_applications`), et les statistiques de
  * rétention lues sur la collection déclarée ignoraient tout ce que ce cron y avait déposé.
  *
- * Le `$merge` se fait sur `_id`, ce qui rend la reprise rejouable et absorbe un `_id` dupliqué à
- * l'intérieur de la collection orpheline. Il ne rattrape en revanche aucun doublon avec l'autre
+ * Le `$merge` se fait sur `_id`, ce qui rend la reprise idempotente vis-à-vis de la collection
+ * cible : une ré-exécution après un échec partiel met à jour les documents déjà copiés au lieu
+ * d'en insérer des doubles. Il ne rattrape en revanche aucun doublon avec l'autre
  * chemin d'anonymisation : `anonymizeApplicantsAndApplications` projette `{ _id: 0 }` puis
  * `insertMany`, donc ses documents portent un `_id` régénéré, sans rapport avec celui de la
  * candidature d'origine que conserve le cron repris ici.

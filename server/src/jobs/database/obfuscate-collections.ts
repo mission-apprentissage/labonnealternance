@@ -276,8 +276,9 @@ const obfuscateEntreprisesManagedByCfa = async () => {
   }
 }
 
-// Collections légitimes qui ne sont pas décrites par un modèle : file du job processor et journal
-// des migrations. `search_items` est bien un modèle, il figure ici pour échapper au vidage.
+// Collections que `dropUnknownCollections` doit épargner bien qu'aucun modèle ne les décrive :
+// file du job processor et journal des migrations. `search_items` y figure en doublon, il est déjà
+// couvert par `modelDescriptors`.
 export const modelToKeep: string[] = ["search_items", "job_processor.workers", "job_processor.jobs", "changelog"]
 
 const dropUnknownCollections = async () => {
