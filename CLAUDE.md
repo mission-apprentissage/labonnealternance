@@ -4,7 +4,7 @@ Plateforme de recherche de formations et d'offres en alternance (site, API publi
 
 - `server/` : API Fastify 5, MongoDB (driver 7), jobs et crons via job-processor
 - `ui/` : Next.js 16 (App Router), MUI 7 + react-dsfr
-- `shared/` : modèles et routes en Zod 4, utilitaires communs (`shared/src/models`)
+- `shared/` : modèles et routes en Zod 4, utilitaires communs (`shared/src/models`, `shared/src/routes`)
 
 Stack : Node ≥ 26, TypeScript 7, Yarn 3, Biome 2 (lint + format, pas de Prettier ni d'ESLint), Vitest, Playwright (`ui/e2e`), Sentry.
 
