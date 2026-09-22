@@ -5,9 +5,10 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.f
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 
 import {
   controlSearchItemsDrift,
@@ -17,6 +18,10 @@ import {
   syncSearchItemsDelta,
   upsertJobPartnersToSearchItems,
 } from "./search-items.service"
+
+vi.mock("@/common/utils/slack-utils", () => ({
+  notifyToSlack: vi.fn(),
+}))
 
 describe("dedupeRepeatedTitle", () => {
   it("supprime la duplication d'intitulé", () => {
@@ -308,5 +313,96 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       expect(result.indexedRecruteurs).toBe(1)
       expect(result.drift).toBe(false)
     })
+  })
+})
+
+describe("searchItems.service — double écriture par mode (#5389)", () => {
+  useMongo()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    resetSearchItemBuildContextCache()
+  })
+
+  const idsIn = async (name: "search_items" | "search_jobs" | "search_jobs_with_training" | "search_trainings") =>
+    (await getDbCollection(name).find({}).toArray()).map((doc) => doc._id.toString())
+
+  it("indexe une offre classique dans search_jobs et une offre déléguée dans search_jobs_with_training", async () => {
+    const offre = generateJobsPartnersOfferPrivate({ is_delegated: false })
+    const deleguee = generateJobsPartnersOfferPrivate({ is_delegated: true, cfa_legal_name: "CFA Commerce" })
+    await getDbCollection("jobs_partners").insertMany([offre, deleguee])
+
+    await upsertJobPartnersToSearchItems([offre._id, deleguee._id])
+
+    expect(await idsIn("search_items")).toHaveLength(2)
+    expect(await idsIn("search_jobs")).toEqual([offre._id.toString()])
+    expect(await idsIn("search_jobs_with_training")).toEqual([deleguee._id.toString()])
+    expect(await idsIn("search_trainings")).toEqual([])
+  })
+
+  it("range un recruteur algo dans search_jobs", async () => {
+    const recruteur = generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+    await getDbCollection("jobs_partners").insertOne(recruteur)
+
+    await upsertJobPartnersToSearchItems([recruteur._id])
+
+    expect(await idsIn("search_jobs")).toEqual([recruteur._id.toString()])
+  })
+
+  it("déplace une offre d'un corpus à l'autre quand is_delegated change, dans les deux sens", async () => {
+    const job = generateJobsPartnersOfferPrivate({ is_delegated: false })
+    await getDbCollection("jobs_partners").insertOne(job)
+    await upsertJobPartnersToSearchItems([job._id])
+
+    await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { is_delegated: true, cfa_legal_name: "CFA Commerce" } })
+    await upsertJobPartnersToSearchItems([job._id])
+    expect(await idsIn("search_jobs")).toEqual([])
+    expect(await idsIn("search_jobs_with_training")).toEqual([job._id.toString()])
+
+    await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { is_delegated: false } })
+    await upsertJobPartnersToSearchItems([job._id])
+    expect(await idsIn("search_jobs")).toEqual([job._id.toString()])
+    expect(await idsIn("search_jobs_with_training")).toEqual([])
+  })
+
+  it("préserve les keywords Mistral dans la collection du mode lors d'un ré-upsert", async () => {
+    const job = generateJobsPartnersOfferPrivate({})
+    await getDbCollection("jobs_partners").insertOne(job)
+    await getDbCollection("search_jobs").insertOne(generateSearchItemFixture({ _id: job._id, keywords: ["mot-clé-mistral"] }))
+
+    await upsertJobPartnersToSearchItems([job._id])
+
+    expect((await getDbCollection("search_jobs").findOne({ _id: job._id }))?.keywords).toEqual(["mot-clé-mistral"])
+  })
+
+  it("retire une offre annulée des deux collections d'offres sans toucher search_trainings", async () => {
+    const job = generateJobsPartnersOfferPrivate({ offer_status: JOB_STATUS_ENGLISH.ANNULEE })
+    const formation = generateSearchItemFixture({ type: "formation", sub_type: "formation" })
+    await getDbCollection("jobs_partners").insertOne(job)
+    await getDbCollection("search_jobs").insertOne(generateSearchItemFixture({ _id: job._id }))
+    await getDbCollection("search_jobs_with_training").insertOne(generateSearchItemFixture({ _id: job._id }))
+    await getDbCollection("search_trainings").insertOne(formation)
+
+    await upsertJobPartnersToSearchItems([job._id])
+    await removeJobPartnersFromSearchItems([formation._id])
+
+    expect(await idsIn("search_jobs")).toEqual([])
+    expect(await idsIn("search_jobs_with_training")).toEqual([])
+    expect(await idsIn("search_trainings")).toEqual([formation._id.toString()])
+  })
+
+  it("contrôle de dérive : alerte quand une collection par mode diverge de search_items, pas sous le seuil", async () => {
+    const offres = Array.from({ length: 501 }, () => generateSearchItemFixture({ type: "offre", is_formation_included: false }))
+    await getDbCollection("search_items").insertMany(offres)
+    // search_trainings : écart de 1, sous le seuil absolu de 500.
+    await getDbCollection("search_items").insertOne(generateSearchItemFixture({ type: "formation", sub_type: "formation" }))
+
+    const result = await controlSearchItemsDrift()
+
+    expect(result.drift).toBe(true)
+    expect(vi.mocked(notifyToSlack)).toHaveBeenCalledTimes(1)
+    const { message } = vi.mocked(notifyToSlack).mock.calls[0][0]
+    expect(message).toContain("search_jobs : 0 indexés vs 501 attendus")
+    expect(message).not.toContain("search_trainings")
   })
 })

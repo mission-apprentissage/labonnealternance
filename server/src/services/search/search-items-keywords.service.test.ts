@@ -46,7 +46,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
   beforeEach(async () => {
     vi.clearAllMocks()
     await getDbCollection("search_items").deleteMany({})
-    await getDbCollection("search_items_keywords").deleteMany({})
+    await getDbCollection("search_jobs_keywords").deleteMany({})
     await getDbCollection("mistral_batch_jobs").deleteMany({})
   })
 
@@ -61,7 +61,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
       expect(counters.generated).toBe(1)
       const doc = await getDbCollection("search_items").findOne({ _id: offre._id })
       expect(doc?.keywords).toEqual(["javascript", "web"])
-      const cached = await getDbCollection("search_items_keywords").findOne({ source_hash: hashOf(offre) })
+      const cached = await getDbCollection("search_jobs_keywords").findOne({ source_hash: hashOf(offre) })
       expect(cached).toMatchObject({ keywords: ["javascript", "web"], origin: "immediate" })
     })
 
@@ -159,7 +159,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
       expect(requests).toHaveLength(1)
       expect(requests[0].customId).toBe(hashOf(jumeau1))
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "mistral-job-1" })
-      expect(tracked).toMatchObject({ kind: "search_items_keywords", status: "submitted", request_count: 1 })
+      expect(tracked).toMatchObject({ kind: "search_jobs_keywords", status: "submitted", request_count: 1 })
     })
   })
 
@@ -167,7 +167,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
     const trackedJob = (jobId: string) => ({
       _id: new ObjectId(),
       job_id: jobId,
-      kind: "search_items_keywords" as const,
+      kind: "search_jobs_keywords" as const,
       status: "submitted" as const,
       request_count: 1,
       applied_count: null,
@@ -185,7 +185,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
       const counters = await applyPendingMistralBatches()
 
       expect(counters.applied).toBe(1)
-      const cached = await getDbCollection("search_items_keywords").findOne({ source_hash: "hash-abc" })
+      const cached = await getDbCollection("search_jobs_keywords").findOne({ source_hash: "hash-abc" })
       expect(cached).toMatchObject({ keywords: ["forêt"], origin: "batch" })
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-ok" })
       expect(tracked).toMatchObject({ status: "applied", applied_count: 1 })
@@ -233,11 +233,56 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
       const doc = await getDbCollection("search_items").findOne({ _id: offre._id })
       expect(doc?.keywords).toEqual(["cuisine"])
       // Format historique : le cache est alimenté via le texte source du doc.
-      const cachedFromDoc = await getDbCollection("search_items_keywords").findOne({ source_hash: hashOf(offre) })
+      const cachedFromDoc = await getDbCollection("search_jobs_keywords").findOne({ source_hash: hashOf(offre) })
       expect(cachedFromDoc).toMatchObject({ keywords: ["cuisine"], origin: "manual_import" })
       // Format hash : écrit directement au cache.
-      const cachedFromHash = await getDbCollection("search_items_keywords").findOne({ source_hash: "hash-manuel-1" })
+      const cachedFromHash = await getDbCollection("search_jobs_keywords").findOne({ source_hash: "hash-manuel-1" })
       expect(cachedFromHash).toMatchObject({ keywords: ["manuel"], origin: "manual_import" })
     })
+  })
+})
+
+describe("searchItemsKeywords.service — double écriture par mode (#5389)", () => {
+  useMongo()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("génération immédiate : keywords écrits dans search_items et dans la collection du mode", async () => {
+    const offre = offreFixture({ title: "Développeur web", description: "Stack JS moderne." })
+    await getDbCollection("search_items").insertOne(offre)
+    await getDbCollection("search_jobs").insertOne(offre)
+    vi.mocked(sendMistralMessages).mockResolvedValue('{"keywords":["javascript"]}')
+
+    await generateSearchItemsKeywordsContinuous()
+
+    expect(sendMistralMessages).toHaveBeenCalledTimes(1)
+    expect((await getDbCollection("search_items").findOne({ _id: offre._id }))?.keywords).toEqual(["javascript"])
+    expect((await getDbCollection("search_jobs").findOne({ _id: offre._id }))?.keywords).toEqual(["javascript"])
+  })
+
+  it("offre en attente dans search_jobs_with_training seulement (changement de corpus) : rattrapée par le cache", async () => {
+    const offre = offreFixture({ title: "BTS MCO en alternance", description: "Vente en magasin.", is_formation_included: true })
+    await getDbCollection("search_items").insertOne({ ...offre, keywords: ["vente"] })
+    await getDbCollection("search_jobs_with_training").insertOne(offre)
+    await writeKeywordsToCache({ sourceHash: hashOf(offre), keywords: ["vente"], origin: "immediate" })
+
+    const counters = await generateSearchItemsKeywordsContinuous()
+
+    expect(counters.cacheHits).toBe(1)
+    expect(sendMistralMessages).not.toHaveBeenCalled()
+    expect((await getDbCollection("search_jobs_with_training").findOne({ _id: offre._id }))?.keywords).toEqual(["vente"])
+  })
+
+  it("batch hebdo : un recruteur en attente dans search_jobs seulement est soumis", async () => {
+    const recruteur = recruteurFixture({ rome_labels: ["Boulangerie - viennoiserie"] })
+    await getDbCollection("search_jobs").insertOne(recruteur)
+    vi.mocked(submitMistralBatch).mockResolvedValue("job-mode")
+
+    const result = await submitSearchItemsKeywordsBatch()
+
+    expect(result.uniqueTexts).toBe(1)
+    expect(await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-mode" })).toMatchObject({ kind: "search_jobs_keywords" })
   })
 })

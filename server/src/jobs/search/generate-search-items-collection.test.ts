@@ -1,4 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { ObjectId } from "bson"
+import type { IFormationCatalogue } from "shared"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
@@ -44,5 +46,36 @@ describe("fillSearchItemsCollection — réconciliation nightly (streamée)", ()
 
     // L'offre annulée n'est pas indexée, l'orphelin a été purgé.
     expect(docs.some((doc) => doc._id.equals(cancelled._id))).toBe(false)
+  })
+
+  it("répartit les items dans la collection de leur mode et y purge les orphelins (#5389)", async () => {
+    const offre = generateJobsPartnersOfferPrivate({ offer_title: "Vendeur" })
+    const deleguee = generateJobsPartnersOfferPrivate({ offer_title: "BTS MCO en alternance", is_delegated: true, cfa_legal_name: "CFA Commerce" })
+    const formation = {
+      _id: new ObjectId(),
+      cle_ministere_educatif: "cle-formation-1",
+      intitule_rco: "BTS Négociation et digitalisation de la relation client",
+      lieu_formation_adresse: "2 rue du Lieu",
+      localite: "Lyon",
+      code_postal: "69001",
+      lieu_formation_geopoint: { type: "Point", coordinates: [4.83, 45.76] },
+      etablissement_formateur_entreprise_raison_sociale: "CFA TEST",
+    } as unknown as IFormationCatalogue
+    await getDbCollection("jobs_partners").insertMany([offre, deleguee])
+    // Formation réduite aux champs projetés par le nightly : le validateur exigerait tout le catalogue.
+    await getDbCollection("formationcatalogues").insertOne(formation, { bypassDocumentValidation: true })
+
+    // L'offre déléguée était indexée en emplois (is_delegated modifié depuis) ; orphelin présent seulement dans search_jobs.
+    const orphelin = generateSearchItemFixture({ title: "Orphelin" })
+    await getDbCollection("search_jobs").insertMany([generateSearchItemFixture({ _id: deleguee._id, keywords: ["gardé"] }), orphelin])
+
+    await fillSearchItemsCollection()
+
+    const idsOf = async (name: "search_jobs" | "search_jobs_with_training" | "search_trainings") =>
+      (await getDbCollection(name).find({}).toArray()).map((doc) => doc._id.toString()).sort()
+    expect(await idsOf("search_jobs")).toEqual([offre._id.toString()])
+    expect(await idsOf("search_jobs_with_training")).toEqual([deleguee._id.toString()])
+    expect(await idsOf("search_trainings")).toEqual([formation._id.toString()])
+    expect(await getDbCollection("search_items").countDocuments({})).toBe(3)
   })
 })
