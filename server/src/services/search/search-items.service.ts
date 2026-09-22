@@ -685,11 +685,11 @@ export const controlSearchItemsDrift = async () => {
     getDbCollection("search_items").countDocuments({ type: "offre", sub_type: { $ne: LBA_ITEM_TYPE.RECRUTEURS_LBA } }),
     getDbCollection("search_items").countDocuments({ sub_type: LBA_ITEM_TYPE.RECRUTEURS_LBA }),
     getDbCollection("search_items").countDocuments({ type: "offre", is_formation_included: { $ne: true } }),
-    getDbCollection("search_jobs").estimatedDocumentCount(),
+    getDbCollection("search_jobs").countDocuments({}),
     getDbCollection("search_items").countDocuments({ type: "offre", is_formation_included: true }),
-    getDbCollection("search_jobs_with_training").estimatedDocumentCount(),
+    getDbCollection("search_jobs_with_training").countDocuments({}),
     getDbCollection("search_items").countDocuments({ type: "formation" }),
-    getDbCollection("search_trainings").estimatedDocumentCount(),
+    getDbCollection("search_trainings").countDocuments({}),
   ])
   const [searchJobsExpected, searchJobsIndexed, withTrainingExpected, withTrainingIndexed, trainingsExpected, trainingsIndexed] = corpusCounts
 
