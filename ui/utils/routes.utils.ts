@@ -284,6 +284,14 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/offres-partenaires` as string,
       title: "Offres partenaires",
     },
+    backAdminFeedbackForms: {
+      getPath: () => `/espace-pro/administration/formulaires-feedback` as string,
+      title: "Formulaires de feedback",
+    },
+    backAdminFeedbackFormCreation: {
+      getPath: () => `/espace-pro/administration/formulaires-feedback/creation` as string,
+      title: "Créer un formulaire de feedback",
+    },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
@@ -580,6 +588,10 @@ export const PAGES = {
     backEditAdministrator: ({ userId }: { userId: string }): IPage => ({
       getPath: () => `/espace-pro/administration/gestion-des-administrateurs/user/${userId}` as string,
       title: "Modification d'administrateur",
+    }),
+    backAdminFeedbackFormEdit: ({ slug, title }: { slug: string; title?: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/formulaires-feedback/${slug}/modification` as string,
+      title: title ?? "Modifier le formulaire",
     }),
     backCreateCFAConfirmation: ({ email }: { email: string }): IPage => ({
       getPath: () => `/espace-pro/authentification/confirmation?email=${email}` as string,
