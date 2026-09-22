@@ -6,6 +6,9 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
+/** Champs que le constructeur écrit lui-même : exclus du type d'extraSet et retirés à l'exécution. */
+const PILOTED_FIELDS = ["offer_status", "updated_at", "offer_status_history"] as const
+
 export type IJobStatusChange = {
   status: JOB_STATUS_ENGLISH
   /** Motif du changement. C'est la valeur regroupée dans les tableaux de bord : préférer un libellé stable à une phrase construite. */
@@ -15,11 +18,12 @@ export type IJobStatusChange = {
   /** Horodatage partagé par le $set et la trace, pour qu'ils ne divergent pas. Par défaut : maintenant. */
   date?: Date
   /**
-   * Champs métier écrits dans le même update (offer_expiration, managed_by...). Les trois champs que
-   * le constructeur pilote lui-même en sont exclus par le type : les passer serait sans effet, autant
-   * que ce soit une erreur de compilation plutôt qu'un écrasement silencieux.
+   * Champs métier écrits dans le même update (offer_expiration, managed_by...). Les champs pilotés
+   * par le constructeur en sont exclus par le type, et retirés à l'exécution pour le cas où un
+   * appelant contournerait le typage : offer_status_history y ferait échouer l'update entier, pas
+   * seulement perdre sa valeur.
    */
-  extraSet?: Omit<Partial<IJobsPartnersOfferPrivate>, "offer_status" | "updated_at" | "offer_status_history">
+  extraSet?: Omit<Partial<IJobsPartnersOfferPrivate>, (typeof PILOTED_FIELDS)[number]>
 }
 
 /**
@@ -40,10 +44,21 @@ export type IJobStatusChange = {
  * (cf. cancelRemovedJobsPartners, qui concatène l'historique avec $concatArrays) ne peuvent pas
  * l'utiliser et restent à jour manuellement.
  */
-export const buildJobStatusChangeUpdate = ({ status, reason, grantedBy, date = new Date(), extraSet }: IJobStatusChange): UpdateFilter<IJobsPartnersOfferPrivate> => ({
-  $set: { ...extraSet, offer_status: status, updated_at: date },
-  $push: { offer_status_history: { date, status, reason, granted_by: grantedBy } },
-})
+export const buildJobStatusChangeUpdate = ({ status, reason, grantedBy, date = new Date(), extraSet }: IJobStatusChange): UpdateFilter<IJobsPartnersOfferPrivate> => {
+  // Retrait défensif des trois champs que le constructeur pilote. Le type les interdit déjà dans
+  // extraSet, mais un appelant qui contourne par cast ne se contenterait pas d'un écrasement
+  // silencieux : offer_status_history se retrouverait à la fois en $set et en $push, et Mongo
+  // rejette l'update entier (ConflictingUpdateOperators, code 40).
+  const safeExtraSet: Record<string, unknown> = { ...extraSet }
+  for (const field of PILOTED_FIELDS) {
+    delete safeExtraSet[field]
+  }
+
+  return {
+    $set: { ...safeExtraSet, offer_status: status, updated_at: date },
+    $push: { offer_status_history: { date, status, reason, granted_by: grantedBy } },
+  }
+}
 
 /** Applique un changement de statut tracé à toutes les offres correspondant au filtre. */
 export const changeJobsPartnersStatus = async (filter: Filter<IJobsPartnersOfferPrivate>, change: IJobStatusChange) =>

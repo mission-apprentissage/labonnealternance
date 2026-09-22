@@ -167,7 +167,16 @@ const updateRecruteursSiretInfosInError = async () => {
                 grantedBy: "update-siret-infos-in-error-job",
               })
             )
-            await sendMailNouvelleOffre(user, awaitingOffer)
+            // L'envoi est isolé du try englobant : une panne d'envoi faisait retomber dans le catch,
+            // qui dépubliait l'offre tout juste republiée sous le motif "vérification du SIRET en
+            // erreur" — alors que le SIRET venait précisément d'être revalidé.
+            try {
+              await sendMailNouvelleOffre(user, awaitingOffer)
+            } catch (mailErr) {
+              logger.error(mailErr)
+              logger.error(`Correction des recruteurs en erreur: offre id=${awaitingOffer._id}, mail de republication non envoyé`)
+              sentryCaptureException(mailErr)
+            }
           }
         }
         stats.success++

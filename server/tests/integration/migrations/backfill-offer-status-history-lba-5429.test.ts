@@ -97,6 +97,25 @@ describe("migration backfill-offer-status-history-lba-5429", () => {
       expect.soft(byId.get("reactivee")?.offer_status_history).toEqual([{ ...fluxRemoval, reason: "bug du 06 2026" }, reactivation])
     })
 
+    it("épargne une entrée postérieure au run fautif", async () => {
+      // cancelRemovedJobsPartners tourne toujours et pose ce motif légitimement : au-delà de la
+      // borne de juillet 2026, ce n'est plus le bug, et requalifier effacerait la vraie cause.
+      const posterieure = { ...fluxRemoval, date: new Date("2026-08-20T03:00:00.000Z") }
+      await getDbCollection("jobs_partners").insertMany([
+        lbaOffer("avant-borne", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [fluxRemoval] }),
+        lbaOffer("apres-borne", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [posterieure] }),
+        lbaOffer("les-deux", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [fluxRemoval, posterieure] }),
+      ])
+
+      await up()
+      const byId = await readAll()
+
+      expect.soft(byId.get("avant-borne")?.offer_status_history).toEqual([{ ...fluxRemoval, reason: "bug du 06 2026" }])
+      expect.soft(byId.get("apres-borne")?.offer_status_history).toEqual([posterieure])
+      // Sur une même offre, seule l'entrée antérieure à la borne bascule.
+      expect.soft(byId.get("les-deux")?.offer_status_history).toEqual([{ ...fluxRemoval, reason: "bug du 06 2026" }, posterieure])
+    })
+
     it("ne touche ni aux autres motifs ni aux autres partenaires", async () => {
       const expiration = {
         date: new Date("2026-06-05T02:15:00.000Z"),

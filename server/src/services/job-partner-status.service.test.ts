@@ -17,7 +17,7 @@ describe("buildJobStatusChangeUpdate", () => {
 
   it("pousse la trace au lieu de remplacer l'historique", () => {
     // $push et non $set : c'est ce qui préserve les transitions déjà enregistrées sur l'offre.
-    const update = buildJobStatusChangeUpdate({ status: JOB_STATUS_ENGLISH.ANNULEE, reason: "recruteur anonymisé", grantedBy: "anonymize-lba-jobs-partners", date })
+    const update = buildJobStatusChangeUpdate({ status: JOB_STATUS_ENGLISH.ANNULEE, reason: "formulaire du recruteur archivé", grantedBy: "archive-formulaire", date })
 
     expect(update.$push).toBeDefined()
     expect(update.$set).not.toHaveProperty("offer_status_history")
@@ -35,6 +35,26 @@ describe("buildJobStatusChangeUpdate", () => {
     })
 
     expect(update.$set).toEqual({ offer_expiration: date, offer_status: JOB_STATUS_ENGLISH.POURVUE, updated_at: date })
+  })
+
+  it("retire offer_status_history de extraSet plutôt que de laisser Mongo rejeter l'update", () => {
+    // Vérifié en base : un même champ en $set et en $push lève ConflictingUpdateOperators (code 40)
+    // et fait échouer l'update entier, à la différence des deux autres champs pilotés qui seraient
+    // seulement écrasés. Le type l'interdit, la garde runtime couvre le contournement par cast.
+    const update = buildJobStatusChangeUpdate({
+      status: JOB_STATUS_ENGLISH.ANNULEE,
+      reason: "offre expirée",
+      grantedBy: "expire-jobs-partners",
+      date,
+      extraSet: {
+        offer_expiration: date,
+        offer_status_history: [{ date, status: JOB_STATUS_ENGLISH.ACTIVE, reason: "injectée", granted_by: "contournement" }],
+      } as IJobStatusChange["extraSet"],
+    })
+
+    expect(update.$set).not.toHaveProperty("offer_status_history")
+    expect(update.$set).toEqual({ offer_expiration: date, offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: date })
+    expect(update.$push).toEqual({ offer_status_history: { date, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "offre expirée", granted_by: "expire-jobs-partners" } })
   })
 
   it("horodate à maintenant quand aucune date n'est fournie", () => {

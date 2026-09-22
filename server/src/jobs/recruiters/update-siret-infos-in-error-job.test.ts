@@ -9,6 +9,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getEntrepriseDataFromSiret } from "@/services/etablissement.service"
+import { sendMailNouvelleOffre } from "@/services/formulaire-notifications.service"
 import { updateSiretInfosInError } from "./update-siret-infos-in-error-job"
 
 vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolvedValue(undefined) }))
@@ -21,9 +22,10 @@ vi.mock("@/services/user-recruteur.service", () => ({ setEntrepriseInError: vi.f
 useMongo()
 
 /**
- * Les deux branches du job changent le statut d'offres : la branche nominale republie l'offre en
- * attente une fois le SIRET revalidé, la branche d'erreur dépublie. Ni l'une ni l'autre ne laissait
- * de trace, et la seconde touchait tout le périmètre du recruteur (issue #5429).
+ * Les trois branches du job changent le statut d'offres : la branche nominale republie l'offre en
+ * attente une fois le SIRET revalidé, la branche « création interdite » archive le formulaire, la
+ * branche d'erreur dépublie. Aucune ne laissait de trace, et la dernière touchait tout le périmètre
+ * du recruteur (issue #5429).
  */
 describe("updateSiretInfosInError", () => {
   const SIRET = "42476141900045"
@@ -70,6 +72,46 @@ describe("updateSiretInfosInError", () => {
           granted_by: "update-siret-infos-in-error-job",
         }),
       ])
+    })
+
+    it("garde l'offre republiée quand l'envoi du mail échoue", async () => {
+      // L'envoi était dans le try englobant : sa panne faisait retomber dans le catch, qui
+      // dépubliait l'offre tout juste republiée sous le motif "vérification du SIRET en erreur".
+      const { user } = await saveEntrepriseEnErreur()
+      await insertOffer("en-attente", user._id, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE })
+      vi.mocked(getEntrepriseDataFromSiret).mockResolvedValue({ siret: SIRET } as never)
+      vi.mocked(sendMailNouvelleOffre).mockRejectedValueOnce(new Error("SMTP indisponible"))
+
+      await updateSiretInfosInError()
+      const byId = await readAll()
+
+      expect.soft(byId.get("en-attente")?.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
+      expect.soft(byId.get("en-attente")?.offer_status_history).toHaveLength(1)
+      expect.soft(byId.get("en-attente")?.offer_status_history[0]).toMatchObject({ reason: "données entreprise corrigées" })
+    })
+  })
+
+  describe("quand le SIRET interdit la création du compte", () => {
+    it("archive le formulaire et trace les offres encore ouvertes", async () => {
+      // Troisième branche du job : le SIRET répond, mais avec une erreur métier (non diffusible,
+      // code NAF 85...). Le formulaire entier est archivé, ce qui passe par archiveFormulaire.
+      const { user } = await saveEntrepriseEnErreur()
+      const updated_at = new Date("2026-01-15T09:00:00.000Z")
+      await insertOffer("active", user._id, { offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+      await insertOffer("pourvue", user._id, { offer_status: JOB_STATUS_ENGLISH.POURVUE, updated_at })
+      vi.mocked(getEntrepriseDataFromSiret).mockResolvedValue({ error: true, message: "informations non diffusibles" } as never)
+
+      await updateSiretInfosInError()
+      const byId = await readAll()
+
+      expect.soft(byId.get("active")?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+      expect
+        .soft(byId.get("active")?.offer_status_history)
+        .toEqual([expect.objectContaining({ status: JOB_STATUS_ENGLISH.ANNULEE, reason: "formulaire du recruteur archivé", granted_by: "archive-formulaire" })])
+      // L'archivage ne rouvre pas et ne réécrit pas les offres déjà closes.
+      expect.soft(byId.get("pourvue")?.offer_status).toEqual(JOB_STATUS_ENGLISH.POURVUE)
+      expect.soft(byId.get("pourvue")?.updated_at).toEqual(updated_at)
+      expect.soft(byId.get("pourvue")?.offer_status_history).toEqual([])
     })
   })
 

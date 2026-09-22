@@ -11,6 +11,13 @@ const FLUX_REMOVAL_REASON = "supprimée du flux source"
 const JUNE_2026_BUG_REASON = "bug du 06 2026"
 /** Clôture décidée par un humain, par opposition aux annulations automatiques. */
 const MANUAL_CLOSURE_REASON = "Désactivation manuelle"
+/**
+ * Borne haute du run fautif de juin 2026. cancelRemovedJobsPartners tourne toujours et pose
+ * légitimement FLUX_REMOVAL_REASON : sans cette borne, une entrée écrite après la correction #4814
+ * serait requalifiée à tort en « bug ». Le job a été corrigé en juin, la borne prend le début du
+ * mois suivant.
+ */
+const JUNE_2026_BUG_CUTOFF = new Date("2026-07-01T00:00:00.000Z")
 const NO_REASON_RECORDED = "motif non enregistré (clôture antérieure au correctif #5429)"
 
 /** Statuts terminaux d'une offre clôturée. POURVUE vaut "Filled" en base, pas "Provided". */
@@ -62,12 +69,9 @@ const backfillClosedOffersWithoutComment = async () => {
     job_status_comment: { $in: [null, ""] },
   }
 
-  const total = await getDbCollection("jobs_partners").countDocuments(filter)
-  logger.info(`volet 1 — offres closes sans motif ni historique : ${total} offres`)
-
   // Pipeline d'update : la trace dépend de champs du document (statut, updated_at), qu'un update
   // classique ne sait pas lire.
-  const { modifiedCount } = await getDbCollection("jobs_partners").updateMany(filter, [
+  const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(filter, [
     {
       $set: {
         offer_status_history: [{ date: "$updated_at", status: "$offer_status", reason: NO_REASON_RECORDED, granted_by: GRANTED_BY }],
@@ -75,7 +79,7 @@ const backfillClosedOffersWithoutComment = async () => {
     },
   ])
 
-  logger.info(`volet 1 — ${modifiedCount}/${total} offres complétées`)
+  logger.info(`volet 1 — ${modifiedCount}/${matchedCount} offres complétées`)
 }
 
 /**
@@ -91,23 +95,23 @@ const backfillClosedOffersWithoutComment = async () => {
  * Pas de filtre sur offer_status : les offres réactivées par #4813 portent toujours l'entrée fautive
  * à côté de leur entrée de réactivation. arrayFilters requalifie chaque entrée concernée et laisse
  * les autres intactes — une offre a pu être annulée puis réactivée plusieurs fois.
+ *
+ * La borne de date restreint la requalification au run fautif : le job continue de tourner et peut
+ * poser le même motif légitimement, auquel cas il ne s'agit plus du bug.
  */
 const requalifyFluxRemovalReason = async () => {
   const filter = {
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-    "offer_status_history.reason": FLUX_REMOVAL_REASON,
+    offer_status_history: { $elemMatch: { reason: FLUX_REMOVAL_REASON, date: { $lt: JUNE_2026_BUG_CUTOFF } } },
   }
 
-  const total = await getDbCollection("jobs_partners").countDocuments(filter)
-  logger.info(`volet 2 — offres portant "${FLUX_REMOVAL_REASON}" : ${total} offres`)
-
-  const { modifiedCount } = await getDbCollection("jobs_partners").updateMany(
+  const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(
     filter,
     { $set: { "offer_status_history.$[entry].reason": JUNE_2026_BUG_REASON } },
-    { arrayFilters: [{ "entry.reason": FLUX_REMOVAL_REASON }] }
+    { arrayFilters: [{ "entry.reason": FLUX_REMOVAL_REASON, "entry.date": { $lt: JUNE_2026_BUG_CUTOFF } }] }
   )
 
-  logger.info(`volet 2 — ${modifiedCount}/${total} offres requalifiées en "${JUNE_2026_BUG_REASON}"`)
+  logger.info(`volet 2 — ${modifiedCount}/${matchedCount} offres requalifiées en "${JUNE_2026_BUG_REASON}"`)
 }
 
 /**
@@ -134,14 +138,11 @@ const recordManualClosures = async () => {
       offer_status_history: { $not: { $elemMatch: { status, reason: MANUAL_CLOSURE_REASON } } },
     }
 
-    const total = await getDbCollection("jobs_partners").countDocuments(filter)
-    logger.info(`volet 3 — offres ${status} clôturées manuellement et non tracées : ${total} offres`)
-
     // $ifNull : $concatArrays renvoie null si l'un de ses opérandes l'est, ce qui effacerait
     // l'historique d'un document où le champ serait absent. Le validateur de collection ne l'interdit
     // pas en production (validationAction "warn", cf. configureDbSchemaValidation), et la protection
     // est gratuite face à une perte de donnée.
-    const { modifiedCount } = await getDbCollection("jobs_partners").updateMany(filter, [
+    const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(filter, [
       {
         $set: {
           offer_status_history: {
@@ -151,7 +152,7 @@ const recordManualClosures = async () => {
       },
     ])
 
-    logger.info(`volet 3 — ${modifiedCount}/${total} offres ${status} tracées en "${MANUAL_CLOSURE_REASON}"`)
+    logger.info(`volet 3 — ${modifiedCount}/${matchedCount} offres ${status} tracées en "${MANUAL_CLOSURE_REASON}"`)
   }
 }
 
