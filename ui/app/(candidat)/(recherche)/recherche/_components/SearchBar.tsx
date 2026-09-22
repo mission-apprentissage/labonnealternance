@@ -498,7 +498,10 @@ export function SearchBar({
             setInputValue(value)
             qSourceRef.current = "free_text"
             onQChange?.(value, "free_text")
-            if (value === "") handleSubmit("", "free_text")
+            // Champ vidé sur la page de résultats : le critère métier est retiré de la recherche
+            // courante (comme la croix du lieu). Jamais sur la home : sans ce garde, effacer sa
+            // saisie envoyait l'usager sur /recherche (onSubmit y navigue) — onQChange("") suffit.
+            if (value === "" && submitOnSelect) handleSubmit("", "free_text")
           }}
           onChange={(_e, value, reason) => {
             // "createOption" = Entrée sans option surlignée (freeSolo) : MUI ne fait pas
@@ -524,7 +527,9 @@ export function SearchBar({
           renderOption={({ key: _muiKey, ...optionProps }, option) =>
             option.kind === "free_text" ? (
               // Ligne « Rechercher : {saisie} », même gabarit que « France entière » du lieu :
-              // icône + libellé + indice Entrée (elle est pré-surlignée, cf. autoHighlight).
+              // icône + libellé + indice Entrée (elle est pré-surlignée, cf. autoHighlight). Le
+              // verbe « Rechercher : » n'est affiché que si l'accepter lance vraiment (page de
+              // résultats, submitOnSelect) — sur la home la ligne ne fait que valider la saisie.
               <Box
                 component="li"
                 key="__free_text__"
@@ -541,7 +546,7 @@ export function SearchBar({
                 <Box component="span" className={fr.cx("fr-icon-search-line", "fr-icon--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default }} aria-hidden="true" />
                 <Box>
                   <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>
-                    Rechercher :{" "}
+                    {submitOnSelect && <>Rechercher : </>}
                     <Box component="span" sx={{ fontWeight: 700 }}>
                       {option.value}
                     </Box>
