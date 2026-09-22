@@ -34,14 +34,12 @@ export async function parseCsvContent(content: string, options: CsvParseOptions 
   return new Promise((resolve, reject) => {
     const records: Record<string, string>[] = []
 
-    // Initialize the parser
     const parser = parse({
       trim: true,
       delimiter: ",",
       columns: true,
       ...options,
     })
-    // Use the readable stream api to consume records
     parser.on("readable", function () {
       let record
       // biome-ignore lint/suspicious/noAssignInExpressions: migration
@@ -51,12 +49,10 @@ export async function parseCsvContent(content: string, options: CsvParseOptions 
     })
 
     const errors: Error[] = []
-    // Catch any error
     parser.on("error", function (err) {
       errors.push(err)
     })
 
-    // Test that the parsed records matched the expected records
     parser.on("end", function () {
       if (errors.length) {
         reject(errors)

@@ -10,9 +10,6 @@ type Props = {
   ville: string
 }
 
-/**
- * Etablissement information.
- */
 export const ContactCfaSummary = (props: Props) => {
   const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule } = props
 

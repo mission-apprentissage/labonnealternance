@@ -38,7 +38,7 @@ async function ConnectedShell({ children }: PropsWithChildren) {
   // Ce redirect est un filet de sécurité si jamais cette route est atteinte sans session valide.
   if (user == null) {
     // Si on arrive ici, le proxy a laissé passer une route protégée mais la session n'est pas
-    // lisible dans ce rendu. Deux précautions (incident du 2026-09-02, boucle 307 ↔ 307) :
+    // lisible dans ce rendu. Deux précautions contre la boucle 307 ↔ 307 (#5388) :
     // 1. tracer l'incohérence, sans contenu de session, pour pouvoir l'analyser dans Loki ;
     // 2. marquer le rebond avec SESSION_RETRY_PARAM pour que le proxy affiche la page de connexion
     //    au lieu de renvoyer vers l'espace pro, ce qui rebouclerait sur ce même redirect.

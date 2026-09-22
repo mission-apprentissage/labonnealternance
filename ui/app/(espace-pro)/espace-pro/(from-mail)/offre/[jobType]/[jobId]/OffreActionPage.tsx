@@ -12,8 +12,7 @@ import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { cancelOffre, cancelPartnerJob, fillOffre, providedPartnerJob } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
-// Note: l'action "cancel" pour les offres LBA (OFFRES_EMPLOI_LBA) n'est plus déclenchée automatiquement ici,
-// elle passe désormais par le formulaire ClotureRecrutementForm (voir plus bas) qui recueille un motif obligatoire.
+// Pas d'action "cancel" pour les offres LBA (OFFRES_EMPLOI_LBA) : cf. isClotureForm.
 const jobActions = {
   [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: {
     provided: fillOffre,
@@ -52,7 +51,7 @@ export function OffreActionPage({
   const router = useRouter()
 
   // Pour les offres LBA, l'annulation passe par le formulaire "Clôturer votre recrutement" (motif obligatoire),
-  // au lieu d'annuler silencieusement l'offre au chargement de la page.
+  // pas par une annulation au chargement de la page.
   const isClotureForm = actionName === "cancel" && jobType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
 
   useEffect(() => {

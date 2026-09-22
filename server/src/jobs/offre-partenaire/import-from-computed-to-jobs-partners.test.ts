@@ -197,8 +197,8 @@ describe("offer_status_history lors de l'import", () => {
   })
 
   it("réactive une offre annulée sans entrée d'historique (dernière transition tracée : une réactivation)", async () => {
-    // Tous les chemins d'annulation ne tracent pas encore l'historique : sans preuve de l'origine,
-    // la garde ne doit pas geler l'offre — comportement historique conservé.
+    // Tous les chemins d'annulation ne tracent pas l'historique : sans preuve de l'origine, la
+    // garde ne doit pas geler l'offre.
     await createJobPartner({
       partner_job_id: "cancelled_untracked_1",
       offer_status: JOB_STATUS_ENGLISH.ANNULEE,
@@ -254,17 +254,12 @@ describe("updated_at posé par l'import et fenêtre du cron delta search_items",
   })
 
   /**
-   * Reproduction du trou observé en prod le 2026-09-11 : 965 offres modifiées depuis moins de
-   * 30 jours dont la position indexée ne correspondait plus à la source. L'import nocturne dure
-   * ~26 min, le delta lit `updated_at >= now − 10 min` toutes les 5 min : un document écrit plus
-   * de 10 min après le DÉBUT de l'import, mais horodaté à ce début, est déjà hors fenêtre quand
-   * il arrive en base. Le delta ne le voit jamais.
+   * Régression observée en prod le 2026-09-11 : 965 offres modifiées depuis moins de 30 jours à
+   * position indexée périmée. Cf. le commentaire sur updated_at dans importFromComputedToJobsPartners.
    *
-   * L'horloge est simulée sur Date seulement (pas les timers, le driver Mongo en dépend) et
-   * avancée de 6 min à chaque lecture de l'existant dans jobs_partners, c'est-à-dire juste avant
-   * chaque écriture, comme le ferait un import long : 1re offre écrite à t0+6, 2e à t0+12. Le
-   * delta qui suit la fin de l'import (t0+12, fenêtre [t0+2, t0+12]) doit voir les deux ; datées
-   * du début de l'import (t0), il n'en voyait aucune.
+   * L'horloge est simulée sur Date seulement (le driver Mongo dépend des timers) et avance de
+   * 6 min avant chaque écriture : 1re offre à t0+6, 2e à t0+12. Le delta suivant (fenêtre
+   * [t0+2, t0+12]) doit voir les deux ; datées de t0, il n'en verrait aucune.
    */
   it("un document écrit tard dans un import long est repris par le delta : updated_at doit dater de l'écriture, pas du début de l'import", async () => {
     const t0 = new Date("2026-09-11T00:01:00.000Z")
@@ -326,7 +321,6 @@ describe("updated_at posé par l'import et fenêtre du cron delta search_items",
     // Chaque document est horodaté à sa propre écriture : deux valeurs distinctes, toutes ≥ t0+6.
     expect(new Set(written.map((d) => d.updated_at.getTime())).size).toBe(2)
     for (const d of written) expect(d.updated_at.getTime()).toBeGreaterThanOrEqual(t0.getTime() + 6 * 60_000)
-    // Et le delta les a vus tous les deux.
     expect(scanned).toBe(2)
     for (const s of stale) {
       const indexed = await getDbCollection("search_items").findOne({ _id: s._id })

@@ -65,9 +65,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
       onSubmit={submitForm}
     >
       {(informationForm) => {
-        // Le bouton "Continuer" n'est plus désactivé tant que le formulaire est invalide : cf.
-        // createSubmitWithFocusOnError, qui force l'affichage de l'erreur sur tous les champs invalides
-        // et scrolle/focus le premier plutôt que de laisser le bouton inerte sans indication visuelle.
+        // Le bouton "Continuer" n'est pas désactivé quand le formulaire est invalide : cf. createSubmitWithFocusOnError.
         const handleSubmit = createSubmitWithFocusOnError(formRef, informationForm)
 
         return (

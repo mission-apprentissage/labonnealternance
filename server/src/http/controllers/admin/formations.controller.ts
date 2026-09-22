@@ -3,13 +3,7 @@ import { zRoutes } from "shared/index"
 import type { Server } from "@/http/server"
 import { getCatalogueFormations } from "@/services/catalogue.service"
 
-/**
- * @description Formations server.
- */
 export default (server: Server) => {
-  /**
-   * @description Get in formation collection.
-   */
   server.get(
     "/admin/formations",
     {

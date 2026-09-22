@@ -31,22 +31,10 @@ export default function RendezVousApprentissageDetailRendererClient({
 
   const title = "Gestion de l'établissement"
 
-  /**
-   * @description Patch eligibleTrainingsForAppointments.
-   * @param {string} id
-   * @param {Object} body
-   * @returns {Promise<void>}
-   */
   const patchEligibleTrainingsForAppointment = async (id, body) => {
     await apiPatch("/admin/eligible-trainings-for-appointment/:id", { params: { id }, body })
   }
 
-  /**
-   * @description Save email.
-   * @param parameterId
-   * @param email
-   * @returns {Promise<string|number>}
-   */
   const saveEmail = async (parameterId, email, cle_ministere_educatif) => {
     if (!email || !z.email().safeParse(email).success) {
       return toast({ title: "Email de contact non valide.", variant: "error" })
@@ -57,12 +45,6 @@ export default function RendezVousApprentissageDetailRendererClient({
     toast({ title: "Email de contact mis à jour." })
   }
 
-  /**
-   * @description Disable/enable email overriding.
-   * @param id
-   * @param is_lieu_formation_email_customized
-   * @return {Promise<void>}
-   */
   const disableEmailOverriding = async (id, is_lieu_formation_email_customized) => {
     await patchEligibleTrainingsForAppointment(id, { is_lieu_formation_email_customized })
     if (is_lieu_formation_email_customized) {
@@ -75,15 +57,7 @@ export default function RendezVousApprentissageDetailRendererClient({
     refreshPage()
   }
 
-  /**
-   * @description Handle referrer checkbox.
-   * @param {Object} parameter
-   * @param {Boolean} checked
-   * @param {Object} referrer
-   * @returns {Promise<void>}
-   */
   const onCheckboxChange = async ({ parameter, checked, referrer }) => {
-    // Add referrer
     if (checked) {
       await patchEligibleTrainingsForAppointment(parameter._id, { referrers: parameter.referrers.map((ref) => ref).concat(referrer.name) })
       refreshPage()

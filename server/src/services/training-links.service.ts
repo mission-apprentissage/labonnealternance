@@ -54,7 +54,7 @@ const getFormationCoordinates = (formation: IFormationCatalogue): { latitude: st
 
 // Préfère le libellé ROME (signal le plus boosté côté recherche, cf. rome_labels) et ne retombe
 // sur l'intitulé de formation que si aucun code ROME n'est résolu, pour éviter les 0 résultat
-// sur les intitulés longs (au-delà de 4 termes utiles, 75% de couverture est exigée).
+// sur les intitulés longs (couverture exigée, cf. msmFor).
 const getFormationSearchLabel = (formation: IFormationCatalogue, romeLabelByCode: Map<string, string>): string | null => {
   const [romeLabel] = resolveRomeLabels(formation.rome_codes, romeLabelByCode)
   return romeLabel ?? formation.intitule_long ?? null

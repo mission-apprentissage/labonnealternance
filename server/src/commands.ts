@@ -324,13 +324,7 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("search:suggestions:rollback"))
 
-/**
- *
- *
- * JOB ORGANISME DE FORMATION
- *
- *
- */
+// Jobs organisme de formation
 
 program
   .command("etablissement:invite:premium:follow-up")
@@ -346,13 +340,7 @@ program
   .option("-b, --bypassDate", "Run follow-up now without the 10 days waiting", false)
   .action(createJobAction("etablissement:invite:premium:affelnet:follow-up"))
 
-/**
- *
- *
- * JOB CANDIDAT
- *
- *
- */
+// Jobs candidat
 
 program
   .command("sync-sib-blocked")

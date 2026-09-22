@@ -133,15 +133,10 @@ export function SearchHitCard({ hit, currentParams, position, cardRef, isHighlig
       sx={{
         my: fr.spacing("2v"),
         borderRadius: "8px",
-        // Halo signalant, au retour d'une fiche détail, la carte qui vient d'être consultée
-        // (cf. SearchResultsList) : ombre floue bleu écume (color-mix) plutôt qu'un contour
-        // net, en box-shadow pour ne pas déplacer les cartes voisines. Impulsion en cloche
-        // (~gaussienne) : keyframes symétriques à pic central + ease-in-out par segment —
-        // l'intensité monte et retombe en douceur, sans plateau, en 0,5 s. Le state ne sert
-        // qu'à déclencher ; son reset côté liste (≥ la durée) permet de rejouer l'animation
-        // à la consultation suivante. `both` fige l'état final transparent : aucun saut
-        // quand `animation` repasse à none. Ombre statique sans animation pour
-        // prefers-reduced-motion.
+        // Halo de la carte consultée au retour d'une fiche détail (cf. SearchResultsList) :
+        // box-shadow pour ne pas déplacer les cartes voisines. Le reset du state côté liste
+        // (≥ la durée) permet de rejouer l'animation ; `both` fige l'état final transparent,
+        // sans saut quand `animation` repasse à none.
         "@keyframes shadow-pulse-highlight": {
           "0%": { boxShadow: "0 0 0 0 transparent" },
           "50%": { boxShadow: `0 0 10px 0 color-mix(in srgb, ${fr.colors.decisions.border.plain.blueEcume.default} 55%, transparent)` },

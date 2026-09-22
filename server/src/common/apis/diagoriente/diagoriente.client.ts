@@ -52,9 +52,7 @@ const getDiagorienteToken = async (access: IAuthParams): Promise<string> => {
     }, validation.data.expires_in * 1000)
     return validation.data.access_token
   } catch (error: any) {
-    // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.data` (le client_id/
-    // client_secret envoyés en corps de requête), que extraErrorDataIntegration sérialiserait
-    // tel quel dans Sentry (sendDefaultPii actif).
+    // Erreur dédiée : l'AxiosError porte `config.data` (client_id/client_secret), cf. SENSITIVE_KEY_PATTERN.
     sentryCaptureException(new Error(`diagoriente: échec d'obtention du token (${error.message ?? "erreur inconnue"})`), {
       extra: { status: error.response?.status, responseData: error.response?.data },
     })
@@ -73,10 +71,8 @@ export const getDiagorienteRomeClassification = async (data: IDiagorienteClassif
     })
     responseData = apiResponse.data
   } catch (error: any) {
-    // Erreur dédiée plutôt que l'AxiosError brut, qui porte `config.headers.Authorization` (le
-    // Bearer token) : par cohérence avec getDiagorienteToken ci-dessus, et pour ne pas dépendre
-    // du comportement de l'appelant (aujourd'hui fillRomeForPartners avale l'erreur dans un Error
-    // générique avant tout appel Sentry, mais rien ne garantit qu'un futur appelant fasse de même).
+    // Erreur dédiée : l'AxiosError porte le Bearer token, cf. SENSITIVE_KEY_PATTERN. Ne pas compter
+    // sur l'appelant pour l'avaler avant Sentry.
     sentryCaptureException(new Error(`diagoriente: échec de classification (${error.message ?? "erreur inconnue"})`), {
       extra: { status: error.response?.status, responseData: error.response?.data },
     })

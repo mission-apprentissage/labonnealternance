@@ -22,10 +22,6 @@ export const ensureInitialization = () => {
   return mongodbClient
 }
 
-/**
- * @param  {string} uri
- * @returns client
- */
 export const connectToMongodb = async (uri: string) => {
   const client = new MongoClient(uri, {
     heartbeatFrequencyMS: 10_000,
@@ -63,7 +59,7 @@ export const getMongodbClientState = () => mongodbClientState
 export const closeMongodbConnection = async () => {
   logger.warn("Closing MongoDB")
   await closeChangeStreams()
-  // Let 100ms for possible callback cleanup to register tasks in mongodb queue
+  // Laisse aux callbacks de nettoyage le temps d'enregistrer leurs tâches dans la file mongodb
   await sleep(200)
   return mongodbClient?.close()
 }
@@ -91,10 +87,6 @@ export const getDbCollectionIndexes = async (name: CollectionName): Promise<Inde
   return await ensureInitialization().db().collection(name).indexes()
 }
 
-/**
- * Création d'une collection si elle n'existe pas
- * @param {string} collectionName
- */
 const createCollectionIfDoesNotExist = async (collectionName: string) => {
   const db = getDatabase()
   const collectionsInDb = await db.listCollections().toArray()
@@ -111,18 +103,8 @@ const createCollectionIfDoesNotExist = async (collectionName: string) => {
   }
 }
 
-/**
- * Vérification de l'existence d'une collection à partir de la liste des collections
- * @param {*} collectionsInDb
- * @param {*} collectionName
- * @returns
- */
 export const collectionExistInDb = (collectionsInDb: CollectionInfo[], collectionName: string) => collectionsInDb.map(({ name }: { name: string }) => name).includes(collectionName)
 
-/**
- * Config de la validation
- * @param {*} modelDescriptors
- */
 export const configureDbSchemaValidation = async (modelDescriptors: IModelDescriptor[]) => {
   const db = getDatabase()
   ensureInitialization()
@@ -156,20 +138,11 @@ export const configureDbSchemaValidation = async (modelDescriptors: IModelDescri
   )
 }
 
-/**
- * Clear de toutes les collections
- * @returns
- */
 export const clearAllCollections = async () => {
   const collections = await getDatabase().collections()
   return Promise.all(collections.map(async (c) => c.deleteMany({})))
 }
 
-/**
- * Clear d'une collection
- * @param {string} name
- * @returns
- */
 export async function clearCollection(name: string) {
   ensureInitialization()
   await getDatabase().collection(name).deleteMany({})

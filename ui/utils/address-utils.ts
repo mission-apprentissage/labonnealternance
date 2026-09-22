@@ -13,7 +13,7 @@ const rawPostalAddress = (address: string) => {
   if (isNonEmptyString(address)) {
     if (countInstances(address, SEPARATOR) > 1) {
       const elements = address.split(SEPARATOR)
-      elements.shift() // Retire le premier élément : https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/shift
+      elements.shift()
       result = elements.join(SEPARATOR)
     } else {
       result = address

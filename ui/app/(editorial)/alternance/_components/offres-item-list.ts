@@ -30,8 +30,6 @@ export function cardName(card: OffreCard): string {
   return stripHtmlTags(raw ?? "")
 }
 
-// Construit les entrées ItemList (schema.org) à partir des cartes d'offres d'une page landing.
-// On ne conserve que les cartes disposant d'une URL et d'un intitulé exploitable.
 export function buildOffresItemList(cards: OffreCard[]): { name: string; url: string }[] {
   return cards.map((card) => ({ name: cardName(card), url: card.lba_url })).filter((entry): entry is { name: string; url: string } => Boolean(entry.name && entry.url))
 }
