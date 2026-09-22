@@ -1731,21 +1731,16 @@ describe("findJobOpportunityById", () => {
     })
 
     it("should return null when not found", async () => {
-      // Utiliser un ID qui n'existe pas dans la base de données
       const nonExistentId = new ObjectId()
 
-      // Vérifier que la fonction lance bien une erreur
       expect(await getJobsPartnersByIdAsJobOfferApi(nonExistentId)).toEqual(null)
     })
 
     it("should return a job offer with correct format on getJobsPartnersByIdAsJobOfferApi", async () => {
-      // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
-      // Appeler la fonction avec l'ID existant
       const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
-      // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
         ...originalJob,
         contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
@@ -1753,18 +1748,14 @@ describe("findJobOpportunityById", () => {
         apply_recipient_id: originalJob.apply_email ? `partners_${originalJob._id}` : null,
       })
 
-      // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
 
-      // Utiliser le schéma Zod pour valider la structure
       const validationResult = zJobOfferApiReadV3.safeParse(result)
 
-      // Si la validation échoue, afficher les erreurs pour faciliter le débogage
       if (!validationResult.success) {
         console.error("Validation errors:", validationResult.error.format())
       }
 
-      // Vérifier que la validation a réussi
       expect(validationResult.success).toBe(true)
     })
 
@@ -1772,35 +1763,27 @@ describe("findJobOpportunityById", () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: null })
 
-      // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
-      // Appeler la fonction avec l'ID existant
       const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
-      // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
         ...originalJob,
         contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
         apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
-        apply_recipient_id: null, // Vérification dans l'appel à la conversion
+        apply_recipient_id: null,
       })
 
-      // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
 
-      // Vérifier que l'objet retourné par getJobsPartnersByIdAsJobOfferApi a bien apply_recipient_id = null
       expect(result?.apply.recipient_id).toBeNull()
 
-      // Utiliser le schéma Zod pour valider la structure
       const validationResult = zJobOfferApiReadV3.safeParse(result)
 
-      // Si la validation échoue, afficher les erreurs pour faciliter le débogage
       if (!validationResult.success) {
         console.error("Validation errors:", validationResult.error.format())
       }
 
-      // Vérifier que la validation a réussi
       expect(validationResult.success).toBe(true)
     })
 
@@ -1808,36 +1791,28 @@ describe("findJobOpportunityById", () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: "test@mail.fr" })
 
-      // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
-      // Appeler la fonction avec l'ID existant
       const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
-      // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
         ...originalJob,
         contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
         apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_email: "test@mail.fr",
-        apply_recipient_id: `partners_${originalJob._id}`, // Vérification dans l'appel à la conversion
+        apply_recipient_id: `partners_${originalJob._id}`,
       })
 
-      // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
 
-      // Vérifier que l'objet retourné par getJobsPartnersByIdAsJobOfferApi a bien apply_recipient_id non null et correct
       expect(result?.apply.recipient_id).toBe(`partners_${originalJob._id}`)
 
-      // Utiliser le schéma Zod pour valider la structure
       const validationResult = zJobOfferApiReadV3.safeParse(result)
 
-      // Si la validation échoue, afficher les erreurs pour faciliter le débogage
       if (!validationResult.success) {
         console.error("Validation errors:", validationResult.error.format())
       }
 
-      // Vérifier que la validation a réussi
       expect(validationResult.success).toBe(true)
     })
   })
@@ -1855,35 +1830,27 @@ describe("findJobOpportunityById", () => {
     })
 
     it("should throw an error when no job is found on findJobOpportunityById", async () => {
-      // Créer un contexte mock
       const context = {
         addWarning: vi.fn(),
       } as unknown as JobOpportunityRequestContext
 
-      // Utiliser un ID inexistant
       const nonExistentId = new ObjectId()
 
-      // Vérifier que la fonction lance une erreur
       await expect(findJobOpportunityById(nonExistentId, context)).rejects.toThrowError("Aucune offre d'emploi trouvée")
     })
 
     it("should find an offer from jobs_partners collection on findJobOpportunityById", async () => {
-      // Créer un contexte mock
       const context = {
         addWarning: vi.fn(),
       } as unknown as JobOpportunityRequestContext
 
-      // Exécuter la fonction avec un ID existant lié à un élément de la collection jobs_partners
       const result = await findJobOpportunityById(jobPartnerId, context)
 
-      // Vérifier que le résultat n'est pas nul
       expect(result).not.toBeNull()
 
-      // Vérifier que l'objet retourné correspond bien au schéma IJobOfferApiReadV3
       const validationResult = zJobOfferApiReadV3.safeParse(result)
       expect(validationResult.success).toBe(true)
 
-      // En cas d'erreur, afficher les détails
       if (!validationResult.success) {
         console.error("Validation errors:", validationResult.error.format())
       }

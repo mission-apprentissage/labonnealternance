@@ -9,7 +9,7 @@
  *  - les sourcemaps des chunks : pour asserter l'absence d'un package sur le first-load.
  *
  * Trois classes de sortie, volontairement distinctes :
- *  - dépassement de budget → jugement, assouplissable par `--report-only` ;
+ *  - dépassement de budget ou budget non renseigné → jugement, assouplissable par `--report-only` ;
  *  - erreur de mesure (fichier absent, sourcemap introuvable, route inconnue) → toujours exit 1 ;
  *  - usage invalide (flag inconnu, fichier de budgets mal formé) → toujours exit 1.
  * Sinon un run vert serait indiscernable d'un run qui n'a rien mesuré.
@@ -29,7 +29,7 @@ export class MeasureError extends Error {
   }
 }
 
-/** Usage invalide : flag inconnu ou fichier de budgets mal formé. Jamais assoupli non plus. */
+/** Usage invalide : jamais assoupli non plus. */
 export class UsageError extends Error {
   constructor(message) {
     super(message)
@@ -459,8 +459,7 @@ export function main(argv = []) {
     configPath = path.resolve(options["--config"] ?? path.join(uiDir, "perf-budget.json"))
     report = evaluate({ uiDir, config: readJsonFile(configPath, "fichier de budgets") })
   } catch (error) {
-    // Ni la mesure ni l'usage ne sont assouplis par --report-only : un run vert doit prouver
-    // qu'il a mesuré quelque chose.
+    // Ni la mesure ni l'usage ne sont assouplis par --report-only (cf. en-tête du fichier).
     if (error instanceof MeasureError) {
       console.error(`❌ mesure impossible — ${error.message}`)
       return 1

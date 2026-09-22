@@ -30,10 +30,6 @@ export default function PremiumParcoursup() {
   const [hasAccepted, setHasAccepted] = useState(false)
   const [etablissement, setEtablissement]: [IPremiumEtablissement | null, (e: any) => void] = useState()
 
-  /**
-   * @description Accept terms.
-   * @returns {Promise<void>}
-   */
   const accept = async () => {
     await apiPost("/etablissements/:id/premium/accept", {
       params: { id },
@@ -45,10 +41,6 @@ export default function PremiumParcoursup() {
     window.scrollTo(0, 0)
   }
 
-  /**
-   * @description Refuse invite.
-   * @returns {Promise<void>}
-   */
   const refuse = async () => {
     await apiPost("/etablissements/:id/premium/refuse", {
       params: { id },

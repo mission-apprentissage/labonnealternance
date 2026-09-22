@@ -58,8 +58,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
     "Pour faciliter la formation du jeune travailleur en situation de handicap, certaines règles du contrat d’apprentissage sont aménagées comme la durée du contrat, le temps de travail, le déroulement de la formation ou encore la limite d’âge.",
   ]
 
-  // guide_source a remplacé source (paramètre réservé de Plausible) ; l'ancien nom reste lu en
-  // repli pour les liens externes/favoris antérieurs au renommage.
+  // Repli sur `source`, ancien nom de guide_source (cf. AllerPlusLoinItem), pour les liens externes et favoris.
   const params = new URLSearchParams(await searchParams)
   const source = params.get("guide_source") || params.get("source") || undefined
 

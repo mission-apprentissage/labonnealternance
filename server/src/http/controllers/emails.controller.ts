@@ -5,15 +5,8 @@ import type { Server } from "@/http/server"
 import type { IBrevoWebhookEvent } from "@/services/emails.service"
 import { processHardBounceWebhookEvent, processWebhookEvent } from "@/services/emails.service"
 
-/**
- * Email controllers.
- */
 export default (server: Server) => {
-  /**
-   * @description Update email status.
-   * @method {POST}
-   * @returns {Promise<void>}
-   */
+  // Webhook Brevo : mise à jour du statut des emails envoyés
   server.post(
     "/emails/webhook",
     {

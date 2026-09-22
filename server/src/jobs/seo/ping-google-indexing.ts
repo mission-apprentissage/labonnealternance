@@ -18,8 +18,7 @@ import { buildLbaUrlFromJob } from "@/services/jobs/job-opportunity/job-opportun
 // de quota accordée, ajouter les autres partner_labels ici (~6 000 changements/jour au total).
 const PARTNER_LABELS_SCOPE: string[] = [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]
 
-// Fenêtre du delta : 2× l'intervalle du cron (30 min) — un run raté est rattrapé par le
-// suivant, les notifications sont idempotentes (même modèle que pingIndexNow).
+// Fenêtre du delta : cf. DELTA_DEFAULT_WINDOW_MS dans ping-indexnow.ts.
 const DELTA_DEFAULT_WINDOW_MS = 60 * 60 * 1000
 
 /**
@@ -40,8 +39,7 @@ export const pingGoogleIndexing = async (payload?: { since?: Date | string }) =>
     return { scanned: 0, published: 0, failed: 0, quotaExhausted: false }
   }
 
-  // `since` peut arriver sérialisé en string (payload CLI / job queued JSON) : sans coercition,
-  // `$gte: "2026-…"` (string vs Date BSON) ne matcherait silencieusement aucun document.
+  // Coercition de `since` : cf. pingIndexNow.
   const since = payload?.since ? new Date(payload.since) : new Date(Date.now() - DELTA_DEFAULT_WINDOW_MS)
   if (Number.isNaN(since.getTime())) throw new Error(`pingGoogleIndexing: paramètre since invalide (${payload?.since})`)
 
@@ -64,8 +62,7 @@ export const pingGoogleIndexing = async (payload?: { since?: Date | string }) =>
 
   for await (const job of cursor) {
     scanned++
-    // URL toujours reconstruite — jamais lue depuis `lba_url`, figé avec le publicUrl de
-    // l'environnement qui a exécuté le job d'import (cf. admin/jobs-partners.controller.ts).
+    // URL reconstruite plutôt que lue depuis `lba_url` : cf. pingIndexNow.
     const url = buildLbaUrlFromJob(job)
     if (seenUrls.has(url)) continue
     seenUrls.add(url)

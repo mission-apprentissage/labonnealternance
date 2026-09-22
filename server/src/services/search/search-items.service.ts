@@ -145,13 +145,11 @@ export const resolveRomeLabels = (codes: (string | null | undefined)[] | null | 
 }
 
 /**
- * Canonicalisation de casse des champs de facette (organization_name, activity_sector) :
- * les sources partenaires livrent des casses différentes ("CARREFOUR"/"Carrefour",
- * "PROGRAMMATION INFORMATIQUE"/"Programmation informatique") → chaque variante devient une
- * option distincte dans les filtres (type `token`, match exact). Toutes les variantes d'un
- * même libellé (comparaison insensible à la casse) convergent vers UNE forme canonique :
- * la plus "propre" (ni tout-majuscules ni tout-minuscules) déjà en base, sinon la plus
- * fréquente — on préserve ainsi "SNCF Voyageurs" ou "… PVC" au lieu de réécrire la casse.
+ * Canonicalisation de casse des champs de facette (organization_name, activity_sector) : les
+ * sources livrent "CARREFOUR" et "Carrefour", deux options distinctes pour un champ `token`
+ * (match exact). Les variantes convergent vers la plus "propre" déjà en base (ni tout-majuscules
+ * ni tout-minuscules), sinon la plus fréquente : on préserve "SNCF Voyageurs" plutôt que de
+ * réécrire la casse.
  */
 const pickCanonicalVariant = (variants: { v: string; c: number }[]): string => {
   let best = variants[0].v
@@ -214,8 +212,8 @@ export const convertFormationNiveauDiplome = (niveau: string) => {
 
 /**
  * Descriptions en texte brut : les sources livrent du HTML (balises + entités) qui s'affiche
- * tel quel dans les previews et pollue l'index (tokens parasites p/li/ul, cf. bug synonymes
- * "plaquiste"). Les fins de blocs deviennent des sauts de ligne pour ne pas coller les mots.
+ * tel quel dans les previews et pollue l'index (tokens parasites p/li/ul). Les fins de blocs
+ * deviennent des sauts de ligne pour ne pas coller les mots.
  */
 export const stripHtmlToText = (text: string | null | undefined): string => {
   if (!text) return ""
@@ -461,10 +459,9 @@ export const buildRecruteurSearchItem = (job: IJobPartnerForSearchItem, ctx: Sea
 // ─── Synchronisation incrémentale jobs_partners → search_items ─────────────────────────────
 
 /**
- * Stages partagés nightly/sync : comptage des candidatures d'une offre. applications.job_id est
- * un ObjectId : jointure directe ObjectId↔ObjectId (comparer à $toString(_id) ne matchait plus
- * rien → compteur à 0). Le $count dans le pipeline du $lookup évite de matérialiser les documents
- * candidature en mémoire — seul le compteur remonte.
+ * Stages partagés nightly/sync. applications.job_id est un ObjectId : jointure directe (comparer
+ * à $toString(_id) ne matche rien, compteur à 0). Le $count dans le pipeline du $lookup évite de
+ * matérialiser les candidatures en mémoire.
  */
 export const applicationCountByJobIdStages = [
   { $lookup: { from: "applications", localField: "_id", foreignField: "job_id", as: "applications", pipeline: [{ $count: "count" }] } },
@@ -472,10 +469,8 @@ export const applicationCountByJobIdStages = [
 ]
 
 /**
- * Stage de comptage des candidatures d'un recruteur LBA par siret (candidature spontanée) : ce
- * volume n'est PAS plafonné (contrairement aux offres, cf. checkMaxApplicationCount qui exclut
- * explicitement RECRUTEURS_LBA) — d'où le $count dans le pipeline pour ne jamais matérialiser un
- * tableau de candidatures potentiellement volumineux pour un siret très sollicité.
+ * Candidatures d'un recruteur LBA par siret : volume non plafonné (checkMaxApplicationCount exclut
+ * RECRUTEURS_LBA), d'où le $count dans le pipeline, cf. applicationCountByJobIdStages.
  */
 export const applicationCountBySiretLookupStage = {
   $lookup: { from: "applications", localField: "workplace_siret", foreignField: "company_siret", as: "applications", pipeline: [{ $count: "count" }] },
@@ -577,11 +572,9 @@ export const removeJobPartnersFromSearchItems = async (ids: ObjectId[]): Promise
   return result.deletedCount
 }
 
-// Fenêtre du delta : 2× l'intervalle du cron (5 min) — un run raté est rattrapé par le
-// suivant, les upserts sont idempotents, et le nightly réconcilie l'ensemble. À garder aligné
-// sur l'intervalle : une fenêtre plus large ne protège pas davantage (un run raté reste couvert)
-// mais réécrit chaque document autant de fois qu'il y a de runs dans la fenêtre — ce qui pesait
-// pendant les imports de masse nocturnes.
+// Fenêtre du delta : 2× l'intervalle du cron (5 min), un run raté est rattrapé par le suivant.
+// À garder aligné : une fenêtre plus large ne protège pas davantage mais réécrit chaque document
+// autant de fois qu'il y a de runs dans la fenêtre, ce qui pèse pendant les imports de masse.
 const DELTA_DEFAULT_WINDOW_MS = 10 * 60 * 1000
 const DELTA_CHUNK_SIZE = 500
 
@@ -590,17 +583,14 @@ const DELTA_CHUNK_SIZE = 500
  * taille de la liste : cron delta, import des offres API, et actions métier unitaires via la
  * variante fire-and-forget ci-dessous.
  *
- * Deux garanties que les appelants n'ont pas à reproduire : découpage en chunks, pour ne pas
- * charger des dizaines de milliers de documents d'un coup (`unsubscribeRecruteurLba` passe toutes
- * les offres des entreprises désinscrites), et contexte de build chargé UNE fois pour tout l'appel
- * — pas par chunk, sinon 2 agrégations full-scan sur search_items à chaque tranche.
+ * Deux garanties que les appelants n'ont pas à reproduire : découpage en chunks (la désinscription
+ * des recruteurs, `unsubscribeCompanies`, passe toutes les offres des entreprises désinscrites), et
+ * contexte de build chargé une fois pour tout l'appel, pas par chunk.
  *
- * Contexte mémoïsé (`getSearchItemBuildContext`) et non rechargé : ces agrégations dominent le coût
- * d'un run utile (mesuré en prod sur le cron delta : 2 à 3 s avec une poignée de documents contre
- * 30 à 50 ms à vide, contexte non chargé), et ce point d'entrée est désormais appelé toutes les
- * 5 min par l'import des offres API. La fraîcheur des maps de canonicalisation n'a pas besoin
- * d'être parfaite : canonicalizeCase les enrichit en mémoire entre deux rechargements. Le batch
- * nightly, lui, garde le chargement frais — c'est une reconstruction complète.
+ * Contexte mémoïsé (cf. getSearchItemBuildContext) : ses agrégations dominent le coût d'un run utile
+ * (mesuré en prod sur le cron delta : 2 à 3 s avec une poignée de documents contre 30 à 50 ms à vide),
+ * et l'import des offres API appelle ce point d'entrée toutes les 5 min. Le nightly, reconstruction
+ * complète, garde le chargement frais.
  */
 export const syncJobPartnersToSearchItemsInChunks = async (ids: ObjectId[]): Promise<{ upserted: number; removed: number }> => {
   const ctx = ids.length ? await getSearchItemBuildContext() : undefined
@@ -647,8 +637,8 @@ export const syncSearchItemsDelta = async (payload?: { since?: Date | string }) 
   return { scanned: ids.length, upserted, removed }
 }
 
-// Dérive tolérée entre les sources et l'index : le delta (15 min) et les candidatures en
-// continu créent un écart transitoire normal.
+// Dérive tolérée entre les sources et l'index : la fenêtre du delta (cf. DELTA_DEFAULT_WINDOW_MS)
+// et les candidatures en continu créent un écart transitoire normal.
 const DRIFT_ABSOLUTE_THRESHOLD = 500
 const DRIFT_RELATIVE_THRESHOLD = 0.01
 

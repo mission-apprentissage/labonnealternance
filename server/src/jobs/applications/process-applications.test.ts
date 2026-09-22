@@ -12,20 +12,17 @@ import { isInfected } from "@/services/clamav.service"
 import mailer from "@/services/mailer.service"
 import { processApplications } from "./process-applications"
 
-// Mock ClamAV to be available and not detect viruses
 vi.mock("@/services/clamav.service", () => ({
   isClamavAvailable: vi.fn().mockResolvedValue(true),
   isInfected: vi.fn().mockResolvedValue(false),
 }))
 
-// Mock S3 to avoid actual AWS calls
 vi.mock("@/common/utils/aws-utils", () => ({
   s3WriteString: vi.fn().mockResolvedValue(undefined),
   s3ReadAsString: vi.fn().mockResolvedValue(applicationTestFile),
   s3Delete: vi.fn().mockResolvedValue(undefined),
 }))
 
-// Mock mailer to avoid sending actual emails
 vi.mock("@/services/mailer.service", () => ({
   default: {
     sendEmail: vi.fn().mockResolvedValue({ messageId: "test-message-id", accepted: ["test@example.com"] }),
@@ -33,13 +30,11 @@ vi.mock("@/services/mailer.service", () => ({
   },
 }))
 
-// Mock Slack notifications
 vi.mock("@/common/utils/slack-utils", () => ({
   notifyToSlack: vi.fn().mockResolvedValue(undefined),
 }))
 
-// Mock axios to avoid actual HTTP calls (used by Taleez API integration)
-// Using importOriginal to preserve axios.create() which is used by other services at module init time
+// importOriginal preserves axios.create(), which other services call at module init time
 vi.mock("axios", async (importOriginal) => {
   const mod = await importOriginal<typeof import("axios")>()
   return {
@@ -89,12 +84,9 @@ describe("process-applications", () => {
     await processApplications()
 
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
-    // Scan should complete without detecting a virus
     expect(updatedApplication?.scan_status).toBe(ApplicationScanStatus.NO_VIRUS_DETECTED)
-    // Both applicant and company emails should be sent
     expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
-    // Both emails should have been sent (company + applicant)
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
   })
 
@@ -129,15 +121,11 @@ describe("process-applications", () => {
     await processApplications()
 
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
-    // Scan should complete without detecting a virus
     expect(updatedApplication?.scan_status).toBe(ApplicationScanStatus.NO_VIRUS_DETECTED)
-    // Taleez API should be called instead of sending a company email
+    // Taleez notifies the company itself: no company email, to_company_message_id holds the partner label
     expect(vi.mocked(axios.default.post)).toHaveBeenCalledOnce()
-    // to_company_message_id should remain null (Taleez handles the company notification)
     expect(updatedApplication?.to_company_message_id).toEqual("Taleez")
-    // Applicant email should be sent
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
-    // Only applicant email should be sent (not company email)
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(1)
     expect(mailerSendEmailSpy.mock.calls[0][0]).toMatchObject({ to: applicant.email })
   })
@@ -169,12 +157,9 @@ describe("process-applications", () => {
     await processApplications()
 
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
-    // Scan should complete without detecting a virus
     expect(updatedApplication?.scan_status).toBe(ApplicationScanStatus.NO_VIRUS_DETECTED)
-    // Both applicant and company emails should be sent
     expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
-    // Both emails should have been sent (company + applicant)
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
   })
 

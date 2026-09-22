@@ -16,17 +16,15 @@ const fields = [
 ] as const satisfies (keyof IComputedJobsPartners)[]
 
 /**
- * sanitizeTextField normalise null/undefined en "" : appliqué tel quel, il écrasait par une chaîne
- * vide les champs absents du document (le filtre ci-dessous ne sélectionne qu'un champ non nul
- * parmi ceux listés, les autres sont réécrits quand même). Une chaîne vide neutralise tous les fallbacks
- * `??` en aval — en particulier fillSiretInfosForPartners, qui ne remplissait plus workplace_name
- * depuis l'enseigne / la raison sociale du SIRET, puisque `"" ?? x` vaut "".
+ * sanitizeTextField normalise null/undefined en "" : appliqué tel quel, il écrirait une chaîne vide
+ * dans les champs absents (le filtre ci-dessous sélectionne un document dès qu'un seul des champs
+ * listés est non nul, tous sont réécrits). Or "" neutralise les fallbacks `??` en aval, par exemple
+ * dans fillSiretInfosForPartners (`"" ?? x` vaut ""). Un champ absent reste donc null.
  *
- * Un champ absent reste donc null. En revanche un champ renseigné dont il ne reste rien après
- * sanitization (espaces ou balises seules) garde sa chaîne vide, volontairement : offer_title et
- * offer_description sont NON-nullables dans jobs_partners, et y écrire null fait échouer la
- * validation d'une offre qui passait avec "" — l'offre ne serait plus importée du tout. Le "" est
- * traité comme une valeur absente côté lecture, où les chaînes de repli utilisent `||`.
+ * Un champ renseigné dont il ne reste rien après sanitization (espaces ou balises seules) garde en
+ * revanche sa chaîne vide, volontairement : offer_title et offer_description sont NON-nullables dans
+ * jobs_partners, y écrire null ferait rejeter l'offre à la validation. Côté lecture, les chaînes de
+ * repli utilisent `||` pour traiter "" comme absent.
  */
 const sanitizeNullableTextField = (text: string | null | undefined): string | null => {
   if (text == null) {
@@ -41,7 +39,7 @@ const sanitizeNullableTextField = (text: string | null | undefined): string | nu
  * masqué en `&#64;` redevient détectable ; il retire aussi les balises `<a href="mailto:...">` en
  * conservant leur texte visible, que les regex prennent ensuite en charge.
  *
- * Le "" d'un champ vidé est préservé (cf. garde-fou ci-dessus) : removeContactDetailsFromText
+ * Le "" d'un champ vidé est préservé (cf. sanitizeNullableTextField) : removeContactDetailsFromText
  * renvoie "" pour une entrée vide.
  */
 const sanitizeNullableDescription = (text: string | null | undefined): string | null => {

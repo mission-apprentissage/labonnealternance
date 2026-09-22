@@ -22,7 +22,7 @@ interface DiplomeMetierTemp {
 }
 
 const buildAcronyms = (intitule: string): string => {
-  // Remove content in parentheses
+  // Truncates from the first " (" to the end of the string
   const intitule_sans_parenthese = intitule.replace(/\s\(.*$/, "")
 
   const tokens = intitule_sans_parenthese.toLowerCase().split(/[\s-';:,)]+/)
@@ -45,7 +45,6 @@ const buildAcronyms = (intitule: string): string => {
 }
 
 const updateDiplomeMetierList = (initial: DiplomeMetierTemp, toAdd: FormationData): DiplomeMetierTemp => {
-  // Use Set for efficient deduplication
   const romesSet = new Set(initial.codes_romes)
   const rncpsSet = new Set(initial.codes_rncps)
 
@@ -107,7 +106,6 @@ export const updateDiplomeMetier = async (): Promise<void> => {
     const diplomesMetiers = await getIntitulesFormations()
     const now = new Date()
 
-    // Prepare all documents for bulk insert
     const diplomesToInsert: IDiplomesMetiers[] = []
     const invalidDiplomes: string[] = []
 
@@ -133,7 +131,6 @@ export const updateDiplomeMetier = async (): Promise<void> => {
       }
     }
 
-    // Bulk insert all valid diplomes in a single operation
     if (diplomesToInsert.length > 0) {
       logger.info(`Inserting ${diplomesToInsert.length} diplomes...`)
       await getDbCollection("diplomesmetiers").insertMany(diplomesToInsert, { ordered: false })

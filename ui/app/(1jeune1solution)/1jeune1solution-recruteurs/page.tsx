@@ -26,7 +26,6 @@ export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: s
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
 
     let nextUri = PAGES.dynamic.espaceProCreationDetail({ siret: formattedSiret, type: AUTHTYPE.ENTREPRISE, origin, isWidget: false }).getPath()
-    // validate establishment_siret
 
     getEntrepriseInformation(formattedSiret).then((entrepriseData) => {
       setSubmitting(true)
@@ -79,11 +78,7 @@ export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: s
 
 export default function UnJeune1Solution() {
   const onSelectOrganisation = (organisation: Organisation | null) => {
-    // if (organisation?.activite_principale?.startsWith("85")) {
-    //   setOrganisationType(AUTHTYPE.CFA)
-    // } else {
-    //   setOrganisationType(AUTHTYPE.ENTREPRISE)
-    // }
+    // Sans effet : le type de compte (CFA ou entreprise) est déterminé à la soumission (cf. submitSiret).
   }
 
   return (

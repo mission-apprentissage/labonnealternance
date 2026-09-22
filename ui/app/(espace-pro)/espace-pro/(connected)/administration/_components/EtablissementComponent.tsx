@@ -31,20 +31,12 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
     }
   }
 
-  /**
-   * @description Returns toast common error for etablissement updates.
-   * @return {string | number}
-   */
   const putError = () =>
     toast({
       title: "Une erreur est survenue durant l'enregistrement.",
       variant: "error",
     })
 
-  /**
-   * @description Call succes Toast.
-   * @return {string | number}
-   */
   const putSuccess = () =>
     toast({
       title: "Enregistrement effectué avec succès.",
@@ -54,11 +46,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
     fetchData()
   }, [])
 
-  /**
-   * @description Upserts "gestionnaire_email"
-   * @param {string} email
-   * @return {Promise<void>}
-   */
+  /** Upsert de "gestionnaire_email". */
   const upsertEmailDecisionnaire = async (email: string) => {
     try {
       const response = await apiPatch("/admin/etablissements/:id", { params: { id: etablissement?._id }, body: { gestionnaire_email: email } })

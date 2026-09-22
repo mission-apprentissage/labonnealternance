@@ -23,9 +23,6 @@ export const getCity = (recruiter) => {
   return city
 }
 
-/**
- * @description Incrémente le compteur de vue de la page de détail d'une offre LBA
- */
 export const addOffreDetailView = async (jobId: ObjectId | string) => {
   try {
     await getDbCollection("jobs_partners").updateOne(
@@ -39,9 +36,6 @@ export const addOffreDetailView = async (jobId: ObjectId | string) => {
   }
 }
 
-/**
- * @description Incrémente les compteurs de vue d'un ensemble d'offres lba
- */
 export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
   const ids = jobIds.map((id) => new ObjectId(id))
   try {

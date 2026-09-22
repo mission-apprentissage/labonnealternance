@@ -8,15 +8,10 @@ import { logger } from "@/common/logger"
 import config from "@/config"
 
 /**
- * Décrit une erreur de l'API Brevo sans reprendre l'objet d'erreur brut.
- *
- * L'erreur levée par le SDK porte `config.data`, c'est-à-dire le corps CSV complet de la requête —
- * adresses email nominatives de recruteurs et de candidats. `extraErrorDataIntegration` la
- * sérialiserait telle quelle dans Sentry (`sendDefaultPii` actif) et aucune clé de ce corps ne
- * correspond au scrub par nom de `sentry.ts`. Constaté en production sur le job « Export contact
- * recruteurs vers Brevo » (Sentry LBA-SERVER-5J7KF4ZZZTAAB).
- *
- * Même logique que les clients france-travail, diagoriente, inserjeunes et api-entreprise.
+ * Décrit une erreur de l'API Brevo sans reprendre l'objet d'erreur brut : l'erreur du SDK porte
+ * `config.data`, le corps CSV complet de la requête (emails nominatifs de recruteurs et de candidats).
+ * `extraErrorDataIntegration` la sérialiserait dans Sentry (`sendDefaultPii` actif) et aucune clé de ce
+ * corps ne correspond au scrub par nom de `sentry.ts` (constaté en production, LBA-SERVER-5J7KF4ZZZTAAB).
  */
 const describeBrevoError = (error: any): { status: number | undefined; brevoMessage: string | undefined; message: string } => ({
   // Le SDK Brevo expose selon les appels `response.statusCode` (superagent) ou `response.status`
@@ -53,13 +48,9 @@ const hardBounceWebhook = {
 }
 
 /**
- * Journalise l'échec de création d'un webhook.
- *
- * L'ancienne version lisait `error.response.res.text` sans garde : quand `error.response` est
- * absent (échec réseau, DNS, timeout), le handler de rejet levait lui-même un TypeError que plus
- * rien ne rattrapait — rejet non rattrapé à chaque démarrage du serveur en production, et une
- * nouvelle issue Sentry à chaque release puisque le culprit contient le hash du chunk
- * (LBA-SERVER-5J7KF4ZZZTA8E et 5 issues jumelles).
+ * Journalise l'échec de création d'un webhook sans supposer `error.response` présent : il est absent sur
+ * un échec réseau (DNS, timeout), et un accès non gardé lève un TypeError dans le handler de rejet, non
+ * rattrapé, à chaque démarrage du serveur en production (LBA-SERVER-5J7KF4ZZZTA8E et 5 issues jumelles).
  */
 const logBrevoWebhookError = (webhook: string, error: any): void => {
   const { status, brevoMessage, message } = describeBrevoError(error)
@@ -140,9 +131,8 @@ export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKE
   let attempt = 0
   let lastError: unknown = null
 
-  // Ne jamais relever l'erreur du SDK telle quelle : elle porte le corps CSV de l'import
-  // (cf. describeBrevoError). On la remplace par un Boom qui ne retient que le statut, le message
-  // renvoyé par Brevo, la liste ciblée et le nombre de contacts.
+  // Ne jamais relever l'erreur du SDK telle quelle (cf. describeBrevoError) : le Boom ne retient que le
+  // statut, le message renvoyé par Brevo, la liste ciblée et le nombre de contacts.
   const toImportError = (error: unknown) => {
     const { status, brevoMessage, message } = describeBrevoError(error)
     return internal(`brevo: échec de l'import de contacts (${brevoMessage ?? message})`, { account, listId, status, contactCount: contacts.length })
@@ -163,9 +153,8 @@ export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKE
           const rateLimitReset = headers["x-sib-ratelimit-reset"]
           const rateLimitRemaining = headers["x-sib-ratelimit-remaining"]
 
-          // Use Brevo's x-sib-ratelimit-reset header (time in ms until reset) or fallback to exponential backoff
+          // x-sib-ratelimit-reset (ms avant reset) sinon backoff exponentiel 100ms, 200ms, 400ms… plafonné à 2s.
           // Brevo rate limit: 10 RPS, so wait at least 100ms between retries
-          // Exponential backoff: 100ms, 200ms, 500ms, 1s, 2s
           const parsed = parseInt(rateLimitReset)
           const backoffMs = Math.min(100 * Math.pow(2, attempt - 1), 2000)
           const delayMs = !isNaN(parsed) && parsed > 0 ? Math.min(parsed, 30_000) : backoffMs

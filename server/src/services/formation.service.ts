@@ -42,7 +42,7 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue, priseDeRendezVo
       remoteOnly: rawFormation.entierement_a_distance,
     },
     company: {
-      name: getSchoolName(rawFormation), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
+      name: getSchoolName(rawFormation),
       siret: rawFormation.etablissement_formateur_siret,
       uai: rawFormation.etablissement_formateur_uai,
       headquarter: {
@@ -88,11 +88,6 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue, priseDeRendezVo
   return resultFormation
 }
 
-/**
- * Construit le bloc de sessions d'une formation
- * @param {Partial<IFormationCatalogue>} formation
- * @return {ILbaItemTrainingSession[]}
- */
 const setSessions = (formation: Partial<IFormationCatalogue>): ILbaItemTrainingSession[] => {
   const { date_debut, date_fin, modalites_entrees_sorties } = formation ?? {}
   if (date_debut?.length && date_debut?.length === date_fin?.length && date_debut?.length === modalites_entrees_sorties?.length) {
@@ -120,11 +115,6 @@ const getDurationFromSessions = (sessions: ILbaItemTrainingSession[]): number | 
   return duration
 }
 
-/**
- * Retourne l'adresse de la formation à partir des meilleurs informations disponibles
- * @param {Partial<IFormationCatalogue>} formation
- * @returns {string}
- */
 const getTrainingAddress = (formation: Partial<IFormationCatalogue>): string => {
   let schoolAddress = ""
 
@@ -148,11 +138,6 @@ const getTrainingAddress = (formation: Partial<IFormationCatalogue>): string => 
   return schoolAddress
 }
 
-/**
- * Retourne le nom du centre de formation à partir des meilleurs informations disponibles d'une formation
- * @param {Partial<IFormationCatalogue>} formation
- * @returns {string}
- */
 const getSchoolName = (formation: Partial<IFormationCatalogue>): string | undefined => {
   return (
     (formation.etablissement_formateur_enseigne || formation.etablissement_formateur_entreprise_raison_sociale || formation.etablissement_gestionnaire_entreprise_raison_sociale) ??

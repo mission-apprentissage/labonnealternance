@@ -15,11 +15,10 @@ import { searchItems, suggestSearchTerms } from "@/services/search/search.servic
  * Le fichier est découpé en deux sections :
  *  1. "non-régression" : comportements validés OK en recette → ils doivent RESTER verts
  *     après toute modification du moteur (boosts, analyzers, synonymes, index...).
- *  2. "corrigés par la refonte Phase 1" : ex-KO/Mitigé de la recette, corrigés par la porte
- *     de pertinence (couverture par terme + minimumShouldMatch dynamique) et promus en
- *     non-régression. Convention pour les futures cibles : les écrire en `it.fails`
- *     (le test décrit le comportement CIBLE, il est vert tant que le défaut existe, et
- *     passe au rouge quand une modif le corrige → retirer alors le `.fails`).
+ *  2. "corrigés par …" : cas KO/Mitigé de la recette, couverts par la porte de pertinence
+ *     (couverture par terme + minimumShouldMatch dynamique). Convention pour les futures
+ *     cibles : les écrire en `it.fails` (vert tant que le défaut existe, rouge quand une
+ *     modif le corrige → retirer alors le `.fails`).
  *
  * ⚠️ Ces tests nécessitent mongot (sidecar MongoDB Search) : ils tournent contre la stack
  * Docker locale (`yarn dev` / `yarn services:start`), PAS en CI. Ils sont donc gated :
@@ -312,12 +311,12 @@ const CORPUS = [
     // Contre-exemple du filtre niveau inclusif : niveau 3, ne doit PAS remonter sur niveau 6.
     level: "3",
   }),
-  // — recette #2 : fuzzy sur nom d'entreprise ("vigile" remontait VIGIER, VIRGILE, VIEILLE…).
+  // — fuzzy sur nom d'entreprise ("vigile" remontait VIGIER, VIRGILE, VIEILLE…).
   //   Recruteur à 1 édition de "vigile", sans lien avec la sécurité → ne doit jamais matcher.
   generateSearchItemFixture({
     url_id: "recruteur-vigier",
-    // Comme en prod (generateSearchItemsCollection) : les recruteurs sont des docs type
-    // "offre", distingués par sub_type/is_algo_company.
+    // Comme buildRecruteurSearchItem : les recruteurs sont des docs type "offre", distingués
+    // par sub_type/is_algo_company.
     type: "offre",
     type_filter_label: "Candidature spontanée",
     sub_type: "recruteurs_lba",
@@ -329,7 +328,7 @@ const CORPUS = [
     publication_date: new Date("2026-07-12T08:14:04.000Z"),
     is_algo_company: true,
   }),
-  // — recette #2 : tri par date pollué par les recruteurs (publication_date = date d'import,
+  // — tri par date pollué par les recruteurs (publication_date = date d'import,
   //   plus récente que toutes les offres) [Fadoua, "Assistant RH" et "Prothèses" en tri date].
   generateSearchItemFixture({
     url_id: "recruteur-travaux",
@@ -353,7 +352,7 @@ const CORPUS = [
     organization_name: "BTP Construction",
     publication_date: new Date("2026-05-01T00:00:00.000Z"),
   }),
-  // — recette #2 : la couverture par description suffisait à passer la porte → traîne
+  // — la couverture par description suffisait à passer la porte → traîne
   //   d'incohérents ["chargé de déploiement" remontait du cross-marketing].
   generateSearchItemFixture({
     url_id: "offre-marketing-deploiement-desc",
@@ -415,9 +414,9 @@ const CORPUS = [
     is_formation_included: true,
     smart_apply: true,
   }),
-  // — recette #3 : pièges de la porte de pertinence.
+  // — pièges de la porte de pertinence.
   // "vigile" s'étend en "agent(e) de sécurité" : l'expansion doit matcher en SÉQUENCE —
-  //   l'agent commercial ne doit plus entrer via le token "agent" seul [recette, KO].
+  //   l'agent commercial ne doit pas entrer via le token "agent" seul [recette, KO].
   generateSearchItemFixture({
     url_id: "recruteur-agent-commercial",
     type_filter_label: "Candidature spontanée",
@@ -429,7 +428,7 @@ const CORPUS = [
     organization_name: "FORCE DE VENTE SUD",
     is_algo_company: true,
   }),
-  // "vente" ne doit plus matcher "verte(s)" par fuzzy (paysagistes) [recette, KO].
+  // "vente" ne doit pas matcher "verte(s)" par fuzzy (paysagistes) [recette, KO].
   generateSearchItemFixture({
     url_id: "offre-paysagiste",
     title: "Ouvrier paysagiste",
@@ -468,7 +467,7 @@ const CORPUS = [
     rome_labels: ["Carrosserie automobile"],
     organization_name: "AutoRepar",
   }),
-  // Keyword générique : une OFFRE portant "communication" en keyword ne doit plus entrer sur
+  // Keyword générique : une OFFRE portant "communication" en keyword ne doit pas entrer sur
   //   la requête mono-terme "communication" [recette, KO] ; un RECRUTEUR le peut toujours
   //   (keywords = son seul texte riche avec rome_labels).
   generateSearchItemFixture({
@@ -501,7 +500,7 @@ const CORPUS = [
 const SYNONYMS = [
   { _id: new ObjectId(), mappingType: "equivalent" as const, synonyms: ["management commercial", "mco"] },
   { _id: new ObjectId(), mappingType: "equivalent" as const, synonyms: ["économie sociale et familiale", "esf"] },
-  // recette #2 : synonyme métier absent du référentiel (présent aussi dans le seed docs/mongodb/search-synonyms.json)
+  // Synonyme métier absent du référentiel (présent aussi dans le seed docs/mongodb/search-synonyms.json)
   { _id: new ObjectId(), mappingType: "equivalent" as const, synonyms: ["vigile", "agent de sécurité", "agente de sécurité"] },
 ]
 
@@ -719,20 +718,17 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   })
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 2. Ex-CIBLES D'AMÉLIORATION — KO / Mitigé en recette, CORRIGÉS par la refonte
-  // Phase 1 (porte de pertinence : une clause de couverture par terme +
-  // minimumShouldMatch dynamique + fuzzy par longueur + autocomplete en recherche
-  // + bonus phrase). Promus de `it.fails` en `it` → désormais non-régression.
-  // Pour toute nouvelle cible KO : ajouter un test `it.fails` décrivant le
-  // comportement CIBLE ; quand une modif le corrige, retirer le `.fails`.
+  // 2. KO / Mitigé en recette, couverts par la porte de pertinence (une clause de
+  // couverture par terme + minimumShouldMatch dynamique + fuzzy par longueur +
+  // autocomplete en recherche + bonus phrase). Chaque commentaire décrit le piège
+  // d'un moteur à minimumShouldMatch:1 et clauses par champ. Nouvelles cibles : cf. en-tête.
   // ──────────────────────────────────────────────────────────────────────────
   describe("corrigés par la refonte Phase 1 (ex-KO/Mitigé en recette)", () => {
     it("couverture multi-termes : 'product manager' ne remonte pas les docs ne matchant qu'un seul terme [recette, KO]", async () => {
       const result = await search({ q: "product manager" })
 
-      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : minimumShouldMatch=1 → 'Product Designer' et 'Assistant manager'
-      // polluent les résultats. Cible : quand un document matche tous les termes,
-      // les documents 1-terme ne doivent pas remonter (ou nettement après).
+      // Piège : 'Product Designer' et 'Assistant manager' ne matchent qu'un terme ; quand un
+      // document matche tous les termes, les documents 1-terme ne doivent pas remonter.
       expect(ids(result)).not.toContain("offre-product-designer")
       expect(ids(result)).not.toContain("offre-assistant-manager")
     })
@@ -747,9 +743,8 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     it("nom d'entreprise : l'offre de l'employeur avant les offres qui le mentionnent en description", async () => {
       const result = await search({ q: "sncf" })
 
-      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : la mention en description (boost 2, mais champ court → TF/IDF fort)
-      // passe devant le match employeur (organization_name, boost 3). Cible : le match
-      // sur l'employeur doit dominer les simples mentions.
+      // Piège : une mention en description (champ court → TF/IDF fort) peut passer devant le
+      // match employeur (organization_name).
       const employeur = rankOf(result, "offre-sncf")
       const mention = rankOf(result, "offre-mention-sncf")
       expect(employeur).toBeGreaterThanOrEqual(0)
@@ -759,8 +754,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     it("acronyme ambigu : 'esf' privilégie le synonyme exact (économie sociale et familiale) sur le fuzzy 'ESG' [recette, KO]", async () => {
       const result = await search({ q: "esf" })
 
-      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : le fuzzy (maxEdits 1) sur le titre 'Analyste ESG' (boost 7) écrase
-      // la clause synonymes (boost 1). Cible : le match par synonyme exact doit dominer.
+      // Piège : le fuzzy (maxEdits 1) sur le titre 'Analyste ESG' peut écraser la clause synonymes.
       const esf = rankOf(result, "offre-esf")
       const esg = rankOf(result, "offre-esg")
       expect(esf).toBeGreaterThanOrEqual(0)
@@ -770,55 +764,47 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     it("abréviation / mot incomplet : 'compta' trouve les offres comptables (comme l'autocomplétion) [recette, KO]", async () => {
       const result = await search({ q: "compta" })
 
-      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : 'compta' → 'comptable' dépasse maxEdits=1 et l'opérateur text
-      // ne fait pas de préfixe → 0 résultat pertinent. Cible : aligner la recherche
-      // sur le comportement préfixe de l'autocomplétion (ou synonymes d'abréviations).
+      // Piège : 'compta' → 'comptable' dépasse maxEdits=1 et l'opérateur text ne fait pas de
+      // préfixe ; seul le préfixe (autocomplete) couvre ce cas.
       expect(ids(result)).toContain("offre-comptable")
     })
 
     it("tri par date filtré par pertinence : 'assistant ressources humaines' + sort=date ne remonte pas 'Apprenti Boucher' en tête [Fadoua, KO]", async () => {
       const result = await search({ q: "assistant ressources humaines", sort: "date" })
 
-      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : le tri par date s'applique à TOUS les docs matchant au moins
-      // une clause ('ressources' dans la description du boucher suffit) → l'offre la
-      // plus récente gagne quel que soit son score. Cible : ne trier par date que des
-      // résultats suffisamment pertinents.
+      // Piège : le tri par date s'applique à tout le result set ; si 'ressources' dans la
+      // description du boucher suffit à y entrer, l'offre la plus récente gagne.
       expect(ids(result)[0]).toBe("offre-rh")
     })
 
     it("zéro résultat honnête : une requête sans document pertinent renvoie 0 hit plutôt que du bruit [Fadoua, KO]", async () => {
       const result = await search({ q: "imagerie médicale et radiologie thérapeutique" })
 
-      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : 'médicale' matche (stemming) la description "Dispositifs médicaux…"
-      // → des résultats non pertinents remontent. Cible : en dessous d'un seuil de
-      // couverture des termes, préférer 0 résultat (question produit ouverte en recette).
+      // Piège : 'médicale' matche (stemming) la description "Dispositifs médicaux…" ; en dessous
+      // d'un seuil de couverture des termes, on préfère 0 résultat.
       expect(result.nbHits).toBe(0)
     })
 
     it("sélection d'autocomplete : 'Cuisinier / Cuisinière à domicile' ne remonte pas les docs ne matchant que 'domicile' [recette, KO]", async () => {
       const result = await search({ q: "Cuisinier / Cuisinière à domicile" })
 
-      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : le doublet masculin/féminin des intitulés ROME gonfle le nombre de
-      // termes et 'domicile' seul suffit à matcher (minimumShouldMatch=1) → conducteurs PL,
-      // aides à domicile... Cible : dédupliquer les termes normalisés (cuisinier ≈ cuisinière)
-      // et exiger la couverture du terme métier.
+      // Piège : le doublet masculin/féminin gonfle le nombre de termes ; il faut dédupliquer
+      // (cuisinier ≈ cuisinière) et exiger la couverture du terme métier, pas 'domicile' seul.
       expect(ids(result)).not.toContain("offre-aide-domicile")
     })
 
     it("requête spécifique multi-domaines : 'monteur vidéo' privilégie l'audiovisuel sur le BTP/élec [Jérémy, KO]", async () => {
       const result = await search({ q: "monteur vidéo" })
 
-      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : 'Monteur réseaux électriques' matche 'monteur' (titre, boost 7)
-      // et concurrence le doc full-match. Cible : la couverture des deux termes doit
-      // l'emporter nettement.
+      // Piège : 'Monteur réseaux électriques' matche 'monteur' (titre) et concurrence le doc full-match.
       expect(rankOf(result, "offre-cadreur")).toBe(0)
       expect(ids(result)).not.toContain("offre-monteur-reseaux")
     })
   })
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 2bis. CORRIGÉS PAR LA RECETTE #2 — fuzzy sur noms d'entreprise, couverture
-  // par description, tri par date pollué par les recruteurs, synonyme métier.
+  // 2bis. Fuzzy sur noms d'entreprise, couverture par description, tri par date
+  // pollué par les recruteurs, synonyme métier.
   // ──────────────────────────────────────────────────────────────────────────
   describe("corrigés par la recette #2", () => {
     it("pas de fuzzy sur les noms d'entreprise : 'vigile' ne remonte pas VIGIER [recette, KO]", async () => {
@@ -852,7 +838,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     it("tri par date : les recruteurs (date d'import) sont relégués en fin de liste [Fadoua, KO + ticket algo]", async () => {
       const result = await search({ q: "conduite de travaux", sort: "date" })
 
-      // Présents (spec : affichés en dernier, plus exclus) mais APRÈS toutes les offres,
+      // Présents (spec : affichés en dernier, pas exclus) mais APRÈS toutes les offres,
       // malgré leur date d'import plus récente que toutes les dates de publication.
       expect(ids(result)).toContain("recruteur-travaux")
       expect(rankOf(result, "recruteur-travaux")).toBeGreaterThan(rankOf(result, "offre-conducteur-travaux"))
@@ -868,7 +854,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   })
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 2ter. CORRIGÉS PAR LA RECETTE #3 — synonymes en séquence, fuzzy resserré,
+  // 2ter. Synonymes en séquence, fuzzy resserré,
   // edgeGram/keywords réservés selon le contexte, mots de diplôme neutralisés.
   describe("corrigés par la recette #3", () => {
     it("synonymes en séquence : 'vigile' ne remonte plus les agents commerciaux via le token 'agent' [recette, KO]", async () => {

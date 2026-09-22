@@ -26,8 +26,8 @@ interface SearchMobilePanelProps {
 }
 
 /**
- * Panneau mobile plein écran (recherche / filtres). Remplace le `Drawer`
- * unique du POC. Head titre + croix, body scrollable, footer sticky optionnel.
+ * Panneau mobile plein écran (recherche / filtres) : head titre + croix, body scrollable,
+ * footer sticky optionnel.
  */
 export function SearchMobilePanel({ title, ariaLabel, hideHeader = false, onClose, children, footer }: SearchMobilePanelProps) {
   useLockBodyScroll()
@@ -42,11 +42,8 @@ export function SearchMobilePanel({ title, ariaLabel, hideHeader = false, onClos
       aria-label={title ?? ariaLabel}
       sx={{
         position: "fixed",
-        // Suivi du viewport VISUEL, pas `inset: 0` : le clavier virtuel recouvre le bas du
-        // layout viewport — un panneau pleine hauteur y laisserait la liste de suggestions
-        // et le footer masqués. top : iOS décale le viewport visuel (offsetTop) pour amener
-        // le champ focus en vue — décalage via `top` et non `transform`, déjà utilisé par
-        // l'animation d'ouverture (conflit pendant sa lecture).
+        // Suivi du viewport visuel plutôt que `inset: 0` (cf. useVisualViewportSize). Décalage
+        // via `top` et non `transform`, déjà utilisé par l'animation d'ouverture.
         top: viewport.offsetTop ? `${viewport.offsetTop}px` : 0,
         left: 0,
         right: 0,
