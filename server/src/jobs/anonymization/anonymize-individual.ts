@@ -1,9 +1,11 @@
+import { internal } from "@hapi/boom"
 import type { ObjectId } from "mongodb"
 import anonymizedApplicantsModel from "shared/models/anonymized-applicant.model"
 import anonymizedApplicationsModel from "shared/models/anonymized-applications.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymized-users-with-accounts.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { deleteCvFilesForApplications } from "@/services/application-cv.service"
 import { anonymizeAppointments } from "./anonymize-appointments"
 
 const anonimizeUserWithAccount = (_id: ObjectId) =>
@@ -29,6 +31,19 @@ const deleteUserWithAccount = (query) => getDbCollection("userswithaccounts").de
 
 const anonymizeApplication = async (_id: ObjectId) => {
   logger.info(`[START] Anonymize applicant & related applications`)
+
+  // Droit à l'effacement : le CV doit partir AVANT les documents, la clé S3 dérivant de
+  // applications._id. Mode strict volontaire — en cas d'échec S3 on n'écrit rien et on ne supprime
+  // rien, donc la clé reste reconstructible et l'opérateur rejoue le job. Le périmètre est un
+  // individu, le déclenchement est manuel, le délai RGPD d'un mois n'est pas menacé par une reprise.
+  const cvReport = await deleteCvFilesForApplications({ applicant_id: _id }, { context: "anonymize-individual" })
+  if (cvReport.failedKeys.length) {
+    throw internal("anonymize-individual : échec de suppression des CV sur S3, effacement interrompu pour permettre une reprise", {
+      applicantId: _id.toString(),
+      failedKeys: cvReport.failedKeys,
+    })
+  }
+
   await getDbCollection("applicants")
     .aggregate([
       {

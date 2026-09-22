@@ -81,16 +81,22 @@ const processApplicationGroup = async (applicationFilter: Filter<IApplication>, 
       if (application.scan_status !== ApplicationScanStatus.NO_VIRUS_DETECTED) {
         try {
           hasVirus = await processApplicationScanForVirus(application, applicant)
-          if (hasVirus) {
-            results.virusDetected++
-            results.ids_in_error.push(application._id.toString())
-          }
         } catch (err2) {
           await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { scan_status: ApplicationScanStatus.ERROR_CLAMAV } })
           throw err2
         }
       }
-      if (!hasVirus) {
+      if (hasVirus) {
+        results.virusDetected++
+        results.ids_in_error.push(application._id.toString())
+        // Depuis #5495 les CV sont conservés 1 an, sauf ceux-ci : un fichier infecté est supprimé
+        // immédiatement. Ce bloc est volontairement HORS du try du scan : un échec S3 y basculerait
+        // scan_status en ERROR_CLAMAV, ce qui renverrait la candidature au scan et enverrait un
+        // second mail d'échec au candidat. S3 d'abord, $set ensuite : si S3 échoue, la date reste
+        // nulle et la passe "virus" du cron de purge rattrape sous 24 h.
+        await deleteApplicationCvFile(application)
+        await getDbCollection("applications").updateOne({ _id: application._id }, { $set: { applicant_attachment_deleted_at: new Date() } })
+      } else {
         try {
           await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
           results.success++
@@ -99,7 +105,6 @@ const processApplicationGroup = async (applicationFilter: Filter<IApplication>, 
           throw err3
         }
       }
-      await deleteApplicationCvFile(application)
     } catch (err) {
       results.error++
       results.ids_in_error.push(application._id.toString())

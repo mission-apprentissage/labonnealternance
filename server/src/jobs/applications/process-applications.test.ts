@@ -6,7 +6,9 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.f
 import { ApplicationScanStatus } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { s3Delete } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { isInfected } from "@/services/clamav.service"
 import mailer from "@/services/mailer.service"
 import { processApplications } from "./process-applications"
 
@@ -174,5 +176,85 @@ describe("process-applications", () => {
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
     // Both emails should have been sent (company + applicant)
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
+  })
+
+  // #5495 : le CV est conservé 1 an et purgé par un cron dédié, sauf s'il est infecté.
+  describe("conservation du CV", () => {
+    const s3DeleteSpy = vi.mocked(s3Delete)
+    const isInfectedSpy = vi.mocked(isInfected)
+
+    const setupApplication = async () => {
+      const jobId = new ObjectId()
+      const applicant = generateApplicantFixture({ email: `candidat-${new ObjectId()}@test.fr` })
+      await getDbCollection("applicants").insertOne(applicant)
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          _id: jobId,
+          partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+          apply_email: "company@test.fr",
+          workplace_siret: "12345678901234",
+        })
+      )
+      const application = generateApplicationFixture({
+        applicant_id: applicant._id,
+        job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+        job_id: jobId,
+        company_email: "company@test.fr",
+        company_siret: "12345678901234",
+        to_company_message_id: null,
+        to_applicant_message_id: null,
+        scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
+        applicant_attachment_deleted_at: null,
+      })
+      await getDbCollection("applications").insertOne(application)
+      return application
+    }
+
+    beforeEach(() => {
+      s3DeleteSpy.mockClear()
+      s3DeleteSpy.mockResolvedValue(undefined)
+      isInfectedSpy.mockResolvedValue(false)
+    })
+
+    // Le test qui garantit le cœur de #5495 : sans virus, le CV reste sur S3.
+    it("conserve le CV d'une candidature saine", async () => {
+      const application = await setupApplication()
+
+      await processApplications()
+
+      expect(s3DeleteSpy).not.toHaveBeenCalled()
+      const updated = await getDbCollection("applications").findOne({ _id: application._id })
+      expect(updated?.scan_status).toBe(ApplicationScanStatus.NO_VIRUS_DETECTED)
+      expect(updated?.applicant_attachment_deleted_at).toBeNull()
+    })
+
+    it("supprime immédiatement le CV d'une candidature infectée", async () => {
+      isInfectedSpy.mockResolvedValue(true)
+      const application = await setupApplication()
+
+      await processApplications()
+
+      expect(s3DeleteSpy).toHaveBeenCalledWith("applications", `cv-${application._id}`)
+      const updated = await getDbCollection("applications").findOne({ _id: application._id })
+      expect(updated?.scan_status).toBe(ApplicationScanStatus.VIRUS_DETECTED)
+      expect(updated?.applicant_attachment_deleted_at).toBeInstanceOf(Date)
+      // Le candidat est toujours prévenu de l'échec d'envoi.
+      expect(mailerSendEmailSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it("laisse scan_status à VIRUS_DETECTED quand la suppression S3 échoue", async () => {
+      isInfectedSpy.mockResolvedValue(true)
+      s3DeleteSpy.mockRejectedValue(new Error("S3 indisponible"))
+      const application = await setupApplication()
+
+      await processApplications()
+
+      const updated = await getDbCollection("applications").findOne({ _id: application._id })
+      // Surtout pas ERROR_CLAMAV : la candidature repasserait au scan et un second mail d'échec
+      // partirait vers le candidat.
+      expect(updated?.scan_status).toBe(ApplicationScanStatus.VIRUS_DETECTED)
+      // Date non posée : la passe "virus" du cron de purge rattrapera.
+      expect(updated?.applicant_attachment_deleted_at).toBeNull()
+    })
   })
 })

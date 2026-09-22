@@ -18,6 +18,12 @@ export enum RefusalReasons {
   METIER_RECHERCHE = "Notre entreprise ne recrute pas sur le métier recherché",
 }
 
+/**
+ * Durée de conservation du CV sur S3, à compter de la création de la candidature (issue #5495).
+ * Au-delà, le fichier est supprimé par le cron "Purge des CV des candidatures de plus d'un (1) an".
+ */
+export const APPLICATION_CV_RETENTION_YEARS = 1
+
 export enum HELLOWORK_STATUS {
   CONTACTED = "CONTACTED",
   REJECTED = "REJECTED",
