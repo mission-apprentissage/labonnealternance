@@ -20,6 +20,7 @@ import { metiersRouteController } from "./controllers/_private/metiers.private.c
 import { seoRouteController } from "./controllers/_private/seo.private.controller"
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligible-trainings-for-appointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
+import adminFeedbackFormsRoute from "./controllers/admin/feedback-forms.controller"
 import formationsRoute from "./controllers/admin/formations.controller"
 import jobsPartnersAdminRoute from "./controllers/admin/jobs-partners.controller"
 import application from "./controllers/application.controller"
@@ -148,6 +149,7 @@ export async function bind(app: Server) {
       etablissementsRecruteurRoute(typedSubApp)
       jobsRouteV2(typedSubApp)
       jobsPartnersAdminRoute(typedSubApp)
+      adminFeedbackFormsRoute(typedSubApp)
 
       trainingLinks(typedSubApp)
       jobsApiV3Routes(typedSubApp)

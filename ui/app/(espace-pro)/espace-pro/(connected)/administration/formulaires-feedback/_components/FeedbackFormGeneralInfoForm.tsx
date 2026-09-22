@@ -1,0 +1,139 @@
+"use client"
+
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
+import { FormikProvider, useFormik } from "formik"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import type { IFeedbackFormInput } from "shared/models/feedback-form.model"
+import { ZFeedbackFormInput } from "shared/models/feedback-form.model"
+import { toSnakeCaseSlug } from "shared/utils/string-utils"
+import { toFormikValidationSchema } from "zod-formik-adapter"
+
+import CustomInput from "@/app/_components/CustomInput"
+import { useToast } from "@/app/hooks/useToast"
+import { ApiError, apiPost, apiPut } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
+
+import { TriggerScopeField } from "./TriggerScopeField"
+
+const emptyForm: IFeedbackFormInput = {
+  slug: "",
+  title: "",
+  trigger: { minInteractions: 1, scope: [] },
+  questions: [],
+}
+
+export function FeedbackFormGeneralInfoForm({ initialValues }: { initialValues?: IFeedbackFormInput }) {
+  const isEdit = Boolean(initialValues)
+  const router = useRouter()
+  const toast = useToast()
+  // tant que le slug n'a pas été édité à la main, il suit le titre
+  const [slugTouched, setSlugTouched] = useState(isEdit)
+
+  const formik = useFormik<IFeedbackFormInput>({
+    initialValues: initialValues ?? emptyForm,
+    validationSchema: toFormikValidationSchema(ZFeedbackFormInput),
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      try {
+        if (isEdit) {
+          const { slug, ...body } = values
+          await apiPut("/admin/feedback-forms/:slug", { params: { slug }, body })
+          toast({ title: "Formulaire enregistré" })
+        } else {
+          await apiPost("/admin/feedback-forms", { body: values })
+          toast({ title: "Brouillon enregistré" })
+        }
+        router.push(PAGES.static.backAdminFeedbackForms.getPath())
+      } catch (error) {
+        const message = error instanceof ApiError && error.context?.statusCode >= 400 ? error.context.message : "Une erreur est survenue, merci de réessayer plus tard"
+        toast({ title: message, variant: "error" })
+      }
+    },
+  })
+
+  const { values, handleSubmit, isSubmitting, setFieldValue } = formik
+
+  return (
+    <FormikProvider value={formik}>
+      {/* noValidate : la validation Zod porte les messages en français, celle du navigateur les doublerait */}
+      <form onSubmit={handleSubmit} noValidate>
+        <Typography component="h2" className={fr.cx("fr-text--md", "fr-text--bold")} sx={{ color: fr.colors.decisions.text.title.blueFrance.default, mb: fr.spacing("3v") }}>
+          1 · Informations générales
+        </Typography>
+
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, columnGap: fr.spacing("4v") }}>
+          <CustomInput
+            name="title"
+            label="Titre"
+            info="Visible uniquement dans le back-office"
+            type="text"
+            value={values.title}
+            onChange={(event) => {
+              const title = event.target.value
+              setFieldValue("title", title)
+              if (!slugTouched) {
+                setFieldValue("slug", toSnakeCaseSlug(title))
+              }
+            }}
+          />
+          <CustomInput
+            name="slug"
+            label="Slug"
+            info="Généré depuis le titre, modifiable, unique"
+            type="text"
+            value={values.slug}
+            disabled={isEdit}
+            onChange={(event) => {
+              setSlugTouched(true)
+              setFieldValue("slug", event.target.value)
+            }}
+          />
+        </Box>
+
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "2fr 1fr" }, columnGap: fr.spacing("4v"), alignItems: "start" }}>
+          <TriggerScopeField />
+          <CustomInput
+            name="trigger.minInteractions"
+            label="Interactions avant affichage"
+            info="Jamais 0 : pas d'affichage au chargement"
+            type="number"
+            inputProps={{ min: 1 }}
+            value={values.trigger.minInteractions}
+            onChange={(event) => {
+              const raw = event.target.value
+              setFieldValue("trigger.minInteractions", raw === "" ? "" : Number(raw))
+            }}
+          />
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: fr.spacing("2v"),
+            mt: fr.spacing("4v"),
+            pt: fr.spacing("4v"),
+            borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+          }}
+        >
+          <Typography className={fr.cx("fr-text--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default, mb: 0 }}>
+            {isEdit ? "Les modifications d'un brouillon sont enregistrées en place." : "Le formulaire sera enregistré en brouillon. Vous pourrez l'activer depuis la liste."}
+          </Typography>
+          <Box sx={{ display: "flex", gap: fr.spacing("2v") }}>
+            <Button priority="secondary" linkProps={{ href: PAGES.static.backAdminFeedbackForms.getPath() }}>
+              Annuler
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isEdit ? "Enregistrer les modifications" : "Enregistrer le brouillon"}
+            </Button>
+          </Box>
+        </Box>
+      </form>
+    </FormikProvider>
+  )
+}

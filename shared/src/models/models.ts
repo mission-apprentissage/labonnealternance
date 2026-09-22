@@ -26,6 +26,7 @@ import emailBlacklistModel from "./email-blacklist.model.js"
 import entrepriseModel from "./entreprise.model.js"
 import entreprisesManagedByCfaModel from "./entreprises-managed-by-cfa.model.js"
 import etablissementModel from "./etablissement.model.js"
+import feedbackFormModel from "./feedback-form.model.js"
 import formationModel from "./formation.model.js"
 import franceTravailAccessModel from "./france-travail-access.model.js"
 import geolocationsModel from "./geolocations.model.js"
@@ -111,6 +112,7 @@ const modelDescriptorMap = {
   [emailBlacklistModel.collectionName]: emailBlacklistModel,
   [entrepriseModel.collectionName]: entrepriseModel,
   [etablissementModel.collectionName]: etablissementModel,
+  [feedbackFormModel.collectionName]: feedbackFormModel,
   [formationModel.collectionName]: formationModel,
   [franceTravailAccessModel.collectionName]: franceTravailAccessModel,
   [geolocationsModel.collectionName]: geolocationsModel,

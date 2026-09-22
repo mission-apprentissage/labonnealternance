@@ -1,0 +1,153 @@
+import type { Jsonify } from "type-fest"
+
+import { z } from "../helpers/zod-with-open-api.js"
+
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
+
+/**
+ * Registre des formulaires de feedback contextuel (widget affiché aux usagers après une
+ * interaction). Un formulaire = une définition JSON de questions, un déclencheur (pages +
+ * nombre d'interactions) et un statut.
+ *
+ * Cycle de vie : draft -> active <-> inactive, tout état -> archived (terminal).
+ */
+
+export const FEEDBACK_FORM_STATUS = ["draft", "active", "inactive", "archived"] as const
+export const ZFeedbackFormStatus = z.enum(FEEDBACK_FORM_STATUS)
+export type IFeedbackFormStatus = z.output<typeof ZFeedbackFormStatus>
+
+export const ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS: Record<IFeedbackFormStatus, IFeedbackFormStatus[]> = {
+  draft: ["active", "archived"],
+  active: ["inactive", "archived"],
+  inactive: ["active", "archived"],
+  archived: [],
+}
+
+// --- Questions ---
+
+const zQuestionBase = {
+  // slug stable de la question — clé dans `answers` des réponses. Ex : "search_relevance"
+  id: z.string().min(1).max(60),
+  label: z.string().min(1).max(300),
+  required: z.boolean().default(false),
+  // affichage conditionnel : n'apparaît que si la question référencée vaut une des valeurs listées
+  showIf: z
+    .strictObject({
+      questionId: z.string(),
+      equals: z.union([z.string(), z.array(z.string())]),
+    })
+    .nullish(),
+}
+
+const zSelectOptions = z
+  .array(z.strictObject({ value: z.string().max(60), label: z.string().max(150) }))
+  .min(2)
+  .max(12)
+
+const ZFeedbackRatingQuestion = z.strictObject({
+  ...zQuestionBase,
+  type: z.literal("rating"),
+  scale: z.enum(["thumbs3", "stars5"]).default("thumbs3"),
+})
+
+const ZFeedbackSingleSelectQuestion = z.strictObject({
+  ...zQuestionBase,
+  type: z.literal("single_select"),
+  options: zSelectOptions,
+})
+
+const ZFeedbackMultiSelectQuestion = z.strictObject({
+  ...zQuestionBase,
+  type: z.literal("multi_select"),
+  options: zSelectOptions,
+  maxSelections: z.number().int().positive().max(12).optional(),
+})
+
+const ZFeedbackTextQuestion = z.strictObject({
+  ...zQuestionBase,
+  type: z.literal("text"),
+  maxLength: z.number().int().positive().max(2000).default(500),
+  placeholder: z.string().max(150).nullish(),
+})
+
+export const ZFeedbackQuestion = z.discriminatedUnion("type", [ZFeedbackRatingQuestion, ZFeedbackSingleSelectQuestion, ZFeedbackMultiSelectQuestion, ZFeedbackTextQuestion])
+export type IFeedbackQuestion = z.output<typeof ZFeedbackQuestion>
+
+export const FEEDBACK_FORM_MAX_QUESTIONS = 10
+
+// --- Formulaire ---
+
+const ZFeedbackFormTrigger = z.strictObject({
+  minInteractions: z.number({ error: "Indiquez un nombre d'interactions" }).int("Indiquez un nombre entier").positive("Le widget ne peut pas s'afficher au chargement").default(1),
+  // chemins où le widget est autorisé à s'afficher, ex : ["/recherche", "/entreprise/:id"]
+  scope: z.array(z.string().min(1)).default([]),
+})
+
+/**
+ * Champs éditables depuis le back-office (création / modification).
+ *
+ * Volontairement permissif : un formulaire est toujours enregistré en brouillon, et le
+ * back-office le construit par blocs successifs (informations générales, puis questions).
+ * Exiger ici un déclencheur ou au moins une question rendrait impossible l'enregistrement
+ * d'un brouillon en cours de rédaction. Ces contraintes sont portées par
+ * `ZFeedbackFormPublishable`, vérifié au moment de l'activation.
+ */
+export const ZFeedbackFormInput = z.strictObject({
+  slug: z
+    .string({ error: "Le slug est obligatoire" })
+    .min(3, "Le slug doit faire au moins 3 caractères")
+    .max(80, "Le slug ne peut pas dépasser 80 caractères")
+    .regex(/^[a-z0-9_-]+$/, "Le slug ne peut contenir que des minuscules, chiffres, tirets et tirets bas"),
+  title: z.string({ error: "Le titre est obligatoire" }).min(1, "Le titre est obligatoire").max(150, "Le titre ne peut pas dépasser 150 caractères"),
+  trigger: ZFeedbackFormTrigger,
+  questions: z.array(ZFeedbackQuestion).max(FEEDBACK_FORM_MAX_QUESTIONS).default([]),
+})
+export type IFeedbackFormInput = z.output<typeof ZFeedbackFormInput>
+
+/** Ce qu'un formulaire doit satisfaire pour pouvoir être activé (et donc affiché aux usagers). */
+export const ZFeedbackFormPublishable = ZFeedbackFormInput.superRefine((data, ctx) => {
+  if (data.trigger.scope.length === 0) {
+    ctx.addIssue({ code: "custom", message: "Au moins une page de déclenchement est nécessaire", path: ["trigger", "scope"] })
+  }
+  if (data.questions.length === 0) {
+    ctx.addIssue({ code: "custom", message: "Au moins une question est nécessaire", path: ["questions"] })
+  }
+})
+
+export const ZFeedbackForm = ZFeedbackFormInput.extend({
+  _id: zObjectId,
+  status: ZFeedbackFormStatus,
+  version: z.number().int().positive(),
+  created_at: z.coerce.date<Date>(),
+  updated_at: z.coerce.date<Date>(),
+  // email de l'admin ayant créé le formulaire (membre de l'équipe, jamais un usager)
+  created_by: z.string(),
+  status_history: z.array(
+    z.strictObject({
+      status: ZFeedbackFormStatus,
+      date: z.coerce.date<Date>(),
+      granted_by: z.string(),
+    })
+  ),
+})
+export type IFeedbackForm = z.output<typeof ZFeedbackForm>
+
+/** Vue liste du back-office : le formulaire + son nombre de réponses. */
+export const ZFeedbackFormForAdmin = ZFeedbackForm.extend({
+  responses_count: z.number().int().nonnegative(),
+})
+export type IFeedbackFormForAdmin = z.output<typeof ZFeedbackFormForAdmin>
+export type IFeedbackFormForAdminJSON = Jsonify<IFeedbackFormForAdmin>
+
+export default {
+  zod: ZFeedbackForm,
+  indexes: [
+    [{ slug: 1 }, { unique: true }],
+    [{ status: 1 }, {}],
+    // un seul formulaire actif par chemin de déclenchement — contrôlé côté service, l'index sert la lecture publique
+    [{ "trigger.scope": 1, status: 1 }, {}],
+    [{ updated_at: -1 }, {}],
+  ],
+  collectionName: "feedback_forms" as const,
+} as const satisfies IModelDescriptor
