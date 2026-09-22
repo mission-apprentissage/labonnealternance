@@ -527,6 +527,11 @@ describe("checkForJobActivations", () => {
 
     const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
     expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    // La mise en ligne est une transition comme une autre : sans trace, l'historique d'une offre
+    // réactivée reste bloqué sur son annulation précédente (issue #5429).
+    expect(updatedJob?.offer_status_history).toEqual([
+      expect.objectContaining({ status: JOB_STATUS_ENGLISH.ACTIVE, reason: "compte recruteur validé", granted_by: "activate-and-extend-offre" }),
+    ])
 
     expect(mailer.sendEmail).toHaveBeenCalledTimes(2)
     expect(mailer.sendEmail).toHaveBeenCalledWith(expect.objectContaining({ to: "cfa@mail.fr", subject: "Une entreprise recrute dans votre domaine" }))

@@ -24,19 +24,27 @@ export enum JOB_STATUS_ENGLISH {
 }
 
 /**
- * Qui a clôturé une offre OFFRES_EMPLOI_LBA, et par quel canal. Reporté dans
- * `offer_status_history[].granted_by`, `reason` portant le motif choisi dans la modale.
+ * Qui a clôturé une offre, et par quel canal. Reporté dans `offer_status_history[].granted_by`,
+ * `reason` portant le motif choisi dans la modale.
  *
- * Le canal vient de la route : lien magique d'un mail transactionnel (auth access-token) ou espace
- * pro connecté (auth cookie-session). Sur l'espace pro, l'acteur est déduit des rôles de la session
+ * Le canal vient de la route : lien signé reçu par mail (auth access-token) ou espace pro connecté
+ * (auth cookie-session). Sur l'espace pro, l'acteur est déduit des rôles de la session
  * (cf. resolveEspaceProClosureOrigin) : les quatre rôles passent par la même route, et ne pas les
  * distinguer revenait à ranger l'annulation d'un administrateur avec celle du recruteur lui-même.
+ *
+ * Les valeurs ESPACE_PRO_* ne concernent que les offres OFFRES_EMPLOI_LBA, seules gérées depuis
+ * l'espace pro. MAIL_RECRUTEUR couvre en plus les offres partenaires : le lien envoyé au recruteur
+ * est le même, seule la route appelée derrière change selon le type d'offre.
  */
 export enum JOB_CLOSURE_ORIGIN {
   /**
-   * Routes en access-token : PUT /formulaire/offre/:jobId/cancel et /provided — le lien est signé
-   * pour le gestionnaire de l'offre. Libellé volontairement neutre : le même canal porte l'annulation
-   * et la déclaration « offre pourvue ».
+   * Routes en access-token, atteintes depuis la page `(from-mail)` où le lien du mail dépose le
+   * recruteur : PUT /formulaire/offre/:jobId/cancel et /provided pour les offres LBA, POST
+   * /v2/_private/jobs/canceled|provided/:id pour les offres partenaires. Un même jeton, signé par
+   * createCancelJobLink / createProvidedJobLink, porte les scopes des deux familles de routes et est
+   * lié à l'identifiant de l'offre : malgré leur préfixe v2, ces routes ne sont pas une API ouverte
+   * aux partenaires. Libellé volontairement neutre : le même canal porte l'annulation et la
+   * déclaration « offre pourvue ».
    */
   MAIL_RECRUTEUR = "action du recruteur depuis un mail",
   ESPACE_PRO_RECRUTEUR = "clôture par le recruteur depuis l'espace pro",

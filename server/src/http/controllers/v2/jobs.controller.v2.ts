@@ -1,5 +1,5 @@
 import { badRequest } from "@hapi/boom"
-import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
+import { JOB_CLOSURE_ORIGIN, JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
@@ -30,7 +30,14 @@ export default (server: Server) => {
       if (job.offer_status === JOB_STATUS_ENGLISH.POURVUE) {
         throw badRequest("Job is already provided")
       }
-      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS_ENGLISH.POURVUE, updated_at: new Date() } })
+      await getDbCollection("jobs_partners").findOneAndUpdate(
+        { _id: id },
+        buildJobStatusChangeUpdate({
+          status: JOB_STATUS_ENGLISH.POURVUE,
+          reason: "offre déclarée pourvue par le recruteur",
+          grantedBy: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
+        })
+      )
       syncJobPartnersToSearchItemsInBackground([id])
       return res.status(200).send({})
     }
@@ -57,8 +64,8 @@ export default (server: Server) => {
         { _id: id },
         buildJobStatusChangeUpdate({
           status: JOB_STATUS_ENGLISH.ANNULEE,
-          reason: "annulation manuelle par api",
-          grantedBy: "jobs.controller.v2",
+          reason: "offre annulée par le recruteur",
+          grantedBy: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
         })
       )
       syncJobPartnersToSearchItemsInBackground([id])

@@ -840,13 +840,12 @@ const activateAndExtendOffre = async (id: ObjectId) => {
     {
       _id: id,
     },
-    {
-      $set: {
-        offer_expiration: addExpirationPeriod(dayjs()).toDate(),
-        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-        updated_at: new Date(),
-      },
-    },
+    buildJobStatusChangeUpdate({
+      status: JOB_STATUS_ENGLISH.ACTIVE,
+      reason: "compte recruteur validé",
+      grantedBy: "activate-and-extend-offre",
+      extraSet: { offer_expiration: addExpirationPeriod(dayjs()).toDate() },
+    }),
     { returnDocument: "after" }
   )
   if (!found) {
