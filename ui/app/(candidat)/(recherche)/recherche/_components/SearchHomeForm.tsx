@@ -144,10 +144,10 @@ export function SearchHomeForm({ id }: { id: string }) {
     )
   }
 
-  /* Une suggestion acceptée (flèches + Entrée, clic) ne fait que remplir le champ, seul le bouton
-     lance — comme en 07/2026. La ligne d'action « Rechercher : {saisie} » (1ʳᵉ, pré-surlignée,
-     comme « France entière » sur le lieu) lance directement : Entrée sur la saisie libre = lancer,
-     liste fermée aussi (soumission implicite). */
+  /* Une option métier acceptée (Entrée, clic) — la ligne « Rechercher : {saisie} » pré-surlignée
+     comme une suggestion — ne fait que remplir le champ et fermer la liste : l'usager renseigne
+     ensuite le lieu et le type d'offre, seul le bouton lance (retour Aurélie sur l'issue 5508,
+     même règle qu'en 07/2026). Entrée ne lance que liste fermée (soumission implicite). */
   const handleQChange = (value: string, source: QSource) => {
     setQ(value)
     setQSource(source)
