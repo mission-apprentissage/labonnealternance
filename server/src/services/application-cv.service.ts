@@ -7,9 +7,8 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 
 /**
- * Source unique de vérité de la clé S3 d'un CV.
- * La clé dérive de applications._id : si le document disparaît avant le fichier, la clé n'est plus
- * reconstructible et l'objet devient un orphelin définitif dans le bucket.
+ * Clé S3 d'un CV, dérivée de applications._id. Supprimer le document avant le fichier rend la clé
+ * incalculable et l'objet orphelin définitif : toute suppression de candidature purge le CV d'abord.
  */
 export const getApplicationCvS3Key = (applicationId: ObjectId) => `cv-${applicationId}`
 
@@ -29,14 +28,11 @@ const SENTRY_REPORT_CAP = 10
 export const emptyCvDeletionReport = (): ICvDeletionReport => ({ attempted: 0, deleted: 0, failedKeys: [], remaining: 0 })
 
 /**
- * Supprime de S3 les CV des candidatures ciblées par `filter` dont le CV n'a pas déjà été purgé,
- * puis pose applicant_attachment_deleted_at sur les seuls succès.
+ * Supprime de S3 les CV des candidatures ciblées par `filter` dont le CV n'est pas déjà purgé, puis
+ * pose applicant_attachment_deleted_at sur les seuls succès.
  *
- * Best effort : une erreur S3 n'interrompt pas le lot, elle est remontée dans le rapport. Un
- * échec laisse applicant_attachment_deleted_at à null, donc le passage suivant réessaiera.
- *
- * NE SUPPRIME AUCUN DOCUMENT : à appeler avant tout $merge / insertMany / deleteMany sur
- * `applications`, sinon la clé S3 n'est plus calculable.
+ * Ne supprime aucun document : à appeler avant tout $merge / insertMany / deleteMany sur
+ * `applications` (cf. getApplicationCvS3Key).
  */
 export const deleteCvFilesForApplications = async (
   filter: Filter<IApplication>,
@@ -45,9 +41,8 @@ export const deleteCvFilesForApplications = async (
   const report = emptyCvDeletionReport()
   const collection = getDbCollection("applications")
 
-  // applicant_attachment_deleted_at: null est LA décision "ce CV doit-il être supprimé ?".
-  // En régime établi, toute candidature de plus de 2 ans a déjà été purgée à 1 an : sans ce
-  // filtre, les crons d'anonymisation déclencheraient des milliers d'appels S3 inutiles.
+  // Le filtre sur la date de purge évite des milliers d'appels S3 inutiles : en régime établi, une
+  // candidature de plus de 2 ans a déjà été purgée à 1 an quand les jobs d'anonymisation la voient.
   const scopedFilter = { ...filter, applicant_attachment_deleted_at: null }
   const cursor = collection.find(scopedFilter, { projection: { _id: 1 } })
 
@@ -60,8 +55,8 @@ export const deleteCvFilesForApplications = async (
     batch = []
     const succeeded: ObjectId[] = []
 
-    // Le try/catch est DANS le callback : asyncForEachGrouped fait un Promise.all par groupe,
-    // une rejection ferait tomber tout le groupe.
+    // try/catch dans le callback : asyncForEachGrouped fait un Promise.all par groupe, une rejection
+    // ferait tomber tout le groupe.
     await asyncForEachGrouped(current, S3_CONCURRENCY, async (_id) => {
       report.attempted++
       if (dryRun) return
@@ -77,7 +72,7 @@ export const deleteCvFilesForApplications = async (
     })
 
     if (succeeded.length) {
-      // S3 d'abord, $set ensuite : si S3 a échoué, la date reste nulle et le passage suivant rejoue.
+      // S3 d'abord, $set ensuite : sur échec S3 la date reste nulle et le passage suivant rejoue.
       await collection.updateMany({ _id: { $in: succeeded } }, { $set: { applicant_attachment_deleted_at: new Date() } })
       report.deleted += succeeded.length
     }
@@ -97,11 +92,13 @@ export const deleteCvFilesForApplications = async (
   await flush()
 
   if (interrupted) {
-    // Compté après coup plutôt qu'en amont : un countDocuments sur des millions de documents
-    // coûterait plus cher que le travail lui-même quand il n'y a rien à purger.
-    report.remaining = await collection.countDocuments(scopedFilter)
+    // Compté seulement ici : un countDocuments sur des millions de documents coûterait plus cher que
+    // le travail lui-même les nuits où il n'y a rien à purger. En dry-run aucune date n'est posée,
+    // donc les candidatures déjà parcourues sont encore dans le filtre et doivent être déduites.
+    const stillMatching = await collection.countDocuments(scopedFilter)
+    report.remaining = dryRun ? Math.max(0, stillMatching - report.attempted) : stillMatching
   }
 
-  logger.info({ context, ...report, failedKeys: report.failedKeys.length, dryRun }, "suppression des CV terminée")
+  logger.info({ context, ...report, failedKeys: undefined, failedKeysCount: report.failedKeys.length, dryRun }, "suppression des CV terminée")
   return report
 }

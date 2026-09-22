@@ -32,10 +32,9 @@ const deleteUserWithAccount = (query) => getDbCollection("userswithaccounts").de
 const anonymizeApplication = async (_id: ObjectId) => {
   logger.info(`[START] Anonymize applicant & related applications`)
 
-  // Droit à l'effacement : le CV doit partir AVANT les documents, la clé S3 dérivant de
-  // applications._id. Mode strict volontaire — en cas d'échec S3 on n'écrit rien et on ne supprime
-  // rien, donc la clé reste reconstructible et l'opérateur rejoue le job. Le périmètre est un
-  // individu, le déclenchement est manuel, le délai RGPD d'un mois n'est pas menacé par une reprise.
+  // Droit à l'effacement : purge S3 avant les documents (cf. getApplicationCvS3Key), en mode strict.
+  // Sur échec S3 rien n'est écrit ni supprimé, donc la clé reste calculable et l'opérateur rejoue.
+  // Périmètre d'un individu, déclenchement manuel : le délai RGPD d'un mois absorbe une reprise.
   const cvReport = await deleteCvFilesForApplications({ applicant_id: _id }, { context: "anonymize-individual" })
   if (cvReport.failedKeys.length) {
     throw internal("anonymize-individual : échec de suppression des CV sur S3, effacement interrompu pour permettre une reprise", {

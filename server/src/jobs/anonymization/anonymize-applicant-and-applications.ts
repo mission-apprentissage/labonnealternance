@@ -29,9 +29,8 @@ const anonymize = async () => {
 
   const applicantsIdsToDelete = matchedApplicants.map((doc) => doc.applicant_id)
 
-  // Les CV doivent partir AVANT les écritures d'anonymisation et le deleteMany : la clé S3 dérive
-  // de applications._id, que la projection ci-dessous efface (_id: 0). Mode dégradé assumé, même
-  // raison que dans anonymize-applications.
+  // Purge S3 avant les écritures d'anonymisation et le deleteMany (cf. getApplicationCvS3Key), la
+  // projection ci-dessous effaçant l'_id. Mode dégradé sur échec S3, cf. anonymizeApplications.
   const cvReport = await deleteCvFilesForApplications({ applicant_id: { $in: applicantsIdsToDelete } }, { context: "anonymize-applicant-and-applications" })
 
   const matchedApplications = await getDbCollection("applications")
@@ -67,15 +66,14 @@ const anonymize = async () => {
     .toArray()
 
   await getDbCollection("anonymized_applicants").insertMany(matchedApplicants)
-  // insertMany([]) lève : le cas se produit dès qu'un candidat inactif depuis 2 ans a déjà vu ses
-  // candidatures supprimées par le cron de 15 0, dix minutes plus tôt.
+  // insertMany([]) lève, et le tableau est vide dès qu'un candidat inactif depuis 2 ans a déjà vu
+  // ses candidatures supprimées par anonymizeApplications, cinq minutes plus tôt.
   if (matchedApplications.length) {
     await getDbCollection("anonymized_applications").insertMany(matchedApplications)
   }
   const [resApplications, resApplicants] = await Promise.all([
-    // Même filtre que la purge des CV ci-dessus. Équivalent à l'ancien filtre, qui utilisait déjà
-    // des applicant_id (matchedApplications les projette sous ce nom), à ceci près qu'il portait
-    // sur un sous-ensemble : les applicants en plus ici n'ont par construction aucune candidature.
+    // Même filtre que la purge des CV ci-dessus, pour que les deux portent exactement sur le même
+    // ensemble de candidatures.
     getDbCollection("applications").deleteMany({ applicant_id: { $in: applicantsIdsToDelete } }),
     getDbCollection("applicants").deleteMany({ _id: { $in: applicantsIdsToDelete } }),
     // we don't keep archive of applicants_email_logs

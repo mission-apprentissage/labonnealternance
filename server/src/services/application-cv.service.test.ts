@@ -174,6 +174,26 @@ describe("deleteCvFilesForApplications", () => {
     expect(report).toMatchObject({ attempted: 0, deleted: 0, remaining: 4 })
   })
 
+  it("déduit les candidatures déjà parcourues du reliquat en dry-run", async () => {
+    const ids: ObjectId[] = []
+    for (let i = 0; i < 4; i++) {
+      const application = await insertApplication({ applicant_attachment_deleted_at: null })
+      ids.push(application._id)
+    }
+
+    // Le budget expire après le premier lot de 2. En dry-run aucune date n'est posée, donc les 2
+    // candidatures déjà parcourues matchent encore le filtre et seraient recomptées dans remaining.
+    const realNow = Date.now()
+    let checks = 0
+    const nowSpy = vi.spyOn(Date, "now").mockImplementation(() => (++checks > 2 ? realNow + 10_000 : realNow))
+
+    const report = await deleteCvFilesForApplications({ _id: { $in: ids } }, { context: "test", batchSize: 2, dryRun: true, timeoutTs: realNow + 1_000 })
+
+    nowSpy.mockRestore()
+    expect(report.attempted).toBe(2)
+    expect(report.remaining).toBe(2)
+  })
+
   it("ne rapporte aucun reliquat quand le budget suffit", async () => {
     const application = await insertApplication({ applicant_attachment_deleted_at: null })
 

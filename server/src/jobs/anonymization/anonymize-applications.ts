@@ -24,10 +24,9 @@ const anonymize = async () => {
 
   const matchCondition = { created_at: { $lte: period } }
 
-  // Les CV doivent partir AVANT le $merge et le deleteMany : la clé S3 dérive de applications._id,
-  // et la projection ci-dessous ne le conserve pas. Mode dégradé assumé — bloquer sur un échec S3
-  // empêcherait la purge de milliers de documents porteurs de données personnelles au-delà de la
-  // durée de conservation, ce qui est un manquement plus large qu'un fichier orphelin.
+  // Purge S3 avant le $merge et le deleteMany (cf. getApplicationCvS3Key). Mode dégradé sur échec
+  // S3 : bloquer laisserait des milliers de documents personnels au-delà de la durée de
+  // conservation, manquement plus large qu'un fichier orphelin.
   const cvReport = await deleteCvFilesForApplications(matchCondition, { context: "anonymize-applications" })
 
   await getDbCollection("applications")

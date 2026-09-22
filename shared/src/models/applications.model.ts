@@ -20,11 +20,7 @@ export enum ApplicationScanStatus {
   DO_NOT_SEND = "DO_NOT_SEND",
   UNKNOWN_ERROR = "UNKNOWN_ERROR",
   ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
-  /**
-   * Terminal. La candidature n'a jamais pu être traitée et son CV a été purgé au bout d'un an
-   * (#5495) : elle n'est plus envoyable, et ce statut la sort des filtres de processApplications
-   * pour éviter une relance toutes les 10 minutes sur un fichier qui n'existe plus.
-   */
+  /** Terminal : candidature jamais traitée dont le CV a été purgé, donc plus envoyable (cf. purgeApplicationCvFiles). */
   CV_PURGED = "CV_PURGED",
 }
 
@@ -47,7 +43,7 @@ const ZApplicationOld = z.strictObject({
     .min(1)
     .regex(/((.*?))(\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$/i)
     .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
-  applicant_attachment_deleted_at: z.date().nullish().describe("Date de suppression du CV du candidat sur S3. null = le CV est encore stocké et consultable."),
+  applicant_attachment_deleted_at: z.date().nullish().describe("Date de suppression du CV du candidat sur S3. Null ou absent : le CV est encore stocké et consultable."),
   applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
   applicant_inscription_formation: z.boolean().nullish().describe("Information donnée par le candidat. Indique si le candidat est inscrit en formation."),
   applicant_contract_duration: z.string().nullish().describe("Information donnée par le candidat. Durée souhaitée du contrat."),
