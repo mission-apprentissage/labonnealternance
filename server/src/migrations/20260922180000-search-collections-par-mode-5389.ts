@@ -1,9 +1,5 @@
-import searchJobsModel, { searchJobsWithTrainingModel } from "shared/models/search-jobs.model"
-import searchTrainingsModel from "shared/models/search-trainings.model"
-
 import { logger } from "@/common/logger"
-import { getDatabase, getDbCollection } from "@/common/utils/mongodb-utils"
-import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { createSearchIndexes, getDatabase, getDbCollection } from "@/common/utils/mongodb-utils"
 
 const LEGACY_KEYWORDS_COLLECTION = "search_items_keywords"
 
@@ -41,36 +37,10 @@ const CORPUS_FILTERS = [
 ] as const
 
 /**
- * Crée seulement les index absents, sans passer par `createSearchIndexes` : son `updateSearchIndex`
- * relance un build complet de chaque index existant même à définition identique (version
- * incrémentée, statut BUILDING), `search_items_index` compris.
- */
-const createCorpusSearchIndexes = async () => {
-  for (const { collectionName, searchIndexes } of [searchJobsModel, searchJobsWithTrainingModel, searchTrainingsModel]) {
-    const collection = getDbCollection(collectionName)
-    let existing: (string | undefined)[]
-    try {
-      existing = (await collection.listSearchIndexes().toArray()).map((index) => index.name)
-    } catch (err) {
-      // Environnements sans mongot (CI) : même repli que createSearchIndexes, mais remonté à Sentry
-      // car en prod l'index manquant ne se verrait qu'au contrôle post-MEP.
-      sentryCaptureException(err)
-      logger.error({ err }, `Search indexes indisponibles pour ${collectionName} (mongot absent ?)`)
-      continue
-    }
-    for (const searchIndex of searchIndexes) {
-      if (existing.includes(searchIndex.name)) continue
-      await collection.createSearchIndex(searchIndex)
-      logger.info(`Search index ${searchIndex.name} créé sur ${collectionName}`)
-    }
-  }
-}
-
-/**
  * Double écriture `search_items` → une collection par mode (#5389). La copie par `$merge` reprend
  * les keywords Mistral et prend quelques minutes, là où `fillSearchItemsCollection` réécrit chaque
- * item un par un. Les lectures restent sur `search_items_index`, qui n'est pas reconstruit : seuls
- * les trois nouveaux index se construisent, en arrière-plan.
+ * item un par un. Les lectures restent sur `search_items_index` ; createSearchIndexes ne construit
+ * que les trois nouveaux index, en arrière-plan, et laisse les index inchangés en place.
  *
  * Contrôle après coup, dans Compass sur chaque collection :
  *   [{ $listSearchIndexes: {} }] → status READY, queryable true
@@ -94,7 +64,7 @@ export const up = async () => {
     logger.info(`${into} : ${await getDbCollection(into).estimatedDocumentCount()} documents après copie depuis search_items`)
   }
 
-  await createCorpusSearchIndexes()
+  await createSearchIndexes()
 }
 
 export const requireShutdown: boolean = false
