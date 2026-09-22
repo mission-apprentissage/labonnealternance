@@ -32,7 +32,7 @@ Après un bump de dépendances : `yarn install` puis `yarn dedupe --strategy hig
 - Next : `cacheComponents` actif. Après lecture de `headers()` ou de la session, `"use cache: private"` avec `cacheTag`/`cacheLife`, jamais `"use cache"` seul. Avec `<Activity>`, un composant reste monté au retour arrière : tout `useState(prop)` doit être resynchronisé par un `useEffect`.
 - Icônes : DSFR en priorité (`fr-icon-*`). Typage des composants : https://github.com/codegouvfr/react-dsfr/tree/main/src
 - `ui/AGENTS.md` et `ui/CLAUDE.md` sont générés par `next dev` : ne pas les modifier.
-- PR : titre `type(lba-XXX): sujet`, description qui commence par `Closes #XXX`, via le skill `pull-request-lba`. Le check de titre n'accepte que `fix`, `feat`, `refactor`, `chore` et `docs` (`.github/pr-title-checker-config.json`).
+- PR : titre `type: sujet (#XXX)` où `XXX` est le numéro de l'issue, suffixe omis quand il n'y a pas d'issue liée ; description qui commence par `Closes #XXX`. Le tout via le skill `pull-request-lba`. Le check de titre n'accepte que `fix`, `feat`, `refactor`, `chore` et `docs`, avec un scope optionnel qui désigne un workspace (`chore(ui): …`) et jamais l'issue (`.github/pr-title-checker-config.json`).
 - `_temp/` est ignoré par git : notes de passation et plans de travail.
 
 ## Commentaires

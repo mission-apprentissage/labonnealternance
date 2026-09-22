@@ -40,7 +40,7 @@ Flag these in review as well.
 ## Pull Requests & Commits
 
 - **Commits**: Conventional Commits, enforced by commitlint (`.husky/commitlint.config.js`, extends `@commitlint/config-conventional`). Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`, `build`, `revert`.
-- **PR title**: `type(lba-XXX): subject`, where `XXX` is the GitHub issue number. `pr-title-check.yml` only accepts the types `fix`, `feat`, `refactor`, `chore` and `docs` (`.github/pr-title-checker-config.json`) and does not enforce the `lba-XXX` scope — the scope is a team convention.
+- **PR title**: `type: subject (#XXX)`, where `XXX` is the GitHub issue number; drop the suffix when no issue is linked. `pr-title-check.yml` only accepts the types `fix`, `feat`, `refactor`, `chore` and `docs` (`.github/pr-title-checker-config.json`). A scope is optional and names a workspace (`chore(ui): …`), never the issue — the issue number belongs in the title suffix and in `Closes #XXX`.
 - **PR description**: whenever you create or update one (Copilot Summary, generated description, `@copilot` mention), take the issue number from the title and start the description with `Closes #XXX`. Never omit it. Template:
 
   ```
