@@ -217,9 +217,6 @@ const EmailField = () => {
     }
   }, [])
 
-  /**
-   * On email change, check if email is correct and set suggestion if not.
-   */
   const onEmailChange = (e) => {
     field.onChange(e)
     const value = e.target.value
@@ -229,9 +226,6 @@ const EmailField = () => {
     }, 300)
   }
 
-  /**
-   * Set email value from suggestion.
-   */
   const onClickEmailSuggestion = (e) => {
     helper.setValue(e.currentTarget.innerHTML, true)
     setSuggestedEmails([])
@@ -273,9 +267,6 @@ const ReasonsField = ({ formik }: { formik: any }) => {
   const [field, meta, helper] = useField("applicantReasons")
   const applicantReasons: EReasonsKey[] = field.value || []
 
-  /**
-   * On change on applicant reasons, it updates the state.
-   */
   const onChangeApplicantReasons = (reasonKey: EReasonsKey, checked: boolean) => {
     const updatedReasons = checked ? [...applicantReasons, reasonKey] : applicantReasons.filter((key) => key !== reasonKey)
     helper.setValue(updatedReasons, true)

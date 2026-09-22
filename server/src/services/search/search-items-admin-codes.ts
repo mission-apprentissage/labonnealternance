@@ -13,18 +13,16 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
  *
  * Ordre de résolution, du plus sûr au moins sûr, chaque étape ne s'appliquant que si la
  * précédente n'a rien donné. Chiffres de production du 2026-09-11 (tools/geo-781/compass.md) :
- *  1. code INSEE de la commune (formations) : 92,7 % des formations ;
- *     les arrondissements de Paris, Lyon et Marseille (3 423 formations) sont ramenés à leur
- *     commune, le référentiel ne connaissant pas les arrondissements ;
+ *  1. code INSEE de la commune (formations) : 92,7 % des formations, dont 3 423 à
+ *     l'arrondissement (cf. ARRONDISSEMENT_PARENT) ;
  *  2. code postal connu du référentiel : 99,4 % des offres ; un CP à cheval sur deux
  *     départements (16 CP, 402 offres) est tranché par la commune du CP la plus proche du géopoint ;
  *  3. code postal inconnu du référentiel mais de forme départementale (CEDEX, 75000, 13000 :
  *     ~160 offres) : le département est lu dans le code lui-même, c'est la règle de numérotation ;
  *  4. géopoint seul (1 185 offres sans CP) : commune dont la bbox contient le point, la plus
  *     proche en cas de recouvrement. Hors de toute bbox, on renonce.
- * Saint-Martin et Saint-Barthélemy (105 offres) ne sont rattachées à rien : ce sont des
- * collectivités, pas des départements, et leur CP commence pourtant par 971. Elles sont exclues
- * de l'étape 3 explicitement et tombent hors de toute bbox à l'étape 4.
+ * Saint-Martin et Saint-Barthélemy (105 offres) ne sont rattachées à rien : exclues de l'étape 3
+ * (cf. COLLECTIVITE_ZIPCODES), elles tombent hors de toute bbox à l'étape 4.
  */
 
 export type IAdminCodes = { departement_code: string | null; region_code: string | null }
@@ -169,8 +167,7 @@ export const resolveAdminCodes = (source: { insee?: string | null; zipcode?: str
     if (candidates?.length) {
       const departements = new Set(candidates.map((c) => c.departement_code))
       if (departements.size === 1) return toCodes(candidates[0])
-      // CP à cheval : la commune du CP la plus proche du géopoint. Sans géopoint, on renonce
-      // plutôt que de choisir au hasard.
+      // CP à cheval : sans géopoint, on renonce plutôt que de choisir au hasard.
       const best = point ? nearest(candidates, point) : null
       return best ? toCodes(best) : NO_CODES
     }

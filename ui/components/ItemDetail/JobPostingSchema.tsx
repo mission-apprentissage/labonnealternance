@@ -56,9 +56,8 @@ const buildJobPostingSchema = ({ title, description, id, job }: JobPostingSchema
         addressCountry: "France",
       },
     },
-    // `baseSalary` retiré : aucune donnée de salaire fiable par offre (l'ancienne valeur 486,49 était figée pour toutes les offres).
-    // Google : champ recommandé mais non requis → on l'omet plutôt que d'envoyer une valeur fausse.
-    // https://developers.google.com/search/docs/appearance/structured-data/job-posting#job-posting-definition
+    // Pas de `baseSalary` : aucune donnée de salaire fiable par offre. Champ recommandé mais non requis
+    // par Google (cf. lien ci-dessus) → omis plutôt que d'envoyer une valeur fausse.
   }
 }
 

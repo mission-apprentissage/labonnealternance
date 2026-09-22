@@ -1,11 +1,10 @@
 /**
  * Analyse la présence de chaque CFA de la blocklist dans la collection computed_jobs_partners.
  *
- * Usage (depuis le dossier server/) :
- *   yarn cli analyzeCfaBlockList.ts > docs/cfa-blocklist-analysis.md
+ * Usage (depuis le dossier server/) : `yarn cli analyzeCfaBlockList`, qui écrit
+ * docs/cfa-blocklist-analysis.md (cf. OUTPUT_PATH).
  *
- * Le script se connecte à MongoDB, parcourt computed_jobs_partners par batches de 500,
- * et produit un tableau Markdown avec :
+ * Produit un tableau Markdown avec :
  *   - nombre d'offres où le nom apparaît dans workplace_name
  *   - nombre d'offres où le nom apparaît dans offer_description
  *   - nombre d'offres où le nom apparaît dans workplace_description
@@ -21,8 +20,8 @@ import { closeMongodbConnection, connectToMongodb, getDbCollection } from "@/com
 import config from "@/config"
 import { cfaCompanyList } from "@/jobs/offre-partenaire/is-company-in-blocked-cfa-list"
 
-// En dev (tsx) : import.meta.dirname = server/src/jobs/oneTimeJob → ../../../../ = racine du monorepo
-// En prod (dist compilé) : import.meta.dirname = server/dist/jobs/oneTimeJob → ../../../../ = racine du monorepo
+// En dev (tsx) : import.meta.dirname = server/src/jobs/one-time-job → ../../../../ = racine du monorepo
+// En prod (dist compilé) : import.meta.dirname = server/dist/jobs/one-time-job → ../../../../ = racine du monorepo
 const OUTPUT_PATH = join(import.meta.dirname, "../../../../docs/cfa-blocklist-analysis.md")
 
 const stringNormaliser = (str: string): string => {

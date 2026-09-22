@@ -22,9 +22,7 @@ export const tabSx = {
     gap: 1,
   },
 
-  // Style des tabs individuels
   "& .MuiTab-root": {
-    // Normal
     backgroundColor: "#E3E3FD",
     color: "#161616",
     fontWeight: "bold",
@@ -33,29 +31,24 @@ export const tabSx = {
     outline: "none",
     textTransform: "none",
 
-    // Hover
     "&:hover": {
       backgroundColor: "#C1C1FB",
     },
 
-    // Focus
     "&.Mui-focusVisible": {
       backgroundColor: "#C1C1FB",
       outline: "2px solid #6A6AF4",
     },
 
-    // Selected
     "&.Mui-selected": {
       color: "primary.main",
       backgroundColor: "#fff",
       borderLeft: "1px solid #DDD",
       borderRight: "1px solid #DDD",
-      // Hover
       "&:hover": {
         backgroundColor: "#C1C1FB",
       },
     },
-    // Selected
     "&.Mui-selected.Mui-focusVisible": {
       color: "primary.main",
       backgroundColor: "#C1C1FB",

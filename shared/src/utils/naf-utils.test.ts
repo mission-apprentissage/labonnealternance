@@ -45,7 +45,7 @@ describe("normalizeNafCode", () => {
 
 describe("normalizeNafLabel", () => {
   it("fait converger les deux casses du même libellé INSEE", () => {
-    // le cas exact remonté par Fadoua : deux lignes distinctes dans Metabase
+    // le cas remonté dans l'issue #5344 : deux lignes distinctes dans Metabase
     const expected = "Fabrication d'autres produits laitiers"
     expect(normalizeNafLabel("FABRICATION D'AUTRES PRODUITS LAITIERS")).toBe(expected)
     expect(normalizeNafLabel("Fabrication d'autres produits laitiers")).toBe(expected)
@@ -89,7 +89,7 @@ describe("normalizeNafLabel", () => {
 
 describe("normalizeNafLabel et les URLs indexées", () => {
   // buildLbaUrlFromJob utilise workplace_naf_label comme titre de slug pour les fiches
-  // RECRUTEURS_LBA, et ce partenaire passe désormais par la normalisation. Recasser un libellé
+  // RECRUTEURS_LBA, et ce partenaire passe par la normalisation. Recasser un libellé
   // ne doit jamais déplacer une URL déjà indexée : toKebabCase absorbe la casse, ce test le verrouille.
   it.each([
     "FABRICATION D'AUTRES PRODUITS LAITIERS",

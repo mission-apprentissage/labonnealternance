@@ -6,10 +6,8 @@ import { ZPointGeometry } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
-// Define schemas for nested objects
 const geoCoordSchema = z.string()
 
-// Define schemas for each interface
 const etablissementFormateurSchema = z.strictObject({
   etablissement_formateur_id: z.string().nullish(),
   etablissement_formateur_siret: extensions.siret.nullish(),
@@ -78,12 +76,10 @@ const etablissementReferenceSchema = z.strictObject({
   etablissement_reference_date_creation: z.date().nullish(),
 })
 
-// Define a schema for a single string or an array of strings
 const stringOrArraySchema = z.union([z.string(), z.array(z.string())])
 
 const collectionName = "formationcatalogues" as const
 
-// Define the Zod schema for IFormationCatalogue
 export const zFormationCatalogueSchema = z
   .object({
     _id: zObjectId,

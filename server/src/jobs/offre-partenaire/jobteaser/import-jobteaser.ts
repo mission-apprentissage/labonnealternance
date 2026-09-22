@@ -21,7 +21,6 @@ export const importJobteaserRaw = async (sourceStream?: NodeJS.ReadableStream) =
       conflictingOpeningTagWithoutAttributes: true,
     })
   } else {
-    // fetch token
     const tokenResponse = await fetch("https://partneraccess.jobteaser.com/api/v2/user/token", {
       method: "GET",
       headers: {
@@ -31,7 +30,6 @@ export const importJobteaserRaw = async (sourceStream?: NodeJS.ReadableStream) =
     })
     const token = ((await tokenResponse.json()) as { access_token: string; expires_at: string }).access_token
 
-    // fetch list of files
     const listResponse = await fetch("https://partneraccess.jobteaser.com/api/v2/user/dirs", {
       method: "GET",
       headers: {
@@ -42,7 +40,6 @@ export const importJobteaserRaw = async (sourceStream?: NodeJS.ReadableStream) =
     const list: ListType[] = (await listResponse.json()) as ListType[]
     const latestFile = list.at(-1)?.name
 
-    // fetch latest file
     const fileResponse = await fetch(`https://partneraccess.jobteaser.com/api/v2/user/files?path=${latestFile}`, {
       method: "GET",
       headers: {

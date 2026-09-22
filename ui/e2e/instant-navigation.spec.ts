@@ -4,7 +4,6 @@ import { mainId } from "@/app/_components/zone-ids"
 
 // Pilote Cache Components : ces tests verrouillent le gain obtenu sur 4 routes
 // (accueil, fiche offre, fiche formation, dashboard entreprise) contre toute régression future.
-// Voir le plan de migration pour le détail de chaque conversion.
 
 test.describe("navigation instantanée — accueil", () => {
   test("naviguer vers l'accueil depuis une autre page affiche le header sans attendre la session", async ({ page }) => {
@@ -27,7 +26,7 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
   // Le landmark est ciblé par son id de zone et non par `locator("main")` : le cache de navigation
   // laisse le `main` de /recherche monté (masqué) dans le document, deux landmarks coexistent donc.
   //
-  // `use cache: private` (voir plan de migration, Étape 3bis) ne survit qu'en mémoire navigateur :
+  // `use cache: private` ne survit qu'en mémoire navigateur :
   // il rend les navigations CLIENT (clic + prefetch) instantanées, mais pas un rechargement complet
   // (MPA/reload), qui repart toujours d'un cache vide. Le test doit donc simuler un vrai clic depuis
   // une page de résultats, pas un `page.reload()`.

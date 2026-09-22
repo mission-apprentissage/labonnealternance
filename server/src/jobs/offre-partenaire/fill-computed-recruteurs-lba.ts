@@ -27,11 +27,10 @@ export const fillComputedRecruteursLba = async () => {
   await clearBlacklistedEmailsRecruteursLba()
   // reset checks
   await getDbCollection("computed_jobs_partners").updateMany(computedJobFilter, { $set: { business_error: null, jobs_in_success: [], errors: [] } })
-  // Ce pipeline est distinct de fillComputedJobsPartners et n'héritait donc pas de la
-  // normalisation NAF (issue #5344), alors que workplace_naf_label est ici le champ le plus
-  // exposé : titre de carte éditoriale, secteur de la fiche, et slug d'URL via
-  // buildLbaUrlFromJob. Sans effet sur les champs texte, offer_title et offer_description
-  // valant la constante RECRUTEURS_LBA et non du texte libre.
+  // Pipeline distinct de fillComputedJobsPartners : la normalisation NAF (#5344) doit y être appelée
+  // explicitement. workplace_naf_label est ici le champ le plus exposé (titre de carte éditoriale,
+  // secteur de la fiche, slug d'URL via buildLbaUrlFromJob). Sans effet sur offer_title et
+  // offer_description, qui valent la constante RECRUTEURS_LBA.
   await formatTextFieldsJobsPartners(context)
   await fillEntrepriseEngagementComputedJobsPartners(context)
   await fillOpcoInfosForPartners(context)

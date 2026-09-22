@@ -3,8 +3,8 @@ import { afterEach, describe, expect, it } from "vitest"
 
 import { getCommuneParCodeDepartement, getCommuneParCodeInsee, getDepartements } from "./geo-api-gouv"
 
-// Réponses de https://geo.api.gouv.fr rejouées par nock : plus d'appel réseau réel (les tests
-// dépassaient le timeout de 5 s depuis les runners GitHub selon l'humeur de l'API).
+// Réponses de https://geo.api.gouv.fr rejouées par nock : l'API réelle dépasse parfois le timeout
+// de 5 s depuis les runners GitHub.
 const GEO_API_URL = "https://geo.api.gouv.fr"
 const COMMUNE_FIELDS = { fields: "code,codeParent,codesPostaux,centre,bbox,codeDepartement,codeRegion", geometry: "centre" }
 

@@ -161,6 +161,7 @@ describe("POST /v2/application", () => {
       applicant_answers_to_recruiter_questions: null,
       applicant_id: applicant?._id,
       applicant_attachment_name: body.applicant_attachment_name,
+      applicant_attachment_deleted_at: null,
       applicant_message_to_company: "",
       application_url: null,
       caller: "Un super Partenaire",

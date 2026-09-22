@@ -3,10 +3,9 @@ import { describe, expect, it } from "vitest"
 import { buildRecherchePageParams, IRechercheMode, parseRecherchePageParams, resolveRecherchePageParams, toURLSearchParams } from "./recherche.route.utils"
 
 /**
- * Ce module a perdu ses schémas zod (le type `IRecherchePageParams` est désormais explicite) :
- * ces tests remplacent la validation qui était jusqu'ici portée par zod. Les cas qui doivent
- * répondre *faux* passent en premier — c'est là que la réécriture peut régresser sans que rien
- * ne le signale.
+ * Ce module n'a pas de schéma zod (cf. imports de recherche.route.utils.ts) : ces tests portent
+ * la validation. Les cas qui doivent répondre *faux* passent en premier — c'est là qu'une
+ * réécriture peut régresser sans que rien ne le signale.
  */
 describe("parseRecherchePageParams", () => {
   it("retourne null sans searchParams", () => {

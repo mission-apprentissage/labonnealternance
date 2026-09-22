@@ -109,8 +109,7 @@ const getContratType = (contrat: IApecJob["Contrat"]): IComputedJobsPartners["co
     return ["Professionnalisation"]
   }
 
-  // Fallback: preserve previous behavior where any non-exact apprenticeship string
-  // was treated as "Apprentissage"
+  // Fallback: any unrecognized contract type is treated as "Apprentissage"
   return ["Apprentissage"]
 }
 
