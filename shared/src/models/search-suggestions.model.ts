@@ -54,6 +54,7 @@ export default {
           fields: {
             term: [{ type: "autocomplete", tokenization: "edgeGram", minGrams: 3, maxGrams: 15, foldDiacritics: true }],
             status: { type: "token" },
+            category: { type: "token" },
           },
         },
       },
