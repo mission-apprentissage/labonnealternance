@@ -158,7 +158,6 @@ describe("purgeApplicationCvFiles", () => {
     const report = await purgeApplicationCvFiles()
 
     expect(report).toMatchObject({ deleted: 0, failedKeys: [] })
-    // Le cron ne trouvera du travail qu'au bout d'un an : pas de "0 CV supprimé" chaque nuit.
     expect(slackSpy).not.toHaveBeenCalled()
   })
 
@@ -169,7 +168,6 @@ describe("purgeApplicationCvFiles", () => {
 
     expect(s3DeleteSpy).toHaveBeenCalledWith("applications", `cv-${application._id}`)
     const updated = await getDbCollection("applications").findOne({ _id: application._id })
-    // Sinon processApplications la reprendrait toutes les 10 min sur un fichier absent.
     expect(updated?.scan_status).toBe(ApplicationScanStatus.CV_PURGED)
     expect(report.markedUnprocessable).toBe(1)
   })
@@ -242,7 +240,6 @@ describe("purgeApplicationCvFiles", () => {
     const report = await purgeApplicationCvFiles({ dryRun: true })
 
     expect(s3DeleteSpy).not.toHaveBeenCalled()
-    // deleted ne compte que les suppressions réelles ; le volume simulé est dans attempted.
     expect(report).toMatchObject({ attempted: 1, deleted: 0 })
     expect(await deletedAtOf(application._id)).toBeNull()
   })

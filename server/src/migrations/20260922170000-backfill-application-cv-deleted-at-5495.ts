@@ -3,7 +3,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 /**
- * Marque comme purgées les candidatures dont le CV n'est plus sur S3 (#5495), pour que
+ * Marque comme purgées les candidatures dont le CV est absent de S3 (#5495), pour que
  * purgeApplicationCvFiles ne les rebalaie pas chaque nuit et que le suivi de candidature n'annonce
  * pas un CV consultable qui n'existe pas.
  *
@@ -37,8 +37,8 @@ export const up = async () => {
         { scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED, to_applicant_message_id: null },
       ],
     },
-    // created_at plutôt que la date du run : la suppression suivait le dépôt de quelques minutes, et
-    // dater du jour raconterait une purge massive qui n'a pas eu lieu.
+    // created_at plutôt que la date du run, à quelques minutes près de la vraie suppression : dater
+    // du jour raconterait une purge massive qui n'a pas eu lieu.
     [{ $set: { applicant_attachment_deleted_at: { $ifNull: ["$created_at", fallbackDate] } } }],
     { bypassDocumentValidation: true }
   )

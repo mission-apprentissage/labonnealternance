@@ -4,9 +4,9 @@ import type { ICvDeletionReport } from "@/services/application-cv.service"
 const FAILED_KEYS_IN_SLACK = 50
 
 /**
- * Rend visible le mode dégradé d'un job d'anonymisation qui a supprimé des candidatures sans avoir
- * pu supprimer leurs CV. Les clés S3 figurent dans le message parce qu'une fois le document
- * supprimé, elles sont la seule trace permettant de retrouver le fichier devenu orphelin.
+ * Signale les CV restés sur S3 alors que leurs candidatures ont été effacées. Le message porte les
+ * clés parce qu'elles sont la seule trace exploitable une fois le document parti (cf.
+ * getApplicationCvS3Key).
  */
 export const notifyCvDeletionFailures = async (subject: string, report: ICvDeletionReport) => {
   if (!report.failedKeys.length) return

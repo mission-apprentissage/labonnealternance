@@ -201,7 +201,6 @@ describe("process-applications", () => {
       isInfectedSpy.mockResolvedValue(false)
     })
 
-    // Le test qui garantit le cœur de #5495 : sans virus, le CV reste sur S3.
     it("conserve le CV d'une candidature saine", async () => {
       const application = await setupApplication()
 

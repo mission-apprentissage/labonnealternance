@@ -20,7 +20,7 @@ export enum RefusalReasons {
 
 /**
  * Durée de conservation du CV sur S3, à compter de la création de la candidature (issue #5495).
- * Au-delà, le fichier est supprimé par le cron "Purge des CV des candidatures de plus d'un (1) an".
+ * Au-delà, le fichier est supprimé par purgeApplicationCvFiles.
  */
 export const APPLICATION_CV_RETENTION_YEARS = 1
 

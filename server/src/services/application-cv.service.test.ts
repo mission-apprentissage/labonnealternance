@@ -154,7 +154,6 @@ describe("deleteCvFilesForApplications", () => {
     const report = await deleteCvFilesForApplications({ _id: application._id }, { context: "test", dryRun: true })
 
     expect(s3DeleteSpy).not.toHaveBeenCalled()
-    // deleted ne compte que les suppressions réelles ; le volume simulé est dans attempted.
     expect(report).toMatchObject({ attempted: 1, deleted: 0 })
     const updated = await getDbCollection("applications").findOne({ _id: application._id })
     expect(updated?.applicant_attachment_deleted_at).toBeNull()

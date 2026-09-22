@@ -80,7 +80,7 @@ describe("anonymizeApplications", () => {
     await anonymizeApplications()
 
     expect(s3DeleteSpy).toHaveBeenCalledWith("applications", `cv-${application._id}`)
-    // Si la purge S3 passait après le deleteMany, la clé cv-<_id> ne serait plus reconstructible.
+    // Purger après le deleteMany rendrait la clé cv-<_id> incalculable.
     expect(documentsPresentsPendantS3).toBe(1)
     expect(await getDbCollection("applications").countDocuments({ _id: application._id })).toBe(0)
   })

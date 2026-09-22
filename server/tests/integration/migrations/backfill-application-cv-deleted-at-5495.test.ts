@@ -37,10 +37,10 @@ describe("migration backfill-application-cv-deleted-at-5495", () => {
     ["UNKNOWN_ERROR", { scan_status: ApplicationScanStatus.UNKNOWN_ERROR }],
     ["ERROR_APPLICANT_NOT_FOUND", { scan_status: ApplicationScanStatus.ERROR_APPLICANT_NOT_FOUND }],
     ["NO_VIRUS_DETECTED sans mail candidat envoyé", { scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED, to_applicant_message_id: null }],
-    // Son s3Delete a pu échouer à l'époque : le fichier infecté est peut-être encore là, et le
-    // marquer purgé le rendrait introuvable pour toujours.
+    // Un s3Delete en échec laisse le fichier infecté dans le bucket : le marquer purgé le rendrait
+    // introuvable.
     ["VIRUS_DETECTED", { scan_status: ApplicationScanStatus.VIRUS_DETECTED }],
-    // Statut legacy jamais repris par processApplications : son CV n'a jamais été supprimé.
+    // Statut qu'aucun filtre de processApplications ne reprend, donc son CV est encore là.
     ["DO_NOT_SEND", { scan_status: ApplicationScanStatus.DO_NOT_SEND }],
   ])("laisse intacte une candidature en vol (%s)", async (_label, data) => {
     const application = await insertLegacyApplication(data)
@@ -64,8 +64,6 @@ describe("migration backfill-application-cv-deleted-at-5495", () => {
 
     await up()
 
-    // Surtout pas null : le document serait lu « CV disponible » et ne serait jamais purgé, un
-    // created_at null ne matchant pas un $lte sur une date.
     expect(await deletedAtOf(application._id)).toBeInstanceOf(Date)
   })
 
