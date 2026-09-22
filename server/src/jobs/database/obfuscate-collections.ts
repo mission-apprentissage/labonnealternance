@@ -276,7 +276,9 @@ const obfuscateEntreprisesManagedByCfa = async () => {
   }
 }
 
-const modelToKeep: string[] = ["search_items", "job_processor.workers", "job_processor.jobs", "changelog"]
+// Collections légitimes qui ne sont pas décrites par un modèle : file du job processor et journal
+// des migrations. `search_items` est bien un modèle, il figure ici pour échapper au vidage.
+export const modelToKeep: string[] = ["search_items", "job_processor.workers", "job_processor.jobs", "changelog"]
 
 const dropUnknownCollections = async () => {
   const knownCollections = new Set<string>([...modelDescriptors.map((d) => d.collectionName), ...modelToKeep])
