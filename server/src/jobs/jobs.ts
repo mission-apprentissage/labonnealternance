@@ -24,6 +24,7 @@ import { anonymizeUsers } from "./anonymization/anonymize-users"
 import { removeBrevoContacts } from "./anonymization/remove-brevo-contacts"
 import { processApplications } from "./applications/process-applications"
 import { processRecruiterIntentions } from "./applications/process-recruiter-intentions"
+import { purgeApplicationCvFiles } from "./applications/purge-application-cv-files"
 import { relanceCandidatsInactifs } from "./applications/relance-candidats-inactifs"
 import { relanceIncitationSpontanee } from "./applications/relance-incitation-spontanee"
 import { recreateIndexes } from "./database/recreate-indexes"
@@ -140,6 +141,11 @@ export async function setupJobProcessor() {
           "Génération du sitemap pour les offres": {
             cron_string: "20 0 * * *",
             handler: generateSitemap,
+            tag: "main",
+          },
+          "Purge des CV des candidatures de plus d'un (1) an": {
+            cron_string: "25 0 * * *",
+            handler: async () => purgeApplicationCvFiles(),
             tag: "main",
           },
           // Décalé de 10 min après l'expiration des offres (*/30) pour capter ses bumps de updated_at.

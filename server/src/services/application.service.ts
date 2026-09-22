@@ -36,6 +36,7 @@ import type { UserForAccessToken } from "@/security/access-token.service"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink, createCloturerOffreMagicLink, createProvidedJobLink, generateApplicationReplyToken } from "./app-links.service"
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
+import { getApplicationCvS3Key } from "./application-cv.service"
 import type { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
 import { buildEstablishmentId } from "./etablissement.service"
@@ -525,6 +526,7 @@ const newApplicationToApplicationDocumentV2 = async (
     to_applicant_message_id: null,
     to_company_message_id: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
+    applicant_attachment_deleted_at: null,
     application_url: "application_url" in newApplication ? newApplication.application_url : null,
     foreign_application_status_url: "foreign_application_status_url" in newApplication ? newApplication.foreign_application_status_url : null,
     foreign_application_id: "foreign_application_id" in newApplication ? newApplication.foreign_application_id : null,
@@ -880,7 +882,7 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
   }
 }
 
-const getApplicationCvS3Filename = (application: IApplication) => `cv-${application._id}`
+const getApplicationCvS3Filename = (application: Pick<IApplication, "_id">) => getApplicationCvS3Key(application._id)
 
 const getApplicationAttachmentContent = async (application: IApplication): Promise<string> => {
   const content = await s3ReadAsString("applications", getApplicationCvS3Filename(application))
@@ -918,7 +920,7 @@ export const processApplicationScanForVirus = async (application: IApplication, 
   return hasVirus
 }
 
-export const deleteApplicationCvFile = async (application: IApplication) => {
+export const deleteApplicationCvFile = async (application: Pick<IApplication, "_id">) => {
   await s3Delete("applications", getApplicationCvS3Filename(application))
 }
 

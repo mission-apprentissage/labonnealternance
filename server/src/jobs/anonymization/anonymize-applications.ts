@@ -1,6 +1,8 @@
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
+import { deleteCvFilesForApplications } from "@/services/application-cv.service"
+import { notifyCvDeletionFailures } from "./notify-cv-deletion-failures"
 
 export const anonymizeApplicationProjection = {
   company_recruitment_intention: 1,
@@ -22,6 +24,11 @@ const anonymize = async () => {
 
   const matchCondition = { created_at: { $lte: period } }
 
+  // Purge S3 avant le $merge et le deleteMany (cf. getApplicationCvS3Key). Mode dégradé sur échec
+  // S3 : bloquer laisserait des milliers de documents personnels au-delà de la durée de
+  // conservation, manquement plus large qu'un fichier orphelin.
+  const cvReport = await deleteCvFilesForApplications(matchCondition, { context: "anonymize-applications" })
+
   await getDbCollection("applications")
     .aggregate([
       {
@@ -38,7 +45,7 @@ const anonymize = async () => {
 
   const res = await getDbCollection("applications").deleteMany(matchCondition)
 
-  return res.deletedCount
+  return { deletedCount: res.deletedCount, cvReport }
 }
 
 /**
@@ -49,12 +56,14 @@ export const anonymizeApplications = async function () {
   try {
     logger.info("[START] Anonymisation des candidatures de plus de deux (2) ans")
 
-    const anonymizedApplicationCount = await anonymize()
+    const { deletedCount, cvReport } = await anonymize()
 
     await notifyToSlack({
       subject: "ANONYMISATION CANDIDATURES",
-      message: `Anonymisation des candidatures de plus de deux (2) an terminée. ${anonymizedApplicationCount} candidature(s) anonymisée(s).`,
+      message: `Anonymisation des candidatures de plus de deux (2) an terminée. ${deletedCount} candidature(s) anonymisée(s). ${cvReport.deleted} CV supprimé(s) de S3.`,
     })
+
+    await notifyCvDeletionFailures("ANONYMISATION CANDIDATURES", cvReport)
   } catch (err: any) {
     await notifyToSlack({ subject: "ANONYMISATION CANDIDATURES", message: `ECHEC anonymisation des candidatures`, error: true })
     throw err
