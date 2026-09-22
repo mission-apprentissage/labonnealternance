@@ -9,6 +9,7 @@ import type { ReactNode } from "react"
 import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { searchAddress } from "@/services/base-adresse"
 import { apiGet } from "@/utils/api.utils"
+import type { SearchMode } from "../_utils/search.params.utils"
 
 function useThrottle(value: string, delay: number) {
   const lastUpdateRef = useRef<number | null>(null)
@@ -158,6 +159,8 @@ type LieuDropdownOption = LieuOption | typeof FRANCE_ENTIERE_OPTION
 type MetierOption = { kind: "free_text"; value: string } | { kind: "suggestion"; value: string }
 
 interface SearchBarProps {
+  /** Type de recherche courant : les suggestions du champ métier viennent de son seul corpus. */
+  mode: SearchMode
   initialQ?: string
   initialLieuLabel?: string
   /**
@@ -228,6 +231,7 @@ function FieldError({ children, id }: { children: ReactNode; id?: string }) {
 }
 
 export function SearchBar({
+  mode,
   initialQ = "",
   initialLieuLabel,
   franceEntiereIfEmpty = false,
@@ -312,8 +316,8 @@ export function SearchBar({
   const lieuWrapperSx = activeField === "lieu" ? activeWrapperSx : { flex: rowSx.lieuFlex, width: rowSx.fieldWidth, display: activeField === "metier" ? "none" : undefined }
 
   const { data: suggestionData, isPending: suggestionsPending } = useQuery({
-    queryKey: ["/v1/search/suggest", debouncedInput],
-    queryFn: ({ signal }) => apiGet("/v1/search/suggest", { querystring: { q: debouncedInput, limit: 8 } }, { signal }),
+    queryKey: ["/v1/search/suggest", debouncedInput, mode],
+    queryFn: ({ signal }) => apiGet("/v1/search/suggest", { querystring: { q: debouncedInput, limit: 8, mode } }, { signal }),
     enabled: debouncedInput.length >= 3,
     staleTime: 1000 * 60 * 5,
     throwOnError: false,

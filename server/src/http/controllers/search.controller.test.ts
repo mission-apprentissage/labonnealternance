@@ -6,14 +6,14 @@ import { describe, expect, it, vi } from "vitest"
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
-// Intercepte les appels `aggregate` sur search_items pour simuler un échec mongot précis
+// Intercepte les appels `aggregate` sur search_jobs (corpus du mode par défaut) pour simuler un échec mongot précis
 // (même pattern que search.service.test.ts), sans toucher au reste de la stack.
 function mockFirstAggregateCallToFail(errorMessage: string) {
   const getDbCollectionOriginal = mongodbUtils.getDbCollection
   let aggregateCalls = 0
   return vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
     const collection = getDbCollectionOriginal(name)
-    if (name !== "search_items") return collection
+    if (name !== "search_jobs") return collection
     return new Proxy(collection, {
       get(target, prop, receiver) {
         if (prop === "aggregate") {
@@ -133,7 +133,7 @@ describe("search.controller", () => {
 
       it("accepte tous les paramètres de filtre sans erreur", async () => {
         const doc = generateSearchItemFixture()
-        await getDbCollection("search_items").insertOne(doc)
+        await getDbCollection("search_jobs").insertOne(doc)
 
         const response = await httpClient().inject({
           method: "GET",
@@ -241,7 +241,7 @@ describe("search.controller", () => {
       it("logue status=error, nb_hits=null et renvoie 500 quand searchItems échoue", async () => {
         const getDbCollectionOriginal = mongodbUtils.getDbCollection
         const spy = vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
-          if (name !== "search_items") return getDbCollectionOriginal(name)
+          if (name !== "search_jobs") return getDbCollectionOriginal(name)
           throw new Error("boom")
         })
 
@@ -255,6 +255,42 @@ describe("search.controller", () => {
           spy.mockRestore()
         }
       })
+    })
+  })
+
+  // Collection interrogée par mode (#5389) : espionnée sur getDbCollection, sans dépendre de mongot.
+  describe("corpus interrogé selon le mode", () => {
+    const collectionsQueried = async (path: string) => {
+      const spy = vi.spyOn(mongodbUtils, "getDbCollection")
+      try {
+        const response = await httpClient().inject({ method: "GET", path })
+        expect(response.statusCode).toBe(200)
+        return new Set(spy.mock.calls.map(([name]) => name).filter((name) => name.startsWith("search_") && name !== "search_queries" && name !== "search_suggestions"))
+      } finally {
+        spy.mockRestore()
+      }
+    }
+
+    it.each([
+      ["/api/v1/search", "search_jobs"],
+      ["/api/v1/search?mode=emplois", "search_jobs"],
+      ["/api/v1/search?mode=emplois_formation", "search_jobs_with_training"],
+      ["/api/v1/search?mode=formations", "search_trainings"],
+      // `type` historique sans `mode` : type=formation désigne le corpus formations, le reste emplois.
+      ["/api/v1/search?type=formation", "search_trainings"],
+      ["/api/v1/search?type=offre", "search_jobs"],
+      // `mode` prime sur `type`.
+      ["/api/v1/search?type=formation&mode=emplois", "search_jobs"],
+      ["/api/v1/search/suggest?q=boulanger", "search_jobs"],
+      ["/api/v1/search/suggest?q=boulanger&mode=formations", "search_trainings"],
+      ["/api/v1/search/suggest?q=boulanger&mode=emplois_formation", "search_jobs_with_training"],
+    ])("%s → %s uniquement", async (path, collection) => {
+      expect([...(await collectionsQueried(path))]).toEqual([collection])
+    })
+
+    it("refuse un mode inconnu sur le suggest", async () => {
+      const response = await httpClient().inject({ method: "GET", path: "/api/v1/search/suggest?q=boulanger&mode=tout" })
+      expect(response.statusCode).toBe(400)
     })
   })
 })
