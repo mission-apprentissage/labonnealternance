@@ -4,7 +4,7 @@
 //   LBA_MONGODB_URI="mongodb://..." node tools/geo-781/bench.mjs "Nord" --limit 500
 //
 // Sans LBA_MONGODB_URI (la variable du server/.env) : compare les emprises entre elles.
-// Avec : exécute les requêtes sur `search_items` et mesure ce que
+// Avec : exécute les requêtes sur `search_jobs` (corpus emplois) et mesure ce que
 // chaque stratégie ramène VRAIMENT, la vérité terrain étant l'appartenance au
 // contour officiel (point-in-polygon), pas la stratégie elle-même.
 
@@ -113,13 +113,13 @@ if (!mongoUri) {
 const { MongoClient } = await import("mongodb")
 const client = new MongoClient(mongoUri)
 await client.connect()
-const items = client.db().collection("search_items")
+const items = client.db().collection("search_jobs")
 
 async function run(clause) {
   const started = Date.now()
   const docs = await items
     .aggregate([
-      { $search: { index: "search_items_index", compound: { must: [{ exists: { path: "location" } }], filter: [clause] } } },
+      { $search: { index: "search_jobs_index", compound: { must: [{ exists: { path: "location" } }], filter: [clause] } } },
       { $limit: LIMIT },
       { $project: { _id: 0, url_id: 1, type: 1, address: 1, location: 1, departement_code: 1, region_code: 1 } },
     ])
@@ -140,7 +140,7 @@ for (const s of strategies) {
 
 const reference = results.find((r) => r.id === "3-contour")
 
-console.log(`\nRésultats sur search_items (limite ${fmt(LIMIT)})\n`)
+console.log(`\nRésultats sur search_jobs (limite ${fmt(LIMIT)})\n`)
 console.log(`  stratégie          ramenés   dans le périmètre   hors périmètre   rappel    temps`)
 for (const r of results) {
   if (r.error) {
@@ -158,8 +158,8 @@ for (const r of results) if (r.truncated) console.log(`\n  /!\\ ${r.id} a attein
 const codes = results.find((r) => r.id.startsWith("4-code"))
 if (codes && !codes.error && codes.total === 0) {
   console.log(`\n  /!\\ 4-code ramène 0 : soit les champs departement_code/region_code ne sont pas encore`)
-  console.log(`  peuplés (relancer la génération de search_items), soit l'index Atlas Search n'a pas`)
-  console.log(`  fini sa reconstruction (db.search_items.aggregate([{ $listSearchIndexes: {} }])).\n`)
+  console.log(`  peuplés (relancer fillSearchItemsCollection), soit l'index Atlas Search n'a pas`)
+  console.log(`  fini sa reconstruction (db.search_jobs.aggregate([{ $listSearchIndexes: {} }])).\n`)
 }
 console.log(`\n  Lecture : "hors périmètre" compare chaque résultat au contour officiel. 4-code doit`)
 console.log(`  être à 0 % de bruit et 100 % de rappel par rapport à 3-contour ; un écart signale`)

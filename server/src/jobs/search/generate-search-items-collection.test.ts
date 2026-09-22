@@ -15,7 +15,6 @@ describe("fillSearchItemsCollection — réconciliation nightly (streamée)", ()
   useMongo()
 
   beforeEach(async () => {
-    await getDbCollection("search_items").deleteMany({})
     await getDbCollection("jobs_partners").deleteMany({})
   })
 
@@ -26,14 +25,14 @@ describe("fillSearchItemsCollection — réconciliation nightly (streamée)", ()
     await getDbCollection("jobs_partners").insertMany([active, cancelled, recruteur])
 
     // Doc déjà indexé avec keywords Mistral (doit être conservé, keywords compris) + orphelin (doit être purgé).
-    await getDbCollection("search_items").insertMany([
+    await getDbCollection("search_jobs").insertMany([
       generateSearchItemFixture({ _id: active._id, title: "Ancien titre", keywords: ["mot-clé-mistral"] }),
       generateSearchItemFixture({ title: "Orphelin (plus dans les sources)" }),
     ])
 
     await fillSearchItemsCollection()
 
-    const docs = await getDbCollection("search_items").find({}).toArray()
+    const docs = await getDbCollection("search_jobs").find({}).toArray()
     expect(docs).toHaveLength(2)
 
     const activeDoc = docs.find((doc) => doc._id.equals(active._id))
@@ -76,6 +75,5 @@ describe("fillSearchItemsCollection — réconciliation nightly (streamée)", ()
     expect(await idsOf("search_jobs")).toEqual([offre._id.toString()])
     expect(await idsOf("search_jobs_with_training")).toEqual([deleguee._id.toString()])
     expect(await idsOf("search_trainings")).toEqual([formation._id.toString()])
-    expect(await getDbCollection("search_items").countDocuments({})).toBe(3)
   })
 })

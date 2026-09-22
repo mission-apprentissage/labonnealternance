@@ -12,7 +12,7 @@ import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { downloadMistralBatchOutput, getMistralBatchJob, sendMistralMessages, submitMistralBatch } from "@/services/mistralai/mistralai.service"
-import { KEYWORDS_COLLECTIONS } from "@/services/search/search-items.service"
+import { SEARCH_JOBS_COLLECTIONS } from "@/services/search/search-items.service"
 
 /**
  * Génération continue des mots-clés Mistral des offres indexées, sans intervention manuelle :
@@ -29,9 +29,9 @@ import { KEYWORDS_COLLECTIONS } from "@/services/search/search-items.service"
  * Convention : `keywords: null` = « à générer » ; `[]` = « traité, rien d'utilisable »
  * (réponse invalide/vide) — le document sort de la file, pas de boucle.
  *
- * Double écriture (#5389) : chaque collection de KEYWORDS_COLLECTIONS est scannée et chaque
- * keyword écrit dans les trois par `_id`. Une offre qui change de corpus y est réinsérée à
- * `keywords: null`, la passe cache la rattrape sans appel Mistral.
+ * Les deux corpus d'offres (SEARCH_JOBS_COLLECTIONS) sont scannés et chaque keyword écrit par `_id`
+ * dans les deux. Une offre qui change de corpus y est réinsérée à `keywords: null`, la passe cache
+ * la rattrape sans appel Mistral.
  */
 
 export const KEYWORDS_MODEL = "mistral-small-latest"
@@ -110,13 +110,9 @@ const resolveKeywordsFromCache = async (hashes: string[]): Promise<Map<string, s
 
 const PENDING_PROJECTION = { _id: 1, title: 1, description: 1, rome_labels: 1, sub_type: 1 } as const
 
-// `search_items` mêle offres et formations ; les deux autres collections ne portent que des offres.
-const pendingFilterFor = (name: (typeof KEYWORDS_COLLECTIONS)[number], extra: { sub_type?: string } = {}) =>
-  name === "search_items" ? { type: "offre", keywords: null, ...extra } : { keywords: null, ...extra }
-
 const writeKeywordsToDocs = async (updates: AnyBulkWriteOperation<ISearchItem>[]) => {
   if (!updates.length) return
-  await Promise.all(KEYWORDS_COLLECTIONS.map((name) => getDbCollection(name).bulkWrite(updates, { ordered: false })))
+  await Promise.all(SEARCH_JOBS_COLLECTIONS.map((name) => getDbCollection(name).bulkWrite(updates, { ordered: false })))
 }
 
 const CACHE_PASS_CHUNK_SIZE = 500
@@ -187,8 +183,8 @@ export const generateSearchItemsKeywordsContinuous = async (payload?: { limit?: 
     }
     chunk = []
   }
-  for (const name of KEYWORDS_COLLECTIONS) {
-    for await (const doc of getDbCollection(name).find(pendingFilterFor(name), { projection: PENDING_PROJECTION })) {
+  for (const name of SEARCH_JOBS_COLLECTIONS) {
+    for await (const doc of getDbCollection(name).find({ keywords: null }, { projection: PENDING_PROJECTION })) {
       chunk.push(doc as KeywordsSourceDoc)
       if (chunk.length >= CACHE_PASS_CHUNK_SIZE) await flushChunk()
     }
@@ -242,8 +238,8 @@ export const submitSearchItemsKeywordsBatch = async (payload?: { recruteursOnly?
   const subTypeFilter = recruteursOnly ? { sub_type: LBA_ITEM_TYPE.RECRUTEURS_LBA } : {}
 
   const textByHash = new Map<string, string>()
-  for (const name of KEYWORDS_COLLECTIONS) {
-    for await (const doc of getDbCollection(name).find(pendingFilterFor(name, subTypeFilter), { projection: PENDING_PROJECTION })) {
+  for (const name of SEARCH_JOBS_COLLECTIONS) {
+    for await (const doc of getDbCollection(name).find({ keywords: null, ...subTypeFilter }, { projection: PENDING_PROJECTION })) {
       const sourceText = buildKeywordsSourceText(doc as KeywordsSourceDoc)
       if (!sourceText) continue
       textByHash.set(computeSourceHash(sourceText), sourceText)
@@ -395,7 +391,10 @@ export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
         const docId = new ObjectId(customId)
         await writeKeywordsToDocs([{ updateOne: { filter: { _id: docId }, update: { $set: { keywords } } } }])
         // Alimente aussi le cache pour les futurs documents au même texte source.
-        const doc = await getDbCollection("search_items").findOne({ _id: docId }, { projection: PENDING_PROJECTION })
+        const [jobsDoc, withTrainingDoc] = await Promise.all(
+          SEARCH_JOBS_COLLECTIONS.map((name) => getDbCollection(name).findOne({ _id: docId }, { projection: PENDING_PROJECTION }))
+        )
+        const doc = jobsDoc ?? withTrainingDoc
         const sourceText = doc ? buildKeywordsSourceText(doc) : ""
         if (sourceText) await writeKeywordsToCache({ sourceHash: computeSourceHash(sourceText), keywords, origin: "manual_import" })
       } else {

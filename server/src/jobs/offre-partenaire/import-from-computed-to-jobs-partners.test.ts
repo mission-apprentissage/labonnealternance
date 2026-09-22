@@ -1,5 +1,6 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { findIndexed } from "@tests/utils/search-index.test.utils"
 import type { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
@@ -59,7 +60,7 @@ describe("Importing computed_jobs_partners into jobs_partners", () => {
     it("remonte les _id jobs_partners des offres importées, y compris quand ils diffèrent du computed", async () => {
       // "existing_3" est déjà dans jobs_partners avec son propre _id, et son document computed en a
       // un autre : c'est l'_id de jobs_partners qu'il faut remonter, sinon l'appelant travaille sur
-      // un _id qui n'existe pas dans la collection (l'indexation search_items le traiterait comme
+      // un _id qui n'existe pas dans la collection (l'indexation le traiterait comme
       // une offre disparue et tenterait de la retirer de l'index).
       const existingJobPartner = await getDbCollection("jobs_partners").findOne({ partner_job_id: "existing_3" })
       const computedOfExisting = await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: "existing_3" })
@@ -242,7 +243,7 @@ describe("offer_status_history lors de l'import", () => {
   })
 })
 
-describe("updated_at posé par l'import et fenêtre du cron delta search_items", () => {
+describe("updated_at posé par l'import et fenêtre du cron delta de l'index de recherche", () => {
   useMongo()
 
   afterEach(async () => {
@@ -250,7 +251,6 @@ describe("updated_at posé par l'import et fenêtre du cron delta search_items",
     vi.restoreAllMocks()
     await getDbCollection("computed_jobs_partners").deleteMany({})
     await getDbCollection("jobs_partners").deleteMany({})
-    await getDbCollection("search_items").deleteMany({})
   })
 
   /**
@@ -323,7 +323,7 @@ describe("updated_at posé par l'import et fenêtre du cron delta search_items",
     for (const d of written) expect(d.updated_at.getTime()).toBeGreaterThanOrEqual(t0.getTime() + 6 * 60_000)
     expect(scanned).toBe(2)
     for (const s of stale) {
-      const indexed = await getDbCollection("search_items").findOne({ _id: s._id })
+      const indexed = await findIndexed(s._id)
       expect(indexed?.location?.coordinates).toEqual([-1.264835, 47.08357])
     }
   })

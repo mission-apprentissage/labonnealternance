@@ -10,7 +10,7 @@ import type { IAdminArea } from "shared/utils/admin-area"
  * `token` : le filtre est un `equals`, exact et le moins coûteux possible.
  */
 
-/** Champ `search_items` porteur du code pour la maille demandée. */
+/** Champ des documents de recherche porteur du code pour la maille demandée. */
 const ADMIN_AREA_FIELD: Record<IAdminArea["kind"], "departement_code" | "region_code"> = {
   region: "region_code",
   departement: "departement_code",

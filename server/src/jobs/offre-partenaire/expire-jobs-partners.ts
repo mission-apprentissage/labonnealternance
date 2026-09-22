@@ -84,7 +84,7 @@ export const expireJobsPartners = async () => {
   const expiringJobs = await getDbCollection("jobs_partners").find(filter).toArray()
 
   const result = await getDbCollection("jobs_partners").updateMany(filter, {
-    // updated_at : requis par le cron delta search_items (syncSearchItemsDelta).
+    // updated_at : requis par le cron delta de l'index de recherche (syncSearchItemsDelta).
     $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now },
     $push: {
       offer_status_history: {
