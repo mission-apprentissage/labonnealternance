@@ -5,8 +5,6 @@ import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 import { JOB_START_TYPE } from "./job.model.js"
 
-const collectionName = "search_items" as const
-
 export const ZSearchItemLocation = z
   .object({
     type: z.literal("Point"),
@@ -52,10 +50,7 @@ export const ZSearchItem = z.object({
 
 export type ISearchItem = z.output<typeof ZSearchItem>
 
-/**
- * Définition Atlas Search commune à `search_items` et aux collections par mode (#5389) : les
- * documents sont identiques pendant la double écriture, les réglages par corpus viennent avec #5525.
- */
+/** Définition Atlas Search commune aux trois corpus ; les réglages par corpus vivent dans search.service.ts (SEARCH_CORPORA). */
 export const SEARCH_ITEM_INDEX_DEFINITION = {
   mappings: {
     dynamic: false,
@@ -115,10 +110,3 @@ export const SEARCH_ITEM_INDEXES = [
   [{ publication_date: -1 }, {}],
   [{ location: "2dsphere" }, {}],
 ] as const satisfies IModelDescriptor["indexes"]
-
-export default {
-  zod: ZSearchItem,
-  indexes: SEARCH_ITEM_INDEXES,
-  searchIndexes: [{ name: "search_items_index", definition: SEARCH_ITEM_INDEX_DEFINITION }],
-  collectionName,
-} as const satisfies IModelDescriptor

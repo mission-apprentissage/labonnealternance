@@ -1,6 +1,6 @@
 # API Search — Référence d'intégration
 
-Endpoint de recherche unifié utilisant **MongoDB Search** (mongot / Lucene) sur la collection `search_items`.
+Endpoint de recherche unifié utilisant **MongoDB Search** (mongot / Lucene) sur une collection par mode de recherche (`mode` : `emplois` par défaut, `emplois_formation`, `formations`).
 
 ## Endpoint
 
@@ -136,13 +136,13 @@ Définie par `buildTextClauses` ([`search.service.ts`](../../server/src/services
 Composant [`SearchBar.tsx`](../../ui/app/beta/_components/SearchBar.tsx) :
 
 - **Champ texte libre** « Que recherchez-vous ? » (`Autocomplete` freeSolo) — **aucun référentiel métier imposé** (pas de liste ROME fermée).
-- **Suggestions** : endpoint dédié `/v1/search/suggest?q=<saisie>&limit=8` (contenu indexé + suggestions apprises), *throttle* ~300 ms, à partir de **3 caractères**. Dropdown : 1ʳᵉ ligne « Rechercher : {saisie} » (recherche texte libre) + groupe « Suggestions » avec la sous-chaîne matchée en gras.
+- **Suggestions** : endpoint dédié `/v1/search/suggest?q=<saisie>&limit=8&mode=<mode>` (contenu indexé du corpus du mode + suggestions apprises), *throttle* ~300 ms, à partir de **3 caractères**. Dropdown : 1ʳᵉ ligne « Rechercher : {saisie} » (recherche texte libre) + groupe « Suggestions » avec la sous-chaîne matchée en gras.
 - **Déclenchement de la recherche** (pas de bouton de soumission sur la page résultats) : touche **Entrée**, **sélection d'une suggestion** ou de la ligne « Rechercher : … », ou **vidage** du champ (retire `q`).
 
 ## Architecture technique
 
-- **Collection** : `search_items` (MongoDB)
-- **Index de recherche** : `search_items_index` (mongot / Lucene)
+- **Collections** : `search_jobs`, `search_jobs_with_training`, `search_trainings` (MongoDB), une par mode
+- **Index de recherche** : `<collection>_index` (mongot / Lucene), définition commune `SEARCH_ITEM_INDEX_DEFINITION` (`search-corpus.model.ts`), réglages par corpus dans `SEARCH_CORPORA` (`search.service.ts`)
 - **Champs full-text** : `title`, `description`, `keywords`, `organization_name` (analyseur `lucene.french`)
 - **Champs filtrables** : `type`, `type_filter_label`, `sub_type`, `contract_type`, `level`, `activity_sector`, `organization_name`, `is_disabled_elligible`, `start_type`, `start_date` (range), `smart_apply`, `is_algo_company`, `is_formation_included`
 - **Géosearch** : champ `location` (GeoJSON Point), rayon en mètres dans l'opérateur `geoWithin`

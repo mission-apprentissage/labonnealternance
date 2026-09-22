@@ -1,5 +1,6 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { countIndexed, findIndexed } from "@tests/utils/search-index.test.utils"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
@@ -10,7 +11,7 @@ import { processJobPartnersForApi, reprocessJobPartners } from "./process-job-pa
 
 // fillComputedJobsPartners neutralisé : ses étapes appellent les API externes (SIRET, ROME,
 // classification) et ne sont pas le sujet ici — les documents du test sont déjà validés. Le reste
-// de la chaîne (import vers jobs_partners puis indexation search_items) tourne pour de vrai.
+// de la chaîne (import vers jobs_partners puis indexation) tourne pour de vrai.
 vi.mock("./fill-computed-jobs-partners", async (importOriginal) => ({
   ...(await importOriginal<typeof import("./fill-computed-jobs-partners")>()),
   fillComputedJobsPartners: vi.fn(async () => ({})),
@@ -24,11 +25,10 @@ describe("process-job-partners-for-api", () => {
     return async () => {
       await getDbCollection("computed_jobs_partners").deleteMany({})
       await getDbCollection("jobs_partners").deleteMany({})
-      await getDbCollection("search_items").deleteMany({})
     }
   })
 
-  it("indexe dans search_items les offres importées, sans attendre le cron delta", async () => {
+  it("indexe les offres importées, sans attendre le cron delta", async () => {
     const computed = await createComputedJobPartner({
       partner_label: "Mission Apprentissage",
       partner_job_id: "api_offer_1",
@@ -44,8 +44,8 @@ describe("process-job-partners-for-api", () => {
     expect.soft(jobPartner?._id.toString()).toBe(computed._id.toString())
     expect.soft(jobPartner?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
 
-    // Le _id est conservé de bout en bout : computed_jobs_partners → jobs_partners → search_items.
-    const searchItem = await getDbCollection("search_items").findOne({ _id: computed._id })
+    // Le _id est conservé de bout en bout : computed_jobs_partners → jobs_partners → index de recherche.
+    const searchItem = await findIndexed(computed._id)
     expect.soft(searchItem?.type).toBe("offre")
     expect.soft(searchItem?.title).toBe("TEST SANDBOX - ne pas traiter")
   })
@@ -125,10 +125,10 @@ describe("process-job-partners-for-api", () => {
 
     await processJobPartnersForApi()
 
-    expect.soft(await getDbCollection("search_items").countDocuments({ _id: autreJob._id })).toBe(0)
+    expect.soft(await countIndexed(autreJob._id)).toBe(0)
     // L'offre du run, elle, est bien indexée.
     const importee = await getDbCollection("jobs_partners").findOne({ partner_job_id: "api_offer_3" })
-    expect.soft(await getDbCollection("search_items").countDocuments({ _id: importee!._id })).toBe(1)
+    expect.soft(await countIndexed(importee!._id)).toBe(1)
   })
 
   it("n'indexe pas les offres que l'import a écartées", async () => {
@@ -144,7 +144,7 @@ describe("process-job-partners-for-api", () => {
     await processJobPartnersForApi()
 
     expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: "api_offer_2" })).toBe(0)
-    expect.soft(await getDbCollection("search_items").countDocuments({ _id: computed._id })).toBe(0)
+    expect.soft(await countIndexed(computed._id)).toBe(0)
   })
 
   describe("reprocessJobPartners (levier d'incident CLI)", () => {
@@ -175,7 +175,7 @@ describe("process-job-partners-for-api", () => {
       await reprocessJobPartners({ filter: '{"partner_job_id":"reprocess_in_1"}' })
 
       expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: "reprocess_in_1" })).toBe(1)
-      expect.soft(await getDbCollection("search_items").countDocuments({ _id: inScope._id })).toBe(1)
+      expect.soft(await countIndexed(inScope._id)).toBe(1)
       expect.soft(await getDbCollection("computed_jobs_partners").countDocuments({ _id: inScope._id })).toBe(0)
       // Hors filtre : ni importé, ni supprimé.
       expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: "reprocess_out_1" })).toBe(0)

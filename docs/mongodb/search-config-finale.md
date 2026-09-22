@@ -1,14 +1,14 @@
 # Configuration finale du moteur de recherche (MongoDB Search)
 
 > Source de vérité unique de la configuration de recherche de La Bonne Alternance.
-> Alignée sur le code : `shared/src/models/search-items.model.ts`, `server/src/jobs/search/generate-search-items-collection.ts`, `server/src/services/search/search.service.ts`, `server/src/common/utils/mongodb-utils.ts`.
+> Alignée sur le code : `shared/src/models/search-corpus.model.ts`, `server/src/jobs/search/generate-search-items-collection.ts`, `server/src/services/search/search.service.ts`, `server/src/common/utils/mongodb-utils.ts`.
 > Pour le contexte de la décision (pourquoi cette architecture), voir [analyse-search-analyzers.md](./analyse-search-analyzers.md).
 
 ---
 
 ## 1. Principe : matching ≠ affichage
 
-La collection `search_items` agrège **3 types de documents** dans un index unique (`search_items_index`), classés par **un seul score**, affichés dans **une liste flat** côté front :
+Chaque mode de recherche a sa collection et son index (`search_jobs`, `search_jobs_with_training`, `search_trainings`, index `<collection>_index`), classés par **un seul score**, affichés dans **une liste flat** côté front. Les documents partagent un même schéma et relèvent de 3 types :
 
 - `formation` (sub_type `formation`)
 - `offre` (sub_type `offres_emploi_lba` / `offres_emploi_partenaires`)
@@ -102,7 +102,7 @@ Les facettes (`$searchMeta`) comptent les documents (pas de score) → le boosti
 3. Suppression des docs absents des sources.
 4. 2e passe `fillMissingKeywords` (Mistral) : source = `description`, à défaut `rome_labels` (recruteurs).
 
-> ⚠️ Le job **conserve les docs déjà présents** (`if (existingIds.has(id)) return`). Un re-run ne backfill **pas** les nouveaux champs. Pour appliquer un changement de schéma (ex. `rome_labels`, `description` recruteur vidée) : **drop la collection `search_items`** avant régénération.
+> ⚠️ Le job **conserve les docs déjà présents** (`if (existingIds.has(id)) return`). Un re-run ne backfill **pas** les nouveaux champs. Pour appliquer un changement de schéma (ex. `rome_labels`, `description` recruteur vidée) : **drop les collections du mode concerné** avant régénération.
 
 ### Index de recherche (`createSearchIndexes`)
 
@@ -143,7 +143,7 @@ Suggestions de saisie par **préfixe**, en plus de la recherche full-text.
 
 ```
 1. Déployer le code (modèle + job + service).
-2. Drop la collection `search_items`.
+2. Drop les collections `search_jobs`, `search_jobs_with_training`, `search_trainings`.
 3. Lancer fillSearchItemsCollection (régénère avec rome_labels, description recruteur vide).
 4. Lancer recreateIndexes (ou createSearchIndexes) → updateSearchIndex applique lba_company + rome_labels.
 5. Vérifier : listSearchIndexes contient lba_company et le champ rome_labels.

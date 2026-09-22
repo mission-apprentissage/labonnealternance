@@ -13,7 +13,7 @@ import { importFromComputedToJobsPartners } from "./import-from-computed-to-jobs
 const excludedJobPartnersFromApi = Object.values(JOBPARTNERS_LABEL)
 
 /**
- * Indexe dans search_items les offres que le run vient d'écrire, sans attendre le cron delta : les
+ * Indexe dans l'index de recherche les offres que le run vient d'écrire, sans attendre le cron delta : les
  * deux crons ne sont pas synchronisés, et lancé sur la même minute le delta peut lire jobs_partners
  * avant le commit de l'import (observé en recette le 28/08/2026 : offre visible 15 min plus tard).
  *
@@ -31,11 +31,11 @@ const syncImportedJobsToSearchItems = async (jobPartnerIds: ObjectId[]) => {
   }
   try {
     const { upserted, removed } = await syncJobPartnersToSearchItemsInChunks(jobPartnerIds)
-    logger.info(`processJobPartnersForApi: indexation search_items de ${jobPartnerIds.length} offres importées — ${upserted} upserts, ${removed} retraits`)
+    logger.info(`processJobPartnersForApi: indexation de ${jobPartnerIds.length} offres importées — ${upserted} upserts, ${removed} retraits`)
   } catch (err) {
     // Loggué en plus de Sentry : le run sort en succès, sans cette ligne la dégradation serait
     // indiscernable d'un bon run dans les logs, où se diagnostique la latence d'indexation.
-    logger.error({ err, count: jobPartnerIds.length }, "processJobPartnersForApi: indexation search_items en échec, rattrapage laissé au cron delta")
+    logger.error({ err, count: jobPartnerIds.length }, "processJobPartnersForApi: indexation en échec, rattrapage laissé au cron delta")
     sentryCaptureException(err)
   }
 }

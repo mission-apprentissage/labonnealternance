@@ -22,7 +22,7 @@ le contenu ici (les copies périment).
 
 ## Doc interne LBA
 
-- [search-config-finale.md](./search-config-finale.md) — configuration de l'index `search_items` (source de vérité)
+- [search-config-finale.md](./search-config-finale.md) — configuration des index de recherche par mode (source de vérité)
 - [api-search.md](./api-search.md) — référence de l'API `/v1/search`
 - [analyse-search-analyzers.md](./analyse-search-analyzers.md) — justification des choix d'analyzers
 - [current-behavior.md](./current-behavior.md) — comportement du moteur (tri, géo, facettes)

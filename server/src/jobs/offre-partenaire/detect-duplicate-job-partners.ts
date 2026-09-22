@@ -361,7 +361,7 @@ const buildOperationsForASingleOffer = (offer: TreatedDocument, otherOfferDuplic
     jobPartnerOperations.push({
       updateOne: {
         filter: { _id: offer._id },
-        // updated_at : requis par le cron delta search_items (syncSearchItemsDelta).
+        // updated_at : requis par le cron delta de l'index de recherche (syncSearchItemsDelta).
         update: { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() } },
       },
     })

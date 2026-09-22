@@ -277,7 +277,9 @@ export async function setupJobProcessor() {
           // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners ci-dessus) : mesuré en prod
           // le 29/08/2026, ce cron perdait 127 slots par 24 h en `noConcurrent_conflict`, soit un sur deux ;
           // la cadence effective de 10 min égalait DELTA_DEFAULT_WINDOW_MS, sans marge de recouvrement.
-          // Deux runs concurrents sont idempotents (lecture de jobs_partners, upsert search_items par _id).
+          // Noms « search_items » conservés : job-processor en fait le monitorSlug Sentry, un renommage
+          // recréerait les moniteurs et perdrait leur historique.
+          // Deux runs concurrents sont idempotents (lecture de jobs_partners, upsert par _id).
           "Sync delta search_items (jobs_partners modifiés)": {
             cron_string: "*/5 * * * *",
             handler: async () => syncSearchItemsDelta(),
