@@ -30,10 +30,6 @@ export default function PremiumAffelnet() {
   const [hasAccepted, setHasAccepted] = useState(false)
   const [etablissement, setEtablissement]: [IAffelnetEtablissement | null, (e: any) => void] = useState()
 
-  /**
-   * @description Accept terms.
-   * @returns {Promise<void>}
-   */
   const accept = async () => {
     await apiPost("/etablissements/:id/premium/affelnet/accept", {
       params: { id },
@@ -46,10 +42,6 @@ export default function PremiumAffelnet() {
     window.scrollTo(0, 0)
   }
 
-  /**
-   * @description Refuse terms.
-   * @returns {Promise<void>}
-   */
   const refuse = async () => {
     await apiPost("/etablissements/:id/premium/affelnet/refuse", {
       params: { id },

@@ -85,9 +85,7 @@ export const publishUrlNotification = async (url: string, type: GoogleIndexingNo
     await axiosClient.post(GOOGLE_INDEXING_PUBLISH_ENDPOINT, { url, type }, { headers: { Authorization: `Bearer ${accessToken}` } })
     return "published"
   } catch (err: any) {
-    // Erreur dédiée plutôt que l'objet Axios, dans les deux branches : celui-ci porte
-    // `config.headers.Authorization` (le Bearer token), que extraErrorDataIntegration
-    // sérialiserait tel quel dans Sentry (sendDefaultPii actif, pas de beforeSend filtrant).
+    // Erreur dédiée dans les deux branches : l'AxiosError porte le Bearer token, cf. SENSITIVE_KEY_PATTERN.
     const context = { extra: { url, type, status: err.response?.status, responseData: err.response?.data } }
     if (err.response?.status === 429) {
       sentryCaptureException(new Error("google-indexing: quota quotidien épuisé (HTTP 429)"), context)

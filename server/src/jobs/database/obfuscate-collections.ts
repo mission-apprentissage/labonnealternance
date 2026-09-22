@@ -245,16 +245,12 @@ const obfuscateUsersWithAccounts = async () => {
 
   logger.info(`obfuscating userswithaccounts done`)
 
-  // restoring one admin
   await keepSpecificUser(ADMIN_EMAIL, AccessEntityType.ADMIN)
 
-  // restoring one CFA user
   await keepSpecificUser("cfa@beta.gouv.fr", AccessEntityType.CFA)
 
-  // restoring one ENTREPRISE user
   await keepSpecificUser("entreprise@beta.gouv.fr", AccessEntityType.ENTREPRISE)
 
-  // restoring one OPCO user
   await keepSpecificUser("opco@beta.gouv.fr", AccessEntityType.OPCO)
 }
 

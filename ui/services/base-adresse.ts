@@ -33,10 +33,10 @@ const COMMUNE_RANK = 2
 
 /**
  * Seules catégories demandées à l'index `poi`. `type=municipality` ne filtre que l'index
- * `address` : sans cette restriction, `poi` remplissait les 10 places avec tout ce qui porte le
- * nom saisi (hameaux, arrêt de tram « Bretagne » à Nantes, forêt…) et plus aucune commune de
- * l'index `address` ne passait. Les communes restent servies par `address`, dans leur format
- * historique : pas de doublon, pas d'EPCI sans code, arrondissements déjà couverts (75115…).
+ * `address` : sans cette restriction, `poi` remplit les 10 places avec tout ce qui porte le
+ * nom saisi (hameaux, arrêt de tram « Bretagne » à Nantes, forêt…) et aucune commune de
+ * l'index `address` ne passe. Les communes restent servies par `address` : pas de doublon,
+ * pas d'EPCI sans code, arrondissements déjà couverts (75115…).
  */
 const POI_CATEGORIES = "département,région"
 
@@ -81,11 +81,10 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
     let filter = ""
 
     if (term.length < 6) {
-      // sur courte recherche on ne demande que des villes
       if (!type) filter = "&type=municipality"
 
       if (!isNaN(Number(term))) {
-        // si le début est un nombre on complète à 5 chiffes avec des 0 pour rechercher sur un CP
+        // saisie numérique : complétée à 5 chiffres avec des 0 pour rechercher sur un CP
         const zipLengthDiff = 5 - term.length
         for (let i = 0; i < zipLengthDiff; ++i) term += "0"
       }
@@ -116,7 +115,7 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
       const returnedItems = data.features.map((feature): IAddressItem => {
         const { label: addressLabel, citycode, toponym, category } = feature.properties
         // Sur `poi`, `postcode` et `citycode` sont des tableaux : sans ce premier élément, le
-        // libellé sérialisait le tableau (« Bretagne 76200,76370 »). `citycode` porte le code
+        // libellé sérialiserait le tableau (« Bretagne 76200,76370 »). `citycode` porte le code
         // commune sur `address`, et le code département ou région sur `poi` : l'API n'expose pas
         // de champ `code` dédié.
         const postcode = firstOf(feature.properties.postcode)

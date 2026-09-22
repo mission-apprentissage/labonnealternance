@@ -72,7 +72,6 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: b
 
     count++
 
-    // Invite all etablissements only in production environment
     const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Rappel: Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e`,

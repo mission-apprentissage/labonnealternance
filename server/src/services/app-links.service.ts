@@ -231,9 +231,6 @@ export function createViewDelegationLink(email: string, establishment_id: string
 
   return `${config.publicUrl}/espace-pro/proposition/formulaire/${establishment_id}/offre/${job_id}/siret/${siret_formateur}?token=${token}`
 }
-/**
- * Forge a link for Affelnet premium activation.
- */
 export function createRdvaPremiumAffelnetPageLink(email: string, siret: string, etablissementId: string): string {
   const token = generateAccessToken(
     { type: "cfa", email, siret },
@@ -268,9 +265,6 @@ export function createRdvaPremiumAffelnetPageLink(email: string, siret: string, 
   return `${config.publicUrl}/premium/affelnet/${etablissementId}?token=${encodeURIComponent(token)}`
 }
 
-/**
- * Forge a link for Parcoursup premium activation.
- */
 export function createRdvaPremiumParcoursupPageLink(email: string, siret: string, etablissementId: string): string {
   const token = generateAccessToken(
     { type: "cfa", email, siret },
@@ -305,9 +299,6 @@ export function createRdvaPremiumParcoursupPageLink(email: string, siret: string
   return `${config.publicUrl}/premium/${etablissementId}?token=${encodeURIComponent(token)}`
 }
 
-/**
- * Forge a link for allwoing unsubscription.
- */
 export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string, etablissementId: string): string {
   const token = generateAccessToken(
     { type: "cfa", email, siret },
@@ -334,9 +325,6 @@ export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string
   return `${config.publicUrl}/optout/unsubscribe/${etablissementId}?token=${encodeURIComponent(token)}`
 }
 
-/**
- * Forge a link for reading appointment
- */
 export function createRdvaAppointmentIdPageLink(email: string, siret: string, appointmentId: string): string {
   const token = generateAccessToken(
     { type: "cfa", email, siret },

@@ -41,7 +41,6 @@ export function generatePath(originalPath: string, params: PathParam = {}): stri
       // only apply the splat if it's the last segment
       if (isLastSegment && segment === "*") {
         const star = "*"
-        // Apply the splat
         return stringify(params[star])
       }
 
@@ -59,7 +58,6 @@ export function generatePath(originalPath: string, params: PathParam = {}): stri
       // Remove any optional markers from optional static segments
       return segment.replace(/\?$/g, "")
     })
-    // Remove empty segments
     .filter((segment) => !!segment)
 
   return prefix + segments.join("/")

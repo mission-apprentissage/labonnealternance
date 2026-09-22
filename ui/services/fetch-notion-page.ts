@@ -10,7 +10,7 @@ import type { ExtendedRecordMap } from "notion-types"
 const notion = new NotionAPI({ apiBaseUrl: process.env.NOTION_API_BASE_URL ?? "https://app.notion.com/api/v3" })
 
 // `cacheLife("days")` ci-dessous ne suffit pas : `cacheMaxMemorySize: 0` (next.config.mjs) rend le
-// cache handler "use cache" no-op en production, donc chaque requête retapait l'API Notion non
+// cache handler "use cache" no-op en production, donc chaque requête retaperait l'API Notion non
 // officielle → 429 en rafale (issue Sentry LBA-UI-5CVZZZZZZG4TR). Ce cache process-level est
 // indépendant du cache handler Next et sert aussi de dernier rempart (stale-if-error).
 const TTL_MS = 24 * 60 * 60 * 1_000

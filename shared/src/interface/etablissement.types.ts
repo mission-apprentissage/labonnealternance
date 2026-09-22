@@ -46,7 +46,7 @@ export const ZEtablissementCatalogue = z.strictObject({
   entreprise_numero_tva_intracommunautaire: z.null(),
   // Nullable côté catalogue : la donnée remonte à null pour certains OF (constaté en production sur
   // /api/etablissement/cfas-proches, Sentry LBA-SERVER-5J7KF4ZZZTAKP). Le schéma sert aussi de
-  // schéma de réponse de cette route, un z.string() strict la faisait échouer en sérialisation.
+  // schéma de réponse de cette route : un z.string() strict la ferait échouer en sérialisation.
   entreprise_raison_sociale: z.string().nullable(),
   entreprise_nom_commercial: z.null(),
   entreprise_date_creation: z.date(),

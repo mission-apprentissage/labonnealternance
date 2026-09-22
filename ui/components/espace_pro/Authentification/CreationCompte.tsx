@@ -51,7 +51,6 @@ export const CreationCompteForm = ({
 
     const nextUri = PAGES.dynamic.espaceProCreationDetail({ siret: formattedSiret, type: organisationType, origin, isWidget }).getPath()
 
-    // validate establishment_siret
     if (organisationType === AUTHTYPE.ENTREPRISE) {
       getEntrepriseInformation(formattedSiret).then((entrepriseData) => {
         if (entrepriseData.error === true) {
@@ -142,9 +141,8 @@ export const CreationCompteForm = ({
                   router.push(PAGES.static.espaceProCreationCfa.getPath())
                 }}
                 underline="hover"
-                // Ce lien n'ouvre pas de nouvel onglet : il bascule l'onglet courant via router.push.
-                // Le target="_blank" qu'il portait annonçait un changement de contexte qui n'a pas lieu (RGAA 6.1).
-                // Le href porte la destination réelle, pour que le lien reste utilisable hors JavaScript.
+                // Bascule l'onglet courant via router.push : pas de target="_blank", qui annoncerait un
+                // changement de contexte qui n'a pas lieu (RGAA 6.1). Le href garde le lien utilisable hors JS.
                 href={PAGES.static.espaceProCreationCfa.getPath()}
                 sx={{ cursor: "pointer" }}
               >

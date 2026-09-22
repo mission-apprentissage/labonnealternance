@@ -111,29 +111,12 @@ const emailCandidatureTemplateMap = {
   [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "mail-candidature",
 }
 
-/**
- * @description Get applications by job id
- */
 export const getApplicationsByJobId = (job_id: IApplication["job_id"]) => getDbCollection("applications").find({ job_id }).toArray()
 
-/**
- * @description Get applications count by job id
- */
 export const getApplicationCount = (job_id: IApplication["job_id"]) => getDbCollection("applications").countDocuments({ job_id })
 
-/**
- * @description Check if an email if blacklisted.
- * @param {string} email - Email
- * @return {Promise<boolean>}
- */
 export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await getDbCollection("emailblacklists").findOne({ email }))
 
-/**
- * @description Add an email address to the blacklist collection.
- * @param {string} email
- * @param {string} blacklistingOrigin
- * @return {Promise<void>}
- */
 export const addEmailToBlacklist = async (email: string, blacklistingOrigin: BlackListOrigins, event: BrevoEventStatus): Promise<void> => {
   try {
     z.email().parse(email)
@@ -164,9 +147,7 @@ export const removeEmailFromLbaCompanies = async (email: string) => {
 
 async function identifyFileType(base64Data: string): Promise<string | undefined> {
   try {
-    // Convert base64 string to a buffer
     const buffer = Buffer.from(base64Data, "base64")
-    // Get the file type from the buffer
     const type = await fileTypeFromBuffer(buffer)
     return type?.ext
   } catch (_) {
@@ -233,9 +214,6 @@ async function validateApplicationFileType(filename: string, base64String: strin
   }
 }
 
-/**
- * Send an application
- */
 export const sendApplicationV2 = async ({
   newApplication,
   caller,
@@ -321,9 +299,7 @@ export const sendApplicationV2 = async ({
 }
 
 /**
- * Build url to access item detail on LBA ui
- * email PJ contient un virus
- * email candidat et recruteur lors d'une candidature
+ * URLs de la fiche détail, pour les emails candidat et recruteur et l'email « PJ contient un virus ».
  */
 const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: string; utm_medium?: string; utm_campaign?: string }) => {
   const { job_id, company_siret, job_origin, job_title } = application
@@ -365,7 +341,6 @@ export const buildUserForToken = (application: IApplication, user?: IUserWithAcc
   }
 }
 
-// get data from applicant
 const buildReplyLink = (application: IApplication, intention: ApplicationIntention, userForToken: UserForAccessToken) => {
   const { job_origin, _id } = application
   const applicationId = _id.toString()
@@ -398,10 +373,6 @@ export const getUserManagingOffer = async (offer: { managed_by?: ObjectId | null
   return user
 }
 
-/**
- * Build urls to add in email messages sent to the recruiter
- * email recruteur uniquement
- */
 const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) => {
   const utmRecruiterData = "&utm_source=lba&utm_medium=email&utm_campaign=je-candidate-recruteur"
 
@@ -441,10 +412,8 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
   if (application.job_id) {
     urls.jobUrl = `${config.publicUrl}${buildJobUrlPath(application.job_origin, application.job_id.toString())}${utmRecruiterData}`
     urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
-    // Pour une offre LBA gérée par un recruteur identifié, on privilégie le lien qui connecte le recruteur
-    // et ouvre la modale "Clôturer votre recrutement" sur son tableau de bord (motif obligatoire).
-    // Sinon (offre partenaire, ou offre LBA sans gestionnaire identifié) on garde l'ancien lien par jeton,
-    // qui exécute l'action directement sur une page autonome.
+    // Offre LBA gérée par un recruteur identifié : lien qui le connecte et ouvre la modale « Clôturer
+    // votre recrutement » (motif obligatoire). Sinon, lien par jeton qui exécute l'action sur une page autonome.
     urls.cancelJobUrl =
       user && lbaJob?.workplace_siret
         ? createCloturerOffreMagicLink(userWithAccountToUserForToken(user), {
@@ -524,10 +493,6 @@ const offreOrCompanyToCompanyFields = (
   }
 }
 
-/**
- * @description Initialize application object from query parameters
- */
-// get data from applicant
 const newApplicationToApplicationDocumentV2 = async (
   newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput,
   applicant: IApplicant,
@@ -568,17 +533,11 @@ const newApplicationToApplicationDocumentV2 = async (
   return application
 }
 
-/**
- * @description Return template file path for given type
- */
 export const getEmailTemplate = (type = "mail-candidat"): string => {
   return getStaticFilePath(`./templates/${type}.mjml.ejs`)
 }
 
-/**
- * checks if email is not disposable
- * TODO KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
- */
+// TODO KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
 export const validatePermanentEmail = (email: string): string => {
   if (isEmailBurner(email)) {
     return "email temporaire non autorisé"
@@ -604,10 +563,6 @@ async function getApplicationCountForItemV2(applicantId: ObjectId, LbaJob: IJobO
   }
 }
 
-/**
- * @description checks if email's owner has not sent more than allowed count of applications per day
- */
-// get data from applicant
 const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOrCompanyV2, caller?: string): Promise<void> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
@@ -687,10 +642,6 @@ const getJobSourceType = async (application: IApplication) => {
 
   return ENTREPRISE
 }
-/**
- * @description sends notification email to applicant
- */
-// get data from applicant
 export const sendMailToApplicant = async ({
   application,
   applicant,
@@ -759,9 +710,6 @@ export const sendMailToApplicant = async ({
   return sentMessageId
 }
 
-/**
- * sends email notification to applicant if it's application hardbounced
- */
 const notifyHardbounceToApplicant = async ({ application }: { application: IApplication }): Promise<void> => {
   const applicant = await getApplicantFromDB({ _id: application.applicant_id })
   if (applicant) {
@@ -781,9 +729,6 @@ export interface IApplicationCount {
   count: number
 }
 
-/**
- * @description retourne le nombre de candidatures enregistrées par identifiant d'offres lba fournis
- */
 export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]): Promise<IApplicationCount[]> => {
   const applicationCountByJob = (await getDbCollection("applications")
     .aggregate([
@@ -807,11 +752,6 @@ export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]
   }))
 }
 
-/**
- * @description retourne le nombre de candidatures enregistrées par siret de société fournis
- * @param {ILbaCompany["siret"][]} sirets
- * @returns {Promise<IApplicationCount[]>} token data
- */
 export const getApplicationByCompanyCount = async (sirets: string[]): Promise<IApplicationCount[]> => {
   const applicationCountByCompany = (await getDbCollection("applications")
     .aggregate([
@@ -852,7 +792,6 @@ export const processApplicationHardbounceEvent = async (payload, sendNotificatio
 
   return false
 }
-// get data from applicant
 export const processApplicationCandidateHardbounceEvent = async (payload) => {
   const { email } = payload
   const messageId = payload["message-id"]
@@ -885,7 +824,6 @@ const sanitizeApplicantForEmail = (applicant: IApplicant) => {
     applicant_phone: sanitizeTextField(phone),
   }
 }
-// get data from applicant
 const sanitizeApplicationForEmail = (application: IApplication) => {
   const {
     applicant_attachment_name,
@@ -951,7 +889,6 @@ const getApplicationAttachmentContent = async (application: IApplication): Promi
   }
   return content
 }
-// get data from applicant
 export const processApplicationScanForVirus = async (application: IApplication, applicant: IApplicant) => {
   const fileContent = await getApplicationAttachmentContent(application)
   const hasVirus = await isInfected(fileContent)
@@ -1020,7 +957,6 @@ export const processApplicationEmails = {
       await this.sendCandidatEmail(application, applicant)
     }
   },
-  // get data from applicant
   async sendRecruteurEmail(application: IApplication, applicant: IApplicant, attachmentContent: string) {
     const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application, { utm_campaign: "je-candidate-recruteur" })
@@ -1188,8 +1124,7 @@ const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM
   if (searchParams) {
     searchParams.delete("page")
     // Le CTA promet des candidatures : on force les offres même si la recherche d'origine affichait
-    // aussi des formations (« Emplois avec formations »), auxquelles on ne candidate pas. C'est ce
-    // que faisait l'ancien `displayFormations=false` sur ce lien.
+    // aussi des formations (« Emplois avec formations »), auxquelles on ne candidate pas.
     searchParams.set("mode", "emplois")
     for (const utmParam of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
       searchParams.delete(utmParam)

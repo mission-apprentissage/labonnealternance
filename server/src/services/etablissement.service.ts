@@ -70,7 +70,6 @@ const getEffectif = (code: IEtablissementGouvData["data"]["unite_legale"]["tranc
 }
 
 /**
- * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  * Throw an error if the data is private
  */
 export const getEtablissementFromGouv = async (siret: string): Promise<IEtablissementGouvData | null> => {
@@ -80,9 +79,6 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IEtabliss
   }
   return data
 }
-/**
- * @description Get the establishment information from the REFERENTIEL API for a given SIRET
- */
 const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
   try {
     const { data } = await getHttpClient().get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
@@ -113,9 +109,6 @@ function getRaisonSocialeFromGouvResponse(d: IEtablissementGouvData["data"]): st
   }
 }
 
-/**
- * @description Format Entreprise data
- */
 export const formatEntrepriseData = (data: IEtablissementGouvData["data"]): IFormatAPIEntreprise => {
   if (!data.adresse) {
     throw new Error("erreur dans le format de l'api SIRENE : le champ adresse est vide")
@@ -135,9 +128,6 @@ export const formatEntrepriseData = (data: IEtablissementGouvData["data"]): IFor
   }
 }
 
-/**
- * @description Format Referentiel data
- */
 export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
   const geojson = d.adresse?.geojson ?? d.lieux_de_formation.at(0)?.adresse?.geojson
   if (!geojson) {
@@ -201,20 +191,16 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
 
   const siren = siret.slice(0, 9)
   const sirenRegex = `^${siren}`
-  // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
   const bonneBoiteList = await getAllEstablishmentFromLbaCompany({
     workplace_siret: { $regex: sirenRegex },
     apply_email: { $nin: ["", null] },
     partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   })
 
-  // Format arrays to get only the emails
   const bonneBoiteEmailList = bonneBoiteList.map(({ apply_email }) => apply_email)
 
-  // Create a single array with all emails duplicate free
   const validEmails = [...new Set([...bonneBoiteEmailList])]
 
-  // Check BAL API for validation
   const isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
   if (isValid) {
     return { isValid: true, validator: "bonnes boites ou referentiel opco" }
@@ -341,7 +327,6 @@ const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opc
       captureException(err)
     }
   })
-  // Save OPCO data to database for future use
   if (opcoDataToSave.length > 0) {
     await insertOpcos(opcoDataToSave)
   }
@@ -394,9 +379,8 @@ export const getEntrepriseDataFromSiret = async ({
       return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
     }
   }
-  // Check if a CFA already has the company as partenaire
+  // NAF 85 (enseignement) : organisme de formation, refusé pour un compte entreprise
   if (type === ENTREPRISE) {
-    // Allow cfa to add themselves as a company
     if (activite_principale?.code?.startsWith("85")) {
       if (isApiApprentissage) {
         return errorFactory("The SIRET number is not referenced as a company.", BusinessErrorCodes.IS_CFA)
@@ -507,8 +491,7 @@ export const entrepriseOnboardingWorkflow = {
     )
 
     let validated = false
-    // handiEngagement est posé ici sur le rôle (déclaration), mais n'est appliqué à
-    // referentiel_engagement_entreprise que lorsque ce rôle passe réellement à GRANTED
+    // handiEngagement déclaré ici, appliqué au passage à GRANTED (cf. applyPendingHandiEngagementIfGranted)
     const { user: managingUser } = await createOrganizationUser({
       userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail, last_action_date: new Date() },
       is_email_checked: false,
@@ -682,7 +665,6 @@ export const sendEmailConfirmationEntreprise = async (userId: ObjectId, accessSt
   const jobs = await getDbCollection("jobs_partners").find({ managed_by: userId }).toArray()
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && offre.is_delegated === false) {
-    // Get user account validation link
     const url = createValidationMagicLink(userWithAccountToUserForToken(user))
     const firstRomeCode = offre.offer_rome_codes.at(0)
     const referentielRomeOpt = firstRomeCode ? await getDbCollection("referentielromes").findOne({ "rome.code_rome": firstRomeCode }) : null

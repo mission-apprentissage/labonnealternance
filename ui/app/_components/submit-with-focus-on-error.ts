@@ -2,7 +2,7 @@ import type { FormikProps } from "formik"
 import type { RefObject } from "react"
 
 /**
- * Fabrique un handler onSubmit pour un formulaire Formik dont le bouton n'est plus désactivé par
+ * Fabrique un handler onSubmit pour un formulaire Formik dont le bouton n'est pas désactivé par
  * isValid : au submit, force l'affichage de l'erreur sur tous les champs invalides (setTouched) puis
  * scrolle/focus le premier champ en erreur dans l'ordre du DOM plutôt que de laisser le bouton inerte
  * sans indication visuelle. Repose sur l'attribut `name` de chaque champ (posé nativement par
