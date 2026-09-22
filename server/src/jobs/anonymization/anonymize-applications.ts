@@ -1,3 +1,4 @@
+import anonymizedApplicationsModel from "shared/models/anonymized-applications.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
@@ -38,7 +39,7 @@ const anonymize = async () => {
         $project: anonymizeApplicationProjection,
       },
       {
-        $merge: "anonymizedapplications",
+        $merge: anonymizedApplicationsModel.collectionName,
       },
     ])
     .toArray()
