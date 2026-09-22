@@ -57,7 +57,7 @@ export function WidgetTester() {
   return (
     <Box sx={{ p: fr.spacing("6v"), backgroundColor: "#f8f8f8" }}>
       <Typography variant="h1" sx={{ mb: fr.spacing("4v") }}>
-        Test du Widget La bonne alternance
+        Test du <span lang="en">Widget</span> La bonne alternance
       </Typography>
       <Typography sx={{ mb: fr.spacing("4v") }}>
         Lien vers la documentation détaillé :{" "}
@@ -81,7 +81,7 @@ export function WidgetTester() {
         <FormLabel htmlFor="caller">Identifiant appelant (caller)</FormLabel>
         <Input onChange={(e) => setCaller(e.target.value)} id="caller" name="caller" type="text" placeholder="ex: nom_site" className={fr.cx("fr-input")} />
         <Button type="button" title="Rafraîchir les widgets" onClick={refreshWidgets}>
-          Rafraîchir les widgets
+          Rafraîchir les <span lang="en">widgets</span>
         </Button>
       </Stack>
       <Box sx={{ p: fr.spacing("6v"), backgroundColor: fr.colors.decisions.background.altOverlap.grey.active, my: fr.spacing("6v") }}>

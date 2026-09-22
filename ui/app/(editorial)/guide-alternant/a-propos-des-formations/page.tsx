@@ -115,8 +115,8 @@ const AProposDesFormationsPage = () => {
           ]}
         />
         <Paragraph>
-          Les bénéfices du mentorat sont nombreux : conseils personnalisés, boost de confiance en soi, ouverture sur le monde professionnel et parfois même accès à des opportunités
-          d'emploi grâce au réseau de votre mentor.
+          Les bénéfices du mentorat sont nombreux : conseils personnalisés, <span lang="en">boost</span> de confiance en soi, ouverture sur le monde professionnel et parfois même
+          accès à des opportunités d'emploi grâce au réseau de votre mentor.
         </Paragraph>
       </Section>
       <Section title="Vous allez rencontrer une école ? Préparer votre rendez-vous avec notre quiz :">

@@ -224,17 +224,17 @@ export default function AlternanceDiplomes() {
             , l'alternance reste l'une des voies royales pour acquérir des réflexes terrain. Les BTS commerciaux — par exemple le{" "}
             {btsMco ? <Link href={PAGES.dynamic.seoDiplome(btsMco.slug).getPath()}>{btsMco.titre}</Link> : "BTS MCO"} ou le{" "}
             {btsNdrc ? <Link href={PAGES.dynamic.seoDiplome(btsNdrc.slug).getPath()}>{btsNdrc.titre}</Link> : "BTS NDRC"} — et le BUT Techniques de Commercialisation forment aux
-            métiers de la vente, du retail et du e-commerce. Les Licences Pro et Masters en marketing digital, communication ou data prolongent cette logique sur des fonctions plus
-            stratégiques (chef de produit, traffic manager, responsable marketing).
+            métiers de la vente, du <span lang="en">retail</span> et du e-commerce. Les Licences Pro et Masters en marketing digital, communication ou data prolongent cette logique
+            sur des fonctions plus stratégiques (chef de produit, <span lang="en">traffic manager</span>, responsable marketing).
           </Typography>
           <Typography component="p" sx={{ mb: fr.spacing("3v") }}>
             <Typography component="span" sx={accentSx}>
               Pour le numérique et l'informatique
             </Typography>
             , l'éventail va du {btsSio ? <Link href={PAGES.dynamic.seoDiplome(btsSio.slug).getPath()}>{btsSio.titre}</Link> : "BTS SIO"} (services informatiques aux organisations)
-            aux Masters spécialisés (cybersécurité, data science, IA, cloud), en passant par le BUT Informatique et les Licences Pro. Les débouchés sont massifs : développeur,
-            administrateur réseaux, technicien support, data analyst, ingénieur DevOps — autant de métiers en tension où l'alternance est particulièrement valorisée par les
-            recruteurs.
+            aux Masters spécialisés (cybersécurité, <span lang="en">data science</span>, IA, <span lang="en">cloud</span>), en passant par le BUT Informatique et les Licences Pro.
+            Les débouchés sont massifs : développeur, administrateur réseaux, technicien support, <span lang="en">data analyst</span>, ingénieur <span lang="en">DevOps</span> —
+            autant de métiers en tension où l'alternance est particulièrement valorisée par les recruteurs.
           </Typography>
           <Typography component="p" sx={{ mb: fr.spacing("3v") }}>
             <Typography component="span" sx={accentSx}>
