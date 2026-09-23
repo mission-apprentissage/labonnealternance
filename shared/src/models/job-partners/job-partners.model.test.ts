@@ -89,7 +89,7 @@ describe("ZJobsPartnersWritableApi", () => {
   })
 
   describe("offer_creation", () => {
-    // Fallback is handled in jobOpportinityService
+    // Fallback is handled in job-opportunity.service
     it("should allow null", () => {
       const result = ZJobsPartnersWritableApi.safeParse({
         ...data,
@@ -152,7 +152,7 @@ describe("ZJobsPartnersWritableApi", () => {
   })
 
   describe("offer_expiration", () => {
-    // Fallback is handled in jobOpportinityService
+    // Fallback is handled in job-opportunity.service
     it("should allow null", () => {
       const result = ZJobsPartnersWritableApi.safeParse({
         ...data,

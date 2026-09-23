@@ -38,13 +38,11 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
   const cardRefs = useRef(new Map<string, HTMLElement>())
   const [highlightedHitId, setHighlightedHitId] = useState<string | null>(null)
 
-  // Chaque fermeture de fiche est une nouvelle demande de scroll : `scrollToHitId` repasse
-  // par null (nettoyage de l'URL par SearchPageClient) entre deux fermetures, donc chaque
-  // transition null → valeur arme une demande — y compris pour re-consulter la même fiche.
-  // La demande reste armée dans une ref (et non consommée à la volée) car elle doit survivre
-  // au retour à null de `scrollToHitId` si la carte n'est pas encore rendue. Un booléen
-  // « déjà scrollé » ne suffit PAS : le composant est réutilisé (pas remonté) par le routeur
-  // au fil des allers-retours liste ↔ fiche, un garde définitif ne marche qu'une fois.
+  // `scrollToHitId` repasse par null entre deux fermetures de fiche (nettoyage de l'URL par
+  // SearchPageClient) : chaque transition null → valeur arme une demande, même pour la même
+  // fiche. Ref plutôt que consommation à la volée : la demande doit survivre au retour à null si
+  // la carte n'est pas encore rendue. Pas de booléen « déjà scrollé » : le routeur réutilise le
+  // composant au fil des allers-retours liste ↔ fiche, un garde définitif ne marcherait qu'une fois.
   const pendingScrollRef = useRef<string | null>(null)
   const prevScrollToHitIdRef = useRef<string | null | undefined>(null)
   if (scrollToHitId !== prevScrollToHitIdRef.current) {
@@ -52,15 +50,10 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
     if (scrollToHitId) pendingScrollRef.current = scrollToHitId
   }
 
-  // Retour depuis une fiche détail : re-scroller sur la carte consultée plutôt que de revenir
-  // en haut de liste. useLayoutEffect (avant la peinture du navigateur) + behavior "instant" :
-  // aucune animation à traversée de liste ni flash du haut — la toute première image peinte
-  // après le montage est déjà à la bonne position, même avec beaucoup de résultats chargés
-  // (« Voir plus »). Pas de tableau de deps : l'effet est ré-essayé à chaque rendu jusqu'à ce
-  // que la carte existe (chargement asynchrone des résultats) ; carte jamais chargée → la
-  // demande reste armée sans effet (repli silencieux, cf. hook).
-  // Le halo (highlightedHitId) est déclenché ICI, dans le même commit que le scroll : la toute
-  // première image peinte montre déjà la carte en vue ET surlignée, avant de s'estomper.
+  // Retour depuis une fiche détail : useLayoutEffect + behavior "instant" pour que la première
+  // image peinte soit déjà sur la carte consultée, sans flash du haut de liste. Pas de deps :
+  // ré-essayé à chaque rendu jusqu'à ce que la carte existe ; jamais chargée, la demande reste
+  // armée sans effet. Le halo est déclenché dans le même commit que le scroll.
   useLayoutEffect(() => {
     const target = pendingScrollRef.current
     if (!target) return
@@ -71,11 +64,8 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
     setHighlightedHitId(target)
   })
 
-  // Le cycle visuel (impulsion en cloche, 0,5 s) est entièrement porté par l'animation CSS
-  // de la carte (cf. SearchHitCard) : ce reset ne pilote rien de visible, il réarme le state
-  // APRÈS la fin de l'animation pour qu'une prochaine consultation puisse la rejouer. Le
-  // raccourcir sous la durée de l'animation la couperait net (animation: none) ; le
-  // rallonger est sans effet visuel, l'état final `both` étant déjà transparent.
+  // L'animation (0,5 s) est portée par le CSS de SearchHitCard : ce reset réarme seulement le
+  // state pour la consultation suivante. Sous la durée de l'animation, il la couperait net.
   useEffect(() => {
     if (!highlightedHitId) return
     const timer = setTimeout(() => setHighlightedHitId(null), 1000)

@@ -4,14 +4,8 @@ import { referrers } from "shared/constants/referers"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligible-trainings-for-appointment.service"
 import type { Server } from "../server"
 
-/**
- * @description Partners server.
- */
 export default (server: Server) => {
-  /**
-   * @description Returns all available parcoursup ids.
-   * This endpoint is used by Parcoursup.
-   */
+  // Appelé par Parcoursup
   server.get(
     "/partners/parcoursup/formations",
     {

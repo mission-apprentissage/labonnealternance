@@ -63,10 +63,7 @@ export const modifyPermissionToUser = async (
     becameGranted = eventProps.status === AccessStatus.GRANTED
   }
 
-  // Point de passage unique de toute transition réelle vers GRANTED (création directe, auto-validation,
-  // activation admin/OPCO) : c'est ici, et seulement ici, qu'un engagement handicap déclaré à la création
-  // du compte (cf. ZRoleManagement.handiEngagement) devient effectif dans referentiel_engagement_entreprise
-  // — jamais avant qu'un compte soit réellement validé.
+  // Point de passage unique de toute transition réelle vers GRANTED (cf. applyPendingHandiEngagementIfGranted).
   if (becameGranted) {
     await applyPendingHandiEngagementIfGranted(updatedRole)
   }
@@ -353,7 +350,6 @@ export const deactivateUserRole = async ({
   }
   const { email, last_name, first_name, phone } = user
   const { siret, raison_sociale } = organization
-  // send email to user to notify him his account has been disabled
   await sendDeactivatedRecruteurMail({
     email,
     last_name,
@@ -388,12 +384,6 @@ export const activateUserRole = async ({ userId, organizationId, requestedBy }: 
   })
 
   if (updatedRole.authorized_type === AccessEntityType.ENTREPRISE) {
-    /**
-     * if entreprise type of user is validated :
-     * - activate offer
-     * - update expiration date to one month later
-     * - send email to delegation if available
-     */
     await checkForJobActivations(updatedRole.user_id, new ObjectId(updatedRole.authorized_id))
   }
 

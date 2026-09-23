@@ -28,9 +28,6 @@ import { getUserRecruteurById } from "@/services/user-recruteur.service"
 import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
 
 export default (server: Server) => {
-  /**
-   * Get form from id
-   */
   server.get(
     "/formulaire/:establishment_id",
     {
@@ -62,9 +59,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Get form from id
-   */
   server.get(
     "/formulaire/delegation/:establishment_id",
     {
@@ -82,9 +76,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Post form
-   */
   server.post(
     "/user/:userId/formulaire",
     {
@@ -153,9 +144,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Create new offer
-   */
   server.post(
     "/formulaire/:establishment_id/offre",
     {
@@ -215,9 +203,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Create new offer
-   */
   server.post(
     "/formulaire/:establishment_id/offre/by-token",
     {
@@ -286,9 +271,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Create offer delegations
-   */
   server.post(
     "/formulaire/offre/:jobId/delegation",
     {
@@ -344,9 +326,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Update an existing offer from id
-   */
   server.put(
     "/formulaire/offre/:jobId",
     {

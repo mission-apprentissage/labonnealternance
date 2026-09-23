@@ -55,18 +55,17 @@ export const TRANCHES_AGE_PROFESSIONNALISATION: Array<TrancheAge> = [
   { min: 26, max: null },
 ]
 
-// Taux pour l'apprentissage
-// Indexé par les tranches d'âge et l'année de contrat
+// Indexé par l'index de tranche dans TRANCHES_AGE_APPRENTISSAGE, puis par l'année de contrat
 export const TAUX_APPRENTISSAGE: Record<number, Record<number, number>> = {
   0: {
-    1: APPRENTISSAGE_TAUX_1ERE_TRANCHE_AGE_1ERE_ANNEE_CONTRAT, // 1ère année de contrat
-    2: APPRENTISSAGE_TAUX_1ERE_TRANCHE_AGE_2EME_ANNEE_CONTRAT, // 2ème année de contrat
-    3: APPRENTISSAGE_TAUX_1ERE_TRANCHE_AGE_3EME_ANNEE_CONTRAT, // 3ème année de contrat
-    4: APPRENTISSAGE_TAUX_1ERE_TRANCHE_AGE_4EME_ANNEE_CONTRAT, // 4ème année de contrat
+    1: APPRENTISSAGE_TAUX_1ERE_TRANCHE_AGE_1ERE_ANNEE_CONTRAT,
+    2: APPRENTISSAGE_TAUX_1ERE_TRANCHE_AGE_2EME_ANNEE_CONTRAT,
+    3: APPRENTISSAGE_TAUX_1ERE_TRANCHE_AGE_3EME_ANNEE_CONTRAT,
+    4: APPRENTISSAGE_TAUX_1ERE_TRANCHE_AGE_4EME_ANNEE_CONTRAT,
   }, // 14-17 ans
   1: {
-    1: APPRENTISSAGE_TAUX_2EME_TRANCHE_AGE_1ERE_ANNEE_CONTRAT, // 1ère année de contrat
-    2: APPRENTISSAGE_TAUX_2EME_TRANCHE_AGE_2EME_ANNEE_CONTRAT, // ... etc
+    1: APPRENTISSAGE_TAUX_2EME_TRANCHE_AGE_1ERE_ANNEE_CONTRAT,
+    2: APPRENTISSAGE_TAUX_2EME_TRANCHE_AGE_2EME_ANNEE_CONTRAT,
     3: APPRENTISSAGE_TAUX_2EME_TRANCHE_AGE_3EME_ANNEE_CONTRAT,
     4: APPRENTISSAGE_TAUX_2EME_TRANCHE_AGE_4EME_ANNEE_CONTRAT,
   }, // 18-20 ans
@@ -84,8 +83,7 @@ export const TAUX_APPRENTISSAGE: Record<number, Record<number, number>> = {
   }, // 26+ ans
 }
 
-// Taux pour les contrats de professionnalisation
-// Indexé par les tranches d'âge et le groupe de niveau de diplôme (pré ou post-bac)
+// Indexé par l'index de tranche dans TRANCHES_AGE_PROFESSIONNALISATION, puis par NiveauDiplomeGroup
 export const TAUX_PROFESSIONNALISATION: Record<number, { inferieurBac: number; bacEtPlus: number }> = {
   0: {
     inferieurBac: CONTRAT_PRO_TAUX_1ERE_TRANCHE_AGE_DIPLOME_1_3,
@@ -101,11 +99,6 @@ export const TAUX_PROFESSIONNALISATION: Record<number, { inferieurBac: number; b
   }, // 26+ ans (minimum SMIC ou 85% SMC)
 }
 
-/**
- * MAPPING NIVEAU DIPLÔME → GROUPE
- * Niveaux 1-3 : Inférieur au Bac (inferieurBac)
- * Niveaux 4-8 : Bac+2 et plus (bacEtPlus)
- */
 export const NIVEAU_DIPLOME_TO_GROUP: Record<number, NiveauDiplomeGroup> = {
   1: "inferieurBac",
   2: "inferieurBac",

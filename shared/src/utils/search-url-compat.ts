@@ -24,7 +24,7 @@ import { NIVEAUX_POUR_LBA } from "../constants/recruteur.js"
  * | `displayFormations=true`   | `mode=emplois_formation`|                                             |
  * | `displayEntreprises=false` | `is_algo_company=false` | masquait les recruteurs LBA                 |
  * | `scrollToRecruteursLba`    | `is_algo_company=true`  | mise en avant des entreprises à contacter   |
- * | `romes`, `rncp`, `opco`    | —                       | pas d'équivalent (cf. NON_TRADUITS)         |
+ * | `romes`, `rncp`, `opco`    | —                       | pas d'équivalent (cf. LEGACY_PARAMS_SANS_EQUIVALENT)|
  * | `displayFilters`, `activeItems` | —                  | notions disparues du nouveau moteur         |
  *
  * `romes` n'est PAS traduit : le nouveau moteur cherche sur un libellé texte (`q`), pas sur des
@@ -36,7 +36,6 @@ import { NIVEAUX_POUR_LBA } from "../constants/recruteur.js"
 /** Clés legacy sans équivalent : consommées puis abandonnées, listées pour l'audit. */
 const LEGACY_PARAMS_SANS_EQUIVALENT = ["romes", "rncp", "opco", "displayFilters", "activeItems"] as const
 
-/** Clés legacy traduites ci-dessous. */
 const LEGACY_PARAMS_TRADUITS = ["job_name", "address", "lat", "lon", "diploma", "displayFormations", "displayEntreprises", "scrollToRecruteursLba"] as const
 
 const isSet = (params: URLSearchParams, key: string) => (params.get(key) ?? "").trim() !== ""
@@ -84,10 +83,9 @@ export function applyLegacySearchParams(search: URLSearchParams): URLSearchParam
   }
 
   // `mode` n'est inféré que si le lien exprimait explicitement un choix d'affichage. Une URL
-  // legacy nue (ni `displayFormations` ni `displayEntreprises`) reste sur le défaut du nouveau
-  // moteur (`emplois`) : c'est déjà ce qu'elle produit aujourd'hui, et basculer ces URL — dont
-  // les pages métier indexées, 2ᵉ source de trafic organique — en emplois+formations serait un
-  // changement de mix de résultats, pas une correction de lien.
+  // legacy nue reste sur le défaut du nouveau moteur (`emplois`) : basculer ces URL — dont les
+  // pages métier indexées, 2ᵉ source de trafic organique — en emplois+formations changerait le
+  // mix de résultats, ce n'est pas une correction de lien.
   if (!isSet(result, "mode") && search.get("displayFormations") === "true") {
     result.set("mode", "emplois_formation")
   }
@@ -146,7 +144,7 @@ export function parseSearchUrlFromParam(from: string | null | undefined): URLSea
  * exploitable à rejouer.
  *
  * Ordre : `from` d'abord (déjà au format du nouveau moteur, c'est la recherche exacte de
- * l'usager), traduction legacy ensuite (URL d'avant la bascule).
+ * l'usager), traduction legacy ensuite.
  */
 export function resolveSearchParamsFromUrl(url: URL): URLSearchParams | null {
   const fromParams = parseSearchUrlFromParam(url.searchParams.get("from"))

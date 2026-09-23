@@ -83,7 +83,6 @@ export async function up(): Promise<number> {
   return count
 }
 
-// Show migration status and returns number of pending migrations
 export async function status(): Promise<{ count: number; requireShutdown: boolean }> {
   const migrationFiles = await listMigrationFiles()
   const appliedMigrationsFiles = await getAppliedMigrations()

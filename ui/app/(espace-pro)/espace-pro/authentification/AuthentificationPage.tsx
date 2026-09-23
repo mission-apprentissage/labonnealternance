@@ -130,7 +130,7 @@ export default function Authentification() {
             onSubmit={submitEmail}
           >
             {({ values, isSubmitting, validateForm, setTouched, submitForm }) => {
-              // Le bouton ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui force l'affichage
+              // Le bouton ne dépend pas de isValid : cf. createSubmitWithFocusOnError, qui force l'affichage
               // de l'erreur et déplace le focus sur le champ invalide (RGAA 11.10, 12.8).
               const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
               return (

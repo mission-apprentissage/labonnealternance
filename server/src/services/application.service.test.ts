@@ -17,7 +17,6 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
 import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, removeEmailFromLbaCompanies, sendApplicationV2 } from "./application.service"
 
-// Mock S3 operations to avoid actual AWS calls during tests
 vi.mock("@/common/utils/aws-utils", () => {
   return {
     s3WriteString: vi.fn().mockResolvedValue(undefined),
@@ -26,14 +25,12 @@ vi.mock("@/common/utils/aws-utils", () => {
   }
 })
 
-// Mock ClamAV antivirus service to avoid dependency on external service
 vi.mock("@/services/clamav.service", () => {
   return {
     isInfected: vi.fn().mockResolvedValue(false),
   }
 })
 
-// Mock mailer service to avoid sending actual emails during tests
 vi.mock("@/services/mailer.service", () => {
   return {
     default: {
@@ -43,8 +40,7 @@ vi.mock("@/services/mailer.service", () => {
   }
 })
 
-// Mock axios to avoid actual HTTP calls during tests (used by Taleez API integration)
-// Using importOriginal to preserve axios.create() which is used by other services at module init time
+// importOriginal : axios.create() est appelé par d'autres services au chargement du module
 vi.mock("axios", async (importOriginal) => {
   const mod = await importOriginal<typeof import("axios")>()
   return {
@@ -224,14 +220,12 @@ describe("Sending application", () => {
 
 describe("buildApplicationFromHelloworkAndSaveToDb", () => {
   afterEach(async () => {
-    // Clean up collections after each test
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("applicants").deleteMany({})
     await getDbCollection("applications").deleteMany({})
   })
 
   it("Should successfully create application from Hellowork with valid data", async () => {
-    // Create a valid partner job
     const partnerJob = generateJobsPartnersOfferPrivate({
       _id: new ObjectId("6081289803569600282e0010"),
       partner_job_id: "job_dev_001",
@@ -269,7 +263,6 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     expect(result.atsApplicationId).toBeTruthy()
     expect(typeof result.atsApplicationId).toBe("string")
 
-    // Verify the application was created in the database
     const savedApplication = await getDbCollection("applications").findOne({ _id: new ObjectId(result.atsApplicationId) })
     expect(savedApplication).toBeTruthy()
     expect(savedApplication?.caller).toBe("hellowork-api")
@@ -306,7 +299,6 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     expect(result).toHaveProperty("atsApplicationId")
     expect(result.atsApplicationId).toBeTruthy()
 
-    // Verify the application message is empty when no cover letter
     const savedApplication = await getDbCollection("applications").findOne({ _id: new ObjectId(result.atsApplicationId) })
     expect(savedApplication?.applicant_message_to_company).toBe("")
   })
@@ -415,7 +407,6 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       },
     })
 
-    // Create applicant
     const applicant = await getDbCollection("applicants").insertOne({
       _id: new ObjectId(),
       firstname: "Repeat",
@@ -427,8 +418,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       updatedAt: new Date(),
     })
 
-    // Create 3 existing applications for the same job and applicant
-    // This is at the limit, so the next (4th) application should trigger the error (max is 3)
+    // 3 candidatures existantes = la limite (max 3) : la 4e doit échouer
     const applications = Array.from({ length: 3 }, () =>
       generateApplicationFixture({
         applicant_id: applicant.insertedId,
@@ -466,7 +456,6 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       },
     })
 
-    // Create applicant
     const applicant = await getDbCollection("applicants").insertOne({
       _id: new ObjectId(),
       firstname: "Spam",
@@ -691,13 +680,11 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
 
     await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
 
-    // Should send both company email (mail-candidature-spontanee) and applicant email (mail-candidat-recruteur-lba)
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
     const templates = mailerSendEmailSpy.mock.calls.map((call) => call[0].template)
     expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidature-spontanee")]))
     expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidat-offre-emploi")]))
 
-    // DB should be updated with both message IDs
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
     expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
@@ -728,7 +715,6 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
     })
     await getDbCollection("applications").insertOne(application)
 
-    // Import axios to check the mock call
     const axios = await import("axios")
     vi.mocked(axios.default.post).mockClear()
 
@@ -741,7 +727,6 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(1)
     expect(mailerSendEmailSpy.mock.calls[0][0]).toMatchObject({ to: applicant.email })
 
-    // DB: to_company_message_id should remain null (Taleez handles it), to_applicant_message_id should be set
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
     expect(updatedApplication?.to_company_message_id).toEqual("Taleez")
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
@@ -773,13 +758,11 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
 
     await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
 
-    // Should send both company email (mail-candidature-partenaire) and applicant email (mail-candidat-offre-emploi)
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
     const templates = mailerSendEmailSpy.mock.calls.map((call) => call[0].template)
     expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidature")]))
     expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidat-offre-emploi")]))
 
-    // DB should be updated with both message IDs
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
     expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")

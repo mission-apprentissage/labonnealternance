@@ -135,7 +135,6 @@ const activeLogger = (): Logger => requestLoggerStore.getStore() ?? rootLogger
  * Logger applicatif. Proxy qui résout dynamiquement le logger actif :
  * - le logger de requête (avec reqId) si on est dans le cycle de vie d'une requête HTTP ;
  * - sinon le logger racine.
- * L'API publique (info/warn/error/debug/trace/fatal/child/level) reste identique.
  */
 export const logger: Logger = new Proxy({} as Logger, {
   get(_target, prop) {
@@ -159,7 +158,6 @@ export function getRootLogger(): FastifyBaseLogger {
 
 /**
  * Ajoute un contexte persistant au logger racine (utilisé par la CLI pour taguer le module).
- * Remplace l'ancienne mutation `logger.fields.module` de Bunyan.
  */
 export function setRootContext(fields: Record<string, unknown>): void {
   rootLogger = rootLogger.child(fields)

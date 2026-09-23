@@ -33,12 +33,8 @@ import { PAGES } from "@/utils/routes.utils"
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const { setFormValues } = React.useContext(DisplayContext)
 
-  // `rechercheParams` est résolu par resolveRecherchePageParams : sur une fiche ouverte depuis
-  // le moteur, job_name/geo/radius viennent du `?from=` (les cartes ne posent plus job_name,
-  // lat ni lon sur l'URL de la fiche), sinon des paramètres legacy. Sans cette résolution,
-  // formValues restait { job: null, location: null } — d'où un `job_searched_by_user` vide sur
-  // les candidatures, la distance au lieu de recherche masquée et les dimensions métier/lieu
-  // perdues côté Plausible et Matomo.
+  // `rechercheParams` vient de resolveRecherchePageParams (`?from=` du moteur, sinon paramètres
+  // legacy) ; cf. son JSDoc pour ce qui dépend de formValues.
   React.useEffect(() => {
     setFormValues({
       job: rechercheParams.job_name ? { label: rechercheParams.job_name } : null,
@@ -102,9 +98,6 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
     return () => window.removeEventListener("resize", updateHeaderHeight)
   }, [])
 
-  // Ouverture depuis le moteur de recherche (?from=/recherche…) : précédent/suivant naviguent
-  // dans les résultats de /recherche et « fermer » y retourne. Sans ?from=, pas de contexte
-  // de liste : pas de précédent/suivant, « fermer » retombe sur /recherche.
   const { swipeHandlers, goNext, goPrev, handleClose: closeToSearch, position } = useDetailNavigation()
 
   useEffect(() => {

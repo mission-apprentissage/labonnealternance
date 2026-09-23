@@ -39,8 +39,8 @@ export const LayoutArticle = ({
   sourceAllerPlusLoin?: string
   parentPage?: IPage
   page: IPage
-  // metadata de la page (celle exportée pour Next) : IPage ne porte plus les métadonnées SEO,
-  // qui vivent dans le registre METADATA server-only (issue #5214)
+  // metadata exportée par la page pour Next : les métadonnées SEO vivent dans le registre
+  // METADATA server-only, pas dans IPage (#5214)
   metadata: Metadata
 }) => (
   <>

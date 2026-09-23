@@ -20,6 +20,8 @@ export enum ApplicationScanStatus {
   DO_NOT_SEND = "DO_NOT_SEND",
   UNKNOWN_ERROR = "UNKNOWN_ERROR",
   ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
+  /** Terminal : candidature jamais traitée dont le CV a été purgé, donc plus envoyable (cf. purgeApplicationCvFiles). */
+  CV_PURGED = "CV_PURGED",
 }
 
 export enum CompanyFeebackSendStatus {
@@ -41,6 +43,7 @@ const ZApplicationOld = z.strictObject({
     .min(1)
     .regex(/((.*?))(\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$/i)
     .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
+  applicant_attachment_deleted_at: z.date().nullish().describe("Date de suppression du CV du candidat sur S3. Null ou absent : le CV est encore stocké et consultable."),
   applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
   applicant_inscription_formation: z.boolean().nullish().describe("Information donnée par le candidat. Indique si le candidat est inscrit en formation."),
   applicant_contract_duration: z.string().nullish().describe("Information donnée par le candidat. Durée souhaitée du contrat."),
@@ -200,6 +203,8 @@ export default {
     [{ scan_status: 1 }, {}],
     [{ scan_status: 1, to_applicant_message_id: 1 }, {}],
     [{ created_at: 1 }, {}],
+    // Purge des CV à 1 an : égalité sur applicant_attachment_deleted_at (null = à purger), puis intervalle sur created_at.
+    [{ applicant_attachment_deleted_at: 1, created_at: 1 }, {}],
     [{ company_email: 1 }, {}],
     [{ applicant_contract_start: 1 }, {}],
     [{ applicant_contract_duration: 1 }, {}],

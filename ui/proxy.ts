@@ -10,19 +10,17 @@ import { PAGES } from "./utils/routes.utils"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
-// SESSION_RETRY_PARAM (shared/constants/session) : marqueur de rebond posé sur la redirection
-// espace-pro protégée → authentification quand la session n'a pas pu être confirmée invalide (panne
-// API, pas de 401), et par le layout connecté quand la session est illisible dans le rendu. S'il est
-// déjà présent quand on atterrit sur /espace-pro/authentification, on ne fait plus jamais confiance
-// à un résultat "session valide" pour rebondir une nouvelle fois vers la page protégée : un signal
-// instable (JWT proche de l'expiration, API auth flaky) ne doit jamais produire plus d'un
-// aller-retour (cf. issue #5245).
+// SESSION_RETRY_PARAM : marqueur de rebond vers /espace-pro/authentification, posé quand la session
+// n'a pas pu être confirmée invalide (panne API, pas de 401) et par le layout connecté quand la
+// session est illisible dans le rendu. S'il est présent, un résultat « session valide » ne relance
+// pas de rebond vers la page protégée : un signal instable (JWT proche de l'expiration, API auth
+// flaky) ne doit jamais produire plus d'un aller-retour (issue #5245).
 
 // Un préchargement Next (<Link prefetch>, segment cache) n'est pas une navigation : rediriger un
 // utilisateur connecté vers son accueil depuis /espace-pro/authentification n'a aucun sens dans ce
 // cas, et produit une boucle 307 ↔ 307 quand la page d'origine affiche un lien « Connexion » (le
 // navigateur suit la redirection, Next re-redirige pour rétablir le paramètre _rsc, et le routeur
-// relance le préchargement — incident du 2026-09-02). On sert alors la page telle quelle.
+// relance le préchargement). On sert alors la page telle quelle.
 const isPrefetchRequest = (request: NextRequest): boolean => request.headers.has("next-router-prefetch") || request.headers.has("next-router-segment-prefetch")
 
 type SessionCheckResult =
@@ -117,7 +115,6 @@ const redirectToAuthentication = (request: NextRequest, options: { purgeCookie: 
   return response
 }
 
-// Laisse passer la requête vers le rendu Next en lui transmettant la session résolue par le proxy.
 const passThroughWithSession = (request: NextRequest, result: SessionCheckResult) => {
   const requestHeaders = new Headers(request.headers)
   // seul le proxy a le droit de poser x-session : un client ne doit pas pouvoir le forger
@@ -162,10 +159,8 @@ export async function proxy(request: NextRequest) {
         return passThroughWithSession(request, result)
       }
       if (query.get(SESSION_RETRY_PARAM)) {
-        // On vient de rebondir depuis une route protégée qui n'a pas pu confirmer la session
-        // (panne API ambiguë) : même si elle semble valide ici, ne pas rebondir une nouvelle fois,
-        // le signal est instable. L'utilisateur devra se reconnecter manuellement une fois l'API
-        // stabilisée.
+        // Rebond déjà fait (cf. SESSION_RETRY_PARAM en tête de fichier) : l'utilisateur se reconnecte
+        // manuellement une fois l'API stabilisée.
         return renderAuthenticationPage(request, { purgeCookie: false })
       }
       return redirectAfterAuthentication(result.user, request)
