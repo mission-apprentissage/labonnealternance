@@ -25,6 +25,11 @@ type Props = {
   variant?: "inline" | "floating"
   /** Appelé après chaque réponse, question passée ou fermeture, avec l'état complet du parcours. */
   onProgress?: (progress: IFeedbackWidgetProgress) => void
+  /**
+   * `false` : la croix reste dessinée, pour que l'aperçu ressemble au widget réel, mais grisée et
+   * retirée de l'arbre d'accessibilité et de la tabulation — elle ne fait rien dans ce contexte.
+   */
+  closable?: boolean
 }
 
 /**
@@ -38,7 +43,7 @@ type Props = {
  * Accessibilité : à chaque question, le focus est placé sur son libellé, sans quoi l'utilisateur
  * clavier ou lecteur d'écran resterait sur un bouton qui vient de disparaître (RGAA 7.1).
  */
-export function FeedbackWidget({ questions, variant = "inline", onProgress }: Props) {
+export function FeedbackWidget({ questions, variant = "inline", onProgress, closable = true }: Props) {
   const [answers, setAnswers] = useState<IFeedbackAnswers>({})
   const [skipped, setSkipped] = useState<string[]>([])
   const [closed, setClosed] = useState(false)
@@ -101,7 +106,16 @@ export function FeedbackWidget({ questions, variant = "inline", onProgress }: Pr
         <Typography ref={headingRef} id={headingId} tabIndex={-1} sx={{ fontSize: "15px", fontWeight: 700, lineHeight: "22px", mb: 0, outlineOffset: "2px" }}>
           {current ? current.label : "Merci pour votre retour"}
         </Typography>
-        <Button type="button" priority="tertiary no outline" size="small" iconId="fr-icon-close-line" title="Fermer" onClick={close} />
+        <Button
+          type="button"
+          priority="tertiary no outline"
+          size="small"
+          iconId="fr-icon-close-line"
+          title="Fermer"
+          disabled={!closable}
+          nativeButtonProps={closable ? undefined : { "aria-hidden": true, tabIndex: -1 }}
+          onClick={close}
+        />
       </Box>
 
       {current ? (

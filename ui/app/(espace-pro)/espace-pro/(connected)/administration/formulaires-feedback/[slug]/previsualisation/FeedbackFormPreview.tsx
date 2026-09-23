@@ -121,16 +121,14 @@ export function FeedbackFormPreview() {
             <Typography sx={{ color: fr.colors.decisions.text.mention.grey.default }}>Ce formulaire n'a pas encore de question : il n'y a rien à prévisualiser.</Typography>
           ) : (
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: fr.spacing("3v") }}>
-              {currentTrial.status === "closed" ? (
-                <Typography sx={{ color: fr.colors.decisions.text.mention.grey.default, mb: 0 }}>Le widget a été fermé, comme un usager peut le faire à tout moment.</Typography>
-              ) : (
-                <FeedbackWidget
-                  key={currentTrial.id}
-                  questions={questions}
-                  variant="inline"
-                  onProgress={(progress) => setTrials(([latest, ...previous]) => [{ ...latest, ...progress }, ...previous])}
-                />
-              )}
+              {/* fermer n'a pas de sens dans l'aperçu : « Recommencer » tient ce rôle */}
+              <FeedbackWidget
+                key={currentTrial.id}
+                questions={questions}
+                variant="inline"
+                closable={false}
+                onProgress={(progress) => setTrials(([latest, ...previous]) => [{ ...latest, ...progress }, ...previous])}
+              />
               <Button type="button" priority="secondary" size="small" iconId="fr-icon-refresh-line" iconPosition="left" onClick={restart}>
                 Recommencer
               </Button>
