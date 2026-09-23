@@ -2,8 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
 
-// TODO valeurs factices, à remplacer par l'agrégat de feedback_responses quand la collection existera
-const FAKE_RESULTS = { displays: 4786, responses: 623, completed: 354, comments: 39, whyAnswers: 12 }
+import { FAKE_RESULTS } from "./fakeFeedbackResults"
 
 const formatCount = (value: number) => value.toLocaleString("fr-FR")
 const formatShare = (part: number, total: number) => `${total ? Math.round((part / total) * 100) : 0} %`

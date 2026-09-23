@@ -22,6 +22,7 @@ import { getFeedbackFormActions } from "../_utils/feedbackFormActions"
 import { useFeedbackFormStatusChange } from "../_utils/useFeedbackFormStatusChange"
 import { FeedbackFormDefinition } from "./FeedbackFormDefinition"
 import { FeedbackFormResultsSummary } from "./FeedbackFormResultsSummary"
+import { FeedbackQuestionStats } from "./FeedbackQuestionStats"
 
 /**
  * Page de résultats d'un formulaire, sans onglets : les résultats en tête (à venir), puis le
@@ -164,6 +165,11 @@ export function FeedbackFormDetail() {
           Valeurs factices, en attendant la collecte des réponses.
         </Typography>
         <FeedbackFormResultsSummary since={form.created_at} />
+        {questions.length > 0 && (
+          <Box sx={{ mt: fr.spacing("6v") }}>
+            <FeedbackQuestionStats questions={questions} />
+          </Box>
+        )}
       </Box>
 
       <Box
