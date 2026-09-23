@@ -58,13 +58,21 @@ describe("admin feedback-forms controller", () => {
     expect(saved?.status_history).toEqual([{ status: "draft", date: expect.any(Date), granted_by: user.email }])
   })
 
-  it("accepte un brouillon sans question ni page de déclenchement", async () => {
+  it("accepte un brouillon sans question", async () => {
     const { bearerToken } = await loginAsAdmin()
 
-    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { minInteractions: 1, scope: [] }, questions: [] })
+    const response = await createForm(bearerToken, { ...generalInfoOnly, questions: [] })
 
     expect(response.statusCode).toEqual(200)
-    expect(response.json()).toMatchObject({ status: "draft", questions: [], trigger: { scope: [] } })
+    expect(response.json()).toMatchObject({ status: "draft", questions: [] })
+  })
+
+  it("refuse un formulaire sans page de déclenchement", async () => {
+    const { bearerToken } = await loginAsAdmin()
+
+    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { minInteractions: 1, scope: [] } })
+
+    expect(response.statusCode).toEqual(400)
   })
 
   it("refuse un slug déjà utilisé", async () => {
@@ -167,6 +175,9 @@ describe("admin feedback-forms controller", () => {
 
     const actives = await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms?status=active", headers: bearerToken })
     expect(actives.json().forms).toHaveLength(0)
+
+    const several = await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms?status=draft&status=active", headers: bearerToken })
+    expect(several.json().forms).toHaveLength(1)
   })
 
   it("renvoie le détail d'un formulaire, et 404 si le slug est inconnu", async () => {
@@ -200,5 +211,86 @@ describe("admin feedback-forms controller", () => {
       version: 1,
       trigger: { minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] },
     })
+  })
+
+  it("supprime un brouillon", async () => {
+    const { bearerToken } = await loginAsAdmin()
+    await createForm(bearerToken)
+
+    const response = await httpClient().inject({ method: "DELETE", path: "/api/admin/feedback-forms/page_entreprise_v1", headers: bearerToken })
+
+    expect(response.statusCode).toEqual(200)
+    expect(await getDbCollection("feedback_forms").countDocuments({ slug: "page_entreprise_v1" })).toEqual(0)
+  })
+
+  it("refuse de supprimer un formulaire qui n'est plus un brouillon", async () => {
+    const { bearerToken } = await loginAsAdmin()
+    await createForm(bearerToken)
+    await getDbCollection("feedback_forms").updateOne({ slug: "page_entreprise_v1" }, { $set: { status: "active" } })
+
+    const response = await httpClient().inject({ method: "DELETE", path: "/api/admin/feedback-forms/page_entreprise_v1", headers: bearerToken })
+
+    expect(response.statusCode).toEqual(409)
+    expect(await getDbCollection("feedback_forms").countDocuments({ slug: "page_entreprise_v1" })).toEqual(1)
+  })
+
+  it("renvoie 404 à la suppression d'un formulaire inconnu", async () => {
+    const { bearerToken } = await loginAsAdmin()
+
+    const response = await httpClient().inject({ method: "DELETE", path: "/api/admin/feedback-forms/inconnu", headers: bearerToken })
+
+    expect(response.statusCode).toEqual(404)
+  })
+
+  it("refuse la suppression à un utilisateur non admin", async () => {
+    const { bearerToken: adminToken } = await loginAsAdmin()
+    await createForm(adminToken)
+    const { bearerToken } = await createAndLogUser(httpClient, "userCfa", { type: "CFA" })
+
+    const response = await httpClient().inject({ method: "DELETE", path: "/api/admin/feedback-forms/page_entreprise_v1", headers: bearerToken })
+
+    expect(response.statusCode).toEqual(403)
+  })
+
+  it("archive un formulaire et trace le changement de statut", async () => {
+    const { bearerToken, user } = await loginAsAdmin()
+    await createForm(bearerToken)
+
+    const response = await httpClient().inject({ method: "POST", path: "/api/admin/feedback-forms/page_entreprise_v1/archive", headers: bearerToken })
+
+    expect(response.statusCode).toEqual(200)
+    const saved = await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" })
+    expect(saved?.status).toEqual("archived")
+    expect(saved?.status_history.map(({ status, granted_by }) => ({ status, granted_by }))).toEqual([
+      { status: "draft", granted_by: user.email },
+      { status: "archived", granted_by: user.email },
+    ])
+  })
+
+  it("refuse d'archiver un formulaire déjà archivé, puis de le modifier", async () => {
+    const { bearerToken } = await loginAsAdmin()
+    await createForm(bearerToken)
+    await httpClient().inject({ method: "POST", path: "/api/admin/feedback-forms/page_entreprise_v1/archive", headers: bearerToken })
+
+    const archiveAgain = await httpClient().inject({ method: "POST", path: "/api/admin/feedback-forms/page_entreprise_v1/archive", headers: bearerToken })
+    expect(archiveAgain.statusCode).toEqual(409)
+
+    const update = await httpClient().inject({
+      method: "PUT",
+      path: "/api/admin/feedback-forms/page_entreprise_v1",
+      headers: bearerToken,
+      body: { title: "Titre", trigger: generalInfoOnly.trigger, questions: [] },
+    })
+    expect(update.statusCode).toEqual(409)
+  })
+
+  it("refuse l'archivage à un utilisateur non admin", async () => {
+    const { bearerToken: adminToken } = await loginAsAdmin()
+    await createForm(adminToken)
+    const { bearerToken } = await createAndLogUser(httpClient, "userCfa", { type: "CFA" })
+
+    const response = await httpClient().inject({ method: "POST", path: "/api/admin/feedback-forms/page_entreprise_v1/archive", headers: bearerToken })
+
+    expect(response.statusCode).toEqual(403)
   })
 })

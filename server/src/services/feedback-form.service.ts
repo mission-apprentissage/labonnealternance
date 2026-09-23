@@ -2,6 +2,7 @@ import { conflict, notFound } from "@hapi/boom"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IFeedbackForm, IFeedbackFormForAdmin, IFeedbackFormInput, IFeedbackFormStatus } from "shared/models/feedback-form.model"
+import { ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS } from "shared/models/feedback-form.model"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
@@ -88,4 +89,34 @@ export async function updateFeedbackForm(slug: string, input: Omit<IFeedbackForm
   const update = { ...input, updated_at: new Date() }
   await getDbCollection("feedback_forms").updateOne({ _id: form._id }, { $set: update })
   return { ...form, ...update }
+}
+
+/**
+ * Supprime définitivement un brouillon. Un brouillon n'a jamais été affiché, il n'a donc aucune
+ * réponse. Au-delà, c'est l'archivage qui retire un formulaire sans perdre ses résultats.
+ */
+export async function deleteFeedbackForm(slug: string): Promise<void> {
+  const form = await getFeedbackFormBySlug(slug)
+  if (form.status !== "draft") {
+    throw conflict("Seul un brouillon peut être supprimé")
+  }
+  await getDbCollection("feedback_forms").deleteOne({ _id: form._id })
+}
+
+/** Changement de statut conforme au cycle de vie, tracé dans `status_history`. */
+async function transitionFeedbackFormStatus(slug: string, next: IFeedbackFormStatus, grantedBy: string): Promise<void> {
+  const form = await getFeedbackFormBySlug(slug)
+  if (!ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS[form.status].includes(next)) {
+    throw conflict(form.status === "archived" ? "Ce formulaire est déjà archivé" : "Ce changement de statut n'est pas autorisé")
+  }
+  const now = new Date()
+  await getDbCollection("feedback_forms").updateOne(
+    { _id: form._id },
+    { $set: { status: next, updated_at: now }, $push: { status_history: { status: next, date: now, granted_by: grantedBy } } }
+  )
+}
+
+/** Archive un formulaire, quel que soit son statut : il n'est plus affiché aux usagers ni modifiable, ses réponses restent. */
+export async function archiveFeedbackForm(slug: string, grantedBy: string): Promise<void> {
+  await transitionFeedbackFormStatus(slug, "archived", grantedBy)
 }

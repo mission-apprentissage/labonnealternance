@@ -2,7 +2,14 @@ import { zRoutes } from "shared"
 
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
-import { createFeedbackForm, getFeedbackFormForAdmin, listFeedbackFormsForAdmin, updateFeedbackForm } from "@/services/feedback-form.service"
+import {
+  archiveFeedbackForm,
+  createFeedbackForm,
+  deleteFeedbackForm,
+  getFeedbackFormForAdmin,
+  listFeedbackFormsForAdmin,
+  updateFeedbackForm,
+} from "@/services/feedback-form.service"
 
 export default (server: Server) => {
   server.get(
@@ -42,6 +49,19 @@ export default (server: Server) => {
     }
   )
 
+  server.post(
+    "/admin/feedback-forms/:slug/archive",
+    {
+      schema: zRoutes.post["/admin/feedback-forms/:slug/archive"],
+      onRequest: server.auth(zRoutes.post["/admin/feedback-forms/:slug/archive"]),
+    },
+    async (req, res) => {
+      const user = getUserFromRequest(req, zRoutes.post["/admin/feedback-forms/:slug/archive"]).value
+      await archiveFeedbackForm(req.params.slug, user.email)
+      return res.status(200).send({})
+    }
+  )
+
   server.put(
     "/admin/feedback-forms/:slug",
     {
@@ -51,6 +71,18 @@ export default (server: Server) => {
     async (req, res) => {
       const form = await updateFeedbackForm(req.params.slug, req.body)
       return res.status(200).send(form)
+    }
+  )
+
+  server.delete(
+    "/admin/feedback-forms/:slug",
+    {
+      schema: zRoutes.delete["/admin/feedback-forms/:slug"],
+      onRequest: server.auth(zRoutes.delete["/admin/feedback-forms/:slug"]),
+    },
+    async (req, res) => {
+      await deleteFeedbackForm(req.params.slug)
+      return res.status(200).send({})
     }
   )
 }

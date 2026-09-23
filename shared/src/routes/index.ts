@@ -127,6 +127,7 @@ const zRoutesPut = {
 const zRoutesDelete = {
   ...zUserRecruteurRoutes.delete,
   ...zFormulaireRoute.delete,
+  ...zFeedbackFormsRoutes.delete,
 } as const
 
 const zRoutesPatch = {

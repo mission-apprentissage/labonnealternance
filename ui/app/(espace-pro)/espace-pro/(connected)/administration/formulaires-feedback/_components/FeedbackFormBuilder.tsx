@@ -6,12 +6,13 @@ import { Box, Typography } from "@mui/material"
 import type { FormikErrors } from "formik"
 import { FormikProvider, getIn, prepareDataForValidation, setIn, useFormik } from "formik"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { IFeedbackFormInput } from "shared/models/feedback-form.model"
 import { ZFeedbackFormInput } from "shared/models/feedback-form.model"
 import { toSnakeCaseSlug } from "shared/utils/string-utils"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { useToast } from "@/app/hooks/useToast"
 import { ApiError, apiPost, apiPut } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -85,7 +86,8 @@ export function FeedbackFormBuilder({ initialValues }: { initialValues?: IFeedba
     },
   })
 
-  const { values, handleSubmit, isSubmitting, setFieldValue, resetForm } = formik
+  const { values, isSubmitting, setFieldValue, resetForm } = formik
+  const formRef = useRef<HTMLFormElement>(null)
 
   // Next garde le segment précédent monté : revenir sur la page de création par « Créer un
   // formulaire » réutilise le même arbre React, donc la saisie abandonnée réapparaîtrait. Cet
@@ -100,7 +102,7 @@ export function FeedbackFormBuilder({ initialValues }: { initialValues?: IFeedba
   return (
     <FormikProvider value={formik}>
       {/* noValidate : la validation Zod porte les messages en français, celle du navigateur les doublerait */}
-      <form onSubmit={handleSubmit} noValidate>
+      <form ref={formRef} onSubmit={createSubmitWithFocusOnError(formRef, formik)} noValidate>
         <Typography component="h2" className={fr.cx("fr-text--md", "fr-text--bold")} sx={{ color: fr.colors.decisions.text.title.blueFrance.default, mb: fr.spacing("3v") }}>
           1 · Informations générales
         </Typography>

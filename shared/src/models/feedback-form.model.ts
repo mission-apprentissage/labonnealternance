@@ -135,17 +135,19 @@ const ZFeedbackFormTrigger = z.strictObject({
  * la sérialisation des réponses de l'API.
  */
 const ZFeedbackFormTriggerInput = ZFeedbackFormTrigger.extend({
-  scope: z.array(z.string().min(1).refine(matchesKnownUiRoute, "Ce chemin ne correspond à aucune page du site")).default([]),
+  scope: z
+    .array(z.string().min(1).refine(matchesKnownUiRoute, "Ce chemin ne correspond à aucune page du site"), { error: "Ajoutez au moins une page de déclenchement" })
+    .min(1, "Ajoutez au moins une page de déclenchement"),
 })
 
 /**
  * Champs éditables depuis le back-office (création / modification).
  *
- * Volontairement permissif : un formulaire est toujours enregistré en brouillon, et le
- * back-office le construit par blocs successifs (informations générales, puis questions).
- * Exiger ici un déclencheur ou au moins une question rendrait impossible l'enregistrement
- * d'un brouillon en cours de rédaction. Ces contraintes sont portées par
- * `ZFeedbackFormPublishable`, vérifié au moment de l'activation.
+ * Un formulaire est toujours enregistré en brouillon, construit par blocs successifs
+ * (informations générales, puis questions) : exiger au moins une question rendrait impossible
+ * l'enregistrement d'un brouillon en cours de rédaction. Cette contrainte est portée par
+ * `ZFeedbackFormPublishable`, vérifié au moment de l'activation. La page de déclenchement, elle,
+ * est exigée dès la saisie (`ZFeedbackFormTriggerInput`).
  */
 export const ZFeedbackFormFields = z.strictObject({
   slug: z
@@ -164,9 +166,6 @@ export type IFeedbackFormInput = z.output<typeof ZFeedbackFormInput>
 
 /** Ce qu'un formulaire doit satisfaire pour pouvoir être activé (et donc affiché aux usagers). */
 export const ZFeedbackFormPublishable = ZFeedbackFormInput.superRefine((data, ctx) => {
-  if (data.trigger.scope.length === 0) {
-    ctx.addIssue({ code: "custom", message: "Au moins une page de déclenchement est nécessaire", path: ["trigger", "scope"] })
-  }
   if (data.questions.length === 0) {
     ctx.addIssue({ code: "custom", message: "Au moins une question est nécessaire", path: ["questions"] })
   }

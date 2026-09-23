@@ -9,6 +9,8 @@ import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import type { ColumnDef } from "@/app/(espace-pro)/_components/VirtualTable"
 import { PAGES } from "@/utils/routes.utils"
 
+import type { IFeedbackFormAction } from "../formulaires-feedback/_components/ConfirmationActionFormulaire"
+
 const STATUS_BADGE: Record<IFeedbackFormStatus, { label: string; severity: "success" | "info" | "warning" | "new" }> = {
   draft: { label: "Brouillon", severity: "new" },
   active: { label: "Actif", severity: "success" },
@@ -25,7 +27,11 @@ function FeedbackFormStatusBadge({ status }: { status: IFeedbackFormStatus }) {
   )
 }
 
-export function getFeedbackFormsColumns(): ColumnDef<IFeedbackFormForAdminJSON>[] {
+export function getFeedbackFormsColumns({
+  onAction,
+}: {
+  onAction: (form: IFeedbackFormForAdminJSON, action: IFeedbackFormAction) => void
+}): ColumnDef<IFeedbackFormForAdminJSON>[] {
   return [
     {
       id: "title",
@@ -98,6 +104,8 @@ export function getFeedbackFormsColumns(): ColumnDef<IFeedbackFormForAdminJSON>[
       enableSorting: false,
       cell: (info) => {
         const form = info.row.original
+        // archivé = état terminal : plus rien à modifier ni à archiver, il reste seulement consultable dans la liste
+        if (form.status === "archived") return null
         const actions: PopoverMenuAction[] = [
           {
             label: "Modifier",
@@ -105,6 +113,9 @@ export function getFeedbackFormsColumns(): ColumnDef<IFeedbackFormForAdminJSON>[
             hint: form.title,
             link: PAGES.dynamic.backAdminFeedbackFormEdit({ slug: form.slug }).getPath(),
           },
+          { label: "Archiver", type: "button", hint: form.title, onClick: () => onAction(form, "archive") },
+          // un formulaire déjà affiché aux usagers s'archive (ses réponses restent), il ne se supprime pas
+          form.status === "draft" ? { label: "Supprimer", type: "button", hint: form.title, onClick: () => onAction(form, "delete") } : null,
         ]
         return <PopoverMenu title={`Actions sur le formulaire ${form.title}`} actions={actions} />
       },

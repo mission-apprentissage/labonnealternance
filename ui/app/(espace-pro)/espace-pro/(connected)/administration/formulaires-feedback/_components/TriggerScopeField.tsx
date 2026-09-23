@@ -26,7 +26,7 @@ const MAX_SUGGESTIONS = 50
  * le chemin concerné dans son libellé (RGAA 7.4, 11.10).
  */
 export function TriggerScopeField() {
-  const [field, , helpers] = useField<string[]>(FIELD_NAME)
+  const [field, meta, helpers] = useField<string[]>(FIELD_NAME)
   const [inputError, setInputError] = useState<string | null>(null)
   const [announcement, setAnnouncement] = useState("")
 
@@ -50,7 +50,9 @@ export function TriggerScopeField() {
   // (ou ciblant une page supprimée depuis) signale tout de suite ce qu'il y a à corriger.
   const invalidPaths = paths.filter((path) => !matchesKnownUiRoute(path))
   const storedError = invalidPaths.length ? `${invalidPaths.join(", ")} ne correspond${invalidPaths.length > 1 ? "ent" : ""} à aucune page du site` : undefined
-  const error = inputError ?? storedError
+  // « au moins un chemin » : une erreur de liste, pas d'élément — celles-ci sont nommées ci-dessus
+  const listError = meta.touched && typeof meta.error === "string" ? meta.error : undefined
+  const error = inputError ?? storedError ?? listError
 
   const addPath = (candidate: string) => {
     const path = candidate.trim()
@@ -76,6 +78,8 @@ export function TriggerScopeField() {
 
   const removePath = (path: string) => {
     commitPaths(pathsRef.current.filter((item) => item !== path))
+    // retirer le dernier chemin doit faire apparaître l'erreur tout de suite, pas au prochain blur
+    helpers.setTouched(true, false)
     setInputError(null)
     setAnnouncement(`Chemin ${path} retiré`)
   }
@@ -109,7 +113,11 @@ export function TriggerScopeField() {
   return (
     <Box sx={{ position: "relative" }}>
       <Input
-        label="Pages de déclenchement"
+        label={
+          <>
+            Pages de déclenchement<span aria-hidden="true">*</span>
+          </>
+        }
         hintText="Le widget ne s'affiche que sur ces chemins."
         state={error ? "error" : "default"}
         stateRelatedMessage={error}
@@ -120,6 +128,7 @@ export function TriggerScopeField() {
               setSuggestions(filterSuggestions(inputValue))
               openMenu()
             },
+            onBlur: () => helpers.setTouched(true),
             onKeyDown: (event) => {
               // Entrée sur un élément surligné est gérée par downshift ; sinon on valide la saisie
               // libre, sans quoi la touche soumettrait le formulaire
@@ -129,6 +138,9 @@ export function TriggerScopeField() {
               }
             },
           }),
+          // `name` permet au focus sur la première erreur de retrouver ce champ à la soumission
+          name: FIELD_NAME,
+          "aria-required": true,
           placeholder: "Choisissez un chemin dans la liste",
         }}
       />
