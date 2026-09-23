@@ -108,7 +108,7 @@ describe("sync-etablissements-and-formations", () => {
     expect(fiches).toHaveLength(1)
     expect(fiches[0]._id).toEqual(existingId)
     expect(fiches[0].training_intitule_long).toBe("BTS Management commercial opérationnel")
-    // rco_formation_id n'appartient pas au `$set` de mise à jour, comme avant le passage en bulk.
+    // rco_formation_id n'appartient pas au `$set` de mise à jour : il garde sa valeur de création.
     expect(fiches[0].rco_formation_id).toBe("rco-origine")
   })
 
@@ -124,7 +124,7 @@ describe("sync-etablissements-and-formations", () => {
     const fiches = await getDbCollection("eligible_trainings_for_appointments").find({ cle_ministere_educatif: "cle-1" }).toArray()
     expect(fiches).toHaveLength(1)
     // Dernière formation lue gagne sur les champs partagés, mais pas sur les champs propres à la
-    // création : même arbitrage que l'ancien insert-puis-update.
+    // création.
     expect(fiches[0].training_intitule_long).toBe("Seconde")
     expect(fiches[0].rco_formation_id).toBe("rco-1")
   })

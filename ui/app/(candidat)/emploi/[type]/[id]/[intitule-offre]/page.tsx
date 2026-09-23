@@ -79,7 +79,7 @@ async function getOffreOption(type: LBA_ITEM_TYPE, id: string) {
   if (!type || !id || !acceptedTypes.includes(type)) return null
 
   cacheTag(`offer:${type}:${id}`)
-  cacheLife({ revalidate: 300 }) // 5 minutes, aligné sur l'ancien `revalidate = 300`
+  cacheLife({ revalidate: 300 }) // 5 minutes
 
   try {
     const offre = await apiGet("/_private/jobs/:source/:id", { params: { source: type, id } })

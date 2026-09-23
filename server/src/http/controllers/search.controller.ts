@@ -16,9 +16,8 @@ export default (server: Server) => {
       // sur la latence), page 0 uniquement (l'infinite scroll rejoue le même q à chaque page).
       // `internal` exclut les requêtes non issues d'un utilisateur (ex. prefetch SSR pour le SEO
       // de /recherche), qui rejouent sinon le même q que le fetch client et faussent les stats.
-      // Loggé aussi côté échec (cf. #5153 : avant, une requête qui plantait n'était jamais
-      // loguée, seul Sentry en gardait la trace) — re-throw ensuite, comportement d'erreur
-      // inchangé pour le client et pour la capture Sentry standard.
+      // Loggé aussi en cas d'échec (#5153), puis re-throw : comportement d'erreur inchangé pour
+      // le client et pour la capture Sentry.
       const shouldLog = !req.query.internal && req.query.q?.trim() && req.query.page === 0
       try {
         const { degraded, ...result } = await searchItems(req.query)

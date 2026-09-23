@@ -31,7 +31,7 @@ export default function Layout({ children }: PropsWithChildren) {
 
 // Le header doit connaître l'utilisateur connecté : sinon il affiche un lien « Connexion » vers
 // /espace-pro/authentification à un recruteur déjà authentifié, et le préchargement de ce lien
-// déclenche une boucle de redirections 307 entre le proxy et l'espace pro (incident du 2026-09-02).
+// déclenche une boucle de redirections 307 entre le proxy et l'espace pro (#5383).
 async function IntentionHeaderWithUser() {
   const { user } = await getSession()
   return <PublicHeader zone="formulaire-intention" user={user} hideConnectionButton={false} />

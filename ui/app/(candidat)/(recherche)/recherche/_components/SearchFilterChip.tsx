@@ -12,10 +12,9 @@ import { type KeyboardEvent, type ReactNode, useId, useRef, useState } from "rea
  * La sélection est signalée par l'inversion du fond (pas de badge ✓) et le libellé
  * porte la valeur active (ex. « BTS, DEUST (Bac+2) », « Offres d'emploi en alternance, +1 »).
  *
- * RGAA : à l'ouverture, le focus est déplacé sur le premier élément atteignable du panneau
- * (Tab seul ne suffisait pas — le Popper MUI ne gère aucun focus par défaut). Une fois dans
- * le panneau, ↑/↓/Home/End déplacent le focus entre les éléments (cases, lignes de choix,
- * champ de saisie), quel que soit le contenu passé en `popperContent`.
+ * RGAA : le Popper MUI ne gère aucun focus, d'où le focus déplacé à l'ouverture sur le premier
+ * élément atteignable du panneau, puis ↑/↓/Home/End entre les éléments, quel que soit le
+ * contenu passé en `popperContent`.
  */
 interface SearchFilterChipProps {
   label: string
@@ -177,10 +176,9 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
         />
       )}
       {isDropdown && (
-        // disablePortal : par défaut MUI monte le Popper en fin de <body>, ce qui sort le
-        // panneau de l'ordre de tabulation du formulaire (Tab en sortie atterrit ailleurs
-        // dans la page). En le laissant à sa place dans l'arbre, la tabulation qui quitte le
-        // panneau retombe naturellement sur l'élément suivant du bandeau (chip suivant).
+        // disablePortal : par défaut MUI monte le Popper en fin de <body>, hors de l'ordre de
+        // tabulation du formulaire. Laissé à sa place, Tab en sortie du panneau retombe sur le
+        // chip suivant.
         <Popper id={popperId} open={open} anchorEl={anchorRef.current} placement="bottom-start" transition disablePortal sx={{ zIndex: (theme) => theme.zIndex.modal }}>
           {({ TransitionProps }) => (
             <Grow

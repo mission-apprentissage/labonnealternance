@@ -10,7 +10,7 @@ export const FormulaireEditionOffreButtons = ({ offre, competencesDirty }: { off
 
   const finalDirty = dirty || competencesDirty
 
-  // Le bouton ne dépend plus de isValid : au clic, l'erreur est affichée sur tous les champs invalides et le focus
+  // Le bouton ne dépend pas de isValid : au clic, l'erreur est affichée sur tous les champs invalides et le focus
   // est déplacé sur le premier d'entre eux dans l'ordre du DOM (RGAA 11.10, 12.8), comme createSubmitWithFocusOnError
   // pour les formulaires qui disposent d'une balise <form>.
   const handleClick = async () => {

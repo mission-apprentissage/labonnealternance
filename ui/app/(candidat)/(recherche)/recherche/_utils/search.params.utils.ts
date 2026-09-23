@@ -90,10 +90,9 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
   const longitude = getFloat("longitude")
   const hasGeoPair = latitude !== undefined && longitude !== undefined
 
-  // « source » est l'ancien nom de « search_source », abandonné parce que c'est un paramètre
-  // réservé de Plausible (attribution d'acquisition). Le repli reste nécessaire tant que des
-  // liens externes le portent : campagne traininglinks du 2026-08-24, liens posés par des sites
-  // tiers. search_source prime si les deux sont présents.
+  // Repli sur « source », ancien nom de search_source (paramètre réservé de Plausible pour
+  // l'attribution d'acquisition), tant que des liens externes le portent : campagne
+  // traininglinks du 2026-08-24, sites tiers. search_source prime si les deux sont présents.
   const rawQSource = search.get("search_source") ?? search.get("source")
 
   return {
@@ -178,7 +177,7 @@ export function buildSearchPageTitle(params: ISearchPageParams): string {
  * Canonical auto-référent d'une page de résultats du nouveau moteur (`q`) : chemin + le métier
  * recherché (et le `mode` s'il n'est pas la valeur par défaut). Débarrassé du bruit d'URL (géo,
  * filtres, pagination, tri, toggles) pour consolider les variantes d'une même recherche métier sur
- * une page indexable unique. Indispensable depuis le noindex de `/recherche` nue (#5034) : sans
+ * une page indexable unique. Indispensable avec le noindex de `/recherche` nue (#5034) : sans
  * canonical propre, les pages `?q=` héritent du canonical racine (`"./"` → `/recherche`) et seraient
  * dé-indexées avec elle. Sans `q`, renvoie `/recherche` (la page nue, cible de noindex).
  */

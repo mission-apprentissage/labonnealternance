@@ -480,7 +480,7 @@ export const PAGES = {
       title: props.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
     }),
     // print_source et non source : « source » est un paramètre réservé de Plausible (attribution
-    // d'acquisition). La page d'impression lit encore l'ancien nom en repli.
+    // d'acquisition). Repli sur `source` : cf. ImpressionPage.
     espaceProOffreImpression: (jobId: string, printSource?: "cfa-sharing") => ({
       getPath: () => generateUri("/espace-pro/offre/impression/:jobId", { params: { jobId }, querystring: removeUndefinedFields({ print_source: printSource }) }),
       title: "Imprimer mon offre",

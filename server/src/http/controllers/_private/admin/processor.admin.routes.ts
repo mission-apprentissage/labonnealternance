@@ -22,14 +22,10 @@ const jobHandlers: Record<TriggerableJob, () => Promise<unknown>> = {
   updateHandiEngagementForce: () => updateHandiEngagement({ force: true }),
 }
 
-// zProcessorStatus (exporté par job-processor) est construit avec zod/v4-mini et utilise zObjectIdMini
-// (zod-mongodb-schema), un .transform() à sens unique (string|ObjectId -> ObjectId) sans direction
-// d'encodage — même défaut que celui documenté et corrigé sur zObjectId dans shared/models/common.ts,
-// mais côté job-processor (dépendance externe, déjà à sa dernière version publiée). Le serializerCompiler
-// par défaut de fastify-type-provider-zod encode la réponse via ce schéma : dès qu'un job/worker/
-// historique réel (donc un ObjectId) est présent, il lève ZodEncodeError. Sérialiseur JSON natif pour
-// cette seule route : getProcessorStatus() est déjà typée et correcte, seule l'étape d'encode zod
-// (inutile ici) est court-circuitée — les autres routes gardent le comportement par défaut.
+// zProcessorStatus (job-processor, dépendance externe déjà à sa dernière version publiée) utilise
+// zObjectIdMini, un .transform() à sens unique sans direction d'encodage (même défaut que zObjectId,
+// cf. shared/src/models/common.ts) : le serializerCompiler par défaut de fastify-type-provider-zod lève
+// ZodEncodeError dès qu'un ObjectId est présent. Sérialiseur JSON natif pour cette seule route.
 const rawJsonSerializerCompiler: FastifySerializerCompiler<unknown> = () => (data) => JSON.stringify(data)
 
 export function processorAdminRoutes(server: Server) {

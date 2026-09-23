@@ -12,14 +12,12 @@ const mistral = new Mistral({
 
 export type Message = { role: "system"; content: string } | { role: "user"; content: string } | { role: "assistant"; content: string } | { role: "tool"; content: string }
 
-// 429 Mistral (rate limit) : transitoire par nature — la capture immédiate générait ~100 events/jour
-// de pur bruit Sentry (LBA-SERVER-5J7KF4ZZZT9JV) alors qu'un backoff suffit. Les quotas sont des
-// fenêtres À LA MINUTE (vérifié empiriquement sur /v1/chat/completions : en-têtes
-// x-ratelimit-{limit,remaining}-{tokens,req}-minute ; pas de X-RateLimit-Remaining global,
-// contrairement à ce que suggère la doc) : on honore Retry-After s'il est présent sur le 429,
-// sinon paliers fixes dont le dernier (60s) garantit une fenêtre de quota fraîche. Tous les
-// appelants sont des jobs de fond : la latence ajoutée est sans enjeu. La capture Sentry ne part
-// qu'une fois les retries épuisés — la dégradation (retour null) reste observable.
+// 429 Mistral : transitoire, un backoff suffit (capturé tout de suite, c'est du bruit Sentry,
+// cf. LBA-SERVER-5J7KF4ZZZT9JV). Les quotas sont des fenêtres à la minute (en-têtes
+// x-ratelimit-{limit,remaining}-{tokens,req}-minute observés sur /v1/chat/completions, pas de
+// X-RateLimit-Remaining global malgré la doc) : Retry-After s'il est présent, sinon paliers fixes
+// dont le dernier (60s) garantit une fenêtre fraîche. Appelants = jobs de fond, la latence est sans
+// enjeu. Sentry ne capture qu'une fois les retries épuisés.
 const RATE_LIMIT_RETRY_DELAYS_MS = [2_000, 10_000, 60_000]
 
 const isMistralRateLimitError = (error: unknown): error is Error & { headers?: Headers } => error instanceof Error && (error as { statusCode?: unknown }).statusCode === 429
@@ -116,10 +114,9 @@ export const downloadMistralBatchOutput = async (fileId: string): Promise<Map<st
 }
 
 /**
- * Soumet un job batch Mistral SANS attendre son résultat (fire-and-forget) : construit le
- * JSONL, l'upload (purpose `batch`) et crée le job. Retourne l'id du job (null si échec).
- * Récupération des résultats : console Mistral ou API (download de l'outputFile), puis
- * application via le job dédié (ex. `search:apply-keywords-batch --file <jsonl>`).
+ * Soumet un job batch Mistral sans attendre son résultat. Retourne l'id du job (null si échec).
+ * Mode « fichier » (upload puis `inputFiles`) : l'inline (`requests`) est rejeté par la gateway
+ * au-delà de quelques centaines de requêtes (payload trop volumineux → 400 HTML).
  */
 export const submitMistralBatch = async ({
   requests,
@@ -139,7 +136,8 @@ export const submitMistralBatch = async ({
   if (requests.length === 0) return null
 
   try {
-    // JSONL d'entrée : une ligne par requête { custom_id, body: <payload chat verbatim> }.
+    // `body` est transmis verbatim à l'API : noms snake_case (`max_tokens`, `response_format`),
+    // contrairement à `chat.complete`.
     const jsonl = requests.map((r) => JSON.stringify({ custom_id: r.customId, body: { messages: r.messages, max_tokens: maxTokens, response_format: responseFormat } })).join("\n")
 
     const inputFile = await mistral.files.upload({
@@ -164,15 +162,8 @@ export const submitMistralBatch = async ({
 }
 
 /**
- * Exécute une série de requêtes chat via l'API Batch Mistral (asynchrone, -50% de coût).
- * Mode « fichier » : on construit un JSONL, on l'upload (purpose `batch`), puis on crée le
- * job via `inputFiles` — l'inline (`requests`) est rejeté par la gateway au-delà de quelques
- * centaines de requêtes (payload trop volumineux → 400 HTML). Sonde le statut jusqu'à
- * terminaison, puis télécharge et parse le JSONL de sortie.
- *
- * NB : le `body` de chaque ligne est transmis verbatim à l'API → noms snake_case
- * (`max_tokens`, `response_format`), contrairement à `chat.complete`.
- *
+ * Variante bloquante de submitMistralBatch (-50 % de coût) : sonde le statut jusqu'à terminaison
+ * puis télécharge la sortie.
  * @returns Map customId → contenu texte de la réponse (les échecs sont simplement absents).
  */
 export const sendMistralBatch = async ({
@@ -199,7 +190,6 @@ export const sendMistralBatch = async ({
     const jobId = await submitMistralBatch({ requests, model, maxTokens, responseFormat, timeoutHours, inputFileName: "keywords_batch_input.jsonl" })
     if (!jobId) return results
 
-    // Polling jusqu'à un statut terminal (ou expiration de maxWaitMs côté job runner).
     let current = await mistral.batch.jobs.get({ jobId })
     const startedAt = Date.now()
     while (!BATCH_TERMINAL_STATUSES.has(current.status)) {

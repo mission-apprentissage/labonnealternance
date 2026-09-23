@@ -59,7 +59,6 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
         etablissement_gestionnaire_siret: etablissement.gestionnaire_siret,
       })
 
-      // Send email
       await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: "Le service de mise en relation est activé pour votre CFA sur La bonne alternance",
@@ -84,7 +83,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
         },
       })
 
-      // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
+      // Emails des lieux de formation, hors email décisionnaire (gestionnaire_email)
       let emails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
         const email = eligibleTrainingsForAppointment.lieu_formation_email
         if (!_.isNil(email) && email !== etablissement.gestionnaire_email) {

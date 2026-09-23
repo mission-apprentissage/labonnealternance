@@ -19,9 +19,6 @@ const getJobOrigin = async (userId: ObjectId) => {
   return (userWithAccount && userWithAccount.origin && RECRUITER_USER_ORIGIN[userWithAccount.origin]) ?? "La bonne alternance"
 }
 
-/**
- * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
- */
 export async function sendDelegationMailToCFA(email: string, offre: IJobsPartnersOfferPrivate, siret: string) {
   const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret })
   if (unsubscribeOF) return
@@ -70,9 +67,8 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
   const { is_delegated, workplace_name, workplace_siret, cfa_siret, cfa_legal_name, workplace_legal_name, workplace_brand } = job
   const raisonSocialeEntreprise = workplace_name || workplace_legal_name || workplace_brand
   // `||` comme la ligne au-dessus : workplace_name peut valoir "" (champ sanitizé côté pipeline),
-  // auquel cas le mail partait avec une raison sociale vide au lieu du SIRET.
+  // on retombe alors sur le SIRET.
   const establishmentTitle = workplace_name || workplace_siret
-  // Send mail with action links to manage offers
   await mailer.sendEmail({
     to: email,
     subject: raisonSocialeEntreprise ? `Votre offre d'alternance pour ${raisonSocialeEntreprise} publiée` : "Votre offre d'alternance est publiée",

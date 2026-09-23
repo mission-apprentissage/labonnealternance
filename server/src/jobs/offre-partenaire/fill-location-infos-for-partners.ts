@@ -51,7 +51,6 @@ export const fillLocationInfosForPartners = async ({ addedMatchFilter }: FillCom
             },
           ]
         }
-        // on essaie de géolocaliser avec le code postal et la ville
         if (workplace_address_zipcode && workplace_address_city) {
           geolocation = await getGeolocationWithMinScore(`${workplace_address_zipcode} ${workplace_address_city}`)
         }

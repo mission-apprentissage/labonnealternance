@@ -4,10 +4,9 @@
 // stylesheet (tokens, Marianne @font-face, all component modules) — NOT
 // `dsfr.min.css`, which is a stripped core. The `fr-icon-*` mask definitions
 // live separately in `utility/icons/icons.min.css`. Both reference SVG icons
-// via url(). Rendered
-// designs on claude.ai/design get only the styles.css @import closure under a
-// strict CSP, so every icon url() must be inlined as a data-URI (relative
-// url(icons/...) would 404 there and in the preview cards).
+// via url(). Rendered designs on claude.ai/design get only the styles.css
+// @import closure under a strict CSP, so every icon url() must be inlined as a
+// data-URI (relative url(icons/...) would 404 there and in the preview cards).
 //
 // This concatenates core + icon CSS and inlines all svg/png url()s as
 // data-URIs, resolving each file relative to ITS OWN source dir. Font url()s
@@ -22,8 +21,7 @@ import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync
 import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
-// Anchor every path on this script's location, NOT the cwd, so the script works
-// whatever directory it's launched from.
+// Paths anchored on this script's location, NOT the cwd.
 const HERE = dirname(fileURLToPath(import.meta.url)) // <repo>/ui/.design-sync
 // Walk up from HERE to the node_modules holding react-dsfr (monorepo-hoisted).
 function findDsfr() {
@@ -75,10 +73,7 @@ mkdirSync(OUT_DIR, { recursive: true })
 mkdirSync(join(OUT_DIR, "fonts"), { recursive: true })
 for (const f of readdirSync(join(DSFR, "fonts"))) if (/\.(woff2?|ttf|otf)$/i.test(f)) cpSync(join(DSFR, "fonts", f), join(OUT_DIR, "fonts", f))
 
-// dsfr.main.min.css is the COMPLETE component stylesheet (toggle, segmented,
-// pagination, download, …). dsfr.min.css is a stripped core that omits many
-// component modules — do not use it. fr-icon-* utility classes (for iconId)
-// live separately in utility/icons/icons.min.css.
+// dsfr.main.min.css, not dsfr.min.css (cf. file header).
 const parts = [
   { file: join(DSFR, "dsfr.main.min.css"), base: DSFR, label: "core" },
   { file: join(DSFR, "utility/icons/icons.min.css"), base: join(DSFR, "utility/icons"), label: "icons" },

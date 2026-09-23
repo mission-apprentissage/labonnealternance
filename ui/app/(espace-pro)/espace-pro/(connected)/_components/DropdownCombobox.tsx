@@ -33,8 +33,7 @@ export default function DropdownCombobox(props) {
 
   // Downshift n'émet InputBlur que si le menu est ouvert et hors mousedown : après un clic à la souris dans
   // le champ (focus ouvre le menu, puis l'événement click le referme via InputClick), la sortie du champ
-  // n'émet plus rien. Le champ ne passait donc jamais "touched" et l'erreur "Champ obligatoire" ne
-  // s'affichait pas sur un Métier vide. Le marquage se fait désormais sur le vrai onBlur, ci-dessous.
+  // n'émet rien. Le marquage "touched" se fait donc sur le vrai onBlur, ci-dessous.
   const stateReducer = (_, actions) => {
     const { type, changes } = actions
     switch (type) {

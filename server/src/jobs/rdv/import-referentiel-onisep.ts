@@ -32,7 +32,6 @@ export const importReferentielOnisep = async () => {
     filePath: "./widget_mna_ideo.csv",
   }
 
-  // Téléchargement du CSV
   const { data } = await axios.get("https://data.lheo.org/export/csv/relations/widget-mna-ideo/widget_mna_ideo", {
     maxContentLength: Infinity,
   })
@@ -79,7 +78,7 @@ export const importReferentielOnisep = async () => {
             }
             callback(null, refOnisep)
           } else {
-            callback() // Skip row
+            callback()
           }
         },
       }),

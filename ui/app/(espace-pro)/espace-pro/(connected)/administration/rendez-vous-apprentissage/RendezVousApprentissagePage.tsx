@@ -18,12 +18,6 @@ export default function RendezVousApprentissage() {
   const router = useRouter()
   const toast = useToast()
 
-  /**
-   * @description Returns search results.
-   * @param {Object} values
-   * @param {String} values.keyword
-   * @returns {Promise<void>}
-   */
   const search = async (values) => {
     const { keyword } = values
     setLoading(true)

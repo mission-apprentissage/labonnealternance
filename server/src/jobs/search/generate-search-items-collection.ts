@@ -22,9 +22,6 @@ import {
   upsertSearchItem,
 } from "@/services/search/search-items.service"
 
-// Génération des mots-clés Mistral : déplacée dans search-items-keywords.service.ts
-// (cron continu + batch hebdo recruteurs + ramasse des jobs + import manuel).
-
 const NIGHTLY_CONCURRENCY = 100
 
 /**
@@ -64,7 +61,7 @@ const processCursorStream = async <T extends { _id: ObjectId }>(
  * Réconciliation complète des sources (formations, offres actives, recruteurs) vers
  * `search_items`. Sert de batch initial ET de réconciliation nightly (cron ~06:00, après
  * processComputedAndImportToJobPartners) : rattrape tout ce que la sync incrémentale
- * (appels explicites + cron delta, cf. searchItems.service.ts) aurait manqué, et purge
+ * (appels explicites + cron delta, cf. search-items.service.ts) aurait manqué, et purge
  * les documents orphelins (disparus des sources — suppressions physiques comprises).
  */
 export const fillSearchItemsCollection = async () => {
@@ -141,7 +138,7 @@ export const fillSearchItemsCollection = async () => {
     },
     {
       // Les intitulés ROME sont résolus côté JS via une Map en mémoire (resolveRomeLabels),
-      // partagée avec les offres/formations — plus de $lookup referentielromes par doc.
+      // partagée avec les offres/formations, plutôt qu'un $lookup referentielromes par doc.
       $project: {
         ...jobsProjection,
         application_count: 1,
@@ -150,17 +147,16 @@ export const fillSearchItemsCollection = async () => {
     },
   ])
 
-  // Référentiels partagés avec les builders de la sync incrémentale (searchItems.service.ts).
+  // Référentiels partagés avec les builders de la sync incrémentale (search-items.service.ts).
   const ctx = await loadSearchItemBuildContext()
 
   const processedIds = new Set<string>()
   const searchItemsCollection = getDbCollection("search_items")
 
   // Un seul chemin par source, item nouveau ou déjà indexé : upsertSearchItem réécrit tous les
-  // champs sauf `keywords` (préservés). L'ancienne variante « déjà en base → $set d'une liste
-  // fermée de champs » a laissé dériver `address` et `location` : 1 593 offres affichées en prod
-  // à une position que la source avait corrigée (2026-09-11). Le coût d'une réécriture complète
-  // est le même qu'un $set partiel : un updateOne par item.
+  // champs sauf `keywords`. Un $set sur une liste fermée de champs laisse dériver les autres
+  // (`address`, `location` : 1 593 offres affichées en prod à une position périmée, 2026-09-11),
+  // pour le même coût : un updateOne par item.
   await processCursorStream(formationsCursor, "formations", processedIds, async (formation) => {
     // Sans géopoint, pas d'item de recherche possible : on le compte plutôt que de laisser une
     // exception le dire à Sentry. L'item indexé, s'il existe, garde son état précédent.
@@ -179,7 +175,6 @@ export const fillSearchItemsCollection = async () => {
     await upsertSearchItem(buildRecruteurSearchItem(job, ctx))
   })
 
-  // Delete documents that are no longer in the sources
   const idsToDelete = [...existingIds].filter((id) => !processedIds.has(id))
   if (idsToDelete.length > 0) {
     await searchItemsCollection.deleteMany({
@@ -191,6 +186,6 @@ export const fillSearchItemsCollection = async () => {
   logger.info({ corrections: ctx.corrections }, "fillSearchItemsCollection: corrections appliquées aux données source")
 
   // Les mots-clés des documents `keywords: null` sont générés par les crons dédiés
-  // (generateSearchItemsKeywordsContinuous / submitSearchItemsKeywordsBatch) — cf.
-  // searchItemsKeywords.service.ts.
+  // (generateSearchItemsKeywordsContinuous / submitSearchItemsKeywordsBatch), cf.
+  // search-items-keywords.service.ts.
 }
