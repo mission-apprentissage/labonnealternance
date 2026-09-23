@@ -169,7 +169,15 @@ export function FeedbackFormDetail() {
         />
       </Box>
 
-      <Box component="section" aria-labelledby="definition-titre" sx={{ p: fr.spacing("6v"), backgroundColor: fr.colors.decisions.background.alt.grey.default }}>
+      <Box
+        component="section"
+        aria-labelledby="definition-titre"
+        sx={{
+          p: fr.spacing("6v"),
+          backgroundColor: fr.colors.decisions.background.alt.grey.default,
+          border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+        }}
+      >
         <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "baseline", gap: fr.spacing("2v"), mb: fr.spacing("3v") }}>
           <Typography id="definition-titre" component="h2" className={fr.cx("fr-h5")} sx={{ mb: 0 }}>
             Définition du formulaire ({questions.length} question{questions.length > 1 ? "s" : ""})
