@@ -21,6 +21,7 @@ import { ConfirmationActionFormulaire } from "../_components/ConfirmationActionF
 import { getFeedbackFormActions } from "../_utils/feedbackFormActions"
 import { useFeedbackFormStatusChange } from "../_utils/useFeedbackFormStatusChange"
 import { FeedbackFormDefinition } from "./FeedbackFormDefinition"
+import { FeedbackFormResultsSummary } from "./FeedbackFormResultsSummary"
 
 /**
  * Page de résultats d'un formulaire, sans onglets : les résultats en tête (à venir), puis le
@@ -159,14 +160,10 @@ export function FeedbackFormDetail() {
         <Typography id="resultats-titre" component="h2" className={fr.cx("fr-h5")} sx={{ mb: fr.spacing("3v") }}>
           Résultats
         </Typography>
-        {/* à remplir : répartition des réponses, abandons, commentaires */}
-        <Box
-          sx={{
-            minHeight: 240,
-            border: `1px dashed ${fr.colors.decisions.border.default.grey.default}`,
-            backgroundColor: fr.colors.decisions.background.alt.grey.default,
-          }}
-        />
+        <Typography className={fr.cx("fr-text--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("3v") }}>
+          Valeurs factices, en attendant la collecte des réponses.
+        </Typography>
+        <FeedbackFormResultsSummary since={form.created_at} />
       </Box>
 
       <Box
