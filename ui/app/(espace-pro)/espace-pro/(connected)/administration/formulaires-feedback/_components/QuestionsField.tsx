@@ -13,6 +13,7 @@ import CustomInput from "@/app/_components/CustomInput"
 
 import type { IFeedbackFormDraft, IFeedbackQuestionDraft, IFeedbackQuestionType } from "../_utils/questionDrafts"
 import { createQuestionDraft, nextQuestionId, QUESTION_TYPE_LABEL } from "../_utils/questionDrafts"
+import { ConditionalDisplayField } from "./ConditionalDisplayField"
 
 const ADD_QUESTION_BUTTON_ID = "feedback-form-add-question"
 
@@ -103,6 +104,7 @@ export function QuestionsField() {
             question={question}
             index={index}
             count={questions.length}
+            questions={questions}
             onChange={(patch) => updateQuestion(index, patch)}
             onMove={(direction) => moveQuestion(index, direction)}
             onRemove={() => removeQuestion(index)}
@@ -142,13 +144,14 @@ type QuestionCardProps = {
   question: IFeedbackQuestionDraft
   index: number
   count: number
+  questions: IFeedbackQuestionDraft[]
   onChange: (patch: Partial<IFeedbackQuestionDraft>) => void
   onMove: (direction: -1 | 1) => void
   onRemove: () => void
   onAnnounce: (message: string) => void
 }
 
-function QuestionCard({ question, index, count, onChange, onMove, onRemove, onAnnounce }: QuestionCardProps) {
+function QuestionCard({ question, index, count, questions, onChange, onMove, onRemove, onAnnounce }: QuestionCardProps) {
   const { errors, setFieldValue } = useFormikContext<IFeedbackFormDraft>()
   const name = `questions.${index}`
   const position = index + 1
@@ -353,6 +356,8 @@ function QuestionCard({ question, index, count, onChange, onMove, onRemove, onAn
           />
         </Box>
       )}
+
+      <ConditionalDisplayField question={question} index={index} questions={questions} />
     </Box>
   )
 }

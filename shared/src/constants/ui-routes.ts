@@ -24,6 +24,7 @@ export const UI_ROUTE_PATTERNS = [
   "/espace-pro/administration/compte",
   "/espace-pro/administration/formulaires-feedback",
   "/espace-pro/administration/formulaires-feedback/:slug/modification",
+  "/espace-pro/administration/formulaires-feedback/:slug/previsualisation",
   "/espace-pro/administration/formulaires-feedback/creation",
   "/espace-pro/administration/gestion-des-administrateurs",
   "/espace-pro/administration/gestion-des-administrateurs/user/:userId",

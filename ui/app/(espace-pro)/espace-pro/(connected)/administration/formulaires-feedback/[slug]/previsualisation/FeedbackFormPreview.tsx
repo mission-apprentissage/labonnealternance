@@ -6,20 +6,28 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
+import { useMemo, useState } from "react"
+import { ZFeedbackFormFields } from "shared/models/feedback-form.model"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { FeedbackWidget } from "@/components/feedback/FeedbackWidget"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 import { FeedbackFormStatusBadge } from "../../../_utils/feedbackFormsColumns"
+import { PreviewTrialCard } from "./PreviewTrialCard"
+import type { IPreviewTrial } from "./previewTrials"
+import { createTrial } from "./previewTrials"
 
 /**
  * Prévisualisation d'un formulaire enregistré, quel que soit son statut. Une page et non une
  * modale (contrairement à la maquette) : elle s'ouvre depuis la liste, se partage par son URL et
  * laisse la place aux deux colonnes.
  *
- * Squelette : les colonnes « Aperçu du widget » et « Essais » seront remplies aux étapes suivantes.
+ * À gauche, le widget réel en variante inline ; à droite, un encart par essai. « Recommencer »
+ * remonte le widget à zéro et ouvre un nouvel encart au-dessus des précédents, qui restent
+ * consultables pour comparer les parcours. Rien n'est enregistré : tout vit dans l'état de la page.
  */
 export function FeedbackFormPreview() {
   const { slug } = useParams() as { slug: string }
@@ -32,6 +40,20 @@ export function FeedbackFormPreview() {
     queryFn: () => apiGet("/admin/feedback-forms/:slug", { params: { slug } }),
     retry: false,
   })
+
+  // schéma de lecture : la réponse de l'API perd ses valeurs par défaut à la sérialisation
+  const questions = useMemo(() => (form ? ZFeedbackFormFields.shape.questions.parse(form.questions) : []), [form])
+
+  // le plus récent en tête ; le widget est monté avec la clé de l'essai en cours pour repartir de zéro
+  const [trials, setTrials] = useState<IPreviewTrial[]>(() => [createTrial(1)])
+  const [announcement, setAnnouncement] = useState("")
+  const [currentTrial] = trials
+
+  const restart = () => {
+    const next = createTrial(currentTrial.id + 1)
+    setTrials([next, ...trials])
+    setAnnouncement(`Essai ${next.id} commencé`)
+  }
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -83,13 +105,43 @@ export function FeedbackFormPreview() {
           <Typography id="previsualisation-apercu-titre" component="h2" className={fr.cx("fr-text--md", "fr-text--bold")} sx={{ mb: fr.spacing("3v") }}>
             Aperçu du widget
           </Typography>
-          <PreviewPlaceholder />
+          {questions.length === 0 ? (
+            <Typography sx={{ color: fr.colors.decisions.text.mention.grey.default }}>Ce formulaire n'a pas encore de question : il n'y a rien à prévisualiser.</Typography>
+          ) : (
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: fr.spacing("3v") }}>
+              {currentTrial.status === "closed" ? (
+                <Typography sx={{ color: fr.colors.decisions.text.mention.grey.default, mb: 0 }}>Le widget a été fermé, comme un usager peut le faire à tout moment.</Typography>
+              ) : (
+                <FeedbackWidget
+                  key={currentTrial.id}
+                  questions={questions}
+                  variant="inline"
+                  onProgress={(progress) => setTrials(([latest, ...previous]) => [{ ...latest, ...progress }, ...previous])}
+                />
+              )}
+              <Button type="button" priority="secondary" size="small" iconId="fr-icon-refresh-line" iconPosition="left" onClick={restart}>
+                Recommencer
+              </Button>
+              <Typography className={fr.cx("fr-text--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default, mb: 0 }}>
+                Sur le site, ce même widget s'affiche dans le coin de l'écran plutôt que dans la page.
+              </Typography>
+            </Box>
+          )}
         </Box>
         <Box component="section" aria-labelledby="previsualisation-essais-titre">
           <Typography id="previsualisation-essais-titre" component="h2" className={fr.cx("fr-text--md", "fr-text--bold")} sx={{ mb: fr.spacing("3v") }}>
             Essais
           </Typography>
-          <PreviewPlaceholder />
+          {questions.length > 0 && (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+              {trials.map((trial) => (
+                <PreviewTrialCard key={trial.id} trial={trial} questions={questions} isLatest={trial.id === currentTrial.id} />
+              ))}
+            </Box>
+          )}
+          <p className={fr.cx("fr-sr-only")} aria-live="polite">
+            {announcement}
+          </p>
         </Box>
       </Box>
 
@@ -97,17 +149,5 @@ export function FeedbackFormPreview() {
         Une prévisualisation ne remplace pas un test sur le site : elle ne joue pas le déclenchement (pages, nombre d'interactions), seulement l'enchaînement des questions.
       </Typography>
     </>
-  )
-}
-
-function PreviewPlaceholder() {
-  return (
-    <Box
-      sx={{
-        minHeight: 320,
-        border: `1px dashed ${fr.colors.decisions.border.default.grey.default}`,
-        backgroundColor: fr.colors.decisions.background.alt.grey.default,
-      }}
-    />
   )
 }

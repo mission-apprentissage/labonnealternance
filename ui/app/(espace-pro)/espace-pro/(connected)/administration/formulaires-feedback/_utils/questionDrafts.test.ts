@@ -35,6 +35,20 @@ describe("brouillons de questions", () => {
     expect(question).toEqual({ id: "q1", type: "text", label: "Un commentaire ?", required: false, showIf: null, maxLength: 500, placeholder: null })
   })
 
+  it("n'enregistre la condition d'affichage que si la case est cochée, sans la perdre quand elle est décochée", () => {
+    const draft = { ...createQuestionDraft("q2"), label: "Pourquoi ?", conditional: true, showIf: { questionId: "q1", equals: "negative" } }
+
+    expect(toFeedbackQuestion(draft).showIf).toEqual({ questionId: "q1", equals: "negative" })
+    expect(toFeedbackQuestion({ ...draft, conditional: false }).showIf).toBeNull()
+    expect(toFeedbackQuestion({ ...draft, conditional: false, type: "rating" })).toMatchObject({ showIf: null })
+  })
+
+  it("garde une question conditionnelle sans libellé pour la signaler plutôt que l'écarter", () => {
+    const { draftIndexes } = toFeedbackFormInput(form([{ ...createQuestionDraft("q1"), conditional: true }]))
+
+    expect(draftIndexes).toEqual([0])
+  })
+
   it("dérive la valeur de chaque option de son libellé", () => {
     const draft = { ...createQuestionDraft("q1"), type: "single_select" as const, label: "Pourquoi ?", options: [{ label: "Contact recruteur" }, { label: "Adresse et accès" }] }
 

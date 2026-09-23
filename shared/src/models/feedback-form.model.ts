@@ -33,6 +33,7 @@ const zQuestionBase = {
   label: z.string({ error: "Indiquez le libellé de la question" }).min(1, "Indiquez le libellé de la question").max(300, "Le libellé ne peut pas dépasser 300 caractères"),
   required: z.boolean().default(false),
   // affichage conditionnel : n'apparaît que si la question référencée vaut une des valeurs listées
+  // (règles de validité : voir getFeedbackShowIfIssue)
   showIf: z
     .strictObject({
       questionId: z.string(),
@@ -105,9 +106,70 @@ export type IFeedbackQuestion = z.output<typeof ZFeedbackQuestion>
 
 export const FEEDBACK_FORM_MAX_QUESTIONS = 10
 
+/** Les trois notes rapides. `value` est ce qui est stocké dans les réponses et visé par une condition. */
+export const FEEDBACK_RATING_OPTIONS = [
+  { value: "positive", label: "Très bien" },
+  { value: "neutral", label: "Moyen" },
+  { value: "negative", label: "Pas convaincu" },
+] as const
+
+/** Réponses possibles d'une question, donc celles qu'une condition d'affichage peut viser. Aucune pour un texte libre. */
+export function getFeedbackQuestionChoices(question: IFeedbackQuestion): readonly { value: string; label: string }[] {
+  switch (question.type) {
+    case "rating":
+      return FEEDBACK_RATING_OPTIONS
+    case "single_select":
+    case "multi_select":
+      return question.options
+    case "text":
+      return []
+  }
+}
+
+/**
+ * Ce qui empêche la condition d'affichage d'une question de fonctionner, ou `null` si elle est
+ * valable (ou absente). Une condition ne peut viser qu'une question posée *avant* : le widget pose
+ * les questions dans l'ordre, une condition sur une question suivante ne serait jamais remplie.
+ *
+ * Partagé par la validation d'enregistrement et par le back-office, qui signale une condition
+ * cassée dès qu'une modification la rend invalide, sans attendre la soumission.
+ */
+export function getFeedbackShowIfIssue(
+  questions: IFeedbackQuestion[],
+  index: number
+): {
+  field: "questionId" | "equals"
+  message: string
+  /** `incomplete` : rien n'a encore été choisi. `broken` : le choix fait ne tient plus, après une modification du formulaire. */
+  reason: "incomplete" | "broken"
+} | null {
+  const { showIf } = questions[index]
+  if (!showIf) return null
+  // rien n'est posé avant elle : sa condition ne pourrait jamais être remplie
+  if (index === 0) return { field: "questionId", message: "La première question ne peut pas être conditionnelle", reason: "broken" }
+  if (!showIf.questionId) return { field: "questionId", message: "Choisissez la question qui conditionne l'affichage", reason: "incomplete" }
+
+  const targetIndex = questions.findIndex((question) => question.id === showIf.questionId)
+  if (targetIndex === -1) return { field: "questionId", message: "La question choisie n'existe plus", reason: "broken" }
+  if (targetIndex >= index) return { field: "questionId", message: "La question choisie doit être posée avant celle-ci", reason: "broken" }
+
+  const choices = getFeedbackQuestionChoices(questions[targetIndex])
+  if (choices.length === 0) return { field: "questionId", message: "Une question à texte libre ne peut pas conditionner l'affichage", reason: "broken" }
+
+  const expected = [showIf.equals].flat().filter(Boolean)
+  if (expected.length === 0) return { field: "equals", message: "Choisissez la réponse qui affiche cette question", reason: "incomplete" }
+  if (expected.some((value) => !choices.some((choice) => choice.value === value))) {
+    return { field: "equals", message: "Cette réponse n'existe plus dans la question choisie", reason: "broken" }
+  }
+  return null
+}
+
 const ZFeedbackQuestions = z.array(ZFeedbackQuestion).max(FEEDBACK_FORM_MAX_QUESTIONS, `Un formulaire compte au plus ${FEEDBACK_FORM_MAX_QUESTIONS} questions`).default([])
 
-/** Questions telles qu'elles peuvent être saisies : l'identifiant est la clé des réponses, il doit être unique. */
+/**
+ * Questions telles qu'elles peuvent être saisies : l'identifiant est la clé des réponses, il doit
+ * être unique ; une condition d'affichage doit viser une réponse qui existe encore.
+ */
 const ZFeedbackQuestionsInput = ZFeedbackQuestions.superRefine((questions, ctx) => {
   const seen = new Set<string>()
   questions.forEach((question, index) => {
@@ -115,6 +177,11 @@ const ZFeedbackQuestionsInput = ZFeedbackQuestions.superRefine((questions, ctx) 
       ctx.addIssue({ code: "custom", message: `L'identifiant de question ${question.id} est utilisé plusieurs fois`, path: [index, "id"] })
     }
     seen.add(question.id)
+
+    const showIfIssue = getFeedbackShowIfIssue(questions, index)
+    if (showIfIssue) {
+      ctx.addIssue({ code: "custom", message: showIfIssue.message, path: [index, "showIf", showIfIssue.field] })
+    }
   })
 })
 

@@ -293,4 +293,53 @@ describe("admin feedback-forms controller", () => {
 
     expect(response.statusCode).toEqual(403)
   })
+
+  describe("affichage conditionnel", () => {
+    const rating: IFeedbackFormInput["questions"][number] = { id: "q1", type: "rating", label: "Utile ?", required: true, scale: "thumbs3" }
+    const conditional = (showIf: { questionId: string; equals: string }): IFeedbackFormInput["questions"][number] => ({
+      id: "q2",
+      type: "text",
+      label: "Pourquoi ?",
+      required: false,
+      maxLength: 500,
+      showIf,
+    })
+
+    it("enregistre une condition sur une réponse d'une question précédente", async () => {
+      const { bearerToken } = await loginAsAdmin()
+
+      const response = await createForm(bearerToken, { ...generalInfoOnly, questions: [rating, conditional({ questionId: "q1", equals: "negative" })] })
+
+      expect(response.statusCode).toEqual(200)
+      const saved = await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" })
+      expect(saved?.questions[1].showIf).toEqual({ questionId: "q1", equals: "negative" })
+    })
+
+    it("refuse une condition sur une réponse qui n'existe pas", async () => {
+      const { bearerToken } = await loginAsAdmin()
+
+      const response = await createForm(bearerToken, { ...generalInfoOnly, questions: [rating, conditional({ questionId: "q1", equals: "supprimee" })] })
+
+      expect(response.statusCode).toEqual(400)
+    })
+
+    it("refuse une condition sur une question posée après, ou inexistante", async () => {
+      const { bearerToken } = await loginAsAdmin()
+
+      const after = await createForm(bearerToken, { ...generalInfoOnly, questions: [conditional({ questionId: "q1", equals: "negative" }), rating] })
+      expect(after.statusCode).toEqual(400)
+
+      const missing = await createForm(bearerToken, { ...generalInfoOnly, questions: [rating, conditional({ questionId: "q9", equals: "negative" })] })
+      expect(missing.statusCode).toEqual(400)
+    })
+
+    it("refuse une condition sur la première question", async () => {
+      const { bearerToken } = await loginAsAdmin()
+
+      const response = await createForm(bearerToken, { ...generalInfoOnly, questions: [{ ...rating, showIf: { questionId: "q1", equals: "negative" } }] })
+
+      expect(response.statusCode).toEqual(400)
+      expect(response.json().message).toContain("La première question ne peut pas être conditionnelle")
+    })
+  })
 })

@@ -34,7 +34,10 @@ export type IFeedbackQuestionDraft = {
   // non éditables pour l'instant, conservés pour ne pas perdre ce qui serait déjà en base
   placeholder: ITextQuestion["placeholder"]
   maxSelections: IMultiSelectQuestion["maxSelections"]
-  showIf: IFeedbackQuestion["showIf"]
+  /** Case « Affichage conditionnel ». Décochée, la condition saisie est gardée mais pas enregistrée. */
+  conditional: boolean
+  /** `""` tant que rien n'est choisi : c'est la validation qui le signale. */
+  showIf: { questionId: string; equals: string | string[] }
 }
 
 export type IFeedbackFormDraft = Omit<IFeedbackFormInput, "questions"> & { questions: IFeedbackQuestionDraft[] }
@@ -57,7 +60,8 @@ export const createQuestionDraft = (id: string): IFeedbackQuestionDraft => ({
   maxLength: 500,
   placeholder: null,
   maxSelections: undefined,
-  showIf: null,
+  conditional: false,
+  showIf: { questionId: "", equals: "" },
 })
 
 export const toQuestionDraft = (question: IFeedbackQuestion): IFeedbackQuestionDraft => {
@@ -66,7 +70,8 @@ export const toQuestionDraft = (question: IFeedbackQuestion): IFeedbackQuestionD
     type: question.type,
     label: question.label,
     required: question.required,
-    showIf: question.showIf ?? null,
+    conditional: Boolean(question.showIf),
+    showIf: question.showIf ? { questionId: question.showIf.questionId, equals: question.showIf.equals ?? "" } : { questionId: "", equals: "" },
   }
   switch (question.type) {
     case "rating":
@@ -85,7 +90,7 @@ export const toQuestionDraft = (question: IFeedbackQuestion): IFeedbackQuestionD
  * résultat n'est donc un `IFeedbackQuestion` valide qu'une fois passé par `ZFeedbackFormInput`.
  */
 export const toFeedbackQuestion = (draft: IFeedbackQuestionDraft): IFeedbackQuestion => {
-  const base = { id: draft.id, label: draft.label, required: draft.required, showIf: draft.showIf }
+  const base = { id: draft.id, label: draft.label, required: draft.required, showIf: draft.conditional ? draft.showIf : null }
   const options = draft.options.map(({ label }) => ({ label, value: toSnakeCaseSlug(label, 60) }))
   switch (draft.type) {
     case "rating":
@@ -102,7 +107,7 @@ export const toFeedbackQuestion = (draft: IFeedbackQuestionDraft): IFeedbackQues
 /** Question laissée telle qu'à sa création : ignorée à l'enregistrement plutôt que refusée. */
 export const isBlankQuestion = (draft: IFeedbackQuestionDraft) => {
   const hasOptions = draft.type === "single_select" || draft.type === "multi_select"
-  return !draft.label.trim() && (!hasOptions || draft.options.every(({ label }) => !label.trim()))
+  return !draft.label.trim() && !draft.conditional && (!hasOptions || draft.options.every(({ label }) => !label.trim()))
 }
 
 /**
