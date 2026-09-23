@@ -75,9 +75,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const data = await getDiplomeData(slug)
   if (!data) return {}
 
+  const totalOffres = data.kpis.offres.toLocaleString("fr-FR")
+
   return {
-    title: `${data.titre} | La bonne alternance`,
-    description: `Découvrez le ${data.titre} : programme, prérequis, salaire, entreprises qui recrutent et perspectives d'emploi. Trouvez votre alternance sur La bonne alternance.`,
+    title: `${data.titre} en alternance : ${totalOffres} offres | La bonne alternance`,
+    description: `${totalOffres} offres pour préparer le ${data.titre} en alternance : programme, écoles qui forment, entreprises qui recrutent. Service public gratuit.`,
   }
 }
 
