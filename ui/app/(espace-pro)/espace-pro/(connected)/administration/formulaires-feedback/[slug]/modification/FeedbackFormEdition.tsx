@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
 import { ZFeedbackFormFields } from "shared/models/feedback-form.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -22,6 +23,13 @@ export function FeedbackFormEdition({ slug }: { slug: string }) {
     queryFn: () => apiGet("/admin/feedback-forms/:slug", { params: { slug } }),
     retry: false,
   })
+
+  // Schéma de lecture et non de saisie : un chemin devenu invalide doit pouvoir être ouvert
+  // puis corrigé, pas faire planter la page. La validation de saisie s'appliquera au submit.
+  const initialValues = useMemo(
+    () => (form ? ZFeedbackFormFields.parse({ slug: form.slug, title: form.title, trigger: form.trigger, questions: form.questions }) : undefined),
+    [form]
+  )
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -42,9 +50,7 @@ export function FeedbackFormEdition({ slug }: { slug: string }) {
       <Typography component="h1" className={fr.cx("fr-h3")} sx={{ mb: fr.spacing("4v") }}>
         Modifier {form.title}
       </Typography>
-      {/* Schéma de lecture et non de saisie : un chemin devenu invalide doit pouvoir être ouvert
-          puis corrigé, pas faire planter la page. La validation de saisie s'appliquera au submit. */}
-      <FeedbackFormBuilder initialValues={ZFeedbackFormFields.parse({ slug: form.slug, title: form.title, trigger: form.trigger, questions: form.questions })} />
+      <FeedbackFormBuilder mode="edit" initialValues={initialValues} />
     </>
   )
 }

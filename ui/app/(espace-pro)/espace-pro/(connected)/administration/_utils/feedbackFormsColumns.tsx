@@ -104,16 +104,19 @@ export function getFeedbackFormsColumns({
       enableSorting: false,
       cell: (info) => {
         const form = info.row.original
-        // archivé = état terminal : plus rien à modifier ni à archiver, il reste seulement consultable dans la liste
-        if (form.status === "archived") return null
+        // archivé = état terminal : plus rien à modifier ni à archiver, seulement à dupliquer
+        const isArchived = form.status === "archived"
         const actions: PopoverMenuAction[] = [
-          {
-            label: "Modifier",
-            type: "link",
-            hint: form.title,
-            link: PAGES.dynamic.backAdminFeedbackFormEdit({ slug: form.slug }).getPath(),
-          },
-          { label: "Archiver", type: "button", hint: form.title, onClick: () => onAction(form, "archive") },
+          isArchived
+            ? null
+            : {
+                label: "Modifier",
+                type: "link",
+                hint: form.title,
+                link: PAGES.dynamic.backAdminFeedbackFormEdit({ slug: form.slug }).getPath(),
+              },
+          { label: "Dupliquer", type: "link", hint: form.title, link: PAGES.dynamic.backAdminFeedbackFormDuplication({ slug: form.slug }).getPath() },
+          isArchived ? null : { label: "Archiver", type: "button", hint: form.title, onClick: () => onAction(form, "archive") },
           // un formulaire déjà affiché aux usagers s'archive (ses réponses restent), il ne se supprime pas
           form.status === "draft" ? { label: "Supprimer", type: "button", hint: form.title, onClick: () => onAction(form, "delete") } : null,
         ]

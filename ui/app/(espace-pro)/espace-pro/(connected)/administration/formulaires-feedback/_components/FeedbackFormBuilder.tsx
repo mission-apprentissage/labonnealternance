@@ -56,8 +56,13 @@ const validate = (values: IFeedbackFormDraft): FormikErrors<IFeedbackFormDraft> 
   return errors
 }
 
-export function FeedbackFormBuilder({ initialValues }: { initialValues?: IFeedbackFormInput }) {
-  const isEdit = Boolean(initialValues)
+/**
+ * `initialValues` pré-remplit le formulaire : en modification, c'est le formulaire enregistré ; en
+ * création, c'est une copie à enregistrer comme nouveau brouillon (duplication). Il doit être
+ * mémoïsé par l'appelant, l'effet de réinitialisation en dépend.
+ */
+export function FeedbackFormBuilder({ mode, initialValues }: { mode: "create" | "edit"; initialValues?: IFeedbackFormInput }) {
+  const isEdit = mode === "edit"
   const router = useRouter()
   const toast = useToast()
   // tant que le slug n'a pas été édité à la main, il suit le titre
@@ -94,10 +99,10 @@ export function FeedbackFormBuilder({ initialValues }: { initialValues?: IFeedba
   // effet se rejoue quand le segment redevient actif et rend bien un formulaire vierge.
   useEffect(() => {
     if (!isEdit) {
-      resetForm({ values: createEmptyForm() })
+      resetForm({ values: initialValues ? toFeedbackFormDraft(initialValues) : createEmptyForm() })
       setSlugTouched(false)
     }
-  }, [isEdit, resetForm])
+  }, [isEdit, resetForm, initialValues])
 
   return (
     <FormikProvider value={formik}>

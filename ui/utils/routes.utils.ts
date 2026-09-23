@@ -593,6 +593,11 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/formulaires-feedback/${slug}/modification` as string,
       title: title ?? "Modifier le formulaire",
     }),
+    // page de création pré-remplie avec les paramètres du formulaire source : rien n'est créé avant l'enregistrement
+    backAdminFeedbackFormDuplication: ({ slug }: { slug: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/formulaires-feedback/creation?source=${encodeURIComponent(slug)}` as string,
+      title: "Créer un formulaire de feedback",
+    }),
     backCreateCFAConfirmation: ({ email }: { email: string }): IPage => ({
       getPath: () => `/espace-pro/authentification/confirmation?email=${email}` as string,
       title: "Confirmation de création de compte",
