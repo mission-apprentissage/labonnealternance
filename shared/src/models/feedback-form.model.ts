@@ -30,7 +30,7 @@ export const ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS: Record<IFeedbackFormStatu
 const zQuestionBase = {
   // slug stable de la question — clé dans `answers` des réponses. Ex : "search_relevance"
   id: z.string().min(1).max(60),
-  label: z.string().min(1).max(300),
+  label: z.string({ error: "Indiquez le libellé de la question" }).min(1, "Indiquez le libellé de la question").max(300, "Le libellé ne peut pas dépasser 300 caractères"),
   required: z.boolean().default(false),
   // affichage conditionnel : n'apparaît que si la question référencée vaut une des valeurs listées
   showIf: z
@@ -41,10 +41,33 @@ const zQuestionBase = {
     .nullish(),
 }
 
+export const FEEDBACK_QUESTION_MIN_OPTIONS = 2
+export const FEEDBACK_QUESTION_MAX_OPTIONS = 12
+
 const zSelectOptions = z
-  .array(z.strictObject({ value: z.string().max(60), label: z.string().max(150) }))
-  .min(2)
-  .max(12)
+  .array(
+    z.strictObject({
+      // clé stockée dans les réponses, dérivée du libellé côté back-office. Ex : "contact_recruteur"
+      value: z.string().max(60),
+      label: z.string({ error: "Indiquez le libellé de l'option" }).min(1, "Indiquez le libellé de l'option").max(150, "Le libellé ne peut pas dépasser 150 caractères"),
+    })
+  )
+  .min(FEEDBACK_QUESTION_MIN_OPTIONS, `Proposez au moins ${FEEDBACK_QUESTION_MIN_OPTIONS} options`)
+  .max(FEEDBACK_QUESTION_MAX_OPTIONS, `Proposez au plus ${FEEDBACK_QUESTION_MAX_OPTIONS} options`)
+  // La valeur est la clé des réponses : vide ou en double, deux choix deviendraient indiscernables
+  // dans les résultats. L'erreur est posée sur le libellé, seul champ que l'admin voit.
+  .superRefine((options, ctx) => {
+    const seen = new Set<string>()
+    options.forEach((option, index) => {
+      if (!option.label) return
+      if (!option.value) {
+        ctx.addIssue({ code: "custom", message: "Le libellé doit contenir au moins une lettre ou un chiffre", path: [index, "label"] })
+      } else if (seen.has(option.value)) {
+        ctx.addIssue({ code: "custom", message: "Cette option est en double", path: [index, "label"] })
+      }
+      seen.add(option.value)
+    })
+  })
 
 const ZFeedbackRatingQuestion = z.strictObject({
   ...zQuestionBase,
@@ -68,7 +91,12 @@ const ZFeedbackMultiSelectQuestion = z.strictObject({
 const ZFeedbackTextQuestion = z.strictObject({
   ...zQuestionBase,
   type: z.literal("text"),
-  maxLength: z.number().int().positive().max(2000).default(500),
+  maxLength: z
+    .number({ error: "Indiquez une longueur maximale" })
+    .int("Indiquez un nombre entier")
+    .positive("La longueur maximale doit être d'au moins 1 caractère")
+    .max(2000, "La longueur maximale ne peut pas dépasser 2000 caractères")
+    .default(500),
   placeholder: z.string().max(150).nullish(),
 })
 
@@ -76,6 +104,19 @@ export const ZFeedbackQuestion = z.discriminatedUnion("type", [ZFeedbackRatingQu
 export type IFeedbackQuestion = z.output<typeof ZFeedbackQuestion>
 
 export const FEEDBACK_FORM_MAX_QUESTIONS = 10
+
+const ZFeedbackQuestions = z.array(ZFeedbackQuestion).max(FEEDBACK_FORM_MAX_QUESTIONS, `Un formulaire compte au plus ${FEEDBACK_FORM_MAX_QUESTIONS} questions`).default([])
+
+/** Questions telles qu'elles peuvent être saisies : l'identifiant est la clé des réponses, il doit être unique. */
+const ZFeedbackQuestionsInput = ZFeedbackQuestions.superRefine((questions, ctx) => {
+  const seen = new Set<string>()
+  questions.forEach((question, index) => {
+    if (seen.has(question.id)) {
+      ctx.addIssue({ code: "custom", message: `L'identifiant de question ${question.id} est utilisé plusieurs fois`, path: [index, "id"] })
+    }
+    seen.add(question.id)
+  })
+})
 
 // --- Formulaire ---
 
@@ -114,11 +155,11 @@ export const ZFeedbackFormFields = z.strictObject({
     .regex(/^[a-z0-9_-]+$/, "Le slug ne peut contenir que des minuscules, chiffres, tirets et tirets bas"),
   title: z.string({ error: "Le titre est obligatoire" }).min(1, "Le titre est obligatoire").max(150, "Le titre ne peut pas dépasser 150 caractères"),
   trigger: ZFeedbackFormTrigger,
-  questions: z.array(ZFeedbackQuestion).max(FEEDBACK_FORM_MAX_QUESTIONS).default([]),
+  questions: ZFeedbackQuestions,
 })
 
 /** Ce que le back-office envoie à la création comme à la modification. */
-export const ZFeedbackFormInput = ZFeedbackFormFields.extend({ trigger: ZFeedbackFormTriggerInput })
+export const ZFeedbackFormInput = ZFeedbackFormFields.extend({ trigger: ZFeedbackFormTriggerInput, questions: ZFeedbackQuestionsInput })
 export type IFeedbackFormInput = z.output<typeof ZFeedbackFormInput>
 
 /** Ce qu'un formulaire doit satisfaire pour pouvoir être activé (et donc affiché aux usagers). */

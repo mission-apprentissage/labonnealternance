@@ -3,47 +3,78 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
-import { FormikProvider, useFormik } from "formik"
+import type { FormikErrors } from "formik"
+import { FormikProvider, getIn, prepareDataForValidation, setIn, useFormik } from "formik"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { IFeedbackFormInput } from "shared/models/feedback-form.model"
 import { ZFeedbackFormInput } from "shared/models/feedback-form.model"
 import { toSnakeCaseSlug } from "shared/utils/string-utils"
-import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
 import { useToast } from "@/app/hooks/useToast"
 import { ApiError, apiPost, apiPut } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
+import type { IFeedbackFormDraft } from "../_utils/questionDrafts"
+import { toFeedbackFormDraft, toFeedbackFormInput } from "../_utils/questionDrafts"
+import { QuestionsField } from "./QuestionsField"
 import { TriggerScopeField } from "./TriggerScopeField"
 
-const createEmptyForm = (): IFeedbackFormInput => ({
-  slug: "",
-  title: "",
-  trigger: { minInteractions: 1, scope: [] },
-  questions: [],
-})
+const createEmptyForm = (): IFeedbackFormDraft =>
+  toFeedbackFormDraft({
+    slug: "",
+    title: "",
+    trigger: { minInteractions: 1, scope: [] },
+    questions: [],
+  })
 
-export function FeedbackFormGeneralInfoForm({ initialValues }: { initialValues?: IFeedbackFormInput }) {
+/**
+ * Les valeurs Formik sont des brouillons de questions (tous types confondus), pas le corps de
+ * requête : on valide donc ce qui sera réellement envoyé, puis on reporte chaque erreur sur le
+ * champ du brouillon correspondant.
+ */
+const validate = (values: IFeedbackFormDraft): FormikErrors<IFeedbackFormDraft> => {
+  const { input, draftIndexes } = toFeedbackFormInput(values)
+  // même traitement que `validationSchema` : "" devient undefined, pour que les champs vides
+  // reçoivent le message « obligatoire » plutôt qu'une erreur de longueur
+  const result = ZFeedbackFormInput.safeParse(prepareDataForValidation(input))
+  if (result.success) return {}
+
+  let errors: FormikErrors<IFeedbackFormDraft> = {}
+  for (const issue of result.error.issues) {
+    const path = issue.path.map(String)
+    if (path[0] === "questions" && path[1] !== undefined) {
+      path[1] = String(draftIndexes[Number(path[1])])
+    }
+    const key = path.join(".")
+    if (key && getIn(errors, key) === undefined) {
+      errors = setIn(errors, key, issue.message)
+    }
+  }
+  return errors
+}
+
+export function FeedbackFormBuilder({ initialValues }: { initialValues?: IFeedbackFormInput }) {
   const isEdit = Boolean(initialValues)
   const router = useRouter()
   const toast = useToast()
   // tant que le slug n'a pas été édité à la main, il suit le titre
   const [slugTouched, setSlugTouched] = useState(isEdit)
 
-  const formik = useFormik<IFeedbackFormInput>({
-    initialValues: initialValues ?? createEmptyForm(),
-    validationSchema: toFormikValidationSchema(ZFeedbackFormInput),
+  const formik = useFormik<IFeedbackFormDraft>({
+    initialValues: initialValues ? toFeedbackFormDraft(initialValues) : createEmptyForm(),
+    validate,
     enableReinitialize: true,
     onSubmit: async (values) => {
+      const { input } = toFeedbackFormInput(values)
       try {
         if (isEdit) {
-          const { slug, ...body } = values
+          const { slug, ...body } = input
           await apiPut("/admin/feedback-forms/:slug", { params: { slug }, body })
           toast({ title: "Formulaire enregistré" })
         } else {
-          await apiPost("/admin/feedback-forms", { body: values })
+          await apiPost("/admin/feedback-forms", { body: input })
           toast({ title: "Brouillon enregistré" })
         }
         router.push(PAGES.static.backAdminFeedbackForms.getPath())
@@ -118,6 +149,8 @@ export function FeedbackFormGeneralInfoForm({ initialValues }: { initialValues?:
             }}
           />
         </Box>
+
+        <QuestionsField />
 
         <Box
           sx={{

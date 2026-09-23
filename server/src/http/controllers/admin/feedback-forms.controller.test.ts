@@ -92,6 +92,59 @@ describe("admin feedback-forms controller", () => {
     expect(response.statusCode).toEqual(400)
   })
 
+  it("enregistre les questions de chaque type", async () => {
+    const { bearerToken } = await loginAsAdmin()
+    const questions: IFeedbackFormInput["questions"] = [
+      { id: "q1", type: "rating", label: "Ces informations vous ont-elles été utiles ?", required: true, scale: "thumbs3" },
+      {
+        id: "q2",
+        type: "multi_select",
+        label: "Quelles informations vous ont manqué ?",
+        required: false,
+        options: [
+          { value: "contact_recruteur", label: "Contact recruteur" },
+          { value: "offres_en_cours", label: "Offres en cours" },
+        ],
+      },
+      { id: "q3", type: "text", label: "Un commentaire ?", required: false, maxLength: 500 },
+    ]
+
+    const response = await createForm(bearerToken, { ...generalInfoOnly, questions })
+
+    expect(response.statusCode).toEqual(200)
+    const saved = await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" })
+    expect(saved?.questions).toMatchObject(questions)
+  })
+
+  it("refuse une question sans libellé", async () => {
+    const { bearerToken } = await loginAsAdmin()
+
+    const response = await createForm(bearerToken, { ...generalInfoOnly, questions: [{ id: "q1", type: "rating", label: "", required: false, scale: "thumbs3" }] })
+
+    expect(response.statusCode).toEqual(400)
+  })
+
+  it("refuse deux options indiscernables dans les réponses", async () => {
+    const { bearerToken } = await loginAsAdmin()
+    const options = [
+      { value: "contact", label: "Contact" },
+      { value: "contact", label: "contact" },
+    ]
+
+    const response = await createForm(bearerToken, { ...generalInfoOnly, questions: [{ id: "q1", type: "single_select", label: "Pourquoi ?", required: false, options }] })
+
+    expect(response.statusCode).toEqual(400)
+  })
+
+  it("refuse deux questions portant le même identifiant", async () => {
+    const { bearerToken } = await loginAsAdmin()
+    const question = { id: "q1", type: "rating" as const, label: "Utile ?", required: false, scale: "thumbs3" as const }
+
+    const response = await createForm(bearerToken, { ...generalInfoOnly, questions: [question, { ...question, label: "Autre" }] })
+
+    expect(response.statusCode).toEqual(400)
+  })
+
   it("liste les formulaires du plus récemment modifié au plus ancien, avec leur nombre de réponses", async () => {
     const { bearerToken } = await loginAsAdmin()
     await createForm(bearerToken)
