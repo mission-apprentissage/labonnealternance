@@ -202,11 +202,11 @@ interface SearchBarProps {
   /** Message d'erreur DSFR sous le champ lieu. */
   lieuError?: string
   /**
-   * Cliquer sur la croix d'effacement du champ métier vide le champ ET lance une recherche
-   * vide — comme si l'utilisateur validait un champ qu'il vient de vider à la main. À réserver
-   * aux mises en page SANS bouton Rechercher visible (page de résultats desktop, cf.
-   * submitOnSuggestion) : la home et les panneaux mobiles ont toujours un bouton pour lancer
-   * explicitement, la croix ne doit alors que vider le champ.
+   * Vider le champ métier — croix d'effacement ou effacement manuel — retire aussitôt le critère
+   * de la recherche courante (comme la croix du lieu). Réservé aux mises en page SANS bouton
+   * Rechercher visible (page de résultats desktop) : sur la home et dans le panneau mobile, le
+   * bouton lance explicitement, vider le champ ne fait que le vider (sur la home, onSubmit
+   * naviguerait vers /recherche).
    */
   submitOnClear?: boolean
 }
@@ -250,7 +250,6 @@ export function SearchBar({
   onSubmit,
   onLieuChange,
   onQChange,
-  submitOnSuggestion = false,
   submitOnClear = false,
   submitOnSelect = false,
   layout = "row",
@@ -511,14 +510,8 @@ export function SearchBar({
             setInputValue(value)
             qSourceRef.current = "free_text"
             onQChange?.(value, "free_text")
-            // Champ vidé sur la page de résultats : le critère métier est retiré de la recherche
-            // courante (comme la croix du lieu). Jamais sur la home : sans ce garde, effacer sa
-            // saisie envoyait l'usager sur /recherche (onSubmit y navigue) — onQChange("") suffit.
-            if (value === "" && submitOnSelect) handleSubmit("", "free_text")
-            // reason "clear" (croix) vide aussi le champ : sans submitOnClear, on n'y donne pas
-            // suite ici (cf. doc de la prop) — seul un Entrée sur champ vide validé par
-            // l'utilisateur, ou l'effacement caractère par caractère, lance la recherche.
-            if (value === "" && (reason !== "clear" || submitOnClear)) handleSubmit("", "free_text")            
+            // Champ vidé (croix ou effacement) : cf. submitOnClear. onQChange("") suffit ailleurs.
+            if (value === "" && submitOnClear) handleSubmit("", "free_text")
           }}
           onChange={(_e, value, reason) => {
             // "createOption" = Entrée sans option surlignée (freeSolo) : MUI ne fait pas
