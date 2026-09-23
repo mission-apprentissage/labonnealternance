@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { ZFeedbackFormInput } from "shared/models/feedback-form.model"
+import { ZFeedbackFormFields } from "shared/models/feedback-form.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { apiGet } from "@/utils/api.utils"
@@ -42,8 +42,9 @@ export function FeedbackFormEdition({ slug }: { slug: string }) {
       <Typography component="h1" className={fr.cx("fr-h3")} sx={{ mb: fr.spacing("4v") }}>
         Modifier {form.title}
       </Typography>
-      {/* re-validation de la définition renvoyée par l'API : applique les valeurs par défaut et donne au formulaire un objet complet */}
-      <FeedbackFormGeneralInfoForm initialValues={ZFeedbackFormInput.parse({ slug: form.slug, title: form.title, trigger: form.trigger, questions: form.questions })} />
+      {/* Schéma de lecture et non de saisie : un chemin devenu invalide doit pouvoir être ouvert
+          puis corrigé, pas faire planter la page. La validation de saisie s'appliquera au submit. */}
+      <FeedbackFormGeneralInfoForm initialValues={ZFeedbackFormFields.parse({ slug: form.slug, title: form.title, trigger: form.trigger, questions: form.questions })} />
     </>
   )
 }

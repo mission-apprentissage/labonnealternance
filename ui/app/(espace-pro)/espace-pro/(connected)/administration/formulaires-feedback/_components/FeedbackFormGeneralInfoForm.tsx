@@ -5,7 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { FormikProvider, useFormik } from "formik"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { IFeedbackFormInput } from "shared/models/feedback-form.model"
 import { ZFeedbackFormInput } from "shared/models/feedback-form.model"
 import { toSnakeCaseSlug } from "shared/utils/string-utils"
@@ -18,12 +18,12 @@ import { PAGES } from "@/utils/routes.utils"
 
 import { TriggerScopeField } from "./TriggerScopeField"
 
-const emptyForm: IFeedbackFormInput = {
+const createEmptyForm = (): IFeedbackFormInput => ({
   slug: "",
   title: "",
   trigger: { minInteractions: 1, scope: [] },
   questions: [],
-}
+})
 
 export function FeedbackFormGeneralInfoForm({ initialValues }: { initialValues?: IFeedbackFormInput }) {
   const isEdit = Boolean(initialValues)
@@ -33,7 +33,7 @@ export function FeedbackFormGeneralInfoForm({ initialValues }: { initialValues?:
   const [slugTouched, setSlugTouched] = useState(isEdit)
 
   const formik = useFormik<IFeedbackFormInput>({
-    initialValues: initialValues ?? emptyForm,
+    initialValues: initialValues ?? createEmptyForm(),
     validationSchema: toFormikValidationSchema(ZFeedbackFormInput),
     enableReinitialize: true,
     onSubmit: async (values) => {
@@ -54,7 +54,17 @@ export function FeedbackFormGeneralInfoForm({ initialValues }: { initialValues?:
     },
   })
 
-  const { values, handleSubmit, isSubmitting, setFieldValue } = formik
+  const { values, handleSubmit, isSubmitting, setFieldValue, resetForm } = formik
+
+  // Next garde le segment précédent monté : revenir sur la page de création par « Créer un
+  // formulaire » réutilise le même arbre React, donc la saisie abandonnée réapparaîtrait. Cet
+  // effet se rejoue quand le segment redevient actif et rend bien un formulaire vierge.
+  useEffect(() => {
+    if (!isEdit) {
+      resetForm({ values: createEmptyForm() })
+      setSlugTouched(false)
+    }
+  }, [isEdit, resetForm])
 
   return (
     <FormikProvider value={formik}>

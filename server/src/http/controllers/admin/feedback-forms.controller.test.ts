@@ -9,7 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 const generalInfoOnly: IFeedbackFormInput = {
   slug: "page_entreprise_v1",
   title: "Fiche entreprise — utilité des informations",
-  trigger: { minInteractions: 1, scope: ["/entreprise/:id"] },
+  trigger: { minInteractions: 1, scope: ["/formation/:id/:intitule-formation"] },
   questions: [],
 }
 
@@ -84,6 +84,14 @@ describe("admin feedback-forms controller", () => {
     expect(response.statusCode).toEqual(400)
   })
 
+  it("refuse un chemin de déclenchement qui ne correspond à aucune page du site", async () => {
+    const { bearerToken } = await loginAsAdmin()
+
+    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { minInteractions: 1, scope: ["/page-qui-nexiste-pas"] } })
+
+    expect(response.statusCode).toEqual(400)
+  })
+
   it("liste les formulaires du plus récemment modifié au plus ancien, avec leur nombre de réponses", async () => {
     const { bearerToken } = await loginAsAdmin()
     await createForm(bearerToken)
@@ -128,7 +136,7 @@ describe("admin feedback-forms controller", () => {
       method: "PUT",
       path: "/api/admin/feedback-forms/page_entreprise_v1",
       headers: bearerToken,
-      body: { title: "Titre corrigé", trigger: { minInteractions: 3, scope: ["/entreprise/:id", "/recherche"] }, questions: [] },
+      body: { title: "Titre corrigé", trigger: { minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] }, questions: [] },
     })
 
     expect(response.statusCode).toEqual(200)
@@ -137,7 +145,7 @@ describe("admin feedback-forms controller", () => {
       title: "Titre corrigé",
       status: "draft",
       version: 1,
-      trigger: { minInteractions: 3, scope: ["/entreprise/:id", "/recherche"] },
+      trigger: { minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] },
     })
   })
 })

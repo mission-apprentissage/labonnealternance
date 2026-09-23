@@ -1,6 +1,7 @@
 import type { Jsonify } from "type-fest"
 
 import { z } from "../helpers/zod-with-open-api.js"
+import { matchesKnownUiRoute } from "../utils/ui-routes.utils.js"
 
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
@@ -80,8 +81,20 @@ export const FEEDBACK_FORM_MAX_QUESTIONS = 10
 
 const ZFeedbackFormTrigger = z.strictObject({
   minInteractions: z.number({ error: "Indiquez un nombre d'interactions" }).int("Indiquez un nombre entier").positive("Le widget ne peut pas s'afficher au chargement").default(1),
-  // chemins où le widget est autorisé à s'afficher, ex : ["/recherche", "/entreprise/:id"]
+  // chemins où le widget est autorisé à s'afficher, ex : ["/recherche", "/formation/:id/:titre"]
   scope: z.array(z.string().min(1)).default([]),
+})
+
+/**
+ * Déclencheur tel qu'il peut être *saisi* : un chemin qui ne correspond à aucune page du site est
+ * refusé, sinon le widget n'y serait jamais rendu et l'erreur ne se verrait qu'en production.
+ *
+ * Volontairement absent du schéma de lecture : si une page disparaît de `ui/app`, les formulaires
+ * qui la ciblaient doivent rester lisibles et corrigeables dans le back-office, pas faire échouer
+ * la sérialisation des réponses de l'API.
+ */
+const ZFeedbackFormTriggerInput = ZFeedbackFormTrigger.extend({
+  scope: z.array(z.string().min(1).refine(matchesKnownUiRoute, "Ce chemin ne correspond à aucune page du site")).default([]),
 })
 
 /**
@@ -93,7 +106,7 @@ const ZFeedbackFormTrigger = z.strictObject({
  * d'un brouillon en cours de rédaction. Ces contraintes sont portées par
  * `ZFeedbackFormPublishable`, vérifié au moment de l'activation.
  */
-export const ZFeedbackFormInput = z.strictObject({
+export const ZFeedbackFormFields = z.strictObject({
   slug: z
     .string({ error: "Le slug est obligatoire" })
     .min(3, "Le slug doit faire au moins 3 caractères")
@@ -103,6 +116,9 @@ export const ZFeedbackFormInput = z.strictObject({
   trigger: ZFeedbackFormTrigger,
   questions: z.array(ZFeedbackQuestion).max(FEEDBACK_FORM_MAX_QUESTIONS).default([]),
 })
+
+/** Ce que le back-office envoie à la création comme à la modification. */
+export const ZFeedbackFormInput = ZFeedbackFormFields.extend({ trigger: ZFeedbackFormTriggerInput })
 export type IFeedbackFormInput = z.output<typeof ZFeedbackFormInput>
 
 /** Ce qu'un formulaire doit satisfaire pour pouvoir être activé (et donc affiché aux usagers). */
@@ -115,7 +131,7 @@ export const ZFeedbackFormPublishable = ZFeedbackFormInput.superRefine((data, ct
   }
 })
 
-export const ZFeedbackForm = ZFeedbackFormInput.extend({
+export const ZFeedbackForm = ZFeedbackFormFields.extend({
   _id: zObjectId,
   status: ZFeedbackFormStatus,
   version: z.number().int().positive(),
