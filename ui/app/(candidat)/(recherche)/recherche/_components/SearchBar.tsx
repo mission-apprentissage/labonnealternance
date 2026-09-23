@@ -603,9 +603,8 @@ export function SearchBar({
           freeSolo
           // cf. champ métier : sans clearText le bouton croix s'annonce "Clear" (RGAA 8.7).
           clearText="Effacer"
-          // autoHighlight : la 1re suggestion est pré-surlignée → Entrée la sélectionne
-          // (au lieu de laisser un texte non validé). Vaut aussi pour « France entière »
-          // (seule option quand le champ est vide).
+          // La 1re option (suggestion ou « France entière ») est pré-surlignée : Entrée la
+          // sélectionne au lieu de laisser un texte non validé.
           autoHighlight
           // Ouvre le dropdown au focus : l'option « France entière » est proposée avant toute saisie.
           openOnFocus
