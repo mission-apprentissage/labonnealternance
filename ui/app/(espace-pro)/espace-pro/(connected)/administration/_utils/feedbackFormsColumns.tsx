@@ -18,7 +18,7 @@ const STATUS_BADGE: Record<IFeedbackFormStatus, { label: string; severity: "succ
   archived: { label: "Archivé", severity: "info" },
 }
 
-function FeedbackFormStatusBadge({ status }: { status: IFeedbackFormStatus }) {
+export function FeedbackFormStatusBadge({ status }: { status: IFeedbackFormStatus }) {
   const { label, severity } = STATUS_BADGE[status]
   return (
     <Badge small noIcon severity={severity}>
@@ -107,6 +107,7 @@ export function getFeedbackFormsColumns({
         // archivé = état terminal : plus rien à modifier ni à archiver, seulement à dupliquer
         const isArchived = form.status === "archived"
         const actions: PopoverMenuAction[] = [
+          { label: "Prévisualiser", type: "link", hint: form.title, link: PAGES.dynamic.backAdminFeedbackFormPreview({ slug: form.slug }).getPath() },
           isArchived
             ? null
             : {

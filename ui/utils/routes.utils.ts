@@ -593,6 +593,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/formulaires-feedback/${slug}/modification` as string,
       title: title ?? "Modifier le formulaire",
     }),
+    backAdminFeedbackFormPreview: ({ slug, title }: { slug: string; title?: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/formulaires-feedback/${slug}/previsualisation` as string,
+      title: title ? `Prévisualisation — ${title}` : "Prévisualisation",
+    }),
     // page de création pré-remplie avec les paramètres du formulaire source : rien n'est créé avant l'enregistrement
     backAdminFeedbackFormDuplication: ({ slug }: { slug: string }): IPage => ({
       getPath: () => `/espace-pro/administration/formulaires-feedback/creation?source=${encodeURIComponent(slug)}` as string,
