@@ -593,6 +593,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/formulaires-feedback/${slug}/modification` as string,
       title: title ?? "Modifier le formulaire",
     }),
+    backAdminFeedbackFormDetail: ({ slug, title }: { slug: string; title?: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/formulaires-feedback/${slug}` as string,
+      title: title ?? "Résultats du formulaire",
+    }),
     backAdminFeedbackFormPreview: ({ slug, title }: { slug: string; title?: string }): IPage => ({
       getPath: () => `/espace-pro/administration/formulaires-feedback/${slug}/previsualisation` as string,
       title: title ? `Prévisualisation — ${title}` : "Prévisualisation",

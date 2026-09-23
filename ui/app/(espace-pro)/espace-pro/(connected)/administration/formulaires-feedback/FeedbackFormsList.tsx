@@ -15,6 +15,7 @@ import { PAGES } from "@/utils/routes.utils"
 import { getFeedbackFormsColumns } from "../_utils/feedbackFormsColumns"
 import type { IFeedbackFormAction } from "./_components/ConfirmationActionFormulaire"
 import { ConfirmationActionFormulaire } from "./_components/ConfirmationActionFormulaire"
+import { useFeedbackFormStatusChange } from "./_utils/useFeedbackFormStatusChange"
 
 /**
  * Filtre de statut. Un formulaire archivé n'a plus d'action possible : il n'apparaît que lorsqu'on
@@ -49,13 +50,23 @@ export function FeedbackFormsList() {
   // construites qu'une fois.
   const [isConfirmationOpen, setConfirmationOpen] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
+  const changeStatus = useFeedbackFormStatusChange()
+  // les colonnes ne sont construites qu'une fois : la ref leur donne toujours la dernière fonction
+  const changeStatusRef = useRef(changeStatus)
+  changeStatusRef.current = changeStatus
 
   const columns = useMemo(
     () =>
       getFeedbackFormsColumns({
-        onAction: (form, action) => {
-          setPending({ form, action })
-          setConfirmationOpen(true)
+        onAction: (form, item) => {
+          if (item.kind === "run") {
+            changeStatusRef.current(form, item.action)
+            return
+          }
+          if (item.kind === "confirm") {
+            setPending({ form, action: item.action })
+            setConfirmationOpen(true)
+          }
         },
       }),
     []

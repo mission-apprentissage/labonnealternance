@@ -3,8 +3,10 @@ import { zRoutes } from "shared"
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
 import {
+  activateFeedbackForm,
   archiveFeedbackForm,
   createFeedbackForm,
+  deactivateFeedbackForm,
   deleteFeedbackForm,
   getFeedbackFormForAdmin,
   listFeedbackFormsForAdmin,
@@ -46,6 +48,32 @@ export default (server: Server) => {
       const user = getUserFromRequest(req, zRoutes.post["/admin/feedback-forms"]).value
       const form = await createFeedbackForm(req.body, user.email)
       return res.status(200).send(form)
+    }
+  )
+
+  server.post(
+    "/admin/feedback-forms/:slug/activate",
+    {
+      schema: zRoutes.post["/admin/feedback-forms/:slug/activate"],
+      onRequest: server.auth(zRoutes.post["/admin/feedback-forms/:slug/activate"]),
+    },
+    async (req, res) => {
+      const user = getUserFromRequest(req, zRoutes.post["/admin/feedback-forms/:slug/activate"]).value
+      await activateFeedbackForm(req.params.slug, user.email)
+      return res.status(200).send({})
+    }
+  )
+
+  server.post(
+    "/admin/feedback-forms/:slug/deactivate",
+    {
+      schema: zRoutes.post["/admin/feedback-forms/:slug/deactivate"],
+      onRequest: server.auth(zRoutes.post["/admin/feedback-forms/:slug/deactivate"]),
+    },
+    async (req, res) => {
+      const user = getUserFromRequest(req, zRoutes.post["/admin/feedback-forms/:slug/deactivate"]).value
+      await deactivateFeedbackForm(req.params.slug, user.email)
+      return res.status(200).send({})
     }
   )
 

@@ -1,8 +1,8 @@
-import { conflict, notFound } from "@hapi/boom"
+import { badRequest, conflict, notFound } from "@hapi/boom"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IFeedbackForm, IFeedbackFormForAdmin, IFeedbackFormInput, IFeedbackFormStatus } from "shared/models/feedback-form.model"
-import { ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS } from "shared/models/feedback-form.model"
+import { ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS, ZFeedbackFormPublishable } from "shared/models/feedback-form.model"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
@@ -92,20 +92,23 @@ export async function updateFeedbackForm(slug: string, input: Omit<IFeedbackForm
 }
 
 /**
- * Supprime définitivement un brouillon. Un brouillon n'a jamais été affiché, il n'a donc aucune
- * réponse. Au-delà, c'est l'archivage qui retire un formulaire sans perdre ses résultats.
+ * Supprime définitivement un brouillon ou un formulaire archivé. Un formulaire actif ou inactif
+ * doit d'abord être archivé : la suppression ne peut pas retirer un widget encore en service.
+ *
+ * TODO à l'arrivée de `feedback_responses` : supprimer aussi les réponses d'un archivé (ou refuser
+ * s'il en a), sinon elles resteraient orphelines.
  */
 export async function deleteFeedbackForm(slug: string): Promise<void> {
   const form = await getFeedbackFormBySlug(slug)
-  if (form.status !== "draft") {
-    throw conflict("Seul un brouillon peut être supprimé")
+  if (form.status !== "draft" && form.status !== "archived") {
+    throw conflict("Seul un brouillon ou un formulaire archivé peut être supprimé")
   }
   await getDbCollection("feedback_forms").deleteOne({ _id: form._id })
 }
 
 /** Changement de statut conforme au cycle de vie, tracé dans `status_history`. */
-async function transitionFeedbackFormStatus(slug: string, next: IFeedbackFormStatus, grantedBy: string): Promise<void> {
-  const form = await getFeedbackFormBySlug(slug)
+async function transitionFeedbackFormStatus(slug: string, next: IFeedbackFormStatus, grantedBy: string, form?: IFeedbackForm): Promise<void> {
+  form ??= await getFeedbackFormBySlug(slug)
   if (!ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS[form.status].includes(next)) {
     throw conflict(form.status === "archived" ? "Ce formulaire est déjà archivé" : "Ce changement de statut n'est pas autorisé")
   }
@@ -119,4 +122,33 @@ async function transitionFeedbackFormStatus(slug: string, next: IFeedbackFormSta
 /** Archive un formulaire, quel que soit son statut : il n'est plus affiché aux usagers ni modifiable, ses réponses restent. */
 export async function archiveFeedbackForm(slug: string, grantedBy: string): Promise<void> {
   await transitionFeedbackFormStatus(slug, "archived", grantedBy)
+}
+
+/**
+ * Active un brouillon ou un formulaire inactif : il pourra s'afficher aux usagers.
+ *
+ * Refusé si le formulaire n'est pas publiable (aucune question, chemin qui n'existe plus, condition
+ * cassée) ou si un autre formulaire est déjà actif sur l'un de ses chemins — deux widgets ne
+ * doivent pas se disputer la même page. La comparaison porte sur les chemins tels que saisis :
+ * `/guide/*` et `/guide/page` ne sont pas vus comme en conflit.
+ */
+export async function activateFeedbackForm(slug: string, grantedBy: string): Promise<void> {
+  const form = await getFeedbackFormBySlug(slug)
+  const publishable = ZFeedbackFormPublishable.safeParse({ slug: form.slug, title: form.title, trigger: form.trigger, questions: form.questions })
+  if (!publishable.success) {
+    throw badRequest(`Activation impossible : ${publishable.error.issues[0].message}`)
+  }
+
+  const concurrent = await getDbCollection("feedback_forms").findOne({ status: "active", _id: { $ne: form._id }, "trigger.scope": { $in: form.trigger.scope } })
+  if (concurrent) {
+    const shared = form.trigger.scope.filter((path) => concurrent.trigger.scope.includes(path))
+    throw conflict(`Activation impossible : le formulaire « ${concurrent.title} » est déjà actif sur ${shared.join(", ")}`)
+  }
+
+  await transitionFeedbackFormStatus(slug, "active", grantedBy, form)
+}
+
+/** Désactive un formulaire actif : il n'est plus affiché, reste modifiable et réactivable. */
+export async function deactivateFeedbackForm(slug: string, grantedBy: string): Promise<void> {
+  await transitionFeedbackFormStatus(slug, "inactive", grantedBy)
 }

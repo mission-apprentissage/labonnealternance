@@ -223,7 +223,18 @@ describe("admin feedback-forms controller", () => {
     expect(await getDbCollection("feedback_forms").countDocuments({ slug: "page_entreprise_v1" })).toEqual(0)
   })
 
-  it("refuse de supprimer un formulaire qui n'est plus un brouillon", async () => {
+  it("supprime un formulaire archivé", async () => {
+    const { bearerToken } = await loginAsAdmin()
+    await createForm(bearerToken)
+    await getDbCollection("feedback_forms").updateOne({ slug: "page_entreprise_v1" }, { $set: { status: "archived" } })
+
+    const response = await httpClient().inject({ method: "DELETE", path: "/api/admin/feedback-forms/page_entreprise_v1", headers: bearerToken })
+
+    expect(response.statusCode).toEqual(200)
+    expect(await getDbCollection("feedback_forms").countDocuments({ slug: "page_entreprise_v1" })).toEqual(0)
+  })
+
+  it("refuse de supprimer un formulaire actif", async () => {
     const { bearerToken } = await loginAsAdmin()
     await createForm(bearerToken)
     await getDbCollection("feedback_forms").updateOne({ slug: "page_entreprise_v1" }, { $set: { status: "active" } })
@@ -340,6 +351,68 @@ describe("admin feedback-forms controller", () => {
 
       expect(response.statusCode).toEqual(400)
       expect(response.json().message).toContain("La première question ne peut pas être conditionnelle")
+    })
+  })
+
+  describe("activation", () => {
+    const withQuestion: IFeedbackFormInput = { ...generalInfoOnly, questions: [{ id: "q1", type: "rating", label: "Utile ?", required: true, scale: "thumbs3" }] }
+    const post = (headers: Record<string, string>, slug: string, action: "activate" | "deactivate") =>
+      httpClient().inject({ method: "POST", path: `/api/admin/feedback-forms/${slug}/${action}`, headers })
+
+    it("active un brouillon publiable et trace le changement de statut", async () => {
+      const { bearerToken, user } = await loginAsAdmin()
+      await createForm(bearerToken, withQuestion)
+
+      const response = await post(bearerToken, "page_entreprise_v1", "activate")
+
+      expect(response.statusCode).toEqual(200)
+      const saved = await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" })
+      expect(saved?.status).toEqual("active")
+      expect(saved?.status_history.at(-1)).toMatchObject({ status: "active", granted_by: user.email })
+    })
+
+    it("refuse d'activer un formulaire sans question", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken)
+
+      const response = await post(bearerToken, "page_entreprise_v1", "activate")
+
+      expect(response.statusCode).toEqual(400)
+      expect(response.json().message).toContain("Au moins une question est nécessaire")
+    })
+
+    it("refuse d'activer un formulaire sur un chemin où un autre est déjà actif", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken, withQuestion)
+      await post(bearerToken, "page_entreprise_v1", "activate")
+      await createForm(bearerToken, { ...withQuestion, slug: "autre_formulaire", title: "Autre formulaire" })
+
+      const response = await post(bearerToken, "autre_formulaire", "activate")
+
+      expect(response.statusCode).toEqual(409)
+      expect(response.json().message).toContain("Fiche entreprise — utilité des informations")
+    })
+
+    it("désactive un formulaire actif, puis permet de le réactiver", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken, withQuestion)
+      await post(bearerToken, "page_entreprise_v1", "activate")
+
+      const deactivation = await post(bearerToken, "page_entreprise_v1", "deactivate")
+      expect(deactivation.statusCode).toEqual(200)
+      expect((await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" }))?.status).toEqual("inactive")
+
+      const reactivation = await post(bearerToken, "page_entreprise_v1", "activate")
+      expect(reactivation.statusCode).toEqual(200)
+    })
+
+    it("refuse de désactiver un brouillon", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken, withQuestion)
+
+      const response = await post(bearerToken, "page_entreprise_v1", "deactivate")
+
+      expect(response.statusCode).toEqual(409)
     })
   })
 })

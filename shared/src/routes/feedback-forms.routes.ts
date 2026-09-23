@@ -45,6 +45,25 @@ export const zFeedbackFormsRoutes = {
       },
       securityScheme: adminSecurity,
     },
+    // exige un formulaire publiable (au moins une question) et aucun autre formulaire actif sur ses chemins
+    "/admin/feedback-forms/:slug/activate": {
+      method: "post",
+      path: "/admin/feedback-forms/:slug/activate",
+      params: z.strictObject({ slug: z.string() }),
+      response: {
+        "200": z.strictObject({}),
+      },
+      securityScheme: adminSecurity,
+    },
+    "/admin/feedback-forms/:slug/deactivate": {
+      method: "post",
+      path: "/admin/feedback-forms/:slug/deactivate",
+      params: z.strictObject({ slug: z.string() }),
+      response: {
+        "200": z.strictObject({}),
+      },
+      securityScheme: adminSecurity,
+    },
     // état terminal : le formulaire n'est plus affiché ni modifiable, ses réponses sont conservées
     "/admin/feedback-forms/:slug/archive": {
       method: "post",
@@ -70,7 +89,7 @@ export const zFeedbackFormsRoutes = {
     },
   },
   delete: {
-    // brouillons uniquement : un formulaire déjà affiché aux usagers s'archive, ses réponses restent
+    // brouillons et archivés : un formulaire actif ou inactif s'archive d'abord
     "/admin/feedback-forms/:slug": {
       method: "delete",
       path: "/admin/feedback-forms/:slug",

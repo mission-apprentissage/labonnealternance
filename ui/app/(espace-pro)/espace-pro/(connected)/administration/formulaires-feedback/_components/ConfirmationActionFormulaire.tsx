@@ -32,7 +32,9 @@ const ACTIONS: Record<
     confirmLabel: "Supprimer le formulaire",
     iconId: "fr-icon-delete-line",
     description: (form) => [
-      `Vous êtes sur le point de supprimer le brouillon « ${form.title} ».`,
+      form.status === "archived"
+        ? `Vous êtes sur le point de supprimer le formulaire archivé « ${form.title} ».`
+        : `Vous êtes sur le point de supprimer le brouillon « ${form.title} ».`,
       "Cette action est définitive : le formulaire et ses questions ne pourront pas être récupérés.",
     ],
     success: (form) => `Formulaire « ${form.title} » supprimé`,

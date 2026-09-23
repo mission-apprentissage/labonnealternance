@@ -7,9 +7,9 @@ import type { IFeedbackFormForAdminJSON, IFeedbackFormStatus } from "shared/mode
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import type { ColumnDef } from "@/app/(espace-pro)/_components/VirtualTable"
-import { PAGES } from "@/utils/routes.utils"
 
-import type { IFeedbackFormAction } from "../formulaires-feedback/_components/ConfirmationActionFormulaire"
+import type { IFeedbackFormActionItem } from "../formulaires-feedback/_utils/feedbackFormActions"
+import { getFeedbackFormActions } from "../formulaires-feedback/_utils/feedbackFormActions"
 
 const STATUS_BADGE: Record<IFeedbackFormStatus, { label: string; severity: "success" | "info" | "warning" | "new" }> = {
   draft: { label: "Brouillon", severity: "new" },
@@ -30,7 +30,7 @@ export function FeedbackFormStatusBadge({ status }: { status: IFeedbackFormStatu
 export function getFeedbackFormsColumns({
   onAction,
 }: {
-  onAction: (form: IFeedbackFormForAdminJSON, action: IFeedbackFormAction) => void
+  onAction: (form: IFeedbackFormForAdminJSON, action: IFeedbackFormActionItem) => void
 }): ColumnDef<IFeedbackFormForAdminJSON>[] {
   return [
     {
@@ -104,23 +104,11 @@ export function getFeedbackFormsColumns({
       enableSorting: false,
       cell: (info) => {
         const form = info.row.original
-        // archivé = état terminal : plus rien à modifier ni à archiver, seulement à dupliquer
-        const isArchived = form.status === "archived"
-        const actions: PopoverMenuAction[] = [
-          { label: "Prévisualiser", type: "link", hint: form.title, link: PAGES.dynamic.backAdminFeedbackFormPreview({ slug: form.slug }).getPath() },
-          isArchived
-            ? null
-            : {
-                label: "Modifier",
-                type: "link",
-                hint: form.title,
-                link: PAGES.dynamic.backAdminFeedbackFormEdit({ slug: form.slug }).getPath(),
-              },
-          { label: "Dupliquer", type: "link", hint: form.title, link: PAGES.dynamic.backAdminFeedbackFormDuplication({ slug: form.slug }).getPath() },
-          isArchived ? null : { label: "Archiver", type: "button", hint: form.title, onClick: () => onAction(form, "archive") },
-          // un formulaire déjà affiché aux usagers s'archive (ses réponses restent), il ne se supprime pas
-          form.status === "draft" ? { label: "Supprimer", type: "button", hint: form.title, onClick: () => onAction(form, "delete") } : null,
-        ]
+        const actions: PopoverMenuAction[] = getFeedbackFormActions(form).map((action) =>
+          action.kind === "link"
+            ? { label: action.label, type: "link", hint: form.title, link: action.href }
+            : { label: action.label, type: "button", hint: form.title, onClick: () => onAction(form, action) }
+        )
         return <PopoverMenu title={`Actions sur le formulaire ${form.title}`} actions={actions} />
       },
     },
