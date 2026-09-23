@@ -69,8 +69,8 @@ describe("updateHandiEngagement", () => {
     // when
     await updateHandiEngagement()
     // then
-    // Le traitement applique désormais un upsert unique ($addToSet) quel que soit l'état préalable du
-    // document : updated_at est donc rafraîchi même quand la source était déjà présente.
+    // Upsert unique quel que soit l'état préalable (cf. buildUpsertOp) : updated_at est rafraîchi même
+    // quand la source était déjà présente.
     const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: SIRET_1 })
     expect(doc?.sources).toEqual([EntrepriseEngagementSources.FRANCE_TRAVAIL])
     expect(doc?.updated_at.getTime()).toBeGreaterThan(before.getTime())

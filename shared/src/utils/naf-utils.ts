@@ -19,7 +19,7 @@ import { CODE_NAF_REGEX } from "../constants/regex.js"
  *
  * Le préfixe de division reste intact dans tous les cas, donc les filtres existants sur les CFA
  * (`$regex: "^85"` dans blockJobsPartnersWithNaf85, `startsWith("85")` dans
- * validateCreationEntrepriseFromCfa) continuent de matcher.
+ * validateCreationEntrepriseFromCfa) matchent quelle que soit la forme reçue.
  */
 export const normalizeNafCode = (nafCode: string | null | undefined): string | null => {
   if (!nafCode) return null

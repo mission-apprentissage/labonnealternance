@@ -4,7 +4,6 @@ export type ReferrerObject = {
   full_name: string
   url: string
 }
-// Referrer configurations
 export const referrers = {
   PARCOURSUP: {
     code: 1,
@@ -45,7 +44,6 @@ export enum ReferrerApiEnum {
   JEUNE_1_SOLUTION = "jeune_1_solution",
   AFFELNET = "affelnet",
 }
-// Type guad
 export function isValidReferrerApi(referrer: string): referrer is ReferrerApiEnum {
   return Object.values(ReferrerApiEnum).includes(referrer as ReferrerApiEnum)
 }

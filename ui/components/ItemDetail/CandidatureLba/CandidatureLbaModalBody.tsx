@@ -51,7 +51,11 @@ export const CandidatureLbaModalBody = ({
   // on utilise donc un nom de champ indexé, et on rétablit l'intitulé de la question à la soumission.
   const questionFields = customQuestions.map((question, index) => ({ question, name: `custom_question_${index}` }))
 
-  const questionZodExtension = Object.fromEntries(questionFields.map(({ name }) => [name, z.string({ error: "Une réponse est obligatoire" })]))
+  // .trim().min(1) en plus du message de type : formik convertit la chaîne vide en undefined avant validation,
+  // mais une réponse composée uniquement d'espaces lui parvient telle quelle.
+  const questionZodExtension = Object.fromEntries(
+    questionFields.map(({ name }) => [name, z.string({ error: "Une réponse est obligatoire" }).trim().min(1, "Une réponse est obligatoire")])
+  )
 
   const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
   const questionsInitValues = Object.fromEntries(questionFields.map(({ question, name }) => [name, applicantAnswersSession?.[question] ?? ""]))
@@ -451,9 +455,8 @@ const FormikSelect = ({ formik, name, label, options, emptyButtonHint }: { formi
         state={displayedErrorOpt ? "error" : "default"}
         stateRelatedMessage={displayedErrorOpt}
       />
-      {/* RGAA 7.1 : réinitialiser un champ est une action, pas un lien. Le <a href="#"> qui
-          l'implémentait n'avait pas de destination et renvoyait en haut de page au clavier.
-          type="button" évite en plus de soumettre le formulaire. */}
+      {/* RGAA 7.1 : réinitialiser un champ est une action, pas un lien (un <a href="#"> renverrait
+          en haut de page au clavier). type="button" évite en plus de soumettre le formulaire. */}
       <button
         type="button"
         onClick={() => formik.setFieldValue(name, null, true)}

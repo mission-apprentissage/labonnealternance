@@ -74,9 +74,7 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
 
     return validation.data.access_token
   } catch (error: any) {
-    // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.data` (le
-    // client_secret envoyé en corps de requête urlencoded), que extraErrorDataIntegration
-    // sérialiserait tel quel dans Sentry (sendDefaultPii actif).
+    // Erreur dédiée : l'AxiosError porte `config.data` (client_secret urlencoded), cf. SENSITIVE_KEY_PATTERN.
     sentryCaptureException(new Error(`france-travail: échec d'obtention du token (${error.message ?? "erreur inconnue"})`), {
       extra: { status: error.response?.status, responseData: error.response?.data },
     })
@@ -84,9 +82,6 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
   }
 }
 
-/**
- * @description Search for FT Jobs
- */
 export const searchForFtJobs = async (
   params: {
     codeROME?: string
@@ -110,7 +105,7 @@ export const searchForFtJobs = async (
     try {
       const extendedParams = {
         ...params,
-        // paramètres exclurant les offres LBA des résultats de l'api PE
+        // exclut les offres LBA des résultats de l'API France Travail
         partenaires: "LABONNEALTERNANCE",
         modeSelectionPartenaires: "EXCLU",
       }
@@ -129,8 +124,7 @@ export const searchForFtJobs = async (
       if (options.throwOnError) {
         throw error
       }
-      // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.headers.Authorization`
-      // (le Bearer token), que extraErrorDataIntegration sérialiserait tel quel dans Sentry.
+      // Erreur dédiée : l'AxiosError porte le Bearer token, cf. SENSITIVE_KEY_PATTERN.
       sentryCaptureException(new Error(`france-travail: échec de recherche d'offres (${error.message ?? "erreur inconnue"})`), {
         extra: { params, status: error.response?.status, responseData: error.response?.data },
       })
@@ -139,9 +133,6 @@ export const searchForFtJobs = async (
   })
 }
 
-/**
- * @description Get a FT Job
- */
 export const getFtJob = async (id: string) => {
   const token = await getToken("OFFRE")
   const result = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/${id}`, {
@@ -155,9 +146,6 @@ export const getFtJob = async (id: string) => {
   return result
 }
 
-/**
- * Sends CSV file to France Travail API through a "form data".
- */
 export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => {
   const form = new FormData()
   form.append("login", config.franceTravailDepotOffres.login)
@@ -179,9 +167,7 @@ export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => 
     }
   } catch (error: any) {
     logger.error(error)
-    // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.data` (le form-data
-    // envoyé, avec login/password France Travail), que extraErrorDataIntegration sérialiserait
-    // tel quel dans Sentry.
+    // Erreur dédiée : l'AxiosError porte `config.data` (form-data avec login/password FT), cf. SENSITIVE_KEY_PATTERN.
     sentryCaptureException(new Error(`france-travail: échec d'envoi du CSV (${error.message ?? "erreur inconnue"})`), {
       extra: { status: error.response?.status, responseData: error.response?.data },
     })
@@ -196,10 +182,8 @@ export async function* getAllFTJobsByDepartments(departement: string): AsyncGene
   let total = 1
 
   while (start < total) {
-    // Construct the range for this "page"
     const range = `${start}-${start + jobLimit - 1}`
 
-    // Prepare your query params
     const params: Parameters<typeof searchForFtJobs>[0] = {
       natureContrat: "E2,FS", // E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
       range,
@@ -218,15 +202,12 @@ export async function* getAllFTJobsByDepartments(departement: string): AsyncGene
       const { data: jobs, contentRange } = response
 
       if (!jobs.resultats) {
-        //  logger.info("No resultats from FranceTravail", params)
         break
       }
 
       yield jobs.resultats as Omit<IFTJobRaw, "_id" | "createdAt">[]
 
-      // Safely parse out the total
-      // Usually, contentRange might look like "offres 0-149/9981"
-      // We split by "/" and take the second part (9981), converting to Number
+      // contentRange : "offres 0-149/9981"
       if (contentRange) {
         const totalString = contentRange.split("/")[1]
         if (totalString) {
@@ -234,13 +215,10 @@ export async function* getAllFTJobsByDepartments(departement: string): AsyncGene
         }
       }
 
-      // Move to the next "page"
       start += jobLimit
     } catch (error: any) {
-      // handle 3000 limit page reach
       if (error.response?.data?.message === "La position de début doit être inférieure ou égale à 3000.") {
-        // Erreur dédiée plutôt que l'AxiosError brut (porte le Bearer token en header) ;
-        // l'erreur d'origine est tout de même rethrow ci-dessous pour l'appelant.
+        // Erreur dédiée (cf. SENSITIVE_KEY_PATTERN) ; l'erreur d'origine est rethrow pour l'appelant.
         sentryCaptureException(new Error(`france-travail: limite des 3000 offres atteinte (dept: ${departement})`), {
           extra: { status: error.response?.status, responseData: error.response?.data },
         })

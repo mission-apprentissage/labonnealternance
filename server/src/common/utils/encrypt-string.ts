@@ -15,7 +15,6 @@ const encrypt = ({ value, iv, secret }) => {
   return crypted.toString()
 }
 
-// caller est un paramètre optionnel passé aux appels apis pour identifier la source
 export const encryptMailWithIV = ({ value }): { email: string; iv?: string } => {
   const iv = crypto.randomBytes(16)
 

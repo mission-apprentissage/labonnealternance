@@ -14,11 +14,7 @@ import {
 } from "@/config/simulateur-alternant"
 import { getChargesSalariales, getSimulationInformation } from "./simulateur-alternant"
 
-// ============================================
-// HELPERS POUR LES TESTS
-// ============================================
-
-// Date de référence valide pour les tests (après MIN_DEBUT_CONTRAT)
+// Postérieure à MIN_DEBUT_CONTRAT et à DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE : contrats hors exonération totale.
 const DATE_REFERENCE_TEST = MIN_DEBUT_CONTRAT.add(1, "month").toDate()
 
 const createDateNaissance = (age: number, referenceDate: Date = DATE_REFERENCE_TEST): Date => {
@@ -26,10 +22,6 @@ const createDateNaissance = (age: number, referenceDate: Date = DATE_REFERENCE_T
   dateNaissance.setFullYear(dateNaissance.getFullYear() - age)
   return dateNaissance
 }
-
-// ============================================
-// TESTS: Tranches d'âge
-// ============================================
 
 describe("Tranches d'âge", () => {
   describe("Apprentissage", () => {
@@ -80,10 +72,6 @@ describe("Tranches d'âge", () => {
   })
 })
 
-// ============================================
-// TESTS: Groupes de niveau de diplôme
-// ============================================
-
 describe("Groupes de niveau de diplôme", () => {
   it.each([
     { niveau: 1, expectedGroup: "inferieurBac" },
@@ -110,10 +98,6 @@ describe("Groupes de niveau de diplôme", () => {
     expect(result.anneesSimulation[0].tauxSmic).toBe(tauxAttendu)
   })
 })
-
-// ============================================
-// TESTS: Durée de contrat
-// ============================================
 
 describe("Durée de contrat", () => {
   it("retourne les taux pour chaque année du contrat (apprentissage)", () => {
@@ -209,10 +193,6 @@ describe("Durée de contrat", () => {
   })
 })
 
-// ============================================
-// TESTS: Calcul salaire brut
-// ============================================
-
 describe("Calcul du salaire brut", () => {
   it("calcule correctement le salaire brut métropole", () => {
     const result = getSimulationInformation({
@@ -264,14 +244,9 @@ describe("Calcul du salaire brut", () => {
   })
 })
 
-// ============================================
-// TESTS: Calcul salaire net et exonérations
-// ============================================
-
 describe("Calcul du salaire net", () => {
-  // Note: le test "exonération totale avant la date limite" a été supprimé car
-  // DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE (2025-03-01) < MIN_DEBUT_CONTRAT (2026-01-01)
-  // Ce cas est déjà couvert par les tests de getChargesSalariales
+  // Pas de cas « exonération totale avant la date limite » : DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE est
+  // antérieure à MIN_DEBUT_CONTRAT, donc hors des dates acceptées ici (cf. tests de getChargesSalariales).
 
   describe("Professionnalisation", () => {
     it("applique les cotisations salariales", () => {
@@ -290,10 +265,6 @@ describe("Calcul du salaire net", () => {
   })
 })
 
-// ============================================
-// TESTS: Tranche de salaire (min/max)
-// ============================================
-
 describe("Tranche de salaire", () => {
   it("calcule min = 97% et max = 100%", () => {
     const result = getSimulationInformation({
@@ -310,10 +281,6 @@ describe("Tranche de salaire", () => {
     expect(min).toBeCloseTo(max * 0.97, 0)
   })
 })
-
-// ============================================
-// TESTS: Structure de retour
-// ============================================
 
 describe("Structure de retour", () => {
   it("contient toutes les propriétés requises", () => {
@@ -339,14 +306,7 @@ describe("Structure de retour", () => {
   })
 })
 
-// ============================================
-// TESTS: Secteur public vs privé (après exonération)
-// ============================================
-
 describe("Calcul charges salariales par secteur (après date exonération)", () => {
-  // DATE_REFERENCE_TEST (2026-02-01) est après DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE (2025-03-01)
-  // et après MIN_DEBUT_CONTRAT (2026-01-01)
-
   it("secteur public : exonération totale", () => {
     const result = getSimulationInformation({
       typeContrat: "apprentissage",
@@ -415,14 +375,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
   })
 })
 
-// ============================================
-// TESTS: Règle taux > 50% vs <= 50% (secteur privé)
-// ============================================
-
 describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () => {
-  // DATE_REFERENCE_TEST (2026-02-01) est après DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE (2025-03-01)
-  // et après MIN_DEBUT_CONTRAT (2026-01-01)
-
   it("taux <= 50% : exonération totale des charges (net = brut)", () => {
     const result = getSimulationInformation({
       typeContrat: "apprentissage",
@@ -485,12 +438,8 @@ describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () =>
   })
 })
 
-// ============================================
-// TESTS: getChargesSalariales
-// ============================================
-
 describe("getChargesSalariales", () => {
-  const salaireHoraireBrut = 10 // valeur de test fixe
+  const salaireHoraireBrut = 10
 
   describe("Contrat de professionnalisation", () => {
     it("applique le taux de cotisations salariales sur le salaire brut", () => {
@@ -724,14 +673,12 @@ describe("getChargesSalariales", () => {
 })
 
 describe("Test de la fonction de validation des données entrante", () => {
-  // Helper pour créer une date de naissance valide (relative à aujourd'hui)
   const createValidDateNaissance = (age: number): Date => {
     const date = new Date()
     date.setFullYear(date.getFullYear() - age)
     return date
   }
 
-  // Date de signature de contrat valide (après MIN_DEBUT_CONTRAT)
   const dateSignatureContratValide = MIN_DEBUT_CONTRAT.add(1, "month").toDate()
 
   describe("Validation du niveau de diplôme (professionnalisation)", () => {

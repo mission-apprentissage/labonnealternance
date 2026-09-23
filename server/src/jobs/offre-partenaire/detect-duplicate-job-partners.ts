@@ -17,7 +17,6 @@ import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.servic
 import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 import { defaultFillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
 
-// champs utilisés pour les projections
 const fieldsRead = [
   "_id",
   "partner_label",
@@ -120,7 +119,6 @@ const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners
       // Compter les documents et ne conserver que les 500 premiers pour éviter un dépassement BSON
       // sur les groupes pathologiquement volumineux (ils seront filtrés ensuite via count > 500)
       { $group: { _id: `$${groupField}`, count: { $sum: 1 }, documents: { $firstN: { input: "$$ROOT", n: 500 } } } },
-      // Ne garder que les groupes avec au moins 2 offres (doublons potentiels) et ignorer les groupes trop larges
       { $match: { count: { $gte: 2, $lte: 500 } } },
       {
         $project: {

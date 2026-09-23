@@ -136,10 +136,7 @@ export default function CompteRenderer() {
       >
         {(formik) => {
           const { values, isSubmitting, setFieldValue } = formik
-          // Le bouton "Enregistrer" ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui
-          // force l'affichage de l'erreur sur tous les champs invalides et scrolle/focus le premier
-          // plutôt que de bloquer la sauvegarde du reste du formulaire (ex: téléphone/email) tant que
-          // handiEngagement n'a pas de valeur.
+          // Le bouton "Enregistrer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
           const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
 
           return (

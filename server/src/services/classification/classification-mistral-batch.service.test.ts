@@ -68,9 +68,7 @@ describe("classification-mistral-batch.service", () => {
     })
 
     it("transmet un timeout court à Mistral : un batch bloqué doit expirer, pas attendre 24 h", async () => {
-      // Incident des 30–31/08/2026 : un batch de 20 681 requêtes bloqué à 99,4 % pendant plus de
-      // 24 h, sans fichier de sortie tant que le statut n'est pas terminal. Le défaut Mistral
-      // (24 h) laissait le catalogue à l'arrêt ; 10 batchs sur 12 mesurés reviennent en < 70 min.
+      // Pas de fichier de sortie tant que le statut n'est pas terminal, cf. CLASSIFICATION_BATCH_TIMEOUT_HOURS.
       const [job] = await givenSomeComputedJobPartners([{ offer_title: "Vendeur" }])
       vi.mocked(submitMistralBatch).mockResolvedValue("mistral-job-1")
 
@@ -153,15 +151,12 @@ describe("classification-mistral-batch.service", () => {
       expect(addJobMock).toHaveBeenCalledWith({ name: "processJobPartnersWithFilter", payload: { _id: { $in: [job._id] } }, queued: true })
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-ok" })
       expect(tracked).toMatchObject({ status: "applied", applied_count: 1, error: null })
-      // Application complète en SUCCESS : pas d'alerte.
       expect(notifyToSlack).not.toHaveBeenCalled()
     })
 
     it("job terminé (publish) : jobs_in_success contient CLASSIFICATION — pas de boucle de resoumission", async () => {
-      // Régression : un $pull ici laisserait le document éligible au filtre de candidature de
-      // detectClassificationJobsPartners (business_error: null ET jobs_in_success sans
-      // CLASSIFICATION), ré-déclenché juste après par processJobPartnersWithFilter — pour un gros
-      // lot "publish", ça resoumettrait indéfiniment le même batch à chaque ramasse horaire.
+      // Régression : un $pull laisserait le document éligible à detectClassificationJobsPartners
+      // (business_error: null ET jobs_in_success sans CLASSIFICATION), d'où une resoumission à chaque ramasse.
       const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING }])
       await getDbCollection("mistral_batch_jobs").insertOne(trackedJob("job-ok-publish"))
       vi.mocked(getMistralBatchJob).mockResolvedValue({ status: "SUCCESS", outputFile: "file-1" } as never)
@@ -183,9 +178,8 @@ describe("classification-mistral-batch.service", () => {
     })
 
     it("job expiré (TIMEOUT_EXCEEDED) avec fichier de sortie : le partiel est appliqué, les réponses manquantes restent PENDING", async () => {
-      // Un batch de 20 000 requêtes est otage de sa pire requête : les 99,4 % traités doivent
-      // servir. Les offres sans réponse restent CLASSIFICATION_PENDING et seront relancées par le
-      // filet de sécurité — jamais annulées, jamais abandonnées.
+      // Les réponses acquises doivent servir ; les offres sans réponse restent CLASSIFICATION_PENDING
+      // pour le filet de sécurité, jamais annulées.
       const [answered, missing] = await givenSomeComputedJobPartners([
         { partner_job_id: "answered", offer_title: "Répondue", business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() },
         { partner_job_id: "missing", offer_title: "Coincée", business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: new Date() },
@@ -266,9 +260,8 @@ describe("classification-mistral-batch.service", () => {
     })
 
     it("filet de sécurité : débloque une offre pendante depuis plus de 6h, même sans job suivi, ET relance son traitement", async () => {
-      // Avant : la libération remettait business_error à null sans rien relancer. Une offre déjà
-      // dotée d'un code ROME n'était alors reprise par aucun job avant la nuit suivante — 16 147
-      // offres Hellowork et France Travail bloquées ainsi en prod le 01/09/2026.
+      // Régression : sans relance, une offre déjà dotée d'un code ROME n'est reprise par aucun job
+      // avant la nuit suivante (cf. releaseStuckPendingClassifications).
       const staleDate = new Date(Date.now() - 7 * 60 * 60 * 1000)
       const [job] = await givenSomeComputedJobPartners([{ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: staleDate }])
 
@@ -291,8 +284,7 @@ describe("classification-mistral-batch.service", () => {
     })
 
     it("filet de sécurité : la relance est découpée en jobs de 2 000 _id, pas un seul payload géant", async () => {
-      // 20 681 offres libérées d'un coup après l'incident du 31/08/2026 : un seul job porterait un
-      // payload de ~530 Ko, rejoué dans la ligne de log d'ouverture de processJobPartnersWithFilter.
+      // cf. requeueProcessing (payload de ~530 Ko pour 20 681 offres en un seul job).
       const staleDate = new Date(Date.now() - 7 * 60 * 60 * 1000)
       const jobs = await givenSomeComputedJobPartners(
         Array.from({ length: 2_001 }, (_, i) => ({ partner_job_id: `stale-${i}`, business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING, updated_at: staleDate }))

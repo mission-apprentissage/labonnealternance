@@ -64,9 +64,6 @@ function TrainingDetailPage({
   const router = useRouter()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
-  // Ouverture depuis le moteur de recherche (?from=/recherche…) : précédent/suivant naviguent
-  // dans les résultats de /recherche et « fermer » y retourne. Sans ?from=, pas de contexte
-  // de liste : pas de précédent/suivant, « fermer » retombe sur /recherche.
   const { swipeHandlers, goNext, goPrev, handleClose: closeToSearch } = useDetailNavigation()
   const handleClose = closeToSearch ?? (() => router.push(PAGES.dynamic.recherche(rechercheParams).getPath(), { scroll: false }))
 

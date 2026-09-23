@@ -21,8 +21,7 @@ const getReminderCompanyName = ({
   workplace_brand,
   workplace_legal_name,
 }: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => {
-  // Chaîne de repli en `||` : workplace_name est sanitizé côté pipeline et peut valoir "" (cf.
-  // formatTextFieldsJobsPartners), ce qui court-circuiterait le repli sur brand / raison sociale.
+  // `||` et non `??` : workplace_name peut valoir "" (cf. formatTextFieldsJobsPartners).
   return workplace_name || workplace_brand || workplace_legal_name || ""
 }
 
@@ -82,8 +81,7 @@ export const expireJobsPartners = async () => {
   const now = new Date()
   const filter = { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_expiration: { $lt: now } }
 
-  // On récupère les offres AVANT le flip de statut pour pouvoir envoyer le mail de clôture automatique
-  // aux recruteurs gérés par LBA (managed_by renseigné), sans changer le filtre du updateMany ci-dessous.
+  // Lues avant le flip de statut, pour le mail de clôture automatique (cf. sendExpirationEmails).
   const expiringJobs = await getDbCollection("jobs_partners").find(filter).toArray()
 
   const result = await changeJobsPartnersStatus(filter, {

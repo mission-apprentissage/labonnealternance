@@ -24,6 +24,7 @@ import { anonymizeUsers } from "./anonymization/anonymize-users"
 import { removeBrevoContacts } from "./anonymization/remove-brevo-contacts"
 import { processApplications } from "./applications/process-applications"
 import { processRecruiterIntentions } from "./applications/process-recruiter-intentions"
+import { purgeApplicationCvFiles } from "./applications/purge-application-cv-files"
 import { relanceCandidatsInactifs } from "./applications/relance-candidats-inactifs"
 import { relanceIncitationSpontanee } from "./applications/relance-incitation-spontanee"
 import { recreateIndexes } from "./database/recreate-indexes"
@@ -140,6 +141,11 @@ export async function setupJobProcessor() {
           "Génération du sitemap pour les offres": {
             cron_string: "20 0 * * *",
             handler: generateSitemap,
+            tag: "main",
+          },
+          "Purge des CV des candidatures de plus d'un (1) an": {
+            cron_string: "25 0 * * *",
+            handler: async () => purgeApplicationCvFiles(),
             tag: "main",
           },
           // Décalé de 10 min après l'expiration des offres (*/30) pour capter ses bumps de updated_at.
@@ -264,19 +270,14 @@ export async function setupJobProcessor() {
             handler: config.env === "production" ? async () => exportJobsToFranceTravail() : async () => Promise.resolve(0),
             tag: "main",
           },
-          // Les offres déposées par API sont indexées directement en fin de processJobPartnersForApi :
-          // ce cron ne porte plus leur latence, il couvre les écritures de masse des AUTRES chemins
-          // (expiration */30, annulation, dédoublonnage, imports de flux) et sert de rattrapage.
-          // Maintenu à 5 min pour le retrait : une offre expirée ou annulée reste sinon proposée en
-          // recherche jusqu'au run suivant. Runs à vide à 30-50 ms, 2 à 3 s en régime nominal.
-          // Pas de `concurrency: { mode: "exclusive" }`, pour la même raison que le cron jobs_partners
-          // ci-dessus : mesuré en prod le 29/08/2026, ce cron perdait 127 slots par 24 h en
-          // `noConcurrent_conflict`, soit un sur deux. La cadence effective retombait à 10 min, très
-          // exactement la largeur de DELTA_DEFAULT_WINDOW_MS — plus aucune marge de recouvrement, donc
-          // le moindre retard de démarrage ouvrait un trou rattrapé seulement par la réconciliation
-          // nocturne. Le chevauchement que `exclusive` évitait est sans danger ici : le handler lit
-          // jobs_partners et upsert search_items par _id sans muter la source, deux runs concurrents
-          // sont idempotents.
+          // Les offres déposées par API sont indexées en fin de processJobPartnersForApi : ce cron couvre
+          // les écritures de masse des autres chemins (expiration */30, annulation, dédoublonnage, imports
+          // de flux) et sert de rattrapage. 5 min pour qu'une offre expirée ou annulée sorte vite de la
+          // recherche. Runs à vide à 30-50 ms, 2 à 3 s en régime nominal.
+          // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners ci-dessus) : mesuré en prod
+          // le 29/08/2026, ce cron perdait 127 slots par 24 h en `noConcurrent_conflict`, soit un sur deux ;
+          // la cadence effective de 10 min égalait DELTA_DEFAULT_WINDOW_MS, sans marge de recouvrement.
+          // Deux runs concurrents sont idempotents (lecture de jobs_partners, upsert search_items par _id).
           "Sync delta search_items (jobs_partners modifiés)": {
             cron_string: "*/5 * * * *",
             handler: async () => syncSearchItemsDelta(),
@@ -444,9 +445,7 @@ export async function setupJobProcessor() {
         },
       },
       "update-handi-engagement:force": {
-        // Déclenchement manuel : ignore le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
-        // pour forcer le nettoyage des sources France Travail obsolètes, quand l'écart constaté est
-        // confirmé légitime (ex. mise à jour majeure du fichier source).
+        // Déclenchement manuel uniquement, cf. UpdateHandiEngagementOptions.force.
         handler: async () => updateHandiEngagement({ force: true }),
       },
       "api:user:create": {
@@ -498,7 +497,6 @@ export async function setupJobProcessor() {
       "migrations:up": {
         handler: async () => {
           await upMigration()
-          // Validate all documents after the migration
           await addJob({ name: "db:validate", queued: true, payload: {} })
           return
         },

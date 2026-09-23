@@ -70,9 +70,6 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
   return access.admin || access.entreprises.includes(entrepriseId.toString())
 }
 
-/**
- * @description Create job offer for formulaire
- */
 export const createJob = async ({
   job,
   siret,
@@ -120,7 +117,6 @@ export const createJob = async ({
   const isJobActive = isOrganizationValid && isUserEmailConfirmed
 
   const newJobStatus = isJobActive ? JOB_STATUS_ENGLISH.ACTIVE : JOB_STATUS_ENGLISH.EN_ATTENTE
-  // get user activation state if not managed by a CFA
   const codeRome = job.rome_code.at(0)
   if (!codeRome) {
     throw internal(`inattendu : pas de code rome pour une création d'offre pour siret=${siret}, role._id=${mainRole._id}`)
@@ -149,7 +145,8 @@ export const createJob = async ({
 
   const userJobCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret })
 
-  // if first offer creation for an Entreprise, send specific mail
+  // Première offre d'une entreprise : pas de mail « nouvelle offre », elle figure dans le mail de
+  // validation du compte (cf. sendEmailConfirmationEntreprise)
   if (!(userJobCount === 1 && is_delegated === false)) {
     await sendMailNouvelleOffre(user, newJobPartner)
   }
@@ -242,9 +239,6 @@ const notifyCfaDelegations = async (
   })
 }
 
-/**
- * Create job delegations
- */
 export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: ObjectId; etablissementCatalogueIds: string[] }): Promise<void> => {
   const offer = await getDbCollection("jobs_partners").findOne({ _id: jobId })
   if (!offer) {
@@ -334,11 +328,6 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   )
 }
 
-/**
- * @description Check if job offer exists
- * @param {IJob['_id']} id
- * @returns {Promise<IRecruiter>}
- */
 export const checkOffreExists = async (id: ObjectId): Promise<boolean> => {
   const count = await getDbCollection("jobs_partners").countDocuments({ _id: id })
   return count === 1
@@ -377,9 +366,6 @@ const applicationCountJoin = [
   },
 ]
 
-/**
- * @description Get job offer by its id.
- */
 export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDetail | null> => {
   const jobPartner = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(id) })
   if (!jobPartner) {
@@ -622,7 +608,6 @@ export const archiveFormulaire = async (userId: ObjectId, siret: string) => {
 
 /**
  * @description Archive existing delegated formulaires and cancel all its job offers
- * @param {IUserRecruteur["establishment_siret"]} establishment_siret
  */
 export const archiveDelegatedFormulaire = async (userId: ObjectId, cfaId: ObjectId) => {
   const delegatedEntreprises = await getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfaId }).toArray()
@@ -644,9 +629,6 @@ const resolveContractStartFromJob = (job: Pick<PatchOffreBody, "job_start_type" 
   return job.job_start_date
 }
 
-/**
- * @description Update specific field(s) in an existing job offer
- */
 export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise<void> => {
   await validateFieldsFromReferentielRome(payload)
 
@@ -680,8 +662,7 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     offer_description: romeDetails?.definition,
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
-    // offer_title_custom = saisie libre recruteur (le schéma Zod n'interdit pas les tags HTML) →
-    // texte brut avant stockage ; si le nettoyage vide le titre, fallback comme s'il était absent.
+    // cf. jobCreateToJobsPartner (offer_title_custom)
     offer_title: sanitizeToPlainText(job.offer_title_custom) || job.rome_appellation_label || existingJob.offer_title,
     offer_rome_appellation: job.rome_appellation_label,
     workplace_description: job.job_employer_description !== undefined ? sanitizeTextField(job.job_employer_description, true) || null : existingJob.workplace_description,
@@ -705,9 +686,6 @@ export const updateJobDelegation = async (jobId: ObjectId, delegation: IDelegati
   )
 }
 
-/**
- * @description Change job status to provided
- */
 export const provideOffre = async (id: ObjectId): Promise<void> => {
   const now = new Date()
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
@@ -790,9 +768,6 @@ export const closeOffreWithMotif = async ({
   return { alreadyClosed: found.offer_status !== JOB_STATUS_ENGLISH.ACTIVE }
 }
 
-/**
- * @description Extends job duration by 1 month.
- */
 export const extendOffre = async (id: ObjectId, jobFields: Pick<IJobCreate, "job_start_date" | "job_start_type" | "job_start_date_flexible">): Promise<Date> => {
   const now = new Date()
   const { job_start_date_flexible, job_start_type } = jobFields
@@ -903,10 +878,8 @@ const filterRomeDetails = (romeDetails, competencesRome) => {
   Object.keys(competencesRome).forEach((key) => {
     if (romeDetails[key]) {
       if (key === "savoir_etre_professionnel") {
-        // Create a map of competencesRome for quick lookup
         const competencesMap = new Map(competencesRome[key].map((item) => [generateKey(item), item]))
 
-        // Filter romeDetails based on the map created above
         filteredRome[key] = romeDetails[key].filter((item) => competencesMap.has(generateKey(item)))
       } else {
         // For savoir_faire and savoirs
@@ -914,10 +887,8 @@ const filterRomeDetails = (romeDetails, competencesRome) => {
           .map((category) => {
             const competencesCategory = competencesRome[key].find((c) => c.libelle === category.libelle)
             if (competencesCategory) {
-              // Create a map of items for quick lookup
               const competencesMap = new Map(competencesCategory.items.map((item) => [generateKey(item), item]))
 
-              // Filter items in the category based on the map created above
               const filteredItems = category.items.filter((item) => competencesMap.has(generateKey(item)))
               return { libelle: category.libelle, items: filteredItems }
             }

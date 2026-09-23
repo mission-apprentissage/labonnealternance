@@ -270,9 +270,7 @@ export default function DetailEntreprise({
         >
           {(formik) => {
             const { values, isSubmitting, setFieldValue, errors, touched } = formik
-            // Le bouton "Enregistrer" ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui
-            // force l'affichage de l'erreur sur tous les champs invalides et scrolle/focus le premier
-            // plutôt que de bloquer la sauvegarde tant que l'OPCO ou la déclaration ne sont pas remplis.
+            // Le bouton "Enregistrer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
             const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
 
             return (

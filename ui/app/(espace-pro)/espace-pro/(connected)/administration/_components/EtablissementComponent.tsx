@@ -9,11 +9,9 @@ import "react-dates/lib/css/_datepicker.css"
 import LbaBadge from "@/app/(espace-pro)/_components/Badge"
 import { useToast } from "@/app/hooks/useToast"
 import { dayjs } from "@/common/dayjs"
-import { Disquette } from "@/theme/components/icons"
 import { apiGet, apiPatch } from "@/utils/api.utils"
 
 const EtablissementComponent = ({ id }: { id?: string }) => {
-  const emailGestionnaireFocusRef = createRef()
   const emailGestionnaireRef = createRef()
 
   const [etablissement, setEtablissement]: [any, (t: any) => void] = useState(undefined)
@@ -31,20 +29,12 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
     }
   }
 
-  /**
-   * @description Returns toast common error for etablissement updates.
-   * @return {string | number}
-   */
   const putError = () =>
     toast({
       title: "Une erreur est survenue durant l'enregistrement.",
       variant: "error",
     })
 
-  /**
-   * @description Call succes Toast.
-   * @return {string | number}
-   */
   const putSuccess = () =>
     toast({
       title: "Enregistrement effectué avec succès.",
@@ -54,11 +44,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
     fetchData()
   }, [])
 
-  /**
-   * @description Upserts "gestionnaire_email"
-   * @param {string} email
-   * @return {Promise<void>}
-   */
+  /** Upsert de "gestionnaire_email". */
   const upsertEmailDecisionnaire = async (email: string) => {
     try {
       const response = await apiPatch("/admin/etablissements/:id", { params: { id: etablissement?._id }, body: { gestionnaire_email: email } })
@@ -67,6 +53,11 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
     } catch (_error) {
       putError()
     }
+  }
+
+  const saveEmailDecisionnaire = async () => {
+    // @ts-expect-error: TODO
+    await upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())
   }
 
   if (etablissement === null) {
@@ -162,25 +153,21 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
         </Box>
       )}
       <Box sx={{ p: fr.spacing("4v") }}>
-        {/*  @ts-expect-error: TODO */}
-        <Box onClick={() => emailGestionnaireFocusRef.current.focus()}>
-          <Typography sx={{ fontWeight: 700 }}>
+        <Box>
+          <Typography component="label" htmlFor="emailDecisionnaire" sx={{ fontWeight: 700 }}>
             Email décisionnaire <br />
-            <br />
           </Typography>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ mt: fr.spacing("6v"), display: "flex", alignItems: "center" }}>
             <Input
               sx={{ fontSize: "12px", maxWidth: "400px", width: "100%" }}
               className={fr.cx("fr-input")}
               inputRef={emailGestionnaireRef}
               defaultValue={etablissement?.gestionnaire_email}
               type="email"
+              id="emailDecisionnaire"
             />
             <Box sx={{ ml: fr.spacing("2v") }}>
-              {/*  @ts-expect-error: TODO */}
-              <Button onClick={async () => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
-                <Disquette sx={{ width: "16px", height: "16px" }} />
-              </Button>
+              <Button onClick={saveEmailDecisionnaire} iconId="fr-icon-save-line" title="Enregistrer l'Email décisionnaire" />
             </Box>
           </Box>
         </Box>

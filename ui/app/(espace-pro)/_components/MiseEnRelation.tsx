@@ -139,11 +139,6 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [delegationsEnregistrees, setDelegationsEnregistrees] = useState(false)
 
-  /**
-   * @description Handles all checkboxes.
-   * @param {Object} etablissement
-   * @return {void}
-   */
   const changeEtablissement = (etablissement) => {
     const index = checkedEtablissements.findIndex((item) => item._id === etablissement._id)
     if (index === -1) {

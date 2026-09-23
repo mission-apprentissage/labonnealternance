@@ -33,7 +33,7 @@ describe("importEdf", () => {
         .find({ partner_label: JOBPARTNERS_LABEL.EDF }, { projection: { _id: 0, created_at: 0 } })
         .toArray()
     ).sort((a, b) => ((a.partner_job_id ?? "") < (b.partner_job_id ?? "") ? -1 : 1))
-    // Only the 2 alternance offers should be imported (VIE is filtered out)
+    // The VIE offer is imported too, but blocked (business_error WRONG_DATA, empty contract_type)
     expect.soft(jobs.length).toBe(3)
     // Omit timezone-sensitive date fields to avoid CI vs local discrepancies
     const jobsWithoutDates = jobs.map(({ offer_creation, offer_expiration, contract_start, updated_at, ...rest }) => rest)

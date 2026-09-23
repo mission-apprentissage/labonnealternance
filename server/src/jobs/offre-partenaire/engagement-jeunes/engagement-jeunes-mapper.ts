@@ -129,7 +129,7 @@ export const engagementJeunesJobToJobsPartners = (job: IEngagementJeunesJob): IC
     workplace_address_zipcode: location_cp,
     workplace_address_city: location_ville,
     apply_url: application_url,
-    // max 5 ans. J'ai trouvé un contrat à 24 ans de durée
+    // Plafond de 5 ans : le flux contient des durées aberrantes (ex. 24 ans)
     contract_duration: duree_contrat_unit === "months" && duree_contrat && duree_contrat <= 12 * 5 ? duree_contrat : null,
   }
   return partnerJob

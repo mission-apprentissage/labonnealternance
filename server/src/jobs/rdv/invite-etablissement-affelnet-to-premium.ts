@@ -63,7 +63,7 @@ export const inviteEtablissementAffelnetToPremium = async (bypassDate?: boolean)
     .toArray()) as Array<IEtablissementsToInviteToPremium>
 
   for (const etablissement of etablissementsToInviteToPremium) {
-    // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
+    // Only send an invite if the "etablissement" have at least one available Affelnet "formation"
     const hasOneAvailableFormation = await getDbCollection("eligible_trainings_for_appointments").findOne({
       etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
       lieu_formation_email: { $ne: null },
@@ -76,7 +76,6 @@ export const inviteEtablissementAffelnetToPremium = async (bypassDate?: boolean)
 
     count++
 
-    // send the invitation mail
     const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e !`,

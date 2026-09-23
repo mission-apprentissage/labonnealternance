@@ -12,19 +12,18 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { limitStream } from "@/common/utils/stream-utils"
 
-/**
- * `onImported` reçoit, en fin d'import, les _id **jobs_partners** effectivement écrits — utile aux
- * appelants qui doivent enchaîner sur ces offres précisément (indexation search_items du cron
- * offres API). Les _id ne sont matérialisés que si un consommateur est branché : le flux nightly
- * importe des centaines de milliers de documents et n'a pas à payer la liste.
- *
- * Attention, l'_id jobs_partners n'est PAS toujours celui du document computed : l'upsert cible
- * `{partner_job_id, partner_label}`, donc une offre déjà présente conserve son propre _id et
- * `$setOnInsert._id` ne s'applique qu'à la création.
- */
 /** Seule origine d'annulation qu'une réapparition dans le flux invalide légitimement. */
 const REACTIVATION_ALLOWED_GRANTED_BY = "cancel-removed-jobs-partners"
 
+/**
+ * `onImported` reçoit en fin d'import les _id jobs_partners écrits, pour les appelants qui
+ * enchaînent sur ces offres (indexation search_items du cron offres API). La liste n'est
+ * construite que si `onImported` est fourni : le flux nightly importe des centaines de milliers
+ * de documents.
+ *
+ * L'_id jobs_partners n'est pas toujours celui du document computed : l'upsert cible
+ * `{partner_job_id, partner_label}`, une offre existante garde son _id.
+ */
 export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, onImported?: (jobPartnerIds: ObjectId[]) => void | Promise<void>) => {
   logger.info(`import dans jobs_partners commencé`)
   const filters: Filter<IComputedJobsPartners>[] = [{ validated: true, business_error: null }]
@@ -102,15 +101,11 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           { projection: { offer_status: 1, offer_status_history: { $slice: -1 } } }
         )
 
-        // Une offre annulée ne peut être réactivée par le flux que si c'est le flux qui l'avait
-        // annulée (disparue puis revenue, ou business_error transitoire levé). Les fermetures
-        // décidées ailleurs — seuil de candidatures (application.service), détecteur de doublons,
-        // classification humaine, admin — ne doivent pas être écrasées par une simple réapparition
-        // dans le fichier partenaire (observé en prod : PASS rouvrait chaque nuit ses offres fermées
-        // au seuil de 80 candidatures). La garde ne mord que sur une preuve positive : la dernière
-        // transition tracée est bien l'annulation courante ET elle ne vient pas du flux. Historique
-        // vide, ou annulation posée sans entrée d'historique (dernière transition ACTIVE) : on ne
-        // sait pas qui a annulé, on conserve le comportement historique (réactivation).
+        // Une offre annulée n'est réactivée par le flux que si c'est le flux qui l'avait annulée.
+        // Les fermetures décidées ailleurs (seuil de candidatures, doublons, classification, admin)
+        // ne doivent pas être écrasées (observé en prod : PASS rouvrait chaque nuit ses offres
+        // fermées au seuil de 80 candidatures). Sans preuve de l'auteur de l'annulation (historique
+        // vide, ou dernière transition ACTIVE), on réactive.
         const lastTransition = existingJob?.offer_status_history?.at(-1)
         const lastCancellation = lastTransition?.status === JOB_STATUS_ENGLISH.ANNULEE ? lastTransition : undefined
         const isReactivation = existingJob?.offer_status === JOB_STATUS_ENGLISH.ANNULEE && partnerJobToUpsert.offer_status === JOB_STATUS_ENGLISH.ACTIVE
@@ -122,10 +117,9 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
           {
             // updated_at horodaté à l'écriture, pas au début de l'import : le cron delta
-            // search_items lit `updated_at >= now − 10 min` toutes les 5 min, et l'import dure
-            // ~26 min. Un document écrit tard mais daté du début arrivait déjà hors fenêtre et
-            // n'était jamais resynchronisé (965 offres à position périmée en prod le 2026-09-11).
-            // `importDate` reste la date du lot pour created_at et l'historique de statut.
+            // search_items lit `updated_at >= now − 10 min` toutes les 5 min et l'import dure
+            // ~26 min, un document daté du début serait déjà hors fenêtre (965 offres à position
+            // périmée en prod le 2026-09-11). `importDate` date le lot (created_at, historique).
             $set: { ...partnerJobToUpsert, updated_at: new Date() },
             $setOnInsert: {
               created_at: importDate,
@@ -140,9 +134,8 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           { upsert: true }
         )
 
-        // Collecté après l'écriture réussie. L'_id de l'offre est celui du document existant s'il y
-        // en a un, sinon celui posé par $setOnInsert — la projection du findOne ci-dessus renvoie
-        // _id, inclus par défaut.
+        // _id de l'offre existante s'il y en a une (projeté par défaut par le findOne), sinon celui
+        // posé par $setOnInsert.
         importedIds?.push(existingJob?._id ?? computedJobPartner._id)
 
         const historyEntriesToPush = [

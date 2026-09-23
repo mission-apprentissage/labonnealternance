@@ -201,16 +201,18 @@ jobs:
         run: |
           CURRENT_TAG="v${{ needs.version.outputs.VERSION }}"
 
-          # Itère sur les derniers runs réussis pour trouver le dernier déploiement en production
+          # Itère sur les derniers runs terminés pour trouver le dernier déploiement en production
           # (le workflow tourne aussi pour recette/pentest, donc on ne peut pas juste prendre head -1).
+          # On filtre sur la conclusion du job de déploiement et non sur celle du run : un run dont
+          # seul le changelog a échoué a bien déployé, et l'ignorer ferait grossir la fenêtre à chaque MEP.
           PREV_TAG=""
           RUN_IDS=$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/workflows/_deploy.yml/runs?status=success&per_page=20" \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/_deploy.yml/runs?status=completed&per_page=30" \
             --jq ".workflow_runs[] | select(.id | tostring != \"$GITHUB_RUN_ID\") | .id")
 
           for RUN_ID in $RUN_IDS; do
             PREV_VERSION=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs" \
-              --jq 'first(.jobs[] | select(.name | test("Deploy .* on production")) | .name | capture("Deploy (?<v>.*) on production") | .v) // empty')
+              --jq 'first(.jobs[] | select(.conclusion == "success" and (.name | test("^Deploy .* on production$"))) | .name | capture("Deploy (?<v>.*) on production") | .v) // empty')
             if [ -n "$PREV_VERSION" ]; then
               PREV_TAG="v${PREV_VERSION}"
               break
@@ -221,6 +223,8 @@ jobs:
             echo "No previous production run found, skipping"
             exit 0
           fi
+
+          echo "Fenêtre de changelog : ${PREV_TAG} → ${CURRENT_TAG} ($(git rev-list --count "${PREV_TAG}..${CURRENT_TAG}") commits)"
 
           # Transmettre les tags aux steps suivants
           echo "PREV_TAG=${PREV_TAG}" >> "$GITHUB_ENV"
@@ -312,19 +316,29 @@ jobs:
               # Valider que ISSUE est bien un entier pour éviter de passer du JSON d'erreur en paramètre
               [[ "$ISSUE" =~ ^[0-9]+$ ]] || continue
 
-              ITEM_ID=$(gh api graphql -f query='
+              ITEM=$(gh api graphql -f query='
                 query($owner: String!, $repo: String!, $issue: Int!) {
                   repository(owner: $owner, name: $repo) {
                     issue(number: $issue) {
                       projectItems(first: 100) {
-                        nodes { id project { number } }
+                        nodes { id isArchived project { number } }
                       }
                     }
                   }
                 }' -f owner="mission-apprentissage" -f repo="labonnealternance" -F issue="$ISSUE" \
-                --jq '[.data.repository.issue.projectItems.nodes[] | select(.project.number == 14) | .id] | first' 2>/dev/null || true)
+                --jq '[.data.repository.issue.projectItems.nodes[] | select(.project.number == 14) | "\(.id) \(.isArchived)"] | first // empty' 2>/dev/null || true)
 
-              if [ -n "$ITEM_ID" ] && [ "$ITEM_ID" != "null" ]; then
+              ITEM_ID="${ITEM%% *}"
+
+              # Un item archivé ne peut pas être modifié : on le signale sans faire échouer la MEP.
+              if [ "${ITEM##* }" = "true" ]; then
+                echo "Issue #$ISSUE → item archivé dans le projet, ignoré"
+                continue
+              fi
+
+              # Si la requête GraphQL a échoué, gh renvoie son JSON d'erreur sur stdout : ne pas
+              # le passer en itemId, sinon la mutation échoue avec un message incompréhensible.
+              if [[ "$ITEM_ID" =~ ^PVTI_[A-Za-z0-9_-]+$ ]]; then
                 gh api graphql -f query='
                   mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                     updateProjectV2ItemFieldValue(input: {
