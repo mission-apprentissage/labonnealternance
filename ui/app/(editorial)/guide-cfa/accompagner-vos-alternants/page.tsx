@@ -114,7 +114,7 @@ const AccompagnerVosAlternantsPage = async () => {
         </Paragraph>
         <Paragraph>
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("6v") }}>
-            <Image src="/images/guides/guide-cfa/telechargement_affiche.png" alt="Affiche La bonne alternance" width={139} height={198} />
+            <Image src="/images/guides/guide-cfa/telechargement_affiche.png" alt="" aria-hidden="true" width={139} height={198} />
             <Box sx={{ flex: 1 }}>
               <DsfrLink download="affiche-cfa-avril-2026.pdf" href="/ressources/affiche-cfa-avril-2026.pdf" style={{ color: "#000" }}>
                 Télécharger l’affiche La bonne alternance, à exposer dans votre CFA - PDF{" "}
