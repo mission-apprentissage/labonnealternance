@@ -24,7 +24,10 @@ export function getQuestionStatuses(questions: IFeedbackQuestion[], trial: IPrev
     if (question.id in trial.answers) return { kind: "answered", answer: formatAnswer(question, trial.answers[question.id]) }
     if (trial.skipped.includes(question.id)) return { kind: "skipped" }
     if (question.id === current?.id) return { kind: trial.status === "closed" ? "closed_here" : "current" }
-    if (!isQuestionVisible(question, trial.answers)) return { kind: "hidden" }
+    // masquée seulement si la condition est tranchée : tant que la question visée n'a pas eu de
+    // réponse (ni été passée) et que l'essai continue, elle peut encore s'afficher
+    const conditionPending = question.showIf && !(question.showIf.questionId in trial.answers) && !trial.skipped.includes(question.showIf.questionId)
+    if (!isQuestionVisible(question, trial.answers) && !(conditionPending && trial.status === "in_progress")) return { kind: "hidden" }
     return { kind: trial.status === "closed" ? "not_asked" : "upcoming" }
   })
 }

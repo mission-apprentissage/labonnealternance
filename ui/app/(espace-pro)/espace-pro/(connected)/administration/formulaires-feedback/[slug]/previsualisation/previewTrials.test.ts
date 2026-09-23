@@ -39,4 +39,13 @@ describe("essais de prévisualisation", () => {
 
     expect(summarizeStatuses(statuses)).toEqual("3 répondues")
   })
+
+  it("ne dit une question conditionnelle masquée qu'une fois sa condition tranchée", () => {
+    const conditional: IFeedbackQuestion = { id: "q2", type: "text", label: "Pourquoi ?", required: false, maxLength: 500, showIf: { questionId: "q1", equals: "negative" } }
+    const withCondition = [questions[0], conditional]
+
+    expect(getQuestionStatuses(withCondition, createTrial(1))[1]).toEqual({ kind: "upcoming" })
+    expect(getQuestionStatuses(withCondition, { ...createTrial(1), answers: { q1: "positive" }, status: "completed" })[1]).toEqual({ kind: "hidden" })
+    expect(getQuestionStatuses(withCondition, { ...createTrial(1), answers: { q1: "negative" } })[1]).toEqual({ kind: "current" })
+  })
 })

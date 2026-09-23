@@ -99,6 +99,18 @@ export function FeedbackFormPreview() {
         </Button>
       </Box>
 
+      {/* même mise en avant que la question en cours dans les essais : pas de CSS DSFR supplémentaire à charger */}
+      <Typography
+        sx={{
+          p: "12px 16px",
+          mb: fr.spacing("6v"),
+          backgroundColor: fr.colors.decisions.background.contrast.info.default,
+          borderLeft: `3px solid ${fr.colors.decisions.border.actionHigh.blueFrance.default}`,
+        }}
+      >
+        Une prévisualisation ne remplace pas un test sur le site : elle ne joue pas le déclenchement (pages, nombre d'interactions), seulement l'enchaînement des questions.
+      </Typography>
+
       {/* 2/5 – 3/5 en desktop ; empilées (aperçu au-dessus) en dessous de lg, tablette comprise */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "2fr 3fr" }, gap: fr.spacing("6v"), alignItems: "start" }}>
         <Box component="section" aria-labelledby="previsualisation-apercu-titre">
@@ -144,10 +156,6 @@ export function FeedbackFormPreview() {
           </p>
         </Box>
       </Box>
-
-      <Typography className={fr.cx("fr-text--sm")} sx={{ mt: fr.spacing("6v"), color: fr.colors.decisions.text.mention.grey.default }}>
-        Une prévisualisation ne remplace pas un test sur le site : elle ne joue pas le déclenchement (pages, nombre d'interactions), seulement l'enchaînement des questions.
-      </Typography>
     </>
   )
 }
