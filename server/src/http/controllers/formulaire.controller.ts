@@ -24,7 +24,7 @@ import {
   validateDelegatedCompanyPhoneAndEmail,
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
-import { moderateFreeText } from "@/services/offre-moderation.service"
+import { improveFreeText } from "@/services/offre-moderation.service"
 import { getUserRecruteurById } from "@/services/user-recruteur.service"
 import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
 
@@ -298,7 +298,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { text } = req.body
-      const improvedText = await moderateFreeText(text)
+      const improvedText = await improveFreeText(text)
       return res.status(200).send({ text: improvedText ?? text })
     }
   )
@@ -315,7 +315,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { text } = req.body
-      const improvedText = await moderateFreeText(text)
+      const improvedText = await improveFreeText(text)
       return res.status(200).send({ text: improvedText ?? text })
     }
   )
