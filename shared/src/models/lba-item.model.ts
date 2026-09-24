@@ -167,6 +167,12 @@ const ZLbaItemJob = z.strictObject({
   jobStartDate: z.date().nullish(), // matcha -> offres.date_debut_apprentissage | partner -> contract_start
   jobExpirationDate: z.date().nullish(), // partner -> offer_expiration
   romeDetails: ZReferentielRomeForJob.nullish(), // matcha -> offres.rome_detail -> détail du code ROME
+  romeDefinition: z
+    .string()
+    .nullish()
+    .describe(
+      "Définition du métier au référentiel ROME. Renseignée sur la fiche détail d'une offre LBA : offer_description reçoit cette même définition quand le recruteur n'a pas rédigé de description, la comparer est ce qui permet de distinguer les deux cas."
+    ),
   rythmeAlternance: z.string().nullish(), // matcha -> offres.rythme_alternance
   elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
   dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat | partner -> contract_duration

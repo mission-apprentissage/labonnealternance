@@ -3,13 +3,15 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import { useEffect } from "react"
 import type { ILbaItemPartnerJobJson } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ConseilsEntretienBlock } from "@/components/ItemDetail/ConseilsEntretienBlock"
 import { ContratBlock } from "@/components/ItemDetail/ItemDetailServices/ContratBlock"
 import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailServices/EmployeurPresentationBlock"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
-import { BAD_DESCRIPTION_LENGTH, JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
+import { JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
+import { getRecruiterWrittenDescription } from "@/components/ItemDetail/ItemDetailServices/job-description.utils"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
 import { notifyJobDetailViewV3 } from "@/utils/api"
 import { isOfferActive } from "@/utils/is-offer-active"
@@ -26,8 +28,8 @@ export const LbaJobCfaDetail = ({ job, title, jobSearchedByUser }: { job: ILbaIt
   }, [job?.job?.id])
 
   const description = job?.job?.description
-  const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
-  const romeDescription = job?.job?.romeDetails?.definition
+  const romeDescription = job?.job?.romeDefinition
+  const validCustomDescription = getRecruiterWrittenDescription(description, romeDescription, job?.job?.partner_label === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
 
   return (
     <>

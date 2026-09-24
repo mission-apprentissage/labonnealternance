@@ -21,7 +21,14 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { checkForJobActivations, createJob, createJobDelegations, getCompetencesRomeFromPartnerJob, getFormulairesForCfaManagedEnterprises } from "./formulaire.service"
+import {
+  checkForJobActivations,
+  createJob,
+  createJobDelegations,
+  getCompetencesRomeFromPartnerJob,
+  getFormulairesForCfaManagedEnterprises,
+  jobPartnersToRecruiter,
+} from "./formulaire.service"
 import mailer from "./mailer.service"
 
 // Mock mailer service to avoid sending actual emails during tests
@@ -218,6 +225,50 @@ describe("getCompetencesRomeFromPartnerJob", () => {
       savoir_faire: [{ libelle: selectedSavoirFaireCategory!.libelle, items: [selectedSavoirFaireItem] }],
       savoirs: [{ libelle: selectedSavoirsCategory!.libelle, items: [selectedSavoirsItem] }],
     })
+  })
+})
+
+/**
+ * Une offre déposée sans description rédigée stocke la définition ROME dans offer_description. Rendue
+ * telle quelle au formulaire, elle rouvrait l'édition en mode "Personnaliser la description", la fiche
+ * métier présentée comme une saisie du recruteur.
+ */
+describe("jobPartnersToRecruiter", () => {
+  const referentielRome = generateReferentielRome()
+  const entreprise = generateEntrepriseFixture({})
+  const user = generateUserWithAccountFixture({})
+  const role = generateRoleManagementFixture({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString(), user_id: user._id })
+
+  const jobDescriptionOf = (offerDescription: string | null) => {
+    const partnerJob = {
+      ...generateJobsPartnersOfferPrivate({ offer_description: offerDescription ?? "" }),
+      rome_detail: referentielRome,
+    }
+    return jobPartnersToRecruiter([partnerJob], role, user, entreprise).jobs[0].job_description
+  }
+
+  it("should drop the description when it is the rome definition", () => {
+    expect(jobDescriptionOf(referentielRome.definition)).toBe(null)
+  })
+
+  it("should drop the description when it is the rome definition with different spacing", () => {
+    expect(jobDescriptionOf(`  ${referentielRome.definition.replace(" ", "\n  ")}\n`)).toBe(null)
+  })
+
+  it("should keep a description written by the recruiter", () => {
+    const written = "Vous rejoindrez notre atelier de 12 personnes pour préparer un BTS maintenance, avec un tuteur dédié."
+    expect(jobDescriptionOf(written)).toBe(written)
+  })
+
+  it("should keep a short description: the display threshold does not apply to the edit form", () => {
+    const short = "Poste d'assistant, tuteur dédié."
+    expect(short.length).toBeLessThan(50)
+    expect(jobDescriptionOf(short)).toBe(short)
+  })
+
+  it("should keep a description that merely starts with the rome definition", () => {
+    const written = `${referentielRome.definition} Chez nous, un tuteur vous accompagne dès la première semaine.`
+    expect(jobDescriptionOf(written)).toBe(written)
   })
 })
 

@@ -29,6 +29,7 @@ import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/m
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
+import { isRomeDefinition } from "shared/utils/job-description.utils"
 import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import type z from "zod"
 import { deduplicate } from "@/common/utils/array"
@@ -1311,7 +1312,10 @@ export function jobPartnersToRecruiter(
       job_start_type: jobPartner.contract_start_type ?? JOB_START_TYPE.PRECISE_DATE,
       job_start_date_flexible: Boolean(jobPartner.contract_start_is_flexible),
       job_start_date: jobPartner.contract_start ?? jobPartner.offer_creation ?? jobPartner.created_at,
-      job_description: jobPartner.offer_description,
+      // offer_description contient la définition ROME quand l'offre a été déposée sans description
+      // rédigée : la rendre telle quelle ferait rouvrir le formulaire en mode "Personnaliser", avec
+      // la fiche métier présentée comme une saisie du recruteur.
+      job_description: isRomeDefinition(jobPartner.offer_description, jobPartner.rome_detail?.definition) ? null : jobPartner.offer_description,
       job_employer_description: jobPartner.workplace_description,
       rome_code: jobPartner.offer_rome_codes ?? [],
       rome_detail: jobPartner.rome_detail,

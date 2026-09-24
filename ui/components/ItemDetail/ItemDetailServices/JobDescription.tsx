@@ -4,7 +4,7 @@ import React, { useMemo } from "react"
 import type { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-export const BAD_DESCRIPTION_LENGTH = 50
+import { isDisplayableDescription } from "@/components/ItemDetail/ItemDetailServices/job-description.utils"
 
 const DescriptionSection = ({ title, children }: { title: string; children: string }) => (
   <Box>
@@ -16,9 +16,10 @@ const DescriptionSection = ({ title, children }: { title: string; children: stri
 export const JobDescription = ({ job }: { job: ILbaItemPartnerJobJson | ILbaItemLbaJobJson }) => {
   const { description, partner_label } = job.job
 
-  const validCustomDescription = useMemo(() => (description && description.length > BAD_DESCRIPTION_LENGTH ? description : null), [description])
+  const isLbaOffer = partner_label === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+  const validCustomDescription = useMemo(() => (isDisplayableDescription(description, isLbaOffer) ? description : null), [description, isLbaOffer])
 
-  const descriptionTitle = useMemo(() => `Description ${partner_label === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "du métier" : "de l'offre"}`, [partner_label])
+  const descriptionTitle = useMemo(() => `Description ${isLbaOffer ? "du métier" : "de l'offre"}`, [isLbaOffer])
 
   if (!validCustomDescription) {
     return null

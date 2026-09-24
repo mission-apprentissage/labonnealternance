@@ -14,6 +14,7 @@ import { generateApplicationToken } from "./app-links.service"
 import { getApplicationByJobCount, PARTNERS_WITH_APPLICATION_API } from "./application.service"
 import { getHiringCountLastFullYears } from "./deca-contrats.service"
 import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
+import { getRomeDetailsFromDB } from "./rome.service"
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
@@ -21,7 +22,8 @@ import { getRecipientID } from "./jobs/job-opportunity/job-opportunity.service"
 function transformPartnerJob(
   partnerJob: IJobsPartnersOfferPrivateWithDistance,
   applicationCountMap?: null | Map<string, number>,
-  hiringCount3Years?: number | null
+  hiringCount3Years?: number | null,
+  romeDefinition?: string | null
 ): ILbaItemPartnerJob {
   const romes = partnerJob.offer_rome_codes.map((code) => ({ code, label: null }))
   const longitude = partnerJob.workplace_geopoint.coordinates[0]
@@ -90,6 +92,9 @@ function transformPartnerJob(
       startDateFlexible: partnerJob.contract_start_is_flexible ?? null,
       isCfaEntreprise: isCfaEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
       to_applicant_questions: partnerJob.to_applicant_questions,
+      // Comme hiringCount3Years : uniquement sur la fiche détail, les résultats de recherche n'en ont
+      // pas l'usage et ne paient pas la lecture du référentiel.
+      ...(romeDefinition !== undefined ? { romeDefinition } : {}),
     },
 
     contact: {
@@ -126,7 +131,15 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
   // cfa_siret quand is_delegated est vrai.
   const hiringCount3Years = rawPartnerJob.workplace_siret ? await getHiringCountLastFullYears(rawPartnerJob.workplace_siret) : null
 
-  const partnerJob = transformPartnerJob(rawPartnerJob, applicationCountMap, hiringCount3Years)
+  // offer_description reçoit la définition ROME quand le recruteur n'a pas rédigé de description
+  // (cf. formulaire.service) : la fiche a besoin de la définition pour distinguer les deux cas et
+  // n'afficher la fiche métier que sur le premier. Seules les offres LBA sont concernées, les flux
+  // partenaires arrivent toujours avec leur propre texte.
+  const isLbaOffer = rawPartnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA
+  const romeCode = rawPartnerJob.offer_rome_codes?.at(0)
+  const romeDefinition = isLbaOffer && romeCode ? ((await getRomeDetailsFromDB(romeCode))?.definition ?? null) : null
+
+  const partnerJob = transformPartnerJob(rawPartnerJob, applicationCountMap, hiringCount3Years, romeDefinition)
 
   return partnerJob
 }
