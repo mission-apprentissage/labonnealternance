@@ -14,7 +14,6 @@ import type { IJob, IReferentielRomeForJob } from "shared"
 import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails, detectUrls } from "shared/utils/detect-url-and-emails"
 import * as Yup from "yup"
-import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -297,10 +296,12 @@ export const FormulaireEditionOffreStep1 = ({
   formValues: any
   token?: string
 }) => {
-  const { rome_appellation_label, rome_code } = offre ?? {}
-  const initRome = rome_code?.at(0)
+  // formValues porte la saisie de l'étape 1 quand on y revient depuis l'étape suivante : sans ce
+  // repli, le métier est perdu au retour, et avec lui le mode de rédaction et la fiche ROME.
+  const initAppellation = offre?.rome_appellation_label ?? formValues?.rome_appellation_label
+  const initRome = (offre?.rome_code ?? formValues?.rome_code)?.at(0)
   const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: string } | null>(
-    rome_appellation_label && initRome ? { rome: initRome, appellation: rome_appellation_label } : null
+    initAppellation && initRome ? { rome: initRome, appellation: initAppellation } : null
   )
   const { rome } = romeAndAppellation ?? {}
 
@@ -395,7 +396,11 @@ export const FormulaireEditionOffreStep1 = ({
     job_description: offre?.job_description ?? "",
     ...formValues,
   }
+  // localOnSubmit normalise les champs libres vides à null avant de les remonter : au retour sur
+  // l'étape, un input contrôlé doit retrouver une chaîne.
   initialValues.offer_title_custom = initialValues.offer_title_custom ?? ""
+  initialValues.job_description = initialValues.job_description ?? ""
+  initialValues.job_employer_description = initialValues.job_employer_description ?? ""
 
   return (
     <>
@@ -565,25 +570,19 @@ export const FormulaireEditionOffreStep1 = ({
                     </Box>
                   )}
 
-                  {romeAndAppellation ? (
-                    // en rédaction libre, le texte du recruteur remplace la fiche métier : on la masque
-                    descriptionMode === "structured" && (
-                      <Box sx={{ mt: fr.spacing("4v") }}>
-                        <RomeDetailWithQuery
-                          selectedCompetences={{
-                            savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                            savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
-                            savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                          }}
-                          title={values.offer_title_custom || romeAndAppellation.appellation}
-                          rome={romeAndAppellation.rome}
-                          onChange={onSelectedCompetencesChange}
-                        />
-                      </Box>
-                    )
-                  ) : (
-                    <Box sx={{ mt: fr.spacing("4v"), display: ["none", "block"] }}>
-                      <InfosDiffusionOffre />
+                  {/* en rédaction libre, le texte du recruteur remplace la fiche métier : on la masque */}
+                  {romeAndAppellation && descriptionMode === "structured" && (
+                    <Box sx={{ mt: fr.spacing("4v") }}>
+                      <RomeDetailWithQuery
+                        selectedCompetences={{
+                          savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                          savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
+                          savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                        }}
+                        title={values.offer_title_custom || romeAndAppellation.appellation}
+                        rome={romeAndAppellation.rome}
+                        onChange={onSelectedCompetencesChange}
+                      />
                     </Box>
                   )}
                 </Box>
