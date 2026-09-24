@@ -55,10 +55,8 @@ function transformPartnerJob(
     },
     company: {
       siret: partnerJob.is_delegated ? partnerJob.cfa_siret : partnerJob.workplace_siret,
-      // `||` et non `??` sur la chaîne de repli : workplace_name est sanitizé côté pipeline et peut
-      // valoir "" (cf. formatTextFieldsJobsPartners), ce qui court-circuitait tous les replis et
-      // affichait une fiche détail sans employeur, alors que la carte de résultat — qui utilise `||`
-      // dans buildJobOfferSearchItem — affichait bien la raison sociale.
+      // `||` et non `??` : workplace_name est sanitizé côté pipeline et peut valoir "" (cf.
+      // formatTextFieldsJobsPartners) ; même repli que la carte de résultat (buildJobOfferSearchItem).
       name: partnerJob.is_delegated ? partnerJob.cfa_legal_name : partnerJob.workplace_name || partnerJob.workplace_brand || partnerJob.workplace_legal_name || UNKNOWN_COMPANY,
       size: partnerJob.workplace_size,
       opco: { label: partnerJob.workplace_opco, url: null },
@@ -142,31 +140,4 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
   const partnerJob = transformPartnerJob(rawPartnerJob, applicationCountMap, hiringCount3Years, romeDefinition)
 
   return partnerJob
-}
-
-export const anonymizeLbaJobsPartners = async ({ partner_job_ids }: { partner_job_ids: string[] }) => {
-  const jobsPartnersCollection = getDbCollection("jobs_partners")
-  const now = new Date()
-  await jobsPartnersCollection.updateMany(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: { $in: partner_job_ids } },
-    {
-      $set: {
-        apply_email: null,
-        apply_phone: null,
-        apply_url: null,
-        offer_description: "",
-        workplace_description: null,
-        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
-        updated_at: now,
-        offer_status_history: [
-          {
-            status: JOB_STATUS_ENGLISH.ANNULEE,
-            reason: "recruiter has been anonymized",
-            date: now,
-            granted_by: "lba",
-          },
-        ],
-      },
-    }
-  )
 }

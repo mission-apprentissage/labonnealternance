@@ -1,5 +1,5 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
-import { JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
+import { JOB_CLOSURE_ORIGIN, JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/http-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -24,14 +24,12 @@ import {
   validateDelegatedCompanyPhoneAndEmail,
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
+import { resolveEspaceProClosureOrigin } from "@/services/job-partner-status.service"
 import { improveFreeText } from "@/services/offre-moderation.service"
 import { getUserRecruteurById } from "@/services/user-recruteur.service"
 import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
 
 export default (server: Server) => {
-  /**
-   * Get form from id
-   */
   server.get(
     "/formulaire/:establishment_id",
     {
@@ -63,9 +61,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Get form from id
-   */
   server.get(
     "/formulaire/delegation/:establishment_id",
     {
@@ -83,9 +78,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Post form
-   */
   server.post(
     "/user/:userId/formulaire",
     {
@@ -154,9 +146,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Create new offer
-   */
   server.post(
     "/formulaire/:establishment_id/offre",
     {
@@ -216,9 +205,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Create new offer
-   */
   server.post(
     "/formulaire/:establishment_id/offre/by-token",
     {
@@ -288,7 +274,8 @@ export default (server: Server) => {
   )
 
   /**
-   * Améliore (orthographe, structure, modération) un texte libre saisi par le recruteur, sans le sauvegarder.
+   * Corrige la forme d'un texte libre saisi par le recruteur, sans le sauvegarder. Ne juge pas le
+   * contenu : cf. improveFreeText.
    */
   server.post(
     "/formulaire/:establishment_id/offre/ameliorer-texte",
@@ -320,9 +307,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Create offer delegations
-   */
   server.post(
     "/formulaire/offre/:jobId/delegation",
     {
@@ -378,9 +362,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Update an existing offer from id
-   */
   server.put(
     "/formulaire/offre/:jobId",
     {
@@ -455,6 +436,7 @@ export default (server: Server) => {
       const { alreadyClosed } = await closeOffreWithMotif({
         id: jobId,
         offer_status: statusMapping[job_status],
+        origin: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
         job_status_comment,
         job_status_comment_precision,
         job_recruitment_channel,
@@ -465,7 +447,8 @@ export default (server: Server) => {
   )
 
   /**
-   * Permet de passer une offre en statut ANNULER (depuis l'interface d'admin)
+   * Permet de passer une offre en statut ANNULER depuis l'espace pro connecté (session cookie) :
+   * le recruteur sur son tableau de bord comme l'administrateur depuis le back-office.
    */
   server.put(
     "/formulaire/offre/f/:jobId/cancel",
@@ -488,6 +471,7 @@ export default (server: Server) => {
         job_status_comment_precision,
         job_recruitment_channel,
         offer_status: statusMapping[job_status],
+        origin: resolveEspaceProClosureOrigin(req.userAccess),
         id: req.params.jobId,
       })
       return res.status(200).send({ alreadyClosed })

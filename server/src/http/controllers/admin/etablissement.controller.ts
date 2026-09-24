@@ -4,13 +4,7 @@ import { zRoutes } from "shared/index"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 
-/**
- * @description Etablissement server.
- */
 export default (server: Server) => {
-  /**
-   * Gets an etablissement from its siret_formateur.
-   */
   server.get(
     "/admin/etablissements/siret-formateur/:siret",
     {
@@ -28,9 +22,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Gets an etablissement from its id.
-   */
   server.get(
     "/admin/etablissements/:id",
     {
@@ -48,9 +39,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Updates an etablissement.
-   */
   server.patch(
     "/admin/etablissements/:id",
     {

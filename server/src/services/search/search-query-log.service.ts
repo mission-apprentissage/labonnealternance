@@ -9,13 +9,11 @@ import { normalizeTerm, tokenizeQuery } from "./search.service"
  * Log au fil de l'eau des recherches utilisateurs → collection `search_queries`.
  * Contraintes : appelé en fire-and-forget depuis le contrôleur /v1/search (jamais d'await),
  * ne doit JAMAIS throw ni ralentir la réponse. RGPD : pas d'IP / user / referer, requêtes
- * contenant des PII jamais loggées, géo arrondie à ~11 km. Cf. searchQueries.model.ts.
+ * contenant des PII jamais loggées, géo arrondie à ~11 km. Cf. search-queries.model.ts.
  *
- * Appelé aussi bien sur succès que sur échec de searchItems (cf. search.controller.ts) : avant
- * #5153, les requêtes qui plantaient n'étaient jamais loguées (le log n'existait que sur le
- * chemin de succès), rendant impossible toute analyse a posteriori des échecs réels via
- * `search_queries` — seul Sentry gardait la trace. `status` distingue désormais succès normal,
- * succès après repli maxClauseCount ("degraded"), et échec ("error", nb_hits alors null).
+ * Appelé sur succès comme sur échec de searchItems (cf. search.controller.ts, #5153), pour
+ * analyser les échecs réels : `status` distingue succès, succès après repli maxClauseCount
+ * ("degraded") et échec ("error", nb_hits alors null).
  */
 
 // Détection PII dans le texte libre : email, téléphone FR, longues séquences de chiffres

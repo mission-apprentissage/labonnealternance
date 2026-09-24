@@ -15,6 +15,7 @@ import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink } from "@/services/app-links.service"
 import { getApplicationByJobCount } from "@/services/application.service"
+import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 
 const APPLICATION_COUNT_THRESHOLD = 80
@@ -24,8 +25,7 @@ const getReminderCompanyName = ({
   workplace_brand,
   workplace_legal_name,
 }: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => {
-  // Chaîne de repli en `||` : workplace_name est sanitizé côté pipeline et peut valoir "" (cf.
-  // formatTextFieldsJobsPartners), ce qui court-circuiterait le repli sur brand / raison sociale.
+  // `||` et non `??` : workplace_name peut valoir "" (cf. formatTextFieldsJobsPartners).
   return workplace_name || workplace_brand || workplace_legal_name || ""
 }
 
@@ -86,8 +86,7 @@ const sendThresholdEmails = async (closedJobs: IJobsPartnersOfferPrivate[]) => {
  * et notifie le recruteur par mail avec un lien vers le formulaire de clôture de recrutement.
  */
 export const closeJobsPartnersOnApplicationThreshold = async (payload?: { threshold?: string | number }) => {
-  // threshold configurable (CLI --threshold, défaut 80) : permet de tester en preview sans avoir
-  // à créer 80 candidatures réelles sur une offre.
+  // Surchargeable (CLI --threshold) pour tester en preview sans créer autant de candidatures réelles.
   const threshold = payload?.threshold !== undefined ? Number(payload.threshold) : APPLICATION_COUNT_THRESHOLD
 
   const activeJobs = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }).toArray()
@@ -113,17 +112,12 @@ export const closeJobsPartnersOnApplicationThreshold = async (payload?: { thresh
   await asyncForEach(jobsToClose, async (job) => {
     const found = await getDbCollection("jobs_partners").findOneAndUpdate(
       { _id: job._id },
-      {
-        $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now },
-        $push: {
-          offer_status_history: {
-            date: now,
-            status: JOB_STATUS_ENGLISH.ANNULEE,
-            reason: `seuil de ${threshold} candidatures atteint`,
-            granted_by: "close-jobs-partners-on-application-threshold",
-          },
-        },
-      },
+      buildJobStatusChangeUpdate({
+        status: JOB_STATUS_ENGLISH.ANNULEE,
+        reason: `seuil de ${threshold} candidatures atteint`,
+        grantedBy: "close-jobs-partners-on-application-threshold",
+        date: now,
+      }),
       { returnDocument: "after" }
     )
     if (found) {

@@ -15,6 +15,7 @@ import { notifyToSlack } from "@/common/utils/slack-utils"
 import { getEntrepriseDataFromSiret } from "@/services/etablissement.service"
 import { archiveFormulaire } from "@/services/formulaire.service"
 import { sendMailNouvelleOffre } from "@/services/formulaire-notifications.service"
+import { buildJobStatusChangeUpdate, changeJobsPartnersStatus } from "@/services/job-partner-status.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
 import { sendDeactivatedRecruteurMail } from "@/services/role-management.service"
 import { setEntrepriseInError } from "@/services/user-recruteur.service"
@@ -158,25 +159,46 @@ const updateRecruteursSiretInfosInError = async () => {
             managed_by: role.user_id,
           })
           if (awaitingOffer) {
-            await getDbCollection("jobs_partners").updateOne({ _id: awaitingOffer._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ACTIVE, updated_at: new Date() } })
-            await sendMailNouvelleOffre(user, awaitingOffer)
+            await getDbCollection("jobs_partners").updateOne(
+              { _id: awaitingOffer._id },
+              buildJobStatusChangeUpdate({
+                status: JOB_STATUS_ENGLISH.ACTIVE,
+                reason: "données entreprise corrigées",
+                grantedBy: "update-siret-infos-in-error-job",
+              })
+            )
+            // L'envoi est isolé du try englobant : une panne d'envoi faisait retomber dans le catch,
+            // qui dépubliait l'offre tout juste republiée sous le motif "vérification du SIRET en
+            // erreur" — alors que le SIRET venait précisément d'être revalidé.
+            try {
+              await sendMailNouvelleOffre(user, awaitingOffer)
+            } catch (mailErr) {
+              logger.error(mailErr)
+              logger.error(`Correction des recruteurs en erreur: offre id=${awaitingOffer._id}, mail de republication non envoyé`)
+              sentryCaptureException(mailErr)
+            }
           }
         }
         stats.success++
       }
     } catch (err) {
       const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
-      await getDbCollection("jobs_partners").updateMany(
+      // Restreint aux offres publiées : dépublier le temps de résoudre l'erreur SIRET est bien
+      // l'intention, mais le filtre portait sur tout le périmètre du recruteur et rouvrait des
+      // offres closes — une annulation ou un recrutement réussi repassait "en attente" (issue #5429).
+      // Une offre déjà en attente est exclue au passage : l'y remettre ne changerait rien et
+      // ajouterait une transition fictive à son historique.
+      await changeJobsPartnersStatus(
         {
           workplace_siret: siret,
           partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
           managed_by: role.user_id,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
         },
         {
-          $set: {
-            offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE,
-            updated_at: new Date(),
-          },
+          status: JOB_STATUS_ENGLISH.EN_ATTENTE,
+          reason: "vérification du SIRET en erreur",
+          grantedBy: "update-siret-infos-in-error-job",
         }
       )
       logger.error(err)

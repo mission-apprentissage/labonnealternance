@@ -13,7 +13,6 @@ export function useLocalStorage<T>(key: string, initialValue?: T) {
     }
   })
 
-  // Function to update localStorage
   const setLocalStorage = useCallback(
     (value: T) => {
       if (typeof window === "undefined") return

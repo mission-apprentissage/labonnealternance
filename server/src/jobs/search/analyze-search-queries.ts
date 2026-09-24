@@ -64,13 +64,10 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
   const since = new Date(Date.now() - CRITERIA.WINDOW_DAYS * 24 * 3600 * 1000)
   return getDbCollection("search_queries")
     .aggregate<IQueryStats>([
-      // status=error exclu : nb_hits est alors null (recherche non aboutie, aucun signal de
-      // pertinence) — l'inclure gonflerait `total` sans jamais compter dans `zero_hits_count`,
-      // ce qui ferait paraître le terme plus pertinent qu'il ne l'est (cf. #5166). Même logique
-      // pour search_source=training_links / external_sites : trafic synthétique (liens générés côté
-      // serveur pour les vœux Parcoursup, ou liens de recherche personnalisés posés par des
-      // sites tiers), pas des recherches organiques — l'inclure biaiserait les stats qui
-      // nourrissent le moteur de suggestion avec du volume qui ne reflète pas l'usage réel.
+      // status=error exclu : nb_hits y est null, l'inclure gonflerait `total` sans compter dans
+      // `zero_hits_count` et ferait paraître le terme plus pertinent qu'il ne l'est (cf. #5166).
+      // search_source=training_links / external_sites exclus : trafic synthétique (liens générés
+      // pour les vœux Parcoursup, liens de recherche posés par des sites tiers), pas organique.
       { $match: { created_at: { $gte: since }, status: { $ne: "error" }, search_source: { $nin: ["training_links", "external_sites"] } } },
       {
         $group: {
@@ -118,9 +115,8 @@ export const analyzeSearchQueries = async () => {
   const allStats = await aggregateQueryStats()
   const rejectedReasons = new Map<string, number>()
   const countReason = (reason: string) => rejectedReasons.set(reason, (rejectedReasons.get(reason) ?? 0) + 1)
-  // Compté à part des vrais rejets (cf. plus bas) : un candidat capé n'est PAS persisté en
-  // "rejected" et sera réévalué au prochain run — le confondre avec "Rejets" dans le rapport
-  // Slack laisserait croire à tort qu'il est écarté définitivement.
+  // Compté à part des vrais rejets : un candidat capé n'est pas persisté en "rejected" (cf. plus
+  // bas), le mêler aux « Rejets » du rapport Slack le ferait passer pour écarté définitivement.
   const cappedReasons = new Map<string, number>()
   const countCapped = (reason: string) => cappedReasons.set(reason, (cappedReasons.get(reason) ?? 0) + 1)
 
@@ -241,13 +237,10 @@ export const analyzeSearchQueries = async () => {
       continue
     }
 
-    // Capé par le quota du run (pas un vrai rejet IA) : ne PAS persister en "rejected", sinon
-    // `already_processed` l'exclurait à vie de tous les prochains runs — y compris de bons
-    // candidats qui n'ont simplement pas eu de place cette fois (constaté sur le run de
-    // rattrapage initial : des candidats à forte confiance comme "devops"/"design" dépassaient
-    // le quota suggestion, retombaient sur le test synonyme, et étaient reportés sous un motif
-    // de rejet trompeur — "not_synonym_candidate" — qui masquait le vrai motif : capé). Réévalué
-    // au prochain run.
+    // Capé par le quota du run (pas un vrai rejet IA) : ne pas persister en "rejected", sinon
+    // `already_processed` l'exclurait à vie des prochains runs alors qu'il n'a simplement pas eu
+    // de place. Compté comme capé, et non sous le motif du test synonyme sur lequel il retombe
+    // (ex. "not_synonym_candidate"), puis réévalué au prochain run.
     if (suggestionCapped || synonymCapped) {
       countCapped(suggestionCapped ? "suggestion_capped" : "synonym_capped")
       continue

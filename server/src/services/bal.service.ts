@@ -16,7 +16,7 @@ const getApiClient = (options) =>
       ...options,
     }),
     {
-      ttl: 1000 * 60 * 10, // 10 Minutes
+      ttl: 1000 * 60 * 10,
     }
   )
 
@@ -29,7 +29,7 @@ interface IBALResponse {
  * Documentation https://bal.apprentissage.beta.gouv.fr/api/documentation/static/index.html
  */
 const executeWithRateLimiting = apiRateLimiter("apiBal", {
-  nbRequests: 2, // 2req/s
+  nbRequests: 2,
   durationInSeconds: 1,
   client: getApiClient({
     baseURL: config.bal.baseUrl,
@@ -39,9 +39,6 @@ const executeWithRateLimiting = apiRateLimiter("apiBal", {
 
 /**
  * @description Validation d'appartenance à une organisation
- * @param {string} siret
- * @param {string} email
- * @returns
  */
 export const validationOrganisation = async (siret: string, email: string): Promise<IBALResponse> => {
   return executeWithRateLimiting(async (client) => {
@@ -58,7 +55,7 @@ export const validationOrganisation = async (siret: string, email: string): Prom
           },
         }
       )
-      return data // is_valid: boolean, on: string "domain"|"email"
+      return data
     } catch (error: any) {
       if (error?.response?.status !== 500) {
         sentryCaptureException(error)

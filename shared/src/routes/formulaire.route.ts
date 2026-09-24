@@ -8,15 +8,20 @@ import { ZPersonNameInput } from "../models/users-recruteur.model.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
 
+// Les trois champs texte sont bornés : le front n'envoie que des motifs d'une liste fermée (le plus
+// long fait 53 caractères) et deux précisions libres saisies dans la modale, mais la route accepte
+// n'importe quelle chaîne. job_status_comment est le plus exposé — il est recopié dans
+// offer_status_history, un tableau qui ne fait que croître, où un texte non borné ferait enfler le
+// document à chaque clôture.
 const zJobClosingBody = z.strictObject({
   job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
-  job_status_comment: z.string(),
-  job_status_comment_precision: z.string().optional(),
-  job_recruitment_channel: z.string().optional(),
+  job_status_comment: z.string().max(500),
+  job_status_comment_precision: z.string().max(500).optional(),
+  job_recruitment_channel: z.string().max(500).optional(),
 })
 
-// alreadyClosed : l'offre n'était déjà plus ACTIVE au moment de la requête (ex: lien de clôture utilisé
-// deux fois) — la mise à jour du motif est appliquée quand même, mais le front peut adapter son message.
+// alreadyClosed : l'offre portait déjà le statut demandé au moment de la requête (ex: lien de clôture
+// utilisé deux fois) — rien n'est réécrit, et le front adapte son message.
 const zJobClosingResponse = z.strictObject({ alreadyClosed: z.boolean() })
 const zInvalidRessourceError = z.strictObject({ status: z.literal("INVALID_RESSOURCE"), message: z.string() })
 

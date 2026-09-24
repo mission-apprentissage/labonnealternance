@@ -127,7 +127,7 @@ function MobileSection({ title, children }: { title?: string; children: ReactNod
 }
 
 export function SearchFilters({ params, facets, counts, nbHits, onNavigate, variant = "bar" }: SearchFiltersProps) {
-  // search_filter_opened : dropdown ouvert puis refermé SANS application (spec tracking filtres).
+  // search_filter_opened : dropdown ouvert puis refermé SANS application.
   // `navigate` marque le dropdown ouvert comme « appliqué » ; la fermeture sans application émet l'événement.
   const openDropdownRef = useRef<{ filterName: string; applied: boolean } | null>(null)
   const trackDropdown = (filterName: string) => (open: boolean) => {
@@ -174,7 +174,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
 
   // Type d'offres : 2 cases indépendantes portées par le param multi is_algo_company
   // (false = offres, true = entreprises à contacter). Les deux cochées : la sélection reste
-  // affichée mais aucun filtre n'est envoyé à l'API (équivaut à « tout », cf. useSearchResults).
+  // affichée mais aucun filtre n'est envoyé à l'API (équivaut à « tout », cf. paramsToQuerystring).
   const offresChecked = params.is_algo_company?.includes(false) ?? false
   const entreprisesChecked = params.is_algo_company?.includes(true) ?? false
   const toggleOfferKind = (kind: "offres" | "entreprises") => {

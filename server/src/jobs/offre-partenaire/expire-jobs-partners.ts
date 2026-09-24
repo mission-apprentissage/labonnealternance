@@ -13,6 +13,7 @@ import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink } from "@/services/app-links.service"
+import { changeJobsPartnersStatus } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 
 const getReminderCompanyName = ({
@@ -20,8 +21,7 @@ const getReminderCompanyName = ({
   workplace_brand,
   workplace_legal_name,
 }: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => {
-  // Chaîne de repli en `||` : workplace_name est sanitizé côté pipeline et peut valoir "" (cf.
-  // formatTextFieldsJobsPartners), ce qui court-circuiterait le repli sur brand / raison sociale.
+  // `||` et non `??` : workplace_name peut valoir "" (cf. formatTextFieldsJobsPartners).
   return workplace_name || workplace_brand || workplace_legal_name || ""
 }
 
@@ -81,21 +81,14 @@ export const expireJobsPartners = async () => {
   const now = new Date()
   const filter = { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_expiration: { $lt: now } }
 
-  // On récupère les offres AVANT le flip de statut pour pouvoir envoyer le mail de clôture automatique
-  // aux recruteurs gérés par LBA (managed_by renseigné), sans changer le filtre du updateMany ci-dessous.
+  // Lues avant le flip de statut, pour le mail de clôture automatique (cf. sendExpirationEmails).
   const expiringJobs = await getDbCollection("jobs_partners").find(filter).toArray()
 
-  const result = await getDbCollection("jobs_partners").updateMany(filter, {
-    // updated_at : requis par le cron delta search_items (syncSearchItemsDelta).
-    $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now },
-    $push: {
-      offer_status_history: {
-        date: now,
-        status: JOB_STATUS_ENGLISH.ANNULEE,
-        reason: "offre expirée (date dépassée)",
-        granted_by: "expire-jobs-partners",
-      },
-    },
+  const result = await changeJobsPartnersStatus(filter, {
+    status: JOB_STATUS_ENGLISH.ANNULEE,
+    reason: "offre expirée (date dépassée)",
+    grantedBy: "expire-jobs-partners",
+    date: now,
   })
   logger.info(`expireJobsPartners: ${result.modifiedCount} offres expirées`)
 

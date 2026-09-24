@@ -4,9 +4,6 @@ import type { Server } from "@/http/server"
 import { getRomesAndLabelsFromTitleQuery } from "@/services/metiers.service"
 import { getRomeDetailsFromDB } from "@/services/rome.service"
 
-/**
- * API romes
- */
 export default function (server: Server) {
   server.get(
     "/rome",

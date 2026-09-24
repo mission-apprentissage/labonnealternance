@@ -145,9 +145,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
           </Box>
         </Box>
 
-        {/**
-         * BLOC DESCRIPTION DE LA VILLE
-         */}
+        {/* BLOC DESCRIPTION DE LA VILLE */}
         <Box sx={{ mb: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box
             sx={{
@@ -190,9 +188,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
           </Box>
         </Box>
 
-        {/**
-         * BLOC VIE D'ALTERNANT
-         */}
+        {/* BLOC VIE D'ALTERNANT */}
         <Box
           sx={{
             mb: fr.spacing("8v"),
@@ -258,9 +254,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
           </Box>
         </Box>
 
-        {/**
-         * BLOC STATISTIQUES
-         */}
+        {/* BLOC STATISTIQUES */}
         <Box sx={{ mb: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
             Opportunités d'emploi
@@ -312,9 +306,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
           </Box>
         </Box>
 
-        {/**
-         * BLOC OFFRES
-         */}
+        {/* BLOC OFFRES */}
         {data.cards?.length > 0 && (
           <Box sx={{ mb: fr.spacing("8v"), mt: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
             <Box
@@ -340,9 +332,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
           </Box>
         )}
 
-        {/**
-         * BLOC MOBILITE
-         */}
+        {/* BLOC MOBILITE */}
         <Box
           sx={{
             mb: fr.spacing("8v"),
@@ -403,9 +393,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
             </Box>
           </Box>
 
-          {/**
-           * BLOC LOGEMENT
-           */}
+          {/* BLOC LOGEMENT */}
           <Box sx={{ mt: fr.spacing("3v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("2v"), md: fr.spacing("8v") } }}>
             <Box sx={{ flex: 1 }}>
               <Typography variant="h3" sx={{ mb: { xs: fr.spacing("3v"), md: 0 }, fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
@@ -466,9 +454,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
           </Box>
         </Box>
 
-        {/**
-         * BLOC LOISIRS
-         */}
+        {/* BLOC LOISIRS */}
         <Box sx={{ mb: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
             Les loisirs <span style={{ color: "#161616" }}>à {data.ville}</span>

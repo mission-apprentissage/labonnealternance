@@ -19,7 +19,6 @@ interface GlobalFilterProps {
   searchPlaceholder?: string
 }
 
-// Define a default UI for filtering
 function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }: GlobalFilterProps) {
   const [value, setValue] = React.useState(globalFilter)
   const onChange = (value: string) => {
@@ -77,10 +76,7 @@ function TableWithPagination({
 
   const filterTypes = React.useMemo(
     () => ({
-      // Add a new fuzzyTextFilterFn filter type.
       fuzzyText: fuzzyTextFilterFn,
-      // Or, override the default text filter to use
-      // "startWith"
       text: (rows, id, filterValue) => {
         if (!filterValue) return rows
         return rows.filter((row) => {
@@ -148,7 +144,6 @@ function TableWithPagination({
                   mt: fr.spacing("6v"),
                   display: "-webkit-box",
 
-                  // ← number of lines
                   WebkitLineClamp: 3,
 
                   WebkitBoxOrient: "vertical",

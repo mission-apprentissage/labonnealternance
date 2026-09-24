@@ -16,7 +16,7 @@ import { PAGES } from "@/utils/routes.utils"
 type PrdvData = NonNullable<Awaited<ReturnType<typeof getPrdvContext>>>
 
 // Le landmark <main> et l'ancre mainId("rdva") du lien d'évitement sont portés par le layout (rdva)
-// pour toutes ses pages (premium, optout, rdva) : ce wrapper ne gère plus que les marges.
+// pour toutes ses pages (premium, optout, rdva) : ce wrapper ne gère que les marges.
 const RdvaMain = ({ children }: PropsWithChildren) => <Box sx={{ my: fr.spacing("6v"), mx: fr.spacing("2v") }}>{children}</Box>
 
 const PrdvIndisponible = () => (
@@ -38,9 +38,6 @@ type Props = {
   referrer: string | null
 }
 
-/**
- * Appointment form page.
- */
 export default function PriseDeRendezVous({ data, cleMinistereEducatif, referrer }: Props) {
   return <PageContent data={data} cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
 }
@@ -81,10 +78,9 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
   }
 
   // Contexte introuvable : la clé ministère éducatif est inconnue, expirée, ou le CFA ne prend plus
-  // de rendez-vous. C'est un état fonctionnel attendu, pas une panne. Le `throw` précédent le
-  // faisait remonter à l'ErrorBoundary, qui affichait « Un problème technique est survenu » et
-  // capturait un event Sentry par visite — 343 sur 7 jours, 936 depuis le 07/07
-  // (LBA-UI-5CVZZZZZZG40G).
+  // de rendez-vous. État fonctionnel attendu, pas une panne : un `throw` vers l'ErrorBoundary
+  // afficherait « Un problème technique » et capturerait un event Sentry par visite
+  // (LBA-UI-5CVZZZZZZG40G : 343 sur 7 jours, 936 depuis le 07/07).
   if (!data) {
     return (
       <RdvaMain>

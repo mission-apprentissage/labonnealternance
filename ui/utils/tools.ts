@@ -2,8 +2,6 @@ import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson,
 
 import { rawPostalAddress } from "./address-utils"
 
-//import * as Sentry from "@sentry/react";
-
 const getPathLink = (anyItem: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson) => {
   let res = ""
   if (anyItem?.place) {

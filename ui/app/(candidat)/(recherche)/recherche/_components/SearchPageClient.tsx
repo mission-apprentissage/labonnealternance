@@ -40,16 +40,11 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const result = useSearchResults(params)
   const router = useRouter()
 
-  // Retour depuis une fiche détail fermée (?active_hit=…, posé par useDetailNavigation) : à
-  // capturer dans un state pour survivre au router.replace qui retire le paramètre de l'URL
-  // une fois consommé (cf. effet plus bas). Un `useState(() => …)` capté « au montage » ne
-  // suffit PAS ici : le routeur App Router peut réutiliser cette instance de SearchPageClient
-  // depuis son cache de navigation au lieu de la remonter en revenant sur /recherche — la
-  // valeur initiale de useState ne serait alors jamais réévaluée. On capture donc `active_hit`
-  // en ajustant l'état PENDANT le rendu (pattern React officiel, cf. « adjusting state during
-  // rendering ») dès qu'il change par rapport à la dernière valeur vue, plutôt qu'au montage
-  // ou dans un effet — un effet tournerait après la peinture et provoquerait le flash qu'on
-  // cherche justement à éviter.
+  // Retour depuis une fiche détail (?active_hit=…, posé par useDetailNavigation) : capturé dans
+  // un state pour survivre au router.replace qui retire le paramètre. Pas de `useState(() => …)`
+  // au montage : l'App Router peut réutiliser cette instance depuis son cache de navigation sans
+  // la remonter. Pas d'effet non plus (il tournerait après la peinture, d'où un flash) : l'état
+  // est ajusté PENDANT le rendu (pattern React « adjusting state during rendering »).
   const rawActiveHit = rawSearchParams?.get(ACTIVE_HIT_PARAM) ?? null
   const [seenActiveHit, setSeenActiveHit] = useState(rawActiveHit)
   const [pendingScrollHitId, setPendingScrollHitId] = useState<string | null>(null)
@@ -58,11 +53,9 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     if (rawActiveHit) setPendingScrollHitId(rawActiveHit)
   }
 
-  // Une fois les résultats disponibles (donc la carte visée soit rendue, soit absente des
-  // pages déjà chargées — dans les deux cas on ne retente pas), on nettoie l'URL : le
-  // paramètre est à usage unique, il ne doit pas survivre à un partage de lien ou reparaître
-  // après un filtre. `scroll: false` impératif : sans lui, ce `replace` ramène la page en
-  // haut (comportement par défaut du routeur), effaçant le scroll qu'on vient de restaurer.
+  // Résultats disponibles (carte visée rendue ou absente, on ne retente pas) : on retire le
+  // paramètre, à usage unique, de l'URL. `scroll: false` impératif : sans lui, ce `replace`
+  // ramène la page en haut et efface le scroll qu'on vient de restaurer.
   useEffect(() => {
     if (!pendingScrollHitId || !result.data) return
     setPendingScrollHitId(null)
@@ -163,8 +156,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       total_results: result.data.pages.at(-1)?.nbHits ?? 0,
       count_alternance: facets?.type?.offre ?? 0,
       count_formation: facets?.type?.formation ?? 0,
-      // Détail par type d'offre (spec Notion « À modifier dans search_results_displayed ») :
-      // facette sub_type du result set.
+      // Détail par type d'offre : facette sub_type du result set.
       count_offer_lba: facets?.sub_type?.[LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA] ?? 0,
       count_offer_partner: facets?.sub_type?.[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES] ?? 0,
       count_company_algo: facets?.sub_type?.[LBA_ITEM_TYPE.RECRUTEURS_LBA] ?? 0,
@@ -219,7 +211,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // Changement de type de recherche : les filtres actifs ne s'appliquent plus forcément au
   // nouveau mode (chips différentes) → remis à zéro, comme le tri s'il n'existe pas en mode
   // formations. Le clear implicite n'émet PAS de search_filter_removed (c'est un changement
-  // de mode, pas des retraits unitaires — documenté sur Notion).
+  // de mode, pas des retraits unitaires).
   function handleModeChange(mode: SearchMode) {
     pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf(mode), search_engine: SEARCH_ENGINES.BETA })
     const cleared = clearedFilters(params)
@@ -264,10 +256,8 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             évite le débordement horizontal sans créer de scroll container (sticky préservé). */}
         <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, overflowX: "clip" }}>
           <DefaultContainer sx={{ py: fr.spacing("4v") }}>
-            {/* Bandeau : champs + chips, panneau blanc arrondi comme le design — sticky au scroll.
-                z-index > 500 (cartes DSFR shadow), < 1100 (.fr-header, cf application.css) et
-                < 1250 (modales DSFR). Le header a son propre z-index garanti globalement — pas
-                besoin de deviner la valeur DSFR interne du menu déroulant ici. */}
+            {/* Bandeau sticky au scroll. z-index > 500 (cartes DSFR shadow), < 1100 (.fr-header,
+                cf application.css) et < 1250 (modales DSFR). */}
             <Box ref={stickySentinelRef} aria-hidden="true" sx={{ height: 0 }} />
             <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
               {/* Bandeau collé : fond blanc pleine largeur (comme le legacy) — couvre les
@@ -285,7 +275,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                     transform: "translateX(-50%)",
                     backgroundColor: fr.colors.decisions.background.default.grey.default,
                     // L'ombre de séparation avec les résultats est portée par la bande
-                    // pleine largeur — le panneau, à plat, ne projette plus la sienne.
+                    // pleine largeur, le panneau collé n'en projette pas.
                     boxShadow: "0 2px 6px rgba(0,0,18,0.08)",
                   }}
                 />
@@ -303,12 +293,12 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               >
                 <Box id={zoneScopedId("recherche", "search-form")} tabIndex={-1} sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
                   <Box sx={{ flex: 1 }}>
-                    {/* submitOnSuggestion : pas de bouton Rechercher ici, une suggestion acceptée s'applique aussitôt, comme le lieu. */}
+                    {/* submitOnSelect : pas de bouton Rechercher ici, une option métier acceptée (saisie libre ou suggestion) s'applique aussitôt, comme le lieu. */}
                     <SearchBar
                       initialQ={params.q}
                       initialLieuLabel={params.lieu_label}
                       franceEntiereIfEmpty
-                      submitOnSuggestion
+                      submitOnSelect
                       onSubmit={handleSearch}
                       onLieuChange={handleLieuChange}
                     />
@@ -387,7 +377,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                 initialQ={params.q}
                 initialLieuLabel={params.lieu_label}
                 franceEntiereIfEmpty
-                submitOnSuggestion
+                submitOnSelect
                 onSubmit={handleSearch}
                 onLieuChange={handleLieuChange}
               />

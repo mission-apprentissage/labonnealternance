@@ -5,6 +5,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
 import { getMistralClassificationBatch } from "@/common/apis/classification/classification-mistral.client"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 export type TJobClassification = {
@@ -104,7 +105,6 @@ export const getClassification = async (jobs: TJobClassification[]): Promise<(st
     await getDbCollection("cache_classification").insertMany(payloads)
   }
 
-  // Return results in the same order as input jobs
   return jobs.map((_job, index) => {
     const cached = cachedClassifications[index]
     if (cached) {
@@ -131,13 +131,10 @@ export const updateClassificationAndSynchronise = async ({
   // l'entrée d'un autre partenaire.
   const jobsFilter = { $or: jobs.map(({ partner_label, partner_job_id }) => ({ partner_label, partner_job_id })) }
 
-  // update cache_classification
   await getDbCollection("cache_classification").updateMany(jobsFilter, { $set: { human_verification: classification } })
-  // get jobs_partners to update offer_status to annulé if classification !== human_verification
   const scopeToUpdate = await getDbCollection("cache_classification")
     .find(jobsFilter, { projection: { partner_label: 1, partner_job_id: 1, classification: 1, human_verification: 1 } })
     .toArray()
-  // filter scopeToUpdate to keep only the jobs where classification !== human_verification
   const filteredScope = scopeToUpdate.filter(({ classification, human_verification }) => classification !== human_verification)
 
   for await (const entry of filteredScope) {
@@ -146,17 +143,11 @@ export const updateClassificationAndSynchronise = async ({
       await Promise.all([
         getDbCollection("jobs_partners").updateOne(
           { partner_label: entry.partner_label, partner_job_id: entry.partner_job_id },
-          {
-            $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
-            $push: {
-              offer_status_history: {
-                date: new Date(),
-                status: JOB_STATUS_ENGLISH.ANNULEE,
-                reason: "classification humaine non conforme",
-                granted_by: grantedBy,
-              },
-            },
-          }
+          buildJobStatusChangeUpdate({
+            status: JOB_STATUS_ENGLISH.ANNULEE,
+            reason: "classification humaine non conforme",
+            grantedBy,
+          })
         ),
         getDbCollection("computed_jobs_partners").updateOne(
           { partner_label: entry.partner_label, partner_job_id: entry.partner_job_id },
@@ -178,13 +169,9 @@ export const updateClassificationAndSynchronise = async ({
 
   if (filteredScope.length) {
     const filteredScopeFilter = { $or: filteredScope.map(({ partner_label, partner_job_id }) => ({ partner_label, partner_job_id })) }
-    // Ré-exécute la chaîne de traitement (validation + import vers jobs_partners) pour les seules
-    // offres concernées. `queued: true` pour ne pas bloquer l'appelant (endpoint admin HTTP ou
-    // CLI) sur un pipeline potentiellement long. Le nom doit être le nom JS exact de la fonction
-    // (`processJobPartnersWithFilter`, enregistrée dans simple-job-definitions.ts) — d'anciens
-    // noms kebab-case ("fill-computed-jobs-partners", "import-from-computed-to-jobs-partners") ne
-    // correspondaient à aucun handler enregistré et échouaient silencieusement en prod ("Job not
-    // found", confirmé via Sentry sur ~16 occurrences en 13 jours avant correctif).
+    // Ré-exécute validation + import vers jobs_partners pour ces seules offres ; `queued` pour ne pas
+    // bloquer l'appelant (admin HTTP ou CLI). `name` = nom JS exact du handler (simple-job-definitions.ts) :
+    // un nom kebab-case ne correspond à aucun handler et échoue en silence (« Job not found », constaté en prod).
     await addJob({ name: "processJobPartnersWithFilter", payload: filteredScopeFilter, queued: true })
   }
 }

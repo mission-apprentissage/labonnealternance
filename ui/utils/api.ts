@@ -55,7 +55,6 @@ export const ameliorerTexteOffreByToken = async (establishment_id: string, field
   apiPost("/formulaire/:establishment_id/offre/ameliorer-texte/by-token", { params: { establishment_id }, body: { field, text }, headers: { authorization: `Bearer ${token}` } })
 export const viewOffreDelegation = async (jobId: string, siret: string, token: string) =>
   apiPatch(`/formulaire/offre/:jobId/delegation/view`, { params: { jobId }, querystring: { siret_formateur: siret }, headers: { authorization: `Bearer ${token}` } })
-// need a function to cancel partner jobs : add the job_origin from the application in the url - refactor ui/pages/espace-pro/offre/[jobId]/[option].tsx needed
 export const cancelPartnerJob = async (id: string, token: string) => apiPost("/v2/_private/jobs/canceled/:id", { params: { id }, headers: { authorization: `Bearer ${token}` } })
 export const providedPartnerJob = async (id: string, token: string) => apiPost("/v2/_private/jobs/provided/:id", { params: { id }, headers: { authorization: `Bearer ${token}` } })
 // once offres_emploi_lba are definitly stored in jobs partners, we can move this call to /jobs/:jobId/cancel
@@ -227,9 +226,9 @@ export const getPrdvContext = async (cleMinistereEducatif: string, referrer: str
   } catch (error) {
     // Rend la main à Next avant tout traitement applicatif. Avec `cacheComponents`, un fetch non
     // mis en cache pendant le prerender renvoie une promesse suspendue qui rejette quand le
-    // prerender s'interrompt (digest HANGING_PROMISE_REJECTION) : capturée ici, elle produisait un
-    // event Sentry par requête sur /rdva — 20 467 sur 5 jours, 80 % du volume d'erreurs de l'UI
-    // (LBA-UI-5CVZZZZZZG501). unstable_rethrow relaie aussi notFound() et redirect().
+    // prerender s'interrompt (digest HANGING_PROMISE_REJECTION) : capturée ici, elle produirait un
+    // event Sentry par requête sur /rdva (mesuré : 20 467 sur 5 jours, 80 % du volume d'erreurs de
+    // l'UI, LBA-UI-5CVZZZZZZG501). unstable_rethrow relaie aussi notFound() et redirect().
     unstable_rethrow(error)
     const isExpectedError = error instanceof ApiError && error.context.statusCode >= 400 && error.context.statusCode < 500
     if (isExpectedError) {
