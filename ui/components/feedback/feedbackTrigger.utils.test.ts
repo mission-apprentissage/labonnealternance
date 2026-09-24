@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 
 import {
   findFeedbackFormForPath,
+  getFeedbackPageContext,
   incrementInteractionCount,
   isFeedbackInteraction,
   isFeedbackSuppressed,
@@ -11,6 +12,7 @@ import {
   rememberFeedbackCompleted,
   rememberFeedbackDismissed,
   takeAnnouncement,
+  toUrlParams,
 } from "./feedbackTrigger.utils"
 
 const memoryStorage = () => {
@@ -26,7 +28,7 @@ const brokenStorage = {
   },
 }
 
-const form = (slug: string, scope: string[]): IFeedbackFormPublic => ({ slug, version: 1, trigger: { minInteractions: 1, scope }, questions: [] })
+const form = (slug: string, scope: string[]): IFeedbackFormPublic => ({ slug, trigger: { minInteractions: 1, scope }, questions: [] })
 
 describe("findFeedbackFormForPath", () => {
   const forms = [form("recherche", ["/recherche"]), form("formations", ["/formation/:id/:titre", "/guide-alternant/*"])]
@@ -51,7 +53,7 @@ describe("isFeedbackSuppressed", () => {
   })
 
   it("ne repropose jamais un formulaire répondu", () => {
-    expect(isFeedbackSuppressed({ completedVersion: 1, dismissedAt: "2020-01-01T00:00:00Z" }, now)).toBe(true)
+    expect(isFeedbackSuppressed({ completedAt: "2026-01-01T00:00:00Z", dismissedAt: "2020-01-01T00:00:00Z" }, now)).toBe(true)
   })
 
   it("écarte un formulaire pendant 30 jours", () => {
@@ -64,9 +66,9 @@ describe("mémoire du navigateur", () => {
   it("retient l'écartement et la réponse", () => {
     const storage = memoryStorage()
     rememberFeedbackDismissed("recherche", new Date("2026-09-24T12:00:00Z"), storage)
-    rememberFeedbackCompleted("recherche", 2, storage)
+    rememberFeedbackCompleted("recherche", new Date("2026-09-24T13:00:00Z"), storage)
 
-    expect(readFeedbackMemory("recherche", storage)).toEqual({ dismissedAt: "2026-09-24T12:00:00.000Z", completedVersion: 2 })
+    expect(readFeedbackMemory("recherche", storage)).toEqual({ dismissedAt: "2026-09-24T12:00:00.000Z", completedAt: "2026-09-24T13:00:00.000Z" })
     expect(readFeedbackMemory("autre", storage)).toEqual({})
   })
 
@@ -110,5 +112,25 @@ describe("isFeedbackInteraction", () => {
   it("ignore l'en-tête, le pied de page, le bandeau de consentement et le widget", () => {
     expect(isFeedbackInteraction(target("interactive", "header"))).toBe(false)
     expect(isFeedbackInteraction(target("interactive", "launcher"))).toBe(false)
+  })
+})
+
+describe("contexte de page", () => {
+  const formation = form("formation", ["/recherche", "/formation/:id/:titre"])
+
+  it("donne le motif, les segments et les paramètres d'URL, filtrés", () => {
+    expect(getFeedbackPageContext(formation, "/formation/123/cap", new URLSearchParams("utm_source=news&romes=a&romes=b&token=secret"))).toEqual({
+      page: "/formation/:id/:titre",
+      path_params: { id: "123", titre: "cap" },
+      query: { utm_source: "news", romes: ["a", "b"] },
+    })
+  })
+
+  it("renvoie null hors des pages de déclenchement", () => {
+    expect(getFeedbackPageContext(formation, "/", new URLSearchParams())).toBeNull()
+  })
+
+  it("regroupe les clés répétées en tableau", () => {
+    expect(toUrlParams(new URLSearchParams("a=1&b=2&b=3"))).toEqual({ a: "1", b: ["2", "3"] })
   })
 })

@@ -1,7 +1,7 @@
 import type { IFeedbackQuestion } from "shared/models/feedback-form.model"
 import { describe, expect, it } from "vitest"
 
-import { formatAnswer, getCurrentQuestion, getPreviousQuestion, getStepProgress, isQuestionVisible } from "./feedbackWidget.utils"
+import { formatAnswer, getCurrentQuestion, getPreviousQuestion, getStepProgress, isQuestionVisible, toFeedbackAnswerList } from "./feedbackWidget.utils"
 
 const rating: IFeedbackQuestion = { id: "q1", type: "rating", label: "Utile ?", required: true, scale: "thumbs3", showIf: null }
 const multi: IFeedbackQuestion = {
@@ -40,6 +40,14 @@ describe("widget de feedback", () => {
     expect(getStepProgress([rating, multi, text], {}, rating)).toEqual({ step: 1, total: 2 })
     expect(getStepProgress([rating, multi, text], { q1: "negative" }, multi)).toEqual({ step: 2, total: 3 })
     expect(getStepProgress([rating, multi, text], { q1: "positive" }, multi)).toEqual({ step: 2, total: 2 })
+  })
+
+  it("met les réponses au format enregistré, dans l'ordre des questions", () => {
+    expect(toFeedbackAnswerList([rating, multi, text], { q3: "Trop lent", q1: "negative", q2: ["contact"] })).toEqual([
+      { question_id: "q1", choices: ["negative"] },
+      { question_id: "q2", choices: ["contact"] },
+      { question_id: "q3", text: "Trop lent" },
+    ])
   })
 
   it("affiche les libellés plutôt que les valeurs stockées", () => {

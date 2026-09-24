@@ -7,13 +7,14 @@ import { scopePatternsOverlap } from "shared/utils/ui-routes.utils"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
+const STARTED_RESPONSE = { answers: { $ne: [] } }
+
 /**
  * Liste des formulaires pour le back-office, du plus récemment modifié au plus ancien.
  *
  * `responses_count` ne compte que les réponses réellement commencées (au moins une question
- * répondue) : une réponse est créée dès l'affichage du widget, la compter donnerait le nombre
- * d'affichages et non de retours. La collection `feedback_responses` n'existe pas encore —
- * `$lookup` la traite alors comme vide, ce qui donne bien 0.
+ * répondue) : un parcours est créé dès l'ouverture du panneau, le compter donnerait le nombre
+ * d'ouvertures et non de retours.
  */
 function withResponsesCount(match: Filter<IFeedbackForm>): Document[] {
   return [
@@ -23,7 +24,7 @@ function withResponsesCount(match: Filter<IFeedbackForm>): Document[] {
       $lookup: {
         from: "feedback_responses",
         let: { slug: "$slug" },
-        pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$form_slug", "$$slug"] }, { $gt: [{ $size: { $objectToArray: "$answers" } }, 0] }] } } }, { $count: "n" }],
+        pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$form_slug", "$$slug"] }, { $gt: [{ $size: "$answers" }, 0] }] } } }, { $count: "n" }],
         as: "rc",
       },
     },
@@ -65,7 +66,6 @@ export async function createFeedbackForm(input: IFeedbackFormInput, createdBy: s
     ...input,
     _id: new ObjectId(),
     status: "draft",
-    version: 1,
     created_at: now,
     updated_at: now,
     created_by: createdBy,
@@ -76,15 +76,23 @@ export async function createFeedbackForm(input: IFeedbackFormInput, createdBy: s
 }
 
 /**
- * Met à jour la définition d'un formulaire.
+ * Met à jour la définition d'un formulaire, en place.
  *
- * Un brouillon est mis à jour en place. Le versioning d'un formulaire déjà activé arrivera avec
- * l'activation : tant que le seul statut atteignable est `draft`, il n'y a rien à versionner.
+ * Refusé dès qu'il a des réponses : elles doivent rester rattachées aux questions auxquelles les
+ * usagers ont répondu. Les modifications s'enregistrent alors dans un nouveau formulaire, sous un
+ * autre slug, l'original restant en l'état. Un formulaire actif reste soumis aux règles de
+ * l'activation (cf. `assertActivable`).
  */
 export async function updateFeedbackForm(slug: string, input: Omit<IFeedbackFormInput, "slug">): Promise<IFeedbackForm> {
   const form = await getFeedbackFormBySlug(slug)
   if (form.status === "archived") {
     throw conflict("Un formulaire archivé ne peut plus être modifié")
+  }
+  if (await getDbCollection("feedback_responses").countDocuments({ form_slug: slug, ...STARTED_RESPONSE }, { limit: 1 })) {
+    throw conflict("Ce formulaire a déjà des réponses : enregistrez vos modifications dans un nouveau formulaire")
+  }
+  if (form.status === "active") {
+    await assertActivable({ ...form, ...input }, "Modification impossible")
   }
 
   const update = { ...input, updated_at: new Date() }
@@ -96,14 +104,16 @@ export async function updateFeedbackForm(slug: string, input: Omit<IFeedbackForm
  * Supprime définitivement un brouillon ou un formulaire archivé. Un formulaire actif ou inactif
  * doit d'abord être archivé : la suppression ne peut pas retirer un widget encore en service.
  *
- * TODO à l'arrivée de `feedback_responses` : supprimer aussi les réponses d'un archivé (ou refuser
- * s'il en a), sinon elles resteraient orphelines.
+ * Ses affichages et ses réponses partent avec lui : sans formulaire, ils ne seraient plus lisibles.
  */
 export async function deleteFeedbackForm(slug: string): Promise<void> {
   const form = await getFeedbackFormBySlug(slug)
   if (form.status !== "draft" && form.status !== "archived") {
     throw conflict("Seul un brouillon ou un formulaire archivé peut être supprimé")
   }
+  await getDbCollection("feedback_responses").deleteMany({ form_slug: slug })
+  await getDbCollection("feedback_displays").deleteMany({ form_slug: slug })
+  await getDbCollection("feedback_display_counts").deleteMany({ form_slug: slug })
   await getDbCollection("feedback_forms").deleteOne({ _id: form._id })
 }
 
@@ -135,9 +145,15 @@ export async function archiveFeedbackForm(slug: string, grantedBy: string): Prom
  */
 export async function activateFeedbackForm(slug: string, grantedBy: string): Promise<void> {
   const form = await getFeedbackFormBySlug(slug)
+  await assertActivable(form, "Activation impossible")
+  await transitionFeedbackFormStatus(slug, "active", grantedBy, form)
+}
+
+/** Ce qu'un formulaire actif doit respecter : être publiable et ne partager aucune page avec un autre formulaire actif. */
+async function assertActivable(form: IFeedbackForm, prefix: string): Promise<void> {
   const publishable = ZFeedbackFormPublishable.safeParse({ slug: form.slug, title: form.title, trigger: form.trigger, questions: form.questions })
   if (!publishable.success) {
-    throw badRequest(`Activation impossible : ${publishable.error.issues[0].message}`)
+    throw badRequest(`${prefix} : ${publishable.error.issues[0].message}`)
   }
 
   // peu de formulaires actifs à la fois : le chevauchement des motifs se calcule ici plutôt qu'en requête
@@ -147,11 +163,9 @@ export async function activateFeedbackForm(slug: string, grantedBy: string): Pro
   for (const concurrent of actives) {
     const overlapping = concurrent.trigger.scope.filter((path) => form.trigger.scope.some((own) => scopePatternsOverlap(own, path)))
     if (overlapping.length) {
-      throw conflict(`Activation impossible : le formulaire « ${concurrent.title} » est déjà actif sur ${overlapping.join(", ")}`)
+      throw conflict(`${prefix} : le formulaire « ${concurrent.title} » est déjà actif sur ${overlapping.join(", ")}`)
     }
   }
-
-  await transitionFeedbackFormStatus(slug, "active", grantedBy, form)
 }
 
 /** Désactive un formulaire actif : il n'est plus affiché, reste modifiable et réactivable. */
@@ -162,7 +176,7 @@ export async function deactivateFeedbackForm(slug: string, grantedBy: string): P
 /** Formulaires actifs, réduits à ce qu'en voit le widget public. */
 export async function listActiveFeedbackForms(): Promise<IFeedbackFormPublic[]> {
   return getDbCollection("feedback_forms")
-    .find({ status: "active" }, { projection: { _id: 0, slug: 1, version: 1, trigger: 1, questions: 1 } })
+    .find({ status: "active" }, { projection: { _id: 0, slug: 1, trigger: 1, questions: 1 } })
     .sort({ slug: 1 })
     .toArray() as Promise<IFeedbackFormPublic[]>
 }

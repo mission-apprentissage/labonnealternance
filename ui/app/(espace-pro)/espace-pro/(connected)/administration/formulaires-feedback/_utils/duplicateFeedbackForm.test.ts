@@ -1,7 +1,7 @@
 import type { IFeedbackFormInput } from "shared/models/feedback-form.model"
 import { describe, expect, it } from "vitest"
 
-import { toDuplicateFormInput } from "./duplicateFeedbackForm"
+import { nextFeedbackFormSlug, toDuplicateFormInput, toNewFormFromAnswered } from "./duplicateFeedbackForm"
 
 const source: IFeedbackFormInput = {
   slug: "fiche_entreprise",
@@ -31,5 +31,24 @@ describe("toDuplicateFormInput", () => {
     const { trigger } = toDuplicateFormInput({ ...source, trigger: { minInteractions: 1, scope: ["/page-supprimee"] } })
 
     expect(trigger.scope).toEqual(["/page-supprimee"])
+  })
+})
+
+describe("nextFeedbackFormSlug", () => {
+  it("ajoute ou incrémente un suffixe numérique", () => {
+    expect(nextFeedbackFormSlug("recherche")).toBe("recherche_2")
+    expect(nextFeedbackFormSlug("recherche_2")).toBe("recherche_3")
+    expect(nextFeedbackFormSlug("recherche_v1")).toBe("recherche_v1_2")
+  })
+
+  it("reste dans la limite de 80 caractères", () => {
+    expect(nextFeedbackFormSlug("a".repeat(80))).toBe(`${"a".repeat(78)}_2`)
+  })
+})
+
+describe("toNewFormFromAnswered", () => {
+  it("reprend tout sauf le slug", () => {
+    const source = { slug: "recherche", title: "Recherche", trigger: { minInteractions: 2, scope: ["/recherche"] }, questions: [] }
+    expect(toNewFormFromAnswered(source)).toEqual({ ...source, slug: "recherche_2" })
   })
 })

@@ -79,17 +79,16 @@ export function useFeedbackTrigger(): IFeedbackTrigger {
   const ready = form !== null && readInteractionCount(form.slug) >= form.trigger.minInteractions && !isFeedbackSuppressed(readFeedbackMemory(form.slug))
 
   const slug = form?.slug
-  const version = form?.version
   const dismiss = useCallback(() => {
     if (!slug) return
     rememberFeedbackDismissed(slug)
     refresh()
   }, [slug])
   const complete = useCallback(() => {
-    if (!slug || version === undefined) return
-    rememberFeedbackCompleted(slug, version)
+    if (!slug) return
+    rememberFeedbackCompleted(slug)
     refresh()
-  }, [slug, version])
+  }, [slug])
 
   return { form, ready, dismiss, complete }
 }

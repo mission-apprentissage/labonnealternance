@@ -80,7 +80,6 @@ export function FeedbackFormDetail() {
 
   const metadata = [
     { label: "Slug", value: <Box component="code">{form.slug}</Box> },
-    { label: "Version", value: form.version },
     { label: "Pages", value: form.trigger.scope?.length ? form.trigger.scope.join(", ") : "—" },
     { label: "Déclenchement", value: `après ${form.trigger.minInteractions} interaction${(form.trigger.minInteractions ?? 1) > 1 ? "s" : ""}` },
     { label: "Créé le", value: dayjs(form.created_at).format("DD/MM/YYYY") },

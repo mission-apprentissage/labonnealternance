@@ -84,7 +84,7 @@ export function FeedbackFormPreview() {
             </Typography>
             <FeedbackFormStatusBadge status={form.status} />
             <Typography component="span" className={fr.cx("fr-text--sm")} sx={{ mb: 0, color: fr.colors.decisions.text.mention.grey.default }}>
-              · v{form.version} ·{" "}
+              ·{" "}
               <Box component="code" sx={{ fontFamily: "monospace" }}>
                 {form.slug}
               </Box>

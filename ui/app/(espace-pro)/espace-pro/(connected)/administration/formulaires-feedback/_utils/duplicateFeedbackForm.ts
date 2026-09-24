@@ -18,3 +18,21 @@ export const toDuplicateFormInput = (source: { title?: string; trigger?: unknown
   const title = `${(source.title ?? "").slice(0, TITLE_MAX_LENGTH - COPY_SUFFIX.length)}${COPY_SUFFIX}`
   return ZFeedbackFormFields.parse({ slug: toSnakeCaseSlug(title), title, trigger: source.trigger, questions: source.questions })
 }
+
+const SLUG_MAX_LENGTH = 80
+
+/** `recherche` → `recherche_2`, `recherche_2` → `recherche_3`, dans la limite de longueur d'un slug. */
+export function nextFeedbackFormSlug(slug: string): string {
+  const match = slug.match(/^(.*)_(\d+)$/)
+  const [base, next] = match ? [match[1], Number(match[2]) + 1] : [slug, 2]
+  const suffix = `_${next}`
+  return `${base.slice(0, SLUG_MAX_LENGTH - suffix.length)}${suffix}`
+}
+
+/**
+ * Valeurs de départ quand on modifie un formulaire qui a déjà des réponses : tout est repris, seul
+ * le slug change. Les modifications partent dans un nouveau formulaire, l'original garde ses
+ * réponses et son statut.
+ */
+export const toNewFormFromAnswered = (source: { slug?: string; title?: string; trigger?: unknown; questions?: unknown }): IFeedbackFormInput =>
+  ZFeedbackFormFields.parse({ slug: nextFeedbackFormSlug(source.slug ?? ""), title: source.title, trigger: source.trigger, questions: source.questions })

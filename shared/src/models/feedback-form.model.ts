@@ -126,6 +126,23 @@ export function getFeedbackQuestionChoices(question: IFeedbackQuestion): readonl
   }
 }
 
+/** Réponses d'un parcours, par id de question : une valeur (note, choix unique, texte) ou plusieurs (choix multiple). */
+export type IFeedbackAnswersByQuestion = Record<string, string | string[]>
+
+/** Une question conditionnelle n'est posée que si la question visée a reçu la réponse attendue. */
+export function isFeedbackQuestionVisible(question: IFeedbackQuestion, answers: IFeedbackAnswersByQuestion): boolean {
+  if (!question.showIf) return true
+  const answer = answers[question.showIf.questionId]
+  if (answer === undefined) return false
+  const expected = [question.showIf.equals].flat()
+  return [answer].flat().some((value) => expected.includes(value))
+}
+
+/** Question à poser maintenant : la première visible, ni répondue ni passée. `undefined` quand le parcours est terminé. */
+export function getFeedbackCurrentQuestion(questions: IFeedbackQuestion[], answers: IFeedbackAnswersByQuestion, skipped: string[]): IFeedbackQuestion | undefined {
+  return questions.find((question) => isFeedbackQuestionVisible(question, answers) && !(question.id in answers) && !skipped.includes(question.id))
+}
+
 /**
  * Ce qui empêche la condition d'affichage d'une question de fonctionner, ou `null` si elle est
  * valable (ou absente). Une condition ne peut viser qu'une question posée *avant* : le widget pose
@@ -241,7 +258,6 @@ export const ZFeedbackFormPublishable = ZFeedbackFormInput.superRefine((data, ct
 export const ZFeedbackForm = ZFeedbackFormFields.extend({
   _id: zObjectId,
   status: ZFeedbackFormStatus,
-  version: z.number().int().positive(),
   created_at: z.coerce.date<Date>(),
   updated_at: z.coerce.date<Date>(),
   // email de l'admin ayant créé le formulaire (membre de l'équipe, jamais un usager)
@@ -264,7 +280,7 @@ export type IFeedbackFormForAdmin = z.output<typeof ZFeedbackFormForAdmin>
 export type IFeedbackFormForAdminJSON = Jsonify<IFeedbackFormForAdmin>
 
 /** Ce que le widget public reçoit d'un formulaire actif : rien de ce qui est interne au back-office (titre, historique, auteur). */
-export const ZFeedbackFormPublic = ZFeedbackForm.pick({ slug: true, version: true, trigger: true, questions: true })
+export const ZFeedbackFormPublic = ZFeedbackForm.pick({ slug: true, trigger: true, questions: true })
 export type IFeedbackFormPublic = z.output<typeof ZFeedbackFormPublic>
 
 export default {

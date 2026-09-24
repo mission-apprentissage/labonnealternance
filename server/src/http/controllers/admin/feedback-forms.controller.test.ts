@@ -38,7 +38,7 @@ describe("admin feedback-forms controller", () => {
     expect(response.statusCode).toEqual(403)
   })
 
-  it("crée un formulaire en brouillon, en version 1, tracé au nom de l'admin", async () => {
+  it("crée un formulaire en brouillon, tracé au nom de l'admin", async () => {
     const { bearerToken, user } = await loginAsAdmin()
 
     const response = await createForm(bearerToken)
@@ -48,13 +48,11 @@ describe("admin feedback-forms controller", () => {
       slug: "page_entreprise_v1",
       title: "Fiche entreprise — utilité des informations",
       status: "draft",
-      version: 1,
       created_by: user.email,
     })
 
     const saved = await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" })
     expect(saved?.status).toEqual("draft")
-    expect(saved?.version).toEqual(1)
     expect(saved?.status_history).toEqual([{ status: "draft", date: expect.any(Date), granted_by: user.email }])
   })
 
@@ -192,7 +190,7 @@ describe("admin feedback-forms controller", () => {
     expect(missing.statusCode).toEqual(404)
   })
 
-  it("met à jour un brouillon en place, sans changer sa version", async () => {
+  it("met à jour un brouillon en place", async () => {
     const { bearerToken } = await loginAsAdmin()
     await createForm(bearerToken)
 
@@ -208,7 +206,6 @@ describe("admin feedback-forms controller", () => {
     expect(saved).toMatchObject({
       title: "Titre corrigé",
       status: "draft",
-      version: 1,
       trigger: { minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] },
     })
   })
@@ -421,6 +418,23 @@ describe("admin feedback-forms controller", () => {
       expect(response.statusCode).toEqual(200)
     })
 
+    it("refuse de modifier un formulaire actif pour lui retirer ses questions ou le poser sur la page d'un autre", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken, withQuestion)
+      await post(bearerToken, "page_entreprise_v1", "activate")
+      await createForm(bearerToken, { ...withQuestion, slug: "recherche", title: "Recherche", trigger: { minInteractions: 1, scope: ["/recherche"] } })
+      await post(bearerToken, "recherche", "activate")
+      const put = (body: Omit<IFeedbackFormInput, "slug">) => httpClient().inject({ method: "PUT", path: "/api/admin/feedback-forms/recherche", headers: bearerToken, body })
+
+      const emptied = await put({ title: "Recherche", trigger: { minInteractions: 1, scope: ["/recherche"] }, questions: [] })
+      expect(emptied.statusCode).toEqual(400)
+      expect(emptied.json().message).toContain("Au moins une question est nécessaire")
+
+      const moved = await put({ title: "Recherche", trigger: { minInteractions: 1, scope: ["/formation/*"] }, questions: withQuestion.questions })
+      expect(moved.statusCode).toEqual(409)
+      expect(moved.json().message).toContain("Fiche entreprise — utilité des informations")
+    })
+
     it("désactive un formulaire actif, puis permet de le réactiver", async () => {
       const { bearerToken } = await loginAsAdmin()
       await createForm(bearerToken, withQuestion)
@@ -441,6 +455,52 @@ describe("admin feedback-forms controller", () => {
       const response = await post(bearerToken, "page_entreprise_v1", "deactivate")
 
       expect(response.statusCode).toEqual(409)
+    })
+  })
+  describe("formulaire qui a des réponses", () => {
+    const withQuestion: IFeedbackFormInput = { ...generalInfoOnly, questions: [{ id: "q1", type: "rating", label: "Utile ?", required: true, scale: "thumbs3" }] }
+
+    const answerOnce = async (headers: Record<string, string>) => {
+      await createForm(headers, withQuestion)
+      await httpClient().inject({ method: "POST", path: "/api/admin/feedback-forms/page_entreprise_v1/activate", headers })
+      const context = { page: "/formation/:id/:intitule-formation", path_params: { id: "1", "intitule-formation": "cap" }, query: {} }
+      const { display_id } = (await httpClient().inject({ method: "POST", path: "/api/feedback-forms/page_entreprise_v1/displays", body: context })).json()
+      const { response_id, token } = (await httpClient().inject({ method: "POST", path: "/api/feedback-forms/page_entreprise_v1/responses", body: { display_id } })).json()
+      await httpClient().inject({
+        method: "PUT",
+        path: `/api/feedback-responses/${response_id}`,
+        body: { token, answers: [{ question_id: "q1", choices: ["positive"] }], skipped: [] },
+      })
+    }
+
+    it("compte ses réponses et refuse de le modifier", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await answerOnce(bearerToken)
+
+      const detail = await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms/page_entreprise_v1", headers: bearerToken })
+      expect(detail.json().responses_count).toEqual(1)
+
+      const response = await httpClient().inject({
+        method: "PUT",
+        path: "/api/admin/feedback-forms/page_entreprise_v1",
+        headers: bearerToken,
+        body: { title: "Autre titre", trigger: withQuestion.trigger, questions: withQuestion.questions },
+      })
+      expect(response.statusCode).toEqual(409)
+      expect(response.json().message).toContain("nouveau formulaire")
+    })
+
+    it("supprime ses affichages et ses réponses avec lui", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await answerOnce(bearerToken)
+      await httpClient().inject({ method: "POST", path: "/api/admin/feedback-forms/page_entreprise_v1/archive", headers: bearerToken })
+
+      const response = await httpClient().inject({ method: "DELETE", path: "/api/admin/feedback-forms/page_entreprise_v1", headers: bearerToken })
+
+      expect(response.statusCode).toEqual(200)
+      expect(await getDbCollection("feedback_responses").countDocuments({})).toEqual(0)
+      expect(await getDbCollection("feedback_displays").countDocuments({})).toEqual(0)
+      expect(await getDbCollection("feedback_display_counts").countDocuments({})).toEqual(0)
     })
   })
 })

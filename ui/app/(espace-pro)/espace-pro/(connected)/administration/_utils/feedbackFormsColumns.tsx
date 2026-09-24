@@ -69,13 +69,6 @@ export function getFeedbackFormsColumns({
       cell: (info) => <FeedbackFormStatusBadge status={info.getValue<IFeedbackFormStatus>()} />,
     },
     {
-      id: "version",
-      header: "Version",
-      accessorKey: "version",
-      size: 80,
-      cell: (info) => `v${info.getValue<number>()}`,
-    },
-    {
       id: "responses_count",
       header: "Réponses",
       accessorKey: "responses_count",

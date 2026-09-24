@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { matchesKnownUiRoute, matchesScope, scopePatternsOverlap } from "./ui-routes.utils.js"
+import { extractScopeParams, getScopeParamNames, matchesKnownUiRoute, matchesScope, scopePatternsOverlap } from "./ui-routes.utils.js"
 
 describe("matchesKnownUiRoute", () => {
   it("accepte un chemin littéral existant", () => {
@@ -103,5 +103,29 @@ describe("scopePatternsOverlap", () => {
     expect(scopePatternsOverlap("/emploi/matcha/:id/:titre", "/emploi/lba/:id/:titre")).toBe(false)
     expect(scopePatternsOverlap("/guide/a/*", "/guide/b/*")).toBe(false)
     expect(scopePatternsOverlap("/guide/a/*", "/guide")).toBe(false)
+  })
+})
+
+describe("extractScopeParams", () => {
+  it("donne les valeurs des segments :param", () => {
+    expect(extractScopeParams("/formation/:id/:titre", "/formation/123/cap-cuisine")).toEqual({ id: "123", titre: "cap-cuisine" })
+    expect(extractScopeParams("/recherche", "/recherche")).toEqual({})
+  })
+
+  it("range le reste du chemin sous * et décode les segments", () => {
+    expect(extractScopeParams("/guide-alternant/*", "/guide-alternant/a/b%C3%A9")).toEqual({ "*": "a/bé" })
+    expect(extractScopeParams("/guide-alternant/*", "/guide-alternant")).toEqual({})
+  })
+
+  it("renvoie null hors du motif", () => {
+    expect(extractScopeParams("/formation/:id/:titre", "/formation/123")).toBeNull()
+  })
+})
+
+describe("getScopeParamNames", () => {
+  it("liste les segments :param et * final", () => {
+    expect(getScopeParamNames("/formation/:id/:titre")).toEqual(["id", "titre"])
+    expect(getScopeParamNames("/guide-alternant/*")).toEqual(["*"])
+    expect(getScopeParamNames("/recherche")).toEqual([])
   })
 })

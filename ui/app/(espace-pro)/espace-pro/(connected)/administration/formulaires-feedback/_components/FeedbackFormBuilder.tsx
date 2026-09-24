@@ -59,14 +59,15 @@ const validate = (values: IFeedbackFormDraft): FormikErrors<IFeedbackFormDraft> 
 /**
  * `initialValues` pré-remplit le formulaire : en modification, c'est le formulaire enregistré ; en
  * création, c'est une copie à enregistrer comme nouveau brouillon (duplication). Il doit être
- * mémoïsé par l'appelant, l'effet de réinitialisation en dépend.
+ * mémoïsé par l'appelant, l'effet de réinitialisation en dépend. `keepSlug` : le slug fourni ne
+ * suit pas le titre (nouveau formulaire tiré d'un formulaire qui a des réponses).
  */
-export function FeedbackFormBuilder({ mode, initialValues }: { mode: "create" | "edit"; initialValues?: IFeedbackFormInput }) {
+export function FeedbackFormBuilder({ mode, initialValues, keepSlug = false }: { mode: "create" | "edit"; initialValues?: IFeedbackFormInput; keepSlug?: boolean }) {
   const isEdit = mode === "edit"
   const router = useRouter()
   const toast = useToast()
   // tant que le slug n'a pas été édité à la main, il suit le titre
-  const [slugTouched, setSlugTouched] = useState(isEdit)
+  const [slugTouched, setSlugTouched] = useState(isEdit || keepSlug)
 
   const formik = useFormik<IFeedbackFormDraft>({
     initialValues: initialValues ? toFeedbackFormDraft(initialValues) : createEmptyForm(),
@@ -100,9 +101,9 @@ export function FeedbackFormBuilder({ mode, initialValues }: { mode: "create" | 
   useEffect(() => {
     if (!isEdit) {
       resetForm({ values: initialValues ? toFeedbackFormDraft(initialValues) : createEmptyForm() })
-      setSlugTouched(false)
+      setSlugTouched(keepSlug)
     }
-  }, [isEdit, resetForm, initialValues])
+  }, [isEdit, resetForm, initialValues, keepSlug])
 
   return (
     <FormikProvider value={formik}>

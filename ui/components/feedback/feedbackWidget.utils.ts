@@ -1,5 +1,6 @@
 import type { IFeedbackQuestion } from "shared/models/feedback-form.model"
-import { FEEDBACK_RATING_OPTIONS, getFeedbackQuestionChoices } from "shared/models/feedback-form.model"
+import { FEEDBACK_RATING_OPTIONS, getFeedbackQuestionChoices, isFeedbackQuestionVisible } from "shared/models/feedback-form.model"
+import type { IFeedbackAnswer } from "shared/models/feedback-response.model"
 
 /** Valeur d'une réponse : une option (ou note) pour un choix unique, plusieurs pour un choix multiple, du texte libre. */
 export type IFeedbackAnswerValue = string | string[]
@@ -15,26 +16,8 @@ const RATING_ICONS = {
 /** Les trois notes rapides, dans l'ordre d'affichage, avec leur icône. */
 export const RATING_OPTIONS = FEEDBACK_RATING_OPTIONS.map((option) => ({ ...option, iconId: RATING_ICONS[option.value] }))
 
-/**
- * Affichage conditionnel : une question dont la condition n'est pas remplie est retirée de
- * l'enchaînement. Le back-office ne permet pas encore d'en créer, mais le widget respecte déjà
- * celles qui existeraient dans une définition.
- */
-export function isQuestionVisible(question: IFeedbackQuestion, answers: IFeedbackAnswers): boolean {
-  if (!question.showIf) return true
-  const answer = answers[question.showIf.questionId]
-  if (answer === undefined) return false
-  const expected = [question.showIf.equals].flat()
-  return [answer].flat().some((value) => expected.includes(value))
-}
-
-/**
- * Question à poser maintenant : la première, dans l'ordre, qui est visible et n'a été ni répondue
- * ni passée. `undefined` quand le parcours est terminé.
- */
-export function getCurrentQuestion(questions: IFeedbackQuestion[], answers: IFeedbackAnswers, skipped: string[]): IFeedbackQuestion | undefined {
-  return questions.find((question) => isQuestionVisible(question, answers) && !(question.id in answers) && !skipped.includes(question.id))
-}
+// règles partagées avec le serveur, qui valide les réponses reçues
+export { getFeedbackCurrentQuestion as getCurrentQuestion, isFeedbackQuestionVisible as isQuestionVisible } from "shared/models/feedback-form.model"
 
 /**
  * Question sur laquelle « Retour » ramène : la dernière, avant la question courante, qui a été
@@ -50,8 +33,17 @@ export function getPreviousQuestion(questions: IFeedbackQuestion[], answers: IFe
  * conditionnelle ne compte qu'une fois sa condition remplie, le total peut donc augmenter en route.
  */
 export function getStepProgress(questions: IFeedbackQuestion[], answers: IFeedbackAnswers, current: IFeedbackQuestion): { step: number; total: number } {
-  const asked = questions.filter((question) => isQuestionVisible(question, answers))
+  const asked = questions.filter((question) => isFeedbackQuestionVisible(question, answers))
   return { step: asked.findIndex((question) => question.id === current.id) + 1, total: asked.length }
+}
+
+/** Réponses du widget au format enregistré : un texte, ou des choix toujours en tableau. */
+export function toFeedbackAnswerList(questions: IFeedbackQuestion[], answers: IFeedbackAnswers): IFeedbackAnswer[] {
+  return questions.flatMap((question): IFeedbackAnswer[] => {
+    const value = answers[question.id]
+    if (value === undefined) return []
+    return question.type === "text" ? [{ question_id: question.id, text: String(value) }] : [{ question_id: question.id, choices: [value].flat() }]
+  })
 }
 
 /** Réponse telle qu'un humain la lit : libellés plutôt que valeurs techniques. */

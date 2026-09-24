@@ -6,6 +6,7 @@ import { Box } from "@mui/material"
 import { useEffect, useId, useRef, useState } from "react"
 import { FeedbackWidget } from "./FeedbackWidget"
 import { takeAnnouncement } from "./feedbackTrigger.utils"
+import { useFeedbackSession } from "./useFeedbackSession"
 import { useFeedbackTrigger } from "./useFeedbackTrigger"
 
 /**
@@ -20,6 +21,7 @@ import { useFeedbackTrigger } from "./useFeedbackTrigger"
  */
 export function FeedbackLauncher() {
   const { form, ready, dismiss, complete } = useFeedbackTrigger()
+  const session = useFeedbackSession(form, ready)
   const [open, setOpen] = useState(false)
   const [announcement, setAnnouncement] = useState("")
   const panelId = useId()
@@ -48,6 +50,7 @@ export function FeedbackLauncher() {
     if (!form) return
     setOpen(true)
     setOpenSlug(form.slug)
+    session.start()
     requestAnimationFrame(() => panelRef.current?.querySelector<HTMLElement>("[data-feedback-heading]")?.focus())
   }
 
@@ -94,8 +97,9 @@ export function FeedbackLauncher() {
               variant="floating"
               questions={form.questions}
               onClose={closePanel}
-              onProgress={({ status }) => {
-                if (status === "completed") complete()
+              onProgress={(progress) => {
+                session.save(progress)
+                if (progress.status === "completed") complete()
               }}
             />
           </Box>

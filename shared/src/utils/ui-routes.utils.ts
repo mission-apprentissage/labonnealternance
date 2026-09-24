@@ -82,3 +82,36 @@ export function scopePatternsOverlap(a: string, b: string): boolean {
   if (right.isPrefix) return left.segments.length >= right.segments.length && compatible(right.segments.length)
   return left.segments.length === right.segments.length && compatible(left.segments.length)
 }
+
+/**
+ * Valeurs des segments `:param` du motif pour la page courante : `/formation/:id/:titre` sur
+ * `/formation/123/cap` donne `{ id: "123", titre: "cap" }`. Avec un `*` final, le reste du chemin
+ * va sous la clé `*`. `null` si le motif ne couvre pas la page.
+ */
+/** Clés que `extractScopeParams` peut produire pour ce motif : ses segments `:param`, plus `*` s'il couvre une sous-arborescence. */
+export function getScopeParamNames(pattern: string): string[] {
+  const { segments, isPrefix } = parseScopePattern(pattern)
+  return [...segments.filter(isParam).map((segment) => segment.slice(1)), ...(isPrefix ? ["*"] : [])]
+}
+
+const safeDecode = (segment: string) => {
+  try {
+    return decodeURIComponent(segment)
+  } catch {
+    return segment
+  }
+}
+
+export function extractScopeParams(pattern: string, pathname: string): Record<string, string> | null {
+  if (!matchesScope(pattern, pathname)) return null
+  const { segments, isPrefix } = parseScopePattern(pattern)
+  const pathSegments = toSegments(pathname)
+  const params: Record<string, string> = {}
+  segments.forEach((segment, index) => {
+    if (isParam(segment)) params[segment.slice(1)] = safeDecode(pathSegments[index])
+  })
+  if (isPrefix && pathSegments.length > segments.length) {
+    params["*"] = pathSegments.slice(segments.length).map(safeDecode).join("/")
+  }
+  return params
+}
