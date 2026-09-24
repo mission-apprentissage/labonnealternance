@@ -37,6 +37,10 @@ const CLOSED_STATUSES = [JOB_STATUS_ENGLISH.POURVUE, JOB_STATUS_ENGLISH.ANNULEE]
  * date de clôture** : des écritures ultérieures (mise à jour du SIRET, de l'OPCO, des coordonnées du
  * recruteur) l'ont rafraîchie sans changer le statut. `granted_by` marque donc ces entrées comme
  * reconstituées, pour qu'une analyse puisse les exclure.
+ *
+ * `bypassDocumentValidation` sur chaque écriture : hors production le validateur est en `error`, et
+ * des offres anciennes ne respectent pas le schéma actuel (`apply_url` absent, par exemple). Le
+ * contrôle porterait sur tout le document, pas sur le seul champ modifié ici.
  */
 export const up = async () => {
   await backfillClosedOffersWithoutComment()
@@ -71,13 +75,17 @@ const backfillClosedOffersWithoutComment = async () => {
 
   // Pipeline d'update : la trace dépend de champs du document (statut, updated_at), qu'un update
   // classique ne sait pas lire.
-  const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(filter, [
-    {
-      $set: {
-        offer_status_history: [{ date: "$updated_at", status: "$offer_status", reason: NO_REASON_RECORDED, granted_by: GRANTED_BY }],
+  const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(
+    filter,
+    [
+      {
+        $set: {
+          offer_status_history: [{ date: "$updated_at", status: "$offer_status", reason: NO_REASON_RECORDED, granted_by: GRANTED_BY }],
+        },
       },
-    },
-  ])
+    ],
+    { bypassDocumentValidation: true }
+  )
 
   logger.info(`volet 1 — ${modifiedCount}/${matchedCount} offres complétées`)
 }
@@ -108,7 +116,7 @@ const requalifyFluxRemovalReason = async () => {
   const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(
     filter,
     { $set: { "offer_status_history.$[entry].reason": JUNE_2026_BUG_REASON } },
-    { arrayFilters: [{ "entry.reason": FLUX_REMOVAL_REASON, "entry.date": { $lt: JUNE_2026_BUG_CUTOFF } }] }
+    { arrayFilters: [{ "entry.reason": FLUX_REMOVAL_REASON, "entry.date": { $lt: JUNE_2026_BUG_CUTOFF } }], bypassDocumentValidation: true }
   )
 
   logger.info(`volet 2 — ${modifiedCount}/${matchedCount} offres requalifiées en "${JUNE_2026_BUG_REASON}"`)
@@ -142,15 +150,19 @@ const recordManualClosures = async () => {
     // l'historique d'un document où le champ serait absent. Le validateur de collection ne l'interdit
     // pas en production (validationAction "warn", cf. configureDbSchemaValidation), et la protection
     // est gratuite face à une perte de donnée.
-    const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(filter, [
-      {
-        $set: {
-          offer_status_history: {
-            $concatArrays: [{ $ifNull: ["$offer_status_history", []] }, [{ date: "$updated_at", status, reason: MANUAL_CLOSURE_REASON, granted_by: GRANTED_BY }]],
+    const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(
+      filter,
+      [
+        {
+          $set: {
+            offer_status_history: {
+              $concatArrays: [{ $ifNull: ["$offer_status_history", []] }, [{ date: "$updated_at", status, reason: MANUAL_CLOSURE_REASON, granted_by: GRANTED_BY }]],
+            },
           },
         },
-      },
-    ])
+      ],
+      { bypassDocumentValidation: true }
+    )
 
     logger.info(`volet 3 — ${modifiedCount}/${matchedCount} offres ${status} tracées en "${MANUAL_CLOSURE_REASON}"`)
   }
