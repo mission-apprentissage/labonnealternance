@@ -268,7 +268,7 @@ export default function AlternanceMetiers() {
               <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} aria-label={`${m.metier} - voir les offres d'alternance`} style={cardLinkStyle}>
                 <Box sx={listicleCardSx}>
                   <Box>
-                    <Typography sx={cardTitleSx}>{m.metier}</Typography>
+                    <Typography sx={cardTitleSx}>{m.metier === "Data analyst" ? <span lang="en">Data analyst</span> : m.metier}</Typography>
                   </Box>
                   <ArrowRightLine sx={cardArrowSx} />
                 </Box>
