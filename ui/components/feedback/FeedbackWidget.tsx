@@ -2,13 +2,12 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import { Box, Typography } from "@mui/material"
 import { useEffect, useId, useRef, useState } from "react"
 import type { IFeedbackQuestion } from "shared/models/feedback-form.model"
 
 import type { IFeedbackAnswers, IFeedbackAnswerValue } from "./feedbackWidget.utils"
-import { getCurrentQuestion, RATING_OPTIONS } from "./feedbackWidget.utils"
+import { getCurrentQuestion, getPreviousQuestion, getStepProgress, RATING_OPTIONS } from "./feedbackWidget.utils"
 
 export type IFeedbackWidgetProgress = {
   answers: IFeedbackAnswers
@@ -24,36 +23,44 @@ type Props = {
    * qui le positionne.
    */
   variant?: "inline" | "floating"
-  /** Appelé après chaque réponse, question passée ou fermeture, avec l'état complet du parcours. */
+  /** Appelé après chaque réponse, question passée, retour ou fermeture, avec l'état complet du parcours. */
   onProgress?: (progress: IFeedbackWidgetProgress) => void
   /**
-   * `false` : la croix reste dessinée, pour que l'aperçu ressemble au widget réel, mais grisée et
-   * retirée de l'arbre d'accessibilité et de la tabulation — elle ne fait rien dans ce contexte.
+   * `false` : « Réduire » et « Terminer » restent dessinés, pour que l'aperçu ressemble au widget
+   * réel, mais grisés et retirés de l'arbre d'accessibilité et de la tabulation — ils ne font rien
+   * dans ce contexte.
    */
   closable?: boolean
-  /** Fourni : la croix appelle `onClose` au lieu de retirer le widget, dont l'état est conservé. */
+  /** Fourni : « Réduire » et « Terminer » appellent `onClose` au lieu de retirer le widget, dont l'état est conservé. */
   onClose?: () => void
 }
 
+const inertProps = { "aria-hidden": true, tabIndex: -1 } as const
+
 /**
  * Widget de feedback : pose les questions une par une, dans l'ordre de la définition, en sautant
- * celles dont la condition d'affichage n'est pas remplie.
+ * celles dont la condition d'affichage n'est pas remplie. Chaque étape se valide par « Continuer »,
+ * se saute par « Passer » si elle est facultative, et « Retour » rouvre la précédente avec sa
+ * réponse. Un écran de remerciement clôt le parcours.
  *
  * Purement présentationnel : aucun appel réseau, aucun stockage. L'enregistrement des réponses et
  * le déclenchement sur le site sont l'affaire de l'appelant, via `onProgress`. Le titre du
  * formulaire n'est jamais affiché : il est réservé au back-office.
  *
- * Accessibilité : à chaque question, le focus est placé sur son libellé, sans quoi l'utilisateur
- * clavier ou lecteur d'écran resterait sur un bouton qui vient de disparaître (RGAA 7.1).
+ * Accessibilité : à chaque étape, le focus est placé sur le libellé de la question, sans quoi
+ * l'utilisateur clavier ou lecteur d'écran resterait sur un bouton qui vient de disparaître (RGAA 7.1).
  */
 export function FeedbackWidget({ questions, variant = "inline", onProgress, closable = true, onClose }: Props) {
   const [answers, setAnswers] = useState<IFeedbackAnswers>({})
   const [skipped, setSkipped] = useState<string[]>([])
+  // réponses retirées par « Retour », pour pré-remplir la question rouverte
+  const [drafts, setDrafts] = useState<IFeedbackAnswers>({})
   const [closed, setClosed] = useState(false)
   const headingId = useId()
   const headingRef = useRef<HTMLParagraphElement>(null)
 
   const current = getCurrentQuestion(questions, answers, skipped)
+  const previous = current ? getPreviousQuestion(questions, answers, skipped) : undefined
 
   // pas au premier affichage : le widget ne doit pas voler le focus de la page à son apparition
   const isFirstStep = useRef(true)
@@ -67,19 +74,30 @@ export function FeedbackWidget({ questions, variant = "inline", onProgress, clos
 
   if (closed) return null
 
-  const report = (nextAnswers: IFeedbackAnswers, nextSkipped: string[]) =>
+  const update = (nextAnswers: IFeedbackAnswers, nextSkipped: string[]) => {
+    setAnswers(nextAnswers)
+    setSkipped(nextSkipped)
     onProgress?.({ answers: nextAnswers, skipped: nextSkipped, status: getCurrentQuestion(questions, nextAnswers, nextSkipped) ? "in_progress" : "completed" })
-
-  const answer = (question: IFeedbackQuestion, value: IFeedbackAnswerValue) => {
-    const next = { ...answers, [question.id]: value }
-    setAnswers(next)
-    report(next, skipped)
   }
 
+  const answer = (question: IFeedbackQuestion, value: IFeedbackAnswerValue) =>
+    update(
+      { ...answers, [question.id]: value },
+      skipped.filter((id) => id !== question.id)
+    )
+
   const skip = (question: IFeedbackQuestion) => {
-    const next = [...skipped, question.id]
-    setSkipped(next)
-    report(answers, next)
+    const { [question.id]: _dropped, ...rest } = answers
+    update(rest, [...skipped, question.id])
+  }
+
+  const goBack = (question: IFeedbackQuestion) => {
+    const { [question.id]: reopened, ...rest } = answers
+    if (reopened !== undefined) setDrafts((previousDrafts) => ({ ...previousDrafts, [question.id]: reopened }))
+    update(
+      rest,
+      skipped.filter((id) => id !== question.id)
+    )
   }
 
   const close = () => {
@@ -100,37 +118,55 @@ export function FeedbackWidget({ questions, variant = "inline", onProgress, clos
         width: 340,
         maxWidth: "100%",
         boxSizing: "border-box",
-        p: "20px",
-        borderTop: `3px solid ${fr.colors.decisions.border.actionHigh.blueFrance.default}`,
+        p: fr.spacing("4v"),
         backgroundColor: fr.colors.decisions.background.default.grey.default,
-        boxShadow: "0 4px 16px rgba(0, 0, 18, 0.16)",
+        boxShadow: "0 2px 8px rgba(0, 0, 18, 0.16)",
         display: "flex",
         flexDirection: "column",
-        gap: "16px",
+        gap: fr.spacing("3v"),
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: fr.spacing("2v") }}>
-        <Typography ref={headingRef} id={headingId} tabIndex={-1} data-feedback-heading sx={{ fontSize: "15px", fontWeight: 700, lineHeight: "22px", mb: 0, outlineOffset: "2px" }}>
-          {current ? current.label : "Merci pour votre retour"}
-        </Typography>
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Button
           type="button"
-          priority="tertiary no outline"
+          priority="secondary"
           size="small"
-          iconId="fr-icon-close-line"
-          title="Fermer"
+          iconId="fr-icon-subtract-line"
+          iconPosition="left"
           disabled={!closable}
-          nativeButtonProps={closable ? undefined : { "aria-hidden": true, tabIndex: -1 }}
+          nativeButtonProps={closable ? undefined : inertProps}
           onClick={close}
-        />
+        >
+          Réduire
+        </Button>
       </Box>
 
+      <Typography ref={headingRef} id={headingId} tabIndex={-1} data-feedback-heading sx={{ fontSize: "15px", fontWeight: 700, lineHeight: "22px", mb: 0, outlineOffset: "2px" }}>
+        {current ? current.label : "Merci pour votre retour"}
+      </Typography>
+
       {current ? (
-        <QuestionStep key={current.id} question={current} headingId={headingId} onAnswer={(value) => answer(current, value)} onSkip={() => skip(current)} />
+        <QuestionStep
+          key={current.id}
+          question={current}
+          headingId={headingId}
+          initialValue={drafts[current.id]}
+          progress={getStepProgress(questions, answers, current)}
+          onAnswer={(value) => answer(current, value)}
+          onSkip={() => skip(current)}
+          onBack={previous ? () => goBack(previous) : undefined}
+        />
       ) : (
-        <Typography className={fr.cx("fr-text--sm")} sx={{ mb: 0 }}>
-          Votre avis nous aide à améliorer La bonne alternance.
-        </Typography>
+        <>
+          <Typography className={fr.cx("fr-text--sm")} sx={{ mb: 0 }}>
+            Vos réponses nous aident à améliorer La bonne alternance.
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button type="button" size="small" disabled={!closable} nativeButtonProps={closable ? undefined : inertProps} onClick={close}>
+              Terminer
+            </Button>
+          </Box>
+        </>
       )}
     </Box>
   )
@@ -139,108 +175,188 @@ export function FeedbackWidget({ questions, variant = "inline", onProgress, clos
 type StepProps = {
   question: IFeedbackQuestion
   headingId: string
+  initialValue: IFeedbackAnswerValue | undefined
+  progress: { step: number; total: number }
   onAnswer: (value: IFeedbackAnswerValue) => void
   onSkip: () => void
+  onBack: (() => void) | undefined
 }
 
-/** Une question. Montée avec `key={question.id}` : la saisie en cours repart de zéro à chaque question. */
-function QuestionStep({ question, headingId, onAnswer, onSkip }: StepProps) {
-  const [selection, setSelection] = useState<string[]>([])
-  const [text, setText] = useState("")
+type IChoice = { value: string; label: string; iconId?: string }
 
-  const skipButton = !question.required && (
-    <Button type="button" priority="tertiary no outline" size="small" onClick={onSkip}>
-      Passer
-    </Button>
-  )
+/** Une étape. Montée avec `key={question.id}` : la saisie repart de la réponse éventuellement rouverte par « Retour ». */
+function QuestionStep({ question, headingId, initialValue, progress, onAnswer, onSkip, onBack }: StepProps) {
+  const [selection, setSelection] = useState<string[]>(question.type === "text" ? [] : [initialValue ?? []].flat())
+  const [text, setText] = useState(question.type === "text" && typeof initialValue === "string" ? initialValue : "")
+  const [error, setError] = useState<string | null>(null)
+  const groupRef = useRef<HTMLDivElement>(null)
+  const errorId = `${headingId}-erreur`
 
-  switch (question.type) {
-    case "rating":
-      return (
-        <>
-          <Box role="group" aria-labelledby={headingId} sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("2v") }}>
-            {RATING_OPTIONS.map((option) => (
-              <Button key={option.value} type="button" priority="secondary" size="small" iconId={option.iconId} iconPosition="left" onClick={() => onAnswer(option.value)}>
-                {option.label}
-              </Button>
-            ))}
-          </Box>
-          {skipButton && <Box>{skipButton}</Box>}
-        </>
-      )
+  const isText = question.type === "text"
+  const isEmpty = isText ? !text.trim() : selection.length === 0
 
-    case "single_select":
-      return (
-        <>
-          <Box role="group" aria-labelledby={headingId} sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("2v") }}>
-            {question.options.map((option) => (
-              <Button key={option.value} type="button" priority="secondary" size="small" onClick={() => onAnswer(option.value)}>
-                {option.label}
-              </Button>
-            ))}
-          </Box>
-          {skipButton && <Box>{skipButton}</Box>}
-        </>
-      )
-
-    case "multi_select": {
-      const limitReached = question.maxSelections !== undefined && selection.length >= question.maxSelections
-      return (
-        <>
-          <Checkbox
-            small
-            legend={<span className={fr.cx("fr-sr-only")}>{question.label}</span>}
-            style={{ marginBottom: 0 }}
-            options={question.options.map((option) => {
-              const checked = selection.includes(option.value)
-              return {
-                label: option.label,
-                nativeInputProps: {
-                  checked,
-                  disabled: !checked && limitReached,
-                  onChange: () => setSelection((previous) => (checked ? previous.filter((value) => value !== option.value) : [...previous, option.value])),
-                },
-              }
-            })}
-          />
-          <Box sx={{ display: "flex", gap: fr.spacing("2v") }}>
-            <Button type="button" size="small" disabled={question.required && selection.length === 0} onClick={() => onAnswer(selection)}>
-              Valider
-            </Button>
-            {skipButton}
-          </Box>
-        </>
-      )
+  const submit = () => {
+    if (isEmpty) {
+      if (!question.required) {
+        onSkip()
+        return
+      }
+      setError(isText ? "Le champ est obligatoire." : "Veuillez sélectionner au moins une option avant de continuer.")
+      groupRef.current?.querySelector<HTMLElement>("input, textarea")?.focus()
+      return
     }
+    if (isText) onAnswer(text.trim())
+    else onAnswer(question.type === "multi_select" ? selection : selection[0])
+  }
 
-    case "text": {
-      const counterId = `${headingId}-compteur`
-      return (
-        <>
+  const choices: IChoice[] = question.type === "rating" ? RATING_OPTIONS : question.type === "text" ? [] : question.options
+  const multiple = question.type === "multi_select"
+  const limitReached = question.type === "multi_select" && question.maxSelections !== undefined && selection.length >= question.maxSelections
+
+  const toggle = (value: string) => {
+    setError(null)
+    setSelection((previous) => (multiple ? (previous.includes(value) ? previous.filter((item) => item !== value) : [...previous, value]) : [value]))
+  }
+
+  const errorColor = fr.colors.decisions.text.default.error.default
+  const counterId = `${headingId}-compteur`
+
+  return (
+    <>
+      <Box
+        ref={groupRef}
+        role={isText ? undefined : multiple ? "group" : "radiogroup"}
+        aria-labelledby={isText ? undefined : headingId}
+        aria-describedby={!isText && error ? errorId : undefined}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: fr.spacing("2v"),
+          ...(error ? { borderLeft: `2px solid ${fr.colors.decisions.border.plain.error.default}`, pl: fr.spacing("3v") } : {}),
+        }}
+      >
+        {isText ? (
           <Box>
             <textarea
-              className={fr.cx("fr-input")}
+              className={fr.cx("fr-input", error ? "fr-input--error" : undefined)}
               aria-labelledby={headingId}
-              aria-describedby={counterId}
-              placeholder={question.placeholder ?? (question.required ? undefined : "Votre commentaire (facultatif)")}
-              maxLength={question.maxLength}
+              aria-describedby={[counterId, error ? errorId : null].filter(Boolean).join(" ")}
+              aria-invalid={error ? true : undefined}
+              placeholder={question.type === "text" ? question.placeholder : undefined}
+              maxLength={question.type === "text" ? question.maxLength : undefined}
               rows={3}
               value={text}
-              onChange={(event) => setText(event.target.value)}
+              onChange={(event) => {
+                setError(null)
+                setText(event.target.value)
+              }}
               style={{ resize: "vertical" }}
             />
             <Typography id={counterId} className={fr.cx("fr-hint-text")} sx={{ mt: fr.spacing("1v"), mb: 0 }}>
-              {text.length} / {question.maxLength} caractères
+              {text.length} / {question.type === "text" ? question.maxLength : 0} caractères
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", gap: fr.spacing("2v") }}>
-            <Button type="button" size="small" disabled={!text.trim()} onClick={() => onAnswer(text.trim())}>
-              Envoyer
+        ) : (
+          choices.map((choice) => {
+            const checked = selection.includes(choice.value)
+            return (
+              <ChoiceTile
+                key={choice.value}
+                choice={choice}
+                name={`${headingId}-${question.id}`}
+                multiple={multiple}
+                checked={checked}
+                disabled={multiple && !checked && limitReached}
+                invalid={Boolean(error)}
+                onToggle={() => toggle(choice.value)}
+              />
+            )
+          })
+        )}
+        {error && (
+          <Typography
+            id={errorId}
+            className={fr.cx("fr-icon-error-fill", "fr-icon--sm")}
+            sx={{ fontSize: "12px", lineHeight: "18px", color: errorColor, mb: 0, "&::before": { mr: fr.spacing("1v") } }}
+          >
+            {error}
+          </Typography>
+        )}
+      </Box>
+
+      <Box>
+        <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end", gap: fr.spacing("2v") }}>
+          {onBack && (
+            <Button type="button" priority="secondary" size="small" onClick={onBack}>
+              Retour
             </Button>
-            {skipButton}
-          </Box>
-        </>
-      )
-    }
-  }
+          )}
+          {!question.required && (
+            <Button type="button" priority="secondary" size="small" onClick={onSkip}>
+              Passer
+            </Button>
+          )}
+          <Button type="button" size="small" onClick={submit}>
+            Continuer
+          </Button>
+        </Box>
+        <Typography sx={{ fontSize: "12px", lineHeight: "18px", color: fr.colors.decisions.text.mention.grey.default, mt: fr.spacing("2v"), mb: 0 }}>
+          Étape {progress.step} sur {progress.total}
+        </Typography>
+      </Box>
+    </>
+  )
+}
+
+/** Option encadrée : toute la tuile est cliquable, la case (ou le bouton radio) natif porte l'état. */
+function ChoiceTile({
+  choice,
+  name,
+  multiple,
+  checked,
+  disabled,
+  invalid,
+  onToggle,
+}: {
+  choice: IChoice
+  name: string
+  multiple: boolean
+  checked: boolean
+  disabled: boolean
+  invalid: boolean
+  onToggle: () => void
+}) {
+  const colors = fr.colors.decisions
+  return (
+    <Box
+      component="label"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: fr.spacing("3v"),
+        p: `${fr.spacing("3v")} ${fr.spacing("4v")}`,
+        border: `1px solid ${checked ? colors.border.actionHigh.blueFrance.default : colors.border.default.grey.default}`,
+        backgroundColor: colors.background.default.grey.default,
+        fontSize: "14px",
+        lineHeight: "22px",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.6 : 1,
+        "&:hover": disabled ? {} : { backgroundColor: colors.background.default.grey.hover },
+        "&:has(input:focus-visible)": { outline: `2px solid ${colors.border.plain.info.default}`, outlineOffset: "2px" },
+      }}
+    >
+      <input
+        type={multiple ? "checkbox" : "radio"}
+        name={name}
+        value={choice.value}
+        checked={checked}
+        disabled={disabled}
+        aria-invalid={invalid ? true : undefined}
+        onChange={onToggle}
+        style={{ margin: 0, width: 16, height: 16, flexShrink: 0, accentColor: colors.background.actionHigh.blueFrance.default, outline: "none" }}
+      />
+      {choice.iconId && <span className={`${choice.iconId} ${fr.cx("fr-icon--sm")}`} aria-hidden="true" />}
+      <span>{choice.label}</span>
+    </Box>
+  )
 }

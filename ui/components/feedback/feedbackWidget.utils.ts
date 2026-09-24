@@ -36,6 +36,24 @@ export function getCurrentQuestion(questions: IFeedbackQuestion[], answers: IFee
   return questions.find((question) => isQuestionVisible(question, answers) && !(question.id in answers) && !skipped.includes(question.id))
 }
 
+/**
+ * Question sur laquelle « Retour » ramène : la dernière, avant la question courante, qui a été
+ * répondue ou passée. Les réponses forment toujours un préfixe du parcours (revenir en arrière
+ * retire la réponse de la question rouverte), donc c'est bien l'étape précédente.
+ */
+export function getPreviousQuestion(questions: IFeedbackQuestion[], answers: IFeedbackAnswers, skipped: string[]): IFeedbackQuestion | undefined {
+  return [...questions].reverse().find((question) => question.id in answers || skipped.includes(question.id))
+}
+
+/**
+ * « Étape N sur M » : rang de la question courante parmi celles qui seront posées. Une question
+ * conditionnelle ne compte qu'une fois sa condition remplie, le total peut donc augmenter en route.
+ */
+export function getStepProgress(questions: IFeedbackQuestion[], answers: IFeedbackAnswers, current: IFeedbackQuestion): { step: number; total: number } {
+  const asked = questions.filter((question) => isQuestionVisible(question, answers))
+  return { step: asked.findIndex((question) => question.id === current.id) + 1, total: asked.length }
+}
+
 /** Réponse telle qu'un humain la lit : libellés plutôt que valeurs techniques. */
 export function formatAnswer(question: IFeedbackQuestion, value: IFeedbackAnswerValue): string {
   if (question.type === "text") {
