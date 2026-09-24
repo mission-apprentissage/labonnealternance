@@ -15,7 +15,7 @@ import type {
   IUserRecruteur,
   zRoutes,
 } from "shared"
-import { assertUnreachable, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { assertUnreachable, JOB_CLOSURE_ORIGIN, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
 import { EntrepriseErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
@@ -43,9 +43,9 @@ import { getUserManagingOffer } from "./application.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDataFromSiret } from "./etablissement.service"
 import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-notifications.service"
+import { buildJobStatusChangeUpdate, changeJobsPartnersStatus } from "./job-partner-status.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
-import { anonymizeLbaJobsPartners } from "./partner-job.service"
 import { getEntrepriseEngagementFranceTravail } from "./referentiel-engagement-entreprise.service"
 import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./role-management.service"
 import { getRomeDetailsFromDB } from "./rome.service"
@@ -578,16 +578,22 @@ export const archiveFormulaireByEstablishmentId = async (id: string) => {
   await archiveFormulaire(userId, siret)
 }
 
+/** Motif tracé dans offer_status_history quand tout le formulaire d'un recruteur est archivé. */
+export const ARCHIVE_FORMULAIRE_REASON = "formulaire du recruteur archivé"
+
 export const archiveFormulaire = async (userId: ObjectId, siret: string) => {
   const now = new Date()
-  await getDbCollection("jobs_partners").updateMany(
-    { managed_by: userId, workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE },
-    { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now, offer_expiration: now } }
-  )
-  await getDbCollection("jobs_partners").updateMany(
-    { managed_by: userId, workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: { $ne: JOB_STATUS_ENGLISH.ACTIVE } },
-    { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now } }
-  )
+  const change = { reason: ARCHIVE_FORMULAIRE_REASON, grantedBy: "archive-formulaire", date: now, status: JOB_STATUS_ENGLISH.ANNULEE } as const
+  const recruiterOffersFilter = { managed_by: userId, workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA }
+
+  await changeJobsPartnersStatus({ ...recruiterOffersFilter, offer_status: JOB_STATUS_ENGLISH.ACTIVE }, { ...change, extraSet: { offer_expiration: now } })
+  // Second passage restreint aux offres EN ATTENTE : elles n'ont jamais été publiées, les archiver
+  // avec le reste du formulaire est bien l'intention. Le filtre portait auparavant sur
+  // `$ne: ACTIVE`, ce qui repassait en Cancelled les offres POURVUE — un recrutement réussi
+  // réécrit en annulation, donc perdu pour la mesure d'impact — et réécrivait `updated_at` sur des
+  // offres déjà annulées, qui remontaient alors dans les tableaux de bord datés sur ce champ
+  // (issue #5429). Une offre déjà close, quelle qu'en soit l'issue, n'a plus à être touchée ici.
+  await changeJobsPartnersStatus({ ...recruiterOffersFilter, offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE }, change)
   const mainRole = await getMainRoleManagement(userId)
   if (mainRole?.authorized_type === AccessEntityType.CFA) {
     const entreprise = await getDbCollection("entreprises").findOne({ siret })
@@ -684,7 +690,12 @@ export const provideOffre = async (id: ObjectId): Promise<void> => {
   const now = new Date()
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
     { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
-    { $set: { offer_status: JOB_STATUS_ENGLISH.POURVUE, updated_at: now } }
+    buildJobStatusChangeUpdate({
+      status: JOB_STATUS_ENGLISH.POURVUE,
+      reason: "offre déclarée pourvue par le recruteur",
+      grantedBy: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
+      date: now,
+    })
   )
   if (!found) {
     throw new Error(`could not find lba offer with id=${id}`)
@@ -699,39 +710,60 @@ export const provideOffre = async (id: ObjectId): Promise<void> => {
 export const closeOffreWithMotif = async ({
   id,
   offer_status,
+  origin,
   job_status_comment,
   job_status_comment_precision,
   job_recruitment_channel,
 }: {
   id: ObjectId
   offer_status: JOB_STATUS_ENGLISH
+  origin: JOB_CLOSURE_ORIGIN
   job_status_comment: string
   job_status_comment_precision?: string
   job_recruitment_channel?: string
 }): Promise<{ alreadyClosed: boolean }> => {
   const now = new Date()
-  // returnDocument: "before" pour savoir si l'offre était déjà clôturée avant cette requête
-  // (ex: lien de clôture cliqué deux fois) — la mise à jour est appliquée dans tous les cas,
-  // le motif reste une donnée utile même sur une offre déjà close.
+  const offerFilter = { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id }
+
+  // `offer_status: { $ne: offer_status }` restreint l'écriture aux transitions réelles. Un lien de
+  // clôture cliqué deux fois arrivait sinon jusqu'au $push et comptait la même clôture deux fois
+  // dans les tableaux de bord de l'issue #5429 — le trou de mesure que cette écriture est censée
+  // combler. Conséquence assumée : sur un second passage vers le même statut, le motif n'est plus
+  // réécrit. Changer d'avis reste possible tant que le statut change (annulée puis pourvue).
+  //
+  // returnDocument: "before" pour distinguer une clôture d'une offre déjà close : `alreadyClosed`
+  // pilote l'écran de confirmation côté recruteur.
+  //
+  // Le motif est écrit deux fois, et ce n'est pas redondant : job_status_comment porte le dernier
+  // motif connu de l'offre (relu par l'espace pro), offer_status_history en garde la trace datée,
+  // seul champ commun à toutes les origines d'annulation — les annulations automatiques
+  // (expiration, seuil de candidatures, doublons) ne renseignent jamais job_status_comment.
+  // `reason` reçoit le motif brut de la modale pour rester regroupable tel quel ; la précision
+  // libre du motif "Autre" et le canal de recrutement gardent leurs champs dédiés.
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
-    {
-      $set: {
-        offer_status,
-        updated_at: now,
-        offer_expiration: now,
-        job_status_comment,
-        job_status_comment_precision,
-        job_recruitment_channel,
-      },
-    },
+    { ...offerFilter, offer_status: { $ne: offer_status } },
+    buildJobStatusChangeUpdate({
+      status: offer_status,
+      reason: job_status_comment,
+      grantedBy: origin,
+      date: now,
+      extraSet: { offer_expiration: now, job_status_comment, job_status_comment_precision, job_recruitment_channel },
+    }),
     {
       returnDocument: "before",
     }
   )
+
   if (!found) {
-    throw new Error(`could not find lba offer with id=${id}`)
+    // Deux causes possibles, à ne pas confondre : l'offre n'existe pas, ou elle porte déjà ce
+    // statut. Le second cas est le double-clic, et doit rendre la même réponse qu'avant le filtre.
+    const existing = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { _id: 1 } })
+    if (!existing) {
+      throw new Error(`could not find lba offer with id=${id}`)
+    }
+    return { alreadyClosed: true }
   }
+
   syncJobPartnersToSearchItemsInBackground([id])
   return { alreadyClosed: found.offer_status !== JOB_STATUS_ENGLISH.ACTIVE }
 }
@@ -783,13 +815,12 @@ const activateAndExtendOffre = async (id: ObjectId) => {
     {
       _id: id,
     },
-    {
-      $set: {
-        offer_expiration: addExpirationPeriod(dayjs()).toDate(),
-        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-        updated_at: new Date(),
-      },
-    },
+    buildJobStatusChangeUpdate({
+      status: JOB_STATUS_ENGLISH.ACTIVE,
+      reason: "compte recruteur validé",
+      grantedBy: "activate-and-extend-offre",
+      extraSet: { offer_expiration: addExpirationPeriod(dayjs()).toDate() },
+    }),
     { returnDocument: "after" }
   )
   if (!found) {
@@ -1083,14 +1114,6 @@ export function getCompetencesRomeFromPartnerJob(jobPartner: IJobsPartnersOfferP
     savoir_etre_professionnel: savoirEtreProfessionnel,
     savoir_faire: savoirFaire,
     savoirs,
-  }
-}
-
-export const _updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
-  const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
-  const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
-  if (jobIds.length) {
-    await anonymizeLbaJobsPartners({ partner_job_ids: jobIds })
   }
 }
 

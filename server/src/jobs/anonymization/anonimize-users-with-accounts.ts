@@ -6,6 +6,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
+import { changeJobsPartnersStatus } from "@/services/job-partner-status.service"
 
 const anonymize = async () => {
   const fromDate = dayjs().subtract(2, "years").toDate()
@@ -14,10 +15,20 @@ const anonymize = async () => {
   const userIds = usersToAnonymize.map(({ _id }) => _id.toString())
   const userObjectIds = usersToAnonymize.map(({ _id }) => _id)
 
-  await getDbCollection("jobs_partners").updateMany(
-    { managed_by: { $in: userObjectIds }, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
-    { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, managed_by: null, updated_at: new Date() } }
+  // Restreint aux offres encore ouvertes : une offre déjà close garde son statut et son motif
+  // d'origine, sinon l'anonymisation réécrivait `updated_at` sur des annulations anciennes, qui
+  // remontaient dans les tableaux de bord datés sur ce champ, et écrasait les offres POURVUE
+  // (issue #5429). `managed_by` est détaché sur tout le périmètre, close ou non, par l'update
+  // séparé ci-dessous : c'est lui qui porte l'anonymisation proprement dite.
+  await changeJobsPartnersStatus(
+    {
+      managed_by: { $in: userObjectIds },
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_ATTENTE] },
+    },
+    { status: JOB_STATUS_ENGLISH.ANNULEE, reason: "compte recruteur anonymisé RGPD", grantedBy: "anonimize-users-with-accounts" }
   )
+  await getDbCollection("jobs_partners").updateMany({ managed_by: { $in: userObjectIds }, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA }, { $set: { managed_by: null } })
 
   await getDbCollection("userswithaccounts")
     .aggregate([

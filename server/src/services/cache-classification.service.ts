@@ -5,6 +5,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
 import { getMistralClassificationBatch } from "@/common/apis/classification/classification-mistral.client"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
 export type TJobClassification = {
@@ -142,17 +143,11 @@ export const updateClassificationAndSynchronise = async ({
       await Promise.all([
         getDbCollection("jobs_partners").updateOne(
           { partner_label: entry.partner_label, partner_job_id: entry.partner_job_id },
-          {
-            $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
-            $push: {
-              offer_status_history: {
-                date: new Date(),
-                status: JOB_STATUS_ENGLISH.ANNULEE,
-                reason: "classification humaine non conforme",
-                granted_by: grantedBy,
-              },
-            },
-          }
+          buildJobStatusChangeUpdate({
+            status: JOB_STATUS_ENGLISH.ANNULEE,
+            reason: "classification humaine non conforme",
+            grantedBy,
+          })
         ),
         getDbCollection("computed_jobs_partners").updateOne(
           { partner_label: entry.partner_label, partner_job_id: entry.partner_job_id },
