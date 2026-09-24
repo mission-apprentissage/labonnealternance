@@ -73,7 +73,10 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
               interdiction de mentionner ou sous-entendre un critère discriminatoire (sexe, origine, apparence physique, situation de famille, grossesse, état de santé, handicap,
               orientation sexuelle, opinions politiques ou religieuses, etc.), sauf exigence professionnelle essentielle et justifiée.
               <br />
-              Texte de référence : Code pénal art. 225-1 et 225-2, Code du travail L1132-1
+              Texte de référence :{" "}
+              <DsfrLink href="https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070719/LEGISCTA000006165298/">
+                Code pénal art. 225-1 et 225-2, Code du travail L1132-1
+              </DsfrLink>
             </>,
             <>
               <Paragraph component="span" bold>
@@ -81,7 +84,7 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
               </Paragraph>{" "}
               le titre du poste doit être épicène ou suivi de (H/F/X).
               <br />
-              Texte de référence : Code du travail L1142-1
+              Texte de référence : <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006900801">Code du travail L1142-1</DsfrLink>
             </>,
             <>
               <Paragraph component="span" bold>
@@ -90,7 +93,8 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
               le texte doit refléter que c'est un contrat de formation en alternance (apprentissage ou professionnalisation), pas un poste salarié classique déguisé. Les missions
               doivent être cohérentes avec l'acquisition du diplôme visé.
               <br />
-              Texte de référence : Code du travail, partie apprentissage
+              Texte de référence :{" "}
+              <DsfrLink href="https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006160819/">Code du travail, partie apprentissage</DsfrLink>
             </>,
             <>
               <Paragraph component="span" bold>
@@ -98,7 +102,7 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
               </Paragraph>{" "}
               le descriptif doit être rédigé en français si le poste s'exerce en France.
               <br />
-              Texte de référence : Loi Toubon
+              Texte de référence : <DsfrLink href="https://www.legifrance.gouv.fr/loda/id/LEGITEXT000005616341/">Loi Toubon</DsfrLink>
             </>,
             <>
               <Paragraph component="span" bold>
@@ -106,7 +110,10 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
               </Paragraph>{" "}
               pas de promesses fausses sur les conditions de travail, les horaires, l'encadrement ou les perspectives.
               <br />
-              Texte de référence : Principe général, sanctionnable au titre de la tromperie
+              Texte de référence :{" "}
+              <DsfrLink href="https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006069565/LEGISCTA000032222837/">
+                Principe général, sanctionnable au titre de la tromperie
+              </DsfrLink>
             </>,
             <>
               <Paragraph component="span" bold>
@@ -114,7 +121,7 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
               </Paragraph>{" "}
               pas de collecte de données personnelles superflues dans l'annonce elle-même (photo, situation familiale demandés au candidat).
               <br />
-              Texte de référence : RGPD, principe de minimisation
+              Texte de référence : <DsfrLink href="https://www.cnil.fr/fr/definition/minimisation">RGPD, principe de minimisation</DsfrLink>
             </>,
           ]}
         />
@@ -190,8 +197,8 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
         </Paragraph>
         <ParagraphList
           listItems={[
-            "L'orthographe, la grammaire et la ponctuation seront systématiquement corrigées.",
-            "La structure et la clarté de la formulation pourront être améliorées.",
+            "Votre texte est publié tel que vous l'avez rédigé : la modération ne corrige ni l'orthographe, ni la formulation.",
+            'Le bouton "Améliorer" du formulaire vous propose, sur demande, une version corrigée et restructurée. Elle ne remplace votre texte que si vous l\'acceptez.',
             "Les informations factuelles sur le poste seront conservées et non modifiées : responsabilités liées au poste, avantages, compétences, salaires et informations légales de l'entreprise.",
             "Toutes les mentions discriminantes, haineuses, offensantes, ou à caractère sexuel seront systématiquement supprimées ou corrigées.",
             "Pour des raisons de sécurité, toute information personnelle (adresse e-mail, numéro de téléphone, etc.) ne sera pas affichée sur l'offre.",
