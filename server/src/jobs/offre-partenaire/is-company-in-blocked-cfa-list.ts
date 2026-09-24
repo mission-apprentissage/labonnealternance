@@ -1776,7 +1776,6 @@ export const cfaCompanyList = [
   "WIN TOURS",
   "WIN VANNES",
   "WKG CORPORATE",
-  "XEFI",
   "XP SCHOOL",
   "YAFFA",
   "YELLOWE",
