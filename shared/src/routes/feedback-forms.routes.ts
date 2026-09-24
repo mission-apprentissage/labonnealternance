@@ -1,5 +1,5 @@
 import { z } from "../helpers/zod-with-open-api.js"
-import { ZFeedbackForm, ZFeedbackFormForAdmin, ZFeedbackFormInput, ZFeedbackFormStatus } from "../models/feedback-form.model.js"
+import { ZFeedbackForm, ZFeedbackFormForAdmin, ZFeedbackFormInput, ZFeedbackFormPublic, ZFeedbackFormStatus } from "../models/feedback-form.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 
@@ -11,6 +11,15 @@ const adminSecurity = {
 
 export const zFeedbackFormsRoutes = {
   get: {
+    // public : le widget du site choisit lui-même le formulaire de la page courante (cf. matchesScope)
+    "/feedback-forms/active": {
+      method: "get",
+      path: "/feedback-forms/active",
+      response: {
+        "200": z.strictObject({ forms: z.array(ZFeedbackFormPublic) }),
+      },
+      securityScheme: null,
+    },
     "/admin/feedback-forms": {
       method: "get",
       path: "/admin/feedback-forms",

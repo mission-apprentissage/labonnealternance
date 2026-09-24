@@ -1,8 +1,9 @@
 import { badRequest, conflict, notFound } from "@hapi/boom"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IFeedbackForm, IFeedbackFormForAdmin, IFeedbackFormInput, IFeedbackFormStatus } from "shared/models/feedback-form.model"
+import type { IFeedbackForm, IFeedbackFormForAdmin, IFeedbackFormInput, IFeedbackFormPublic, IFeedbackFormStatus } from "shared/models/feedback-form.model"
 import { ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS, ZFeedbackFormPublishable } from "shared/models/feedback-form.model"
+import { scopePatternsOverlap } from "shared/utils/ui-routes.utils"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
@@ -129,8 +130,8 @@ export async function archiveFeedbackForm(slug: string, grantedBy: string): Prom
  *
  * Refusé si le formulaire n'est pas publiable (aucune question, chemin qui n'existe plus, condition
  * cassée) ou si un autre formulaire est déjà actif sur l'un de ses chemins — deux widgets ne
- * doivent pas se disputer la même page. La comparaison porte sur les chemins tels que saisis :
- * `/guide/*` et `/guide/page` ne sont pas vus comme en conflit.
+ * doivent pas se disputer la même page, y compris via des motifs qui se recouvrent
+ * (`/formation/*` et `/formation/:id/:titre`, cf. `scopePatternsOverlap`).
  */
 export async function activateFeedbackForm(slug: string, grantedBy: string): Promise<void> {
   const form = await getFeedbackFormBySlug(slug)
@@ -139,10 +140,15 @@ export async function activateFeedbackForm(slug: string, grantedBy: string): Pro
     throw badRequest(`Activation impossible : ${publishable.error.issues[0].message}`)
   }
 
-  const concurrent = await getDbCollection("feedback_forms").findOne({ status: "active", _id: { $ne: form._id }, "trigger.scope": { $in: form.trigger.scope } })
-  if (concurrent) {
-    const shared = form.trigger.scope.filter((path) => concurrent.trigger.scope.includes(path))
-    throw conflict(`Activation impossible : le formulaire « ${concurrent.title} » est déjà actif sur ${shared.join(", ")}`)
+  // peu de formulaires actifs à la fois : le chevauchement des motifs se calcule ici plutôt qu'en requête
+  const actives = await getDbCollection("feedback_forms")
+    .find({ status: "active", _id: { $ne: form._id } })
+    .toArray()
+  for (const concurrent of actives) {
+    const overlapping = concurrent.trigger.scope.filter((path) => form.trigger.scope.some((own) => scopePatternsOverlap(own, path)))
+    if (overlapping.length) {
+      throw conflict(`Activation impossible : le formulaire « ${concurrent.title} » est déjà actif sur ${overlapping.join(", ")}`)
+    }
   }
 
   await transitionFeedbackFormStatus(slug, "active", grantedBy, form)
@@ -151,4 +157,12 @@ export async function activateFeedbackForm(slug: string, grantedBy: string): Pro
 /** Désactive un formulaire actif : il n'est plus affiché, reste modifiable et réactivable. */
 export async function deactivateFeedbackForm(slug: string, grantedBy: string): Promise<void> {
   await transitionFeedbackFormStatus(slug, "inactive", grantedBy)
+}
+
+/** Formulaires actifs, réduits à ce qu'en voit le widget public. */
+export async function listActiveFeedbackForms(): Promise<IFeedbackFormPublic[]> {
+  return getDbCollection("feedback_forms")
+    .find({ status: "active" }, { projection: { _id: 0, slug: 1, version: 1, trigger: 1, questions: 1 } })
+    .sort({ slug: 1 })
+    .toArray() as Promise<IFeedbackFormPublic[]>
 }

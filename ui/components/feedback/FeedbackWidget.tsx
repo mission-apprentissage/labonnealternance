@@ -20,7 +20,8 @@ type Props = {
   questions: IFeedbackQuestion[]
   /**
    * "inline" : dans le flux de la page (prévisualisation du back-office).
-   * "floating" : fixé dans le coin de l'écran, tel qu'affiché aux usagers sur le site.
+   * "floating" : panneau non modal ouvert par le bouton « Donner mon avis » (cf. FeedbackLauncher),
+   * qui le positionne.
    */
   variant?: "inline" | "floating"
   /** Appelé après chaque réponse, question passée ou fermeture, avec l'état complet du parcours. */
@@ -30,6 +31,8 @@ type Props = {
    * retirée de l'arbre d'accessibilité et de la tabulation — elle ne fait rien dans ce contexte.
    */
   closable?: boolean
+  /** Fourni : la croix appelle `onClose` au lieu de retirer le widget, dont l'état est conservé. */
+  onClose?: () => void
 }
 
 /**
@@ -43,7 +46,7 @@ type Props = {
  * Accessibilité : à chaque question, le focus est placé sur son libellé, sans quoi l'utilisateur
  * clavier ou lecteur d'écran resterait sur un bouton qui vient de disparaître (RGAA 7.1).
  */
-export function FeedbackWidget({ questions, variant = "inline", onProgress, closable = true }: Props) {
+export function FeedbackWidget({ questions, variant = "inline", onProgress, closable = true, onClose }: Props) {
   const [answers, setAnswers] = useState<IFeedbackAnswers>({})
   const [skipped, setSkipped] = useState<string[]>([])
   const [closed, setClosed] = useState(false)
@@ -80,16 +83,20 @@ export function FeedbackWidget({ questions, variant = "inline", onProgress, clos
   }
 
   const close = () => {
+    if (onClose) {
+      onClose()
+      return
+    }
     setClosed(true)
     onProgress?.({ answers, skipped, status: "closed" })
   }
 
   return (
     <Box
-      component="section"
-      aria-label="Donnez votre avis"
+      // panneau non modal : la page reste utilisable pendant qu'il est ouvert, donc ni aria-modal ni piège à focus
+      {...(variant === "floating" ? { role: "dialog", "aria-label": "Donner mon avis" } : { component: "section", "aria-label": "Donnez votre avis" })}
       sx={{
-        ...(variant === "floating" ? { position: "fixed", right: 24, bottom: 24, zIndex: 1300 } : { position: "relative" }),
+        position: "relative",
         width: 340,
         maxWidth: "100%",
         boxSizing: "border-box",
@@ -103,7 +110,7 @@ export function FeedbackWidget({ questions, variant = "inline", onProgress, clos
       }}
     >
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: fr.spacing("2v") }}>
-        <Typography ref={headingRef} id={headingId} tabIndex={-1} sx={{ fontSize: "15px", fontWeight: 700, lineHeight: "22px", mb: 0, outlineOffset: "2px" }}>
+        <Typography ref={headingRef} id={headingId} tabIndex={-1} data-feedback-heading sx={{ fontSize: "15px", fontWeight: 700, lineHeight: "22px", mb: 0, outlineOffset: "2px" }}>
           {current ? current.label : "Merci pour votre retour"}
         </Typography>
         <Button

@@ -263,6 +263,10 @@ export const ZFeedbackFormForAdmin = ZFeedbackForm.extend({
 export type IFeedbackFormForAdmin = z.output<typeof ZFeedbackFormForAdmin>
 export type IFeedbackFormForAdminJSON = Jsonify<IFeedbackFormForAdmin>
 
+/** Ce que le widget public reçoit d'un formulaire actif : rien de ce qui est interne au back-office (titre, historique, auteur). */
+export const ZFeedbackFormPublic = ZFeedbackForm.pick({ slug: true, version: true, trigger: true, questions: true })
+export type IFeedbackFormPublic = z.output<typeof ZFeedbackFormPublic>
+
 export default {
   zod: ZFeedbackForm,
   indexes: [

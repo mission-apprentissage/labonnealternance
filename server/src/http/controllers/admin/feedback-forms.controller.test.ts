@@ -393,6 +393,34 @@ describe("admin feedback-forms controller", () => {
       expect(response.json().message).toContain("Fiche entreprise — utilité des informations")
     })
 
+    it("refuse d'activer un formulaire dont un motif recouvre le chemin d'un autre formulaire actif", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken, withQuestion)
+      await post(bearerToken, "page_entreprise_v1", "activate")
+      await createForm(bearerToken, {
+        ...withQuestion,
+        slug: "toutes_formations",
+        title: "Toutes les formations",
+        trigger: { minInteractions: 1, scope: ["/recherche", "/formation/*"] },
+      })
+
+      const response = await post(bearerToken, "toutes_formations", "activate")
+
+      expect(response.statusCode).toEqual(409)
+      expect(response.json().message).toContain("/formation/:id/:intitule-formation")
+    })
+
+    it("active un formulaire dont les chemins ne recouvrent aucun formulaire actif", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken, withQuestion)
+      await post(bearerToken, "page_entreprise_v1", "activate")
+      await createForm(bearerToken, { ...withQuestion, slug: "recherche", title: "Recherche", trigger: { minInteractions: 2, scope: ["/recherche"] } })
+
+      const response = await post(bearerToken, "recherche", "activate")
+
+      expect(response.statusCode).toEqual(200)
+    })
+
     it("désactive un formulaire actif, puis permet de le réactiver", async () => {
       const { bearerToken } = await loginAsAdmin()
       await createForm(bearerToken, withQuestion)

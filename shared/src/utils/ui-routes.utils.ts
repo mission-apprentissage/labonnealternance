@@ -41,3 +41,44 @@ export function matchesKnownUiRoute(inputPattern: string): boolean {
     return comparedSegments.every((segment, index) => segmentMatches(segment, routeSegments[index]))
   })
 }
+
+type IScopePattern = { segments: string[]; isPrefix: boolean }
+
+const parseScopePattern = (pattern: string): IScopePattern => {
+  const segments = toSegments(pattern.trim())
+  const isPrefix = segments.at(-1) === "*"
+  return { segments: isPrefix ? segments.slice(0, -1) : segments, isPrefix }
+}
+
+const isParam = (segment: string) => segment.startsWith(":")
+
+/**
+ * La page courante (`usePathname()`) fait-elle partie d'une page de déclenchement ? Même grammaire
+ * que `matchesKnownUiRoute` : `:param` vaut n'importe quel segment, `*` final couvre la
+ * sous-arborescence, page de départ comprise (`/guide/*` couvre `/guide`).
+ */
+export function matchesScope(pattern: string, pathname: string): boolean {
+  const { segments, isPrefix } = parseScopePattern(pattern)
+  const pathSegments = toSegments(pathname)
+  if (isPrefix ? pathSegments.length < segments.length : pathSegments.length !== segments.length) {
+    return false
+  }
+  return segments.every((segment, index) => isParam(segment) || segment === pathSegments[index])
+}
+
+/**
+ * Deux pages de déclenchement peuvent-elles viser une même page ? `/formation/*` et
+ * `/formation/:id/:titre` se chevauchent, `/recherche` et `/formation/*` non. Sert à garantir
+ * qu'un seul formulaire est actif par page.
+ */
+export function scopePatternsOverlap(a: string, b: string): boolean {
+  const left = parseScopePattern(a)
+  const right = parseScopePattern(b)
+  const compatible = (length: number) =>
+    Array.from({ length }, (_, index) => index).every((index) => isParam(left.segments[index]) || isParam(right.segments[index]) || left.segments[index] === right.segments[index])
+
+  if (left.isPrefix && right.isPrefix) return compatible(Math.min(left.segments.length, right.segments.length))
+  if (left.isPrefix) return right.segments.length >= left.segments.length && compatible(left.segments.length)
+  if (right.isPrefix) return left.segments.length >= right.segments.length && compatible(right.segments.length)
+  return left.segments.length === right.segments.length && compatible(left.segments.length)
+}

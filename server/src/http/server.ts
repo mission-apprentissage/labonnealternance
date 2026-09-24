@@ -29,6 +29,7 @@ import { coreRoutes } from "./controllers/core.controller"
 import emailsRoute from "./controllers/emails.controller"
 import etablissementRoute from "./controllers/etablissement.controller"
 import etablissementsRecruteurRoute from "./controllers/etablissement-recruteur.controller"
+import feedbackFormsRoute from "./controllers/feedback-forms.controller"
 import formationsPrivateRoute from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
 import inserjeunesRoute from "./controllers/inserjeunes.controller"
@@ -150,6 +151,7 @@ export async function bind(app: Server) {
       jobsRouteV2(typedSubApp)
       jobsPartnersAdminRoute(typedSubApp)
       adminFeedbackFormsRoute(typedSubApp)
+      feedbackFormsRoute(typedSubApp)
 
       trainingLinks(typedSubApp)
       jobsApiV3Routes(typedSubApp)
