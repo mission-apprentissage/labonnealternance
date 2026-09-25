@@ -8,7 +8,7 @@ import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/Cand
 export function RecruteurLbaCandidater({ item, showScrollToTop }: { item: ILbaItemJobsGlobal; showScrollToTop?: boolean }) {
   if (!item?.contact?.hasEmail) {
     return (
-      <Box sx={{ my: fr.spacing("2v") }}>
+      <Box component="p" sx={{ my: fr.spacing("2v") }}>
         <Typography
           component="span"
           sx={{

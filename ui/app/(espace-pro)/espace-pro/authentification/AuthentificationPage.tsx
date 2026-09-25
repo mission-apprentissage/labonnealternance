@@ -172,8 +172,11 @@ export default function Authentification() {
           </Button>
         </Box>
         <Typography sx={{ mt: fr.spacing("4v") }}>
-          <strong>Vous êtes candidat ?</strong> La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les
-          offres d’emploi et de formation sans vous créer de compte.
+          <Box component="span" sx={{ fontWeight: 700 }}>
+            Vous êtes candidat ?
+          </Box>{" "}
+          La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les offres d’emploi et de formation sans vous
+          créer de compte.
         </Typography>
         <Box sx={{ mt: fr.spacing("4v") }}>
           <Button linkProps={{ href: PAGES.static.home.getPath() }} priority="secondary" style={{ width: "100%" }}>

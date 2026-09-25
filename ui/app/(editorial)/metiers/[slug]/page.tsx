@@ -80,13 +80,22 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
             }}
           >
             <Typography>
-              Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{relatedMetier.name}</i>
+              Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en{" "}
+              <Box component="span" sx={{ fontStyle: "italic" }}>
+                {relatedMetier.name}
+              </Box>
             </Typography>
             <Typography>
-              Liste d'entreprises qui recrutent en alternance en <i>{relatedMetier.name}</i>
+              Liste d'entreprises qui recrutent en alternance en{" "}
+              <Box component="span" sx={{ fontStyle: "italic" }}>
+                {relatedMetier.name}
+              </Box>
             </Typography>
             <Typography>
-              Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{relatedMetier.name}</i>
+              Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en{" "}
+              <Box component="span" sx={{ fontStyle: "italic" }}>
+                {relatedMetier.name}
+              </Box>
             </Typography>
 
             <Typography sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>

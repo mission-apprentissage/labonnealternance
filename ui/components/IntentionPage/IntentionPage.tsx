@@ -176,15 +176,24 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
           <Typography sx={{ fontWeight: 700, mt: fr.spacing("3v") }}>
             {applicant_first_name} {applicant_last_name}
           </Typography>
-          <Typography sx={{ mt: fr.spacing("3v") }}>
-            Téléphone :
-            <br />
-            <strong>{applicant_phone}</strong>
-          </Typography>
-          <Typography sx={{ mt: fr.spacing("3v") }}>
-            Email :<br />
-            <strong>{applicant_email}</strong>
-          </Typography>
+          <Box component="dl" sx={{ m: 0, p: 0 }}>
+            <Box sx={{ mt: fr.spacing("3v") }}>
+              <Typography component="dt" sx={{ p: 0 }}>
+                Téléphone :
+              </Typography>
+              <Typography component="dd" sx={{ m: 0, p: 0, fontWeight: 700 }}>
+                {applicant_phone}
+              </Typography>
+            </Box>
+            <Box sx={{ mt: fr.spacing("3v") }}>
+              <Typography component="dt" sx={{ p: 0 }}>
+                Email :
+              </Typography>
+              <Typography component="dd" sx={{ m: 0, p: 0, fontWeight: 700 }}>
+                {applicant_email}
+              </Typography>
+            </Box>
+          </Box>
         </Box>
       ) : !isEditing ? (
         <Box sx={{ my: fr.spacing("6v"), px: fr.spacing("4v"), py: fr.spacing("2v"), backgroundColor: "#E1FEE8", color: "#18753C", width: "100%", display: "flex", gap: "10px" }}>

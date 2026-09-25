@@ -196,7 +196,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "Labon
           <Typography component="h1" sx={{ fontSize: "32px", fontWeight: 700 }}>
             Vous recrutez des alternants ?
           </Typography>
-          <Typography component="div" sx={{ fontSize: "20px", lineHeight: "24px", mb: fr.spacing("4v"), mt: fr.spacing("8v") }}>
+          <Typography sx={{ fontSize: "20px", lineHeight: "24px", mb: fr.spacing("4v"), mt: fr.spacing("8v") }}>
             Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
           </Typography>
           <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />

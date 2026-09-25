@@ -53,8 +53,10 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
             </Box>
           </Typography>
           <Typography sx={{ fontSize: "16px", mt: "12px" }}>
-            <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
-            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Prendre contact avec une école</DsfrLink>
+            <Box component="span" sx={{ fontWeight: 700 }}>
+              Pour préparer votre premier contact avec le centre formation,
+            </Box>{" "}
+            répondez à notre quiz <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Prendre contact avec une école</DsfrLink>
           </Typography>
         </Box>
       </Box>

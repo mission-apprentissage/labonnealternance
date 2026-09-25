@@ -85,17 +85,14 @@ export function WidgetTester() {
         </Button>
       </Stack>
       <Box sx={{ p: fr.spacing("6v"), backgroundColor: fr.colors.decisions.background.altOverlap.grey.active, my: fr.spacing("6v") }}>
-        <Typography sx={{ textAlign: "center" }}>
+        <Typography sx={{ textAlign: "center", mb: fr.spacing("6v") }}>
           URL associée à l&apos;attribut{" "}
           <Typography component={"span"} sx={{ fontWeight: 700 }}>
             src
           </Typography>{" "}
-          de l&apos;iframe :<br />
-          <br />
-          <Typography component={"span"} sx={{ fontWeight: 700 }}>
-            {widgetUrl}
-          </Typography>
+          de l&apos;iframe :
         </Typography>
+        <Typography sx={{ textAlign: "center", fontWeight: 700 }}>{widgetUrl}</Typography>
       </Box>
       <hr aria-hidden="true" />
       <Typography variant="h3">Largeur 360 px - hauteur 640 px</Typography>

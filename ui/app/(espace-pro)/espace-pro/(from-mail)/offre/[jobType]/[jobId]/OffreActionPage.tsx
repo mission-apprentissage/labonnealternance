@@ -132,31 +132,31 @@ export function OffreActionPage({
         </>
       )}
 
-      <Box sx={{ mt: fr.spacing("8v") }}>
-        Aller sur le site{" "}
-        <Link
-          href={PAGES.static.home.getPath()}
-          sx={{
-            fontWeight: 700,
-          }}
-        >
-          La bonne alternance
-        </Link>
-        <br />
-        <br />
-        Se connecter à votre{" "}
-        <Link
-          href={PAGES.static.authentification.getPath()}
-          sx={{
-            fontWeight: 700,
-          }}
-        >
-          espace recruteur
-        </Link>
-        <br />
-        <br />
+      <Box component="ul" sx={{ mt: fr.spacing("8v"), p: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
+        <li>
+          Aller sur le site{" "}
+          <Link
+            href={PAGES.static.home.getPath()}
+            sx={{
+              fontWeight: 700,
+            }}
+          >
+            La bonne alternance
+          </Link>
+        </li>
+        <li>
+          Se connecter à votre{" "}
+          <Link
+            href={PAGES.static.authentification.getPath()}
+            sx={{
+              fontWeight: 700,
+            }}
+          >
+            espace recruteur
+          </Link>
+        </li>
         {jobId && (
-          <>
+          <li>
             Voir{" "}
             <Link
               href={PAGES.dynamic.jobDetail({ type: jobType, jobId }).getPath()}
@@ -167,7 +167,7 @@ export function OffreActionPage({
               l'offre
             </Link>{" "}
             sur le site La bonne alternance
-          </>
+          </li>
         )}
       </Box>
     </Box>

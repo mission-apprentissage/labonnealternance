@@ -149,7 +149,7 @@ const Formulaire = ({
                       my: fr.spacing("4v"),
                     }}
                   >
-                    <Box sx={{ fontSize: "0.75rem", lineHeight: "1.25rem", mt: "0 !important", display: "block !important" }} className="fr-info-text">
+                    <Box component="p" sx={{ fontSize: "0.75rem", lineHeight: "1.25rem", mt: "0 !important", display: "block !important" }} className="fr-info-text">
                       Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
                       email comportant <span style={{ fontWeight: "bold" }}>le nom de domaine de votre établissement.</span>
                     </Box>

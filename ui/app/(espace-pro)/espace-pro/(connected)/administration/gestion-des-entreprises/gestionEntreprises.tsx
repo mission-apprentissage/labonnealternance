@@ -116,7 +116,15 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
                 <Typography sx={{ color: "#666666", mb: fr.spacing("2v") }}>SIRET {currentCompany.siret}</Typography>
                 {!currentCompany.active && (
                   <Typography sx={{ mb: fr.spacing("2v"), color: "#CE0500", fontSize: "14px" }}>
-                    Société supprimée de la collection <strong>recruteurslba</strong> mais présente dans <strong>applications</strong>.
+                    Société supprimée de la collection{" "}
+                    <Box component="span" sx={{ fontWeight: 700 }}>
+                      recruteurslba
+                    </Box>{" "}
+                    mais présente dans{" "}
+                    <Box component="span" sx={{ fontWeight: 700 }}>
+                      applications
+                    </Box>
+                    .
                     <br />
                     Seules les mises à jour seront enregistrées.
                   </Typography>
@@ -262,7 +270,7 @@ export default function GestionEntreprises() {
         {/* Ligne 2, colonne gauche : liste des résultats (pleine largeur tant qu'aucune recherche n'est lancée) */}
         <Box sx={{ gridColumn: { lg: isEnabled ? "1" : "1 / -1" }, gridRow: { lg: "2" }, minWidth: 0 }}>
           {!isEnabled ? (
-            <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>
+            <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>
               {searchField === "workplace_siret" ? "Saisissez un SIRET (14 chiffres) pour rechercher." : "Saisissez au moins 2 caractères pour rechercher."}
             </Box>
           ) : isFetching ? (
@@ -270,7 +278,9 @@ export default function GestionEntreprises() {
               <CircularProgress />
             </Box>
           ) : companies.length === 0 ? (
-            <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>Aucun résultat.</Box>
+            <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>
+              Aucun résultat.
+            </Box>
           ) : (
             <VirtualTable
               caption={`Entreprises de l'algorithme (${companies.length})`}

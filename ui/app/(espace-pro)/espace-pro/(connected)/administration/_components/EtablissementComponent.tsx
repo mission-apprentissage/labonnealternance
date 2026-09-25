@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Input, Typography } from "@mui/material"
+import type { ReactNode } from "react"
 import { createRef, useEffect, useState } from "react"
 
 import "react-dates/initialize"
@@ -10,6 +11,17 @@ import LbaBadge from "@/app/(espace-pro)/_components/Badge"
 import { useToast } from "@/app/hooks/useToast"
 import { dayjs } from "@/common/dayjs"
 import { apiGet, apiPatch } from "@/utils/api.utils"
+
+const Field = ({ label, children }: { label: string; children: ReactNode }) => (
+  <Box sx={{ width: "100%" }}>
+    <Typography component="dt" sx={{ fontWeight: 700, mb: fr.spacing("6v") }}>
+      {label}
+    </Typography>
+    <Box component="dd" sx={{ m: 0 }}>
+      {children}
+    </Box>
+  </Box>
+)
 
 const EtablissementComponent = ({ id }: { id?: string }) => {
   const emailGestionnaireRef = createRef()
@@ -69,93 +81,38 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
       <Box sx={{ borderBottom: "1px solid #E0E5ED" }}>
         <Typography sx={{ fontSize: "20px", fontWeight: 700, p: fr.spacing("4v") }}>Etablissement</Typography>
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v") }}>
-        <Box sx={{ width: "100%" }}>
-          <Typography sx={{ fontWeight: 700 }}>
-            Raison sociale <br />
-            <br />
-            <Typography component="span" sx={{ fontWeight: 400 }}>
-              {etablissement?.raison_sociale}
-            </Typography>
-          </Typography>
-        </Box>
-        <Box sx={{ width: "100%" }}>
-          <Typography sx={{ fontWeight: 700 }}>
-            SIRET Formateur <br />
-            <br />
-            <Typography component="span" sx={{ fontWeight: 400 }}>
-              {etablissement?.formateur_siret}
-            </Typography>
-          </Typography>
-        </Box>
-        <Box sx={{ width: "100%" }}>
-          <Typography sx={{ fontWeight: 700 }}>
-            SIRET Gestionnaire <br />
-            <br />
-            <Typography component="span" sx={{ fontWeight: 400 }}>
-              {etablissement?.gestionnaire_siret}
-            </Typography>
-          </Typography>
-        </Box>
+      <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v"), m: 0 }}>
+        <Field label="Raison sociale">{etablissement?.raison_sociale}</Field>
+        <Field label="SIRET Formateur">{etablissement?.formateur_siret}</Field>
+        <Field label="SIRET Gestionnaire">{etablissement?.gestionnaire_siret}</Field>
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v") }}>
-        <Box sx={{ width: "100%" }}>
-          <Typography sx={{ fontWeight: 700 }}>
-            Adresse
-            <br />
-            <br />
-            <Typography component="span" sx={{ fontWeight: 400 }}>
-              {etablissement?.formateur_address}
-            </Typography>
-          </Typography>
-        </Box>
-        <Box sx={{ width: "100%" }}>
-          <Typography sx={{ fontWeight: 700 }}>
-            Code postal <br />
-            <br />
-            <Typography component="span" sx={{ fontWeight: 400 }}>
-              {etablissement?.formateur_zip_code}
-            </Typography>
-          </Typography>
-        </Box>
+      <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v"), m: 0 }}>
+        <Field label="Adresse">{etablissement?.formateur_address}</Field>
+        <Field label="Code postal">{etablissement?.formateur_zip_code}</Field>
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v") }}>
+      <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v"), m: 0 }}>
         {etablissement?.optout_invitation_date && (
-          <Box sx={{ width: "100%" }}>
-            <Typography sx={{ fontWeight: 700 }}>
-              Date d'invitation à l'opt-out <br />
-              <br />
-              <LbaBadge variant="neutral">{dayjs(etablissement?.optout_invitation_date).format("DD/MM/YYYY")}</LbaBadge>
-            </Typography>
-          </Box>
+          <Field label="Date d'invitation à l'opt-out">
+            <LbaBadge variant="neutral">{dayjs(etablissement?.optout_invitation_date).format("DD/MM/YYYY")}</LbaBadge>
+          </Field>
         )}
         {etablissement?.optout_activation_date && (
-          <Box sx={{ width: "100%" }}>
-            <Typography sx={{ fontWeight: 700 }}>
-              Date d'activation des formations
-              <br />
-              <br />
-              <LbaBadge variant="neutral">{dayjs(etablissement?.optout_activation_date).format("DD/MM/YYYY")}</LbaBadge>
-            </Typography>
-          </Box>
+          <Field label="Date d'activation des formations">
+            <LbaBadge variant="neutral">{dayjs(etablissement?.optout_activation_date).format("DD/MM/YYYY")}</LbaBadge>
+          </Field>
         )}
       </Box>
       {etablissement?.optout_refusal_date && (
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v") }}>
-          <Box sx={{ width: "100%" }}>
-            <Typography sx={{ fontWeight: 700 }}>
-              Date de refus de l'opt-out
-              <br />
-              <br />
-              <LbaBadge variant="neutral">{dayjs(etablissement?.optout_refusal_date).format("DD/MM/YYYY")}</LbaBadge>
-            </Typography>
-          </Box>
+        <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v"), m: 0 }}>
+          <Field label="Date de refus de l'opt-out">
+            <LbaBadge variant="neutral">{dayjs(etablissement?.optout_refusal_date).format("DD/MM/YYYY")}</LbaBadge>
+          </Field>
         </Box>
       )}
       <Box sx={{ p: fr.spacing("4v") }}>
         <Box>
           <Typography component="label" htmlFor="emailDecisionnaire" sx={{ fontWeight: 700 }}>
-            Email décisionnaire <br />
+            Email décisionnaire
           </Typography>
           <Box sx={{ mt: fr.spacing("6v"), display: "flex", alignItems: "center" }}>
             <Input

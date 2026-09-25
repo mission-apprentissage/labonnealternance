@@ -213,7 +213,7 @@ function TrainingDetailPage({
               <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("4v") }}>
                 <Box sx={{ flex: 1 }}>
                   {Boolean(appliedDate) && (
-                    <div>
+                    <Box component="p" sx={{ m: 0 }}>
                       <Typography
                         component="span"
                         className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
@@ -226,7 +226,7 @@ function TrainingDetailPage({
                       >
                         Super, vous avez déjà pris contact le {appliedDate}.
                       </Typography>
-                    </div>
+                    </Box>
                   )}
                   {elligibleForAppointment && (
                     <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
@@ -304,17 +304,15 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
         <TrainingDescriptionDetails training={training.training} />
         <Box sx={{ backgroundColor: "#f6f6f6", mt: fr.spacing("6v"), p: 2 }}>
           {training.training.onisepUrl && (
-            <div>
-              <Typography component="span">Descriptif du {training.training.title} sur&nbsp;</Typography>
-              <Typography component="span">
-                <DsfrLink href={training.training.onisepUrl}>le site Onisep&nbsp;</DsfrLink>
-              </Typography>
-            </div>
+            <Typography>
+              Descriptif du {training.training.title} sur&nbsp;
+              <DsfrLink href={training.training.onisepUrl}>le site Onisep&nbsp;</DsfrLink>
+            </Typography>
           )}
-          <Box sx={{ my: fr.spacing("4v") }}>
+          <Typography sx={{ my: fr.spacing("4v") }}>
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
             <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Préparez votre premier contact avec un CFA&nbsp;</DsfrLink>
-          </Box>
+          </Typography>
         </Box>
       </Box>
       {IJStats.isFetched && IJStats.data ? <StatsInserJeunes stats={IJStats.data} /> : null}
@@ -375,41 +373,25 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
             CFA d&apos;entreprise concerné :
           </Typography>
 
-          <Box sx={{ my: fr.spacing("4v") }}>
-            <Box>
-              &bull;{" "}
-              <Typography
-                component="span"
-                sx={{
-                  ml: fr.spacing("8v"),
-                }}
-              >
-                Commencez par vous inscrire à la formation pour accéder ensuite au contrat,
-              </Typography>
-            </Box>
-            <Box>
-              &bull;{" "}
-              <Typography
-                component="span"
-                sx={{
-                  ml: fr.spacing("8v"),
-                }}
-              >
-                Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.
-              </Typography>
-            </Box>
+          <Box component="ul" sx={{ my: fr.spacing("4v"), pl: fr.spacing("10v") }}>
+            <Typography component="li" sx={{ pb: 0 }}>
+              Commencez par vous inscrire à la formation pour accéder ensuite au contrat,
+            </Typography>
+            <Typography component="li" sx={{ pb: 0 }}>
+              Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.
+            </Typography>
           </Box>
 
           <Typography>Prenez contact avec cet établissement ou consultez son site web pour en savoir + !</Typography>
 
-          <Box
+          <Typography
             sx={{
               my: fr.spacing("4v"),
             }}
           >
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
             <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Préparez votre premier contact avec un CFA&nbsp;</DsfrLink>
-          </Box>
+          </Typography>
         </Box>
       )}
     </>
@@ -430,9 +412,7 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
             }}
           >
             <Typography sx={{ fontWeight: "700" }}>Description de la formation</Typography>
-            <Typography component="span" sx={dontBreakOutCssParameters}>
-              {training.description}
-            </Typography>
+            <Typography sx={dontBreakOutCssParameters}>{training.description}</Typography>
           </Box>
         </Box>
       )}
@@ -446,9 +426,7 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
             }}
           >
             <Typography sx={{ fontWeight: "700" }}>Objectifs</Typography>
-            <Typography component="span" sx={dontBreakOutCssParameters}>
-              {training.objectif}
-            </Typography>
+            <Typography sx={dontBreakOutCssParameters}>{training.objectif}</Typography>
           </Box>
         </Box>
       )}
@@ -457,14 +435,16 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
           <Image width={24} height={24} src="/images/icons/training-academic-cap.svg" alt="" />
           <Box sx={{ pl: fr.spacing("8v"), whiteSpace: "pre-wrap" }}>
             <Typography sx={{ fontWeight: "700" }}>Sessions de formation</Typography>
-            {isPermanentEntry
-              ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
-              : training["sessions"].map((session: any, i: number) => (
-                  <Fragment key={i}>
-                    du {formatDate(session.startDate)} au {formatDate(session.endDate)}
-                    <br />
-                  </Fragment>
-                ))}
+            <Typography>
+              {isPermanentEntry
+                ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
+                : training["sessions"].map((session: any, i: number) => (
+                    <Fragment key={i}>
+                      du {formatDate(session.startDate)} au {formatDate(session.endDate)}
+                      <br />
+                    </Fragment>
+                  ))}
+            </Typography>
           </Box>
         </Box>
       ) : null}

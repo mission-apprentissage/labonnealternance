@@ -32,15 +32,17 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
             alignItems: "center",
           }}
         >
-          <Typography>
-            Nous sélectionnons pour vous des entreprises dont nous jugeons qu’il est possible qu’elles recrutent des alternants.
-            <br />
-            <strong>L’entreprise {recruteurLba?.company?.name} n’a pas déposé d’offre mais serait susceptible de recruter.</strong> Renseignez-vous sur ses activités et les métiers
-            qu’elle exerce avant de soumettre votre candidature spontanée.
-            <br />
-            <br />
-            <strong>Les candidats envoyant des candidatures spontanées ont plus de chance de trouver un employeur.</strong>
-          </Typography>
+          <Box>
+            <Typography sx={{ mb: fr.spacing("6v") }}>
+              Nous sélectionnons pour vous des entreprises dont nous jugeons qu’il est possible qu’elles recrutent des alternants.
+              <br />
+              <strong>L’entreprise {recruteurLba?.company?.name} n’a pas déposé d’offre mais serait susceptible de recruter.</strong> Renseignez-vous sur ses activités et les
+              métiers qu’elle exerce avant de soumettre votre candidature spontanée.
+            </Typography>
+            <Typography>
+              <strong>Les candidats envoyant des candidatures spontanées ont plus de chance de trouver un employeur.</strong>
+            </Typography>
+          </Box>
           <Box
             sx={{
               px: fr.spacing("4v"),
@@ -79,20 +81,18 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
           </List>
         </Accordion>
         <Accordion label="2. Préparez votre candidature spontanée">
-          <Typography>
+          <Typography sx={{ mb: fr.spacing("6v") }}>
             Après une recherche approfondie sur l'entreprise, personnalisez votre lettre de motivation en précisant tout d'abord pourquoi elle vous intéresse particulièrement : son
             domaine d'activité, ses valeurs, etc.
             <br />
             Mettez ensuite en avant vos qualités en lien avec le métier recherché. Puis terminez en exposant ce que vous pensez apporter à l'entreprise lors de votre alternance.
             Adaptez également votre CV.
-            <br />
-            <br />
+          </Typography>
+          <Typography sx={{ mb: fr.spacing("6v") }}>
             Pour cela, le service <DsfrLink href="https://diagoriente.beta.gouv.fr/">Diagoriente</DsfrLink> vous aide à valoriser vos compétences sur votre CV sur la base de vos
             expériences et vos centres d'intérêt.
-            <br />
-            <br />
-            Pour rendre votre CV plus beau et professionnel, vous pouvez utiliser ces outils gratuits :
           </Typography>
+          <Typography>Pour rendre votre CV plus beau et professionnel, vous pouvez utiliser ces outils gratuits :</Typography>
           <List sx={{ pl: fr.spacing("6v"), listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
             <ListItem>
               <DsfrLink href="https://cv.clicnjob.fr/">https://cv.clicnjob.fr/</DsfrLink>
@@ -106,34 +106,20 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
           </List>
         </Accordion>
         <Accordion label="3. Anticiper la suite">
-          <Typography>
+          <Typography sx={{ mb: fr.spacing("6v") }}>
             Une fois votre candidature envoyée, notez-vous un rappel pour pouvoir relancer l'entreprise dans 10 jours si vous n'avez pas de réponse d'ici là.
-            <br />
-            <br />
-            <strong>Vous ne recevez pas de réponse ?</strong>
-            <br />
-            Voici un exemple de relance par téléphone :
-            <br />
-            <Typography
-              component="span"
-              sx={{
-                py: fr.spacing("8v"),
-                fontStyle: "italic",
-                color: "#6A6A6A",
-              }}
-            >
-              "Bonjour,
-              <br />
-              Je suis [Prénom Nom]. Je vous appelle car je vous ai envoyé ma candidature par mail le [jour/mois] pour un poste d'apprenti [intitulé du poste visé]. N'ayant pas reçu
-              de réponse, je me permets de vous relancer car je suis vraiment très intéressé·e par votre entreprise. Je serai heureux·se de vous expliquer plus en détail ma
-              motivation lors d'un rendez-vous. Pourriez-vous me dire à qui je dois m'adresser pour savoir où en est ma candidature et quand puis-je espérer recevoir une réponse ?"
-            </Typography>
-            <br />
-            <br />
-            <strong>Vous avez une proposition d'entretien ?</strong>
-            <br />
-            Préparez-vous avec ce quizz interactif :
           </Typography>
+          <Typography sx={{ fontWeight: 700 }}>Vous ne recevez pas de réponse ?</Typography>
+          <Typography>Voici un exemple de relance par téléphone :</Typography>
+          <Typography component="blockquote" sx={{ m: 0, mb: fr.spacing("6v"), fontStyle: "italic", color: "#6A6A6A" }}>
+            "Bonjour,
+            <br />
+            Je suis [Prénom Nom]. Je vous appelle car je vous ai envoyé ma candidature par mail le [jour/mois] pour un poste d'apprenti [intitulé du poste visé]. N'ayant pas reçu
+            de réponse, je me permets de vous relancer car je suis vraiment très intéressé·e par votre entreprise. Je serai heureux·se de vous expliquer plus en détail ma
+            motivation lors d'un rendez-vous. Pourriez-vous me dire à qui je dois m'adresser pour savoir où en est ma candidature et quand puis-je espérer recevoir une réponse ?"
+          </Typography>
+          <Typography sx={{ fontWeight: 700 }}>Vous avez une proposition d'entretien ?</Typography>
+          <Typography>Préparez-vous avec ce quizz interactif :</Typography>
           <List sx={{ pl: fr.spacing("6v"), listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
             <ListItem>
               <DsfrLink href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac">Préparer un entretien avec un employeur</DsfrLink>

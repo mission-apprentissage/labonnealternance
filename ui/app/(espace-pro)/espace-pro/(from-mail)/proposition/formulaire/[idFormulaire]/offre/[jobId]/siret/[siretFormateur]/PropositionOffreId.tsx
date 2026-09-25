@@ -184,8 +184,12 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
             }}
           >
             <NextImage src="/images/icons/bulb.png" alt="" width={24} height={24} />
-            <Box>
-              Pour aider le recruteur à vous identifier, indiquez que vous le contactez suite à son dépôt d’offre sur le site <strong>{jobOrigin}</strong>.
+            <Box component="p" sx={{ m: 0 }}>
+              Pour aider le recruteur à vous identifier, indiquez que vous le contactez suite à son dépôt d’offre sur le site{" "}
+              <Box component="span" sx={{ fontWeight: 700 }}>
+                {jobOrigin}
+              </Box>
+              .
             </Box>
           </Box>
           <Box sx={{ border: "solid 1px #000091", p: fr.spacing("6v") }}>

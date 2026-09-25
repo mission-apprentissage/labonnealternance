@@ -1,3 +1,4 @@
+import { Box } from "@mui/material"
 import type { SharedProps } from "notistack"
 import { enqueueSnackbar } from "notistack"
 import { useCallback } from "react"
@@ -11,7 +12,11 @@ export function useToast() {
   return useCallback((opts: ToastOptions) => {
     const message = (
       <div>
-        {opts.title && <strong>{opts.title}</strong>}
+        {opts.title && (
+          <Box component="span" sx={{ fontWeight: 700 }}>
+            {opts.title}
+          </Box>
+        )}
         {opts.description && <div>{opts.description}</div>}
       </div>
     )
