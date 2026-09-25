@@ -6,10 +6,14 @@ import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import { useId, useState } from "react"
 import type { IFeedbackQuestion } from "shared/models/feedback-form.model"
+import { FEEDBACK_RATING_OPTIONS } from "shared/models/feedback-form.model"
+import type { IFeedbackFormResultsJSON } from "shared/models/feedback-response.model"
 
 import { QUESTION_TYPE_LABEL } from "../_utils/questionDrafts"
-import type { IFeedbackChoiceStat, IFeedbackComment } from "./fakeFeedbackResults"
-import { getFakeQuestionStats } from "./fakeFeedbackResults"
+import type { IFeedbackChoiceStat, IFeedbackQuestionResults } from "./feedbackResults.utils"
+import { getChoiceStats } from "./feedbackResults.utils"
+
+type IFeedbackComments = NonNullable<IFeedbackQuestionResults["comments"]>
 
 const VISIBLE_COMMENTS = 3
 
@@ -45,22 +49,24 @@ function ChoiceBars({ choices, colorFor }: { choices: IFeedbackChoiceStat[]; col
   )
 }
 
-function Comments({ comments }: { comments: IFeedbackComment[] }) {
+const ratingLabel = (value: string | null) => FEEDBACK_RATING_OPTIONS.find((option) => option.value === value)?.label ?? null
+
+function Comments({ comments: { total, latest } }: { comments: IFeedbackComments }) {
   const [expanded, setExpanded] = useState(false)
   const listId = useId()
-  const visible = expanded ? comments : comments.slice(0, VISIBLE_COMMENTS)
+  const visible = expanded ? latest : latest.slice(0, VISIBLE_COMMENTS)
 
   return (
     <>
       <Box component="ul" id={listId} sx={{ m: 0, p: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-        {visible.map((comment) => (
-          <Box component="li" key={comment.id} sx={{ p: 0 }}>
+        {visible.map((comment, position) => (
+          <Box component="li" key={position} sx={{ p: 0 }}>
             <Typography sx={{ fontSize: "14px", mb: fr.spacing("1v") }}>{comment.text}</Typography>
-            <Typography sx={{ ...mention, fontSize: "12px" }}>{[dayjs(comment.date).format("DD/MM/YYYY"), comment.rating].filter(Boolean).join(" · ")}</Typography>
+            <Typography sx={{ ...mention, fontSize: "12px" }}>{[dayjs(comment.date).format("DD/MM/YYYY"), ratingLabel(comment.rating)].filter(Boolean).join(" · ")}</Typography>
           </Box>
         ))}
       </Box>
-      {comments.length > VISIBLE_COMMENTS && (
+      {latest.length > VISIBLE_COMMENTS && (
         <Box>
           <Button
             type="button"
@@ -69,7 +75,7 @@ function Comments({ comments }: { comments: IFeedbackComment[] }) {
             nativeButtonProps={{ "aria-expanded": expanded, "aria-controls": listId }}
             onClick={() => setExpanded((previous) => !previous)}
           >
-            {expanded ? "Voir moins" : `Voir les ${comments.length} commentaires`}
+            {expanded ? "Voir moins" : total > latest.length ? `Voir les ${latest.length} derniers commentaires` : `Voir les ${total} commentaires`}
           </Button>
         </Box>
       )}
@@ -78,9 +84,11 @@ function Comments({ comments }: { comments: IFeedbackComment[] }) {
 }
 
 /** Répartition des réponses d'une question : barres pour les choix, derniers commentaires pour un texte libre. */
-function QuestionStatsCard({ question, index, questions }: { question: IFeedbackQuestion; index: number; questions: IFeedbackQuestion[] }) {
-  const stats = getFakeQuestionStats(question, index, questions)
-  const count = stats.kind === "selections" ? `${stats.selections.toLocaleString("fr-FR")} sélections` : `${stats.responses.toLocaleString("fr-FR")} réponses`
+function QuestionStatsCard({ question, index, results }: { question: IFeedbackQuestion; index: number; results: IFeedbackQuestionResults }) {
+  const plural = (count: number, word: string) => `${count.toLocaleString("fr-FR")} ${word}${count > 1 ? "s" : ""}`
+  const isMulti = question.type === "multi_select"
+  const selections = results.choices.reduce((sum, { count }) => sum + count, 0)
+  const count = results.answered ? (isMulti ? plural(selections, "sélection") : plural(results.answered, "réponse")) : null
 
   return (
     <Box
@@ -102,23 +110,25 @@ function QuestionStatsCard({ question, index, questions }: { question: IFeedback
         <Typography id={`resultats-question-${question.id}`} component="h3" sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700, my: fr.spacing("1v") }}>
           {question.label}
         </Typography>
-        <Typography sx={mention}>{count}</Typography>
+        {count && <Typography sx={mention}>{count}</Typography>}
       </Box>
 
-      {stats.kind === "comments" ? (
-        <Comments comments={stats.comments} />
+      {!results.answered ? (
+        <Typography sx={mention}>{question.type === "text" ? "Aucun commentaire pour l'instant" : "Aucune réponse pour l'instant"}</Typography>
+      ) : results.comments ? (
+        <Comments comments={results.comments} />
       ) : (
-        <ChoiceBars choices={stats.choices} colorFor={(choice) => (question.type === "rating" ? RATING_COLORS[choice.value] : CHOICE_COLOR)} />
+        <ChoiceBars choices={getChoiceStats(question, results)} colorFor={(choice) => (question.type === "rating" ? RATING_COLORS[choice.value] : CHOICE_COLOR)} />
       )}
 
-      {stats.kind === "selections" && (
+      {isMulti && results.answered > 0 && (
         <Typography sx={{ ...mention, fontSize: "12px" }}>Plusieurs réponses possibles — les pourcentages portent sur le total des sélections.</Typography>
       )}
     </Box>
   )
 }
 
-export function FeedbackQuestionStats({ questions }: { questions: IFeedbackQuestion[] }) {
+export function FeedbackQuestionStats({ questions, results }: { questions: IFeedbackQuestion[]; results: IFeedbackFormResultsJSON }) {
   return (
     <Box
       sx={{
@@ -130,7 +140,12 @@ export function FeedbackQuestionStats({ questions }: { questions: IFeedbackQuest
       }}
     >
       {questions.map((question, index) => (
-        <QuestionStatsCard key={question.id} question={question} index={index} questions={questions} />
+        <QuestionStatsCard
+          key={question.id}
+          question={question}
+          index={index}
+          results={results.questions.find(({ question_id }) => question_id === question.id) ?? { question_id: question.id, answered: 0, choices: [], comments: null }}
+        />
       ))}
     </Box>
   )

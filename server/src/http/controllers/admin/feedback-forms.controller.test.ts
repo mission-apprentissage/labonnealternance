@@ -515,4 +515,94 @@ describe("admin feedback-forms controller", () => {
       expect(await getDbCollection("feedback_display_counts").countDocuments({})).toEqual(0)
     })
   })
+
+  describe("résultats", () => {
+    const resultsForm: IFeedbackFormInput = {
+      ...generalInfoOnly,
+      questions: [
+        { id: "q1", type: "rating", label: "Utile ?", required: true, scale: "thumbs3" },
+        {
+          id: "q2",
+          type: "multi_select",
+          label: "Filtres ?",
+          required: false,
+          options: [
+            { value: "contrat", label: "Contrat" },
+            { value: "niveau", label: "Niveau" },
+          ],
+        },
+        { id: "q3", type: "text", label: "Pourquoi ?", required: false, maxLength: 200 },
+      ],
+    }
+    const context = { page: "/formation/:id/:intitule-formation", path_params: { id: "1", "intitule-formation": "cap" }, query: {} }
+
+    const answer = async (answers: object[], skipped: string[] = []) => {
+      const { display_id } = (await httpClient().inject({ method: "POST", path: "/api/feedback-forms/page_entreprise_v1/displays", body: context })).json()
+      const { response_id, token } = (await httpClient().inject({ method: "POST", path: "/api/feedback-forms/page_entreprise_v1/responses", body: { display_id } })).json()
+      if (answers.length || skipped.length) {
+        await httpClient().inject({ method: "PUT", path: `/api/feedback-responses/${response_id}`, body: { token, answers, skipped } })
+      }
+    }
+
+    it("renvoie des résultats vides pour un formulaire sans affichage", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken, resultsForm)
+
+      const response = await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms/page_entreprise_v1/results", headers: bearerToken })
+
+      expect(response.statusCode).toEqual(200)
+      expect(response.json()).toEqual({
+        displays: { total: 0, since: null },
+        responses: { started: 0, completed: 0 },
+        questions: [
+          { question_id: "q1", answered: 0, choices: [], comments: null },
+          { question_id: "q2", answered: 0, choices: [], comments: null },
+          { question_id: "q3", answered: 0, choices: [], comments: { total: 0, latest: [] } },
+        ],
+      })
+    })
+
+    it("compte affichages, parcours commencés et terminés, sélections et commentaires", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken, resultsForm)
+      await httpClient().inject({ method: "POST", path: "/api/admin/feedback-forms/page_entreprise_v1/activate", headers: bearerToken })
+
+      await answer([
+        { question_id: "q1", choices: ["positive"] },
+        { question_id: "q2", choices: ["contrat", "niveau"] },
+        { question_id: "q3", text: "Très clair" },
+      ])
+      await answer(
+        [
+          { question_id: "q1", choices: ["negative"] },
+          { question_id: "q2", choices: ["contrat"] },
+        ],
+        ["q3"]
+      )
+      await answer([{ question_id: "q1", choices: ["negative"] }])
+      await answer([])
+
+      const response = await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms/page_entreprise_v1/results", headers: bearerToken })
+      const results = response.json()
+
+      expect(results.displays).toEqual({ total: 4, since: new Date().toISOString().slice(0, 10) })
+      expect(results.responses).toEqual({ started: 3, completed: 2 })
+      const [rating, multi, text] = results.questions
+      expect(rating.answered).toEqual(3)
+      expect(rating.choices).toEqual(
+        expect.arrayContaining([
+          { value: "positive", count: 1 },
+          { value: "negative", count: 2 },
+        ])
+      )
+      expect(multi.answered).toEqual(2)
+      expect(multi.choices).toEqual(
+        expect.arrayContaining([
+          { value: "contrat", count: 2 },
+          { value: "niveau", count: 1 },
+        ])
+      )
+      expect(text).toMatchObject({ answered: 1, choices: [], comments: { total: 1, latest: [{ text: "Très clair", rating: "positive", date: expect.any(String) }] } })
+    })
+  })
 })

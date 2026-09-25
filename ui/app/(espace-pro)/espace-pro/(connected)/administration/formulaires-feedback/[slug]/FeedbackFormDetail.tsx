@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useParams, useRouter } from "next/navigation"
@@ -26,7 +26,7 @@ import { FeedbackFormResultsSummary } from "./FeedbackFormResultsSummary"
 import { FeedbackQuestionStats } from "./FeedbackQuestionStats"
 
 /**
- * Page de résultats d'un formulaire, sans onglets : les résultats en tête (à venir), puis le
+ * Page de résultats d'un formulaire, sans onglets : les résultats en tête (chiffres clés puis détail par question), puis le
  * récapitulatif de la définition. Porte les mêmes actions que le menu de la liste, les
  * destructives passant par la même modale de confirmation.
  */
@@ -47,6 +47,12 @@ export function FeedbackFormDetail() {
   } = useQuery({
     queryKey: ["/admin/feedback-forms/:slug", slug],
     queryFn: () => apiGet("/admin/feedback-forms/:slug", { params: { slug } }),
+    retry: false,
+  })
+
+  const results = useQuery({
+    queryKey: ["/admin/feedback-forms/:slug/results", slug],
+    queryFn: () => apiGet("/admin/feedback-forms/:slug/results", { params: { slug } }),
     retry: false,
   })
 
@@ -167,14 +173,21 @@ export function FeedbackFormDetail() {
         <Typography id="resultats-titre" component="h2" className={fr.cx("fr-h5")} sx={{ mb: fr.spacing("3v") }}>
           Résultats
         </Typography>
-        <Typography className={fr.cx("fr-text--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("3v") }}>
-          Valeurs factices, en attendant la collecte des réponses.
-        </Typography>
-        <FeedbackFormResultsSummary since={form.created_at} />
-        {questions.length > 0 && (
-          <Box sx={{ mt: fr.spacing("6v") }}>
-            <FeedbackQuestionStats questions={questions} />
+        {results.isLoading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+            <CircularProgress aria-label="Chargement des résultats" />
           </Box>
+        ) : results.isError || !results.data ? (
+          <FeedbackFormLoadError error={results.error} subject="les résultats" onRetry={() => results.refetch()} />
+        ) : (
+          <>
+            <FeedbackFormResultsSummary results={results.data} questions={questions} />
+            {questions.length > 0 && (
+              <Box sx={{ mt: fr.spacing("6v") }}>
+                <FeedbackQuestionStats questions={questions} results={results.data} />
+              </Box>
+            )}
+          </>
         )}
       </Box>
 

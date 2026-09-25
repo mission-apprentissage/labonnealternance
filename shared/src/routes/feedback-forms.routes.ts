@@ -1,7 +1,7 @@
 import { z } from "../helpers/zod-with-open-api.js"
 import { ZFeedbackPageContext } from "../models/feedback-display.model.js"
 import { FEEDBACK_FORM_MAX_QUESTIONS, ZFeedbackForm, ZFeedbackFormForAdmin, ZFeedbackFormInput, ZFeedbackFormPublic, ZFeedbackFormStatus } from "../models/feedback-form.model.js"
-import { FEEDBACK_RESPONSE_STATUS, ZFeedbackAnswer } from "../models/feedback-response.model.js"
+import { FEEDBACK_RESPONSE_STATUS, ZFeedbackAnswer, ZFeedbackFormResults } from "../models/feedback-response.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 
@@ -33,6 +33,15 @@ export const zFeedbackFormsRoutes = {
       }),
       response: {
         "200": z.strictObject({ forms: z.array(ZFeedbackFormForAdmin) }),
+      },
+      securityScheme: adminSecurity,
+    },
+    "/admin/feedback-forms/:slug/results": {
+      method: "get",
+      path: "/admin/feedback-forms/:slug/results",
+      params: z.strictObject({ slug: z.string() }),
+      response: {
+        "200": ZFeedbackFormResults,
       },
       securityScheme: adminSecurity,
     },

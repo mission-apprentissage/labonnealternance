@@ -5,7 +5,8 @@ import { ObjectId } from "mongodb"
 import type { IFeedbackPageContext } from "shared/models/feedback-display.model"
 import type { IFeedbackAnswersByQuestion, IFeedbackForm, IFeedbackQuestion } from "shared/models/feedback-form.model"
 import { FEEDBACK_RATING_OPTIONS, getFeedbackCurrentQuestion, isFeedbackQuestionVisible } from "shared/models/feedback-form.model"
-import type { IFeedbackAnswer, IFeedbackResponse } from "shared/models/feedback-response.model"
+import type { IFeedbackAnswer, IFeedbackFormResults, IFeedbackResponse } from "shared/models/feedback-response.model"
+import { FEEDBACK_RESULTS_MAX_COMMENTS } from "shared/models/feedback-response.model"
 import { sanitizeFeedbackUrlParams } from "shared/utils/feedback-url-params"
 import { getScopeParamNames } from "shared/utils/ui-routes.utils"
 
@@ -150,4 +151,81 @@ export async function updateFeedbackResponse(id: string, { token, answers, skipp
     { $set: { answers, skipped, status: completed ? "completed" : "in_progress", updated_at: now, completed_at: completed ? (response.completed_at ?? now) : null } }
   )
   return { status: completed ? ("completed" as const) : ("in_progress" as const) }
+}
+
+type IResultsFacets = {
+  totals: { started: number; completed: number }[]
+  answered: { _id: string; count: number }[]
+  choices: { _id: { question_id: string; value: string }; count: number }[]
+  comments: { _id: string; total: number; latest: { text: string; date: Date; rating: string | null }[] }[]
+}
+
+/**
+ * Résultats d'un formulaire, calculés à la demande : aux volumes attendus (quelques milliers de
+ * parcours), une agrégation suffit, sans compteur à entretenir hormis les affichages par jour.
+ * Seuls les parcours commencés (au moins une réponse) sont comptés.
+ */
+export async function getFeedbackFormResults(slug: string): Promise<IFeedbackFormResults> {
+  const form = await getDbCollection("feedback_forms").findOne({ slug })
+  if (!form) {
+    throw notFound("Formulaire introuvable")
+  }
+  // la note rapide accompagne chaque commentaire : c'est la première question de ce type, s'il y en a une
+  const ratingQuestionId = form.questions.find(({ type }) => type === "rating")?.id ?? null
+
+  const [displays] = await getDbCollection("feedback_display_counts")
+    .aggregate<{ total: number; since: string }>([{ $match: { form_slug: slug } }, { $group: { _id: null, total: { $sum: "$displays" }, since: { $min: "$day" } } }])
+    .toArray()
+
+  const [facets] = await getDbCollection("feedback_responses")
+    .aggregate<IResultsFacets>([
+      { $match: { form_slug: slug, answers: { $ne: [] } } },
+      {
+        $facet: {
+          totals: [{ $group: { _id: null, started: { $sum: 1 }, completed: { $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] } } } }],
+          answered: [{ $unwind: "$answers" }, { $group: { _id: "$answers.question_id", count: { $sum: 1 } } }],
+          choices: [
+            { $unwind: "$answers" },
+            { $unwind: "$answers.choices" },
+            { $group: { _id: { question_id: "$answers.question_id", value: "$answers.choices" }, count: { $sum: 1 } } },
+          ],
+          comments: [
+            {
+              $addFields: {
+                rating: {
+                  $first: { $map: { input: { $filter: { input: "$answers", cond: { $eq: ["$$this.question_id", ratingQuestionId] } } }, in: { $first: "$$this.choices" } } },
+                },
+              },
+            },
+            { $unwind: "$answers" },
+            { $match: { "answers.text": { $exists: true } } },
+            { $sort: { updated_at: -1 } },
+            {
+              $group: {
+                _id: "$answers.question_id",
+                total: { $sum: 1 },
+                latest: { $push: { text: "$answers.text", date: "$updated_at", rating: { $ifNull: ["$rating", null] } } },
+              },
+            },
+            { $project: { total: 1, latest: { $slice: ["$latest", FEEDBACK_RESULTS_MAX_COMMENTS] } } },
+          ],
+        },
+      },
+    ])
+    .toArray()
+
+  const totals = facets?.totals[0] ?? { started: 0, completed: 0 }
+  return {
+    displays: { total: displays?.total ?? 0, since: displays?.since ?? null },
+    responses: { started: totals.started, completed: totals.completed },
+    questions: form.questions.map((question) => {
+      const comments = facets?.comments.find(({ _id }) => _id === question.id)
+      return {
+        question_id: question.id,
+        answered: facets?.answered.find(({ _id }) => _id === question.id)?.count ?? 0,
+        choices: (facets?.choices ?? []).filter(({ _id }) => _id.question_id === question.id).map(({ _id, count }) => ({ value: _id.value, count })),
+        comments: question.type === "text" ? { total: comments?.total ?? 0, latest: comments?.latest ?? [] } : null,
+      }
+    }),
+  }
 }

@@ -1,3 +1,5 @@
+import type { Jsonify } from "type-fest"
+
 import { z } from "../helpers/zod-with-open-api.js"
 
 import type { IModelDescriptor } from "./common.js"
@@ -42,3 +44,34 @@ export default {
   // tolérant aux champs hors schéma jusqu'à la stabilisation du modèle, cf. feedback-form.model
   authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor
+
+/** Nombre de commentaires rapportés au plus par question à texte libre, du plus récent au plus ancien. */
+export const FEEDBACK_RESULTS_MAX_COMMENTS = 100
+
+/**
+ * Résultats d'un formulaire pour la page « Voir les résultats ». Des comptes bruts : les
+ * pourcentages se calculent à l'affichage. Une entrée par question de la définition, dans l'ordre.
+ */
+export const ZFeedbackFormResults = z.object({
+  // `since` : premier jour (UTC, AAAA-MM-JJ) où le bouton est apparu
+  displays: z.object({ total: z.number().int().nonnegative(), since: z.string().nullable() }),
+  // `started` : au moins une question répondue
+  responses: z.object({ started: z.number().int().nonnegative(), completed: z.number().int().nonnegative() }),
+  questions: z.array(
+    z.object({
+      question_id: z.string(),
+      answered: z.number().int().nonnegative(),
+      // sélections par valeur (notes et options), vide pour un texte libre
+      choices: z.array(z.object({ value: z.string(), count: z.number().int().nonnegative() })),
+      // texte libre : nombre total et derniers commentaires, avec la note rapide du même parcours
+      comments: z
+        .object({
+          total: z.number().int().nonnegative(),
+          latest: z.array(z.object({ text: z.string(), date: z.coerce.date<Date>(), rating: z.string().nullable() })),
+        })
+        .nullable(),
+    })
+  ),
+})
+export type IFeedbackFormResults = z.output<typeof ZFeedbackFormResults>
+export type IFeedbackFormResultsJSON = Jsonify<IFeedbackFormResults>
