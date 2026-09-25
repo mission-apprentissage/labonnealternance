@@ -223,7 +223,9 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
         type: "date",
         defaultValue: params.start_date ?? "",
         onBlur: (e) => setStartDate(e.target.value || undefined),
-        onChange: (e) => { if (!e.target.value) setStartDate(undefined) },
+        onChange: (e) => {
+          if (!e.target.value) setStartDate(undefined)
+        },
       }}
     />
   )
