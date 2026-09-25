@@ -213,13 +213,17 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
     },
   ]
 
+  // key forces remount when start_date is cleared externally (e.g. "Réinitialiser les filtres"),
+  // otherwise defaultValue ignores the reset (React doesn't update uncontrolled inputs after mount).
   const startDateInput = (
     <Input
+      key={params.start_date ?? ""}
       label="À partir du"
       nativeInputProps={{
         type: "date",
-        value: params.start_date ?? "",
-        onChange: (e) => setStartDate(e.target.value || undefined),
+        defaultValue: params.start_date ?? "",
+        onBlur: (e) => setStartDate(e.target.value || undefined),
+        onChange: (e) => { if (!e.target.value) setStartDate(undefined) },
       }}
     />
   )
