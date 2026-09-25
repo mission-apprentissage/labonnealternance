@@ -48,7 +48,7 @@ export const LbaJobDetail = ({ job, title, jobSearchedByUser }: { job: ILbaItemP
 
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          Description du métier
+          Description
         </Typography>
         <JobDescription job={job} />
         {/* description rédigée par le recruteur : elle remplace la fiche métier, on n'affiche pas les deux */}
