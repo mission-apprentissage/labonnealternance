@@ -116,8 +116,13 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
           {job.job_employer_description && (
             <Box>
               <Typography sx={{ fontSize: "24px", mb: fr.spacing("6v"), fontWeight: 700 }}>Présentation de l’entreprise</Typography>
-              {/* stocké ré-encodé par sanitizeTextField : à rendre en HTML, comme sur la fiche détail */}
-              <Typography sx={{ fontSize: "16px", whiteSpace: "pre-wrap", mb: fr.spacing("6v") }} dangerouslySetInnerHTML={{ __html: job.job_employer_description }} />
+              {/* stocké ré-encodé par sanitizeTextField, qui conserve <p> et <ul> : rendu en HTML dans un div,
+                  comme sur la fiche détail — un <p> les invaliderait */}
+              <Typography
+                component="div"
+                sx={{ fontSize: "16px", whiteSpace: "pre-wrap", mb: fr.spacing("6v") }}
+                dangerouslySetInnerHTML={{ __html: job.job_employer_description }}
+              />
               <hr />
             </Box>
           )}
@@ -159,7 +164,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
                 Description
               </Typography>
               {/* cf. job_employer_description */}
-              <Typography sx={{ fontSize: "16px", whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: job.job_description }} />
+              <Typography component="div" sx={{ fontSize: "16px", whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: job.job_description }} />
             </Box>
           ) : (
             competencesRome && <RomeDetailReadOnly romeReferentiel={job.rome_detail} competences={competencesRome} appellation={job.rome_appellation_label} />
