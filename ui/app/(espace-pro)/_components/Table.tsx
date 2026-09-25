@@ -71,7 +71,7 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                                 },
                               }}
                             >
-                              <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
+                              <Typography component="span" className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
                                 {column.srOnly ? column.srOnly : column.render("Header")}
                               </Typography>
                               <Box component="span" sx={{ pl: fr.spacing("2v") }}>

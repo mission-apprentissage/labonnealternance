@@ -137,14 +137,8 @@ export default function Authentification() {
                 <form ref={formRef} onSubmit={handleSubmit} noValidate autoComplete="off">
                   <CustomInput name="email" label="Votre email" type="email" value={values.email} autoFocus />
                   <Alerts />
-                  <Button type="submit" disabled={isSubmitting} style={{ width: "100%" }}>
-                    <Box
-                      sx={{
-                        margin: "auto",
-                      }}
-                    >
-                      Se connecter
-                    </Box>
+                  <Button type="submit" disabled={isSubmitting} style={{ width: "100%", justifyContent: "center" }}>
+                    Se connecter
                   </Button>
                 </form>
               )

@@ -53,7 +53,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
         <Box sx={{ p: fr.spacing("10v"), marginBottom: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
             Tous les emplois et formations en alternance en
-            <Typography component="h1" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
+            <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
               {relatedMetier.name}
             </Typography>
           </Typography>

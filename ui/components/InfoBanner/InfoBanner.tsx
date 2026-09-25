@@ -9,7 +9,7 @@ import type { IDisplayState } from "@/context/DisplayContextProvider"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const blueBannerText = (
-  <Typography>
+  <Typography component="div">
     <Typography>
       <Typography component="span" sx={{ fontWeight: 700 }}>
         Comment pourrions-nous faciliter vos recrutements en alternance ?{" "}
