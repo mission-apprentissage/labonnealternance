@@ -16,11 +16,15 @@ export function InfoDelegation() {
         </Typography>
         <Box>
           <Typography sx={{ mt: fr.spacing("6v") }}>
-            <strong>Gagner du temps : </strong>Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre
-            région.
+            <Box component="span" sx={{ fontWeight: 700 }}>
+              Gagner du temps :{" "}
+            </Box>
+            Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre région.
           </Typography>
           <Typography sx={{ mt: fr.spacing("6v") }}>
-            <strong>Rejoindre le réseau des acteurs de l'apprentissage de votre territoire : </strong>
+            <Box component="span" sx={{ fontWeight: 700 }}>
+              Rejoindre le réseau des acteurs de l'apprentissage de votre territoire :{" "}
+            </Box>
             Développez des relations de confiance avec les acteurs de l'apprentissage de votre territoire afin de promouvoir votre entreprise et vos métiers auprès des jeunes.
           </Typography>
         </Box>

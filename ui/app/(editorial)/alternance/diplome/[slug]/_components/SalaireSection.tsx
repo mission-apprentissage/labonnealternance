@@ -24,7 +24,11 @@ export function SalaireSection({ titre, utmParams }: { titre: React.ReactNode; u
       <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v") }}>
         {titre}
       </Typography>
-      <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }} />
+      <Box
+        aria-hidden="true"
+        component="hr"
+        sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+      />
       <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }} gutterBottom>
         Rémunération et évolution des apprentis
       </Typography>

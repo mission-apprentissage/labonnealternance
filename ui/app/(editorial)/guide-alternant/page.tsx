@@ -60,6 +60,7 @@ const GuideAlternantPage = () => {
               Tout savoir sur l'alternance
             </Typography>
             <Divider
+              aria-hidden="true"
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
             />
           </Grid>
@@ -106,6 +107,7 @@ const GuideAlternantPage = () => {
               La rémunération en alternance
             </Typography>
             <Divider
+              aria-hidden="true"
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
             />
           </Grid>
@@ -120,6 +122,7 @@ const GuideAlternantPage = () => {
               Encore plus de conseils et astuces
             </Typography>
             <Divider
+              aria-hidden="true"
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
             />
           </Grid>
@@ -206,6 +209,7 @@ const GuideAlternantPage = () => {
                 Liens et documents utiles
               </Typography>
               <Divider
+                aria-hidden="true"
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>
@@ -329,6 +333,7 @@ const GuideAlternantPage = () => {
               Encore plus de ressources
             </Typography>
             <Divider
+              aria-hidden="true"
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
             />
           </Grid>

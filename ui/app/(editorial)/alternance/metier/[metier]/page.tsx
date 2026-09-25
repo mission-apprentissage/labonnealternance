@@ -227,7 +227,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
             <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
               Le métier de <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()},</span> en alternance
             </Typography>
-            <Box component="hr" sx={hrSx} />
+            <Box aria-hidden="true" component="hr" sx={hrSx} />
             <Typography component="div" sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.description }} />
           </Box>
 
@@ -276,7 +276,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
             <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
               Entreprises qui recrutent activement en alternance
             </Typography>
-            <Box component="hr" sx={hrSx} />
+            <Box aria-hidden="true" component="hr" sx={hrSx} />
             <Typography sx={{ fontSize: "1.125rem", mb: fr.spacing("6v") }}>
               Découvrez{" "}
               <Typography component="span" sx={{ color: fr.colors.decisions.text.default.info.default, fontWeight: 700, fontSize: "1.125rem" }}>
@@ -309,7 +309,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
           <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
             Les formations
           </Typography>
-          <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #4B9F6C", opacity: 1 }} />
+          <Box aria-hidden="true" component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #4B9F6C", opacity: 1 }} />
           <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
             Niveaux de formation disponibles
           </Typography>
@@ -337,7 +337,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
             <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
               Où trouver une alternance <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span> ?
             </Typography>
-            <Box component="hr" sx={hrSx} />
+            <Box aria-hidden="true" component="hr" sx={hrSx} />
             <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
               Les offres par ville :
             </Typography>
@@ -405,7 +405,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
                 Découvrez les {statItems[0].value} offres disponibles pour devenir{" "}
                 <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
               </Typography>
-              <Box component="hr" sx={hrSx} />
+              <Box aria-hidden="true" component="hr" sx={hrSx} />
             </Box>
             <Box
               sx={{

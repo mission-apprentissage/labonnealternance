@@ -58,10 +58,8 @@ const SuccesDesinscription = () => (
           Pour cette raison, il était affiché sur La bonne alternance et vous receviez des candidatures spontanées en conséquence. L'email ainsi que le numéro de téléphone
           référencés sur votre entreprise sont issus de votre espace recruteur France Travail.
         </Typography>
-        <Typography sx={{ mt: fr.spacing("6v") }}>
-          Nous restons à votre disposition si vous souhaitez de nouveau être référencé sur La bonne alternance.
-          <br />
-          <br />
+        <Typography sx={{ my: fr.spacing("6v") }}>Nous restons à votre disposition si vous souhaitez de nouveau être référencé sur La bonne alternance.</Typography>
+        <Typography>
           Bien cordialement,
           <br />
           L'équipe La bonne alternance

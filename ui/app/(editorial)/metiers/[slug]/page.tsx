@@ -53,11 +53,12 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
         <Box sx={{ p: fr.spacing("10v"), marginBottom: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
             Tous les emplois et formations en alternance en
-            <Typography component="h1" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
+            <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
               {relatedMetier.name}
             </Typography>
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{
               maxWidth: "93px",
@@ -79,13 +80,22 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
             }}
           >
             <Typography>
-              Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{relatedMetier.name}</i>
+              Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en{" "}
+              <Box component="span" sx={{ fontStyle: "italic" }}>
+                {relatedMetier.name}
+              </Box>
             </Typography>
             <Typography>
-              Liste d'entreprises qui recrutent en alternance en <i>{relatedMetier.name}</i>
+              Liste d'entreprises qui recrutent en alternance en{" "}
+              <Box component="span" sx={{ fontStyle: "italic" }}>
+                {relatedMetier.name}
+              </Box>
             </Typography>
             <Typography>
-              Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{relatedMetier.name}</i>
+              Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en{" "}
+              <Box component="span" sx={{ fontStyle: "italic" }}>
+                {relatedMetier.name}
+              </Box>
             </Typography>
 
             <Typography sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>

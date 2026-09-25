@@ -74,13 +74,13 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
       metadata={metadata}
     >
       <InfoSection>
-        <Box>
+        <Paragraph>
           Bon à savoir : le Ministère du Travail et de l'Emploi, en partenariat avec l’AGEFIPH et le FIHFP, a publié{" "}
           <DsfrLink href="https://travail-emploi.gouv.fr/apprentissage-et-handicap-un-guide-pour-les-employeurs-et-les-apprentis">
             un guide sur l’apprentissage & le handicap
           </DsfrLink>{" "}
           à destination des employeurs, des CFA et des personnes en situation de handicap.
-        </Box>
+        </Paragraph>
       </InfoSection>
       <Section title="Qui peut bénéficier d’un contrat d’apprentissage aménagé ?">
         <Paragraph>Le contrat d’apprentissage aménagé est accessible dans le secteur privé comme dans le secteur public :</Paragraph>

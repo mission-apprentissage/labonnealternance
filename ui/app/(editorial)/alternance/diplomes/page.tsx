@@ -127,6 +127,7 @@ export default function AlternanceDiplomes() {
             Tous les diplômes accessibles en alternance
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{
               maxWidth: "93px",

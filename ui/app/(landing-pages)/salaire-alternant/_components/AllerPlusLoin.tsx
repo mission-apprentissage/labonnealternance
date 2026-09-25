@@ -27,7 +27,10 @@ const CardItem = ({ title, description, href }: { title: string; description: st
 export const AllerPlusLoin = () => (
   <Box>
     <Typography variant="h2">Pour aller plus loin</Typography>
-    <Divider sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }} />
+    <Divider
+      aria-hidden="true"
+      sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
+    />
     <Grid container spacing={2} mt={2}>
       <CardItem
         title="Comprendre la rémunération en alternance"

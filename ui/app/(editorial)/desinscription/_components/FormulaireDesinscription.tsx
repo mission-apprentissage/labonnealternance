@@ -204,10 +204,12 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
           <Typography variant="h1" sx={{ mb: fr.spacing("6v"), color: fr.colors.decisions.text.active.blueFrance.default }}>
             Vous êtes une entreprise
           </Typography>
-          <Typography variant="h2" sx={{ mb: fr.spacing("6v") }}>
+          <Typography component="p" variant="h2" sx={{ mb: fr.spacing("6v") }}>
             Vous souhaitez ne plus recevoir de candidatures spontanées de La bonne alternance
           </Typography>
-          <Typography variant="h2">Veuillez remplir le formulaire ci-contre.</Typography>
+          <Typography component="p" variant="h2">
+            Veuillez remplir le formulaire ci-contre.
+          </Typography>
         </Box>
         <Box>
           <FormikContext value={formik}>

@@ -6,7 +6,7 @@ export default function CandidatureParTelephone({ contactPhone }: { contactPhone
 
   return (
     <>
-      <Box sx={{ my: fr.spacing("4v") }}>
+      <Box component="p" sx={{ my: fr.spacing("4v") }}>
         <Typography
           component="span"
           sx={{

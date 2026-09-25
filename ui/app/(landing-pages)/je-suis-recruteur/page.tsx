@@ -338,6 +338,7 @@ const JeSuisRecruteurPage = () => {
                 le marché caché de l’emploi
               </Typography>
               <Divider
+                aria-hidden="true"
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>

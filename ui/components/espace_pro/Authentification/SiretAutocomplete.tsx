@@ -71,7 +71,9 @@ export const SiretAutocomplete = ({
                     <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#CE0500", padding: "8px 16px" }}>
                       La recherche par raison sociale est temporairement indisponible.
                       <br />
-                      <b>Veuillez renseigner votre numéro de SIRET.</b>
+                      <Box component="span" sx={{ fontWeight: 700 }}>
+                        Veuillez renseigner votre numéro de SIRET.
+                      </Box>
                     </Typography>
                   </Box>
                 )

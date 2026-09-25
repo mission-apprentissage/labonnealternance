@@ -61,7 +61,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
             </>,
           ]}
         />
-        <InfoSection>Astuce : De nombreux OPCO proposent une saisie en ligne du Cerfa via leur portail. Cette option réduit les erreurs et accélère le traitement.</InfoSection>
+        <InfoSection>
+          <Paragraph>Astuce : De nombreux OPCO proposent une saisie en ligne du Cerfa via leur portail. Cette option réduit les erreurs et accélère le traitement.</Paragraph>
+        </InfoSection>
       </Section>
       <Section title="Le Cerfa : contrat d'apprentissage">
         <Paragraph fontWeight={"bold"}>Structure du formulaire</Paragraph>

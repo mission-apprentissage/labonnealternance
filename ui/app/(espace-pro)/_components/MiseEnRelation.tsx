@@ -63,7 +63,7 @@ function DelegationsEnregistrees({
               Votre offre a été partagée aux CFA sélectionnés
             </Typography>
             <Box>
-              Les écoles que vous avez sélectionnées ont reçu par email votre offre et vos coordonnées suivantes :
+              <Typography>Les écoles que vous avez sélectionnées ont reçu par email votre offre et vos coordonnées suivantes :</Typography>
               <Typography sx={{ mt: fr.spacing("2v") }}>
                 Prénom:{" "}
                 <Typography component="span" sx={{ fontWeight: 700 }}>
@@ -247,7 +247,7 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                               </Link>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <Divider orientation="vertical" />
+                              <Divider aria-hidden="true" orientation="vertical" />
                               <Typography sx={{ fontSize: "12px", fontWeight: "700", color: "#666666", px: fr.spacing("4v") }}>à {etablissement.distance_en_km} km</Typography>
                             </Box>
                           </Box>

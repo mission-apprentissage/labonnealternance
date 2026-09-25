@@ -30,6 +30,7 @@ export default async function Metiers() {
             </Typography>
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{
               maxWidth: "93px",
