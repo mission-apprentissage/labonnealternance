@@ -18,6 +18,7 @@ import { PAGES } from "@/utils/routes.utils"
 import { FeedbackFormStatusBadge } from "../../_utils/feedbackFormsColumns"
 import type { IFeedbackFormAction } from "../_components/ConfirmationActionFormulaire"
 import { ConfirmationActionFormulaire } from "../_components/ConfirmationActionFormulaire"
+import { FeedbackFormLoadError } from "../_components/FeedbackFormLoadError"
 import { getFeedbackFormActions } from "../_utils/feedbackFormActions"
 import { useFeedbackFormStatusChange } from "../_utils/useFeedbackFormStatusChange"
 import { FeedbackFormDefinition } from "./FeedbackFormDefinition"
@@ -41,6 +42,7 @@ export function FeedbackFormDetail() {
     data: form,
     isLoading,
     isError,
+    error,
     refetch,
   } = useQuery({
     queryKey: ["/admin/feedback-forms/:slug", slug],
@@ -59,7 +61,12 @@ export function FeedbackFormDetail() {
     return (
       <>
         <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminFeedbackForms, PAGES.dynamic.backAdminFeedbackFormDetail({ slug })]} />
-        <Alert severity="error" title="Formulaire introuvable" description="Ce formulaire n'existe pas ou a été supprimé." />
+        <FeedbackFormLoadError
+          error={error}
+          subject="ce formulaire"
+          notFound={{ title: "Formulaire introuvable", description: "Ce formulaire n'existe pas ou a été supprimé." }}
+          onRetry={() => refetch()}
+        />
       </>
     )
   }

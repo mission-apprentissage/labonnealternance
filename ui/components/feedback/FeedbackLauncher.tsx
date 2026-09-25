@@ -123,7 +123,7 @@ export function FeedbackLauncher() {
                 iconPosition="left"
                 nativeButtonProps={{ "aria-expanded": open, "aria-controls": panelId }}
                 onClick={() => (open ? closePanel() : openPanel())}
-                style={{ boxShadow: "0 4px 16px rgba(0, 0, 18, 0.16)" }}
+                style={{ borderRadius: 9999, boxShadow: "0 4px 16px rgba(0, 0, 18, 0.16)" }}
               >
                 Donner mon avis
               </Button>

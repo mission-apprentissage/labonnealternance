@@ -12,6 +12,7 @@ import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 import { FeedbackFormBuilder } from "../../_components/FeedbackFormBuilder"
+import { FeedbackFormLoadError } from "../../_components/FeedbackFormLoadError"
 import { toNewFormFromAnswered } from "../../_utils/duplicateFeedbackForm"
 
 export function FeedbackFormEdition({ slug }: { slug: string }) {
@@ -19,6 +20,8 @@ export function FeedbackFormEdition({ slug }: { slug: string }) {
     data: form,
     isLoading,
     isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ["/admin/feedback-forms/:slug", slug],
     queryFn: () => apiGet("/admin/feedback-forms/:slug", { params: { slug } }),
@@ -42,7 +45,12 @@ export function FeedbackFormEdition({ slug }: { slug: string }) {
     return (
       <>
         <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminFeedbackForms, PAGES.dynamic.backAdminFeedbackFormEdit({ slug })]} />
-        <Alert severity="error" title="Formulaire introuvable" description="Ce formulaire n'existe pas ou a été supprimé." />
+        <FeedbackFormLoadError
+          error={error}
+          subject="ce formulaire"
+          notFound={{ title: "Formulaire introuvable", description: "Ce formulaire n'existe pas ou a été supprimé." }}
+          onRetry={() => refetch()}
+        />
       </>
     )
   }

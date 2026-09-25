@@ -17,6 +17,7 @@ import { PAGES } from "@/utils/routes.utils"
 import { getFeedbackFormsColumns } from "../_utils/feedbackFormsColumns"
 import type { IFeedbackFormAction } from "./_components/ConfirmationActionFormulaire"
 import { ConfirmationActionFormulaire } from "./_components/ConfirmationActionFormulaire"
+import { FeedbackFormLoadError } from "./_components/FeedbackFormLoadError"
 import { useFeedbackFormStatusChange } from "./_utils/useFeedbackFormStatusChange"
 
 /**
@@ -37,7 +38,13 @@ export function FeedbackFormsList() {
   const [statusFilter, setStatusFilter] = useState<IStatusFilter>("all")
   const [search, setSearch] = useState("")
 
-  const { data: forms, isLoading } = useQuery({
+  const {
+    data: forms,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["/admin/feedback-forms", statusFilter],
     queryFn: async () => {
       const { forms } = await apiGet("/admin/feedback-forms", { querystring: { status: [...STATUS_FILTERS[statusFilter].statuses] } })
@@ -45,6 +52,7 @@ export function FeedbackFormsList() {
     },
     // garde le tableau affiché pendant le changement de filtre au lieu de le remplacer par un spinner
     placeholderData: keepPreviousData,
+    retry: false,
   })
 
   const [pending, setPending] = useState<{ form: IFeedbackFormForAdminJSON; action: IFeedbackFormAction } | null>(null)
@@ -103,46 +111,49 @@ export function FeedbackFormsList() {
             Questionnaires affichés aux usagers après une interaction avec une fonctionnalité. Un seul formulaire actif par page à la fois.
           </Typography>
         </Box>
-        <Button linkProps={{ href: PAGES.static.backAdminFeedbackFormCreation.getPath() }}>Créer un formulaire</Button>
+        {/* en panne, ni création ni filtres : rien de ce qu'ils promettent ne fonctionnerait */}
+        {!isError && <Button linkProps={{ href: PAGES.static.backAdminFeedbackFormCreation.getPath() }}>Créer un formulaire</Button>}
       </Box>
 
       {/* DSFR retire la marge basse du dernier groupe de champs : sans marge commune, les champs alignés par le bas sont décalés */}
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "flex-end",
-          columnGap: fr.spacing("4v"),
-          "& > .fr-input-group, & > .fr-select-group": { mb: fr.spacing("6v") },
-        }}
-      >
-        <Input
-          label="Rechercher par titre ou slug"
-          hintText="Une partie du titre ou du slug"
-          style={{ width: 480, maxWidth: "100%" }}
-          nativeInputProps={{
-            type: "search",
-            value: search,
-            onChange: (event) => setSearch(event.target.value),
-          }}
-        />
-        {/* toujours affiché, même liste vide : c'est le seul chemin vers les formulaires archivés */}
-        <Select
-          label="Statut"
-          hint="Hors archivés par défaut"
-          style={{ width: 320, maxWidth: "100%" }}
-          nativeSelectProps={{
-            value: statusFilter,
-            onChange: (event) => setStatusFilter(event.target.value as IStatusFilter),
+      {!isError && (
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "flex-end",
+            columnGap: fr.spacing("4v"),
+            "& > .fr-input-group, & > .fr-select-group": { mb: fr.spacing("6v") },
           }}
         >
-          {Object.entries(STATUS_FILTERS).map(([value, { label }]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </Select>
-      </Box>
+          <Input
+            label="Rechercher par titre ou slug"
+            hintText="Une partie du titre ou du slug"
+            style={{ width: 480, maxWidth: "100%" }}
+            nativeInputProps={{
+              type: "search",
+              value: search,
+              onChange: (event) => setSearch(event.target.value),
+            }}
+          />
+          {/* affiché même liste vide : c'est le seul chemin vers les formulaires archivés */}
+          <Select
+            label="Statut"
+            hint="Hors archivés par défaut"
+            style={{ width: 320, maxWidth: "100%" }}
+            nativeSelectProps={{
+              value: statusFilter,
+              onChange: (event) => setStatusFilter(event.target.value as IStatusFilter),
+            }}
+          >
+            {Object.entries(STATUS_FILTERS).map(([value, { label }]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+        </Box>
+      )}
       {/* le tableau se met à jour à chaque frappe, sans validation : on annonce le nombre de résultats (RGAA 7.5) */}
       <p role="status" className={fr.cx("fr-sr-only")}>
         {searchPattern && forms ? `${visibleForms.length} formulaire${visibleForms.length > 1 ? "s" : ""} pour « ${search.trim()} »` : ""}
@@ -151,6 +162,10 @@ export function FeedbackFormsList() {
       {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
           <CircularProgress />
+        </Box>
+      ) : isError ? (
+        <Box sx={{ py: 4 }}>
+          <FeedbackFormLoadError error={error} subject="la liste des formulaires" onRetry={() => refetch()} />
         </Box>
       ) : !forms?.length ? (
         <Box sx={{ py: 6, textAlign: "center" }}>

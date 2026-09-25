@@ -11,6 +11,7 @@ import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { apiGet } from "@/utils/api.utils"
 
 import { FeedbackFormBuilder } from "../_components/FeedbackFormBuilder"
+import { FeedbackFormLoadError } from "../_components/FeedbackFormLoadError"
 import { toDuplicateFormInput } from "../_utils/duplicateFeedbackForm"
 
 function Title() {
@@ -33,6 +34,8 @@ export function FeedbackFormCreation() {
     data: sourceForm,
     isLoading,
     isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ["/admin/feedback-forms/:slug", source],
     queryFn: () => apiGet("/admin/feedback-forms/:slug", { params: { slug: source! } }),
@@ -59,7 +62,12 @@ export function FeedbackFormCreation() {
     return (
       <>
         <Title />
-        <Alert severity="error" title="Formulaire à dupliquer introuvable" description="Ce formulaire n'existe pas ou a été supprimé." />
+        <FeedbackFormLoadError
+          error={error}
+          subject="le formulaire à dupliquer"
+          notFound={{ title: "Formulaire à dupliquer introuvable", description: "Ce formulaire n'existe pas ou a été supprimé." }}
+          onRetry={() => refetch()}
+        />
       </>
     )
   }
