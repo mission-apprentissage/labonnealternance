@@ -203,7 +203,7 @@ jobs:
 
           # Borne basse du changelog : le dernier déploiement en production, lu dans l'API deployments.
           # La liste des runs ne convient pas : servie par un index de recherche, elle renvoie par
-          # intermittence un instantané vieux de plusieurs semaines, quel que soit le filtre.
+          # intermittence un instantané vieux de plusieurs semaines, quel que soit le filtre (cf. #5541).
           # `gh api --jq` n'accepte pas --arg, d'où le jq externe.
           DEPLOYMENTS=$(gh api \
             "repos/$GITHUB_REPOSITORY/deployments?environment=production&per_page=20" \
