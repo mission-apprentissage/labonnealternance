@@ -1,5 +1,5 @@
-import type { IFeedbackFormInput, IFeedbackQuestion } from "shared/models/feedback-form.model"
-import { FEEDBACK_QUESTION_MIN_OPTIONS } from "shared/models/feedback-form.model"
+import type { IFeedbackFormInput, IFeedbackFormTrigger, IFeedbackQuestion } from "shared/models/feedback-form.model"
+import { FEEDBACK_QUESTION_MIN_OPTIONS, normalizeFeedbackTrigger } from "shared/models/feedback-form.model"
 import { toSnakeCaseSlug } from "shared/utils/string-utils"
 
 export type IFeedbackQuestionType = IFeedbackQuestion["type"]
@@ -115,13 +115,18 @@ export const isBlankQuestion = (draft: IFeedbackQuestionDraft) => {
  * index dans le brouillon : les erreurs de validation doivent revenir sur le bon bloc même quand
  * une question vide a été écartée avant elle.
  */
-export const toFeedbackFormInput = ({ questions, ...rest }: IFeedbackFormDraft): { input: IFeedbackFormInput; draftIndexes: number[] } => {
+export const toFeedbackFormInput = ({ questions, trigger, ...rest }: IFeedbackFormDraft): { input: IFeedbackFormInput; draftIndexes: number[] } => {
   const draftIndexes = questions.flatMap((question, index) => (isBlankQuestion(question) ? [] : [index]))
-  return { input: { ...rest, questions: draftIndexes.map((index) => toFeedbackQuestion(questions[index])) }, draftIndexes }
+  // comme pour les questions, seuls les paramètres du type de déclencheur choisi partent
+  return { input: { ...rest, trigger: normalizeFeedbackTrigger(trigger), questions: draftIndexes.map((index) => toFeedbackQuestion(questions[index])) }, draftIndexes }
 }
 
-export const toFeedbackFormDraft = ({ questions, ...rest }: IFeedbackFormInput): IFeedbackFormDraft => ({
+/** Valeurs proposées pour chaque type de déclencheur, pour qu'en changer ne présente jamais un champ vide. */
+export const DEFAULT_TRIGGER_PARAMS = { minInteractions: 1, delaySeconds: 30, event: "application_abandoned" } as const satisfies Partial<IFeedbackFormTrigger>
+
+export const toFeedbackFormDraft = ({ questions, trigger, ...rest }: IFeedbackFormInput): IFeedbackFormDraft => ({
   ...rest,
+  trigger: { ...DEFAULT_TRIGGER_PARAMS, ...trigger },
   // un formulaire commence toujours par une question à remplir, y compris un brouillon enregistré sans question
   questions: questions.length ? questions.map(toQuestionDraft) : [createQuestionDraft("q1")],
 })

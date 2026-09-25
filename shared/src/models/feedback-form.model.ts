@@ -204,11 +204,68 @@ const ZFeedbackQuestionsInput = ZFeedbackQuestions.superRefine((questions, ctx) 
 
 // --- Formulaire ---
 
+/**
+ * Ce qui fait apparaître le bouton « Donner mon avis » sur une page de déclenchement :
+ * - `interactions` : après N clics sur des éléments interactifs, cumulés sur la session ;
+ * - `delay` : après N secondes passées sur la page, onglet visible, même sans aucune interaction ;
+ * - `event` : quand un parcours précis du site se produit (cf. FEEDBACK_TRIGGER_EVENTS).
+ */
+export const FEEDBACK_TRIGGER_TYPES = ["interactions", "delay", "event"] as const
+export type IFeedbackTriggerType = (typeof FEEDBACK_TRIGGER_TYPES)[number]
+
+/** `application_abandoned` : le formulaire de candidature simplifiée est ouvert puis fermé sans avoir été envoyé. */
+export const FEEDBACK_TRIGGER_EVENTS = ["application_abandoned"] as const
+export type IFeedbackTriggerEvent = (typeof FEEDBACK_TRIGGER_EVENTS)[number]
+
+export const FEEDBACK_DELAY_MIN_SECONDS = 5
+export const FEEDBACK_DELAY_MAX_SECONDS = 600
+
+// Champs de tous les types à plat, plutôt qu'une union discriminée : le back-office garde la saisie
+// de chaque type quand on en change, seuls ceux du type choisi sont enregistrés (cf.
+// normalizeFeedbackTrigger). `type` reste facultatif en lecture et pour le validateur Mongo : les
+// formulaires créés avant les autres déclencheurs n'en ont pas (cf. getFeedbackTriggerType).
 const ZFeedbackFormTrigger = z.object({
-  minInteractions: z.number({ error: "Indiquez un nombre d'interactions" }).int("Indiquez un nombre entier").positive("Le widget ne peut pas s'afficher au chargement").default(1),
+  type: z.enum(FEEDBACK_TRIGGER_TYPES).optional(),
+  minInteractions: z.number({ error: "Indiquez un nombre d'interactions" }).int("Indiquez un nombre entier").positive("Le widget ne peut pas s'afficher au chargement").optional(),
+  delaySeconds: z
+    .number({ error: "Indiquez une durée en secondes" })
+    .int("Indiquez un nombre entier de secondes")
+    .min(FEEDBACK_DELAY_MIN_SECONDS, `Au moins ${FEEDBACK_DELAY_MIN_SECONDS} secondes`)
+    .max(FEEDBACK_DELAY_MAX_SECONDS, `Au plus ${FEEDBACK_DELAY_MAX_SECONDS} secondes`)
+    .optional(),
+  event: z.enum(FEEDBACK_TRIGGER_EVENTS, { error: "Choisissez un événement" }).optional(),
   // chemins où le widget est autorisé à s'afficher, ex : ["/recherche", "/formation/:id/:titre"]
   scope: z.array(z.string().min(1)).default([]),
 })
+export type IFeedbackFormTrigger = z.output<typeof ZFeedbackFormTrigger>
+
+/** Type du déclencheur ; absent, c'est un déclencheur par interactions. */
+export const getFeedbackTriggerType = (trigger: Pick<IFeedbackFormTrigger, "type">): IFeedbackTriggerType => trigger.type ?? "interactions"
+
+const TRIGGER_REQUIRED_FIELD = {
+  interactions: { field: "minInteractions", message: "Indiquez un nombre d'interactions" },
+  delay: { field: "delaySeconds", message: "Indiquez une durée en secondes" },
+  event: { field: "event", message: "Choisissez un événement" },
+} as const satisfies Record<IFeedbackTriggerType, { field: keyof IFeedbackFormTrigger; message: string }>
+
+type IFeedbackFormTriggerWithType = Omit<IFeedbackFormTrigger, "type"> & { type: IFeedbackTriggerType }
+
+/** Le déclencheur avec son type explicite : ce que le back-office édite. */
+export const withFeedbackTriggerType = (trigger: IFeedbackFormTrigger): IFeedbackFormTriggerWithType => ({ ...trigger, type: getFeedbackTriggerType(trigger) })
+
+/** Le déclencheur réduit aux paramètres de son type : ce qui est enregistré. */
+export function normalizeFeedbackTrigger(trigger: IFeedbackFormTrigger): IFeedbackFormTriggerWithType {
+  const { scope } = trigger
+  const type = getFeedbackTriggerType(trigger)
+  switch (type) {
+    case "interactions":
+      return { type, scope, minInteractions: trigger.minInteractions }
+    case "delay":
+      return { type, scope, delaySeconds: trigger.delaySeconds }
+    case "event":
+      return { type, scope, event: trigger.event }
+  }
+}
 
 /**
  * Déclencheur tel qu'il peut être *saisi* : un chemin qui ne correspond à aucune page du site est
@@ -219,9 +276,15 @@ const ZFeedbackFormTrigger = z.object({
  * la sérialisation des réponses de l'API.
  */
 const ZFeedbackFormTriggerInput = ZFeedbackFormTrigger.extend({
+  type: z.enum(FEEDBACK_TRIGGER_TYPES).default("interactions"),
   scope: z
     .array(z.string().min(1).refine(matchesKnownUiRoute, "Ce chemin ne correspond à aucune page du site"), { error: "Ajoutez au moins une page de déclenchement" })
     .min(1, "Ajoutez au moins une page de déclenchement"),
+}).superRefine((trigger, ctx) => {
+  const { field, message } = TRIGGER_REQUIRED_FIELD[trigger.type]
+  if (trigger[field] === undefined) {
+    ctx.addIssue({ code: "custom", message, path: [field] })
+  }
 })
 
 /**

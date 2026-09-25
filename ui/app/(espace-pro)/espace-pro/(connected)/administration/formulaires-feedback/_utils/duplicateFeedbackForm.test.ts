@@ -6,7 +6,7 @@ import { nextFeedbackFormSlug, toDuplicateFormInput, toNewFormFromAnswered } fro
 const source: IFeedbackFormInput = {
   slug: "fiche_entreprise",
   title: "Fiche entreprise",
-  trigger: { minInteractions: 3, scope: ["/recherche"] },
+  trigger: { type: "interactions", minInteractions: 3, scope: ["/recherche"] },
   questions: [{ id: "q1", type: "rating", label: "Utile ?", required: true, scale: "thumbs3", showIf: null }],
 }
 
@@ -28,7 +28,7 @@ describe("toDuplicateFormInput", () => {
   })
 
   it("conserve un chemin devenu invalide pour qu'il soit signalé plutôt que perdu", () => {
-    const { trigger } = toDuplicateFormInput({ ...source, trigger: { minInteractions: 1, scope: ["/page-supprimee"] } })
+    const { trigger } = toDuplicateFormInput({ ...source, trigger: { type: "interactions", minInteractions: 1, scope: ["/page-supprimee"] } })
 
     expect(trigger.scope).toEqual(["/page-supprimee"])
   })
@@ -48,7 +48,7 @@ describe("nextFeedbackFormSlug", () => {
 
 describe("toNewFormFromAnswered", () => {
   it("reprend tout sauf le slug", () => {
-    const source = { slug: "recherche", title: "Recherche", trigger: { minInteractions: 2, scope: ["/recherche"] }, questions: [] }
+    const source = { slug: "recherche", title: "Recherche", trigger: { type: "interactions", minInteractions: 2, scope: ["/recherche"] }, questions: [] }
     expect(toNewFormFromAnswered(source)).toEqual({ ...source, slug: "recherche_2" })
   })
 })

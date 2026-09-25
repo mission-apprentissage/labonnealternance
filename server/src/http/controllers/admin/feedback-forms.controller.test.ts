@@ -9,7 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 const generalInfoOnly: IFeedbackFormInput = {
   slug: "page_entreprise_v1",
   title: "Fiche entreprise — utilité des informations",
-  trigger: { minInteractions: 1, scope: ["/formation/:id/:intitule-formation"] },
+  trigger: { type: "interactions", minInteractions: 1, scope: ["/formation/:id/:intitule-formation"] },
   questions: [],
 }
 
@@ -80,7 +80,7 @@ describe("admin feedback-forms controller", () => {
   it("refuse un formulaire sans page de déclenchement", async () => {
     const { bearerToken } = await loginAsAdmin()
 
-    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { minInteractions: 1, scope: [] } })
+    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { type: "interactions", minInteractions: 1, scope: [] } })
 
     expect(response.statusCode).toEqual(400)
   })
@@ -105,7 +105,7 @@ describe("admin feedback-forms controller", () => {
   it("refuse un chemin de déclenchement qui ne correspond à aucune page du site", async () => {
     const { bearerToken } = await loginAsAdmin()
 
-    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { minInteractions: 1, scope: ["/page-qui-nexiste-pas"] } })
+    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { type: "interactions", minInteractions: 1, scope: ["/page-qui-nexiste-pas"] } })
 
     expect(response.statusCode).toEqual(400)
   })
@@ -210,7 +210,7 @@ describe("admin feedback-forms controller", () => {
       method: "PUT",
       path: "/api/admin/feedback-forms/page_entreprise_v1",
       headers: bearerToken,
-      body: { title: "Titre corrigé", trigger: { minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] }, questions: [] },
+      body: { title: "Titre corrigé", trigger: { type: "interactions", minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] }, questions: [] },
     })
 
     expect(response.statusCode).toEqual(200)
@@ -218,7 +218,7 @@ describe("admin feedback-forms controller", () => {
     expect(saved).toMatchObject({
       title: "Titre corrigé",
       status: "draft",
-      trigger: { minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] },
+      trigger: { type: "interactions", minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] },
     })
   })
 
@@ -410,7 +410,7 @@ describe("admin feedback-forms controller", () => {
         ...withQuestion,
         slug: "toutes_formations",
         title: "Toutes les formations",
-        trigger: { minInteractions: 1, scope: ["/recherche", "/formation/*"] },
+        trigger: { type: "interactions", minInteractions: 1, scope: ["/recherche", "/formation/*"] },
       })
 
       const response = await post(bearerToken, "toutes_formations", "activate")
@@ -423,7 +423,7 @@ describe("admin feedback-forms controller", () => {
       const { bearerToken } = await loginAsAdmin()
       await createForm(bearerToken, withQuestion)
       await post(bearerToken, "page_entreprise_v1", "activate")
-      await createForm(bearerToken, { ...withQuestion, slug: "recherche", title: "Recherche", trigger: { minInteractions: 2, scope: ["/recherche"] } })
+      await createForm(bearerToken, { ...withQuestion, slug: "recherche", title: "Recherche", trigger: { type: "interactions", minInteractions: 2, scope: ["/recherche"] } })
 
       const response = await post(bearerToken, "recherche", "activate")
 
@@ -434,15 +434,15 @@ describe("admin feedback-forms controller", () => {
       const { bearerToken } = await loginAsAdmin()
       await createForm(bearerToken, withQuestion)
       await post(bearerToken, "page_entreprise_v1", "activate")
-      await createForm(bearerToken, { ...withQuestion, slug: "recherche", title: "Recherche", trigger: { minInteractions: 1, scope: ["/recherche"] } })
+      await createForm(bearerToken, { ...withQuestion, slug: "recherche", title: "Recherche", trigger: { type: "interactions", minInteractions: 1, scope: ["/recherche"] } })
       await post(bearerToken, "recherche", "activate")
       const put = (body: Omit<IFeedbackFormInput, "slug">) => httpClient().inject({ method: "PUT", path: "/api/admin/feedback-forms/recherche", headers: bearerToken, body })
 
-      const emptied = await put({ title: "Recherche", trigger: { minInteractions: 1, scope: ["/recherche"] }, questions: [] })
+      const emptied = await put({ title: "Recherche", trigger: { type: "interactions", minInteractions: 1, scope: ["/recherche"] }, questions: [] })
       expect(emptied.statusCode).toEqual(400)
       expect(emptied.json().message).toContain("Au moins une question est nécessaire")
 
-      const moved = await put({ title: "Recherche", trigger: { minInteractions: 1, scope: ["/formation/*"] }, questions: withQuestion.questions })
+      const moved = await put({ title: "Recherche", trigger: { type: "interactions", minInteractions: 1, scope: ["/formation/*"] }, questions: withQuestion.questions })
       expect(moved.statusCode).toEqual(409)
       expect(moved.json().message).toContain("Fiche entreprise — utilité des informations")
     })
@@ -603,6 +603,58 @@ describe("admin feedback-forms controller", () => {
         ])
       )
       expect(text).toMatchObject({ answered: 1, choices: [], comments: { total: 1, latest: [{ text: "Très clair", rating: "positive", date: expect.any(String) }] } })
+    })
+  })
+
+  describe("déclencheurs", () => {
+    it("enregistre un déclencheur par temps en ne gardant que ses paramètres", async () => {
+      const { bearerToken } = await loginAsAdmin()
+
+      const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { type: "delay", delaySeconds: 30, minInteractions: 4, scope: ["/recherche"] } })
+
+      expect(response.statusCode).toEqual(200)
+      const saved = await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" })
+      expect(saved?.trigger).toEqual({ type: "delay", delaySeconds: 30, scope: ["/recherche"] })
+    })
+
+    it("enregistre un déclencheur sur l'abandon d'une candidature", async () => {
+      const { bearerToken } = await loginAsAdmin()
+
+      const response = await createForm(bearerToken, {
+        ...generalInfoOnly,
+        trigger: { type: "event", event: "application_abandoned", scope: ["/emploi/:type/:id/:intitule-offre"] },
+      })
+
+      expect(response.statusCode).toEqual(200)
+      const saved = await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" })
+      expect(saved?.trigger).toEqual({ type: "event", event: "application_abandoned", scope: ["/emploi/:type/:id/:intitule-offre"] })
+    })
+
+    it.each([
+      ["un temps sans durée", { type: "delay", scope: ["/recherche"] }, "Indiquez une durée en secondes"],
+      ["un temps trop court", { type: "delay", delaySeconds: 2, scope: ["/recherche"] }, "Au moins 5 secondes"],
+      ["un événement sans événement", { type: "event", scope: ["/recherche"] }, "Choisissez un événement"],
+      ["des interactions sans nombre", { type: "interactions", scope: ["/recherche"] }, "Indiquez un nombre d'interactions"],
+    ])("refuse %s", async (_label, trigger, message) => {
+      const { bearerToken } = await loginAsAdmin()
+
+      const response = await createForm(bearerToken, { ...generalInfoOnly, trigger } as IFeedbackFormInput)
+
+      expect(response.statusCode).toEqual(400)
+      expect(response.json().message).toContain(message)
+    })
+
+    it("lit et active un formulaire enregistré sans type de déclencheur", async () => {
+      const { bearerToken } = await loginAsAdmin()
+      await createForm(bearerToken, { ...generalInfoOnly, questions: [{ id: "q1", type: "rating", label: "Utile ?", required: true, scale: "thumbs3" }] })
+      await getDbCollection("feedback_forms").updateOne({ slug: "page_entreprise_v1" }, { $unset: { "trigger.type": "" } })
+
+      const read = await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms/page_entreprise_v1", headers: bearerToken })
+      expect(read.statusCode).toEqual(200)
+      expect(read.json().trigger).toEqual({ minInteractions: 1, scope: generalInfoOnly.trigger.scope })
+
+      const activation = await httpClient().inject({ method: "POST", path: "/api/admin/feedback-forms/page_entreprise_v1/activate", headers: bearerToken })
+      expect(activation.statusCode).toEqual(200)
     })
   })
 })

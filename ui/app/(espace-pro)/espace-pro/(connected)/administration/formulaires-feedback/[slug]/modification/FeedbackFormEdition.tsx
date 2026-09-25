@@ -5,7 +5,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert"
 import { Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
-import { ZFeedbackFormFields } from "shared/models/feedback-form.model"
+import { withFeedbackTriggerType, ZFeedbackFormFields } from "shared/models/feedback-form.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { apiGet } from "@/utils/api.utils"
@@ -30,10 +30,11 @@ export function FeedbackFormEdition({ slug }: { slug: string }) {
 
   // Schéma de lecture et non de saisie : un chemin devenu invalide doit pouvoir être ouvert
   // puis corrigé, pas faire planter la page. La validation de saisie s'appliquera au submit.
-  const initialValues = useMemo(
-    () => (form ? ZFeedbackFormFields.parse({ slug: form.slug, title: form.title, trigger: form.trigger, questions: form.questions }) : undefined),
-    [form]
-  )
+  const initialValues = useMemo(() => {
+    if (!form) return undefined
+    const parsed = ZFeedbackFormFields.parse({ slug: form.slug, title: form.title, trigger: form.trigger, questions: form.questions })
+    return { ...parsed, trigger: withFeedbackTriggerType(parsed.trigger) }
+  }, [form])
   const hasResponses = (form?.responses_count ?? 0) > 0
   const newFormValues = useMemo(() => (form && hasResponses ? toNewFormFromAnswered(form) : undefined), [form, hasResponses])
 

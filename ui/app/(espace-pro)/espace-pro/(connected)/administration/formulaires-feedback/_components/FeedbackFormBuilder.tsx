@@ -20,13 +20,14 @@ import { PAGES } from "@/utils/routes.utils"
 import type { IFeedbackFormDraft } from "../_utils/questionDrafts"
 import { toFeedbackFormDraft, toFeedbackFormInput } from "../_utils/questionDrafts"
 import { QuestionsField } from "./QuestionsField"
+import { TriggerConditionField } from "./TriggerConditionField"
 import { TriggerScopeField } from "./TriggerScopeField"
 
 const createEmptyForm = (): IFeedbackFormDraft =>
   toFeedbackFormDraft({
     slug: "",
     title: "",
-    trigger: { minInteractions: 1, scope: [] },
+    trigger: { type: "interactions", minInteractions: 1, scope: [] },
     questions: [],
   })
 
@@ -144,18 +145,7 @@ export function FeedbackFormBuilder({ mode, initialValues, keepSlug = false }: {
 
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "2fr 1fr" }, columnGap: fr.spacing("4v"), alignItems: "start" }}>
           <TriggerScopeField />
-          <CustomInput
-            name="trigger.minInteractions"
-            label="Interactions avant affichage"
-            info="Jamais 0 : pas d'affichage au chargement"
-            type="number"
-            inputProps={{ min: 1 }}
-            value={values.trigger.minInteractions}
-            onChange={(event) => {
-              const raw = event.target.value
-              setFieldValue("trigger.minInteractions", raw === "" ? "" : Number(raw))
-            }}
-          />
+          <TriggerConditionField />
         </Box>
 
         <QuestionsField />

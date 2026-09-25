@@ -28,7 +28,7 @@ const brokenStorage = {
   },
 }
 
-const form = (slug: string, scope: string[]): IFeedbackFormPublic => ({ slug, trigger: { minInteractions: 1, scope }, questions: [] })
+const form = (slug: string, scope: string[]): IFeedbackFormPublic => ({ slug, trigger: { type: "interactions", minInteractions: 1, scope }, questions: [] })
 
 describe("findFeedbackFormForPath", () => {
   const forms = [form("recherche", ["/recherche"]), form("formations", ["/formation/:id/:titre", "/guide-alternant/*"])]

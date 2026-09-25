@@ -20,6 +20,7 @@ import type { IFeedbackFormAction } from "../_components/ConfirmationActionFormu
 import { ConfirmationActionFormulaire } from "../_components/ConfirmationActionFormulaire"
 import { FeedbackFormLoadError } from "../_components/FeedbackFormLoadError"
 import { getFeedbackFormActions } from "../_utils/feedbackFormActions"
+import { describeFeedbackTrigger } from "../_utils/feedbackTrigger.labels"
 import { useFeedbackFormStatusChange } from "../_utils/useFeedbackFormStatusChange"
 import { FeedbackFormDefinition } from "./FeedbackFormDefinition"
 import { FeedbackFormResultsSummary } from "./FeedbackFormResultsSummary"
@@ -94,7 +95,7 @@ export function FeedbackFormDetail() {
   const metadata = [
     { label: "Slug", value: <Box component="code">{form.slug}</Box> },
     { label: "Pages", value: form.trigger.scope?.length ? form.trigger.scope.join(", ") : "—" },
-    { label: "Déclenchement", value: `après ${form.trigger.minInteractions} interaction${(form.trigger.minInteractions ?? 1) > 1 ? "s" : ""}` },
+    { label: "Déclenchement", value: describeFeedbackTrigger(form.trigger) },
     { label: "Créé le", value: dayjs(form.created_at).format("DD/MM/YYYY") },
     { label: "Modifié le", value: dayjs(form.updated_at).format("DD/MM/YYYY") },
   ]

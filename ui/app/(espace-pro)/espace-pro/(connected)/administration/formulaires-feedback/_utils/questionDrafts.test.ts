@@ -6,13 +6,13 @@ import { createQuestionDraft, nextQuestionId, toFeedbackFormDraft, toFeedbackFor
 const form = (questions: IFeedbackFormDraft["questions"]): IFeedbackFormDraft => ({
   slug: "fiche_entreprise",
   title: "Fiche entreprise",
-  trigger: { minInteractions: 1, scope: [] },
+  trigger: { type: "interactions", minInteractions: 1, scope: [] },
   questions,
 })
 
 describe("brouillons de questions", () => {
   it("démarre un formulaire avec une question « Note rapide » vide", () => {
-    const draft = toFeedbackFormDraft({ slug: "", title: "", trigger: { minInteractions: 1, scope: [] }, questions: [] })
+    const draft = toFeedbackFormDraft({ slug: "", title: "", trigger: { type: "interactions", minInteractions: 1, scope: [] }, questions: [] })
 
     expect(draft.questions).toEqual([expect.objectContaining({ id: "q1", type: "rating", label: "" })])
   })

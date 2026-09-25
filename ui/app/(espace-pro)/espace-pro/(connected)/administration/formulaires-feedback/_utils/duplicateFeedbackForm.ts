@@ -1,5 +1,5 @@
 import type { IFeedbackFormInput } from "shared/models/feedback-form.model"
-import { ZFeedbackFormFields } from "shared/models/feedback-form.model"
+import { withFeedbackTriggerType, ZFeedbackFormFields } from "shared/models/feedback-form.model"
 import { toSnakeCaseSlug } from "shared/utils/string-utils"
 
 const COPY_SUFFIX = " (copie)"
@@ -16,7 +16,8 @@ const TITLE_MAX_LENGTH = 150
 // entrée volontairement lâche : la réponse de l'API (valeurs par défaut optionnelles une fois sérialisée) est revalidée ici
 export const toDuplicateFormInput = (source: { title?: string; trigger?: unknown; questions?: unknown }): IFeedbackFormInput => {
   const title = `${(source.title ?? "").slice(0, TITLE_MAX_LENGTH - COPY_SUFFIX.length)}${COPY_SUFFIX}`
-  return ZFeedbackFormFields.parse({ slug: toSnakeCaseSlug(title), title, trigger: source.trigger, questions: source.questions })
+  const parsed = ZFeedbackFormFields.parse({ slug: toSnakeCaseSlug(title), title, trigger: source.trigger, questions: source.questions })
+  return { ...parsed, trigger: withFeedbackTriggerType(parsed.trigger) }
 }
 
 const SLUG_MAX_LENGTH = 80
@@ -34,5 +35,7 @@ export function nextFeedbackFormSlug(slug: string): string {
  * le slug change. Les modifications partent dans un nouveau formulaire, l'original garde ses
  * réponses et son statut.
  */
-export const toNewFormFromAnswered = (source: { slug?: string; title?: string; trigger?: unknown; questions?: unknown }): IFeedbackFormInput =>
-  ZFeedbackFormFields.parse({ slug: nextFeedbackFormSlug(source.slug ?? ""), title: source.title, trigger: source.trigger, questions: source.questions })
+export const toNewFormFromAnswered = (source: { slug?: string; title?: string; trigger?: unknown; questions?: unknown }): IFeedbackFormInput => {
+  const parsed = ZFeedbackFormFields.parse({ slug: nextFeedbackFormSlug(source.slug ?? ""), title: source.title, trigger: source.trigger, questions: source.questions })
+  return { ...parsed, trigger: withFeedbackTriggerType(parsed.trigger) }
+}

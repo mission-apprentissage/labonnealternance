@@ -2,7 +2,7 @@ import { badRequest, conflict, notFound } from "@hapi/boom"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IFeedbackForm, IFeedbackFormForAdmin, IFeedbackFormInput, IFeedbackFormPublic, IFeedbackFormStatus } from "shared/models/feedback-form.model"
-import { ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS, ZFeedbackFormPublishable } from "shared/models/feedback-form.model"
+import { ALLOWED_FEEDBACK_FORM_STATUS_TRANSITIONS, normalizeFeedbackTrigger, ZFeedbackFormPublishable } from "shared/models/feedback-form.model"
 import { scopePatternsOverlap } from "shared/utils/ui-routes.utils"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -64,6 +64,7 @@ export async function createFeedbackForm(input: IFeedbackFormInput, createdBy: s
   const now = new Date()
   const form: IFeedbackForm = {
     ...input,
+    trigger: normalizeFeedbackTrigger(input.trigger),
     _id: new ObjectId(),
     status: "draft",
     created_at: now,
@@ -95,7 +96,7 @@ export async function updateFeedbackForm(slug: string, input: Omit<IFeedbackForm
     await assertActivable({ ...form, ...input }, "Modification impossible")
   }
 
-  const update = { ...input, updated_at: new Date() }
+  const update = { ...input, trigger: normalizeFeedbackTrigger(input.trigger), updated_at: new Date() }
   await getDbCollection("feedback_forms").updateOne({ _id: form._id }, { $set: update })
   return { ...form, ...update }
 }

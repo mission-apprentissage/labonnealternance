@@ -40,7 +40,6 @@ export type IFeedbackMemory = { dismissedAt?: string; completedAt?: string }
 const memoryKey = (slug: string) => `lba-feedback:${slug}`
 const countKey = (slug: string) => `lba-feedback-count:${slug}`
 const announcedKey = (slug: string) => `lba-feedback-announced:${slug}`
-const ENGAGED_KEY = "lba-feedback-engaged"
 
 export const readFeedbackMemory = (slug: string, storage = getBrowserStorage("localStorage")): IFeedbackMemory => readJson<IFeedbackMemory>(storage, memoryKey(slug)) ?? {}
 
@@ -68,10 +67,6 @@ export function incrementInteractionCount(slug: string, storage = getBrowserStor
   writeJson(storage, countKey(slug), next)
   return next
 }
-
-/** Une interaction a déjà eu lieu dans la session : au rechargement, on récupère les formulaires sans attendre la suivante. */
-export const hasEngaged = (storage = getBrowserStorage("sessionStorage")): boolean => readJson<boolean>(storage, ENGAGED_KEY) === true
-export const markEngaged = (storage = getBrowserStorage("sessionStorage")): void => writeJson(storage, ENGAGED_KEY, true)
 
 /** L'apparition du bouton n'est annoncée qu'une fois par session : la répéter à chaque page deviendrait du bruit. */
 export function takeAnnouncement(slug: string, storage = getBrowserStorage("sessionStorage")): boolean {
