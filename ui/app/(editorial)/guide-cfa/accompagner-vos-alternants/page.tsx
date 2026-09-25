@@ -108,9 +108,9 @@ const AccompagnerVosAlternantsPage = async () => {
           et évite le découragement.
         </Paragraph>
         <Paragraph>
-          La plateforme La bonne alternance permet à vos alternants d'accéder à un vivier d'entreprises que les autres jobboards ne voient pas. Mais cet outil ne remplace pas
-          l'accompagnement humain : c'est à vous de les aider à comprendre la démarche, à préparer des candidatures sérieuses, et à tenir dans la durée. Offres et candidatures
-          spontanées sont complémentaires. Les jeunes qui utilisent les deux ont mécaniquement plus de chances de trouver.
+          La plateforme La bonne alternance permet à vos alternants d'accéder à un vivier d'entreprises que les autres <span lang="en">jobboards</span> ne voient pas. Mais cet
+          outil ne remplace pas l'accompagnement humain : c'est à vous de les aider à comprendre la démarche, à préparer des candidatures sérieuses, et à tenir dans la durée.
+          Offres et candidatures spontanées sont complémentaires. Les jeunes qui utilisent les deux ont mécaniquement plus de chances de trouver.
         </Paragraph>
         <Paragraph>
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("6v") }}>

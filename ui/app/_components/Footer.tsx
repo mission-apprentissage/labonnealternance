@@ -188,7 +188,11 @@ export function Footer({ zone, isWidget = false }: { zone: ZoneName; isWidget?: 
     "La bonne alternance simplifie les mises en relation entre les trois types d’acteurs candidats, recruteurs et centres de formation, afin de faciliter les entrées en alternance."
   const widgetDescription = (
     <Typography>
-      <Typography variant="h6">Le dépôt simplifié d'offre en alternance</Typography>
+      {/* variant="h6" ne porte ici que la taille : ce n'est pas un titre de section, et un <h6>
+          dans le <p> parent serait de surcroît invalide (RGAA 8.2 et 8.9). */}
+      <Typography component="span" variant="h6" sx={{ display: "block" }}>
+        Le dépôt simplifié d'offre en alternance
+      </Typography>
       La bonne alternance est un service public numérique qui simplifie les mises en relation entre les trois types d’acteurs candidats, recruteurs et centres de formation, afin de
       faciliter les entrées en alternance
     </Typography>

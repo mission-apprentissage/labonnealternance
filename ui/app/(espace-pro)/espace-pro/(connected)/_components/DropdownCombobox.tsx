@@ -63,7 +63,7 @@ export default function DropdownCombobox(props) {
         // astérisque masquée car le formulaire porte déjà la mention "Tous les champs sont obligatoires").
         hideAsterisk
         name={name}
-        info={"Sélectionnez un métier pour référencer l'offre."}
+        info={"Sélectionnez un métier pour référencer l'offre"}
         placeholder={placeholder || "sélectionner un métier"}
         {...getInputProps({
           onFocus() {
@@ -74,7 +74,11 @@ export default function DropdownCombobox(props) {
           },
         })}
       />
+      {/* getMenuProps() pose role="listbox" : la cible doit être un <ul> et ses enfants des <li>
+          (RGAA 8.2). Les marges et le listStyle sont déjà neutralisés ici ; la mise en forme des
+          listes de DepotSimplifieStyling exclut explicitement les [role="listbox"]. */}
       <Box
+        component="ul"
         sx={{
           width: "100%",
           margin: 0,
@@ -117,7 +121,7 @@ export default function DropdownCombobox(props) {
             </li>
           ))}
         {isOpen && inputItems.length === 0 && (
-          <Box key="nomatch" {...neutralItemProps}>
+          <Box component="li" role="presentation" key="nomatch" {...neutralItemProps}>
             Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche
           </Box>
         )}

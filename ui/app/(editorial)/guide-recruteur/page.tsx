@@ -92,6 +92,9 @@ const GuideRecruteurPage = () => {
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES_PARTAGES["prevention-des-risques-professionnels-pour-les-apprentis"]} source="guide-recruteur" />
             </Grid>
+            <Grid size={{ md: 3, xs: 12 }}>
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["rediger-son-offre-d-alternance"]} source="guide-recruteur" />
+            </Grid>
           </Grid>
           <Grid
             container

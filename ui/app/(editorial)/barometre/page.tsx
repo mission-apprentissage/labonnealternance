@@ -297,7 +297,11 @@ export default function BarometrePage() {
 
               <Typography component="p" sx={paragraphSx}>
                 Les métiers les plus concurrentiels pour les candidats se concentrent principalement dans le numérique et le tertiaire qualifié. On retrouve notamment
-                <em> développeur web, data engineer, développeur logiciel</em>, ou encore <em>administrateur SI</em>.
+                <em>
+                  {" "}
+                  développeur web, <span lang="en">data engineer</span>, développeur logiciel
+                </em>
+                , ou encore <em>administrateur SI</em>.
               </Typography>
 
               <Typography component="p" sx={paragraphSx}>
@@ -321,7 +325,19 @@ export default function BarometrePage() {
                 <BarChartHorizontal
                   title="Métiers les plus sous tension (plus de candidats que d’offres)"
                   caption="Ratio offres / candidatures (le plus faible)"
-                  items={metiersSousTension}
+                  items={metiersSousTension.map((item) =>
+                    item.label.startsWith("Data analyst")
+                      ? {
+                          ...item,
+                          label: (
+                            <>
+                              <span lang="en">Data analyst</span>
+                              {item.label.slice("Data analyst".length)}
+                            </>
+                          ),
+                        }
+                      : item
+                  )}
                   tone="error"
                 />
                 <BarChartHorizontal title="Métiers les moins sous tension (ratio offres/cand. le plus élevé)" items={metiersMoinsSousTension} tone="success" />

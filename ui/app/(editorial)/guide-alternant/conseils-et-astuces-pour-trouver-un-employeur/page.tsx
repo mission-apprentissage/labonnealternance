@@ -54,7 +54,8 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
           </Typography>
         </Paragraph>
         <Paragraph>
-          France Travail recense de nombreux évènements (conférences, salons, job dating, conférences en ligne…) pour vous aider dans vos recherches de contrat.{" "}
+          France Travail recense de nombreux évènements (conférences, salons, <span lang="en">job dating</span>, conférences en ligne…) pour vous aider dans vos recherches de
+          contrat.{" "}
           <DsfrLink href="https://mesevenementsemploi.francetravail.fr/mes-evenements-emploi/evenements">
             En savoir plus
             <span className="fr-sr-only">{" - Consulter les évènements France Travail"}</span>

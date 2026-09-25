@@ -142,26 +142,36 @@ export default function APropos() {
                   </Typography>{" "}
                   intéressés par l'alternance à trouver une formation d’une part, et un contrat avec une entreprise d’autre part, en exposant et permettant aux candidat d'entrer en
                   contact avec :
-                  <Box component="ul" sx={{ my: fr.spacing("8v"), pl: fr.spacing("4v"), listStyle: "disc", "& > li": { mb: fr.spacing("6v") } }}>
-                    <li>
-                      Les formations en apprentissage issues du{" "}
-                      <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/">catalogue des formations en apprentissage du Réseau des Carif-Oref</DsfrLink>.
-                    </li>
-                    <li>
-                      De nombreuses offres d’emploi en alternance : celles postées par les recruteurs directement sur notre plateforme, ainsi que sur les sites de nos partenaires
-                      (via API ou Widget, cf. <DsfrLink href="/espace-developpeurs">Espace développeurs</DsfrLink>
-                      ).
-                    </li>
-                    <li>
-                      Nous agrégeons également les offres en alternance de France travail et de ses{" "}
-                      <DsfrLink href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html">
-                        sites partenaires
-                        <span className="fr-sr-only">{" - Accéder à la liste des sites partenaires de France Travail"}</span>
-                      </DsfrLink>
-                      . Des entreprises identifiées comme à fort potentiel d'embauche en alternance sur la base de données publiques. Notre objectif est de faciliter les démarches
-                      de candidatures spontanées des candidats, en pré ciblant les entreprises pertinentes.
-                    </li>
-                  </Box>
+                </Typography>
+
+                {/* La liste et le paragraphe suivant étaient imbriqués dans le <p> ci-dessus :
+                    contenu de bloc interdit dans un <p>, le parseur le refermait avant (RGAA 8.2). */}
+                <Box component="ul" sx={{ my: fr.spacing("8v"), pl: fr.spacing("4v"), listStyle: "disc", "& > li": { mb: fr.spacing("6v") } }}>
+                  <li>
+                    Les formations en apprentissage issues du{" "}
+                    <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/">catalogue des formations en apprentissage du Réseau des Carif-Oref</DsfrLink>.
+                  </li>
+                  <li>
+                    De nombreuses offres d’emploi en alternance : celles postées par les recruteurs directement sur notre plateforme, ainsi que sur les sites de nos partenaires
+                    (via API ou Widget, cf. <DsfrLink href="/espace-developpeurs">Espace développeurs</DsfrLink>
+                    ).
+                  </li>
+                  <li>
+                    Nous agrégeons également les offres en alternance de France travail et de ses{" "}
+                    <DsfrLink href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html">
+                      sites partenaires
+                      <span className="fr-sr-only">{" - Accéder à la liste des sites partenaires de France Travail"}</span>
+                    </DsfrLink>
+                    . Des entreprises identifiées comme à fort potentiel d'embauche en alternance sur la base de données publiques. Notre objectif est de faciliter les démarches de
+                    candidatures spontanées des candidats, en pré ciblant les entreprises pertinentes.
+                  </li>
+                </Box>
+
+                <Typography
+                  sx={{
+                    mb: fr.spacing("4v"),
+                  }}
+                >
                   <Typography
                     component="span"
                     sx={{

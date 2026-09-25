@@ -4,9 +4,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { domAnimation, LazyMotion } from "motion/react"
 import * as motion from "motion/react-m"
+import type { ReactNode } from "react"
 
 export type BarChartHorizontalItem = {
-  label: string
+  label: ReactNode
   value: number
   displayValue?: string
 }
@@ -30,7 +31,7 @@ export function BarChartHorizontal({
   tone = "info",
   source = "La bonne alternance",
 }: {
-  title: string
+  title: ReactNode
   caption?: string
   items: BarChartHorizontalItem[]
   tone?: Tone
@@ -70,7 +71,7 @@ export function BarChartHorizontal({
             const percent = max > 0 ? (item.value / max) * 100 : 0
             return (
               <Box
-                key={item.label}
+                key={index}
                 sx={{
                   display: "grid",
                   gridTemplateColumns: { xs: "1fr", md: "minmax(180px, 32%) 1fr" },

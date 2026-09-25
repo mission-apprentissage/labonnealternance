@@ -8,6 +8,16 @@ import type { PAGES } from "@/utils/routes.utils"
 // littéraux titre/description représentaient ~la moitié de ses octets émis dans les bundles
 // client, dupliqués entre chunks (issue #5214). Les clés reflètent celles de PAGES — le
 // `satisfies` en fin de fichier casse le typecheck si une clé de PAGES est renommée ou supprimée.
+// Libellé de l'espace pro, utilisé pour distinguer dans le <title> des pages homonymes d'un
+// espace à l'autre : « Informations de contact » et « Création d'une offre » existent à
+// l'identique côté recruteur, CFA, OPCO et administration (RGAA 8.6).
+const ESPACE_LABEL: Record<string, string> = {
+  CFA: "espace organisme de formation",
+  ENTREPRISE: "espace recruteur",
+  OPCO: "espace OPCO",
+  ADMIN: "espace administration",
+}
+
 export const METADATA = {
   static: {
     home: () => ({
@@ -83,6 +93,10 @@ export const METADATA = {
     guidePreventionDesRisquesProfessionnelsPourLesApprentis: () => ({
       title: "La prévention des risques professionnels | Guide pour les apprentis, les CFA et les recruteurs",
       description: "Obligations des employeurs, accueil en entreprise et rôle des CFA dans la prévention des risques professionnels pour les apprentis.",
+    }),
+    guideRedigerSonOffreDAlternance: () => ({
+      title: "Bien rédiger son offre d'alternance | Charte de rédaction",
+      description: "Règles obligatoires, bonnes pratiques et modération : tout savoir pour rédiger une offre d'alternance claire, conforme et attractive.",
     }),
     guideAlternant: () => ({
       title: "Guide de l'alternant 2026 | Tout savoir sur l'alternance",
@@ -166,6 +180,14 @@ export const METADATA = {
       title: "Simulateur salaire alternance 2026 | Calcul gratuit brut et net",
       description:
         "Calculez votre salaire net en alternance en 2 clics. Indiquez votre âge, type de contrat et durée : le simulateur affiche votre rémunération mensuelle brut et net.",
+    }),
+    unJeuneUneSolution: () => ({
+      title: "Trouver une alternance avec 1jeune1solution - La bonne alternance",
+      description: "Recherchez votre alternance par métier et par ville depuis 1jeune1solution : offres d’emploi, candidatures spontanées et formations en apprentissage.",
+    }),
+    unJeuneUneSolutionRecruteurs: () => ({
+      title: "Recruter en alternance avec 1jeune1solution - La bonne alternance",
+      description: "Publiez gratuitement votre offre en alternance depuis 1jeune1solution et recevez les candidatures des jeunes sur La bonne alternance.",
     }),
     EspaceDeveloppeurs: () => ({
       title: "Espace développeurs - Transparence et qualité des offres - La bonne alternance",
@@ -297,7 +319,9 @@ export const METADATA = {
     }),
   },
   dynamic: {
-    compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): Metadata => ({ title: "Informations de contact - La bonne alternance" }),
+    compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): Metadata => ({
+      title: `Informations de contact - ${ESPACE_LABEL[userType]} - La bonne alternance`,
+    }),
     metierJobById: (metier: string): Metadata => ({
       title: `${metier} en alternance - Découvrez les opportunités`,
       description: `Explorez les différents métiers accessibles en ${metier} en alternance et trouvez celui qui correspond à votre projet professionnel.`,
@@ -315,7 +339,11 @@ export const METADATA = {
       userType: string
       userId?: string
       raison_sociale?: string
-    }): Metadata => ({ title: `${offerId === "creation" ? "Création d'une offre" : "Edition d'une offre"} - La bonne alternance` }),
+    }): Metadata => {
+      const action = offerId === "creation" ? "Création d'une offre" : "Edition d'une offre"
+      const espace = ESPACE_LABEL[userType]
+      return { title: espace ? `${action} - ${espace} - La bonne alternance` : `${action} - La bonne alternance` }
+    },
     backCfaEntrepriseCreationDetail: (siret: string): Metadata => ({
       title: `Création entreprise ${siret} - La bonne alternance`,
     }),
@@ -332,10 +360,12 @@ export const METADATA = {
       title: "Gestion des recruteurs - La bonne alternance",
     }),
     backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): Metadata => ({
-      title: `${user_label ?? "Entreprise"} - La bonne alternance`,
+      // Repli explicite : les generateMetadata appelants ne résolvent pas le libellé, et
+      // « Entreprise » ne disait pas de quelle page il s'agissait (RGAA 8.6).
+      title: `${user_label ?? "Détail du recruteur"} - La bonne alternance`,
     }),
     backAdminUserCfaEntreprise: ({ user_id, establishment_id, user_label }: { user_id: string; establishment_id: string; user_label?: string }): Metadata => ({
-      title: `${user_label ?? "Entreprise"} - La bonne alternance`,
+      title: `${user_label ?? "Détail de l'entreprise partenaire"} - La bonne alternance`,
     }),
     backEntrepriseEditionOffre: ({ job_id }: { job_id: string }): Metadata => ({
       title: `${job_id ? "Edition d'une offre" : "Création d'une offre"} - La bonne alternance`,
@@ -344,7 +374,7 @@ export const METADATA = {
       title: "Mise en relation avec des organismes de formation - La bonne alternance",
     }),
     backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): Metadata => ({
-      title: `${user_label ?? "Entreprise"} - La bonne alternance`,
+      title: `${user_label ?? "Informations de l'entreprise"} - La bonne alternance`,
     }),
     backEditAdministrator: ({ userId }: { userId: string }): Metadata => ({
       title: "Modification d'administrateur - La bonne alternance",

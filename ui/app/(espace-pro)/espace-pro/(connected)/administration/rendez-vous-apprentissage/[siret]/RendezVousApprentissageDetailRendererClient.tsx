@@ -120,7 +120,10 @@ export default function RendezVousApprentissageDetailRendererClient({
                                       <Typography sx={{ fontWeight: 700 }}>Clé ministere educatif</Typography> {parameter?.cle_ministere_educatif}
                                     </Box>
                                     <Box>
-                                      <Typography sx={{ fontWeight: 700 }}>Id parcoursup </Typography> {parameter?.parcoursup_id || "N/C"}
+                                      <Typography sx={{ fontWeight: 700 }}>
+                                        <span lang="en">Id</span> parcoursup{" "}
+                                      </Typography>{" "}
+                                      {parameter?.parcoursup_id || "N/C"}
                                     </Box>
                                     <Box>
                                       <Typography sx={{ fontWeight: 700 }}>Intitulé</Typography> {parameter?.training_intitule_long}
