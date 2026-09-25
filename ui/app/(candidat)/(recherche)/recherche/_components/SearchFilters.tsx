@@ -215,6 +215,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
 
   // La clé force un remount quand start_date est remis à zéro en externe (ex. « Réinitialiser les filtres »),
   // sinon React n'applique pas les mises à jour de defaultValue sur un champ non contrôlé après le montage.
+  // Le filtre part au blur pour éviter une recherche avec une date partielle ; onChange ne sert qu'à propager l'effacement immédiat.
   const startDateInput = (
     <Input
       key={params.start_date ?? ""}
