@@ -9,8 +9,8 @@ import { ZFeedbackPageContext } from "./feedback-display.model.js"
  * choix unique : les trois types à choix se comptent avec le même `$unwind`.
  */
 export const ZFeedbackAnswer = z.union([
-  z.strictObject({ question_id: z.string(), choices: z.array(z.string()).min(1).max(12) }),
-  z.strictObject({ question_id: z.string(), text: z.string().trim().min(1).max(2000) }),
+  z.object({ question_id: z.string(), choices: z.array(z.string()).min(1).max(12) }),
+  z.object({ question_id: z.string(), text: z.string().trim().min(1).max(2000) }),
 ])
 export type IFeedbackAnswer = z.output<typeof ZFeedbackAnswer>
 
@@ -39,4 +39,6 @@ export default {
   zod: ZFeedbackResponse,
   indexes: [[{ form_slug: 1, created_at: -1 }, {}]],
   collectionName: "feedback_responses" as const,
+  // tolérant aux champs hors schéma jusqu'à la stabilisation du modèle, cf. feedback-form.model
+  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor

@@ -35,7 +35,7 @@ const zQuestionBase = {
   // affichage conditionnel : n'apparaît que si la question référencée vaut une des valeurs listées
   // (règles de validité : voir getFeedbackShowIfIssue)
   showIf: z
-    .strictObject({
+    .object({
       questionId: z.string(),
       equals: z.union([z.string(), z.array(z.string())]),
     })
@@ -47,7 +47,7 @@ export const FEEDBACK_QUESTION_MAX_OPTIONS = 12
 
 const zSelectOptions = z
   .array(
-    z.strictObject({
+    z.object({
       // clé stockée dans les réponses, dérivée du libellé côté back-office. Ex : "contact_recruteur"
       value: z.string().max(60),
       label: z.string({ error: "Indiquez le libellé de l'option" }).min(1, "Indiquez le libellé de l'option").max(150, "Le libellé ne peut pas dépasser 150 caractères"),
@@ -70,26 +70,26 @@ const zSelectOptions = z
     })
   })
 
-const ZFeedbackRatingQuestion = z.strictObject({
+const ZFeedbackRatingQuestion = z.object({
   ...zQuestionBase,
   type: z.literal("rating"),
   scale: z.enum(["thumbs3", "stars5"]).default("thumbs3"),
 })
 
-const ZFeedbackSingleSelectQuestion = z.strictObject({
+const ZFeedbackSingleSelectQuestion = z.object({
   ...zQuestionBase,
   type: z.literal("single_select"),
   options: zSelectOptions,
 })
 
-const ZFeedbackMultiSelectQuestion = z.strictObject({
+const ZFeedbackMultiSelectQuestion = z.object({
   ...zQuestionBase,
   type: z.literal("multi_select"),
   options: zSelectOptions,
   maxSelections: z.number().int().positive().max(12).optional(),
 })
 
-const ZFeedbackTextQuestion = z.strictObject({
+const ZFeedbackTextQuestion = z.object({
   ...zQuestionBase,
   type: z.literal("text"),
   maxLength: z
@@ -204,7 +204,7 @@ const ZFeedbackQuestionsInput = ZFeedbackQuestions.superRefine((questions, ctx) 
 
 // --- Formulaire ---
 
-const ZFeedbackFormTrigger = z.strictObject({
+const ZFeedbackFormTrigger = z.object({
   minInteractions: z.number({ error: "Indiquez un nombre d'interactions" }).int("Indiquez un nombre entier").positive("Le widget ne peut pas s'afficher au chargement").default(1),
   // chemins où le widget est autorisé à s'afficher, ex : ["/recherche", "/formation/:id/:titre"]
   scope: z.array(z.string().min(1)).default([]),
@@ -233,7 +233,7 @@ const ZFeedbackFormTriggerInput = ZFeedbackFormTrigger.extend({
  * `ZFeedbackFormPublishable`, vérifié au moment de l'activation. La page de déclenchement, elle,
  * est exigée dès la saisie (`ZFeedbackFormTriggerInput`).
  */
-export const ZFeedbackFormFields = z.strictObject({
+export const ZFeedbackFormFields = z.object({
   slug: z
     .string({ error: "Le slug est obligatoire" })
     .min(3, "Le slug doit faire au moins 3 caractères")
@@ -263,7 +263,7 @@ export const ZFeedbackForm = ZFeedbackFormFields.extend({
   // email de l'admin ayant créé le formulaire (membre de l'équipe, jamais un usager)
   created_by: z.string(),
   status_history: z.array(
-    z.strictObject({
+    z.object({
       status: ZFeedbackFormStatus,
       date: z.coerce.date<Date>(),
       granted_by: z.string(),
@@ -293,4 +293,9 @@ export default {
     [{ updated_at: -1 }, {}],
   ],
   collectionName: "feedback_forms" as const,
+  // Tolérant aux champs hors schéma le temps que le modèle se stabilise (#5247) : des documents
+  // locaux portent des champs retirés depuis (ex. `version`). z.object écarte ces champs des réponses
+  // de l'API au lieu de les rejeter, et le validateur Mongo les accepte. À resserrer
+  // (z.strictObject, authorizeAdditionalProperties: false) avant la mise en production.
+  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor

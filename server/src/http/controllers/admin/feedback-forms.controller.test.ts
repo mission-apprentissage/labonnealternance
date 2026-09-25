@@ -30,6 +30,18 @@ describe("admin feedback-forms controller", () => {
     expect(response.statusCode).toEqual(403)
   })
 
+  it("lit un formulaire qui porte un champ retiré du modèle, sans le renvoyer", async () => {
+    const { bearerToken } = await loginAsAdmin()
+    await createForm(bearerToken)
+    await getDbCollection("feedback_forms").updateOne({ slug: "page_entreprise_v1" }, { $set: { version: 1 } as object })
+
+    const response = await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms", headers: bearerToken })
+
+    expect(response.statusCode).toEqual(200)
+    expect(response.json().forms[0].slug).toEqual("page_entreprise_v1")
+    expect(response.json().forms[0]).not.toHaveProperty("version")
+  })
+
   it("refuse la création à un utilisateur non admin", async () => {
     const { bearerToken } = await createAndLogUser(httpClient, "userCfa", { type: "CFA" })
 

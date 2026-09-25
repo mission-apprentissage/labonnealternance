@@ -11,7 +11,7 @@ const zUrlParamValue = z.string().max(FEEDBACK_URL_PARAM_MAX_LENGTH)
  * de ses segments `:param` et les paramètres de l'URL, filtrés (cf. `sanitizeFeedbackUrlParams`).
  * Jamais l'URL brute.
  */
-export const ZFeedbackPageContext = z.strictObject({
+export const ZFeedbackPageContext = z.object({
   page: z.string().min(1).max(FEEDBACK_URL_PARAM_MAX_LENGTH),
   path_params: z.record(zUrlParamValue, zUrlParamValue).refine((params) => Object.keys(params).length <= FEEDBACK_URL_PARAMS_MAX_KEYS),
   query: z.record(zUrlParamValue, z.union([zUrlParamValue, z.array(zUrlParamValue).max(10)])).refine((params) => Object.keys(params).length <= FEEDBACK_URL_PARAMS_MAX_KEYS),
@@ -30,4 +30,6 @@ export default {
   zod: ZFeedbackDisplay,
   indexes: [[{ form_slug: 1, created_at: -1 }, {}]],
   collectionName: "feedback_displays" as const,
+  // tolérant aux champs hors schéma jusqu'à la stabilisation du modèle, cf. feedback-form.model
+  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor
