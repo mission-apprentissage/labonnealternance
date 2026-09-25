@@ -12,21 +12,26 @@ import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { downloadMistralBatchOutput, getMistralBatchJob, sendMistralMessages, submitMistralBatch } from "@/services/mistralai/mistralai.service"
+import { KEYWORDS_COLLECTIONS } from "@/services/search/search-items.service"
 
 /**
- * Génération continue des mots-clés Mistral de `search_items`, sans intervention manuelle :
+ * Génération continue des mots-clés Mistral des offres indexées, sans intervention manuelle :
  *
- * - cache `search_items_keywords` keyé par HASH du texte source : les recruteurs partagent
+ * - cache `search_jobs_keywords` keyé par HASH du texte source : les recruteurs partagent
  *   massivement les mêmes rome_labels et les offres re-créées à texte identique ne coûtent
- *   qu'un appel, et un drop de `search_items` ne perd pas les keywords ;
+ *   qu'un appel, et un drop de l'index ne perd pas les keywords ;
  * - offres classiques → API chat immédiate (cron continu, plafonné) ;
  * - recruteurs_lba (rechargés le dimanche, gros volume) → batch Mistral hebdomadaire
  *   dédupliqué par hash (`customId = source_hash`), suivi dans `mistral_batch_jobs` et
  *   ramassé par cron (reprise garantie à travers les redéploiements) ;
  * - import manuel conservé en secours (`applyKeywordsBatchFile`).
  *
- * Convention : `keywords: null` dans search_items = « à générer » ; `[]` = « traité, rien
- * d'utilisable » (réponse invalide/vide) — le document sort de la file, pas de boucle.
+ * Convention : `keywords: null` = « à générer » ; `[]` = « traité, rien d'utilisable »
+ * (réponse invalide/vide) — le document sort de la file, pas de boucle.
+ *
+ * Double écriture (#5389) : chaque collection de KEYWORDS_COLLECTIONS est scannée et chaque
+ * keyword écrit dans les trois par `_id`. Une offre qui change de corpus y est réinsérée à
+ * `keywords: null`, la passe cache la rattrape sans appel Mistral.
  */
 
 export const KEYWORDS_MODEL = "mistral-small-latest"
@@ -79,7 +84,7 @@ const now = () => new Date()
 /** Écrit/rafraîchit une entrée du cache ([] = traité sans résultat utilisable). */
 export const writeKeywordsToCache = async ({ sourceHash, keywords, origin }: { sourceHash: string; keywords: string[]; origin: "immediate" | "batch" | "manual_import" }) => {
   try {
-    await getDbCollection("search_items_keywords").updateOne(
+    await getDbCollection("search_jobs_keywords").updateOne(
       { source_hash: sourceHash },
       { $set: { keywords, model: KEYWORDS_MODEL, origin, last_used_at: now() }, $setOnInsert: { _id: new ObjectId(), created_at: now() } },
       { upsert: true }
@@ -94,16 +99,26 @@ export const writeKeywordsToCache = async ({ sourceHash, keywords, origin }: { s
 /** Résout un lot de hashes depuis le cache (bump `last_used_at` des entrées servies). */
 const resolveKeywordsFromCache = async (hashes: string[]): Promise<Map<string, string[]>> => {
   if (!hashes.length) return new Map()
-  const rows = await getDbCollection("search_items_keywords")
+  const rows = await getDbCollection("search_jobs_keywords")
     .find({ source_hash: { $in: hashes } }, { projection: { source_hash: 1, keywords: 1 } })
     .toArray()
   if (rows.length) {
-    await getDbCollection("search_items_keywords").updateMany({ source_hash: { $in: rows.map((row) => row.source_hash) } }, { $set: { last_used_at: now() } })
+    await getDbCollection("search_jobs_keywords").updateMany({ source_hash: { $in: rows.map((row) => row.source_hash) } }, { $set: { last_used_at: now() } })
   }
   return new Map(rows.map((row) => [row.source_hash, row.keywords]))
 }
 
 const PENDING_PROJECTION = { _id: 1, title: 1, description: 1, rome_labels: 1, sub_type: 1 } as const
+
+// `search_items` mêle offres et formations ; les deux autres collections ne portent que des offres.
+const pendingFilterFor = (name: (typeof KEYWORDS_COLLECTIONS)[number], extra: { sub_type?: string } = {}) =>
+  name === "search_items" ? { type: "offre", keywords: null, ...extra } : { keywords: null, ...extra }
+
+const writeKeywordsToDocs = async (updates: AnyBulkWriteOperation<ISearchItem>[]) => {
+  if (!updates.length) return
+  await Promise.all(KEYWORDS_COLLECTIONS.map((name) => getDbCollection(name).bulkWrite(updates, { ordered: false })))
+}
+
 const CACHE_PASS_CHUNK_SIZE = 500
 const CACHE_WRITE_BULK_SIZE = 1_000
 
@@ -135,7 +150,7 @@ const applyCacheToDocs = async (docs: KeywordsSourceDoc[]): Promise<{ misses: (K
       misses.push(doc)
     }
   }
-  if (updates.length) await getDbCollection("search_items").bulkWrite(updates, { ordered: false })
+  await writeKeywordsToDocs(updates)
   return { misses, hits }
 }
 
@@ -146,7 +161,7 @@ const MAX_CONSECUTIVE_FAILURES = 5
 /**
  * Cron continu (30 min) :
  * 1. passe CACHE sur tous les docs `keywords: null` (recruteurs compris — c'est ainsi que
- *    les résultats des batchs hebdo se propagent vers search_items, gratuitement) ;
+ *    les résultats des batchs hebdo se propagent vers les offres indexées, gratuitement) ;
  * 2. appels IMMÉDIATS (API chat) pour les offres non-recruteurs restées en miss, plafonnés
  *    par run — les recruteurs en miss attendent le batch hebdomadaire.
  */
@@ -157,7 +172,6 @@ export const generateSearchItemsKeywordsContinuous = async (payload?: { limit?: 
   // Candidats immédiats plafonnés à l'accumulation : sinon un gros backlog retiendrait tous les
   // miss en mémoire, descriptions comprises. Dédupliqués par hash, les jumeaux seront servis par
   // le cache au tick suivant.
-  const pending = getDbCollection("search_items").find({ type: "offre", keywords: null }, { projection: PENDING_PROJECTION })
   const immediateCandidates: (KeywordsSourceDoc & { sourceHash: string; sourceText: string })[] = []
   const candidateHashes = new Set<string>()
   let chunk: KeywordsSourceDoc[] = []
@@ -173,11 +187,13 @@ export const generateSearchItemsKeywordsContinuous = async (payload?: { limit?: 
     }
     chunk = []
   }
-  for await (const doc of pending) {
-    chunk.push(doc as KeywordsSourceDoc)
-    if (chunk.length >= CACHE_PASS_CHUNK_SIZE) await flushChunk()
+  for (const name of KEYWORDS_COLLECTIONS) {
+    for await (const doc of getDbCollection(name).find(pendingFilterFor(name), { projection: PENDING_PROJECTION })) {
+      chunk.push(doc as KeywordsSourceDoc)
+      if (chunk.length >= CACHE_PASS_CHUNK_SIZE) await flushChunk()
+    }
+    await flushChunk()
   }
-  await flushChunk()
 
   // Échecs consécutifs comptés par batch, après le Promise.all : sous concurrence, un
   // incrément/reset par promesse rendrait le seuil non déterministe.
@@ -200,7 +216,7 @@ export const generateSearchItemsKeywordsContinuous = async (payload?: { limit?: 
         if (!keywords.length) counters.unusable++
         else counters.generated++
         await writeKeywordsToCache({ sourceHash: doc.sourceHash, keywords, origin: "immediate" })
-        await getDbCollection("search_items").updateOne({ _id: doc._id }, { $set: { keywords } })
+        await writeKeywordsToDocs([{ updateOne: { filter: { _id: doc._id }, update: { $set: { keywords } } } }])
         return "ok"
       })
     )
@@ -223,21 +239,22 @@ export const submitSearchItemsKeywordsBatch = async (payload?: { recruteursOnly?
   // `recruteursOnly` peut arriver en string via la CLI / un payload de job queued : la string
   // "false" est truthy, d'où la comparaison explicite.
   const recruteursOnly = String(payload?.recruteursOnly ?? true) !== "false"
-  const filter = { type: "offre", keywords: null, ...(recruteursOnly ? { sub_type: LBA_ITEM_TYPE.RECRUTEURS_LBA } : {}) }
+  const subTypeFilter = recruteursOnly ? { sub_type: LBA_ITEM_TYPE.RECRUTEURS_LBA } : {}
 
   const textByHash = new Map<string, string>()
-  const cursor = getDbCollection("search_items").find(filter, { projection: PENDING_PROJECTION })
-  for await (const doc of cursor) {
-    const sourceText = buildKeywordsSourceText(doc as KeywordsSourceDoc)
-    if (!sourceText) continue
-    textByHash.set(computeSourceHash(sourceText), sourceText)
+  for (const name of KEYWORDS_COLLECTIONS) {
+    for await (const doc of getDbCollection(name).find(pendingFilterFor(name, subTypeFilter), { projection: PENDING_PROJECTION })) {
+      const sourceText = buildKeywordsSourceText(doc as KeywordsSourceDoc)
+      if (!sourceText) continue
+      textByHash.set(computeSourceHash(sourceText), sourceText)
+    }
   }
 
   // Hashes déjà en cache : la passe cache du cron continu suffit.
   const hashes = [...textByHash.keys()]
   for (let i = 0; i < hashes.length; i += CACHE_PASS_CHUNK_SIZE) {
     const slice = hashes.slice(i, i + CACHE_PASS_CHUNK_SIZE)
-    const cached = await getDbCollection("search_items_keywords")
+    const cached = await getDbCollection("search_jobs_keywords")
       .find({ source_hash: { $in: slice } }, { projection: { source_hash: 1 } })
       .toArray()
     for (const row of cached) textByHash.delete(row.source_hash)
@@ -251,7 +268,7 @@ export const submitSearchItemsKeywordsBatch = async (payload?: { recruteursOnly?
       requests: slice,
       model: KEYWORDS_MODEL,
       maxTokens: KEYWORDS_MAX_TOKENS,
-      inputFileName: `search_items_keywords_${i / KEYWORDS_BATCH_CHUNK_SIZE + 1}.jsonl`,
+      inputFileName: `search_jobs_keywords_${i / KEYWORDS_BATCH_CHUNK_SIZE + 1}.jsonl`,
     })
     if (!jobId) {
       logger.error(`submitSearchItemsKeywordsBatch: échec de soumission de la tranche ${i / KEYWORDS_BATCH_CHUNK_SIZE + 1} (${slice.length} requêtes)`)
@@ -262,7 +279,7 @@ export const submitSearchItemsKeywordsBatch = async (payload?: { recruteursOnly?
       await getDbCollection("mistral_batch_jobs").insertOne({
         _id: new ObjectId(),
         job_id: jobId,
-        kind: "search_items_keywords",
+        kind: "search_jobs_keywords",
         status: "submitted",
         request_count: slice.length,
         applied_count: null,
@@ -285,10 +302,10 @@ export const submitSearchItemsKeywordsBatch = async (payload?: { recruteursOnly?
 
 /**
  * Cron de ramasse (horaire) : applique la sortie dans le cache seulement, la passe cache du cron
- * continu propage vers search_items.
+ * continu propage vers les offres indexées.
  */
 export const applyPendingMistralBatches = async () => {
-  const pendingJobs = await getDbCollection("mistral_batch_jobs").find({ status: "submitted", kind: "search_items_keywords" }).toArray()
+  const pendingJobs = await getDbCollection("mistral_batch_jobs").find({ status: "submitted", kind: "search_jobs_keywords" }).toArray()
   const counters = { applied: 0, stillRunning: 0, failed: 0 }
 
   for (const pending of pendingJobs) {
@@ -312,7 +329,7 @@ export const applyPendingMistralBatches = async () => {
               upsert: true,
             },
           }))
-          const result = await getDbCollection("search_items_keywords").bulkWrite(ops, { ordered: false })
+          const result = await getDbCollection("search_jobs_keywords").bulkWrite(ops, { ordered: false })
           appliedCount += result.upsertedCount + result.matchedCount
         }
         await getDbCollection("mistral_batch_jobs").updateOne(
@@ -351,7 +368,7 @@ export const applyPendingMistralBatches = async () => {
 /**
  * Import MANUEL (secours) d'un JSONL de sortie Mistral téléchargé à la main. Deux formats de
  * `custom_id` supportés : hash de texte source (batchs du pipeline actuel) → cache ;
- * ObjectId 24 hex (batchs historiques keyés par document) → search_items + cache.
+ * ObjectId 24 hex (batchs historiques keyés par document) → offres indexées + cache.
  */
 export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
   const file = payload?.file
@@ -374,9 +391,9 @@ export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
       }
 
       if (/^[0-9a-f]{24}$/i.test(customId)) {
-        // Format historique : custom_id = _id du document search_items.
+        // Format historique : custom_id = _id du document indexé.
         const docId = new ObjectId(customId)
-        await getDbCollection("search_items").updateOne({ _id: docId }, { $set: { keywords } })
+        await writeKeywordsToDocs([{ updateOne: { filter: { _id: docId }, update: { $set: { keywords } } } }])
         // Alimente aussi le cache pour les futurs documents au même texte source.
         const doc = await getDbCollection("search_items").findOne({ _id: docId }, { projection: PENDING_PROJECTION })
         const sourceText = doc ? buildKeywordsSourceText(doc) : ""

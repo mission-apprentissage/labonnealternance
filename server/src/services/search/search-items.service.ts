@@ -512,14 +512,38 @@ const fetchJobPartnersForSync = async (ids: ObjectId[]): Promise<{ offers: IJobP
   return { offers, recruteurs }
 }
 
+/** Collections d'offres par mode (#5389) ; une offre n'appartient qu'à l'une des deux. */
+export const SEARCH_JOBS_COLLECTIONS = ["search_jobs", "search_jobs_with_training"] as const
+
+type SearchCorpusCollection = (typeof SEARCH_JOBS_COLLECTIONS)[number] | "search_trainings"
+
+/** Collections qui portent des `keywords` Mistral : `search_items` et les deux corpus d'offres. */
+export const KEYWORDS_COLLECTIONS = ["search_items", ...SEARCH_JOBS_COLLECTIONS] as const
+
+/** Collection du mode de recherche qui sert l'item, cf. `buildModeFilter` dans search.service.ts. */
+export const getSearchCorpusCollection = (doc: Pick<ISearchItem, "type" | "is_formation_included">): SearchCorpusCollection => {
+  if (doc.type === "formation") return "search_trainings"
+  return doc.is_formation_included ? "search_jobs_with_training" : "search_jobs"
+}
+
 /**
  * Upsert préservant les `keywords` (enrichissement Mistral asynchrone) des docs déjà indexés.
  * Utilisé par la sync incrémentale ET le nightly : un `replaceOne` remettrait `keywords: null`
  * sur un doc inséré/enrichi par un autre chemin entre deux lectures (course sync ↔ cron keywords).
+ *
+ * Double écriture `search_items` + collection du mode (#5389). Une offre change de collection
+ * quand `is_delegated` ou la liste GEIQ change : elle est retirée de l'autre collection d'offres.
  */
 export const upsertSearchItem = async (doc: ISearchItem) => {
   const { keywords: _keywords, _id, ...fields } = doc
-  await getDbCollection("search_items").updateOne({ _id }, { $set: fields, $setOnInsert: { keywords: null } }, { upsert: true })
+  const update = { $set: fields, $setOnInsert: { keywords: null } }
+  const corpus = getSearchCorpusCollection(doc)
+  const otherJobsCollection = SEARCH_JOBS_COLLECTIONS.find((name) => corpus !== "search_trainings" && name !== corpus)
+  await Promise.all([
+    getDbCollection("search_items").updateOne({ _id }, update, { upsert: true }),
+    getDbCollection(corpus).updateOne({ _id }, update, { upsert: true }),
+    otherJobsCollection ? getDbCollection(otherJobsCollection).deleteOne({ _id }) : null,
+  ])
 }
 
 /**
@@ -565,10 +589,16 @@ export const upsertJobPartnersToSearchItems = async (ids: ObjectId[], sharedCtx?
   return { upserted, removed }
 }
 
-/** Retire des jobs_partners de l'index (garde-fou : ne touche jamais les formations). */
+/**
+ * Retire des jobs_partners de l'index (garde-fou : ne touche jamais les formations). Le compte
+ * retourné est celui de `search_items`, référence tant que dure la double écriture (#5389).
+ */
 export const removeJobPartnersFromSearchItems = async (ids: ObjectId[]): Promise<number> => {
   if (!ids.length) return 0
-  const result = await getDbCollection("search_items").deleteMany({ _id: { $in: ids }, type: "offre" })
+  const [result] = await Promise.all([
+    getDbCollection("search_items").deleteMany({ _id: { $in: ids }, type: "offre" }),
+    ...SEARCH_JOBS_COLLECTIONS.map((name) => getDbCollection(name).deleteMany({ _id: { $in: ids } })),
+  ])
   return result.deletedCount
 }
 
@@ -645,19 +675,30 @@ const DRIFT_RELATIVE_THRESHOLD = 0.01
 /**
  * Garde-fou : compare les volumes attendus (jobs_partners) aux volumes indexés
  * (search_items) et alerte Slack en cas de dérive — symptôme d'une sync cassée
- * (cron delta muet, écriture de masse sans bump updated_at…).
+ * (cron delta muet, écriture de masse sans bump updated_at…). Pendant la double écriture
+ * (#5389), chaque collection par mode est aussi comparée à sa part de `search_items`.
  */
 export const controlSearchItemsDrift = async () => {
-  const [expectedOffers, expectedRecruteurs, indexedOffers, indexedRecruteurs] = await Promise.all([
+  const [expectedOffers, expectedRecruteurs, indexedOffers, indexedRecruteurs, ...corpusCounts] = await Promise.all([
     getDbCollection("jobs_partners").countDocuments({ partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, offer_status: JOB_STATUS_ENGLISH.ACTIVE }),
     getDbCollection("jobs_partners").countDocuments({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }),
     getDbCollection("search_items").countDocuments({ type: "offre", sub_type: { $ne: LBA_ITEM_TYPE.RECRUTEURS_LBA } }),
     getDbCollection("search_items").countDocuments({ sub_type: LBA_ITEM_TYPE.RECRUTEURS_LBA }),
+    getDbCollection("search_items").countDocuments({ type: "offre", is_formation_included: { $ne: true } }),
+    getDbCollection("search_jobs").countDocuments({}),
+    getDbCollection("search_items").countDocuments({ type: "offre", is_formation_included: true }),
+    getDbCollection("search_jobs_with_training").countDocuments({}),
+    getDbCollection("search_items").countDocuments({ type: "formation" }),
+    getDbCollection("search_trainings").countDocuments({}),
   ])
+  const [searchJobsExpected, searchJobsIndexed, withTrainingExpected, withTrainingIndexed, trainingsExpected, trainingsIndexed] = corpusCounts
 
   const drifts = [
     { label: "offres", expected: expectedOffers, indexed: indexedOffers },
     { label: "recruteurs", expected: expectedRecruteurs, indexed: indexedRecruteurs },
+    { label: "search_jobs", expected: searchJobsExpected, indexed: searchJobsIndexed },
+    { label: "search_jobs_with_training", expected: withTrainingExpected, indexed: withTrainingIndexed },
+    { label: "search_trainings", expected: trainingsExpected, indexed: trainingsIndexed },
   ].filter(({ expected, indexed }) => {
     const gap = Math.abs(expected - indexed)
     return gap > Math.max(DRIFT_ABSOLUTE_THRESHOLD, expected * DRIFT_RELATIVE_THRESHOLD)
@@ -669,7 +710,7 @@ export const controlSearchItemsDrift = async () => {
   }
 
   logger.info(
-    `controlSearchItemsDrift: offres ${indexedOffers}/${expectedOffers}, recruteurs ${indexedRecruteurs}/${expectedRecruteurs}${drifts.length ? " — DÉRIVE DÉTECTÉE" : ""}`
+    `controlSearchItemsDrift: offres ${indexedOffers}/${expectedOffers}, recruteurs ${indexedRecruteurs}/${expectedRecruteurs}, search_jobs ${searchJobsIndexed}/${searchJobsExpected}, search_jobs_with_training ${withTrainingIndexed}/${withTrainingExpected}, search_trainings ${trainingsIndexed}/${trainingsExpected}${drifts.length ? " — DÉRIVE DÉTECTÉE" : ""}`
   )
   return { expectedOffers, expectedRecruteurs, indexedOffers, indexedRecruteurs, drift: drifts.length > 0 }
 }

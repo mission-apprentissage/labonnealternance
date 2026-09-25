@@ -120,7 +120,7 @@ Autocomplete BAN (≥ 2 caractères), `autoHighlight` (Entrée = 1ʳᵉ suggesti
 
 ## Synchronisation jobs_partners → search_items
 
-Mécanisme **hybride** ([`searchItems.service.ts`](../../server/src/services/search/searchItems.service.ts)) :
+Mécanisme **hybride** ([`search-items.service.ts`](../../server/src/services/search/search-items.service.ts)) :
 
 1. **Appels explicites** (fire-and-forget, jamais bloquants pour l'action métier) dans les actions unitaires : création/activation/annulation/pourvue d'offre (formulaire, API v2, classification, max candidatures), désinscription recruteur (suppression physique).
 2. **Cron delta** (`*/15 min`, `syncSearchItemsDelta`) : jobs_partners dont `updated_at` ≥ now − 30 min (fenêtre 2× l'intervalle, idempotent) — couvre les écritures de masse (expiration, imports, dédoublonnage… toutes bumpent désormais `updated_at`, index dédié ajouté).
@@ -131,9 +131,9 @@ Garanties : les `keywords` Mistral des docs indexés sont préservés par les up
 
 ### Keywords Mistral (génération continue)
 
-Automatisée de bout en bout ([`searchItemsKeywords.service.ts`](../../server/src/services/search/searchItemsKeywords.service.ts)) :
+Automatisée de bout en bout ([`search-items-keywords.service.ts`](../../server/src/services/search/search-items-keywords.service.ts)) :
 
-- **Cache `search_items_keywords`** keyé par le **hash du texte source** (pas par doc) : les recruteurs partagent massivement les mêmes rome_labels (un appel par combinaison ROME distincte), les offres re-créées à texte identique sont gratuites, et une régénération de `search_items` ne perd plus les keywords. Convention : `keywords: null` = à générer, `[]` = traité sans résultat utilisable (pas de re-boucle).
+- **Cache `search_jobs_keywords`** keyé par le **hash du texte source** (pas par doc) : les recruteurs partagent massivement les mêmes rome_labels (un appel par combinaison ROME distincte), les offres re-créées à texte identique sont gratuites, et une régénération de `search_items` ne perd plus les keywords. Convention : `keywords: null` = à générer, `[]` = traité sans résultat utilisable (pas de re-boucle).
 - **Cron continu** (`*/30 min`) : passe cache sur toute la file (c'est ainsi que les batchs se propagent), puis appels API **immédiats** pour les offres classiques en miss (plafond 300/run, concurrence 5, abandon après 5 erreurs API consécutives). Les recruteurs en miss attendent le batch.
 - **Batch hebdo recruteurs** (`0 18 * * SUN`, après leur rechargement de 10:00 UTC) : soumission Mistral Batch dédupliquée par hash (`customId = source_hash`), suivie dans **`mistral_batch_jobs`**.
 - **Ramasse horaire** (`applyPendingMistralBatches`) : vérifie les jobs `submitted`, télécharge et applique les sorties au cache — reprise garantie à travers les redéploiements ; échec → alerte Slack.
