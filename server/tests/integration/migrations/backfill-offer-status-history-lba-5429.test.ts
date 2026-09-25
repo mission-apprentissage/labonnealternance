@@ -242,4 +242,36 @@ describe("migration backfill-offer-status-history-lba-5429", () => {
       expect.soft(afterSecond.get(id)?.offer_status_history).toEqual(afterFirst.get(id)?.offer_status_history)
     }
   })
+
+  it("traite aussi les offres anciennes qui ne passent plus la validation de schéma", async () => {
+    // Hors production, jobs_partners est en validationAction error : un document qui ne respecte plus le
+    // schéma courant fait échouer toute mise à jour, même sans rapport avec le champ fautif (code 121).
+    const withoutApplyUrl = (doc: ReturnType<typeof lbaOffer>) => {
+      const { apply_url: _, ...rest } = doc
+      return rest as typeof doc
+    }
+    const legacyDocs = [
+      withoutApplyUrl(lbaOffer("sans-motif", { offer_status: JOB_STATUS_ENGLISH.ANNULEE })),
+      withoutApplyUrl(
+        lbaOffer("flux", {
+          offer_status_history: [
+            { date: new Date("2026-06-10T00:00:00.000Z"), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "supprimée du flux source", granted_by: "cancel-removed-jobs-partners" },
+          ],
+        })
+      ),
+      withoutApplyUrl(lbaOffer("avec-motif", { offer_status: JOB_STATUS_ENGLISH.ANNULEE, job_status_comment: "Je ne reçois pas de candidature" })),
+    ]
+    const collection = getDbCollection("jobs_partners")
+
+    // Garde-fou anti-vacuité : sans ce refus, le test ne prouve rien.
+    await expect(collection.insertOne(legacyDocs[0])).rejects.toMatchObject({ code: 121 })
+    await collection.insertMany(legacyDocs, { bypassDocumentValidation: true })
+
+    await up()
+    const byId = await readAll()
+
+    expect.soft(byId.get("sans-motif")?.offer_status_history).toHaveLength(1)
+    expect.soft(byId.get("flux")?.offer_status_history[0]?.reason).toBe("bug du 06 2026")
+    expect.soft(byId.get("avec-motif")?.offer_status_history).toMatchObject([{ reason: "Désactivation manuelle" }])
+  })
 })

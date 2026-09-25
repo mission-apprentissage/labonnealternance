@@ -193,6 +193,14 @@ interface SearchBarProps {
   qError?: string
   /** Message d'erreur DSFR sous le champ lieu. */
   lieuError?: string
+  /**
+   * Vider le champ métier — croix d'effacement ou effacement manuel — retire aussitôt le critère
+   * de la recherche courante (comme la croix du lieu). Réservé aux mises en page SANS bouton
+   * Rechercher visible (page de résultats desktop) : sur la home et dans le panneau mobile, le
+   * bouton lance explicitement, vider le champ ne fait que le vider (sur la home, onSubmit
+   * naviguerait vers /recherche).
+   */
+  submitOnClear?: boolean
 }
 
 // `id` : nécessaire pour l'association explicite au champ via aria-labelledby
@@ -234,6 +242,7 @@ export function SearchBar({
   onSubmit,
   onLieuChange,
   onQChange,
+  submitOnClear = false,
   submitOnSelect = false,
   layout = "row",
   inlineSuggestions = false,
@@ -447,6 +456,9 @@ export function SearchBar({
         </FieldLabel>
         <Autocomplete
           freeSolo
+          // Sans clearText, MUI nomme le bouton croix "Clear" (aria-label ET title) : seul nom
+          // accessible du contrôle, en anglais sur une page française (RGAA 8.7).
+          clearText="Effacer"
           options={metierOptions}
           getOptionLabel={(o) => (typeof o === "string" ? o : o.value)}
           // La 1ʳᵉ option pré-surlignée est la ligne « Rechercher : {saisie} » : Entrée valide la
@@ -470,10 +482,8 @@ export function SearchBar({
             setInputValue(value)
             qSourceRef.current = "free_text"
             onQChange?.(value, "free_text")
-            // Champ vidé sur la page de résultats : le critère métier est retiré de la recherche
-            // courante (comme la croix du lieu). Jamais sur la home : onSubmit y navigue vers
-            // /recherche, onQChange("") suffit.
-            if (value === "" && submitOnSelect) handleSubmit("", "free_text")
+            // Champ vidé (croix ou effacement) : cf. submitOnClear. onQChange("") suffit ailleurs.
+            if (value === "" && submitOnClear) handleSubmit("", "free_text")
           }}
           onChange={(_e, value, reason) => {
             // "createOption" = Entrée sans option surlignée (freeSolo) : MUI ne fait pas
@@ -591,6 +601,8 @@ export function SearchBar({
         </Box>
         <Autocomplete
           freeSolo
+          // cf. champ métier : sans clearText le bouton croix s'annonce "Clear" (RGAA 8.7).
+          clearText="Effacer"
           // La 1re option (suggestion ou « France entière ») est pré-surlignée : Entrée la
           // sélectionne au lieu de laisser un texte non validé.
           autoHighlight

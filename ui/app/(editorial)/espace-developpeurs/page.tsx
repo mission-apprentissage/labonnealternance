@@ -133,7 +133,7 @@ export default function EspaceDeveloppeurs() {
                   fontWeight: 700,
                 }}
               >
-                Widget
+                <span lang="en">Widget</span>
               </Typography>
 
               <Typography
@@ -209,7 +209,7 @@ export default function EspaceDeveloppeurs() {
                   fontWeight: 700,
                 }}
               >
-                Widget
+                <span lang="en">Widget</span>
               </Typography>
 
               <Typography

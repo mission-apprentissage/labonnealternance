@@ -293,11 +293,13 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               >
                 <Box id={zoneScopedId("recherche", "search-form")} tabIndex={-1} sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
                   <Box sx={{ flex: 1 }}>
-                    {/* submitOnSelect : pas de bouton Rechercher ici, une option métier acceptée (saisie libre ou suggestion) s'applique aussitôt, comme le lieu. */}
+                    {/* submitOnSelect/submitOnClear : pas de bouton Rechercher ici, une option métier acceptée
+                        (saisie libre ou suggestion) ou un champ vidé s'appliquent aussitôt, comme le lieu. */}
                     <SearchBar
                       initialQ={params.q}
                       initialLieuLabel={params.lieu_label}
                       franceEntiereIfEmpty
+                      submitOnClear
                       submitOnSelect
                       onSubmit={handleSearch}
                       onLieuChange={handleLieuChange}

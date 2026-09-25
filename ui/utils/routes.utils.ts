@@ -218,6 +218,16 @@ export const PAGES = {
       title: "Salaire alternant",
       index: true,
     },
+    unJeuneUneSolution: {
+      getPath: () => `/1jeune1solution` as string,
+      title: "Trouver une alternance avec 1jeune1solution",
+      index: false,
+    },
+    unJeuneUneSolutionRecruteurs: {
+      getPath: () => `/1jeune1solution-recruteurs` as string,
+      title: "Recruter en alternance avec 1jeune1solution",
+      index: false,
+    },
     EspaceDeveloppeurs: {
       getPath: () => `/espace-developpeurs` as string,
       title: "Espace développeurs",

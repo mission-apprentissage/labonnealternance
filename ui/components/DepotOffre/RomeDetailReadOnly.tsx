@@ -19,6 +19,14 @@ const CompetencesGroupDiv = styled.div`
   }
 `
 
+// Les compétences forment une liste : un <li> hors <ul>/<ol> rend un document invalide (RGAA 8.2)
+// et prive les lecteurs d'écran du nombre d'éléments. Marges neutralisées pour conserver le rendu
+// d'origine, qui reposait sur le seul `margin-left` des <li>.
+const CompetencesList = styled.ul`
+  margin: 0;
+  padding: 0;
+`
+
 export const RomeDetailReadOnly = ({
   appellation,
   romeReferentiel: { definition, acces_metier },
@@ -41,9 +49,11 @@ export const RomeDetailReadOnly = ({
       {competences?.savoir_etre_professionnel && (
         <Accordion defaultExpanded={true} id="qualites" label="Qualités souhaitées pour ce métier">
           <CompetencesGroupDiv>
-            {competences.savoir_etre_professionnel.map(({ libelle }) => (
-              <li key={libelle}>{libelle}</li>
-            ))}
+            <CompetencesList>
+              {competences.savoir_etre_professionnel.map(({ libelle }) => (
+                <li key={libelle}>{libelle}</li>
+              ))}
+            </CompetencesList>
           </CompetencesGroupDiv>
         </Accordion>
       )}
@@ -52,9 +62,11 @@ export const RomeDetailReadOnly = ({
           {competences.savoir_faire.map(({ libelle, items = [] }) => (
             <CompetencesGroupDiv key={libelle}>
               <Typography className="competences-group-title">{libelle}</Typography>
-              {items.map(({ libelle }) => (
-                <li key={libelle}>{libelle}</li>
-              ))}
+              <CompetencesList>
+                {items.map(({ libelle }) => (
+                  <li key={libelle}>{libelle}</li>
+                ))}
+              </CompetencesList>
             </CompetencesGroupDiv>
           ))}
         </Accordion>
@@ -64,9 +76,11 @@ export const RomeDetailReadOnly = ({
           {competences.savoirs.map(({ libelle, items = [] }) => (
             <CompetencesGroupDiv key={libelle}>
               <Typography className="competences-group-title">{libelle}</Typography>
-              {items.map(({ libelle }) => (
-                <li key={libelle}>{libelle}</li>
-              ))}
+              <CompetencesList>
+                {items.map(({ libelle }) => (
+                  <li key={libelle}>{libelle}</li>
+                ))}
+              </CompetencesList>
             </CompetencesGroupDiv>
           ))}
         </Accordion>
