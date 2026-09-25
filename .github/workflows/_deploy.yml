@@ -287,17 +287,23 @@ jobs:
           # Slack rejette tout le message si une section dépasse 3000 caractères : on répartit les
           # lignes sur autant de sections que nécessaire.
           add_section() {
-            local chunk="$1"$'\n' line
+            local header="$1" chunk="$1"$'\n' line count=0
             [ -n "$2" ] || return 0
             while IFS= read -r line; do
               [ -n "$line" ] || continue
               if [ $(( ${#chunk} + ${#line} + 1 )) -gt 2900 ]; then
                 push_block "$chunk"
-                chunk=""
+                chunk="${header} (suite)"$'\n'
+                count=0
               fi
               chunk+="${line}"$'\n'
+              count=$((count + 1))
             done <<< "$2"
-            [ -n "$chunk" ] && push_block "$chunk"
+            # `cmd && autre` en dernière instruction renverrait 1 et, le runner lançant bash en
+            # -e, ferait échouer le step dès qu'un chunk est vide.
+            if [ "$count" -gt 0 ]; then
+              push_block "$chunk"
+            fi
           }
 
           add_section ':large_green_circle: *Nouvelles fonctionnalités*' "$FEAT_LINES"
@@ -323,7 +329,9 @@ jobs:
               -H 'Content-type: application/json' \
               --data @-)
 
-          SLACK_RESPONSE=$(cat /tmp/slack-response.txt)
+          # La réponse vient d'un service externe : sans échappement, un % ou un saut de ligne
+          # casserait la workflow command ::error:: et permettrait d'en forger d'autres.
+          SLACK_RESPONSE=$(tr '\r\n' '  ' < /tmp/slack-response.txt | sed 's/%/%25/g' | cut -c1-200)
           if [ "$HTTP_CODE" != "200" ] || [ "$SLACK_RESPONSE" != "ok" ]; then
             echo "::error::Slack a refusé le changelog (HTTP ${HTTP_CODE}) : ${SLACK_RESPONSE}"
             exit 1
