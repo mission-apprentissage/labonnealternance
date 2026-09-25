@@ -213,8 +213,8 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
     },
   ]
 
-  // key forces remount when start_date is cleared externally (e.g. "Réinitialiser les filtres"),
-  // otherwise defaultValue ignores the reset (React doesn't update uncontrolled inputs after mount).
+  // La clé force un remount quand start_date est remis à zéro en externe (ex. « Réinitialiser les filtres »),
+  // sinon React n'applique pas les mises à jour de defaultValue sur un champ non contrôlé après le montage.
   const startDateInput = (
     <Input
       key={params.start_date ?? ""}
