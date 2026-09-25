@@ -201,33 +201,44 @@ jobs:
         run: |
           CURRENT_TAG="v${{ needs.version.outputs.VERSION }}"
 
-          # Itère sur les derniers runs terminés pour trouver le dernier déploiement en production
-          # (le workflow tourne aussi pour recette/pentest, donc on ne peut pas juste prendre head -1).
-          # On filtre sur la conclusion du job de déploiement et non sur celle du run : un run dont
-          # seul le changelog a échoué a bien déployé, et l'ignorer ferait grossir la fenêtre à chaque MEP.
-          PREV_TAG=""
-          RUN_IDS=$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/workflows/_deploy.yml/runs?status=completed&per_page=30" \
-            --jq ".workflow_runs[] | select(.id | tostring != \"$GITHUB_RUN_ID\") | .id")
+          # Borne basse du changelog : le dernier déploiement en production, lu dans l'API deployments.
+          # La liste des runs ne convient pas : servie par un index de recherche, elle renvoie par
+          # intermittence un instantané vieux de plusieurs semaines, quel que soit le filtre.
+          # `gh api --jq` n'accepte pas --arg, d'où le jq externe.
+          DEPLOYMENTS=$(gh api \
+            "repos/$GITHUB_REPOSITORY/deployments?environment=production&per_page=20" \
+            | jq -r --arg started "$RUN_STARTED_AT" \
+            '.[] | select(.created_at < $started) | "\(.id) \(.sha)"')
 
-          for RUN_ID in $RUN_IDS; do
-            PREV_VERSION=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs" \
-              --jq 'first(.jobs[] | select(.conclusion == "success" and (.name | test("^Deploy .* on production$"))) | .name | capture("Deploy (?<v>.*) on production") | .v) // empty')
-            if [ -n "$PREV_VERSION" ]; then
-              PREV_TAG="v${PREV_VERSION}"
+          PREV_SHA=""
+          while read -r DEPLOY_ID DEPLOY_SHA; do
+            [ -n "$DEPLOY_ID" ] || continue
+            # Un déploiement en échec n'a rien mis en production : il ne borne pas le changelog.
+            STATE=$(gh api "repos/$GITHUB_REPOSITORY/deployments/$DEPLOY_ID/statuses" \
+              --jq 'first(.[].state) // empty')
+            if [ "$STATE" = "success" ]; then
+              PREV_SHA="$DEPLOY_SHA"
               break
             fi
-          done
+          done <<< "$DEPLOYMENTS"
 
-          if [ -z "$PREV_TAG" ]; then
-            echo "No previous production run found, skipping"
+          if [ -z "$PREV_SHA" ]; then
+            echo "::warning::Aucun déploiement de production antérieur dans les 20 derniers, changelog non publié"
             exit 0
           fi
 
-          echo "Fenêtre de changelog : ${PREV_TAG} → ${CURRENT_TAG} ($(git rev-list --count "${PREV_TAG}..${CURRENT_TAG}") commits)"
+          if ! git cat-file -e "${PREV_SHA}^{commit}" 2>/dev/null; then
+            echo "::error::Le commit ${PREV_SHA} du déploiement précédent est absent du checkout"
+            exit 1
+          fi
 
-          # Transmettre les tags aux steps suivants
-          echo "PREV_TAG=${PREV_TAG}" >> "$GITHUB_ENV"
+          # Libellé lisible pour Slack ; la plage git, elle, s'appuie sur le sha exact.
+          PREV_LABEL=$(git describe --tags --abbrev=0 "$PREV_SHA" 2>/dev/null || echo "${PREV_SHA:0:9}")
+
+          echo "Fenêtre de changelog : ${PREV_LABEL} (${PREV_SHA:0:9}) → ${CURRENT_TAG} ($(git rev-list --count "${PREV_SHA}..${CURRENT_TAG}") commits)"
+
+          # Transmettre la plage aux steps suivants
+          echo "PREV_SHA=${PREV_SHA}" >> "$GITHUB_ENV"
           echo "CURRENT_TAG=${CURRENT_TAG}" >> "$GITHUB_ENV"
 
           TODAY=$(date +%Y-%m-%d)
@@ -249,18 +260,18 @@ jobs:
             else
               OTHER_LINES+="• ${author} - ${subject} (${hash})${NL}"
             fi
-          done < <(git log --pretty=format:"%h%x09%an%x09%s" "${PREV_TAG}..${CURRENT_TAG}")
+          done < <(git log --pretty=format:"%h%x09%an%x09%s" "${PREV_SHA}..${CURRENT_TAG}")
 
           if [ -z "$FEAT_LINES" ] && [ -z "$FIX_LINES" ] && [ -z "$CHORE_LINES" ] && [ -z "$OTHER_LINES" ]; then
-            echo "No commits between ${PREV_TAG} and ${CURRENT_TAG}, skipping"
+            echo "No commits between ${PREV_LABEL} and ${CURRENT_TAG}, skipping"
             exit 0
           fi
 
-          DIFF_URL="https://github.com/${GITHUB_REPOSITORY}/compare/${PREV_TAG}...${CURRENT_TAG}"
+          DIFF_URL="https://github.com/${GITHUB_REPOSITORY}/compare/${PREV_SHA}...${CURRENT_TAG}"
 
           BLOCKS=$(jq -n \
             --arg version "$CURRENT_TAG" \
-            --arg prev "$PREV_TAG" \
+            --arg prev "$PREV_LABEL" \
             --arg date "$TODAY" \
             '[
               {"type":"header","text":{"type":"plain_text","text":"🚀 Déployé en production — \($version)"}},
@@ -268,34 +279,65 @@ jobs:
               {"type":"divider"}
             ]')
 
-          if [ -n "$FEAT_LINES" ]; then
-            FEAT_TEXT=$':large_green_circle: *Nouvelles fonctionnalités*\n'"$FEAT_LINES"
-            BLOCKS=$(echo "$BLOCKS" | jq --arg text "$FEAT_TEXT" \
+          push_block() {
+            BLOCKS=$(echo "$BLOCKS" | jq --arg text "$1" \
               '. + [{"type":"section","text":{"type":"mrkdwn","text":$text}}]')
-          fi
+          }
 
-          if [ -n "$FIX_LINES" ]; then
-            FIX_TEXT=$':red_circle: *Corrections*\n'"$FIX_LINES"
-            BLOCKS=$(echo "$BLOCKS" | jq --arg text "$FIX_TEXT" \
-              '. + [{"type":"section","text":{"type":"mrkdwn","text":$text}}]')
-          fi
+          # Slack rejette tout le message si une section dépasse 3000 caractères : on répartit les
+          # lignes sur autant de sections que nécessaire.
+          add_section() {
+            local chunk="$1"$'\n' line
+            [ -n "$2" ] || return 0
+            while IFS= read -r line; do
+              [ -n "$line" ] || continue
+              if [ $(( ${#chunk} + ${#line} + 1 )) -gt 2900 ]; then
+                push_block "$chunk"
+                chunk=""
+              fi
+              chunk+="${line}"$'\n'
+            done <<< "$2"
+            [ -n "$chunk" ] && push_block "$chunk"
+          }
+
+          add_section ':large_green_circle: *Nouvelles fonctionnalités*' "$FEAT_LINES"
+          add_section ':red_circle: *Corrections*' "$FIX_LINES"
 
           BLOCKS=$(echo "$BLOCKS" | jq --arg url "$DIFF_URL" \
             '. + [{"type":"context","elements":[{"type":"mrkdwn","text":"<\($url)|Voir le diff complet →>"}]}]')
 
-          jq -n --argjson blocks "$BLOCKS" \
+          # Slack plafonne un message à 50 blocs.
+          BLOCK_COUNT=$(echo "$BLOCKS" | jq 'length')
+          if [ "$BLOCK_COUNT" -gt 50 ]; then
+            echo "::warning::Changelog tronqué : ${BLOCK_COUNT} blocs pour une limite Slack de 50"
+            BLOCKS=$(echo "$BLOCKS" | jq --arg url "$DIFF_URL" \
+              '.[0:49] + [{"type":"context","elements":[{"type":"mrkdwn","text":"<\($url)|Changelog tronqué, voir le diff complet →>"}]}]')
+            BLOCK_COUNT=$(echo "$BLOCKS" | jq 'length')
+          fi
+
+          # Un webhook Slack répond "ok" en texte brut et refuse un payload invalide sans que curl
+          # n'échoue : sans ce contrôle, le job sort vert sans avoir rien posté.
+          HTTP_CODE=$(jq -n --argjson blocks "$BLOCKS" \
             '{"attachments":[{"color":"#00a95f","blocks":$blocks}]}' \
-          | curl -s -X POST "$SLACK_WEBHOOK_URL" \
+          | curl -s -o /tmp/slack-response.txt -w '%{http_code}' -X POST "$SLACK_WEBHOOK_URL" \
               -H 'Content-type: application/json' \
-              --data @-
+              --data @-)
+
+          SLACK_RESPONSE=$(cat /tmp/slack-response.txt)
+          if [ "$HTTP_CODE" != "200" ] || [ "$SLACK_RESPONSE" != "ok" ]; then
+            echo "::error::Slack a refusé le changelog (HTTP ${HTTP_CODE}) : ${SLACK_RESPONSE}"
+            exit 1
+          fi
+          echo "Changelog posté sur Slack (${BLOCK_COUNT} blocs)"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_STARTED_AT: ${{ github.run_started_at }}
 
       - name: Mark linked issues as en-production in GitHub Project
         shell: bash
         run: |
-          PR_NUMBERS=$(git log --pretty=format:"%s" "${PREV_TAG}..${CURRENT_TAG}" \
+          PR_NUMBERS=$(git log --pretty=format:"%s" "${PREV_SHA}..${CURRENT_TAG}" \
             | grep -oP '\(#\K[0-9]+(?=\))' || true)
 
           FAILED=0
