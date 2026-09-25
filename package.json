@@ -95,6 +95,7 @@
     "zod@3.21.4": "patch:zod@npm%3A3.21.4#./.yarn/patches/zod-npm-3.21.4-9f570b215c.patch",
     "handlebars": "^4.7.9",
     "fast-xml-parser": "^5.5.9",
-    "tar": "^7.5.19"
+    "tar": "^7.5.19",
+    "react-notion-x@^7.10.0": "patch:react-notion-x@npm%3A7.10.0#./.yarn/patches/react-notion-x-npm-7.10.0-bc6011c92e.patch"
   }
 }

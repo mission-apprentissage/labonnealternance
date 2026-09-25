@@ -16,3 +16,8 @@
 .notion-hash-link {
   display: none;
 }
+
+/* Texte d'un bloc Notion qui a des blocs enfants (cf. .yarn/patches/react-notion-x-*.patch) : sans ce reset, le <p> prend la marge basse du DSFR. */
+.notion-text-content {
+  margin: 0;
+}
