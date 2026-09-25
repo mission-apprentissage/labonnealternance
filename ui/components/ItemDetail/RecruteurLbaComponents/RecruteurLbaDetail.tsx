@@ -33,15 +33,12 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
           }}
         >
           <Box>
+            <Typography>Nous sélectionnons pour vous des entreprises dont nous jugeons qu’il est possible qu’elles recrutent des alternants.</Typography>
             <Typography sx={{ mb: fr.spacing("6v") }}>
-              Nous sélectionnons pour vous des entreprises dont nous jugeons qu’il est possible qu’elles recrutent des alternants.
-              <br />
               <strong>L’entreprise {recruteurLba?.company?.name} n’a pas déposé d’offre mais serait susceptible de recruter.</strong> Renseignez-vous sur ses activités et les
               métiers qu’elle exerce avant de soumettre votre candidature spontanée.
             </Typography>
-            <Typography>
-              <strong>Les candidats envoyant des candidatures spontanées ont plus de chance de trouver un employeur.</strong>
-            </Typography>
+            <Typography sx={{ fontWeight: 700 }}>Les candidats envoyant des candidatures spontanées ont plus de chance de trouver un employeur.</Typography>
           </Box>
           <Box
             sx={{
