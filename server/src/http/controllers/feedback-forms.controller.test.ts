@@ -48,7 +48,8 @@ describe("public feedback-forms controller", () => {
   }
 
   const display = (slug: string, body: object = context) => httpClient().inject({ method: "POST", path: `/api/feedback-forms/${slug}/displays`, body })
-  const start = (slug: string, display_id: string) => httpClient().inject({ method: "POST", path: `/api/feedback-forms/${slug}/responses`, body: { display_id } })
+  const start = (slug: string, display_id: string, body: object = context) =>
+    httpClient().inject({ method: "POST", path: `/api/feedback-forms/${slug}/responses`, body: { display_id, ...body } })
   const progress = (id: string, body: object) => httpClient().inject({ method: "PUT", path: `/api/feedback-responses/${id}`, body })
 
   const openResponse = async () => {
@@ -119,7 +120,36 @@ describe("public feedback-forms controller", () => {
   })
 
   describe("parcours", () => {
-    it("ouvre un parcours qui reprend le contexte de l'affichage", async () => {
+    it("ouvre un parcours avec le contexte de page à l'ouverture, filtré, et non celui de l'affichage", async () => {
+      const { create, activate } = await setup()
+      await create(form("formation", ["/formation/:id/:intitule-formation"], questions))
+      await activate("formation")
+      const { display_id } = (await display("formation")).json()
+
+      const response = await start("formation", display_id, {
+        ...context,
+        path_params: { ...context.path_params, intrus: "x" },
+        query: { utm_source: "relance", lieu: "paris", email: "a@b.fr" },
+      })
+
+      expect(response.statusCode).toEqual(200)
+      const saved = await getDbCollection("feedback_responses").findOne({})
+      expect(saved).toMatchObject({ page: context.page, path_params: context.path_params, query: { utm_source: "relance", lieu: "paris" } })
+      const shown = await getDbCollection("feedback_displays").findOne({})
+      expect(shown?.query).toEqual(context.query)
+    })
+
+    it("refuse d'ouvrir un parcours sur une page qui ne déclenche pas le formulaire", async () => {
+      const { create, activate } = await setup()
+      await create(form("formation", ["/formation/:id/:intitule-formation"], questions))
+      await activate("formation")
+      const { display_id } = (await display("formation")).json()
+
+      expect((await start("formation", display_id, { ...context, page: "/recherche" })).statusCode).toEqual(400)
+      expect(await getDbCollection("feedback_responses").countDocuments()).toEqual(0)
+    })
+
+    it("ouvre un parcours rattaché à son affichage", async () => {
       const { response_id, token } = await openResponse()
 
       const saved = await getDbCollection("feedback_responses").findOne({})

@@ -39,7 +39,8 @@ export default (server: Server) => {
       config: rateLimitConfig,
     },
     async (req, res) => {
-      const created = await startFeedbackResponse(req.params.slug, req.body.display_id)
+      const { display_id, ...context } = req.body
+      const created = await startFeedbackResponse(req.params.slug, display_id, context)
       return res.status(200).send(created)
     }
   )

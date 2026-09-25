@@ -67,12 +67,12 @@ export const zFeedbackFormsRoutes = {
       },
       securityScheme: null,
     },
-    // public : ouverture du panneau, crée le parcours ; le jeton rendu est exigé pour le compléter
+    // public : ouverture du panneau, crée le parcours avec le contexte de page à cet instant ; le jeton rendu est exigé pour le compléter
     "/feedback-forms/:slug/responses": {
       method: "post",
       path: "/feedback-forms/:slug/responses",
       params: z.strictObject({ slug: z.string() }),
-      body: z.strictObject({ display_id: z.string() }),
+      body: z.strictObject({ ...ZFeedbackPageContext.shape, display_id: z.string() }),
       response: {
         "200": z.strictObject({ response_id: z.string(), token: z.string() }),
       },

@@ -13,7 +13,7 @@ type IResponseSession = { response_id: string; token: string }
 
 /**
  * Enregistrement côté serveur : une apparition du bouton par page vue, un parcours créé à
- * l'ouverture du panneau, puis l'état complet du parcours à chaque étape. Les appels sont mis en
+ * l'ouverture du panneau avec les paramètres d'URL de cet instant, puis l'état complet du parcours à chaque étape. Les appels sont mis en
  * file pour arriver dans l'ordre. Un échec réseau n'interrompt jamais l'usager : sa réponse est
  * simplement perdue.
  */
@@ -46,8 +46,11 @@ export function useFeedbackSession(form: IFeedbackFormPublic | null, ready: bool
   const start = useCallback(() => {
     if (!form || responseRef.current || !displayRef.current) return
     const formSlug = form.slug
+    // paramètres lus à l'ouverture : une nouvelle recherche sur la même page change l'URL sans nouvel affichage
+    const context = getFeedbackPageContext(form, window.location.pathname, new URLSearchParams(window.location.search))
+    if (!context) return
     responseRef.current = displayRef.current.id
-      .then((displayId) => (displayId ? apiPost("/feedback-forms/:slug/responses", { params: { slug: formSlug }, body: { display_id: displayId } }) : null))
+      .then((displayId) => (displayId ? apiPost("/feedback-forms/:slug/responses", { params: { slug: formSlug }, body: { display_id: displayId, ...context } }) : null))
       .catch(() => null)
   }, [form])
 

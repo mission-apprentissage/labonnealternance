@@ -52,9 +52,13 @@ export async function recordFeedbackDisplay(slug: string, context: IFeedbackPage
   return _id.toString()
 }
 
-/** Ouvre un parcours à partir de l'affichage qui l'a déclenché, dont il reprend le contexte de page. */
-export async function startFeedbackResponse(slug: string, displayId: string): Promise<{ response_id: string; token: string }> {
-  await getActiveFeedbackForm(slug)
+/**
+ * Ouvre un parcours rattaché à l'affichage qui l'a déclenché. Le contexte est celui de la page à
+ * l'ouverture du panneau, pas celui de l'affichage : l'usager a pu changer les paramètres entre-temps
+ * (nouvelle recherche sans changer de page).
+ */
+export async function startFeedbackResponse(slug: string, displayId: string, context: IFeedbackPageContext): Promise<{ response_id: string; token: string }> {
+  const form = await getActiveFeedbackForm(slug)
   const display = ObjectId.isValid(displayId) ? await getDbCollection("feedback_displays").findOne({ _id: new ObjectId(displayId), form_slug: slug }) : null
   if (!display) {
     throw notFound("Affichage introuvable")
@@ -65,9 +69,7 @@ export async function startFeedbackResponse(slug: string, displayId: string): Pr
     _id: new ObjectId(),
     form_slug: slug,
     display_id: display._id,
-    page: display.page,
-    path_params: display.path_params,
-    query: display.query,
+    ...toStoredContext(form, context),
     status: "in_progress",
     answers: [],
     skipped: [],
