@@ -275,6 +275,12 @@ export const METADATA = {
     backAdminGestionDesOffresPartenaires: () => ({
       title: "Offres partenaires - La bonne alternance",
     }),
+    backAdminFeedbackForms: () => ({
+      title: "Formulaires de feedback - La bonne alternance",
+    }),
+    backAdminFeedbackFormCreation: () => ({
+      title: "Créer un formulaire de feedback - La bonne alternance",
+    }),
     backOpcoHome: () => ({
       title: "Accueil espace OPCO - La bonne alternance",
     }),

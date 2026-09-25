@@ -12,12 +12,15 @@ export const ModalReadOnly = ({
   onClose,
   size = "md",
   hideCloseButton = false,
+  labelledBy,
 }: {
   children: React.ReactNode
   isOpen: boolean
   onClose: () => void
   size?: "xs" | "sm" | "md" | "lg" | "xl"
   hideCloseButton?: boolean
+  /** id du titre de la modale : sans lui, le lecteur d'écran annonce une boîte de dialogue sans nom (RGAA 7.1) */
+  labelledBy?: string
 }) => {
   const isMobile = useIsMobileDevice()
 
@@ -37,6 +40,7 @@ export const ModalReadOnly = ({
       }}
       fullScreen={isMobile}
       maxWidth={size}
+      aria-labelledby={labelledBy}
       slotProps={{
         paper: {
           onClick: (e) => {

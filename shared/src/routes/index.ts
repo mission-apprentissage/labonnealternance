@@ -13,6 +13,7 @@ import { zCoreRoutes } from "./core.routes.js"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligible-trainings-for-appointment.routes.js"
 import { zEmailsRoutes } from "./emails.routes.js"
 import { zEtablissementRoutes } from "./etablissement.routes.js"
+import { zFeedbackFormsRoutes } from "./feedback-forms.routes.js"
 import { zFormationsRoutes } from "./formations.routes.js"
 import { zFormulaireRoute } from "./formulaire.route.js"
 import { zInserJeunesRoutes } from "./inserjeunes.routes.js"
@@ -70,6 +71,7 @@ const zRoutesGetP5 = {
   ...zJobsRoutesV3.get,
   ...zSearchRoutes.get,
   ...zJobsPartnersAdminRoutes.get,
+  ...zFeedbackFormsRoutes.get,
 } as const
 
 const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 & typeof zRoutesGetP5 = {
@@ -105,6 +107,7 @@ const zRoutesPost3 = {
   ...zJobsRoutesV3.post,
   ...zProcessorAdminRoutes.post,
   ...zJobsPartnersAdminRoutes.post,
+  ...zFeedbackFormsRoutes.post,
 }
 
 const zRoutesPost = {
@@ -118,11 +121,13 @@ const zRoutesPut = {
   ...zFormulaireRoute.put,
   ...zUpdateLbaCompanyRoutes.put,
   ...zJobsRoutesV3.put,
+  ...zFeedbackFormsRoutes.put,
 } as const
 
 const zRoutesDelete = {
   ...zUserRecruteurRoutes.delete,
   ...zFormulaireRoute.delete,
+  ...zFeedbackFormsRoutes.delete,
 } as const
 
 const zRoutesPatch = {
