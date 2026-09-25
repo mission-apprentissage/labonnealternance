@@ -90,33 +90,42 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
 
 export const FormulaireEditionOffreStep3 = ({
   offre,
+  formValues,
   etablissements,
   onSubmit,
   onCancel,
   isFtEligible = true,
 }: {
   offre?: IJob
+  /** saisie déjà validée sur cette étape, à restaurer quand on y revient depuis l'étape 4 */
+  formValues?: any
   // disponibilité déjà déterminée à l'étape 2 : cette étape n'est affichée que si la liste est non vide
   etablissements: IEtablissementCatalogueProcheWithDistanceJSON[]
   onSubmit?: (values: any) => void
-  onCancel: () => void
+  /** reçoit la saisie en cours : le retour ne doit pas la perdre plus que le passage à l'étape suivante */
+  onCancel: (values: { etablissementCatalogueIds: string[] }) => void
   isFtEligible?: boolean
 }) => {
   const disabledIds = etablissements
     .filter((etablissement) => offre?.delegations?.some((delegation) => etablissement.siret === delegation.siret_code))
     .map((etablissement) => etablissement._id)
 
+  // les CFA déjà en délégation (disabledIds) ne doivent pas être re-notifiés : seules les nouvelles
+  // sélections remontent au conteneur, à l'envoi comme au retour.
+  const keepNewSelections = (ids: string[]): string[] => ids.filter((id) => !disabledIds.includes(id))
+
+  // symétriquement, les cases cochées au retour sont les nouvelles sélections plus ces délégations.
+  const previouslySelectedIds: string[] = formValues?.etablissementCatalogueIds ?? []
+
   return (
     <Formik<IStep3Form>
       enableReinitialize={true}
       initialValues={{
-        etablissementCatalogueIds: disabledIds,
+        etablissementCatalogueIds: [...new Set([...disabledIds, ...previouslySelectedIds])],
       }}
       onSubmit={(values) => {
-        // ne transmet que les nouvelles sélections : les CFA déjà en délégation (disabledIds) ne doivent pas être re-notifiés
-        const newEtablissementCatalogueIds = values.etablissementCatalogueIds.filter((id) => !disabledIds.includes(id))
         onSubmit?.({
-          etablissementCatalogueIds: newEtablissementCatalogueIds,
+          etablissementCatalogueIds: keepNewSelections(values.etablissementCatalogueIds),
           cfaCountProposed: etablissements.length,
           cfaCountSelected: values.etablissementCatalogueIds.length,
         })
@@ -149,22 +158,26 @@ export const FormulaireEditionOffreStep3 = ({
             </Box>
             <InfoDelegation />
           </Box>
-          <Buttons offre={offre} onCancel={onCancel} isFtEligible={isFtEligible} />
+          <Buttons
+            offre={offre}
+            onCancel={({ etablissementCatalogueIds }) => onCancel({ etablissementCatalogueIds: keepNewSelections(etablissementCatalogueIds) })}
+            isFtEligible={isFtEligible}
+          />
         </>
       )}
     </Formik>
   )
 }
 
-const Buttons = ({ offre, onCancel, isFtEligible }: { offre?: IJob; onCancel: () => void; isFtEligible: boolean }) => {
-  const { isSubmitting, submitForm } = useFormikContext<IStep3Form>()
+const Buttons = ({ offre, onCancel, isFtEligible }: { offre?: IJob; onCancel: (values: IStep3Form) => void; isFtEligible: boolean }) => {
+  const { isSubmitting, submitForm, values } = useFormikContext<IStep3Form>()
 
   return (
     <Box
       sx={{ display: "flex", justifyContent: "flex-end", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v"), mt: fr.spacing("6v") }}
     >
       <Box sx={{ mr: fr.spacing("4v") }}>
-        <Button aria-label="Retour vers l'étape 2 du formulaire de dépôt d'offre" className="fr-btn--secondary" onClick={() => onCancel()}>
+        <Button aria-label="Retour vers l'étape 2 du formulaire de dépôt d'offre" className="fr-btn--secondary" onClick={() => onCancel(values)}>
           Retour
         </Button>
       </Box>

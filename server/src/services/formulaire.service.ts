@@ -29,6 +29,7 @@ import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/m
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
+import { isRomeDefinition } from "shared/utils/job-description.utils"
 import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import type z from "zod"
 import { deduplicate } from "@/common/utils/array"
@@ -46,6 +47,7 @@ import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-not
 import { buildJobStatusChangeUpdate, changeJobsPartnersStatus } from "./job-partner-status.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
+import { moderateFreeText } from "./offre-moderation.service"
 import { getEntrepriseEngagementFranceTravail } from "./referentiel-engagement-entreprise.service"
 import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./role-management.service"
 import { getRomeDetailsFromDB } from "./rome.service"
@@ -84,6 +86,11 @@ export const createJob = async ({
   origin?: string
 }): Promise<IJobsPartnersOfferPrivate> => {
   await validateFieldsFromReferentielRome(job)
+
+  // Modération systématique des champs de description libre (correction + PII, cf #5006),
+  // indépendamment du nombre d'utilisations restantes du CTA "Améliorer via l'IA" côté UI.
+  const [moderatedDescription, moderatedEmployerDescription] = await Promise.all([moderateFreeText(job.job_description), moderateFreeText(job.job_employer_description)])
+  const moderatedJob: IJobCreate = { ...job, job_description: moderatedDescription, job_employer_description: moderatedEmployerDescription }
 
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
@@ -131,7 +138,7 @@ export const createJob = async ({
   }
 
   const newJobPartner: IJobsPartnersOfferPrivate = await jobCreateToJobsPartner({
-    job,
+    job: moderatedJob,
     cfa: cfa ?? undefined,
     entreprise,
     user,
@@ -640,6 +647,13 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
   const job = payload
   const now = new Date()
 
+  // Modération systématique des champs de description libre (correction + PII, cf #5006),
+  // indépendamment du nombre d'utilisations restantes du CTA "Améliorer via l'IA" côté UI.
+  const [moderatedDescription, moderatedEmployerDescription] = await Promise.all([
+    moderateFreeText(job.job_description),
+    job.job_employer_description !== undefined ? moderateFreeText(job.job_employer_description) : undefined,
+  ])
+
   const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
 
   const jobPartnerUpdate: Partial<IJobsPartnersOfferPrivate> = {
@@ -659,13 +673,13 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
     offer_access_conditions: romeDetails?.acces_metier ? [romeDetails.acces_metier] : [],
-    offer_description: romeDetails?.definition,
+    offer_description: moderatedDescription || romeDetails?.definition || "",
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     // cf. jobCreateToJobsPartner (offer_title_custom)
     offer_title: sanitizeToPlainText(job.offer_title_custom) || job.rome_appellation_label || existingJob.offer_title,
     offer_rome_appellation: job.rome_appellation_label,
-    workplace_description: job.job_employer_description !== undefined ? sanitizeTextField(job.job_employer_description, true) || null : existingJob.workplace_description,
+    workplace_description: job.job_employer_description !== undefined ? moderatedEmployerDescription || null : existingJob.workplace_description,
     to_applicant_questions: job.to_applicant_questions,
     contract_rythm: job.job_rythm,
     ...(job.ft_support !== undefined && { ft_support: job.ft_support }),
@@ -1206,7 +1220,8 @@ async function jobCreateToJobsPartner({
     offer_access_conditions: acces_metier ? [acces_metier] : [],
     offer_title,
     offer_rome_codes: job.rome_code ?? null,
-    offer_description: job.job_description ?? definition ?? "",
+    // job.job_description est déjà modéré (correction IA + masquage PII + sanitization HTML) par createJob.
+    offer_description: job.job_description || definition || "",
     offer_creation: now,
     offer_expiration: addExpirationPeriod(now).toDate(),
     offer_status: status,
@@ -1216,7 +1231,8 @@ async function jobCreateToJobsPartner({
     contract_remote: null,
     offer_status_history: [],
     workplace_address_street_label: null,
-    workplace_description: sanitizeTextField(job.job_employer_description, true) || null,
+    // job.job_employer_description est déjà modéré (correction IA + masquage PII + sanitization HTML) par createJob.
+    workplace_description: job.job_employer_description || null,
     workplace_name: null,
     workplace_website: null,
 
@@ -1290,7 +1306,10 @@ export function jobPartnersToRecruiter(
       job_start_type: jobPartner.contract_start_type ?? JOB_START_TYPE.PRECISE_DATE,
       job_start_date_flexible: Boolean(jobPartner.contract_start_is_flexible),
       job_start_date: jobPartner.contract_start ?? jobPartner.offer_creation ?? jobPartner.created_at,
-      job_description: jobPartner.offer_description,
+      // offer_description contient la définition ROME quand l'offre a été déposée sans description
+      // rédigée : la rendre telle quelle ferait rouvrir le formulaire en mode "Personnaliser", avec
+      // la fiche métier présentée comme une saisie du recruteur.
+      job_description: isRomeDefinition(jobPartner.offer_description, jobPartner.rome_detail?.definition) ? null : jobPartner.offer_description,
       job_employer_description: jobPartner.workplace_description,
       rome_code: jobPartner.offer_rome_codes ?? [],
       rome_detail: jobPartner.rome_detail,

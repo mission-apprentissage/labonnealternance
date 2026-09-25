@@ -25,6 +25,7 @@ import {
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
 import { resolveEspaceProClosureOrigin } from "@/services/job-partner-status.service"
+import { improveFreeText } from "@/services/offre-moderation.service"
 import { getUserRecruteurById } from "@/services/user-recruteur.service"
 import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
 
@@ -269,6 +270,40 @@ export default (server: Server) => {
       })
       const token = generateOffreToken(user, createdOffer)
       return res.status(200).send({ job_id: createdOffer._id.toString(), token })
+    }
+  )
+
+  /**
+   * Corrige la forme d'un texte libre saisi par le recruteur, sans le sauvegarder. Ne juge pas le
+   * contenu : cf. improveFreeText.
+   */
+  server.post(
+    "/formulaire/:establishment_id/offre/ameliorer-texte",
+    {
+      schema: zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte"],
+      onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte"])],
+    },
+    async (req, res) => {
+      const { text } = req.body
+      const improvedText = await improveFreeText(text)
+      return res.status(200).send({ text: improvedText ?? text })
+    }
+  )
+
+  /**
+   * Même route qu'au-dessus, mais accessible par lien magique (dépôt simplifié post-inscription,
+   * cf DepotSimplifieCreationOffre) : ce parcours n'authentifie jamais par cookie de session.
+   */
+  server.post(
+    "/formulaire/:establishment_id/offre/ameliorer-texte/by-token",
+    {
+      schema: zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte/by-token"],
+      onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte/by-token"])],
+    },
+    async (req, res) => {
+      const { text } = req.body
+      const improvedText = await improveFreeText(text)
+      return res.status(200).send({ text: improvedText ?? text })
     }
   )
 

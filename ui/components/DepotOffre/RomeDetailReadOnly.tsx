@@ -39,7 +39,7 @@ export const RomeDetailReadOnly = ({
   return (
     <Box>
       <Typography component="h4" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("6v") }}>
-        Description de l’offre
+        Description
       </Typography>
       <Typography sx={{ fontSize: "12px", mb: fr.spacing("6v") }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
       <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("4v") }}>{appellation}</Typography>

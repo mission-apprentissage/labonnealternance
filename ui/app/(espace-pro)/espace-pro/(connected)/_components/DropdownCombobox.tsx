@@ -63,7 +63,7 @@ export default function DropdownCombobox(props) {
         // astérisque masquée car le formulaire porte déjà la mention "Tous les champs sont obligatoires").
         hideAsterisk
         name={name}
-        info={"Sélectionnez un métier pour référencer l'offre."}
+        info={"Sélectionnez un métier pour référencer l'offre"}
         placeholder={placeholder || "sélectionner un métier"}
         {...getInputProps({
           onFocus() {
