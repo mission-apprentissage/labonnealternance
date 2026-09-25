@@ -208,7 +208,7 @@ function TrainingDetailPage({
               </Typography>
 
               <ItemDetailCard selectedItem={selectedItem} />
-              <hr style={{ paddingBottom: "1px" }} />
+              <hr aria-hidden="true" style={{ paddingBottom: "1px" }} />
 
               <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("4v") }}>
                 <Box sx={{ flex: 1 }}>

@@ -58,6 +58,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
             </Typography>
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{
               maxWidth: "93px",

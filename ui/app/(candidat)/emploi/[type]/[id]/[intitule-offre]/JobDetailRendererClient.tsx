@@ -280,7 +280,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
                 dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
               />
               <ItemDetailCard selectedItem={selectedItem} />
-              <hr style={{ paddingBottom: "1px" }} />
+              <hr aria-hidden="true" style={{ paddingBottom: "1px" }} />
               <Box
                 sx={{
                   display: "flex",

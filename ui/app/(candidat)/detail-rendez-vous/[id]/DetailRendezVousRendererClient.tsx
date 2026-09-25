@@ -141,7 +141,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
               </Typography>
             </Typography>
           </Box>
-          <hr />
+          <hr aria-hidden="true" />
           <Box sx={{ mb: fr.spacing("4v") }}>
             <Typography component="p" sx={{ mt: fr.spacing("2v") }}>
               Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
@@ -179,7 +179,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
               </>
             )}
           </Box>
-          <hr />
+          <hr aria-hidden="true" />
           {currentState === "initial" && (
             <CfaCandidatInformationForm formik={formik} setCurrentState={setCurrentState} otherClicked={otherClicked} unreachableClicked={unreachableClicked} />
           )}

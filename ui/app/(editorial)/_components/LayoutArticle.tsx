@@ -82,6 +82,7 @@ export const LayoutArticle = ({
                   Pour continuer d'explorer
                 </Typography>
                 <Divider
+                  aria-hidden="true"
                   sx={{
                     width: fr.spacing("16v"),
                     height: 0,

@@ -146,7 +146,7 @@ export default function Authentification() {
           </Formik>
         </Box>
 
-        <Divider />
+        <Divider aria-hidden="true" />
 
         <Typography variant="h5" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
           Vous n'avez pas de compte ?

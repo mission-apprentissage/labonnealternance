@@ -66,6 +66,7 @@ export default function APropos() {
                   À propos
                 </Typography>
                 <Box
+                  aria-hidden="true"
                   component="hr"
                   sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
                 />
