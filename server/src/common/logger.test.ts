@@ -56,9 +56,19 @@ describe("serializers.req", () => {
     expect(query.token).toBe(null)
   })
 
-  it("masque les variantes de nom contenant token, quelle que soit la casse", () => {
-    const { url } = serializers.req(fakeRequest({ url: `/api/x?access_token=${FAKE_JWT}&jobToken=${FAKE_JWT}&API_KEY=secret` })) as { url: string }
-    expect(url).toBe("/api/x?access_token=[Filtered]&jobToken=[Filtered]&API_KEY=secret")
+  it("masque les variantes de nom, quelle que soit la casse ou le séparateur", () => {
+    const { url } = serializers.req(fakeRequest({ url: `/api/x?access_token=${FAKE_JWT}&jobToken=${FAKE_JWT}&API_KEY=secret&api-key=secret&api_keyword=seo` })) as {
+      url: string
+    }
+    expect(url).toBe("/api/x?access_token=[Filtered]&jobToken=[Filtered]&API_KEY=[Filtered]&api-key=[Filtered]&api_keyword=seo")
+  })
+
+  it("masque dans query les mêmes paramètres que dans url", () => {
+    const { url, query } = serializers.req(
+      fakeRequest({ url: "/api/x?email=test%40exemple.fr&api_key=secret&page=2", query: { email: "test@exemple.fr", api_key: "secret", page: "2" } })
+    ) as { url: string; query: Record<string, unknown> }
+    expect(url).toBe("/api/x?email=[Filtered]&api_key=[Filtered]&page=2")
+    expect(query).toEqual({ email: "[Filtered]", api_key: "[Filtered]", page: "2" })
   })
 
   it("ne plante pas sur une clé mal encodée", () => {

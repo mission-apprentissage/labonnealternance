@@ -13,7 +13,7 @@ const REDACTED = "[Filtered]"
 
 const isSensibleQueryParam = (key: string): boolean => {
   const lower = key.toLowerCase()
-  return lower.includes("token") || lower === "email" || SENSIBLE_KEYS.has(lower)
+  return lower.includes("token") || lower === "email" || SENSIBLE_KEYS.has(lower) || SENSIBLE_KEYS.has(lower.replace(/[-_]/g, ""))
 }
 
 /**
@@ -43,6 +43,11 @@ const redactUrl = (value: unknown): unknown => {
     })
     .join("&")
   return value.slice(0, queryStart + 1) + redactedQuery + (hashStart === -1 ? "" : value.slice(hashStart))
+}
+
+const withRedactedQueryParams = (query: unknown): unknown => {
+  if (query == null || typeof query !== "object") return query
+  return Object.fromEntries(Object.entries(query).map(([key, value]) => [key, isSensibleQueryParam(key) ? REDACTED : value]))
 }
 
 const URL_HEADERS = new Set(["referer", "location"])
@@ -104,7 +109,7 @@ export const serializers = {
       remotePort: request.socket?.remotePort,
       requestId: request.id,
       headers: withRedactedUrlHeaders(withoutSensibleFields(request.headers, new Set())),
-      query: withoutSensibleFields(request.query, new Set()),
+      query: withoutSensibleFields(withRedactedQueryParams(request.query), new Set()),
       params: withoutSensibleFields(request.params, new Set()),
       body: typeof request.body === "object" ? withoutSensibleFields(request.body, new Set()) : null,
     }
