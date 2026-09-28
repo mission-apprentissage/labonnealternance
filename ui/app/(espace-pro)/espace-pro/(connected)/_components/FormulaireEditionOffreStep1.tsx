@@ -13,6 +13,7 @@ import { useState } from "react"
 import type { IJob, IReferentielRomeForJob } from "shared"
 import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails, detectUrls } from "shared/utils/detect-url-and-emails"
+import { decodeSanitizedText } from "shared/utils/string-utils"
 import * as Yup from "yup"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
@@ -69,7 +70,7 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
       // lien magique : jamais de cookie de session, d'où la route jumelle par-token.
       const result = token ? await ameliorerTexteOffreByToken(establishmentId, fieldName, text, token) : await ameliorerTexteOffre(establishmentId, fieldName, text)
       if (result && "text" in result && result.text) {
-        setProposal({ text: result.text, attempt })
+        setProposal({ text: decodeSanitizedText(result.text), attempt })
       } else {
         setHasError(true)
         setRemaining((r) => Math.min(r + 1, AMELIORER_IA_MAX_USAGES))
@@ -392,8 +393,8 @@ export const FormulaireEditionOffreStep1 = ({
     job_duration: offre?.job_duration ?? 12,
     job_rythm: offre?.job_rythm ?? "",
     offer_title_custom: offre?.offer_title_custom ?? "",
-    job_employer_description: offre?.job_employer_description ?? "",
-    job_description: offre?.job_description ?? "",
+    job_employer_description: decodeSanitizedText(offre?.job_employer_description ?? ""),
+    job_description: decodeSanitizedText(offre?.job_description ?? ""),
     ...formValues,
   }
   // localOnSubmit normalise les champs libres vides à null avant de les remonter : au retour sur

@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import { type IJobJson, type ILbaItemPartnerJobJson, JOB_START_TYPE } from "shared"
 import { formatDate } from "@/utils/strutils"
+import { InlineField } from "./InlineField"
 
 const getDiplomaPills = (label: string): string[] => {
   const parenIdx = label.indexOf("(")
@@ -31,36 +32,18 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
   const isFlexibleStartDate = Boolean(job?.job?.startDateFlexible)
   const contractStartLabel = isUrgentRecruitment ? "Démarrage dès que possible" : jobStartDate ? `${jobStartDate}${isFlexibleStartDate ? ", date flexible" : ""}` : undefined
   return (
-    <Stack spacing={1} sx={{ mb: fr.spacing("4v") }}>
-      {contractStartLabel && (
-        <div>
-          <strong>Date de début de contrat souhaitée :</strong> {contractStartLabel}
-        </div>
-      )}
-      {job?.job?.dureeContrat && (
-        <div>
-          <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
-        </div>
-      )}
-      {job?.job?.type?.length > 0 ? (
-        <Box>
-          <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
-        </Box>
-      ) : null}
-      {job?.job?.contract_rythm && (
-        <div>
-          <strong>Rythme de l'alternance : </strong> {job?.job?.contract_rythm}
-        </div>
-      )}
-      {job?.job?.quantiteContrat > 1 && (
-        <div>
-          <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
-        </div>
-      )}
+    <Stack component="dl" spacing={1} sx={{ mt: 0, mb: fr.spacing("4v"), p: 0 }}>
+      {contractStartLabel && <InlineField label="Date de début de contrat souhaitée :">{contractStartLabel}</InlineField>}
+      {job?.job?.dureeContrat && <InlineField label="Durée du contrat :">{job?.job?.dureeContrat}</InlineField>}
+      {job?.job?.type?.length > 0 ? <InlineField label="Nature du contrat :">{getContractTypes(job?.job?.type)}</InlineField> : null}
+      {job?.job?.contract_rythm && <InlineField label="Rythme de l'alternance :">{job?.job?.contract_rythm}</InlineField>}
+      {job?.job?.quantiteContrat > 1 && <InlineField label="Nombre de postes disponibles :">{job?.job?.quantiteContrat}</InlineField>}
       <Stack direction="row" sx={{ flexWrap: "wrap" }}>
-        <strong>Niveau de formation visé en fin de contrat :</strong>{" "}
+        <Box component="dt" sx={{ fontWeight: 700, p: 0 }}>
+          Niveau de formation visé en fin de contrat :
+        </Box>
         {job?.target_diploma_level ? (
-          <Stack direction="row" sx={{ flexWrap: "wrap" }}>
+          <Stack component="dd" direction="row" sx={{ flexWrap: "wrap", m: 0, p: 0 }}>
             {getDiplomaPills(job.target_diploma_level).map((pill, idx) => (
               <Typography
                 component="span"
@@ -81,7 +64,7 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
             ))}
           </Stack>
         ) : (
-          <Typography component="span" sx={{ ml: fr.spacing("2v"), mb: fr.spacing("2v") }}>
+          <Typography component="dd" sx={{ ml: fr.spacing("2v"), mb: fr.spacing("2v"), p: 0 }}>
             Indifférent
           </Typography>
         )}

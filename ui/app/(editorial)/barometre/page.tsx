@@ -123,21 +123,34 @@ export default function BarometrePage() {
                 </Typography>
                 <Box component="ul" sx={{ pl: fr.spacing("4v"), m: 0, "& > li": { mb: fr.spacing("2v") } }}>
                   <li>
-                    <strong>Un marché qui se contracte</strong>&nbsp;: première baisse des entrées en apprentissage depuis 2018 ({negative("-4,8 %")}).
+                    <Typography component="span" sx={{ fontWeight: 700 }}>
+                      Un marché qui se contracte
+                    </Typography>
+                    &nbsp;: première baisse des entrées en apprentissage depuis 2018 ({negative("-4,8 %")}).
                   </li>
                   <li>
-                    <strong>Une plateforme qui résiste</strong>&nbsp;: une stabilité des offres publiées par les recruteurs ({positive("+1 %")}).
+                    <Typography component="span" sx={{ fontWeight: 700 }}>
+                      Une plateforme qui résiste
+                    </Typography>
+                    &nbsp;: une stabilité des offres publiées par les recruteurs ({positive("+1 %")}).
                   </li>
                   <li>
-                    <strong>Une demande qui s’accentue</strong>&nbsp;: ~320 000 candidatures sur La bonne alternance, avec un pic important en mars 2026 ({positive("+58 %")} par
-                    rapport à mars 2025).
+                    <Typography component="span" sx={{ fontWeight: 700 }}>
+                      Une demande qui s’accentue
+                    </Typography>
+                    &nbsp;: ~320 000 candidatures sur La bonne alternance, avec un pic important en mars 2026 ({positive("+58 %")} par rapport à mars 2025).
                   </li>
                   <li>
-                    <strong>Un déséquilibre par métier</strong>&nbsp;: une forte concentration de candidats sur certains métiers, tandis que d’autres secteurs manquent de
-                    candidatures.
+                    <Typography component="span" sx={{ fontWeight: 700 }}>
+                      Un déséquilibre par métier
+                    </Typography>
+                    &nbsp;: une forte concentration de candidats sur certains métiers, tandis que d’autres secteurs manquent de candidatures.
                   </li>
                   <li>
-                    <strong>74 % de candidatures spontanées</strong>&nbsp;: la plateforme révèle le marché caché là où les offres publiées ne suffisent plus.
+                    <Typography component="span" sx={{ fontWeight: 700 }}>
+                      74 % de candidatures spontanées
+                    </Typography>
+                    &nbsp;: la plateforme révèle le marché caché là où les offres publiées ne suffisent plus.
                   </li>
                 </Box>
               </Callout>
@@ -268,11 +281,21 @@ export default function BarometrePage() {
 
               <Typography component="p" sx={paragraphSx}>
                 Les métiers les plus recherchés par les candidats sur La bonne alternance sont dominés par les fonctions support et tertiaires&nbsp;:{" "}
-                <em>comptable, assistant RH, assistant commercial, secrétaire</em>. Ces profils concentrent une demande forte des jeunes.
+                <Typography component="span" sx={{ fontStyle: "italic" }}>
+                  comptable, assistant RH, assistant commercial, secrétaire
+                </Typography>
+                . Ces profils concentrent une demande forte des jeunes.
               </Typography>
 
               <Typography component="p" sx={paragraphSx}>
-                À l’opposé, la quasi-absence de candidatures sur La bonne alternance pour des métiers comme <em>cariste, bobinier, ajusteur-monteur</em> ou <em>aide agricole</em>{" "}
+                À l’opposé, la quasi-absence de candidatures sur La bonne alternance pour des métiers comme{" "}
+                <Typography component="span" sx={{ fontStyle: "italic" }}>
+                  cariste, bobinier, ajusteur-monteur
+                </Typography>{" "}
+                ou{" "}
+                <Typography component="span" sx={{ fontStyle: "italic" }}>
+                  aide agricole
+                </Typography>{" "}
                 ne reflète probablement pas un manque d’opportunités. Elle pourrait davantage traduire un décalage entre l’outil numérique et les réalités de ces secteurs. Pour ces
                 métiers, le recrutement passerait potentiellement par des canaux alternatifs&nbsp;: l’intérim pour la logistique et l’industrie, les groupements d’employeurs et
                 réseaux de proximité pour l’agriculture, la cooptation directe entre CFA et entreprises partenaires pour les métiers spécialisés. À cela s’ajouterait une
@@ -297,22 +320,37 @@ export default function BarometrePage() {
 
               <Typography component="p" sx={paragraphSx}>
                 Les métiers les plus concurrentiels pour les candidats se concentrent principalement dans le numérique et le tertiaire qualifié. On retrouve notamment
-                <em>
+                <Typography component="span" sx={{ fontStyle: "italic" }}>
                   {" "}
                   développeur web, <span lang="en">data engineer</span>, développeur logiciel
-                </em>
-                , ou encore <em>administrateur SI</em>.
+                </Typography>
+                , ou encore{" "}
+                <Typography component="span" sx={{ fontStyle: "italic" }}>
+                  administrateur SI
+                </Typography>
+                .
               </Typography>
 
               <Typography component="p" sx={paragraphSx}>
                 Ces métiers attirent beaucoup de candidatures, alors que le volume d’offres publiées reste limité. Deux explications sont possibles&nbsp;: soit La bonne alternance
-                couvre encore peu ces métiers, soit l’offre en alternance sur ces profils est structurellement faible par rapport à la demande. Le métier de <em>graphiste</em>
+                couvre encore peu ces métiers, soit l’offre en alternance sur ces profils est structurellement faible par rapport à la demande. Le métier de{" "}
+                <Typography component="span" sx={{ fontStyle: "italic" }}>
+                  graphiste
+                </Typography>
                 illustre le même phénomène sur des profils plus créatifs.
               </Typography>
 
               <Typography component="p" sx={paragraphSx}>
                 À l’inverse, les métiers les moins concurrentiels sont davantage représentés par des métiers manuels, notamment dans le BTP et la mécanique spécialisée. Parmi les
-                exemples observés&nbsp;: <em>maçon/maçonne, couvreur/couvreuse</em>, ou encore <em>mécanicien d’engins de chantier et de travaux publics</em>.
+                exemples observés&nbsp;:{" "}
+                <Typography component="span" sx={{ fontStyle: "italic" }}>
+                  maçon/maçonne, couvreur/couvreuse
+                </Typography>
+                , ou encore{" "}
+                <Typography component="span" sx={{ fontStyle: "italic" }}>
+                  mécanicien d’engins de chantier et de travaux publics
+                </Typography>
+                .
               </Typography>
 
               <Typography component="p" sx={paragraphSx}>
@@ -402,8 +440,11 @@ export default function BarometrePage() {
 
               <Typography component="p" sx={paragraphSx}>
                 L’un des apports distinctifs de La bonne alternance est d’orienter les candidats vers des secteurs et des entreprises qui recrutent sans nécessairement publier
-                d’offres. Le top 10 des secteurs en candidature spontanée diffère sensiblement de celui des offres publiées&nbsp;: <em>santé, social et services de proximité</em> y
-                dominent largement.
+                d’offres. Le top 10 des secteurs en candidature spontanée diffère sensiblement de celui des offres publiées&nbsp;:{" "}
+                <Typography component="span" sx={{ fontStyle: "italic" }}>
+                  santé, social et services de proximité
+                </Typography>{" "}
+                y dominent largement.
               </Typography>
 
               <Typography component="p" sx={paragraphSx}>

@@ -42,6 +42,8 @@ export const Conseil = ({ title, href, icon }: { title: string; href: string; ic
       linkProps={{
         href: href,
       }}
+      enlargeLink
+      className={fr.cx("fr-card--no-icon")}
       desc={null}
       horizontal
       border

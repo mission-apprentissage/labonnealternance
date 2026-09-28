@@ -3,11 +3,23 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Container, FormControl, FormControlLabel, Radio, RadioGroup, Stack, TextareaAutosize, Typography } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
+import type { ReactNode } from "react"
 import { useEffect, useState } from "react"
 import type { IEtablissementJson } from "shared"
 
 import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
+
+const EtablissementField = ({ label, children }: { label: string; children: ReactNode }) => (
+  <div>
+    <Typography component="dt" sx={{ display: "inline", p: 0 }}>
+      {label} :
+    </Typography>{" "}
+    <Typography component="dd" sx={{ display: "inline", m: 0, p: 0, fontWeight: 700 }}>
+      {children}
+    </Typography>
+  </div>
+)
 
 type IEtablissementPartial = Pick<
   IEtablissementJson,
@@ -117,22 +129,12 @@ export default function OptOutUnsubscribe() {
                   control={<Radio />}
                   value={radioOptions.UNSUBSCRIBE_NO_DETAILS}
                 />
-                <Stack gap={fr.spacing("2v")} sx={{ backgroundColor: "#E5E5E5", p: fr.spacing("6v") }}>
-                  <Typography>
-                    Raison sociale : <strong>{etablissement.raison_sociale}</strong>
-                  </Typography>
-                  <Typography>
-                    SIRET : <strong>{etablissement.formateur_siret}</strong>
-                  </Typography>
-                  <Typography>
-                    Adresse : <strong>{etablissement.formateur_address}</strong>
-                  </Typography>
-                  <Typography>
-                    Code postal : <strong>{etablissement.formateur_zip_code}</strong>
-                  </Typography>
-                  <Typography>
-                    Ville : <strong>{etablissement.formateur_city}</strong>
-                  </Typography>
+                <Stack component="dl" gap={fr.spacing("2v")} sx={{ backgroundColor: "#E5E5E5", p: fr.spacing("6v"), m: 0 }}>
+                  <EtablissementField label="Raison sociale">{etablissement.raison_sociale}</EtablissementField>
+                  <EtablissementField label="SIRET">{etablissement.formateur_siret}</EtablissementField>
+                  <EtablissementField label="Adresse">{etablissement.formateur_address}</EtablissementField>
+                  <EtablissementField label="Code postal">{etablissement.formateur_zip_code}</EtablissementField>
+                  <EtablissementField label="Ville">{etablissement.formateur_city}</EtablissementField>
                 </Stack>
 
                 <FormControlLabel

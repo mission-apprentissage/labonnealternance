@@ -1,8 +1,19 @@
 import { describe, expect, it } from "vitest"
 
-import { joinNonNullStrings, removeAccents, toKebabCase } from "./string-utils.js"
+import { decodeSanitizedText, joinNonNullStrings, removeAccents, toKebabCase } from "./string-utils.js"
 
 describe("string-utils", () => {
+  describe("decodeSanitizedText", () => {
+    it("décode les entités produites par sanitizeTextField", () => {
+      expect(decodeSanitizedText("R&amp;D : 3 &lt; 5 &gt; 2")).toBe("R&D : 3 < 5 > 2")
+    })
+    it("décode en une seule passe : une entité saisie telle quelle par le recruteur reste lisible", () => {
+      expect(decodeSanitizedText("&amp;lt;")).toBe("&lt;")
+    })
+    it("laisse intactes les autres entités et un texte brut", () => {
+      expect(decodeSanitizedText("&eacute; &#39; &nbsp; H&M")).toBe("&eacute; &#39; &nbsp; H&M")
+    })
+  })
   describe("removeAccents", () => {
     it("should remove standard accents", () => {
       expect(removeAccents("àâä")).toBe("aaa")

@@ -15823,7 +15823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-notion-x@npm:^7.10.0":
+"react-notion-x@npm:7.10.0":
   version: 7.10.0
   resolution: "react-notion-x@npm:7.10.0"
   dependencies:
@@ -15847,6 +15847,33 @@ __metadata:
     react-pdf:
       optional: true
   checksum: 36c5e0e0821cec9b2c97e4c273127bbd2216d32be3f81e500869f7fb7e4ae00b20e74998d3c73b08b690968c6a3b582039cf47dbe4eadd35f9c77358d8669d46
+  languageName: node
+  linkType: hard
+
+"react-notion-x@patch:react-notion-x@npm%3A7.10.0#./.yarn/patches/react-notion-x-npm-7.10.0-bc6011c92e.patch::locator=mna-lba%40workspace%3A.":
+  version: 7.10.0
+  resolution: "react-notion-x@patch:react-notion-x@npm%3A7.10.0#./.yarn/patches/react-notion-x-npm-7.10.0-bc6011c92e.patch::version=7.10.0&hash=58a6b0&locator=mna-lba%40workspace%3A."
+  dependencies:
+    "@fisch0920/medium-zoom": ^1.0.7
+    "@matejmazur/react-katex": ^3.1.3
+    katex: 0.16.21
+    notion-types: 7.10.0
+    notion-utils: 7.10.0
+    prismjs: ^1.30.0
+    react-fast-compare: ^3.2.0
+    react-hotkeys-hook: ^4.5.1
+    react-image: ^4.0.3
+    react-intersection-observer: ^9.16.0
+    react-modal: ^3.16.3
+    react-pdf: ^9.2.1
+    unionize: ^3.1.0
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+  dependenciesMeta:
+    react-pdf:
+      optional: true
+  checksum: 1c75c91bc6dc6668c37dcc3eaaa32a5c09cf94946c43ac28ef4f4e7b5ba55eacb9d87ee6ab260beea9a3c4632bfd16a7e95f7c057c3d8a39ed8103125b064699
   languageName: node
   linkType: hard
 

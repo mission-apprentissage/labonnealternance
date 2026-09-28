@@ -21,7 +21,7 @@ export const BandeauAuthentificationCfa = () => {
         <Typography component="p" variant="h6">
           Vous aviez déjà un compte CFA sur le Portail de l'alternance ?
         </Typography>
-        <Typography component="span" variant="body1">
+        <Typography variant="body1">
           Pour les organismes de formation qui avaient déjà un compte sur le Portail de l'alternance, vous devez créer un nouveau compte CFA sur La bonne alternance pour continuer
           d'accéder à la carte d'étudiant des métiers. <DsfrLink href={PAGES.static.authentification.getPath()}>Créer mon compte</DsfrLink>
         </Typography>

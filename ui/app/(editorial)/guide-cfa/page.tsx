@@ -58,6 +58,7 @@ const guideCfaPage = () => {
               Tout savoir sur l'alternance
             </Typography>
             <Divider
+              aria-hidden="true"
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
             />
           </Grid>
@@ -96,6 +97,7 @@ const guideCfaPage = () => {
                 Liens utiles
               </Typography>
               <Divider
+                aria-hidden="true"
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>
@@ -163,6 +165,7 @@ const guideCfaPage = () => {
                   Documents utiles
                 </Typography>
                 <Divider
+                  aria-hidden="true"
                   sx={{
                     width: fr.spacing("16v"),
                     height: 0,
@@ -199,6 +202,7 @@ const guideCfaPage = () => {
               Encore plus de ressources
             </Typography>
             <Divider
+              aria-hidden="true"
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
             />
           </Grid>

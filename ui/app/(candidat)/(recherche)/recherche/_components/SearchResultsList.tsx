@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, CircularProgress, Skeleton } from "@mui/material"
+import { Box, CircularProgress, Skeleton, Typography } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { isAutoRadiusActive, RADIUS_MAX } from "../_hooks/use-auto-radius"
@@ -97,10 +97,10 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
       <Box sx={{ mt: fr.spacing("8v"), textAlign: "center" }}>
         {/* Illustration legacy réutilisée (pas d'export Figma pour cet état). */}
         <Image src="/images/dosearch.svg" alt="" aria-hidden="true" width={266} height={190} />
-        <Box sx={{ mt: fr.spacing("4v"), fontWeight: 700, color: fr.colors.decisions.text.default.grey.default }}>Aucun résultat trouvé pour votre recherche.</Box>
-        <Box sx={{ mt: fr.spacing("2v"), color: fr.colors.decisions.text.mention.grey.default }}>
+        <Typography sx={{ mt: fr.spacing("4v"), fontWeight: 700, color: fr.colors.decisions.text.default.grey.default }}>Aucun résultat trouvé pour votre recherche.</Typography>
+        <Typography sx={{ mt: fr.spacing("2v"), color: fr.colors.decisions.text.mention.grey.default }}>
           Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
-        </Box>
+        </Typography>
       </Box>
     )
   }

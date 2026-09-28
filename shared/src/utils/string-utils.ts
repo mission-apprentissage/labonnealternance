@@ -31,3 +31,12 @@ export const stringNormaliser = (str: string): string => {
 
 /** Identifiant lisible et stable dérivé d'un libellé, en snake_case : "Fiche entreprise — utilité" -> "fiche_entreprise_utilite" */
 export const toSnakeCaseSlug = (str: string, maxLength = 80): string => stringNormaliser(str).replace(/ /g, "_").slice(0, maxLength).replace(/_+$/, "")
+
+const SANITIZED_ENTITIES: Record<string, string> = { "&amp;": "&", "&lt;": "<", "&gt;": ">" }
+
+/**
+ * Rend éditable dans un textarea un texte libre stocké par sanitizeTextField (serveur), qui ré-encode
+ * & < > : ce sont les seules entités qu'il produit (cf. test de sanitizeTextField côté serveur).
+ * Jamais pour un rendu innerHTML : le texte décodé n'est plus échappé.
+ */
+export const decodeSanitizedText = (text: string): string => text.replace(/&(amp|lt|gt);/g, (entity) => SANITIZED_ENTITIES[entity])
