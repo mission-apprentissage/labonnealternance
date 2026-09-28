@@ -1,6 +1,7 @@
 import { getConnectedInfos, givenAConnectedOpcoUser } from "@tests/fixture/connectedUser.fixture"
 import type { GetOfferResponse, OfferCreationByTokenResponse, OfferCreationResponse, OfferUpdateBody } from "@tests/sdk/entrepriseSdk"
 import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
+import { getApiApprentissageTestingToken } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { saveAdminUserTest, saveCfaUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
@@ -12,7 +13,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { AccessEntityType, JOB_STATUS_ENGLISH } from "shared/models/index"
-import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE } from "shared/models/job.model"
+import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { buildEstablishmentId } from "@/services/etablissement.service"
@@ -187,6 +188,94 @@ describe("formulaire.controller", () => {
 
       const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies })
       expect.soft((offerResponse.json() as GetOfferResponse).job_description).toBeNull()
+    })
+  })
+
+  describe("champs issus de la fiche ROME", () => {
+    const description = "Vous participerez au développement de nos outils internes aux côtés de l'équipe technique."
+
+    const createOffer = async (job_description?: string) => {
+      const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+      const response = await entrepriseSdkInstance.createOffer({
+        establishment_id: formulaire!.establishment_id,
+        cookies,
+        job: { ...buildCreateJobDataFromReferentiel(referentielRome), job_description },
+      })
+      return { cookies, jobId: (response.json() as OfferCreationResponse)._id.toString() }
+    }
+    const readJob = async (jobId: string) => getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
+    const romeFields = (job: Awaited<ReturnType<typeof readJob>>) => [
+      job?.offer_desired_skills,
+      job?.offer_to_be_acquired_skills,
+      job?.offer_to_be_acquired_knowledge,
+      job?.offer_access_conditions,
+    ]
+
+    it("laisse vides les champs ROME d'une offre à description rédigée, en gardant son code ROME", async () => {
+      const { jobId } = await createOffer(description)
+
+      const job = await readJob(jobId)
+      expect.soft(job?.offer_description_mode).toBe(OFFER_DESCRIPTION_MODE.CUSTOM)
+      expect.soft(job?.offer_rome_codes).toEqual([romeCode])
+      expect.soft(romeFields(job)).toEqual([[], [], [], []])
+    })
+
+    it("remplit les champs ROME d'une offre sur fiche métier", async () => {
+      const { jobId } = await createOffer()
+
+      const job = await readJob(jobId)
+      expect.soft(job?.offer_description_mode).toBe(OFFER_DESCRIPTION_MODE.STRUCTURED)
+      for (const field of romeFields(job)) {
+        expect.soft(field?.length).toBeGreaterThan(0)
+      }
+    })
+
+    it("vide les champs ROME quand une offre sur fiche métier passe en description rédigée", async () => {
+      const { cookies, jobId } = await createOffer()
+      const job = (await entrepriseSdkInstance.getOffer({ jobId, cookies })).json() as GetOfferResponse
+
+      const response = await entrepriseSdkInstance.updateOffer({ jobId, cookies, body: { ...jobToJobPatch(job), job_description: description } })
+
+      expect.soft(response.statusCode).toBe(200)
+      const updatedJob = await readJob(jobId)
+      expect.soft(updatedJob?.offer_description_mode).toBe(OFFER_DESCRIPTION_MODE.CUSTOM)
+      expect.soft(romeFields(updatedJob)).toEqual([[], [], [], []])
+    })
+
+    it("expose par l'API v3 le code ROME d'une offre rédigée, sans contenu de la fiche", async () => {
+      const { jobId } = await createOffer(description)
+      const token = await getApiApprentissageTestingToken({
+        email: "test@test.fr",
+        organisation: "Un partenaire",
+        habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": false },
+      })
+
+      const response = await httpClient().inject({ method: "GET", path: `/api/v3/jobs/${jobId}`, headers: { authorization: `Bearer ${token}` } })
+
+      expect.soft(response.statusCode).toBe(200)
+      const { offer } = response.json()
+      expect.soft(offer.rome_codes).toEqual([romeCode])
+      expect.soft([offer.desired_skills, offer.to_be_acquired_skills, offer.access_conditions]).toEqual([[], [], []])
+    })
+
+    it("ne renvoie pas de compétences à l'édition d'une offre à description rédigée, et les remplit au retour sur fiche métier", async () => {
+      const { cookies, jobId } = await createOffer(description)
+      const job = (await entrepriseSdkInstance.getOffer({ jobId, cookies })).json() as GetOfferResponse
+      expect.soft(job.competences_rome).toBeNull()
+
+      // sans compétences reçues, le formulaire repart de toute la fiche (cf. finalSelectedCompetences)
+      const response = await entrepriseSdkInstance.updateOffer({
+        jobId,
+        cookies,
+        body: { ...jobToJobPatch(job), job_description: null, competences_rome: referentielRome.competences },
+      })
+
+      expect.soft(response.statusCode).toBe(200)
+      const updatedJob = await readJob(jobId)
+      expect.soft(updatedJob?.offer_description_mode).toBe(OFFER_DESCRIPTION_MODE.STRUCTURED)
+      for (const field of romeFields(updatedJob)) {
+        expect.soft(field?.length).toBeGreaterThan(0)
+      }
     })
   })
 
