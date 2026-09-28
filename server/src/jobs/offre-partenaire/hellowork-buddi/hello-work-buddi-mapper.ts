@@ -80,7 +80,7 @@ export const helloWorkBuddiJobToJobsPartners = (job: IHelloWorkBuddiJob): ICompu
       .tz(creationDate || now)
       .add(2, "months")
       .toDate(),
-    offer_multicast: true,
+    offer_multicast: false,
     workplace_siret: siretParsing.success ? siretParsing.data : null,
     workplace_name: company_title,
     workplace_description: company_description && company_description.length >= 30 ? company_description : null,
