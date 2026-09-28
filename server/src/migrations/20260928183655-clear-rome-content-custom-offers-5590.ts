@@ -11,10 +11,12 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
  * offer_description_mode sur les offres existantes, en comparant la description à la définition ROME
  * (cf. isRecruiterWrittenDescription), et vide les 4 champs ROME des offres rédigées, code ROME conservé.
  *
- * Seules les offres créées depuis le MVP (#5078) sont classées : lui seul masquait les compétences au
- * recruteur. Avant, une description différente de la définition ROME actuelle est surtout une définition
- * périmée par un réimport du référentiel : mesuré en production, 96 % des 13 458 offres ainsi classées
- * partageaient leur texte avec au moins 5 offres du même ROME. Les offres antérieures restent sans mode.
+ * Une description vide ou identique à la définition actuelle est une fiche métier, quelle que soit la
+ * date : le mode est posé, les champs restent tels quels. Une description différente n'est classée
+ * rédigée que pour une offre créée depuis le MVP (#5078), seul formulaire qui masquait les compétences
+ * au recruteur. Avant, c'est surtout une définition périmée par un réimport du référentiel : mesuré en
+ * production, 96 % des 13 458 offres dans ce cas partageaient leur texte avec au moins 5 offres du même
+ * ROME. Ces offres antérieures restent sans mode.
  *
  * Une offre dont le code ROME n'a pas de définition dans le référentiel reste sans mode : faute de
  * référence, une fiche métier recopiée passerait pour rédigée et perdrait ses compétences.
@@ -43,11 +45,11 @@ export const up = async () => {
 
   // null matche aussi le champ absent : seules les offres pas encore classées sont relues au rejeu.
   const cursor = getDbCollection("jobs_partners").find(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_description_mode: null, created_at: { $gte: MVP_RELEASE_DATE } },
-    { projection: { _id: 1, offer_description: 1, offer_rome_codes: 1 } }
+    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_description_mode: null },
+    { projection: { _id: 1, offer_description: 1, offer_rome_codes: 1, created_at: 1 } }
   )
 
-  const counts = { custom: 0, structured: 0, undetermined: 0 }
+  const counts = { custom: 0, structured: 0, undetermined: 0, beforeMvp: 0 }
   let batch: AnyBulkWriteOperation<IJobsPartnersOfferPrivate>[] = []
 
   const flush = async () => {
@@ -56,7 +58,7 @@ export const up = async () => {
     batch = []
   }
 
-  for await (const { _id, offer_description, offer_rome_codes } of cursor) {
+  for await (const { _id, offer_description, offer_rome_codes, created_at } of cursor) {
     const romeCode = offer_rome_codes?.at(0)
     const definition = romeCode ? definitions.get(romeCode) : undefined
     if (!definition) {
@@ -65,6 +67,10 @@ export const up = async () => {
     }
 
     const isCustom = isRecruiterWrittenDescription(offer_description, definition)
+    if (isCustom && created_at < MVP_RELEASE_DATE) {
+      counts.beforeMvp++
+      continue
+    }
     counts[isCustom ? "custom" : "structured"]++
     batch.push({
       updateOne: {
@@ -96,14 +102,8 @@ export const up = async () => {
     { bypassDocumentValidation: true }
   )
 
-  const beforeMvp = await getDbCollection("jobs_partners").countDocuments({
-    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-    offer_description_mode: null,
-    created_at: { $lt: MVP_RELEASE_DATE },
-  })
-
   logger.info(
-    `clear rome content 5590 : ${counts.custom} offres rédigées vidées, ${counts.structured} sur fiche métier, ${counts.undetermined} sans définition ROME laissées sans mode, ${refilled} re-vidées, ${beforeMvp} antérieures au MVP non classées`
+    `clear rome content 5590 : ${counts.custom} offres rédigées vidées, ${counts.structured} sur fiche métier, ${counts.undetermined} sans définition ROME laissées sans mode, ${refilled} re-vidées, ${counts.beforeMvp} antérieures au MVP à description différente de la définition laissées sans mode`
   )
 }
 

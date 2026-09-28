@@ -41,6 +41,7 @@ describe("migration clear-rome-content-custom-offers-5590", () => {
       // fiche métier recopiée, espacement différent du référentiel
       lbaOffer("fiche-metier", { offer_description: `  ${referentielRome.definition}\n` }),
       lbaOffer("sans-description", { offer_description: "" }),
+      lbaOffer("fiche-metier-avant-mvp", { offer_description: referentielRome.definition, created_at: new Date("2024-04-15T08:00:00.000Z") }),
       lbaOffer("rome-absent", { offer_rome_codes: ["Z9999"], offer_description: "Texte rédigé sur un métier absent du référentiel." }),
       lbaOffer("redigee-re-remplie", { offer_description: "Texte rédigé par le recruteur.", offer_description_mode: OFFER_DESCRIPTION_MODE.CUSTOM }),
       // antérieure au MVP : sa description est une définition ROME changée depuis par le référentiel
@@ -64,11 +65,11 @@ describe("migration clear-rome-content-custom-offers-5590", () => {
     expect.soft(job).toMatchObject(emptyRomeContent)
   })
 
-  it("laisse intacte une offre sur fiche métier, y compris sans description", async () => {
+  it("pose le mode d'une offre sur fiche métier, quelle que soit sa date, sans toucher ses champs", async () => {
     await seed()
     await up()
     const jobs = await readAll()
-    for (const id of ["fiche-metier", "sans-description"]) {
+    for (const id of ["fiche-metier", "sans-description", "fiche-metier-avant-mvp"]) {
       expect.soft(jobs.get(id)?.offer_description_mode, id).toBe(OFFER_DESCRIPTION_MODE.STRUCTURED)
       expect.soft(jobs.get(id), id).toMatchObject(romeContent)
     }
