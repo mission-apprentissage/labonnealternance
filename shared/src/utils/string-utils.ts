@@ -28,3 +28,12 @@ export const stringNormaliser = (str: string): string => {
     .trim()
     .replace(/\s+/g, " ")
 }
+
+const SANITIZED_ENTITIES: Record<string, string> = { "&amp;": "&", "&lt;": "<", "&gt;": ">" }
+
+/**
+ * Rend éditable dans un textarea un texte libre stocké par sanitizeTextField (serveur), qui ré-encode
+ * & < > : ce sont les seules entités qu'il produit (cf. test de sanitizeTextField côté serveur).
+ * Jamais pour un rendu innerHTML : le texte décodé n'est plus échappé.
+ */
+export const decodeSanitizedText = (text: string): string => text.replace(/&(amp|lt|gt);/g, (entity) => SANITIZED_ENTITIES[entity])
