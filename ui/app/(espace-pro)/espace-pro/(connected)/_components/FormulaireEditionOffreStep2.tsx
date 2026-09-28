@@ -114,6 +114,9 @@ export const FormulaireEditionOffreStep2 = ({
               lineHeight: "24px",
               color: "#000091",
               mt: fr.spacing("6v"),
+              // adresse insécable : « break-word » ne réduit pas la largeur min-content,
+              // et le layout centré de création de compte déborde alors des deux côtés (#5578)
+              overflowWrap: "anywhere",
             }}
           >
             Vous avez une question à suggérer ? Écrivez-nous à <DsfrLink href={`mailto:${publicConfig.publicEmail}`}>{publicConfig.publicEmail}</DsfrLink>
