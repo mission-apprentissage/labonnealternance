@@ -11,6 +11,7 @@ import dayjs from "dayjs"
 import { Formik, useFormikContext } from "formik"
 import { useState } from "react"
 import type { IJob, IReferentielRomeForJob } from "shared"
+import type { OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails, detectUrls } from "shared/utils/detect-url-and-emails"
 import { decodeSanitizedText } from "shared/utils/string-utils"
@@ -172,7 +173,7 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   )
 }
 
-type DescriptionMode = "structured" | "custom"
+type DescriptionMode = OFFER_DESCRIPTION_MODE
 
 const DescriptionModeToggle = ({ mode, onChange }: { mode: DescriptionMode; onChange: (mode: DescriptionMode) => void }) => (
   // Le DSFR n'a pas de variante "cartes de largeur égale" : fr-fieldset--inline aligne en baseline
