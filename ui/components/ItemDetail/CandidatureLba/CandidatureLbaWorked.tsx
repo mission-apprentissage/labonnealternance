@@ -63,7 +63,7 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
               }}
             >
               <b>
-                Augmentez vos chances de trouver une alternance avec des <TagCandidatureSpontanee /> visibles en fin de résultats de recherche.
+                Augmentez vos chances de trouver une alternance avec des <TagCandidatureSpontanee /> visibles dans les résultats de recherche.
               </b>
               <br />
               60% des recrutements se font grâce à des candidatures spontanées.
