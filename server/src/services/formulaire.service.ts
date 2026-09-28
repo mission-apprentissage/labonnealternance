@@ -1102,7 +1102,7 @@ const getRomeContentFields = ({
   }
 }
 
-export const isCustomDescriptionOffer = (
+const isCustomDescriptionOffer = (
   jobPartner: Pick<IJobsPartnersOfferPrivate, "offer_description" | "offer_description_mode"> & { rome_detail?: IReferentielRome | null }
 ): boolean =>
   jobPartner.offer_description_mode
