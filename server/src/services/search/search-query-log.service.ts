@@ -46,10 +46,10 @@ type SearchQuerystring = {
   longitude?: number
   radius?: number
   admin_area?: string
-  search_source?: "suggestion" | "free_text" | "training_links" | "external_sites"
+  search_source?: "suggestion" | "free_text" | "training_links" | "external_sites" | "partner_links"
   // Alias déprécié (cf. search.routes.ts) : encore envoyé volontairement par l'UI courante
   // (transition anti-version-skew) et par les liens traininglinks émis avant le 2026-08-24.
-  source?: "suggestion" | "free_text" | "training_links" | "external_sites"
+  source?: "suggestion" | "free_text" | "training_links" | "external_sites" | "partner_links"
 }
 
 // Arrondi à 1 décimale (~11 km) : suffisant pour "quelle zone cherche quoi", inexploitable

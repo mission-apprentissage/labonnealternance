@@ -190,6 +190,7 @@ describe("search.controller", () => {
       it.each([
         ["training_links", "requeteTrainingLinks"],
         ["external_sites", "requeteExternalSites"],
+        ["partner_links", "requetePartnerLinks"],
       ] as const)("accepte et logue search_source=%s", async (searchSource, q) => {
         const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?q=${q}&page=0&search_source=${searchSource}` })
         expect(response.statusCode).toBe(200)
