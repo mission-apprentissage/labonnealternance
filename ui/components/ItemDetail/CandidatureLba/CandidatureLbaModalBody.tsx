@@ -111,7 +111,7 @@ export const CandidatureLbaModalBody = ({
         },
       }}
     >
-      <form onSubmit={handleSubmitWithScrollOnFirstError} style={{ position: "relative" }}>
+      <form noValidate onSubmit={handleSubmitWithScrollOnFirstError} style={{ position: "relative" }}>
         <Box sx={{ margin: { xs: fr.spacing("4v"), md: fr.spacing("6v") }, mb: 0 }}>
           {!fromWidget && (
             <>
@@ -229,7 +229,6 @@ export const CandidatureLbaModalBody = ({
                 iconId="fr-icon-arrow-right-line"
                 iconPosition="left"
                 data-tracking-id="postuler-offre-lba"
-                aria-label="Envoyer la candidature"
                 type="submit"
                 data-testid="candidature-not-sent"
                 style={{ minWidth: "fit-content" }}
@@ -241,7 +240,6 @@ export const CandidatureLbaModalBody = ({
                 iconId="fr-icon-arrow-right-line"
                 iconPosition="left"
                 data-tracking-id="postuler-entreprise-algo"
-                aria-label="Envoyer la candidature spontanée"
                 type="submit"
                 data-testid="candidature-not-sent"
                 style={{ minWidth: "fit-content" }}
@@ -263,16 +261,18 @@ const MesInformations = ({ formik }: { formik: FormikType }) => {
         Mes informations
       </ModalTitle>
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
-        <FormikInput name="applicant_last_name" label="Nom" formik={formik} required />
-        <FormikInput name="applicant_first_name" label="Prénom" formik={formik} required />
+        <FormikInput name="applicant_last_name" label="Nom" formik={formik} required inputProps={{ autoComplete: "family-name" }} />
+        <FormikInput name="applicant_first_name" label="Prénom" formik={formik} required inputProps={{ autoComplete: "given-name" }} />
         <EmailInput formik={formik} />
         <FormikInput
           name="applicant_phone"
           label="Téléphone"
+          hint="Par exemple 0612345678 ou +33612345678"
           formik={formik}
           required
           inputProps={{
             type: "tel",
+            autoComplete: "tel",
             sx: { mt: { xs: 3, md: 0 } },
           }}
         />
@@ -358,9 +358,11 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
       formik={formik}
       label="E-mail"
       name="applicant_email"
+      hint="Format attendu : nom@domaine.fr"
       required
       inputProps={{
         type: "email",
+        autoComplete: "email",
         onChange: onEmailChange,
       }}
       postInput={
@@ -371,7 +373,7 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
                 Voulez vous dire ?
               </Typography>
               {suggestedEmails.map((suggestedEmail) => (
-                <Button key={suggestedEmail.corrected} onClick={() => clickSuggestion(suggestedEmail.corrected)} priority="tertiary no outline" size="small">
+                <Button key={suggestedEmail.corrected} type="button" onClick={() => clickSuggestion(suggestedEmail.corrected)} priority="tertiary no outline" size="small">
                   {suggestedEmail.corrected}
                 </Button>
               ))}
@@ -386,6 +388,7 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
 const FormikInput = ({
   name,
   label,
+  hint,
   required,
   formik,
   inputProps,
@@ -393,6 +396,7 @@ const FormikInput = ({
 }: {
   name: string
   label: string
+  hint?: string
   required?: boolean
   formik: FormikType
   inputProps?: Partial<InputProps>
@@ -402,10 +406,15 @@ const FormikInput = ({
   const touched = formik.touched[name]
   const error = formik.errors[name] as string
   const displayedErrorOpt = touched && error
+  const hintId = `${name}-hint`
+  const errorId = `${name}-error`
 
   return (
     <FormControl error={Boolean(displayedErrorOpt)} fullWidth>
-      <FormLabel {...(required ? { required } : {})}>{label}</FormLabel>
+      <FormLabel htmlFor={name} {...(required ? { required } : {})}>
+        {label}
+      </FormLabel>
+      {hint && <HintText id={hintId}>{hint}</HintText>}
       <Input
         fullWidth={true}
         data-testid={name}
@@ -413,6 +422,7 @@ const FormikInput = ({
         name={name}
         type="text"
         error={Boolean(displayedErrorOpt)}
+        aria-describedby={describedBy(hint && hintId, displayedErrorOpt && errorId)}
         value={value}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
@@ -420,7 +430,7 @@ const FormikInput = ({
         {...inputProps}
       />
       {postInput}
-      <FormHelperText>{displayedErrorOpt}</FormHelperText>
+      <FormHelperText id={errorId}>{displayedErrorOpt}</FormHelperText>
     </FormControl>
   )
 }
@@ -506,13 +516,15 @@ const TextareaInput = ({
   const touched = formik.touched[name]
   const error = formik.errors[name] as string
   const displayedErrorOpt = touched && error
+  const hintId = `${name}-hint`
+  const errorId = `${name}-error`
 
   return (
     <FormControl error={Boolean(displayedErrorOpt)} fullWidth>
-      <FormLabel sx={{ mb: fr.spacing("1v"), fontSize: "16px", lineHeight: "24px" }} {...(required ? { required } : {})}>
+      <FormLabel htmlFor={name} sx={{ mb: fr.spacing("1v"), fontSize: "16px", lineHeight: "24px" }} {...(required ? { required } : {})}>
         {label}
       </FormLabel>
-      {Boolean(description) && <FormLabel sx={{ mb: fr.spacing("1v"), fontSize: "12px", lineHeight: "20px", color: "grey.600" }}>{description}</FormLabel>}
+      {description && <HintText id={hintId}>{description}</HintText>}
       <TextareaAutosize
         style={{
           marginTop: fr.spacing("2v"),
@@ -525,8 +537,11 @@ const TextareaInput = ({
         onBlur={formik.handleBlur}
         onChange={formik.handleChange}
         value={value}
+        // TextareaAutosize n'est pas un InputBase : l'état d'erreur du FormControl ne lui parvient pas
+        aria-invalid={Boolean(displayedErrorOpt)}
+        aria-describedby={describedBy(description && hintId, displayedErrorOpt && errorId)}
       />
-      <FormHelperText>{displayedErrorOpt}</FormHelperText>
+      <FormHelperText id={errorId}>{displayedErrorOpt}</FormHelperText>
       {Boolean(infoText) && (
         <Box sx={{ mt: fr.spacing("6v") }}>
           <InfoText>{infoText}</InfoText>
@@ -578,6 +593,14 @@ const RadioInput = <T extends { label: string; value: any }>({
     </Box>
   )
 }
+
+const describedBy = (...ids: (string | false | undefined)[]) => ids.filter(Boolean).join(" ") || undefined
+
+const HintText = ({ id, children }: { id: string; children: React.ReactNode }) => (
+  <Typography id={id} sx={{ mb: fr.spacing("1v"), fontSize: "12px", lineHeight: "20px", color: "grey.600" }}>
+    {children}
+  </Typography>
+)
 
 const InfoText = ({ children }: { children: React.ReactNode }) => {
   if (!children) {

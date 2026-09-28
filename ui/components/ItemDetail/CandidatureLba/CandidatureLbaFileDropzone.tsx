@@ -53,7 +53,9 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     }
   }
 
+  // noKeyboard : c'est l'input natif, étiqueté, qui reçoit le focus, et non la racine du dropzone (role="presentation")
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    noKeyboard: true,
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
@@ -93,10 +95,14 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
 
   const mandatoryFileError = formik.touched.applicant_attachment_name && formik.errors?.applicant_attachment_name
   const hasError = Boolean(mandatoryFileError || showUnacceptedFileMessages)
+  const inputId = "applicant_attachment_name"
+  const hintId = `${inputId}-hint`
+  const formatErrorId = `${inputId}-format-error`
+  const errorId = `${inputId}-error`
+  const describedBy = [hintId, showUnacceptedFileMessages && formatErrorId, mandatoryFileError && errorId].filter(Boolean).join(" ")
 
   return (
     <Box
-      id="applicant_attachment_name"
       sx={{
         border: isDragActive ? "1px dashed" : "1px solid",
         borderColor: isDragActive ? "grey.600" : "transparent",
@@ -139,20 +145,26 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
         </Box>
       ) : (
         <Box sx={{ cursor: hasSelectedFile() ? "auto" : "pointer" }} data-testid="fileDropzone">
-          <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700, color: hasError ? "error.main" : "grey.700", mb: fr.spacing("3v") }}>
+          <Typography
+            component="label"
+            htmlFor={inputId}
+            // le label active déjà l'input : sans stopPropagation, la racine ouvrirait une seconde fois le sélecteur
+            onClick={(e) => e.stopPropagation()}
+            sx={{ display: "block", cursor: "pointer", fontSize: "16px", lineHeight: "24px", fontWeight: 700, color: hasError ? "error.main" : "grey.700", mb: fr.spacing("3v") }}
+          >
             Chargez votre CV ou déposez-le ici <span style={{ color: "#ce0500" }}>*</span>
           </Typography>
-          <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "grey.700", mb: fr.spacing("4v") }}>
+          <Typography id={hintId} sx={{ fontSize: "12px", lineHeight: "20px", color: "grey.700", mb: fr.spacing("4v") }}>
             Le CV doit être au format PDF ou Docx et ne doit pas dépasser 3 Mo
           </Typography>
-          <input {...getInputProps()} style={{ display: "block" }} />
+          <input {...getInputProps({ id: inputId, tabIndex: 0, "aria-describedby": describedBy, "aria-invalid": hasError })} style={{ display: "block" }} />
           {showUnacceptedFileMessages && (
-            <Typography sx={{ color: "error.main", fontSize: "14px" }}>
+            <Typography id={formatErrorId} sx={{ color: "error.main", fontSize: "14px" }}>
               <span aria-hidden="true">⚠</span> Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)
             </Typography>
           )}
           {mandatoryFileError && (
-            <Typography sx={{ color: "error.main", fontSize: "14px" }}>
+            <Typography id={errorId} sx={{ color: "error.main", fontSize: "14px" }}>
               <span aria-hidden="true">⚠</span> La pièce jointe est obligatoire
             </Typography>
           )}
