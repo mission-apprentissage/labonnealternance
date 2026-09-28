@@ -70,7 +70,11 @@ const CustomInput = (props) => {
               <Typography className={fr.cx("fr-message--error")}>
                 {parse(meta.error || "")}
                 {meta.error?.includes("a été refusé") && (
-                  <Typography component="span" sx={{ color: `${fr.colors.decisions.text.actionHigh.blueFrance.default} !important` }}>
+                  <Typography
+                    component="span"
+                    // adresse insécable, cf. FormulaireEditionOffreStep2
+                    sx={{ color: `${fr.colors.decisions.text.actionHigh.blueFrance.default} !important`, overflowWrap: "anywhere" }}
+                  >
                     {" "}
                     <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Espace pro - Accès entreprise refusé")}`} external={true}>
                       {publicConfig.publicEmail}
