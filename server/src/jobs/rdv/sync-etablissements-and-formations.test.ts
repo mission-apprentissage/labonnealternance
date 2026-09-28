@@ -129,6 +129,53 @@ describe("sync-etablissements-and-formations", () => {
     expect(fiches[0].rco_formation_id).toBe("rco-1")
   })
 
+  it("reprend intitule_rco quand le catalogue n'a pas d'intitulé long, sans le préférer à un intitulé long", async () => {
+    await getDbCollection("formationcatalogues").insertMany([
+      givenFormation({ cle_ministere_educatif: "cle-sans-long", intitule_long: null, intitule_rco: "Intitulé RCO" }),
+      givenFormation({ cle_ministere_educatif: "cle-avec-long", intitule_long: "Intitulé long", intitule_rco: "Intitulé RCO" }),
+    ])
+
+    const stats = await syncEtablissementsAndFormations()
+
+    expect(stats.errors).toBe(0)
+    const byCle = new Map((await getDbCollection("eligible_trainings_for_appointments").find({}).toArray()).map((f) => [f.cle_ministere_educatif, f]))
+    expect.soft(byCle.get("cle-sans-long")?.training_intitule_long).toBe("Intitulé RCO")
+    expect.soft(byCle.get("cle-avec-long")?.training_intitule_long).toBe("Intitulé long")
+  })
+
+  it("répare une fiche existante enregistrée sans intitulé", async () => {
+    const legacy = {
+      _id: new ObjectId(),
+      cle_ministere_educatif: "cle-1",
+      training_id_catalogue: "ancien",
+      training_intitule_long: null as unknown as string,
+      training_code_formation_diplome: "00000000",
+      lieu_formation_email: null,
+      parcoursup_id: null,
+      rco_formation_id: "rco-origine",
+      is_catalogue_published: true,
+      referrers: [],
+      lieu_formation_street: "ancienne rue",
+      lieu_formation_city: "ancienne ville",
+      lieu_formation_zip_code: "00000",
+      etablissement_formateur_raison_sociale: "ANCIEN",
+      etablissement_formateur_street: null,
+      departement_etablissement_formateur: null,
+      created_at: new Date("2020-01-01"),
+      last_catalogue_sync_date: new Date("2020-01-01"),
+    }
+    const collection = getDbCollection("eligible_trainings_for_appointments")
+    // Garde-fou anti-vacuité : le validateur doit refuser cette fiche, sinon le test ne prouve rien.
+    await expect(collection.insertOne(legacy)).rejects.toMatchObject({ code: 121 })
+    await collection.insertOne(legacy, { bypassDocumentValidation: true })
+    await getDbCollection("formationcatalogues").insertOne(givenFormation({ intitule_long: null, intitule_rco: "Intitulé RCO" }))
+
+    const stats = await syncEtablissementsAndFormations()
+
+    expect(stats).toMatchObject({ updated: 1, errors: 0 })
+    expect((await collection.findOne({ _id: legacy._id }))?.training_intitule_long).toBe("Intitulé RCO")
+  })
+
   it("n'active aucun referrer tant que l'établissement n'a ni opt-out ni premium", async () => {
     await getDbCollection("etablissements").insertOne({
       _id: new ObjectId(),
@@ -165,8 +212,8 @@ describe("sync-etablissements-and-formations", () => {
   it("écrit les formations valides d'un lot même si l'une d'elles est rejetée, et échoue à la fin", async () => {
     await getDbCollection("formationcatalogues").insertMany([
       givenFormation({ cle_ministere_educatif: "cle-ok-1" }),
-      // intitule_long absent -> training_intitule_long null -> rejeté par le validateur de schéma.
-      givenFormation({ cle_ministere_educatif: "cle-ko", intitule_long: undefined }),
+      // aucun intitulé -> training_intitule_long null -> rejeté par le validateur de schéma.
+      givenFormation({ cle_ministere_educatif: "cle-ko", intitule_long: undefined, intitule_court: undefined, intitule_rco: undefined }),
       givenFormation({ cle_ministere_educatif: "cle-ok-2" }),
     ])
 
