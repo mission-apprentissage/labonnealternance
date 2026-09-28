@@ -11,6 +11,11 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
  * offer_description_mode sur les offres existantes, en comparant la description à la définition ROME
  * (cf. isRecruiterWrittenDescription), et vide les 4 champs ROME des offres rédigées, code ROME conservé.
  *
+ * Seules les offres créées depuis le MVP (#5078) sont classées : lui seul masquait les compétences au
+ * recruteur. Avant, une description différente de la définition ROME actuelle est surtout une définition
+ * périmée par un réimport du référentiel : mesuré en production, 96 % des 13 458 offres ainsi classées
+ * partageaient leur texte avec au moins 5 offres du même ROME. Les offres antérieures restent sans mode.
+ *
  * Une offre dont le code ROME n'a pas de définition dans le référentiel reste sans mode : faute de
  * référence, une fiche métier recopiée passerait pour rédigée et perdrait ses compétences.
  *
@@ -27,6 +32,9 @@ const EMPTY_ROME_CONTENT = {
 
 const BATCH_SIZE = 500
 
+// merge de #5078 dans main, premier déploiement possible du MVP (recette comprise)
+const MVP_RELEASE_DATE = new Date("2026-09-25T13:44:44Z")
+
 export const up = async () => {
   const referentiel = await getDbCollection("referentielromes")
     .find({}, { projection: { "rome.code_rome": 1, definition: 1 } })
@@ -35,7 +43,7 @@ export const up = async () => {
 
   // null matche aussi le champ absent : seules les offres pas encore classées sont relues au rejeu.
   const cursor = getDbCollection("jobs_partners").find(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_description_mode: null },
+    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_description_mode: null, created_at: { $gte: MVP_RELEASE_DATE } },
     { projection: { _id: 1, offer_description: 1, offer_rome_codes: 1 } }
   )
 
@@ -88,8 +96,14 @@ export const up = async () => {
     { bypassDocumentValidation: true }
   )
 
+  const beforeMvp = await getDbCollection("jobs_partners").countDocuments({
+    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+    offer_description_mode: null,
+    created_at: { $lt: MVP_RELEASE_DATE },
+  })
+
   logger.info(
-    `clear rome content 5590 : ${counts.custom} offres rédigées vidées, ${counts.structured} sur fiche métier, ${counts.undetermined} sans définition ROME laissées sans mode, ${refilled} re-vidées`
+    `clear rome content 5590 : ${counts.custom} offres rédigées vidées, ${counts.structured} sur fiche métier, ${counts.undetermined} sans définition ROME laissées sans mode, ${refilled} re-vidées, ${beforeMvp} antérieures au MVP non classées`
   )
 }
 

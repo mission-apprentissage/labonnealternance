@@ -21,8 +21,16 @@ describe("migration clear-rome-content-custom-offers-5590", () => {
   }
   const emptyRomeContent = { offer_desired_skills: [], offer_to_be_acquired_skills: [], offer_to_be_acquired_knowledge: [], offer_access_conditions: [] }
 
+  const afterMvp = new Date("2026-09-28T10:00:00.000Z")
   const lbaOffer = (partner_job_id: string, overrides = {}) =>
-    generateJobsPartnersOfferPrivate({ partner_job_id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_rome_codes: [romeCode], ...romeContent, ...overrides })
+    generateJobsPartnersOfferPrivate({
+      partner_job_id,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_rome_codes: [romeCode],
+      created_at: afterMvp,
+      ...romeContent,
+      ...overrides,
+    })
 
   const readAll = async () => new Map((await getDbCollection("jobs_partners").find({}).toArray()).map((job) => [job.partner_job_id, job]))
 
@@ -35,6 +43,8 @@ describe("migration clear-rome-content-custom-offers-5590", () => {
       lbaOffer("sans-description", { offer_description: "" }),
       lbaOffer("rome-absent", { offer_rome_codes: ["Z9999"], offer_description: "Texte rédigé sur un métier absent du référentiel." }),
       lbaOffer("redigee-re-remplie", { offer_description: "Texte rédigé par le recruteur.", offer_description_mode: OFFER_DESCRIPTION_MODE.CUSTOM }),
+      // antérieure au MVP : sa description est une définition ROME changée depuis par le référentiel
+      lbaOffer("avant-mvp", { offer_description: "Ancienne définition ROME, remplacée depuis dans le référentiel.", created_at: new Date("2024-04-15T08:00:00.000Z") }),
       generateJobsPartnersOfferPrivate({
         partner_job_id: "partenaire",
         partner_label: JOBPARTNERS_LABEL.HELLOWORK,
@@ -64,11 +74,11 @@ describe("migration clear-rome-content-custom-offers-5590", () => {
     }
   })
 
-  it("ne classe pas une offre dont le code ROME n'a pas de définition, ni l'offre d'un partenaire", async () => {
+  it("ne classe pas une offre antérieure au MVP, sans définition ROME, ou d'un partenaire", async () => {
     await seed()
     await up()
     const jobs = await readAll()
-    for (const id of ["rome-absent", "partenaire"]) {
+    for (const id of ["avant-mvp", "rome-absent", "partenaire"]) {
       expect.soft(jobs.get(id)?.offer_description_mode, id).toBeUndefined()
       expect.soft(jobs.get(id), id).toMatchObject(romeContent)
     }
