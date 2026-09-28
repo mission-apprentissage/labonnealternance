@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { OPCOS_LABEL, TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
 import { extensions } from "../../../helpers/zod-helpers/zod-primitives.js"
-import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
 import type { IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, JOBPARTNERS_LABEL } from "../../../models/jobs-partners.model.js"
 import { ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, ZJobsPartnersRecruiterApi, zDiplomaEuropeanLevel } from "../../../models/jobs-partners.model.js"
 
@@ -56,6 +56,8 @@ export const zJobOfferApiReadV3 = z.object({
   apply: zJobRecruiterApiReadV3.shape.apply,
   contract: z.object({
     start: ZJobsPartnersOfferApi.shape.contract_start,
+    start_type: extensions.buildEnum(JOB_START_TYPE).nullable().describe("Mode de démarrage du contrat"),
+    start_is_flexible: z.boolean().nullable().describe("Indique si la date de démarrage est flexible"),
     duration: ZJobsPartnersOfferApi.shape.contract_duration,
     type: ZJobsPartnersOfferApi.shape.contract_type,
     remote: ZJobsPartnersOfferApi.shape.contract_remote,
@@ -74,6 +76,7 @@ export const zJobOfferApiReadV3 = z.object({
     }),
     opening_count: ZJobsPartnersOfferApi.shape.offer_opening_count,
     status: ZJobsPartnersOfferApi.shape.offer_status,
+    to_applicant_questions: z.array(z.string()).nullable().describe("Questions posées par le recruteur pour le candidat"),
   }),
   is_delegated: ZJobsPartnersOfferApi.shape.is_delegated.default(false),
 })
@@ -162,6 +165,8 @@ export const zJobOfferApiWriteV3 = z.object({
         .transform((value) => new Date(value))
         .nullable()
         .default(null),
+      start_type: ZJobsPartnersOfferPrivate.shape.contract_start_type.default(null),
+      start_is_flexible: ZJobsPartnersOfferPrivate.shape.contract_start_is_flexible.default(null),
       duration: ZJobsPartnersOfferPrivate.shape.contract_duration.default(null),
       type: ZJobsPartnersOfferPrivate.shape.contract_type.default([TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]),
       remote: ZJobsPartnersOfferPrivate.shape.contract_remote.default(null),
@@ -211,6 +216,7 @@ export const zJobOfferApiWriteV3 = z.object({
     origin: ZJobsPartnersOfferPrivate.shape.offer_origin,
     multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast,
     status: ZJobsPartnersOfferPrivate.shape.offer_status.default(JOB_STATUS_ENGLISH.ACTIVE),
+    to_applicant_questions: ZJobsPartnersOfferPrivate.shape.to_applicant_questions.default(null),
   }),
   apply: z
     .object({
@@ -289,6 +295,8 @@ function convertToJobOfferApiReadV3(input: IJobsPartnersOfferApi): IJobOfferApiR
 
     contract: {
       start: input.contract_start,
+      start_type: input.contract_start_type ?? null,
+      start_is_flexible: input.contract_start_is_flexible ?? null,
       duration: input.contract_duration,
       type: input.contract_type,
       remote: input.contract_remote,
@@ -308,6 +316,7 @@ function convertToJobOfferApiReadV3(input: IJobsPartnersOfferApi): IJobOfferApiR
       },
       opening_count: input.offer_opening_count,
       status: input.offer_status,
+      to_applicant_questions: input.to_applicant_questions ?? null,
     },
 
     is_delegated: input.is_delegated || false,
