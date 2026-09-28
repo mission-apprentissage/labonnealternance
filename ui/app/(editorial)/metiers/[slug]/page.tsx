@@ -2,10 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 import path from "path"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import NotFound from "@/app/_components/NotFound"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import type { IStaticMetiers, IStaticVilles } from "@/utils/get-static-data"
 import { getStaticMetiers, getStaticVilles } from "@/utils/get-static-data"
@@ -44,13 +44,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
   const relatedMetier = getMetierBySlug(metiers, slug)
 
   if (!relatedMetier) {
-    // notFound() duplique l'en-tête/pied de page ici : le layout édito attend la session (getSession) dans
-    // un <Suspense>, et le Suspense se remonte en double avec le HTTPAccessFallbackBoundary de Next 16.
-    return (
-      <DefaultContainer>
-        <NotFound />
-      </DefaultContainer>
-    )
+    notFound()
   }
   return (
     <Box>

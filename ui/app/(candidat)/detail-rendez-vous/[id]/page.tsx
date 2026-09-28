@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
-import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import NotFound from "@/app/_components/NotFound"
+import { notFound } from "next/navigation"
 import { ApiError, apiGet } from "@/utils/api.utils"
 import { METADATA } from "@/utils/routes.metadata.utils"
 import DetailRendezVousRendererClient from "./DetailRendezVousRendererClient"
@@ -23,13 +22,7 @@ export default async function DetailRendezVousPage({ params, searchParams }: { p
     return <DetailRendezVousRendererClient appointmentId={id} appointment={appointmentRecap} token={token} />
   } catch (err) {
     if (err instanceof ApiError && err.isNotFoundError()) {
-      // notFound() duplique l'en-tête/pied de page ici : le layout attend la session (getSession) dans
-      // un <Suspense>, et le Suspense se remonte en double avec le HTTPAccessFallbackBoundary de Next 16.
-      return (
-        <DefaultContainer>
-          <NotFound />
-        </DefaultContainer>
-      )
+      notFound()
     }
     throw err
   }

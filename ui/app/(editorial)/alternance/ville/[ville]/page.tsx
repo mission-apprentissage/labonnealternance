@@ -2,10 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
 import { cacheLife } from "next/cache"
 import Image from "next/image"
+import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import NotFound from "@/app/_components/NotFound"
 import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
@@ -62,13 +62,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
   const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-villes"
 
   if (!data) {
-    // notFound() duplique l'en-tête/pied de page ici : le layout édito attend la session (getSession) dans
-    // un <Suspense>, et le Suspense se remonte en double avec le HTTPAccessFallbackBoundary de Next 16.
-    return (
-      <DefaultContainer>
-        <NotFound />
-      </DefaultContainer>
-    )
+    notFound()
   }
 
   const villePage = PAGES.dynamic.seoVille(ville, data.ville)
