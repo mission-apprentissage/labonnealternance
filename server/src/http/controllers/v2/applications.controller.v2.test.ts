@@ -278,6 +278,39 @@ describe("POST /v2/application", () => {
       expect(response.json().message).toBe("Each question of the job offer can only be answered once")
     })
 
+    it("accepts a question that only differs by whitespace and stores the offer wording", async () => {
+      const response = await post({
+        ...baseBody(jobPartnerWithQuestions._id.toString()),
+        applicant_answers_to_recruiter_questions: [{ question: `  ${OFFER_QUESTIONS[0].replace(" ", "  ")} `, answer: "Pour apprendre le métier." }],
+      })
+
+      expect.soft(response.statusCode).toBe(202)
+      const application = await getDbCollection("applications").findOne({ job_id: jobPartnerWithQuestions._id })
+      expect(application?.applicant_answers_to_recruiter_questions).toEqual([{ question: OFFER_QUESTIONS[0], answer: "Pour apprendre le métier." }])
+    })
+
+    it("rejects a question that differs by more than whitespace", async () => {
+      const response = await post({
+        ...baseBody(jobPartnerWithQuestions._id.toString()),
+        applicant_answers_to_recruiter_questions: [{ question: OFFER_QUESTIONS[0].replace(" ?", ""), answer: "Pour apprendre le métier." }],
+      })
+
+      expect(response.statusCode).toBe(400)
+    })
+
+    it("rejects twice the same question written with different whitespace", async () => {
+      const response = await post({
+        ...baseBody(jobPartnerWithQuestions._id.toString()),
+        applicant_answers_to_recruiter_questions: [
+          { question: OFFER_QUESTIONS[0], answer: "Une première réponse." },
+          { question: `${OFFER_QUESTIONS[0]} `, answer: "Une seconde réponse." },
+        ],
+      })
+
+      expect.soft(response.statusCode).toBe(400)
+      expect(response.json().message).toBe("Each question of the job offer can only be answered once")
+    })
+
     it("rejects an answer longer than the allowed length", async () => {
       const response = await post({
         ...baseBody(jobPartnerWithQuestions._id.toString()),

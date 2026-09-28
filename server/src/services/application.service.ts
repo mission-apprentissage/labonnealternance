@@ -216,24 +216,32 @@ async function validateApplicationFileType(filename: string, base64String: strin
   }
 }
 
-const assertAnswersMatchOfferQuestions = (
+const normalizeQuestionWhitespace = (question: string) => question.replace(/\s+/g, " ").trim()
+
+// Renvoie les réponses avec le libellé exact de l'offre : la comparaison tolère les écarts d'espaces
+// d'une plateforme qui recopie la question, le mail au recruteur reprend le texte qu'il a saisi.
+const matchAnswersToOfferQuestions = (
   answers: IApplicationApiPublicOutput["applicant_answers_to_recruiter_questions"],
   offerQuestions: IJobsPartnersOfferPrivate["to_applicant_questions"]
-) => {
+): IApplicationApiPublicOutput["applicant_answers_to_recruiter_questions"] => {
   if (!answers?.length) {
-    return
+    return answers
   }
-  const askedQuestions = new Set(offerQuestions ?? [])
-  const unknownQuestion = answers.find(({ question }) => !askedQuestions.has(question))
-  if (unknownQuestion) {
-    throw badRequest(BusinessErrorCodes.UNKNOWN_RECRUITER_QUESTION, { question: unknownQuestion.question })
-  }
+  const askedQuestions = new Map((offerQuestions ?? []).map((question) => [normalizeQuestionWhitespace(question), question]))
+  const matchedAnswers = answers.map(({ question, answer }) => {
+    const offerQuestion = askedQuestions.get(normalizeQuestionWhitespace(question))
+    if (offerQuestion === undefined) {
+      throw badRequest(BusinessErrorCodes.UNKNOWN_RECRUITER_QUESTION, { question })
+    }
+    return { question: offerQuestion, answer }
+  })
   // Le plafond du schéma porte sur le nombre d'entrées : sans ce contrôle, un appelant pourrait
   // répondre trois fois à la même question et faire gonfler le mail envoyé au recruteur.
-  const answeredQuestions = new Set(answers.map(({ question }) => question))
-  if (answeredQuestions.size !== answers.length) {
+  const answeredQuestions = new Set(matchedAnswers.map(({ question }) => question))
+  if (answeredQuestions.size !== matchedAnswers.length) {
     throw badRequest(BusinessErrorCodes.DUPLICATE_RECRUITER_ANSWER)
   }
+  return matchedAnswers
 }
 
 export const sendApplicationV2 = async ({
@@ -280,7 +288,7 @@ export const sendApplicationV2 = async ({
   // Les réponses restent facultatives, y compris sur une offre qui pose des questions : une plateforme partenaire
   // n'affiche pas nos questions dans son propre formulaire de candidature. En revanche, si des réponses sont
   // transmises, elles doivent porter sur les questions réellement posées par l'offre.
-  assertAnswersMatchOfferQuestions(newApplication.applicant_answers_to_recruiter_questions, job.to_applicant_questions)
+  const applicant_answers_to_recruiter_questions = matchAnswersToOfferQuestions(newApplication.applicant_answers_to_recruiter_questions, job.to_applicant_questions)
 
   const lbaJob: IJobOrCompanyV2 = {
     job,
@@ -302,7 +310,7 @@ export const sendApplicationV2 = async ({
   }
 
   try {
-    const application = await newApplicationToApplicationDocumentV2(newApplication, applicant, lbaJob, caller)
+    const application = await newApplicationToApplicationDocumentV2({ ...newApplication, applicant_answers_to_recruiter_questions }, applicant, lbaJob, caller)
     await s3WriteString("applications", getApplicationCvS3Filename(application), {
       Body: applicant_attachment_content,
     })
