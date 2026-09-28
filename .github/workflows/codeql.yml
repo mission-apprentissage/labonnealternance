@@ -17,6 +17,10 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [main]
+    # ready_for_review est indispensable : le job porte `if: draft == false`, donc une PR ouverte
+    # en brouillon sort en "skipped" et, sans ce trigger, rien ne relance l'analyse quand elle
+    # devient relisible (cf. #5567).
+    types: [opened, synchronize, reopened, ready_for_review]
   schedule:
     - cron: "37 12 * * 6"
 
