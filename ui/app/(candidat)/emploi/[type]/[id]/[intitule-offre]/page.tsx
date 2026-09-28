@@ -16,10 +16,12 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 
   let title = ""
   switch (type) {
-    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
       // @ts-ignore
-      title = `Candidature spontanée en ${job?.nafs[0]?.label} chez ${job.title}`
+      const secteur = job?.nafs?.[0]?.label
+      title = secteur ? `Candidature spontanée en ${secteur} chez ${job.title}` : `Candidature spontanée chez ${job.title}`
       break
+    }
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
       title = `Offre d'emploi ${job?.title}`
