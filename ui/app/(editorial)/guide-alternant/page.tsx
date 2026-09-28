@@ -319,6 +319,8 @@ const GuideAlternantPage = () => {
                   </Box>
                 }
                 border
+                enlargeLink
+                className={fr.cx("fr-card--no-icon")}
                 style={{
                   borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.plain.blueFrance.default}`,
                 }}
