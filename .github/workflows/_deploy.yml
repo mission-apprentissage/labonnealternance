@@ -201,8 +201,9 @@ jobs:
         run: |
           CURRENT_TAG="v${{ needs.version.outputs.VERSION }}"
 
-          # `github.run_started_at` se résout en chaîne vide dans ce workflow ; un $started vide
-          # rendrait le select ci-dessous toujours faux et écarterait tous les déploiements.
+          # `github.run_started_at` se résout en chaîne vide dans ce workflow. Un RUN_STARTED_AT
+          # vide rendrait toujours faux le `select(.created_at < $started)` plus bas et écarterait
+          # tous les déploiements.
           RUN_STARTED_AT=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --jq '.run_started_at // empty')
           # Le format est validé et pas seulement la non-vacuité : une valeur non datée passerait
