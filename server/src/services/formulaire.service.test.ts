@@ -829,11 +829,6 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
   })
 })
 
-/**
- * Cas observé en recette : un compte refusé sur une première entreprise crée un compte sur une
- * seconde, validé. Le rôle refusé, trouvé en premier, faisait afficher toutes les offres de la
- * seconde entreprise comme expirées (recruteur ARCHIVE).
- */
 describe("getFormulaireWithRomeDetail — utilisateur rattaché à plusieurs entreprises", () => {
   it("should derive the recruiter status from the role on the requested company", async () => {
     const { user } = await saveEntrepriseUserTest({}, { status: [roleManagementEventFactory({ status: AccessStatus.DENIED })] }, { siret: "11111111100011" })

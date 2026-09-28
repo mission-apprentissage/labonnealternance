@@ -32,7 +32,6 @@ import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { isRomeDefinition } from "shared/utils/job-description.utils"
 import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import type z from "zod"
-import { logger } from "@/common/logger"
 import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
@@ -530,14 +529,14 @@ export const selectRoleForEntreprise = <T extends { authorized_type: string; aut
   if (entrepriseRole) return entrepriseRole
   const cfaRole = roles.find((role) => role.authorized_type === AccessEntityType.CFA)
   if (cfaRole) return cfaRole
-  // aucun rôle ne correspond à ce siret : on garde l'ancien choix (premier rôle) plutôt que de faire
-  // échouer l'espace recruteur, mais l'incohérence doit se voir.
+  // aucun rôle ne correspond à ce siret : repli sur le premier rôle plutôt que de faire échouer
+  // l'espace recruteur, signalé à Sentry pour que l'incohérence se voie.
   const fallback = roles.at(0) ?? null
   if (fallback) {
-    logger.warn(
-      { userId: context.userId.toString(), siret: context.siret, authorizedId: fallback.authorized_id },
-      "aucun rôle sur l'entreprise du siret, repli sur le premier rôle"
-    )
+    sentryCaptureException(internal("aucun rôle sur l'entreprise du siret, repli sur le premier rôle"), {
+      level: "warning",
+      extra: { userId: context.userId.toString(), siret: context.siret, authorizedId: fallback.authorized_id },
+    })
   }
   return fallback
 }
