@@ -17,7 +17,7 @@ import type { ICFA } from "shared/models/cfa.model"
 import type { IFormationCatalogue } from "shared/models/formation.model"
 import { zFormationCatalogueSchema } from "shared/models/formation.model"
 import type { IEntreprise, IJobCreate, IReferentielRome, IUserWithAccount } from "shared/models/index"
-import { JOB_START_TYPE } from "shared/models/job.model"
+import { JOB_START_TYPE, OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -276,6 +276,28 @@ describe("jobPartnersToRecruiter", () => {
   it("should keep a description that merely starts with the rome definition", () => {
     const written = `${referentielRome.definition} Chez nous, un tuteur vous accompagne dès la première semaine.`
     expect(jobDescriptionOf(written)).toBe(written)
+  })
+
+  describe("with a stored description mode", () => {
+    const recruiterJobOf = (overrides: Partial<IJobsPartnersOfferPrivate>) =>
+      jobPartnersToRecruiter([{ ...generateJobsPartnersOfferPrivate(overrides), rome_detail: referentielRome }], role, user, entreprise).jobs[0]
+
+    it("should trust the structured mode over a description that no longer matches the rome definition", () => {
+      // définition recopiée au dépôt puis modifiée par un réimport du référentiel
+      const job = recruiterJobOf({
+        offer_description: "Ancienne définition ROME, remplacée depuis dans le référentiel.",
+        offer_description_mode: OFFER_DESCRIPTION_MODE.STRUCTURED,
+      })
+      expect.soft(job.job_description).toBeNull()
+      expect.soft(job.competences_rome).not.toBeNull()
+    })
+
+    it("should return the description of a custom offer, without competences", () => {
+      const written = "Vous rejoindrez notre atelier de 12 personnes pour préparer un BTS maintenance."
+      const job = recruiterJobOf({ offer_description: written, offer_description_mode: OFFER_DESCRIPTION_MODE.CUSTOM })
+      expect.soft(job.job_description).toBe(written)
+      expect.soft(job.competences_rome).toBeNull()
+    })
   })
 })
 
