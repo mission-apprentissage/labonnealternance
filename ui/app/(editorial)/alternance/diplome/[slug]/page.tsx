@@ -2,11 +2,11 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import type { Metadata } from "next"
 import { cacheLife } from "next/cache"
-import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import type { ISeoDiplome } from "shared/models/seo-diplome.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import NotFound from "@/app/_components/NotFound"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { UTM_PARAMS } from "@/app/(editorial)/alternance/diplome/[slug]/_data/constants"
@@ -95,7 +95,9 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
   const { slug } = await params
   const rawData = await getDiplomeData(slug)
 
-  if (!rawData) notFound()
+  // notFound() duplique l'en-tête/pied de page ici : le layout édito attend la session (getSession) dans
+  // un <Suspense>, et le Suspense se remonte en double avec le HTTPAccessFallbackBoundary de Next 16.
+  if (!rawData) return <NotFound />
 
   const data = rawData as unknown as ISeoDiplome
   const metierLabel = await getMetierLabel(data.romes)
