@@ -78,7 +78,7 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
               </Link>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Divider orientation="vertical" />
+              <Divider aria-hidden="true" orientation="vertical" />
               <Typography sx={{ fontSize: "12px", fontWeight: "700", color: "#666666", px: fr.spacing("4v") }}>à {etablissement.distance_en_km} km</Typography>
             </Box>
           </Box>

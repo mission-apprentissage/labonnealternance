@@ -28,6 +28,9 @@ const unsubscribeReasons = [
   "Autre",
 ]
 
+// Reprend la taille des h2 de DepotSimplifieStyling, qui ne s'applique pas à un <p>
+const sousTitreSx = { fontSize: { xs: "16px", lg: "24px" }, lineHeight: { xs: "24px", lg: "32px" } }
+
 const SupportLink = ({ subject }: { subject: string }) => {
   const fullSubject = `Candidature spontanée - Déréférencement - ${subject}`
   return (
@@ -204,10 +207,12 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
           <Typography variant="h1" sx={{ mb: fr.spacing("6v"), color: fr.colors.decisions.text.active.blueFrance.default }}>
             Vous êtes une entreprise
           </Typography>
-          <Typography variant="h2" sx={{ mb: fr.spacing("6v") }}>
+          <Typography component="p" variant="h2" sx={{ ...sousTitreSx, mb: fr.spacing("6v") }}>
             Vous souhaitez ne plus recevoir de candidatures spontanées de La bonne alternance
           </Typography>
-          <Typography variant="h2">Veuillez remplir le formulaire ci-contre.</Typography>
+          <Typography component="p" variant="h2" sx={sousTitreSx}>
+            Veuillez remplir le formulaire ci-contre.
+          </Typography>
         </Box>
         <Box>
           <FormikContext value={formik}>

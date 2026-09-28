@@ -137,14 +137,8 @@ export default function Authentification() {
                 <form ref={formRef} onSubmit={handleSubmit} noValidate autoComplete="off">
                   <CustomInput name="email" label="Votre email" type="email" value={values.email} autoFocus />
                   <Alerts />
-                  <Button type="submit" disabled={isSubmitting} style={{ width: "100%" }}>
-                    <Box
-                      sx={{
-                        margin: "auto",
-                      }}
-                    >
-                      Se connecter
-                    </Box>
+                  <Button type="submit" disabled={isSubmitting} style={{ width: "100%", justifyContent: "center" }}>
+                    Se connecter
                   </Button>
                 </form>
               )
@@ -152,7 +146,7 @@ export default function Authentification() {
           </Formik>
         </Box>
 
-        <Divider />
+        <Divider aria-hidden="true" />
 
         <Typography variant="h5" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
           Vous n'avez pas de compte ?
@@ -178,8 +172,11 @@ export default function Authentification() {
           </Button>
         </Box>
         <Typography sx={{ mt: fr.spacing("4v") }}>
-          <strong>Vous êtes candidat ?</strong> La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les
-          offres d’emploi et de formation sans vous créer de compte.
+          <Box component="span" sx={{ fontWeight: 700 }}>
+            Vous êtes candidat ?
+          </Box>{" "}
+          La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les offres d’emploi et de formation sans vous
+          créer de compte.
         </Typography>
         <Box sx={{ mt: fr.spacing("4v") }}>
           <Button linkProps={{ href: PAGES.static.home.getPath() }} priority="secondary" style={{ width: "100%" }}>

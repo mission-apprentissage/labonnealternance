@@ -77,7 +77,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
         <Typography component="h1" sx={{ fontSize: "40px", lineHeight: "48px", fontWeight: 700, my: fr.spacing("6v") }}>
           Détails de la demande
         </Typography>
-        <hr />
+        <hr aria-hidden="true" />
       </Box>
       <Box sx={{ backgroundColor: "#F2F2F9", p: fr.spacing("6v") }}>
         <Typography component="h3" sx={{ fontSize: "28px", lineHeight: "36px", fontWeight: 700 }}>
@@ -123,7 +123,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
                 sx={{ fontSize: "16px", whiteSpace: "pre-wrap", mb: fr.spacing("6v") }}
                 dangerouslySetInnerHTML={{ __html: job.job_employer_description }}
               />
-              <hr />
+              <hr aria-hidden="true" />
             </Box>
           )}
 
@@ -154,7 +154,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
               <Typography sx={valueWithEllipsis}>{job.job_count}</Typography>
             </Box>
           </Box>
-          <hr />
+          <hr aria-hidden="true" />
 
           {/* job_description vaut null quand l'offre reprend la fiche ROME (cf. jobPartnersToRecruiter). Sinon,
               le texte du recruteur remplace la fiche métier, comme sur la fiche détail. */}
@@ -184,8 +184,12 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
             }}
           >
             <NextImage src="/images/icons/bulb.png" alt="" width={24} height={24} />
-            <Box>
-              Pour aider le recruteur à vous identifier, indiquez que vous le contactez suite à son dépôt d’offre sur le site <strong>{jobOrigin}</strong>.
+            <Box component="p" sx={{ m: 0 }}>
+              Pour aider le recruteur à vous identifier, indiquez que vous le contactez suite à son dépôt d’offre sur le site{" "}
+              <Box component="span" sx={{ fontWeight: 700 }}>
+                {jobOrigin}
+              </Box>
+              .
             </Box>
           </Box>
           <Box sx={{ border: "solid 1px #000091", p: fr.spacing("6v") }}>
@@ -209,7 +213,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
                 <Typography sx={{ mr: fr.spacing("3v") }}>Téléphone :</Typography>
                 <Typography sx={valueWithEllipsis}>{formulaire.phone}</Typography>
               </Box>
-              <Divider sx={{ mb: 0, p: 0, backgroundImage: "none" }} />
+              <Divider aria-hidden="true" sx={{ mb: 0, p: 0, backgroundImage: "none" }} />
               <Typography component="h4" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("3v") }}>
                 Informations légales
               </Typography>

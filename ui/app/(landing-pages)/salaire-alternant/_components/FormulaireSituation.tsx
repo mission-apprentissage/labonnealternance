@@ -139,7 +139,7 @@ export const FormulaireSituation = () => {
       <Typography variant="h2" color={fr.colors.decisions.text.title.blueFrance.default} gutterBottom>
         Votre situation :
       </Typography>
-      <Typography variant="caption" color={fr.colors.decisions.text.mention.grey.default} gutterBottom>
+      <Typography variant="caption" component="p" color={fr.colors.decisions.text.mention.grey.default} gutterBottom>
         Sauf mention contraire “(optionnel)” , tous les champs sont obligatoires.
       </Typography>
       <Formik validateOnMount={true} enableReinitialize={true} initialValues={initialValues} validationSchema={inputSchema} onSubmit={onSubmit}>
@@ -384,7 +384,9 @@ export const FormulaireSituation = () => {
           </Form>
         )}
       </Formik>
-      <Typography variant="caption">Dernière mise à jour : {DATE_DERNIERE_MISE_A_JOUR.toLocaleDateString("fr-FR")}</Typography>
+      <Typography variant="caption" component="p">
+        Dernière mise à jour : {DATE_DERNIERE_MISE_A_JOUR.toLocaleDateString("fr-FR")}
+      </Typography>
     </Box>
   )
 }

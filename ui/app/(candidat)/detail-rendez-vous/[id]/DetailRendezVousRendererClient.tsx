@@ -1,8 +1,10 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import type { SxProps, Theme } from "@mui/material"
 import { Box, List, ListItem, Typography } from "@mui/material"
 import { useFormik } from "formik"
+import type { ReactNode } from "react"
 import { useState } from "react"
 import type { IAppointmentRecapJson } from "shared"
 import * as Yup from "yup"
@@ -16,6 +18,17 @@ import { RdvReasons } from "@/components/RDV/rdv-reasons"
 import { apiPost } from "@/utils/api.utils"
 
 type State = "initial" | "sending" | "answered" | "other" | "unreachable" | "error"
+
+const ContactField = ({ label, children, sx }: { label: string; children: ReactNode; sx?: SxProps<Theme> }) => (
+  <Box sx={sx}>
+    <Typography component="dt" sx={{ display: "inline", p: 0 }}>
+      {label} :
+    </Typography>{" "}
+    <Typography component="dd" sx={{ display: "inline", m: 0, p: 0, fontWeight: 700 }}>
+      {children}
+    </Typography>
+  </Box>
+)
 
 export default function DetailRendezVousRendererClient({ appointmentId, appointment, token }: { appointmentId: string; appointment: IAppointmentRecapJson; token: string }) {
   const [currentState, setCurrentState] = useState<State>("initial")
@@ -116,32 +129,16 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
                 {appointment.user.type === "parent" ? "Le parent" : "L'étudiant"}
               </Typography>
             )}
-            <Typography sx={{ mt: fr.spacing("6v") }}>
-              Nom :{" "}
-              <Typography component="span">
-                <strong>{appointment.user.lastname}</strong>
-              </Typography>
-            </Typography>
-            <Typography>
-              Prénom :{" "}
-              <Typography component="span">
-                <b>{appointment.user.firstname}</b>
-              </Typography>
-            </Typography>
-            <Typography sx={{ mt: fr.spacing("6v") }}>
-              Numéro de téléphone :{" "}
-              <Typography component="span">
-                <b>{appointment.user.phone.match(/.{1,2}/g).join(".")}</b>
-              </Typography>
-            </Typography>
-            <Typography>
-              Email :{" "}
-              <Typography component="span">
-                <b>{appointment.user.email}</b>
-              </Typography>
-            </Typography>
+            <Box component="dl" sx={{ mt: fr.spacing("6v"), mb: 0, p: 0 }}>
+              <ContactField label="Nom">{appointment.user.lastname}</ContactField>
+              <ContactField label="Prénom">{appointment.user.firstname}</ContactField>
+              <ContactField label="Numéro de téléphone" sx={{ mt: fr.spacing("6v") }}>
+                {appointment.user.phone.match(/.{1,2}/g).join(".")}
+              </ContactField>
+              <ContactField label="Email">{appointment.user.email}</ContactField>
+            </Box>
           </Box>
-          <hr />
+          <hr aria-hidden="true" />
           <Box sx={{ mb: fr.spacing("4v") }}>
             <Typography component="p" sx={{ mt: fr.spacing("2v") }}>
               Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
@@ -150,8 +147,8 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
               <List sx={{ listStyleType: "disc", pl: fr.spacing("4v") }}>
                 {(appointment.appointment?.applicant_reasons || []).map((reason, i) => {
                   return (
-                    <ListItem key={i} sx={{ display: "list-item" }}>
-                      <strong>{RdvReasons.find((item) => item.key === reason).title}</strong>
+                    <ListItem key={i} sx={{ display: "list-item", fontWeight: 700 }}>
+                      {RdvReasons.find((item) => item.key === reason).title}
                     </ListItem>
                   )
                 })}
@@ -167,19 +164,22 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
             {appointment.formation && (
               <>
                 <Typography component="p" sx={{ mt: fr.spacing("4v") }}>
-                  à propos de la formation : <strong>{appointment.formation.training_intitule_long}</strong>
+                  à propos de la formation :{" "}
+                  <Box component="span" sx={{ fontWeight: 700 }}>
+                    {appointment.formation.training_intitule_long}
+                  </Box>
                 </Typography>
                 <Typography component="p" sx={{ mt: fr.spacing("2v") }}>
                   dispensée par :{" "}
-                  <strong>
+                  <Box component="span" sx={{ fontWeight: 700 }}>
                     {appointment.formation.etablissement_formateur_raison_sociale}, {appointment.formation.lieu_formation_street}, {appointment.formation.lieu_formation_zip_code},{" "}
                     {appointment.formation.lieu_formation_city}
-                  </strong>
+                  </Box>
                 </Typography>
               </>
             )}
           </Box>
-          <hr />
+          <hr aria-hidden="true" />
           {currentState === "initial" && (
             <CfaCandidatInformationForm formik={formik} setCurrentState={setCurrentState} otherClicked={otherClicked} unreachableClicked={unreachableClicked} />
           )}
