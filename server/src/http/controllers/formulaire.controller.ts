@@ -1,5 +1,6 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
-import { JOB_CLOSURE_ORIGIN, JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
+import type { IJobCreate } from "shared/index"
+import { JOB_CLOSURE_ORIGIN, JOB_STATUS, JOB_STATUS_ENGLISH, ZJobCreate, zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/http-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -28,6 +29,12 @@ import { resolveEspaceProClosureOrigin } from "@/services/job-partner-status.ser
 import { improveFreeText } from "@/services/offre-moderation.service"
 import { getUserRecruteurById } from "@/services/user-recruteur.service"
 import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
+
+const JOB_CREATE_FIELDS = Object.keys(ZJobCreate.shape) as (keyof IJobCreate)[]
+
+// Les routes de création acceptent un body en passthrough (cf. zRoutes) : seuls les champs de
+// ZJobCreate sont transmis à createJob. Liste dérivée du schéma, pour que les deux routes ne divergent pas.
+const pickJobCreateFields = (body: IJobCreate): IJobCreate => Object.fromEntries(JOB_CREATE_FIELDS.map((field) => [field, body[field]])) as IJobCreate
 
 export default (server: Server) => {
   server.get(
@@ -158,45 +165,8 @@ export default (server: Server) => {
       const user = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/offre"]).value
 
       const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
-      const {
-        job_type,
-        delegations,
-        job_count,
-        job_duration,
-        job_level_label,
-        job_rythm,
-        job_start_date,
-        job_start_type,
-        job_start_date_flexible,
-        rome_appellation_label,
-        rome_code,
-        rome_label,
-        competences_rome,
-        offer_title_custom,
-        job_employer_description,
-        to_applicant_questions,
-        ft_support,
-      } = req.body
       const createdOffer = await createJob({
-        job: {
-          job_type,
-          delegations,
-          job_count,
-          job_duration,
-          job_level_label,
-          job_rythm,
-          job_start_date,
-          job_start_type,
-          job_start_date_flexible,
-          rome_appellation_label,
-          rome_code,
-          rome_label,
-          competences_rome,
-          offer_title_custom,
-          job_employer_description,
-          to_applicant_questions,
-          ft_support,
-        },
+        job: pickJobCreateFields(req.body),
         user,
         siret,
         source: getSourceFromCookies(req),
@@ -222,47 +192,8 @@ export default (server: Server) => {
       }
 
       const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
-      const {
-        job_type,
-        delegations,
-        job_count,
-        job_description,
-        job_duration,
-        job_level_label,
-        job_rythm,
-        job_start_date,
-        job_start_type,
-        job_start_date_flexible,
-        rome_appellation_label,
-        rome_code,
-        rome_label,
-        competences_rome,
-        offer_title_custom,
-        job_employer_description,
-        to_applicant_questions,
-        ft_support,
-      } = req.body
       const createdOffer = await createJob({
-        job: {
-          job_type,
-          delegations,
-          job_count,
-          job_description,
-          job_duration,
-          job_level_label,
-          job_rythm,
-          job_start_date,
-          job_start_type,
-          job_start_date_flexible,
-          rome_appellation_label,
-          rome_code,
-          rome_label,
-          competences_rome,
-          offer_title_custom,
-          job_employer_description,
-          to_applicant_questions,
-          ft_support,
-        },
+        job: pickJobCreateFields(req.body),
         siret,
         user,
         source: getSourceFromCookies(req),

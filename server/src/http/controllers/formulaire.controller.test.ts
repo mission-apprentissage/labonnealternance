@@ -27,6 +27,11 @@ vi.mock("@/services/mailer.service", () => {
   }
 })
 
+// la modération des textes libres appelle Mistral : sans réponse, elle renvoie le texte masqué et sanitizé
+vi.mock("@/services/mistralai/mistralai.service", () => ({
+  sendMistralMessages: vi.fn().mockResolvedValue(null),
+}))
+
 const buildCreateJobDataFromReferentiel = (referentielRome: IReferentielRome) => {
   return {
     job_start_date: dayjs().add(1, "day").toDate(),
@@ -129,6 +134,61 @@ describe("formulaire.controller", () => {
     expect.soft(createdJob?.cfa_apply_email).toBeNull()
     expect.soft(createdJob?.cfa_address_label).toBeNull()
   }, 10_000)
+
+  describe("description rédigée par le recruteur", () => {
+    const description = "Vous participerez au développement de nos outils internes aux côtés de l'équipe technique."
+
+    it.each([
+      {
+        route: "connectée",
+        create: async () => {
+          const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+          const response = await entrepriseSdkInstance.createOffer({
+            establishment_id: formulaire!.establishment_id,
+            cookies,
+            job: { ...buildCreateJobDataFromReferentiel(referentielRome), job_description: description },
+          })
+          return { cookies, jobId: (response.json() as OfferCreationResponse)._id.toString() }
+        },
+      },
+      {
+        route: "par jeton",
+        create: async () => {
+          const { cookies, formulaire, user } = await entrepriseSdkInstance.createAndGetConnectedUser()
+          const response = await entrepriseSdkInstance.createOfferByToken({
+            establishment_id: formulaire!.establishment_id,
+            user,
+            job: { ...buildCreateJobDataFromReferentiel(referentielRome), job_description: description },
+          })
+          return { cookies, jobId: (response.json() as OfferCreationByTokenResponse).job_id }
+        },
+      },
+    ])("la conserve à la création (route $route) et la renvoie à l'édition", async ({ create }) => {
+      const { cookies, jobId } = await create()
+
+      const createdJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
+      expect.soft(createdJob?.offer_description).toBe(description)
+
+      const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies })
+      expect.soft((offerResponse.json() as GetOfferResponse).job_description).toBe(description)
+    })
+
+    it("sans description saisie, stocke la définition du métier et ne la renvoie pas comme une saisie", async () => {
+      const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+      const response = await entrepriseSdkInstance.createOffer({
+        establishment_id: formulaire!.establishment_id,
+        cookies,
+        job: buildCreateJobDataFromReferentiel(referentielRome),
+      })
+      const jobId = (response.json() as OfferCreationResponse)._id.toString()
+
+      const createdJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
+      expect.soft(createdJob?.offer_description).toBe(referentielRome.definition)
+
+      const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies })
+      expect.soft((offerResponse.json() as GetOfferResponse).job_description).toBeNull()
+    })
+  })
 
   describe("mise à jour", () => {
     it("met à jour la description publique quand le ROME est modifié", async () => {
