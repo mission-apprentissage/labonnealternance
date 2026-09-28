@@ -73,10 +73,10 @@ export const zSearchRoutes = {
         page: z.coerce.number<number>().min(0).default(0).describe("Index de page (0-based)"),
         hitsPerPage: z.coerce.number<number>().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
         search_source: z
-          .enum(["suggestion", "free_text", "training_links", "external_sites"])
+          .enum(["suggestion", "free_text", "training_links", "external_sites", "partner_links"])
           .optional()
           .describe(
-            "Origine de la requête (télémétrie autocomplete UI, lien généré côté serveur par traininglinks pour les vœux Parcoursup, ou lien de recherche personnalisé posé par un site externe — sans effet sur les résultats)"
+            "Origine de la requête (télémétrie autocomplete UI, lien généré côté serveur par traininglinks pour les vœux Parcoursup, lien de recherche personnalisé posé par un site externe, ou lien généré pour un partenaire PRDV — sans effet sur les résultats)"
           ),
         // Alias déprécié de search_source (renommé : « source » est un paramètre réservé de
         // Plausible, mais seul le nom dans l'URL de page compte pour le tracker — pas les appels
@@ -84,7 +84,7 @@ export const zSearchRoutes = {
         // pré-renommage rejetterait search_source, clé inconnue du strictObject), et présent dans
         // les liens traininglinks émis avant le renommage (dernière campagne : 2026-08-24).
         // search_source prime si les deux sont fournis.
-        source: z.enum(["suggestion", "free_text", "training_links", "external_sites"]).optional().describe("Déprécié : utiliser search_source"),
+        source: z.enum(["suggestion", "free_text", "training_links", "external_sites", "partner_links"]).optional().describe("Déprécié : utiliser search_source"),
         internal: z
           .enum(["true", "false"])
           .transform((v) => v === "true")

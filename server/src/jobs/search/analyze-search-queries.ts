@@ -66,9 +66,9 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
     .aggregate<IQueryStats>([
       // status=error exclu : nb_hits y est null, l'inclure gonflerait `total` sans compter dans
       // `zero_hits_count` et ferait paraître le terme plus pertinent qu'il ne l'est (cf. #5166).
-      // search_source=training_links / external_sites exclus : trafic synthétique (liens générés
-      // pour les vœux Parcoursup, liens de recherche posés par des sites tiers), pas organique.
-      { $match: { created_at: { $gte: since }, status: { $ne: "error" }, search_source: { $nin: ["training_links", "external_sites"] } } },
+      // search_source=training_links / external_sites / partner_links exclus : trafic synthétique
+      // (liens générés pour les vœux Parcoursup, par des sites tiers ou pour les partenaires PRDV).
+      { $match: { created_at: { $gte: since }, status: { $ne: "error" }, search_source: { $nin: ["training_links", "external_sites", "partner_links"] } } },
       {
         $group: {
           _id: "$q_normalized",
