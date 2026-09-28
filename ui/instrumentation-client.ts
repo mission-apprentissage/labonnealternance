@@ -1,7 +1,7 @@
 import { extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
 
 import { shouldReloadOnce } from "@/utils/reload-guard.utils"
-import { isHeadlessBrowserUserAgent } from "@/utils/sentry-filters.utils"
+import { isHeadlessBrowserUserAgent, isStackOverflowOutsideBundle } from "@/utils/sentry-filters.utils"
 
 import { publicConfig } from "./config.public"
 
@@ -87,6 +87,8 @@ init({
       const hasNoApplicationFrame = frames.every((frame) => !frame.filename || frame.filename === "[native code]" || /react-dom-client\.production\.js$/.test(frame.filename))
       if (hasNoApplicationFrame) return null
     }
+
+    if (isStackOverflowOutsideBundle(exception)) return null
 
     console.info(event)
     return event
