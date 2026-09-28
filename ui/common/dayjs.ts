@@ -17,11 +17,6 @@ dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
 dayjs.extend(advancedFormat)
 
-/**
- * @description Formats date.
- * @param {string} date
- * @returns {string|void}
- */
 const formatDate = (date: string | number | Date | null | undefined) => {
   if (!date) {
     return

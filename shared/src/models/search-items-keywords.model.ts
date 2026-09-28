@@ -9,8 +9,8 @@ const collectionName = "search_items_keywords" as const
  * Cache des mots-clés générés par Mistral pour `search_items`, keyé par le HASH du texte
  * source (pas par document) : les recruteurs partagent massivement les mêmes rome_labels
  * (mêmes combinaisons ROME par NAF) et les offres re-créées à texte identique (rotation des
- * flux) ne coûtent ainsi qu'un seul appel. Résilience : une régénération de `search_items`
- * ne perd plus les keywords.
+ * flux) ne coûtent ainsi qu'un seul appel. Une régénération de `search_items` ne perd pas
+ * les keywords.
  *
  * `keywords: []` = le texte a été traité mais Mistral n'a rien produit d'utilisable
  * (réponse invalide/vide) — le document sort de la file sans re-boucler.

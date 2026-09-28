@@ -23,6 +23,7 @@ import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/context
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -209,34 +210,28 @@ export default function DetailEntreprise({
           {user.type !== "CFA" && (
             <Box sx={{ display: "flex", gap: fr.spacing("3v"), flexWrap: "wrap" }}>
               {userRecruteur.establishment_siret && (
-                <a
+                <DsfrLink
                   href={`https://annuaire-entreprises.data.gouv.fr/etablissement/${userRecruteur.establishment_siret}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
                 >
                   Annuaire entreprises
-                </a>
+                </DsfrLink>
               )}
               {userRecruteur.email && (
-                <a
+                <DsfrLink
                   href={`https://www.google.com/search?q=${encodeURIComponent(userRecruteur.email)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
                 >
                   Rechercher l&apos;email
-                </a>
+                </DsfrLink>
               )}
               {(userRecruteur.establishment_raison_sociale || userRecruteur.establishment_enseigne) && userRecruteur.address && (
-                <a
+                <DsfrLink
                   href={`https://www.google.com/maps/search/${encodeURIComponent(`${userRecruteur.establishment_enseigne ?? userRecruteur.establishment_raison_sociale} ${userRecruteur.address}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
                 >
                   Google Maps
-                </a>
+                </DsfrLink>
               )}
             </Box>
           )}
@@ -275,9 +270,7 @@ export default function DetailEntreprise({
         >
           {(formik) => {
             const { values, isSubmitting, setFieldValue, errors, touched } = formik
-            // Le bouton "Enregistrer" ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui
-            // force l'affichage de l'erreur sur tous les champs invalides et scrolle/focus le premier
-            // plutôt que de bloquer la sauvegarde tant que l'OPCO ou la déclaration ne sont pas remplis.
+            // Le bouton "Enregistrer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
             const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
 
             return (

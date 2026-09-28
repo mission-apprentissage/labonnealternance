@@ -58,12 +58,6 @@ const givenATokenUser = (): AccessUserToken => {
     },
   }
 }
-// const givenACredentialUser = (): AccessUserCredential => {
-//   return {
-//     type: "ICredential",
-//     value: {},
-//   }
-// }
 
 const givenARequest = ({ user, resourceId }: { user: AccessUserToken | AccessUserCredential | AccessUser2; resourceId?: ObjectId }) => {
   return {

@@ -5,7 +5,6 @@ import { removeUrlsFromText } from "../common.js"
 import { z } from "../zod-with-open-api.js"
 import { buildEnum, latitude, longitude } from "./zod-primitives-light.js"
 
-// Fonction générique pour créer une projection MongoDB avec exclusion de champs
 export const createProjectionFromZod = <T extends z.ZodObject<any>>(schema: T, excludeFields: (keyof z.infer<T>)[]): Record<string, 1> => {
   return Object.keys(schema.shape).reduce(
     (acc, key) => {
@@ -34,7 +33,7 @@ export const extensions = {
   // Same z.codec() rationale as `phone` above: strips URLs from free-text user input
   // (anti-spam) while staying response-schema-safe. Accepts a custom input schema
   // (e.g. z.string().min(1).max(50)) so length/format constraints still apply to
-  // the raw input, before sanitization, matching the pre-existing validation order.
+  // the raw input, before sanitization.
   withoutUrls: (inputSchema: z.ZodString = z.string()) =>
     z.codec(inputSchema, z.string(), {
       decode: (value) => removeUrlsFromText(value),

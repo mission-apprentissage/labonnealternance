@@ -23,12 +23,47 @@ export enum JOB_STATUS_ENGLISH {
   EN_ATTENTE = "Pending",
 }
 
+/**
+ * Qui a clôturé une offre, et par quel canal. Reporté dans `offer_status_history[].granted_by`,
+ * `reason` portant le motif choisi dans la modale.
+ *
+ * Le canal vient de la route : lien signé reçu par mail (auth access-token) ou espace pro connecté
+ * (auth cookie-session). Sur l'espace pro, l'acteur est déduit des rôles de la session
+ * (cf. resolveEspaceProClosureOrigin) : les quatre rôles passent par la même route, et ne pas les
+ * distinguer revenait à ranger l'annulation d'un administrateur avec celle du recruteur lui-même.
+ *
+ * Les valeurs ESPACE_PRO_* ne concernent que les offres OFFRES_EMPLOI_LBA, seules gérées depuis
+ * l'espace pro. MAIL_RECRUTEUR couvre en plus les offres partenaires : le lien envoyé au recruteur
+ * est le même, seule la route appelée derrière change selon le type d'offre.
+ */
+export enum JOB_CLOSURE_ORIGIN {
+  /**
+   * Routes en access-token, atteintes depuis la page `(from-mail)` où le lien du mail dépose le
+   * recruteur : PUT /formulaire/offre/:jobId/cancel et /provided pour les offres LBA, POST
+   * /v2/_private/jobs/canceled|provided/:id pour les offres partenaires. Un même jeton, signé par
+   * createCancelJobLink / createProvidedJobLink, porte les scopes des deux familles de routes et est
+   * lié à l'identifiant de l'offre : malgré leur préfixe v2, ces routes ne sont pas une API ouverte
+   * aux partenaires. Libellé volontairement neutre : le même canal porte l'annulation et la
+   * déclaration « offre pourvue ».
+   */
+  MAIL_RECRUTEUR = "action du recruteur depuis un mail",
+  ESPACE_PRO_RECRUTEUR = "clôture par le recruteur depuis l'espace pro",
+  ESPACE_PRO_CFA = "clôture par le CFA délégataire depuis l'espace pro",
+  ESPACE_PRO_OPCO = "clôture par l'OPCO depuis l'espace pro",
+  ESPACE_PRO_ADMIN = "clôture par un administrateur depuis l'espace pro",
+  /** Repli quand la session n'expose aucun rôle exploitable : le canal reste sûr, pas l'acteur. */
+  ESPACE_PRO_INDETERMINE = "clôture depuis l'espace pro (acteur indéterminé)",
+}
+
 export const JOB_START_TYPE = {
   DES_QUE_POSSIBLE: "des_que_possible",
   PRECISE_DATE: "precise_date",
 } as const
 
 export type JOB_START_TYPE = (typeof JOB_START_TYPE)[keyof typeof JOB_START_TYPE]
+
+export const JOB_DESCRIPTION_MAX_LENGTH = 3000
+export const JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH = 800
 
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
   switch (status) {
@@ -168,6 +203,13 @@ export const ZJobStartDateCreate = (now: dayjs.Dayjs | null = null) =>
       }
     )
 
+// Limites de saisie portées par les corps de création et de mise à jour, pas par ZJobFields qui valide
+// aussi les réponses : sanitizeTextField encode & en &amp;, un texte stocké peut dépasser sa limite.
+export const ZJobFreeTextInput = {
+  job_description: z.string().max(JOB_DESCRIPTION_MAX_LENGTH).nullish(),
+  job_employer_description: z.string().max(JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH).nullish(),
+}
+
 export const ZJobCreate = ZJobFields.pick({
   rome_appellation_label: true,
   rome_code: true,
@@ -177,8 +219,6 @@ export const ZJobCreate = ZJobFields.pick({
   job_count: true,
   job_duration: true,
   job_rythm: true,
-  job_description: true,
-  job_employer_description: true,
   delegations: true,
   competences_rome: true,
   offer_title_custom: true,
@@ -188,6 +228,7 @@ export const ZJobCreate = ZJobFields.pick({
   job_start_date_flexible: true,
 })
   .extend({
+    ...ZJobFreeTextInput,
     job_start_date: ZJobStartDateCreate(),
     job_start_type: extensions.buildEnum(JOB_START_TYPE),
   })

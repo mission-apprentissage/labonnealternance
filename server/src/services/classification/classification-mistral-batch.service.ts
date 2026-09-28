@@ -15,27 +15,22 @@ import type { Message } from "@/services/mistralai/mistralai.service"
 import { BATCH_TERMINAL_STATUSES, downloadMistralBatchOutput, getMistralBatchJob, submitMistralBatch } from "@/services/mistralai/mistralai.service"
 
 /**
- * Mode batch de la classification jobs_partners (~50% moins cher que le mode sync, mais
- * asynchrone) : réservé aux pics de volume détectés par detectClassificationJobsPartners
- * (import massif, rattrapage) — jamais le flux organique, qui reste sync pour ne pas retarder
- * la publication. `customId` = `_id` de computed_jobs_partners (un document par requête, pas de
- * regroupement par 50 comme en sync : on doit retrouver le document précis à débloquer).
+ * Mode batch de la classification jobs_partners (~50 % moins cher que le sync, mais asynchrone) :
+ * réservé aux pics de volume détectés par detectClassificationJobsPartners ; le flux organique
+ * reste sync pour ne pas retarder la publication. `customId` = `_id` de computed_jobs_partners (un
+ * document par requête, pas de regroupement par 50 : on doit retrouver le document à débloquer).
  *
- * Trois garde-fous, tirés de l'incident des 30–31/08/2026 (batch de 20 681 requêtes bloqué à
- * 99,4 % pendant plus de 24 h, catalogue partenaire à l'arrêt) :
- * - les soumissions sont découpées en lots indépendants (BATCH_CHUNK_SIZE), suivis séparément :
- *   une requête coincée ne bloque plus que son lot ;
- * - `timeout_hours` est court (CLASSIFICATION_BATCH_TIMEOUT_HOURS) et la ramasse applique la
- *   sortie de tout job terminal qui en a une, SUCCESS ou non — les résultats acquis servent, les
- *   requêtes manquantes restent CLASSIFICATION_PENDING et repartent au lot suivant ;
- * - le filet de sécurité (PENDING_TIMEOUT_MS) ne se contente plus de lever le marquage : il
- *   relance la chaîne de traitement sur les offres libérées, sinon celles qui ont un code ROME
- *   n'étaient reprises par personne avant la nuit suivante.
+ * Un batch est otage de sa pire requête (incident des 30–31/08/2026 : 20 681 requêtes bloquées à
+ * 99,4 % plus de 24 h). Garde-fous :
+ * - lots indépendants (BATCH_CHUNK_SIZE), suivis séparément ;
+ * - `timeout_hours` court (CLASSIFICATION_BATCH_TIMEOUT_HOURS) et application de la sortie de tout
+ *   job terminal qui en a une, SUCCESS ou non ; les requêtes manquantes restent CLASSIFICATION_PENDING ;
+ * - le filet (PENDING_TIMEOUT_MS) relance la chaîne de traitement, cf. releaseStuckPendingClassifications.
  */
 
 const now = () => new Date()
 
-/** Un batch de ~20 000 requêtes est otage de sa pire requête ; 2 000 borne le rayon d'un blocage. */
+/** Borne le rayon d'un blocage. */
 const BATCH_CHUNK_SIZE = 2_000
 
 /** 10 batchs sur 12 mesurés en prod reviennent en moins de 70 min ; au-delà, mieux vaut récupérer
@@ -137,10 +132,8 @@ const submitOneChunk = async (docs: ClassificationCandidate[]): Promise<string |
   return jobId
 }
 
-/** Soumet directement des documents déjà chargés (évite un second aller-retour Mongo quand
- * l'appelant les a déjà en main — ex. le routage sync/batch de detectClassificationJobsPartners,
- * qui a besoin des mêmes champs pour compter les candidats avant de décider de la bascule).
- * Découpe en lots indépendants ; retourne les ids des jobs effectivement créés. */
+/** Prend des documents déjà chargés (detectClassificationJobsPartners les a en main pour décider
+ * de la bascule sync/batch). Retourne les ids des jobs effectivement créés. */
 export const submitClassificationRequests = async (docs: ClassificationCandidate[], { chunkSize = BATCH_CHUNK_SIZE }: { chunkSize?: number } = {}): Promise<string[]> => {
   if (!docs.length) return []
   const jobIds: string[] = []
@@ -154,8 +147,7 @@ export const submitClassificationRequests = async (docs: ClassificationCandidate
     logger.info(`submitClassificationRequests: ${docs.length} offre(s) réparties sur ${jobIds.length} batch(s) de ${chunkSize} max`)
   }
   if (failedDocs) {
-    // Symétrique de l'alerte sur job terminal en échec : ces offres restent CLASSIFICATION_PENDING
-    // six heures avant que le filet ne les relance, autant le savoir tout de suite.
+    // Ces offres restent CLASSIFICATION_PENDING jusqu'au filet (PENDING_TIMEOUT_MS) : on alerte tout de suite.
     await notifyToSlack({
       subject: "Batch Mistral classification jobs_partners : soumission en échec",
       message: `${failedDocs} offre(s) n'ont pu être soumises à Mistral (${jobIds.length} lot(s) soumis avec succès). Elles restent CLASSIFICATION_PENDING jusqu'au filet de sécurité, qui relancera leur traitement.`,
@@ -165,30 +157,23 @@ export const submitClassificationRequests = async (docs: ClassificationCandidate
   return jobIds
 }
 
-/** Soumet un batch Mistral (fire-and-forget, suivi dans mistral_batch_jobs) pour les
- * computed_jobs_partners matchant `filter` — usage manuel (backfill/rattrapage via addJob). Le
- * routage automatique de detectClassificationJobsPartners appelle submitClassificationRequests
- * directement avec les documents déjà chargés, pour ne pas les refetcher ici. */
+/** Usage manuel (backfill/rattrapage via addJob) ; le routage automatique passe par
+ * submitClassificationRequests. */
 export const submitClassificationBatch = async (filter: Filter<IComputedJobsPartners>): Promise<string[]> => {
   const docs = await getDbCollection("computed_jobs_partners").find(filter, { projection: CLASSIFICATION_PROJECTION }).toArray()
   return submitClassificationRequests(docs)
 }
 
-// Largement au-dessus d'une durée normale de batch (souvent quelques minutes à heures) : sert de
-// filet de sécurité pour débloquer une offre dont le suivi a été perdu ou dont le job a échoué,
-// sans avoir besoin de retrouver précisément quel job batch la couvrait.
+// Filet de sécurité, largement au-dessus d'une durée normale de batch : débloque une offre dont
+// le suivi a été perdu ou le job a échoué, sans retrouver quel job la couvrait.
 const PENDING_TIMEOUT_MS = 6 * 60 * 60 * 1000
 
-/** Relance la chaîne de traitement (fill → validation → import) sur des computed précis. Passe
- * par addJob (nom enregistré dans simple-job-definitions.ts) plutôt qu'un import direct, pour ne
- * pas créer de cycle avec detectClassificationJobsPartners (qui importe ce module).
- * `queued: true` : sans lui, addJob exécute le job inline dans la ramasse horaire — un run de
- * 14 min mesuré en prod le 28/08 — et le cron, sans maxRuntimeInMinutes explicite, est tué au
- * bout de 60 min s'il cumule plusieurs lots plus le filet. Le worker prend le relais en quelques
- * secondes, comme pour updateClassificationAndSynchronise.
- * Découpée par BATCH_CHUNK_SIZE : le filet après incident peut libérer 20 000 offres d'un coup
- * (20 681 PENDING le 31/08/2026), soit un payload de ~530 Ko mesuré pour un seul job, rejoué tel
- * quel dans la ligne de log d'ouverture de processJobPartnersWithFilter. */
+/** Relance fill → validation → import. addJob plutôt qu'un import direct : évite un cycle avec
+ * detectClassificationJobsPartners (qui importe ce module).
+ * `queued: true` : sinon addJob exécute le job inline dans la ramasse (14 min mesurées en prod le
+ * 28/08) et le cron, sans maxRuntimeInMinutes explicite, est tué au bout de 60 min.
+ * Découpée par BATCH_CHUNK_SIZE : 20 681 offres libérées d'un coup le 31/08/2026 donnent un payload
+ * de ~530 Ko, rejoué tel quel dans le log d'ouverture de processJobPartnersWithFilter. */
 const requeueProcessing = async (ids: ObjectId[]) => {
   for (const part of chunk(ids, BATCH_CHUNK_SIZE)) {
     await addJob({ name: "processJobPartnersWithFilter", payload: { _id: { $in: part } }, queued: true })
@@ -211,10 +196,9 @@ const releaseStuckPendingClassifications = async () => {
   logger.warn(
     `releaseStuckPendingClassifications: ${ids.length} offre(s) débloquée(s) après plus de ${PENDING_TIMEOUT_MS / 3_600_000}h en CLASSIFICATION_PENDING — chaîne de traitement relancée`
   )
-  // Sans cette relance, une offre libérée mais déjà dotée d'un code ROME n'était reprise par aucun
-  // job avant la nuit suivante (processMissingRome ne prend que les sans-ROME) : 16 147 offres
-  // Hellowork et France Travail bloquées ainsi en prod le 01/09/2026. Au retraitement, les offres
-  // déjà classées sont servies par cache_classification ; seules les inconnues repartent.
+  // Sans relance, une offre libérée déjà dotée d'un code ROME n'est reprise par aucun job avant la
+  // nuit suivante (processMissingRome ne prend que les sans-ROME) : 16 147 offres bloquées ainsi en
+  // prod le 01/09/2026. Les offres déjà classées sont servies par cache_classification.
   await requeueProcessing(ids)
   return ids.length
 }
@@ -266,12 +250,9 @@ const applyBatchOutput = async (outputFile: string, requestCount: number): Promi
         filter: { _id: doc._id },
         update: {
           $set: { business_error: parsed.label === "unpublish" ? JOB_PARTNER_BUSINESS_ERROR.CFA : null, updated_at: appliedAt },
-          // $addToSet (pas $pull) : la classification a réellement été obtenue, comme le
-          // chemin sync (fillFieldsForComputedPartnersFactory) qui pousse CLASSIFICATION
-          // dans jobs_in_success sur tout succès quel que soit le label. Un $pull laisserait
-          // les offres "publish" (business_error: null) éligibles au filtre de candidature
-          // de detectClassificationJobsPartners re-déclenché juste après par
-          // processJobPartnersWithFilter → boucle de resoumission Mistral à chaque ramasse.
+          // $addToSet quel que soit le label, comme le chemin sync (fillFieldsForComputedPartnersFactory).
+          // Un $pull laisserait les offres "publish" éligibles à detectClassificationJobsPartners,
+          // relancé juste après par processJobPartnersWithFilter : resoumission à chaque ramasse.
           $addToSet: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION },
         },
       },
@@ -331,14 +312,12 @@ const checkAndApplyTrackedJob = async (tracked: IMistralBatchJob, { force = fals
     return "failed"
   }
 
-  // QUEUED / RUNNING / … : on repassera.
   await getDbCollection("mistral_batch_jobs").updateOne({ _id: tracked._id }, { $set: { checked_at: now() } })
   return "stillRunning"
 }
 
-/** Cron de ramasse (horaire) : débloque les offres restées pendantes trop longtemps (et relance
- * leur traitement), puis télécharge et applique la sortie des jobs batch terminés. Reprise
- * garantie à travers les redéploiements — tout job soumis finit ramassé ou expiré par le filet. */
+/** Cron de ramasse (horaire). Reprise garantie à travers les redéploiements : tout job soumis
+ * finit ramassé ou expiré par le filet. */
 export const applyPendingClassificationBatches = async () => {
   await releaseStuckPendingClassifications()
 

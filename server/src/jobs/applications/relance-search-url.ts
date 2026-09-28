@@ -1,12 +1,9 @@
 import { resolveSearchParamsFromUrl, SEARCH_PAGE_PATH } from "shared/utils/search-url-compat"
 
-// Reconstruit un lien de recherche LBA à partir de l'URL exacte de la dernière candidature d'un candidat
-// (`applications.application_url`), pour les emails de relance. Partagé par les boucles de relance.
-//
-// `application_url` est le `window.location.href` au moment de la candidature : depuis la bascule du
-// nouveau moteur c'est une fiche détail `/emploi/…?from=%2Frecherche%3Fq%3D…` (la recherche d'origine
-// est dans `from`), et avant c'était une URL au format legacy (`?romes=…&job_name=…&lat=…`). Les deux
-// formes coexistent en base ; `resolveSearchParamsFromUrl` les ramène au schéma du nouveau moteur.
+// Lien de recherche des emails de relance, reconstruit depuis `applications.application_url` (le
+// `window.location.href` au moment de la candidature). Deux formes coexistent en base : fiche détail
+// `/emploi/…?from=%2Frecherche%3Fq%3D…` (recherche d'origine dans `from`) et URL legacy
+// (`?romes=…&job_name=…&lat=…`) ; `resolveSearchParamsFromUrl` les ramène au schéma du nouveau moteur.
 export const buildTaggedSearchUrl = (
   application_url: string | null | undefined,
   { utmCampaign, highlightRecruteursLba = false }: { utmCampaign: string; highlightRecruteursLba?: boolean }
@@ -32,11 +29,10 @@ export const buildTaggedSearchUrl = (
   // une semaine plus tard, et le lien serait partagé tel quel.
   searchParams.delete("page")
 
-  // Met en avant les entreprises où candidater spontanément (recruteurs LBA) sur la page de recherche
+  // is_algo_company met en avant les entreprises où candidater spontanément (recruteurs LBA)
   if (highlightRecruteursLba) {
     searchParams.set("is_algo_company", "true")
   }
-  // On retire tous les UTM éventuellement capturés dans l'URL d'origine avant de poser les nôtres
   for (const utmParam of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
     searchParams.delete(utmParam)
   }

@@ -1,0 +1,6 @@
+{
+  "name": "lba-ds",
+  "version": "0.0.0",
+  "types": "index.d.ts",
+  "main": "index.ts"
+}

@@ -23,10 +23,7 @@ export const BandeauAuthentificationCfa = () => {
         </Typography>
         <Typography component="span" variant="body1">
           Pour les organismes de formation qui avaient déjà un compte sur le Portail de l'alternance, vous devez créer un nouveau compte CFA sur La bonne alternance pour continuer
-          d'accéder à la carte d'étudiant des métiers.{" "}
-          <DsfrLink href={PAGES.static.authentification.getPath()} aria-label="Accéder à la page d'authentification">
-            Créer mon compte
-          </DsfrLink>
+          d'accéder à la carte d'étudiant des métiers. <DsfrLink href={PAGES.static.authentification.getPath()}>Créer mon compte</DsfrLink>
         </Typography>
       </Box>
       <Box>

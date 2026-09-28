@@ -106,9 +106,8 @@ describe("process-job-partners-for-api", () => {
   })
 
   it("n'indexe pas ce qu'un autre job écrit pendant le run", async () => {
-    // Garde-fou du ciblage par _id : une borne `updated_at` absorberait tout ce que l'expiration,
-    // le dédoublonnage ou un import de flux écrit en parallèle, et ce cron hériterait de leur
-    // volume (jusqu'à 4 min mesurées sur le cron delta pendant les imports nocturnes).
+    // Garde-fou du ciblage par _id : une offre écrite en parallèle par un autre job ne doit pas être
+    // indexée par ce run (cf. syncImportedJobsToSearchItems).
     const autreJob = await createJobPartner({
       partner_job_id: "ecrit_par_un_autre_job",
       partner_label: JOBPARTNERS_LABEL.HELLOWORK,

@@ -40,13 +40,10 @@ const zContextCreateSchemaCleMinistereEducatif = z.strictObject({
 export type IContextCreateSchemaCleMinistereEducatif = z.output<typeof zContextCreateSchemaCleMinistereEducatif>
 
 const zContextCreateSchema = z.union([
-  // Find through "idParcoursup"
   zContextCreateSchemaParcoursup,
 
-  // Find through "idActionFormation"
   zContextCreateSchemaActionFormation,
 
-  // Find through "idCleMinistereEducatif"
   zContextCreateSchemaCleMinistereEducatif,
 ])
 
@@ -78,21 +75,6 @@ const zAppointmentRequestContextCreateResponseSchema = z.union([
 export type IAppointmentRequestContextCreateResponseSchema = z.output<typeof zAppointmentRequestContextCreateResponseSchema>
 export type IAppointmentRequestContextCreateFormAvailableResponseSchema = Jsonify<z.output<typeof zAppointmentRequestContextCreateFormAvailableResponseSchema>>
 export type IAppointmentRequestContextCreateFormUnavailableResponseSchema = Jsonify<z.output<typeof zAppointmentRequestContextCreateFormUnavailableResponseSchema>>
-
-// const zContextQuerySchema = z
-//   .object({
-//     idCleMinistereEducatif: z.string().optional(),
-//     idActionFormation: z.string().optional(),
-//     idParcoursup: z.string().optional(),
-//     referrer: z.enum([
-//       referrers.PARCOURSUP.name.toLowerCase(),
-//       referrers.LBA.name.toLowerCase(),
-//       referrers.ONISEP.name.toLowerCase(),
-//       referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
-//       referrers.AFFELNET.name.toLowerCase(),
-//     ]),
-//   })
-//   .strict()
 
 export const zAppointmentsRoute = {
   get: {

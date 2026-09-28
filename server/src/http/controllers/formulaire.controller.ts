@@ -1,5 +1,6 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
-import { JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
+import type { IJobCreate } from "shared/index"
+import { JOB_CLOSURE_ORIGIN, JOB_STATUS, JOB_STATUS_ENGLISH, ZJobCreate, zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/http-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -24,13 +25,18 @@ import {
   validateDelegatedCompanyPhoneAndEmail,
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
+import { resolveEspaceProClosureOrigin } from "@/services/job-partner-status.service"
+import { improveFreeText } from "@/services/offre-moderation.service"
 import { getUserRecruteurById } from "@/services/user-recruteur.service"
 import { getUserWithAccountByEmail } from "@/services/user-with-account.service"
 
+const JOB_CREATE_FIELDS = Object.keys(ZJobCreate.shape) as (keyof IJobCreate)[]
+
+// Les routes de création acceptent un body en passthrough (cf. zRoutes) : seuls les champs de
+// ZJobCreate sont transmis à createJob. Liste dérivée du schéma, pour que les deux routes ne divergent pas.
+const pickJobCreateFields = (body: IJobCreate): IJobCreate => Object.fromEntries(JOB_CREATE_FIELDS.map((field) => [field, body[field]])) as IJobCreate
+
 export default (server: Server) => {
-  /**
-   * Get form from id
-   */
   server.get(
     "/formulaire/:establishment_id",
     {
@@ -62,9 +68,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Get form from id
-   */
   server.get(
     "/formulaire/delegation/:establishment_id",
     {
@@ -82,9 +85,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Post form
-   */
   server.post(
     "/user/:userId/formulaire",
     {
@@ -153,9 +153,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Create new offer
-   */
   server.post(
     "/formulaire/:establishment_id/offre",
     {
@@ -168,45 +165,8 @@ export default (server: Server) => {
       const user = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/offre"]).value
 
       const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
-      const {
-        job_type,
-        delegations,
-        job_count,
-        job_duration,
-        job_level_label,
-        job_rythm,
-        job_start_date,
-        job_start_type,
-        job_start_date_flexible,
-        rome_appellation_label,
-        rome_code,
-        rome_label,
-        competences_rome,
-        offer_title_custom,
-        job_employer_description,
-        to_applicant_questions,
-        ft_support,
-      } = req.body
       const createdOffer = await createJob({
-        job: {
-          job_type,
-          delegations,
-          job_count,
-          job_duration,
-          job_level_label,
-          job_rythm,
-          job_start_date,
-          job_start_type,
-          job_start_date_flexible,
-          rome_appellation_label,
-          rome_code,
-          rome_label,
-          competences_rome,
-          offer_title_custom,
-          job_employer_description,
-          to_applicant_questions,
-          ft_support,
-        },
+        job: pickJobCreateFields(req.body),
         user,
         siret,
         source: getSourceFromCookies(req),
@@ -215,9 +175,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Create new offer
-   */
   server.post(
     "/formulaire/:establishment_id/offre/by-token",
     {
@@ -235,47 +192,8 @@ export default (server: Server) => {
       }
 
       const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
-      const {
-        job_type,
-        delegations,
-        job_count,
-        job_description,
-        job_duration,
-        job_level_label,
-        job_rythm,
-        job_start_date,
-        job_start_type,
-        job_start_date_flexible,
-        rome_appellation_label,
-        rome_code,
-        rome_label,
-        competences_rome,
-        offer_title_custom,
-        job_employer_description,
-        to_applicant_questions,
-        ft_support,
-      } = req.body
       const createdOffer = await createJob({
-        job: {
-          job_type,
-          delegations,
-          job_count,
-          job_description,
-          job_duration,
-          job_level_label,
-          job_rythm,
-          job_start_date,
-          job_start_type,
-          job_start_date_flexible,
-          rome_appellation_label,
-          rome_code,
-          rome_label,
-          competences_rome,
-          offer_title_custom,
-          job_employer_description,
-          to_applicant_questions,
-          ft_support,
-        },
+        job: pickJobCreateFields(req.body),
         siret,
         user,
         source: getSourceFromCookies(req),
@@ -287,8 +205,39 @@ export default (server: Server) => {
   )
 
   /**
-   * Create offer delegations
+   * Corrige la forme d'un texte libre saisi par le recruteur, sans le sauvegarder. Ne juge pas le
+   * contenu : cf. improveFreeText.
    */
+  server.post(
+    "/formulaire/:establishment_id/offre/ameliorer-texte",
+    {
+      schema: zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte"],
+      onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte"])],
+    },
+    async (req, res) => {
+      const { text } = req.body
+      const improvedText = await improveFreeText(text)
+      return res.status(200).send({ text: improvedText ?? text })
+    }
+  )
+
+  /**
+   * Même route qu'au-dessus, mais accessible par lien magique (dépôt simplifié post-inscription,
+   * cf DepotSimplifieCreationOffre) : ce parcours n'authentifie jamais par cookie de session.
+   */
+  server.post(
+    "/formulaire/:establishment_id/offre/ameliorer-texte/by-token",
+    {
+      schema: zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte/by-token"],
+      onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre/ameliorer-texte/by-token"])],
+    },
+    async (req, res) => {
+      const { text } = req.body
+      const improvedText = await improveFreeText(text)
+      return res.status(200).send({ text: improvedText ?? text })
+    }
+  )
+
   server.post(
     "/formulaire/offre/:jobId/delegation",
     {
@@ -344,9 +293,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Update an existing offer from id
-   */
   server.put(
     "/formulaire/offre/:jobId",
     {
@@ -421,6 +367,7 @@ export default (server: Server) => {
       const { alreadyClosed } = await closeOffreWithMotif({
         id: jobId,
         offer_status: statusMapping[job_status],
+        origin: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
         job_status_comment,
         job_status_comment_precision,
         job_recruitment_channel,
@@ -431,7 +378,8 @@ export default (server: Server) => {
   )
 
   /**
-   * Permet de passer une offre en statut ANNULER (depuis l'interface d'admin)
+   * Permet de passer une offre en statut ANNULER depuis l'espace pro connecté (session cookie) :
+   * le recruteur sur son tableau de bord comme l'administrateur depuis le back-office.
    */
   server.put(
     "/formulaire/offre/f/:jobId/cancel",
@@ -454,6 +402,7 @@ export default (server: Server) => {
         job_status_comment_precision,
         job_recruitment_channel,
         offer_status: statusMapping[job_status],
+        origin: resolveEspaceProClosureOrigin(req.userAccess),
         id: req.params.jobId,
       })
       return res.status(200).send({ alreadyClosed })

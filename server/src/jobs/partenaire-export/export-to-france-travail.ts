@@ -378,7 +378,7 @@ export const exportJobsToFranceTravailCsvOnly = async () => {
   const csvPath = new URL("./exportFT.csv", import.meta.url)
   try {
     const jobs = await getJobsToExport()
-    // 0 offre sur le flux principal est toujours anormal en production : on échoue plutôt que d'envoyer un fichier vide à FT.
+    // cf. exportJobsToFranceTravail
     if (jobs.length === 0) {
       throw new Error("Aucune offre à exporter : l'agrégation a renvoyé 0 résultat, fichier non transmis")
     }
@@ -397,7 +397,7 @@ export const exportJobsToFranceTravailCsvOnly = async () => {
       message: `Echec de l'export des offres France Travail. ${err}`,
       error: true,
     })
-    // Relance pour que le run job-processor soit marqué errored (capture Sentry) au lieu de finished.
+    // cf. exportJobsToFranceTravail
     throw err
   }
 }

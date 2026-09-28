@@ -29,7 +29,7 @@ const buildApiError = (statusCode: number) =>
 // Avec `cacheComponents`, un fetch non mis en cache pendant le prerender renvoie une promesse
 // suspendue qui rejette quand le prerender s'interrompt. Next marque cette erreur du digest
 // HANGING_PROMISE_REJECTION et attend qu'on la relaie ; capturée comme une erreur applicative,
-// elle produisait un event Sentry par requête sur /rdva (LBA-UI-5CVZZZZZZG501).
+// elle produirait un event Sentry par requête sur /rdva (LBA-UI-5CVZZZZZZG501).
 const hangingPromiseRejection = () => Object.assign(new Error("During prerendering, fetch() rejects when the prerender is complete."), { digest: "HANGING_PROMISE_REJECTION" })
 
 describe("getPrdvContext", () => {

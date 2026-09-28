@@ -1,0 +1,16 @@
+{
+  "pkg": "lba-ds",
+  "globalName": "LbaDs",
+  "shape": "package",
+  "entry": "./.design-sync/ds-src/index.ts",
+  "cssEntry": "dsfr/dsfr-complete.css",
+  "provider": {
+    "component": "LbaDsProvider"
+  },
+  "componentSrcMap": {
+    "LbaDsProvider": null,
+    "Tab": null
+  },
+  "projectId": "7115b18a-9832-4c7b-98c1-fa7a6d6b26cb",
+  "readmeHeader": ".design-sync/conventions.md"
+}

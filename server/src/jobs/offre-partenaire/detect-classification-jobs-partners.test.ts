@@ -248,7 +248,7 @@ describe("detect-classification-jobs-partners", () => {
     const pendingCount = await getDbCollection("computed_jobs_partners").countDocuments({ business_error: JOB_PARTNER_BUSINESS_ERROR.CLASSIFICATION_PENDING })
     expect(pendingCount).toBe(501)
     // Un seul aller-retour Mongo pour construire les requêtes batch : les documents déjà chargés
-    // sont passés directement, pas un filtre à refetcher (cf. commentaire Copilot sur la PR).
+    // sont passés directement, pas un filtre à refetcher.
     expect(submitClassificationRequests).toHaveBeenCalledTimes(1)
     const docs = vi.mocked(submitClassificationRequests).mock.calls[0][0]
     expect(docs).toHaveLength(501)

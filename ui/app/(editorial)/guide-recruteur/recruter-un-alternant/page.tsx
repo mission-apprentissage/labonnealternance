@@ -57,10 +57,7 @@ const faqItems: { question: string; answer: string; answerNode?: ReactNode; link
           "Désignez un maître d'apprentissage.",
           <>
             Trouvez un candidat — vous pouvez{" "}
-            <DsfrLink
-              href={`${PAGES.static.espaceProCreationEntreprise.getPath()}?utm_source=lba&utm_medium=website&utm_campaign=lba_ressources_recruteur`}
-              aria-label="Déposer gratuitement une offre d'alternance sur La bonne alternance"
-            >
+            <DsfrLink href={`${PAGES.static.espaceProCreationEntreprise.getPath()}?utm_source=lba&utm_medium=website&utm_campaign=lba_ressources_recruteur`}>
               déposer gratuitement votre offre sur La bonne alternance
             </DsfrLink>
             .
@@ -186,11 +183,7 @@ const RecruterUnAlternantPage = () => {
           Montants fixés par le décret n° 2026-168 du 6 mars 2026, pour les contrats d'apprentissage conclus depuis le 8 mars 2026 et dont l'exécution débute avant le 1er janvier
           2027. Aide versée par l'ASP la première année du contrat. Pour les entreprises de 250 salariés et plus, l'aide est soumise à une condition d'effectif d'apprentis et n'est
           pas cumulable avec l'aide unique. L'aide « apprenti en situation de handicap » est cumulable avec les aides spécifiques de l'AGEFIPH. Voir aussi{" "}
-          <DsfrLink
-            href="https://travail-emploi.gouv.fr/laide-aux-employeurs-qui-recrutent-en-apprentissage"
-            size="sm"
-            aria-label="Consulter l'aide aux employeurs qui recrutent en apprentissage sur le site du ministère du Travail"
-          >
+          <DsfrLink href="https://travail-emploi.gouv.fr/laide-aux-employeurs-qui-recrutent-en-apprentissage" size="sm">
             l'aide aux employeurs qui recrutent en apprentissage
           </DsfrLink>
           .
@@ -198,10 +191,7 @@ const RecruterUnAlternantPage = () => {
         <InfoSection>
           <Paragraph>
             Ces montants sont fixés par décret et actualisés chaque année. Pour les montants en vigueur, référez-vous au{" "}
-            <DsfrLink
-              href="https://travail-emploi.gouv.fr/aides-aux-contrats-en-alternance-guide-pratique-destination-des-employeurs-et-des-organismes-de-formation"
-              aria-label="Consulter le guide des aides aux contrats en alternance du ministère du Travail"
-            >
+            <DsfrLink href="https://travail-emploi.gouv.fr/aides-aux-contrats-en-alternance-guide-pratique-destination-des-employeurs-et-des-organismes-de-formation">
               guide des aides aux contrats en alternance du ministère du Travail
             </DsfrLink>
             , qui détaille et actualise ces informations.
@@ -243,7 +233,7 @@ const RecruterUnAlternantPage = () => {
         <Paragraph variant="body2" color={fr.colors.decisions.text.mention.grey.default}>
           Pourcentages du SMIC en vigueur (1 867,02 € brut/mois au 1er juin 2026). Pour les 21 ans et plus, la rémunération peut être relevée au SMIC ou au minimum conventionnel
           lorsqu'il est plus favorable. Source :{" "}
-          <DsfrLink href="https://www.service-public.fr/particuliers/vosdroits/F2918" size="sm" aria-label="Consulter la rémunération d'un apprenti sur service-public.fr">
+          <DsfrLink href="https://www.service-public.fr/particuliers/vosdroits/F2918" size="sm">
             service-public.fr
           </DsfrLink>
           .
@@ -252,17 +242,8 @@ const RecruterUnAlternantPage = () => {
           Le <strong>coût réel</strong> est inférieur à ce salaire brut : la première année, l'aide à l'embauche (jusqu'à 5 000 €) vient en déduction, et la rémunération de
           l'apprenti est exonérée de cotisations salariales jusqu'à 50 % du SMIC (soit 933,51 € au 1er juin 2026), si bien que le salaire net reste proche du brut sous ce seuil.
           Pour estimer précisément le reste à charge, utilisez le{" "}
-          <DsfrLink
-            href="https://www.urssaf.fr/accueil/outils-documentation/simulateurs/cotisations-employeur.html"
-            aria-label="Consulter le simulateur de coût employeur de l'URSSAF"
-          >
-            simulateur employeur de l'URSSAF
-          </DsfrLink>{" "}
-          ou notre{" "}
-          <DsfrLink href={PAGES.static.salaireAlternant.getPath()} aria-label="Accéder au simulateur de salaire en alternance">
-            simulateur de salaire en alternance
-          </DsfrLink>
-          .
+          <DsfrLink href="https://www.urssaf.fr/accueil/outils-documentation/simulateurs/cotisations-employeur.html">simulateur employeur de l'URSSAF</DsfrLink> ou notre{" "}
+          <DsfrLink href={PAGES.static.salaireAlternant.getPath()}>simulateur de salaire en alternance</DsfrLink>.
         </Paragraph>
       </Section>
 
@@ -279,10 +260,7 @@ const RecruterUnAlternantPage = () => {
             </>,
             <>
               <strong>Trouvez un candidat</strong> :{" "}
-              <DsfrLink
-                href={`${PAGES.static.espaceProCreationEntreprise.getPath()}?utm_source=lba&utm_medium=website&utm_campaign=lba_ressources_recruteur`}
-                aria-label="Déposer gratuitement une offre d'alternance sur La bonne alternance"
-              >
+              <DsfrLink href={`${PAGES.static.espaceProCreationEntreprise.getPath()}?utm_source=lba&utm_medium=website&utm_campaign=lba_ressources_recruteur`}>
                 déposez gratuitement votre offre sur La bonne alternance
               </DsfrLink>{" "}
               pour recevoir des candidatures ciblées.
@@ -292,11 +270,7 @@ const RecruterUnAlternantPage = () => {
             </>,
             <>
               <strong>Signez le contrat</strong> d'apprentissage (Cerfa FA13) ou de professionnalisation avec l'apprenti et le centre de formation. Votre OPCO peut vous accompagner
-              dans cette démarche —{" "}
-              <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr/" aria-label="Trouver mon OPCO sur le site de France compétences">
-                trouver mon OPCO
-              </DsfrLink>
-              .
+              dans cette démarche — <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr/">trouver mon OPCO</DsfrLink>.
             </>,
             <>
               <strong>Transmettez le contrat à votre OPCO</strong> au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en
@@ -306,10 +280,7 @@ const RecruterUnAlternantPage = () => {
         />
         <Paragraph>
           Pour aller plus loin, consultez notre{" "}
-          <DsfrLink href={PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation.getPath()} aria-label="Consulter le guide du Cerfa d'apprentissage">
-            guide du Cerfa d'apprentissage et de professionnalisation
-          </DsfrLink>
-          .
+          <DsfrLink href={PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation.getPath()}>guide du Cerfa d'apprentissage et de professionnalisation</DsfrLink>.
         </Paragraph>
       </Section>
 
@@ -333,9 +304,7 @@ const RecruterUnAlternantPage = () => {
                   {item.link ? (
                     <>
                       {" "}
-                      <DsfrLink href={item.link.href} aria-label={item.link.label}>
-                        {item.link.label}
-                      </DsfrLink>
+                      <DsfrLink href={item.link.href}>{item.link.label}</DsfrLink>
                     </>
                   ) : null}
                 </Typography>

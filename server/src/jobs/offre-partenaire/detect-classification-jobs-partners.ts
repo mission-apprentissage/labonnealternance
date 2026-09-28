@@ -99,8 +99,7 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter }: Fil
     filters.push(addedMatchFilter)
   }
 
-  // Prédicat partagé avec fillFieldsForComputedPartnersFactory (même helper) — nécessaire pour
-  // compter les candidats avant de choisir la voie sync/batch, sans risque de divergence.
+  // Même prédicat que la factory, cf. buildComputedPartnersCandidateFilter.
   const candidateFilter = buildComputedPartnersCandidateFilter({
     job: COMPUTED_ERROR_SOURCE.CLASSIFICATION,
     sourceFields: CLASSIFICATION_SOURCE_FIELDS,

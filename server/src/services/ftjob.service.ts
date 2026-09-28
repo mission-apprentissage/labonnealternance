@@ -26,8 +26,6 @@ const correspondancesNatureContrat = {
 
 /**
  * formule de modification du rayon de distance pour prendre en compte les limites des communes
- * @param {number} radius le rayon de recherche en km
- * @return {number}
  */
 const getRoundedRadius = (radius: number) => {
   return radius * 1.2
@@ -35,11 +33,6 @@ const getRoundedRadius = (radius: number) => {
 
 /**
  * Calcule la distance au centre de recherche lorsque l'information est manquante
- * Dépend de turf
- * @param {FTJob} job l'offre géolocalisée dont nous n'avons pas la distance au centre
- * @param {string} latitude la latitude du centre de recherche
- * @param {string} longitude la longitude du centre de recherche
- * @return {number}
  */
 const computeJobDistanceToSearchCenter = (job: FTJob, latitude: string, longitude: string) => {
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
@@ -239,9 +232,6 @@ const transformFtJobs = ({ jobs, radius, latitude, longitude, isMinimalData }: {
   return resultJobs
 }
 
-/**
- * Récupère une liste d'offres depuis l'API France Travail
- */
 export const getFtJobs = async ({
   romes,
   insee,
@@ -304,9 +294,6 @@ export const getFtJobs = async ({
   }
 }
 
-/**
- * Récupère une liste d'offres depuis l'API France Travail
- */
 export const getFtJobsV2 = async ({
   romes,
   insee,
@@ -335,7 +322,7 @@ export const getFtJobsV2 = async ({
   }
 
   if (insee) {
-    // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
+    // cf. getFtJobs (codes insee des villes à arrondissement)
     let codeInsee = insee
     if (insee === "75056") codeInsee = "75101"
     else if (insee === "13055") codeInsee = "13201"
@@ -399,7 +386,6 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
 
   let jobs = transformFtJobs({ jobs: resultats, radius: currentRadius, latitude, longitude, isMinimalData })
 
-  // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {
     jobs.sort((a, b) => {
       const bDist = b.place?.distance ?? 0
@@ -408,14 +394,12 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
     })
   }
 
-  // filtrage sur l'opco
   if (opco || opcoUrl) {
     jobs = await filterJobsByOpco({ opco, opcoUrl, jobs })
   }
 
   // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
   if (caller) {
-    // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
     jobs.forEach((job) => {
       if (job.company) {
         job.company.siret = null

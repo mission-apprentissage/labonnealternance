@@ -1,0 +1,183 @@
+import { ObjectId } from "bson"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
+import z from "zod"
+import { blankComputedJobPartner } from "@/jobs/offre-partenaire/fill-computed-jobs-partners"
+
+// Le flux LinkedIn ne peut pas être filtré sur l'alternance : LinkedIn n'a pas cette valeur dans
+// sa taxonomie et ne l'expose dans aucun champ (confirmé par le partenaire le 17/09/2026). Le flux
+// est seulement restreint aux experienceLevel INTERNSHIP / ENTRY_LEVEL / ASSOCIATE, ce qui laisse
+// une majorité d'offres d'emploi classiques. La détection se fait donc sur le texte.
+//
+// Le titre seul fait foi, volontairement. Chercher dans la description remonte trois fois plus
+// d'offres mais introduit des faux positifs non filtrables : boilerplate d'entreprise mentionnant
+// l'alternance, sens non contractuel du mot ("alternance 2*8", "en alternance avec la responsable
+// RH"), et négations ("les contrats en alternance ne seront pas étudiés"). Sur un service public,
+// une offre hors périmètre affichée coûte plus cher qu'une offre manquée.
+//
+// Mesuré sur la livraison du 16/09/2026 : 352 offres retenues sur 9 590, aucune dont le titre
+// mentionne aussi CDI, CDD ou intérim.
+const ALTERNANCE_REGEX = /\b(alternan\w*|apprenti\w*|professionnalisation|contrat\s+pro)\b/i
+const PROFESSIONNALISATION_REGEX = /\b(professionnalisation|contrat\s+pro)\b/i
+const APPRENTISSAGE_REGEX = /\b(alternan\w*|apprenti\w*)\b/i
+
+// Paramètre de tracking imposé par LinkedIn, à ajouter derrière le `trk=` déjà présent dans le flux.
+const LINKEDIN_TRACKING_PARAM = "mcid=7503545590606254081"
+
+const SIXTY_DAYS_MS = 60 * 24 * 60 * 60 * 1000
+
+export const ZLinkedinJob = z.looseObject({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  location: z.string().nullish(),
+  city: z.string().nullish(),
+  state: z.string().nullish(),
+  postalCode: z.string().nullish(),
+  country: z.string().nullish(),
+  url: z.string(),
+  company: z.string(),
+  // Validé ici plutôt que replié dans le mapper : un changement de format côté LinkedIn doit
+  // remonter en erreur de parsing (comptée et envoyée à Sentry par rawToComputedJobsPartners),
+  // pas se traduire par 10 000 offres datées de l'instant de l'import.
+  listDate: z.string().transform((value, ctx) => {
+    const parsed = parseLinkedinDate(value)
+    if (!parsed) {
+      ctx.addIssue({ code: "custom", message: `Date de publication illisible : ${value}` })
+      return z.NEVER
+    }
+    return parsed
+  }),
+  expirationDate: z.string().nullish(),
+  linkedinCompanyId: z.string().nullish(),
+  linkedinCompanyUrl: z.string().nullish(),
+  jobFunction: z.string().nullish(),
+  experienceLevel: z.string().nullish(),
+  employmentStatus: z.string().nullish(),
+  industries: z.string().nullish(),
+})
+
+export type ILinkedinJob = z.output<typeof ZLinkedinJob>
+
+const MONTHS: Record<string, number> = {
+  january: 0,
+  february: 1,
+  march: 2,
+  april: 3,
+  may: 4,
+  june: 5,
+  july: 6,
+  august: 7,
+  september: 8,
+  october: 9,
+  november: 10,
+  december: 11,
+}
+
+// Format LinkedIn : "September 15, 2026 at 8:14:58 AM UTC". Parsé à la main plutôt qu'avec
+// dayjs : le helper partagé force la locale `fr`, les noms de mois anglais ne seraient pas résolus.
+export const parseLinkedinDate = (value: string | null | undefined): Date | null => {
+  if (!value) {
+    return null
+  }
+  const match = value.trim().match(/^([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})\s+at\s+(\d{1,2}):(\d{2}):(\d{2})\s+(AM|PM)\s+UTC$/i)
+  if (!match) {
+    return null
+  }
+  const [, monthName, day, year, hour, minute, second, meridiem] = match
+  const month = MONTHS[monthName.toLowerCase()]
+  if (month === undefined) {
+    return null
+  }
+  let hours = Number.parseInt(hour, 10) % 12
+  if (meridiem.toUpperCase() === "PM") {
+    hours += 12
+  }
+  const dayNumber = Number.parseInt(day, 10)
+  const parsed = new Date(Date.UTC(Number.parseInt(year, 10), month, dayNumber, hours, Number.parseInt(minute, 10), Number.parseInt(second, 10)))
+  // Date.UTC reporte silencieusement les jours hors bornes : "February 31" donnerait le 3 mars.
+  return parsed.getUTCMonth() === month && parsed.getUTCDate() === dayNumber ? parsed : null
+}
+
+// `city` est vide sur une partie des offres ; `location` est toujours renseigné sous la forme
+// "Ville, Région, Pays" — on retombe sur son premier segment.
+export const getCity = (job: ILinkedinJob): string | null => {
+  const city = job.city?.trim()
+  if (city) {
+    return city
+  }
+  const firstSegment = job.location?.split(",")[0]?.trim()
+  return firstSegment || null
+}
+
+// Le flux fournit déjà `trk=`, `utm_medium`, `utm_source` et `ePP` ; seul `mcid` manque.
+export const buildApplyUrl = (url: string): string => {
+  // `includes("mcid=")` matcherait aussi un paramètre nommé `epmcid` ou `xmcid`.
+  if (/[?&]mcid=/.test(url)) {
+    return url
+  }
+  // Concaténation plutôt que `new URL()` : réécrire via `searchParams` ré-encoderait le jeton `ePP`,
+  // qui est du base64 et contient des caractères que l'encodage altérerait.
+  const [base, ...fragment] = url.split("#")
+  const withParam = `${base}${base.includes("?") ? "&" : "?"}${LINKEDIN_TRACKING_PARAM}`
+  return fragment.length ? `${withParam}#${fragment.join("#")}` : withParam
+}
+
+// `contract_type` alimente un filtre de recherche : retirer "Apprentissage" à tort rend l'offre
+// invisible pour les candidats qui filtrent dessus. La description mentionne fréquemment les deux
+// contrats ("en apprentissage ou en professionnalisation") ; on retourne alors les deux plutôt que
+// d'arbitrer, et "Professionnalisation" seul uniquement si l'apprentissage n'apparaît nulle part.
+export const getContractType = (job: ILinkedinJob): IComputedJobsPartners["contract_type"] => {
+  const haystack = `${job.title} ${job.description}`
+  const isProfessionnalisation = PROFESSIONNALISATION_REGEX.test(haystack)
+  const isApprentissage = APPRENTISSAGE_REGEX.test(haystack)
+
+  if (!isProfessionnalisation) {
+    return [TRAINING_CONTRACT_TYPE.APPRENTISSAGE]
+  }
+  return isApprentissage ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : [TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
+}
+
+const getBusinessError = (job: ILinkedinJob): JOB_PARTNER_BUSINESS_ERROR | null => {
+  if (job.title.trim().length < 3 || job.description.trim().length < 30) {
+    return JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
+  }
+  if (!ALTERNANCE_REGEX.test(job.title)) {
+    return JOB_PARTNER_BUSINESS_ERROR.FULL_TIME
+  }
+  return null
+}
+
+export const linkedinJobToJobsPartners = (job: ILinkedinJob): IComputedJobsPartners => {
+  const now = new Date()
+  const creationDate = job.listDate
+  const city = getCity(job)
+  const zipcode = job.postalCode?.trim() || null
+
+  return {
+    ...blankComputedJobPartner(now),
+    _id: new ObjectId(),
+    partner_label: JOBPARTNERS_LABEL.LINKEDIN,
+    partner_job_id: job.id,
+    offer_title: job.title,
+    offer_description: job.description,
+    offer_creation: creationDate,
+    // Repli à 60 jours conforme à la convention du modèle. Sans date, l'offre n'expirerait jamais :
+    // `expireJobsPartners` filtre sur `offer_expiration < now`, qui ne matche pas null.
+    // Arithmétique en millisecondes plutôt que dayjs : le flux est en UTC, et un `add(60, "days")`
+    // en Europe/Paris décale le résultat d'une heure quand les 60 jours franchissent un changement
+    // d'heure, rendant la sortie dépendante du fuseau de la machine.
+    offer_expiration: parseLinkedinDate(job.expirationDate) ?? new Date(creationDate.getTime() + SIXTY_DAYS_MS),
+    // Les offres pointent vers linkedin.com : pas de rediffusion vers les autres partenaires.
+    offer_multicast: false,
+    contract_type: getContractType(job),
+    workplace_name: job.company,
+    workplace_address_city: city,
+    workplace_address_zipcode: zipcode,
+    workplace_address_label: [city, zipcode].filter(Boolean).join(" ") || job.location?.trim() || null,
+    apply_url: buildApplyUrl(job.url),
+    business_error: getBusinessError(job),
+  }
+}

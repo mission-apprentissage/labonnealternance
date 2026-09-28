@@ -38,7 +38,7 @@ export const ZHelloWorkJob = z.looseObject({
 
 export type IHelloWorkJob = z.output<typeof ZHelloWorkJob>
 
-// le flux Hellowork a changé de vocabulaire en cours de route : on garde les deux formes tant que l'ancien flux n'est pas décommissionné
+// deux vocabulaires coexistent (ancien et nouveau flux Hellowork) : garder les deux formes tant que l'ancien flux n'est pas décommissionné
 const teletravailMapping: Record<string, TRAINING_REMOTE_TYPE> = {
   Complet: TRAINING_REMOTE_TYPE.remote,
   Partiel: TRAINING_REMOTE_TYPE.hybrid,
@@ -66,7 +66,7 @@ const diplomaMapping: Record<string, IComputedJobsPartners["offer_target_diploma
   // "Sans diplôme" n'est volontairement pas mappé : ce n'est pas un niveau de diplôme visé
 }
 
-// sans ça une évolution du vocabulaire Hellowork retombe silencieusement sur null, comme ça a été le cas pour education et remote
+// sans ce warning, une évolution du vocabulaire Hellowork retombe silencieusement sur null
 const alreadyWarnedValues = new Set<string>()
 
 const warnOnceOnUnknownValue = (field: string, value: string) => {

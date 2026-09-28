@@ -64,7 +64,10 @@ export default function Social({ utmParams }: { utmParams: string }) {
               <Button
                 linkProps={{
                   href: `https://www.instagram.com/1jeune1solution/?${utmParams}`,
-                  "aria-label": "Lien vers le compte Instagram de 1jeune1solution",
+                  // RGAA 6.1 : deux liens voisins affichent « @1jeune1solution ». L'aria-label les
+                  // distingue, il doit donc commencer par cet intitulé visible pour rester atteignable
+                  // à la commande vocale.
+                  "aria-label": "@1jeune1solution - compte Instagram de 1jeune1solution",
                 }}
                 size="large"
                 priority="tertiary"
@@ -87,7 +90,7 @@ export default function Social({ utmParams }: { utmParams: string }) {
               <Button
                 linkProps={{
                   href: `https://www.tiktok.com/@1jeune_1solution/?${utmParams}`,
-                  "aria-label": "Lien vers le compte Tiktok de 1jeune1solution",
+                  "aria-label": "@1jeune1solution - compte Tiktok de 1jeune1solution",
                 }}
                 size="large"
                 priority="tertiary"
@@ -129,7 +132,7 @@ export default function Social({ utmParams }: { utmParams: string }) {
                 <Button
                   linkProps={{
                     href: `https://www.linkedin.com/company/la-bonne-alternance/?${utmParams}`,
-                    "aria-label": "Lien vers le compte LinkedIn de La bonne alternance",
+                    "aria-label": "LinkedIn La bonne alternance - compte LinkedIn de La bonne alternance",
                   }}
                   size="large"
                   priority="secondary"

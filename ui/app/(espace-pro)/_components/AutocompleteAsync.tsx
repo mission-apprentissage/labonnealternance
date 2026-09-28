@@ -105,11 +105,18 @@ export default function AutocompleteAsync<T>({
           ref: undefined,
         }}
       />
+      {/* getMenuProps() pose role="listbox" : la cible doit être un <ul>, et ses enfants des <li>.
+          Les <li> vivaient dans des <div> intermédiaires — document invalide (RGAA 8.2) et nombre
+          d'éléments non restitué. Le padding vertical, porté avant par un div interne, est appliqué
+          ici et seulement quand la liste a du contenu, pour ne pas laisser une bande blanche vide. */}
       <Box
+        component="ul"
         sx={{
           width: "100%",
           margin: 0,
           marginTop: "6px",
+          padding: 0,
+          paddingY: isOpen && shouldRenderDropdown ? "8px" : 0,
           zIndex: 2000,
           position: "absolute",
           listStyle: "none",
@@ -122,20 +129,17 @@ export default function AutocompleteAsync<T>({
         {...getMenuProps()}
       >
         {isOpen && shouldRenderDropdown && (
-          <Box sx={{ padding: "8px 0px" }}>
-            {shouldRenderItems && (
-              <Box>
-                {inputItems.map((item, index) => (
-                  <li key={index} {...getItemProps({ item, index })}>
-                    {renderItem(item, index === highlightedIndex, index)}
-                  </li>
-                ))}
-              </Box>
-            )}
-            {shouldRenderError && renderError(error)}
-            {shouldRenderEmptyResult && renderNoResult}
-            {shouldRenderLoading && renderLoading}
-          </Box>
+          <>
+            {shouldRenderItems &&
+              inputItems.map((item, index) => (
+                <li key={index} {...getItemProps({ item, index })}>
+                  {renderItem(item, index === highlightedIndex, index)}
+                </li>
+              ))}
+            {shouldRenderError && <li role="presentation">{renderError(error)}</li>}
+            {shouldRenderEmptyResult && <li role="presentation">{renderNoResult}</li>}
+            {shouldRenderLoading && <li role="presentation">{renderLoading}</li>}
+          </>
         )}
       </Box>
     </Box>

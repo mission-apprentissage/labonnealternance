@@ -1,7 +1,3 @@
-// This file configures the initialization of Sentry on the client.
-// The config you add here will be used whenever a users loads a page in their browser.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
-
 import { extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
 
 import { shouldReloadOnce } from "@/utils/reload-guard.utils"
@@ -9,21 +5,18 @@ import { isHeadlessBrowserUserAgent } from "@/utils/sentry-filters.utils"
 
 import { publicConfig } from "./config.public"
 
-// Pas de tracing client (issue #5186, décision d'équipe 2026-08) : à 0,1 % de sample il
-// n'apportait presque rien, et son retrait permet le tree-shaking du module tracing via le flag
-// __SENTRY_TRACING__ (voir compiler.define dans next.config.mjs). Conséquences assumées : plus de
-// transactions pageload/navigation client, plus de propagation des trace headers vers l'API.
-// Le tracing serveur (sentry.server.config.ts / lba-server) est inchangé.
+// Pas de tracing client (issue #5186) : à 0,1 % de sample il n'apportait presque rien, et son
+// absence permet le tree-shaking du module tracing (__SENTRY_TRACING__, cf. compiler.define dans
+// next.config.mjs). Conséquences assumées : aucune transaction pageload/navigation client, aucune
+// propagation des trace headers vers l'API. Le tracing serveur (sentry.server.config.ts) reste actif.
 init({
   dsn: publicConfig.sentry_dsn,
   environment: publicConfig.env,
   enabled: !publicConfig.sentryDisabled,
   release: publicConfig.version,
   normalizeDepth: 8,
-  // replaysOnErrorSampleRate: 1.0,
-  // replaysSessionSampleRate: 0.1,
   integrations: [
-    // captureConsoleIntegration retirée (issue #5186) : 2 issues / 14 événements / 0 utilisateur
+    // Pas de captureConsoleIntegration (issue #5186) : 2 issues / 14 événements / 0 utilisateur
     // en 90 jours de prod, et le seul cas capté était un TypeError mieux traité en vraie exception.
     extraErrorDataIntegration({ depth: 8 }),
     httpClientIntegration({}),
@@ -100,15 +93,11 @@ init({
   },
 })
 
-// Pendant un déploiement (rolling update Docker Swarm), un onglet resté ouvert peut garder en
-// mémoire des chunks JS de l'ancien build : le routeur y navigue ensuite vers des modules qui
-// n'existent plus (ou plus au même endroit) côté nouveau déploiement. Deux signatures fiables
-// (Sentry LBA-UI-2DH, LBA-UI-5CVZZZZZZG4M9) sont ciblées ici, hors du render React (promesse de
-// chargement de chunk / appel de Server Action) — un simple reload récupère le build courant.
-// NB : un TypeError générique "X is not a function" (LBA-UI-5CVZZZZZZG4QA) a la même origine
-// probable, mais matcher ce pattern trop largement risquerait de masquer de vrais bugs ; il n'est
-// donc PAS couvert ici. Le rendu React est couvert séparément par ErrorComponent.tsx (ChunkLoadError
-// uniquement, via error boundary) — même clé de garde-fou pour ne compter qu'un seul reload.
+// Après un déploiement (rolling update Docker Swarm), un onglet ouvert peut référencer des chunks
+// JS ou des Server Actions de l'ancien build ; un reload récupère le build courant. Deux signatures
+// fiables, hors du render React (Sentry LBA-UI-2DH, LBA-UI-5CVZZZZZZG4M9). Volontairement PAS le
+// TypeError générique "X is not a function" (LBA-UI-5CVZZZZZZG4QA), trop large : il masquerait de
+// vrais bugs. Le render React est couvert par ErrorComponent.tsx, même clé pour un seul reload.
 if (typeof window !== "undefined") {
   const isStaleDeploymentError = (error: unknown): boolean => {
     if (!(error instanceof Error)) return false

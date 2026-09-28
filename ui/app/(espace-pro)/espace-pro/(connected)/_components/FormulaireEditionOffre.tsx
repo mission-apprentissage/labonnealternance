@@ -105,9 +105,11 @@ export const FormulaireEditionOffre = ({
           }}
           offre={offre}
           establishment_id={establishment_id}
+          token={token}
         />
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2
+          formValues={formValues}
           onSubmit={({ etablissements, ...values }) => {
             const hasCfa = Boolean(etablissements?.length) && !isCfaAccount
             if (hasCfa) {
@@ -128,6 +130,7 @@ export const FormulaireEditionOffre = ({
                 step_name: "cfa_share",
                 has_screening_questions: finalValues.to_applicant_questions?.length > 0,
                 ft_eligible: isFtEligible,
+                description_mode: finalValues.job_description ? "custom" : "structured",
               })
               pushMatomoEvent({
                 event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
@@ -142,13 +145,15 @@ export const FormulaireEditionOffre = ({
           geoCoordinates={formulaire?.geo_coordinates}
           isFtEligible={isFtEligible}
           skipCfaStep={isCfaAccount}
-          onCancel={() => {
+          onCancel={(values) => {
+            setFormValues({ ...formValues, ...values })
             setCurrentStep(1)
             onChangeScreen?.()
           }}
         />
       ) : currentStep === 3 && !isCfaAccount ? (
         <FormulaireEditionOffreStep3
+          formValues={formValues}
           onSubmit={(values) => {
             if (!isFtEligible) {
               const { cfaCountProposed, cfaCountSelected, etablissements, ...finalValues } = { ...formValues, ...values, ft_support: false }
@@ -157,6 +162,7 @@ export const FormulaireEditionOffre = ({
                 step_name: "cfa_share",
                 has_screening_questions: finalValues.to_applicant_questions?.length > 0,
                 ft_eligible: isFtEligible,
+                description_mode: finalValues.job_description ? "custom" : "structured",
               })
               pushMatomoEvent({
                 event: MATOMO_EVENTS.CFA_SHARE_CONFIRMED,
@@ -172,7 +178,8 @@ export const FormulaireEditionOffre = ({
           }}
           offre={offre}
           etablissements={formValues?.etablissements ?? []}
-          onCancel={() => {
+          onCancel={(values) => {
+            setFormValues({ ...formValues, ...values })
             setCurrentStep(2)
             onChangeScreen?.()
           }}
@@ -180,6 +187,7 @@ export const FormulaireEditionOffre = ({
         />
       ) : currentStep === 4 && isFtEligible ? (
         <FormulaireEditionOffreStep4FtSupport
+          formValues={formValues}
           onSubmit={(values) => {
             const { cfaCountProposed, cfaCountSelected, etablissements, ...finalValues } = { ...formValues, ...values }
             pushMatomoEvent({
@@ -187,6 +195,7 @@ export const FormulaireEditionOffre = ({
               step_name: "ft_support",
               has_screening_questions: finalValues.to_applicant_questions?.length > 0,
               ft_eligible: isFtEligible,
+              description_mode: finalValues.job_description ? "custom" : "structured",
             })
             pushMatomoEvent({
               event: MATOMO_EVENTS.JOB_CREATION_FT_PARTNERSHIP_STEP,
@@ -200,7 +209,8 @@ export const FormulaireEditionOffre = ({
             handleSave(finalValues)
           }}
           offre={offre}
-          onCancel={() => {
+          onCancel={(values) => {
+            setFormValues({ ...formValues, ...values })
             setCurrentStep(3)
             onChangeScreen?.()
           }}

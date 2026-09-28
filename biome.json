@@ -415,5 +415,8 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "plugins": [
+    "./.biome/plugins/lien-nouvelle-fenetre.grit"
+  ]
 }

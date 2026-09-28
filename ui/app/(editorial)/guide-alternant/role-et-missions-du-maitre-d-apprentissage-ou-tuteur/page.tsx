@@ -107,9 +107,7 @@ const RoleEtMissionsDuMaitreDApprentissageOuTuteurPage = () => {
         </Paragraph>
         <Paragraph>
           En dernier recours, si la situation ne s'améliore pas malgré ces démarches, vous pouvez contacter{" "}
-          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F31633" aria-label="Contacter un médiateur de l'apprentissage">
-            un médiateur de l'apprentissage.
-          </DsfrLink>
+          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F31633">un médiateur de l'apprentissage.</DsfrLink>
         </Paragraph>
         <Paragraph>
           Le médiateur de l'apprentissage doit être saisi en cas de rupture par l'apprenti de son contrat d'apprentissage après les 45 premiers jours de formation pratique en

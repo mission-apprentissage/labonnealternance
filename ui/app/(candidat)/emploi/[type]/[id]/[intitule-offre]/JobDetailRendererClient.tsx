@@ -6,10 +6,8 @@ import { useRouter } from "next/navigation"
 import React, { useEffect, useRef, useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { Footer } from "@/app/_components/Footer"
 import { useDetailNavigation } from "@/app/(candidat)/(recherche)/recherche/_hooks/use-detail-navigation"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { useIsWidget } from "@/app/hooks/use-is-widget"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
@@ -35,12 +33,8 @@ import { PAGES } from "@/utils/routes.utils"
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const { setFormValues } = React.useContext(DisplayContext)
 
-  // `rechercheParams` est résolu par resolveRecherchePageParams : sur une fiche ouverte depuis
-  // le moteur, job_name/geo/radius viennent du `?from=` (les cartes ne posent plus job_name,
-  // lat ni lon sur l'URL de la fiche), sinon des paramètres legacy. Sans cette résolution,
-  // formValues restait { job: null, location: null } — d'où un `job_searched_by_user` vide sur
-  // les candidatures, la distance au lieu de recherche masquée et les dimensions métier/lieu
-  // perdues côté Plausible et Matomo.
+  // `rechercheParams` vient de resolveRecherchePageParams (`?from=` du moteur, sinon paramètres
+  // legacy) ; cf. son JSDoc pour ce qui dépend de formValues.
   React.useEffect(() => {
     setFormValues({
       job: rechercheParams.job_name ? { label: rechercheParams.job_name } : null,
@@ -85,7 +79,6 @@ function CandidatureStickyBar({ selectedItem }: { selectedItem: ILbaItemJobsGlob
 function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecherchePageParams; selectedItem: ILbaItemJobsGlobal }) {
   const router = useRouter()
   const theme = useTheme()
-  const isWidget = useIsWidget()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -105,9 +98,6 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
     return () => window.removeEventListener("resize", updateHeaderHeight)
   }, [])
 
-  // Ouverture depuis le moteur de recherche (?from=/recherche…) : précédent/suivant naviguent
-  // dans les résultats de /recherche et « fermer » y retourne. Sans ?from=, pas de contexte
-  // de liste : pas de précédent/suivant, « fermer » retombe sur /recherche.
   const { swipeHandlers, goNext, goPrev, handleClose: closeToSearch, position } = useDetailNavigation()
 
   useEffect(() => {
@@ -255,7 +245,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
       </Box>
 
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
-        <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
+        <Box sx={{ mb: fr.spacing("12v") }}>
           {/* Header carte — toujours dans le flux, scrolle normalement */}
           <Box
             ref={headerRef}
@@ -285,7 +275,6 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
               {getJobPublishedTimeAndApplications({ item: selectedItem })}
               <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />
               <Typography
-                id="detail-header"
                 variant={"h3"}
                 sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
                 dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
@@ -340,7 +329,6 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
             </Box>
           </Box>
 
-          <Box id="detail-content-container" />
           <Box>
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && (
               <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} jobSearchedByUser={rechercheParams.job_name} />
@@ -382,7 +370,6 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
       </Container>
       {isCollapsed && <CandidatureStickyBar selectedItem={selectedItem} />}
       {!isMobile && <BackToTopButton />}
-      {!isWidget && <Footer />}
     </Box>
   )
 }

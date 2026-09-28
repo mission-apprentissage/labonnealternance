@@ -156,7 +156,7 @@ function generate(schema: unknown, path: Path): unknown {
       // date_debut/date_fin are raw date strings (z.array(z.string())), later fed
       // through `new Date(...)` by application code (not by the zod schema itself,
       // which can't be format-checked here) - an arbitrary random string becomes an
-      // Invalid Date, which Zod v4's stricter response encoding now rejects outright.
+      // Invalid Date, which Zod v4's stricter response encoding rejects outright.
       if (path[path.length - 2] === "date_debut" || path[path.length - 2] === "date_fin") return randomDate().toISOString()
       if (def.format === "url") return "https://example.com"
       if (def.format === "uuid") return "00000000-0000-4000-8000-000000000000"

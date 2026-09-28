@@ -56,7 +56,7 @@ export const relanceIncitationSpontanee = async () => {
         },
       },
       { $match: { relance_logs: { $size: 0 } } },
-      // Cible : aucune candidature spontanée (recruteurs_lba). Disjoint de la liste A (relance des inactifs).
+      // Aucune candidature spontanée (recruteurs_lba), cf. en-tête.
       {
         $lookup: {
           from: "applications",
@@ -96,13 +96,11 @@ export const relanceIncitationSpontanee = async () => {
   const rows: RelanceSpontaneeRow[] = candidates.map((candidate) => ({
     email: candidate.email,
     firstname: candidate.firstname,
-    // On met en avant les entreprises où candidater spontanément (recruteurs LBA) sur la page de recherche
     lien_recherche: buildTaggedSearchUrl(candidate.application_url, { utmCampaign: RELANCE_SPONTANEE_UTM_CAMPAIGN, highlightRecruteursLba: true }) ?? "",
     metier: candidate.job_searched_by_user ?? candidate.job_title ?? "",
   }))
 
-  // On trace la relance AVANT l'envoi : en cas de crash entre les deux, on préfère rater une relance
-  // plutôt que d'en envoyer deux (garantie "une seule relance par candidat et par liste").
+  // Tracé avant l'envoi (une seule relance par candidat et par liste), cf. relanceCandidatsInactifs.
   const now = new Date()
   await getDbCollection("applicants_email_logs").insertMany(
     candidates.map((candidate) => ({

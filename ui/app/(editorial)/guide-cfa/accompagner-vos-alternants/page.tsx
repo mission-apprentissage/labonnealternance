@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Image from "next/image"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
@@ -108,16 +108,20 @@ const AccompagnerVosAlternantsPage = async () => {
           et évite le découragement.
         </Paragraph>
         <Paragraph>
-          La plateforme La bonne alternance permet à vos alternants d'accéder à un vivier d'entreprises que les autres jobboards ne voient pas. Mais cet outil ne remplace pas
-          l'accompagnement humain : c'est à vous de les aider à comprendre la démarche, à préparer des candidatures sérieuses, et à tenir dans la durée. Offres et candidatures
-          spontanées sont complémentaires. Les jeunes qui utilisent les deux ont mécaniquement plus de chances de trouver.
+          La plateforme La bonne alternance permet à vos alternants d'accéder à un vivier d'entreprises que les autres <span lang="en">jobboards</span> ne voient pas. Mais cet
+          outil ne remplace pas l'accompagnement humain : c'est à vous de les aider à comprendre la démarche, à préparer des candidatures sérieuses, et à tenir dans la durée.
+          Offres et candidatures spontanées sont complémentaires. Les jeunes qui utilisent les deux ont mécaniquement plus de chances de trouver.
         </Paragraph>
         <Paragraph>
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("6v") }}>
-            <Image src="/images/guides/guide-cfa/telechargement_affiche.png" alt="Affiche La bonne alternance" width={139} height={198} />
+            <Image src="/images/guides/guide-cfa/telechargement_affiche.png" alt="" aria-hidden="true" width={139} height={198} />
             <Box sx={{ flex: 1 }}>
               <DsfrLink download="affiche-cfa-avril-2026.pdf" href="/ressources/affiche-cfa-avril-2026.pdf" style={{ color: "#000" }}>
-                Télécharger l’affiche La bonne alternance, à exposer dans votre CFA.
+                Télécharger l’affiche La bonne alternance, à exposer dans votre CFA - PDF{" "}
+                {/* RGAA 13.6 : format et poids font partie du nom accessible du lien de téléchargement. */}
+                <Typography component="span" variant="caption" ml={fr.spacing("2v")}>
+                  (2,7 Mo)
+                </Typography>
               </DsfrLink>
             </Box>
           </Box>

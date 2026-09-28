@@ -31,7 +31,9 @@ export const HowTo = () => (
           les deux autres sont sous la ligne de flottaison et se disputaient la bande passante */}
       <Image fetchPriority="high" priority src="/images/howto1.svg" alt="" unoptimized width={286} height={141} style={{ width: "100%", height: "auto" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
-        <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Le job de vos rêves</Typography>
+        <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>
+          Le <span lang="en">job</span> de vos rêves
+        </Typography>
         <Typography>
           Renseignez
           <Box component="span" className={fr.cx("fr-text--bold")}>

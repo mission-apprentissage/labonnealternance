@@ -49,13 +49,12 @@ const ETABLISSEMENT_PROJECTION = {
   gestionnaire_email: 1,
 } as const
 
-/** Le job faisait une écriture unitaire par formation sur eligible_trainings_for_appointments. */
 const BULK_SIZE = 500
 
 /**
  * Le job parcourt tout le catalogue : une erreur isolée sur une formation ne doit pas perdre le
- * travail déjà fait (l'ancien `callback(err)` avortait tout le pipeline). Au-delà de ce nombre
- * d'erreurs consécutives on considère la panne systémique et on arrête.
+ * travail déjà fait. Au-delà de ce nombre d'erreurs consécutives, la panne est considérée
+ * systémique et le job s'arrête.
  */
 const MAX_CONSECUTIVE_ERRORS = 50
 
@@ -68,8 +67,8 @@ const cacheKey = (...parts: unknown[]) => JSON.stringify(parts)
 export const syncEtablissementsAndFormations = async () => {
   logger.info("Cron #syncEtablissementsAndFormations started.")
 
-  // Horodatage unique pour tout le run : last_catalogue_sync_date devient un vrai marqueur de
-  // passage, homogène sur l'ensemble des documents touchés.
+  // Horodatage unique pour tout le run : last_catalogue_sync_date est un marqueur de passage
+  // homogène sur l'ensemble des documents touchés.
   const syncedAt = new Date()
 
   // `read` compte les formations sorties du curseur. C'est le seul dénominateur juste : une
@@ -213,7 +212,7 @@ export const syncEtablissementsAndFormations = async () => {
 
         // Champs communs à la création et à la mise à jour. Les cinq champs propres à la création
         // (created_at, rco_formation_id, cle_ministere_educatif et les deux sirets) n'en font pas
-        // partie : l'ancien `$set` ne les touchait pas non plus.
+        // partie.
         const sharedFields = {
           training_id_catalogue: formation._id.toString(),
           lieu_formation_email: emailRdv ?? null,
@@ -331,7 +330,7 @@ export const syncEtablissementsAndFormations = async () => {
 
   if (runError) throw runError
 
-  // Les erreurs isolées n'avortent plus le run, mais elles doivent rester visibles : le job échoue
+  // Les erreurs isolées n'avortent pas le run, mais elles doivent rester visibles : le job échoue
   // après avoir traité l'intégralité du catalogue, et le check-in Sentry passe en `error`.
   if (stats.errors > 0) {
     throw new Error(`syncEtablissementsAndFormations: ${stats.errors} erreur(s) sur ${stats.read} formation(s) parcourue(s)`)

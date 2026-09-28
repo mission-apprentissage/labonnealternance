@@ -5,9 +5,6 @@ import { parseEnum } from "shared/utils/index"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
-/**
- * @description get opco from database collection OPCOS
- */
 export const getOpcoBySirenFromDB = async (siren: string) => {
   const opcoFromDB = await getDbCollection("opcos").findOne({ siren })
   if (opcoFromDB) {
@@ -48,8 +45,6 @@ export const getOpcosBySiretFromDB = async (sirets: string[]): Promise<{ opco: O
 
 /**
  * @description ajoute un opco en base s'il n'existe pas déjà sinon le mets à jour
- * @param {IOpco} opcoData
- * @returns {Promise<IOpco>}
  */
 export const saveOpco = async (opcoData: Omit<IOpco, "_id">) => getDbCollection("opcos").findOneAndUpdate({ siren: opcoData.siren }, { $set: opcoData }, { upsert: true })
 
@@ -73,10 +68,6 @@ export const insertOpcos = async (opcoDatas: Omit<IOpco, "_id">[]) => {
 
 /**
  * @description Filtre une liste de jobs pour ne laisser que ceux qui ont la valeur opcoUrl ou opco
- * @param {any[]} jobs
- * @param {string} opco
- * @param {string} opcoUrl
- * @returns {Promise<any[]>}
  */
 export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; opco?: string; opcoUrl?: string }): Promise<any[]> => {
   const sirensToFind: any[] = []

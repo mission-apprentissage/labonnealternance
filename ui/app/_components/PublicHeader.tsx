@@ -5,8 +5,9 @@ import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
 import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
+import { headerId, type ZoneName } from "./zone-ids"
 
-export function PublicHeader({ user, hideConnectionButton = false }: { user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
+export function PublicHeader({ zone, user, hideConnectionButton = false }: { zone: ZoneName; user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
   const props = useMemo(() => {
     const extraItems = [
       <HeaderQuickAccessItem
@@ -52,9 +53,10 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
 
     return {
       ...DsfrHeaderProps,
+      id: headerId(zone),
       quickAccessItems: [...(DsfrHeaderProps.quickAccessItems ?? []), ...extraItems],
     }
-  }, [user, hideConnectionButton])
+  }, [zone, user, hideConnectionButton])
 
   return (
     <>
@@ -64,6 +66,6 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
   )
 }
 
-export const PublicHeaderStatic = () => {
-  return <DsfrHeader {...DsfrHeaderProps} navigation={<DsfrHeaderNavigation />} />
+export const PublicHeaderStatic = ({ zone }: { zone: ZoneName }) => {
+  return <DsfrHeader {...DsfrHeaderProps} id={headerId(zone)} navigation={<DsfrHeaderNavigation />} />
 }

@@ -1,11 +1,9 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
 import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
 // Imports profonds plutôt que le barrel "shared" : ce module part dans le bundle de la home
-// (via le registre PAGES de routes.utils). Ce n'est pas ce qui a sorti zod du first-load — le
-// barrel est élaguable et `routes.utils` l'utilise encore ; c'est la suppression des usages de
-// zod *au niveau valeur* (z.object/z.enum/buildEnum) qui l'a fait. Les imports profonds sont
-// une ceinture de sécurité : ils rendent la chaîne insensible à un futur `sideEffects` élargi
-// dans shared/package.json, qui rendrait shared/routes non élaguable.
+// (via le registre PAGES de routes.utils). Ils gardent la chaîne élaguable même si `sideEffects`
+// s'élargit dans shared/package.json. Ce qui garde zod hors du first-load, c'est l'absence
+// d'usage au niveau valeur (z.object/z.enum/buildEnum), pas ces imports.
 import { MAX_SEARCH_ROMES_PRIVATE } from "shared/constants/search"
 import { typedKeys } from "shared/utils/object-utils"
 
@@ -16,7 +14,7 @@ import { parseSearchPageParams } from "./search.params.utils"
 /**
  * Paramètres d'URL du moteur de recherche legacy (`?job_name=…&romes=…`).
  *
- * Le moteur legacy est décommissionné : ce module ne sert plus qu'à
+ * Le moteur legacy est décommissionné ; ce module sert uniquement à
  * - produire les métadonnées SEO des URL legacy encore indexées (repli `?job_name=`,
  *   cf. `recherche.metadata.utils`) ;
  * - construire des liens `/recherche` au format legacy depuis le registre PAGES
@@ -195,9 +193,8 @@ export function toURLSearchParams(searchParams: Record<string, string | string[]
  * Plausible « Affichage - Fiche emploi » et Matomo.
  *
  * Deux formats d'entrée, par priorité :
- * 1. `?from=/recherche?q=…&latitude=…` — nouveau moteur. Les cartes de résultats ne posent plus
- *    `job_name`/`lat`/`lon` sur l'URL de la fiche : la recherche d'origine n'est portée que par
- *    l'URL de retour (cf. `buildHitDetailUrl`). C'est le seul format émis aujourd'hui.
+ * 1. `?from=/recherche?q=…&latitude=…` — nouveau moteur, seul format émis : la recherche
+ *    d'origine n'est portée que par l'URL de retour (cf. `buildHitDetailUrl`).
  * 2. `?job_name=…&lat=…&lon=…&address=…` — format legacy, encore porté par les liens en
  *    circulation (pages éditoriales, liens partagés, résultats indexés).
  *
@@ -205,9 +202,8 @@ export function toURLSearchParams(searchParams: Record<string, string | string[]
  * même chose, les mélanger produirait un métier et un lieu venant de deux recherches
  * différentes. `?from=` externe ou malformé → repli legacy.
  *
- * Le garde du `from` n'est pas réimplémenté ici : `parseSearchUrlFromParam` (shared) le porte en
- * un seul exemplaire, partagé avec le hook de navigation et le serveur. Il rejette aussi bien les
- * préfixes voisins (`/recherche-formation`) que la remontée d'arborescence (`/recherche/../…`).
+ * Garde du `from` : cf. `parseSearchUrlFromParam` (shared), partagé avec le hook de navigation
+ * et le serveur — ne pas le réimplémenter ici.
  */
 export function resolveRecherchePageParams(search: URLSearchParams, mode: IRechercheMode): IRecherchePageParams {
   // Non nul par construction : `search` n'est jamais null ici, contrairement à la signature

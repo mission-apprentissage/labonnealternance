@@ -44,14 +44,14 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     workplace_address_zipcode: zip_code,
     workplace_address_label: joinNonNullStrings([street_number, street_name, zip_code, libelleCommuneEtablissement]),
     // La projection SIRENE dépend du territoire ; sans code postal, le code INSEE porte le même
-    // préfixe (974xx…). Sans lui, un établissement réunionnais retombait en Lambert 93, en mer du Nord.
+    // préfixe (974xx…). Sans lui, un établissement réunionnais tomberait en Lambert 93, en mer du Nord.
     workplace_geopoint: getWorkplaceGeolocation(coordonneeLambertAbscisseEtablissement, coordonneeLambertOrdonneeEtablissement, zip_code ?? insee_city_code),
     workplace_size: company_size,
     apply_email: email,
     apply_phone: phone,
     offer_rome_codes: rome_codes.map(({ rome_code }) => rome_code),
-    // laisser recruteurs_lba pour les entreprises issue de l'algorithme de lba (passer la validation & l'import dans jobs_partners)
     offer_creation: createdAt,
+    // laisser recruteurs_lba pour les entreprises issue de l'algorithme de lba (passer la validation & l'import dans jobs_partners)
     offer_title: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     offer_description: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     offer_multicast: true,

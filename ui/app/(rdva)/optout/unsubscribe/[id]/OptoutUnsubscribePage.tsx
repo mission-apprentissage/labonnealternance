@@ -39,17 +39,8 @@ export default function OptOutUnsubscribe() {
   const [etablissement, setEtablissement] = useState<undefined | IEtablissementPartial>()
   const [radioValue, setRadioValue] = useState(radioOptions.UNSUBSCRIBE_NO_DETAILS)
 
-  /**
-   * @description Save textarea content.
-   * @param {Event} event
-   * @returns {void}
-   */
   const handleTextarea = (event) => setTextarea(event.target.value)
 
-  /**
-   * @description Submit unsubscription.
-   * @returns {Promise<void>}
-   */
   const submit = async () => {
     const opt_out_question = textarea === "" ? undefined : textarea
 
@@ -91,7 +82,6 @@ export default function OptOutUnsubscribe() {
     }
   }, [id, token])
 
-  // Display nothing until date isn't received
   if (!etablissement) {
     return null
   }

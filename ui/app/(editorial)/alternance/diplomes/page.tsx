@@ -123,7 +123,7 @@ export default function AlternanceDiplomes() {
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
+          <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
             Tous les diplômes accessibles en alternance
           </Typography>
           <Box
@@ -224,17 +224,17 @@ export default function AlternanceDiplomes() {
             , l'alternance reste l'une des voies royales pour acquérir des réflexes terrain. Les BTS commerciaux — par exemple le{" "}
             {btsMco ? <Link href={PAGES.dynamic.seoDiplome(btsMco.slug).getPath()}>{btsMco.titre}</Link> : "BTS MCO"} ou le{" "}
             {btsNdrc ? <Link href={PAGES.dynamic.seoDiplome(btsNdrc.slug).getPath()}>{btsNdrc.titre}</Link> : "BTS NDRC"} — et le BUT Techniques de Commercialisation forment aux
-            métiers de la vente, du retail et du e-commerce. Les Licences Pro et Masters en marketing digital, communication ou data prolongent cette logique sur des fonctions plus
-            stratégiques (chef de produit, traffic manager, responsable marketing).
+            métiers de la vente, du <span lang="en">retail</span> et du e-commerce. Les Licences Pro et Masters en marketing digital, communication ou data prolongent cette logique
+            sur des fonctions plus stratégiques (chef de produit, <span lang="en">traffic manager</span>, responsable marketing).
           </Typography>
           <Typography component="p" sx={{ mb: fr.spacing("3v") }}>
             <Typography component="span" sx={accentSx}>
               Pour le numérique et l'informatique
             </Typography>
             , l'éventail va du {btsSio ? <Link href={PAGES.dynamic.seoDiplome(btsSio.slug).getPath()}>{btsSio.titre}</Link> : "BTS SIO"} (services informatiques aux organisations)
-            aux Masters spécialisés (cybersécurité, data science, IA, cloud), en passant par le BUT Informatique et les Licences Pro. Les débouchés sont massifs : développeur,
-            administrateur réseaux, technicien support, data analyst, ingénieur DevOps — autant de métiers en tension où l'alternance est particulièrement valorisée par les
-            recruteurs.
+            aux Masters spécialisés (cybersécurité, <span lang="en">data science</span>, IA, <span lang="en">cloud</span>), en passant par le BUT Informatique et les Licences Pro.
+            Les débouchés sont massifs : développeur, administrateur réseaux, technicien support, <span lang="en">data analyst</span>, ingénieur <span lang="en">DevOps</span> —
+            autant de métiers en tension où l'alternance est particulièrement valorisée par les recruteurs.
           </Typography>
           <Typography component="p" sx={{ mb: fr.spacing("3v") }}>
             <Typography component="span" sx={accentSx}>
@@ -271,7 +271,7 @@ export default function AlternanceDiplomes() {
             }}
           >
             {diplomeData.map((d) => (
-              <Link key={d.slug} href={PAGES.dynamic.seoDiplome(d.slug).getPath()} aria-label={`Tout savoir sur le ${d.titre} en alternance`} style={cardLinkStyle}>
+              <Link key={d.slug} href={PAGES.dynamic.seoDiplome(d.slug).getPath()} style={cardLinkStyle}>
                 <Box sx={listicleCardSx}>
                   <Box>
                     <Typography sx={cardTitleSx}>{d.titre}</Typography>
@@ -322,7 +322,7 @@ export default function AlternanceDiplomes() {
               }}
             >
               {metiersHighlight.map((m) => (
-                <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} aria-label={`Alternance ${m.metier}`} style={cardLinkStyle}>
+                <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} style={cardLinkStyle}>
                   <Box sx={listicleCardSx}>
                     <Typography sx={cardTitleSx}>{m.metier}</Typography>
                     <ArrowRightLine sx={cardArrowSx} />
@@ -358,7 +358,7 @@ export default function AlternanceDiplomes() {
               }}
             >
               {villesHighlight.map((v) => (
-                <Link key={v.slug} href={PAGES.dynamic.seoVille(v.slug).getPath()} aria-label={`Alternance à ${v.ville}`} style={cardLinkStyle}>
+                <Link key={v.slug} href={PAGES.dynamic.seoVille(v.slug).getPath()} style={cardLinkStyle}>
                   <Box sx={listicleCardSx}>
                     <Typography sx={cardTitleSx}>{v.ville}</Typography>
                     <ArrowRightLine sx={cardArrowSx} />

@@ -147,9 +147,15 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
           </Typography>
           <input {...getInputProps()} style={{ display: "block" }} />
           {showUnacceptedFileMessages && (
-            <Typography sx={{ color: "error.main", fontSize: "14px" }}>⚠ Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)</Typography>
+            <Typography sx={{ color: "error.main", fontSize: "14px" }}>
+              <span aria-hidden="true">⚠</span> Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)
+            </Typography>
           )}
-          {mandatoryFileError && <Typography sx={{ color: "error.main", fontSize: "14px" }}>⚠ La pièce jointe est obligatoire</Typography>}
+          {mandatoryFileError && (
+            <Typography sx={{ color: "error.main", fontSize: "14px" }}>
+              <span aria-hidden="true">⚠</span> La pièce jointe est obligatoire
+            </Typography>
+          )}
         </Box>
       )}
     </Box>

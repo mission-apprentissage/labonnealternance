@@ -41,9 +41,9 @@ export default {
   zod: ZEtablissement,
   indexes: [
     [{ gestionnaire_siret: 1 }, {}],
-    // Filtre de l'updateMany upsert de syncEtablissementsAndFormations. Remplace l'index simple
-    // {formateur_siret} dont il est le préfixe : le garder coûtait une écriture d'index par update
-    // sans servir de requête que celui-ci ne couvre pas.
+    // Filtre de l'updateMany upsert de syncEtablissementsAndFormations. Couvre aussi les requêtes
+    // sur {formateur_siret} seul (préfixe) : un index simple dédié coûterait une écriture d'index
+    // par update sans servir de requête supplémentaire.
     [{ formateur_siret: 1, gestionnaire_siret: 1 }, {}],
     [{ premium_activation_date: 1 }, {}],
     [{ premium_affelnet_activation_date: 1 }, {}],

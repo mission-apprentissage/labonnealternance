@@ -104,7 +104,6 @@ describe("fill-opco-infos-for-partners", () => {
         workplace_idcc: null,
       },
     ])
-    // Mock France Competences API response
     const fcResponse = generateFCOpcoResponseFixture({
       siret: testSiret,
       opcoRattachement: {

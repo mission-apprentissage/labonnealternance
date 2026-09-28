@@ -25,7 +25,7 @@ export default function PlanDuSite() {
           <Box sx={{ p: fr.spacing("10v"), marginBottom: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
             <Grid container spacing={fr.spacing("2v")}>
               <Grid size={{ xs: 12, md: 3 }}>
-                <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+                <Typography component={"h1"} variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
                   Plan du site
                 </Typography>
                 <Box

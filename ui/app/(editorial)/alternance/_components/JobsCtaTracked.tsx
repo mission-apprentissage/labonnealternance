@@ -25,7 +25,6 @@ export function JobsCtaTracked({ href, searchOrigin, searchJobName, searchAddres
       search_radius: 30,
       search_diploma: "indifferent",
       search_origin: searchOrigin,
-      // Les CTA éditoriaux pointent vers les parcours du moteur legacy.
       search_engine: SEARCH_ENGINES.PRODUCTION,
     })
   }

@@ -4,9 +4,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 
-/**
- * Anonymize users older than 1 year.
- */
+// Anonymise les utilisateurs sans action depuis 2 ans (#1726).
 const anonymize = async () => {
   const period = new Date()
   period.setFullYear(period.getFullYear() - 2)

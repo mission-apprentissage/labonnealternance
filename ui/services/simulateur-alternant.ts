@@ -59,9 +59,6 @@ export type OutputSimulation = {
   anneesSimulation: Array<AnneeSimulation>
 }
 
-/**
- * Trouve l'index de la tranche d'âge correspondant à l'âge donné
- */
 const findTrancheAgeIndex = (tranches: readonly TrancheAge[], age: number): number => {
   const index = tranches.findIndex((t) => age >= t.min && (t.max === null || age <= t.max))
 
@@ -72,10 +69,6 @@ const findTrancheAgeIndex = (tranches: readonly TrancheAge[], age: number): numb
   return index
 }
 
-/**
- * Déduit le groupe de niveau de diplôme à partir du niveau de diplôme
- * (1-3 : inférieur au bac, 4-8 : bac et plus)
- */
 const getNiveauDiplomeGroup = (niveauDiplome: number): NiveauDiplomeGroup => {
   const group = NIVEAU_DIPLOME_TO_GROUP[niveauDiplome]
 
@@ -86,9 +79,6 @@ const getNiveauDiplomeGroup = (niveauDiplome: number): NiveauDiplomeGroup => {
   return group
 }
 
-/**
- * Récupère le taux SMIC pour un contrat en apprentissage
- */
 const getTauxSmicApprentissage = (age: number, anneeContrat: AnneeContrat): number => {
   const trancheIndex = findTrancheAgeIndex(TRANCHES_AGE_APPRENTISSAGE, age)
   const taux = TAUX_APPRENTISSAGE[trancheIndex]?.[anneeContrat]
@@ -100,9 +90,6 @@ const getTauxSmicApprentissage = (age: number, anneeContrat: AnneeContrat): numb
   return taux
 }
 
-/**
- * Récupère le taux SMIC pour un contrat de professionnalisation
- */
 const getTauxSmicProfessionnalisation = (age: number, niveauDiplome: number): number => {
   const trancheIndex = findTrancheAgeIndex(TRANCHES_AGE_PROFESSIONNALISATION, age)
   const groupe = getNiveauDiplomeGroup(niveauDiplome)
@@ -115,9 +102,6 @@ const getTauxSmicProfessionnalisation = (age: number, niveauDiplome: number): nu
   return taux
 }
 
-/**
- * Récupère le taux SMIC en fonction du type de contrat
- */
 const getTauxSmic = ({ typeContrat, age, anneeContrat, niveauDiplome }: { typeContrat: TypeContrat; age: number; anneeContrat: AnneeContrat; niveauDiplome: number }): number => {
   if (typeContrat === "apprentissage") {
     return getTauxSmicApprentissage(age, anneeContrat)
@@ -125,9 +109,6 @@ const getTauxSmic = ({ typeContrat, age, anneeContrat, niveauDiplome }: { typeCo
   return getTauxSmicProfessionnalisation(age, niveauDiplome)
 }
 
-/**
- * Récupère le taux SMIC pour chaque année simulée (durée du contrat)
- */
 const getAllTauxSmic = ({
   typeContrat,
   age,
@@ -150,16 +131,10 @@ const getAllTauxSmic = ({
   )
 }
 
-/**
- * Récupère la valeur du SMIC en fonction de la région
- */
 const getSmic = (isRegionMayotte: boolean) => {
   return isRegionMayotte ? SMIC.mayotte : SMIC.metropole
 }
 
-/**
- * Récupère la valeur de salaire brut en fonction du taux SMIC et de la région
- */
 const getSalaireBrut = (tauxSmic: number, isRegionMayotte: boolean): { salaireHoraireBrut: number; salaireMensuelBrut: number; salaireAnnuelBrut: number } => {
   const smic = getSmic(isRegionMayotte)
   const salaireHoraireBrut = smic.brut.horaire * tauxSmic
@@ -174,30 +149,23 @@ const getSalaireBrut = (tauxSmic: number, isRegionMayotte: boolean): { salaireHo
 }
 
 /**
- * Calcule les charges salariales horaires en fonction du type de contrat et du contexte
- *
- * Règles :
- * - Professionnalisation : taux fixe de cotisations salariales
- * - Apprentissage avant DATE_FIN_EXONERATION : exonération totale (0)
- * - Apprentissage secteur public après exonération : taux réduit (exonération partielle)
- * - Apprentissage secteur privé après exonération :
- *   - Si tauxSmic <= 50% : exonération totale (0)
- *   - Si tauxSmic > 50% : cotisations sur la part excédant 50% du SMIC
+ * Charges salariales horaires :
+ * - professionnalisation : taux fixe, sans exonération ;
+ * - apprentissage signé au plus tard à DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE : exonération totale ;
+ * - apprentissage après cette date, public ou privé : exonération totale si tauxSmic <= 50 %, sinon
+ *   taux réduit (public) ou cotisations sur la seule part excédant 50 % du SMIC (privé).
+ * Règle public <= 50 % : https://mission-apprentissage.slack.com/archives/C09LX145Z5Z/p1771851092923919
  */
 export const getChargesSalariales = ({ typeContrat, dateSignatureContrat, secteur, tauxSmic, salaireHoraireBrut }: InputChargesSalariales): number => {
-  // Professionnalisation : pas d'exonération
   if (typeContrat === "professionnalisation") {
     return salaireHoraireBrut * TAUX_COTISATIONS_SALARIALES_CONTRAT_PROFESSIONNALISATION
   }
 
-  // Apprentissage : exonération totale si date de signature de contrat <= date fin exonération
   if (dateSignatureContrat <= DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE) {
     return 0
   }
 
-  // Apprentissage secteur public : exonération partielle
   if (secteur === "public") {
-    // Si le taux SMIC est <= 50%, exonération totale (MAJ 23/02/2026 https://mission-apprentissage.slack.com/archives/C09LX145Z5Z/p1771851092923919)
     if (tauxSmic <= 0.5) {
       return 0
     }
@@ -205,13 +173,10 @@ export const getChargesSalariales = ({ typeContrat, dateSignatureContrat, secteu
     return salaireHoraireBrut * tauxApresExoneration
   }
 
-  // Apprentissage secteur privé : exonération sur la part <= 50% du SMIC
   if (secteur === "privé") {
-    // Si le taux SMIC est <= 50%, exonération totale
     if (tauxSmic <= 0.5) {
       return 0
     }
-    // Sinon, cotisations uniquement sur la part excédant 50%
     const tauxApresExoneration = ((tauxSmic - 0.5) / tauxSmic) * TAUX_COTISATIONS_SALARIALES_AVANT_EXONERATION_APPRENTISSAGE_PRIVE
     return salaireHoraireBrut * tauxApresExoneration
   }
@@ -219,10 +184,6 @@ export const getChargesSalariales = ({ typeContrat, dateSignatureContrat, secteu
   return 0
 }
 
-/**
- *
- * Déduit le salaire net à partir du salaire brut en fonction des charges salariales
- */
 const getSalaireNet = ({
   salaireHoraireBrut,
   tauxSmic,
@@ -255,10 +216,6 @@ const getSalaireNet = ({
   }
 }
 
-/**
- *
- * Crée une tranche de salaire (min, max) à partir d'un salaire donné
- */
 const getTrancheSalaire = (salaire: number, round: boolean = false): TrancheSalaire => {
   return {
     min: round ? Math.round(salaire * 0.97) : salaire * 0.97,
@@ -285,8 +242,7 @@ const checkDataValidity = (input: Partial<InputSimulation>) => {
 }
 
 /**
- * Calcul d'une rémunération d'alternant en fonction des paramètres fournis
- * Détermine année par année les rémunérations brute et nette journalières, mensuelles et annuelles
+ * Rémunérations brute et nette, horaires, mensuelles et annuelles, pour chaque année de contrat.
  */
 export const getSimulationInformation = (inputSimulation: InputSimulation): OutputSimulation => {
   const { typeContrat, dateNaissance, dureeContrat, dateSignatureContrat, niveauDiplome, secteur, isRegionMayotte } = inputSimulation

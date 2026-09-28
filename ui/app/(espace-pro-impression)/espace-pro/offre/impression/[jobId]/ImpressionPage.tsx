@@ -22,8 +22,8 @@ const printExactColor = { WebkitPrintColorAdjust: "exact", printColorAdjust: "ex
 export default function PrintableJobPage() {
   const { jobId } = useParams() as { jobId: string }
   const searchParams = useSearchParams()
-  // print_source a remplacé source (paramètre réservé de Plausible) ; l'ancien nom reste lu en
-  // repli pour les liens émis avant le renommage (onglets ouverts, favoris).
+  // Repli sur `source`, ancien nom de print_source (paramètre réservé de Plausible), pour les
+  // liens déjà émis (onglets ouverts, favoris).
   const printSource = searchParams.get("print_source") ?? searchParams.get("source")
   const utmCampaign = printSource === "cfa-sharing" ? "mer-cfa-entreprise" : "offre-phygital-sur-affiche"
 

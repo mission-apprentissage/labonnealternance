@@ -10,12 +10,10 @@ export function paramsToQuerystring(params: ISearchPageParams) {
     hitsPerPage: params.hitsPerPage,
   }
   if (params.q) qs.q = params.q
-  // Télémétrie moteur de suggestion : origine de q (suggestion sélectionnée vs texte libre).
-  // Envoyé sous l'ancien nom `source` pour UNE release : un serveur pré-renommage rejetterait
-  // `search_source` (clé inconnue du strictObject → 400) si l'UI bascule avant lui pendant le
-  // déploiement. À basculer vers `search_source` à la release suivante, une fois l'API déployée
-  // partout. Seule l'URL de PAGE (search.params.utils.ts) devait perdre `source` pour Plausible —
-  // les appels API ne sont pas lus par le tracker.
+  // Origine de q (télémétrie), envoyée sous l'alias `source` pour UNE release : un serveur
+  // pré-renommage rejetterait `search_source` (clé inconnue du strictObject → 400) si l'UI est
+  // déployée avant lui. À basculer vers `search_source` à la release suivante. Plausible ne lit
+  // pas les appels API, seule l'URL de page (search.params.utils.ts) doit se passer de `source`.
   if (params.q && params.q_source) qs.source = params.q_source
   // Toujours envoyé : le mode par défaut « emplois » exclut les formations et les offres CFA/GEIQ côté API
   qs.mode = params.mode
@@ -28,8 +26,7 @@ export function paramsToQuerystring(params: ISearchPageParams) {
   if (params.urgent) qs.start_type = "des_que_possible"
   if (params.handi) qs.is_disabled_elligible = "true"
   if (params.smart_apply) qs.smart_apply = "true"
-  // Un seul type d'offres coché → filtre API ; les deux cochés (ou aucun) → pas de filtre,
-  // la sélection « tout » équivaut à l'absence de filtre.
+  // Un seul type d'offres coché → filtre API ; les deux cochés (ou aucun) équivalent à « tout ».
   if (params.is_algo_company?.length === 1) qs.is_algo_company = params.is_algo_company[0].toString()
   if (params.sort) qs.sort = params.sort
   if (params.latitude !== undefined) qs.latitude = params.latitude

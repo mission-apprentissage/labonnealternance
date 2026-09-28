@@ -6,6 +6,7 @@ import { Box, Container, Stack, Typography } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { IEtablissementJson } from "shared"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
@@ -29,10 +30,6 @@ export default function PremiumAffelnet() {
   const [hasAccepted, setHasAccepted] = useState(false)
   const [etablissement, setEtablissement]: [IAffelnetEtablissement | null, (e: any) => void] = useState()
 
-  /**
-   * @description Accept terms.
-   * @returns {Promise<void>}
-   */
   const accept = async () => {
     await apiPost("/etablissements/:id/premium/affelnet/accept", {
       params: { id },
@@ -45,10 +42,6 @@ export default function PremiumAffelnet() {
     window.scrollTo(0, 0)
   }
 
-  /**
-   * @description Refuse terms.
-   * @returns {Promise<void>}
-   */
   const refuse = async () => {
     await apiPost("/etablissements/:id/premium/affelnet/refuse", {
       params: { id },
@@ -101,10 +94,7 @@ export default function PremiumAffelnet() {
 
             <Typography sx={{ fontWeight: 700 }}>
               Votre choix a bien été pris en compte Le service RDV Apprentissage ne sera pas activé pour vos formations. <br /> Si vous changez d'avis, merci de nous contacter à
-              l'adresse suivante:{" "}
-              <a style={{ textDecoration: "underline" }} href={`mailto:${publicConfig.publicEmail}?subject=Formulaire%20premium%20-%20Activer%20RDVA`}>
-                {publicConfig.publicEmail}
-              </a>
+              l'adresse suivante: <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Formulaire%20premium%20-%20Activer%20RDVA`}>{publicConfig.publicEmail}</DsfrLink>
             </Typography>
           </Box>
         )}

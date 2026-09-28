@@ -41,7 +41,9 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
     >
       <Typography sx={{ fontWeight: 700 }}>Allez-vous contacter {workplace} ?</Typography>
       {storedValue ? (
-        <Typography sx={{ fontWeight: 700 }}>Merci pour votre réponse ! 👌</Typography>
+        <Typography sx={{ fontWeight: 700 }}>
+          Merci pour votre réponse ! <span aria-hidden="true">👌</span>
+        </Typography>
       ) : (
         <>
           <Button
@@ -54,7 +56,7 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
               })
             }}
           >
-            👍 Oui
+            <span aria-hidden="true">👍</span> Oui
           </Button>
           <Button
             type="button"
@@ -66,7 +68,7 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
               })
             }}
           >
-            👎 Non
+            <span aria-hidden="true">👎</span> Non
           </Button>
         </>
       )}

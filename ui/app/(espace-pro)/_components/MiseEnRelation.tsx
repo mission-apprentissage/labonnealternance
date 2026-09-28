@@ -139,11 +139,6 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [delegationsEnregistrees, setDelegationsEnregistrees] = useState(false)
 
-  /**
-   * @description Handles all checkboxes.
-   * @param {Object} etablissement
-   * @return {void}
-   */
   const changeEtablissement = (etablissement) => {
     const index = checkedEtablissements.findIndex((item) => item._id === etablissement._id)
     if (index === -1) {
@@ -242,13 +237,13 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
 
                               <Link
                                 underline="hover"
-                                aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
                                 href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
                                 color="inherit"
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
                                 En savoir plus
+                                <span className="fr-sr-only">{" - Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"}</span>
                               </Link>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center" }}>

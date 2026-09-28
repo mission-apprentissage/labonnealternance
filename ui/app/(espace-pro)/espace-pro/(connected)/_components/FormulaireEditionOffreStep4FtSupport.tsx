@@ -27,13 +27,25 @@ const blueBoxTextStyle = {
   lineHeight: "24px",
 }
 
-export const FormulaireEditionOffreStep4FtSupport = ({ offre, onSubmit, onCancel }: { offre?: IJob; onSubmit: (values: IStep4Form) => void; onCancel: () => void }) => {
+export const FormulaireEditionOffreStep4FtSupport = ({
+  offre,
+  formValues,
+  onSubmit,
+  onCancel,
+}: {
+  offre?: IJob
+  /** saisie déjà validée sur cette étape, à restaurer quand on y revient depuis une étape suivante */
+  formValues?: any
+  onSubmit: (values: IStep4Form) => void
+  /** reçoit la saisie en cours : le retour ne doit pas la perdre plus que le passage à l'étape suivante */
+  onCancel: (values: IStep4Form) => void
+}) => {
   return (
     <Formik<IStep4Form>
       validateOnMount
       enableReinitialize={true}
       initialValues={{
-        ft_support: offre?.ft_support ?? false,
+        ft_support: formValues?.ft_support ?? offre?.ft_support ?? false,
       }}
       onSubmit={onSubmit}
     >
@@ -142,15 +154,15 @@ const FtSupportCheckbox = () => {
   )
 }
 
-const Buttons = ({ offre, onCancel }: { offre?: IJob; onCancel: () => void }) => {
-  const { isSubmitting, submitForm } = useFormikContext<IStep4Form>()
+const Buttons = ({ offre, onCancel }: { offre?: IJob; onCancel: (values: IStep4Form) => void }) => {
+  const { isSubmitting, submitForm, values } = useFormikContext<IStep4Form>()
 
   return (
     <Box
       sx={{ display: "flex", justifyContent: "flex-end", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v"), mt: fr.spacing("6v") }}
     >
       <Box sx={{ mr: fr.spacing("4v") }}>
-        <Button className="fr-btn--secondary" aria-label="Retour vers l'étape précédente du formulaire de dépôt d'offre" onClick={() => onCancel()}>
+        <Button className="fr-btn--secondary" aria-label="Retour vers l'étape précédente du formulaire de dépôt d'offre" onClick={() => onCancel(values)}>
           Retour
         </Button>
       </Box>

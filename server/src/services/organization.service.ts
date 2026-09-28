@@ -70,13 +70,9 @@ export const updateEntrepriseHandiEngagement = async (siret: string, handiEngage
 }
 
 /**
- * Appelée par modifyPermissionToUser à chaque transition réelle d'un rôle vers GRANTED (quel que soit le
- * chemin : auto-validation, activation admin/OPCO, création directe).
- *
- * `role.handiEngagement` est le choix déclaré à la création du compte (cf. ZRoleManagement), jamais
- * réécrit depuis — on ne l'applique au référentiel qu'ici, une fois le rôle effectivement validé, pour ne
- * pas enregistrer un engagement pour un compte jamais activé (cf. updateEntrepriseHandiEngagement, qui
- * est elle-même un no-op si `handiEngagement` n'est pas "oui").
+ * Appelée par modifyPermissionToUser à chaque transition réelle d'un rôle vers GRANTED (auto-validation,
+ * activation admin/OPCO, création directe). `role.handiEngagement`, déclaré à la création du compte et
+ * jamais réécrit, n'est appliqué au référentiel qu'ici : pas d'engagement pour un compte jamais activé.
  */
 export const applyPendingHandiEngagementIfGranted = async (role: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "handiEngagement">) => {
   if (role.authorized_type !== AccessEntityType.ENTREPRISE || !role.handiEngagement) {

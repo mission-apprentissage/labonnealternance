@@ -37,9 +37,8 @@ describe("format-text-fields-jobs-partners", () => {
   })
 
   it("laisse la chaîne vide d'un champ renseigné qui se vide à la sanitization", async () => {
-    // Garde-fou : écrire null ici ferait échouer la validation zod de jobs_partners, qui refuse
-    // null sur offer_description (non-nullable) mais accepte "" — l'offre ne serait plus importée.
-    // Un "" est traité comme absent côté lecture, où les chaînes de repli utilisent `||`.
+    // Garde-fou (cf. sanitizeNullableTextField) : null ferait échouer la validation zod de
+    // jobs_partners, offer_description y est non-nullable.
     await givenSomeComputedJobPartners([
       {
         offer_title: "Développeur web en alternance",

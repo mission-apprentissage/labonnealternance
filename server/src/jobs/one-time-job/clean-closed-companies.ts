@@ -34,7 +34,6 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
       const recruiterId = new ObjectId(row.id)
       const managedBy = row["managed-by"]
 
-      // 1. Archive le recruteur et annule ses offres actives
       await getDbCollection("recruiters").updateOne(
         { _id: recruiterId },
         {
@@ -55,7 +54,7 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
 
       const managedById = new ObjectId(managedBy)
 
-      // 3. Désactive le rôle rolemanagement pour cette entreprise uniquement
+      // Désactive le rôle rolemanagement pour cette entreprise uniquement
       const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId }, { projection: { establishment_siret: 1 } })
       const entreprise = recruiter ? await getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret }, { projection: { _id: 1 } }) : null
       const roleFilter = entreprise

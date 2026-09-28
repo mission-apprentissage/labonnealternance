@@ -108,7 +108,6 @@ function parseDate(dateStr: string | null | undefined) {
 function parseDuration(field) {
   const stagePatterns = [/^Entre\s+1\s+et\s+2\s+mois$/, /^Entre\s+4\s+et\s+6\s+mois$/]
 
-  // Vérifie si le champ correspond à un stage
   if (stagePatterns.some((pattern) => pattern.test(field))) {
     return 0 // do not import stage
   }

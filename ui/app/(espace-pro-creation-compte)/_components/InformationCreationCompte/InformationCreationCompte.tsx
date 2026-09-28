@@ -115,8 +115,7 @@ const Formulaire = ({
       {({ values, isSubmitting, setFieldValue, errors, touched, validateForm, setTouched, submitForm }) => {
         const infosOpco = infosOpcos.find((x) => x.nom === values.opco)
 
-        // Le bouton "Continuer" ne dépend plus de isValid : cf. createSubmitWithFocusOnError, qui force
-        // l'affichage de l'erreur sur tous les champs invalides et scrolle/focus le premier.
+        // Le bouton "Continuer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
         const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
 
         return (

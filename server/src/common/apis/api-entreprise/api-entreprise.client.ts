@@ -16,9 +16,6 @@ const apiParams = {
   object: config.entreprise.object,
 }
 
-/**
- * @description Get the establishment information from the ENTREPRISE API for a given SIRET
- */
 export async function getEtablissementFromGouvSafe(siret: string): Promise<IEtablissementGouvData | BusinessErrorCodes.NON_DIFFUSIBLE | null> {
   try {
     if (config.entreprise.simulateError) {
@@ -40,9 +37,7 @@ export async function getEtablissementFromGouvSafe(siret: string): Promise<IEtab
     if ([404, 422, 429].includes(status)) {
       return null
     }
-    // Erreur dédiée plutôt que l'AxiosError brut : celui-ci porte `config.params.token` (la clé
-    // d'API entreprise, transmise en query string), que extraErrorDataIntegration sérialiserait
-    // tel quel dans Sentry.
+    // Erreur dédiée : l'AxiosError porte `config.params.token` (clé d'API en query string), cf. SENSITIVE_KEY_PATTERN.
     sentryCaptureException(new Error(`api-entreprise: échec de récupération de l'établissement (${error.message ?? "erreur inconnue"})`), {
       extra: { siret, status, responseData: error?.response?.data },
     })

@@ -75,13 +75,11 @@ const getEntreprisesManagedByUser = async (user: IUserWithAccount) => {
         $match: { user_id: user._id, authorized_type: ENTREPRISE },
       },
       {
-        // conversion de authorized_id en ObjectId
         $addFields: {
           authorizedId: { $toObjectId: "$authorized_id" },
         },
       },
       {
-        // récupération des entreprises correspondantes à rolemanagements.authorized_id
         $lookup: {
           from: "entreprises",
           localField: "authorizedId",
@@ -93,7 +91,6 @@ const getEntreprisesManagedByUser = async (user: IUserWithAccount) => {
         $unwind: "$entreprises",
       },
       {
-        // on garde les entreprises
         $project: {
           _id: 0,
           entreprises: 1,

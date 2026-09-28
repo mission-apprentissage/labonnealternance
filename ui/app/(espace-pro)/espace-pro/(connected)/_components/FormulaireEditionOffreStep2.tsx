@@ -10,6 +10,8 @@ import { type IJob, ZJobFields } from "shared"
 import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import type z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { publicConfig } from "@/config.public"
 import { getRelatedEtablissementsFromRome } from "@/utils/api"
 
 const questions = [
@@ -30,6 +32,7 @@ type IStep2Form = z.output<typeof ZStep2Form>
 
 export const FormulaireEditionOffreStep2 = ({
   offre,
+  formValues,
   romeCode,
   geoCoordinates,
   isFtEligible = true,
@@ -38,12 +41,15 @@ export const FormulaireEditionOffreStep2 = ({
   onCancel,
 }: {
   offre?: IJob
+  /** saisie déjà validée sur cette étape, à restaurer quand on y revient depuis une étape suivante */
+  formValues?: any
   romeCode?: string
   geoCoordinates?: string | null
   isFtEligible?: boolean
   skipCfaStep?: boolean
   onSubmit?: (values: any) => void
-  onCancel: () => void
+  /** reçoit la saisie en cours : le retour ne doit pas la perdre plus que le passage à l'étape suivante */
+  onCancel: (values: IStep2Form) => void
 }) => {
   const [latitude, longitude] = (geoCoordinates ?? "").split(",").map(parseFloat)
   const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude)
@@ -66,7 +72,7 @@ export const FormulaireEditionOffreStep2 = ({
       validateOnMount
       enableReinitialize={true}
       initialValues={{
-        to_applicant_questions: offre?.to_applicant_questions ?? [],
+        to_applicant_questions: formValues?.to_applicant_questions ?? offre?.to_applicant_questions ?? [],
       }}
       validationSchema={toFormikValidationSchema(ZStep2Form)}
       onSubmit={(values) => onSubmit?.({ ...values, etablissements: etablissements ?? [] })}
@@ -110,7 +116,7 @@ export const FormulaireEditionOffreStep2 = ({
               mt: fr.spacing("6v"),
             }}
           >
-            Vous avez une question à suggérer ? Écrivez-nous à <a href="mailto:contact@labonnealternance.apprentissage.beta.fr">contact@labonnealternance.apprentissage.beta.fr</a>
+            Vous avez une question à suggérer ? Écrivez-nous à <DsfrLink href={`mailto:${publicConfig.publicEmail}`}>{publicConfig.publicEmail}</DsfrLink>
           </Typography>
           <Buttons offre={offre} onCancel={onCancel} isFtEligible={isFtEligible} hasCfa={hasCfa} isPendingCfaCheck={isPendingCfaCheck} />
         </>
@@ -178,12 +184,12 @@ const Buttons = ({
   isPendingCfaCheck,
 }: {
   offre?: IJob
-  onCancel: () => void
+  onCancel: (values: IStep2Form) => void
   isFtEligible: boolean
   hasCfa: boolean
   isPendingCfaCheck: boolean
 }) => {
-  const { isValid, isSubmitting, submitForm } = useFormikContext<any>()
+  const { isValid, isSubmitting, submitForm, values } = useFormikContext<IStep2Form>()
 
   const willContinue = isFtEligible || hasCfa
 
@@ -192,7 +198,7 @@ const Buttons = ({
       sx={{ display: "flex", justifyContent: "flex-end", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v"), mt: fr.spacing("6v") }}
     >
       <Box sx={{ mr: fr.spacing("4v") }}>
-        <Button aria-label="Retour vers l'étape 1 du formulaire de dépôt d'offre" className="fr-btn--secondary" onClick={() => onCancel()}>
+        <Button aria-label="Retour vers l'étape 1 du formulaire de dépôt d'offre" className="fr-btn--secondary" onClick={() => onCancel(values)}>
           Retour
         </Button>
       </Box>

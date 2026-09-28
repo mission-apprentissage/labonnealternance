@@ -33,8 +33,8 @@ describe("importDecaContratsParAnnee", () => {
 
     // Le document valide est tout de même upserté avant que l'échec global ne soit remonté : seul le
     // statut final du job (throw) signale l'anomalie, pas une absence d'écriture.
-    // 4 rejets de validation (errors) + 1 ligne non-JSON (jsonErrors) sur 5 lignes au total (4 documents
-    // ayant atteint l'étape par-document + 1 ligne jamais parsée, sommée dans le total via jsonErrors).
+    // 3 rejets de validation (errors) + 1 ligne non-JSON (jsonErrors) = 4 rejets, sur 5 lignes
+    // (4 documents parsés + la ligne non-JSON ; la ligne vide est ignorée).
     await expect(importDecaContratsParAnnee(stringToStream(lines.join("\n") + "\n"))).rejects.toThrow(/4\/5 document\(s\) rejeté\(s\)/)
 
     const documents = await getDbCollection("deca_contrats")
@@ -52,9 +52,8 @@ describe("importDecaContratsParAnnee", () => {
     const s3Stream = stringToStream(JSON.stringify({ siret: "42476141900045", contrats_par_annee: { "2023": 2 } }) + "\n")
     vi.mocked(s3ReadAsStream).mockResolvedValueOnce(s3Stream)
 
-    // Simule jobs.ts:478 (`handler: async (job) => fct(job.payload)`) où job.payload est un objet
-    // quelconque, pas un stream : avant le fix, cet objet était passé directement à pipeline() et
-    // faisait planter le job avec "The 'body' argument must be ... Received an instance of Object".
+    // Simule le runner de jobs.ts (`handler: async (job) => fct(job.payload)`) avec un payload objet :
+    // passé tel quel à pipeline(), il fait planter le job ("The 'body' argument must be ... Received an instance of Object").
     const counters = await importDecaContratsParAnnee({ notAStream: true } as any)
 
     expect(s3ReadAsStream).toHaveBeenCalledWith("storage", "siretlist/lba_deca_contrats_par_annee.ndjson")

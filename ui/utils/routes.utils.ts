@@ -113,6 +113,11 @@ export const PAGES = {
       title: "La prévention des risques professionnels pour les apprentis",
       index: true,
     },
+    guideRedigerSonOffreDAlternance: {
+      getPath: () => `/guide/rediger-son-offre-d-alternance` as string,
+      title: "Bien rédiger son offre d'alternance",
+      index: true,
+    },
     guideAlternant: {
       getPath: () => `/guide-alternant` as string,
       title: "Je m'informe sur l'alternance",
@@ -212,6 +217,16 @@ export const PAGES = {
       getPath: () => `/salaire-alternant` as string,
       title: "Salaire alternant",
       index: true,
+    },
+    unJeuneUneSolution: {
+      getPath: () => `/1jeune1solution` as string,
+      title: "Trouver une alternance avec 1jeune1solution",
+      index: false,
+    },
+    unJeuneUneSolutionRecruteurs: {
+      getPath: () => `/1jeune1solution-recruteurs` as string,
+      title: "Recruter en alternance avec 1jeune1solution",
+      index: false,
     },
     EspaceDeveloppeurs: {
       getPath: () => `/espace-developpeurs` as string,
@@ -470,7 +485,7 @@ export const PAGES = {
       title: props.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
     }),
     // print_source et non source : « source » est un paramètre réservé de Plausible (attribution
-    // d'acquisition). La page d'impression lit encore l'ancien nom en repli.
+    // d'acquisition). Repli sur `source` : cf. ImpressionPage.
     espaceProOffreImpression: (jobId: string, printSource?: "cfa-sharing") => ({
       getPath: () => generateUri("/espace-pro/offre/impression/:jobId", { params: { jobId }, querystring: removeUndefinedFields({ print_source: printSource }) }),
       title: "Imprimer mon offre",

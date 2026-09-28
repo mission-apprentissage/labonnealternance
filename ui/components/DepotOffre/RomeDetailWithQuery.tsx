@@ -61,11 +61,7 @@ export const RomeDetailWithQuery = ({
       </Typography>
       <Typography>
         La fiche métier n'a pas pu être trouvée, merci de le{" "}
-        <DsfrLink
-          aria-label="Envoi d'un email à l'équipe La bonne alternance - nouvelle fenêtre"
-          href={`mailto:${publicConfig.publicEmail}?subject=Dépôt%20offre%20-%20ROME%20manquant-${title}`}
-          external
-        >
+        <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Dépôt%20offre%20-%20ROME%20manquant-${title}`} external>
           signaler à notre équipe support
         </DsfrLink>{" "}
         en précisant le métier cherché

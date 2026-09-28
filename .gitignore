@@ -169,7 +169,9 @@ assets/*
 tmp
 
 venv
+# CLAUDE.md générés par next dev (ui/) ; celui de la racine est versionné
 CLAUDE.md
+!/CLAUDE.md
 .mcp.json
 _temp/
 

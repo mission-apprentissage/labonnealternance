@@ -165,10 +165,6 @@ export const getRecruteurLbaFromDB = async (siret: string): Promise<ILbaItemLbaC
 /**
  * Met à jour les coordonnées de contact d'une société issue de l'algo
  * A usage interne
- * @param {string} siret
- * @param {string} email
- * @param {string} phone
- * @returns {Promise<ILbaCompany | string>}
  */
 export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string | null; phone: string | null }) => {
   const now = new Date()

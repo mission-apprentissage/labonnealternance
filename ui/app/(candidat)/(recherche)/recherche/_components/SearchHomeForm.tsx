@@ -63,15 +63,13 @@ function MobileFakeField({ value, onOpen }: { value?: string; onOpen: () => void
 }
 
 /**
- * Formulaire du nouveau moteur affiché sur la page d'accueil pour les utilisateurs ayant
- * opté pour la nouvelle version : champs + type de recherche, SANS filtres (cf. Figma).
- * State local — la recherche part vers /recherche au clic sur le bouton Rechercher, sur
- * Entrée dans un champ (sans suggestion surlignée) ou à l'acceptation d'une suggestion
- * métier : même comportement que la barre de la page de résultats.
- * En mobile, la saisie passe par une modale plein écran ouverte par un faux champ —
- * champ ancré en haut, suggestions visibles au-dessus du clavier.
+ * Formulaire du nouveau moteur sur la page d'accueil (utilisateurs ayant opté pour la nouvelle
+ * version) : champs + type de recherche, sans filtres. La recherche part vers /recherche au clic
+ * sur Rechercher ou sur Entrée liste fermée ; accepter une option métier ne fait que remplir le
+ * champ (cf. handleQChange). En mobile, la saisie passe par une modale plein écran ouverte par
+ * un faux champ, pour garder les suggestions au-dessus du clavier.
  */
-export function SearchHomeForm() {
+export function SearchHomeForm({ id }: { id: string }) {
   const router = useRouter()
   const [q, setQ] = useState("")
   // Source de la valeur du champ métier pour la télémétrie ("suggestion" si elle vient
@@ -93,11 +91,10 @@ export function SearchHomeForm() {
 
   // Retour sur la home après une recherche : formulaire vierge, comme après un montage à neuf.
   // Selon le chemin de navigation, cacheComponents remonte la home ou réaffiche l'instance
-  // conservée (<Activity> masquée) avec tout son état — le dernier choix réapparaissait alors
-  // (« France entière » notamment) là où une instance neuve n'en garde rien. Les effets d'une
-  // Activity masquée sont rejoués au réaffichage : c'est le signal de retour. Le reset ne
-  // s'applique qu'après un lancement (searchLaunched), jamais au premier montage.
-  // SearchBar (desktop) garde sa saisie en interne : le changement de key la remonte.
+  // conservée (<Activity> masquée) avec tout son état. Les effets d'une Activity masquée sont
+  // rejoués au réaffichage : c'est le signal de retour, pris en compte seulement après un
+  // lancement (searchLaunched). SearchBar (desktop) garde sa saisie en interne : le changement
+  // de key la remonte.
   const [formKey, setFormKey] = useState(0)
   const searchLaunched = useRef(false)
   useEffect(() => {
@@ -144,16 +141,15 @@ export function SearchHomeForm() {
     )
   }
 
-  /* Une suggestion acceptée (Entrée, clic) ne fait que remplir le champ, seul le bouton lance —
-     comme en 07/2026. L'alignement 09/2026 sur « Entrée = lancer » (ligne « Rechercher : … »
-     pré-surlignée) a été retiré : en test, Entrée lançait la recherche là où l'usager voulait
-     sélectionner la suggestion. Entrée ne lance que liste fermée (soumission implicite). */
+  /* Une option métier acceptée (Entrée, clic), saisie libre comme suggestion, ne fait que
+     remplir le champ : l'usager renseigne ensuite le lieu et le type d'offre (issue #5508).
+     Entrée ne lance que liste fermée (soumission implicite). */
   const handleQChange = (value: string, source: QSource) => {
     setQ(value)
     setQSource(source)
   }
 
-  // Même événement que le sélecteur de la page de résultats (spec tracking filtres).
+  // Même événement que le sélecteur de la page de résultats.
   const handleModeChange = (newMode: SearchMode) => {
     pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf(newMode), search_engine: SEARCH_ENGINES.BETA })
     setMode(newMode)
@@ -161,7 +157,10 @@ export function SearchHomeForm() {
 
   return (
     <Box
-      id="search-form"
+      id={id}
+      // Cible du lien d'évitement « Recherche » (voir ui/app/(home)/layout.tsx) : sans
+      // tabindex="-1" le navigateur scrolle jusqu'ici mais laisse le focus sur le lien.
+      tabIndex={-1}
       sx={{
         padding: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
         backgroundColor: fr.colors.decisions.background.default.grey.default,

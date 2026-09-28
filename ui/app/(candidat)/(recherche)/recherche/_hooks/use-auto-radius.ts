@@ -7,7 +7,7 @@ export const RADIUS_MAX = 100
 
 /**
  * L'élargissement automatique s'applique-t-il à ces paramètres ? Un lieu (lat/lng) sans emprise
- * administrative : avec `admin_area`, le rayon n'intervient plus dans le filtre, l'élargir ne
+ * administrative : avec `admin_area`, le rayon n'intervient pas dans le filtre, l'élargir ne
  * changerait rien. Partagé avec SearchResultsList, qui affiche le skeleton tant que
  * l'élargissement est en cours — les deux doivent s'arrêter sur la même condition, sinon
  * skeleton infini (0 résultat en emprise administrative, rayon jamais porté à 100).
@@ -15,10 +15,8 @@ export const RADIUS_MAX = 100
 export const isAutoRadiusActive = (params: ISearchPageParams) => params.latitude !== undefined && params.longitude !== undefined && !params.admin_area
 
 /**
- * Élargit automatiquement le rayon par paliers de 20 km (20, 40, … jusqu'à 100)
- * tant que la recherche géolocalisée ne renvoie aucun résultat. Remplace le
- * champ rayon manuel (devenu inutile sans carte, le scroll infini chargeant la
- * suite). Ne s'active que si un lieu (lat/lng) est défini.
+ * Élargit automatiquement le rayon par paliers de 20 km (20, 40, … jusqu'à 100) tant que la
+ * recherche géolocalisée ne renvoie aucun résultat (cf. isAutoRadiusActive).
  */
 export function useAutoRadius({
   params,

@@ -20,8 +20,8 @@ const getJobPartnersNightlyJobNames = () => [...new Set([...Object.keys(importer
 type ErrorSignal = { path: string; detail: string }
 
 // Parcourt récursivement un résultat de job (souvent imbriqué : { filled: { step1: {total,success,error}, ... } })
-// et n'en extrait que les champs *error* non nuls, avec leur chemin et leur total si disponible.
-// Évite de dumper le JSON complet (souvent illisible sur Slack) pour ne montrer que ce qui compte.
+// et n'en extrait que les champs *error* non nuls, avec leur chemin et leur total : le JSON complet
+// est illisible sur Slack.
 const findErrorSignals = (value: unknown, path: string[] = []): ErrorSignal[] => {
   if (value == null || typeof value !== "object") return []
   if (Array.isArray(value)) return value.flatMap((item, i) => findErrorSignals(item, [...path, String(i)]))

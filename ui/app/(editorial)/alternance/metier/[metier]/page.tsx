@@ -22,7 +22,6 @@ import { PAGES } from "@/utils/routes.utils"
 
 const UTM_PARAMS = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-metiers"
 
-// Shared style constants
 const boxCss = {
   textAlign: "center",
   display: "flex",
@@ -191,7 +190,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
             <HomeCircleImageDecoration size="small" />
           </Box>
           <Box sx={{ position: "relative" }}>
-            <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("10v") }}>
+            <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("10v") }}>
               Alternance{" "}
               <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
                 {data.metier}
@@ -222,16 +221,14 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
 
         <JobsCta href={jobsSearchUrl} metier={data.metier} />
 
-        {/**
-         * BLOC DESCRIPTION METIER
-         */}
+        {/* BLOC DESCRIPTION METIER */}
         <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box sx={{ mb: fr.spacing("6v") }}>
             <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
               Le métier de <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()},</span> en alternance
             </Typography>
             <Box component="hr" sx={hrSx} />
-            <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.description }} />
+            <Typography component="div" sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.description }} />
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -263,9 +260,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
           </Box>
         </Box>
 
-        {/**
-         * BLOC SALAIRE
-         */}
+        {/* BLOC SALAIRE */}
         <SalaireSection
           utmParams={UTM_PARAMS}
           titre={
@@ -275,9 +270,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
           }
         />
 
-        {/**
-         * BLOC ENTREPRISES
-         */}
+        {/* BLOC ENTREPRISES */}
         <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box sx={{ mb: fr.spacing("6v") }}>
             <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
@@ -338,9 +331,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
           </Box>
         </Box>
 
-        {/**
-         * BLOC VILLES
-         */}
+        {/* BLOC VILLES */}
         <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box sx={{ mb: fr.spacing("6v") }}>
             <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
@@ -366,7 +357,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
                 ? `/alternance/ville/${villeSlug}?${UTM_PARAMS}`
                 : `${buildSearchUrl({ mode: "emplois", q: data.metier, radius: 30, page: 0, hitsPerPage: 20, latitude: ville.geopoint.lat, longitude: ville.geopoint.long, lieu_label: ville.nom })}&${UTM_PARAMS}`
               return (
-                <Link key={ville.nom} href={href} style={{ background: "transparent" }} aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}>
+                <Link key={ville.nom} href={href} aria-label={`${ville.nom} - ${ville.job_count} offres en alternance de ${data.metier}`} style={{ background: "transparent" }}>
                   <Box
                     sx={{
                       ...boxCss,
@@ -406,9 +397,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
           </Box>
         </Box>
 
-        {/**
-         * BLOC OFFRES
-         */}
+        {/* BLOC OFFRES */}
         {data.cards.length > 0 && (
           <Box sx={{ mb: fr.spacing("8v"), mt: fr.spacing("16v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
             <Box sx={{ mb: fr.spacing("6v") }}>

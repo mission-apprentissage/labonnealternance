@@ -27,7 +27,6 @@ export const getEmailsForParcoursup = async (): Promise<string[]> => {
   const targetedEmails: string[] = []
 
   for (const etablissement of etablissementWithParcoursup) {
-    // Retrieve all emails
     let establishmentEmails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
       if (eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret) {
         const email = eligibleTrainingsForAppointment.lieu_formation_email
@@ -102,7 +101,6 @@ export const getEmailsForAffelnet = async (): Promise<string[]> => {
   const targetedEmails: string[] = []
 
   for (const etablissement of etablissementWithAffelnet) {
-    // Retrieve all emails
     let establishmentEmails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
       if (eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret) {
         const email = eligibleTrainingsForAppointment.lieu_formation_email

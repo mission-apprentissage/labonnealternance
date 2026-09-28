@@ -170,7 +170,6 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
   const { title, description, missionDescription, missionDescriptionFormatted, applicantProfile, applicantProfileFormatted, contract, contractLength, location, customFields } =
     jobDescription
 
-  // Determine contract type from the xml2js parsed value
   let business_error: string | null = null
   let contract_type: ("Apprentissage" | "Professionnalisation")[] = []
   const contractText = getXmlTextValue(contract)
@@ -209,7 +208,6 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
 
   const workplace_address_label = workplace_address_city
 
-  // Build description by combining available fields
   const descriptionParts: string[] = []
   if (missionDescriptionFormatted || missionDescription || description) {
     descriptionParts.push(/*missionDescriptionFormatted ?? */ missionDescription ?? description)
@@ -235,7 +233,6 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
     business_error = business_error ?? JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
   }
 
-  // Extract specialisations for offer_desired_skills
   // XML structure: specialisations.specialisation[*].specialisation (inner specialisation holds text)
   const rawSpecialisations = applicantCriteria?.specialisations?.specialisation
   const outerList = rawSpecialisations ? (Array.isArray(rawSpecialisations) ? rawSpecialisations : [rawSpecialisations]) : []
@@ -246,7 +243,6 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
     })
     .filter((s): s is string => s !== null && s.trim() !== "")
 
-  // Dates
   const now = new Date()
   const publicationDate = parseEnedisDate(creationDate) ?? now
   const offer_expiration = dayjs(parseEnedisDate(modificationDate) ?? publicationDate)
@@ -254,7 +250,6 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
     .add(2, "months")
     .toDate()
 
-  // Contract start from customFields datetime1 or beginningDate
   const dateTime = getXmlTextValue(customFields?.datetime1) ?? null
   const contract_start = dateTime ? parseEnedisShortDate(dateTime) : null
 

@@ -113,18 +113,15 @@ export const importReferentielRome = async () => {
     return
   }
 
-  // Convertir la réponse en ArrayBuffer et ensuite en Buffer pour le traitement
   const buffer = await response.arrayBuffer()
   const zipBuffer = Buffer.from(buffer)
 
   logger.info("Fichier ZIP téléchargé, extraction du contenu")
 
-  // Initialiser et extraire le fichier ZIP
   const zip = new admzip(zipBuffer)
   const zipEntries = zip.getEntries()
   let targetEntry
 
-  // Rechercher l'entrée correspondant au fichier XML cible
   for (const entry of zipEntries) {
     if (/unix_fiche_emploi_metier.*\.xml$/i.test(entry.entryName)) {
       targetEntry = entry
@@ -139,13 +136,11 @@ export const importReferentielRome = async () => {
 
   logger.info(`Extraction et décodage du fichier : ${targetEntry.entryName}`)
 
-  // Obtenir les données du fichier XML et les décoder
   const xmlBuffer = targetEntry.getData()
   const xml = iconv.decode(xmlBuffer, "iso8859-15")
 
   logger.info("Analyse du fichier XML")
 
-  // Parser le contenu XML
   const parser = new xml2js.Parser({ explicitArray: false, emptyTag: null })
   const data = await parser.parseStringPromise(xml)
 
@@ -154,7 +149,6 @@ export const importReferentielRome = async () => {
   if (data.fiches_metier.fiche_metier.length > 500) {
     logger.info("Suppression du référentiel courant")
 
-    // Supprimer le référentiel actuel et insérer les nouvelles données
     await getDbCollection("referentielromes").deleteMany({})
 
     await asyncForEach(data.fiches_metier.fiche_metier, async (ficheMetier: any) => {

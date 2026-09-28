@@ -30,7 +30,7 @@ export const getApplicantByEmail = async (email: string) => getApplicantFromDB({
 export const getOrCreateApplicant = async (applicant: IApplicantNew | IApplicant) => {
   let dbApplicantOpt = await getApplicantByEmail(applicant.email.toLowerCase())
   if (dbApplicantOpt) {
-    // update last_connection date on applicant collection (last application = last connection)
+    // dernière candidature = dernière connexion
     await updateApplicant(dbApplicantOpt._id, { last_connection: new Date() })
   } else {
     dbApplicantOpt = await createApplicant(applicant)

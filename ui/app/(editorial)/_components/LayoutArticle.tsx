@@ -39,8 +39,8 @@ export const LayoutArticle = ({
   sourceAllerPlusLoin?: string
   parentPage?: IPage
   page: IPage
-  // metadata de la page (celle exportée pour Next) : IPage ne porte plus les métadonnées SEO,
-  // qui vivent dans le registre METADATA server-only (issue #5214)
+  // metadata exportée par la page pour Next : les métadonnées SEO vivent dans le registre
+  // METADATA server-only, pas dans IPage (#5214)
   metadata: Metadata
 }) => (
   <>
@@ -57,7 +57,7 @@ export const LayoutArticle = ({
     />
     <Breadcrumb pages={pages} />
     <DefaultContainer sx={{ marginBottom: fr.spacing("10v") }}>
-      <Grid container spacing={fr.spacing("6v")} id="editorial-content-container">
+      <Grid container spacing={fr.spacing("6v")}>
         <Grid container sx={{ marginBottom: fr.spacing("6v") }}>
           <Grid size={{ md: 2, xs: 0 }}></Grid>
           <Grid size={{ md: 8, xs: 12 }}>

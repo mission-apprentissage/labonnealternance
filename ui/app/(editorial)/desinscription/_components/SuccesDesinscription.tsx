@@ -36,23 +36,14 @@ const SuccesDesinscription = () => (
         <Stack spacing={fr.spacing("4v")} sx={{ mt: fr.spacing("6v") }}>
           <Box sx={{ display: "flex", gap: fr.spacing("4v"), flexDirection: "column" }}>
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>
-              Celles ayant diffusé une offre d'emploi sur notre{" "}
-              <DsfrLink aria-label="Accéder au formulaire de dépôt simplifié de La bonne alternance" href={`${baseUrl}/acces-recruteur`}>
-                formulaire de dépôt simplifié
-              </DsfrLink>
+              Celles ayant diffusé une offre d'emploi sur notre <DsfrLink href={`${baseUrl}/acces-recruteur`}>formulaire de dépôt simplifié</DsfrLink>
             </Typography>
 
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>
-              Celles ayant diffusé une offre d'emploi sur{" "}
-              <DsfrLink aria-label="Accéder au site de France Travail - nouvelle fenêtre" href="https://www.francetravail.fr">
-                France Travail
-              </DsfrLink>{" "}
-              ou ses{" "}
-              <DsfrLink
-                aria-label="Accéder au site de France Travail - nouvelle fenêtre"
-                href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
-              >
+              Celles ayant diffusé une offre d'emploi sur <DsfrLink href="https://www.francetravail.fr">France Travail</DsfrLink> ou ses{" "}
+              <DsfrLink href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html">
                 sites partenaires
+                <span className="fr-sr-only">{" - Accéder à la liste des sites partenaires de France Travail"}</span>
               </DsfrLink>
             </Typography>
 
@@ -91,12 +82,7 @@ const SuccesDesinscription = () => (
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>Répondre aux problématiques de recrutement en formant un vivier de candidats employables</Typography>
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>Disposer d'un regard nouveau et sensibilisé aux enjeux de demain</Typography>
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>
-              <DsfrLink
-                aria-label="Accès au site de simulation des aides au recrutement en alternance - nouvelle fenêtre"
-                href="https://alternance.emploi.gouv.fr/simulateur-employeur/etape-1"
-              >
-                Profiter d'un financement gouvernemental
-              </DsfrLink>
+              <DsfrLink href="https://alternance.emploi.gouv.fr/simulateur-employeur/etape-1">Profiter d'un financement gouvernemental</DsfrLink>
             </Typography>
           </Box>
         </Stack>

@@ -7,9 +7,6 @@ type Coordinate = {
   destination: { latitude: number; longitude: number }
 }
 
-/**
- * Returns number of kilometers between two geo points.
- */
 export const getDistanceInKm = (coordinate: Coordinate): number => {
   const { origin, destination } = coordinate
   const distanceInKm = distance([origin.longitude, origin.latitude], [destination.longitude, destination.latitude])
@@ -36,7 +33,6 @@ export const normalizeDepartementToRegex = (code: string): RegExp[] => {
   // Cas DROM-COM (971 à 979)
   if (/^97\d$/.test(code)) return [new RegExp(`^${code}`)]
 
-  // Cas général
   return [new RegExp(`^${code}`)]
 }
 

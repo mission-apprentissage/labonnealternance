@@ -29,10 +29,8 @@ export const importDecaContratsParAnnee = async (sourceFileReadStream?: Readable
 
   let sourceStream: Readable
   try {
-    // Le runner générique des jobs simples appelle systématiquement fct(job.payload) (jobs.ts), quel que
-    // soit le job — job.payload peut donc arriver ici sous forme d'objet quelconque (pas forcément
-    // undefined). On ne réutilise ce paramètre que s'il s'agit réellement d'un Readable (cas des tests,
-    // qui injectent un stream explicite), sinon on retombe sur la lecture S3 habituelle.
+    // Le runner des jobs simples (jobs.ts) appelle toujours fct(job.payload) : le paramètre peut être un
+    // objet quelconque. Seul un vrai Readable (injecté par les tests) remplace la lecture S3.
     sourceStream = sourceFileReadStream instanceof Readable ? sourceFileReadStream : await s3ReadAsStream("storage", S3_KEY)
   } catch (err) {
     logger.error({ err }, `importDecaContratsParAnnee: échec de la lecture du fichier S3 (${S3_KEY})`)
@@ -44,9 +42,7 @@ export const importDecaContratsParAnnee = async (sourceFileReadStream?: Readable
   const counters = { total: 0, upserted: 0, errors: 0, jsonErrors: 0 }
 
   const parseStream = ndjsonToObjectStream((err, line) => {
-    // Compté à part de `errors` : une ligne non-JSON n'atteint jamais l'étape par-document (donc jamais
-    // `total`), contrairement aux rejets de validation ci-dessous. Sommé dans le message final pour un
-    // ratio complet plutôt qu'un total qui sous-compterait ces lignes.
+    // Compté à part de `errors` : une ligne non-JSON n'atteint jamais l'étape par-document, ni `total`.
     counters.jsonErrors++
     logger.error({ err, line }, "importDecaContratsParAnnee: ligne ndjson non parsable")
   })
@@ -118,8 +114,7 @@ export const importDecaContratsParAnnee = async (sourceFileReadStream?: Readable
   // en succès silencieux : le runner de jobs (jobs.ts) ne regarde que l'absence d'exception pour conclure
   // au succès, indépendamment du contenu des logs.
   if (counters.errors > 0 || counters.jsonErrors > 0) {
-    // jsonErrors sommé à total : ces lignes n'ont jamais atteint l'étape par-document (donc jamais compté
-    // dans total), sans ce correctif le ratio affiché sous-compterait le nombre réel de lignes du fichier.
+    // jsonErrors ajouté à total, qui ne compte pas ces lignes : le ratio porte sur toutes les lignes du fichier.
     const rejected = counters.errors + counters.jsonErrors
     const total = counters.total + counters.jsonErrors
     const err = new Error(`importDecaContratsParAnnee: ${rejected}/${total} document(s) rejeté(s) sur ${S3_KEY}`)

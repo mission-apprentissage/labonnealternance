@@ -25,9 +25,8 @@ import { certificationFixtures } from "@/services/external/api-alternance/certif
 vi.mock("@/common/apis/france-travail/france-travail.client")
 vi.mock("@/common/apis/api-entreprise/api-entreprise.client")
 
-// Remplace l'ancien mock HTTP du serveur lab (décommissionné) : la classification passe par
-// Mistral, mocké à la même frontière que dans cache-classification.service.test.ts. Répond
-// "publish" pour chaque offre reçue, comme le faisait le mock lab.
+// Classification Mistral mockée à la même frontière que dans cache-classification.service.test.ts :
+// répond "publish" pour chaque offre reçue.
 vi.mock("@/services/mistralai/mistralai.service", async (importOriginal) => {
   const mod = await importOriginal<typeof import("@/services/mistralai/mistralai.service")>()
   return {
@@ -550,7 +549,6 @@ describe("PUT /jobs/:id", async () => {
     expect(await getDbCollection("computed_jobs_partners").countDocuments({ _id: id })).toBe(1)
     const doc = await getDbCollection("computed_jobs_partners").findOne({ _id: id })
 
-    // Ensure that the job offer is associated to the correct permission
     expect(doc?.offer_title).toBe(data.offer.title)
     expect(doc).not.toEqual(originalJob)
   })
@@ -648,20 +646,16 @@ describe("GET /v3/jobs/:id", () => {
   })
 
   it("should return valid jobOpportunity data from jobs_partners collection", async () => {
-    // Effectuer la requête API avec l'id de la collection jobs_partners
     const response = await httpClient().inject({
       method: "GET",
       path: `/api/v3/jobs/${jobPartnerId}`,
       headers: { authorization: `Bearer ${token}` },
     })
 
-    // Vérifier que le statut HTTP est 200
     expect(response.statusCode).toBe(200)
 
-    // Récupérer les données JSON de la réponse
     const data = response.json()
 
-    // Vérifier que les données correspondent bien au schéma `zJobOfferApiReadV3`
     // Conversion en date forcée car problème de typage avec les dates
     const validationResult = zJobOfferApiReadV3.safeParse({
       ...data,
@@ -675,12 +669,10 @@ describe("GET /v3/jobs/:id", () => {
       },
     })
 
-    // Afficher les erreurs en cas d'échec de validation pour faciliter le debug
     if (!validationResult.success) {
       console.error("Validation errors:", validationResult.error.format())
     }
 
-    // Assertion pour s'assurer que les données respectent bien le schéma
     expect(validationResult.success).toBe(true)
   })
 
@@ -698,13 +690,10 @@ describe("GET /v3/jobs/:id", () => {
     const getResponse = await jobsSdk.getOffer(id, token)
     expect.soft(getResponse.statusCode).toBe(200)
 
-    // Vérifier que le statut HTTP est 200
     expect(getResponse.statusCode).toBe(200)
 
-    // Récupérer les données JSON de la réponse
     const data = getResponse.json()
 
-    // Vérifier que les données correspondent bien au schéma `zJobOfferApiReadV3`
     // Conversion en date forcée car problème de typage avec les dates
     const validationResult = zJobOfferApiReadV3.safeParse({
       ...data,
@@ -722,14 +711,11 @@ describe("GET /v3/jobs/:id", () => {
       },
     })
 
-    // Afficher les erreurs en cas d'échec de validation
     if (!validationResult.success) {
       console.error("❌ Validation errors detected:")
 
-      // Affichage formaté de toutes les erreurs
       console.error("Errors:", JSON.stringify(validationResult.error.format(), null, 2))
 
-      // Boucle sur chaque champ en erreur pour un affichage plus clair
       Object.entries(validationResult.error.format()).forEach(([field, issues]) => {
         console.error(`🚨 Champ en erreur: ${field}`)
         if (Array.isArray(issues)) {
@@ -742,32 +728,25 @@ describe("GET /v3/jobs/:id", () => {
       })
     }
 
-    // Vérifier que la validation est bien passée
     expect(validationResult.success).toBe(true)
   })
 
   it("should return error if job does not exist", async () => {
-    // Générer un ID inexistant
     const nonExistentId = new ObjectId().toString()
 
-    // Vérifier que l'ID n'existe pas en base
     const jobExistsInRecruiters = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(nonExistentId) })
     expect(jobExistsInRecruiters).toBeNull()
 
-    // Effectuer la requête API avec un ID inexistant
     const response = await httpClient().inject({
       method: "GET",
       path: `/api/v3/jobs/${nonExistentId}`,
       headers: { authorization: `Bearer ${token}` },
     })
 
-    // Vérifier que le statut HTTP est 404
     expect(response.statusCode).toBe(404)
 
-    // Récupérer les données JSON de la réponse
     const data = response.json()
 
-    // Vérifier que le message d'erreur est correct
     expect(data).toMatchObject({
       statusCode: 404,
       error: "Not Found",

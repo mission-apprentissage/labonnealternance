@@ -18,7 +18,6 @@ export const CfaCandidatInformationForm = (props) => {
             className={fr.cx("fr-input")}
             id="message"
             name="message"
-            // minRows={4}
             onChange={formik.handleChange}
             value={formik.values.message}
             placeholder={`Bonjour,

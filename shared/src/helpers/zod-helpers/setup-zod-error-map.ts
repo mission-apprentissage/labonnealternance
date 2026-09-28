@@ -12,7 +12,7 @@ export function setupZodErrorMap() {
         return `${capitalize((iss.path ?? []).join("."))}: ${iss.message}`
       }
       // returning undefined defers to the next error map in the precedence chain
-      // (ultimately Zod's own default message), matching the old `ctx.defaultError` fallback.
+      // (ultimately Zod's own default message).
       return undefined
     },
   })

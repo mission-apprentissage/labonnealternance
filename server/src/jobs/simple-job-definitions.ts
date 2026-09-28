@@ -15,6 +15,7 @@ import { anonymizeUsers } from "./anonymization/anonymize-users"
 import { removeBrevoContacts } from "./anonymization/remove-brevo-contacts"
 import { processApplications } from "./applications/process-applications"
 import { processRecruiterIntentions } from "./applications/process-recruiter-intentions"
+import { purgeApplicationCvFiles } from "./applications/purge-application-cv-files"
 import { obfuscateCollections } from "./database/obfuscate-collections"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
@@ -60,6 +61,7 @@ import { processJooble } from "./offre-partenaire/jooble/process-jooble"
 import { processKelio } from "./offre-partenaire/kelio/process-kelio"
 import { processLaposte } from "./offre-partenaire/laposte/process-laposte"
 import { processLeboncoin } from "./offre-partenaire/leboncoin/process-leboncoin"
+import { processLinkedin } from "./offre-partenaire/linkedin/process-linkedin"
 import { processPass } from "./offre-partenaire/pass/process-pass"
 import { processFillRomeStandalone } from "./offre-partenaire/process-fill-rome-standalone"
 import {
@@ -125,6 +127,14 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: obfuscateCollections,
     description: "Pseudonymisation des documents",
+  },
+  {
+    fct: purgeApplicationCvFiles,
+    description: "Supprime de S3 les CV des candidatures de plus d'un an",
+    cliOptions: [
+      { flags: "--before <date>", description: "Date ISO de coupure (défaut : il y a 1 an). Refusée si au futur." },
+      { flags: "--dry-run", description: "Compte les CV à purger sans rien supprimer" },
+    ],
   },
   {
     fct: importReferentielRome,
@@ -549,6 +559,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processApec,
     description: "Import du flux APEC jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processLinkedin,
+    description: "Import du flux LinkedIn jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: detectClassificationJobsPartners,

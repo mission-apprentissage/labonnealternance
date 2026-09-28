@@ -16,12 +16,10 @@ import { refreshEntrepriseEngagementJobsPartners } from "@/jobs/engagement-handi
 
 const S3_KEY = "siretlist/lba_handi_engage_flag.ndjson"
 
-// Nombre d'opérations upsert accumulées avant l'envoi d'un bulkWrite : borne la mémoire et le nombre
-// d'aller-retours MongoDB tout en conservant des lots de taille raisonnable.
+// Taille des lots bulkWrite : borne la mémoire et le nombre d'aller-retours MongoDB.
 const BULK_WRITE_BATCH_SIZE = 500
 
-// Marge acceptée entre le nombre de SIRET du fichier téléchargé et le nombre de documents
-// FRANCE_TRAVAIL déjà en base, avant d'autoriser le nettoyage des sources obsolètes.
+// Écart maximal toléré avant le nettoyage des sources obsolètes, cf. le garde-fou dans updateHandiEngagement.
 const MISSING_SIRETS_CLEANUP_MARGIN_RATIO = 0.2
 
 // Le fichier ndjson est supposé contenir une entrée `{ siret: string, ... }` par ligne.
@@ -116,8 +114,6 @@ export const updateHandiEngagement = async ({ force = false }: UpdateHandiEngage
     counters.modifiedCount += batch.modifiedCount
   }
 
-  // Lecture ligne à ligne en streaming (pas de chargement du fichier entier en mémoire) et écriture par
-  // lots via bulkWrite (pas d'aller-retour MongoDB par SIRET).
   const lines = createInterface({ input: stream, crlfDelay: Infinity })
   for await (const line of lines) {
     if (!line.trim()) continue

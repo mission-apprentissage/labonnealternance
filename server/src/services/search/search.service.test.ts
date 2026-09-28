@@ -7,15 +7,11 @@ import * as sentryUtils from "@/common/utils/sentry-utils"
 import { searchItems } from "@/services/search/search.service"
 
 /**
- * Repli sans fuzzy ni synonymes quand mongot dépasse maxClauseCount=1024 (#5153) : le premier
- * fix (plafond de 12 termes) n'avait aucun effet (la requête fautive en prod ne comptait que
- * 6 termes) ; le deuxième (désactiver seulement le fuzzy) non plus (même requête, retry sans
- * fuzzy toujours en échec 31ms plus tard en prod). Diagnostic confirmé en isolant chaque
- * clause contre mongot : la clause `phrase`+`synonyms` sur la requête entière (buildTextGate)
- * suffit À ELLE SEULE à dépasser la limite sur une requête longue et riche en mots courants
- * (intitulé de formation complet), indépendamment du fuzzy et du nombre de termes — et mongot
- * n'expose aucun réglage pour relever la limite. `searchItems` retente désormais la même
- * requête avec le fuzzy ET les synonymes désactivés au lieu de renvoyer un 500.
+ * Repli sans fuzzy ni synonymes quand mongot dépasse maxClauseCount=1024 (#5153). Ni un plafond
+ * de termes (la requête fautive en prod n'en comptait que 6) ni le retrait du seul fuzzy ne
+ * suffisent : la clause `phrase`+`synonyms` sur la requête entière (buildTextGate) dépasse à elle
+ * seule la limite sur une requête longue riche en mots courants, et mongot n'expose aucun réglage
+ * pour la relever.
  *
  * ⚠️ Nécessite mongot (sidecar MongoDB Search), comme search-result.test.ts — gated :
  *   SEARCH_RELEVANCE_TESTS=true yarn vitest run src/services/search/search.service.test.ts
@@ -111,8 +107,8 @@ describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy ni synonymes sur
     )
 
     // "de la le en" : uniquement des stopwords → tokenizeQuery(q) = [] côté couverture, mais la
-    // clause synonymes opère sur le q brut (pas sur `terms`) donc `gate` n'était pas null avant
-    // repli. En repli (synonymes retirées, coverage déjà vide), should:[] devait renvoyer null.
+    // clause synonymes opère sur le q brut (pas sur `terms`) donc `gate` n'est pas null avant
+    // repli. En repli (synonymes retirées, coverage déjà vide), should:[] doit renvoyer null.
     const result = await searchItems({ q: "de la le en", radius: 30, page: 0, hitsPerPage: 10 })
 
     expect(result).toBeDefined()

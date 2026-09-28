@@ -8,7 +8,7 @@ export const REPETITION_VOIE_MAPPING = {
 // Numero INE (Identifiant National Elève)
 // Le numero INE composé de 11 caractères,
 // soit 10 chiffres et 1 lettre soit 9 chiffres et 2 lettres (depuis la rentrée 2018).
-// INE BEA (Base élèves académique) 123456789FF
+// INE RNIE ex: 123456789FF
 const INE_RNIE_REGEX_PATTERN = "^[0-9]{9}[a-zA-Z]{2}$"
 // INE BEA (Base élèves académique) ex: 1234567890F
 const INE_BEA_REGEX_PATTERN = "^[0-9_]{10}[a-zA-Z]{1}$"

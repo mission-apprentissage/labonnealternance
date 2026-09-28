@@ -90,7 +90,7 @@ export const updateSeoVilleActivities = async () => {
               $sum: 1,
             },
             rome_codes: {
-              $addToSet: "$offer_rome_codes", // Collects all unique rome_codes
+              $addToSet: "$offer_rome_codes",
             },
           },
         },
@@ -194,14 +194,12 @@ const getTopCompaniesForMetier = async (romes: string[]) => {
 
   const topCompanies = await getDbCollection("jobs_partners")
     .aggregate([
-      // 1. Filtrer par statut Active et codes ROME
       {
         $match: {
           offer_status: JOB_STATUS_ENGLISH.ACTIVE,
           offer_rome_codes: { $in: romes },
         },
       },
-      // 2. Grouper par SIRET
       {
         $group: {
           _id: "$workplace_siret",
@@ -211,16 +209,13 @@ const getTopCompaniesForMetier = async (romes: string[]) => {
           count: { $sum: 1 },
         },
       },
-      // 3. Trier par count décroissant
       {
         $sort: { count: -1 },
       },
-      // 4. Limiter à topLimit
       {
         $limit: topLimit,
       },
 
-      // 5. Formatter le résultat
       {
         $project: {
           _id: 0,

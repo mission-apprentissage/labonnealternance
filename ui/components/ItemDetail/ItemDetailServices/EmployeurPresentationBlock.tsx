@@ -92,8 +92,9 @@ export const EmployeurPresentationBlock = ({
         {phone && (
           <div>
             <strong>Téléphone : </strong>
-            <DsfrLink href={`tel:${phone}`} aria-label="Appeler la société au téléphone">
+            <DsfrLink href={`tel:${phone}`}>
               {phone}
+              <span className="fr-sr-only"> - appeler la société</span>
             </DsfrLink>
           </div>
         )}

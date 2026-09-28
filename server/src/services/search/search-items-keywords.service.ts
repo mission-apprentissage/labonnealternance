@@ -18,7 +18,7 @@ import { downloadMistralBatchOutput, getMistralBatchJob, sendMistralMessages, su
  *
  * - cache `search_items_keywords` keyé par HASH du texte source : les recruteurs partagent
  *   massivement les mêmes rome_labels et les offres re-créées à texte identique ne coûtent
- *   qu'un appel — un drop de `search_items` ne perd plus les keywords ;
+ *   qu'un appel, et un drop de `search_items` ne perd pas les keywords ;
  * - offres classiques → API chat immédiate (cron continu, plafonné) ;
  * - recruteurs_lba (rechargés le dimanche, gros volume) → batch Mistral hebdomadaire
  *   dédupliqué par hash (`customId = source_hash`), suivi dans `mistral_batch_jobs` et
@@ -64,9 +64,8 @@ type KeywordsSourceDoc = Pick<ISearchItem, "title" | "description" | "rome_label
 
 /**
  * Texte source de la génération : titre + description (le titre porte souvent la forme la
- * plus canonique du métier), à défaut les intitulés ROME (recruteurs, description vide —
- * leur title = nom d'entreprise, sans valeur pour les mots-clés). Tronqué à la taille
- * réellement envoyée à Mistral — le hash du cache porte sur ce texte exact.
+ * plus canonique du métier), à défaut les intitulés ROME (recruteurs, description vide :
+ * leur title = nom d'entreprise, sans valeur pour les mots-clés). cf. SOURCE_TEXT_MAX_LENGTH.
  */
 export const buildKeywordsSourceText = (doc: Pick<ISearchItem, "title" | "description" | "rome_labels">): string => {
   const text = (doc.description?.trim() ? [doc.title?.trim(), doc.description.trim()].filter(Boolean).join("\n") : (doc.rome_labels ?? []).join(", ")).trim()
@@ -117,7 +116,6 @@ const applyCacheToDocs = async (docs: KeywordsSourceDoc[]): Promise<{ misses: (K
   for (const doc of docs) {
     const sourceText = buildKeywordsSourceText(doc)
     if (!sourceText) {
-      // Sans texte source (doc vide) : rien à générer, on marque [] directement (le doc sort de la file).
       updates.push({ updateOne: { filter: { _id: doc._id }, update: { $set: { keywords: [] } } } })
       continue
     }
@@ -156,10 +154,9 @@ export const generateSearchItemsKeywordsContinuous = async (payload?: { limit?: 
   const limit = Number(payload?.limit ?? CONTINUOUS_IMMEDIATE_LIMIT)
   const counters = { cacheHits: 0, generated: 0, unusable: 0, failures: 0 }
 
-  // 1. Passe cache, par lots, sur l'ensemble de la file. Les candidats immédiats sont
-  //    plafonnés À L'ACCUMULATION (pas après coup) : sans cela, un gros backlog (bootstrap)
-  //    retiendrait tous les miss en mémoire, descriptions comprises. Dédupliqués par hash :
-  //    un seul appel API par texte, les jumeaux seront servis par le cache au tick suivant.
+  // Candidats immédiats plafonnés à l'accumulation : sinon un gros backlog retiendrait tous les
+  // miss en mémoire, descriptions comprises. Dédupliqués par hash, les jumeaux seront servis par
+  // le cache au tick suivant.
   const pending = getDbCollection("search_items").find({ type: "offre", keywords: null }, { projection: PENDING_PROJECTION })
   const immediateCandidates: (KeywordsSourceDoc & { sourceHash: string; sourceText: string })[] = []
   const candidateHashes = new Set<string>()
@@ -182,10 +179,8 @@ export const generateSearchItemsKeywordsContinuous = async (payload?: { limit?: 
   }
   await flushChunk()
 
-  // 2. Génération immédiate des offres en miss (plafond par run, concurrence bornée,
-  //    abandon après N erreurs API consécutives — retenté au tick suivant). Le compteur
-  //    d'échecs est évalué PAR BATCH (résultats agrégés après le Promise.all) : sous
-  //    concurrence, un incrément/reset par promesse rendrait le seuil non déterministe.
+  // Échecs consécutifs comptés par batch, après le Promise.all : sous concurrence, un
+  // incrément/reset par promesse rendrait le seuil non déterministe.
   let consecutiveFailures = 0
 
   for (let i = 0; i < immediateCandidates.length; i += IMMEDIATE_CONCURRENCY) {
@@ -220,12 +215,9 @@ export const generateSearchItemsKeywordsContinuous = async (payload?: { limit?: 
 }
 
 /**
- * Soumission batch Mistral (fire-and-forget, suivi en base) des docs `keywords: null` —
- * recruteurs_lba par défaut (cron hebdo du dimanche soir, après leur rechargement de
- * 10:00 UTC), tous types via CLI (`recruteursOnly: false`) pour un rattrapage massif.
- * Dédupliqué par hash de texte source (`customId = source_hash`) : les combinaisons ROME
- * identiques ne coûtent qu'une requête. Le résultat est ramassé par
- * `applyPendingMistralBatches` puis propagé par la passe cache du cron continu.
+ * recruteurs_lba par défaut (cron hebdo du dimanche soir, après leur rechargement de 10:00 UTC),
+ * tous types via CLI (`recruteursOnly: false`) pour un rattrapage massif. Ramassé par
+ * applyPendingMistralBatches.
  */
 export const submitSearchItemsKeywordsBatch = async (payload?: { recruteursOnly?: boolean | string }) => {
   // `recruteursOnly` peut arriver en string via la CLI / un payload de job queued : la string
@@ -233,7 +225,6 @@ export const submitSearchItemsKeywordsBatch = async (payload?: { recruteursOnly?
   const recruteursOnly = String(payload?.recruteursOnly ?? true) !== "false"
   const filter = { type: "offre", keywords: null, ...(recruteursOnly ? { sub_type: LBA_ITEM_TYPE.RECRUTEURS_LBA } : {}) }
 
-  // Textes sources dédupliqués par hash.
   const textByHash = new Map<string, string>()
   const cursor = getDbCollection("search_items").find(filter, { projection: PENDING_PROJECTION })
   for await (const doc of cursor) {
@@ -242,7 +233,7 @@ export const submitSearchItemsKeywordsBatch = async (payload?: { recruteursOnly?
     textByHash.set(computeSourceHash(sourceText), sourceText)
   }
 
-  // Exclut les hashes déjà en cache (déjà générés — la passe cache du cron continu suffira).
+  // Hashes déjà en cache : la passe cache du cron continu suffit.
   const hashes = [...textByHash.keys()]
   for (let i = 0; i < hashes.length; i += CACHE_PASS_CHUNK_SIZE) {
     const slice = hashes.slice(i, i + CACHE_PASS_CHUNK_SIZE)
@@ -293,10 +284,8 @@ export const submitSearchItemsKeywordsBatch = async (payload?: { recruteursOnly?
 }
 
 /**
- * Cron de ramasse (horaire) : vérifie les jobs batch `submitted`, télécharge et applique la
- * sortie des jobs terminés dans le CACHE (customId = source_hash) — la propagation vers
- * search_items est assurée par la passe cache du cron continu. Reprise garantie : tout job
- * soumis finit ramassé, même après un redéploiement. Échec → alerte Slack.
+ * Cron de ramasse (horaire) : applique la sortie dans le cache seulement, la passe cache du cron
+ * continu propage vers search_items.
  */
 export const applyPendingMistralBatches = async () => {
   const pendingJobs = await getDbCollection("mistral_batch_jobs").find({ status: "submitted", kind: "search_items_keywords" }).toArray()
@@ -346,7 +335,6 @@ export const applyPendingMistralBatches = async () => {
         continue
       }
 
-      // QUEUED / RUNNING / … : on repassera.
       await getDbCollection("mistral_batch_jobs").updateOne({ _id: pending._id }, { $set: { checked_at: now() } })
       counters.stillRunning++
     } catch (err) {

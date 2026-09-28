@@ -12,6 +12,7 @@ export function generateApplicationFixture(data: Partial<IApplication>): IApplic
     applicant_id: applicant._id,
     applicant_message_to_company: "some blahblahblah",
     applicant_attachment_name: "cv.pdf",
+    applicant_attachment_deleted_at: null,
     company_recruitment_intention: null,
     company_feedback: null,
     company_feedback_date: null,

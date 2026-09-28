@@ -9,6 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
 import { updateClassificationAndSynchronise } from "@/services/cache-classification.service"
+import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
 import { buildLbaUrl } from "@/services/jobs/job-opportunity/job-opportunity.service"
 import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 
@@ -129,17 +130,11 @@ export default (server: Server) => {
 
       await getDbCollection("jobs_partners").updateOne(
         { _id: id },
-        {
-          $set: { offer_status: JOB_STATUS_ENGLISH.ACTIVE, updated_at: new Date() },
-          $push: {
-            offer_status_history: {
-              date: new Date(),
-              status: JOB_STATUS_ENGLISH.ACTIVE,
-              reason: "réactivation manuelle par un administrateur",
-              granted_by: requestUser.email,
-            },
-          },
-        }
+        buildJobStatusChangeUpdate({
+          status: JOB_STATUS_ENGLISH.ACTIVE,
+          reason: "réactivation manuelle par un administrateur",
+          grantedBy: requestUser.email,
+        })
       )
       syncJobPartnersToSearchItemsInBackground([id])
       return res.status(200).send({})
@@ -163,17 +158,11 @@ export default (server: Server) => {
 
       await getDbCollection("jobs_partners").updateOne(
         { _id: id },
-        {
-          $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
-          $push: {
-            offer_status_history: {
-              date: new Date(),
-              status: JOB_STATUS_ENGLISH.ANNULEE,
-              reason,
-              granted_by: requestUser.email,
-            },
-          },
-        }
+        buildJobStatusChangeUpdate({
+          status: JOB_STATUS_ENGLISH.ANNULEE,
+          reason,
+          grantedBy: requestUser.email,
+        })
       )
       syncJobPartnersToSearchItemsInBackground([id])
       return res.status(200).send({})

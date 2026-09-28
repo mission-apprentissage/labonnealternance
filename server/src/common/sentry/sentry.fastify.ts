@@ -54,7 +54,6 @@ function extractUserData(request: FastifyRequest): UserData {
 }
 
 export function initSentryFastify(app: Server) {
-  // Setup official Fastify error handler
   // shouldHandleError capture cet handler AVANT le passage par errorMiddleware/boomify : sans lui,
   // les erreurs de validation Fastify (querystring/body, statusCode 400, ex. FST_ERR_VALIDATION)
   // remontent brutes et échappent au filtre beforeSend de sentry.ts (qui ne sait reconnaître que
@@ -66,7 +65,6 @@ export function initSentryFastify(app: Server) {
     },
   })
 
-  // Custom user data hook
   app.addHook("onRequest", async (request, _reply) => {
     const scope = Sentry.getIsolationScope()
     scope

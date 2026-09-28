@@ -14,13 +14,7 @@ import * as eligibleTrainingsForAppointmentService from "@/services/eligible-tra
 import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
 
-/**
- * @description Etablissement server.
- */
 export default (server: Server) => {
-  /**
-   * @description Returns etablissement from its id.
-   */
   server.get(
     "/etablissements/:id",
     {
@@ -81,7 +75,6 @@ export default (server: Server) => {
 
       await sendMailCfaPremiumStart(etablissement, "affelnet")
 
-      // update establishment with premium activation date
       etablissement = await getDbCollection("etablissements").findOneAndUpdate(
         { _id: etablissement._id },
         {
@@ -95,7 +88,7 @@ export default (server: Server) => {
         affelnet_visible: true,
       })
 
-      // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
+      // Emails des lieux de formation, hors email décisionnaire (gestionnaire_email)
       let emailsAffelnet = eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
       emailsAffelnet = [...new Set(emailsAffelnet.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
 
@@ -134,7 +127,6 @@ export default (server: Server) => {
         )
       )
 
-      // update all eligible trainings for appointments with referrer AFFELNET
       const eligibleTrainingsForAppointmentsIdsToUpdate = eligibleTrainingsForAppointmentsAffelnetFound.map((doc) => doc._id)
       await getDbCollection("eligible_trainings_for_appointments").updateMany(
         { _id: { $in: eligibleTrainingsForAppointmentsIdsToUpdate } },
@@ -171,7 +163,6 @@ export default (server: Server) => {
 
       await sendMailCfaPremiumStart(etablissement, "parcoursup")
 
-      // update establishment with premium activation date
       etablissement = await getDbCollection("etablissements").findOneAndUpdate(
         { _id: etablissement._id },
         {
@@ -188,7 +179,7 @@ export default (server: Server) => {
         parcoursup_visible: true,
       })
 
-      // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
+      // Emails des lieux de formation, hors email décisionnaire (gestionnaire_email)
       let emailsParcoursup = eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
       emailsParcoursup = [...new Set(emailsParcoursup.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
 
@@ -230,7 +221,6 @@ export default (server: Server) => {
         )
       )
 
-      // update all eligible trainings for appointments with referrer PARCOURSUP
       const eligibleTrainingsForAppointmentsIdsToUpdate = eligibleTrainingsForAppointmentsParcoursupFound.map((doc) => doc._id)
       await getDbCollection("eligible_trainings_for_appointments").updateMany(
         { _id: { $in: eligibleTrainingsForAppointmentsIdsToUpdate } },
@@ -291,7 +281,6 @@ export default (server: Server) => {
         },
       })
 
-      // update establishment with premium refusal date
       etablissement = await getDbCollection("etablissements").findOneAndUpdate(
         { _id: etablissement._id },
         {
@@ -354,7 +343,6 @@ export default (server: Server) => {
         },
       })
 
-      // update establishment with premium refusal date
       etablissement = await getDbCollection("etablissements").findOneAndUpdate(
         { _id: etablissement._id },
         {
@@ -367,9 +355,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * @description OptOutUnsubscribe to "opt-out".
-   */
   server.post(
     "/etablissements/:id/opt-out/unsubscribe",
     {
@@ -430,7 +415,6 @@ export default (server: Server) => {
         )
       }
 
-      // update establishment with optout refusal date
       etablissement = await getDbCollection("etablissements").findOneAndUpdate(
         { _id: new ObjectId(req.params.id.toString()) },
         {

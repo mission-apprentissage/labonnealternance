@@ -108,7 +108,7 @@ const nextConfig = {
   },
   output: "standalone",
   compress: false, // disable default gzip compression by nextJS, done by Nginx
-  cacheMaxMemorySize: 0, // disable default in-memory caching
+  cacheMaxMemorySize: 0,
   images: {
     unoptimized: true,
     // Tout changement d'image devra passer par un changement de nom de fichier
@@ -244,19 +244,14 @@ const nextConfig = {
 }
 
 const sentryConfig = {
-  // For all available options, see:
-  // https://github.com/getsentry/sentry-webpack-plugin#options
-
   org: "sentry",
   project: "lba-ui",
   sentryUrl: "https://sentry.apprentissage.beta.gouv.fr/",
 
-  // Le tracing client est volontairement retiré (issue #5186) : sans ce flag, chaque build
-  // afficherait « ACTION REQUIRED » en demandant de réexporter onRouterTransitionStart depuis
-  // instrumentation-client.ts — soit exactement ce que la décision d'équipe a supprimé.
+  // Pas de tracing client (issue #5186, cf. instrumentation-client.ts) : sans ce flag, chaque build
+  // affiche « ACTION REQUIRED » et demande de réexporter onRouterTransitionStart.
   suppressOnRouterTransitionStartWarning: true,
 
-  // Only print logs for uploading source maps in CI
   silent: false,
 
   // For all available options, see:
@@ -265,21 +260,12 @@ const sentryConfig = {
   // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
 
-  // Formes non dépréciées depuis Sentry 10.x : reactComponentAnnotation et le tree-shaking
-  // du logger (ex-disableLogger) vivent sous `webpack`. hideSourceMaps a été retiré du SDK
-  // (la rétention des sourcemaps est pilotée par `sourcemaps` ci-dessous).
+  // Sentry 10.x : ces options vivent sous `webpack` (formes de premier niveau dépréciées). La
+  // rétention des sourcemaps est pilotée par `sourcemaps` ci-dessous, pas par hideSourceMaps.
   webpack: {
-    // Automatically annotate React components to show their full name in breadcrumbs and session replay
     reactComponentAnnotation: { enabled: true },
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
     treeshake: { removeDebugLogging: true },
   },
-
-  // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  // This can increase your server load as well as your hosting bill.
-  // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-  // side errors will fail.
-  // tunnelRoute: "/monitoring",
 
   sourcemaps: {
     disable: false,

@@ -155,9 +155,7 @@ export const createOrganizationUser = async ({
   organization: Organization
   grantedBy?: string
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
-  // Choix (ENTREPRISE) déclaré à la création du compte : posé sur le rôle créé, mais pas encore appliqué
-  // à referentiel_engagement_entreprise — cf. modifyPermissionToUser/applyPendingHandiEngagementIfGranted,
-  // qui ne l'enregistrent que lorsque ce rôle passe réellement à GRANTED.
+  // Choix (ENTREPRISE) déclaré à la création du compte, appliqué au passage à GRANTED (cf. applyPendingHandiEngagementIfGranted)
   handiEngagement?: IRoleManagement["handiEngagement"]
 }) => {
   const { user, created } = await findOrCreateUserWithAccount(userFields, is_email_checked, grantedBy ?? "")
@@ -297,8 +295,6 @@ export const removeUser = async (id: IUserWithAccount["_id"] | string) => {
 
 /**
  * @description update last_connection user date
- * @param {IUserRecruteur["email"]} email
- * @returns {Promise<IUserRecruteur>}
  */
 export const updateLastConnectionDate = async (email: IUserRecruteur["email"]): Promise<void> => {
   await getDbCollection("userswithaccounts").updateOne({ email: email.toLowerCase() }, { $set: { last_action_date: new Date(), updatedAt: new Date() } })
@@ -306,8 +302,6 @@ export const updateLastConnectionDate = async (email: IUserRecruteur["email"]): 
 
 /**
  * @description get last user validation state from status array, by creation date
- * @param {IUserRecruteur["status"]} stateArray
- * @returns {IUserRecruteur["status"]}
  */
 export const getUserStatus = (stateArray: IUserRecruteur["status"]): IUserStatusValidation["status"] => {
   const sortedArray = [...stateArray].sort((a, b) => new Date(a?.date ?? 0).valueOf() - new Date(b?.date ?? 0).valueOf())

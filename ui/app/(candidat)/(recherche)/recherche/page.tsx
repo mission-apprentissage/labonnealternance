@@ -11,7 +11,7 @@ type Props = {
 
 // Titre ajusté à la recherche (métier / lieu / mode), comme le moteur legacy.
 // Les navigations client (router.replace) re-fetchent le payload RSC → Next met à jour
-// document.title à chaque recherche. Repli sur les URL legacy `?job_name=` (cf. util) pour ne
+// document.title à chaque recherche. Repli sur les URL legacy `?job_name=` (cf. buildRecherchePageMetadata) pour ne
 // pas servir un titre générique aux pages métier indexées par Google.
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   return buildRecherchePageMetadata(new URLSearchParams(await searchParams))

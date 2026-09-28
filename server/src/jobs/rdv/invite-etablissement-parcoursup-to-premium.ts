@@ -80,7 +80,6 @@ export const inviteEtablissementParcoursupToPremium = async (bypassDate?: boolea
 
     count++
 
-    // Invite all etablissements only in production environment
     const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Parcoursup !`,

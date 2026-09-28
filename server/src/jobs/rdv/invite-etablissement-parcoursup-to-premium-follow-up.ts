@@ -72,7 +72,6 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate:
 
     count++
 
-    // Invite all etablissements only in production environment
     const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Rappel: Trouvez et recrutez vos candidats sur Parcoursup`,

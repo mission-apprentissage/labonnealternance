@@ -105,24 +105,12 @@ const neededFieldsFromCatalogue = {
   num_tel: 1,
 }
 
-/**
- * @description Get formation by its identifier.
- * @param {String} id
- * @returns {Promise<Object>}
- */
 export const getFormationById = (id: string) => getDbCollection("formationcatalogues").findOne({ _id: new ObjectId(id) })
 
-/**
- * @description Get formations from the formation catalogue collection.
- * @param {Object} query - Mongo query
- * @param {Object} select
- * @returns {Promise<Object>}
- */
 export const getCatalogueFormations = (query: object, select?: object) => getDbCollection("formationcatalogues").find(query, select).toArray()
 
 /**
  * @description Get formations count through the CARIF OREF catalogue API.
- * @returns {string}
  */
 export const countFormations = async (): Promise<number | boolean> => {
   try {
@@ -134,22 +122,11 @@ export const countFormations = async (): Promise<number | boolean> => {
   }
 }
 
-/**
- * @description Returns etablissements.
- * @param {Object} query
- * @returns {Promise<Object[]>}
- */
 export const getCatalogueEtablissements = async (query: object = {}, select: object = {}): Promise<{ etablissements: IEtablissementCatalogue[] }> => {
   const response = await axios.post(`${config.catalogueUrl}/api/v1/entity/etablissements`, { query, select, limit: 100000 })
   return response.data
 }
 
-/**
- * @description Gets nearest "etablissements" from ROMEs.
- * @param {string[]} rome
- * @param {{latitude: string, longitude: string}} origin
- * @returns {Promise<Object[]>}
- */
 export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { rome: string[]; origin: { latitude: number; longitude: number }; limit: number }) => {
   const formationQuery: Filter<IFormationCatalogue> = {
     rome_codes: { $in: rome },
@@ -208,11 +185,6 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { 
   return etablissementsRefined.slice(0, limit)
 }
 
-/**
- * @description Convert query into URL params
- * @param {Object} query - Mongo query
- * @returns {String}
- */
 const convertQueryIntoParams = (query: object, options: object = {}): string => {
   return querystring.stringify({
     query: JSON.stringify(query),
@@ -248,10 +220,6 @@ export const getAllFormationsFromCatalogue = async () => {
   })
 }
 
-/**
- * @description create an axios instance to connect to the ministère educatif catalogue
- * @returns {instanceof<API>}
- */
 const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
   const instance = axios.create({ baseURL: "https://catalogue.apprentissage.education.gouv.fr/api" })
 

@@ -54,13 +54,9 @@ describe("getHiringCountLastFullYears", () => {
     expect(result).toBe(0)
   })
 
-  // Documents historiques possibles malgré la validation zod à l'import (écrits avant son ajout, ou en
-  // base malgré le validationAction "warn" en prod) : le service doit rester défensif plutôt que planter.
-  // bypassDocumentValidation: en environnement de test, le validateur JSON schema de la collection est en
-  // mode "error" (mongodb-utils.ts, validationAction "warn" uniquement en prod) : ces documents malformés
-  // seraient normalement rejetés à l'insertion. On force leur écriture pour reproduire fidèlement un
-  // document historique déjà présent en base (écrit avant l'ajout de la validation zod à l'import, ou
-  // en base malgré le mode "warn" en prod).
+  // Documents historiques (écrits avant la validation zod à l'import, ou en base malgré le
+  // validationAction "warn" en prod) : le service doit rester défensif plutôt que planter.
+  // bypassDocumentValidation : en test, le validateur de la collection est en mode "error" (mongodb-utils.ts).
   it("retourne 0 quand contrats_par_annee est absent du document", async () => {
     await getDbCollection("deca_contrats").insertOne(
       {
@@ -107,9 +103,8 @@ describe("getHiringCountLastFullYears", () => {
   })
 
   it("ignore une valeur négative pour une année", async () => {
-    // Depuis la consolidation du schéma (ZDecaContrats.contrats_par_annee est maintenant .nonnegative()),
-    // une valeur négative est rejetée par le validateur Mongo lui-même : ce cas ne peut plus survenir que
-    // sur un document historique écrit avant ce durcissement, d'où le bypassDocumentValidation.
+    // ZDecaContrats.contrats_par_annee est .nonnegative() : seul un document historique peut porter
+    // une valeur négative, d'où le bypassDocumentValidation.
     await getDbCollection("deca_contrats").insertOne(
       {
         _id: new ObjectId(),

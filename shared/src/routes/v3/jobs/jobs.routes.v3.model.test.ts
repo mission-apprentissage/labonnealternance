@@ -356,7 +356,7 @@ describe("IJobOfferApiWriteV3", () => {
   })
 
   describe("offer_creation", () => {
-    // Fallback is handled in jobOpportinityService
+    // Fallback is handled in job-opportunity.service
     it("should allow null", () => {
       const result = zJobOfferApiWriteV3.safeParse({
         ...data,
@@ -461,7 +461,7 @@ describe("IJobOfferApiWriteV3", () => {
   })
 
   describe("offer_expiration", () => {
-    // Fallback is handled in jobOpportinityService
+    // Fallback is handled in job-opportunity.service
     it("should allow null", () => {
       const result = zJobOfferApiWriteV3.safeParse({
         ...data,
@@ -674,7 +674,7 @@ describe("convertToJobOfferApiReadV3", () => {
       },
       apply: {
         url: "https://postler.com",
-        phone: "0300000000",
+        phone: null,
         recipient_id: null,
       },
       contract: {

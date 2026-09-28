@@ -38,8 +38,8 @@ export type INavigationTargets = {
 
 /**
  * Calcule, dans la liste des résultats, la position de l'item courant et les index
- * précédent/suivant (navigation circulaire). Sans `currentUrlId` (conséquence historique
- * des liens partagés « recherche France entière »), la navigation démarre du premier
+ * précédent/suivant (navigation circulaire). Sans `currentUrlId` (liens partagés
+ * « recherche France entière »), la navigation démarre du premier
  * résultat mais `position` reste null : l'item affiché n'est pas identifié dans la liste.
  * Item absent de la liste → pas de navigation.
  */
@@ -111,13 +111,10 @@ export function useDetailNavigation(): IDetailNavigation {
     },
   })
 
-  // « Fermer » revient sur la liste, en y rescrollant sur la carte consultée (via
-  // withActiveHit — cf. SearchResultsList) plutôt que de reperdre la position en haut.
-  // Sans currentUrlId identifiable, pas de référence à ajouter : retour simple sur `from`,
-  // avec le scroll-to-top par défaut du routeur (pas de cible à restaurer de toute façon).
-  // Avec une référence, `scroll: false` est impératif : par défaut Next remonte en haut de
-  // page à chaque navigation, ce qui écraserait le scroll restauré par SearchResultsList
-  // (les deux s'exécutent dans le même commit — le sien, en tant qu'ancêtre, après le nôtre).
+  // « Fermer » revient sur la liste en y rescrollant sur la carte consultée (withActiveHit,
+  // cf. SearchResultsList). `scroll: false` impératif dans ce cas : le scroll-to-top par défaut
+  // de Next écraserait le scroll restauré par SearchResultsList. Sans currentUrlId, retour
+  // simple sur `from`.
   const closeUrl = from !== null ? (currentUrlId ? withActiveHit(from, currentUrlId) : from) : null
 
   return {

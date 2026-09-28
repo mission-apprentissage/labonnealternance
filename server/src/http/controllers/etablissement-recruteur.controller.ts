@@ -146,9 +146,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Récupération des informations d'un cfa à l'aide des tables de correspondances et du référentiel
-   */
   server.get(
     "/etablissement/cfa/:siret/validate-creation",
     {
@@ -336,10 +333,7 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Désactiver les mises en relations avec les entreprises
-   */
-
+  // Désactiver les mises en relations avec les entreprises
   server.post(
     "/etablissement/:establishment_siret/proposition/unsubscribe",
     {

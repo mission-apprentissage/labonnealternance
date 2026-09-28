@@ -107,6 +107,11 @@ export function BarChartVertical({
               const total = item.total ?? item.segments.reduce((sum, s) => sum + s.value, 0)
               const heightPercent = max > 0 ? (total / max) * 100 : 0
               const delay = index * 0.05
+              // Nom accessible de la barre. Sur un graphique empilé, le total seul masque la
+              // répartition, qui est l'information portée par le graphique (RGAA 1.6) ; sur une
+              // barre simple, le segment unique ne ferait que répéter le total.
+              const segmentLabels = item.segments.filter((s) => s.value > 0).map((s) => `${s.label} : ${s.value.toLocaleString("fr-FR")}`)
+              const barLabel = [`${item.label} : ${item.totalDisplay ?? total.toLocaleString("fr-FR")}`, ...(item.segments.length > 1 ? segmentLabels : [])].join(", ")
 
               return (
                 <Box
@@ -189,7 +194,7 @@ export function BarChartVertical({
                       transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
                       role="img"
                       tabIndex={0}
-                      aria-label={`${item.label}: ${item.totalDisplay ?? total.toLocaleString("fr-FR")}`}
+                      aria-label={barLabel}
                       style={{
                         width: "100%",
                         height: "100%",

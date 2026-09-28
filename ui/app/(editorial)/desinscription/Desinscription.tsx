@@ -31,7 +31,6 @@ export function DesinscriptionRecruteur() {
     <Box>
       <Breadcrumb pages={[PAGES.static.desinscription]} />
       <DefaultContainer sx={{ marginBottom: fr.spacing("10v") }}>
-        <Box sx={{ height: 0 }} id="editorial-content-container" />
         {!isSuccess ? (
           <>
             <FormulaireDesinscription companyEmail={data?.company_email || ""} handleUnsubscribeSuccess={handleUnsubscribeSuccess} />

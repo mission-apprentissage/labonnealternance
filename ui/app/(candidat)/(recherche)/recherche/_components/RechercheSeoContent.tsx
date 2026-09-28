@@ -10,18 +10,13 @@ import { buildHitDetailUrl, buildRechercheH1, buildSearchUrl } from "../_utils/s
 const MAX_SEO_OFFERS = 10
 
 /**
- * Contenu SEO server-rendered de la page `/recherche`, rendu `sr-only` (invisible à l'écran) :
- * - un H1 dynamique « Alternance {métier}{ à {lieu}} », présent dès le HTML initial — la page
- *   n'en a sinon aucun, tout le rendu visible étant piloté par le client `SearchPageClient` ;
- * - les premières offres en vrais liens `<a href>` (maillage interne + contenu indexable).
- * 100 % additif : ne remplace pas le rendu client interactif.
+ * Contenu SEO server-rendered de `/recherche`, en `sr-only` : un H1 « Alternance {métier}{ à {lieu}} »
+ * (la page n'en a aucun autre, le rendu visible étant client) et les premières offres en vrais
+ * liens `<a href>` pour le maillage interne.
  *
- * Le bloc offres est réservé aux robots : `aria-hidden` + `tabIndex={-1}` sur les liens. Sans
- * cela, ces liens invisibles (sr-only) précèdent le formulaire dans le DOM et captent la
- * tabulation — une dizaine de Tab « dans le vide » entre le header et « Que recherchez-vous ? »
- * (cf. issue #5257). Les lecteurs d'écran ont déjà les vraies cartes dans la liste de résultats,
- * ce doublon ne leur apporte rien. Les robots d'indexation ignorent ces deux attributs.
- * Le H1, lui, reste exposé aux technologies d'assistance (seul titre de niveau 1 de la page).
+ * Le bloc offres est réservé aux robots (`aria-hidden` + `tabIndex={-1}`) : sinon ces liens
+ * invisibles précèdent le formulaire dans le DOM et captent une dizaine de Tab (issue #5257).
+ * Les lecteurs d'écran ont déjà les vraies cartes ; le H1, lui, reste exposé.
  */
 export function RechercheSeoContent({ params }: { params: ISearchPageParams }) {
   const h1 = buildRechercheH1(params)
@@ -46,7 +41,7 @@ async function RechercheSeoOffers({ params }: { params: ISearchPageParams }) {
     // `q` que le fetch client initial — exclu du log analytics de recherche côté serveur.
     data = await apiGet("/v1/search", { querystring: { ...paramsToQuerystring(params), page: 0, hitsPerPage: MAX_SEO_OFFERS, internal: "true" } as never })
   } catch {
-    // Fail-safe : une erreur/lenteur de l'API ne doit jamais casser la page. On omet le bloc offres.
+    // Une erreur/lenteur de l'API ne doit jamais casser la page : on omet le bloc offres.
     return null
   }
 

@@ -23,7 +23,7 @@ export function getLbaCompaniesColumns({ onSelect }: { onSelect: (siret: string)
               actions={[
                 {
                   label: "Éditer les coordonnées",
-                  ariaLabel: `Éditer les coordonnées de la société ${raison_sociale ?? siret}`,
+                  hint: `${raison_sociale ?? siret}`,
                   type: "button",
                   onClick: () => onSelect(siret),
                 },
@@ -43,8 +43,9 @@ export function getLbaCompaniesColumns({ onSelect }: { onSelect: (siret: string)
         const { raison_sociale, enseigne, siret, opco } = info.row.original
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Link component="button" fontWeight="700" onClick={() => onSelect(siret)} sx={{ textAlign: "left" }} aria-label="éditer les coordonnées de la société">
+            <Link component="button" fontWeight="700" onClick={() => onSelect(siret)} sx={{ textAlign: "left" }}>
               {raison_sociale || enseigne || siret}
+              <span className="fr-sr-only"> - éditer les coordonnées de la société</span>
             </Link>
             <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>SIRET {siret}</Typography>
             {opco && (

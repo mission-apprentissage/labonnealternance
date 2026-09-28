@@ -4,12 +4,6 @@ import { isOriginLocal } from "@/common/utils/is-origin-local"
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import type { TJobSearchQuery } from "./job-opportunity.service.types"
 
-/**
- * Contrôle le format d'un code RNCP
- * @param {string} rncp le code RNCP dont on souhaite valider le format
- * @param {string[]} error_messages un tableau de messages d'erreur
- * @returns {boolean}
- */
 const validateRncp = (rncp: string, error_messages: string[]) => {
   if (!/^RNCP\d{2,5}$/.test(rncp)) {
     error_messages.push("rncp : Badly formatted rncp code. RNCP code must include 'RNCP' prefix followed by 2 to 5 digit number. ex : RNCP12, RNCP12345 ...")
@@ -22,15 +16,10 @@ const validateRncp = (rncp: string, error_messages: string[]) => {
 /**
  * Contrôle que les paramètres de codes ROME ou RNCP respectent les critères requis
  * ajoute les erreurs dans error_messages
- * @param {TJobSearchQuery} query les paramètres à vérifier
- * @param {string[]} error_messages un tableau de messages d'erreur
- * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
- * @returns {undefined}
  */
 const validateRomesOrRncp = async (query: Omit<TJobSearchQuery, "isMinimalData">, error_messages: string[], romeLimit = MAX_SEARCH_ROMES) => {
   const { romes, rncp } = query
 
-  // codes ROME : romes
   if (romes && rncp) {
     error_messages.push("romes or rncp : You must specify either a rncp code or 1 or more rome codes.")
   } else if (romes) {
@@ -51,14 +40,6 @@ const validateRomesOrRncp = async (query: Omit<TJobSearchQuery, "isMinimalData">
   }
 }
 
-/**
- * Contrôle du format correct du rayon de recherche
- * @param {number} radius le rayon
- * @param {string[]} error_messages une liste de messages d'erreur
- * @param {number} min optionnel. le rayon minimum
- * @param {number} max optionnel. le rayon maximum
- * @returns {undefined}
- */
 const validateRadius = (radius: number | undefined, error_messages: string[], min = 0, max = 200) => {
   if (radius === undefined) error_messages.push("radius : Search radius is missing.")
   else if (radius < min || (radius > max && radius !== 20000)) error_messages.push(`radius : Search radius must be a number between ${min} and ${max}.`)
@@ -95,9 +76,6 @@ const validateApiSources = (apiSources: string | undefined, errorMessages: strin
 
 /**
  * Contrôle sur le champ caller : obligatoire si appel externe, facultatif si appel depuis le front lba
- * @param {string} caller
- * @param {string} referer
- * @returns {boolean}
  */
 export const validateCaller = ({ caller, referer }: { caller: string | null | undefined; referer: string | undefined }, error_messages: string[] = []) => {
   if (!isOriginLocal(referer) && !caller) {
@@ -113,7 +91,6 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
   const error_messages = []
   const { caller, referer, latitude, longitude, insee, radius, sources } = query
 
-  // présence d'identifiant de la source : caller
   validateCaller({ caller, referer }, error_messages)
 
   // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
@@ -124,16 +101,13 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
     validateLatitude(latitude, error_messages)
     validateLongitude(longitude, error_messages)
 
-    // rayon de recherche : radius
     validateRadius(radius, error_messages)
 
-    // code INSEE : insee
     if (caller) {
       validateInsee(insee, error_messages)
     }
   }
 
-  // source mal formée si présente
   validateApiSources(sources, error_messages)
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }

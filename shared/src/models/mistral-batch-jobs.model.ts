@@ -8,7 +8,7 @@ const collectionName = "mistral_batch_jobs" as const
 /**
  * Suivi des jobs batch Mistral soumis en fire-and-forget : un cron (`applyPendingMistralBatches`)
  * ramasse les jobs terminés (téléchargement du fichier de sortie + application) — la reprise
- * survit aux redéploiements, plus aucun traitement manuel requis. `kind` identifie le
+ * survit aux redéploiements. `kind` identifie le
  * consommateur (extensible à d'autres usages que les keywords).
  */
 export const ZMistralBatchJob = z.object({

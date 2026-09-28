@@ -17,9 +17,8 @@ export interface FilterChange {
 
 const TYPE_FILTER_LABEL_DISTANCE = "Formation à distance"
 
-// is_algo_company est multi-valeurs : false = offres d'emploi, true = entreprises à
-// contacter. Les deux cochées ou aucune = pas de filtre API, mais chaque case reste
-// trackée individuellement (un événement par valeur cochée/décochée).
+// is_algo_company (cf. ISearchPageParams) : chaque case reste trackée individuellement, même
+// quand les deux cochées ne filtrent rien côté API.
 const JOB_OFFER_TYPE_LABELS: Record<"true" | "false", string> = {
   false: "Offres d'emploi en alternance",
   true: "Entreprises à contacter",

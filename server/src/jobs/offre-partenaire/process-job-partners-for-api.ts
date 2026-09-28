@@ -13,19 +13,16 @@ import { importFromComputedToJobsPartners } from "./import-from-computed-to-jobs
 const excludedJobPartnersFromApi = Object.values(JOBPARTNERS_LABEL)
 
 /**
- * Indexe dans search_items les offres que le run vient d'écrire dans jobs_partners, sans attendre
- * le cron delta : les deux crons n'ont aucun rendez-vous, et lancés sur la même minute le delta lit
- * jobs_partners AVANT le commit de l'import (observé en recette le 28/08/2026 : import terminé à
- * 10:00:49, delta démarré à 10:00:23 → « 0 modifiés », offre visible seulement à 10:15).
+ * Indexe dans search_items les offres que le run vient d'écrire, sans attendre le cron delta : les
+ * deux crons ne sont pas synchronisés, et lancé sur la même minute le delta peut lire jobs_partners
+ * avant le commit de l'import (observé en recette le 28/08/2026 : offre visible 15 min plus tard).
  *
- * Indexation ciblée sur les _id importés, et non sur une fenêtre `updated_at` : une fenêtre
- * absorberait tout ce qu'un AUTRE job écrit pendant ce run, donc jusqu'à 4 min de travail mesurées
- * pendant les imports de masse nocturnes — de quoi allonger ce cron au-delà de son intervalle de
- * 5 min et faire chevaucher deux runs, soit exactement la latence de publication qu'on cherche à
- * réduire. Le cron delta reste le rattrapage.
+ * Ciblage sur les _id importés plutôt qu'une fenêtre `updated_at` : une fenêtre absorberait tout
+ * ce que les autres jobs écrivent pendant le run (jusqu'à 4 min de travail mesurées pendant les
+ * imports nocturnes), assez pour dépasser l'intervalle de 5 min et faire chevaucher deux runs.
  *
- * L'indexation ne doit pas faire échouer le run : l'import est déjà commité en base, et une erreur
- * ici serait rejouée par le cron delta puis par la réconciliation nightly.
+ * Ne fait pas échouer le run : l'import est déjà commité, et le cron delta puis la réconciliation
+ * nightly rattrapent l'indexation.
  */
 const syncImportedJobsToSearchItems = async (jobPartnerIds: ObjectId[]) => {
   // La plupart des runs n'importent rien : pas de ligne de log toutes les 5 min pour 0 offre.
@@ -36,9 +33,8 @@ const syncImportedJobsToSearchItems = async (jobPartnerIds: ObjectId[]) => {
     const { upserted, removed } = await syncJobPartnersToSearchItemsInChunks(jobPartnerIds)
     logger.info(`processJobPartnersForApi: indexation search_items de ${jobPartnerIds.length} offres importées — ${upserted} upserts, ${removed} retraits`)
   } catch (err) {
-    // Loggué en plus de Sentry : le run sort en succès, donc sans cette ligne la dégradation est
-    // indiscernable d'un bon run dans les logs — or c'est là qu'on diagnostique la latence
-    // d'indexation. Les offres restent rattrapées par le cron delta puis par le nightly.
+    // Loggué en plus de Sentry : le run sort en succès, sans cette ligne la dégradation serait
+    // indiscernable d'un bon run dans les logs, où se diagnostique la latence d'indexation.
     logger.error({ err, count: jobPartnerIds.length }, "processJobPartnersForApi: indexation search_items en échec, rattrapage laissé au cron delta")
     sentryCaptureException(err)
   }
@@ -84,8 +80,8 @@ export const processJobPartnersForApi = async () => {
     await fillLbaUrl()
     await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
   } finally {
-    // Libération dans un finally, comme le job voisin : sur échec, laisser les documents
-    // revendiqués les rendrait invisibles au run suivant pendant une heure.
+    // Sur échec, des documents restés revendiqués seraient invisibles au run suivant pendant une
+    // heure (cf. STALE_PROCESS_ID_AFTER_MS).
     await getDbCollection("computed_jobs_partners").updateMany(filter, { $set: { currently_processed_id: null } })
   }
   await syncImportedJobsToSearchItems(importedIds)

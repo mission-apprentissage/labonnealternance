@@ -50,10 +50,6 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
 
   const job = (formulaire?.jobs as IJobJson[])?.find((job) => job._id === jobId)
 
-  /**
-   * @description Copy in clipboard.
-   * @return {Promise<void>}
-   */
   const copyInClipboard = () => {
     const jobUrl = `${PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId: job._id }).getPath()}&utm_source=lba&utm_medium=website&utm_campaign=mer-cfa-entreprise`
     navigator.clipboard.writeText(`${publicConfig.baseUrl}${jobUrl}`)
@@ -120,7 +116,13 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
           {job.job_employer_description && (
             <Box>
               <Typography sx={{ fontSize: "24px", mb: fr.spacing("6v"), fontWeight: 700 }}>Présentation de l’entreprise</Typography>
-              <Typography sx={{ fontSize: "16px", mb: fr.spacing("6v") }}>{job.job_employer_description}</Typography>
+              {/* stocké ré-encodé par sanitizeTextField, qui conserve <p> et <ul> : rendu en HTML dans un div,
+                  comme sur la fiche détail — un <p> les invaliderait */}
+              <Typography
+                component="div"
+                sx={{ fontSize: "16px", whiteSpace: "pre-wrap", mb: fr.spacing("6v") }}
+                dangerouslySetInnerHTML={{ __html: job.job_employer_description }}
+              />
               <hr />
             </Box>
           )}
@@ -154,7 +156,19 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
           </Box>
           <hr />
 
-          {competencesRome && <RomeDetailReadOnly romeReferentiel={job.rome_detail} competences={competencesRome} appellation={job.rome_appellation_label} />}
+          {/* job_description vaut null quand l'offre reprend la fiche ROME (cf. jobPartnersToRecruiter). Sinon,
+              le texte du recruteur remplace la fiche métier, comme sur la fiche détail. */}
+          {job.job_description ? (
+            <Box>
+              <Typography component="h4" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("6v") }}>
+                Description
+              </Typography>
+              {/* cf. job_employer_description */}
+              <Typography component="div" sx={{ fontSize: "16px", whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: job.job_description }} />
+            </Box>
+          ) : (
+            competencesRome && <RomeDetailReadOnly romeReferentiel={job.rome_detail} competences={competencesRome} appellation={job.rome_appellation_label} />
+          )}
         </Box>
         <Box>
           <Box

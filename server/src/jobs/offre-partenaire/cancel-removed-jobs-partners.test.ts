@@ -54,7 +54,6 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     const filter = { partner_label: { $in: jobPartnersByFlux } }
     await cancelRemovedJobsPartners(filter)
 
-    // les éléments de jobs_partners qui ne sont plus dans computed doivent être taggés Annulé
     const countCanceledJobsPartners = await getDbCollection("jobs_partners").countDocuments({
       offer_status: JOB_STATUS_ENGLISH.ANNULEE,
     })
@@ -67,14 +66,12 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     })
     expect.soft(countNotCanceledJobsPartners).toEqual(1)
 
-    // les éléments de jobs_partners qui sont également dans computed sont toujours présents
     const countRemainingActiveJobsPartners = await getDbCollection("jobs_partners").countDocuments({
       partner_job_id: { $in: ["existing_1", "existing_3", "existing_4"] },
       offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     })
     expect.soft(countRemainingActiveJobsPartners).toEqual(3)
 
-    // aucun éléments de jobs_partners n'a été retiré de la collection
     const countJobsPartners = await getDbCollection("jobs_partners").countDocuments({})
     expect.soft(countJobsPartners).toEqual(8)
   })

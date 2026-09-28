@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Grid } from "@mui/material"
 
 import type { Metadata } from "next"
+import { mainId } from "@/app/_components/zone-ids"
 import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
 import { GrandsGroupesCandidat } from "@/app/(home)/_components/GrandsGroupesCandidat"
 import { SchemaOrg } from "@/components/SchemaOrg"
@@ -41,6 +42,8 @@ export default function HomePage() {
       />
       <Container
         component="main"
+        id={mainId("home")}
+        tabIndex={-1}
         sx={{
           display: "flex",
           flexDirection: "column",

@@ -1,6 +1,6 @@
-// Typage + guard manuels plutôt que zod : ce service part dans des bundles client et
-// l'ancien schéma déclarait tous les champs .nullish() — les seuls invariants dont le
-// code aval dépend réellement sont les deux niveaux de tableaux, vérifiés ci-dessous.
+// Typage + guard manuels plutôt que zod : ce service part dans des bundles client. Tous les
+// champs sont optionnels ; les seuls invariants dont le code aval dépend sont les deux
+// niveaux de tableaux, vérifiés par parseSearchEntrepriseApiResponse.
 type ISearchEntrepriseEtablissement = {
   activite_principale?: string | null
   adresse?: string | null
@@ -21,7 +21,7 @@ type ISearchEntrepriseResult = {
   matching_etablissements: ISearchEntrepriseEtablissement[]
 }
 
-// Même contrat que l'ancien ZSearchEntrepriseApiResponse.parse : throw si la structure
+// Throw si la structure
 // attendue (results[] et matching_etablissements[]) n'est pas au rendez-vous.
 function parseSearchEntrepriseApiResponse(json: unknown): { results: ISearchEntrepriseResult[] } {
   const results = (json as { results?: unknown })?.results

@@ -232,7 +232,6 @@ export const OffresTabs = ({
       srOnly: "Actions sur les offres",
       disableFilters: true,
       disableSortBy: true,
-      // isSticky: true,
       accessor: (row) => {
         return (
           <OffresTabsMenu

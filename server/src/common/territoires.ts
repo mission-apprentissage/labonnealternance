@@ -1450,7 +1450,6 @@ function codePostalToDepartement(codePostal: string) {
     return codePostal.slice(0, 3)
   }
 
-  // Cas général
   return codePostal.slice(0, 2)
 }
 

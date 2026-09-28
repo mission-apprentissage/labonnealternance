@@ -12,8 +12,9 @@ export default function ItemLocalisation({ item }: { item: ILbaItemFormation2Jso
         Localisation :{" "}
       </Typography>
       <Typography component="span">
-        <DsfrLink href={getPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
+        <DsfrLink href={getPathLink(item)}>
           {item?.place?.fullAddress}
+          <span className="fr-sr-only"> - localisation sur Google Maps</span>
         </DsfrLink>
       </Typography>
       <br />

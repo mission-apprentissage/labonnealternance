@@ -58,7 +58,6 @@ export function HeroDiplome({ titre, sousTitre, kpis, searchHref }: { titre: str
         {/* Title */}
         <Box sx={{ position: "relative", display: "flex", flexDirection: "column", gap: "12px" }}>
           <Typography
-            id="editorial-content-container"
             component="h1"
             sx={{
               fontWeight: 700,

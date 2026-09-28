@@ -33,7 +33,6 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
 
   const handleSave = async (allValues: any) => {
     const { etablissementCatalogueIds, ...values } = allValues
-    // Updates an offer
     if (job_id) {
       delete values.job_creation_date
       delete values.job_update_date

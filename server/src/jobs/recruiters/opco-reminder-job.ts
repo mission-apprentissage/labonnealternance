@@ -28,7 +28,6 @@ export const opcoReminderJob = async () => {
     )
     .toArray()
 
-  // Cancel the job if there's no users awaiting validation
   if (!rolesAwaitingValidation.length) return
 
   const entreprises = await getDbCollection("entreprises")
@@ -48,7 +47,6 @@ export const opcoReminderJob = async () => {
   )
   await Promise.all(
     Object.entries(opcoCounts).map(async ([opco, count]) => {
-      // Get related user to send the email
       const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.OPCO, authorized_id: opco }).toArray()
       const users = await getDbCollection("userswithaccounts")
         .find({ _id: { $in: roles.map((role) => role.user_id) } })

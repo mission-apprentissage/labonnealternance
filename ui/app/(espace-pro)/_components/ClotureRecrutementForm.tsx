@@ -12,7 +12,13 @@ import CustomInput from "@/app/_components/CustomInput"
 export const motifsPourvus = ["J'ai pourvu l'offre avec La bonne alternance", "J'ai pourvu l'offre sans l'aide de La bonne alternance"]
 const motifSansAideLba = motifsPourvus[1]
 const motifAutre = "Autre"
-export const autreMotifs = ["Je ne suis plus en recherche", "Je ne reçois pas de candidature", "Les candidatures reçues ne sont pas assez qualifiées", motifAutre]
+export const autreMotifs = [
+  "Je ne suis plus en recherche",
+  "Je ne reçois pas de candidature",
+  "Les candidatures reçues ne sont pas assez qualifiées",
+  "J'ai reçu assez de candidatures",
+  motifAutre,
+]
 
 export const motifs = [...motifsPourvus, ...autreMotifs]
 

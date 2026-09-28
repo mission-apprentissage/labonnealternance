@@ -6,3 +6,13 @@
 .notion-link:hover {
   text-decoration: underline;
 }
+
+/*
+ * RGAA 6.1 : react-notion-x insère devant chaque titre un lien d'ancre réduit à une icône,
+ * dont le nom accessible (son title) duplique à l'identique le titre qui suit, sans exprimer
+ * sa fonction. Les pages éditoriales ne s'appuient pas sur ces ancres : display:none les
+ * retire de l'arbre d'accessibilité et du parcours clavier.
+ */
+.notion-hash-link {
+  display: none;
+}

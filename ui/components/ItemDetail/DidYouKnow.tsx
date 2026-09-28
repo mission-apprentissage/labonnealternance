@@ -25,9 +25,7 @@ const DidYouKnow = () => {
       <Typography sx={{ pt: fr.spacing("4v") }}>
         Un employeur vous a proposé un entretien ?
         <br />
-        <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" aria-label="Conseils de préparation à un entretien - nouvelle fenêtre">
-          On vous donne des conseils pour vous aider à le préparer.
-        </DsfrLink>
+        <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac">On vous donne des conseils pour vous aider à le préparer.</DsfrLink>
       </Typography>
     </Box>
   )

@@ -56,9 +56,7 @@ const StatsInserJeunes = ({ stats }: Props) => {
         </Box>
         <Typography sx={{ mt: fr.spacing("6v"), color: "grey.425" }}>
           *Données issues du{" "}
-          <DsfrLink href="https://documentation.exposition.inserjeunes.beta.gouv.fr/" aria-label="Site inserjeunes.beta.gouv.fr - nouvelle fenêtre">
-            dispositif InserJeunes promotion {stats.millesime.replace("_", "/")}
-          </DsfrLink>
+          <DsfrLink href="https://documentation.exposition.inserjeunes.beta.gouv.fr/">dispositif InserJeunes promotion {stats.millesime.replace("_", "/")}</DsfrLink>
         </Typography>
       </Box>
     )

@@ -21,12 +21,10 @@ function getProfilingIntegration(): SentryIntegration | null {
   }
 }
 
-// Defense-in-depth : plusieurs clients API (france-travail, diagoriente, inserjeunes...) peuvent
-// laisser fuiter un AxiosError brut jusqu'à Sentry (directement ou via une exception non
-// rattrapée). `extraErrorDataIntegration` sérialise alors `error.config` (headers, body, query
-// params) tel quel dans `event.contexts` — cela expose un Authorization Bearer, un client_secret
-// ou une clé d'API. On scrube ici toute valeur dont la clé ressemble à un secret, en plus des
-// correctifs par client qui remplacent l'AxiosError par une erreur dédiée sans ces propriétés.
+// Un AxiosError brut qui atteint Sentry (directement ou via une exception non rattrapée) voit son
+// `error.config` (headers, body, query params) sérialisé tel quel par `extraErrorDataIntegration`,
+// avec Bearer, client_secret ou clé d'API. Les clients API capturent donc une erreur dédiée à la
+// place ; ce scrub par nom de clé est le filet de sécurité.
 const SENSITIVE_KEY_PATTERN = /(authorization|cookie|secret|password|passwd|token|api[-_]?key|credential)/i
 const REDACTED = "[Filtered]"
 

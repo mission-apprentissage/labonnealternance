@@ -16,8 +16,8 @@ vi.mock("@/common/utils/slack-utils", () => ({ notifyToSlack: vi.fn().mockResolv
 
 const BASE_URL = "https://labonnealternance.apprentissage.beta.gouv.fr"
 
-// URL de candidature réelle depuis la bascule du nouveau moteur : fiche détail portant la
-// recherche d'origine dans son `?from=`.
+// Forme de application_url produite par le nouveau moteur : fiche détail portant la recherche
+// d'origine dans son `?from=`.
 const NEW_ENGINE_APPLICATION_URL = `${BASE_URL}/emploi/offres_emploi_lba/abc123/boulanger?from=${encodeURIComponent("/recherche?q=Boulanger&lieu_label=Marseille 13001&latitude=43.282&longitude=5.405")}`
 
 describe("buildTaggedSearchUrl (highlightRecruteursLba)", () => {

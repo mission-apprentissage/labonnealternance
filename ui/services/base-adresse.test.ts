@@ -33,7 +33,7 @@ describe("searchAddress avec les entités administratives", () => {
     const url = new URL(fetchMock.mock.calls[0][0] as string)
     expect(url.searchParams.get("index")).toBe("address,poi")
     expect(url.searchParams.get("category")).toBe("département,région")
-    // Sous 6 caractères, le filtre historique de l'index address reste posé.
+    // Sous 6 caractères, le filtre type=municipality de l'index address reste posé.
     expect(url.searchParams.get("type")).toBe("municipality")
   })
 
@@ -65,7 +65,7 @@ describe("searchAddress avec les entités administratives", () => {
   })
 
   it("ne sérialise jamais un tableau de codes postaux dans le libellé", async () => {
-    // Cas de la capture d'écran : « Bretagne 76200,76370 ». Exclu par le filtre category, mais le
+    // Cas « Bretagne 76200,76370 ». Exclu par le filtre category, mais le
     // mapping doit rester sain si le filtre s'élargit un jour.
     stubFetch([poi("commune", "Bretagne", "76136", ["76200", "76370"])])
     const [item] = await searchAddress("Breta", undefined, undefined, true)

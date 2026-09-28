@@ -1,0 +1,59 @@
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Typography } from "@mui/material"
+import { useEffect, useRef } from "react"
+import { ApplicationIntention } from "shared/constants/application"
+
+export const IntentionPageResult = ({ intention, canceled = false }: { intention: ApplicationIntention; canceled?: boolean }) => {
+  // Le bouton qui a déclenché l'envoi ou l'annulation est démonté : sans repositionnement, le focus retombe sur <body>
+  // et le résultat n'est pas restitué au clavier ni au lecteur d'écran (RGAA 12.8).
+  const resultRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    resultRef.current?.focus()
+  }, [])
+
+  return (
+    <Box
+      ref={resultRef}
+      tabIndex={-1}
+      sx={{ display: "flex", flexDirection: "column", width: "80%", maxWidth: "992px", margin: "auto", alignItems: "center", textAlign: "center" }}
+      data-testid="IntentionFormConclusion"
+    >
+      {canceled ? (
+        <>
+          <Typography
+            component="h1"
+            sx={{
+              fontSize: "22px",
+              marginBottom: fr.spacing("6v"),
+              fontWeight: 700,
+            }}
+          >
+            C’est noté ! Aucune réponse ne sera envoyée au candidat.
+          </Typography>
+          <Typography sx={{ fontSize: "18px", lineHeight: "28px", maxWidth: "555px" }}>
+            Pensez toutefois à revenir plus tard pour lui répondre. Les réponses des recruteurs permettent aux candidats d’y voir plus clair pour leurs futures candidatures.
+          </Typography>
+        </>
+      ) : (
+        <>
+          <Typography
+            sx={{
+              fontSize: "22px",
+              fontWeight: 700,
+              maxWidth: "555px",
+            }}
+          >
+            Merci beaucoup d’avoir pris le temps d’envoyer un commentaire au candidat.
+          </Typography>
+          {intention === ApplicationIntention.ENTRETIEN ? (
+            <Typography sx={{ fontSize: "18px", lineHeight: "28px", marginTop: fr.spacing("3v") }}>Il dispose désormais de vos instructions pour poursuivre l'échange.</Typography>
+          ) : (
+            <Typography sx={{ fontSize: "18px", lineHeight: "28px", marginTop: fr.spacing("6v"), maxWidth: "555px" }}>
+              Cela permet aux futurs alternants de comprendre les raisons du refus, et de s’améliorer pour leurs prochaines candidatures.
+            </Typography>
+          )}
+        </>
+      )}
+    </Box>
+  )
+}

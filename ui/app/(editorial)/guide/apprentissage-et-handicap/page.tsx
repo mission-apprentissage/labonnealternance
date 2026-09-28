@@ -58,8 +58,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
     "Pour faciliter la formation du jeune travailleur en situation de handicap, certaines règles du contrat d’apprentissage sont aménagées comme la durée du contrat, le temps de travail, le déroulement de la formation ou encore la limite d’âge.",
   ]
 
-  // guide_source a remplacé source (paramètre réservé de Plausible) ; l'ancien nom reste lu en
-  // repli pour les liens externes/favoris antérieurs au renommage.
+  // Repli sur `source`, ancien nom de guide_source (cf. AllerPlusLoinItem), pour les liens externes et favoris.
   const params = new URLSearchParams(await searchParams)
   const source = params.get("guide_source") || params.get("source") || undefined
 
@@ -77,10 +76,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
       <InfoSection>
         <Box>
           Bon à savoir : le Ministère du Travail et de l'Emploi, en partenariat avec l’AGEFIPH et le FIHFP, a publié{" "}
-          <DsfrLink
-            href="https://travail-emploi.gouv.fr/apprentissage-et-handicap-un-guide-pour-les-employeurs-et-les-apprentis"
-            aria-label="Consulter le guide sur l’apprentissage & le handicap"
-          >
+          <DsfrLink href="https://travail-emploi.gouv.fr/apprentissage-et-handicap-un-guide-pour-les-employeurs-et-les-apprentis">
             un guide sur l’apprentissage & le handicap
           </DsfrLink>{" "}
           à destination des employeurs, des CFA et des personnes en situation de handicap.
@@ -159,10 +155,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
         </Paragraph>
         <Paragraph>
           Par ailleurs, une aide au recrutement d’un apprenti en situation de handicap est prévue. Son montant est fixé par décret :{" "}
-          <DsfrLink
-            href="https://travail-emploi.gouv.fr/laide-aux-employeurs-qui-recrutent-en-apprentissage"
-            aria-label="Consulter le site du Ministère du Travail et des Solidarités"
-          >
+          <DsfrLink href="https://travail-emploi.gouv.fr/laide-aux-employeurs-qui-recrutent-en-apprentissage">
             L'aide aux employeurs qui recrutent en apprentissage | Ministère du Travail et des Solidarités
           </DsfrLink>
         </Paragraph>
@@ -192,14 +185,8 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
         <Paragraph>
           Dans les cas d’allongement de durée de la période de formation, le pourcentage du Smic pris en compte pour le calcul de la rémunération est majoré, pendant la période de
           prolongation, de 15 points par rapport à celui appliqué avant cette période. Si vous êtes en situation de handicap, vous pouvez solliciter une aide de l’
-          <DsfrLink href="https://www.agefiph.fr/" aria-label="Consulter le site de l'Agefiph">
-            Agefiph
-          </DsfrLink>{" "}
-          (si vous avez conclu un contrat avec un employeur du secteur privé), ou du{" "}
-          <DsfrLink href="https://www.fiphfp.fr/" aria-label="Consulter le site du FIPHFP">
-            FIPHFP
-          </DsfrLink>{" "}
-          (si vous avez conclu un contrat avec un employeur public).
+          <DsfrLink href="https://www.agefiph.fr/">Agefiph</DsfrLink> (si vous avez conclu un contrat avec un employeur du secteur privé), ou du{" "}
+          <DsfrLink href="https://www.fiphfp.fr/">FIPHFP</DsfrLink> (si vous avez conclu un contrat avec un employeur public).
         </Paragraph>
       </Section>
       <Section title="Quelles sont les aides spécifiques pour les employeurs d’un apprenti reconnu travailleur handicapé ?">
@@ -214,10 +201,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
                   Pour les employeurs du secteur privé :
                 </Typography>{" "}
                 l’aide à l’embauche en contrat d’apprentissage d’une personne handicapée proposée par l'
-                <DsfrLink href="https://www.agefiph.fr/" aria-label="Consulter le site de l'Agefiph">
-                  Agefiph
-                </DsfrLink>
-                .
+                <DsfrLink href="https://www.agefiph.fr/">Agefiph</DsfrLink>.
               </>,
               <Typography component="span" fontWeight={"bold"}>
                 Pour les employeurs du secteur public (non industriel et commercial) (qui ne bénéficient pas de l'aide de l'État) :
@@ -237,17 +221,12 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
           <ParagraphList
             listItems={[
               <>
-                <DsfrLink href="https://www.fiphfp.fr/employeurs/nos-aides-financieres/catalogue-des-interventions" aria-label="Consulter le catalogue des interventions du FIPHFP">
-                  Consulter le catalogue des interventions du FIPHFP
-                </DsfrLink>{" "}
-                si vous avez conclu un contrat avec un employeur public ;
+                <DsfrLink href="https://www.fiphfp.fr/employeurs/nos-aides-financieres/catalogue-des-interventions">Consulter le catalogue des interventions du FIPHFP</DsfrLink> si
+                vous avez conclu un contrat avec un employeur public ;
               </>,
               <>
-                <DsfrLink
-                  href="https://www.agefiph.fr/sites/default/files/medias/fichiers/2025-02/Metodia_Janvier_2025.pdf"
-                  aria-label="Consulter l’offre d’aides financières et services de l’Agefiph"
-                >
-                  Consultez l’offre d’aides financières et services de l’Agefiph
+                <DsfrLink href="https://www.agefiph.fr/sites/default/files/medias/fichiers/2026-01/Agefiph-Metodia_2026-01.pdf">
+                  Consultez l’offre d’aides financières et services de l’Agefiph - PDF, 397 ko
                 </DsfrLink>{" "}
                 si vous avez conclu un contrat avec un employeur privé.
               </>,

@@ -112,7 +112,7 @@ export const RedirectionInterne = async ({ source }: { source?: string }) => {
         </Box>
       </Grid>
       <Grid size={{ xs: 12, md: 3 }} display={"flex"} justifyContent={"flex-end"}>
-        <Image width={253} height={164} src={getImageSrc(userType)} alt={"Illustration d'une personne consultant des offres d'emploi sur un ordinateur"} />
+        <Image width={253} height={164} src={getImageSrc(userType)} alt="" aria-hidden="true" />
       </Grid>
     </Grid>
   )

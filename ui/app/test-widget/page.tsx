@@ -13,28 +13,28 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
+  // Pas de <html>/<body> ici : le layout racine (app/layout.tsx) les rend déjà, et une seconde
+  // paire imbriquée produit un document invalide. La langue est héritée de ce layout (lang="fr").
   return (
-    <html lang="en">
-      <body>
-        <Suspense fallback={<PublicHeaderStatic />}>
-          <TestWidgetHeaderWithUser />
-        </Suspense>
-        <Box
-          sx={{
-            maxWidth: "xl",
-            margin: "auto",
-            marginTop: fr.spacing("4v"),
-          }}
-        >
-          <WidgetTester />
-        </Box>
-        <Footer />
-      </body>
-    </html>
+    <>
+      <Suspense fallback={<PublicHeaderStatic zone="test-widget" />}>
+        <TestWidgetHeaderWithUser />
+      </Suspense>
+      <Box
+        sx={{
+          maxWidth: "xl",
+          margin: "auto",
+          marginTop: fr.spacing("4v"),
+        }}
+      >
+        <WidgetTester />
+      </Box>
+      <Footer zone="test-widget" />
+    </>
   )
 }
 
 async function TestWidgetHeaderWithUser() {
   const { user } = await getSession()
-  return <PublicHeader user={user} />
+  return <PublicHeader zone="test-widget" user={user} />
 }

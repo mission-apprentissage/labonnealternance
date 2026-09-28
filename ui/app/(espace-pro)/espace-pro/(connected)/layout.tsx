@@ -8,6 +8,7 @@ import { Suspense } from "react"
 import { SESSION_COOKIE_NAME, SESSION_RETRY_PARAM } from "shared/constants/session"
 import { AuthWatcher } from "@/app/_components/AuthWatcher"
 import { Footer } from "@/app/_components/Footer"
+import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
 import { UserContextProvider } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { getSession } from "@/utils/get-session"
 import { ConnectedHeader } from "./_components/ConnectedHeader"
@@ -18,9 +19,9 @@ export default function EspaceProConnecteLayout({ children }: PropsWithChildren)
     <>
       <SkipLinks
         links={[
-          { label: "Menu", anchor: "#header-links" },
-          { label: "Contenu", anchor: "#main-content" },
-          { label: "Pied de page", anchor: "#footer-links" },
+          { label: "Menu", anchor: `#${headerId("espace-pro-connecte")}` },
+          { label: "Contenu", anchor: `#${mainId("espace-pro-connecte")}` },
+          { label: "Pied de page", anchor: `#${footerId("espace-pro-connecte")}` },
         ]}
       />
       <Suspense fallback={<ConnectedShellSkeleton />}>
@@ -37,7 +38,7 @@ async function ConnectedShell({ children }: PropsWithChildren) {
   // Ce redirect est un filet de sécurité si jamais cette route est atteinte sans session valide.
   if (user == null) {
     // Si on arrive ici, le proxy a laissé passer une route protégée mais la session n'est pas
-    // lisible dans ce rendu. Deux précautions (incident du 2026-09-02, boucle 307 ↔ 307) :
+    // lisible dans ce rendu. Deux précautions contre la boucle 307 ↔ 307 (#5388) :
     // 1. tracer l'incohérence, sans contenu de session, pour pouvoir l'analyser dans Loki ;
     // 2. marquer le rebond avec SESSION_RETRY_PARAM pour que le proxy affiche la page de connexion
     //    au lieu de renvoyer vers l'espace pro, ce qui rebouclerait sur ce même redirect.
@@ -54,10 +55,10 @@ async function ConnectedShell({ children }: PropsWithChildren) {
   return (
     <UserContextProvider user={user} access={access}>
       <ConnectedHeader user={user} />
-      <Box component="main" id="main-content" tabIndex={-1} role="main" sx={{ marginBottom: fr.spacing("8v") }}>
+      <Box component="main" id={mainId("espace-pro-connecte")} tabIndex={-1} role="main" sx={{ marginBottom: fr.spacing("8v") }}>
         {children}
       </Box>
-      <Footer />
+      <Footer zone="espace-pro-connecte" />
       <AuthWatcher user={user} />
     </UserContextProvider>
   )

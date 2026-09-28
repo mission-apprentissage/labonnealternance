@@ -3,13 +3,7 @@ import { zRoutes } from "shared/index"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { Server } from "@/http/server"
 
-/**
- * Sample entity route module for GET
- */
 export default (server: Server) => {
-  /**
-   * Get all eligibleTrainingsForAppointments GET
-   * */
   server.get(
     "/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret",
     {
@@ -29,9 +23,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Patch parameter.
-   */
   server.patch(
     "/admin/eligible-trainings-for-appointment/:id",
     {

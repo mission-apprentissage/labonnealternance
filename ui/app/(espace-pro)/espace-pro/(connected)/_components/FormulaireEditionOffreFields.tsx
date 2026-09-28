@@ -67,7 +67,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
             }}
             name="rome_label"
             value={values.rome_appellation_label}
-            placeholder="Rechercher un métier.."
+            placeholder="Rechercher un métier"
             dataTestId="offre-metier"
           />
         </FormControl>
@@ -91,7 +91,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
 
   return (
     <>
-      <Box sx={{ mt: fr.spacing("4v") }}>
+      <Box sx={{ mt: fr.spacing("4v") }} data-field-name="job_type">
         <Checkbox
           orientation="vertical"
           state={values.job_type.length === 0 ? "error" : "default"}
@@ -115,13 +115,9 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
               >
                 Type de contrat
               </FormLabel>
-              <Link
-                href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label="Accès au contrat en alternance - nouvelle fenêtre"
-              >
+              <Link href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704" target="_blank" rel="noreferrer noopener">
                 En savoir plus
+                <span className="fr-sr-only">{" - Accès au contrat en alternance - nouvelle fenêtre"}</span>
               </Link>
             </>
           }
@@ -135,7 +131,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
         nativeSelectProps={{ name: "job_level_label", defaultValue: values.job_level_label || "", onChange: handleChange }}
       >
         <option value="" disabled hidden>
-          Sélectionnez un niveau de formation
+          Sélectionner une option
         </option>
         <option value={NIVEAU_DIPLOME_LABEL["3"]}>{NIVEAU_DIPLOME_LABEL["3"]}</option>
         <option value={NIVEAU_DIPLOME_LABEL["4"]}>{NIVEAU_DIPLOME_LABEL["4"]}</option>

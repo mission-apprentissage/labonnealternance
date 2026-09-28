@@ -257,26 +257,16 @@ const fuzzyFor = (term: string): { maxEdits: number; prefixLength: number } | un
   return { maxEdits: 1, prefixLength: 2 }
 }
 
-// Nombre minimal de termes couverts exigé : tous jusqu'à 2 termes, n−1 pour 3-4, 75 % au-delà.
 const msmFor = (n: number): number => (n <= 2 ? n : n <= 4 ? n - 1 : Math.ceil(0.75 * n))
 
-// Filtre « date de début de contrat » (spec ticket Contract start) : l'utilisateur indique
-// quand il veut démarrer → on montre tout ce qui est compatible, c'est-à-dire les offres qui
-// démarrent AVANT OU À cette date ($lte), celles à date flexible, et les docs SANS date de
-// démarrage (candidatures spontanées de l'algo, formations) qui ne sont pas concernés par le
-// critère — ils conservent ainsi leur ordre de pertinence, comme si le filtre n'existait pas.
-// « A une vraie date de démarrage » : seule une valeur date indexée matche un range (null ne
-// matche pas). NB : `exists` est inutilisable ici — il matche aussi les champs à valeur null
-// (le champ est présent dans le document), donc tous les docs.
+// « A une vraie valeur » : seule une valeur indexée matche un range. `exists` est inutilisable
+// ici : il matche aussi les champs à null, donc tous les docs.
 const HAS_START_DATE = { range: { path: "start_date", gte: new Date("1900-01-01T00:00:00.000Z") } }
 const HAS_PUBLICATION_DATE = { range: { path: "publication_date", gte: new Date("1900-01-01T00:00:00.000Z") } }
 const HAS_APPLICATION_COUNT = { range: { path: "application_count", gte: 0 } }
 
-// Result set du tri par date de début : les docs à vraie date de démarrage + les candidatures
-// spontanées (jamais de date par nature — elles restent visibles et sont reléguées en fin de
-// liste par la clé de tri is_algo_company, cf. buildSortStage, comme au tri par date de
-// publication). Les autres docs sans date (formations, offres sans start_date) trieraient en
-// tête (valeur manquante avant toute date en ordre croissant) → écartés.
+// Tri par date de début : les docs sans start_date trieraient en tête (valeur manquante avant
+// toute date en ordre croissant), on les écarte, sauf les candidatures spontanées (cf. buildSortStage).
 const START_DATE_SORT_FILTER = {
   compound: {
     should: [HAS_START_DATE, { equals: { path: "is_algo_company", value: true } }],
@@ -284,6 +274,8 @@ const START_DATE_SORT_FILTER = {
   },
 }
 
+// Filtre date de début : offres qui démarrent au plus tard à cette date, à date flexible, et
+// docs sans date (candidatures spontanées, formations), non concernés par le critère.
 const buildStartDateFilter = (start_date: Date) => ({
   compound: {
     should: [
@@ -298,7 +290,7 @@ const buildStartDateFilter = (start_date: Date) => ({
 })
 
 // Type de recherche (champ « Type de recherche » du front) : « emplois » exclut les offres
-// avec formation incluse (CFA/GEIQ, cf. is_formation_included dans generateSearchItemsCollection)
+// avec formation incluse (CFA/GEIQ, cf. isFormationIncluded dans search-items.service.ts)
 // en plus des formations ; « emplois_formation » ne renvoie QUE ces offres CFA/GEIQ.
 const buildModeFilter = (mode: SearchMode): object => {
   switch (mode) {
@@ -322,18 +314,13 @@ const buildModeFilter = (mode: SearchMode): object => {
 const LEVEL_AGNOSTIC_VALUES = ["", "Indifférent"]
 const buildLevelFilter = (level: string[]) => ({ in: { path: "level", value: [...level, ...LEVEL_AGNOSTIC_VALUES] } })
 
-// Clause de couverture d'UN terme : le terme est cherché sur tous les champs pondérés
-// (boosting par champ). Un doc "couvre" le terme s'il matche au moins un champ.
-// Le comportement diffère en requête MONO-terme vs multi-termes (recette #3) :
-// - autocomplete (edgeGram) réservé au mono-terme : troncature volontaire ("compta" →
-//   "comptable"). En multi-termes il couvrait par préfixe accidentel ("product manager" :
-//   « product » couvert par « production » → boucheries).
-// - keywords (Mistral) : en mono-terme, couverture réservée aux recruteurs (seul texte riche
-//   avec rome_labels) — un keyword générique ("communication", "commercial") suffisait à
-//   faire entrer des offres hors sujet. En multi-termes, keywords couvre pour tous : le msm
-//   exige déjà les autres termes ailleurs ("monteur vidéo" : « vidéo » légitimement couvert
-//   par les keywords d'une offre dont le title porte « monteur »). Les keywords restent un
-//   signal de score pour tous les types (cf. buildTextBonusClauses).
+// Un doc « couvre » un terme s'il le matche sur au moins un champ pondéré. Deux différences
+// entre mono-terme et multi-termes :
+// - autocomplete (edgeGram) en mono-terme seulement : en multi-termes, il couvre par préfixe
+//   accidentel (« product » couvert par « production »).
+// - keywords (Mistral) : en mono-terme, couverture réservée aux recruteurs, sinon un keyword
+//   générique (« commercial ») suffit à faire entrer une offre hors sujet. En multi-termes,
+//   msmFor exige déjà les autres termes ailleurs, keywords couvre donc pour tous.
 function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQuery: boolean): object {
   const fuzzy = simplifyQuery ? undefined : fuzzyFor(term)
   const text = (path: string, boost: number) => ({ text: { query: term, path, ...(fuzzy ? { fuzzy } : {}), score: { boost: { value: boost } } } })
@@ -342,11 +329,9 @@ function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQu
       should: [
         text("rome_labels", 8),
         text("title", 7),
-        // organization_name SANS fuzzy : sur des noms propres, l'édition à 1 caractère produit
-        // des faux positifs massifs ("vigile" → VIRGILE, VIGIER, VIEILLE…). L'analyzer
-        // lba_company gère déjà casse et accents ; description exclue de la couverture (bonus
-        // de score seulement, cf. buildTextBonusClauses) : un terme mentionné uniquement dans
-        // la description ne suffit pas à faire entrer le doc dans le result set.
+        // organization_name sans fuzzy : sur des noms propres, 1 édition donne des faux positifs
+        // massifs (« vigile » → VIRGILE, VIGIER). description absente volontairement : bonus de
+        // score seulement (buildTextBonusClauses), elle ne fait pas entrer un doc.
         { text: { query: term, path: "organization_name", score: { boost: { value: 6 } } } },
         isSingleTerm ? { compound: { must: [text("keywords", 5)], filter: [{ equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } }] } } : text("keywords", 5),
         ...(isSingleTerm
@@ -396,12 +381,9 @@ function buildTextGate(q: string | undefined, simplifyQuery: boolean): object | 
   return should.length ? { compound: { should, minimumShouldMatch: 1 } } : null
 }
 
-// Bonus de score (bloc `should`, n'élargit pas le result set) : adjacence/ordre des termes.
-// phrase sur title/rome_labels départage "Product Manager" des docs aux termes épars ; phrase
-// sur organization_name fait dominer le match employeur sur les mentions en description ;
-// text sur description et keywords départagent les docs qui couvrent aussi le sujet dans
-// leur descriptif / leurs mots-clés (ces champs ne sont plus une voie d'entrée dans le
-// result set — keywords reste une entrée pour les seuls recruteurs, cf. couverture).
+// Bonus de score (bloc `should`, n'élargit pas le result set). phrase sur title/rome_labels
+// favorise les termes adjacents (« Product Manager ») ; phrase sur organization_name fait
+// passer le match employeur devant les mentions en description.
 function buildTextBonusClauses(q?: string): object[] {
   if (!q?.trim()) return []
   return [
@@ -465,11 +447,9 @@ function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) 
   if (level?.length) filter.push(buildLevelFilter(level))
   if (activity_sector?.length) filter.push({ in: { path: "activity_sector", value: activity_sector } })
   if (organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
-  // Filtre opt-in : seul `true` restreint (aux offres éligibles handicap) ; false/absent = tout.
   if (is_disabled_elligible) filter.push({ equals: { path: "is_disabled_elligible", value: true } })
   if (start_type) filter.push({ equals: { path: "start_type", value: start_type } })
   if (start_date) filter.push(buildStartDateFilter(start_date))
-  // Filtre opt-in : seules les offres avec candidature simplifiée quand true.
   if (smart_apply) filter.push({ equals: { path: "smart_apply", value: true } })
   // Type d'offres d'emploi : true = entreprises à contacter (candidatures spontanées de
   // l'algo), false = offres d'emploi. Absent = les deux (aucun filtre).
@@ -477,21 +457,14 @@ function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) 
   const geoClause = buildGeoClause(filters)
   if (geoClause) filter.push(geoClause)
 
-  // Tri par date : on écarte les docs sans vraie date de publication (formations à
-  // publication_date null — un range ne matche que les valeurs date indexées, contrairement à
-  // `exists` qui matche aussi null). Les recruteurs_lba restent présents mais sont RELÉGUÉS en
-  // fin de liste par la clé de tri is_algo_company (leur publication_date est une date
-  // d'IMPORT, pas une vraie date de publication — cf. buildSortStage).
+  // Tris sur un champ : les docs sans valeur trieraient en tête (valeur manquante avant toute
+  // valeur en ordre croissant), on les écarte.
   if (sort === "date") {
     filter.push(HAS_PUBLICATION_DATE)
   }
-  // Tri par nb de candidatures : les docs sans compteur (formations) trieraient en tête
-  // (valeur manquante avant 0 en ordre croissant) → on les écarte, comme le tri date.
   if (sort === "applications") {
     filter.push(HAS_APPLICATION_COUNT)
   }
-  // Tri par date de début de contrat : docs sans start_date écartés, SAUF les candidatures
-  // spontanées, conservées et reléguées en fin de liste (cf. START_DATE_SORT_FILTER).
   if (sort === "start_date") {
     filter.push(START_DATE_SORT_FILTER)
   }
@@ -518,19 +491,15 @@ function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) 
   return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q) } : {}), filter }
 }
 
-// Étape de tri du $search selon l'option choisie (défaut : pertinence + tie-breaks).
+// Les candidatures spontanées (is_algo_company) passent en fin de liste sur les tris par date :
+// leur publication_date est une date d'import, et elles n'ont jamais de date de début.
 function buildSortStage(filters: ISearchFilters): Record<string, unknown> {
   const hasGeo = filters.latitude !== undefined && filters.longitude !== undefined
 
   if (filters.sort === "date") {
-    // Recruteurs algo en DERNIER : leur publication_date est une date d'import, pas une vraie
-    // date de publication — ils suivraient sinon en tête de tri (spec : affichés en fin).
     return { is_algo_company: { order: 1 }, publication_date: { order: -1 } }
   }
   if (filters.sort === "start_date") {
-    // Démarrages les plus proches d'abord ; candidatures spontanées (sans date de début par
-    // nature) en DERNIER via la clé is_algo_company — même mécanique que le tri par date de
-    // publication. Les autres docs sans date sont écartés en amont (START_DATE_SORT_FILTER).
     return { is_algo_company: { order: 1 }, start_date: { order: 1 }, score: { $meta: "searchScore", order: -1 } }
   }
   if (filters.sort === "applications") {
@@ -549,9 +518,6 @@ function buildSortStage(filters: ISearchFilters): Record<string, unknown> {
   }
 }
 
-// Compound sans filtres de dimension — utilisé pour $searchMeta (faceting disjoint).
-// Les counts reflètent texte + géo seulement, indépendamment des filtres actifs,
-// Dimensions de facette pilotées par les filtres multi-sélection du front.
 const FACET_DIMENSIONS = ["type_filter_label", "contract_type", "level", "activity_sector", "organization_name"] as const
 type FacetDimension = (typeof FACET_DIMENSIONS)[number]
 
@@ -671,14 +637,8 @@ export type SearchHit = ISearchItem & {
 // membres du replica set (la répartition de charge sur les secondaires redeviendra souhaitable).
 const SEARCH_AGGREGATE_OPTIONS = { readPreference: "primary" } as const
 
-// mongot n'expose pas de réglage pour relever cette limite (ni en config Docker/preview, ni en
-// déploiement natif prod — vérifié dans les deux repos d'infra). Deux clauses indépendantes
-// peuvent chacune expandre en dizaines/centaines de sous-clauses selon le vocabulaire indexé,
-// indépendamment du nombre de termes de la requête : le `fuzzy` par terme, et — surtout, cf.
-// #5153 où une requête a été isolée et rejouée directement contre mongot — la clause
-// `phrase`+`synonyms` sur la requête entière (buildTextGate), qui à elle seule suffit à
-// dépasser la limite sur une requête longue et riche en mots courants (intitulé de formation
-// complet), même avec le fuzzy désactivé et sans qu'aucun terme ne soit en cause.
+// mongot n'expose aucun réglage pour relever cette limite (vérifié dans les deux repos d'infra).
+// Clauses en cause : cf. le docblock de buildTextGate (#5153).
 function isMaxClauseCountError(err: unknown): boolean {
   return err instanceof Error && err.message.includes("maxClauseCount")
 }
@@ -724,7 +684,6 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
           )
           .toArray(),
 
-        // Compteurs des chips booléennes (handi, urgent, candidature simplifiée) — un $searchMeta chacun.
         Promise.all(
           chipCountKeys.map((key) =>
             getDbCollection("search_items")
@@ -744,7 +703,6 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
           )
         ),
 
-        // Une requête $searchMeta par groupe de facettes (faceting disjonctif).
         ...facetGroups.map((group) =>
           getDbCollection("search_items")
             .aggregate<FacetMetaRow>(
@@ -789,10 +747,8 @@ export async function searchItems(params: ISearchFilters): Promise<{
     aggregations = await runSearchAggregations(params, false)
   } catch (err) {
     if (!isMaxClauseCountError(err)) throw err
-    // Dégradation gracieuse plutôt qu'un 500 : on retente sans fuzzy ni synonymes (tolérance
-    // aux fautes de frappe et alternative de couverture par synonyme perdues pour cette requête
-    // précise seulement — la couverture par terme reste intacte) — capturé en warning pour
-    // suivre la fréquence réelle de ce repli, sans polluer le triage des vraies erreurs.
+    // Repli plutôt qu'un 500 : on retente sans fuzzy ni synonymes. Warning Sentry pour suivre la
+    // fréquence du repli sans polluer le triage des vraies erreurs.
     sentryCaptureException(err, { level: "warning", extra: { q: params.q, fallback: "search-simplify-query" } })
     aggregations = await runSearchAggregations(params, true)
     degraded = true
@@ -829,7 +785,6 @@ export async function searchItems(params: ISearchFilters): Promise<{
     }
   })
 
-  // Fusionne les buckets de chaque groupe en un seul objet de facettes.
   const facets: ISearchFacets = { type: {}, sub_type: {}, type_filter_label: {}, contract_type: {}, level: {}, activity_sector: {}, organization_name: {} }
   metaArrays.forEach((arr, i) => {
     const facet = arr[0]?.facet
@@ -848,9 +803,7 @@ export async function searchItems(params: ISearchFilters): Promise<{
   return { hits, nbHits, page, nbPages, facets, counts, degraded }
 }
 
-// Autocomplétion sur le contenu indexé (title + rome_labels, edgeGram).
 async function suggestFromItems(q: string, limit: number): Promise<string[]> {
-  // Même retry anti-annulation mongot que la recherche principale (cf. search-transient-retry.ts).
   const rows = await retryOnTransientSearchCancellation(
     () =>
       getDbCollection("search_items")
@@ -917,7 +870,6 @@ export async function suggestSearchTerms({ q, limit }: { q: string; limit: numbe
     suggestFromUserSuggestions(q, limit).catch(() => [] as string[]),
   ])
 
-  // Normalisation (minuscules + sans accents) pour le filtrage et la déduplication.
   const diacritics = new RegExp("[\\u0300-\\u036f]", "g")
   const normalize = (s: string) => s.normalize("NFD").replace(diacritics, "").toLowerCase().trim()
   const normalizedQuery = normalize(q)

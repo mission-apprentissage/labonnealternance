@@ -50,10 +50,7 @@ function InformationsEntreprise() {
         </span>
         <Typography component="span">
           Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
-          <CatalogueLink href="https://annuaire-entreprises.data.gouv.fr/" aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
-            l’annuaire des entreprises
-          </CatalogueLink>{" "}
-          ou bien sur les registres de votre entreprise.
+          <CatalogueLink href="https://annuaire-entreprises.data.gouv.fr/">l’annuaire des entreprises</CatalogueLink> ou bien sur les registres de votre entreprise.
         </Typography>
       </Box>
       <Box sx={{ mt: fr.spacing("5v") }}>
@@ -130,8 +127,9 @@ function InformationsCfa() {
             <Box>
               <span style={{ fontWeight: "700" }}>Être référencé dans le Catalogue.</span> Pour ajouter une offre de formation au Catalogue de l’offre de formation en
               apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la page{" "}
-              <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" aria-label="Site intercariforef.org - nouvelle fenêtre">
+              <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation">
                 référencer son offre de formation
+                <span className="fr-sr-only"> - sur le site du réseau des Carif-Oref</span>
               </CatalogueLink>
             </Box>
           </ListItem>
@@ -147,11 +145,9 @@ function InformationsCfa() {
           >
             <Box>
               <span style={{ fontWeight: "700" }}>Être certifié Qualiopi.</span>{" "}
-              <CatalogueLink
-                href="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs"
-                aria-label="Site travail-emploi.gouv.fr - nouvelle fenêtre"
-              >
+              <CatalogueLink href="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs">
                 La certification Qualiopi
+                <span className="fr-sr-only"> - liste des organismes certificateurs sur travail-emploi.gouv.fr</span>
               </CatalogueLink>{" "}
               est l’unique moyen d’accéder au fichier national des organismes de formation référencés et de permettre à vos entreprises clientes de faire financer vos actions avec
               les fonds publics.

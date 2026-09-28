@@ -24,7 +24,6 @@ interface IEtablissementsWithouOptMode {
 export const inviteEtablissementToOptOut = async () => {
   logger.info("Cron #inviteEtablissementToOptOut started.")
 
-  // Opt-out etablissement to activate
   const etablissementsWithouOptMode: Array<IEtablissementsWithouOptMode> = (await getDbCollection("etablissements")
     .aggregate([
       {
@@ -50,8 +49,6 @@ export const inviteEtablissementToOptOut = async () => {
   logger.info(`Etablissements to invite: ${etablissementsWithouOptMode.length}`)
 
   for (const etablissement of etablissementsWithouOptMode) {
-    // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
-
     const etablissementDetails = await getDbCollection("etablissements").findOne({
       _id: new ObjectId(etablissement.id),
     })

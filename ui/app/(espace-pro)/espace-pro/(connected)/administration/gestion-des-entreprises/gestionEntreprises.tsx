@@ -248,7 +248,6 @@ export default function GestionEntreprises() {
               display: "flex",
               alignItems: "center",
               gap: fr.spacing("1v"),
-              // mt: fr.spacing("1v"),
               mb: fr.spacing("3v"),
               fontSize: ".875rem",
               color: "var(--text-mention-grey)",
