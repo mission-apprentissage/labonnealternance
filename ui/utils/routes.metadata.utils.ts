@@ -67,8 +67,8 @@ export const METADATA = {
       description: "Trouvez votre alternance dans 30 grandes villes françaises. Offres, entreprises qui recrutent, logement, transports et vie d'alternant.",
     }),
     alternanceDiplomes: () => ({
-      title: "Diplômes en alternance : BTS, BUT, Licence Pro | LBA",
-      description: "Explorez 20 diplômes accessibles en alternance (BTS, BUT, Licence Pro, CAP, Titres Pro). Programme, durée, salaire et débouchés.",
+      title: "Diplômes en alternance : CAP, bac pro, BTS, titre pro | LBA",
+      description: "Explorez 20 diplômes accessibles en alternance : CAP, bac pro, BTS, titres pro et licence pro. Programme, durée, salaire et débouchés.",
     }),
     codeSources: () => ({
       title: "Nos sources de données - La bonne alternance",
