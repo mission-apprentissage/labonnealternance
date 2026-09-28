@@ -20,4 +20,9 @@ describe("blocs de la fiche métier sur une offre sans champs ROME", () => {
     expect(renderToStaticMarkup(createElement(LbaJobQualites, { job: jobWith({ offer_desired_skills: ["Faire preuve de rigueur"] }) }))).toContain("Faire preuve de rigueur")
     expect(renderToStaticMarkup(createElement(LbaJobAcces, { job: jobWith({ offer_access_conditions: ["Accessible avec un CAP"] }) }))).toContain("Accessible avec un CAP")
   })
+
+  it("affiche chaque condition d'accès séparément", () => {
+    const html = renderToStaticMarkup(createElement(LbaJobAcces, { job: jobWith({ offer_access_conditions: ["Accessible avec un CAP.", "Permis B requis."] }) }))
+    expect(html).toMatch(/Accessible avec un CAP\.<\/p>.*Permis B requis\.<\/p>/)
+  })
 })

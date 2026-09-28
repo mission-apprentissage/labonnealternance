@@ -7,7 +7,9 @@ const LbaJobAcces = ({ job }: { job: ILbaItemPartnerJobJson }) => {
   if (!accesEmploi?.length) return null
   return (
     <Accordion label="À qui ce métier est-il accessible ?">
-      <Typography>{accesEmploi}</Typography>
+      {accesEmploi.map((condition, idx) => (
+        <Typography key={idx}>{condition}</Typography>
+      ))}
     </Accordion>
   )
 }
