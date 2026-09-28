@@ -9,7 +9,7 @@ import type { IDiplomaParam } from "../routes/params.js"
 import { ZPointGeometry } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
-import { JOB_START_TYPE, JOB_STATUS_ENGLISH, ZDelegation, ZToApplicantQuestions } from "./job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, ZDelegation, ZToApplicantQuestions } from "./job.model.js"
 import { ZComputedJobPartnersDuplicateRef } from "./job-partners-duplicate-ref.js"
 import { zOpcoLabel } from "./opco.model.js"
 
@@ -190,6 +190,10 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   job_prolongation_count: z.number().int().nullish().describe("Nombre de fois où l'offre a été prolongée"),
   offer_rome_appellation: z.string().nullish().describe("Pour les offres LBA uniquement, libellé de l'appellation ROME"),
   mer_sent: z.date().nullish().describe("Pour les offres LBA uniquement, date de l'envoi du mail de promotion de la mise en relation, si il a été envoyé."),
+  offer_description_mode: extensions
+    .buildEnum(OFFER_DESCRIPTION_MODE)
+    .nullish()
+    .describe("Pour les offres LBA uniquement : description rédigée par le recruteur (custom), les champs issus du ROME restent alors vides, ou fiche métier (structured)"),
 })
 
 export const ZJobsPartnersRecruiterPrivate = ZJobsPartnersRecruiterApi.extend(ZJobsPartnersRecruiterPrivateFields.shape)

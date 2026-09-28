@@ -182,7 +182,9 @@ function RecruteursContent({
       </Box>
 
       {!isEnabled ? (
-        <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>Saisissez au moins 2 caractères pour rechercher.</Box>
+        <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>
+          Saisissez au moins 2 caractères pour rechercher.
+        </Box>
       ) : isFetching ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
           <CircularProgress />

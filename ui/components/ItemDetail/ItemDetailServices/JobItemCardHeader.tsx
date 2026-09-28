@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import type { ILbaItemJobsGlobal } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
@@ -54,8 +54,12 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
               <Typography component="span" sx={{ fontWeight: 400 }}>
                 {selectedItem.nafs.length > 0 && "label" in selectedItem.nafs ? (
                   <>
-                    {/** @ts-expect-error: TODO */}
-                    Une société du secteur&nbsp;<strong>{selectedItem.nafs[0].label}</strong>&nbsp;propose actuellement cette offre
+                    Une société du secteur&nbsp;
+                    <Box component="span" sx={{ fontWeight: 700 }}>
+                      {/** @ts-expect-error: TODO */}
+                      {selectedItem.nafs[0].label}
+                    </Box>
+                    &nbsp;propose actuellement cette offre
                   </>
                 ) : (
                   "Une société ayant souhaité garder l'anonymat propose actuellement cette offre"

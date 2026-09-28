@@ -66,15 +66,15 @@ export const ValorisationCandidatureSpontanee = ({
       }}
     >
       <Box>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography component="p" variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Plus de 60% des recrutements en alternance se font sans qu’aucune offre n’ait été déposée.
         </Typography>
         <Typography>
           Pour vous aider à trouver un contrat, nous identifions des entreprises susceptibles d'accueillir des alternants.
-          <b>
+          <Box component="span" sx={{ fontWeight: 700 }}>
             {" "}
             Elles sont étiquetées <TagCandidatureSpontanee /> et sont visibles en fin de résultats de recherche.
-          </b>
+          </Box>
         </Typography>
 
         <Typography sx={{ pt: fr.spacing("4v") }}>

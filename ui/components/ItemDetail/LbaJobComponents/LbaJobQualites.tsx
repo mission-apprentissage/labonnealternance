@@ -1,18 +1,19 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion"
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import type { ILbaItemPartnerJobJson } from "shared"
 
 const LbaJobQualites = ({ job }: { job: ILbaItemPartnerJobJson }) => {
+  if (!job?.job?.offer_desired_skills?.length) return null
   return (
-    job?.job?.offer_desired_skills?.length && (
-      <Accordion label="Qualités souhaitées pour ce métier">
+    <Accordion label="Qualités souhaitées pour ce métier">
+      <Box component="ul" sx={{ m: 0 }}>
         {job.job.offer_desired_skills.map((competence, idx) => (
-          <div key={idx}>
-            <Typography component="span">&bull; {competence}</Typography>
-          </div>
+          <Typography component="li" key={idx} sx={{ pb: 0 }}>
+            {competence}
+          </Typography>
         ))}
-      </Accordion>
-    )
+      </Box>
+    </Accordion>
   )
 }
 

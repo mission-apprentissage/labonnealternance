@@ -7,7 +7,7 @@ export const CfaCandidatInformationForm = (props) => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <Box sx={{ mt: fr.spacing("2v"), p: fr.spacing("8v"), backgroundColor: "#F5F5FE" }}>
+      <Box sx={{ mt: fr.spacing("2v"), p: { xs: fr.spacing("3v"), md: fr.spacing("8v") }, backgroundColor: "#F5F5FE" }}>
         <Typography variant="h2" sx={{ fontWeight: 700, color: "#000091", fontSize: "2rem" }}>
           Votre réponse au candidat
         </Typography>

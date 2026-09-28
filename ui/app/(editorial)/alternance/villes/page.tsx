@@ -129,6 +129,7 @@ export default function AlternanceVilles() {
             Trouver une alternance dans les grandes villes
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{
               maxWidth: "93px",

@@ -1,0 +1,38 @@
+diff --git a/build/index.js b/build/index.js
+index cbcb3b3c0594ca78a50799c05e3b33687a8a7609..399f0ba7cf42ef36593306485c286c9aaf37a096 100644
+--- a/build/index.js
++++ b/build/index.js
+@@ -2986,20 +2986,25 @@ function Block(props) {
+       return /* @__PURE__ */ jsx32("hr", { className: cs("notion-hr", blockId) });
+     case "text": {
+       if (!block.properties && !((_g = block.content) == null ? void 0 : _g.length)) {
+-        return /* @__PURE__ */ jsx32("div", { className: cs("notion-blank", blockId), children: "\xA0" });
++        return /* @__PURE__ */ jsx32("div", { className: cs("notion-blank", blockId), "aria-hidden": "true", children: "\xA0" });
+       }
+       const blockColor = (_h = block.format) == null ? void 0 : _h.block_color;
++      const textClassName = cs(
++        "notion-text",
++        blockColor && `notion-${blockColor}`,
++        blockId
++      );
++      const textContent = ((_i = block.properties) == null ? void 0 : _i.title) && /* @__PURE__ */ jsx32(Text, { value: block.properties.title, block });
++      if (!children) {
++        return /* @__PURE__ */ jsx32("p", { className: textClassName, children: textContent });
++      }
+       return /* @__PURE__ */ jsxs14(
+         "div",
+         {
+-          className: cs(
+-            "notion-text",
+-            blockColor && `notion-${blockColor}`,
+-            blockId
+-          ),
++          className: textClassName,
+           children: [
+-            ((_i = block.properties) == null ? void 0 : _i.title) && /* @__PURE__ */ jsx32(Text, { value: block.properties.title, block }),
+-            children && /* @__PURE__ */ jsx32("div", { className: "notion-text-children", children })
++            textContent && /* @__PURE__ */ jsx32("p", { className: "notion-text-content", children: textContent }),
++            /* @__PURE__ */ jsx32("div", { className: "notion-text-children", children })
+           ]
+         }
+       );

@@ -62,6 +62,14 @@ export const JOB_START_TYPE = {
 
 export type JOB_START_TYPE = (typeof JOB_START_TYPE)[keyof typeof JOB_START_TYPE]
 
+/** Mode de rédaction de la description d'une offre LBA : fiche métier ROME, ou texte rédigé par le recruteur. */
+export const OFFER_DESCRIPTION_MODE = {
+  STRUCTURED: "structured",
+  CUSTOM: "custom",
+} as const
+
+export type OFFER_DESCRIPTION_MODE = (typeof OFFER_DESCRIPTION_MODE)[keyof typeof OFFER_DESCRIPTION_MODE]
+
 export const JOB_DESCRIPTION_MAX_LENGTH = 3000
 export const JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH = 800
 

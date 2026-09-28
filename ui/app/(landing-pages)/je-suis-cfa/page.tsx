@@ -172,7 +172,7 @@ const JeSuisCFAPage = () => {
               <Typography variant="body1" gutterBottom>
                 Vous recevez directement dans votre boîte mail des demandes de candidats intéressés par vos formations et pouvez leur répondre en quelques clics.
               </Typography>
-              <Typography variant="caption">
+              <Typography variant="caption" component="p">
                 *Vous pouvez à tout moment vous désinscrire de ce service en{" "}
                 <DsfrLink href={PAGES.static.contact.getPath()}>
                   <Typography variant="caption">contactant notre équipe.</Typography>
