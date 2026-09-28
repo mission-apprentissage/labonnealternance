@@ -184,6 +184,13 @@ export const ZJobStartDateCreate = (now: dayjs.Dayjs | null = null) =>
       }
     )
 
+// Limites de saisie portées par les corps de création et de mise à jour, pas par ZJobFields qui valide
+// aussi les réponses : sanitizeTextField encode & en &amp;, un texte stocké peut dépasser sa limite.
+export const ZJobFreeTextInput = {
+  job_description: z.string().max(JOB_DESCRIPTION_MAX_LENGTH).nullish(),
+  job_employer_description: z.string().max(JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH).nullish(),
+}
+
 export const ZJobCreate = ZJobFields.pick({
   rome_appellation_label: true,
   rome_code: true,
@@ -193,8 +200,6 @@ export const ZJobCreate = ZJobFields.pick({
   job_count: true,
   job_duration: true,
   job_rythm: true,
-  job_description: true,
-  job_employer_description: true,
   delegations: true,
   competences_rome: true,
   offer_title_custom: true,
@@ -204,6 +209,7 @@ export const ZJobCreate = ZJobFields.pick({
   job_start_date_flexible: true,
 })
   .extend({
+    ...ZJobFreeTextInput,
     job_start_date: ZJobStartDateCreate(),
     job_start_type: extensions.buildEnum(JOB_START_TYPE),
   })

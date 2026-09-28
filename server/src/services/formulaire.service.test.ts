@@ -1,10 +1,11 @@
 import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
 import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveDbEntity, saveEntrepriseUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
+import { roleManagementEventFactory, saveDbEntity, saveEntreprise, saveEntrepriseUserTest, saveRoleManagement, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { AccessEntityType, AccessStatus, JOB_CLOSURE_ORIGIN, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -21,6 +22,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { buildEstablishmentId } from "./etablissement.service"
 import {
   ARCHIVE_FORMULAIRE_REASON,
   archiveFormulaire,
@@ -30,6 +32,7 @@ import {
   createJobDelegations,
   getCompetencesRomeFromPartnerJob,
   getFormulairesForCfaManagedEnterprises,
+  getFormulaireWithRomeDetail,
   jobPartnersToRecruiter,
   provideOffre,
 } from "./formulaire.service"
@@ -823,5 +826,22 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       expect.soft(job.updated_at).toEqual(updated_at)
       expect.soft(job.offer_status_history).toHaveLength(0)
     })
+  })
+})
+
+describe("getFormulaireWithRomeDetail — utilisateur rattaché à plusieurs entreprises", () => {
+  it("should derive the recruiter status from the role on the requested company", async () => {
+    const { user } = await saveEntrepriseUserTest({}, { status: [roleManagementEventFactory({ status: AccessStatus.DENIED })] }, { siret: "11111111100011" })
+    const entrepriseValidee = await saveEntreprise({ siret: "22222222200022" })
+    await saveRoleManagement({
+      user_id: user._id,
+      authorized_id: entrepriseValidee._id.toString(),
+      authorized_type: AccessEntityType.ENTREPRISE,
+      status: [roleManagementEventFactory({ status: AccessStatus.GRANTED })],
+    })
+
+    const recruiter = await getFormulaireWithRomeDetail({ establishment_id: buildEstablishmentId(user._id, entrepriseValidee.siret) })
+
+    expect(recruiter?.status).toBe(RECRUITER_STATUS.ACTIF)
   })
 })

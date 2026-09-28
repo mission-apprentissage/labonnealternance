@@ -515,6 +515,32 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
   return recruiters
 }
 
+/**
+ * Un utilisateur a un rôle par organisation : le statut affiché pour les offres d'un siret est celui
+ * du rôle sur l'entreprise de ce siret, et non le premier rôle trouvé, qui peut être refusé sur une
+ * autre entreprise. Les offres déléguées relèvent du rôle CFA.
+ */
+export const selectRoleForEntreprise = <T extends { authorized_type: string; authorized_id: string }>(
+  roles: T[],
+  entreprise: { _id: ObjectId },
+  context: { userId: ObjectId; siret: string }
+): T | null => {
+  const entrepriseRole = roles.find((role) => role.authorized_type === AccessEntityType.ENTREPRISE && role.authorized_id === entreprise._id.toString())
+  if (entrepriseRole) return entrepriseRole
+  const cfaRole = roles.find((role) => role.authorized_type === AccessEntityType.CFA)
+  if (cfaRole) return cfaRole
+  // aucun rôle ne correspond à ce siret : repli sur le premier rôle plutôt que de faire échouer
+  // l'espace recruteur, signalé à Sentry pour que l'incohérence se voie.
+  const fallback = roles.at(0) ?? null
+  if (fallback) {
+    sentryCaptureException(internal("aucun rôle sur l'entreprise du siret, repli sur le premier rôle"), {
+      level: "warning",
+      extra: { userId: context.userId.toString(), siret: context.siret, authorizedId: fallback.authorized_id },
+    })
+  }
+  return fallback
+}
+
 const getRecruiterFromJobsPartnerFilter = async ({
   userId,
   siret,
@@ -545,16 +571,19 @@ const getRecruiterFromJobsPartnerFilter = async ({
     ])
     .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number })[]
 
-  const [mainRole, entreprise, user] = await Promise.all([
-    getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: { $in: [AccessEntityType.CFA, AccessEntityType.ENTREPRISE] } }),
+  const [roles, entreprise, user] = await Promise.all([
+    getDbCollection("rolemanagements")
+      .find({ user_id: userId, authorized_type: { $in: [AccessEntityType.CFA, AccessEntityType.ENTREPRISE] } })
+      .toArray(),
     getDbCollection("entreprises").findOne({ siret }),
     getDbCollection("userswithaccounts").findOne({ _id: userId }),
   ])
-  if (!mainRole) {
-    throw internal("inattendu: mainRole vide", { userId: userId.toString(), siret })
-  }
   if (!entreprise) {
     throw internal("inattendu: entreprise vide", { userId: userId.toString(), siret })
+  }
+  const mainRole = selectRoleForEntreprise(roles, entreprise, { userId, siret })
+  if (!mainRole) {
+    throw internal("inattendu: mainRole vide", { userId: userId.toString(), siret })
   }
   if (!user) {
     throw internal("inattendu: user vide", { userId: userId.toString(), siret })
