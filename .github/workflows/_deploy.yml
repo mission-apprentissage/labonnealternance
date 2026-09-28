@@ -272,7 +272,9 @@ jobs:
             else
               OTHER_LINES+="• ${author} - ${subject} (${hash})${NL}"
             fi
-          done < <(git log --pretty=format:"%h%x09%an%x09%s" "${PREV_SHA}..${CURRENT_TAG}")
+          # tformat et non format : format ne termine pas le dernier commit par un saut de ligne,
+          # et `read` ignore une dernière ligne non terminée : le plus ancien commit serait perdu.
+          done < <(git log --pretty=tformat:"%h%x09%an%x09%s" "${PREV_SHA}..${CURRENT_TAG}")
 
           if [ -z "$FEAT_LINES" ] && [ -z "$FIX_LINES" ] && [ -z "$CHORE_LINES" ] && [ -z "$OTHER_LINES" ]; then
             echo "No commits between ${PREV_LABEL} and ${CURRENT_TAG}, skipping"
