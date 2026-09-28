@@ -48,7 +48,7 @@ function InformationsEntreprise() {
         <span style={{ color: "#000091" }}>
           <InfoCircle sx={{ mr: fr.spacing("2v") }} />
         </span>
-        <Typography component="span">
+        <Typography>
           Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
           <CatalogueLink href="https://annuaire-entreprises.data.gouv.fr/">l’annuaire des entreprises</CatalogueLink> ou bien sur les registres de votre entreprise.
         </Typography>

@@ -64,14 +64,14 @@ export const RomeDetail = ({
       >
         {title}
       </Typography>
-      <Box sx={{ backgroundColor: "#F5F5FE", padding: fr.spacing("3v"), color: "#000091", mt: fr.spacing("3v"), mb: fr.spacing("6v") }}>
+      <Box component="p" sx={{ backgroundColor: "#F5F5FE", padding: fr.spacing("3v"), color: "#000091", mt: fr.spacing("3v"), mb: fr.spacing("6v") }}>
         Voici la description de l’offre qui sera consultable par les candidats.
         <br />
-        <b>
+        <Box component="span" sx={{ fontWeight: 700 }}>
           Décochez les items que vous souhaitez retirer de la description.
           <br />
           Veuillez conserver au minimum 3 items.
-        </b>
+        </Box>
       </Box>
       <Accordion
         id="metier"

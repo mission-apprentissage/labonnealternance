@@ -84,8 +84,10 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                   </Typography>
                   <ContactInfoFields />
                   <Typography sx={{ color: "#0063CB" }}>
-                    <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes
-                    à des fins de contrôles.
+                    <Box component="span" sx={{ fontWeight: 700 }}>
+                      Important :
+                    </Box>{" "}
+                    Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des fins de contrôles.
                   </Typography>
                   <DeclarationExactCheckbox />
                 </>
