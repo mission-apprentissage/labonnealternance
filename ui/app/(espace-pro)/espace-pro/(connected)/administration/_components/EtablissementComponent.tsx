@@ -14,10 +14,10 @@ import { apiGet, apiPatch } from "@/utils/api.utils"
 
 const Field = ({ label, children }: { label: string; children: ReactNode }) => (
   <Box sx={{ width: "100%" }}>
-    <Typography component="dt" sx={{ fontWeight: 700, mb: fr.spacing("6v") }}>
+    <Typography component="dt" sx={{ fontWeight: 700, mb: fr.spacing("6v"), p: 0 }}>
       {label}
     </Typography>
-    <Box component="dd" sx={{ m: 0 }}>
+    <Box component="dd" sx={{ m: 0, p: 0 }}>
       {children}
     </Box>
   </Box>

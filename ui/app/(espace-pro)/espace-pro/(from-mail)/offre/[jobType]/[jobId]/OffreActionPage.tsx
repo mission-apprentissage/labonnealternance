@@ -132,7 +132,7 @@ export function OffreActionPage({
         </>
       )}
 
-      <Box component="ul" sx={{ mt: fr.spacing("8v"), p: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
+      <Box component="ul" sx={{ mt: fr.spacing("8v"), mb: 0, p: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: fr.spacing("6v"), "& > li": { pb: 0 } }}>
         <li>
           Aller sur le site{" "}
           <Link

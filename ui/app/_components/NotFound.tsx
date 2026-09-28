@@ -23,7 +23,7 @@ const NotFound = () => (
       <Typography component="p" variant="h1">
         404
       </Typography>
-      <Typography component="h1" className={fr.cx("fr-text--lg", "fr-text--bold")}>
+      <Typography component="h1" className={fr.cx("fr-text--lg", "fr-text--bold")} sx={{ color: fr.colors.decisions.text.default.grey.default }}>
         Vous êtes perdu·e ?
       </Typography>
       <Typography className={fr.cx("fr-text--sm")}>
