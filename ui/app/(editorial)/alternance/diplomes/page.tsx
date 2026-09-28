@@ -95,7 +95,7 @@ export default function AlternanceDiplomes() {
       <SchemaOrg
         type="ItemList"
         title="Liste des diplômes accessibles en alternance"
-        description="Annuaire des principaux diplômes en alternance : BTS, BUT, Licence Pro, CAP, Titres RNCP."
+        description="Annuaire des principaux diplômes en alternance : CAP, bac pro, BTS, titres pro et licence pro."
         url={url}
         breadcrumbs={breadcrumbs}
         itemList={itemList}
