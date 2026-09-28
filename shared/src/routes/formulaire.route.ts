@@ -1,7 +1,7 @@
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 import { zObjectId } from "../models/common.js"
-import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
+import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS, ZJob, ZJobCreate, ZJobFreeTextInput } from "../models/job.model.js"
 import { ZRecruiter, ZRecruiterWithRomeDetailAndApplicationCount } from "../models/recruiter.model.js"
 import { ZUserWithAccountFields } from "../models/user-with-account.model.js"
 import { ZPersonNameInput } from "../models/users-recruteur.model.js"
@@ -261,14 +261,13 @@ export const zFormulaireRoute = {
         job_count: true,
         job_duration: true,
         job_rythm: true,
-        job_employer_description: true,
-        job_description: true,
         competences_rome: true,
         offer_title_custom: true,
         to_applicant_questions: true,
         ft_support: true,
         job_start_date_flexible: true,
       }).extend({
+        ...ZJobFreeTextInput,
         job_start_date: z.coerce.date<Date>(),
         job_expiration_date: z.coerce.date<Date>(),
         job_start_type: extensions.buildEnum(JOB_START_TYPE),

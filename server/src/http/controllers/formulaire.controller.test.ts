@@ -12,7 +12,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { AccessEntityType, JOB_STATUS_ENGLISH } from "shared/models/index"
-import { JOB_START_TYPE } from "shared/models/job.model"
+import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE } from "shared/models/job.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { buildEstablishmentId } from "@/services/etablissement.service"
@@ -187,6 +187,41 @@ describe("formulaire.controller", () => {
 
       const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies })
       expect.soft((offerResponse.json() as GetOfferResponse).job_description).toBeNull()
+    })
+  })
+
+  describe("longueur des textes libres", () => {
+    const limits = [
+      { field: "job_description", max: JOB_DESCRIPTION_MAX_LENGTH },
+      { field: "job_employer_description", max: JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH },
+    ] as const
+
+    it.each(limits)("refuse $field au-delà de $max caractères à la création, l'accepte à la limite", async ({ field, max }) => {
+      const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+      const create = (length: number) =>
+        entrepriseSdkInstance.createOffer({
+          establishment_id: formulaire!.establishment_id,
+          cookies,
+          job: { ...buildCreateJobDataFromReferentiel(referentielRome), [field]: "a".repeat(length) },
+        })
+
+      expect.soft((await create(max + 1)).statusCode).toBe(400)
+      expect.soft((await create(max)).statusCode).toBe(200)
+    })
+
+    it.each(limits)("refuse $field au-delà de $max caractères à la mise à jour, l'accepte à la limite", async ({ field, max }) => {
+      const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+      const createOfferResponse = await entrepriseSdkInstance.createOffer({
+        establishment_id: formulaire!.establishment_id,
+        cookies,
+        job: buildCreateJobDataFromReferentiel(referentielRome),
+      })
+      const jobId = (createOfferResponse.json() as OfferCreationResponse)._id.toString()
+      const job = (await entrepriseSdkInstance.getOffer({ jobId, cookies })).json() as GetOfferResponse
+      const update = (length: number) => entrepriseSdkInstance.updateOffer({ jobId, cookies, body: { ...jobToJobPatch(job), [field]: "a".repeat(length) } })
+
+      expect.soft((await update(max + 1)).statusCode).toBe(400)
+      expect.soft((await update(max)).statusCode).toBe(200)
     })
   })
 
