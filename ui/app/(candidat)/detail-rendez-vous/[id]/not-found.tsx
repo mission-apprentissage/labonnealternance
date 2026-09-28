@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import NotFound from "@/app/_components/NotFound"
 
 export const metadata: Metadata = {
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 }
 
 export default function DetailRendezVousNotFound() {
-  return <NotFound />
+  return (
+    <DefaultContainer>
+      <NotFound />
+    </DefaultContainer>
+  )
 }

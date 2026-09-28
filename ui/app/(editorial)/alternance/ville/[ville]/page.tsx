@@ -64,7 +64,11 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
   if (!data) {
     // notFound() duplique l'en-tête/pied de page ici : le layout édito attend la session (getSession) dans
     // un <Suspense>, et le Suspense se remonte en double avec le HTTPAccessFallbackBoundary de Next 16.
-    return <NotFound />
+    return (
+      <DefaultContainer>
+        <NotFound />
+      </DefaultContainer>
+    )
   }
 
   const villePage = PAGES.dynamic.seoVille(ville, data.ville)

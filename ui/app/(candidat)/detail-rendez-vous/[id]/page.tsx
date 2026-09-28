@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import NotFound from "@/app/_components/NotFound"
 import { ApiError, apiGet } from "@/utils/api.utils"
 import { METADATA } from "@/utils/routes.metadata.utils"
@@ -24,7 +25,11 @@ export default async function DetailRendezVousPage({ params, searchParams }: { p
     if (err instanceof ApiError && err.isNotFoundError()) {
       // notFound() duplique l'en-tête/pied de page ici : le layout attend la session (getSession) dans
       // un <Suspense>, et le Suspense se remonte en double avec le HTTPAccessFallbackBoundary de Next 16.
-      return <NotFound />
+      return (
+        <DefaultContainer>
+          <NotFound />
+        </DefaultContainer>
+      )
     }
     throw err
   }

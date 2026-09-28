@@ -121,7 +121,11 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
   if (!data) {
     // notFound() duplique l'en-tête/pied de page ici : le layout édito attend la session (getSession) dans
     // un <Suspense>, et le Suspense se remonte en double avec le HTTPAccessFallbackBoundary de Next 16.
-    return <NotFound />
+    return (
+      <DefaultContainer>
+        <NotFound />
+      </DefaultContainer>
+    )
   }
 
   const jobsSearchUrl = `${buildSearchUrl({ mode: "emplois", q: data.metier, radius: 30, page: 0, hitsPerPage: 20 })}&${UTM_PARAMS}`

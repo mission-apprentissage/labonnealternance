@@ -97,7 +97,13 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
 
   // notFound() duplique l'en-tête/pied de page ici : le layout édito attend la session (getSession) dans
   // un <Suspense>, et le Suspense se remonte en double avec le HTTPAccessFallbackBoundary de Next 16.
-  if (!rawData) return <NotFound />
+  if (!rawData) {
+    return (
+      <DefaultContainer>
+        <NotFound />
+      </DefaultContainer>
+    )
+  }
 
   const data = rawData as unknown as ISeoDiplome
   const metierLabel = await getMetierLabel(data.romes)
