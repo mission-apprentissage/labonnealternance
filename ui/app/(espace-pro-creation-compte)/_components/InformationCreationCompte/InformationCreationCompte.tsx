@@ -30,6 +30,7 @@ import { infosOpcos } from "@/theme/components/logos/infos-opcos"
 import { getEntrepriseOpco } from "@/utils/api"
 import { ApiError, apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 
 /**
  * Synchronise values.handiEngagement avec l'état dérivé de get-entreprise (masqué/verrouillé), qui ne
@@ -106,7 +107,7 @@ const Formulaire = ({
         last_name: personNameValidation().required("champ obligatoire"),
         first_name: personNameValidation().required("champ obligatoire"),
         phone: phoneValidation().required("champ obligatoire"),
-        email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
+        email: Yup.string().email(EMAIL_FORMAT_ERROR).lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
         handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire") : Yup.string(),
       })}
@@ -140,7 +141,7 @@ const Formulaire = ({
                     emailInfo={
                       email
                         ? "L’email que nous utilisons est fourni par votre Carif Oref, et permet de vous connecter. Vous pourrez le modifier dans votre espace personnel."
-                        : "Privilégiez votre adresse professionnelle"
+                        : "Format attendu : nom@domaine.fr. Privilégiez votre adresse professionnelle."
                     }
                   />
                   <Box

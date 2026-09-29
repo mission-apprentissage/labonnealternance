@@ -11,6 +11,7 @@ import { Warning } from "@/theme/components/icons"
 
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
+  const { hideAsterisk: _hideAsterisk, ...inputProps } = props
   const hasError = Boolean(meta.error && meta.touched && (props.required !== false || field.value))
   const required = props.required ?? true
   // Association explicite label ↔ input et input ↔ message d'erreur (RGAA) : FormLabel/Input sont ici
@@ -21,7 +22,7 @@ const CustomInput = (props) => {
   const errorId = `${inputId}-error`
   const hintId = `${inputId}-hint`
   // L'indication (format attendu…) et le message d'erreur sont tous deux lus avec le champ (RGAA 11.10)
-  const describedBy = [props.info ? hintId : null, hasError ? errorId : null].filter(Boolean).join(" ") || undefined
+  const describedBy = [props.info ? hintId : null, hasError ? errorId : null, props["aria-describedby"]].filter(Boolean).join(" ") || undefined
   return (
     <Box
       sx={[
@@ -47,7 +48,7 @@ const CustomInput = (props) => {
             {props.info}
           </Box>
         )}
-        <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} id={inputId} aria-describedby={describedBy} />
+        <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...inputProps} id={inputId} aria-describedby={describedBy} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
         {hasError &&
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (

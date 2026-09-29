@@ -2,6 +2,8 @@ import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "shared/valid
 import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
 
+import { SIRET_KEY_ERROR } from "@/utils/validation-messages"
+
 export const phoneValidation = () => {
   return Yup.string()
     .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
@@ -21,5 +23,5 @@ export const SIRETValidation = () => {
     .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
     .min(14, "le siret est sur 14 chiffres")
     .max(14, "le siret est sur 14 chiffres")
-    .test("test-luhn", "Le numéro de SIRET saisi n’est pas valide", (value) => validateSIRET(value))
+    .test("test-luhn", SIRET_KEY_ERROR, (value) => validateSIRET(value))
 }

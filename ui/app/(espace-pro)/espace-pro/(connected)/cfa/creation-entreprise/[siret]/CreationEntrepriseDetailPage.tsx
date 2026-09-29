@@ -19,6 +19,7 @@ import { useToast } from "@/app/hooks/useToast"
 import { personNameValidation, phoneValidation } from "@/common/validation/field-validations"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 
 const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const router = useRouter()
@@ -56,7 +57,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         isDeclarationExact: false,
       }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+        email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
         last_name: personNameValidation().required("champ obligatoire"),
         first_name: personNameValidation().required("champ obligatoire"),
         phone: phoneValidation().required("champ obligatoire"),
@@ -82,7 +83,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                   <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>
                     Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
                   </Typography>
-                  <ContactInfoFields />
+                  <ContactInfoFields thirdParty />
                   <Typography sx={{ color: "#0063CB" }}>
                     <Box component="span" sx={{ fontWeight: 700 }}>
                       Important :
