@@ -2,11 +2,10 @@ import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "shared/valid
 import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
 
+import { PHONE_FORMAT_ERROR } from "@/utils/validation-messages"
+
 export const phoneValidation = () => {
-  return Yup.string()
-    .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-    .min(10, "le téléphone est sur 10 chiffres")
-    .max(10, "le téléphone est sur 10 chiffres")
+  return Yup.string().matches(/^[0-9]{10}$/, PHONE_FORMAT_ERROR)
 }
 
 export const personNameValidation = () => {
