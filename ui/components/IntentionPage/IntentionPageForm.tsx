@@ -1,12 +1,13 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Checkbox, FormControlLabel, FormGroup, Stack, TextField, Typography } from "@mui/material"
 import { FormikProvider, useFormik } from "formik"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { zRoutes } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { toFormikValidationSchema } from "zod-formik-adapter"
-import { CustomFormControl } from "@/app/_components/CustomFormControl"
+import { CustomFormControl, getCustomFormControlErrorId } from "@/app/_components/CustomFormControl"
 import CustomInput from "@/app/_components/CustomInput"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 
 export type IntentionPageFormValues = {
   email: string
@@ -24,7 +25,7 @@ export function IntentionPageForm({
   email: string
   onSubmit: (formValues: IntentionPageFormValues) => void
   company_recruitment_intention: ApplicationIntention
-  onStateChange?: (state: { isValid: boolean; isSubmitting: boolean }) => void
+  onStateChange?: (state: { isSubmitting: boolean }) => void
 }) {
   const isRefusedState = company_recruitment_intention === ApplicationIntention.REFUS
   const placeholderTextArea = ApplicationIntentionDefaultText[company_recruitment_intention]
@@ -37,12 +38,14 @@ export function IntentionPageForm({
     validate: validateForm,
   })
 
-  const { values, setFieldValue, handleBlur, isValid, isSubmitting } = formik
+  const { values, setFieldValue, handleBlur, isSubmitting } = formik
+  const formRef = useRef<HTMLFormElement>(null)
+  const hasFeedbackError = Boolean(formik.touched.company_feedback && formik.errors.company_feedback)
 
   useEffect(() => {
-    onStateChange?.({ isValid, isSubmitting })
+    onStateChange?.({ isSubmitting })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isValid, isSubmitting])
+  }, [isSubmitting])
 
   function validateForm(formValues) {
     const parseResult = schema.safeParse(formValues ?? values)
@@ -60,14 +63,14 @@ export function IntentionPageForm({
   }
 
   return (
-    <form id="intention-form" onSubmit={formik.handleSubmit}>
+    <form id="intention-form" ref={formRef} noValidate onSubmit={createSubmitWithFocusOnError(formRef, formik)}>
       <FormikProvider value={formik}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
           <Box data-testid="fieldset-message">
             <Typography sx={{ fontSize: "12px", my: fr.spacing("6v"), color: "#666", marginTop: "4px" }}>
               Tous les champs sont obligatoires, sauf mention contraire “facultatif”.
             </Typography>
-            <CustomFormControl label="Modifiez votre message :" required={false} name="company_feedback">
+            <CustomFormControl label="Modifiez votre message :" required={false} name="company_feedback" fieldId="company_feedback">
               <TextField
                 id="company_feedback"
                 data-testid="company_feedback"
@@ -76,9 +79,13 @@ export function IntentionPageForm({
                 onBlur={handleBlur}
                 onChange={(event) => {
                   const value = event.target.value
+                  // touched dès la saisie : une erreur apparue au blur décalerait « Envoyer maintenant » pendant le clic, qui serait perdu
+                  formik.setFieldTouched("company_feedback", true, false)
                   formik.setFieldValue("company_feedback", value, true)
                 }}
                 value={values.company_feedback}
+                error={hasFeedbackError}
+                slotProps={{ htmlInput: { "aria-describedby": hasFeedbackError ? getCustomFormControlErrorId("company_feedback") : undefined } }}
                 multiline={true}
                 rows={10}
                 fullWidth={true}
@@ -102,9 +109,10 @@ export function IntentionPageForm({
                   data-testid="email"
                   name="email"
                   required={false}
-                  label="Votre e-mail (facultatif)"
-                  info="Vous serez en copie de la réponse envoyée"
+                  label="E-mail (facultatif)"
+                  info="Format attendu : nom@domaine.fr. Vous serez en copie de la réponse envoyée."
                   type="email"
+                  autoComplete="email"
                   value={values.email}
                 />
               </Box>
@@ -112,17 +120,24 @@ export function IntentionPageForm({
                 <CustomInput
                   data-testid="phone"
                   name="phone"
-                  label="Votre téléphone (facultatif)"
-                  info="Votre numéro apparaîtra dans l’e-mail de réponse"
+                  label="Téléphone (facultatif)"
+                  info="10 chiffres, par exemple 0612345678. Votre numéro apparaîtra dans l’e-mail de réponse."
                   type="tel"
+                  inputProps={{ inputMode: "numeric" }}
+                  autoComplete="tel-national"
                   required={false}
                 />
               </Box>
             </Box>
           )}
           {isRefusedState && (
-            <CustomFormControl label="Précisez la ou les raison(s) de votre refus (facultatif) :" required={false} name="refusal_reasons">
-              <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#666666", marginTop: "8px" }}>Les motifs sélectionnés seront partagés au candidat</Typography>
+            <CustomFormControl
+              label="Précisez la ou les raison(s) de votre refus (facultatif) :"
+              required={false}
+              name="refusal_reasons"
+              group
+              info="Les motifs sélectionnés seront partagés au candidat"
+            >
               <FormGroup>
                 <Stack
                   direction="column"
@@ -134,11 +149,14 @@ export function IntentionPageForm({
                     },
                   }}
                 >
-                  {Object.values(RefusalReasons).map((reason) => (
+                  {Object.values(RefusalReasons).map((reason, index) => (
                     <FormControlLabel
                       key={reason}
+                      htmlFor={`refusal_reasons-${index}`}
                       control={
                         <Checkbox
+                          id={`refusal_reasons-${index}`}
+                          name="refusal_reasons"
                           size="medium"
                           value={reason}
                           onChange={(event) => {
