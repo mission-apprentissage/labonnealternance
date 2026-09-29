@@ -5,7 +5,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { IPointGeometry } from "shared/models/address.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
-import type { ISearchItem } from "shared/models/search-items.model"
+import type { ISearchItem } from "shared/models/search-corpus.model"
 import { isGeiqEntreprise } from "shared/services/is-geiq-entreprise"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -16,7 +16,8 @@ import type { AdminCodeIndex } from "./search-items-admin-codes"
 import { loadAdminCodeIndex, resolveAdminCodes, snapGeopointToCommune } from "./search-items-admin-codes"
 
 /**
- * Construction et synchronisation des documents `search_items` (index MongoDB Search).
+ * Construction et synchronisation des documents de l'index de recherche, une collection par mode
+ * (`search_jobs`, `search_jobs_with_training`, `search_trainings`, cf. getSearchCorpusCollection).
  *
  * - Builders purs (formation / offre / recruteur) partagés entre le batch nightly
  *   (`fillSearchItemsCollection`) et la synchronisation incrémentale.
@@ -167,8 +168,11 @@ const pickCanonicalVariant = (variants: { v: string; c: number }[]): string => {
 }
 
 export const buildCanonicalCaseMap = async (field: "organization_name" | "activity_sector"): Promise<Map<string, string>> => {
-  const rows = await getDbCollection("search_items")
+  // Canonicalisation commune aux trois corpus : un organisme qui publie offres et formations garde une seule casse.
+  const rows = await getDbCollection("search_jobs")
     .aggregate<{ _id: string; variants: { v: string; c: number }[] }>([
+      { $unionWith: { coll: "search_jobs_with_training" } },
+      { $unionWith: { coll: "search_trainings" } },
       { $match: { [field]: { $nin: [null, ""] } } },
       { $group: { _id: { lower: { $toLower: `$${field}` }, exact: `$${field}` }, count: { $sum: 1 } } },
       { $group: { _id: "$_id.lower", variants: { $push: { v: "$_id.exact", c: "$count" } } } },
@@ -297,7 +301,7 @@ export const loadSearchItemBuildContext = async (): Promise<SearchItemBuildConte
   return { romeLabelByCode, organizationCaseMap, sectorCaseMap, adminCodes, corrections: { formations_recentrees: 0, formations_sans_geopoint: 0 } }
 }
 
-// buildCanonicalCaseMap = 2 agrégations $group sur TOUTE la collection search_items : trop
+// buildCanonicalCaseMap = 2 agrégations $group sur TOUS les corpus : trop
 // coûteux pour être payé à chaque appel unitaire (fire-and-forget des actions métier) ou à
 // chaque chunk du cron delta → mémoïsation avec TTL. Les référentiels évoluent lentement ;
 // canonicalizeCase enrichit les maps en mémoire entre deux rechargements (cohérence intra-process).
@@ -456,7 +460,7 @@ export const buildRecruteurSearchItem = (job: IJobPartnerForSearchItem, ctx: Sea
   }
 }
 
-// ─── Synchronisation incrémentale jobs_partners → search_items ─────────────────────────────
+// ─── Synchronisation incrémentale jobs_partners → corpus d'offres ──────────────────────────
 
 /**
  * Stages partagés nightly/sync. applications.job_id est un ObjectId : jointure directe (comparer
@@ -517,9 +521,6 @@ export const SEARCH_JOBS_COLLECTIONS = ["search_jobs", "search_jobs_with_trainin
 
 type SearchCorpusCollection = (typeof SEARCH_JOBS_COLLECTIONS)[number] | "search_trainings"
 
-/** Collections qui portent des `keywords` Mistral : `search_items` et les deux corpus d'offres. */
-export const KEYWORDS_COLLECTIONS = ["search_items", ...SEARCH_JOBS_COLLECTIONS] as const
-
 /** Collection du mode de recherche qui sert l'item, lue par search.service.ts (SEARCH_CORPORA). */
 export const getSearchCorpusCollection = (doc: Pick<ISearchItem, "type" | "is_formation_included">): SearchCorpusCollection => {
   if (doc.type === "formation") return "search_trainings"
@@ -531,23 +532,21 @@ export const getSearchCorpusCollection = (doc: Pick<ISearchItem, "type" | "is_fo
  * Utilisé par la sync incrémentale ET le nightly : un `replaceOne` remettrait `keywords: null`
  * sur un doc inséré/enrichi par un autre chemin entre deux lectures (course sync ↔ cron keywords).
  *
- * Double écriture `search_items` + collection du mode (#5389). Une offre change de collection
- * quand `is_delegated` ou la liste GEIQ change : elle est retirée de l'autre collection d'offres.
+ * Une offre change de collection quand `is_delegated` ou la liste GEIQ change : elle est retirée de
+ * l'autre collection d'offres.
  */
 export const upsertSearchItem = async (doc: ISearchItem) => {
   const { keywords: _keywords, _id, ...fields } = doc
-  const update = { $set: fields, $setOnInsert: { keywords: null } }
   const corpus = getSearchCorpusCollection(doc)
   const otherJobsCollection = SEARCH_JOBS_COLLECTIONS.find((name) => corpus !== "search_trainings" && name !== corpus)
   await Promise.all([
-    getDbCollection("search_items").updateOne({ _id }, update, { upsert: true }),
-    getDbCollection(corpus).updateOne({ _id }, update, { upsert: true }),
+    getDbCollection(corpus).updateOne({ _id }, { $set: fields, $setOnInsert: { keywords: null } }, { upsert: true }),
     otherJobsCollection ? getDbCollection(otherJobsCollection).deleteOne({ _id }) : null,
   ])
 }
 
 /**
- * Synchronise des jobs_partners identifiés vers search_items :
+ * Synchronise des jobs_partners identifiés vers les corpus d'offres :
  * - offre ou recruteur ACTIVE → upsert (keywords Mistral préservés) ;
  * - non-ACTIVE ou _id disparu de jobs_partners → retrait de l'index (même règle que le
  *   $match du batch nightly — sinon un recruteur inactif purgé réapparaîtrait via le cron
@@ -589,17 +588,11 @@ export const upsertJobPartnersToSearchItems = async (ids: ObjectId[], sharedCtx?
   return { upserted, removed }
 }
 
-/**
- * Retire des jobs_partners de l'index (garde-fou : ne touche jamais les formations). Le compte
- * retourné est celui de `search_items`, référence tant que dure la double écriture (#5389).
- */
+/** Retire des jobs_partners de l'index. Ne touche jamais les formations : elles n'ont pas de collection d'offres. */
 export const removeJobPartnersFromSearchItems = async (ids: ObjectId[]): Promise<number> => {
   if (!ids.length) return 0
-  const [result] = await Promise.all([
-    getDbCollection("search_items").deleteMany({ _id: { $in: ids }, type: "offre" }),
-    ...SEARCH_JOBS_COLLECTIONS.map((name) => getDbCollection(name).deleteMany({ _id: { $in: ids } })),
-  ])
-  return result.deletedCount
+  const results = await Promise.all(SEARCH_JOBS_COLLECTIONS.map((name) => getDbCollection(name).deleteMany({ _id: { $in: ids } })))
+  return results.reduce((total, result) => total + result.deletedCount, 0)
 }
 
 // Fenêtre du delta : 2× l'intervalle du cron (5 min), un run raté est rattrapé par le suivant.
@@ -609,7 +602,7 @@ const DELTA_DEFAULT_WINDOW_MS = 10 * 60 * 1000
 const DELTA_CHUNK_SIZE = 500
 
 /**
- * Point d'entrée UNIQUE de la synchronisation incrémentale vers search_items, quelle que soit la
+ * Point d'entrée UNIQUE de la synchronisation incrémentale vers l'index, quelle que soit la
  * taille de la liste : cron delta, import des offres API, et actions métier unitaires via la
  * variante fire-and-forget ci-dessous.
  *
@@ -673,32 +666,23 @@ const DRIFT_ABSOLUTE_THRESHOLD = 500
 const DRIFT_RELATIVE_THRESHOLD = 0.01
 
 /**
- * Garde-fou : compare les volumes attendus (jobs_partners) aux volumes indexés
- * (search_items) et alerte Slack en cas de dérive — symptôme d'une sync cassée
- * (cron delta muet, écriture de masse sans bump updated_at…). Pendant la double écriture
- * (#5389), chaque collection par mode est aussi comparée à sa part de `search_items`.
+ * Garde-fou : compare les volumes attendus (jobs_partners) aux volumes indexés dans les corpus
+ * d'offres et alerte Slack en cas de dérive — symptôme d'une sync cassée (cron delta muet,
+ * écriture de masse sans bump updated_at…).
  */
 export const controlSearchItemsDrift = async () => {
-  const [expectedOffers, expectedRecruteurs, indexedOffers, indexedRecruteurs, ...corpusCounts] = await Promise.all([
+  const [expectedOffers, expectedRecruteurs, indexedJobsOffers, indexedWithTraining, indexedRecruteurs] = await Promise.all([
     getDbCollection("jobs_partners").countDocuments({ partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, offer_status: JOB_STATUS_ENGLISH.ACTIVE }),
     getDbCollection("jobs_partners").countDocuments({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }),
-    getDbCollection("search_items").countDocuments({ type: "offre", sub_type: { $ne: LBA_ITEM_TYPE.RECRUTEURS_LBA } }),
-    getDbCollection("search_items").countDocuments({ sub_type: LBA_ITEM_TYPE.RECRUTEURS_LBA }),
-    getDbCollection("search_items").countDocuments({ type: "offre", is_formation_included: { $ne: true } }),
-    getDbCollection("search_jobs").countDocuments({}),
-    getDbCollection("search_items").countDocuments({ type: "offre", is_formation_included: true }),
+    getDbCollection("search_jobs").countDocuments({ sub_type: { $ne: LBA_ITEM_TYPE.RECRUTEURS_LBA } }),
     getDbCollection("search_jobs_with_training").countDocuments({}),
-    getDbCollection("search_items").countDocuments({ type: "formation" }),
-    getDbCollection("search_trainings").countDocuments({}),
+    getDbCollection("search_jobs").countDocuments({ sub_type: LBA_ITEM_TYPE.RECRUTEURS_LBA }),
   ])
-  const [searchJobsExpected, searchJobsIndexed, withTrainingExpected, withTrainingIndexed, trainingsExpected, trainingsIndexed] = corpusCounts
+  const indexedOffers = indexedJobsOffers + indexedWithTraining
 
   const drifts = [
     { label: "offres", expected: expectedOffers, indexed: indexedOffers },
     { label: "recruteurs", expected: expectedRecruteurs, indexed: indexedRecruteurs },
-    { label: "search_jobs", expected: searchJobsExpected, indexed: searchJobsIndexed },
-    { label: "search_jobs_with_training", expected: withTrainingExpected, indexed: withTrainingIndexed },
-    { label: "search_trainings", expected: trainingsExpected, indexed: trainingsIndexed },
   ].filter(({ expected, indexed }) => {
     const gap = Math.abs(expected - indexed)
     return gap > Math.max(DRIFT_ABSOLUTE_THRESHOLD, expected * DRIFT_RELATIVE_THRESHOLD)
@@ -706,11 +690,11 @@ export const controlSearchItemsDrift = async () => {
 
   if (drifts.length) {
     const message = drifts.map(({ label, expected, indexed }) => `${label} : ${indexed} indexés vs ${expected} attendus (écart ${Math.abs(expected - indexed)})`).join(" — ")
-    await notifyToSlack({ subject: "Dérive de l'index search_items", message: `La synchronisation jobs_partners → search_items dérive. ${message}`, error: true })
+    await notifyToSlack({ subject: "Dérive de l'index de recherche", message: `La synchronisation jobs_partners → index de recherche dérive. ${message}`, error: true })
   }
 
   logger.info(
-    `controlSearchItemsDrift: offres ${indexedOffers}/${expectedOffers}, recruteurs ${indexedRecruteurs}/${expectedRecruteurs}, search_jobs ${searchJobsIndexed}/${searchJobsExpected}, search_jobs_with_training ${withTrainingIndexed}/${withTrainingExpected}, search_trainings ${trainingsIndexed}/${trainingsExpected}${drifts.length ? " — DÉRIVE DÉTECTÉE" : ""}`
+    `controlSearchItemsDrift: offres ${indexedOffers}/${expectedOffers} (dont ${indexedWithTraining} avec formation incluse), recruteurs ${indexedRecruteurs}/${expectedRecruteurs}${drifts.length ? " — DÉRIVE DÉTECTÉE" : ""}`
   )
   return { expectedOffers, expectedRecruteurs, indexedOffers, indexedRecruteurs, drift: drifts.length > 0 }
 }

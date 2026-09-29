@@ -25,7 +25,8 @@ describe("migration search-collections-par-mode-5389", () => {
     // is_formation_included null sur une offre : near-miss du `$ne: true`, elle reste en emplois.
     const offreSansFlag = generateSearchItemFixture({ type: "offre", is_formation_included: null })
     const formation = generateSearchItemFixture({ type: "formation", sub_type: "formation", is_formation_included: null })
-    await getDbCollection("search_items").insertMany([offre, couplee, offreSansFlag, formation])
+    // Collection hors modèles depuis sa suppression, cf. la migration.
+    await getDatabase().collection("search_items").insertMany([offre, couplee, offreSansFlag, formation])
 
     await up()
 

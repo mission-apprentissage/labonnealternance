@@ -1,6 +1,6 @@
 # Comportement du moteur de recherche — `/v1/search` & `/recherche`
 
-> Moteur de recherche MongoDB Search (mongot) au-dessus de la collection `search_items`.
+> Moteur de recherche MongoDB Search (mongot) au-dessus d'une collection par mode de recherche : `search_jobs` (emplois), `search_jobs_with_training` (emplois avec formation incluse), `search_trainings` (formations).
 > Couvre : le **tri** des résultats, le champ **distance**, la **géo**, et le fonctionnement de la page **`/recherche`**.
 
 ---
@@ -37,7 +37,7 @@ Ajouté à la réponse `/v1/search` ([`search.routes.ts`](../../shared/src/route
 
 ## 3. Géo : le champ `location` doit être peuplé
 
-- Le filtre géo utilise l'opérateur Atlas Search **`geoWithin`** (cercle, rayon en mètres) sur le champ **`location`** (GeoJSON `Point [lng, lat]`, mappé `type: "geo"` dans l'index `search_items_index`). Le tri par proximité utilise `near` sur ce même champ (cf. §1).
+- Le filtre géo utilise l'opérateur Atlas Search **`geoWithin`** (cercle, rayon en mètres) sur le champ **`location`** (GeoJSON `Point [lng, lat]`, mappé `type: "geo"` dans chaque index par mode). Le tri par proximité utilise `near` sur ce même champ (cf. §1).
 - **`location` est le seul champ géo** du modèle ([`searchItems.model.ts`](../../shared/src/models/searchItems.model.ts)). L'ancien champ Algolia `_geoloc { lat, lng }` a été **supprimé**, ainsi que le job de backfill `OneTimeJob_AddLocationToAlgolia`.
 - **Si `location` est absent/`null`, toute recherche géo renvoie `0` résultat** (le `geoWithin` ne matche rien) — alors que la recherche globale fonctionne.
 - Alimentation : le job [`fillSearchItemsCollection`](../../server/src/jobs/search/generateSearchItemsCollection.ts) écrit `location` **à la source** pour chaque document (formations, jobs, recruteurs) — aucun backfill nécessaire sur les données régénérées.
@@ -118,22 +118,22 @@ Autocomplete BAN (≥ 2 caractères), `autoHighlight` (Entrée = 1ʳᵉ suggesti
 
 ---
 
-## Synchronisation jobs_partners → search_items
+## Synchronisation jobs_partners → index de recherche
 
 Mécanisme **hybride** ([`search-items.service.ts`](../../server/src/services/search/search-items.service.ts)) :
 
 1. **Appels explicites** (fire-and-forget, jamais bloquants pour l'action métier) dans les actions unitaires : création/activation/annulation/pourvue d'offre (formulaire, API v2, classification, max candidatures), désinscription recruteur (suppression physique).
 2. **Cron delta** (`*/15 min`, `syncSearchItemsDelta`) : jobs_partners dont `updated_at` ≥ now − 30 min (fenêtre 2× l'intervalle, idempotent) — couvre les écritures de masse (expiration, imports, dédoublonnage… toutes bumpent désormais `updated_at`, index dédié ajouté).
 3. **Réconciliation nightly** (`0 6 * * *`, `fillSearchItemsCollection`, après processComputedAndImportToJobPartners) : rattrape tout et purge les orphelins (suppressions physiques invisibles au delta).
-4. **Contrôle de dérive** (`30 7 * * *`, `controlSearchItemsDrift`) : counts jobs_partners vs search_items par famille, alerte Slack si écart > max(500, 1 %).
+4. **Contrôle de dérive** (`30 7 * * *`, `controlSearchItemsDrift`) : counts jobs_partners vs corpus d'offres (`search_jobs` + `search_jobs_with_training`) par famille, alerte Slack si écart > max(500, 1 %).
 
-Garanties : les `keywords` Mistral des docs indexés sont préservés par les upserts (`$setOnInsert` seulement) ; les documents `type: "formation"` ne sont jamais touchés par la sync des offres ; une offre non-ACTIVE ou supprimée de jobs_partners est retirée de l'index.
+Garanties : les `keywords` Mistral des docs indexés sont préservés par les upserts (`$setOnInsert` seulement) ; les formations (`search_trainings`) ne sont jamais touchées par la sync des offres ; une offre qui change de corpus (`is_delegated`, liste GEIQ) est retirée de l'autre collection d'offres ; une offre non-ACTIVE ou supprimée de jobs_partners est retirée de l'index.
 
 ### Keywords Mistral (génération continue)
 
 Automatisée de bout en bout ([`search-items-keywords.service.ts`](../../server/src/services/search/search-items-keywords.service.ts)) :
 
-- **Cache `search_jobs_keywords`** keyé par le **hash du texte source** (pas par doc) : les recruteurs partagent massivement les mêmes rome_labels (un appel par combinaison ROME distincte), les offres re-créées à texte identique sont gratuites, et une régénération de `search_items` ne perd plus les keywords. Convention : `keywords: null` = à générer, `[]` = traité sans résultat utilisable (pas de re-boucle).
+- **Cache `search_jobs_keywords`** keyé par le **hash du texte source** (pas par doc) : les recruteurs partagent massivement les mêmes rome_labels (un appel par combinaison ROME distincte), les offres re-créées à texte identique sont gratuites, et une régénération des corpus ne perd pas les keywords. Convention : `keywords: null` = à générer, `[]` = traité sans résultat utilisable (pas de re-boucle).
 - **Cron continu** (`*/30 min`) : passe cache sur toute la file (c'est ainsi que les batchs se propagent), puis appels API **immédiats** pour les offres classiques en miss (plafond 300/run, concurrence 5, abandon après 5 erreurs API consécutives). Les recruteurs en miss attendent le batch.
 - **Batch hebdo recruteurs** (`0 18 * * SUN`, après leur rechargement de 10:00 UTC) : soumission Mistral Batch dédupliquée par hash (`customId = source_hash`), suivie dans **`mistral_batch_jobs`**.
 - **Ramasse horaire** (`applyPendingMistralBatches`) : vérifie les jobs `submitted`, télécharge et applique les sorties au cache — reprise garantie à travers les redéploiements ; échec → alerte Slack.
