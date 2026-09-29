@@ -2,7 +2,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
-import { Box, Checkbox, CircularProgress, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import type { IJobsPartnersOfferForAdminJSON } from "shared/models/jobs-partners.model"
@@ -11,6 +11,7 @@ import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jo
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { getJobsPartnersForAdmin } from "@/utils/api"
+import { MultiSelect } from "../_components/MultiSelect"
 import { getOffresPartenairesColumns } from "../_utils/offresPartenairesColumns"
 import { ConfirmationClassificationOffre, ConfirmationDesactivationOffre } from "./OffresPartenairesModals"
 
@@ -118,62 +119,5 @@ export function OffresPartenairesList() {
         </>
       )}
     </>
-  )
-}
-
-function MultiSelect<T extends string>({
-  id,
-  label,
-  width,
-  items,
-  value,
-  onChange,
-}: {
-  id: string
-  label: string
-  width: number
-  items: { value: T; label: string }[]
-  value: T[]
-  onChange: (newValue: T[]) => void
-}) {
-  const allSelected = value.length === items.length
-  const someSelected = value.length > 0 && !allSelected
-
-  function handleChange(selected: string[]) {
-    if (selected.includes("__all__")) {
-      onChange(allSelected ? [] : items.map((i) => i.value))
-    } else {
-      onChange(selected as T[])
-    }
-  }
-
-  const displayLabel = value.length === 0 ? "Tous" : value.map((v) => items.find((i) => i.value === v)?.label ?? v).join(", ")
-
-  return (
-    <FormControl sx={{ width }} size="small">
-      <InputLabel id={`${id}-label`} sx={{ fontSize: ".875rem" }}>
-        {label}
-      </InputLabel>
-      <Select
-        labelId={`${id}-label`}
-        multiple
-        value={value}
-        onChange={(e) => handleChange(e.target.value as string[])}
-        input={<OutlinedInput label={label} />}
-        renderValue={() => displayLabel}
-        MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
-      >
-        <MenuItem value="__all__" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
-          <Checkbox checked={allSelected} indeterminate={someSelected} size="small" />
-          <ListItemText primary={allSelected ? "Tout désélectionner" : "Tout sélectionner"} slotProps={{ primary: { fontSize: ".875rem" } }} />
-        </MenuItem>
-        {items.map((item) => (
-          <MenuItem key={item.value} value={item.value}>
-            <Checkbox checked={value.includes(item.value)} size="small" />
-            <ListItemText primary={item.label} slotProps={{ primary: { fontSize: ".875rem" } }} />
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
   )
 }
