@@ -22,7 +22,7 @@ const tokens = {
   onisep: await getToken("onisep"),
   jeune_1_solution: await getToken("jeune_1_solution"),
   lba: await getToken("lba"),
-  unknown: await getToken("Un super Partenaire"),
+  unknown: await getToken("Mission Apprentissage"),
   noHabilitation: await getToken("parcoursup", false),
 }
 
@@ -84,14 +84,10 @@ describe("GET /v2/appointment/links", () => {
     expect(response.statusCode).toBe(403)
   })
 
-  it.each([["lba"], ["unknown"]] as const)("401 pour une organisation qui n'est pas un referrer API (%s)", async (organisation) => {
+  it.each([["lba"], ["unknown"], ["jeune_1_solution"]] as const)("403 pour une organisation hors liste (%s)", async (organisation) => {
     const response = await httpClient().inject({ method: "GET", path: "/api/v2/appointment/links", headers: { authorization: `Bearer ${tokens[organisation]}` } })
-    expect(response.statusCode).toBe(401)
-  })
-
-  it("403 pour un referrer API hors liste (jeune_1_solution)", async () => {
-    const response = await httpClient().inject({ method: "GET", path: "/api/v2/appointment/links", headers: { authorization: `Bearer ${tokens.jeune_1_solution}` } })
     expect(response.statusCode).toBe(403)
+    expect(response.json()).toEqual({ statusCode: 403, error: "Forbidden", message: "Organisation not allowed" })
   })
 
   it("Parcoursup : id = parcoursup_id, formations sans parcoursup_id, non ouvertes, sans email ou sans établissement exclues", async () => {
