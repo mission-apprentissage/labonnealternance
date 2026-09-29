@@ -4,6 +4,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import type { CSSProperties } from "react"
 import { useMemo, useState } from "react"
 import type { IJobsPartnersOfferForAdminJSON } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
@@ -24,6 +25,48 @@ const OFFER_ID_EXAMPLE = "65314e465afcffb8f31b1853"
 
 const validateOfferId = (search: string) =>
   lookLikeObjectId(search) ? null : `Saisissez un identifiant de 24 caractères hexadécimaux (chiffres 0 à 9, lettres a à f), par exemple ${OFFER_ID_EXAMPLE}`
+
+// aria-disabled plutôt que disabled : un bouton désactivé perd le focus, qui retombe en haut de page. Le DSFR ne stylant que :disabled, l'apparence est reproduite ici
+function PaginationButton({
+  label,
+  targetPage,
+  pageCount,
+  isAvailable,
+  onClick,
+}: {
+  label: string
+  targetPage: number
+  pageCount: number
+  isAvailable: boolean
+  onClick: () => void
+}) {
+  return (
+    <Button
+      priority="secondary"
+      onClick={() => {
+        if (isAvailable) onClick()
+      }}
+      nativeButtonProps={{
+        "aria-disabled": !isAvailable,
+        "aria-label": isAvailable ? `${label}, page ${targetPage} sur ${pageCount}` : undefined,
+      }}
+      style={
+        isAvailable
+          ? undefined
+          : ({
+              color: "var(--text-disabled-grey)",
+              boxShadow: "inset 0 0 0 1px var(--border-disabled-grey)",
+              backgroundColor: "transparent",
+              cursor: "not-allowed",
+              "--hover": "inherit",
+              "--active": "inherit",
+            } as CSSProperties)
+      }
+    >
+      {label}
+    </Button>
+  )
+}
 
 export function OffresPartenairesList() {
   const [selectedPartnerLabels, setSelectedPartnerLabels] = useState<string[]>([])
@@ -48,6 +91,7 @@ export function OffresPartenairesList() {
   const total = data?.pagination.total ?? 0
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const currentPage = Math.floor(offset / PAGE_SIZE) + 1
+  const isPageLoading = isFetching && isPlaceholderData
 
   const [currentOffer, setCurrentOffer] = useState<IJobsPartnersOfferForAdminJSON | null>(null)
   const confirmationDesactivationOffre = useDisclosure()
@@ -101,27 +145,42 @@ export function OffresPartenairesList() {
         />
       </Box>
 
-      {isLoading || (isFetching && isPlaceholderData) ? (
+      {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
           <CircularProgress />
         </Box>
       ) : isError ? (
         <Alert severity="error" small description="La recherche des offres a échoué. Réessayez." />
-      ) : jobs.length === 0 ? (
+      ) : jobs.length === 0 && !isPlaceholderData ? (
         <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>Aucun résultat.</Box>
       ) : (
         <>
-          <VirtualTable caption={`Offres partenaires (${total} au total)`} columns={columns} data={jobs} hideSearch={true} />
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}>
-            <Button priority="secondary" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>
-              Précédent
-            </Button>
-            <Typography sx={{ fontSize: ".875rem", color: "#666666" }}>
-              Page {currentPage} / {pageCount}
+          {/* Tableau et pagination restent montés pendant le chargement : les démonter ferait perdre le focus du bouton cliqué */}
+          <Box aria-busy={isPageLoading} sx={{ opacity: isPageLoading ? 0.5 : 1, transition: "opacity .2s" }}>
+            <VirtualTable caption={`Offres partenaires (${total} au total)`} columns={columns} data={jobs} hideSearch={true} />
+          </Box>
+          <Box
+            component="nav"
+            aria-label="Pagination des offres partenaires"
+            sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}
+          >
+            <PaginationButton
+              label="Précédent"
+              targetPage={currentPage - 1}
+              pageCount={pageCount}
+              isAvailable={currentPage > 1}
+              onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
+            />
+            <Typography role="status" sx={{ fontSize: ".875rem", color: "#666666" }}>
+              {isPageLoading ? `Chargement de la page ${currentPage} sur ${pageCount}…` : `Page ${currentPage} sur ${pageCount}`}
             </Typography>
-            <Button priority="secondary" disabled={currentPage >= pageCount} onClick={() => setOffset(offset + PAGE_SIZE)}>
-              Suivant
-            </Button>
+            <PaginationButton
+              label="Suivant"
+              targetPage={currentPage + 1}
+              pageCount={pageCount}
+              isAvailable={currentPage < pageCount}
+              onClick={() => setOffset(offset + PAGE_SIZE)}
+            />
           </Box>
         </>
       )}
