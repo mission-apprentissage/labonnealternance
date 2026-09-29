@@ -2,14 +2,14 @@ import { readFileSync } from "fs"
 import type { AnyBulkWriteOperation } from "mongodb"
 import { ObjectId } from "mongodb"
 import path from "path"
-import type { ISearchItemKeywords } from "shared/models/search-items-keywords.model"
+import type { ISearchJobKeywords } from "shared/models/search-jobs-keywords.model"
 import { gunzipSync } from "zlib"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 /**
- * Pré-remplit le cache `search_items_keywords` avec les mots-clés Mistral déjà générés
+ * Pré-remplit le cache `search_jobs_keywords` avec les mots-clés Mistral déjà générés
  * lors de la recette (batchs de juillet 2026, ~383k réponses → 32 629 hashs uniques).
  * Le cache est keyé par sha256 du texte source : les entrées sont valables dans tous les
  * environnements — la première génération en recette/production ne paiera que le delta.
@@ -22,8 +22,8 @@ export const up = async () => {
   const lines = gunzipSync(readFileSync(filePath)).toString("utf8").split("\n")
 
   const now = new Date()
-  const collection = getDbCollection("search_items_keywords")
-  let ops: AnyBulkWriteOperation<ISearchItemKeywords>[] = []
+  const collection = getDbCollection("search_jobs_keywords")
+  let ops: AnyBulkWriteOperation<ISearchJobKeywords>[] = []
   let upserted = 0
 
   for (const line of lines) {

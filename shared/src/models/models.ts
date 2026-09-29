@@ -70,10 +70,12 @@ import roleManagementModel from "./role-management.model.js"
 import roleManagement360Model from "./role-management360.model.js"
 import romeModel from "./rome.model.js"
 import searchItemsModel from "./search-items.model.js"
-import searchItemsKeywordsModel from "./search-items-keywords.model.js"
+import searchJobsModel, { searchJobsWithTrainingModel } from "./search-jobs.model.js"
+import searchJobsKeywordsModel from "./search-jobs-keywords.model.js"
 import searchQueriesModel from "./search-queries.model.js"
 import searchSuggestionsModel from "./search-suggestions.model.js"
 import searchSynonymsModel from "./search-synonyms.model.js"
+import searchTrainingsModel from "./search-trainings.model.js"
 import seoDiplomeModel from "./seo-diplome.model.js"
 import seoMetierModel from "./seo-metier.model.js"
 import seoVilleModel from "./seo-ville.model.js"
@@ -87,6 +89,9 @@ import userWithAccountModel from "./user-with-account.model.js"
 
 const modelDescriptorMap = {
   [searchItemsModel.collectionName]: searchItemsModel,
+  [searchJobsModel.collectionName]: searchJobsModel,
+  [searchJobsWithTrainingModel.collectionName]: searchJobsWithTrainingModel,
+  [searchTrainingsModel.collectionName]: searchTrainingsModel,
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
   [anonymizedApplicationsModel.collectionName]: anonymizedApplicationsModel,
   [anonymizedAppointmentsModel.collectionName]: anonymizedAppointmentsModel,
@@ -160,7 +165,7 @@ const modelDescriptorMap = {
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
   [searchQueriesModel.collectionName]: searchQueriesModel,
-  [searchItemsKeywordsModel.collectionName]: searchItemsKeywordsModel,
+  [searchJobsKeywordsModel.collectionName]: searchJobsKeywordsModel,
   [mistralBatchJobsModel.collectionName]: mistralBatchJobsModel,
   [searchSuggestionsModel.collectionName]: searchSuggestionsModel,
   [searchSynonymsModel.collectionName]: searchSynonymsModel,
