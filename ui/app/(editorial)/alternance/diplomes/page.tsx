@@ -84,7 +84,7 @@ export default function AlternanceDiplomes() {
 
   const kpiCards = [
     { value: `${diplomeData.length}`, label: "fiches diplôme détaillées" },
-    { value: "CAP à Bac+5", label: "niveaux couverts" },
+    { value: "CAP à Bac+3", label: "niveaux couverts" },
     { value: "1 à 3 ans", label: "durée de formation" },
     { value: "62 %", label: "en emploi 6 mois après le diplôme" },
   ]
