@@ -6,6 +6,10 @@ import { updateSeoDiplome } from "@/services/seo.service"
 const CAP = "CERTIFICAT D'APTITUDE PROFESSIONNELLE"
 const BAC_PRO = "BAC PROFESSIONNEL"
 
+// Le 1er code ROME pilotait vers l'assistanat commercial (D1401) : métiers affichés et lien « Voir les
+// offres » hors sujet. M1609 = Secrétaire médical / Secrétaire médicale.
+export const SECRETAIRE_MEDICALE_ROMES = ["M1609"]
+
 /**
  * Lot 1 des pages diplôme de niveau ≤ bac+2 (#5539) : 5 CAP, 4 bacs pro et le titre pro ADVF.
  *
@@ -21,7 +25,7 @@ const BAC_PRO = "BAC PROFESSIONNEL"
  * sur celles du lot : les écoles étant tirées par $sample, les pages existantes changent d'écoles, comme
  * à chaque passage du cron hebdomadaire.
  */
-const diplomesData = [
+export const diplomesData = [
   {
     slug: "cap-esthetique",
     titre: "CAP Esthétique",
@@ -538,9 +542,7 @@ export const up = async () => {
     )
   }
 
-  // Le 1er code ROME pilotait vers l'assistanat commercial (D1401) : métiers affichés et lien « Voir les
-  // offres » hors sujet. M1609 = Secrétaire médical / Secrétaire médicale.
-  await collection.updateOne({ slug: "titre-pro-secretaire-medicale" }, { $set: { romes: ["M1609"], updated_at: now } })
+  await collection.updateOne({ slug: "titre-pro-secretaire-medicale" }, { $set: { romes: SECRETAIRE_MEDICALE_ROMES, updated_at: now } })
 
   await updateSeoDiplome()
   logger.info(`seo-diplomes-lot1 : ${diplomesData.length} pages diplôme créées ou mises à jour`)

@@ -1,8 +1,8 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
-import { describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { up } from "@/migrations/20260925100000-seo-diplomes-lot1-5539"
+import { diplomesData, SECRETAIRE_MEDICALE_ROMES, up } from "@/migrations/20260925100000-seo-diplomes-lot1-5539"
 
 /**
  * Ce test vit sous tests/ et non à côté de la migration : le runner liste tous les `.js` du
@@ -140,5 +140,36 @@ describe("migration seo-diplomes-lot1-5539", () => {
     const second = await findBySlug("cap-coiffure")
     expect.soft(second?._id).toEqual(first?._id)
     expect.soft(second?.created_at).toEqual(first?.created_at)
+  })
+})
+
+/**
+ * Les pages diplôme sont décrites à deux endroits tenus à la main : la migration (contenu en base) et
+ * ui/.../diplome_data.tsx (hub, footer, plan du site, sitemap). Un écart passe inaperçu : les ROME de la
+ * page secrétaire médicale sont restés faux plusieurs mois côté base. Ce test fait échouer la CI dès que
+ * les deux sources divergent.
+ */
+describe("cohérence entre la migration seo-diplomes-lot1-5539 et diplome_data.tsx", () => {
+  type IDiplomeData = { slug: string; titre: string; intituleLongFormation: string; romes: string[] }
+  let uiBySlug: Map<string, IDiplomeData>
+
+  beforeAll(async () => {
+    // Import dynamique : le tsconfig server n'active pas `jsx` et refuse donc un import statique du `.tsx`
+    // du workspace ui ; vitest, lui, le charge sans difficulté.
+    const uiDataPath = `${import.meta.dirname}/../../../../ui/app/(editorial)/alternance/_components/diplome_data.tsx`
+    const { diplomeData } = (await import(uiDataPath)) as { diplomeData: IDiplomeData[] }
+    uiBySlug = new Map(diplomeData.map((d) => [d.slug, d]))
+  })
+
+  it.each(diplomesData.map((d) => [d.slug, d] as const))("%s est identique dans les deux sources", (slug, diplome) => {
+    const ui = uiBySlug.get(slug)
+    expect(ui, `${slug} absent de diplome_data.tsx`).toBeDefined()
+    expect.soft(ui?.titre).toBe(diplome.titre)
+    expect.soft(ui?.intituleLongFormation).toBe(diplome.intituleLongFormation)
+    expect.soft(ui?.romes).toEqual(diplome.romes)
+  })
+
+  it("les codes ROME de la page secrétaire médicale sont identiques dans les deux sources", () => {
+    expect(uiBySlug.get("titre-pro-secretaire-medicale")?.romes).toEqual(SECRETAIRE_MEDICALE_ROMES)
   })
 })
