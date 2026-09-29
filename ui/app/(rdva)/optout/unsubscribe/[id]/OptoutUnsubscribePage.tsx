@@ -1,13 +1,15 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Container, FormControl, FormControlLabel, Radio, RadioGroup, Stack, TextareaAutosize, Typography } from "@mui/material"
+import Input from "@codegouvfr/react-dsfr/Input"
+import { Box, Container, FormControlLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material"
+import { captureException } from "@sentry/browser"
 import { useParams, useSearchParams } from "next/navigation"
-import type { ReactNode } from "react"
-import { useEffect, useState } from "react"
+import type { FormEvent, ReactNode } from "react"
+import { useEffect, useId, useRef, useState } from "react"
 import type { IEtablissementJson } from "shared"
 
-import { SuccessCircle } from "@/theme/components/icons"
+import { SuccessCircle, Warning } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
 const EtablissementField = ({ label, children }: { label: string; children: ReactNode }) => (
@@ -50,19 +52,56 @@ export default function OptOutUnsubscribe() {
   const [isQuestionSent, setIsQuestionSent] = useState(false)
   const [etablissement, setEtablissement] = useState<undefined | IEtablissementPartial>()
   const [radioValue, setRadioValue] = useState(radioOptions.UNSUBSCRIBE_NO_DETAILS)
+  const [hasSubmitAttempt, setHasSubmitAttempt] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [hasSubmitError, setHasSubmitError] = useState(false)
+  const questionRef = useRef<HTMLTextAreaElement>(null)
 
-  const handleTextarea = (event) => setTextarea(event.target.value)
+  const fieldId = useId()
+  const legendId = `${fieldId}-legend`
+  const etablissementId = `${fieldId}-etablissement`
+  const noDetailsId = `${fieldId}-no-details`
+  const moreDetailsId = `${fieldId}-more-details`
 
-  const submit = async () => {
-    const opt_out_question = textarea === "" ? undefined : textarea
+  const isMoreDetails = radioValue === radioOptions.UNSUBSCRIBE_MORE_DETAILS
+  const question = textarea.trim()
+  const hasQuestionError = hasSubmitAttempt && isMoreDetails && !question
 
-    await apiPost("/etablissements/:id/opt-out/unsubscribe", {
-      params: { id },
-      body: { opt_out_question },
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    })
+  // Saisir une question sélectionne la seconde option, sans quoi la question serait ignorée à l'envoi.
+  const handleTextarea = (event) => {
+    setTextarea(event.target.value)
+    if (event.target.value) {
+      setRadioValue(radioOptions.UNSUBSCRIBE_MORE_DETAILS)
+    }
+  }
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setHasSubmitAttempt(true)
+    setHasSubmitError(false)
+    if (isMoreDetails && !question) {
+      questionRef.current?.focus()
+      return
+    }
+
+    const opt_out_question = isMoreDetails ? question : undefined
+
+    setIsSubmitting(true)
+    try {
+      await apiPost("/etablissements/:id/opt-out/unsubscribe", {
+        params: { id },
+        body: { opt_out_question },
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+    } catch (error) {
+      captureException(error)
+      setHasSubmitError(true)
+      return
+    } finally {
+      setIsSubmitting(false)
+    }
 
     window.scrollTo(0, 0)
 
@@ -120,45 +159,61 @@ export default function OptOutUnsubscribe() {
         </Box>
       )}
       {!hasBeenUnsubscribed && !isQuestionSent && (
-        <>
-          <FormControl>
-            <RadioGroup onChange={(e) => setRadioValue(e.target.value)} value={radioValue}>
-              <Stack gap={fr.spacing("4v")}>
-                <FormControlLabel
-                  label="Je confirme ne pas souhaiter activer le service RDV Apprentissage sur toutes les formations de l’organisme suivant :"
-                  control={<Radio />}
-                  value={radioOptions.UNSUBSCRIBE_NO_DETAILS}
-                />
-                <Stack component="dl" gap={fr.spacing("2v")} sx={{ backgroundColor: "#E5E5E5", p: fr.spacing("6v"), m: 0 }}>
-                  <EtablissementField label="Raison sociale">{etablissement.raison_sociale}</EtablissementField>
-                  <EtablissementField label="SIRET">{etablissement.formateur_siret}</EtablissementField>
-                  <EtablissementField label="Adresse">{etablissement.formateur_address}</EtablissementField>
-                  <EtablissementField label="Code postal">{etablissement.formateur_zip_code}</EtablissementField>
-                  <EtablissementField label="Ville">{etablissement.formateur_city}</EtablissementField>
-                </Stack>
-
-                <FormControlLabel
-                  label={
-                    <>
-                      J’ai besoin d’informations complémentaires avant de prendre ma décision. <br />
-                      Voici les questions que je souhaite poser :
-                    </>
-                  }
-                  control={<Radio />}
-                  value={radioOptions.UNSUBSCRIBE_MORE_DETAILS}
-                />
-                <Box>
-                  <TextareaAutosize className={fr.cx("fr-input")} onChange={handleTextarea} value={textarea} onClick={() => setRadioValue(radioOptions.UNSUBSCRIBE_MORE_DETAILS)} />
-                </Box>
+        <form onSubmit={submit} noValidate>
+          <Typography id={legendId} sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>
+            Votre décision concernant le service RDV Apprentissage
+          </Typography>
+          <RadioGroup name="decision" aria-labelledby={legendId} onChange={(e) => setRadioValue(e.target.value)} value={radioValue}>
+            <Stack gap={fr.spacing("4v")}>
+              <FormControlLabel
+                htmlFor={noDetailsId}
+                label="Je confirme ne pas souhaiter activer le service RDV Apprentissage sur toutes les formations de l’organisme suivant :"
+                control={<Radio id={noDetailsId} slotProps={{ input: { "aria-describedby": etablissementId } }} />}
+                value={radioOptions.UNSUBSCRIBE_NO_DETAILS}
+              />
+              <Stack id={etablissementId} component="dl" gap={fr.spacing("2v")} sx={{ backgroundColor: "#E5E5E5", p: fr.spacing("6v"), m: 0 }}>
+                <EtablissementField label="Raison sociale">{etablissement.raison_sociale}</EtablissementField>
+                <EtablissementField label="SIRET">{etablissement.formateur_siret}</EtablissementField>
+                <EtablissementField label="Adresse">{etablissement.formateur_address}</EtablissementField>
+                <EtablissementField label="Code postal">{etablissement.formateur_zip_code}</EtablissementField>
+                <EtablissementField label="Ville">{etablissement.formateur_city}</EtablissementField>
               </Stack>
-            </RadioGroup>
-          </FormControl>
+
+              <FormControlLabel
+                htmlFor={moreDetailsId}
+                label="J’ai besoin d’informations complémentaires avant de prendre ma décision."
+                control={<Radio id={moreDetailsId} />}
+                value={radioOptions.UNSUBSCRIBE_MORE_DETAILS}
+              />
+              <Input
+                label="Vos questions"
+                hintText="Obligatoire si vous avez besoin d’informations complémentaires."
+                textArea
+                state={hasQuestionError ? "error" : "default"}
+                stateRelatedMessage={hasQuestionError ? "Saisissez vos questions pour que l’équipe RDV Apprentissage puisse vous répondre." : undefined}
+                nativeTextAreaProps={{
+                  ref: questionRef,
+                  name: "opt_out_question",
+                  rows: 4,
+                  value: textarea,
+                  onChange: handleTextarea,
+                  "aria-invalid": hasQuestionError,
+                }}
+              />
+            </Stack>
+          </RadioGroup>
+          {hasSubmitError && (
+            <Box role="alert" sx={{ display: "flex", alignItems: "center", color: fr.colors.decisions.text.actionHigh.redMarianne.default, mt: fr.spacing("4v") }}>
+              <Warning sx={{ m: 0 }} />
+              <Box sx={{ ml: fr.spacing("2v") }}>Une erreur technique s'est produite. Veuillez réessayer ultérieurement.</Box>
+            </Box>
+          )}
           <Box sx={{ my: fr.spacing("10v") }}>
-            <Button onClick={submit} disabled={radioValue === radioOptions.UNSUBSCRIBE_MORE_DETAILS && textarea === ""}>
+            <Button type="submit" disabled={isSubmitting}>
               Envoyer
             </Button>
           </Box>
-        </>
+        </form>
       )}
     </Container>
   )
