@@ -140,30 +140,13 @@ const getSearchError = (value: string, field: ILbaCompanySearchField) => {
   return null
 }
 
-export default function GestionEntreprises() {
+// Saisie locale au formulaire : la remonter à chaque frappe re-rendrait le tableau des résultats
+function EntreprisesSearchForm({ onSearch }: { onSearch: (search: string, field: ILbaCompanySearchField) => void }) {
   const [searchInput, setSearchInput] = useState("")
   const [searchField, setSearchField] = useState<ILbaCompanySearchField>("workplace_legal_name")
   const [searchError, setSearchError] = useState<string | null>(null)
-  const [submittedSearch, setSubmittedSearch] = useState("")
-  const [submittedField, setSubmittedField] = useState<ILbaCompanySearchField>("workplace_legal_name")
-  const [siret, setSiret] = useState<string>("")
   const searchInputRef = useRef<HTMLInputElement>(null)
   const helpTextId = useId()
-  const modalTitleId = useId()
-  const queryClient = useQueryClient()
-  const toast = useToast()
-
-  const isEnabled = getSearchError(submittedSearch, submittedField) === null
-
-  const { data, isFetching } = useQuery({
-    queryKey: ["/admin/lba-companies", submittedField, submittedSearch],
-    queryFn: () => searchLbaCompanies(submittedSearch, submittedField),
-    enabled: isEnabled,
-    staleTime: 1000 * 60 * 5,
-  })
-
-  const companies = useMemo(() => (data as ILbaCompanyForAdminSearchJSON[]) ?? [], [data])
-  const columns = useMemo(() => getLbaCompaniesColumns({ onSelect: setSiret }), [])
 
   const selectedFieldLabel = SEARCH_FIELD_OPTIONS.find((o) => o.value === searchField)?.label ?? ""
   const helpText =
@@ -171,7 +154,7 @@ export default function GestionEntreprises() {
       ? "SIRET : correspondance exacte (14 chiffres)."
       : `« ${selectedFieldLabel} » — recherche insensible à la casse (regex). Résultats limités à 100 entreprises. Cibler un autre champ peut réduire le nombre de résultats.`
 
-  const onSearch = () => {
+  const submit = () => {
     const value = searchInput.trim()
     const error = getSearchError(value, searchField)
     setSearchError(error)
@@ -179,24 +162,11 @@ export default function GestionEntreprises() {
       searchInputRef.current?.focus()
       return
     }
-    setSiret("")
-    setSubmittedField(searchField)
-    setSubmittedSearch(value)
-  }
-
-  const onSaved = async (updatedSiret: string) => {
-    setSiret("")
-    toast({ title: `Les coordonnées de l’entreprise (SIRET ${updatedSiret}) ont été mises à jour.` })
-    await queryClient.invalidateQueries({ queryKey: ["/admin/lba-companies"] })
-    await queryClient.invalidateQueries({ queryKey: ["getCompany", updatedSiret] })
+    onSearch(value, searchField)
   }
 
   return (
     <>
-      <Breadcrumb pages={[PAGES.static.backAdminGestionDesEntreprises]} />
-      <Typography variant="h2" component="h1" gutterBottom>
-        {PAGES.static.backAdminGestionDesEntreprises.title}
-      </Typography>
       <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-start" }}>
         <Input
           label="Rechercher (obligatoire)"
@@ -211,7 +181,7 @@ export default function GestionEntreprises() {
             "aria-describedby": helpTextId,
             "aria-invalid": Boolean(searchError),
             onKeyDown: (e) => {
-              if (e.key === "Enter") onSearch()
+              if (e.key === "Enter") submit()
             },
             style: { minWidth: "600px" },
           }}
@@ -230,7 +200,7 @@ export default function GestionEntreprises() {
             </option>
           ))}
         </Select>
-        <Button iconId="fr-icon-search-line" priority="primary" onClick={onSearch} data-testid="search_for_algo_company" className={fr.cx("fr-mt-4w")}>
+        <Button iconId="fr-icon-search-line" priority="primary" onClick={submit} data-testid="search_for_algo_company" className={fr.cx("fr-mt-4w")}>
           Rechercher
         </Button>
       </Box>
@@ -249,10 +219,55 @@ export default function GestionEntreprises() {
         <span className="fr-icon-information-line fr-icon--sm" aria-hidden="true" />
         <span id={helpTextId}>{helpText}</span>
       </Box>
+    </>
+  )
+}
+
+export default function GestionEntreprises() {
+  const [submittedSearch, setSubmittedSearch] = useState("")
+  const [submittedField, setSubmittedField] = useState<ILbaCompanySearchField>("workplace_legal_name")
+  const [siret, setSiret] = useState<string>("")
+  const modalTitleId = useId()
+  const queryClient = useQueryClient()
+  const toast = useToast()
+
+  const isEnabled = getSearchError(submittedSearch, submittedField) === null
+
+  const { data, isFetching } = useQuery({
+    queryKey: ["/admin/lba-companies", submittedField, submittedSearch],
+    queryFn: () => searchLbaCompanies(submittedSearch, submittedField),
+    enabled: isEnabled,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  })
+
+  const companies = useMemo(() => (data as ILbaCompanyForAdminSearchJSON[]) ?? [], [data])
+  const columns = useMemo(() => getLbaCompaniesColumns({ onSelect: setSiret }), [])
+
+  const onSearch = (search: string, field: ILbaCompanySearchField) => {
+    setSiret("")
+    setSubmittedField(field)
+    setSubmittedSearch(search)
+  }
+
+  const onSaved = async (updatedSiret: string) => {
+    setSiret("")
+    toast({ title: `Les coordonnées de l’entreprise (SIRET ${updatedSiret}) ont été mises à jour.` })
+    await queryClient.invalidateQueries({ queryKey: ["/admin/lba-companies"] })
+    await queryClient.invalidateQueries({ queryKey: ["getCompany", updatedSiret] })
+  }
+
+  return (
+    <>
+      <Breadcrumb pages={[PAGES.static.backAdminGestionDesEntreprises]} />
+      <Typography variant="h2" component="h1" gutterBottom>
+        {PAGES.static.backAdminGestionDesEntreprises.title}
+      </Typography>
+      <EntreprisesSearchForm onSearch={onSearch} />
 
       {!isEnabled ? (
         <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>
-          {searchField === "workplace_siret" ? "Saisissez un SIRET (14 chiffres) pour rechercher." : "Saisissez au moins 2 caractères pour rechercher."}
+          Lancez une recherche pour afficher les entreprises.
         </Box>
       ) : isFetching ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>

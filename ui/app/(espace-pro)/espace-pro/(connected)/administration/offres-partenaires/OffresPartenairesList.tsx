@@ -1,7 +1,7 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
-import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
@@ -10,7 +10,8 @@ import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jo
 
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
-import { getJobsPartnersForAdmin } from "@/utils/api"
+import { getJobsPartnersForAdmin, lookLikeObjectId } from "@/utils/api"
+import { AdminSearchInput } from "../_components/AdminSearchInput"
 import { MultiSelect } from "../_components/MultiSelect"
 import { getOffresPartenairesColumns } from "../_utils/offresPartenairesColumns"
 import { ConfirmationClassificationOffre, ConfirmationDesactivationOffre } from "./OffresPartenairesModals"
@@ -19,13 +20,17 @@ const partnerLabelOptions = Object.values(JOBPARTNERS_LABEL).filter((label) => !
 
 const PAGE_SIZE = 50
 
+const OFFER_ID_EXAMPLE = "65314e465afcffb8f31b1853"
+
+const validateOfferId = (search: string) =>
+  lookLikeObjectId(search) ? null : `Saisissez un identifiant de 24 caractères hexadécimaux (chiffres 0 à 9, lettres a à f), par exemple ${OFFER_ID_EXAMPLE}`
+
 export function OffresPartenairesList() {
   const [selectedPartnerLabels, setSelectedPartnerLabels] = useState<string[]>([])
-  const [idInput, setIdInput] = useState("")
   const [submittedId, setSubmittedId] = useState("")
   const [offset, setOffset] = useState(0)
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, isPlaceholderData, isFetching } = useQuery({
     queryKey: ["/admin/jobs-partners", selectedPartnerLabels, submittedId, offset],
     queryFn: () =>
       getJobsPartnersForAdmin({
@@ -36,6 +41,7 @@ export function OffresPartenairesList() {
       }),
     staleTime: 1000 * 30,
     placeholderData: keepPreviousData,
+    retry: false,
   })
 
   const jobs = useMemo(() => data?.jobs ?? [], [data])
@@ -52,9 +58,14 @@ export function OffresPartenairesList() {
     [confirmationDesactivationOffre, confirmationClassificationOffre]
   )
 
-  const onSearch = () => {
+  const onSearch = (search: string) => {
     setOffset(0)
-    setSubmittedId(idInput.trim())
+    setSubmittedId(search)
+  }
+
+  const onReset = () => {
+    setSelectedPartnerLabels([])
+    onSearch("")
   }
 
   return (
@@ -63,22 +74,16 @@ export function OffresPartenairesList() {
       <ConfirmationClassificationOffre offer={currentOffer} isOpen={confirmationClassificationOffre.isOpen} onClose={confirmationClassificationOffre.onClose} />
 
       {/* Ligne 1 : recherche par id */}
-      <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-end", mb: fr.spacing("3v") }}>
-        <Input
+      <Box sx={{ display: "flex", mb: fr.spacing("6v") }}>
+        <AdminSearchInput
           label="Rechercher par identifiant (_id)"
-          nativeInputProps={{
-            value: idInput,
-            placeholder: "Identifiant de l'offre...",
-            onChange: (e) => setIdInput(e.target.value),
-            onKeyDown: (e) => {
-              if (e.key === "Enter") onSearch()
-            },
-            style: { minWidth: "360px" },
-          }}
+          placeholder="Identifiant de l'offre..."
+          onSearch={onSearch}
+          onReset={onReset}
+          validate={validateOfferId}
+          hintText={`24 caractères hexadécimaux (chiffres 0 à 9, lettres a à f), par exemple ${OFFER_ID_EXAMPLE}`}
+          minWidth="420px"
         />
-        <Button iconId="fr-icon-search-line" priority="primary" onClick={onSearch} style={{ marginBottom: "1.5rem" }}>
-          Rechercher
-        </Button>
       </Box>
 
       {/* Ligne 2 : filtres */}
@@ -96,10 +101,12 @@ export function OffresPartenairesList() {
         />
       </Box>
 
-      {isLoading ? (
+      {isLoading || (isFetching && isPlaceholderData) ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
           <CircularProgress />
         </Box>
+      ) : isError ? (
+        <Alert severity="error" small description="La recherche des offres a échoué. Réessayez." />
       ) : jobs.length === 0 ? (
         <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>Aucun résultat.</Box>
       ) : (

@@ -1,7 +1,5 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
-import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, Stack, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useState } from "react"
@@ -18,6 +16,7 @@ import ConfirmationActivationUtilisateur from "@/components/espace_pro/Confirmat
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
+import { AdminSearchInput } from "../_components/AdminSearchInput"
 import { MultiSelect } from "../_components/MultiSelect"
 import { getRecruteursColumns } from "../_utils/recruteursColumns"
 
@@ -78,15 +77,15 @@ export function UsersList() {
     [attenteQuery.data, errorQuery.data]
   )
 
-  const [searchInput, setSearchInput] = useState("")
+  const [submittedSearch, setSubmittedSearch] = useState("")
   const [selectedStatuses, setSelectedStatuses] = useState<ETAT_UTILISATEUR[]>([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR])
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<AccountTypeValue[]>([...accountTypes])
   const [selectedOpcos, setSelectedOpcos] = useState<OpcoValue[]>([...opcoValues])
 
   const filteredUsers = useMemo(() => {
     let users = allUsers
-    if (searchInput) {
-      const q = searchInput.toLowerCase()
+    if (submittedSearch) {
+      const q = submittedSearch.toLowerCase()
       users = users.filter((u) => [u.establishment_raison_sociale, u.email, u.first_name, u.last_name, u.phone, u.establishment_siret].some((v) => v?.toLowerCase().includes(q)))
     }
     users = users.filter((u) => selectedStatuses.includes(getUserStatus(u.status as unknown as IUserRecruteur["status"]) as ETAT_UTILISATEUR))
@@ -96,7 +95,7 @@ export function UsersList() {
       users = users.filter((u) => selectedOpcos.includes(u.opco as OpcoValue))
     }
     return users
-  }, [allUsers, searchInput, selectedStatuses, selectedAccountTypes, selectedOpcos])
+  }, [allUsers, submittedSearch, selectedStatuses, selectedAccountTypes, selectedOpcos])
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -114,8 +113,13 @@ export function UsersList() {
       statusLabel={`Recruteurs à traiter (${filteredUsers.length})`}
       userRecruteurs={filteredUsers}
       onInvalidateData={refetch}
-      searchInput={searchInput}
-      onSearchInputChange={setSearchInput}
+      onSearch={setSubmittedSearch}
+      onReset={() => {
+        setSubmittedSearch("")
+        setSelectedStatuses([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR])
+        setSelectedAccountTypes([...accountTypes])
+        setSelectedOpcos([...opcoValues])
+      }}
       selectedStatuses={selectedStatuses}
       onSelectedStatusesChange={setSelectedStatuses}
       selectedAccountTypes={selectedAccountTypes}
@@ -131,8 +135,8 @@ function UserContent({
   statusLabel,
   userRecruteurs,
   onInvalidateData,
-  searchInput,
-  onSearchInputChange,
+  onSearch,
+  onReset,
   selectedStatuses,
   onSelectedStatusesChange,
   selectedAccountTypes,
@@ -144,8 +148,8 @@ function UserContent({
   statusLabel: string
   userRecruteurs: IUserRecruteurJson[]
   onInvalidateData: () => void
-  searchInput: string
-  onSearchInputChange: (v: string) => void
+  onSearch: (search: string) => void
+  onReset: () => void
   selectedStatuses: ETAT_UTILISATEUR[]
   onSelectedStatusesChange: (v: ETAT_UTILISATEUR[]) => void
   selectedAccountTypes: AccountTypeValue[]
@@ -172,19 +176,8 @@ function UserContent({
         onConfirmation={onInvalidateData}
       />
       {/* Ligne 1 : recherche */}
-      <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-end", mb: fr.spacing("3v") }}>
-        <Input
-          label="Rechercher"
-          nativeInputProps={{
-            value: searchInput,
-            placeholder: "Raison sociale, email, téléphone...",
-            onChange: (e) => onSearchInputChange(e.target.value),
-            style: { minWidth: "360px" },
-          }}
-        />
-        <Button iconId="fr-icon-search-line" priority="primary" style={{ marginBottom: "1.5rem" }}>
-          Rechercher
-        </Button>
+      <Box sx={{ display: "flex", mb: fr.spacing("6v") }}>
+        <AdminSearchInput label="Rechercher" placeholder="Raison sociale, email, téléphone..." onSearch={onSearch} onReset={onReset} />
       </Box>
 
       {/* Ligne 2 : filtres */}

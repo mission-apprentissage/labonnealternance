@@ -1,7 +1,5 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
-import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
@@ -14,6 +12,7 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { apiGet } from "@/utils/api.utils"
+import { AdminSearchInput } from "../_components/AdminSearchInput"
 import { MultiSelect } from "../_components/MultiSelect"
 import { getRecruteursColumns } from "../_utils/recruteursColumns"
 import { statusLabels } from "../users/UsersList"
@@ -26,7 +25,6 @@ type AccountTypeValue = (typeof accountTypes)[number]
 type OpcoValue = (typeof opcoValues)[number]
 
 export function RecruteursList() {
-  const [searchInput, setSearchInput] = useState("")
   const [submittedSearch, setSubmittedSearch] = useState("")
   const [selectedStatuses, setSelectedStatuses] = useState<ETAT_UTILISATEUR[]>([...allStatuses])
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<AccountTypeValue[]>([...accountTypes])
@@ -48,6 +46,7 @@ export function RecruteursList() {
       }),
     enabled: isEnabled,
     staleTime: 1000 * 60 * 5,
+    retry: false,
   })
 
   const allUsers = useMemo(() => (dataRaw as IUserRecruteurForAdminJSON[]) ?? [], [dataRaw])
@@ -76,9 +75,7 @@ export function RecruteursList() {
       selectedOpcos={selectedOpcos}
       onSelectedOpcosChange={setSelectedOpcos}
       opcoDisabled={opcoDisabled}
-      searchInput={searchInput}
-      onSearchInputChange={setSearchInput}
-      onSearch={() => setSubmittedSearch(searchInput)}
+      onSearch={setSubmittedSearch}
       isEnabled={isEnabled}
       isFetching={isFetching}
     />
@@ -95,8 +92,6 @@ function RecruteursContent({
   selectedOpcos,
   onSelectedOpcosChange,
   opcoDisabled,
-  searchInput,
-  onSearchInputChange,
   onSearch,
   isEnabled,
   isFetching,
@@ -110,9 +105,7 @@ function RecruteursContent({
   selectedOpcos: OpcoValue[]
   onSelectedOpcosChange: (v: OpcoValue[]) => void
   opcoDisabled: boolean
-  searchInput: string
-  onSearchInputChange: (v: string) => void
-  onSearch: () => void
+  onSearch: (search: string) => void
   isEnabled: boolean
   isFetching: boolean
 }) {
@@ -135,22 +128,8 @@ function RecruteursContent({
       />
 
       {/* Ligne 1 : recherche */}
-      <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-end", mb: fr.spacing("3v") }}>
-        <Input
-          label="Rechercher"
-          nativeInputProps={{
-            value: searchInput,
-            placeholder: "Raison sociale, email, téléphone...",
-            onChange: (e) => onSearchInputChange(e.target.value),
-            onKeyDown: (e) => {
-              if (e.key === "Enter") onSearch()
-            },
-            style: { minWidth: "360px" },
-          }}
-        />
-        <Button iconId="fr-icon-search-line" priority="primary" onClick={onSearch} style={{ marginBottom: "1.5rem" }}>
-          Rechercher
-        </Button>
+      <Box sx={{ display: "flex", mb: fr.spacing("6v") }}>
+        <AdminSearchInput label="Rechercher" placeholder="Raison sociale, email, téléphone..." onSearch={onSearch} />
       </Box>
 
       {/* Ligne 2 : filtres */}
@@ -184,7 +163,7 @@ function RecruteursContent({
 
       {!isEnabled ? (
         <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>
-          Saisissez au moins 2 caractères pour rechercher.
+          Lancez une recherche pour afficher les recruteurs.
         </Box>
       ) : isFetching ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
