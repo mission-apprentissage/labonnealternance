@@ -50,11 +50,11 @@ export default function RendezVousApprentissage() {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.rendezVousApprentissageRecherche]} />
-      <Box sx={{ border: "1px solid #E0E5ED", backgroundColor: "white" }}>
-        <Typography component="h2" sx={{ fontWeight: 700, p: fr.spacing("4v"), borderBottom: "1px solid #E0E5ED" }}>
+      <Box>
+        <Typography variant="h2" component="h1" gutterBottom>
           Rechercher un établissement
         </Typography>
-        <Box sx={{ mt: fr.spacing("4v"), px: fr.spacing("4v") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <Formik initialValues={{ keyword: "" }} validationSchema={toFormikValidationSchema(ZSearchForm)} onSubmit={search}>
             {(formik) => (
               <Form ref={formRef} onSubmit={createSubmitWithFocusOnError(formRef, formik)} noValidate>
