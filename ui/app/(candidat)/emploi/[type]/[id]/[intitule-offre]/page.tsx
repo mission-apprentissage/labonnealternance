@@ -5,6 +5,7 @@ import type { ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJo
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { IRechercheMode, resolveRecherchePageParams, toURLSearchParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { buildEmploiMetaDescription } from "@/app/(candidat)/emploi/_utils/emploi.metadata.utils"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { ApiError, apiGet } from "@/utils/api.utils"
 import JobDetailRendererClient from "./JobDetailRendererClient"
@@ -37,6 +38,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 
   return {
     title: `${title} - La bonne alternance`,
+    description: buildEmploiMetaDescription(type, job),
     alternates: {
       // URL canonique sans query params : une même offre accessible avec des paramètres de recherche
       // ou de tracking différents ne doit compter que comme une seule page pour les moteurs.
