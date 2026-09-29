@@ -141,8 +141,8 @@ export default function AlternanceDiplomes() {
             {diplomeData.length} diplômes phares avec leur programme, leur durée et leurs débouchés. Voici comment choisir le vôtre.
           </Typography>
           <Typography component="p" sx={{ mb: fr.spacing("3v"), fontSize: "1.125rem" }}>
-            La bonne alternance recense <strong>{diplomeData.length} fiches diplôme</strong> à préparer en alternance, du CAP aux titres de niveau Bac+5, en passant par les BTS,
-            BUT, Licences Professionnelles et Masters les plus demandés. Pour chaque diplôme — par exemple{" "}
+            La bonne alternance recense <strong>{diplomeData.length} fiches diplôme</strong> à préparer en alternance, du CAP à la licence pro, en passant par les bacs pro, les BTS
+            et les titres professionnels les plus demandés. Pour chaque diplôme — par exemple{" "}
             {diplomeExamples.map((d, i) => (
               <span key={d.slug}>
                 <Link href={PAGES.dynamic.seoDiplome(d.slug).getPath()}>{d.titre}</Link>

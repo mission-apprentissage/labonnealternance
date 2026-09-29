@@ -15,9 +15,11 @@ const BAC_PRO = "BAC PROFESSIONNEL"
  * « CUISINE », BTS « CYBERSECURITE, INFORMATIQUE ET RESEAUX, ELECTRONIQUE »…). Le titre pro ADVF n'a pas
  * d'homonyme au catalogue, d'où l'absence de filtre.
  *
- * Upsert par slug : les champs éditoriaux sont (ré)écrits, les champs calculés par updateSeoDiplome
- * (offres, entreprises, écoles, métiers, cartes) ne sont initialisés qu'à la création — la migration
- * est rejouable sans doublon ni perte des derniers calculs.
+ * Upsert par slug : les champs éditoriaux sont (ré)écrits et les champs calculés (offres, entreprises,
+ * écoles, métiers, cartes) initialisés à vide à la création — la migration est rejouable sans doublon.
+ * updateSeoDiplome() recalcule ensuite ces champs sur toutes les pages de seo_diplomes, pas seulement
+ * sur celles du lot : les écoles étant tirées par $sample, les pages existantes changent d'écoles, comme
+ * à chaque passage du cron hebdomadaire.
  */
 const diplomesData = [
   {

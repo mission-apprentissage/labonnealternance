@@ -496,6 +496,10 @@ export const updateSeoDiplome = async () => {
         ])
         .toArray()) as IDiplomeEcoleCard[]
 
+      if (ecoles.length === 0) {
+        logger.warn(`updateSeoDiplome : aucune école trouvée pour le diplôme ${diplome.slug} (intituleLongFormation ou diplomeFormation à vérifier)`)
+      }
+
       const metiersListe = await getDbCollection(jobsPartnersModel.collectionName)
         .aggregate([
           {
