@@ -27,6 +27,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
@@ -256,7 +257,7 @@ export default function DetailEntreprise({
               .min(10, "le téléphone est sur 10 chiffres")
               .max(10, "le téléphone est sur 10 chiffres")
               .required("champ obligatoire"),
-            email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+            email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
             opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
             ...isDeclarationExactValidation,
@@ -297,7 +298,7 @@ export default function DetailEntreprise({
                             mt: fr.spacing("8v"),
                           }}
                         >
-                          <ContactInfoFields />
+                          <ContactInfoFields thirdParty />
                           {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
                             <OpcoSelect
                               value={values.opco}
