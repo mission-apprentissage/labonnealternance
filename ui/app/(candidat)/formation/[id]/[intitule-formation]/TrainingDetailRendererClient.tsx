@@ -160,7 +160,8 @@ function TrainingDetailPage({
                 <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
                 <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
               </Box>
-              <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
+              {/* cf. JobDetailRendererClient : rappel du titre dans le bandeau fixe, pas un second titre */}
+              <Typography component="p" variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
                 {actualTitle}
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("4v") }}>

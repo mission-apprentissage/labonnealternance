@@ -18,7 +18,7 @@ export const sanitizeTextField = (text: string | null | undefined, keepFormat: b
  * strip des tags puis décodage final des entités — sanitizeTextField seul ne suffit pas,
  * il ré-encode & < > en sortie et ces entités (« &amp; ») s'affichent telles quelles hors
  * innerHTML. Fins de blocs et <br> deviennent des espaces. Pour les intitulés : titres
- * d'offres (dont offer_title_custom saisi librement par les recruteurs), search_items.title.
+ * d'offres (dont offer_title_custom saisi librement par les recruteurs), `title` des documents de recherche.
  */
 export const sanitizeToPlainText = (text: string | null | undefined): string => {
   if (!text) return ""

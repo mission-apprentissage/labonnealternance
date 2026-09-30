@@ -87,9 +87,9 @@ const ConfirmationDesactivationUtilisateur = ({
 
         {reasonComment.isOpen && (
           <Box sx={{ pb: fr.spacing("2v") }}>
-            <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+            <Box sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
               <Input label="Autre" nativeInputProps={{ type: "text", name: "autre", minLength: 3, onChange: (e) => setReason(e.target.value) }} />
-            </Typography>
+            </Box>
           </Box>
         )}
 

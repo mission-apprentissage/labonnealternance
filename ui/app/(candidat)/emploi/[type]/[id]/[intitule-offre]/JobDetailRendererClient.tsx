@@ -213,7 +213,9 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
                 <LbaItemTags item={selectedItem} />
                 <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
               </Box>
+              {/* Rappel du titre dans le bandeau fixe : le vrai titre (h3) reste celui de la fiche (RGAA 8.9) */}
               <Typography
+                component="p"
                 variant={"h3"}
                 sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
                 dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}

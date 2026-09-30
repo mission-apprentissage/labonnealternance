@@ -69,7 +69,6 @@ import reportedCompanyModel from "./reported-company.model.js"
 import roleManagementModel from "./role-management.model.js"
 import roleManagement360Model from "./role-management360.model.js"
 import romeModel from "./rome.model.js"
-import searchItemsModel from "./search-items.model.js"
 import searchJobsModel, { searchJobsWithTrainingModel } from "./search-jobs.model.js"
 import searchJobsKeywordsModel from "./search-jobs-keywords.model.js"
 import searchQueriesModel from "./search-queries.model.js"
@@ -88,7 +87,6 @@ import userModel from "./user.model.js"
 import userWithAccountModel from "./user-with-account.model.js"
 
 const modelDescriptorMap = {
-  [searchItemsModel.collectionName]: searchItemsModel,
   [searchJobsModel.collectionName]: searchJobsModel,
   [searchJobsWithTrainingModel.collectionName]: searchJobsWithTrainingModel,
   [searchTrainingsModel.collectionName]: searchTrainingsModel,

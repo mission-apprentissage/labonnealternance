@@ -1,4 +1,5 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { countIndexed, findIndexed } from "@tests/utils/search-index.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -37,14 +38,13 @@ describe("dedupeRepeatedTitle", () => {
   })
 })
 
-describe("searchItems.service — synchronisation jobs_partners → search_items", () => {
+describe("searchItems.service — synchronisation jobs_partners → index de recherche", () => {
   useMongo()
 
   beforeEach(async () => {
     // Le contexte de build (référentiel ROME, canonicalisation) est mémoïsé avec TTL :
     // invalidation entre chaque test pour que les seeds de referentielromes soient visibles.
     resetSearchItemBuildContextCache()
-    await getDbCollection("search_items").deleteMany({})
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("referentielromes").deleteMany({})
     await getDbCollection("applications").deleteMany({})
@@ -71,7 +71,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       const result = await upsertJobPartnersToSearchItems([job._id])
 
       expect(result).toEqual({ upserted: 1, removed: 0 })
-      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      const doc = await findIndexed(job._id)
       expect(doc).toMatchObject({
         type: "offre",
         sub_type: "offres_emploi_partenaires",
@@ -97,9 +97,9 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
 
       await upsertJobPartnersToSearchItems([job._id, autreJob._id])
 
-      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      const doc = await findIndexed(job._id)
       expect(doc?.application_count).toBe(2)
-      const autreDoc = await getDbCollection("search_items").findOne({ _id: autreJob._id })
+      const autreDoc = await findIndexed(autreJob._id)
       expect(autreDoc?.application_count).toBe(1)
     })
 
@@ -117,7 +117,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
 
       await upsertJobPartnersToSearchItems([recruteur._id])
 
-      const doc = await getDbCollection("search_items").findOne({ _id: recruteur._id })
+      const doc = await findIndexed(recruteur._id)
       expect(doc?.application_count).toBe(1)
     })
 
@@ -136,7 +136,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
 
       await upsertJobPartnersToSearchItems([job._id])
 
-      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      const doc = await findIndexed(job._id)
       expect(doc?.organization_name).toBe("CFA des Métiers du Numérique")
       expect(doc?.type_filter_label).toBe("Offres d'emploi postées par des écoles")
       // L'adresse de l'entreprise d'accueil la réidentifierait : c'est celle du CFA qui est indexée.
@@ -156,7 +156,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
 
       await upsertJobPartnersToSearchItems([job._id])
 
-      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      const doc = await findIndexed(job._id)
       expect(doc?.organization_name).toBe("")
     })
 
@@ -172,7 +172,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
 
       await upsertJobPartnersToSearchItems([job._id])
 
-      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      const doc = await findIndexed(job._id)
       expect(doc?.organization_name).toBe("Boulangerie du Marché")
       expect(doc?.address).toBe("3 place du Four 75012 Paris")
     })
@@ -181,12 +181,12 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       const job = generateJobsPartnersOfferPrivate({ offer_title: "Titre initial" })
       await getDbCollection("jobs_partners").insertOne(job)
       await upsertJobPartnersToSearchItems([job._id])
-      await getDbCollection("search_items").updateOne({ _id: job._id }, { $set: { keywords: ["javascript", "react"] } })
+      await getDbCollection("search_jobs").updateOne({ _id: job._id }, { $set: { keywords: ["javascript", "react"] } })
 
       await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { offer_title: "Titre modifié" } })
       await upsertJobPartnersToSearchItems([job._id])
 
-      const doc = await getDbCollection("search_items").findOne({ _id: job._id })
+      const doc = await findIndexed(job._id)
       expect(doc?.title).toBe("Titre modifié")
       expect(doc?.keywords).toEqual(["javascript", "react"])
     })
@@ -195,13 +195,13 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       const job = generateJobsPartnersOfferPrivate({})
       await getDbCollection("jobs_partners").insertOne(job)
       await upsertJobPartnersToSearchItems([job._id])
-      expect(await getDbCollection("search_items").countDocuments({ _id: job._id })).toBe(1)
+      expect(await countIndexed(job._id)).toBe(1)
 
       await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
       const result = await upsertJobPartnersToSearchItems([job._id])
 
       expect(result.removed).toBe(1)
-      expect(await getDbCollection("search_items").countDocuments({ _id: job._id })).toBe(0)
+      expect(await countIndexed(job._id)).toBe(0)
     })
 
     it("retire un _id disparu de jobs_partners (suppression physique)", async () => {
@@ -213,7 +213,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       const result = await upsertJobPartnersToSearchItems([job._id])
 
       expect(result.removed).toBe(1)
-      expect(await getDbCollection("search_items").countDocuments({ _id: job._id })).toBe(0)
+      expect(await countIndexed(job._id)).toBe(0)
     })
 
     it("route les recruteurs_lba : candidature spontanée, rome via offer_rome_codes (fallback sans raw)", async () => {
@@ -228,7 +228,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
 
       await upsertJobPartnersToSearchItems([recruteur._id])
 
-      const doc = await getDbCollection("search_items").findOne({ _id: recruteur._id })
+      const doc = await findIndexed(recruteur._id)
       expect(doc).toMatchObject({
         sub_type: "recruteurs_lba",
         url_id: "42476141900045",
@@ -245,13 +245,13 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       const recruteur = generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
       await getDbCollection("jobs_partners").insertOne(recruteur)
       await upsertJobPartnersToSearchItems([recruteur._id])
-      expect(await getDbCollection("search_items").countDocuments({ _id: recruteur._id })).toBe(1)
+      expect(await countIndexed(recruteur._id)).toBe(1)
 
       await getDbCollection("jobs_partners").updateOne({ _id: recruteur._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
       const result = await upsertJobPartnersToSearchItems([recruteur._id])
 
       expect(result.removed).toBe(1)
-      expect(await getDbCollection("search_items").countDocuments({ _id: recruteur._id })).toBe(0)
+      expect(await countIndexed(recruteur._id)).toBe(0)
     })
   })
 
@@ -259,13 +259,14 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
     it("supprime les offres demandées mais ne touche jamais les formations", async () => {
       const formation = generateSearchItemFixture({ type: "formation", sub_type: "formation" })
       const offre = generateSearchItemFixture({ type: "offre" })
-      await getDbCollection("search_items").insertMany([formation, offre])
+      await getDbCollection("search_trainings").insertOne(formation)
+      await getDbCollection("search_jobs").insertOne(offre)
 
       const removed = await removeJobPartnersFromSearchItems([formation._id, offre._id])
 
       expect(removed).toBe(1)
-      expect(await getDbCollection("search_items").countDocuments({ _id: formation._id })).toBe(1)
-      expect(await getDbCollection("search_items").countDocuments({ _id: offre._id })).toBe(0)
+      expect(await countIndexed(formation._id)).toBe(1)
+      expect(await countIndexed(offre._id)).toBe(0)
     })
   })
 
@@ -278,8 +279,8 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       const result = await syncSearchItemsDelta({ since: new Date(Date.now() - 60_000) })
 
       expect(result.scanned).toBe(1)
-      expect(await getDbCollection("search_items").countDocuments({ _id: recent._id })).toBe(1)
-      expect(await getDbCollection("search_items").countDocuments({ _id: stale._id })).toBe(0)
+      expect(await countIndexed(recent._id)).toBe(1)
+      expect(await countIndexed(stale._id)).toBe(0)
     })
 
     it("retire de l'index les offres récemment annulées (écritures de masse)", async () => {
@@ -292,7 +293,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
       const result = await syncSearchItemsDelta({ since: new Date(Date.now() - 60_000) })
 
       expect(result.removed).toBe(1)
-      expect(await getDbCollection("search_items").countDocuments({ _id: job._id })).toBe(0)
+      expect(await countIndexed(job._id)).toBe(0)
     })
   })
 
@@ -304,7 +305,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
         offer_status: JOB_STATUS_ENGLISH.ANNULEE,
       })
       await getDbCollection("jobs_partners").insertMany([recruteurActif, recruteurInactif])
-      // Seul le recruteur actif est indexé : le recruteur annulé n'a jamais été (ou plus) dans search_items.
+      // Seul le recruteur actif est indexé : le recruteur annulé n'a jamais été (ou plus) indexé.
       await upsertJobPartnersToSearchItems([recruteurActif._id, recruteurInactif._id])
 
       const result = await controlSearchItemsDrift()
@@ -316,7 +317,7 @@ describe("searchItems.service — synchronisation jobs_partners → search_items
   })
 })
 
-describe("searchItems.service — double écriture par mode (#5389)", () => {
+describe("searchItems.service — une collection par mode (#5389)", () => {
   useMongo()
 
   beforeEach(() => {
@@ -324,8 +325,7 @@ describe("searchItems.service — double écriture par mode (#5389)", () => {
     resetSearchItemBuildContextCache()
   })
 
-  const idsIn = async (name: "search_items" | "search_jobs" | "search_jobs_with_training" | "search_trainings") =>
-    (await getDbCollection(name).find({}).toArray()).map((doc) => doc._id.toString())
+  const idsIn = async (name: "search_jobs" | "search_jobs_with_training" | "search_trainings") => (await getDbCollection(name).find({}).toArray()).map((doc) => doc._id.toString())
 
   it("indexe une offre classique dans search_jobs et une offre déléguée dans search_jobs_with_training", async () => {
     const offre = generateJobsPartnersOfferPrivate({ is_delegated: false })
@@ -334,7 +334,6 @@ describe("searchItems.service — double écriture par mode (#5389)", () => {
 
     await upsertJobPartnersToSearchItems([offre._id, deleguee._id])
 
-    expect(await idsIn("search_items")).toHaveLength(2)
     expect(await idsIn("search_jobs")).toEqual([offre._id.toString()])
     expect(await idsIn("search_jobs_with_training")).toEqual([deleguee._id.toString()])
     expect(await idsIn("search_trainings")).toEqual([])
@@ -391,18 +390,24 @@ describe("searchItems.service — double écriture par mode (#5389)", () => {
     expect(await idsIn("search_trainings")).toEqual([formation._id.toString()])
   })
 
-  it("contrôle de dérive : alerte quand une collection par mode diverge de search_items, pas sous le seuil", async () => {
-    const offres = Array.from({ length: 501 }, () => generateSearchItemFixture({ type: "offre", is_formation_included: false }))
-    await getDbCollection("search_items").insertMany(offres)
-    // search_trainings : écart de 1, sous le seuil absolu de 500.
-    await getDbCollection("search_items").insertOne(generateSearchItemFixture({ type: "formation", sub_type: "formation" }))
+  it("contrôle de dérive : les offres avec formation incluse comptent dans le volume indexé", async () => {
+    // Au-dessus du seuil absolu (500) : oublier search_jobs_with_training ferait lever l'alerte.
+    const deleguees = Array.from({ length: 501 }, () => generateJobsPartnersOfferPrivate({ is_delegated: true, cfa_legal_name: "CFA Commerce" }))
+    await getDbCollection("jobs_partners").insertMany(deleguees)
+    await upsertJobPartnersToSearchItems(deleguees.map((job) => job._id))
+
+    const result = await controlSearchItemsDrift()
+
+    expect(result).toMatchObject({ expectedOffers: 501, indexedOffers: 501, drift: false })
+    expect(vi.mocked(notifyToSlack)).not.toHaveBeenCalled()
+  })
+
+  it("contrôle de dérive : alerte quand l'index d'offres est vide face aux sources", async () => {
+    await getDbCollection("jobs_partners").insertMany(Array.from({ length: 501 }, () => generateJobsPartnersOfferPrivate({})))
 
     const result = await controlSearchItemsDrift()
 
     expect(result.drift).toBe(true)
-    expect(vi.mocked(notifyToSlack)).toHaveBeenCalledTimes(1)
-    const { message } = vi.mocked(notifyToSlack).mock.calls[0][0]
-    expect(message).toContain("search_jobs : 0 indexés vs 501 attendus")
-    expect(message).not.toContain("search_trainings")
+    expect(vi.mocked(notifyToSlack).mock.calls[0][0].message).toContain("offres : 0 indexés vs 501 attendus")
   })
 })

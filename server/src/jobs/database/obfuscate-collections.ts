@@ -273,9 +273,8 @@ const obfuscateEntreprisesManagedByCfa = async () => {
 }
 
 // Collections que `dropUnknownCollections` doit épargner bien qu'aucun modèle ne les décrive :
-// file du job processor et journal des migrations. `search_items` y figure en doublon, il est déjà
-// couvert par `modelDescriptors`.
-export const modelToKeep: string[] = ["search_items", "job_processor.workers", "job_processor.jobs", "changelog"]
+// file du job processor et journal des migrations.
+export const modelToKeep: string[] = ["job_processor.workers", "job_processor.jobs", "changelog"]
 
 const dropUnknownCollections = async () => {
   const knownCollections = new Set<string>([...modelDescriptors.map((d) => d.collectionName), ...modelToKeep])

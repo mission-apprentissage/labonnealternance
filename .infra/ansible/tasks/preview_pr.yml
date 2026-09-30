@@ -146,7 +146,7 @@
       shell:
         cmd: |
           URI="mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/preview_{{ pr_number }}?authSource=local&directConnection=true"
-          check() { docker exec lba_mongodb mongosh "$URI" --quiet --eval 'db.search_items.aggregate([{ $listSearchIndexes: {} }]).toArray().length' >/dev/null 2>&1; }
+          check() { docker exec lba_mongodb mongosh "$URI" --quiet --eval 'db.search_jobs.aggregate([{ $listSearchIndexes: {} }]).toArray().length' >/dev/null 2>&1; }
           if check; then echo "canal search OK"; exit 0; fi
           echo "canal search KO — restart mongot"
           docker restart lba_mongot
