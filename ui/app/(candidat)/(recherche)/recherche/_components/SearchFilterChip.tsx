@@ -22,8 +22,11 @@ interface SearchFilterChipProps {
   activeLabel?: string
   active: boolean
   disabled?: boolean
-  /** Contenu du panneau flottant — présence = variante dropdown. */
-  popperContent?: ReactNode
+  /**
+   * Contenu du panneau flottant — présence = variante dropdown. En fonction, reçoit `close` qui
+   * ferme le panneau et rend le focus au chip (validation depuis un champ, ex. Entrée).
+   */
+  popperContent?: ReactNode | ((close: () => void) => ReactNode)
   /** Variante toggle : bascule à chaque clic. */
   onToggle?: () => void
   /**
@@ -76,6 +79,11 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
 
   const close = () => setOpenNotified(false)
 
+  const closeAndFocusAnchor = () => {
+    close()
+    anchorRef.current?.focus()
+  }
+
   const handleClick = () => {
     if (isDropdown) setOpenNotified(!open)
     else onToggle?.()
@@ -84,8 +92,7 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape" && open) {
       event.stopPropagation()
-      close()
-      anchorRef.current?.focus()
+      closeAndFocusAnchor()
       return
     }
 
@@ -194,7 +201,7 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
             >
               <Paper onKeyDown={handleKeyDown} elevation={0} sx={{ mt: "4px", borderRadius: "4px", py: "8px", minWidth: 240, boxShadow: "0 6px 18px rgba(0,0,18,0.16)" }}>
                 <ClickAwayListener onClickAway={close}>
-                  <Box ref={popperContentRef}>{popperContent}</Box>
+                  <Box ref={popperContentRef}>{typeof popperContent === "function" ? popperContent(closeAndFocusAnchor) : popperContent}</Box>
                 </ClickAwayListener>
               </Paper>
             </Grow>

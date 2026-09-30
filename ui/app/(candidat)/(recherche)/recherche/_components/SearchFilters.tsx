@@ -234,8 +234,9 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
 
   // La clé force un remount quand start_date est remis à zéro en externe (ex. « Réinitialiser les filtres »),
   // sinon React n'applique pas les mises à jour de defaultValue sur un champ non contrôlé après le montage.
-  // Le filtre part au blur pour éviter une recherche avec une date partielle.
-  const startDateInput = (
+  // Le filtre part au blur pour éviter une recherche avec une date partielle. Entrée valide la
+  // saisie par ce même blur, puis appelle `onEnter` (fermeture du popper desktop).
+  const renderStartDateInput = (onEnter?: () => void) => (
     <Input
       key={params.start_date ?? ""}
       label="À partir du"
@@ -244,6 +245,12 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
         type: "date",
         defaultValue: params.start_date ?? "",
         onBlur: (e) => setStartDate(e.target.value || undefined),
+        onKeyDown: (e) => {
+          if (e.key !== "Enter") return
+          e.preventDefault()
+          e.currentTarget.blur()
+          onEnter?.()
+        },
         onChange: (e) => {
           if (!e.target.value) setStartDate(undefined)
         },
@@ -260,7 +267,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
           </MobileSection>
         )}
 
-        {!isFormations && <MobileSection title="Date de début de contrat">{startDateInput}</MobileSection>}
+        {!isFormations && <MobileSection title="Date de début de contrat">{renderStartDateInput()}</MobileSection>}
 
         <MobileSection>
           <RadioButtons
@@ -374,7 +381,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
           activeLabel={params.start_date ? `À partir du ${formatDateFr(params.start_date)}` : undefined}
           active={Boolean(params.start_date)}
           onOpenChange={trackDropdown("contract_start_date")}
-          popperContent={<Box sx={{ px: "16px", pt: "8px" }}>{startDateInput}</Box>}
+          popperContent={(close) => <Box sx={{ px: "16px", pt: "8px" }}>{renderStartDateInput(close)}</Box>}
         />
       )}
 
