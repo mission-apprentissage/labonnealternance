@@ -136,10 +136,16 @@ export default function Authentification() {
               const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
               return (
                 <form ref={formRef} onSubmit={handleSubmit} noValidate>
-                  <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("4v") }}>
-                    Tous les champs sont obligatoires.
-                  </Typography>
-                  <CustomInput hideAsterisk name="email" label="E-mail" type="email" autoComplete="email" info="Format attendu : nom@domaine.fr" value={values.email} autoFocus />
+                  <CustomInput
+                    hideAsterisk
+                    name="email"
+                    label="E-mail (obligatoire)"
+                    type="email"
+                    autoComplete="email"
+                    info="Format attendu : nom@domaine.fr"
+                    value={values.email}
+                    autoFocus
+                  />
                   <Alerts />
                   <Button type="submit" disabled={isSubmitting} style={{ width: "100%", justifyContent: "center" }}>
                     Se connecter
