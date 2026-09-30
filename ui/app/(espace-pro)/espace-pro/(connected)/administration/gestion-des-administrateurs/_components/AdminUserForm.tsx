@@ -11,7 +11,6 @@ import { OPCOS_LABEL } from "shared/constants/index"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import type { INewSuperUser, IUserWithAccountJson } from "shared/models/user-with-account.model"
 import type { Jsonify } from "type-fest"
-import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
@@ -21,31 +20,11 @@ import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-acti
 import { useToast } from "@/app/hooks/useToast"
 import { createSuperUser, updateUser } from "@/utils/api"
 import { ApiError, apiDelete } from "@/utils/api.utils"
-import { EMAIL_FORMAT_ERROR, EMAIL_FORMAT_HINT, PHONE_FORMAT_ERROR, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
+import { EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
 import { AdminConfirmationModal } from "./AdminConfirmationModal"
+import { buildAdminUserFormSchema, toSubmittedPhone } from "./admin-user-form.schema"
 
 const { OPCO, ADMIN } = AUTHTYPE
-
-// Messages en français propres au formulaire : ZNewSuperUser / ZUserWithAccountFields servent aussi l'API
-const buildAdminUserFormSchema = (isCreation: boolean) =>
-  z
-    .object({
-      first_name: z.string({ error: "Saisissez le prénom" }).trim().min(1, "Saisissez le prénom"),
-      last_name: z.string({ error: "Saisissez le nom" }).trim().min(1, "Saisissez le nom"),
-      email: z.email({ error: EMAIL_FORMAT_ERROR }),
-      phone: z
-        .string()
-        .regex(/^[0-9]{10}$/, PHONE_FORMAT_ERROR)
-        .optional(),
-      type: z.enum([OPCO, ADMIN]),
-      opco: z.enum(OPCOS_LABEL, { error: "Sélectionnez un OPCO" }).nullish(),
-    })
-    .refine((values) => values.type !== OPCO || Boolean(values.opco), {
-      path: ["opco"],
-      message: "Sélectionnez un OPCO",
-      // sans `when`, Zod n'évalue la règle qu'une fois les autres champs valides : l'erreur OPCO s'afficherait au second envoi
-      when: () => isCreation,
-    })
 
 export const AdminUserForm = ({
   user,
@@ -103,9 +82,12 @@ export const AdminUserForm = ({
   }
 
   const deleteUser = async () => {
-    const result = await apiDelete("/admin/users/:userId", { params: { userId: user._id.toString() } })
+    // apiDelete lève une ApiError sur une réponse HTTP en erreur, `ok: false` couvre le refus signalé dans une réponse 200
+    const isDeleted = await apiDelete("/admin/users/:userId", { params: { userId: user._id.toString() } })
+      .then((result) => Boolean(result?.ok))
+      .catch(() => false)
     deleteModal.onClose()
-    if (result?.ok) {
+    if (isDeleted) {
       toast({
         title: "Utilisateur supprimé",
       })
@@ -213,7 +195,12 @@ const UserFieldsForm = ({
     },
     validationSchema: toFormikValidationSchema(buildAdminUserFormSchema(isCreation)),
     enableReinitialize: true,
-    onSubmit,
+    // le champ affiche la valeur envoyée : sans changement de valeur initiale, enableReinitialize ne le remettrait pas à jour
+    onSubmit: (submittedValues, { setFieldValue }) => {
+      const phone = toSubmittedPhone(submittedValues.phone)
+      setFieldValue("phone", phone, false)
+      return onSubmit({ ...submittedValues, phone })
+    },
   })
   const { values, errors, touched, isSubmitting } = formik
   const opcoError = touched.opco && errors.opco

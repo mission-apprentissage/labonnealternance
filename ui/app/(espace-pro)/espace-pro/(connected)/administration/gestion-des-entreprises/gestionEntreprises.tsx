@@ -9,7 +9,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useId, useMemo, useRef, useState } from "react"
 import type { ILbaCompanyForAdminSearchJSON, ILbaCompanySearchField } from "shared/routes/update-lba-company.routes"
-import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import CustomInput from "@/app/_components/CustomInput"
@@ -21,6 +20,8 @@ import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { getCompanyContactInfo, putCompanyContactInfo, searchLbaCompanies } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { EMAIL_FORMAT_ERROR, EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
+import { SearchClearButton, searchClearButtonSx } from "../_components/SearchClearButton"
+import { validateLbaCompanySearch } from "../_utils/admin-search-validation"
 import { getLbaCompaniesColumns } from "../_utils/lbaCompaniesColumns"
 
 const unreferencedLbaRecruteurWarning = "Seules les modifications / ajouts sont supportés dans le cas d'une société déréférencée"
@@ -136,17 +137,13 @@ function FormulaireModificationEntreprise({ siret, onCancel, onSaved }: { siret:
 
 const DEFAULT_SEARCH_FIELD: ILbaCompanySearchField = "workplace_legal_name"
 
-const getSearchError = (value: string, field: ILbaCompanySearchField) => {
-  if (value.length < 2) return "Saisissez au moins 2 caractères"
-  if (field === "workplace_siret" && !validateSIRET(value)) return "Saisissez un SIRET valide de 14 chiffres, sans espace, par exemple 12345678901234"
-  return null
-}
-
 // Saisie locale au formulaire : la remonter à chaque frappe re-rendrait le tableau des résultats
 function EntreprisesSearchForm({ onSearch, onReset }: { onSearch: (search: string, field: ILbaCompanySearchField) => void; onReset: () => void }) {
   const [searchInput, setSearchInput] = useState("")
   const [searchField, setSearchField] = useState<ILbaCompanySearchField>(DEFAULT_SEARCH_FIELD)
   const [searchError, setSearchError] = useState<string | null>(null)
+  // cf. AdminSearchInput : croix affichée tant qu'une recherche lancée n'a pas été réinitialisée
+  const [hasSearched, setHasSearched] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const helpTextId = useId()
 
@@ -158,12 +155,13 @@ function EntreprisesSearchForm({ onSearch, onReset }: { onSearch: (search: strin
 
   const submit = () => {
     const value = searchInput.trim()
-    const error = getSearchError(value, searchField)
+    const error = validateLbaCompanySearch(value, searchField)
     setSearchError(error)
     if (error) {
       searchInputRef.current?.focus()
       return
     }
+    setHasSearched(true)
     onSearch(value, searchField)
   }
 
@@ -171,19 +169,22 @@ function EntreprisesSearchForm({ onSearch, onReset }: { onSearch: (search: strin
     setSearchInput("")
     setSearchField(DEFAULT_SEARCH_FIELD)
     setSearchError(null)
+    setHasSearched(false)
     onReset()
+    searchInputRef.current?.focus()
   }
 
   return (
     <>
-      {/* Select et boutons alignés par le bas dans leur propre ligne : le message d'erreur du champ de recherche ne les décale pas */}
-      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("2v"), alignItems: "flex-start" }}>
+      {/* Select et bouton alignés par le bas dans leur propre ligne : le message d'erreur du champ de recherche ne les décale pas */}
+      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("2v"), alignItems: "flex-start", ...searchClearButtonSx }}>
         <Input
           className={fr.cx("fr-mb-3v")}
           style={{ flex: "0 1 420px" }}
           label="Rechercher (obligatoire)"
           state={searchError ? "error" : "default"}
           stateRelatedMessage={searchError}
+          action={searchInput !== "" || hasSearched ? <SearchClearButton onClick={reset} /> : null}
           nativeInputProps={{
             ref: searchInputRef,
             value: searchInput,
@@ -216,9 +217,6 @@ function EntreprisesSearchForm({ onSearch, onReset }: { onSearch: (search: strin
           <Button iconId="fr-icon-search-line" priority="primary" onClick={submit} data-testid="search_for_algo_company" className={fr.cx("fr-mb-3v")}>
             Rechercher
           </Button>
-          <Button iconId="fr-icon-refresh-line" priority="secondary" onClick={reset} className={fr.cx("fr-mb-3v")} style={{ whiteSpace: "nowrap" }}>
-            Réinitialiser la recherche
-          </Button>
         </Box>
       </Box>
 
@@ -248,9 +246,9 @@ export default function GestionEntreprises() {
   const queryClient = useQueryClient()
   const toast = useToast()
 
-  const isEnabled = getSearchError(submittedSearch, submittedField) === null
+  const isEnabled = validateLbaCompanySearch(submittedSearch, submittedField) === null
 
-  const { data, isFetching } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ["/admin/lba-companies", submittedField, submittedSearch],
     queryFn: () => searchLbaCompanies(submittedSearch, submittedField),
     enabled: isEnabled,
@@ -292,7 +290,7 @@ export default function GestionEntreprises() {
         <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>
           Lancez une recherche pour afficher les entreprises.
         </Box>
-      ) : isFetching ? (
+      ) : isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
           <CircularProgress />
         </Box>
@@ -301,16 +299,19 @@ export default function GestionEntreprises() {
           Aucun résultat.
         </Box>
       ) : (
-        <VirtualTable
-          caption={`Entreprises de l'algorithme (${companies.length})`}
-          columns={columns}
-          data={companies}
-          defaultSortBy={[{ id: "raison_sociale", desc: false }]}
-          hideSearch={true}
-          maxHeight="600px"
-          onRowClick={(row) => setSiret(row.siret)}
-          getRowStyle={(row) => (row.siret === siret ? { backgroundColor: "#eef0ff", boxShadow: "inset 3px 0 0 #000091" } : undefined)}
-        />
+        // Tableau monté pendant le rechargement qui suit un enregistrement : le démonter ferait perdre le focus rendu par la modale au bouton de la ligne
+        <Box aria-busy={isFetching} sx={{ opacity: isFetching ? 0.5 : 1, transition: "opacity .2s" }}>
+          <VirtualTable
+            caption={`Entreprises de l'algorithme (${companies.length})`}
+            columns={columns}
+            data={companies}
+            defaultSortBy={[{ id: "raison_sociale", desc: false }]}
+            hideSearch={true}
+            maxHeight="600px"
+            onRowClick={(row) => setSiret(row.siret)}
+            getRowStyle={(row) => (row.siret === siret ? { backgroundColor: "#eef0ff", boxShadow: "inset 3px 0 0 #000091" } : undefined)}
+          />
+        </Box>
       )}
 
       <ModalReadOnly isOpen={Boolean(siret)} onClose={() => setSiret("")} ariaLabelledBy={modalTitleId}>

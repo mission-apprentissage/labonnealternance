@@ -11,20 +11,16 @@ import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jo
 
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
-import { getJobsPartnersForAdmin, lookLikeObjectId } from "@/utils/api"
+import { getJobsPartnersForAdmin } from "@/utils/api"
 import { AdminSearchInput } from "../_components/AdminSearchInput"
 import { MultiSelect } from "../_components/MultiSelect"
+import { OFFER_ID_EXAMPLE, validateOfferId } from "../_utils/admin-search-validation"
 import { getOffresPartenairesColumns } from "../_utils/offresPartenairesColumns"
 import { ConfirmationClassificationOffre, ConfirmationDesactivationOffre } from "./OffresPartenairesModals"
 
 const partnerLabelOptions = Object.values(JOBPARTNERS_LABEL).filter((label) => !jobPartnersExcludedFromFlux.includes(label))
 
 const PAGE_SIZE = 50
-
-const OFFER_ID_EXAMPLE = "65314e465afcffb8f31b1853"
-
-const validateOfferId = (search: string) =>
-  lookLikeObjectId(search) ? null : `Saisissez un identifiant de 24 caractères hexadécimaux (chiffres 0 à 9, lettres a à f), par exemple ${OFFER_ID_EXAMPLE}`
 
 // aria-disabled plutôt que disabled : un bouton désactivé perd le focus, qui retombe en haut de page. Le DSFR ne stylant que :disabled, l'apparence est reproduite ici
 function PaginationButton({
