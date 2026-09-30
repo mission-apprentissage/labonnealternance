@@ -4,13 +4,12 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, Container, FormControlLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material"
 import { captureException } from "@sentry/browser"
-import { useParams, useSearchParams } from "next/navigation"
 import type { FormEvent, ReactNode } from "react"
-import { useEffect, useId, useRef, useState } from "react"
+import { useId, useRef, useState } from "react"
 import type { IEtablissementJson } from "shared"
 
 import { SuccessCircle, Warning } from "@/theme/components/icons"
-import { apiGet, apiPost } from "@/utils/api.utils"
+import { apiPost } from "@/utils/api.utils"
 
 const EtablissementField = ({ label, children }: { label: string; children: ReactNode }) => (
   <div>
@@ -23,7 +22,7 @@ const EtablissementField = ({ label, children }: { label: string; children: Reac
   </div>
 )
 
-type IEtablissementPartial = Pick<
+export type IEtablissementPartial = Pick<
   IEtablissementJson,
   | "_id"
   | "optout_refusal_date"
@@ -38,19 +37,15 @@ type IEtablissementPartial = Pick<
   | "premium_refusal_date"
 >
 
-export default function OptOutUnsubscribe() {
+export default function OptOutUnsubscribe({ id, token, etablissement }: { id: string; token: string; etablissement: IEtablissementPartial }) {
   const radioOptions = {
     UNSUBSCRIBE_NO_DETAILS: "unsubscribe_no_details",
     UNSUBSCRIBE_MORE_DETAILS: "unsubscribe_more_details",
   }
 
-  const token = useSearchParams().get("token")
-  const { id } = useParams() as { id: string }
-
   const [textarea, setTextarea] = useState("")
-  const [hasBeenUnsubscribed, setHasBeenUnsubscribed] = useState(false)
+  const [hasJustUnsubscribed, setHasJustUnsubscribed] = useState(false)
   const [isQuestionSent, setIsQuestionSent] = useState(false)
-  const [etablissement, setEtablissement] = useState<undefined | IEtablissementPartial>()
   const [radioValue, setRadioValue] = useState(radioOptions.UNSUBSCRIBE_NO_DETAILS)
   const [hasSubmitAttempt, setHasSubmitAttempt] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -63,6 +58,7 @@ export default function OptOutUnsubscribe() {
   const noDetailsId = `${fieldId}-no-details`
   const moreDetailsId = `${fieldId}-more-details`
 
+  const hasBeenUnsubscribed = hasJustUnsubscribed || Boolean(etablissement.optout_refusal_date)
   const isMoreDetails = radioValue === radioOptions.UNSUBSCRIBE_MORE_DETAILS
   const question = textarea.trim()
   const hasQuestionError = hasSubmitAttempt && isMoreDetails && !question
@@ -108,33 +104,8 @@ export default function OptOutUnsubscribe() {
     if (opt_out_question) {
       setIsQuestionSent(true)
     } else {
-      setHasBeenUnsubscribed(true)
+      setHasJustUnsubscribed(true)
     }
-  }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const etablissement2 = await apiGet("/etablissements/:id", {
-        params: { id },
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (etablissement2.optout_refusal_date) {
-        setHasBeenUnsubscribed(true)
-      }
-
-      setEtablissement(etablissement2)
-    }
-
-    if (id) {
-      fetchData().catch(console.error)
-    }
-  }, [id, token])
-
-  if (!etablissement) {
-    return null
   }
 
   return (
