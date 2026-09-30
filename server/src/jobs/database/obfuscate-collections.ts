@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 import { randomUUID } from "crypto"
 import { chunk } from "lodash-es"
-import type { Filter } from "mongodb"
+import type { Document, Filter } from "mongodb"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
@@ -13,9 +13,13 @@ import { UserEventType } from "shared/models/user-with-account.model"
 import { logger } from "@/common/logger"
 import { getDatabase, getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
+import { fillSearchItemsCollection } from "../search/generate-search-items-collection"
 import { recreateIndexes } from "./recreate-indexes"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
+
+// Les documents restaurés de production peuvent déroger au schéma : le validateur y est en `warn`, en `error` ailleurs.
+const bypassValidation = { bypassDocumentValidation: true }
 export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
 // leave this function to be used.
@@ -48,7 +52,7 @@ const obfuscateApplicants = async () => {
       update: { $set: { email: getFakeEmail(), firstname: "prenom", lastname: "lastname", phone: "0601010106" } },
     },
   }))
-  await getDbCollection("applicants").bulkWrite(bulk)
+  await getDbCollection("applicants").bulkWrite(bulk, bypassValidation)
 }
 
 const obfuscateApplications = async () => {
@@ -63,7 +67,8 @@ const obfuscateApplications = async () => {
         company_email: fakeEmail,
         applicant_id: new ObjectId(),
       },
-    }
+    },
+    bypassValidation
   )
 }
 
@@ -73,7 +78,7 @@ const obfuscateEmailBlackList = async () => {
   for await (const ebl of emails) {
     const email = getFakeEmail()
     const replacement = { $set: { email } }
-    await getDbCollection("emailblacklists").findOneAndUpdate({ _id: ebl._id }, replacement)
+    await getDbCollection("emailblacklists").findOneAndUpdate({ _id: ebl._id }, replacement, bypassValidation)
   }
 }
 
@@ -87,7 +92,8 @@ const obfuscateAppointments = async () => {
         applicant_message_to_cfa: "Message du candidat ...",
         cfa_recipient_email: fakeEmail,
       },
-    }
+    },
+    bypassValidation
   )
 }
 
@@ -97,7 +103,8 @@ const obfuscateElligibleTrainingsForAppointment = async () => {
     {},
     {
       $set: { lieu_formation_email: fakeEmail },
-    }
+    },
+    bypassValidation
   )
 }
 
@@ -107,7 +114,8 @@ const obfuscateEtablissements = async () => {
     {},
     {
       $set: { gestionnaire_email: fakeEmail },
-    }
+    },
+    bypassValidation
   )
 }
 
@@ -122,7 +130,8 @@ const obfuscateFormations = async () => {
         etablissement_formateur_courriel: fakeEmail,
         num_tel: "0601010106",
       },
-    }
+    },
+    bypassValidation
   )
 }
 
@@ -130,6 +139,8 @@ const fakeJobPartner: Partial<IJobsPartnersOfferPrivate> = {
   apply_url: "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
   apply_phone: "0601010106",
   apply_email: fakeEmail,
+  cfa_apply_phone: "0601010106",
+  cfa_apply_email: fakeEmail,
   offer_description: "offer_description",
   workplace_description: "workplace_description",
 }
@@ -140,7 +151,18 @@ const obfuscatePartnerJobs = async () => {
     { partner_label: { $nin: [JOBPARTNERS_LABEL.RECRUTEURS_LBA] } },
     {
       $set: fakeJobPartner,
-    }
+    },
+    bypassValidation
+  )
+}
+
+const obfuscateJobsPartnersContacts = async () => {
+  logger.info(`obfuscating jobs_partners delegations and status history`)
+  await getDbCollection("jobs_partners").updateMany({ "delegations.0": { $exists: true } }, { $set: { "delegations.$[].email": fakeEmail } }, bypassValidation)
+  await getDbCollection("jobs_partners").updateMany(
+    { "offer_status_history.granted_by": { $regex: "@" } },
+    { $set: { "offer_status_history.$[event].granted_by": "obfuscation" } },
+    { arrayFilters: [{ "event.granted_by": { $regex: "@" } }], ...bypassValidation }
   )
 }
 
@@ -153,7 +175,8 @@ const obfuscateRecruteursLba = async () => {
         apply_email: fakeEmail,
         apply_phone: "0601010807",
       },
-    }
+    },
+    bypassValidation
   )
 
   await getDbCollection("jobs_partners").updateMany(
@@ -162,7 +185,8 @@ const obfuscateRecruteursLba = async () => {
       $set: {
         apply_phone: "0601012020",
       },
-    }
+    },
+    bypassValidation
   )
 }
 
@@ -197,7 +221,7 @@ const keepSpecificUser = async (email: string, type: AccessEntityType) => {
     },
   }
   if (role) {
-    await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: role.user_id }, replacement)
+    await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: role.user_id }, replacement, bypassValidation)
 
     if (getLastStatusEvent(role.status)?.status !== AccessStatus.GRANTED) {
       await getDbCollection("rolemanagements").findOneAndUpdate(
@@ -212,7 +236,8 @@ const keepSpecificUser = async (email: string, type: AccessEntityType) => {
               status: AccessStatus.GRANTED,
             },
           },
-        }
+        },
+        bypassValidation
       )
     }
   }
@@ -226,7 +251,7 @@ const obfuscateUser = async () => {
   for await (const user of users) {
     const email = getFakeEmail()
     const replacement = { $set: { email, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
-    await getDbCollection("users").findOneAndUpdate({ _id: user._id }, replacement)
+    await getDbCollection("users").findOneAndUpdate({ _id: user._id }, replacement, bypassValidation)
   }
 
   logger.info(`obfuscating users done`)
@@ -240,7 +265,7 @@ const obfuscateUsersWithAccounts = async () => {
     const replacement = {
       $set: { email, phone: "0601010106", last_name: "nom_famille", first_name: "prenom" },
     }
-    await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: user._id }, replacement)
+    await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: user._id }, replacement, bypassValidation)
   }
 
   logger.info(`obfuscating userswithaccounts done`)
@@ -267,14 +292,34 @@ const obfuscateEntreprisesManagedByCfa = async () => {
           last_name: "nom_famille",
           first_name: "prenom",
         },
-      }
+      },
+      bypassValidation
     )
   }
 }
 
+const jobProcessorCollections = ["job_processor.workers", "job_processor.jobs", "job_processor.signals"]
+
 // Collections que `dropUnknownCollections` doit épargner bien qu'aucun modèle ne les décrive :
 // file du job processor et journal des migrations.
-export const modelToKeep: string[] = ["job_processor.workers", "job_processor.jobs", "changelog"]
+export const modelToKeep: string[] = [...jobProcessorCollections, "changelog"]
+
+// Le job processor ne tourne pas en preview mais y est lancé à la main : ses collections doivent exister, vides.
+// Le worker et le job du CLI en cours, plus récents que la restauration, sont épargnés : sans eux le heartbeat échoue.
+const emptyJobProcessorCollections = async () => {
+  const cutoff = new Date(Date.now() - 60_000)
+  const filters: Record<string, Filter<Document>> = {
+    "job_processor.workers": { lastSeen: { $lt: cutoff } },
+    "job_processor.jobs": { created_at: { $lt: cutoff } },
+    "job_processor.signals": {},
+  }
+  await Promise.all(
+    jobProcessorCollections.map(async (name) => {
+      logger.info(`emptying ${name}`)
+      await getDatabase().collection(name).deleteMany(filters[name])
+    })
+  )
+}
 
 const dropUnknownCollections = async () => {
   const knownCollections = new Set<string>([...modelDescriptors.map((d) => d.collectionName), ...modelToKeep])
@@ -294,12 +339,14 @@ export async function obfuscateCollections(): Promise<void> {
   if (config.env === "production") return
 
   await dropUnknownCollections()
+  await emptyJobProcessorCollections()
+
+  const rawCollections = modelDescriptors.map((d) => d.collectionName).filter((name) => name.startsWith("raw_"))
 
   const collectionsToEmpty: CollectionName[] = [
     "anonymized_applicants",
     "anonymized_applications",
     "anonymized_appointments",
-    "anonymized_recruiters",
     "anonymized_users",
     "anonymized_userswithaccounts",
     "apicalls",
@@ -311,38 +358,21 @@ export async function obfuscateCollections(): Promise<void> {
     "cache_geolocation",
     "cache_siret",
     "computed_jobs_partners",
+    "credentials",
+    "customemailetfas",
     "emailblacklists",
     "jobs",
     "opcos",
-    "raw_apec",
-    "raw_atlas",
-    "raw_decathlon",
-    // "raw_emploi_inclusion",
-    "raw_engagement_jeunes",
-    "raw_france_travail_cegid",
-    "raw_francetravail",
-    "raw_hellowork",
-    "raw_jobteaser",
-    "raw_jooble",
-    "raw_kelio",
-    "raw_laposte",
-    "raw_leboncoin",
-    "raw_meteojob",
-    "raw_monster",
-    "raw_nos_talents_nos_emplois",
-    "raw_pass",
-    "raw_rhalternance",
-    "raw_recruteurslba",
-    "raw_toulouse_metropole",
-    "raw_vite_un_emploi",
     "recruteurlbaupdateevents",
     "reported_companies",
     "rolemanagement360",
+    "search_queries",
     "sessions",
     "trafficsources",
     "unsubscribedofs",
     "unsubscribedrecruteurslba",
     "users",
+    ...rawCollections,
   ]
 
   await Promise.all(
@@ -370,7 +400,11 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
   await obfuscatePartnerJobs()
+  await obfuscateJobsPartnersContacts()
   await obfuscateEntreprisesManagedByCfa()
 
   await recreateIndexes({ drop: true })
+
+  // Les collections search_* sont calculées sur l'intégralité de jobs_partners : on les réaligne sur l'échantillon conservé.
+  await fillSearchItemsCollection()
 }
