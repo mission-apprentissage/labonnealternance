@@ -27,6 +27,7 @@ export const CfaCandidatInformationForm = (props) => {
             name: "message",
             // react-dsfr 1.33.0 ne pose pas aria-invalid en state="error"
             "aria-invalid": hasError,
+            // Pas de handleBlur : l'erreur apparue au blur décalerait les boutons « autre canal » / « non joignable » pendant le clic, qui serait perdu
             onChange: formik.handleChange,
             value: formik.values.message,
             rows: 6,
