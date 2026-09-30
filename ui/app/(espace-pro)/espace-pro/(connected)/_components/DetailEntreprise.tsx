@@ -325,7 +325,7 @@ export default function DetailEntreprise({
                           )}
                           {userMutation.error && (
                             <Alert sx={{ marginTop: fr.spacing("4v") }} severity="error">
-{/* Affiche le message d'erreur métier quand il est disponible, sinon un message générique en français (RGAA 8.7). */}
+                              {/* Affiche le message d'erreur métier quand il est disponible, sinon un message générique en français (RGAA 8.7). */}
                               {userMutation.error instanceof ApiError && userMutation.error.context.statusCode === 400
                                 ? userMutation.error.message
                                 : "La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement."}
