@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import type { ISearchItem } from "../models/search-items.model.js"
+import type { ISearchItem } from "../models/search-corpus.model.js"
 
 export function generateSearchItemFixture(data: Partial<ISearchItem> = {}): ISearchItem {
   return {

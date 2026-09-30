@@ -40,7 +40,7 @@ const isAlgoCompany = (hit: Hit) => hit.is_algo_company === true
 const isFormation = (hit: Hit) => hit.type === "formation"
 
 // Mêmes badges que la carte legacy (composants feuilles réutilisés), pilotés par les
-// champs de search_items au lieu de l'ideaType legacy.
+// champs des documents de recherche au lieu de l'ideaType legacy.
 function HitTags({ hit }: { hit: Hit }) {
   const tags: React.ReactNode[] = []
 
