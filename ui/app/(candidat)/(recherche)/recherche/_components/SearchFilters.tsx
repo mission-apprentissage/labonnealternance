@@ -112,12 +112,26 @@ export function hasActiveFilters(params: ISearchPageParams): boolean {
   )
 }
 
-/** Section de la modale Filtres mobile : titre gras + contenu, séparée par un filet. */
+const MOBILE_SECTION_TITLE_SX = { fontSize: "1rem", fontWeight: 700, color: fr.colors.decisions.text.default.grey.default }
+
+/**
+ * Section de la modale Filtres mobile : titre gras + contenu, séparée par un filet. Pour un groupe
+ * de cases ou de radios, le titre est la légende du fieldset (pas de `title`) : un `h3` en plus
+ * ferait annoncer deux fois le nom de la section.
+ */
 function MobileSection({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <Box sx={{ py: fr.spacing("4v"), borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`, "& .fr-fieldset": { mb: 0 } }}>
+    <Box
+      sx={{
+        py: fr.spacing("4v"),
+        borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+        "& .fr-fieldset": { mb: 0 },
+        // react-dsfr pose `fr-text--regular` (font-weight !important) sur la légende.
+        "& .fr-fieldset__legend": { ...MOBILE_SECTION_TITLE_SX, fontWeight: "700 !important", pb: fr.spacing("3v") },
+      }}
+    >
       {title && (
-        <Box component="h3" sx={{ margin: 0, mb: fr.spacing("3v"), fontSize: "1rem", fontWeight: 700, color: fr.colors.decisions.text.default.grey.default }}>
+        <Box component="h3" sx={{ ...MOBILE_SECTION_TITLE_SX, margin: 0, mb: fr.spacing("3v") }}>
           {title}
         </Box>
       )}
@@ -213,6 +227,11 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
     },
   ]
 
+  const contractCheckboxOptions = contractOptions.map((option) => ({
+    label: option,
+    nativeInputProps: { checked: params.contract_type?.includes(option) ?? false, onChange: () => toggleContract(option) },
+  }))
+
   // La clé force un remount quand start_date est remis à zéro en externe (ex. « Réinitialiser les filtres »),
   // sinon React n'applique pas les mises à jour de defaultValue sur un champ non contrôlé après le montage.
   // Le filtre part au blur pour éviter une recherche avec une date partielle.
@@ -220,6 +239,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
     <Input
       key={params.start_date ?? ""}
       label="À partir du"
+      hintText="Format attendu : JJ/MM/AAAA, par exemple 01/09/2026"
       nativeInputProps={{
         type: "date",
         defaultValue: params.start_date ?? "",
@@ -235,17 +255,17 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
     return (
       <Box sx={{ "& > :last-child": { borderBottom: "none" } }}>
         {!isFormations && params.mode === "emplois" && (
-          <MobileSection title="Type d'offres d'emploi">
-            <Checkbox small options={offerKindCheckboxOptions} />
+          <MobileSection>
+            <Checkbox small legend="Type d'offres d'emploi" options={offerKindCheckboxOptions} />
           </MobileSection>
         )}
 
         {!isFormations && <MobileSection title="Date de début de contrat">{startDateInput}</MobileSection>}
 
-        <MobileSection title="Niveau d'études visé">
+        <MobileSection>
           <RadioButtons
             small
-            legend=""
+            legend="Niveau d'études visé"
             options={[
               {
                 label: "Indifférent",
@@ -260,15 +280,12 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
         </MobileSection>
 
         {!isFormations && (
-          <MobileSection title="Type de contrat">
-            <Checkbox
-              small
-              options={contractOptions.map((option) => ({
-                label: option,
-                nativeInputProps: { checked: params.contract_type?.includes(option) ?? false, onChange: () => toggleContract(option) },
-              }))}
-            />
-            {contractOptions.length === 0 && <Box sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.disabled.grey.default }}>Aucune option disponible</Box>}
+          <MobileSection title={contractOptions.length > 0 ? undefined : "Type de contrat"}>
+            {contractOptions.length > 0 ? (
+              <Checkbox small legend="Type de contrat" options={contractCheckboxOptions} />
+            ) : (
+              <Box sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.disabled.grey.default }}>Aucune option disponible</Box>
+            )}
           </MobileSection>
         )}
 
@@ -345,7 +362,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
           onOpenChange={trackDropdown("job_offer_type")}
           popperContent={
             <Box sx={CHECKBOX_POPPER_SX}>
-              <Checkbox small options={offerKindCheckboxOptions} />
+              <Checkbox small legend="Type d'offres d'emploi" classes={{ legend: "fr-sr-only" }} options={offerKindCheckboxOptions} />
             </Box>
           }
         />
@@ -393,13 +410,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
           onOpenChange={trackDropdown("contract_type")}
           popperContent={
             <Box sx={CHECKBOX_POPPER_SX}>
-              <Checkbox
-                small
-                options={contractOptions.map((option) => ({
-                  label: option,
-                  nativeInputProps: { checked: params.contract_type?.includes(option) ?? false, onChange: () => toggleContract(option) },
-                }))}
-              />
+              <Checkbox small legend="Type de contrat" classes={{ legend: "fr-sr-only" }} options={contractCheckboxOptions} />
             </Box>
           }
         />
