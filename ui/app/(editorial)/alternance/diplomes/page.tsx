@@ -95,7 +95,7 @@ export default function AlternanceDiplomes() {
       <SchemaOrg
         type="ItemList"
         title="Liste des diplômes accessibles en alternance"
-        description="Annuaire des principaux diplômes en alternance : BTS, BUT, Licence Pro, CAP, Titres RNCP."
+        description="Annuaire des principaux diplômes en alternance : CAP, bac pro, BTS, titres pro et licence pro."
         url={url}
         breadcrumbs={breadcrumbs}
         itemList={itemList}
@@ -142,8 +142,8 @@ export default function AlternanceDiplomes() {
             {diplomeData.length} diplômes phares avec leur programme, leur durée et leurs débouchés. Voici comment choisir le vôtre.
           </Typography>
           <Typography component="p" sx={{ mb: fr.spacing("3v"), fontSize: "1.125rem" }}>
-            La bonne alternance recense <strong>{diplomeData.length} fiches diplôme</strong> à préparer en alternance, du CAP aux titres de niveau Bac+5, en passant par les BTS,
-            BUT, Licences Professionnelles et Masters les plus demandés. Pour chaque diplôme — par exemple{" "}
+            La bonne alternance recense <strong>{diplomeData.length} fiches diplôme</strong> à préparer en alternance, du CAP à la licence pro, en passant par les bacs pro, les BTS
+            et les titres professionnels les plus demandés. Pour chaque diplôme — par exemple{" "}
             {diplomeExamples.map((d, i) => (
               <span key={d.slug}>
                 <Link href={PAGES.dynamic.seoDiplome(d.slug).getPath()}>{d.titre}</Link>
@@ -225,8 +225,8 @@ export default function AlternanceDiplomes() {
             , l'alternance reste l'une des voies royales pour acquérir des réflexes terrain. Les BTS commerciaux — par exemple le{" "}
             {btsMco ? <Link href={PAGES.dynamic.seoDiplome(btsMco.slug).getPath()}>{btsMco.titre}</Link> : "BTS MCO"} ou le{" "}
             {btsNdrc ? <Link href={PAGES.dynamic.seoDiplome(btsNdrc.slug).getPath()}>{btsNdrc.titre}</Link> : "BTS NDRC"} — et le BUT Techniques de Commercialisation forment aux
-            métiers de la vente, du <span lang="en">retail</span> et du e-commerce. Les Licences Pro et Masters en marketing digital, communication ou data prolongent cette logique
-            sur des fonctions plus stratégiques (chef de produit, <span lang="en">traffic manager</span>, responsable marketing).
+            métiers de la vente, du <span lang="en">retail</span> et du e-commerce. Les Licences Pro et Masters en marketing digital, communication ou <span lang="en">data</span>{" "}
+            prolongent cette logique sur des fonctions plus stratégiques (chef de produit, <span lang="en">traffic manager</span>, responsable marketing).
           </Typography>
           <Typography component="p" sx={{ mb: fr.spacing("3v") }}>
             <Typography component="span" sx={accentSx}>

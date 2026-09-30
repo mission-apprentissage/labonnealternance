@@ -4,6 +4,7 @@ import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { beforeAll, describe, expect, it } from "vitest"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
+import { getSearchCorpusCollection } from "@/services/search/search-items.service"
 
 /**
  * Tests de pertinence du moteur de recherche MongoDB Search ($search).
@@ -101,6 +102,49 @@ const CORPUS = [
     keywords: null,
     rome_labels: ["Management relation clientèle"],
     organization_name: "CFA Commerce",
+  }),
+  // — corpus formations (#5389) : intitulé RCO absent du suggest en mode emplois, et mots de diplôme
+  //   en qualificatifs (« bac pro vente » ne doit pas ramener « Bac pro cuisine » via bac + pro).
+  generateSearchItemFixture({
+    url_id: "formation-ndrc",
+    type: "formation",
+    type_filter_label: "Formations",
+    title: "BTS Négociation et digitalisation de la relation client",
+    description: "Formation en alternance à la négociation.",
+    keywords: null,
+    rome_labels: ["Relation client"],
+    organization_name: "CFA Tertiaire",
+  }),
+  // Titre plus court que celui du BTS NDRC : devant lui au seul BM25 sur « relation client ».
+  generateSearchItemFixture({
+    url_id: "formation-conseiller-relation-client",
+    type: "formation",
+    type_filter_label: "Formations",
+    title: "Conseiller relation client",
+    description: "Formation en alternance au conseil client.",
+    keywords: null,
+    rome_labels: ["Relation client"],
+    organization_name: "CFA Services",
+  }),
+  generateSearchItemFixture({
+    url_id: "formation-bacpro-vente",
+    type: "formation",
+    type_filter_label: "Formations",
+    title: "Bac pro Métiers de la vente",
+    description: "Formation en alternance aux techniques de vente.",
+    keywords: null,
+    rome_labels: [],
+    organization_name: "Lycée des Métiers",
+  }),
+  generateSearchItemFixture({
+    url_id: "formation-bacpro-cuisine",
+    type: "formation",
+    type_filter_label: "Formations",
+    title: "Bac pro Cuisine",
+    description: "Formation en alternance en restauration.",
+    keywords: null,
+    rome_labels: [],
+    organization_name: "Lycée hôtelier",
   }),
   // — acronyme ambigu "esf" (recette, KO — le fuzzy remontait des offres d'analyste ESG)
   generateSearchItemFixture({
@@ -507,14 +551,14 @@ const SYNONYMS = [
 // Suggestions issues des recherches utilisateurs (job analyzeSearchQueries) : une active
 // (doit être servie), une disabled (ne doit jamais l'être), une dupliquée d'un title du
 // corpus (la dédup doit la fusionner). Requête de test : préfixe "boulanger".
-const suggestionFixture = (term: string, status: "active" | "disabled") => ({
+const suggestionFixture = (term: string, status: "active" | "disabled", category: "metier" | "formation" = "metier") => ({
   _id: new ObjectId(),
   term,
   normalized: term.toLowerCase(),
   origin: "user_queries" as const,
   status,
   rejection_reason: null,
-  category: "metier" as const,
+  category,
   counters: { total_30d: 25, days_seen_30d: 8, zero_hits_30d: 1, free_text_30d: 20, median_nb_hits: 40 },
   confidence: 0.9,
   run_id: "test-run",
@@ -526,10 +570,12 @@ const USER_SUGGESTIONS = [
   suggestionFixture("Boulangerie artisanale", "active"),
   suggestionFixture("Boulangerie industrielle", "disabled"),
   suggestionFixture("Vendeur en boulangerie", "active"),
+  suggestionFixture("BTS digitalisation relation client", "active", "formation"),
 ]
 
+// Chaque document va dans la collection de son mode, comme la double écriture (upsertSearchItem).
 async function seedCorpus() {
-  await getDbCollection("search_items").insertMany(CORPUS)
+  for (const doc of CORPUS) await getDbCollection(getSearchCorpusCollection(doc)).insertOne(doc)
   await getDbCollection("search_synonyms").insertMany(SYNONYMS)
   await getDbCollection("search_suggestions").insertMany(USER_SUGGESTIONS)
 }
@@ -540,8 +586,8 @@ async function waitForSearchIndexSync(expected: number, timeoutMs = 120_000) {
   const start = Date.now()
   for (;;) {
     try {
-      const { nbHits } = await search({ hitsPerPage: 1 })
-      if (nbHits >= expected) return
+      const counts = await Promise.all((["emplois", "emplois_formation", "formations"] as const).map((mode) => search({ mode, hitsPerPage: 1 })))
+      if (counts.reduce((total, { nbHits }) => total + nbHits, 0) >= expected) return
     } catch {
       // index pas encore créé côté mongot → on réessaie
     }
@@ -568,6 +614,9 @@ async function waitForSuggestionIndexSync(timeoutMs = 120_000) {
     await new Promise((resolve) => setTimeout(resolve, 1_000))
   }
 }
+
+// Mode par défaut (emplois) : seul le corpus search_jobs répond sans `mode`.
+const JOBS_CORPUS_SIZE = CORPUS.filter((doc) => getSearchCorpusCollection(doc) === "search_jobs").length
 
 type SearchParams = Parameters<typeof searchItems>[0]
 
@@ -613,7 +662,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     })
 
     it("acronyme couvert par les synonymes : 'mco' → BTS Management Commercial Opérationnel", async () => {
-      const result = await search({ q: "mco" })
+      const result = await search({ q: "mco", mode: "formations" })
 
       expect(ids(result)).toContain("formation-mco")
     })
@@ -676,7 +725,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
 
       expect(ids(result)).not.toContain("offre-marseille")
       expect(ids(result)).toContain("offre-versailles")
-      expect(result.nbHits).toBe(CORPUS.length - 1)
+      expect(result.nbHits).toBe(JOBS_CORPUS_SIZE - 1)
     })
 
     it("tri par proximité : les documents remontent du plus proche au plus lointain", async () => {
@@ -699,8 +748,8 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     it("pagine correctement (nbHits / nbPages)", async () => {
       const result = await search({ hitsPerPage: 5 })
 
-      expect(result.nbHits).toBe(CORPUS.length)
-      expect(result.nbPages).toBe(Math.ceil(CORPUS.length / 5))
+      expect(result.nbHits).toBe(JOBS_CORPUS_SIZE)
+      expect(result.nbPages).toBe(Math.ceil(JOBS_CORPUS_SIZE / 5))
       expect(result.hits).toHaveLength(5)
     })
 
@@ -981,6 +1030,33 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       for (const hit of result.hits) expect(hit.type).toBe("formation")
     })
 
+    it("suggest : un intitulé RCO n'est proposé qu'en mode formations, y compris via une suggestion utilisateur classée formation", async () => {
+      const emplois = await suggestSearchTerms({ q: "digitalisation", limit: 8, mode: "emplois" })
+      const formations = await suggestSearchTerms({ q: "digitalisation", limit: 8, mode: "formations" })
+
+      expect(emplois.suggestions).toEqual([])
+      expect(formations.suggestions).toEqual(["BTS Négociation et digitalisation de la relation client", "BTS digitalisation relation client"])
+    })
+
+    it("formations : mots de diplôme en qualificatifs, « bac pro vente » ne ramène pas « Bac pro cuisine »", async () => {
+      const result = await search({ q: "bac pro vente", mode: "formations" })
+
+      expect(ids(result)).toEqual(["formation-bacpro-vente"])
+    })
+
+    it("formations : une requête réduite à un mot de diplôme filtre sur ce mot", async () => {
+      const result = await search({ q: "bts", mode: "formations" })
+
+      expect(ids(result).sort()).toEqual(["formation-mco", "formation-ndrc"])
+    })
+
+    it("formations : un mot de diplôme de la requête fait passer la formation qui le porte en tête", async () => {
+      const result = await search({ q: "relation client bts", mode: "formations" })
+
+      expect(rankOf(result, "formation-ndrc")).toBe(0)
+      expect(ids(result)).toContain("formation-conseiller-relation-client")
+    })
+
     it("mode=emplois_formation : uniquement les offres CFA/GEIQ", async () => {
       const result = await search({ mode: "emplois_formation" })
 
@@ -1002,10 +1078,12 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     })
 
     it("smart_apply=true : uniquement les offres avec candidature simplifiée", async () => {
-      const result = await search({ q: "conducteur de travaux", smart_apply: true })
+      const withTraining = await search({ q: "conducteur de travaux", mode: "emplois_formation", smart_apply: true })
+      expect(ids(withTraining)).toContain("offre-travaux-cfa")
 
-      expect(ids(result)).toContain("offre-travaux-cfa")
-      expect(ids(result)).not.toContain("offre-conducteur-travaux")
+      // Témoin : l'offre sort du result set à cause du filtre, pas faute de matcher la requête.
+      expect(ids(await search({ q: "conducteur de travaux" }))).toContain("offre-conducteur-travaux")
+      expect(ids(await search({ q: "conducteur de travaux", smart_apply: true }))).not.toContain("offre-conducteur-travaux")
     })
 
     it("sort=start_date : démarrages les plus proches d'abord, candidatures spontanées en fin de liste, offres sans date écartées", async () => {

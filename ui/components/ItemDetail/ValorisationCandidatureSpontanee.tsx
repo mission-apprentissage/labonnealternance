@@ -1,11 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { useMemo } from "react"
+import NextLink from "next/link"
+import { useEffect, useState } from "react"
 import { buildRecruteursLbaSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search-legacy-utils"
 import { classNames } from "@/utils/class-names"
 import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
+
+const TITLE = "Plus de 60% des recrutements en alternance se font sans qu’aucune offre n’ait été déposée."
+const ACTION_LABEL = " - Voir les entreprises à contacter pour une candidature spontanée"
 
 export const ValorisationCandidatureSpontanee = ({
   overridenQueryParams = {},
@@ -16,35 +19,50 @@ export const ValorisationCandidatureSpontanee = ({
   onClick?: () => void
   disabled?: boolean
 }) => {
-  const router = useRouter()
+  // Calculée après le montage : elle dépend de window.location, absent au rendu serveur, et un
+  // écart serveur/client sur un attribut n'est pas corrigé à l'hydratation.
+  const [searchHref, setSearchHref] = useState<string | null>(null)
 
-  const localOnClick = useMemo(() => {
-    if (typeof window === "undefined") return undefined
+  useEffect(() => {
     // Rejoue la recherche d'origine (?from= du nouveau moteur, ou paramètres legacy d'un lien
     // encore en circulation) en cochant « entreprises à contacter ». Sans contexte de recherche,
     // le bloc reste non cliquable : envoyer sur une page de résultats nue n'aiderait personne.
     const searchUrl = buildRecruteursLbaSearchUrl(window.location.href)
-    if (searchUrl === null || disabled) return undefined
-    return () => {
-      if (onClick) {
-        // Déjà sur la page de recherche : scroll direct sans navigation
-        onClick()
-        return
-      }
-      const fakeUrl = new URL("http://localhost" + searchUrl)
-      const { searchParams } = fakeUrl
-      Object.entries(overridenQueryParams).forEach(([key, value]) => {
-        searchParams.delete(key)
-        searchParams.append(key, value)
-      })
-      router.push(fakeUrl.pathname + fakeUrl.search, { scroll: false })
+    if (searchUrl === null || disabled) {
+      setSearchHref(null)
+      return
     }
-  }, [router, overridenQueryParams, onClick, disabled])
+    const url = new URL(searchUrl, window.location.origin)
+    Object.entries(overridenQueryParams).forEach(([key, value]) => url.searchParams.set(key, value))
+    setSearchHref(url.pathname + url.search)
+  }, [overridenQueryParams, disabled])
+
+  const isInteractive = searchHref !== null
+  // Le lien (ou le bouton) porte le titre et son ::before couvre tout le bloc, qui reste
+  // cliquable en entier avec un focus visible (motif fr-enlarge-link du DSFR).
+  const titleContent = !isInteractive ? (
+    TITLE
+  ) : onClick ? (
+    // Déjà sur la page de recherche : scroll direct sans navigation
+    <Box
+      component="button"
+      type="button"
+      onClick={onClick}
+      sx={{ p: 0, border: "none", background: "none", font: "inherit", color: "inherit", textAlign: "left", cursor: "pointer" }}
+    >
+      {TITLE}
+      <span className="fr-sr-only">{ACTION_LABEL}</span>
+    </Box>
+  ) : (
+    <NextLink href={searchHref}>
+      {TITLE}
+      <span className="fr-sr-only">{ACTION_LABEL}</span>
+    </NextLink>
+  )
 
   return (
     <Box
-      className={classNames({ clickable: Boolean(localOnClick) })}
-      onClick={localOnClick}
+      className={classNames({ "fr-enlarge-link": isInteractive && !onClick, "fr-enlarge-button": isInteractive && Boolean(onClick) })}
       sx={{
         display: "flex",
         gap: "24px",
@@ -57,17 +75,18 @@ export const ValorisationCandidatureSpontanee = ({
         padding: "16px 24px",
 
         boxShadow: "0 2px 6px 0 #00001229",
-        "&.clickable": {
-          cursor: "pointer",
-          "&:hover": {
-            backgroundColor: "#F6F6F6",
-          },
+        "&.fr-enlarge-link:hover, &.fr-enlarge-link:active, &.fr-enlarge-button:hover, &.fr-enlarge-button:active": {
+          backgroundColor: "#F6F6F6",
+        },
+        // Bloc collé au bord de sa colonne : l'outline du DSFR (décalé vers l'extérieur) y serait rogné
+        "&.fr-enlarge-link a::before, &.fr-enlarge-button button::before": {
+          outlineOffset: "-2px",
         },
       }}
     >
       <Box>
         <Typography component="p" variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          Plus de 60% des recrutements en alternance se font sans qu’aucune offre n’ait été déposée.
+          {titleContent}
         </Typography>
         <Typography>
           Pour vous aider à trouver un contrat, nous identifions des entreprises susceptibles d'accueillir des alternants.
