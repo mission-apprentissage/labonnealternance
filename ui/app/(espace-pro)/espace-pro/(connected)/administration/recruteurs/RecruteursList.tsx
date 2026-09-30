@@ -76,6 +76,12 @@ export function RecruteursList() {
       onSelectedOpcosChange={setSelectedOpcos}
       opcoDisabled={opcoDisabled}
       onSearch={setSubmittedSearch}
+      onReset={() => {
+        setSubmittedSearch("")
+        setSelectedStatuses([...allStatuses])
+        setSelectedAccountTypes([...accountTypes])
+        setSelectedOpcos([...opcoValues])
+      }}
       isEnabled={isEnabled}
       isFetching={isFetching}
     />
@@ -93,6 +99,7 @@ function RecruteursContent({
   onSelectedOpcosChange,
   opcoDisabled,
   onSearch,
+  onReset,
   isEnabled,
   isFetching,
 }: {
@@ -106,6 +113,7 @@ function RecruteursContent({
   onSelectedOpcosChange: (v: OpcoValue[]) => void
   opcoDisabled: boolean
   onSearch: (search: string) => void
+  onReset: () => void
   isEnabled: boolean
   isFetching: boolean
 }) {
@@ -128,12 +136,12 @@ function RecruteursContent({
       />
 
       {/* Ligne 1 : recherche */}
-      <Box sx={{ display: "flex", mb: fr.spacing("6v") }}>
-        <AdminSearchInput label="Rechercher" placeholder="Raison sociale, email, téléphone..." onSearch={onSearch} />
+      <Box sx={{ mb: fr.spacing("6v") }}>
+        <AdminSearchInput label="Rechercher" placeholder="Raison sociale, email, téléphone..." onSearch={onSearch} onReset={onReset} />
       </Box>
 
       {/* Ligne 2 : filtres */}
-      <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("4v"), alignItems: "center" }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), "& > .MuiFormControl-root": { mb: fr.spacing("6v") } }}>
         <MultiSelect
           id="status-gestion"
           label="Statut"

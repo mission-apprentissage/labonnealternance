@@ -176,12 +176,12 @@ function UserContent({
         onConfirmation={onInvalidateData}
       />
       {/* Ligne 1 : recherche */}
-      <Box sx={{ display: "flex", mb: fr.spacing("6v") }}>
+      <Box sx={{ mb: fr.spacing("6v") }}>
         <AdminSearchInput label="Rechercher" placeholder="Raison sociale, email, téléphone..." onSearch={onSearch} onReset={onReset} />
       </Box>
 
       {/* Ligne 2 : filtres */}
-      <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("4v"), alignItems: "center" }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), "& > .MuiFormControl-root": { mb: fr.spacing("6v") } }}>
         <MultiSelect
           id="status"
           label="Statut"

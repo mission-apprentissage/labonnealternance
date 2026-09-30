@@ -118,7 +118,7 @@ export function OffresPartenairesList() {
       <ConfirmationClassificationOffre offer={currentOffer} isOpen={confirmationClassificationOffre.isOpen} onClose={confirmationClassificationOffre.onClose} />
 
       {/* Ligne 1 : recherche par id */}
-      <Box sx={{ display: "flex", mb: fr.spacing("6v") }}>
+      <Box sx={{ mb: fr.spacing("6v") }}>
         <AdminSearchInput
           label="Rechercher par identifiant (_id)"
           placeholder="Identifiant de l'offre..."
@@ -126,12 +126,12 @@ export function OffresPartenairesList() {
           onReset={onReset}
           validate={validateOfferId}
           hintText={`24 caractères hexadécimaux (chiffres 0 à 9, lettres a à f), par exemple ${OFFER_ID_EXAMPLE}`}
-          minWidth="420px"
+          inputWidth="420px"
         />
       </Box>
 
       {/* Ligne 2 : filtres */}
-      <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("4v"), alignItems: "center" }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), "& > .MuiFormControl-root": { mb: fr.spacing("6v") } }}>
         <MultiSelect
           id="partner-label-offres-partenaires"
           label="Partenaire"

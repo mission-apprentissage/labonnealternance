@@ -134,6 +134,8 @@ function FormulaireModificationEntreprise({ siret, onCancel, onSaved }: { siret:
   )
 }
 
+const DEFAULT_SEARCH_FIELD: ILbaCompanySearchField = "workplace_legal_name"
+
 const getSearchError = (value: string, field: ILbaCompanySearchField) => {
   if (value.length < 2) return "Saisissez au moins 2 caractères"
   if (field === "workplace_siret" && !validateSIRET(value)) return "Saisissez un SIRET valide de 14 chiffres, sans espace, par exemple 12345678901234"
@@ -141,9 +143,9 @@ const getSearchError = (value: string, field: ILbaCompanySearchField) => {
 }
 
 // Saisie locale au formulaire : la remonter à chaque frappe re-rendrait le tableau des résultats
-function EntreprisesSearchForm({ onSearch }: { onSearch: (search: string, field: ILbaCompanySearchField) => void }) {
+function EntreprisesSearchForm({ onSearch, onReset }: { onSearch: (search: string, field: ILbaCompanySearchField) => void; onReset: () => void }) {
   const [searchInput, setSearchInput] = useState("")
-  const [searchField, setSearchField] = useState<ILbaCompanySearchField>("workplace_legal_name")
+  const [searchField, setSearchField] = useState<ILbaCompanySearchField>(DEFAULT_SEARCH_FIELD)
   const [searchError, setSearchError] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const helpTextId = useId()
@@ -165,10 +167,20 @@ function EntreprisesSearchForm({ onSearch }: { onSearch: (search: string, field:
     onSearch(value, searchField)
   }
 
+  const reset = () => {
+    setSearchInput("")
+    setSearchField(DEFAULT_SEARCH_FIELD)
+    setSearchError(null)
+    onReset()
+  }
+
   return (
     <>
-      <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-start" }}>
+      {/* Select et boutons alignés par le bas dans leur propre ligne : le message d'erreur du champ de recherche ne les décale pas */}
+      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("2v"), alignItems: "flex-start" }}>
         <Input
+          className={fr.cx("fr-mb-3v")}
+          style={{ flex: "0 1 420px" }}
           label="Rechercher (obligatoire)"
           state={searchError ? "error" : "default"}
           stateRelatedMessage={searchError}
@@ -183,26 +195,31 @@ function EntreprisesSearchForm({ onSearch }: { onSearch: (search: string, field:
             onKeyDown: (e) => {
               if (e.key === "Enter") submit()
             },
-            style: { minWidth: "600px" },
           }}
         />
-        <Select
-          label="Cibler un champ"
-          nativeSelectProps={{
-            value: searchField,
-            onChange: (e) => setSearchField(e.target.value as ILbaCompanySearchField),
-            style: { width: "240px" },
-          }}
-        >
-          {SEARCH_FIELD_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </Select>
-        <Button iconId="fr-icon-search-line" priority="primary" onClick={submit} data-testid="search_for_algo_company" className={fr.cx("fr-mt-4w")}>
-          Rechercher
-        </Button>
+        <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("2v"), alignItems: "flex-end" }}>
+          <Select
+            className={fr.cx("fr-mb-3v")}
+            label="Cibler un champ"
+            nativeSelectProps={{
+              value: searchField,
+              onChange: (e) => setSearchField(e.target.value as ILbaCompanySearchField),
+              style: { width: "240px" },
+            }}
+          >
+            {SEARCH_FIELD_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </Select>
+          <Button iconId="fr-icon-search-line" priority="primary" onClick={submit} data-testid="search_for_algo_company" className={fr.cx("fr-mb-3v")}>
+            Rechercher
+          </Button>
+          <Button iconId="fr-icon-refresh-line" priority="secondary" onClick={reset} className={fr.cx("fr-mb-3v")} style={{ whiteSpace: "nowrap" }}>
+            Réinitialiser la recherche
+          </Button>
+        </Box>
       </Box>
 
       <Box
@@ -225,7 +242,7 @@ function EntreprisesSearchForm({ onSearch }: { onSearch: (search: string, field:
 
 export default function GestionEntreprises() {
   const [submittedSearch, setSubmittedSearch] = useState("")
-  const [submittedField, setSubmittedField] = useState<ILbaCompanySearchField>("workplace_legal_name")
+  const [submittedField, setSubmittedField] = useState<ILbaCompanySearchField>(DEFAULT_SEARCH_FIELD)
   const [siret, setSiret] = useState<string>("")
   const modalTitleId = useId()
   const queryClient = useQueryClient()
@@ -250,6 +267,12 @@ export default function GestionEntreprises() {
     setSubmittedSearch(search)
   }
 
+  const onReset = () => {
+    setSiret("")
+    setSubmittedField(DEFAULT_SEARCH_FIELD)
+    setSubmittedSearch("")
+  }
+
   const onSaved = async (updatedSiret: string) => {
     setSiret("")
     toast({ title: `Les coordonnées de l’entreprise (SIRET ${updatedSiret}) ont été mises à jour.` })
@@ -263,7 +286,7 @@ export default function GestionEntreprises() {
       <Typography variant="h2" component="h1" gutterBottom>
         {PAGES.static.backAdminGestionDesEntreprises.title}
       </Typography>
-      <EntreprisesSearchForm onSearch={onSearch} />
+      <EntreprisesSearchForm onSearch={onSearch} onReset={onReset} />
 
       {!isEnabled ? (
         <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>
