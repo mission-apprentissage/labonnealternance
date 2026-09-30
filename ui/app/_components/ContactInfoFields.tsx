@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import type { ReactNode } from "react"
 import CustomInput from "@/app/_components/CustomInput"
+import { PHONE_FORMAT_HINT } from "@/utils/validation-messages"
 
 /**
  * Bloc de champs de contact partagé par les formulaires de création/édition de compte recruteur
@@ -12,6 +13,9 @@ import CustomInput from "@/app/_components/CustomInput"
  *
  * `hideAsterisk` est systématique ici : ces quatre écrans affichent tous la mention "Tous les champs
  * sont obligatoires" (ci-dessous) à la place de l'astérisque par champ.
+ *
+ * Le téléphone accepte toute écriture d'un numéro français (cf. frenchPhoneValidation) : chaque écran le
+ * ramène à 10 chiffres à l'envoi avec toSubmittedPhone.
  *
  * `thirdParty` : les coordonnées saisies sont celles d'un tiers (ex. CFA qui crée une entreprise partenaire),
  * `autoComplete="off"` empêche le navigateur de proposer celles de l'usager connecté (RGAA 11.13).
@@ -26,17 +30,7 @@ export const ContactInfoFields = ({ emailDisabled = false, emailInfo, thirdParty
       {/* autoComplete (RGAA 11.13) et format attendu annoncé avant la saisie (RGAA 11.10) */}
       <CustomInput hideAsterisk name="last_name" label="Nom" type="text" autoComplete={autoComplete("family-name")} />
       <CustomInput hideAsterisk name="first_name" label="Prénom" type="text" autoComplete={autoComplete("given-name")} />
-      <CustomInput
-        hideAsterisk
-        name="phone"
-        label="Téléphone"
-        type="tel"
-        inputMode="numeric"
-        pattern="[0-9]{10}"
-        maxLength="10"
-        autoComplete={autoComplete("tel-national")}
-        info="10 chiffres, par exemple 0612345678"
-      />
+      <CustomInput hideAsterisk name="phone" label="Téléphone" type="tel" autoComplete={autoComplete("tel-national")} info={PHONE_FORMAT_HINT} />
       <CustomInput
         hideAsterisk
         disabled={emailDisabled}

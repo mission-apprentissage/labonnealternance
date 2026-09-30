@@ -14,6 +14,7 @@ export default function AutocompleteAsync<T>({
   info,
   required = true,
   hideAsterisk,
+  requiredMention,
   placeholder,
   name,
   dataTestId,
@@ -36,6 +37,7 @@ export default function AutocompleteAsync<T>({
   info?: React.ReactNode
   required?: boolean
   hideAsterisk?: boolean
+  requiredMention?: boolean
   placeholder?: string
   handleSearch: (input: string) => Promise<T[]>
   onSelectItem: (item: T | null) => void
@@ -123,6 +125,7 @@ export default function AutocompleteAsync<T>({
         pb="0"
         required={required}
         hideAsterisk={hideAsterisk}
+        requiredMention={requiredMention}
         label={label}
         info={info}
         name={name}

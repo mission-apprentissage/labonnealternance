@@ -16,7 +16,7 @@ import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
-import { personNameValidation, phoneValidation } from "@/common/validation/field-validations"
+import { frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
@@ -27,8 +27,10 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const { user } = useConnectedSessionClient()
   const formRef = useRef<HTMLFormElement>(null)
 
-  const submitForm = (values, { setSubmitting, setFieldError }) => {
-    apiPost("/user/:userId/formulaire", { params: { userId: user._id.toString() }, body: { ...values, establishment_siret } })
+  const submitForm = (values, { setSubmitting, setFieldError, setFieldValue }) => {
+    const phone = toSubmittedPhone(values.phone)
+    setFieldValue("phone", phone, false)
+    apiPost("/user/:userId/formulaire", { params: { userId: user._id.toString() }, body: { ...values, phone, establishment_siret } })
       .then((data) => {
         setSubmitting(false)
         toast({
@@ -60,7 +62,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
         last_name: personNameValidation().required("champ obligatoire"),
         first_name: personNameValidation().required("champ obligatoire"),
-        phone: phoneValidation().required("champ obligatoire"),
+        phone: frenchPhoneValidation().required("champ obligatoire"),
         isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations"),
       })}
       onSubmit={submitForm}

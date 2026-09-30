@@ -11,7 +11,7 @@ import { Warning } from "@/theme/components/icons"
 
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
-  const { hideAsterisk: _hideAsterisk, ...inputProps } = props
+  const { hideAsterisk: _hideAsterisk, requiredMention: _requiredMention, ...inputProps } = props
   const hasError = Boolean(meta.error && meta.touched && (props.required !== false || field.value))
   const required = props.required ?? true
   // Association explicite label ↔ input et input ↔ message d'erreur (RGAA) : FormLabel/Input sont ici
@@ -41,6 +41,8 @@ const CustomInput = (props) => {
           // sont une préoccupation séparée, à traiter par `noValidate` sur le <form> englobant.
           <FormLabel htmlFor={inputId} error={hasError} {...(props.hideAsterisk ? { required: false } : {})}>
             {props.label}
+            {/* Hors du nom accessible : l'obligation est déjà restituée par l'attribut required de l'input */}
+            {props.requiredMention && <span aria-hidden="true"> (champ obligatoire)</span>}
           </FormLabel>
         )}
         {props.info && (

@@ -41,11 +41,11 @@ export const SiretAutocomplete = ({
         const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
         return (
           <form ref={formRef} onSubmit={handleSubmit} noValidate>
-            <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("4v") }}>Champ obligatoire</Typography>
             <AutocompleteAsync
               name="establishment_siret"
               label={label}
               hideAsterisk
+              requiredMention
               info="Pour le SIRET : 14 chiffres, sans espace"
               handleSearch={(search: string) => searchEntreprise(search)}
               renderItem={({ raison_sociale, siret, adresse }, highlighted) => <EntrepriseCard {...{ raison_sociale, siret, adresse, highlighted }} />}

@@ -23,7 +23,7 @@ import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { AUTHTYPE } from "@/common/contants"
-import { personNameValidation, phoneValidation } from "@/common/validation/field-validations"
+import { frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { AnimationContainer, LoadingEmptySpace } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { infosOpcos } from "@/theme/components/logos/infos-opcos"
@@ -106,7 +106,7 @@ const Formulaire = ({
       validationSchema={Yup.object().shape({
         last_name: personNameValidation().required("champ obligatoire"),
         first_name: personNameValidation().required("champ obligatoire"),
-        phone: phoneValidation().required("champ obligatoire"),
+        phone: frenchPhoneValidation().required("champ obligatoire"),
         email: Yup.string().email(EMAIL_FORMAT_ERROR).lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
         handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire") : Yup.string(),
@@ -213,8 +213,10 @@ export const InformationCreationCompte = ({
 }) => {
   const router = useRouter()
 
-  const submitForm = (values: any, { setSubmitting, setFieldError }: any) => {
-    const payload = { ...values, type, establishment_siret }
+  const submitForm = (values: any, { setSubmitting, setFieldError, setFieldValue }: any) => {
+    const phone = toSubmittedPhone(values.phone)
+    setFieldValue("phone", phone, false)
+    const payload = { ...values, phone, type, establishment_siret }
     if (type === AUTHTYPE.CFA) {
       payload.opco = OPCOS_LABEL.UNKNOWN_OPCO
     }
