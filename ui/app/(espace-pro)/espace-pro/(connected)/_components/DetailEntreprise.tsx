@@ -23,6 +23,7 @@ import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/context
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
+import { phoneValidation } from "@/common/validation/field-validations"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
@@ -253,11 +254,7 @@ export default function DetailEntreprise({
           validationSchema={Yup.object().shape({
             last_name: Yup.string().required("champ obligatoire"),
             first_name: Yup.string().required("champ obligatoire"),
-            phone: Yup.string()
-              .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-              .min(10, "le téléphone est sur 10 chiffres")
-              .max(10, "le téléphone est sur 10 chiffres")
-              .required("champ obligatoire"),
+            phone: phoneValidation().required("champ obligatoire"),
             email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
             opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),

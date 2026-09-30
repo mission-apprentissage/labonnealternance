@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import type { ReactNode } from "react"
 import CustomInput from "@/app/_components/CustomInput"
+import { EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
 
 /**
  * Bloc de champs de contact partagé par les formulaires de création/édition de compte recruteur
@@ -36,17 +37,9 @@ export const ContactInfoFields = ({ emailDisabled = false, emailInfo, thirdParty
         pattern="[0-9]{10}"
         maxLength="10"
         autoComplete={autoComplete("tel-national")}
-        info="10 chiffres, par exemple 0612345678"
+        info={PHONE_FORMAT_HINT}
       />
-      <CustomInput
-        hideAsterisk
-        disabled={emailDisabled}
-        name="email"
-        label="E-mail"
-        type="email"
-        autoComplete={autoComplete("email")}
-        info={emailInfo ?? "Par exemple nom@domaine.fr"}
-      />
+      <CustomInput hideAsterisk disabled={emailDisabled} name="email" label="E-mail" type="email" autoComplete={autoComplete("email")} info={emailInfo ?? EMAIL_FORMAT_HINT} />
     </>
   )
 }
