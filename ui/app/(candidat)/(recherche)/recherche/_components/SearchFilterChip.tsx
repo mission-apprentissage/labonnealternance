@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, ButtonBase, ClickAwayListener, Grow, Paper, Popper } from "@mui/material"
-import { type KeyboardEvent, type ReactNode, useId, useRef, useState } from "react"
+import { type FocusEvent, type KeyboardEvent, type ReactNode, useId, useRef, useState } from "react"
 
 /**
  * Chip pill de filtre (design « Nouvelle recherche »). Deux comportements :
@@ -123,10 +123,18 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
     focusables[nextIndex].focus()
   }
 
+  // Focus sorti du chip et de son panneau (Tab vers le filtre suivant) → fermeture. Le Popper
+  // est rendu dans ce conteneur (disablePortal). Sans `relatedTarget` (clic hors élément
+  // focusable, fenêtre qui perd le focus, calendrier natif), c'est ClickAwayListener qui tranche.
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    if (!open || !(event.relatedTarget instanceof Node) || event.currentTarget.contains(event.relatedTarget)) return
+    close()
+  }
+
   const palette = active ? CHIP_COLORS.active : CHIP_COLORS.default
 
   return (
-    <Box sx={{ position: "relative", display: "inline-flex" }}>
+    <Box sx={{ position: "relative", display: "inline-flex" }} onBlur={handleBlur}>
       <ButtonBase
         ref={anchorRef}
         disabled={disabled}
@@ -201,7 +209,11 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
             >
               <Paper onKeyDown={handleKeyDown} elevation={0} sx={{ mt: "4px", borderRadius: "4px", py: "8px", minWidth: 240, boxShadow: "0 6px 18px rgba(0,0,18,0.16)" }}>
                 <ClickAwayListener onClickAway={close}>
-                  <Box ref={popperContentRef}>{typeof popperContent === "function" ? popperContent(closeAndFocusAnchor) : popperContent}</Box>
+                  {/* inert pendant l'animation de sortie : sinon Shift+Tab juste après la fermeture
+                      revient dans le panneau, qui disparaît en laissant le focus sur <body>. */}
+                  <Box ref={popperContentRef} inert={!open}>
+                    {typeof popperContent === "function" ? popperContent(closeAndFocusAnchor) : popperContent}
+                  </Box>
                 </ClickAwayListener>
               </Paper>
             </Grow>

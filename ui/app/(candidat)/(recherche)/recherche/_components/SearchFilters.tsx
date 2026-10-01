@@ -32,6 +32,8 @@ interface SearchFiltersProps {
   onNavigate: (newParams: ISearchPageParams) => void
   /** "bar" : rangée de chips desktop ; "sections" : modale Filtres mobile (sections empilées). */
   variant?: "bar" | "sections"
+  /** Variante "sections" : fermeture de la modale, déclenchée par Entrée dans le champ date. */
+  onClose?: () => void
 }
 
 /** Suffixe « (N) » des libellés de chips à compteur. */
@@ -68,6 +70,20 @@ const isFutureDate = (isoDate?: string): boolean => {
 }
 
 const TYPE_FILTER_LABEL_DISTANCE = "Formation à distance"
+
+// Calendrier natif retiré du champ date : son bouton prend un arrêt de tabulation dont le
+// comportement clavier n'est pas fiable, la date se saisit au clavier (RGAA 7.3 couvert). Sans
+// effet sur Firefox (pas de pseudo-élément) ni sur mobile (le sélecteur s'ouvre au toucher).
+// L'icône DSFR (::after décoratif, place réservée par padding-right) partirait sinon sans bouton.
+const HIDDEN_DATE_PICKER_SX = {
+  "& input[type='date']": { paddingRight: "1rem" },
+  "& input[type='date']::-webkit-calendar-picker-indicator, & input[type='date']::after": { display: "none" },
+}
+
+// Désactivé avec le calendrier natif (cf. HIDDEN_DATE_PICKER_SX), à rétablir avec lui.
+// Touches qui modifient la date depuis le champ. Un `change` qui ne suit aucune d'elles vient du
+// calendrier natif, dont les clics et les touches (Entrée comprise) ne parviennent pas à la page.
+// const DATE_EDIT_KEY = /^(\d|Backspace|Delete|ArrowUp|ArrowDown)$/
 
 // Popper à checkboxes : neutralise les marges basses du fieldset DSFR (1rem sur le fieldset
 // ET sur son dernier élément) pour retomber sur le padding vertical du panneau (8px),
@@ -140,7 +156,7 @@ function MobileSection({ title, children }: { title?: string; children: ReactNod
   )
 }
 
-export function SearchFilters({ params, facets, counts, nbHits, onNavigate, variant = "bar" }: SearchFiltersProps) {
+export function SearchFilters({ params, facets, counts, nbHits, onNavigate, variant = "bar", onClose }: SearchFiltersProps) {
   // search_filter_opened : dropdown ouvert puis refermé SANS application.
   // `navigate` marque le dropdown ouvert comme « appliqué » ; la fermeture sans application émet l'événement.
   const openDropdownRef = useRef<{ filterName: string; applied: boolean } | null>(null)
@@ -234,28 +250,49 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
 
   // La clé force un remount quand start_date est remis à zéro en externe (ex. « Réinitialiser les filtres »),
   // sinon React n'applique pas les mises à jour de defaultValue sur un champ non contrôlé après le montage.
-  // Le filtre part au blur pour éviter une recherche avec une date partielle. Entrée valide la
-  // saisie par ce même blur, puis appelle `onEnter` (fermeture du popper desktop).
-  const renderStartDateInput = (onEnter?: () => void) => (
-    <Input
-      key={params.start_date ?? ""}
-      label="À partir du"
-      hintText="Format attendu : JJ/MM/AAAA, par exemple 01/09/2026"
-      nativeInputProps={{
-        type: "date",
-        defaultValue: params.start_date ?? "",
-        onBlur: (e) => setStartDate(e.target.value || undefined),
-        onKeyDown: (e) => {
-          if (e.key !== "Enter") return
-          e.preventDefault()
-          e.currentTarget.blur()
-          onEnter?.()
-        },
-        onChange: (e) => {
-          if (!e.target.value) setStartDate(undefined)
-        },
-      }}
-    />
+  // Le filtre part au blur pour éviter une recherche avec une date partielle, champ vidé compris :
+  // effacer un segment en cours de saisie rend la valeur vide, l'appliquer aussitôt remonterait le
+  // champ (clé) et lui ferait perdre le focus. Entrée valide par ce même blur puis appelle `close`.
+  // Désactivé avec le calendrier natif (cf. HIDDEN_DATE_PICKER_SX) : avec `closeOnPick`, une date
+  // choisie dans le calendrier valide et ferme aussi (popper desktop : sur mobile, le sélecteur
+  // émet des `change` en cours de défilement).
+  // const startDateKeyEditRef = useRef(false)
+  // const renderStartDateInput = (close?: () => void, closeOnPick = false) => (
+  const renderStartDateInput = (close?: () => void) => (
+    <Box sx={HIDDEN_DATE_PICKER_SX}>
+      <Input
+        key={params.start_date ?? ""}
+        label="À partir du"
+        hintText="Format attendu : JJ/MM/AAAA, par exemple 01/09/2026"
+        nativeInputProps={{
+          type: "date",
+          defaultValue: params.start_date ?? "",
+          onBlur: (e) => setStartDate(e.target.value || undefined),
+          onKeyDown: (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault()
+              e.currentTarget.blur()
+              close?.()
+              return
+            }
+            // Désactivé avec le calendrier natif (cf. HIDDEN_DATE_PICKER_SX).
+            // if (e.altKey || !DATE_EDIT_KEY.test(e.key)) return
+            // // L'événement `input` d'une frappe est émis dans la même tâche que son keydown.
+            // startDateKeyEditRef.current = true
+            // setTimeout(() => {
+            //   startDateKeyEditRef.current = false
+            // })
+          },
+          // Désactivé avec le calendrier natif (cf. HIDDEN_DATE_PICKER_SX).
+          // onChange: (e) => {
+          //   if (e.target.value && closeOnPick && !startDateKeyEditRef.current) {
+          //     e.currentTarget.blur()
+          //     close?.()
+          //   }
+          // },
+        }}
+      />
+    </Box>
   )
 
   if (variant === "sections") {
@@ -267,7 +304,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
           </MobileSection>
         )}
 
-        {!isFormations && <MobileSection title="Date de début de contrat">{renderStartDateInput()}</MobileSection>}
+        {!isFormations && <MobileSection title="Date de début de contrat">{renderStartDateInput(onClose)}</MobileSection>}
 
         <MobileSection>
           <RadioButtons
@@ -381,7 +418,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
           activeLabel={params.start_date ? `À partir du ${formatDateFr(params.start_date)}` : undefined}
           active={Boolean(params.start_date)}
           onOpenChange={trackDropdown("contract_start_date")}
-          popperContent={(close) => <Box sx={{ px: "16px", pt: "8px" }}>{renderStartDateInput(close)}</Box>}
+          popperContent={(close) => <Box sx={{ px: "16px", pt: "8px" }}>{renderStartDateInput(close /* , true : cf. HIDDEN_DATE_PICKER_SX */)}</Box>}
         />
       )}
 

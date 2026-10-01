@@ -442,7 +442,15 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               </Box>
             }
           >
-            <SearchFilters variant="sections" params={params} facets={facets} counts={counts} nbHits={result.data ? nbHits : undefined} onNavigate={handleFilterChange} />
+            <SearchFilters
+              variant="sections"
+              params={params}
+              facets={facets}
+              counts={counts}
+              nbHits={result.data ? nbHits : undefined}
+              onNavigate={handleFilterChange}
+              onClose={() => setPanel(null)}
+            />
           </SearchMobilePanel>
         )}
       </Box>
