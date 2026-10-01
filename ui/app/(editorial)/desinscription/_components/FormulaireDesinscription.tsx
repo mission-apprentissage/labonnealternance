@@ -1,15 +1,17 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Select from "@codegouvfr/react-dsfr/Select"
-import { Box, Checkbox, CircularProgress, FormControlLabel, Stack, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { captureException } from "@sentry/browser"
 import { useMutation } from "@tanstack/react-query"
-import { Form, FormikContext, useFormik } from "formik"
-import { useState } from "react"
+import { FormikContext, useFormik } from "formik"
+import { useRef, useState } from "react"
 import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
 
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { publicConfig } from "@/config.public"
@@ -41,16 +43,11 @@ const SupportLink = ({ subject }: { subject: string }) => {
 }
 
 const errorMessages = {
+  // <span> : .fr-message est en flex, le lien y deviendrait un bloc à part
   NON_RECONNU: (
-    <>
-      Votre établissement n’est pas reconnu. Veuillez saisir une adresse email valide. Vous pouvez aussi contacter notre <SupportLink subject="Email inconnu" />.
-    </>
-  ),
-  ETABLISSEMENTS_MULTIPLES: (
-    <>
-      Plusieurs établissements correspondent à cet email, veuillez contacter notre <SupportLink subject="Plusieurs établissements" /> pour procéder au déréférencement de tout ou
-      partie de ces établissements
-    </>
+    <span>
+      Aucun établissement ne correspond à cet e-mail. Vérifiez l’adresse saisie ou contactez notre <SupportLink subject="Email inconnu" />.
+    </span>
   ),
   unexpected_error: (
     <>
@@ -58,6 +55,8 @@ const errorMessages = {
     </>
   ),
 }
+
+type IErrorKey = keyof typeof errorMessages
 
 const ConfirmationDesinscription = ({
   companies,
@@ -71,7 +70,10 @@ const ConfirmationDesinscription = ({
   const allSirets = companies.map((company) => company.siret)
   const [isOpen, setIsOpen] = useState(true)
   const [selectedSirets, setSelectedSirets] = useState(allSirets)
+  const [hasSubmitAttempt, setHasSubmitAttempt] = useState(false)
+  const fieldsetRef = useRef<HTMLFieldSetElement>(null)
   const areAllSelected: boolean = companies.length === selectedSirets.length
+  const hasSelectionError = hasSubmitAttempt && !selectedSirets.length
 
   const mutation = useMutation({
     mutationFn: async ({ sirets }: { sirets: string[] }) => {
@@ -104,45 +106,48 @@ const ConfirmationDesinscription = ({
     onClose()
   }
 
+  const handleSubmit = () => {
+    setHasSubmitAttempt(true)
+    if (!selectedSirets.length) {
+      fieldsetRef.current?.querySelector<HTMLInputElement>("input")?.focus()
+      return
+    }
+    mutation.mutate({ sirets: selectedSirets })
+  }
+
   return (
     <ModalReadOnly isOpen={isOpen} onClose={handleClose}>
       <Box sx={{ p: fr.spacing("6v") }}>
         <Typography variant="h3" sx={{ mb: fr.spacing("6v") }}>
-          Plusieurs établissements correspondent à cet email
+          Plusieurs établissements correspondent à cet e-mail
         </Typography>
         <Box>
-          <Typography sx={{ mb: fr.spacing("6v") }}>Veuillez sélectionner les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées.</Typography>
-
-          {companies.map((company) => (
-            <Box sx={{ display: "flex", alignItems: "center", border: "1px solid #E5E5E5", mb: fr.spacing("4v"), px: fr.spacing("4v"), py: fr.spacing("2v") }} key={company.siret}>
-              <Checkbox onChange={() => toggleSiretSelection(company.siret)} checked={isSiretSelected(company.siret)} value={company.siret} />
-              <Stack spacing={fr.spacing("2v")} sx={{ ml: fr.spacing("6v") }}>
-                <Typography>SIRET: {company.siret}</Typography>
-                <Typography>
+          <Checkbox
+            ref={fieldsetRef}
+            legend="Sélectionnez les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées."
+            state={hasSelectionError ? "error" : "default"}
+            stateRelatedMessage={hasSelectionError ? "Sélectionnez au moins un établissement." : undefined}
+            options={companies.map((company) => ({
+              label: `SIRET ${company.siret}`,
+              hintText: (
+                <>
                   {company.enseigne}
                   <br />
                   {company.address}
-                </Typography>
-              </Stack>
-            </Box>
-          ))}
+                </>
+              ),
+              nativeInputProps: {
+                name: "sirets",
+                value: company.siret,
+                checked: isSiretSelected(company.siret),
+                onChange: () => toggleSiretSelection(company.siret),
+              },
+            }))}
+          />
 
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <FormControlLabel control={<Checkbox defaultChecked onChange={toggleSelectAll} checked={areAllSelected} />} label="Tout sélectionner" />
-            {!isSubmitting ? (
-              <Button
-                disabled={isSubmitting || !selectedSirets.length}
-                onClick={() => {
-                  if (selectedSirets.length) {
-                    mutation.mutate({ sirets: selectedSirets })
-                  }
-                }}
-              >
-                Déréférencer
-              </Button>
-            ) : (
-              <CircularProgress />
-            )}
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Checkbox options={[{ label: "Tout sélectionner", nativeInputProps: { checked: areAllSelected, onChange: toggleSelectAll } }]} />
+            {!isSubmitting ? <Button onClick={handleSubmit}>Déréférencer</Button> : <CircularProgress />}
           </Box>
         </Box>
       </Box>
@@ -151,20 +156,22 @@ const ConfirmationDesinscription = ({
 }
 
 export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSuccess }: { companyEmail?: string; handleUnsubscribeSuccess: () => void }) => {
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [errorKey, setErrorKey] = useState<IErrorKey | null>(null)
   const [possibleCompanies, setPossibleCompanies] = useState<IUnsubscribePossibleCompany[] | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const handleError = (error: any) => {
     if (error && error instanceof ApiError && error.isNotFoundError()) {
-      setErrorMessage(errorMessages.NON_RECONNU)
+      setErrorKey("NON_RECONNU")
+      formRef.current?.querySelector<HTMLInputElement>('[name="email"]')?.focus()
     } else {
       captureException(error)
-      setErrorMessage(errorMessages.unexpected_error)
+      setErrorKey("unexpected_error")
     }
   }
 
   const onUnsubscribeSubmit = async (values: { reason: string; email: string }) => {
-    setErrorMessage(null)
+    setErrorKey(null)
     try {
       const response = await unsubscribeCompany(values)
       if ("possibleCompanies" in response && response.possibleCompanies?.length) {
@@ -179,16 +186,16 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
 
   const formik = useFormik({
     validationSchema: Yup.object().shape({
-      reason: Yup.string().required("Vous devez sélectionner un motif"),
-      email: Yup.string().email("Veuillez saisir une adresse email valide").required("Veuillez saisir une adresse email valide"),
+      reason: Yup.string().required("Sélectionnez un motif"),
+      email: Yup.string().email("Saisissez une adresse e-mail valide, par exemple nom@domaine.fr").required("Saisissez l’e-mail de l’établissement"),
     }),
-    initialValues: { email: companyEmail, reason: undefined },
+    initialValues: { email: companyEmail ?? "", reason: "" },
     onSubmit: onUnsubscribeSubmit,
     enableReinitialize: true,
   })
 
   const onUnsubscribeSiretsSubmit = async (sirets: string[]) => {
-    setErrorMessage(null)
+    setErrorKey(null)
     try {
       await unsubscribeCompanySirets({ sirets, ...formik.values })
       handleUnsubscribeSuccess()
@@ -197,7 +204,10 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
     }
   }
 
-  const { isSubmitting, setFieldValue, isValid, dirty } = formik
+  const { isSubmitting, setFieldValue, values, touched, errors, handleBlur } = formik
+  const reasonError = touched.reason && errors.reason
+  // Le bouton "Confirmer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
+  const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
 
   return (
     <Box>
@@ -216,30 +226,41 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
         </Box>
         <Box>
           <FormikContext value={formik}>
-            <Form>
+            <form ref={formRef} onSubmit={handleSubmit} noValidate>
+              <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("4v") }}>
+                Tous les champs sont obligatoires.
+              </Typography>
               <CustomDSFRInput
-                label="Email de l'établissement *"
-                hintText="Indiquez l'email sur lequel sont actuellement reçues les candidatures"
+                label="E-mail de l'établissement"
+                hintText="Format attendu : nom@domaine.fr. Indiquez l'e-mail sur lequel vous recevez les candidatures."
                 required={true}
                 name="email"
+                errorMessage={errorKey === "NON_RECONNU" ? errorMessages.NON_RECONNU : undefined}
                 nativeInputProps={{
                   type: "email",
                   name: "email",
-                  placeholder: "Adresse email de contact de la société...",
+                  required: true,
+                  autoComplete: "email",
+                  placeholder: "Adresse e-mail de contact de la société...",
                 }}
               />
 
               <Box sx={{ mt: fr.spacing("6v") }}>
                 <Select
-                  label="Motif *"
+                  label="Motif"
                   hint="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature"
+                  state={reasonError ? "error" : "default"}
+                  stateRelatedMessage={reasonError || undefined}
                   nativeSelectProps={{
                     onChange: async (event) => setFieldValue("reason", event.target.value, true),
+                    onBlur: handleBlur,
                     name: "reason",
+                    value: values.reason,
                     required: true,
+                    "aria-invalid": Boolean(reasonError),
                   }}
                 >
-                  <option disabled hidden selected value="">
+                  <option disabled hidden value="">
                     Sélectionnez une valeur...
                   </option>
                   {unsubscribeReasons.map((reason) => (
@@ -250,31 +271,23 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                 </Select>
               </Box>
 
-              {errorMessage && (
-                <Box sx={{ display: "flex", alignItems: "center", color: fr.colors.decisions.text.actionHigh.redMarianne.default, mt: fr.spacing("2v") }}>
+              {errorKey === "unexpected_error" && (
+                <Box role="alert" sx={{ display: "flex", alignItems: "center", color: fr.colors.decisions.text.actionHigh.redMarianne.default, mt: fr.spacing("2v") }}>
                   <Warning sx={{ m: 0 }} />
                   <Box
                     sx={{
                       ml: fr.spacing("2v"),
                     }}
                   >
-                    {errorMessage}
+                    {errorMessages.unexpected_error}
                   </Box>
                 </Box>
               )}
 
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: fr.spacing("6v") }}>
-                <Typography sx={{ fontSize: "12px" }}>Tous les champs sont obligatoires</Typography>
-
-                {!isSubmitting ? (
-                  <Button disabled={isSubmitting || !isValid || !dirty} type="submit">
-                    Confirmer
-                  </Button>
-                ) : (
-                  <CircularProgress />
-                )}
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("6v") }}>
+                {!isSubmitting ? <Button type="submit">Confirmer</Button> : <CircularProgress />}
               </Box>
-            </Form>
+            </form>
           </FormikContext>
         </Box>
       </Box>
