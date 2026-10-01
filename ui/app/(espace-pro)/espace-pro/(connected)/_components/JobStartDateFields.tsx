@@ -14,9 +14,11 @@ const FR_DATE_FORMAT = "DD/MM/YYYY"
 
 /**
  * Type de démarrage, date de début et « Date flexible », communs à l'étape 1 du dépôt d'offre et à la
- * modale de prolongation. `min` et `max` sont au format ISO (YYYY-MM-DD).
+ * modale de prolongation. `min` et `max` sont au format ISO (YYYY-MM-DD) ; sans `min`, une date passée est acceptée.
  */
-export const JobStartDateFields = ({ min, max }: { min: string; max: string }) => {
+export const JobStartDateFields = ({ min, max }: { min?: string; max: string }) => {
+  const maxLabel = dayjs(max).format(FR_DATE_FORMAT)
+  const hintText = min ? `Format attendu : JJ/MM/AAAA, entre le ${dayjs(min).format(FR_DATE_FORMAT)} et le ${maxLabel}` : `Format attendu : JJ/MM/AAAA, avant le ${maxLabel}`
   const { values, setFieldValue } = useFormikContext<any>()
 
   return (
@@ -50,7 +52,7 @@ export const JobStartDateFields = ({ min, max }: { min: string; max: string }) =
             max={max}
             name="job_start_date"
             label="Date de début du contrat"
-            hintText={`Format attendu : JJ/MM/AAAA, entre le ${dayjs(min).format(FR_DATE_FORMAT)} et le ${dayjs(max).format(FR_DATE_FORMAT)}`}
+            hintText={hintText}
           />
           {values.job_start_type === JOB_START_TYPE.PRECISE_DATE && (
             <Box sx={{ mt: fr.spacing("3v") }}>
@@ -114,7 +116,7 @@ const RadioInput = <T extends { label: string; value: any; hintText?: string }>(
   )
 }
 
-const DateInput = ({ name, label, hintText, disabled, min, max }: { name: string; label: string; hintText: string; disabled?: boolean; min: string; max: string }) => {
+const DateInput = ({ name, label, hintText, disabled, min, max }: { name: string; label: string; hintText: string; disabled?: boolean; min?: string; max: string }) => {
   const [input, meta] = useField(name)
   const { value, onChange, onBlur } = input
   const { touched, error } = meta

@@ -21,7 +21,16 @@ import { JobStartDateFields } from "./JobStartDateFields"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 
-export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRomeChange?: (rome: string, appellation: string) => void; section: "contract" | "offer" }) => {
+export const FormulaireEditionOffreFields = ({
+  onRomeChange,
+  section,
+  allowPastStartDate = false,
+}: {
+  onRomeChange?: (rome: string, appellation: string) => void
+  section: "contract" | "offer"
+  /** en édition, une date de début passée reste acceptée (cf. jobStartDateYup dans FormulaireEditionOffreStep1) */
+  allowPastStartDate?: boolean
+}) => {
   const { user } = useAuth()
 
   const { type } = useParams() as { establishment_id: string; email: string; userId: string; type: string; token: string }
@@ -161,7 +170,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
         />
       </Box>
       <Box sx={{ mt: fr.spacing("6v") }}>
-        <JobStartDateFields min={minStartDate.format(ISO_DATE_FORMAT)} max={maxStartDate.format(ISO_DATE_FORMAT)} />
+        <JobStartDateFields min={allowPastStartDate ? undefined : minStartDate.format(ISO_DATE_FORMAT)} max={maxStartDate.format(ISO_DATE_FORMAT)} />
       </Box>
       <FormControl sx={{ mt: fr.spacing("6v"), width: "100%", maxWidth: { xs: "400px", sm: "100%" } }}>
         <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
