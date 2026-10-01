@@ -104,6 +104,7 @@ export const UI_ROUTE_PATTERNS = [
   "/guide/apprentissage-et-handicap",
   "/guide/decouvrir-l-alternance",
   "/guide/prevention-des-risques-professionnels-pour-les-apprentis",
+  "/guide/rediger-son-offre-d-alternance",
   "/je-suis-cfa",
   "/je-suis-recruteur",
   "/mentions-legales",
