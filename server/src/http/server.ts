@@ -20,6 +20,7 @@ import { metiersRouteController } from "./controllers/_private/metiers.private.c
 import { seoRouteController } from "./controllers/_private/seo.private.controller"
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligible-trainings-for-appointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
+import adminFeedbackFormsRoute from "./controllers/admin/feedback-forms.controller"
 import formationsRoute from "./controllers/admin/formations.controller"
 import jobsPartnersAdminRoute from "./controllers/admin/jobs-partners.controller"
 import application from "./controllers/application.controller"
@@ -28,6 +29,7 @@ import { coreRoutes } from "./controllers/core.controller"
 import emailsRoute from "./controllers/emails.controller"
 import etablissementRoute from "./controllers/etablissement.controller"
 import etablissementsRecruteurRoute from "./controllers/etablissement-recruteur.controller"
+import feedbackFormsRoute from "./controllers/feedback-forms.controller"
 import formationsPrivateRoute from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
 import inserjeunesRoute from "./controllers/inserjeunes.controller"
@@ -148,6 +150,8 @@ export async function bind(app: Server) {
       etablissementsRecruteurRoute(typedSubApp)
       jobsRouteV2(typedSubApp)
       jobsPartnersAdminRoute(typedSubApp)
+      adminFeedbackFormsRoute(typedSubApp)
+      feedbackFormsRoute(typedSubApp)
 
       trainingLinks(typedSubApp)
       jobsApiV3Routes(typedSubApp)
