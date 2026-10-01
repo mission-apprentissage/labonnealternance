@@ -5,8 +5,9 @@ import type { PopperProps } from "@mui/material"
 import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
-import type { ReactNode } from "react"
+import type { KeyboardEvent, ReactNode } from "react"
 import { useCallback, useEffect, useId, useRef, useState } from "react"
+import { flushSync } from "react-dom"
 import { searchAddress } from "@/services/base-adresse"
 import { apiGet } from "@/utils/api.utils"
 import type { SearchMode } from "../_utils/search.params.utils"
@@ -306,6 +307,14 @@ export function SearchBar({
     onActiveFieldChange?.(field)
   }
 
+  // Écran de saisie : tout ce qui précède et suit le champ actif est masqué, Tab n'a nulle part
+  // où aller et le focus trap du panneau le renverrait en tête. On en sort de façon synchrone,
+  // avant la navigation native, pour que Tab atteigne l'élément voisin réaffiché.
+  const exitInputScreenOnTab = (event: KeyboardEvent) => {
+    if (event.key !== "Tab" || !activeField) return
+    flushSync(() => changeActiveField(null))
+  }
+
   const isColumn = layout === "column"
   const responsive = layout === "responsive"
   const rowSx = {
@@ -454,7 +463,7 @@ export function SearchBar({
       }}
     >
       {/* Champ métier */}
-      <Box sx={metierWrapperSx}>
+      <Box sx={metierWrapperSx} onKeyDown={exitInputScreenOnTab}>
         <FieldLabel id={metierLabelId} error={Boolean(qError)}>
           Que recherchez-vous ?
         </FieldLabel>
@@ -597,7 +606,7 @@ export function SearchBar({
       </Box>
 
       {/* Champ lieu */}
-      <Box sx={lieuWrapperSx}>
+      <Box sx={lieuWrapperSx} onKeyDown={exitInputScreenOnTab}>
         <Box sx={{ mb: fr.spacing("1v") }}>
           <FieldLabel id={lieuLabelId} error={Boolean(lieuError)}>
             Lieu
