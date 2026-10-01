@@ -1,9 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, CircularProgress, Skeleton, Typography } from "@mui/material"
+import { Box, Skeleton, Typography } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { LiveStatus } from "@/app/_components/LiveStatus"
+import { pluralize } from "@/utils/strutils"
 import { isAutoRadiusActive, RADIUS_MAX } from "../_hooks/use-auto-radius"
 import type { useSearchResults } from "../_hooks/use-search-results"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
@@ -85,6 +87,12 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
   if (!data) return null
 
   const allHits = data.pages.flatMap((p) => p.hits)
+  // Une seule page : rien à annoncer, le total passe par le compteur de SearchPageClient.
+  const loadMoreStatus = isFetchingNextPage
+    ? "Chargement de résultats supplémentaires"
+    : data.pages.length > 1
+      ? `${pluralize(allHits.length, "résultat affiché", "résultats affichés")}`
+      : ""
 
   if (allHits.length === 0) {
     // L'élargissement automatique du rayon (useAutoRadius) est encore en cours : l'état vide
@@ -129,17 +137,22 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
 
       {/* RGAA : chargement à la demande (CTA), pas de scroll infini — le chargement doit
           rester déclenchable au clavier et ne pas se produire sans action de l'utilisateur. */}
+      {/* Le bouton reste monté pendant le chargement pour garder le focus (RGAA 12.8). aria-disabled
+          plutôt que disabled : un bouton désactivé perd le focus. */}
       {hasNextPage && (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: fr.spacing("4v") }}>
-          {isFetchingNextPage ? (
-            <CircularProgress size={24} />
-          ) : (
-            <Button priority="secondary" onClick={() => fetchNextPage()}>
-              Voir plus de résultats
-            </Button>
-          )}
+          <Button
+            priority="secondary"
+            nativeButtonProps={{ "aria-disabled": isFetchingNextPage }}
+            onClick={() => {
+              if (!isFetchingNextPage) fetchNextPage()
+            }}
+          >
+            {isFetchingNextPage ? "Chargement…" : "Voir plus de résultats"}
+          </Button>
         </Box>
       )}
+      <LiveStatus message={loadMoreStatus} />
     </Box>
   )
 }
