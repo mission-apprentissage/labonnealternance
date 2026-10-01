@@ -299,8 +299,9 @@ export async function setupJobProcessor() {
             handler: controlSearchItemsDrift,
             tag: "main",
           },
-          "Analyse mensuelle des recherches utilisateurs (autocomplete + synonymes)": {
-            cron_string: "0 7 1 * *",
+          // Nom sans fréquence : job-processor en fait le monitorSlug Sentry (cf. noms « search_items »).
+          "Analyse des recherches utilisateurs (autocomplete + synonymes)": {
+            cron_string: "0 7 1,16 * *",
             handler: analyzeSearchQueries,
             tag: "slave",
             maxRuntimeInMinutes: 60,
