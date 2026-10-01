@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import ClotureRecrutementForm, { type IClotureRecrutementPayload } from "@/app/(espace-pro)/_components/ClotureRecrutementForm"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { cancelOffre, cancelPartnerJob, fillOffre, providedPartnerJob } from "@/utils/api"
@@ -104,9 +105,9 @@ export function OffreActionPage({
 
       {isClotureForm ? (
         result === "ok" || result === "already-closed" ? (
-          <Typography component="h2" sx={homeEditorialH2}>
+          <FocusedTitle component="h2" sx={homeEditorialH2}>
             {result === "already-closed" ? "Cette offre était déjà clôturée. Votre réponse a bien été enregistrée." : "Votre offre a été modifiée"}
-          </Typography>
+          </FocusedTitle>
         ) : (
           <ClotureRecrutementForm
             offreId={jobId}

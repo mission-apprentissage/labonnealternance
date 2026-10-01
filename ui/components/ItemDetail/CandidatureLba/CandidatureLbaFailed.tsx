@@ -74,7 +74,8 @@ const CandidatureLbaFailed = ({ error }: { error: string }) => {
   const { dataTestId, title, text } = errorData
 
   return (
-    <Box sx={{ px: fr.spacing("8v") }}>
+    // Remplace le formulaire de candidature : l'échec est annoncé à son affichage (RGAA 7.5).
+    <Box role="alert" sx={{ px: fr.spacing("8v") }}>
       <Typography component="p" variant="h1" sx={{ mb: 5, fontSize: "1.5rem", fontWeight: 700 }}>
         Erreur
       </Typography>

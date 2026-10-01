@@ -7,11 +7,13 @@ import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IUserRecruteur } from "shared/models/users-recruteur.model"
 import { getUserStatus } from "shared/models/users-recruteur.model"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { apiGet } from "@/utils/api.utils"
+import { pluralize } from "@/utils/strutils"
 import { AdminSearchInput } from "../_components/AdminSearchInput"
 import { MultiSelect } from "../_components/MultiSelect"
 import { getRecruteursColumns } from "../_utils/recruteursColumns"
@@ -122,6 +124,7 @@ function RecruteursContent({
   const confirmationActivationUtilisateur = useDisclosure()
 
   const columns = getRecruteursColumns({ setCurrentEntreprise, confirmationActivationUtilisateur, confirmationDesactivationUtilisateur })
+  const searchStatus = !isEnabled || isFetching ? "" : userRecruteurs.length === 0 ? "Aucun résultat" : pluralize(userRecruteurs.length, "recruteur trouvé", "recruteurs trouvés")
 
   return (
     <>
@@ -169,6 +172,7 @@ function RecruteursContent({
         />
       </Box>
 
+      <LiveStatus message={searchStatus} />
       {!isEnabled ? (
         <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>
           Lancez une recherche pour afficher les recruteurs.

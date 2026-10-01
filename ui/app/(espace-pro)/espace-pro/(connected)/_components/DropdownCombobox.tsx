@@ -7,6 +7,8 @@ import { useField } from "formik"
 import { useState } from "react"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { LiveStatus } from "@/app/_components/LiveStatus"
+import { pluralize } from "@/utils/strutils"
 
 const neutralItemProps = {
   padding: "0.4rem 0.8rem 0.4rem 0.8rem",
@@ -18,12 +20,19 @@ const neutralItemProps = {
 
 export default function DropdownCombobox(props) {
   const [inputItems, setInputJobItems] = useState([])
+  const [searching, setSearching] = useState(false)
 
   const { saveSelectedItem, handleSearch, value, placeholder, name, label } = props
   const [, , helpers] = useField(props.name)
 
   const itemToString = (item) => (item ? item.appellation : "")
-  const onInputValueChange = ({ inputValue }) => handleSearch(inputValue)?.then((data) => setInputJobItems(data))
+  const onInputValueChange = ({ inputValue }) => {
+    setSearching(true)
+    // handleSearch est débouncé : seule la dernière promesse aboutit.
+    handleSearch(inputValue)
+      ?.then((data) => setInputJobItems(data))
+      .finally(() => setSearching(false))
+  }
 
   const onSelectedItemChange = (changes: Partial<UseComboboxState<any>>) => {
     if ("selectedItem" in changes) {
@@ -45,7 +54,7 @@ export default function DropdownCombobox(props) {
     }
   }
 
-  const { isOpen, getMenuProps, getInputProps, highlightedIndex, getItemProps, reset, openMenu } = useCombobox({
+  const { isOpen, inputValue, getMenuProps, getInputProps, highlightedIndex, getItemProps, reset, openMenu } = useCombobox({
     itemToString,
     onInputValueChange: ({ inputValue }) => onInputValueChange({ inputValue }),
     onSelectedItemChange,
@@ -53,6 +62,13 @@ export default function DropdownCombobox(props) {
     items: inputItems,
     initialInputValue: value ?? [],
   })
+
+  const statusMessage =
+    !isOpen || !inputValue || searching
+      ? ""
+      : inputItems.length === 0
+        ? "Aucun métier trouvé, veuillez reformuler votre recherche"
+        : `${pluralize(inputItems.length, "métier proposé", "métiers proposés")}, utilisez les flèches pour naviguer`
 
   return (
     <div data-testid={props.dataTestId}>
@@ -126,6 +142,7 @@ export default function DropdownCombobox(props) {
           </Box>
         )}
       </Box>
+      <LiveStatus message={statusMessage} />
     </div>
   )
 }

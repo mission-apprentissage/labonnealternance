@@ -16,6 +16,7 @@ import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_ST
 import { detectUrlAndEmails, detectUrls } from "shared/utils/detect-url-and-emails"
 import { decodeSanitizedText } from "shared/utils/string-utils"
 import * as Yup from "yup"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -115,7 +116,6 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
         }}
       >
         <Typography
-          aria-live="polite"
           sx={{
             display: "flex",
             alignItems: "center",
@@ -134,6 +134,9 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
                 ? "L'amélioration a échoué, veuillez réessayer."
                 : `Notre IA peut améliorer votre texte jusqu'à ${AMELIORER_IA_MAX_USAGES} fois (orthographe, structure, formulation)`}
         </Typography>
+        {/* Le libellé ci-dessus est annoncé en deux zones : l'échec est une erreur (role="alert"). */}
+        <LiveStatus message={isProposalOpen ? "Proposition de l'IA - quelle version souhaitez-vous conserver ?" : loading ? "Amélioration en cours" : ""} />
+        <LiveStatus role="alert" message={!isProposalOpen && !loading && hasError ? "L'amélioration a échoué, veuillez réessayer." : ""} />
         <Button type="button" priority="tertiary" size="small" iconId="ri-magic-line" iconPosition="left" disabled={!establishmentId || !canImprove} onClick={handleClick}>
           {`Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`}
         </Button>

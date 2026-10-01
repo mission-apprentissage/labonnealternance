@@ -8,6 +8,7 @@ import type { FormEvent, ReactNode } from "react"
 import { useId, useRef, useState } from "react"
 import type { IEtablissementJson } from "shared"
 
+import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import { SuccessCircle, Warning } from "@/theme/components/icons"
 import { apiPost } from "@/utils/api.utils"
 
@@ -116,17 +117,18 @@ export default function OptOutUnsubscribe({ id, token, etablissement }: { id: st
       {hasBeenUnsubscribed && (
         <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), my: fr.spacing("6v") }}>
           <SuccessCircle width={33} fillHexaColor="#000091" />
-          <Typography component="h3" sx={{ fontWeight: 700 }}>
+          {/* Déjà désinscrit au chargement : pas de déplacement du focus. */}
+          <FocusedTitle component="h3" autoFocus={hasJustUnsubscribed} sx={{ fontWeight: 700 }}>
             Votre désinscription au service “RDV Apprentissage” a bien été prise en compte
-          </Typography>
+          </FocusedTitle>
         </Box>
       )}
       {isQuestionSent && (
         <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), my: fr.spacing("6v") }}>
           <SuccessCircle width={33} fillHexaColor="#000091" />
-          <Typography component="h3" sx={{ fontWeight: 700 }}>
+          <FocusedTitle component="h3" sx={{ fontWeight: 700 }}>
             L'équipe “RDV Apprentissage” reviendra vers vous très prochainement pour répondre à vos questions.
-          </Typography>
+          </FocusedTitle>
         </Box>
       )}
       {!hasBeenUnsubscribed && !isQuestionSent && (

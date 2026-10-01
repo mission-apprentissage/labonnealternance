@@ -5,6 +5,7 @@ import { Box, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { apiPost } from "@/utils/api.utils"
 
 type TriggerableJob = "processApplications" | "processRecruiterIntentions" | "processJobPartnersForApi" | "importCatalogueFormationJob" | "updateHandiEngagementForce"
@@ -52,8 +53,13 @@ function TriggerButton({ name, label, confirmMessage }: { name: TriggerableJob; 
       <Button priority="primary" size="small" disabled={cooldown || mutation.isPending} onClick={handleClick}>
         {label}
       </Button>
-      {mutation.isError && <Typography sx={{ fontSize: "12px", color: "#CE0500" }}>Erreur lors du déclenchement du job</Typography>}
+      {mutation.isError && (
+        <Typography role="alert" sx={{ fontSize: "12px", color: "#CE0500" }}>
+          Erreur lors du déclenchement du job
+        </Typography>
+      )}
       {cooldown && <Typography sx={{ fontSize: "12px", color: "#18753C" }}>Ajouté en file d'attente</Typography>}
+      <LiveStatus message={cooldown ? `${label} : ajouté en file d'attente` : ""} />
     </Box>
   )
 }

@@ -9,9 +9,11 @@ import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { getFlatTableCellBordersSx, getFlatTableResetSx } from "@/app/(espace-pro)/_components/table-styles"
 import ExportButtonNew from "@/components/espace_pro/ExportButton/ExportButtonNew"
 import { PaginationReactQuery } from "@/components/espace_pro/PaginationReactQuery"
+import { pluralize } from "@/utils/strutils"
 
 interface GlobalFilterProps {
   globalFilter: string
@@ -108,6 +110,7 @@ function TableWithPagination({
     headerGroups,
     pageCount,
     page,
+    rows,
     gotoPage,
     prepareRow,
     setGlobalFilter,
@@ -121,6 +124,8 @@ function TableWithPagination({
   }
 
   const hasMultiplePages = Boolean(!Number.isNaN(pageCount) && pageCount > 1)
+  // rows : lignes filtrées, avant pagination.
+  const filterStatus = !globalFilter ? "" : rows.length === 0 ? "Aucun résultat" : pluralize(rows.length, "résultat")
 
   return (
     <Box className="search-page">
@@ -132,6 +137,7 @@ function TableWithPagination({
         >
           <Box sx={{ width: { xs: "100%", sm: "75%", lg: "50%" } }}>
             <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} searchPlaceholder={searchPlaceholder} />
+            <LiveStatus message={filterStatus} />
           </Box>
           {description && (
             <Box

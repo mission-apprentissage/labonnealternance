@@ -11,6 +11,7 @@ import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.rout
 import * as Yup from "yup"
 
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
@@ -271,6 +272,11 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                 </Select>
               </Box>
 
+              {/* L'erreur NON_RECONNU s'affiche sous le champ, qui n'a pas le focus après l'appel API. */}
+              <LiveStatus
+                role="alert"
+                message={errorKey === "NON_RECONNU" ? "Aucun établissement ne correspond à cet e-mail. Vérifiez l’adresse saisie ou contactez notre support." : ""}
+              />
               {errorKey === "unexpected_error" && (
                 <Box role="alert" sx={{ display: "flex", alignItems: "center", color: fr.colors.decisions.text.actionHigh.redMarianne.default, mt: fr.spacing("2v") }}>
                   <Warning sx={{ m: 0 }} />

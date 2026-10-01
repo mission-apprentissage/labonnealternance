@@ -3,7 +3,9 @@ import { useCombobox } from "downshift"
 import { useMemo, useState } from "react"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { debounce } from "@/utils/debounce"
+import { pluralize } from "@/utils/strutils"
 
 export default function AutocompleteAsync<T>({
   onSelectItem,
@@ -24,6 +26,8 @@ export default function AutocompleteAsync<T>({
       <CircularProgress size={30} sx={{ fontWeight: "bold", color: "#CFCFCF" }} />
     </Box>
   ),
+  noResultText = "Aucun résultat",
+  errorText = "",
   allowHealFromError,
 }: {
   name: string
@@ -40,6 +44,10 @@ export default function AutocompleteAsync<T>({
   renderError: (error: any) => React.ReactNode
   renderNoResult?: React.ReactNode
   renderLoading?: React.ReactNode
+  /** Équivalent textuel de renderNoResult, annoncé aux lecteurs d'écran. */
+  noResultText?: string
+  /** Équivalent textuel de renderError, annoncé en role="alert". */
+  errorText?: string
   allowHealFromError: boolean
 }) {
   const [error, setError] = useState(null)
@@ -49,7 +57,7 @@ export default function AutocompleteAsync<T>({
     return debounce(handleSearch, debounceDelayInMs)
   }, [])
 
-  const { isOpen, getMenuProps, getInputProps, getItemProps, highlightedIndex, openMenu } = useCombobox<T>({
+  const { isOpen, inputValue, getMenuProps, getInputProps, getItemProps, highlightedIndex, openMenu } = useCombobox<T>({
     itemToString,
     onInputValueChange: ({ inputValue }) => {
       if (!inputValue || (error && !allowHealFromError)) {
@@ -88,6 +96,17 @@ export default function AutocompleteAsync<T>({
   const shouldRenderItems = Boolean(!error && inputItems.length)
 
   const shouldRenderDropdown = shouldRenderError || shouldRenderEmptyResult || shouldRenderLoading || shouldRenderItems
+
+  // Annonce hors listbox, sans getA11yStatusMessage de downshift : ses dépendances n'incluent pas
+  // les items, le message partirait avant l'arrivée des résultats asynchrones.
+  const statusMessage =
+    !isOpen || loading
+      ? ""
+      : shouldRenderItems
+        ? `${pluralize(inputItems.length, "résultat")}, utilisez les flèches pour naviguer`
+        : shouldRenderEmptyResult && inputValue
+          ? noResultText
+          : ""
 
   return (
     <Box data-testid={dataTestId} sx={{ width: "100%", position: "relative" }}>
@@ -142,6 +161,8 @@ export default function AutocompleteAsync<T>({
           </>
         )}
       </Box>
+      <LiveStatus message={statusMessage} />
+      <LiveStatus role="alert" message={isOpen && shouldRenderError ? errorText : ""} />
     </Box>
   )
 }

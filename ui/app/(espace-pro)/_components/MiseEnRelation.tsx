@@ -11,6 +11,7 @@ import type { IJobWithRomeDetail } from "shared"
 import { ENTREPRISE } from "shared/constants/recruteur"
 import type { IEtablissementCatalogueProcheWithDistance, IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { createEtablissementDelegation, createEtablissementDelegationByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -59,9 +60,9 @@ function DelegationsEnregistrees({
         <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "center", md: "flex-start" } }}>
           <Image fetchPriority="high" src="/images/espace_pro/miseEnRelationEnvoyee.svg" alt="" unoptimized width={268} height={150} style={{ width: "100%", maxWidth: "268px" }} />
           <Box sx={{ mt: { xs: fr.spacing("4v"), md: 0 }, ml: { xs: 0, md: fr.spacing("5v") } }}>
-            <Typography component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold", mb: fr.spacing("4v") }}>
+            <FocusedTitle component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold", mb: fr.spacing("4v") }}>
               Votre offre a été partagée aux CFA sélectionnés
-            </Typography>
+            </FocusedTitle>
             <Box>
               <Typography>Les écoles que vous avez sélectionnées ont reçu par email votre offre et vos coordonnées suivantes :</Typography>
               <Typography sx={{ mt: fr.spacing("2v") }}>

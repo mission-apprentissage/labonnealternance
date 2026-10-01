@@ -14,6 +14,7 @@ import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 import { MultiSelectField } from "@/app/_components/FormComponents/MultiSelectField"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -370,7 +371,7 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
           {suggestedEmails.length > 0 && (
             <Box sx={{ mt: 2, fontSize: "12px", color: "grey.600" }}>
               <Typography component="span" sx={{ mr: fr.spacing("4v") }}>
-                Voulez vous dire ?
+                Voulez-vous dire ?
               </Typography>
               {suggestedEmails.map((suggestedEmail) => (
                 <Button key={suggestedEmail.corrected} type="button" onClick={() => clickSuggestion(suggestedEmail.corrected)} priority="tertiary no outline" size="small">
@@ -379,6 +380,7 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
               ))}
             </Box>
           )}
+          <LiveStatus message={suggestedEmails.length > 0 ? `Voulez-vous dire ${suggestedEmails.map(({ corrected }) => corrected).join(" ou ")} ?` : ""} />
         </>
       }
     />
