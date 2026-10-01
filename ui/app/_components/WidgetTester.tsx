@@ -67,6 +67,7 @@ export function WidgetTester() {
       </Typography>
       <Stack spacing={2}>
         <SearchBar
+          mode={mode}
           layout="column"
           initialQ={q}
           initialLieuLabel={lieu?.label}

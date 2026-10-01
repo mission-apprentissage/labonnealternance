@@ -147,7 +147,7 @@ export const createJob = async ({
   })
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
-  // Indexation immédiate dans search_items (no-op si l'offre est EN_ATTENTE).
+  // Indexation immédiate dans l'index de recherche (no-op si l'offre est EN_ATTENTE).
   syncJobPartnersToSearchItemsInBackground([newJobPartner._id])
 
   const userJobCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret })
@@ -1313,7 +1313,6 @@ async function jobCreateToJobsPartner({
     job_last_prolongation_date: null,
     job_prolongation_count: 0,
     offer_rome_appellation: job.rome_appellation_label,
-    applicationCount: 0,
     duplicates: [],
     apply_recipient_id: newId.toString(),
     to_applicant_questions: job.to_applicant_questions,

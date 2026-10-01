@@ -6,10 +6,7 @@ import * as Yup from "yup"
 import { PHONE_FORMAT_ERROR, SIRET_KEY_ERROR } from "@/utils/validation-messages"
 
 export const phoneValidation = () => {
-  return Yup.string()
-    .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-    .min(10, "le téléphone est sur 10 chiffres")
-    .max(10, "le téléphone est sur 10 chiffres")
+  return Yup.string().matches(/^[0-9]{10}$/, PHONE_FORMAT_ERROR)
 }
 
 // Accepte les écritures usuelles d'un numéro français (espaces, points, +33…) : toSubmittedPhone le ramène à 10 chiffres

@@ -24,6 +24,7 @@ import { AUTHTYPE } from "@/common/contants"
 import { frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { getUser, updateUserWithAccountFields } from "@/utils/api"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import ModificationCompteEmail from "./ModificationCompteEmail"
 
@@ -110,7 +111,7 @@ export default function CompteRenderer() {
           last_name: Yup.string().required("champ obligatoire"),
           first_name: Yup.string().required("champ obligatoire"),
           phone: frenchPhoneValidation().required("champ obligatoire"),
-          email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+          email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
           // Requis uniquement quand le champ est effectivement affiché et modifiable : masqué (source France
           // Travail) ou verrouillé (déjà "oui" via La bonne alternance), sa valeur est déjà figée par ailleurs.
           handiEngagement:

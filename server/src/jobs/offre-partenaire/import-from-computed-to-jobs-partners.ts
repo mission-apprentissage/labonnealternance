@@ -17,7 +17,7 @@ const REACTIVATION_ALLOWED_GRANTED_BY = "cancel-removed-jobs-partners"
 
 /**
  * `onImported` reçoit en fin d'import les _id jobs_partners écrits, pour les appelants qui
- * enchaînent sur ces offres (indexation search_items du cron offres API). La liste n'est
+ * enchaînent sur ces offres (indexation du cron offres API). La liste n'est
  * construite que si `onImported` est fourni : le flux nightly importe des centaines de milliers
  * de documents.
  *
@@ -117,7 +117,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
           {
             // updated_at horodaté à l'écriture, pas au début de l'import : le cron delta
-            // search_items lit `updated_at >= now − 10 min` toutes les 5 min et l'import dure
+            // de l'index de recherche lit `updated_at >= now − 10 min` toutes les 5 min et l'import dure
             // ~26 min, un document daté du début serait déjà hors fenêtre (965 offres à position
             // périmée en prod le 2026-09-11). `importDate` date le lot (created_at, historique).
             $set: { ...partnerJobToUpsert, updated_at: new Date() },

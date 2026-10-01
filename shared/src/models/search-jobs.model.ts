@@ -1,7 +1,7 @@
 import type { z } from "zod"
 
 import type { IModelDescriptor } from "./common.js"
-import { SEARCH_ITEM_INDEX_DEFINITION, SEARCH_ITEM_INDEXES, ZSearchItem } from "./search-items.model.js"
+import { SEARCH_ITEM_INDEX_DEFINITION, SEARCH_ITEM_INDEXES, ZSearchItem } from "./search-corpus.model.js"
 
 /**
  * Corpus des modes « emplois » (`search_jobs`) et « emplois avec formation incluse »

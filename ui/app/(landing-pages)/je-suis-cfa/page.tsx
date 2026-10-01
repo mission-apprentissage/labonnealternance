@@ -96,7 +96,7 @@ const JeSuisCFAPage = () => {
             <Typography variant="h1" component="h1" gutterBottom color={fr.colors.decisions.text.title.blueFrance.default}>
               Vous êtes un organisme de formation
             </Typography>
-            <Typography variant="h2" component="h2" gutterBottom color={fr.colors.decisions.text.default.grey.default}>
+            <Typography variant="h2" component="p" gutterBottom color={fr.colors.decisions.text.default.grey.default}>
               Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emploi
             </Typography>
             <Typography variant="body1" gutterBottom>

@@ -246,7 +246,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
         const dataToWrite = responses.flatMap((response) => {
           const { _id, ...newFields } = response
           // Même règle que l'import computed → jobs_partners : horodatage à l'écriture, sinon un
-          // groupe traité tard dans un run long échappe à la fenêtre du cron delta search_items.
+          // groupe traité tard dans un run long échappe à la fenêtre du cron delta de l'index de recherche.
           const updates: AnyBulkWriteOperation<IJobsPartnersOfferPrivate>[] = [{ updateOne: { filter: { _id }, update: { $set: { ...newFields, updated_at: new Date() } } } }]
           return updates
         })
