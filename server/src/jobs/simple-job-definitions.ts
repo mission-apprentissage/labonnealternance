@@ -76,7 +76,6 @@ import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offre-parte
 import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offre-partenaire/recruteur-lba/process-recruteurs-lba"
 import { processRhAlternance } from "./offre-partenaire/rh-alternance/process-rh-alternance"
 import { analyzeClosedCompanies } from "./one-time-job/analyze-closed-companies"
-import { cleanClosedCompanies } from "./one-time-job/clean-closed-companies"
 import { renvoiMailCreationCompte } from "./one-time-job/renvoi-mail-creation-compte"
 import { exportFileForAlgo } from "./partenaire-export/export-blacklist-algo"
 import { sendContactsToBrevo } from "./partenaire-export/export-contacts-to-brevo"
@@ -551,10 +550,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: updateHandiEngagement,
     description: "Télécharge le référentiel handi-engagement depuis S3 (siretlist/lba_handi_engage_flag.ndjson) et met à jour le référentiel d'engagement handicap",
-  },
-  {
-    fct: cleanClosedCompanies,
-    description: "Traite les recruteurs dont l'entreprise a fermé en les archivant et en désactivant les comptes associés",
   },
   {
     fct: processApec,

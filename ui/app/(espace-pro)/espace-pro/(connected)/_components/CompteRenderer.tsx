@@ -21,8 +21,10 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { useToast } from "@/app/hooks/useToast"
 import { AUTHTYPE } from "@/common/contants"
+import { phoneValidation } from "@/common/validation/field-validations"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { getUser, updateUserWithAccountFields } from "@/utils/api"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import ModificationCompteEmail from "./ModificationCompteEmail"
 
@@ -108,12 +110,8 @@ export default function CompteRenderer() {
         validationSchema={Yup.object().shape({
           last_name: Yup.string().required("champ obligatoire"),
           first_name: Yup.string().required("champ obligatoire"),
-          phone: Yup.string()
-            .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-            .min(10, "le téléphone est sur 10 chiffres")
-            .max(10, "le téléphone est sur 10 chiffres")
-            .required("champ obligatoire"),
-          email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+          phone: phoneValidation().required("champ obligatoire"),
+          email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
           // Requis uniquement quand le champ est effectivement affiché et modifiable : masqué (source France
           // Travail) ou verrouillé (déjà "oui" via La bonne alternance), sa valeur est déjà figée par ailleurs.
           handiEngagement:

@@ -1313,7 +1313,6 @@ async function jobCreateToJobsPartner({
     job_last_prolongation_date: null,
     job_prolongation_count: 0,
     offer_rome_appellation: job.rome_appellation_label,
-    applicationCount: 0,
     duplicates: [],
     apply_recipient_id: newId.toString(),
     to_applicant_questions: job.to_applicant_questions,
