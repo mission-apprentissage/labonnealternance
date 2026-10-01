@@ -138,7 +138,7 @@ export const CfaSelectionList = ({
                   onClick={() => onDetailsClick?.(etablissement.siret)}
                 >
                   En savoir plus
-                  <span className="fr-sr-only">{" - Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"}</span>
+                  <span className="fr-sr-only">{` - ${etablissement.entreprise_raison_sociale} sur le site du catalogue des formations en apprentissage - nouvelle fenêtre`}</span>
                 </Link>
               </Box>
               <Box sx={{ display: "flex", alignItems: "center" }}>
