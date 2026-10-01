@@ -23,10 +23,13 @@ import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/context
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
+import { phoneValidation } from "@/common/validation/field-validations"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
+import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
@@ -201,8 +204,8 @@ export default function DetailEntreprise({
         <Box sx={{ display: user.type !== "CFA" ? "flex" : "none", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
           {showAccountLifecycle && (
             <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
-              <Typography component="h2" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
-                Statut:{" "}
+              <Typography component="p" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
+                Statut :
               </Typography>
               {getUserBadge(lastUserState)}
             </Box>
@@ -251,12 +254,8 @@ export default function DetailEntreprise({
           validationSchema={Yup.object().shape({
             last_name: Yup.string().required("champ obligatoire"),
             first_name: Yup.string().required("champ obligatoire"),
-            phone: Yup.string()
-              .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-              .min(10, "le téléphone est sur 10 chiffres")
-              .max(10, "le téléphone est sur 10 chiffres")
-              .required("champ obligatoire"),
-            email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+            phone: phoneValidation().required("champ obligatoire"),
+            email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
             opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
             ...isDeclarationExactValidation,
@@ -297,7 +296,7 @@ export default function DetailEntreprise({
                             mt: fr.spacing("8v"),
                           }}
                         >
-                          <ContactInfoFields />
+                          <ContactInfoFields thirdParty />
                           {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
                             <OpcoSelect
                               value={values.opco}
@@ -324,7 +323,10 @@ export default function DetailEntreprise({
                           )}
                           {userMutation.error && (
                             <Alert sx={{ marginTop: fr.spacing("4v") }} severity="error">
-                              {userMutation.error + ""}
+                              {/* Affiche le message d'erreur métier quand il est disponible, sinon un message générique en français (RGAA 8.7). */}
+                              {userMutation.error instanceof ApiError && userMutation.error.context.statusCode === 400
+                                ? userMutation.error.message
+                                : "La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement."}
                             </Alert>
                           )}
                         </Box>

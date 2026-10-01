@@ -208,7 +208,6 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
-    applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
     lba_url: z.string().nullable().default(null).optional(),
   })
 
@@ -346,7 +345,7 @@ export default {
     [{ workplace_name: 1 }, {}],
     [{ offer_status: 1 }, {}],
     [{ offer_expiration: 1 }, {}],
-    // Cron delta de synchronisation search_items (syncSearchItemsDelta).
+    // Cron delta de synchronisation de l'index de recherche (syncSearchItemsDelta).
     [{ updated_at: 1 }, {}],
     // Cron delta de notification IndexNow (pingIndexNow) : branche « offres nouvellement créées » du $or.
     [{ created_at: 1 }, {}],
