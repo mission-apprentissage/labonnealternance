@@ -518,7 +518,7 @@ export const FormulaireEditionOffreStep1 = ({
                       border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
                     }}
                   >
-                    <Typography component="h2" sx={{ fontWeight: 700 }}>
+                    <Typography component="h3" sx={{ fontWeight: 700 }}>
                       Le contrat
                     </Typography>
                     <Box sx={{ mt: fr.spacing("4v") }}>
@@ -562,14 +562,14 @@ export const FormulaireEditionOffreStep1 = ({
                       </Typography>
                     </Box>
                   </Box>
-                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
+                  <Typography variant="h4" component="h3" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
                     La présentation de l'entreprise
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
                     <EmployerDescriptionField establishmentId={establishment_id} token={token} />
                   </Box>
 
-                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
+                  <Typography variant="h4" component="h3" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
                     La description du poste
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
