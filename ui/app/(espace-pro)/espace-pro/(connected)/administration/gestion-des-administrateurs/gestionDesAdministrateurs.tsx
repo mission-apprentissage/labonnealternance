@@ -55,7 +55,10 @@ export default function GestionDesAdministrateurs() {
         </Box>
       </ModalReadOnly>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: fr.spacing("4v"), mb: fr.spacing("4v") }}>
+        <Typography variant="h2" component="h1" sx={{ mb: 0 }}>
+          {PAGES.static.backAdminGestionDesAdministrateurs.title}
+        </Typography>
         <Button onClick={newUser.onOpen}>Créer un utilisateur</Button>
       </Box>
 

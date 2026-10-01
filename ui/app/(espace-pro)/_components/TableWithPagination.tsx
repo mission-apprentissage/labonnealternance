@@ -266,7 +266,7 @@ function TableWithPagination({
           >
             <SelectField
               id="page-selector"
-              label=""
+              label={<span className="fr-sr-only">Aller à la page</span>}
               options={[...new Array(pageCount)].map((_, index) => (index + 1).toString()).map((value) => ({ value, label: value }))}
               nativeSelectProps={{
                 value: (finalPageIndex + 1).toString(),
