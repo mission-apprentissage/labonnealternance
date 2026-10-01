@@ -44,7 +44,7 @@ const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret:
       </Typography>
       {!raisonSociale && (
         <Box sx={{ display: "flex", alignItems: "flex-start", mb: fr.spacing("8v") }}>
-          <Typography color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
+          <Typography component="span" aria-hidden="true" color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
           <Box sx={{ ml: fr.spacing("2v") }}>
             <Typography mb={4}>Suite à un problème technique, nous ne sommes pas en mesure d’afficher votre raison sociale et l'adresse de votre établissement.</Typography>
             <Typography>Nous vous invitons à poursuivre votre parcours. Les informations de votre entreprise seront remplies automatiquement ultérieurement.</Typography>
