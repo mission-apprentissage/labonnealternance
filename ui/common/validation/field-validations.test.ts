@@ -21,5 +21,6 @@ describe("toSubmittedPhone", () => {
 
   it("envoie une chaîne vide pour un téléphone absent", () => {
     expect(toSubmittedPhone(undefined)).toBe("")
+    expect(toSubmittedPhone("")).toBe("")
   })
 })
