@@ -111,6 +111,48 @@ describe("analyzeSearchQueries", () => {
     expect(slackMessage()).toContain("Suggestions insérées (1)")
   })
 
+  it("ne réactive pas une clé déjà décidée lors d'un run précédent", async () => {
+    const previous = {
+      _id: new ObjectId(),
+      term: "Diagnostic immobilier",
+      normalized: normalizeQuery("Diagnostic immobilier"),
+      origin: "user_queries" as const,
+      status: "disabled" as const,
+      rejection_reason: null,
+      category: "metier" as const,
+      counters: { total_30d: 25, days_seen_30d: 6, zero_hits_30d: 0, free_text_30d: 25, median_nb_hits: 50 },
+      confidence: 0.95,
+      run_id: "run-precedent",
+      created_at: new Date("2026-09-01"),
+      last_seen_at: new Date("2026-09-01"),
+    }
+    await getDbCollection("search_suggestions").insertOne(previous)
+    await getDbCollection("search_queries").insertMany(queryLogs("diag immobilier", { total: 40, nbHits: 50 }))
+    mockMistral({ "diag immobilier": analysis({ canonical: "Diagnostic immobilier" }) })
+
+    await analyzeSearchQueries()
+
+    expect(await getDbCollection("search_suggestions").findOne({ _id: previous._id })).toMatchObject({ status: "disabled", run_id: "run-precedent" })
+    expect(await getDbCollection("search_suggestions").countDocuments({ status: "active" })).toBe(0)
+    expect(slackMessage()).toContain("Suggestions insérées (0)")
+    expect(slackMessage()).toContain("duplicate_in_run: 1")
+  })
+
+  it("n'insère pas de groupe de synonymes quand la clé du candidat est déjà prise", async () => {
+    // « compta » (route synonyme) a la même clé que la forme canonique « Compta » d'un candidat traité avant.
+    await getDbCollection("search_queries").insertMany([...queryLogs("comptabilite generale", { total: 40, nbHits: 50 }), ...queryLogs("compta", { total: 30, nbHits: 0 })])
+    mockMistral({
+      "comptabilite generale": analysis({ canonical: "Compta" }),
+      compta: analysis({ canonical: "Comptabilité", synonym_of: "comptabilité" }),
+    })
+
+    await analyzeSearchQueries()
+
+    expect(await getDbCollection("search_synonyms").countDocuments({})).toBe(0)
+    expect(slackMessage()).toContain("Synonymes insérés (0)")
+    expect(slackMessage()).toContain("duplicate_in_run: 1")
+  })
+
   it("rapporte le motif de la route synonyme pour un candidat éligible à cette seule route", async () => {
     await getDbCollection("search_queries").insertMany(queryLogs("compta", { total: 40, nbHits: 0 }))
     mockMistral({ compta: analysis({ canonical: "Comptabilité", synonym_of: "comptabilité", confidence: 0.5 }) })
