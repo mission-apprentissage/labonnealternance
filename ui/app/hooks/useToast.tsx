@@ -1,4 +1,3 @@
-import { Box } from "@mui/material"
 import type { SharedProps } from "notistack"
 import { enqueueSnackbar } from "notistack"
 import { useCallback } from "react"
@@ -10,15 +9,13 @@ interface ToastOptions extends Pick<SharedProps, "variant" | "autoHideDuration">
 
 export function useToast() {
   return useCallback((opts: ToastOptions) => {
+    // Contenu phrasé : il est rendu dans le <p> de description de l'Alert DSFR (cf. ToastContent).
     const message = (
-      <div>
-        {opts.title && (
-          <Box component="span" sx={{ fontWeight: 700 }}>
-            {opts.title}
-          </Box>
-        )}
-        {opts.description && <div>{opts.description}</div>}
-      </div>
+      <>
+        {opts.title && <strong>{opts.title}</strong>}
+        {opts.title && opts.description && <br />}
+        {opts.description}
+      </>
     )
 
     enqueueSnackbar(message, {
