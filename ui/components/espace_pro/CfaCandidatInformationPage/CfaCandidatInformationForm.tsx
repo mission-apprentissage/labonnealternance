@@ -31,9 +31,7 @@ export const CfaCandidatInformationForm = (props) => {
             onChange: formik.handleChange,
             value: formik.values.message,
             rows: 6,
-            placeholder: `Bonjour,
-            Merci pour l'intérêt que vous portez à notre formation. Voici les réponses aux points qui vous intéressent :
-            Pour toute demande complémentaire ou pour vous inscrire, vous pouvez contacter mon collègue à l'adresse suivante`,
+            placeholder: "Saisissez votre texte ici",
           }}
         />
         <Box>
