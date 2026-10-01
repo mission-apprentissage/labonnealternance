@@ -38,6 +38,12 @@ const TRACKED_FIELD: Record<FreeTextFieldName, "offer" | "company"> = {
   job_employer_description: "company",
 }
 
+// complète le nom accessible des boutons « Améliorer », identiques à l'écran (RGAA 11.9)
+const FIELD_ACCESSIBLE_LABEL: Record<FreeTextFieldName, string> = {
+  job_description: "la description du poste",
+  job_employer_description: "la présentation de l'entreprise",
+}
+
 /**
  * Encart d'amélioration IA affiché au-dessus du champ libre, en 4 états : au repos (aide + CTA),
  * en cours d'appel, proposition à arbitrer, et quota épuisé (CTA désactivé).
@@ -92,6 +98,7 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   const paddingX = fr.spacing("3v")
   const paddingY = fr.spacing("2v")
   const separator = `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`
+  const buttonLabel = `Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`
 
   return (
     <Box
@@ -134,8 +141,17 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
                 ? "L'amélioration a échoué, veuillez réessayer."
                 : `Notre IA peut améliorer votre texte jusqu'à ${AMELIORER_IA_MAX_USAGES} fois (orthographe, structure, formulation)`}
         </Typography>
-        <Button type="button" priority="tertiary" size="small" iconId="ri-magic-line" iconPosition="left" disabled={!establishmentId || !canImprove} onClick={handleClick}>
-          {`Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`}
+        <Button
+          type="button"
+          priority="tertiary"
+          size="small"
+          iconId="ri-magic-line"
+          iconPosition="left"
+          disabled={!establishmentId || !canImprove}
+          onClick={handleClick}
+          aria-label={`${buttonLabel} ${FIELD_ACCESSIBLE_LABEL[fieldName]}`}
+        >
+          {buttonLabel}
         </Button>
       </Box>
       {isProposalOpen && (
@@ -247,6 +263,8 @@ const JobDescriptionField = ({ establishmentId, token }: { establishmentId?: str
           rows: 8,
           style: { resize: "none" },
           onChange: (e) => setFieldValue("job_description", e.target.value),
+          // aria-invalid : cf. HandiEngagementSelect
+          "aria-invalid": Boolean(errors.job_description),
         }}
       />
     </Box>
@@ -279,6 +297,7 @@ const EmployerDescriptionField = ({ establishmentId, token }: { establishmentId?
           placeholder: "Saisissez votre texte ici",
           style: { resize: "none" },
           onChange: (e) => setFieldValue("job_employer_description", e.target.value),
+          "aria-invalid": Boolean(errors.job_employer_description),
         }}
       />
     </Box>
@@ -315,13 +334,11 @@ export const FormulaireEditionOffreStep1 = ({
   })
 
   const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? formValues?.competences_rome ?? null)
-  const [competencesDirty, setCompetencesDirty] = useState(Boolean(formValues))
   const [descriptionMode, setDescriptionMode] = useState<DescriptionMode>(offre?.job_description || formValues?.job_description ? "custom" : "structured")
 
   const onRomeChange = (rome: string, appellation: string) => {
     setRomeAndAppellation({ rome, appellation })
     setSelectedCompetences(null)
-    setCompetencesDirty(true)
   }
 
   const onSelectedCompetencesChange = (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => {
@@ -349,7 +366,6 @@ export const FormulaireEditionOffreStep1 = ({
       }),
     }
     setSelectedCompetences(savedCompetences)
-    setCompetencesDirty(true)
   }
 
   if (!establishment_id) return <></>
@@ -591,7 +607,7 @@ export const FormulaireEditionOffreStep1 = ({
                 </Box>
               </Box>
               <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v") }}>
-                <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
+                <FormulaireEditionOffreButtons />
               </Box>
             </div>
           )

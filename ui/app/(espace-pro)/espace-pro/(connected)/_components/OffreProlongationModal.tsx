@@ -1,18 +1,16 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
-import Input from "@codegouvfr/react-dsfr/Input"
-import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Typography } from "@mui/material"
 import Box from "@mui/material/Box"
-import FormControl from "@mui/material/FormControl"
-import { Formik, useField } from "formik"
+import { Formik } from "formik"
 import { JOB_START_TYPE } from "shared"
 import dayjs from "shared/helpers/dayjs"
 import * as Yup from "yup"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
+import { submitOrFocusFirstInvalidField } from "./FormulaireEditionOffreButtons"
+import { JobStartDateFields } from "./JobStartDateFields"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
@@ -50,7 +48,7 @@ export const OffreProlongationModal = ({
             onOffreProlongationSubmit(values)
           }}
         >
-          {({ values, setFieldValue, dirty, isValid, submitForm }) => {
+          {(formik) => {
             return (
               <>
                 <Box sx={{ px: fr.spacing("8v") }}>
@@ -65,56 +63,10 @@ export const OffreProlongationModal = ({
                   >
                     Pour que votre offre reste valide, certaines informations nécessitent une mise à jour :
                   </Typography>
+                  <Typography sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.default.grey.default }}>Tous les champs sont obligatoires.</Typography>
                   <Box sx={{ mt: fr.spacing("6v") }}>
-                    <RadioInput
-                      label="Date de début de contrat souhaitée"
-                      name="job_start_type"
-                      options={[
-                        {
-                          value: JOB_START_TYPE.DES_QUE_POSSIBLE,
-                          label: "Démarrer dès que possible",
-                          hintText: "Votre offre indiquera la mention “recrutement urgent”",
-                        },
-                        {
-                          value: JOB_START_TYPE.PRECISE_DATE,
-                          label: "Indiquer une date",
-                        },
-                      ]}
-                      onChange={async ({ value }) => {
-                        if (value === JOB_START_TYPE.DES_QUE_POSSIBLE) {
-                          await setFieldValue("job_start_date", dayjs().format(ISO_DATE_FORMAT))
-                          await setFieldValue("job_start_date_flexible", false, true)
-                        }
-                      }}
-                    />
+                    <JobStartDateFields min={minStartDate.format(ISO_DATE_FORMAT)} max={maxStartDate.format(ISO_DATE_FORMAT)} />
                   </Box>
-                  {Boolean(values.job_start_type) && (
-                    <Box sx={{ ml: "32px" }}>
-                      <DateInput
-                        disabled={values.job_start_type === JOB_START_TYPE.DES_QUE_POSSIBLE}
-                        min={minStartDate.format(ISO_DATE_FORMAT)}
-                        max={maxStartDate.format(ISO_DATE_FORMAT)}
-                        name="job_start_date"
-                        label="Date"
-                      />
-                      {values.job_start_type === JOB_START_TYPE.PRECISE_DATE && (
-                        <Box sx={{ mt: fr.spacing("3v") }}>
-                          <Checkbox
-                            options={[
-                              {
-                                label: "Date flexible",
-                                nativeInputProps: {
-                                  name: "job_start_date_flexible",
-                                  checked: values.job_start_date_flexible,
-                                  onChange: (e) => setFieldValue("job_start_date_flexible", e.target.checked),
-                                },
-                              },
-                            ]}
-                          />
-                        </Box>
-                      )}
-                    </Box>
-                  )}
                 </Box>
                 <Box
                   sx={(theme) => ({
@@ -139,7 +91,7 @@ export const OffreProlongationModal = ({
                   <Button priority="secondary" onClick={modalControls.onClose}>
                     Annuler
                   </Button>
-                  <Button priority="primary" type="submit" disabled={!dirty || !isValid} onClick={submitForm}>
+                  <Button priority="primary" disabled={formik.isSubmitting} onClick={() => submitOrFocusFirstInvalidField(formik)}>
                     Prolonger mon offre
                   </Button>
                 </Box>
@@ -149,72 +101,5 @@ export const OffreProlongationModal = ({
         </Formik>
       </Box>
     </ModalReadOnly>
-  )
-}
-
-const RadioInput = <T extends { label: string; value: any; hintText?: string }>({
-  name,
-  options,
-  label,
-  onChange,
-}: {
-  name: string
-  options: T[]
-  label: string
-  onChange?: (item: T) => void
-}) => {
-  const [input, meta, helper] = useField(name)
-  const { value } = input
-  const { touched, error } = meta
-  const displayedErrorOpt = touched && error
-
-  return (
-    <RadioButtons
-      style={{
-        marginBottom: 0,
-      }}
-      name={name}
-      legend={label}
-      options={options.map((option) => ({
-        label: option.label,
-        hintText: option.hintText,
-        nativeInputProps: {
-          checked: value === option.value,
-          onChange: () => {
-            helper.setValue(option.value, true)
-            onChange?.(option)
-          },
-        },
-      }))}
-      state={displayedErrorOpt ? "error" : "default"}
-      stateRelatedMessage={displayedErrorOpt ? `${error}` : undefined}
-    />
-  )
-}
-
-const DateInput = ({ name, label, disabled, min, max }: { name: string; label: string; disabled?: boolean; min?: string; max?: string }) => {
-  const [input, meta] = useField(name)
-  const { value, onChange, onBlur } = input
-  const { touched, error } = meta
-  const displayedErrorOpt = touched && error
-
-  return (
-    <FormControl error={Boolean(displayedErrorOpt)} fullWidth>
-      <Input
-        disabled={disabled}
-        label={label}
-        state={displayedErrorOpt ? "error" : "default"}
-        stateRelatedMessage={displayedErrorOpt}
-        nativeInputProps={{
-          type: "date",
-          min,
-          max,
-          name,
-          value,
-          onChange,
-          onBlur,
-        }}
-      />
-    </FormControl>
   )
 }

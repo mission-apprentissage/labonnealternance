@@ -2,8 +2,7 @@
 
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
-import { useFormikContext } from "formik"
-import type { IJob } from "shared"
+import { type FormikProps, useFormikContext } from "formik"
 
 // Certains champs (ex: job_type, un groupe de checkboxes) n'ont pas d'élément DOM avec
 // name="<clé Formik>" : chaque checkbox a son propre name. On les repère via un conteneur
@@ -32,33 +31,31 @@ const focusFirstInvalidField = (errorFieldNames: string[]) => {
   }
 }
 
-export const FormulaireEditionOffreButtons = ({ offre, competencesDirty }: { offre?: IJob; competencesDirty: boolean }) => {
-  const { isSubmitting, dirty, submitForm, validateForm, setTouched } = useFormikContext<any>()
+/**
+ * Équivalent de createSubmitWithFocusOnError pour les formulaires sans balise <form> : le bouton ne dépend
+ * pas de isValid ; au clic, l'erreur est affichée sur tous les champs invalides et le focus est déplacé sur
+ * le premier d'entre eux dans l'ordre du DOM (RGAA 11.10, 12.8).
+ */
+export const submitOrFocusFirstInvalidField = async ({ validateForm, setTouched, submitForm }: Pick<FormikProps<any>, "validateForm" | "setTouched" | "submitForm">) => {
+  const validationErrors = await validateForm()
+  const errorFieldNames = Object.keys(validationErrors)
 
-  // les compétences ROME vivent hors de Formik : `dirty` seul ne les verrait pas changer
-  const finalDirty = dirty || competencesDirty
-
-  // Le bouton ne dépend pas de isValid : au clic, l'erreur est affichée sur tous les champs invalides et le focus
-  // est déplacé sur le premier d'entre eux dans l'ordre du DOM (RGAA 11.10, 12.8), comme createSubmitWithFocusOnError
-  // pour les formulaires qui disposent d'une balise <form>.
-  const handleClick = async () => {
-    const validationErrors = await validateForm()
-    const errorFieldNames = Object.keys(validationErrors)
-
-    if (errorFieldNames.length > 0) {
-      // affiche les messages d'erreur sur tous les champs concernés (state="error" des composants
-      // DSFR est conditionné par touched pour la plupart des champs du formulaire).
-      await setTouched(Object.fromEntries(errorFieldNames.map((name) => [name, true])), false)
-      focusFirstInvalidField(errorFieldNames)
-      return
-    }
-
-    submitForm()
+  if (errorFieldNames.length > 0) {
+    // state="error" des composants DSFR est conditionné par touched pour la plupart des champs
+    await setTouched(Object.fromEntries(errorFieldNames.map((name) => [name, true])), false)
+    focusFirstInvalidField(errorFieldNames)
+    return
   }
+
+  await submitForm()
+}
+
+export const FormulaireEditionOffreButtons = () => {
+  const formik = useFormikContext<any>()
 
   return (
     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-      <Button disabled={!finalDirty || isSubmitting} onClick={handleClick} data-testid="creer-offre">
+      <Button disabled={formik.isSubmitting} onClick={() => submitOrFocusFirstInvalidField(formik)} data-testid="creer-offre">
         Continuer
       </Button>
     </Box>
