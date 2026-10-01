@@ -8,6 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
   }
 }
 
-export default async function AdministrationEditAdministrateur() {
-  return <EditAdministrateur />
+export default async function AdministrationEditAdministrateur({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params
+  return <EditAdministrateur userId={userId} />
 }

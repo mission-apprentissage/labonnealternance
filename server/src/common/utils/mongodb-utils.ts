@@ -213,9 +213,9 @@ export const createSearchIndexes = async () => {
     if (!searchIndexes?.length) continue
 
     const collection = getDbCollection(descriptor.collectionName)
-    let existing: string[] = []
+    let existing: { name?: string; latestDefinition?: unknown }[] = []
     try {
-      existing = (await collection.listSearchIndexes().toArray()).map((i) => i.name).filter((name): name is string => Boolean(name))
+      existing = await collection.listSearchIndexes().toArray()
     } catch (err) {
       logger.warn(`Search indexes indisponibles pour ${descriptor.collectionName} (mongot absent ?): ${err}`)
       continue
@@ -223,9 +223,14 @@ export const createSearchIndexes = async () => {
 
     for (const searchIndex of searchIndexes) {
       try {
-        // Index déjà présent → on met à jour sa définition (sinon un changement d'analyzer/champ
-        // ne serait jamais appliqué). updateSearchIndex est idempotent côté mongot.
-        if (searchIndex.name && existing.includes(searchIndex.name)) {
+        const current = existing.find((index) => index.name === searchIndex.name)
+        // updateSearchIndex relance un build complet même à définition identique (version
+        // incrémentée, statut BUILDING) : à chaque MEP, via indexes:recreate, sans cette garde.
+        if (current && isEqual(current.latestDefinition, searchIndex.definition)) {
+          logger.info(`Search index ${searchIndex.name} inchangé sur ${descriptor.collectionName}`)
+          continue
+        }
+        if (searchIndex.name && current) {
           await collection.updateSearchIndex(searchIndex.name, searchIndex.definition)
           logger.info(`Search index ${searchIndex.name} mis à jour sur ${descriptor.collectionName}`)
           continue

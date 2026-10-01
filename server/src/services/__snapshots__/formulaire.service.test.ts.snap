@@ -2,7 +2,6 @@
 
 exports[`createJob > should insert a job 1`] = `
 {
-  "applicationCount": 0,
   "apply_email": "entreprise@mail.fr",
   "apply_phone": "0600000000",
   "cfa_address_label": null,

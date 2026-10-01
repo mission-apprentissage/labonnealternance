@@ -476,7 +476,7 @@ export const FormulaireEditionOffreStep1 = ({
               >
                 Votre offre
               </Typography>
-              <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
+              <Typography component="p" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
                 Tous les champs sont obligatoires, sauf mention contraire "Facultatif".
               </Typography>
               <Box
@@ -525,6 +525,7 @@ export const FormulaireEditionOffreStep1 = ({
                     }}
                   >
                     <Typography
+                      component="span"
                       className={`ri-information-line ${fr.cx("fr-icon--sm")}`}
                       aria-hidden="true"
                       sx={{ color: fr.colors.decisions.text.active.blueFrance.default, flexShrink: 0 }}
