@@ -10,10 +10,10 @@ import { type IJob, ZJobFields } from "shared"
 import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import type z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
+import { submitOrFocusFirstInvalidField } from "@/app/_components/submit-with-focus-on-error"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { getRelatedEtablissementsFromRome } from "@/utils/api"
-import { submitOrFocusFirstInvalidField } from "./FormulaireEditionOffreButtons"
 
 const questions = [
   "Pourquoi souhaitez-vous rejoindre notre entreprise ?",
