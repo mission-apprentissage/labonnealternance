@@ -9,7 +9,7 @@ import type { IDiplomaParam } from "../routes/params.js"
 import { ZPointGeometry } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
-import { JOB_START_TYPE, JOB_STATUS_ENGLISH, ZDelegation } from "./job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, ZDelegation, ZToApplicantQuestions } from "./job.model.js"
 import { ZComputedJobPartnersDuplicateRef } from "./job-partners-duplicate-ref.js"
 import { zOpcoLabel } from "./opco.model.js"
 
@@ -148,6 +148,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
   offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
   offer_status_history: z.array(ZJobsPartnersOfferHistoryEvent).default([]).describe("Historique de l'offre"),
+  to_applicant_questions: ZToApplicantQuestions,
 
   stats_detail_view: z.number().default(0).describe("Nombre de vues de la page de détail"),
   stats_search_view: z.number().default(0).describe("Nombre de vues sur une page de recherche"),
@@ -189,6 +190,10 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   job_prolongation_count: z.number().int().nullish().describe("Nombre de fois où l'offre a été prolongée"),
   offer_rome_appellation: z.string().nullish().describe("Pour les offres LBA uniquement, libellé de l'appellation ROME"),
   mer_sent: z.date().nullish().describe("Pour les offres LBA uniquement, date de l'envoi du mail de promotion de la mise en relation, si il a été envoyé."),
+  offer_description_mode: extensions
+    .buildEnum(OFFER_DESCRIPTION_MODE)
+    .nullish()
+    .describe("Pour les offres LBA uniquement : description rédigée par le recruteur (custom), les champs issus du ROME restent alors vides, ou fiche métier (structured)"),
 })
 
 export const ZJobsPartnersRecruiterPrivate = ZJobsPartnersRecruiterApi.extend(ZJobsPartnersRecruiterPrivateFields.shape)
@@ -203,9 +208,7 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
-    applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
     lba_url: z.string().nullable().default(null).optional(),
-    to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
@@ -342,7 +345,7 @@ export default {
     [{ workplace_name: 1 }, {}],
     [{ offer_status: 1 }, {}],
     [{ offer_expiration: 1 }, {}],
-    // Cron delta de synchronisation search_items (syncSearchItemsDelta).
+    // Cron delta de synchronisation de l'index de recherche (syncSearchItemsDelta).
     [{ updated_at: 1 }, {}],
     // Cron delta de notification IndexNow (pingIndexNow) : branche « offres nouvellement créées » du $or.
     [{ created_at: 1 }, {}],

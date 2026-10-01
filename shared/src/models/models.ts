@@ -2,7 +2,6 @@ import type { z } from "zod"
 import anonymizedApplicantModel from "./anonymized-applicant.model.js"
 import anonymizedApplicationsModel from "./anonymized-applications.model.js"
 import anonymizedAppointmentsModel from "./anonymized-appointments.model.js"
-import anonymizedRecruitersModel from "./anonymized-recruiters.model.js"
 import anonymizedUsersModel from "./anonymized-users.model.js"
 import anonymizedUsersWithAccountsModel from "./anonymized-users-with-accounts.model.js"
 import apicallsModel from "./apicalls.model.js"
@@ -32,7 +31,6 @@ import feedbackFormModel from "./feedback-form.model.js"
 import feedbackResponseModel from "./feedback-response.model.js"
 import formationModel from "./formation.model.js"
 import franceTravailAccessModel from "./france-travail-access.model.js"
-import geolocationsModel from "./geolocations.model.js"
 import jobsModel from "./jobs.model.js"
 import jobsPartnersModel from "./jobs-partners.model.js"
 import jobsPartnersComputedModel from "./jobs-partners-computed.model.js"
@@ -57,14 +55,12 @@ import rawLaposteModel from "./raw-laposte.model.js"
 import rawLeboncoinModel from "./raw-leboncoin.model.js"
 import rawLinkedinModel from "./raw-linkedin.model.js"
 import rawMeteojobModel from "./raw-meteojob.model.js"
-import rawMonsterModel from "./raw-monster.model.js"
 import rawNosTalentsNosEmploisModel from "./raw-nos-talents-nos-emplois.model.js"
 import rawPassModel from "./raw-pass.model.js"
 import rawRecruteursLbaModel from "./raw-recruteurs-lba.model.js"
 import rawRHAlternanceModel from "./raw-rh-alternance.model.js"
 import rawToulouseMetropoleModel from "./raw-toulouse-metropole.model.js"
 import rawViteUnEmploiModel from "./raw-vite-un-emploi.model.js"
-import recruiterModel from "./recruiter.model.js"
 import recruteurLbaUpdateEventModel from "./recruteur-lba-update-event.model.js"
 import { referentielCommuneModel } from "./referentiel/communes.model.js"
 import referentielEngagementEntrepriseModel from "./referentiel-engagement-entreprise.model.js"
@@ -73,11 +69,12 @@ import reportedCompanyModel from "./reported-company.model.js"
 import roleManagementModel from "./role-management.model.js"
 import roleManagement360Model from "./role-management360.model.js"
 import romeModel from "./rome.model.js"
-import searchItemsModel from "./search-items.model.js"
-import searchItemsKeywordsModel from "./search-items-keywords.model.js"
+import searchJobsModel, { searchJobsWithTrainingModel } from "./search-jobs.model.js"
+import searchJobsKeywordsModel from "./search-jobs-keywords.model.js"
 import searchQueriesModel from "./search-queries.model.js"
 import searchSuggestionsModel from "./search-suggestions.model.js"
 import searchSynonymsModel from "./search-synonyms.model.js"
+import searchTrainingsModel from "./search-trainings.model.js"
 import seoDiplomeModel from "./seo-diplome.model.js"
 import seoMetierModel from "./seo-metier.model.js"
 import seoVilleModel from "./seo-ville.model.js"
@@ -90,11 +87,12 @@ import userModel from "./user.model.js"
 import userWithAccountModel from "./user-with-account.model.js"
 
 const modelDescriptorMap = {
-  [searchItemsModel.collectionName]: searchItemsModel,
+  [searchJobsModel.collectionName]: searchJobsModel,
+  [searchJobsWithTrainingModel.collectionName]: searchJobsWithTrainingModel,
+  [searchTrainingsModel.collectionName]: searchTrainingsModel,
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
   [anonymizedApplicationsModel.collectionName]: anonymizedApplicationsModel,
   [anonymizedAppointmentsModel.collectionName]: anonymizedAppointmentsModel,
-  [anonymizedRecruitersModel.collectionName]: anonymizedRecruitersModel,
   [anonymizedUsersModel.collectionName]: anonymizedUsersModel,
   [anonymizedUsersWithAccountsModel.collectionName]: anonymizedUsersWithAccountsModel,
   [appointmentsModel.collectionName]: appointmentsModel,
@@ -121,7 +119,6 @@ const modelDescriptorMap = {
   [feedbackResponseModel.collectionName]: feedbackResponseModel,
   [formationModel.collectionName]: formationModel,
   [franceTravailAccessModel.collectionName]: franceTravailAccessModel,
-  [geolocationsModel.collectionName]: geolocationsModel,
   [jobsModel.collectionName]: jobsModel,
   [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
@@ -133,7 +130,6 @@ const modelDescriptorMap = {
   [rawEmploiInclusionModel.collectionName]: rawEmploiInclusionModel,
   [rawEtudiantModel.collectionName]: rawEtudiantModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
-  [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,
   [rawRecruteursLbaModel.collectionName]: rawRecruteursLbaModel,
   [rawViteUnEmploiModel.collectionName]: rawViteUnEmploiModel,
@@ -168,13 +164,12 @@ const modelDescriptorMap = {
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
   [searchQueriesModel.collectionName]: searchQueriesModel,
-  [searchItemsKeywordsModel.collectionName]: searchItemsKeywordsModel,
+  [searchJobsKeywordsModel.collectionName]: searchJobsKeywordsModel,
   [mistralBatchJobsModel.collectionName]: mistralBatchJobsModel,
   [searchSuggestionsModel.collectionName]: searchSuggestionsModel,
   [searchSynonymsModel.collectionName]: searchSynonymsModel,
   [seoVilleModel.collectionName]: seoVilleModel,
   [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
-  [recruiterModel.collectionName]: recruiterModel,
   [seoDiplomeModel.collectionName]: seoDiplomeModel,
   [seoMetierModel.collectionName]: seoMetierModel,
   [rawHelloWorkBuddiModel.collectionName]: rawHelloWorkBuddiModel,

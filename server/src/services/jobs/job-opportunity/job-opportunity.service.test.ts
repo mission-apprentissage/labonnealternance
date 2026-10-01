@@ -12,7 +12,7 @@ import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, ma
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
 import type { IReferentielRome } from "shared/models/index"
-import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IJobOfferApiWriteV3, IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
@@ -1592,6 +1592,55 @@ describe("createJobOffer", () => {
 
     const job = await getDbCollection("computed_jobs_partners").findOne({ _id: result })
     expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
+  })
+
+  // La flexibilité n'a de sens qu'autour d'une date visée : même normalisation que le formulaire espace-pro.
+  it("should force contract.start_is_flexible to false when the start type is des_que_possible", async () => {
+    const data = generateJobOfferApiWriteV3({
+      ...minimalData,
+      contract: { ...minimalData.contract, start_type: JOB_START_TYPE.DES_QUE_POSSIBLE, start_is_flexible: true },
+    })
+
+    const result = await createJobOffer(identity, data)
+
+    const job = await getDbCollection("computed_jobs_partners").findOne({ _id: result })
+    expect.soft(job?.contract_start_type).toEqual(JOB_START_TYPE.DES_QUE_POSSIBLE)
+    expect(job?.contract_start_is_flexible).toBe(false)
+  })
+
+  it("should keep contract.start_is_flexible when the start type is precise_date", async () => {
+    const data = generateJobOfferApiWriteV3({
+      ...minimalData,
+      contract: { ...minimalData.contract, start_type: JOB_START_TYPE.PRECISE_DATE, start_is_flexible: true },
+    })
+
+    const result = await createJobOffer(identity, data)
+
+    const job = await getDbCollection("computed_jobs_partners").findOne({ _id: result })
+    expect(job?.contract_start_is_flexible).toBe(true)
+  })
+
+  it("should strip markup from to_applicant_questions before storing them", async () => {
+    const data = generateJobOfferApiWriteV3({
+      ...minimalData,
+      offer: { ...minimalData.offer, to_applicant_questions: ["<b>Pourquoi souhaitez-vous nous rejoindre ?</b>"] },
+    })
+
+    const result = await createJobOffer(identity, data)
+
+    const job = await getDbCollection("computed_jobs_partners").findOne({ _id: result })
+    expect(job?.to_applicant_questions).toEqual(["Pourquoi souhaitez-vous nous rejoindre ?"])
+  })
+
+  // Le nettoyage raccourcit la chaîne : une question valide à l'entrée peut devenir trop courte
+  // une fois le balisage retiré, et violerait alors le validateur de la collection.
+  it("should reject a question that becomes too short once markup is stripped", async () => {
+    const data = generateJobOfferApiWriteV3({
+      ...minimalData,
+      offer: { ...minimalData.offer, to_applicant_questions: ["<b>Hi</b>!!"] },
+    })
+
+    await expect(createJobOffer(identity, data)).rejects.toThrow(/to_applicant_questions/)
   })
 
   it("should support offer.status", async () => {

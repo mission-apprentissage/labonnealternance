@@ -26,6 +26,7 @@ import { useToast } from "@/app/hooks/useToast"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
+import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
@@ -201,8 +202,8 @@ export default function DetailEntreprise({
         <Box sx={{ display: user.type !== "CFA" ? "flex" : "none", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
           {showAccountLifecycle && (
             <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
-              <Typography component="h2" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
-                Statut:{" "}
+              <Typography component="p" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
+                Statut :
               </Typography>
               {getUserBadge(lastUserState)}
             </Box>
@@ -324,7 +325,10 @@ export default function DetailEntreprise({
                           )}
                           {userMutation.error && (
                             <Alert sx={{ marginTop: fr.spacing("4v") }} severity="error">
-                              {userMutation.error + ""}
+                              {/* Affiche le message d'erreur métier quand il est disponible, sinon un message générique en français (RGAA 8.7). */}
+                              {userMutation.error instanceof ApiError && userMutation.error.context.statusCode === 400
+                                ? userMutation.error.message
+                                : "La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement."}
                             </Alert>
                           )}
                         </Box>

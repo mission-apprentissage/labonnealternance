@@ -37,6 +37,9 @@ export default defineConfig({
             "@": path.resolve(__dirname, "./ui"),
           },
         },
+        // le tsconfig de Next impose jsx: preserve, que Vite suivrait : sans runtime explicite, un
+        // test ne peut pas importer un composant .tsx du dépôt.
+        oxc: { jsx: { runtime: "automatic" } },
         test: {
           name: "ui",
           root: "./ui",
