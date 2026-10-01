@@ -38,7 +38,7 @@ export const canaux = [
 ]
 
 const zodSchema = z.object({
-  motif: z.string({ error: "Sélectionnez un motif" }),
+  motif: z.string({ error: "Sélectionnez un motif" }).min(1, "Sélectionnez un motif"),
   motifPrecision: z.string().optional(),
   canal: z.string().optional(),
   canalPrecision: z.string().optional(),
