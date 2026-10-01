@@ -39,7 +39,7 @@ const cardBodySx = {
 
 const IntentionPageContent = ({ company_recruitment_intention, id, token, onCancel, onSentNow }: IntentionPageProps & { onCancel: () => void; onSentNow: () => void }) => {
   const [isEditing, setEditing] = useState(false)
-  const [formState, setFormState] = useState({ isValid: false, isSubmitting: false })
+  const [formState, setFormState] = useState({ isSubmitting: false })
 
   const {
     data,
@@ -224,7 +224,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
               <Button
                 aria-label="Envoyer maintenant le message au candidat"
                 onClick={() => (document.getElementById("intention-form") as HTMLFormElement | null)?.requestSubmit()}
-                disabled={!formState.isValid || formState.isSubmitting}
+                disabled={formState.isSubmitting}
               >
                 <DsfrIcon name="fr-icon-mail-send-line" size={16} />
                 Envoyer maintenant
