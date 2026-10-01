@@ -17,10 +17,10 @@ export const zApplicationRoutes = {
         .looseObject({
           company_feedback: z.string().min(1, "Veuillez remplir le message"),
           company_recruitment_intention: z.literal(ApplicationIntention.ENTRETIEN),
-          email: z.email("Adresse e-mail invalide").or(z.literal("")).optional(),
+          email: z.email("Format attendu : nom@domaine.fr").or(z.literal("")).optional(),
           phone: z
             .string()
-            .regex(/^[0-9]{10}$/, "Le numéro de téléphone doit avoir exactement 10 chiffres")
+            .regex(/^[0-9]{10}$/, "Le numéro doit comporter 10 chiffres, par exemple 0612345678")
             .or(z.literal(""))
             .optional(),
         })
