@@ -313,7 +313,7 @@ export async function cancelIntentionComment(id: string, token: string) {
   })
 }
 
-function lookLikeObjectId(id: string): boolean {
+export function lookLikeObjectId(id: string): boolean {
   return /^[0-9a-f]{24}$/gi.test(id)
 }
 

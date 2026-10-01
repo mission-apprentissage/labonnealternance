@@ -1,8 +1,6 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
-import Input from "@codegouvfr/react-dsfr/Input"
-import { Box, Checkbox, CircularProgress, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
@@ -14,6 +12,8 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { apiGet } from "@/utils/api.utils"
+import { AdminSearchInput } from "../_components/AdminSearchInput"
+import { MultiSelect } from "../_components/MultiSelect"
 import { getRecruteursColumns } from "../_utils/recruteursColumns"
 import { statusLabels } from "../users/UsersList"
 
@@ -25,7 +25,6 @@ type AccountTypeValue = (typeof accountTypes)[number]
 type OpcoValue = (typeof opcoValues)[number]
 
 export function RecruteursList() {
-  const [searchInput, setSearchInput] = useState("")
   const [submittedSearch, setSubmittedSearch] = useState("")
   const [selectedStatuses, setSelectedStatuses] = useState<ETAT_UTILISATEUR[]>([...allStatuses])
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<AccountTypeValue[]>([...accountTypes])
@@ -47,6 +46,7 @@ export function RecruteursList() {
       }),
     enabled: isEnabled,
     staleTime: 1000 * 60 * 5,
+    retry: false,
   })
 
   const allUsers = useMemo(() => (dataRaw as IUserRecruteurForAdminJSON[]) ?? [], [dataRaw])
@@ -75,9 +75,13 @@ export function RecruteursList() {
       selectedOpcos={selectedOpcos}
       onSelectedOpcosChange={setSelectedOpcos}
       opcoDisabled={opcoDisabled}
-      searchInput={searchInput}
-      onSearchInputChange={setSearchInput}
-      onSearch={() => setSubmittedSearch(searchInput)}
+      onSearch={setSubmittedSearch}
+      onReset={() => {
+        setSubmittedSearch("")
+        setSelectedStatuses([...allStatuses])
+        setSelectedAccountTypes([...accountTypes])
+        setSelectedOpcos([...opcoValues])
+      }}
       isEnabled={isEnabled}
       isFetching={isFetching}
     />
@@ -94,9 +98,8 @@ function RecruteursContent({
   selectedOpcos,
   onSelectedOpcosChange,
   opcoDisabled,
-  searchInput,
-  onSearchInputChange,
   onSearch,
+  onReset,
   isEnabled,
   isFetching,
 }: {
@@ -109,9 +112,8 @@ function RecruteursContent({
   selectedOpcos: OpcoValue[]
   onSelectedOpcosChange: (v: OpcoValue[]) => void
   opcoDisabled: boolean
-  searchInput: string
-  onSearchInputChange: (v: string) => void
-  onSearch: () => void
+  onSearch: (search: string) => void
+  onReset: () => void
   isEnabled: boolean
   isFetching: boolean
 }) {
@@ -134,26 +136,12 @@ function RecruteursContent({
       />
 
       {/* Ligne 1 : recherche */}
-      <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-end", mb: fr.spacing("3v") }}>
-        <Input
-          label="Rechercher"
-          nativeInputProps={{
-            value: searchInput,
-            placeholder: "Raison sociale, email, téléphone...",
-            onChange: (e) => onSearchInputChange(e.target.value),
-            onKeyDown: (e) => {
-              if (e.key === "Enter") onSearch()
-            },
-            style: { minWidth: "360px" },
-          }}
-        />
-        <Button iconId="fr-icon-search-line" priority="primary" onClick={onSearch} style={{ marginBottom: "1.5rem" }}>
-          Rechercher
-        </Button>
+      <Box sx={{ mb: fr.spacing("6v") }}>
+        <AdminSearchInput label="Rechercher" placeholder="Raison sociale, email, téléphone..." onSearch={onSearch} onReset={onReset} />
       </Box>
 
       {/* Ligne 2 : filtres */}
-      <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("4v"), alignItems: "center" }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), "& > .MuiFormControl-root": { mb: fr.spacing("6v") } }}>
         <MultiSelect
           id="status-gestion"
           label="Statut"
@@ -183,7 +171,7 @@ function RecruteursContent({
 
       {!isEnabled ? (
         <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>
-          Saisissez au moins 2 caractères pour rechercher.
+          Lancez une recherche pour afficher les recruteurs.
         </Box>
       ) : isFetching ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
@@ -199,64 +187,5 @@ function RecruteursContent({
         />
       )}
     </>
-  )
-}
-
-function MultiSelect<T extends string>({
-  id,
-  label,
-  width,
-  items,
-  value,
-  onChange,
-  disabled = false,
-}: {
-  id: string
-  label: string
-  width: number
-  items: { value: T; label: string }[]
-  value: T[]
-  onChange: (newValue: T[]) => void
-  disabled?: boolean
-}) {
-  const allSelected = value.length === items.length
-  const someSelected = value.length > 0 && !allSelected
-
-  function handleChange(selected: string[]) {
-    if (selected.includes("__all__")) {
-      onChange(allSelected ? [] : items.map((i) => i.value))
-    } else {
-      onChange(selected as T[])
-    }
-  }
-
-  const displayLabel = value.length === 0 ? "Tous" : value.map((v) => items.find((i) => i.value === v)?.label ?? v).join(", ")
-
-  return (
-    <FormControl sx={{ width }} size="small" disabled={disabled}>
-      <InputLabel id={`${id}-label`} sx={{ fontSize: ".875rem" }}>
-        {label}
-      </InputLabel>
-      <Select
-        labelId={`${id}-label`}
-        multiple
-        value={value}
-        onChange={(e) => handleChange(e.target.value as string[])}
-        input={<OutlinedInput label={label} />}
-        renderValue={() => displayLabel}
-        MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
-      >
-        <MenuItem value="__all__" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
-          <Checkbox checked={allSelected} indeterminate={someSelected} size="small" />
-          <ListItemText primary={allSelected ? "Tout désélectionner" : "Tout sélectionner"} slotProps={{ primary: { fontSize: ".875rem" } }} />
-        </MenuItem>
-        {items.map((item) => (
-          <MenuItem key={item.value} value={item.value}>
-            <Checkbox checked={value.includes(item.value)} size="small" />
-            <ListItemText primary={item.label} slotProps={{ primary: { fontSize: ".875rem" } }} />
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
   )
 }

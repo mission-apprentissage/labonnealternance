@@ -149,10 +149,11 @@ export function VirtualTable<T>({
           },
         }}
       >
+        {/* thead/tbody en block : dans un table-row-group, un <tr> en flex est enveloppé dans une cellule anonyme et son width: 100% s'effondre */}
         <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
-          <thead style={{ position: "sticky", top: 0, zIndex: 1, backgroundColor: "var(--background-alt-grey)" }}>
+          <thead role="rowgroup" style={{ display: "block", position: "sticky", top: 0, zIndex: 1, backgroundColor: "var(--background-alt-grey)" }}>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} style={{ display: "flex", width: "100%" }}>
+              <tr key={headerGroup.id} role="row" style={{ display: "flex", width: "100%" }}>
                 {headerGroup.headers.map((header) => {
                   const srOnly = header.column.columnDef.meta?.srOnly
                   return (
@@ -184,7 +185,7 @@ export function VirtualTable<T>({
             ))}
           </thead>
 
-          <tbody>
+          <tbody role="rowgroup" style={{ display: "block" }}>
             {paddingTop > 0 && (
               <tr>
                 <td colSpan={99} style={{ height: `${paddingTop}px`, padding: 0, border: 0 }} />
@@ -195,6 +196,7 @@ export function VirtualTable<T>({
               return (
                 <tr
                   key={row.id}
+                  role="row"
                   data-index={virtualRow.index}
                   ref={virtualizer.measureElement}
                   onClick={onRowClick ? () => onRowClick(row.original) : undefined}
@@ -203,6 +205,7 @@ export function VirtualTable<T>({
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
+                      role="cell"
                       style={{
                         flex: `${cell.column.getSize()} 0 0`,
                         minWidth: `${cell.column.getSize()}px`,
