@@ -5,8 +5,9 @@ import type { PopperProps } from "@mui/material"
 import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
-import type { ReactNode } from "react"
+import type { KeyboardEvent, ReactNode } from "react"
 import { useCallback, useEffect, useId, useRef, useState } from "react"
+import { flushSync } from "react-dom"
 import { searchAddress } from "@/services/base-adresse"
 import { apiGet } from "@/utils/api.utils"
 import type { SearchMode } from "../_utils/search.params.utils"
@@ -258,6 +259,7 @@ export function SearchBar({
   const lieuLabelId = useId()
   const metierErrorId = useId()
   const lieuErrorId = useId()
+  const metierListboxGroupIdPrefix = useId()
   const [inputValue, setInputValue] = useState(initialQ)
   const emptyLieuLabel = franceEntiereIfEmpty ? FRANCE_ENTIERE_OPTION.label : ""
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? emptyLieuLabel)
@@ -304,6 +306,15 @@ export function SearchBar({
     if (!inlineSuggestions) return
     setActiveField(field)
     onActiveFieldChange?.(field)
+  }
+
+  // Écran de saisie : tout ce qui précède et suit le champ actif est masqué, Tab n'a nulle part
+  // où aller et le focus trap du panneau le renverrait en tête. On en sort de façon synchrone,
+  // avant la navigation native, pour que Tab atteigne l'élément voisin réaffiché. Suppose ce
+  // gestionnaire React exécuté avant le keydown du focus trap (cf. useDialogA11y).
+  const exitInputScreenOnTab = (event: KeyboardEvent) => {
+    if (event.key !== "Tab" || !activeField) return
+    flushSync(() => changeActiveField(null))
   }
 
   const isColumn = layout === "column"
@@ -454,7 +465,7 @@ export function SearchBar({
       }}
     >
       {/* Champ métier */}
-      <Box sx={metierWrapperSx}>
+      <Box sx={metierWrapperSx} onKeyDown={exitInputScreenOnTab}>
         <FieldLabel id={metierLabelId} error={Boolean(qError)}>
           Que recherchez-vous ?
         </FieldLabel>
@@ -549,10 +560,19 @@ export function SearchBar({
           }
           // Deux groupes consécutifs : "" (ligne « Rechercher », sans en-tête) puis "Suggestions".
           groupBy={(option) => (option.kind === "suggestion" ? "Suggestions" : "")}
+          // listbox ARIA : enfants `option` ou `group` uniquement, d'où le <li> neutralisé et le
+          // <ul> en groupe, nommé par son en-tête quand il en a un.
           renderGroup={(params) => (
-            <Box component="li" key={params.key}>
-              {params.group && <Box sx={{ px: "16px", lineHeight: "36px", fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>{params.group}</Box>}
-              <Box component="ul" sx={{ p: 0, m: 0, listStyle: "none" }}>
+            <Box component="li" key={params.key} role="presentation">
+              {params.group && (
+                <Box
+                  id={`${metierListboxGroupIdPrefix}-${params.key}`}
+                  sx={{ px: "16px", lineHeight: "36px", fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}
+                >
+                  {params.group}
+                </Box>
+              )}
+              <Box component="ul" role="group" aria-labelledby={params.group ? `${metierListboxGroupIdPrefix}-${params.key}` : undefined} sx={{ p: 0, m: 0, listStyle: "none" }}>
                 {params.children}
               </Box>
               {/* État de chargement sous la ligne « Rechercher » (remplace le loadingText MUI, cf. Autocomplete). */}
@@ -597,7 +617,7 @@ export function SearchBar({
       </Box>
 
       {/* Champ lieu */}
-      <Box sx={lieuWrapperSx}>
+      <Box sx={lieuWrapperSx} onKeyDown={exitInputScreenOnTab}>
         <Box sx={{ mb: fr.spacing("1v") }}>
           <FieldLabel id={lieuLabelId} error={Boolean(lieuError)}>
             Lieu
