@@ -259,6 +259,7 @@ export function SearchBar({
   const lieuLabelId = useId()
   const metierErrorId = useId()
   const lieuErrorId = useId()
+  const metierListboxGroupIdPrefix = useId()
   const [inputValue, setInputValue] = useState(initialQ)
   const emptyLieuLabel = franceEntiereIfEmpty ? FRANCE_ENTIERE_OPTION.label : ""
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? emptyLieuLabel)
@@ -309,7 +310,8 @@ export function SearchBar({
 
   // Écran de saisie : tout ce qui précède et suit le champ actif est masqué, Tab n'a nulle part
   // où aller et le focus trap du panneau le renverrait en tête. On en sort de façon synchrone,
-  // avant la navigation native, pour que Tab atteigne l'élément voisin réaffiché.
+  // avant la navigation native, pour que Tab atteigne l'élément voisin réaffiché. Suppose ce
+  // gestionnaire React exécuté avant le keydown du focus trap (cf. useDialogA11y).
   const exitInputScreenOnTab = (event: KeyboardEvent) => {
     if (event.key !== "Tab" || !activeField) return
     flushSync(() => changeActiveField(null))
@@ -558,10 +560,19 @@ export function SearchBar({
           }
           // Deux groupes consécutifs : "" (ligne « Rechercher », sans en-tête) puis "Suggestions".
           groupBy={(option) => (option.kind === "suggestion" ? "Suggestions" : "")}
+          // listbox ARIA : enfants `option` ou `group` uniquement, d'où le <li> neutralisé et le
+          // <ul> en groupe, nommé par son en-tête quand il en a un.
           renderGroup={(params) => (
-            <Box component="li" key={params.key}>
-              {params.group && <Box sx={{ px: "16px", lineHeight: "36px", fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>{params.group}</Box>}
-              <Box component="ul" sx={{ p: 0, m: 0, listStyle: "none" }}>
+            <Box component="li" key={params.key} role="presentation">
+              {params.group && (
+                <Box
+                  id={`${metierListboxGroupIdPrefix}-${params.key}`}
+                  sx={{ px: "16px", lineHeight: "36px", fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}
+                >
+                  {params.group}
+                </Box>
+              )}
+              <Box component="ul" role="group" aria-labelledby={params.group ? `${metierListboxGroupIdPrefix}-${params.key}` : undefined} sx={{ p: 0, m: 0, listStyle: "none" }}>
                 {params.children}
               </Box>
               {/* État de chargement sous la ligne « Rechercher » (remplace le loadingText MUI, cf. Autocomplete). */}

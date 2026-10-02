@@ -205,7 +205,8 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
 
   function submitSearchPanel() {
     const pending = pendingQRef.current
-    if (pending && pending.q !== (params.q ?? "")) handleSearch(pending.q, pending.source)
+    const q = pending?.q.trim() ?? ""
+    if (pending && q !== (params.q ?? "")) handleSearch(q, pending.source)
     closeSearchPanel()
   }
 

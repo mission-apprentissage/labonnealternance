@@ -267,7 +267,11 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
         nativeInputProps={{
           type: "date",
           defaultValue: params.start_date ?? "",
-          onBlur: (e) => setStartDate(e.target.value || undefined),
+          // Sans changement, pas de navigation : elle marquerait le panneau « appliqué » (search_filter_opened).
+          onBlur: (e) => {
+            const value = e.target.value || undefined
+            if (value !== params.start_date) setStartDate(value)
+          },
           onKeyDown: (e) => {
             if (e.key === "Enter") {
               e.preventDefault()

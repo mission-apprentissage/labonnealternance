@@ -69,6 +69,8 @@ export function useDialogA11y(onClose: () => void) {
       }
     }
 
+    // Posé après l'écouteur racine de React (hydratation) : les gestionnaires onKeyDown du
+    // contenu passent avant le trap (cf. exitInputScreenOnTab de SearchBar).
     document.addEventListener("keydown", handleKeyDown)
     return () => {
       document.removeEventListener("keydown", handleKeyDown)

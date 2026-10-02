@@ -6,7 +6,8 @@ import { type FocusEvent, type KeyboardEvent, type ReactNode, useId, useRef, use
 
 /**
  * Chip pill de filtre (design « Nouvelle recherche »). Deux comportements :
- * - avec `popperContent` : dropdown (caret) ouvrant un panneau flottant — fermeture clic extérieur / Échap ;
+ * - avec `popperContent` : dropdown (caret) ouvrant un panneau flottant — fermeture clic extérieur,
+ *   Échap, focus sorti du chip (Tab) ou `close` passé au contenu ;
  * - sans : toggle on/off via `onToggle`.
  *
  * La sélection est signalée par l'inversion du fond (pas de badge ✓) et le libellé
