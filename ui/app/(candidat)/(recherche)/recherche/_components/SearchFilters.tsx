@@ -397,7 +397,7 @@ export function SearchFilters({ params, facets, counts, nbHits, onNavigate, vari
   }
 
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("2v"), alignItems: "center" }}>
+    <Box role="group" aria-label="Filtres" sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("2v"), alignItems: "center" }}>
       {!isFormations && params.mode === "emplois" && (
         <SearchFilterChip
           label="Type d'offres d'emploi"

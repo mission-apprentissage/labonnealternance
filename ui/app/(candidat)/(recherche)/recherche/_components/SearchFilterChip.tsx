@@ -132,6 +132,10 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
   }
 
   const palette = active ? CHIP_COLORS.active : CHIP_COLORS.default
+  const displayedLabel = active ? (activeLabel ?? label) : label
+  // Chip à panneau affichant une valeur : le nom du filtre disparaît du texte visible, on le
+  // rétablit dans le nom accessible (texte visible inclus, WCAG 2.5.3).
+  const ariaLabel = isDropdown && displayedLabel !== label ? `${label} : ${displayedLabel}` : undefined
 
   return (
     <Box sx={{ position: "relative", display: "inline-flex" }} onBlur={handleBlur}>
@@ -140,8 +144,11 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
         disabled={disabled}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
+        aria-label={ariaLabel}
+        // Panneau = bouton de divulgation (aria-expanded + aria-controls) : aria-haspopup="true"
+        // annoncerait un menu, que le panneau n'est pas.
         aria-expanded={isDropdown ? open : undefined}
-        aria-haspopup={isDropdown ? "true" : dialogTrigger ? "dialog" : undefined}
+        aria-haspopup={dialogTrigger ? "dialog" : undefined}
         aria-controls={isDropdown && open ? popperId : undefined}
         aria-pressed={!isDropdown && !dialogTrigger ? active : undefined}
         sx={{
@@ -163,7 +170,7 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
           },
         }}
       >
-        {active ? (activeLabel ?? label) : label}
+        {displayedLabel}
         {(isDropdown || dialogTrigger) && (
           <Box component="span" className={fr.cx(open ? "fr-icon-arrow-up-s-line" : "fr-icon-arrow-down-s-line", "fr-icon--sm")} aria-hidden="true" />
         )}
