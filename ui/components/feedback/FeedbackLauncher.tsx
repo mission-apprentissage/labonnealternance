@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box } from "@mui/material"
+import { Box, Dialog } from "@mui/material"
 import { useEffect, useId, useRef, useState } from "react"
 import { FeedbackWidget } from "./FeedbackWidget"
 import { takeAnnouncement } from "./feedbackTrigger.utils"
@@ -18,7 +18,8 @@ import { useFeedbackTrigger } from "./useFeedbackTrigger"
  *   zone `role="status"` présente dès le montage (RGAA 7.5) ; le focus ne bouge pas, y compris quand
  *   le formulaire demande l'ouverture immédiate (`trigger.autoOpen`) ;
  * - à l'ouverture, le focus va sur la question ; Échap ou la croix referment et le rendent au bouton ;
- * - le panneau fermé reste monté (masqué) : rouvert, il reprend où l'usager s'était arrêté.
+ * - le panneau fermé reste monté (masqué) : rouvert, il reprend où l'usager s'était arrêté ;
+ * - en plein écran (`trigger.fullScreen`), le panneau devient une modale centrée qui garde le focus.
  */
 export function FeedbackLauncher() {
   const { form, ready, dismiss, complete } = useFeedbackTrigger()
@@ -26,6 +27,7 @@ export function FeedbackLauncher() {
   const [open, setOpen] = useState(false)
   const [announcement, setAnnouncement] = useState("")
   const panelId = useId()
+  const dialogTitleId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -33,6 +35,7 @@ export function FeedbackLauncher() {
   // retirer le formulaire (remerciement) — mais pas si l'usager change de page de déclenchement
   const [openSlug, setOpenSlug] = useState<string | null>(null)
   const visible = form !== null && (ready || openSlug === form.slug)
+  const fullScreen = form?.trigger.fullScreen === true
 
   useEffect(() => {
     if (!visible) {
@@ -64,12 +67,26 @@ export function FeedbackLauncher() {
   useEffect(() => {
     if (!ready || !form || !takeAnnouncement(form.slug)) return
     if (form.trigger.autoOpen) {
-      setAnnouncement("Un questionnaire « Donner mon avis » s'est ouvert en bas de page. Le bouton « Réduire » le referme.")
-      openPanel({ moveFocus: false })
+      setAnnouncement(`Un questionnaire « Donner mon avis » s'est ouvert${fullScreen ? "" : " en bas de page"}. Le bouton « Réduire » le referme.`)
+      // une modale garde le focus en elle : il doit y entrer, sans quoi rien ne reste atteignable
+      openPanel({ moveFocus: fullScreen })
     } else {
       setAnnouncement("Vous pouvez donner votre avis sur cette page : bouton « Donner mon avis » en bas de page.")
     }
   }, [ready, form])
+
+  const widget = form && (
+    <FeedbackWidget
+      key={form.slug}
+      variant={fullScreen ? "modal" : "floating"}
+      questions={form.questions}
+      onClose={closePanel}
+      onProgress={(progress) => {
+        session.save(progress)
+        if (progress.status === "completed") complete()
+      }}
+    />
+  )
 
   return (
     <Box data-feedback-launcher>
@@ -90,26 +107,29 @@ export function FeedbackLauncher() {
             gap: fr.spacing("3v"),
           }}
         >
-          <Box
-            id={panelId}
-            ref={panelRef}
-            hidden={!open}
-            onKeyDown={(event) => {
-              if (event.key === "Escape") closePanel()
-            }}
-            sx={{ maxWidth: "100%" }}
-          >
-            <FeedbackWidget
-              key={form.slug}
-              variant="floating"
-              questions={form.questions}
-              onClose={closePanel}
-              onProgress={(progress) => {
-                session.save(progress)
-                if (progress.status === "completed") complete()
+          {fullScreen ? (
+            // modale MUI : piège à focus, page rendue inerte (aria-hidden) et grisée, Échap et clic sur le fond referment
+            <Dialog open={open} keepMounted onClose={closePanel} maxWidth="sm" fullWidth aria-labelledby={dialogTitleId} slotProps={{ paper: { sx: { borderRadius: 0 } } }}>
+              <span id={dialogTitleId} className={fr.cx("fr-sr-only")}>
+                Donner mon avis
+              </span>
+              <Box id={panelId} ref={panelRef}>
+                {widget}
+              </Box>
+            </Dialog>
+          ) : (
+            <Box
+              id={panelId}
+              ref={panelRef}
+              hidden={!open}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") closePanel()
               }}
-            />
-          </Box>
+              sx={{ maxWidth: "100%" }}
+            >
+              {widget}
+            </Box>
+          )}
           {!(open && !ready) && (
             <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
               {!open && (

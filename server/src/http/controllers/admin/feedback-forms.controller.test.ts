@@ -9,7 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 const generalInfoOnly: IFeedbackFormInput = {
   slug: "page_entreprise_v1",
   title: "Fiche entreprise — utilité des informations",
-  trigger: { type: "interactions", autoOpen: false, minInteractions: 1, scope: ["/formation/:id/:intitule-formation"] },
+  trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 1, scope: ["/formation/:id/:intitule-formation"] },
   questions: [],
 }
 
@@ -80,7 +80,7 @@ describe("admin feedback-forms controller", () => {
   it("refuse un formulaire sans page de déclenchement", async () => {
     const { bearerToken } = await loginAsAdmin()
 
-    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { type: "interactions", autoOpen: false, minInteractions: 1, scope: [] } })
+    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 1, scope: [] } })
 
     expect(response.statusCode).toEqual(400)
   })
@@ -105,7 +105,10 @@ describe("admin feedback-forms controller", () => {
   it("refuse un chemin de déclenchement qui ne correspond à aucune page du site", async () => {
     const { bearerToken } = await loginAsAdmin()
 
-    const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { type: "interactions", autoOpen: false, minInteractions: 1, scope: ["/page-qui-nexiste-pas"] } })
+    const response = await createForm(bearerToken, {
+      ...generalInfoOnly,
+      trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 1, scope: ["/page-qui-nexiste-pas"] },
+    })
 
     expect(response.statusCode).toEqual(400)
   })
@@ -210,7 +213,11 @@ describe("admin feedback-forms controller", () => {
       method: "PUT",
       path: "/api/admin/feedback-forms/page_entreprise_v1",
       headers: bearerToken,
-      body: { title: "Titre corrigé", trigger: { type: "interactions", autoOpen: false, minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] }, questions: [] },
+      body: {
+        title: "Titre corrigé",
+        trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] },
+        questions: [],
+      },
     })
 
     expect(response.statusCode).toEqual(200)
@@ -218,7 +225,7 @@ describe("admin feedback-forms controller", () => {
     expect(saved).toMatchObject({
       title: "Titre corrigé",
       status: "draft",
-      trigger: { type: "interactions", autoOpen: false, minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] },
+      trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 3, scope: ["/recherche", "/guide-alternant/*"] },
     })
   })
 
@@ -410,7 +417,7 @@ describe("admin feedback-forms controller", () => {
         ...withQuestion,
         slug: "toutes_formations",
         title: "Toutes les formations",
-        trigger: { type: "interactions", autoOpen: false, minInteractions: 1, scope: ["/recherche", "/formation/*"] },
+        trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 1, scope: ["/recherche", "/formation/*"] },
       })
 
       const response = await post(bearerToken, "toutes_formations", "activate")
@@ -427,7 +434,7 @@ describe("admin feedback-forms controller", () => {
         ...withQuestion,
         slug: "recherche",
         title: "Recherche",
-        trigger: { type: "interactions", autoOpen: false, minInteractions: 2, scope: ["/recherche"] },
+        trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 2, scope: ["/recherche"] },
       })
 
       const response = await post(bearerToken, "recherche", "activate")
@@ -443,18 +450,22 @@ describe("admin feedback-forms controller", () => {
         ...withQuestion,
         slug: "recherche",
         title: "Recherche",
-        trigger: { type: "interactions", autoOpen: false, minInteractions: 1, scope: ["/recherche"] },
+        trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 1, scope: ["/recherche"] },
       })
       await post(bearerToken, "recherche", "activate")
       const put = (body: Omit<IFeedbackFormInput, "slug">) => httpClient().inject({ method: "PUT", path: "/api/admin/feedback-forms/recherche", headers: bearerToken, body })
 
-      const emptied = await put({ title: "Recherche", trigger: { type: "interactions", autoOpen: false, minInteractions: 1, scope: ["/recherche"] }, questions: [] })
+      const emptied = await put({
+        title: "Recherche",
+        trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 1, scope: ["/recherche"] },
+        questions: [],
+      })
       expect(emptied.statusCode).toEqual(400)
       expect(emptied.json().message).toContain("Au moins une question est nécessaire")
 
       const moved = await put({
         title: "Recherche",
-        trigger: { type: "interactions", autoOpen: false, minInteractions: 1, scope: ["/formation/*"] },
+        trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 1, scope: ["/formation/*"] },
         questions: withQuestion.questions,
       })
       expect(moved.statusCode).toEqual(409)
@@ -630,12 +641,12 @@ describe("admin feedback-forms controller", () => {
 
       const response = await createForm(bearerToken, {
         ...generalInfoOnly,
-        trigger: { type: "delay", autoOpen: false, delaySeconds: 30, minInteractions: 4, scope: ["/recherche"] },
+        trigger: { type: "delay", autoOpen: false, fullScreen: false, delaySeconds: 30, minInteractions: 4, scope: ["/recherche"] },
       })
 
       expect(response.statusCode).toEqual(200)
       const saved = await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" })
-      expect(saved?.trigger).toEqual({ type: "delay", delaySeconds: 30, autoOpen: false, scope: ["/recherche"] })
+      expect(saved?.trigger).toEqual({ type: "delay", delaySeconds: 30, autoOpen: false, fullScreen: false, scope: ["/recherche"] })
     })
 
     it("enregistre un déclencheur sur l'abandon d'une candidature", async () => {
@@ -643,12 +654,12 @@ describe("admin feedback-forms controller", () => {
 
       const response = await createForm(bearerToken, {
         ...generalInfoOnly,
-        trigger: { type: "event", autoOpen: false, event: "application_abandoned", scope: ["/emploi/:type/:id/:intitule-offre"] },
+        trigger: { type: "event", autoOpen: false, fullScreen: false, event: "application_abandoned", scope: ["/emploi/:type/:id/:intitule-offre"] },
       })
 
       expect(response.statusCode).toEqual(200)
       const saved = await getDbCollection("feedback_forms").findOne({ slug: "page_entreprise_v1" })
-      expect(saved?.trigger).toEqual({ type: "event", event: "application_abandoned", autoOpen: false, scope: ["/emploi/:type/:id/:intitule-offre"] })
+      expect(saved?.trigger).toEqual({ type: "event", event: "application_abandoned", autoOpen: false, fullScreen: false, scope: ["/emploi/:type/:id/:intitule-offre"] })
     })
 
     it("enregistre l'ouverture immédiate", async () => {
@@ -658,6 +669,15 @@ describe("admin feedback-forms controller", () => {
 
       expect(response.statusCode).toEqual(200)
       expect(response.json().trigger.autoOpen).toEqual(true)
+    })
+
+    it("enregistre l'affichage plein écran", async () => {
+      const { bearerToken } = await loginAsAdmin()
+
+      const response = await createForm(bearerToken, { ...generalInfoOnly, trigger: { ...generalInfoOnly.trigger, fullScreen: true } })
+
+      expect(response.statusCode).toEqual(200)
+      expect(response.json().trigger).toMatchObject({ autoOpen: false, fullScreen: true })
     })
 
     it.each([
@@ -674,10 +694,10 @@ describe("admin feedback-forms controller", () => {
       expect(response.json().message).toContain(message)
     })
 
-    it("lit et active un formulaire enregistré sans type de déclencheur ni ouverture immédiate", async () => {
+    it("lit et active un formulaire enregistré sans type de déclencheur ni options d'ouverture", async () => {
       const { bearerToken } = await loginAsAdmin()
       await createForm(bearerToken, { ...generalInfoOnly, questions: [{ id: "q1", type: "rating", label: "Utile ?", required: true, scale: "thumbs3" }] })
-      await getDbCollection("feedback_forms").updateOne({ slug: "page_entreprise_v1" }, { $unset: { "trigger.type": "", "trigger.autoOpen": "" } })
+      await getDbCollection("feedback_forms").updateOne({ slug: "page_entreprise_v1" }, { $unset: { "trigger.type": "", "trigger.autoOpen": "", "trigger.fullScreen": "" } })
 
       const read = await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms/page_entreprise_v1", headers: bearerToken })
       expect(read.statusCode).toEqual(200)

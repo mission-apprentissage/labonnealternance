@@ -27,7 +27,7 @@ const createEmptyForm = (): IFeedbackFormDraft =>
   toFeedbackFormDraft({
     slug: "",
     title: "",
-    trigger: { type: "interactions", autoOpen: false, minInteractions: 1, scope: [] },
+    trigger: { type: "interactions", autoOpen: false, fullScreen: false, minInteractions: 1, scope: [] },
     questions: [],
   })
 

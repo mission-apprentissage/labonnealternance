@@ -15,7 +15,7 @@ import type { IFeedbackFormDraft } from "../_utils/questionDrafts"
 const numberValue = (raw: string) => (raw === "" ? "" : Number(raw))
 
 /**
- * Type de déclencheur, son paramètre et l'ouverture immédiate. La saisie de chaque type est conservée quand on en change :
+ * Type de déclencheur, son paramètre et les options d'ouverture (immédiate, plein écran). La saisie de chaque type est conservée quand on en change :
  * seuls les paramètres du type retenu sont enregistrés.
  */
 export function TriggerConditionField() {
@@ -87,6 +87,7 @@ export function TriggerConditionField() {
       )}
 
       <Checkbox
+        legend="Ouverture du questionnaire"
         options={[
           {
             label: "Ouverture immédiate",
@@ -95,6 +96,15 @@ export function TriggerConditionField() {
               name: "trigger.autoOpen",
               checked: values.trigger.autoOpen,
               onChange: (changeEvent) => setFieldValue("trigger.autoOpen", changeEvent.target.checked),
+            },
+          },
+          {
+            label: "Plein écran",
+            hintText: "Le questionnaire s'ouvre dans une fenêtre centrée, le reste de la page grisé et inactif",
+            nativeInputProps: {
+              name: "trigger.fullScreen",
+              checked: values.trigger.fullScreen,
+              onChange: (changeEvent) => setFieldValue("trigger.fullScreen", changeEvent.target.checked),
             },
           },
         ]}

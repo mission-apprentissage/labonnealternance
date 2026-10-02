@@ -21,8 +21,9 @@ type Props = {
    * "inline" : dans le flux de la page (prévisualisation du back-office).
    * "floating" : panneau non modal ouvert par le bouton « Donner mon avis » (cf. FeedbackLauncher),
    * qui le positionne.
+   * "modal" : contenu d'une modale fournie par l'appelant, qui porte le rôle et le nom de la boîte de dialogue.
    */
-  variant?: "inline" | "floating"
+  variant?: "inline" | "floating" | "modal"
   /** Appelé après chaque réponse, question passée, retour ou fermeture, avec l'état complet du parcours. */
   onProgress?: (progress: IFeedbackWidgetProgress) => void
   /**
@@ -111,11 +112,11 @@ export function FeedbackWidget({ questions, variant = "inline", onProgress, clos
 
   return (
     <Box
-      // panneau non modal : la page reste utilisable pendant qu'il est ouvert, donc ni aria-modal ni piège à focus
-      {...(variant === "floating" ? { role: "dialog", "aria-label": "Donner mon avis" } : { component: "section", "aria-label": "Donnez votre avis" })}
+      // panneau flottant non modal : la page reste utilisable pendant qu'il est ouvert, donc ni aria-modal ni piège à focus
+      {...(variant === "floating" ? { role: "dialog", "aria-label": "Donner mon avis" } : variant === "inline" ? { component: "section", "aria-label": "Donnez votre avis" } : {})}
       sx={{
         position: "relative",
-        width: 340,
+        width: variant === "modal" ? "100%" : 340,
         maxWidth: "100%",
         boxSizing: "border-box",
         p: fr.spacing("4v"),

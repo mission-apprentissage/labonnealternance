@@ -15,12 +15,11 @@ export const TRIGGER_EVENT_LABEL: Record<IFeedbackTriggerEvent, { label: string;
 
 const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? "s" : ""}`
 
-type IDescribedTrigger = Partial<Pick<IFeedbackFormTrigger, "type" | "minInteractions" | "delaySeconds" | "event" | "autoOpen">>
+type IDescribedTrigger = Partial<Pick<IFeedbackFormTrigger, "type" | "minInteractions" | "delaySeconds" | "event" | "autoOpen" | "fullScreen">>
 
-/** « après 3 interactions », « après 30 secondes sur la page, ouverture immédiate », « candidature commencée puis abandonnée ». */
+/** « après 3 interactions », « après 30 secondes sur la page, ouverture immédiate, plein écran », « candidature commencée puis abandonnée ». */
 export function describeFeedbackTrigger(trigger: IDescribedTrigger): string {
-  const condition = describeCondition(trigger)
-  return trigger.autoOpen ? `${condition}, ouverture immédiate` : condition
+  return [describeCondition(trigger), trigger.autoOpen && "ouverture immédiate", trigger.fullScreen && "plein écran"].filter(Boolean).join(", ")
 }
 
 function describeCondition(trigger: IDescribedTrigger): string {
