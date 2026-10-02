@@ -1,6 +1,7 @@
 import type { ReactElement } from "react"
 import { describe, expect, it, vi } from "vitest"
 
+import { RechercheSeoContent } from "./_components/RechercheSeoContent"
 import type { ISearchPageParams } from "./_utils/search.params.utils"
 import RecherchePage from "./page"
 
@@ -12,7 +13,7 @@ describe("RecherchePage", () => {
     const page = (await RecherchePage({ searchParams: Promise.resolve({ q: "Data Analyst", contract_type: ["Apprentissage", "Professionnalisation"] }) })) as ReactElement<{
       children: ReactElement<{ params: ISearchPageParams }>[]
     }>
-    const [seoContent] = page.props.children
-    expect(seoContent.props.params.contract_type).toEqual(["Apprentissage", "Professionnalisation"])
+    const seoContent = page.props.children.find((child) => child.type === RechercheSeoContent)
+    expect(seoContent?.props.params.contract_type).toEqual(["Apprentissage", "Professionnalisation"])
   })
 })
