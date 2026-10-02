@@ -1,7 +1,7 @@
 import { OPCOS_LABEL } from "shared/constants/index"
 import { describe, expect, it } from "vitest"
 import { EMAIL_FORMAT_ERROR, PHONE_FORMAT_ERROR } from "@/utils/validation-messages"
-import { buildAdminUserFormSchema, toSubmittedPhone } from "./admin-user-form.schema"
+import { buildAdminUserFormSchema } from "./admin-user-form.schema"
 
 const getErrors = (isCreation: boolean, values: Record<string, unknown>) => {
   const result = buildAdminUserFormSchema(isCreation).safeParse(values)
@@ -49,18 +49,5 @@ describe("buildAdminUserFormSchema", () => {
     for (const phone of ["061234567", "0813458765", "+32470123456"]) {
       expect(getErrors(false, { ...validUser, phone })).toEqual({ phone: PHONE_FORMAT_ERROR })
     }
-  })
-})
-
-describe("toSubmittedPhone", () => {
-  it("envoie le téléphone au format national à 10 chiffres", () => {
-    expect(toSubmittedPhone("06 12 34 56 78")).toBe("0612345678")
-    expect(toSubmittedPhone("+33612345678")).toBe("0612345678")
-    expect(toSubmittedPhone("+262 692 12 34 56")).toBe("0692123456")
-  })
-
-  it("envoie une chaîne vide pour un téléphone absent", () => {
-    expect(toSubmittedPhone(undefined)).toBe("")
-    expect(toSubmittedPhone("")).toBe("")
   })
 })

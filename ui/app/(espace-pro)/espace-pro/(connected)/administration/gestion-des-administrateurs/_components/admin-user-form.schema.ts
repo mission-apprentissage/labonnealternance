@@ -27,6 +27,3 @@ export const buildAdminUserFormSchema = (isCreation: boolean) =>
       // sans `when`, Zod saute la règle dès qu'un champ est absent (Formik convertit "" en undefined) : l'erreur OPCO n'apparaîtrait qu'au second envoi
       when: () => isCreation,
     })
-
-// Formik transmet à onSubmit les valeurs saisies, pas la sortie du schéma : la normalisation se fait à l'envoi
-export const toSubmittedPhone = (phone: string | undefined) => (phone ? (toFrenchNationalPhone(phone) ?? phone) : "")

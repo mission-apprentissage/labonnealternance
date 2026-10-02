@@ -16,9 +16,10 @@ import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
-import { personNameValidation, phoneValidation } from "@/common/validation/field-validations"
+import { frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 
 const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const router = useRouter()
@@ -26,8 +27,10 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const { user } = useConnectedSessionClient()
   const formRef = useRef<HTMLFormElement>(null)
 
-  const submitForm = (values, { setSubmitting, setFieldError }) => {
-    apiPost("/user/:userId/formulaire", { params: { userId: user._id.toString() }, body: { ...values, establishment_siret } })
+  const submitForm = (values, { setSubmitting, setFieldError, setFieldValue }) => {
+    const phone = toSubmittedPhone(values.phone)
+    setFieldValue("phone", phone, false)
+    apiPost("/user/:userId/formulaire", { params: { userId: user._id.toString() }, body: { ...values, phone, establishment_siret } })
       .then((data) => {
         setSubmitting(false)
         toast({
@@ -56,10 +59,10 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         isDeclarationExact: false,
       }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+        email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
         last_name: personNameValidation().required("champ obligatoire"),
         first_name: personNameValidation().required("champ obligatoire"),
-        phone: phoneValidation().required("champ obligatoire"),
+        phone: frenchPhoneValidation().required("champ obligatoire"),
         isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations"),
       })}
       onSubmit={submitForm}
@@ -82,7 +85,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                   <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>
                     Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
                   </Typography>
-                  <ContactInfoFields />
+                  <ContactInfoFields thirdParty />
                   <Typography sx={{ color: "#0063CB" }}>
                     <Box component="span" sx={{ fontWeight: 700 }}>
                       Important :
