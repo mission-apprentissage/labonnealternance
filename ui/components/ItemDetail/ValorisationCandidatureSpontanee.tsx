@@ -92,7 +92,7 @@ export const ValorisationCandidatureSpontanee = ({
           Pour vous aider à trouver un contrat, nous identifions des entreprises susceptibles d'accueillir des alternants.
           <Box component="span" sx={{ fontWeight: 700 }}>
             {" "}
-            Elles sont étiquetées <TagCandidatureSpontanee /> et sont visibles en fin de résultats de recherche.
+            Elles sont étiquetées <TagCandidatureSpontanee /> et sont visibles dans les résultats de recherche.
           </Box>
         </Typography>
 
