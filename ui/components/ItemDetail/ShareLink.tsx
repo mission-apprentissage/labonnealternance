@@ -5,6 +5,7 @@ import Image from "next/image"
 import type { SyntheticEvent } from "react"
 import { useState } from "react"
 import type { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 
 const ShareLinkInner = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
   const [copied, setCopied] = useState(false)
@@ -18,34 +19,38 @@ const ShareLinkInner = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJ
     })
   }
 
+  // Le changement de libellé du bouton focalisé n'est pas restitué de façon fiable : annonce dédiée.
   return (
-    <Button priority="tertiary no outline" onClick={copyLink} data-tracking-id={`partager-${item.ideaType}`}>
-      {copied ? (
-        <Box component="span" sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
-          <Image src="/images/icons/share_copied_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
-          <Typography
-            component="span"
-            sx={{
-              color: "#18753C",
-            }}
-          >
-            Lien copié !
-          </Typography>
-        </Box>
-      ) : (
-        <Box component="span" sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
-          <Image src="/images/icons/share_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
-          <Typography
-            component="span"
-            sx={{
-              color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-            }}
-          >
-            Partager
-          </Typography>
-        </Box>
-      )}
-    </Button>
+    <>
+      <Button priority="tertiary no outline" onClick={copyLink} data-tracking-id={`partager-${item.ideaType}`}>
+        {copied ? (
+          <Box component="span" sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
+            <Image src="/images/icons/share_copied_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
+            <Typography
+              component="span"
+              sx={{
+                color: "#18753C",
+              }}
+            >
+              Lien copié !
+            </Typography>
+          </Box>
+        ) : (
+          <Box component="span" sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
+            <Image src="/images/icons/share_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
+            <Typography
+              component="span"
+              sx={{
+                color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+              }}
+            >
+              Partager
+            </Typography>
+          </Box>
+        )}
+      </Button>
+      <LiveStatus message={copied ? "Lien copié dans le presse-papier" : ""} />
+    </>
   )
 }
 

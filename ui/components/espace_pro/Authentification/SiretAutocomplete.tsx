@@ -33,6 +33,8 @@ export const SiretAutocomplete = ({
       onSubmit={onSubmit}
     >
       {({ values, errors, isValid, isSubmitting, setFieldValue, setFieldTouched }) => {
+        const isInvalidSiret = /^[0-9]{14}$/.test(searchInput) && !validateSIRET(searchInput)
+        const showsSearchUnavailable = !(values?.establishment_siret && !errors?.establishment_siret)
         return (
           <Form>
             <AutocompleteAsync
@@ -58,15 +60,17 @@ export const SiretAutocomplete = ({
                 setFieldValue("establishment_siret", inputValue, true)
               }}
               allowHealFromError={false}
+              noResultText={isInvalidSiret ? "Le numéro de SIRET saisi n’est pas valide" : undefined}
+              errorText={showsSearchUnavailable ? "La recherche par raison sociale est temporairement indisponible. Veuillez renseigner votre numéro de SIRET." : ""}
               renderNoResult={
-                /^[0-9]{14}$/.test(searchInput) && !validateSIRET(searchInput) ? (
+                isInvalidSiret ? (
                   <Box>
                     <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#CE0500", padding: "8px 16px" }}>Le numéro de SIRET saisi n’est pas valide</Typography>
                   </Box>
                 ) : undefined
               }
               renderError={() =>
-                values?.establishment_siret && !errors?.establishment_siret ? null : (
+                !showsSearchUnavailable ? null : (
                   <Box>
                     <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#CE0500", padding: "8px 16px" }}>
                       La recherche par raison sociale est temporairement indisponible.

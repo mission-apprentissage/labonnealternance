@@ -16,6 +16,7 @@ import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_ST
 import { detectUrlAndEmails, detectUrls } from "shared/utils/detect-url-and-emails"
 import { decodeSanitizedText } from "shared/utils/string-utils"
 import * as Yup from "yup"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -36,6 +37,12 @@ type FreeTextFieldName = "job_description" | "job_employer_description"
 const TRACKED_FIELD: Record<FreeTextFieldName, "offer" | "company"> = {
   job_description: "offer",
   job_employer_description: "company",
+}
+
+// complète le nom accessible des boutons « Améliorer », identiques à l'écran (RGAA 11.9)
+const FIELD_ACCESSIBLE_LABEL: Record<FreeTextFieldName, string> = {
+  job_description: "la description du poste",
+  job_employer_description: "la présentation de l'entreprise",
 }
 
 /**
@@ -92,6 +99,7 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   const paddingX = fr.spacing("3v")
   const paddingY = fr.spacing("2v")
   const separator = `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`
+  const buttonLabel = `Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`
 
   return (
     <Box
@@ -115,7 +123,6 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
         }}
       >
         <Typography
-          aria-live="polite"
           sx={{
             display: "flex",
             alignItems: "center",
@@ -134,8 +141,20 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
                 ? "L'amélioration a échoué, veuillez réessayer."
                 : `Notre IA peut améliorer votre texte jusqu'à ${AMELIORER_IA_MAX_USAGES} fois (orthographe, structure, formulation)`}
         </Typography>
-        <Button type="button" priority="tertiary" size="small" iconId="ri-magic-line" iconPosition="left" disabled={!establishmentId || !canImprove} onClick={handleClick}>
-          {`Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`}
+        {/* Le libellé ci-dessus est annoncé en deux zones : l'échec est une erreur (role="alert"). */}
+        <LiveStatus message={isProposalOpen ? "Proposition de l'IA - quelle version souhaitez-vous conserver ?" : loading ? "Amélioration en cours" : ""} />
+        <LiveStatus role="alert" message={!isProposalOpen && !loading && hasError ? "L'amélioration a échoué, veuillez réessayer." : ""} />
+        <Button
+          type="button"
+          priority="tertiary"
+          size="small"
+          iconId="ri-magic-line"
+          iconPosition="left"
+          disabled={!establishmentId || !canImprove}
+          onClick={handleClick}
+          aria-label={`${buttonLabel} ${FIELD_ACCESSIBLE_LABEL[fieldName]}`}
+        >
+          {buttonLabel}
         </Button>
       </Box>
       {isProposalOpen && (
@@ -247,6 +266,8 @@ const JobDescriptionField = ({ establishmentId, token }: { establishmentId?: str
           rows: 8,
           style: { resize: "none" },
           onChange: (e) => setFieldValue("job_description", e.target.value),
+          // aria-invalid : cf. HandiEngagementSelect
+          "aria-invalid": Boolean(errors.job_description),
         }}
       />
     </Box>
@@ -279,6 +300,7 @@ const EmployerDescriptionField = ({ establishmentId, token }: { establishmentId?
           placeholder: "Saisissez votre texte ici",
           style: { resize: "none" },
           onChange: (e) => setFieldValue("job_employer_description", e.target.value),
+          "aria-invalid": Boolean(errors.job_employer_description),
         }}
       />
     </Box>
@@ -315,13 +337,11 @@ export const FormulaireEditionOffreStep1 = ({
   })
 
   const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? formValues?.competences_rome ?? null)
-  const [competencesDirty, setCompetencesDirty] = useState(Boolean(formValues))
   const [descriptionMode, setDescriptionMode] = useState<DescriptionMode>(offre?.job_description || formValues?.job_description ? "custom" : "structured")
 
   const onRomeChange = (rome: string, appellation: string) => {
     setRomeAndAppellation({ rome, appellation })
     setSelectedCompetences(null)
-    setCompetencesDirty(true)
   }
 
   const onSelectedCompetencesChange = (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => {
@@ -349,7 +369,6 @@ export const FormulaireEditionOffreStep1 = ({
       }),
     }
     setSelectedCompetences(savedCompetences)
-    setCompetencesDirty(true)
   }
 
   if (!establishment_id) return <></>
@@ -502,7 +521,7 @@ export const FormulaireEditionOffreStep1 = ({
                       border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
                     }}
                   >
-                    <Typography component="h2" sx={{ fontWeight: 700 }}>
+                    <Typography component="h3" sx={{ fontWeight: 700 }}>
                       Le contrat
                     </Typography>
                     <Box sx={{ mt: fr.spacing("4v") }}>
@@ -546,14 +565,14 @@ export const FormulaireEditionOffreStep1 = ({
                       </Typography>
                     </Box>
                   </Box>
-                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
+                  <Typography variant="h4" component="h3" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
                     La présentation de l'entreprise
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
                     <EmployerDescriptionField establishmentId={establishment_id} token={token} />
                   </Box>
 
-                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
+                  <Typography variant="h4" component="h3" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
                     La description du poste
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
@@ -591,7 +610,7 @@ export const FormulaireEditionOffreStep1 = ({
                 </Box>
               </Box>
               <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v") }}>
-                <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
+                <FormulaireEditionOffreButtons />
               </Box>
             </div>
           )

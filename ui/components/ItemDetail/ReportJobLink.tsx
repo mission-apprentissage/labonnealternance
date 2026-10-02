@@ -190,7 +190,7 @@ const ReportedAcknowledgement = () => {
         }}
       >
         <Image width={23} height={23} src="/images/icons/coche_verte.svg" alt="" />
-        <ModalTitle>Votre signalement a bien été envoyé à notre équipe.</ModalTitle>
+        <ModalTitle focusOnMount>Votre signalement a bien été envoyé à notre équipe.</ModalTitle>
       </Stack>
       <Typography>Merci de votre participation à l'amélioration du service La bonne alternance.</Typography>
     </Box>

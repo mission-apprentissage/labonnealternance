@@ -2,19 +2,21 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Checkbox, Container, Divider, Link, Typography } from "@mui/material"
+import { Box, Container, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { IJobWithRomeDetail } from "shared"
 import { ENTREPRISE } from "shared/constants/recruteur"
-import type { IEtablissementCatalogueProcheWithDistance, IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
+import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { createEtablissementDelegation, createEtablissementDelegationByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
-import { CfaSolicitationIntro, InfoDelegation } from "./CfaDelegationContent"
+import { InfoDelegation } from "./CfaDelegationContent"
+import { CfaSelectionList } from "./CfaSelectionList"
 import LoadingEmptySpace from "./LoadingEmptySpace"
 
 function AucunCFAProche({ title }: { title?: string }) {
@@ -59,9 +61,9 @@ function DelegationsEnregistrees({
         <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "center", md: "flex-start" } }}>
           <Image fetchPriority="high" src="/images/espace_pro/miseEnRelationEnvoyee.svg" alt="" unoptimized width={268} height={150} style={{ width: "100%", maxWidth: "268px" }} />
           <Box sx={{ mt: { xs: fr.spacing("4v"), md: 0 }, ml: { xs: 0, md: fr.spacing("5v") } }}>
-            <Typography component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold", mb: fr.spacing("4v") }}>
+            <FocusedTitle component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold", mb: fr.spacing("4v") }}>
               Votre offre a été partagée aux CFA sélectionnés
-            </Typography>
+            </FocusedTitle>
             <Box>
               <Typography>Les écoles que vous avez sélectionnées ont reçu par email votre offre et vos coordonnées suivantes :</Typography>
               <Typography sx={{ mt: fr.spacing("2v") }}>
@@ -125,42 +127,47 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
         latitude,
         longitude,
         limit: 10,
-      }) as Promise<IEtablissementCatalogueProcheWithDistance[]>
+      }) as Promise<IEtablissementCatalogueProcheWithDistanceJSON[]>
     },
 
     enabled: !!formulaire?._id && !!offre?._id,
     gcTime: 0,
   })
 
-  const checkedDisabledEtablissements = (etablissements ?? []).filter((etablissement) => offre.delegations?.some((delegation) => etablissement.siret === delegation.siret_code))
+  const disabledIds = (etablissements ?? []).filter((etablissement) => offre.delegations?.some((delegation) => etablissement.siret === delegation.siret_code)).map(({ _id }) => _id)
+  const isDisabled = (id: string) => disabledIds.includes(id)
 
-  const [checkedEtablissements, setCheckedEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>([])
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [selectionError, setSelectionError] = useState<string | null>(null)
+  const fieldsetRef = useRef<HTMLFieldSetElement>(null)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [delegationsEnregistrees, setDelegationsEnregistrees] = useState(false)
 
-  const changeEtablissement = (etablissement) => {
-    const index = checkedEtablissements.findIndex((item) => item._id === etablissement._id)
-    if (index === -1) {
-      setCheckedEtablissements([...checkedEtablissements, etablissement])
-    } else {
-      setCheckedEtablissements(checkedEtablissements.filter((_, i) => i !== index))
-    }
+  const toggleEtablissement = ({ _id: id }: IEtablissementCatalogueProcheWithDistanceJSON) => {
+    setSelectedIds(selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id])
+    setSelectionError(null)
   }
 
   const submit = async () => {
+    if (selectedIds.length === 0) {
+      setSelectionError("Sélectionnez au moins un centre de formation")
+      const firstCheckbox = fieldsetRef.current?.querySelector<HTMLInputElement>("input:not(:disabled)")
+      firstCheckbox?.scrollIntoView({ behavior: "smooth", block: "center" })
+      firstCheckbox?.focus({ preventScroll: true })
+      return
+    }
     setIsSubmitting(true)
-    const etablissementCatalogueIds = checkedEtablissements.map((etablissement) => etablissement._id)
 
     await (token
       ? createEtablissementDelegationByToken({
           jobId: offre._id.toString(),
-          data: { etablissementCatalogueIds },
+          data: { etablissementCatalogueIds: selectedIds },
           token: token as string,
         })
       : createEtablissementDelegation({
           jobId: offre._id.toString(),
-          data: { etablissementCatalogueIds },
+          data: { etablissementCatalogueIds: selectedIds },
         })
     )
       .then(() => {
@@ -187,73 +194,16 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                 </Typography>
                 <Box sx={{ display: "flex" }}>
                   <Box sx={{ minWidth: { xs: "100%", md: "50%" } }}>
-                    <CfaSolicitationIntro sx={{ fontSize: "20px", lineHeight: "28px", mt: fr.spacing("4v") }} />
-                    <Box sx={{ mt: fr.spacing("5v") }}>
-                      {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistanceJSON, index) => {
-                        const isDisabled = checkedDisabledEtablissements.some((etab) => etab._id === etablissement._id)
-                        const isChecked = checkedEtablissements.some((etab) => etab._id === etablissement._id)
-                        return (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "row",
-                              gap: fr.spacing("4v"),
-                              borderStyle: "solid",
-                              borderWidth: "1px",
-                              borderColor: isDisabled ? "#E5E5E5" : isChecked ? "#000091" : "#DDDDDD",
-                              mb: fr.spacing("4v"),
-                              p: fr.spacing("4v"),
-                            }}
-                            key={etablissement._id}
-                            data-testid={`cfa-${index}`}
-                          >
-                            <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }}>
-                              <Checkbox
-                                sx={{
-                                  "&.Mui-disabled .MuiSvgIcon-root": {
-                                    display: "none",
-                                  },
-                                }}
-                                disabled={isDisabled}
-                                defaultChecked={isDisabled}
-                                onChange={() => changeEtablissement(etablissement)}
-                              />
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                              {isDisabled && (
-                                <Box
-                                  sx={{ display: "flex", alignItems: "flex-start", backgroundColor: "#F6F6F6", width: "fit-content", px: fr.spacing("2v"), py: fr.spacing("1v") }}
-                                >
-                                  <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" style={{ margin: "4px" }} unoptimized width={16} height={16} />
-                                  <Typography sx={{ fontSize: "12px", color: "#666666", mb: fr.spacing("2v") }}>CFA déjà contacté</Typography>
-                                </Box>
-                              )}
-                              <Typography sx={{ fontSize: "16px", lineHeight: "25px", fontWeight: "400", color: "#161616", textTransform: "capitalize", pr: fr.spacing("3v") }}>
-                                {etablissement.entreprise_raison_sociale}
-                              </Typography>
-                              <Typography sx={{ fontSize: "12px", lineHeight: "25px", color: "#666666", textTransform: "capitalize", pr: fr.spacing("3v") }}>
-                                {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.localite}
-                              </Typography>
-
-                              <Link
-                                underline="hover"
-                                href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
-                                color="inherit"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                En savoir plus
-                                <span className="fr-sr-only">{" - Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"}</span>
-                              </Link>
-                            </Box>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <Divider aria-hidden="true" orientation="vertical" />
-                              <Typography sx={{ fontSize: "12px", fontWeight: "700", color: "#666666", px: fr.spacing("4v") }}>à {etablissement.distance_en_km} km</Typography>
-                            </Box>
-                          </Box>
-                        )
-                      })}
-                    </Box>
+                    <CfaSelectionList
+                      ref={fieldsetRef}
+                      etablissements={etablissements}
+                      isChecked={(id) => isDisabled(id) || selectedIds.includes(id)}
+                      isDisabled={isDisabled}
+                      onToggle={toggleEtablissement}
+                      hint="Sélectionnez au moins un centre de formation."
+                      error={selectionError ?? undefined}
+                      introSx={{ fontSize: "20px", lineHeight: "28px", mt: fr.spacing("4v") }}
+                    />
                   </Box>
                   <InfoDelegation />
                 </Box>
@@ -272,7 +222,7 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                     py: fr.spacing("4v"),
                   }}
                 >
-                  <Button disabled={checkedEtablissements.length === 0 || isSubmitting} onClick={submit} data-testid="submit-delegation">
+                  <Button disabled={isSubmitting} onClick={submit} data-testid="submit-delegation">
                     Envoyer ma demande
                   </Button>
                 </Box>

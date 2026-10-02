@@ -5,8 +5,10 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Divider, Grid, List, ListItem, Skeleton, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
 import type { AnneeSimulation, InputSimulation, OutputSimulation } from "@/services/simulateur-alternant"
+import { pluralize } from "@/utils/strutils"
 
 const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulation; index: number }) => {
   const annee: string = index === 0 ? "1ère année" : `${index + 1}e année`
@@ -157,8 +159,16 @@ export const ResultatSimulation = () => {
     }
   }, [simulation])
 
+  // Le formulaire reste en place et scrollIntoView ne déplace pas le focus : le résultat est annoncé.
+  const simulationStatus = !simulation
+    ? ""
+    : isLoading
+      ? "Calcul de la simulation en cours"
+      : `Simulation terminée : ${pluralize(simulation.anneesSimulation.length, "année détaillée", "années détaillées")} sous « Votre simulation »`
+
   return (
     <Box py={2}>
+      <LiveStatus message={simulationStatus} />
       <Box ref={resultatRef} sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
         <Box display={{ md: "flex", xs: "none" }}>
           <Image width={10} height={25} src="/images/triangle.svg" alt="" aria-hidden="true" />

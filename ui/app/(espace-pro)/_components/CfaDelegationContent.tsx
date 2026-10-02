@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material"
 import type { SxProps, Theme } from "@mui/material/styles"
 
 // Textes mutualisés entre la page /espace-pro/entreprise/offre/:id/mise-en-relation (MiseEnRelation.tsx)
-// et l'étape 3 du tunnel de dépôt d'offre rapide (FormulaireEditionOffreStep3CFA.tsx).
+// et l'étape 3 du tunnel de dépôt d'offre rapide (FormulaireEditionOffreStep3CFA.tsx), cf. CfaSelectionList.
 
 export function InfoDelegation() {
   return (
@@ -33,9 +33,9 @@ export function InfoDelegation() {
   )
 }
 
-export function CfaSolicitationIntro({ sx }: { sx?: SxProps<Theme> }) {
+export function CfaSolicitationIntro({ sx, id }: { sx?: SxProps<Theme>; id?: string }) {
   return (
-    <Typography sx={sx}>
+    <Typography id={id} sx={sx}>
       Les CFA suivants proposent des formations en lien avec votre offre et sont localisés dans un rayon de 100km près de votre entreprise.
       <br />
       Choisissez ceux que vous souhaitez solliciter : <strong>votre offre et vos informations de contact leur seront partagées par email.</strong>
