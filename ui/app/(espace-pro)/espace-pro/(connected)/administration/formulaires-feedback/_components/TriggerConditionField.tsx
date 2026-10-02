@@ -1,5 +1,6 @@
 "use client"
 
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { Box } from "@mui/material"
 import { getIn, useFormikContext } from "formik"
@@ -14,7 +15,7 @@ import type { IFeedbackFormDraft } from "../_utils/questionDrafts"
 const numberValue = (raw: string) => (raw === "" ? "" : Number(raw))
 
 /**
- * Type de déclencheur et son paramètre. La saisie de chaque type est conservée quand on en change :
+ * Type de déclencheur, son paramètre et l'ouverture immédiate. La saisie de chaque type est conservée quand on en change :
  * seuls les paramètres du type retenu sont enregistrés.
  */
 export function TriggerConditionField() {
@@ -84,6 +85,20 @@ export function TriggerConditionField() {
           ))}
         </Select>
       )}
+
+      <Checkbox
+        options={[
+          {
+            label: "Ouverture immédiate",
+            hintText: "Le questionnaire s'ouvre en même temps que le bouton, une fois par session",
+            nativeInputProps: {
+              name: "trigger.autoOpen",
+              checked: values.trigger.autoOpen,
+              onChange: (changeEvent) => setFieldValue("trigger.autoOpen", changeEvent.target.checked),
+            },
+          },
+        ]}
+      />
     </Box>
   )
 }

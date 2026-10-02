@@ -15,7 +15,8 @@ import { useFeedbackTrigger } from "./useFeedbackTrigger"
  *
  * Accessibilité :
  * - l'apparition du bouton, sans action de l'usager, est annoncée une fois par session dans une
- *   zone `role="status"` présente dès le montage (RGAA 7.5) ; le focus ne bouge pas ;
+ *   zone `role="status"` présente dès le montage (RGAA 7.5) ; le focus ne bouge pas, y compris quand
+ *   le formulaire demande l'ouverture immédiate (`trigger.autoOpen`) ;
  * - à l'ouverture, le focus va sur la question ; Échap ou la croix referment et le rendent au bouton ;
  * - le panneau fermé reste monté (masqué) : rouvert, il reprend où l'usager s'était arrêté.
  */
@@ -34,24 +35,19 @@ export function FeedbackLauncher() {
   const visible = form !== null && (ready || openSlug === form.slug)
 
   useEffect(() => {
-    if (ready && form && takeAnnouncement(form.slug)) {
-      setAnnouncement("Vous pouvez donner votre avis sur cette page : bouton « Donner mon avis » en bas de page.")
-    }
-  }, [ready, form])
-
-  useEffect(() => {
     if (!visible) {
       setOpen(false)
       setOpenSlug(null)
     }
   }, [visible])
 
-  const openPanel = () => {
+  const openPanel = ({ moveFocus }: { moveFocus: boolean }) => {
     if (!form) return
     setOpen(true)
     setOpenSlug(form.slug)
     session.start()
-    requestAnimationFrame(() => panelRef.current?.querySelector<HTMLElement>("[data-feedback-heading]")?.focus())
+    // ouverture sans action de l'usager : le focus reste où il est, l'annonce suffit
+    if (moveFocus) requestAnimationFrame(() => panelRef.current?.querySelector<HTMLElement>("[data-feedback-heading]")?.focus())
   }
 
   const closePanel = () => {
@@ -63,6 +59,17 @@ export function FeedbackLauncher() {
     }
     requestAnimationFrame(() => buttonRef.current?.focus())
   }
+
+  // première apparition de la session : annoncée, et ouverte d'emblée si le formulaire le demande
+  useEffect(() => {
+    if (!ready || !form || !takeAnnouncement(form.slug)) return
+    if (form.trigger.autoOpen) {
+      setAnnouncement("Un questionnaire « Donner mon avis » s'est ouvert en bas de page. Le bouton « Réduire » le referme.")
+      openPanel({ moveFocus: false })
+    } else {
+      setAnnouncement("Vous pouvez donner votre avis sur cette page : bouton « Donner mon avis » en bas de page.")
+    }
+  }, [ready, form])
 
   return (
     <Box data-feedback-launcher>
@@ -122,7 +129,7 @@ export function FeedbackLauncher() {
                 iconId="fr-icon-feedback-line"
                 iconPosition="left"
                 nativeButtonProps={{ "aria-expanded": open, "aria-controls": panelId }}
-                onClick={() => (open ? closePanel() : openPanel())}
+                onClick={() => (open ? closePanel() : openPanel({ moveFocus: true }))}
                 style={{ borderRadius: 9999, boxShadow: "0 4px 16px rgba(0, 0, 18, 0.16)" }}
               >
                 Donner mon avis

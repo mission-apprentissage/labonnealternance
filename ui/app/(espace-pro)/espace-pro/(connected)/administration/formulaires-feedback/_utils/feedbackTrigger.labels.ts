@@ -15,8 +15,15 @@ export const TRIGGER_EVENT_LABEL: Record<IFeedbackTriggerEvent, { label: string;
 
 const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? "s" : ""}`
 
-/** « après 3 interactions », « après 30 secondes sur la page », « candidature commencée puis abandonnée ». */
-export function describeFeedbackTrigger(trigger: Partial<Pick<IFeedbackFormTrigger, "type" | "minInteractions" | "delaySeconds" | "event">>): string {
+type IDescribedTrigger = Partial<Pick<IFeedbackFormTrigger, "type" | "minInteractions" | "delaySeconds" | "event" | "autoOpen">>
+
+/** « après 3 interactions », « après 30 secondes sur la page, ouverture immédiate », « candidature commencée puis abandonnée ». */
+export function describeFeedbackTrigger(trigger: IDescribedTrigger): string {
+  const condition = describeCondition(trigger)
+  return trigger.autoOpen ? `${condition}, ouverture immédiate` : condition
+}
+
+function describeCondition(trigger: IDescribedTrigger): string {
   switch (trigger.type ?? "interactions") {
     case "interactions":
       return `après ${plural(trigger.minInteractions ?? 1, "interaction")}`

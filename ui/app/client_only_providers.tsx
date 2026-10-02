@@ -10,7 +10,7 @@ import Providers from "@/context/Providers"
 import { setIsTrackingEnabled, setTrackingCookies } from "@/tracking/tracking-cookie-utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
-// hors du bundle initial : le bouton n'apparaît qu'après des interactions, rien ne presse au chargement
+// hors du bundle initial : le bouton n'apparaît qu'une fois son déclencheur atteint, rien ne presse au chargement
 const FeedbackLauncher = dynamic(() => import("@/components/feedback/FeedbackLauncher").then((module) => module.FeedbackLauncher), { ssr: false })
 
 function Tracking(): null {

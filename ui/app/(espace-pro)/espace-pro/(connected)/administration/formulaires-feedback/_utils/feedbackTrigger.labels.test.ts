@@ -9,4 +9,9 @@ describe("describeFeedbackTrigger", () => {
     expect(describeFeedbackTrigger({ type: "delay", delaySeconds: 30 })).toBe("après 30 secondes sur la page")
     expect(describeFeedbackTrigger({ type: "event", event: "application_abandoned" })).toBe("candidature commencée puis abandonnée")
   })
+
+  it("signale l'ouverture immédiate", () => {
+    expect(describeFeedbackTrigger({ type: "delay", delaySeconds: 30, autoOpen: true })).toBe("après 30 secondes sur la page, ouverture immédiate")
+    expect(describeFeedbackTrigger({ type: "delay", delaySeconds: 30, autoOpen: false })).toBe("après 30 secondes sur la page")
+  })
 })

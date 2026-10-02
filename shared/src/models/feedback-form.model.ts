@@ -234,6 +234,8 @@ const ZFeedbackFormTrigger = z.object({
     .max(FEEDBACK_DELAY_MAX_SECONDS, `Au plus ${FEEDBACK_DELAY_MAX_SECONDS} secondes`)
     .optional(),
   event: z.enum(FEEDBACK_TRIGGER_EVENTS, { error: "Choisissez un événement" }).optional(),
+  // le questionnaire s'ouvre avec le bouton, sans attendre le clic ; absent, il ne s'ouvre qu'au clic
+  autoOpen: z.boolean().optional(),
   // chemins où le widget est autorisé à s'afficher, ex : ["/recherche", "/formation/:id/:titre"]
   scope: z.array(z.string().min(1)).default([]),
 })
@@ -248,22 +250,26 @@ const TRIGGER_REQUIRED_FIELD = {
   event: { field: "event", message: "Choisissez un événement" },
 } as const satisfies Record<IFeedbackTriggerType, { field: keyof IFeedbackFormTrigger; message: string }>
 
-type IFeedbackFormTriggerWithType = Omit<IFeedbackFormTrigger, "type"> & { type: IFeedbackTriggerType }
+type IFeedbackFormTriggerWithType = Omit<IFeedbackFormTrigger, "type" | "autoOpen"> & { type: IFeedbackTriggerType; autoOpen: boolean }
 
-/** Le déclencheur avec son type explicite : ce que le back-office édite. */
-export const withFeedbackTriggerType = (trigger: IFeedbackFormTrigger): IFeedbackFormTriggerWithType => ({ ...trigger, type: getFeedbackTriggerType(trigger) })
+/** Le déclencheur avec son type et son ouverture explicites : ce que le back-office édite. */
+export const withFeedbackTriggerType = (trigger: IFeedbackFormTrigger): IFeedbackFormTriggerWithType => ({
+  ...trigger,
+  type: getFeedbackTriggerType(trigger),
+  autoOpen: trigger.autoOpen ?? false,
+})
 
 /** Le déclencheur réduit aux paramètres de son type : ce qui est enregistré. */
 export function normalizeFeedbackTrigger(trigger: IFeedbackFormTrigger): IFeedbackFormTriggerWithType {
-  const { scope } = trigger
+  const common = { scope: trigger.scope, autoOpen: trigger.autoOpen ?? false }
   const type = getFeedbackTriggerType(trigger)
   switch (type) {
     case "interactions":
-      return { type, scope, minInteractions: trigger.minInteractions }
+      return { type, ...common, minInteractions: trigger.minInteractions }
     case "delay":
-      return { type, scope, delaySeconds: trigger.delaySeconds }
+      return { type, ...common, delaySeconds: trigger.delaySeconds }
     case "event":
-      return { type, scope, event: trigger.event }
+      return { type, ...common, event: trigger.event }
   }
 }
 
@@ -277,6 +283,7 @@ export function normalizeFeedbackTrigger(trigger: IFeedbackFormTrigger): IFeedba
  */
 const ZFeedbackFormTriggerInput = ZFeedbackFormTrigger.extend({
   type: z.enum(FEEDBACK_TRIGGER_TYPES).default("interactions"),
+  autoOpen: z.boolean().default(false),
   scope: z
     .array(z.string().min(1).refine(matchesKnownUiRoute, "Ce chemin ne correspond à aucune page du site"), { error: "Ajoutez au moins une page de déclenchement" })
     .min(1, "Ajoutez au moins une page de déclenchement"),

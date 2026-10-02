@@ -13,7 +13,7 @@ const form = (
 ): IFeedbackFormInput => ({
   slug,
   title: `Titre interne ${slug}`,
-  trigger: { type: "interactions", minInteractions: 2, scope },
+  trigger: { type: "interactions", autoOpen: false, minInteractions: 2, scope },
   questions,
 })
 
@@ -75,7 +75,7 @@ describe("public feedback-forms controller", () => {
         forms: [
           {
             slug: "recherche",
-            trigger: { type: "interactions", minInteractions: 2, scope: ["/recherche"] },
+            trigger: { type: "interactions", minInteractions: 2, autoOpen: false, scope: ["/recherche"] },
             questions: [{ id: "q1", type: "rating", label: "Utile ?", required: true, scale: "thumbs3" }],
           },
         ],
