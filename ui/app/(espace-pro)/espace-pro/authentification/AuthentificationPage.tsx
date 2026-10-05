@@ -14,6 +14,7 @@ import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 
 export default function Authentification() {
   const { error } = useSearchParamsRecord()
@@ -124,7 +125,7 @@ export default function Authentification() {
             initialValues={{ email: undefined }}
             validationSchema={toFormikValidationSchema(
               z.object({
-                email: z.string({ error: "Champ obligatoire" }).email("Insérez un email valide"),
+                email: z.email({ error: (issue) => (issue.input === undefined ? "Champ obligatoire" : EMAIL_FORMAT_ERROR) }),
               })
             )}
             onSubmit={submitEmail}
@@ -134,8 +135,17 @@ export default function Authentification() {
               // de l'erreur et déplace le focus sur le champ invalide (RGAA 11.10, 12.8).
               const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
               return (
-                <form ref={formRef} onSubmit={handleSubmit} noValidate autoComplete="off">
-                  <CustomInput name="email" label="Votre email" type="email" value={values.email} autoFocus />
+                <form ref={formRef} onSubmit={handleSubmit} noValidate>
+                  <CustomInput
+                    hideAsterisk
+                    name="email"
+                    label="E-mail (obligatoire)"
+                    type="email"
+                    autoComplete="email"
+                    info="Format attendu : nom@domaine.fr"
+                    value={values.email}
+                    autoFocus
+                  />
                   <Alerts />
                   <Button type="submit" disabled={isSubmitting} style={{ width: "100%", justifyContent: "center" }}>
                     Se connecter

@@ -80,11 +80,11 @@ export function CandidaterButton({
               }}
             >
               {CandidatureSimplifie ? (
-                <Button iconId="fr-icon-mail-send-fill" onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
+                <Button iconId="fr-icon-mail-send-fill" onClick={openApplicationForm} data-testid="postuler-button">
                   Candidature simplifiée
                 </Button>
               ) : (
-                <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
+                <Button onClick={openApplicationForm} data-testid="postuler-button">
                   {buttonLabel}
                 </Button>
               )}

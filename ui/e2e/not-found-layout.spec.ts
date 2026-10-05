@@ -23,4 +23,13 @@ test.describe("404 déclenchées par notFound() — ossature unique", () => {
     await expect(page.locator(`#${mainId("detail-emploi")}`)).toHaveCount(1)
     await expect(page.locator(`#${footerId("detail-emploi")}`)).toHaveCount(1)
   })
+
+  test("une 404 d'opt-out RDVA (établissement inconnu) n'affiche qu'une seule ossature", async ({ page }) => {
+    await page.goto("/optout/unsubscribe/000000000000000000000000?token=jeton-invalide-e2e")
+    await expect(page.getByRole("heading", { name: "404" })).toBeVisible()
+    await page.waitForLoadState("networkidle")
+
+    await expect(page.locator(`#${mainId("rdva")}`)).toHaveCount(1)
+    await expect(page.locator(`#${footerId("rdva")}`)).toHaveCount(1)
+  })
 })

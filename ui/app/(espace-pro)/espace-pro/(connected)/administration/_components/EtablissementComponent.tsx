@@ -3,6 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Input, Typography } from "@mui/material"
 import type { ReactNode } from "react"
 import { createRef, useEffect, useState } from "react"
+import { z } from "zod"
 
 import "react-dates/initialize"
 import "react-dates/lib/css/_datepicker.css"
@@ -11,10 +12,11 @@ import LbaBadge from "@/app/(espace-pro)/_components/Badge"
 import { useToast } from "@/app/hooks/useToast"
 import { dayjs } from "@/common/dayjs"
 import { apiGet, apiPatch } from "@/utils/api.utils"
+import { EMAIL_FORMAT_ERROR, EMAIL_FORMAT_HINT } from "@/utils/validation-messages"
 
 const Field = ({ label, children }: { label: string; children: ReactNode }) => (
   <Box sx={{ width: "100%" }}>
-    <Typography component="dt" sx={{ fontWeight: 700, mb: fr.spacing("6v"), p: 0 }}>
+    <Typography component="dt" sx={{ fontWeight: 700, mb: fr.spacing("2v"), p: 0 }}>
       {label}
     </Typography>
     <Box component="dd" sx={{ m: 0, p: 0 }}>
@@ -24,9 +26,10 @@ const Field = ({ label, children }: { label: string; children: ReactNode }) => (
 )
 
 const EtablissementComponent = ({ id }: { id?: string }) => {
-  const emailGestionnaireRef = createRef()
+  const emailGestionnaireRef = createRef<HTMLInputElement>()
 
   const [etablissement, setEtablissement]: [any, (t: any) => void] = useState(undefined)
+  const [emailError, setEmailError] = useState<string | null>(null)
   const toast = useToast()
 
   const fetchData = async () => {
@@ -68,8 +71,14 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
   }
 
   const saveEmailDecisionnaire = async () => {
-    // @ts-expect-error: TODO
-    await upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())
+    const email = emailGestionnaireRef.current.value.trim().toLowerCase()
+    if (!z.email().safeParse(email).success) {
+      setEmailError(EMAIL_FORMAT_ERROR)
+      emailGestionnaireRef.current.focus()
+      return
+    }
+    setEmailError(null)
+    await upsertEmailDecisionnaire(email)
   }
 
   if (etablissement === null) {
@@ -77,20 +86,20 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
   }
 
   return (
-    <Box sx={{ backgroundColor: "white", border: "1px solid #E0E5ED", borderRadius: "4px", mt: fr.spacing("10v"), pb: fr.spacing("4v") }}>
-      <Box sx={{ borderBottom: "1px solid #E0E5ED" }}>
-        <Typography sx={{ fontSize: "20px", fontWeight: 700, p: fr.spacing("4v") }}>Etablissement</Typography>
-      </Box>
-      <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v"), m: 0 }}>
+    <Box sx={{ mt: fr.spacing("10v") }}>
+      <Typography variant="h3" component="h2" gutterBottom>
+        Etablissement
+      </Typography>
+      <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), py: fr.spacing("2v"), px: 0, m: 0 }}>
         <Field label="Raison sociale">{etablissement?.raison_sociale}</Field>
         <Field label="SIRET Formateur">{etablissement?.formateur_siret}</Field>
         <Field label="SIRET Gestionnaire">{etablissement?.gestionnaire_siret}</Field>
       </Box>
-      <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v"), m: 0 }}>
+      <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), py: fr.spacing("2v"), px: 0, m: 0 }}>
         <Field label="Adresse">{etablissement?.formateur_address}</Field>
         <Field label="Code postal">{etablissement?.formateur_zip_code}</Field>
       </Box>
-      <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v"), m: 0 }}>
+      <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), py: fr.spacing("2v"), px: 0, m: 0 }}>
         {etablissement?.optout_invitation_date && (
           <Field label="Date d'invitation à l'opt-out">
             <LbaBadge variant="neutral">{dayjs(etablissement?.optout_invitation_date).format("DD/MM/YYYY")}</LbaBadge>
@@ -103,18 +112,21 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
         )}
       </Box>
       {etablissement?.optout_refusal_date && (
-        <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v"), m: 0 }}>
+        <Box component="dl" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), py: fr.spacing("2v"), px: 0, m: 0 }}>
           <Field label="Date de refus de l'opt-out">
             <LbaBadge variant="neutral">{dayjs(etablissement?.optout_refusal_date).format("DD/MM/YYYY")}</LbaBadge>
           </Field>
         </Box>
       )}
-      <Box sx={{ p: fr.spacing("4v") }}>
+      <Box sx={{ py: fr.spacing("4v") }}>
         <Box>
           <Typography component="label" htmlFor="emailDecisionnaire" sx={{ fontWeight: 700 }}>
-            Email décisionnaire
+            E-mail décisionnaire (obligatoire)
           </Typography>
-          <Box sx={{ mt: fr.spacing("6v"), display: "flex", alignItems: "center" }}>
+          <Typography id="emailDecisionnaire-hint" className={fr.cx("fr-hint-text")} sx={{ mt: fr.spacing("2v") }}>
+            {EMAIL_FORMAT_HINT}
+          </Typography>
+          <Box sx={{ mt: fr.spacing("4v"), display: "flex", alignItems: "center" }}>
             <Input
               sx={{ fontSize: "12px", maxWidth: "400px", width: "100%" }}
               className={fr.cx("fr-input")}
@@ -122,11 +134,20 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
               defaultValue={etablissement?.gestionnaire_email}
               type="email"
               id="emailDecisionnaire"
+              required
+              autoComplete="off"
+              error={Boolean(emailError)}
+              aria-describedby={emailError ? "emailDecisionnaire-hint emailDecisionnaire-error" : "emailDecisionnaire-hint"}
             />
             <Box sx={{ ml: fr.spacing("2v") }}>
-              <Button onClick={saveEmailDecisionnaire} iconId="fr-icon-save-line" title="Enregistrer l'Email décisionnaire" />
+              <Button onClick={saveEmailDecisionnaire} iconId="fr-icon-save-line" title="Enregistrer l'e-mail décisionnaire" />
             </Box>
           </Box>
+          {emailError && (
+            <Typography id="emailDecisionnaire-error" className={fr.cx("fr-message--error")} sx={{ mt: fr.spacing("2v") }}>
+              {emailError}
+            </Typography>
+          )}
         </Box>
       </Box>
     </Box>

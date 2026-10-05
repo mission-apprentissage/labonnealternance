@@ -11,7 +11,7 @@ import { searchItems, suggestSearchTerms } from "@/services/search/search.servic
 import { normalizeQuery } from "@/services/search/search-query-log.service"
 
 import type { IQueryAnalysis, IQueryStats } from "./search-suggestion-criteria"
-import { CRITERIA, decideSuggestion, decideSynonym, isSuggestionCandidate, isSynonymCandidate, passesQuantitativeGate } from "./search-suggestion-criteria"
+import { CRITERIA, decideSuggestion, decideSynonym, isSuggestionCandidate, isSynonymCandidate, passesQuantitativeGate, resolveRejectionReason } from "./search-suggestion-criteria"
 
 /**
  * Analyse périodique des recherches utilisateurs (`search_queries`, alimentée au fil de l'eau
@@ -126,6 +126,13 @@ export const analyzeSearchQueries = async () => {
   const cappedReasons = new Map<string, number>()
   const countCapped = (reason: string) => cappedReasons.set(reason, (cappedReasons.get(reason) ?? 0) + 1)
 
+  // Rejet persisté ; si la clé est déjà prise par une suggestion du run (cf. persistDecision), le
+  // doublon est compté comme tel plutôt que sous le motif d'origine.
+  const reject = async (stats: IQueryStats, analysis: IQueryAnalysis | null, reason: string) => {
+    const written = await persistDecision(stats, analysis, "rejected", reason, runId, now)
+    countReason(written ? reason : "duplicate_in_run")
+  }
+
   const gatePassed: IQueryStats[] = []
   for (const stats of allStats) {
     const gate = passesQuantitativeGate(stats)
@@ -153,9 +160,8 @@ export const analyzeSearchQueries = async () => {
   const notCovered: IQueryStats[] = []
   for (const stats of candidates) {
     if (await isAlreadySuggested(stats)) {
-      countReason("already_suggested")
       // Persisté en rejected → pas de re-test au prochain run.
-      await persistDecision(stats, null, "rejected", "already_suggested", runId, now)
+      await reject(stats, null, "already_suggested")
     } else {
       notCovered.push(stats)
     }
@@ -189,8 +195,7 @@ export const analyzeSearchQueries = async () => {
     const content = contentByCustomId.get(stats.q_normalized)
     const parsed = content ? safeParseAnalysis(content) : null
     if (!parsed) {
-      countReason("ia_invalid")
-      await persistDecision(stats, null, "rejected", "ia_invalid", runId, now)
+      await reject(stats, null, "ia_invalid")
       continue
     }
 
@@ -202,11 +207,13 @@ export const analyzeSearchQueries = async () => {
       const canonical = parsed.canonical!.trim()
       const canonicalStats = { ...stats, top_raw_q: canonical, q_normalized: normalizeQuery(canonical) || stats.q_normalized }
       if (await isAlreadySuggested(canonicalStats)) {
-        countReason("already_suggested")
-        await persistDecision(stats, parsed, "rejected", "already_suggested", runId, now)
+        await reject(stats, parsed, "already_suggested")
         continue
       }
-      await persistDecision(canonicalStats, parsed, "active", null, runId, now)
+      if (!(await persistDecision(canonicalStats, parsed, "active", null, runId, now))) {
+        await reject(stats, parsed, "duplicate_in_run")
+        continue
+      }
       insertedSuggestions.push(canonical)
       continue
     }
@@ -218,15 +225,19 @@ export const analyzeSearchQueries = async () => {
       // Y4 — vérification empirique : la forme cible doit réellement produire des résultats.
       const controls = await Promise.all(SEARCH_MODES.map((mode) => searchItems({ q: target, mode, radius: 30, page: 0, hitsPerPage: 1 })))
       if (controls.every((control) => control.nbHits === 0)) {
-        countReason("synonym_target_no_hits")
-        await persistDecision(stats, parsed, "rejected", "synonym_target_no_hits", runId, now)
+        await reject(stats, parsed, "synonym_target_no_hits")
         continue
       }
       // Y5 — non-redondance : le couple ne doit exister dans aucun groupe.
       const existing = await getDbCollection("search_synonyms").findOne({ synonyms: { $all: [stats.top_raw_q.toLowerCase(), target.toLowerCase()] } })
       if (existing) {
-        countReason("synonym_exists")
-        await persistDecision(stats, parsed, "rejected", "synonym_exists", runId, now)
+        await reject(stats, parsed, "synonym_exists")
+        continue
+      }
+      // Trace côté search_suggestions (status disabled : pas dans l'autocomplete, mais audité),
+      // posée avant le groupe de synonymes pour ne pas insérer ce dernier sur une clé déjà prise.
+      if (!(await persistDecision(stats, parsed, "disabled", "routed_to_synonym", runId, now))) {
+        countReason("duplicate_in_run")
         continue
       }
       await getDbCollection("search_synonyms").insertOne({
@@ -237,8 +248,6 @@ export const analyzeSearchQueries = async () => {
         run_id: runId,
         created_at: now,
       })
-      // Trace aussi côté search_suggestions (status disabled : pas dans l'autocomplete, mais audité).
-      await persistDecision(stats, parsed, "disabled", "routed_to_synonym", runId, now)
       insertedSynonyms.push(`${stats.top_raw_q} → ${target}`)
       continue
     }
@@ -252,9 +261,7 @@ export const analyzeSearchQueries = async () => {
       continue
     }
 
-    const reason = suggestionVerdict.reason ?? synonymVerdict.reason ?? "rejected_both_routes"
-    countReason(reason)
-    await persistDecision(stats, parsed, "rejected", reason, runId, now)
+    await reject(stats, parsed, resolveRejectionReason(suggestionVerdict, synonymVerdict))
   }
 
   // 6. Rapport.
@@ -284,12 +291,18 @@ function safeParseAnalysis(content: string): IQueryAnalysis | null {
   }
 }
 
+/**
+ * Insertion seule : une clé `normalized` déjà présente (autre candidat du run dont la forme canonique
+ * tombe sur la même clé) n'est jamais écrasée. Renvoie false dans ce cas.
+ */
 async function persistDecision(stats: IQueryStats, analysis: IQueryAnalysis | null, status: "active" | "disabled" | "rejected", reason: string | null, runId: string, now: Date) {
-  await getDbCollection("search_suggestions").updateOne(
+  const result = await getDbCollection("search_suggestions").updateOne(
     { normalized: stats.q_normalized },
     {
-      $setOnInsert: { _id: new ObjectId(), normalized: stats.q_normalized, created_at: now },
-      $set: {
+      $setOnInsert: {
+        _id: new ObjectId(),
+        normalized: stats.q_normalized,
+        created_at: now,
         term: stats.top_raw_q,
         origin: "user_queries",
         status,
@@ -309,6 +322,7 @@ async function persistDecision(stats: IQueryStats, analysis: IQueryAnalysis | nu
     },
     { upsert: true }
   )
+  return result.upsertedCount === 1
 }
 
 /** Rollback groupé d'un run : supprime les suggestions ET les groupes de synonymes insérés. */
