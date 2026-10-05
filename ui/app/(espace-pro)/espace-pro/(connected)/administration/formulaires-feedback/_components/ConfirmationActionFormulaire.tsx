@@ -95,7 +95,7 @@ export function ConfirmationActionFormulaire({
   const paragraphs = config.description(form)
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose} labelledBy={TITLE_ID}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={TITLE_ID}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
         <Typography id={TITLE_ID} component="h2" className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }}>
           {config.title}

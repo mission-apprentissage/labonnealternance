@@ -142,7 +142,14 @@ export function FeedbackWidget({ questions, variant = "inline", onProgress, clos
         </Button>
       </Box>
 
-      <Typography ref={headingRef} id={headingId} tabIndex={-1} data-feedback-heading sx={{ fontSize: "15px", fontWeight: 700, lineHeight: "22px", mb: 0, outlineOffset: "2px" }}>
+      <Typography
+        ref={headingRef}
+        id={headingId}
+        tabIndex={-1}
+        data-feedback-heading
+        // titre focalisé par programme, sans contour ; « :focus » requis pour passer devant la règle DSFR `[tabindex]:focus`
+        sx={{ fontSize: "15px", fontWeight: 700, lineHeight: "22px", mb: 0, "&:focus, &:focus-visible": { outline: "none" } }}
+      >
         {current ? current.label : "Merci pour votre retour"}
       </Typography>
 
