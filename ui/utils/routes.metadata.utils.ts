@@ -56,11 +56,7 @@ export const METADATA = {
     }),
     // Note : les compteurs des meta ci-dessous sont en dur volontairement (importer les tableaux
     // _data juste pour un .length alourdirait le graphe serveur pour rien). À mettre à jour lors
-<<<<<<< HEAD
     // d'un changement de palier (30/30/30 → 100). Les pages hub affichent, elles, le décompte
-=======
-    // d'un changement de palier (30/30/20 → 100). Les pages hub affichent, elles, le décompte
->>>>>>> origin/main
     // dynamique via {data.length}.
     alternanceMetiers: () => ({
       title: "30 métiers en alternance qui recrutent | La bonne alternance",
@@ -72,11 +68,7 @@ export const METADATA = {
     }),
     alternanceDiplomes: () => ({
       title: "Diplômes en alternance : CAP, bac pro, BTS, titre pro | LBA",
-<<<<<<< HEAD
       description: "Explorez 30 diplômes accessibles en alternance : CAP, bac pro, BTS, titres pro et licence pro. Programme, durée, salaire et débouchés.",
-=======
-      description: "Explorez 20 diplômes accessibles en alternance : CAP, bac pro, BTS, titres pro et licence pro. Programme, durée, salaire et débouchés.",
->>>>>>> origin/main
     }),
     codeSources: () => ({
       title: "Nos sources de données - La bonne alternance",
