@@ -8,7 +8,10 @@ module.exports = {
       {
         // Le déploiement lit .infra sur main mais l'image de la dernière release : un refactor sans release
         // déploie des secrets et un .env_server que l'image en cours ne connaît pas (#5650).
-        releaseRules: [{ type: "refactor", release: "patch" }],
+        releaseRules: [
+          { breaking: true, release: "major" },
+          { type: "refactor", release: "patch" },
+        ],
       },
     ],
     "@semantic-release/release-notes-generator",
