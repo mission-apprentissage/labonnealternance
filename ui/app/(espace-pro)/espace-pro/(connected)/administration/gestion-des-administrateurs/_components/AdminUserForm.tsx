@@ -18,11 +18,12 @@ import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focu
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
+import { toSubmittedPhone } from "@/common/validation/field-validations"
 import { createSuperUser, updateUser } from "@/utils/api"
 import { ApiError, apiDelete } from "@/utils/api.utils"
 import { EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
 import { AdminConfirmationModal } from "./AdminConfirmationModal"
-import { buildAdminUserFormSchema, toSubmittedPhone } from "./admin-user-form.schema"
+import { buildAdminUserFormSchema } from "./admin-user-form.schema"
 
 const { OPCO, ADMIN } = AUTHTYPE
 

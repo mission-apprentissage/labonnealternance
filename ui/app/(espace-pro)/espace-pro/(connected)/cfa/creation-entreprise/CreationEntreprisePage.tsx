@@ -18,6 +18,7 @@ const CreationCompte = () => {
 
   return (
     <SiretAutocomplete
+      label="Nom ou SIRET de l’entreprise partenaire"
       onSubmit={({ establishment_siret }, { setSubmitting, setFieldError }) => {
         const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
         getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret }).then((entrepriseData) => {
