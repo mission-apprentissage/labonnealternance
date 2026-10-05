@@ -56,13 +56,13 @@ describe("sendContactsToBrevo", () => {
 
     await sendContactsToBrevo()
 
-    // 2 appels (TRANSACTIONAL + MARKETING) pour le batch ENTREPRISE
     const entrepriseCalls = vi
       .mocked(uploadContactListToBrevo)
-      .mock.calls.filter(([, rows]) => (rows as Record<string, unknown>[]).some((r) => r.role_authorized_type === AccessEntityType.ENTREPRISE))
-    expect(entrepriseCalls.length).toBe(2)
+      .mock.calls.filter(([rows]) => (rows as Record<string, unknown>[]).some((r) => r.role_authorized_type === AccessEntityType.ENTREPRISE))
+    expect(entrepriseCalls.length).toBe(1)
 
-    const [, rows] = entrepriseCalls[0]
+    const [rows, , listId] = entrepriseCalls[0]
+    expect(listId).toBe("996")
     const row = (rows as Record<string, unknown>[]).find((r) => r.user_email === contact.user_email)
     expect(row).toBeDefined()
     expect(row?.user_last_action_date).toEqual(new Date("2025-06-15"))
@@ -86,9 +86,9 @@ describe("sendContactsToBrevo", () => {
 
     const cfaCalls = vi
       .mocked(uploadContactListToBrevo)
-      .mock.calls.filter(([, rows]) => (rows as Record<string, unknown>[]).some((r) => r.role_authorized_type === AccessEntityType.CFA))
-    expect(cfaCalls.length).toBe(2)
-    const [, rows] = cfaCalls[0]
+      .mock.calls.filter(([rows]) => (rows as Record<string, unknown>[]).some((r) => r.role_authorized_type === AccessEntityType.CFA))
+    expect(cfaCalls.length).toBe(1)
+    const [rows] = cfaCalls[0]
     const row = (rows as Record<string, unknown>[]).find((r) => r.user_email === cfaContact.user_email)
     expect(row?.user_last_action_date).toEqual(new Date("2025-06-15"))
     expect(row?.last_offer_date).toBeUndefined()
@@ -103,7 +103,7 @@ describe("sendContactsToBrevo", () => {
     await sendContactsToBrevo()
 
     // le pipeline peut émettre des lots vides : on vérifie qu'aucun contact n'est poussé
-    const pushedRows = vi.mocked(uploadContactListToBrevo).mock.calls.flatMap(([, rows]) => rows as Record<string, unknown>[])
+    const pushedRows = vi.mocked(uploadContactListToBrevo).mock.calls.flatMap(([rows]) => rows as Record<string, unknown>[])
     expect(pushedRows).toHaveLength(0)
   })
 })

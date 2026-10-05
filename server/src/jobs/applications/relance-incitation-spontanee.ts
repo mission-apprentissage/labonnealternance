@@ -34,7 +34,7 @@ type CandidateAggregate = {
 }
 
 export const relanceIncitationSpontanee = async () => {
-  const listId = config.smtp.brevoRelanceSpontaneeListId
+  const listId = config.brevo.listIds.relanceSpontanee
   if (!listId) {
     logger.warn("relanceIncitationSpontanee: LBA_BREVO_RELANCE_SPONTANEE_LIST_ID non configuré, job ignoré")
     return
@@ -115,7 +115,6 @@ export const relanceIncitationSpontanee = async () => {
 
   try {
     await uploadContactListToBrevo(
-      "MARKETING",
       rows,
       [
         { key: "email", header: "EMAIL" },

@@ -40,7 +40,7 @@ type NurturingAggregate = {
 }
 
 export const nurturingEntreprises = async () => {
-  const listId = config.smtp.brevoNurturingEntreprisesListId
+  const listId = config.brevo.listIds.nurturingEntreprises
   if (!listId) {
     logger.warn("nurturingEntreprises: LBA_BREVO_NURTURING_ENTREPRISES_LIST_ID non configuré, job ignoré")
     return
@@ -165,7 +165,6 @@ export const nurturingEntreprises = async () => {
 
   try {
     await uploadContactListToBrevo(
-      "MARKETING",
       rows,
       [
         { key: "email", header: "EMAIL" },
