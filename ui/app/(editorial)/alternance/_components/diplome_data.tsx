@@ -118,6 +118,7 @@ export const diplomeData = [
     titre: "Titre Pro ADVF",
     intituleLongFormation: "ASSISTANT DE VIE AUX FAMILLES",
     romes: ["K1302", "K1304", "K1303"],
+<<<<<<< HEAD
   },
   {
     slug: "cap-boucher",
@@ -178,5 +179,7 @@ export const diplomeData = [
     titre: "Bac pro MSPC",
     intituleLongFormation: "MAINTENANCE DES SYSTEMES DE PRODUCTION CONNECTES",
     romes: ["I1304", "I1310"],
+=======
+>>>>>>> origin/main
   },
 ]

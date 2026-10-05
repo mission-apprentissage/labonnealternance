@@ -75,7 +75,7 @@ const CandidatureLbaFailed = ({ error }: { error: string }) => {
 
   return (
     <Box sx={{ px: fr.spacing("8v") }}>
-      <Typography variant="h1" sx={{ mb: 5, fontSize: "1.5rem", fontWeight: 700 }}>
+      <Typography component="p" variant="h1" sx={{ mb: 5, fontSize: "1.5rem", fontWeight: 700 }}>
         Erreur
       </Typography>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>

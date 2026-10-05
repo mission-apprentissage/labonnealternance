@@ -9,7 +9,7 @@ import { referrers } from "shared/constants/referers"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getEmailForRdv } from "@/services/eligible-trainings-for-appointment.service"
-import { findFirstNonBlacklistedEmail } from "@/services/formation.service"
+import { findFirstNonBlacklistedEmail, getFormationTitle } from "@/services/formation.service"
 
 /**
  * Champs de formationcatalogues réellement consommés ici. Sans projection le curseur tire aussi le
@@ -32,6 +32,8 @@ const FORMATION_PROJECTION = {
   email: 1,
   cfd: 1,
   intitule_long: 1,
+  intitule_court: 1,
+  intitule_rco: 1,
   published: 1,
   parcoursup_id: 1,
   parcoursup_visible: 1,
@@ -221,7 +223,9 @@ export const syncEtablissementsAndFormations = async () => {
           affelnet_visible: formation.affelnet_visible,
           training_code_formation_diplome: formation.cfd,
           etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
-          training_intitule_long: formation.intitule_long,
+          // Sans aucun intitulé, le null est laissé au validateur : rejet compté hors production,
+          // remonté par db:validate en production.
+          training_intitule_long: getFormationTitle(formation) as string,
           referrers: referrersToActivate,
           is_catalogue_published: formation.published,
           last_catalogue_sync_date: syncedAt,

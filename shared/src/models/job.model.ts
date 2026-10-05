@@ -62,6 +62,17 @@ export const JOB_START_TYPE = {
 
 export type JOB_START_TYPE = (typeof JOB_START_TYPE)[keyof typeof JOB_START_TYPE]
 
+/** Mode de rédaction de la description d'une offre LBA : fiche métier ROME, ou texte rédigé par le recruteur. */
+export const OFFER_DESCRIPTION_MODE = {
+  STRUCTURED: "structured",
+  CUSTOM: "custom",
+} as const
+
+export type OFFER_DESCRIPTION_MODE = (typeof OFFER_DESCRIPTION_MODE)[keyof typeof OFFER_DESCRIPTION_MODE]
+
+export const JOB_DESCRIPTION_MAX_LENGTH = 3000
+export const JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH = 800
+
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
   switch (status) {
     case JOB_STATUS.ACTIVE:
@@ -101,6 +112,25 @@ export const ZDelegation = z.strictObject({
   cfa_read_company_detail_at: z.date().nullish().describe("Date de consultation de l'offre"),
   etablissement_id: z.string().nullish().describe("Identifiant d'établissement du catalogue correspondant à etablissement_gestionnaire_id ou etablissement_formateur_id"),
 })
+
+export const TO_APPLICANT_QUESTION_MIN_LENGTH = 5
+export const TO_APPLICANT_QUESTION_MAX_LENGTH = 200
+export const TO_APPLICANT_QUESTIONS_MAX_COUNT = 3
+
+// Questions posées par le recruteur au candidat. Définies ici et réutilisées par le modèle jobs_partners
+// pour que la saisie espace-pro et le dépôt par API partagent exactement les mêmes contraintes.
+export const ZToApplicantQuestions = z
+  .array(
+    z
+      .string()
+      .trim()
+      .min(TO_APPLICANT_QUESTION_MIN_LENGTH, `Une question doit contenir au moins ${TO_APPLICANT_QUESTION_MIN_LENGTH} caractères.`)
+      .max(TO_APPLICANT_QUESTION_MAX_LENGTH, `Une question ne peut pas dépasser ${TO_APPLICANT_QUESTION_MAX_LENGTH} caractères.`)
+      .refine((value) => detectUrlAndEmails(value).length === 0, "Les urls et les emails sont interdits")
+  )
+  .max(TO_APPLICANT_QUESTIONS_MAX_COUNT, `Sélectionnez ${TO_APPLICANT_QUESTIONS_MAX_COUNT} questions au maximum`)
+  .nullish()
+  .describe("Questions posées par le recruteur pour le candidat")
 
 export const ZJobFields = z.strictObject({
   rome_label: z.string().nullish().describe("Libellé du métier concerné"),
@@ -148,7 +178,7 @@ export const ZJobFields = z.strictObject({
     .nullish()
     .refine((value: string | null | undefined) => (value ? detectUrlAndEmails(value).length === 0 : true), "Les urls et les emails sont interdits")
     .describe("Titre de l'offre saisi par le recruteur"),
-  to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
+  to_applicant_questions: ZToApplicantQuestions,
   ft_support: z.boolean().nullish().default(false).describe("Offre transmise à France Travail"),
 })
 
@@ -181,6 +211,13 @@ export const ZJobStartDateCreate = (now: dayjs.Dayjs | null = null) =>
       }
     )
 
+// Limites de saisie portées par les corps de création et de mise à jour, pas par ZJobFields qui valide
+// aussi les réponses : sanitizeTextField encode & en &amp;, un texte stocké peut dépasser sa limite.
+export const ZJobFreeTextInput = {
+  job_description: z.string().max(JOB_DESCRIPTION_MAX_LENGTH).nullish(),
+  job_employer_description: z.string().max(JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH).nullish(),
+}
+
 export const ZJobCreate = ZJobFields.pick({
   rome_appellation_label: true,
   rome_code: true,
@@ -190,8 +227,6 @@ export const ZJobCreate = ZJobFields.pick({
   job_count: true,
   job_duration: true,
   job_rythm: true,
-  job_description: true,
-  job_employer_description: true,
   delegations: true,
   competences_rome: true,
   offer_title_custom: true,
@@ -201,6 +236,7 @@ export const ZJobCreate = ZJobFields.pick({
   job_start_date_flexible: true,
 })
   .extend({
+    ...ZJobFreeTextInput,
     job_start_date: ZJobStartDateCreate(),
     job_start_type: extensions.buildEnum(JOB_START_TYPE),
   })

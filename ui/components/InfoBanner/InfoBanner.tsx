@@ -9,7 +9,7 @@ import type { IDisplayState } from "@/context/DisplayContextProvider"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const blueBannerText = (
-  <Typography>
+  <Typography component="div">
     <Typography>
       <Typography component="span" sx={{ fontWeight: 700 }}>
         Comment pourrions-nous faciliter vos recrutements en alternance ?{" "}
@@ -103,7 +103,7 @@ const InfoBanner = ({
           }}
         >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#B34000" }}>
-            <Typography className={fr.cx("ri-error-warning-fill", "fr-icon--sm")} />
+            <Typography component="span" aria-hidden="true" className={fr.cx("ri-error-warning-fill", "fr-icon--sm")} />
             <Box
               sx={{
                 flexGrow: 1,
@@ -125,7 +125,7 @@ const InfoBanner = ({
           }}
         >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#B34000" }}>
-            <Typography className={fr.cx("ri-error-warning-fill", "fr-icon--sm")} />
+            <Typography component="span" aria-hidden="true" className={fr.cx("ri-error-warning-fill", "fr-icon--sm")} />
             <Box
               sx={{
                 flexGrow: 1,
@@ -147,7 +147,7 @@ const InfoBanner = ({
           }}
         >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#18753C" }}>
-            <Typography className={fr.cx("ri-checkbox-circle-fill", "fr-icon--sm")} />
+            <Typography component="span" aria-hidden="true" className={fr.cx("ri-checkbox-circle-fill", "fr-icon--sm")} />
             <Box
               sx={{
                 flexGrow: 1,
@@ -169,7 +169,7 @@ const InfoBanner = ({
           }}
         >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#0063CB" }}>
-            <Typography className={fr.cx("ri-information-fill", "fr-icon--sm")} />
+            <Typography component="span" aria-hidden="true" className={fr.cx("ri-information-fill", "fr-icon--sm")} />
             <Box
               sx={{
                 flexGrow: 1,

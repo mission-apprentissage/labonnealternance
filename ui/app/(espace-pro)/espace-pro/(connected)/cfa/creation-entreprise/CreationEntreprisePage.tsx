@@ -18,6 +18,7 @@ const CreationCompte = () => {
 
   return (
     <SiretAutocomplete
+      label="Nom ou SIRET de l’entreprise partenaire"
       onSubmit={({ establishment_siret }, { setSubmitting, setFieldError }) => {
         const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
         getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret }).then((entrepriseData) => {
@@ -47,18 +48,20 @@ const InformationEntreprise = () => (
       Ajout d’une entreprise partenaire
     </Typography>
     <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-      <Typography>
-        Ajoutez l’entreprise pour laquelle vous recherchez des candidats.
-        <br />
-        <strong>L’entreprise doit vous avoir préalablement donné son accord.</strong>
-        <br />
-        <br />
-        Le SIRET de votre entreprise partenaire peut être trouvé sur{" "}
-        <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" external>
-          l’annuaire des entreprises
-        </DsfrLink>
-        .
-      </Typography>
+      <Box>
+        <Typography sx={{ mb: fr.spacing("6v") }}>
+          Ajoutez l’entreprise pour laquelle vous recherchez des candidats.
+          <br />
+          <strong>L’entreprise doit vous avoir préalablement donné son accord.</strong>
+        </Typography>
+        <Typography>
+          Le SIRET de votre entreprise partenaire peut être trouvé sur{" "}
+          <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" external>
+            l’annuaire des entreprises
+          </DsfrLink>
+          .
+        </Typography>
+      </Box>
     </Box>
   </Box>
 )

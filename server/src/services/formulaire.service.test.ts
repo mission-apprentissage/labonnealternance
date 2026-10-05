@@ -1,10 +1,11 @@
 import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
 import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveDbEntity, saveEntrepriseUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
+import { roleManagementEventFactory, saveDbEntity, saveEntreprise, saveEntrepriseUserTest, saveRoleManagement, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { AccessEntityType, AccessStatus, JOB_CLOSURE_ORIGIN, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -16,11 +17,12 @@ import type { ICFA } from "shared/models/cfa.model"
 import type { IFormationCatalogue } from "shared/models/formation.model"
 import { zFormationCatalogueSchema } from "shared/models/formation.model"
 import type { IEntreprise, IJobCreate, IReferentielRome, IUserWithAccount } from "shared/models/index"
-import { JOB_START_TYPE } from "shared/models/job.model"
+import { JOB_START_TYPE, OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { buildEstablishmentId } from "./etablissement.service"
 import {
   ARCHIVE_FORMULAIRE_REASON,
   archiveFormulaire,
@@ -30,6 +32,8 @@ import {
   createJobDelegations,
   getCompetencesRomeFromPartnerJob,
   getFormulairesForCfaManagedEnterprises,
+  getFormulaireWithRomeDetail,
+  jobPartnersToRecruiter,
   provideOffre,
 } from "./formulaire.service"
 import mailer from "./mailer.service"
@@ -43,6 +47,12 @@ vi.mock("@/services/mailer.service", () => {
     },
   }
 })
+
+// createJob/patchOffre appellent Mistral pour modérer job_description/job_employer_description (cf #5006) :
+// on mocke pour ne jamais dépendre du réseau/d'une clé API dans les tests, quel que soit le contenu des fixtures.
+vi.mock("@/services/mistralai/mistralai.service", () => ({
+  sendMistralMessages: vi.fn().mockResolvedValue(null),
+}))
 
 useMongo()
 
@@ -221,6 +231,72 @@ describe("getCompetencesRomeFromPartnerJob", () => {
       savoir_etre_professionnel: [selectedSavoirEtre],
       savoir_faire: [{ libelle: selectedSavoirFaireCategory!.libelle, items: [selectedSavoirFaireItem] }],
       savoirs: [{ libelle: selectedSavoirsCategory!.libelle, items: [selectedSavoirsItem] }],
+    })
+  })
+})
+
+/**
+ * Une offre déposée sans description rédigée stocke la définition ROME dans offer_description. Rendue
+ * telle quelle au formulaire, elle rouvrait l'édition en mode "Personnaliser la description", la fiche
+ * métier présentée comme une saisie du recruteur.
+ */
+describe("jobPartnersToRecruiter", () => {
+  const referentielRome = generateReferentielRome()
+  const entreprise = generateEntrepriseFixture({})
+  const user = generateUserWithAccountFixture({})
+  const role = generateRoleManagementFixture({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString(), user_id: user._id })
+
+  const jobDescriptionOf = (offerDescription: string | null) => {
+    const partnerJob = {
+      ...generateJobsPartnersOfferPrivate({ offer_description: offerDescription ?? "" }),
+      rome_detail: referentielRome,
+    }
+    return jobPartnersToRecruiter([partnerJob], role, user, entreprise).jobs[0].job_description
+  }
+
+  it("should drop the description when it is the rome definition", () => {
+    expect(jobDescriptionOf(referentielRome.definition)).toBe(null)
+  })
+
+  it("should drop the description when it is the rome definition with different spacing", () => {
+    expect(jobDescriptionOf(`  ${referentielRome.definition.replace(" ", "\n  ")}\n`)).toBe(null)
+  })
+
+  it("should keep a description written by the recruiter", () => {
+    const written = "Vous rejoindrez notre atelier de 12 personnes pour préparer un BTS maintenance, avec un tuteur dédié."
+    expect(jobDescriptionOf(written)).toBe(written)
+  })
+
+  it("should keep a short description: the display threshold does not apply to the edit form", () => {
+    const short = "Poste d'assistant, tuteur dédié."
+    expect(short.length).toBeLessThan(50)
+    expect(jobDescriptionOf(short)).toBe(short)
+  })
+
+  it("should keep a description that merely starts with the rome definition", () => {
+    const written = `${referentielRome.definition} Chez nous, un tuteur vous accompagne dès la première semaine.`
+    expect(jobDescriptionOf(written)).toBe(written)
+  })
+
+  describe("with a stored description mode", () => {
+    const recruiterJobOf = (overrides: Partial<IJobsPartnersOfferPrivate>) =>
+      jobPartnersToRecruiter([{ ...generateJobsPartnersOfferPrivate(overrides), rome_detail: referentielRome }], role, user, entreprise).jobs[0]
+
+    it("should trust the structured mode over a description that no longer matches the rome definition", () => {
+      // définition recopiée au dépôt puis modifiée par un réimport du référentiel
+      const job = recruiterJobOf({
+        offer_description: "Ancienne définition ROME, remplacée depuis dans le référentiel.",
+        offer_description_mode: OFFER_DESCRIPTION_MODE.STRUCTURED,
+      })
+      expect.soft(job.job_description).toBeNull()
+      expect.soft(job.competences_rome).not.toBeNull()
+    })
+
+    it("should return the description of a custom offer, without competences", () => {
+      const written = "Vous rejoindrez notre atelier de 12 personnes pour préparer un BTS maintenance."
+      const job = recruiterJobOf({ offer_description: written, offer_description_mode: OFFER_DESCRIPTION_MODE.CUSTOM })
+      expect.soft(job.job_description).toBe(written)
+      expect.soft(job.competences_rome).toBeNull()
     })
   })
 })
@@ -772,5 +848,22 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       expect.soft(job.updated_at).toEqual(updated_at)
       expect.soft(job.offer_status_history).toHaveLength(0)
     })
+  })
+})
+
+describe("getFormulaireWithRomeDetail — utilisateur rattaché à plusieurs entreprises", () => {
+  it("should derive the recruiter status from the role on the requested company", async () => {
+    const { user } = await saveEntrepriseUserTest({}, { status: [roleManagementEventFactory({ status: AccessStatus.DENIED })] }, { siret: "11111111100011" })
+    const entrepriseValidee = await saveEntreprise({ siret: "22222222200022" })
+    await saveRoleManagement({
+      user_id: user._id,
+      authorized_id: entrepriseValidee._id.toString(),
+      authorized_type: AccessEntityType.ENTREPRISE,
+      status: [roleManagementEventFactory({ status: AccessStatus.GRANTED })],
+    })
+
+    const recruiter = await getFormulaireWithRomeDetail({ establishment_id: buildEstablishmentId(user._id, entrepriseValidee.siret) })
+
+    expect(recruiter?.status).toBe(RECRUITER_STATUS.ACTIF)
   })
 })

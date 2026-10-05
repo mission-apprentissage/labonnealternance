@@ -58,6 +58,7 @@ const guideCfaPage = () => {
               Tout savoir sur l'alternance
             </Typography>
             <Divider
+              aria-hidden="true"
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
             />
           </Grid>
@@ -86,6 +87,9 @@ const guideCfaPage = () => {
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["accompagner-vos-alternants"]} />
             </Grid>
+            <Grid size={{ md: 3, xs: 12 }}>
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["rediger-son-offre-d-alternance"]} source="guide-cfa" />
+            </Grid>
           </Grid>
           <Grid container size={12} spacing={fr.spacing("4v")}>
             <Grid size={12} my={fr.spacing("6v")}>
@@ -93,6 +97,7 @@ const guideCfaPage = () => {
                 Liens utiles
               </Typography>
               <Divider
+                aria-hidden="true"
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>
@@ -160,6 +165,7 @@ const guideCfaPage = () => {
                   Documents utiles
                 </Typography>
                 <Divider
+                  aria-hidden="true"
                   sx={{
                     width: fr.spacing("16v"),
                     height: 0,
@@ -196,6 +202,7 @@ const guideCfaPage = () => {
               Encore plus de ressources
             </Typography>
             <Divider
+              aria-hidden="true"
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
             />
           </Grid>

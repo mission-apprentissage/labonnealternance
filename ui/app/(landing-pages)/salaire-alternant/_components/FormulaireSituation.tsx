@@ -6,11 +6,13 @@ import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Input from "@codegouvfr/react-dsfr/Input"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import Select from "@codegouvfr/react-dsfr/Select"
-import Tooltip from "@codegouvfr/react-dsfr/Tooltip"
 import { Box, Collapse, Typography } from "@mui/material"
 import dayjs from "dayjs"
+import type { FormikHelpers } from "formik"
 import { Form, Formik } from "formik"
+import { useRef } from "react"
 import * as Yup from "yup"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
 import { DATE_DERNIERE_MISE_A_JOUR, MAX_DATE_NAISSANCE, MIN_DATE_NAISSANCE, MIN_DEBUT_CONTRAT, NEXT_START_OF_MONTH } from "@/config/simulateur-alternant"
 import type { InputSimulation } from "@/services/simulateur-alternant"
@@ -20,35 +22,38 @@ import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 
 const inputSchema = Yup.object().shape({
-  typeContrat: Yup.string().oneOf(["apprentissage", "professionnalisation"]).required("Champ obligatoire"),
+  typeContrat: Yup.string().oneOf(["apprentissage", "professionnalisation"]).required("Sélectionnez un type de contrat"),
   dateNaissance: Yup.date()
     .min(MIN_DATE_NAISSANCE, "Votre âge n'est pas éligible à l'alternance. Veuillez renseigner un âge entre 14 et 77 ans.")
     .max(MAX_DATE_NAISSANCE, "Votre âge n'est pas éligible à l'alternance. Veuillez renseigner un âge entre 14 et 77 ans.")
-    .required("Champ obligatoire"),
+    .required("Saisissez votre date de naissance, par exemple 24/12/2004"),
   isDateSignatureContratConnue: Yup.boolean().when("typeContrat", {
     is: "apprentissage",
-    then: (schema) => schema.required("Champ obligatoire"),
+    then: (schema) => schema.required("Indiquez si vous connaissez la date de signature"),
     otherwise: (schema) => schema.notRequired(),
   }),
   dateSignatureContrat: Yup.date().when("isDateSignatureContratConnue", {
     is: true,
-    then: (schema) => schema.required("Champ obligatoire").min(MIN_DEBUT_CONTRAT, `La date de signature de contrat doit être dans l'année civile en cours ou ultérieure.`),
+    then: (schema) =>
+      schema
+        .required("Saisissez la date de signature, par exemple 01/09/2026")
+        .min(MIN_DEBUT_CONTRAT, `La date de signature de contrat doit être dans l'année civile en cours ou ultérieure.`),
     otherwise: (schema) => schema.notRequired(),
   }),
   niveauDiplome: Yup.number().when("typeContrat", {
     is: "professionnalisation",
-    then: (schema) => schema.required("Champ obligatoire").min(1).max(8),
+    then: (schema) => schema.required("Sélectionnez votre niveau de diplôme").min(1).max(8),
     otherwise: (schema) => schema.notRequired(),
   }),
   dureeContrat: Yup.number()
     .min(1, "La durée du contrat doit être comprise entre 1 et 4 ans")
     .max(4, "La durée du contrat doit être comprise entre 1 et 4 ans")
-    .required("Champ obligatoire"),
+    .required("Sélectionnez une durée de contrat"),
   secteur: Yup.string()
     .oneOf(["public", "privé", "nsp"])
     .when("typeContrat", {
       is: "apprentissage",
-      then: (schema) => schema.required("Champ obligatoire"),
+      then: (schema) => schema.required("Sélectionnez le secteur de l'entreprise"),
       otherwise: (schema) => schema.notRequired(),
     }),
   isRegionMayotte: Yup.boolean().default(false),
@@ -95,6 +100,7 @@ const isProfessionnalisation = (typeContrat: string | undefined) => typeContrat 
 
 export const FormulaireSituation = () => {
   const { setSimulation } = useSimulateur()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const initialValues: InputSchemaType = {
     typeContrat: undefined,
@@ -107,7 +113,7 @@ export const FormulaireSituation = () => {
     isRegionMayotte: false,
   }
 
-  const onSubmit = (values: InputSchemaType) => {
+  const onSubmit = (values: InputSchemaType, { setSubmitting }: FormikHelpers<InputSchemaType>) => {
     const inputSimulation: InputSimulation = {
       ...values,
       typeContrat: values.typeContrat,
@@ -131,6 +137,8 @@ export const FormulaireSituation = () => {
         event: MATOMO_EVENTS.SALARY_SIMULATION_COMPLETED,
         result_status: "failed",
       })
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -139,12 +147,12 @@ export const FormulaireSituation = () => {
       <Typography variant="h2" color={fr.colors.decisions.text.title.blueFrance.default} gutterBottom>
         Votre situation :
       </Typography>
-      <Typography variant="caption" color={fr.colors.decisions.text.mention.grey.default} gutterBottom>
+      <Typography variant="caption" component="p" color={fr.colors.decisions.text.mention.grey.default} gutterBottom>
         Sauf mention contraire “(optionnel)” , tous les champs sont obligatoires.
       </Typography>
       <Formik validateOnMount={true} enableReinitialize={true} initialValues={initialValues} validationSchema={inputSchema} onSubmit={onSubmit}>
-        {({ values, errors, touched, isValid, dirty, handleChange, handleBlur, setValues }) => (
-          <Form autoComplete="off">
+        {({ values, errors, touched, isSubmitting, handleChange, handleBlur, setValues, validateForm, setTouched, submitForm }) => (
+          <Form ref={formRef} noValidate onSubmit={createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Box
                 py={fr.spacing("3v")}
@@ -178,18 +186,15 @@ export const FormulaireSituation = () => {
               <Box py={fr.spacing("3v")}>
                 <Input
                   id="dateNaissance"
-                  label={
-                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                      <Typography variant="body1">Date de naissance</Typography>
-                      <Tooltip title={"Votre âge détermine votre éligibilité au contrat et vos conditions salariales."} kind="click" />
-                    </Box>
-                  }
-                  hintText="Format attendu : JJ/MM/AAAA exemple 24/12/2004"
+                  label="Date de naissance"
+                  hintText="Votre âge détermine votre éligibilité au contrat et vos conditions salariales. Format attendu : JJ/MM/AAAA exemple 24/12/2004"
                   nativeInputProps={{
                     name: "dateNaissance",
                     type: "date",
+                    autoComplete: "bday",
                     onChange: handleChange,
                     onBlur: handleBlur,
+                    "aria-invalid": Boolean(touched.dateNaissance && errors.dateNaissance),
                   }}
                   state={touched.dateNaissance ? (errors.dateNaissance ? "error" : "info") : "default"}
                   stateRelatedMessage={
@@ -205,7 +210,9 @@ export const FormulaireSituation = () => {
                       name: "niveauDiplome",
                       value: values.niveauDiplome,
                       onChange: handleChange,
+                      onBlur: handleBlur,
                       defaultValue: "",
+                      "aria-invalid": Boolean(touched.niveauDiplome && errors.niveauDiplome),
                     }}
                     state={touched.niveauDiplome && errors.niveauDiplome ? "error" : "default"}
                     stateRelatedMessage={touched.niveauDiplome && errors.niveauDiplome ? `${errors.niveauDiplome}` : undefined}
@@ -267,6 +274,7 @@ export const FormulaireSituation = () => {
                         : "",
                       onChange: handleChange,
                       onBlur: handleBlur,
+                      "aria-invalid": values.isDateSignatureContratConnue !== false && Boolean(touched.dateSignatureContrat && errors.dateSignatureContrat),
                     }}
                     disabled={values.isDateSignatureContratConnue === false}
                     state={values.isDateSignatureContratConnue === false ? "info" : touched.dateSignatureContrat && errors.dateSignatureContrat ? "error" : "default"}
@@ -282,22 +290,15 @@ export const FormulaireSituation = () => {
               </Collapse>
               <Box py={fr.spacing("3v")}>
                 <Select
-                  label={
-                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                      <Typography variant="body1" mr={0}>
-                        Durée du contrat
-                      </Typography>
-                      <Tooltip
-                        title={"La durée de votre contrat varie en fonction de la formation choisie. Votre rémunération augmentera à chaque nouvelle année d’exécution du contrat."}
-                        kind="click"
-                      />
-                    </Box>
-                  }
+                  label="Durée du contrat"
+                  hint="La durée de votre contrat varie en fonction de la formation choisie. Votre rémunération augmentera à chaque nouvelle année d’exécution du contrat."
                   nativeSelectProps={{
                     name: "dureeContrat",
                     value: values.dureeContrat,
                     onChange: handleChange,
+                    onBlur: handleBlur,
                     defaultValue: "",
+                    "aria-invalid": Boolean(touched.dureeContrat && errors.dureeContrat),
                   }}
                   state={touched.dureeContrat && errors.dureeContrat ? "error" : "default"}
                   stateRelatedMessage={touched.dureeContrat && errors.dureeContrat ? `${errors.dureeContrat}` : undefined}
@@ -319,19 +320,8 @@ export const FormulaireSituation = () => {
                       marginTop: 0,
                       marginBottom: 0,
                     }}
-                    legend={
-                      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                        <Typography variant="body1" mr={0}>
-                          Secteur de l'entreprise
-                        </Typography>
-                        <Tooltip
-                          title={
-                            "Le niveau de cotisation salariale diffère entre le secteur privé et public (mairies, administrations, ...) impactant le salaire net. Le secteur public à caractère industriel et commercial doit être considéré comme du privé. Si vous n'avez pas ces informations, le salaire obtenu pourra être supérieur mais jamais inférieur."
-                          }
-                          kind="click"
-                        />
-                      </Box>
-                    }
+                    legend="Secteur de l'entreprise"
+                    hintText="Le niveau de cotisation salariale diffère entre le secteur privé et public (mairies, administrations, ...) impactant le salaire net. Le secteur public à caractère industriel et commercial doit être considéré comme du privé. Si vous n'avez pas ces informations, le salaire obtenu pourra être supérieur mais jamais inférieur."
                     name="secteur"
                     options={secteurOptions.map((option) => ({
                       label: option.label,
@@ -352,16 +342,14 @@ export const FormulaireSituation = () => {
                   options={[
                     {
                       label: (
-                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                          <Typography mb={"auto"}>
-                            <Typography component={"span"}>Le contrat s'exécute à Mayotte</Typography>
-                            <Typography variant="caption" color={fr.colors.decisions.text.mention.grey.default} m={fr.spacing("1v")} mr={0} component={"span"}>
-                              (optionnel)
-                            </Typography>
+                        <>
+                          Le contrat s'exécute à Mayotte
+                          <Typography variant="caption" color={fr.colors.decisions.text.mention.grey.default} m={fr.spacing("1v")} mr={0} component={"span"}>
+                            (optionnel)
                           </Typography>
-                          <Tooltip title={"À Mayotte, le SMIC horaire diffère du reste de la France, ce qui impacte la rémunération de l'alternant."} kind="click" />
-                        </Box>
+                        </>
                       ),
+                      hintText: "À Mayotte, le SMIC horaire diffère du reste de la France, ce qui impacte la rémunération de l'alternant.",
                       nativeInputProps: {
                         name: "isRegionMayotte",
                         onChange: (e) => {
@@ -376,7 +364,7 @@ export const FormulaireSituation = () => {
                 />
               </Box>
               <Box mt={fr.spacing("6v")}>
-                <Button type="submit" iconId="fr-icon-refresh-line" disabled={!(isValid && dirty)}>
+                <Button type="submit" iconId="fr-icon-refresh-line" disabled={isSubmitting}>
                   Calculer la rémunération
                 </Button>
               </Box>
@@ -384,7 +372,9 @@ export const FormulaireSituation = () => {
           </Form>
         )}
       </Formik>
-      <Typography variant="caption">Dernière mise à jour : {DATE_DERNIERE_MISE_A_JOUR.toLocaleDateString("fr-FR")}</Typography>
+      <Typography variant="caption" component="p">
+        Dernière mise à jour : {DATE_DERNIERE_MISE_A_JOUR.toLocaleDateString("fr-FR")}
+      </Typography>
     </Box>
   )
 }

@@ -1,4 +1,5 @@
 import { badRequest, notFound } from "@hapi/boom"
+import type { FastifyRequest } from "fastify"
 import * as _ from "lodash-es"
 import { ObjectId } from "mongodb"
 import { zRoutes } from "shared"
@@ -14,12 +15,21 @@ import * as eligibleTrainingsForAppointmentService from "@/services/eligible-tra
 import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
 
+// Placé avant server.auth : un jeton n'ouvre qu'un établissement, un id inconnu répondrait sinon 403 au lieu de 404.
+const assertEtablissementExists = async (req: FastifyRequest) => {
+  const { id } = req.params as { id: string }
+  const exists = ObjectId.isValid(id) && (await getDbCollection("etablissements").countDocuments({ _id: new ObjectId(id) }, { limit: 1 })) > 0
+  if (!exists) {
+    throw notFound("Etablissement not found.")
+  }
+}
+
 export default (server: Server) => {
   server.get(
     "/etablissements/:id",
     {
       schema: zRoutes.get["/etablissements/:id"],
-      onRequest: [server.auth(zRoutes.get["/etablissements/:id"])],
+      onRequest: [assertEtablissementExists, server.auth(zRoutes.get["/etablissements/:id"])],
     },
     async (req, res) => {
       const etablissement = await getDbCollection("etablissements").findOne(

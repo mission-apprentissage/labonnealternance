@@ -29,6 +29,7 @@ export const FormHeaderComponent = ({ children }: PropsWithChildren) => {
             }}
           >
             <Typography
+              component="h1"
               sx={{
                 fontSize: "2rem",
                 fontWeight: "bold",

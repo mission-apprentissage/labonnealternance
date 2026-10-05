@@ -44,10 +44,10 @@ describe("buildTaggedSearchUrl (highlightRecruteursLba)", () => {
     expect(url.searchParams.getAll("is_algo_company")).toEqual(["true"])
   })
 
-  it("traduit scrollToRecruteursLba d'une URL legacy en is_algo_company", () => {
+  it("sans l'option, ne rejoue pas le scrollToRecruteursLba d'une URL legacy", () => {
     const legacy = `${BASE_URL}/recherche?job_name=Boulanger&romes=E1401&scrollToRecruteursLba=true`
     const url = new URL(buildTaggedSearchUrl(legacy, { utmCampaign: "x" }) as string)
-    expect(url.searchParams.get("is_algo_company")).toBe("true")
+    expect(url.searchParams.has("is_algo_company")).toBe(false)
     expect(url.searchParams.get("q")).toBe("Boulanger")
     expect(url.searchParams.has("scrollToRecruteursLba")).toBe(false)
   })

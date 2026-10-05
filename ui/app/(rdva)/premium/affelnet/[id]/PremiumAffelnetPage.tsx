@@ -134,7 +134,10 @@ export default function PremiumAffelnet() {
             <Box sx={{ mb: fr.spacing("6v") }}>
               <Typography>
                 Le service sera activé sur toutes les formations éligibles à être affichées sur Choisir son affectation après la 3e, <br /> liées à votre SIRET{" "}
-                <strong>{etablissement.gestionnaire_siret}</strong>.
+                <Box component="span" sx={{ fontWeight: 700 }}>
+                  {etablissement.gestionnaire_siret}
+                </Box>
+                .
               </Typography>
             </Box>
           </>

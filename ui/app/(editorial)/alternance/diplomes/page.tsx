@@ -127,6 +127,7 @@ export default function AlternanceDiplomes() {
             Tous les diplômes accessibles en alternance
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{
               maxWidth: "93px",
@@ -224,8 +225,8 @@ export default function AlternanceDiplomes() {
             , l'alternance reste l'une des voies royales pour acquérir des réflexes terrain. Les BTS commerciaux — par exemple le{" "}
             {btsMco ? <Link href={PAGES.dynamic.seoDiplome(btsMco.slug).getPath()}>{btsMco.titre}</Link> : "BTS MCO"} ou le{" "}
             {btsNdrc ? <Link href={PAGES.dynamic.seoDiplome(btsNdrc.slug).getPath()}>{btsNdrc.titre}</Link> : "BTS NDRC"} — et le BUT Techniques de Commercialisation forment aux
-            métiers de la vente, du <span lang="en">retail</span> et du e-commerce. Les Licences Pro et Masters en marketing digital, communication ou data prolongent cette logique
-            sur des fonctions plus stratégiques (chef de produit, <span lang="en">traffic manager</span>, responsable marketing).
+            métiers de la vente, du <span lang="en">retail</span> et du e-commerce. Les Licences Pro et Masters en marketing digital, communication ou <span lang="en">data</span>{" "}
+            prolongent cette logique sur des fonctions plus stratégiques (chef de produit, <span lang="en">traffic manager</span>, responsable marketing).
           </Typography>
           <Typography component="p" sx={{ mb: fr.spacing("3v") }}>
             <Typography component="span" sx={accentSx}>

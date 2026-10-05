@@ -296,6 +296,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                     {/* submitOnSelect/submitOnClear : pas de bouton Rechercher ici, une option métier acceptée
                         (saisie libre ou suggestion) ou un champ vidé s'appliquent aussitôt, comme le lieu. */}
                     <SearchBar
+                      mode={params.mode}
                       initialQ={params.q}
                       initialLieuLabel={params.lieu_label}
                       franceEntiereIfEmpty
@@ -373,6 +374,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                 l'espace du panneau (borné au viewport visible, donc au-dessus du clavier). */}
             <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v"), height: searchFieldActive ? "100%" : undefined }}>
               <SearchBar
+                mode={params.mode}
                 layout="column"
                 inlineSuggestions
                 onActiveFieldChange={(field) => setSearchFieldActive(field !== null)}

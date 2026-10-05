@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest"
 import type { z } from "zod"
 
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../../../constants/recruteur.js"
-import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
 import type { IJobsPartnersOfferApi } from "../../../models/jobs-partners.model.js"
 import type { IJobOfferApiReadV3, zJobOfferApiReadV3, zJobRecruiterApiReadV3 } from "./jobs.routes.v3.model.js"
 import { jobsRouteApiv3Converters, zJobOfferApiWriteV3 } from "./jobs.routes.v3.model.js"
@@ -53,6 +53,8 @@ type IJobOfferExpected = {
   apply: IJobRecruiterExpected["apply"]
   contract: {
     start: Date | null
+    start_type: "des_que_possible" | "precise_date" | null
+    start_is_flexible: boolean | null
     duration: number | null
     type: Array<"Apprentissage" | "Professionnalisation">
     remote: TRAINING_REMOTE_TYPE | null
@@ -74,6 +76,7 @@ type IJobOfferExpected = {
     }
     opening_count: number
     status: JOB_STATUS_ENGLISH
+    to_applicant_questions: string[] | null
   }
   is_delegated: boolean
 }
@@ -84,6 +87,8 @@ type IJobOfferApiWriteV3Expected = {
     type?: Array<"Apprentissage" | "Professionnalisation">
     remote?: TRAINING_REMOTE_TYPE | null
     start?: string | null
+    start_type?: "des_que_possible" | "precise_date" | null
+    start_is_flexible?: boolean | null
   }
   offer: {
     title: string
@@ -103,6 +108,7 @@ type IJobOfferApiWriteV3Expected = {
     origin?: string | null
     multicast?: boolean
     status?: JOB_STATUS_ENGLISH
+    to_applicant_questions?: string[] | null
   }
   apply: {
     url?: string | null
@@ -241,6 +247,100 @@ describe("IJobOfferApiWriteV3", () => {
 
       expect(result.success).toBe(true)
       expect(result.data?.contract.start).toEqual(inOneHour)
+    })
+  })
+
+  describe("contract_start_type / contract_start_is_flexible", () => {
+    it("should default to null", () => {
+      const result = zJobOfferApiWriteV3.safeParse({ ...data })
+
+      expect.soft(result.success).toBe(true)
+      expect.soft(result.data?.contract.start_type).toBe(null)
+      expect(result.data?.contract.start_is_flexible).toBe(null)
+    })
+
+    it("should accept the start type enum values", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        contract: { ...data.contract, start_type: JOB_START_TYPE.DES_QUE_POSSIBLE, start_is_flexible: false },
+      })
+
+      expect.soft(result.success).toBe(true)
+      expect.soft(result.data?.contract.start_type).toBe(JOB_START_TYPE.DES_QUE_POSSIBLE)
+      expect(result.data?.contract.start_is_flexible).toBe(false)
+    })
+
+    it("should reject an unknown start type", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        contract: { ...data.contract, start_type: "asap" },
+      })
+
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe("to_applicant_questions", () => {
+    const question = "Pourquoi souhaitez-vous rejoindre notre entreprise ?"
+
+    it("should default to null", () => {
+      const result = zJobOfferApiWriteV3.safeParse({ ...data })
+
+      expect.soft(result.success).toBe(true)
+      expect(result.data?.offer.to_applicant_questions).toBe(null)
+    })
+
+    it("should accept up to 3 questions", () => {
+      const questions = [question, "Qu'aimeriez-vous apprendre durant cette alternance ?", "Quelles compétences souhaitez-vous développer ?"]
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: { ...data.offer, to_applicant_questions: questions },
+      })
+
+      expect.soft(result.success).toBe(true)
+      expect(result.data?.offer.to_applicant_questions).toEqual(questions)
+    })
+
+    it("should reject more than 3 questions", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: { ...data.offer, to_applicant_questions: [question, question, question, question] },
+      })
+
+      expect.soft(result.success).toBe(false)
+      expect(result.error?.issues.at(0)?.message).toBe("Sélectionnez 3 questions au maximum")
+    })
+
+    it("should reject a question shorter than 5 characters", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: { ...data.offer, to_applicant_questions: ["Why"] },
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it("should reject a question longer than 200 characters", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: { ...data.offer, to_applicant_questions: ["a".repeat(201)] },
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it("should reject a question containing an url or an email", () => {
+      const withUrl = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: { ...data.offer, to_applicant_questions: ["Consultez https://example.com puis répondez"] },
+      })
+      const withEmail = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: { ...data.offer, to_applicant_questions: ["Écrivez à contact@example.com pour répondre"] },
+      })
+
+      expect.soft(withUrl.success).toBe(false)
+      expect(withEmail.success).toBe(false)
     })
   })
 
@@ -491,6 +591,8 @@ describe("convertToJobOfferApiReadV3", () => {
       contract_duration: 12,
       contract_remote: TRAINING_REMOTE_TYPE.onsite,
       contract_start: startOfNextMonth,
+      contract_start_type: JOB_START_TYPE.PRECISE_DATE,
+      contract_start_is_flexible: true,
       contract_type: ["Apprentissage"],
       contract_is_disabled_elligible: false,
       offer_access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
@@ -506,6 +608,7 @@ describe("convertToJobOfferApiReadV3", () => {
         label: "BP, Bac, autres formations niveau (Bac)",
       },
       offer_title: "Opérations administratives",
+      to_applicant_questions: ["Pourquoi souhaitez-vous rejoindre notre entreprise ?"],
       offer_to_be_acquired_skills: [
         "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
         "Production, Fabrication: Réaliser des travaux de reprographie",
@@ -576,6 +679,8 @@ describe("convertToJobOfferApiReadV3", () => {
       },
       contract: {
         start: startOfNextMonth,
+        start_type: JOB_START_TYPE.PRECISE_DATE,
+        start_is_flexible: true,
         duration: 12,
         type: ["Apprentissage"],
         remote: TRAINING_REMOTE_TYPE.onsite,
@@ -601,6 +706,7 @@ describe("convertToJobOfferApiReadV3", () => {
         },
         opening_count: 1,
         status: JOB_STATUS_ENGLISH.ACTIVE,
+        to_applicant_questions: ["Pourquoi souhaitez-vous rejoindre notre entreprise ?"],
       },
       is_delegated: false,
     }

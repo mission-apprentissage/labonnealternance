@@ -63,7 +63,7 @@ export default function DropdownCombobox(props) {
         // astérisque masquée car le formulaire porte déjà la mention "Tous les champs sont obligatoires").
         hideAsterisk
         name={name}
-        info={"Sélectionnez un métier pour référencer l'offre."}
+        info={"Sélectionnez un métier pour référencer l'offre"}
         placeholder={placeholder || "sélectionner un métier"}
         {...getInputProps({
           onFocus() {
@@ -122,7 +122,7 @@ export default function DropdownCombobox(props) {
           ))}
         {isOpen && inputItems.length === 0 && (
           <Box component="li" role="presentation" key="nomatch" {...neutralItemProps}>
-            Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche
+            <Typography>Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche</Typography>
           </Box>
         )}
       </Box>

@@ -76,7 +76,6 @@ import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offre-parte
 import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offre-partenaire/recruteur-lba/process-recruteurs-lba"
 import { processRhAlternance } from "./offre-partenaire/rh-alternance/process-rh-alternance"
 import { analyzeClosedCompanies } from "./one-time-job/analyze-closed-companies"
-import { cleanClosedCompanies } from "./one-time-job/clean-closed-companies"
 import { renvoiMailCreationCompte } from "./one-time-job/renvoi-mail-creation-compte"
 import { exportFileForAlgo } from "./partenaire-export/export-blacklist-algo"
 import { sendContactsToBrevo } from "./partenaire-export/export-contacts-to-brevo"
@@ -411,11 +410,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: fillSearchItemsCollection,
-    description: "Génère/met à jour la collection search_items (formations, jobs, recruteurs) pour MongoDB Search",
+    description: "Génère/met à jour les collections de recherche par mode (search_jobs, search_jobs_with_training, search_trainings)",
   },
   {
     fct: generateSearchItemsKeywordsContinuous,
-    description: "Génère les mots-clés des search_items sans keywords : cache puis API Mistral immédiate (plafonné par run)",
+    description: "Génère les mots-clés des offres indexées sans keywords : cache puis API Mistral immédiate (plafonné par run)",
     cliOptions: [{ flags: "--limit <n>", description: "Plafond d'appels API immédiats pour ce run (défaut 300)" }],
   },
   {
@@ -429,12 +428,12 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: syncSearchItemsDelta,
-    description: "Synchronise vers search_items les jobs_partners modifiés récemment (updated_at, fenêtre 10 min par défaut)",
+    description: "Synchronise vers l'index de recherche les jobs_partners modifiés récemment (updated_at, fenêtre 10 min par défaut)",
     cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à synchroniser (défaut : now − 10 min)" }],
   },
   {
     fct: controlSearchItemsDrift,
-    description: "Contrôle la dérive jobs_partners ↔ search_items et alerte Slack en cas d'écart",
+    description: "Contrôle la dérive jobs_partners ↔ index de recherche et alerte Slack en cas d'écart",
   },
   {
     fct: analyzeSearchQueries,
@@ -551,10 +550,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: updateHandiEngagement,
     description: "Télécharge le référentiel handi-engagement depuis S3 (siretlist/lba_handi_engage_flag.ndjson) et met à jour le référentiel d'engagement handicap",
-  },
-  {
-    fct: cleanClosedCompanies,
-    description: "Traite les recruteurs dont l'entreprise a fermé en les archivant et en désactivant les comptes associés",
   },
   {
     fct: processApec,

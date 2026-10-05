@@ -39,7 +39,7 @@ const cardBodySx = {
 
 const IntentionPageContent = ({ company_recruitment_intention, id, token, onCancel, onSentNow }: IntentionPageProps & { onCancel: () => void; onSentNow: () => void }) => {
   const [isEditing, setEditing] = useState(false)
-  const [formState, setFormState] = useState({ isValid: false, isSubmitting: false })
+  const [formState, setFormState] = useState({ isSubmitting: false })
 
   const {
     data,
@@ -176,15 +176,24 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
           <Typography sx={{ fontWeight: 700, mt: fr.spacing("3v") }}>
             {applicant_first_name} {applicant_last_name}
           </Typography>
-          <Typography sx={{ mt: fr.spacing("3v") }}>
-            Téléphone :
-            <br />
-            <strong>{applicant_phone}</strong>
-          </Typography>
-          <Typography sx={{ mt: fr.spacing("3v") }}>
-            Email :<br />
-            <strong>{applicant_email}</strong>
-          </Typography>
+          <Box component="dl" sx={{ m: 0, p: 0 }}>
+            <Box sx={{ mt: fr.spacing("3v") }}>
+              <Typography component="dt" sx={{ p: 0 }}>
+                Téléphone :
+              </Typography>
+              <Typography component="dd" sx={{ m: 0, p: 0, fontWeight: 700 }}>
+                {applicant_phone}
+              </Typography>
+            </Box>
+            <Box sx={{ mt: fr.spacing("3v") }}>
+              <Typography component="dt" sx={{ p: 0 }}>
+                Email :
+              </Typography>
+              <Typography component="dd" sx={{ m: 0, p: 0, fontWeight: 700 }}>
+                {applicant_email}
+              </Typography>
+            </Box>
+          </Box>
         </Box>
       ) : !isEditing ? (
         <Box sx={{ my: fr.spacing("6v"), px: fr.spacing("4v"), py: fr.spacing("2v"), backgroundColor: "#E1FEE8", color: "#18753C", width: "100%", display: "flex", gap: "10px" }}>
@@ -215,7 +224,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
               <Button
                 aria-label="Envoyer maintenant le message au candidat"
                 onClick={() => (document.getElementById("intention-form") as HTMLFormElement | null)?.requestSubmit()}
-                disabled={!formState.isValid || formState.isSubmitting}
+                disabled={formState.isSubmitting}
               >
                 <DsfrIcon name="fr-icon-mail-send-line" size={16} />
                 Envoyer maintenant

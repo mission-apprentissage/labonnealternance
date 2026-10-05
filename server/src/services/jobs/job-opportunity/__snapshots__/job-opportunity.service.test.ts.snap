@@ -11,6 +11,8 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "contract_is_disabled_elligible": false,
   "contract_remote": null,
   "contract_start": 2024-09-01T00:00:00.000Z,
+  "contract_start_is_flexible": null,
+  "contract_start_type": null,
   "contract_type": [
     "Apprentissage",
     "Professionnalisation",
@@ -32,6 +34,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "offer_title": "Apprentis en développement web",
   "offer_to_be_acquired_skills": [],
   "partner_label": "Some organisation",
+  "to_applicant_questions": null,
   "updated_at": 2024-06-18T00:00:00.000Z,
   "validated": false,
   "workplace_address_label": null,
@@ -54,6 +57,8 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "duration": null,
       "remote": null,
       "start": 2021-01-28T15:00:00.000Z,
+      "start_is_flexible": false,
+      "start_type": "precise_date",
       "type": [
         "Apprentissage",
       ],
@@ -85,6 +90,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "status": "Active",
       "target_diploma": null,
       "title": "Opérations administratives",
+      "to_applicant_questions": null,
       "to_be_acquired_skills": [
         "Production, Fabrication	Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
         "Production, Fabrication	Réaliser des travaux de reprographie",
@@ -134,6 +140,8 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "duration": null,
       "remote": null,
       "start": null,
+      "start_is_flexible": false,
+      "start_type": "precise_date",
       "type": [
         "Apprentissage",
         "Professionnalisation",
@@ -160,6 +168,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "status": "Active",
       "target_diploma": null,
       "title": "Une super offre d'alternance",
+      "to_applicant_questions": null,
       "to_be_acquired_skills": [],
     },
     "workplace": {
@@ -240,6 +249,8 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "contract_is_disabled_elligible": false,
   "contract_remote": null,
   "contract_start": 2024-09-01T00:00:00.000Z,
+  "contract_start_is_flexible": null,
+  "contract_start_type": null,
   "contract_type": [
     "Apprentissage",
     "Professionnalisation",
@@ -261,6 +272,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "offer_title": "Apprentis en développement web",
   "offer_to_be_acquired_skills": [],
   "partner_label": "Some organisation",
+  "to_applicant_questions": null,
   "updated_at": 2024-06-18T00:00:00.000Z,
   "validated": false,
   "workplace_address_label": null,

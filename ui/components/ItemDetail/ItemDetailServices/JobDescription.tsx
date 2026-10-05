@@ -1,29 +1,26 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Typography } from "@mui/material"
 import React, { useMemo } from "react"
 import type { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-export const BAD_DESCRIPTION_LENGTH = 50
+import { isDisplayableDescription } from "@/components/ItemDetail/ItemDetailServices/job-description.utils"
 
-const DescriptionSection = ({ title, children }: { title: string; children: string }) => (
-  <Box>
-    <Typography sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>{title}</Typography>
-    {/* component="div" : la description partenaire contient du HTML de bloc (<p>, <ul>) — un <p> l'invaliderait */}
-    <Typography component="div" sx={{ whiteSpace: "pre-wrap", mb: fr.spacing("4v") }} dangerouslySetInnerHTML={{ __html: children }} />
-  </Box>
+// Sans titre : chaque fiche porte le sien dans un h4.
+// component="div" : la description partenaire contient du HTML de bloc (<p>, <ul>) — un <p> l'invaliderait
+const DescriptionSection = ({ children }: { children: string }) => (
+  <Typography component="div" sx={{ whiteSpace: "pre-wrap", mb: fr.spacing("4v") }} dangerouslySetInnerHTML={{ __html: children }} />
 )
 
 export const JobDescription = ({ job }: { job: ILbaItemPartnerJobJson | ILbaItemLbaJobJson }) => {
   const { description, partner_label } = job.job
 
-  const validCustomDescription = useMemo(() => (description && description.length > BAD_DESCRIPTION_LENGTH ? description : null), [description])
-
-  const descriptionTitle = useMemo(() => `Description ${partner_label === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "du métier" : "de l'offre"}`, [partner_label])
+  const isLbaOffer = partner_label === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+  const validCustomDescription = useMemo(() => (isDisplayableDescription(description, isLbaOffer) ? description : null), [description, isLbaOffer])
 
   if (!validCustomDescription) {
     return null
   }
 
-  return <>{validCustomDescription && <DescriptionSection title={descriptionTitle}>{validCustomDescription}</DescriptionSection>}</>
+  return <DescriptionSection>{validCustomDescription}</DescriptionSection>
 }

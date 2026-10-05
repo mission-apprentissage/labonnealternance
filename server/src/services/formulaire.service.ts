@@ -15,7 +15,7 @@ import type {
   IUserRecruteur,
   zRoutes,
 } from "shared"
-import { assertUnreachable, JOB_CLOSURE_ORIGIN, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { assertUnreachable, JOB_CLOSURE_ORIGIN, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, removeAccents } from "shared"
 import { EntrepriseErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
@@ -29,6 +29,7 @@ import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/m
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
+import { isRecruiterWrittenDescription } from "shared/utils/job-description.utils"
 import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import type z from "zod"
 import { deduplicate } from "@/common/utils/array"
@@ -46,6 +47,7 @@ import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-not
 import { buildJobStatusChangeUpdate, changeJobsPartnersStatus } from "./job-partner-status.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
+import { moderateFreeText } from "./offre-moderation.service"
 import { getEntrepriseEngagementFranceTravail } from "./referentiel-engagement-entreprise.service"
 import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./role-management.service"
 import { getRomeDetailsFromDB } from "./rome.service"
@@ -84,6 +86,11 @@ export const createJob = async ({
   origin?: string
 }): Promise<IJobsPartnersOfferPrivate> => {
   await validateFieldsFromReferentielRome(job)
+
+  // Modération systématique des champs de description libre (correction + PII, cf #5006),
+  // indépendamment du nombre d'utilisations restantes du CTA "Améliorer via l'IA" côté UI.
+  const [moderatedDescription, moderatedEmployerDescription] = await Promise.all([moderateFreeText(job.job_description), moderateFreeText(job.job_employer_description)])
+  const moderatedJob: IJobCreate = { ...job, job_description: moderatedDescription, job_employer_description: moderatedEmployerDescription }
 
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
@@ -131,7 +138,7 @@ export const createJob = async ({
   }
 
   const newJobPartner: IJobsPartnersOfferPrivate = await jobCreateToJobsPartner({
-    job,
+    job: moderatedJob,
     cfa: cfa ?? undefined,
     entreprise,
     user,
@@ -140,7 +147,7 @@ export const createJob = async ({
   })
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
-  // Indexation immédiate dans search_items (no-op si l'offre est EN_ATTENTE).
+  // Indexation immédiate dans l'index de recherche (no-op si l'offre est EN_ATTENTE).
   syncJobPartnersToSearchItemsInBackground([newJobPartner._id])
 
   const userJobCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret })
@@ -508,6 +515,32 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
   return recruiters
 }
 
+/**
+ * Un utilisateur a un rôle par organisation : le statut affiché pour les offres d'un siret est celui
+ * du rôle sur l'entreprise de ce siret, et non le premier rôle trouvé, qui peut être refusé sur une
+ * autre entreprise. Les offres déléguées relèvent du rôle CFA.
+ */
+export const selectRoleForEntreprise = <T extends { authorized_type: string; authorized_id: string }>(
+  roles: T[],
+  entreprise: { _id: ObjectId },
+  context: { userId: ObjectId; siret: string }
+): T | null => {
+  const entrepriseRole = roles.find((role) => role.authorized_type === AccessEntityType.ENTREPRISE && role.authorized_id === entreprise._id.toString())
+  if (entrepriseRole) return entrepriseRole
+  const cfaRole = roles.find((role) => role.authorized_type === AccessEntityType.CFA)
+  if (cfaRole) return cfaRole
+  // aucun rôle ne correspond à ce siret : repli sur le premier rôle plutôt que de faire échouer
+  // l'espace recruteur, signalé à Sentry pour que l'incohérence se voie.
+  const fallback = roles.at(0) ?? null
+  if (fallback) {
+    sentryCaptureException(internal("aucun rôle sur l'entreprise du siret, repli sur le premier rôle"), {
+      level: "warning",
+      extra: { userId: context.userId.toString(), siret: context.siret, authorizedId: fallback.authorized_id },
+    })
+  }
+  return fallback
+}
+
 const getRecruiterFromJobsPartnerFilter = async ({
   userId,
   siret,
@@ -538,16 +571,19 @@ const getRecruiterFromJobsPartnerFilter = async ({
     ])
     .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number })[]
 
-  const [mainRole, entreprise, user] = await Promise.all([
-    getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: { $in: [AccessEntityType.CFA, AccessEntityType.ENTREPRISE] } }),
+  const [roles, entreprise, user] = await Promise.all([
+    getDbCollection("rolemanagements")
+      .find({ user_id: userId, authorized_type: { $in: [AccessEntityType.CFA, AccessEntityType.ENTREPRISE] } })
+      .toArray(),
     getDbCollection("entreprises").findOne({ siret }),
     getDbCollection("userswithaccounts").findOne({ _id: userId }),
   ])
-  if (!mainRole) {
-    throw internal("inattendu: mainRole vide", { userId: userId.toString(), siret })
-  }
   if (!entreprise) {
     throw internal("inattendu: entreprise vide", { userId: userId.toString(), siret })
+  }
+  const mainRole = selectRoleForEntreprise(roles, entreprise, { userId, siret })
+  if (!mainRole) {
+    throw internal("inattendu: mainRole vide", { userId: userId.toString(), siret })
   }
   if (!user) {
     throw internal("inattendu: user vide", { userId: userId.toString(), siret })
@@ -640,6 +676,13 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
   const job = payload
   const now = new Date()
 
+  // Modération systématique des champs de description libre (correction + PII, cf #5006),
+  // indépendamment du nombre d'utilisations restantes du CTA "Améliorer via l'IA" côté UI.
+  const [moderatedDescription, moderatedEmployerDescription] = await Promise.all([
+    moderateFreeText(job.job_description),
+    job.job_employer_description !== undefined ? moderateFreeText(job.job_employer_description) : undefined,
+  ])
+
   const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
 
   const jobPartnerUpdate: Partial<IJobsPartnersOfferPrivate> = {
@@ -652,20 +695,14 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     updated_at: now,
     offer_rome_codes: job.rome_code ?? null,
-    offer_desired_skills:
-      job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
-      romeDetails?.competences?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
-      [],
-    offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
-    offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
-    offer_access_conditions: romeDetails?.acces_metier ? [romeDetails.acces_metier] : [],
-    offer_description: romeDetails?.definition,
+    ...getRomeContentFields({ competences_rome: job.competences_rome, romeDetails, isCustomDescription: Boolean(moderatedDescription) }),
+    offer_description: moderatedDescription || romeDetails?.definition || "",
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     // cf. jobCreateToJobsPartner (offer_title_custom)
     offer_title: sanitizeToPlainText(job.offer_title_custom) || job.rome_appellation_label || existingJob.offer_title,
     offer_rome_appellation: job.rome_appellation_label,
-    workplace_description: job.job_employer_description !== undefined ? sanitizeTextField(job.job_employer_description, true) || null : existingJob.workplace_description,
+    workplace_description: job.job_employer_description !== undefined ? moderatedEmployerDescription || null : existingJob.workplace_description,
     to_applicant_questions: job.to_applicant_questions,
     contract_rythm: job.job_rythm,
     ...(job.ft_support !== undefined && { ft_support: job.ft_support }),
@@ -1029,6 +1066,49 @@ function getOfferStatus(job_status: JOB_STATUS, recruiter_status: RECRUITER_STAT
   }
 }
 
+type RomeContentFields = Pick<IJobsPartnersOfferPrivate, "offer_desired_skills" | "offer_to_be_acquired_skills" | "offer_to_be_acquired_knowledge" | "offer_access_conditions">
+
+/**
+ * Champs d'une offre LBA repris de la fiche ROME. Une offre à description rédigée les laisse vides :
+ * le recruteur n'a ni vu ni choisi ce contenu, que l'API diffuserait sinon avec son offre (#5590).
+ */
+const getRomeContentFields = ({
+  competences_rome,
+  romeDetails,
+  isCustomDescription,
+}: {
+  competences_rome: IJob["competences_rome"] | undefined
+  romeDetails: Pick<IReferentielRome, "competences" | "acces_metier"> | null | undefined
+  isCustomDescription: boolean
+}): RomeContentFields & Pick<IJobsPartnersOfferPrivate, "offer_description_mode"> => {
+  if (isCustomDescription) {
+    return {
+      offer_description_mode: OFFER_DESCRIPTION_MODE.CUSTOM,
+      offer_desired_skills: [],
+      offer_to_be_acquired_skills: [],
+      offer_to_be_acquired_knowledge: [],
+      offer_access_conditions: [],
+    }
+  }
+  return {
+    offer_description_mode: OFFER_DESCRIPTION_MODE.STRUCTURED,
+    offer_desired_skills:
+      competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+      romeDetails?.competences?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+      [],
+    offer_to_be_acquired_skills: getSkillsFromRome(competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
+    offer_to_be_acquired_knowledge: getSkillsFromRome(competences_rome?.savoirs, romeDetails?.competences?.savoirs),
+    offer_access_conditions: romeDetails?.acces_metier ? [romeDetails.acces_metier] : [],
+  }
+}
+
+const isCustomDescriptionOffer = (
+  jobPartner: Pick<IJobsPartnersOfferPrivate, "offer_description" | "offer_description_mode"> & { rome_detail?: IReferentielRome | null }
+): boolean =>
+  jobPartner.offer_description_mode
+    ? jobPartner.offer_description_mode === OFFER_DESCRIPTION_MODE.CUSTOM
+    : isRecruiterWrittenDescription(jobPartner.offer_description, jobPartner.rome_detail?.definition)
+
 function getSkillsFromRome(skills, romeDetailsSkills): string[] {
   const usedSkills = skills ?? romeDetailsSkills
 
@@ -1144,7 +1224,8 @@ async function jobCreateToJobsPartner({
   ])
   const entrepriseDataOpt = "error" in entrepriseDataRaw ? null : entrepriseDataRaw
 
-  const { definition, acces_metier } = romeDetails ?? {}
+  const { definition } = romeDetails ?? {}
+  const isCustomDescription = Boolean(job.job_description)
 
   // offer_title_custom = saisie libre recruteur (le schéma Zod n'interdit pas les tags HTML) →
   // texte brut avant stockage ; si le nettoyage vide le titre, fallback comme s'il était absent.
@@ -1197,16 +1278,11 @@ async function jobCreateToJobsPartner({
     workplace_size: entrepriseDataOpt?.establishment_size ?? null,
     offer_origin: origin ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
-    offer_desired_skills:
-      job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
-      romeDetails?.competences?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
-      [],
-    offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
-    offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
-    offer_access_conditions: acces_metier ? [acces_metier] : [],
+    ...getRomeContentFields({ competences_rome: job.competences_rome, romeDetails, isCustomDescription }),
     offer_title,
     offer_rome_codes: job.rome_code ?? null,
-    offer_description: job.job_description ?? definition ?? "",
+    // job.job_description est déjà modéré (correction IA + masquage PII + sanitization HTML) par createJob.
+    offer_description: job.job_description || definition || "",
     offer_creation: now,
     offer_expiration: addExpirationPeriod(now).toDate(),
     offer_status: status,
@@ -1216,7 +1292,8 @@ async function jobCreateToJobsPartner({
     contract_remote: null,
     offer_status_history: [],
     workplace_address_street_label: null,
-    workplace_description: sanitizeTextField(job.job_employer_description, true) || null,
+    // job.job_employer_description est déjà modéré (correction IA + masquage PII + sanitization HTML) par createJob.
+    workplace_description: job.job_employer_description || null,
     workplace_name: null,
     workplace_website: null,
 
@@ -1236,7 +1313,6 @@ async function jobCreateToJobsPartner({
     job_last_prolongation_date: null,
     job_prolongation_count: 0,
     offer_rome_appellation: job.rome_appellation_label,
-    applicationCount: 0,
     duplicates: [],
     apply_recipient_id: newId.toString(),
     to_applicant_questions: job.to_applicant_questions,
@@ -1281,6 +1357,7 @@ export function jobPartnersToRecruiter(
     const resolvedJobLevelLabel: IJob["job_level_label"] = isNiveauPourLbaLabel(jobLevelLabel) ? jobLevelLabel : null
     const resolvedJobRythm: IJob["job_rythm"] = jobPartner.contract_rythm
     const customTitle = jobPartner.offer_rome_appellation && jobPartner.offer_title !== jobPartner.offer_rome_appellation ? jobPartner.offer_title : null
+    const isCustomDescription = isCustomDescriptionOffer(jobPartner)
 
     const ijob: IRecruiterWithRomeDetailAndApplicationCount["jobs"][number] = {
       _id: jobPartner._id,
@@ -1290,7 +1367,10 @@ export function jobPartnersToRecruiter(
       job_start_type: jobPartner.contract_start_type ?? JOB_START_TYPE.PRECISE_DATE,
       job_start_date_flexible: Boolean(jobPartner.contract_start_is_flexible),
       job_start_date: jobPartner.contract_start ?? jobPartner.offer_creation ?? jobPartner.created_at,
-      job_description: jobPartner.offer_description,
+      // offer_description contient la définition ROME quand l'offre a été déposée sans description
+      // rédigée : la rendre telle quelle ferait rouvrir le formulaire en mode "Personnaliser", avec
+      // la fiche métier présentée comme une saisie du recruteur.
+      job_description: isCustomDescription ? jobPartner.offer_description : null,
       job_employer_description: jobPartner.workplace_description,
       rome_code: jobPartner.offer_rome_codes ?? [],
       rome_detail: jobPartner.rome_detail,
@@ -1315,7 +1395,9 @@ export function jobPartnersToRecruiter(
       custom_job_title: null,
       stats_detail_view: jobPartner.stats_detail_view,
       stats_search_view: jobPartner.stats_search_view,
-      competences_rome: getCompetencesRomeFromPartnerJob(jobPartner),
+      // champs ROME vides : sans compétences reçues, le formulaire repart de toute la fiche si le
+      // recruteur repasse en fiche métier (cf. finalSelectedCompetences)
+      competences_rome: isCustomDescription ? null : getCompetencesRomeFromPartnerJob(jobPartner),
       mer_sent: jobPartner.mer_sent,
       offer_title_custom: customTitle,
       candidatures: jobPartner.application_count ?? 0,

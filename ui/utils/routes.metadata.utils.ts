@@ -56,7 +56,11 @@ export const METADATA = {
     }),
     // Note : les compteurs des meta ci-dessous sont en dur volontairement (importer les tableaux
     // _data juste pour un .length alourdirait le graphe serveur pour rien). À mettre à jour lors
+<<<<<<< HEAD
     // d'un changement de palier (30/30/30 → 100). Les pages hub affichent, elles, le décompte
+=======
+    // d'un changement de palier (30/30/20 → 100). Les pages hub affichent, elles, le décompte
+>>>>>>> origin/main
     // dynamique via {data.length}.
     alternanceMetiers: () => ({
       title: "30 métiers en alternance qui recrutent | La bonne alternance",
@@ -68,7 +72,11 @@ export const METADATA = {
     }),
     alternanceDiplomes: () => ({
       title: "Diplômes en alternance : CAP, bac pro, BTS, titre pro | LBA",
+<<<<<<< HEAD
       description: "Explorez 30 diplômes accessibles en alternance : CAP, bac pro, BTS, titres pro et licence pro. Programme, durée, salaire et débouchés.",
+=======
+      description: "Explorez 20 diplômes accessibles en alternance : CAP, bac pro, BTS, titres pro et licence pro. Programme, durée, salaire et débouchés.",
+>>>>>>> origin/main
     }),
     codeSources: () => ({
       title: "Nos sources de données - La bonne alternance",
@@ -93,6 +101,10 @@ export const METADATA = {
     guidePreventionDesRisquesProfessionnelsPourLesApprentis: () => ({
       title: "La prévention des risques professionnels | Guide pour les apprentis, les CFA et les recruteurs",
       description: "Obligations des employeurs, accueil en entreprise et rôle des CFA dans la prévention des risques professionnels pour les apprentis.",
+    }),
+    guideRedigerSonOffreDAlternance: () => ({
+      title: "Bien rédiger son offre d'alternance | Charte de rédaction",
+      description: "Règles obligatoires, bonnes pratiques et modération : tout savoir pour rédiger une offre d'alternance claire, conforme et attractive.",
     }),
     guideAlternant: () => ({
       title: "Guide de l'alternant 2026 | Tout savoir sur l'alternance",

@@ -5,8 +5,6 @@ import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 import { JOB_START_TYPE } from "./job.model.js"
 
-const collectionName = "search_items" as const
-
 export const ZSearchItemLocation = z
   .object({
     type: z.literal("Point"),
@@ -52,70 +50,63 @@ export const ZSearchItem = z.object({
 
 export type ISearchItem = z.output<typeof ZSearchItem>
 
-export default {
-  zod: ZSearchItem,
-  indexes: [
-    [{ type: 1, sub_type: 1 }, {}],
-    [{ publication_date: -1 }, {}],
-    [{ location: "2dsphere" }, {}],
-  ],
-  searchIndexes: [
+/** Définition Atlas Search commune aux trois corpus ; les réglages par corpus vivent dans search.service.ts (SEARCH_CORPORA). */
+export const SEARCH_ITEM_INDEX_DEFINITION = {
+  mappings: {
+    dynamic: false,
+    fields: {
+      // title et rome_labels indexés aussi en `autocomplete` (préfixes) pour les suggestions de saisie.
+      title: [
+        { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+        { type: "autocomplete", tokenization: "edgeGram", minGrams: 3, maxGrams: 15, foldDiacritics: true },
+      ],
+      description: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+      keywords: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+      rome_labels: [
+        { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+        { type: "autocomplete", tokenization: "edgeGram", minGrams: 3, maxGrams: 15, foldDiacritics: true },
+      ],
+      // organization_name : nom d'organisme (CFA / entreprise), jamais à raciniser → analyzer dédié sans stemming.
+      organization_name: [{ type: "string", analyzer: "lba_company", multi: { standard: { type: "string", analyzer: "lucene.standard" } } }, { type: "token" }],
+      type: { type: "token" },
+      type_filter_label: { type: "token" },
+      sub_type: { type: "token" },
+      contract_type: { type: "token" },
+      level: { type: "token" },
+      activity_sector: { type: "token" },
+      smart_apply: { type: "boolean" },
+      application_count: { type: "number" },
+      publication_date: { type: "date" },
+      is_disabled_elligible: { type: "boolean" },
+      start_date: { type: "date" },
+      start_type: { type: "token" },
+      is_start_flexible: { type: "boolean" },
+      is_algo_company: { type: "boolean" },
+      is_formation_included: { type: "boolean" },
+      location: { type: "geo" },
+      departement_code: { type: "token" },
+      region_code: { type: "token" },
+    },
+  },
+  analyzers: [
     {
-      name: "search_items_index",
-      definition: {
-        mappings: {
-          dynamic: false,
-          fields: {
-            // title et rome_labels indexés aussi en `autocomplete` (préfixes) pour les suggestions de saisie.
-            title: [
-              { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
-              { type: "autocomplete", tokenization: "edgeGram", minGrams: 3, maxGrams: 15, foldDiacritics: true },
-            ],
-            description: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
-            keywords: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
-            rome_labels: [
-              { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
-              { type: "autocomplete", tokenization: "edgeGram", minGrams: 3, maxGrams: 15, foldDiacritics: true },
-            ],
-            // organization_name : nom d'organisme (CFA / entreprise), jamais à raciniser → analyzer dédié sans stemming.
-            organization_name: [{ type: "string", analyzer: "lba_company", multi: { standard: { type: "string", analyzer: "lucene.standard" } } }, { type: "token" }],
-            type: { type: "token" },
-            type_filter_label: { type: "token" },
-            sub_type: { type: "token" },
-            contract_type: { type: "token" },
-            level: { type: "token" },
-            activity_sector: { type: "token" },
-            smart_apply: { type: "boolean" },
-            application_count: { type: "number" },
-            publication_date: { type: "date" },
-            is_disabled_elligible: { type: "boolean" },
-            start_date: { type: "date" },
-            start_type: { type: "token" },
-            is_start_flexible: { type: "boolean" },
-            is_algo_company: { type: "boolean" },
-            is_formation_included: { type: "boolean" },
-            location: { type: "geo" },
-            departement_code: { type: "token" },
-            region_code: { type: "token" },
-          },
-        },
-        analyzers: [
-          {
-            // Noms d'organismes : minuscules + sans accents, sans stemming ni stopwords (noms propres préservés).
-            name: "lba_company",
-            tokenizer: { type: "standard" },
-            tokenFilters: [{ type: "lowercase" }, { type: "asciiFolding" }],
-          },
-        ],
-        synonyms: [
-          {
-            name: "lba_synonyms",
-            analyzer: "lucene.standard",
-            source: { collection: "search_synonyms" },
-          },
-        ],
-      },
+      // Noms d'organismes : minuscules + sans accents, sans stemming ni stopwords (noms propres préservés).
+      name: "lba_company",
+      tokenizer: { type: "standard" },
+      tokenFilters: [{ type: "lowercase" }, { type: "asciiFolding" }],
     },
   ],
-  collectionName,
-} as const satisfies IModelDescriptor
+  synonyms: [
+    {
+      name: "lba_synonyms",
+      analyzer: "lucene.standard",
+      source: { collection: "search_synonyms" },
+    },
+  ],
+} as const
+
+export const SEARCH_ITEM_INDEXES = [
+  [{ type: 1, sub_type: 1 }, {}],
+  [{ publication_date: -1 }, {}],
+  [{ location: "2dsphere" }, {}],
+] as const satisfies IModelDescriptor["indexes"]

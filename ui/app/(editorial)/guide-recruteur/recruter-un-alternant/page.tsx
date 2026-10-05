@@ -201,17 +201,26 @@ const RecruterUnAlternantPage = () => {
 
       <Section id="conditions" title="Conditions pour recruter un apprenti">
         <Paragraph>
-          <strong>Quel employeur ?</strong> Toute entreprise du secteur privé, association, profession libérale ou employeur public peut recruter un apprenti. Aucune condition de
-          taille ni d'ancienneté n'est requise.
+          <Typography component="span" fontWeight="bold">
+            Quel employeur ?
+          </Typography>{" "}
+          Toute entreprise du secteur privé, association, profession libérale ou employeur public peut recruter un apprenti. Aucune condition de taille ni d'ancienneté n'est
+          requise.
         </Paragraph>
         <Paragraph>
-          <strong>Quel âge pour l'apprenti ?</strong> Le contrat d'apprentissage s'adresse aux jeunes de 16 à 29 ans révolus. Il est accessible dès 15 ans si la classe de 3e est
-          achevée, et sans limite d'âge pour les personnes reconnues en situation de handicap (RQTH), les sportifs de haut niveau et les porteurs d'un projet de création ou de
-          reprise d'entreprise nécessitant le diplôme préparé.
+          <Typography component="span" fontWeight="bold">
+            Quel âge pour l'apprenti ?
+          </Typography>{" "}
+          Le contrat d'apprentissage s'adresse aux jeunes de 16 à 29 ans révolus. Il est accessible dès 15 ans si la classe de 3e est achevée, et sans limite d'âge pour les
+          personnes reconnues en situation de handicap (RQTH), les sportifs de haut niveau et les porteurs d'un projet de création ou de reprise d'entreprise nécessitant le diplôme
+          préparé.
         </Paragraph>
         <Paragraph>
-          <strong>Quel encadrement ?</strong> L'employeur doit désigner un <strong>maître d'apprentissage</strong>, salarié volontaire justifiant de la qualification et de
-          l'expérience nécessaires, chargé d'accompagner l'apprenti et de faire le lien avec le centre de formation (CFA).
+          <Typography component="span" fontWeight="bold">
+            Quel encadrement ?
+          </Typography>{" "}
+          L'employeur doit désigner un <strong>maître d'apprentissage</strong>, salarié volontaire justifiant de la qualification et de l'expérience nécessaires, chargé
+          d'accompagner l'apprenti et de faire le lien avec le centre de formation (CFA).
         </Paragraph>
       </Section>
 
@@ -253,28 +262,45 @@ const RecruterUnAlternantPage = () => {
           ordered
           listItems={[
             <>
-              <strong>Définissez le poste et le diplôme préparé</strong> : missions confiées à l'apprenti et niveau de formation visé.
+              <Typography component="span" fontWeight="bold">
+                Définissez le poste et le diplôme préparé
+              </Typography>{" "}
+              : missions confiées à l'apprenti et niveau de formation visé.
             </>,
             <>
-              <strong>Désignez un maître d'apprentissage</strong> pour encadrer l'apprenti en entreprise.
+              <Typography component="span" fontWeight="bold">
+                Désignez un maître d'apprentissage
+              </Typography>{" "}
+              pour encadrer l'apprenti en entreprise.
             </>,
             <>
-              <strong>Trouvez un candidat</strong> :{" "}
+              <Typography component="span" fontWeight="bold">
+                Trouvez un candidat
+              </Typography>{" "}
+              :{" "}
               <DsfrLink href={`${PAGES.static.espaceProCreationEntreprise.getPath()}?utm_source=lba&utm_medium=website&utm_campaign=lba_ressources_recruteur`}>
                 déposez gratuitement votre offre sur La bonne alternance
               </DsfrLink>{" "}
               pour recevoir des candidatures ciblées.
             </>,
             <>
-              <strong>Rapprochez-vous du centre de formation</strong> qui préparera l'apprenti au diplôme.
+              <Typography component="span" fontWeight="bold">
+                Rapprochez-vous du centre de formation
+              </Typography>{" "}
+              qui préparera l'apprenti au diplôme.
             </>,
             <>
-              <strong>Signez le contrat</strong> d'apprentissage (Cerfa FA13) ou de professionnalisation avec l'apprenti et le centre de formation. Votre OPCO peut vous accompagner
-              dans cette démarche — <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr/">trouver mon OPCO</DsfrLink>.
+              <Typography component="span" fontWeight="bold">
+                Signez le contrat
+              </Typography>{" "}
+              d'apprentissage (Cerfa FA13) ou de professionnalisation avec l'apprenti et le centre de formation. Votre OPCO peut vous accompagner dans cette démarche —{" "}
+              <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr/">trouver mon OPCO</DsfrLink>.
             </>,
             <>
-              <strong>Transmettez le contrat à votre OPCO</strong> au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en
-              charge les frais de formation.
+              <Typography component="span" fontWeight="bold">
+                Transmettez le contrat à votre OPCO
+              </Typography>{" "}
+              au plus tard dans les 5 jours ouvrables suivant le début du contrat. L'OPCO instruit le dossier et prend en charge les frais de formation.
             </>,
           ]}
         />

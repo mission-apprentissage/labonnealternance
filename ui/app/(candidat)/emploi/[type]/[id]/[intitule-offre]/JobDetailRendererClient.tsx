@@ -213,7 +213,9 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
                 <LbaItemTags item={selectedItem} />
                 <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
               </Box>
+              {/* Rappel du titre dans le bandeau fixe : le vrai titre (h3) reste celui de la fiche (RGAA 8.9) */}
               <Typography
+                component="p"
                 variant={"h3"}
                 sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
                 dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
@@ -280,7 +282,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
                 dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
               />
               <ItemDetailCard selectedItem={selectedItem} />
-              <hr style={{ paddingBottom: "1px" }} />
+              <hr aria-hidden="true" style={{ paddingBottom: "1px" }} />
               <Box
                 sx={{
                   display: "flex",
@@ -307,7 +309,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
                       <Box component="span">
                         <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
                       </Box>
-                      <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
+                      <Typography variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
                         Formation incluse : Votre candidature sera transmise à l'école ou à l'organisme qui gère ce recrutement.
                       </Typography>
                     </Stack>
