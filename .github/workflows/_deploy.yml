@@ -37,6 +37,9 @@ on:
       SLACK_WEBHOOK:
         description: Slack webhook URL
         required: true
+      SLACK_WEBHOOK_LBA_TEAM:
+        description: Slack webhook URL of #lba-team, production changelog only
+        required: false
       OPENPGP_PRIVATE_SUBKEY:
         description: Github Actions' OpenPGP private subkey
         required: true
@@ -335,29 +338,54 @@ jobs:
             BLOCK_COUNT=$(echo "$BLOCKS" | jq 'length')
           fi
 
+          PAYLOAD=$(jq -n --argjson blocks "$BLOCKS" \
+            '{"attachments":[{"color":"#00a95f","blocks":$blocks}]}')
+
           # Un webhook Slack répond "ok" en texte brut et refuse un payload invalide sans que curl
           # n'échoue : sans ce contrôle, le job sort vert sans avoir rien posté.
-          HTTP_CODE=$(jq -n --argjson blocks "$BLOCKS" \
-            '{"attachments":[{"color":"#00a95f","blocks":$blocks}]}' \
-          | curl -s -o /tmp/slack-response.txt -w '%{http_code}' -X POST "$SLACK_WEBHOOK_URL" \
-              -H 'Content-type: application/json' \
-              --data @-)
+          post_changelog() {
+            local channel="$1" url="$2" http_code response
+            if [ -z "$url" ]; then
+              echo "::error::Webhook Slack de ${channel} absent des secrets, changelog non posté"
+              return 1
+            fi
+            : > /tmp/slack-response.txt
+            # Une erreur réseau donne le code 000, signalé comme un refus plus bas.
+            http_code=$(printf '%s' "$PAYLOAD" \
+              | curl -s -o /tmp/slack-response.txt -w '%{http_code}' -X POST "$url" \
+                  -H 'Content-type: application/json' \
+                  --data @-) || true
 
-          # La réponse vient d'un service externe : sans échappement, un % ou un saut de ligne
-          # casserait la workflow command ::error:: et permettrait d'en forger d'autres.
-          SLACK_RESPONSE=$(tr '\r\n' '  ' < /tmp/slack-response.txt | sed 's/%/%25/g' | cut -c1-200)
-          if [ "$HTTP_CODE" != "200" ] || [ "$SLACK_RESPONSE" != "ok" ]; then
-            echo "::error::Slack a refusé le changelog (HTTP ${HTTP_CODE}) : ${SLACK_RESPONSE}"
-            exit 1
-          fi
-          echo "Changelog posté sur Slack (${BLOCK_COUNT} blocs)"
+            # La réponse vient d'un service externe : sans échappement, un % ou un saut de ligne
+            # casserait la workflow command ::error:: et permettrait d'en forger d'autres.
+            response=$(tr '\r\n' '  ' < /tmp/slack-response.txt | sed 's/%/%25/g' | cut -c1-200)
+            if [ "$http_code" != "200" ] || [ "$response" != "ok" ]; then
+              echo "::error::Slack a refusé le changelog pour ${channel} (HTTP ${http_code}) : ${response}"
+              return 1
+            fi
+            echo "Changelog posté dans ${channel} (${BLOCK_COUNT} blocs)"
+          }
+
+          # Chaque canal est tenté même si l'autre refuse ; un seul refus fait échouer le step.
+          POST_FAILED=0
+          post_changelog "#lba-alerting-ops" "$SLACK_WEBHOOK_URL" || POST_FAILED=1
+          post_changelog "#lba-team" "$SLACK_WEBHOOK_LBA_TEAM_URL" || POST_FAILED=1
+          exit "$POST_FAILED"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_LBA_TEAM_URL: ${{ secrets.SLACK_WEBHOOK_LBA_TEAM }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # Le statut des tickets ne dépend pas de la livraison Slack : seule la fenêtre de commits compte.
       - name: Mark linked issues as en-production in GitHub Project
+        if: ${{ !cancelled() }}
         shell: bash
         run: |
+          if [ -z "${PREV_SHA:-}" ] || [ -z "${CURRENT_TAG:-}" ]; then
+            echo "Fenêtre de changelog indéterminée, statuts des tickets non mis à jour"
+            exit 0
+          fi
+
           PR_NUMBERS=$(git log --pretty=format:"%s" "${PREV_SHA}..${CURRENT_TAG}" \
             | grep -oP '\(#\K[0-9]+(?=\))' || true)
 

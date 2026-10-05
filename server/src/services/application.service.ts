@@ -32,6 +32,7 @@ import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
+import { resetReplayedSearchParams } from "@/jobs/applications/relance-search-url"
 import type { UserForAccessToken } from "@/security/access-token.service"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
@@ -1152,13 +1153,10 @@ const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM
 
   const searchParams = application_url ? resolveSearchParamsFromApplicationUrl(application_url) : null
   if (searchParams) {
-    searchParams.delete("page")
+    resetReplayedSearchParams(searchParams)
     // Le CTA promet des candidatures : on force les offres même si la recherche d'origine affichait
     // aussi des formations (« Emplois avec formations »), auxquelles on ne candidate pas.
     searchParams.set("mode", "emplois")
-    for (const utmParam of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
-      searchParams.delete(utmParam)
-    }
     searchParams.set("utm_source", "lba-brevo-transactionnel")
     searchParams.set("utm_medium", "email")
     searchParams.set("utm_campaign", "accuse-envoi-candidature-lien-recherche")

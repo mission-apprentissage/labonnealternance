@@ -1,5 +1,16 @@
 import { resolveSearchParamsFromUrl, SEARCH_PAGE_PATH } from "shared/utils/search-url-compat"
 
+// Remet à zéro ce qui ne doit pas survivre au rejeu d'une recherche par email : la page, les utm
+// capturés dans l'URL d'origine et le filtre de typologie. Le moteur mixe offres et entreprises à
+// contacter, les liens email visent les deux (#5394).
+export const resetReplayedSearchParams = (searchParams: URLSearchParams) => {
+  searchParams.delete("page")
+  searchParams.delete("is_algo_company")
+  for (const utmParam of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+    searchParams.delete(utmParam)
+  }
+}
+
 // Lien de recherche des emails de relance, reconstruit depuis `applications.application_url` (le
 // `window.location.href` au moment de la candidature). Deux formes coexistent en base : fiche détail
 // `/emploi/…?from=%2Frecherche%3Fq%3D…` (recherche d'origine dans `from`) et URL legacy
@@ -25,16 +36,9 @@ export const buildTaggedSearchUrl = (
     return null
   }
 
-  // La relance repart du début de la liste : la page où le candidat s'était arrêté n'a plus de sens
-  // une semaine plus tard, et le lien serait partagé tel quel.
-  searchParams.delete("page")
-
-  // is_algo_company met en avant les entreprises où candidater spontanément (recruteurs LBA)
+  resetReplayedSearchParams(searchParams)
   if (highlightRecruteursLba) {
     searchParams.set("is_algo_company", "true")
-  }
-  for (const utmParam of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
-    searchParams.delete(utmParam)
   }
   searchParams.set("utm_source", "lba-brevo")
   searchParams.set("utm_medium", "email")

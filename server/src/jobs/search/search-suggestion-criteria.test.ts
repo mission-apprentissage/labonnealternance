@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { IQueryAnalysis, IQueryStats } from "./search-suggestion-criteria"
-import { decideSuggestion, decideSynonym, isSuggestionCandidate, isSynonymCandidate, passesQuantitativeGate } from "./search-suggestion-criteria"
+import { decideSuggestion, decideSynonym, isSuggestionCandidate, isSynonymCandidate, passesQuantitativeGate, resolveRejectionReason } from "./search-suggestion-criteria"
 
 // Candidat "idéal suggestion" : fréquent, récurrent, efficace, tapé en texte libre.
 const goodStats = (overrides: Partial<IQueryStats> = {}): IQueryStats => ({
@@ -95,6 +95,16 @@ describe("search-suggestion-criteria", () => {
 
     it("rejette sans cible de reformulation", () => {
       expect(decideSynonym(synonymStats, goodAnalysis({ synonym_of: null }))).toEqual({ verdict: "reject", reason: "no_synonym_target" })
+    })
+  })
+
+  describe("resolveRejectionReason", () => {
+    it("remonte le motif de la route synonyme quand le candidat n'était éligible qu'à celle-ci", () => {
+      expect(resolveRejectionReason({ verdict: "reject", reason: "not_suggestion_candidate" }, { verdict: "reject", reason: "low_confidence" })).toBe("low_confidence")
+    })
+
+    it("garde le motif suggestion quand le candidat était éligible aux deux routes", () => {
+      expect(resolveRejectionReason({ verdict: "reject", reason: "off_topic" }, { verdict: "reject", reason: "no_synonym_target" })).toBe("off_topic")
     })
   })
 })
