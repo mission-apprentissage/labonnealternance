@@ -37,7 +37,7 @@ export const buildRelanceSearchUrl = (application_url: string | null | undefined
   buildTaggedSearchUrl(application_url, { utmCampaign: RELANCE_INACTIVITE_UTM_CAMPAIGN })
 
 export const relanceCandidatsInactifs = async () => {
-  const listId = config.smtp.brevoRelanceCandidatsListId
+  const listId = config.brevo.listIds.relanceCandidats
   if (!listId) {
     logger.warn("relanceCandidatsInactifs: LBA_BREVO_RELANCE_CANDIDATS_LIST_ID non configuré, job ignoré")
     return
@@ -120,7 +120,6 @@ export const relanceCandidatsInactifs = async () => {
 
   try {
     await uploadContactListToBrevo(
-      "MARKETING",
       rows,
       [
         { key: "email", header: "EMAIL" },

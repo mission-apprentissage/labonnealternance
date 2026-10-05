@@ -66,8 +66,7 @@ describe("nurturing-entreprises", () => {
     await nurturingEntreprises()
 
     expect(uploadContactListToBrevo).toHaveBeenCalledTimes(1)
-    const [account, rows, , listId] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
-    expect(account).toBe("MARKETING")
+    const [rows, , listId] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
     expect(listId).toBe("997")
     expect(rows).toHaveLength(1)
     expect(rows[0].email).toBe(`contact-${userId.toHexString()}@entreprise.fr`)
@@ -144,7 +143,7 @@ describe("nurturing-entreprises", () => {
     await nurturingEntreprises()
 
     expect(uploadContactListToBrevo).toHaveBeenCalledTimes(1)
-    const [, rows] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
+    const [rows] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
     expect(rows).toHaveLength(1)
   })
 })

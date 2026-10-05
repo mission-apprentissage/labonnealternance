@@ -12,7 +12,7 @@ import config from "@/config"
 
 const createBrevoContactStream = () => {
   const brevoClient = new brevo.ContactsApi()
-  brevoClient.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.smtp.brevoMarketingApiKey)
+  brevoClient.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.brevo.apiKey)
 
   return Readable.from(
     (async function* () {
@@ -39,7 +39,7 @@ const createBrevoContactStream = () => {
 
 const deleteContactsFromBrevo = async (contactIds: string[]): Promise<void> => {
   const brevoClient = new brevo.ContactsApi()
-  brevoClient.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.smtp.brevoMarketingApiKey)
+  brevoClient.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.brevo.apiKey)
 
   for (const id of contactIds) {
     try {
@@ -59,7 +59,7 @@ export const removeBrevoContacts = async (): Promise<void> => {
 
   let totalToAnonymize = 0
   const brevoClient = new brevo.ContactsApi()
-  brevoClient.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.smtp.brevoMarketingApiKey)
+  brevoClient.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.brevo.apiKey)
 
   const contactStream = createBrevoContactStream()
 

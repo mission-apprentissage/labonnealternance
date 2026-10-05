@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import styled from "@emotion/styled"
 import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material"
-import { useState } from "react"
+import { useId, useState } from "react"
 import type { IReferentielRomeForJobJson } from "shared"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
@@ -129,30 +129,61 @@ export const RomeDetail = ({
   )
 }
 
+/**
+ * Une catégorie de compétences en fieldset (RGAA 11.5). Une rubrique sans catégorie prend pour légende,
+ * masquée, le titre de son accordéon. Les cases sont contrôlées : un décochage refusé (minimum 3) doit
+ * laisser la case cochée.
+ */
 const CompetenceSelection = ({
   competences,
-  groupTitle,
+  legend,
+  isLegendVisible,
+  name,
   onChange,
 }: {
-  groupTitle?: string
+  legend: React.ReactNode
+  isLegendVisible: boolean
+  name: string
   competences: { label: string; selected: boolean; error?: string }[]
   onChange: (competence: string, newValue: boolean) => void
 }) => {
+  const baseId = useId()
   const areAllUnselected = competences.every((competence) => !competence.selected)
   return (
     <CompetenceSelectionDiv>
-      {groupTitle && <Typography className={classNames({ "competences-group-title": true, unselected: areAllUnselected })}>{groupTitle}</Typography>}
-      {competences.map((competence) => {
-        return (
-          <Box key={competence.label} className="competence-checkbox-line">
-            <FormControlLabel
-              label={competence.label}
-              control={<Checkbox defaultChecked={competence.selected} onChange={() => onChange(competence.label, !competence.selected)} />}
-            />
-            {competence.error && <Typography className="error-text">{competence.error}</Typography>}
-          </Box>
-        )
-      })}
+      <Box component="fieldset" sx={{ border: 0, p: 0, m: 0, minWidth: 0 }}>
+        <Typography
+          component="legend"
+          className={isLegendVisible ? classNames({ "competences-group-title": true, unselected: areAllUnselected }) : fr.cx("fr-sr-only")}
+          sx={{ p: 0 }}
+        >
+          {legend}
+        </Typography>
+        {competences.map((competence, index) => {
+          const id = `${baseId}-${index}`
+          const errorId = `${id}-error`
+          return (
+            <Box key={competence.label} className="competence-checkbox-line">
+              <FormControlLabel
+                htmlFor={id}
+                label={competence.label}
+                control={
+                  <Checkbox
+                    id={id}
+                    name={name}
+                    checked={competence.selected}
+                    onChange={() => onChange(competence.label, !competence.selected)}
+                    slotProps={{ input: { "aria-describedby": competence.error ? errorId : undefined, "aria-invalid": Boolean(competence.error) } }}
+                  />
+                }
+              />
+              <Typography id={errorId} className="error-text" aria-live="polite">
+                {competence.error}
+              </Typography>
+            </Box>
+          )
+        })}
+      </Box>
     </CompetenceSelectionDiv>
   )
 }
@@ -193,7 +224,9 @@ const RequiredCompetenceAccordion = ({
       {competences.map(({ libelle: category, items = [] }) => (
         <CompetenceSelection
           key={category ?? ""}
-          groupTitle={category}
+          legend={category ?? title}
+          isLegendVisible={Boolean(category)}
+          name={id}
           competences={items.map(({ libelle: label }) => ({ label, selected: isSelected(label), error: error?.competence === label ? error.error : "" }))}
           onChange={
             totalSelected > minRequired
