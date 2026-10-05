@@ -98,7 +98,8 @@ export function FeedbackLauncher() {
           sx={{
             position: "fixed",
             right: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
-            bottom: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
+            // sous lg, au-dessus des barres d'action fixées en bas des fiches offre et formation (~73 px)
+            bottom: { xs: fr.spacing("24v"), lg: fr.spacing("6v") },
             zIndex: 1300,
             maxWidth: `calc(100vw - 2 * ${fr.spacing("4v")})`,
             display: "flex",
