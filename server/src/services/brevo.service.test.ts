@@ -61,7 +61,7 @@ describe("uploadContactListToBrevo", () => {
       response: { status, data: { code: "unauthorized", message } },
     })
 
-  const televerser = () => uploadContactListToBrevo("TRANSACTIONAL", contacts, contactMapper, "628")
+  const televerser = () => uploadContactListToBrevo(contacts, contactMapper, "628")
 
   beforeEach(() => {
     importContacts.mockReset()
@@ -92,7 +92,7 @@ describe("uploadContactListToBrevo", () => {
     )
 
     expect(error.message).toContain("Key not found")
-    expect(error.data).toMatchObject({ account: "TRANSACTIONAL", listId: "628", status: 401, contactCount: 2 })
+    expect(error.data).toMatchObject({ listId: "628", status: 401, contactCount: 2 })
   })
 
   it("assainit aussi l'erreur après épuisement des retries sur 429", async () => {

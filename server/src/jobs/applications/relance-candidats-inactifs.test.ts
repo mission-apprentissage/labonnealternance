@@ -125,8 +125,7 @@ describe("relance-candidats-inactifs", () => {
     await relanceCandidatsInactifs()
 
     expect(uploadContactListToBrevo).toHaveBeenCalledTimes(1)
-    const [account, rows, , listId] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
-    expect(account).toBe("MARKETING")
+    const [rows, , listId] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
     expect(listId).toBe("999")
     expect(rows).toHaveLength(1)
     expect(rows[0].email).toBe(inWindow.email)
@@ -171,7 +170,7 @@ describe("relance-candidats-inactifs", () => {
 
     await relanceCandidatsInactifs()
 
-    const [, rows] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
+    const [rows] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
     expect(rows[0].lien_recherche).toBe("")
   })
   it("exclut les inactifs qui n'ont jamais fait de candidature spontanée (pris en charge par la liste B)", async () => {
