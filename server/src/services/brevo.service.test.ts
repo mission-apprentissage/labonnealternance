@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import type { BrevoContactColumn } from "./brevo-contact-attributes"
+
 const importContacts = vi.fn()
 
 vi.mock("@getbrevo/brevo", () => {
@@ -51,7 +53,11 @@ describe("uploadContactListToBrevo", () => {
     { EMAIL: "recruteur@exemple-entreprise.fr", PRENOM: "Camille", NOM: "Martin" },
     { EMAIL: "candidat@exemple-perso.fr", PRENOM: "Dominique", NOM: "Bernard" },
   ]
-  const contactMapper = [{ key: "EMAIL" }, { key: "PRENOM" }, { key: "NOM" }]
+  const contactMapper: BrevoContactColumn[] = [
+    { key: "EMAIL", header: "EMAIL" },
+    { key: "PRENOM", header: "PRENOM" },
+    { key: "NOM", header: "NOM" },
+  ]
 
   // Reproduit la forme réelle : l'AxiosError rejeté embarque la requête envoyée, corps inclus.
   const erreurBrevo = (status: number, message: string) =>

@@ -1,11 +1,11 @@
 import brevo, { CreateWebhook } from "@getbrevo/brevo"
 import { internal } from "@hapi/boom"
-import type { ColumnOption } from "csv-stringify"
 import { stringify } from "csv-stringify/sync"
 import dayjs from "shared/helpers/dayjs"
 
 import { logger } from "@/common/logger"
 import config from "@/config"
+import type { BrevoContactColumn } from "@/services/brevo-contact-attributes"
 
 /**
  * Décrit une erreur de l'API Brevo sans reprendre l'objet d'erreur brut : l'erreur du SDK porte
@@ -13,7 +13,7 @@ import config from "@/config"
  * `extraErrorDataIntegration` la sérialiserait dans Sentry (`sendDefaultPii` actif) et aucune clé de ce
  * corps ne correspond au scrub par nom de `sentry.ts` (constaté en production, LBA-SERVER-5J7KF4ZZZTAAB).
  */
-const describeBrevoError = (error: any): { status: number | undefined; brevoMessage: string | undefined; message: string } => ({
+export const describeBrevoError = (error: any): { status: number | undefined; brevoMessage: string | undefined; message: string } => ({
   // Le SDK Brevo expose selon les appels `response.statusCode` (superagent) ou `response.status`
   // (axios) — la boucle de retry ci-dessous lit déjà les deux.
   status: error?.response?.statusCode ?? error?.response?.status,
@@ -104,7 +104,7 @@ export const initBrevoWebhooks = () => {
     )
 }
 
-export const uploadContactListToBrevo = async (contacts: any[], contactMapper: ColumnOption[], listId: string) => {
+export const uploadContactListToBrevo = async (contacts: any[], contactMapper: BrevoContactColumn[], listId: string) => {
   const fileBody = stringify(contacts, {
     delimiter: ";",
     header: true,

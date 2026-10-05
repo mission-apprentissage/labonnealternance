@@ -1,4 +1,3 @@
-import type { ColumnOption } from "csv-stringify/sync"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { UserEventType } from "shared/models/user-with-account.model"
 import { Transform } from "stream"
@@ -11,6 +10,7 @@ import { notifyToSlack } from "@/common/utils/slack-utils"
 import { groupStreamData } from "@/common/utils/stream-utils"
 import config from "@/config"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
+import type { BrevoContactColumn } from "@/services/brevo-contact-attributes"
 
 type IBrevoContact = {
   user_origin: string
@@ -33,7 +33,7 @@ type IBrevoContact = {
 
 let contactCount = 0
 
-const contactMapper: ColumnOption[] = [
+const contactMapper: BrevoContactColumn[] = [
   {
     key: "user_email",
     header: "EMAIL",
