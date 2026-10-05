@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Dialog } from "@mui/material"
+import { Box, Dialog, useMediaQuery, useTheme } from "@mui/material"
 import { useEffect, useId, useRef, useState } from "react"
 import { FeedbackWidget } from "./FeedbackWidget"
 import { takeAnnouncement } from "./feedbackTrigger.utils"
@@ -19,7 +19,9 @@ import { useFeedbackTrigger } from "./useFeedbackTrigger"
  *   le formulaire demande l'ouverture immédiate (`trigger.autoOpen`) ;
  * - à l'ouverture, le focus va sur la question ; Échap ou la croix referment et le rendent au bouton ;
  * - le panneau fermé reste monté (masqué) : rouvert, il reprend où l'usager s'était arrêté ;
- * - en plein écran (`trigger.fullScreen`), le panneau devient une modale centrée qui garde le focus.
+ * - en plein écran (`trigger.fullScreen`), le panneau devient une modale centrée qui garde le focus ;
+ *   sous md, c'est toujours une modale, qui occupe tout l'écran : un panneau non modal couvrant la
+ *   page laisserait la tabulation parcourir des éléments cachés derrière lui (WCAG 2.4.11).
  */
 export function FeedbackLauncher() {
   const { form, ready, dismiss, complete } = useFeedbackTrigger()
@@ -35,7 +37,8 @@ export function FeedbackLauncher() {
   // retirer le formulaire (remerciement) — mais pas si l'usager change de page de déclenchement
   const [openSlug, setOpenSlug] = useState<string | null>(null)
   const visible = form !== null && (ready || openSlug === form.slug)
-  const fullScreen = form?.trigger.fullScreen === true
+  const isSmallScreen = useMediaQuery(useTheme().breakpoints.down("md"), { noSsr: true })
+  const asDialog = isSmallScreen || form?.trigger.fullScreen === true
 
   useEffect(() => {
     if (!visible) {
@@ -67,9 +70,9 @@ export function FeedbackLauncher() {
   useEffect(() => {
     if (!ready || !form || !takeAnnouncement(form.slug)) return
     if (form.trigger.autoOpen) {
-      setAnnouncement(`Un questionnaire « Donner mon avis » s'est ouvert${fullScreen ? "" : " en bas de page"}. Le bouton « Réduire » le referme.`)
+      setAnnouncement(`Un questionnaire « Donner mon avis » s'est ouvert${asDialog ? "" : " en bas de page"}. Le bouton « Réduire » le referme.`)
       // une modale garde le focus en elle : il doit y entrer, sans quoi rien ne reste atteignable
-      openPanel({ moveFocus: fullScreen })
+      openPanel({ moveFocus: asDialog })
     } else {
       setAnnouncement("Vous pouvez donner votre avis sur cette page : bouton « Donner mon avis » en bas de page.")
     }
@@ -78,7 +81,7 @@ export function FeedbackLauncher() {
   const widget = form && (
     <FeedbackWidget
       key={form.slug}
-      variant={fullScreen ? "modal" : "floating"}
+      variant={asDialog ? "modal" : "floating"}
       questions={form.questions}
       onClose={closePanel}
       onProgress={(progress) => {
@@ -108,9 +111,18 @@ export function FeedbackLauncher() {
             gap: fr.spacing("3v"),
           }}
         >
-          {fullScreen ? (
+          {asDialog ? (
             // modale MUI : piège à focus, page rendue inerte (aria-hidden) et grisée, Échap et clic sur le fond referment
-            <Dialog open={open} keepMounted onClose={closePanel} maxWidth="sm" fullWidth aria-labelledby={dialogTitleId} slotProps={{ paper: { sx: { borderRadius: 0 } } }}>
+            <Dialog
+              open={open}
+              keepMounted
+              onClose={closePanel}
+              fullScreen={isSmallScreen}
+              maxWidth="sm"
+              fullWidth
+              aria-labelledby={dialogTitleId}
+              slotProps={{ paper: { sx: { borderRadius: 0 } } }}
+            >
               <span id={dialogTitleId} className={fr.cx("fr-sr-only")}>
                 Donner mon avis
               </span>
