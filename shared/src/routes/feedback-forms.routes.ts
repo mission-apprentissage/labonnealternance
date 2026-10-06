@@ -1,7 +1,7 @@
 import { z } from "../helpers/zod-with-open-api.js"
 import { ZFeedbackPageContext } from "../models/feedback-display.model.js"
 import { FEEDBACK_FORM_MAX_QUESTIONS, ZFeedbackForm, ZFeedbackFormForAdmin, ZFeedbackFormInput, ZFeedbackFormPublic, ZFeedbackFormStatus } from "../models/feedback-form.model.js"
-import { FEEDBACK_RESPONSE_STATUS, ZFeedbackAnswer, ZFeedbackFormResults } from "../models/feedback-response.model.js"
+import { FEEDBACK_COMMENTS_CURSOR, FEEDBACK_RESPONSE_STATUS, ZFeedbackAnswer, ZFeedbackCommentsPage, ZFeedbackFormResults } from "../models/feedback-response.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 
@@ -42,6 +42,17 @@ export const zFeedbackFormsRoutes = {
       params: z.strictObject({ slug: z.string() }),
       response: {
         "200": ZFeedbackFormResults,
+      },
+      securityScheme: adminSecurity,
+    },
+    // tous les commentaires d'une question à texte libre, page par page (les résultats n'en donnent qu'un aperçu)
+    "/admin/feedback-forms/:slug/comments": {
+      method: "get",
+      path: "/admin/feedback-forms/:slug/comments",
+      params: z.strictObject({ slug: z.string() }),
+      querystring: z.strictObject({ question_id: z.string(), cursor: z.string().regex(FEEDBACK_COMMENTS_CURSOR).optional() }),
+      response: {
+        "200": ZFeedbackCommentsPage,
       },
       securityScheme: adminSecurity,
     },

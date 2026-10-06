@@ -43,8 +43,19 @@ export default {
   collectionName: "feedback_responses" as const,
 } as const satisfies IModelDescriptor
 
-/** Nombre de commentaires rapportés au plus par question à texte libre, du plus récent au plus ancien. */
-export const FEEDBACK_RESULTS_MAX_COMMENTS = 100
+/** Commentaires renvoyés avec les résultats, les plus récents d'abord : un aperçu, la liste complète se pagine (cf. `ZFeedbackCommentsPage`). */
+export const FEEDBACK_RESULTS_PREVIEW_COMMENTS = 3
+export const FEEDBACK_COMMENTS_PAGE_SIZE = 20
+
+/** Un commentaire libre, daté de la dernière mise à jour de son parcours, avec la note rapide du même parcours. */
+export const ZFeedbackComment = z.object({ text: z.string(), date: z.coerce.date<Date>(), rating: z.string().nullable() })
+
+/** Curseur de pagination : date de mise à jour et `_id` du dernier parcours de la page, ex. `2026-10-06T08:00:00.000Z_665f…`. */
+export const FEEDBACK_COMMENTS_CURSOR = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z_[0-9a-f]{24}$/
+
+/** Une page de commentaires d'une question, du plus récent au plus ancien ; `next_cursor` est `null` sur la dernière. */
+export const ZFeedbackCommentsPage = z.object({ comments: z.array(ZFeedbackComment), next_cursor: z.string().nullable() })
+export type IFeedbackCommentsPage = z.output<typeof ZFeedbackCommentsPage>
 
 /**
  * Résultats d'un formulaire pour la page « Voir les résultats ». Des comptes bruts : les
@@ -61,13 +72,8 @@ export const ZFeedbackFormResults = z.object({
       answered: z.number().int().nonnegative(),
       // sélections par valeur (notes et options), vide pour un texte libre
       choices: z.array(z.object({ value: z.string(), count: z.number().int().nonnegative() })),
-      // texte libre : nombre total et derniers commentaires, avec la note rapide du même parcours
-      comments: z
-        .object({
-          total: z.number().int().nonnegative(),
-          latest: z.array(z.object({ text: z.string(), date: z.coerce.date<Date>(), rating: z.string().nullable() })),
-        })
-        .nullable(),
+      // texte libre : nombre total et aperçu des derniers commentaires
+      comments: z.object({ total: z.number().int().nonnegative(), latest: z.array(ZFeedbackComment) }).nullable(),
     })
   ),
 })

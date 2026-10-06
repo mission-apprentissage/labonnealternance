@@ -1,6 +1,7 @@
 import { createAndLogUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
+import { ObjectId } from "mongodb"
 import type { IFeedbackFormInput } from "shared/models/feedback-form.model"
 import { describe, expect, it } from "vitest"
 
@@ -620,6 +621,80 @@ describe("admin feedback-forms controller", () => {
         ])
       )
       expect(text).toMatchObject({ answered: 1, choices: [], comments: { total: 1, latest: [{ text: "Très clair", rating: "positive", date: expect.any(String) }] } })
+    })
+
+    describe("commentaires", () => {
+      // parcours écrits en base : les routes publiques sont limitées en débit
+      const insertComment = (index: number, updatedAt: Date) =>
+        getDbCollection("feedback_responses").insertOne({
+          _id: new ObjectId(),
+          form_slug: "page_entreprise_v1",
+          display_id: new ObjectId(),
+          ...context,
+          status: "completed",
+          answers: [
+            { question_id: "q1", choices: [index % 2 ? "negative" : "positive"] },
+            { question_id: "q3", text: `Commentaire ${index}` },
+          ],
+          skipped: [],
+          token: "jeton",
+          created_at: updatedAt,
+          updated_at: updatedAt,
+          completed_at: updatedAt,
+        })
+
+      // 25 commentaires, deux par seconde : des dates égales, départagées par l'_id
+      const insertComments = async () => {
+        for (let index = 0; index < 25; index++) {
+          await insertComment(index, new Date(Date.UTC(2026, 9, 1, 8, 0, Math.floor(index / 2))))
+        }
+      }
+
+      const getComments = (headers: Record<string, string>, query: string) =>
+        httpClient().inject({ method: "GET", path: `/api/admin/feedback-forms/page_entreprise_v1/comments?${query}`, headers })
+
+      it("ne renvoie qu'un aperçu avec les résultats, et le total", async () => {
+        const { bearerToken } = await loginAsAdmin()
+        await createForm(bearerToken, resultsForm)
+        await insertComments()
+
+        const response = await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms/page_entreprise_v1/results", headers: bearerToken })
+
+        const text = response.json().questions[2]
+        expect(text.comments.total).toEqual(25)
+        expect(text.comments.latest.map(({ text }) => text)).toEqual(["Commentaire 24", "Commentaire 23", "Commentaire 22"])
+      })
+
+      it("pagine tous les commentaires, du plus récent au plus ancien, sans doublon ni oubli", async () => {
+        const { bearerToken } = await loginAsAdmin()
+        await createForm(bearerToken, resultsForm)
+        await insertComments()
+
+        const first = await getComments(bearerToken, "question_id=q3")
+        expect(first.statusCode).toEqual(200)
+        expect(first.json().comments).toHaveLength(20)
+        expect(first.json().comments[0]).toEqual({ text: "Commentaire 24", rating: "positive", date: "2026-10-01T08:00:12.000Z" })
+        expect(first.json().next_cursor).toEqual(expect.any(String))
+
+        const second = await getComments(bearerToken, `question_id=q3&cursor=${encodeURIComponent(first.json().next_cursor)}`)
+        expect(second.statusCode).toEqual(200)
+        expect(second.json().next_cursor).toBeNull()
+
+        const texts = [...first.json().comments, ...second.json().comments].map(({ text }) => text)
+        expect(texts).toEqual(Array.from({ length: 25 }, (_, index) => `Commentaire ${24 - index}`))
+      })
+
+      it("refuse une question qui n'est pas à texte libre, un curseur malformé et un non-admin", async () => {
+        const { bearerToken } = await loginAsAdmin()
+        await createForm(bearerToken, resultsForm)
+
+        expect((await getComments(bearerToken, "question_id=q1")).statusCode).toEqual(400)
+        expect((await getComments(bearerToken, "question_id=q3&cursor=abc")).statusCode).toEqual(400)
+        expect((await httpClient().inject({ method: "GET", path: "/api/admin/feedback-forms/inconnu/comments?question_id=q3", headers: bearerToken })).statusCode).toEqual(404)
+
+        const { bearerToken: cfaToken } = await createAndLogUser(httpClient, "userCfa", { type: "CFA" })
+        expect((await getComments(cfaToken, "question_id=q3")).statusCode).toEqual(403)
+      })
     })
   })
 

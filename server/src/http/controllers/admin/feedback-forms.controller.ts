@@ -12,7 +12,7 @@ import {
   listFeedbackFormsForAdmin,
   updateFeedbackForm,
 } from "@/services/feedback-form.service"
-import { getFeedbackFormResults } from "@/services/feedback-response.service"
+import { getFeedbackFormResults, listFeedbackFormComments } from "@/services/feedback-response.service"
 
 export default (server: Server) => {
   server.get(
@@ -36,6 +36,18 @@ export default (server: Server) => {
     async (req, res) => {
       const results = await getFeedbackFormResults(req.params.slug)
       return res.status(200).send(results)
+    }
+  )
+
+  server.get(
+    "/admin/feedback-forms/:slug/comments",
+    {
+      schema: zRoutes.get["/admin/feedback-forms/:slug/comments"],
+      onRequest: server.auth(zRoutes.get["/admin/feedback-forms/:slug/comments"]),
+    },
+    async (req, res) => {
+      const page = await listFeedbackFormComments(req.params.slug, req.query.question_id, req.query.cursor)
+      return res.status(200).send(page)
     }
   )
 

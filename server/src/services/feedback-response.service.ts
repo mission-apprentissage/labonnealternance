@@ -5,8 +5,8 @@ import { ObjectId } from "mongodb"
 import type { IFeedbackPageContext } from "shared/models/feedback-display.model"
 import type { IFeedbackAnswersByQuestion, IFeedbackForm, IFeedbackQuestion } from "shared/models/feedback-form.model"
 import { FEEDBACK_RATING_OPTIONS, getFeedbackCurrentQuestion, isFeedbackQuestionVisible } from "shared/models/feedback-form.model"
-import type { IFeedbackAnswer, IFeedbackFormResults, IFeedbackResponse } from "shared/models/feedback-response.model"
-import { FEEDBACK_RESULTS_MAX_COMMENTS } from "shared/models/feedback-response.model"
+import type { IFeedbackAnswer, IFeedbackCommentsPage, IFeedbackFormResults, IFeedbackResponse } from "shared/models/feedback-response.model"
+import { FEEDBACK_COMMENTS_PAGE_SIZE, FEEDBACK_RESULTS_PREVIEW_COMMENTS } from "shared/models/feedback-response.model"
 import { sanitizeFeedbackUrlParams } from "shared/utils/feedback-url-params"
 import { getScopeParamNames } from "shared/utils/ui-routes.utils"
 
@@ -155,6 +155,19 @@ export async function updateFeedbackResponse(id: string, { token, answers, skipp
   return { status: completed ? ("completed" as const) : ("in_progress" as const) }
 }
 
+/** La note rapide qui accompagne chaque commentaire : la première question de ce type, s'il y en a une. */
+const getRatingQuestionId = (form: IFeedbackForm): string | null => form.questions.find(({ type }) => type === "rating")?.id ?? null
+
+/** Expression d'agrégation : valeur de la réponse du parcours à `questionId`, prise dans `field` (`text`, ou premier choix). */
+const answerOf = (questionId: string | null, field: "text" | "choices") => ({
+  $first: {
+    $map: {
+      input: { $filter: { input: "$answers", cond: { $eq: ["$$this.question_id", questionId] } } },
+      in: field === "text" ? "$$this.text" : { $first: "$$this.choices" },
+    },
+  },
+})
+
 type IResultsFacets = {
   totals: { started: number; completed: number }[]
   answered: { _id: string; count: number }[]
@@ -172,8 +185,7 @@ export async function getFeedbackFormResults(slug: string): Promise<IFeedbackFor
   if (!form) {
     throw notFound("Formulaire introuvable")
   }
-  // la note rapide accompagne chaque commentaire : c'est la première question de ce type, s'il y en a une
-  const ratingQuestionId = form.questions.find(({ type }) => type === "rating")?.id ?? null
+  const ratingQuestionId = getRatingQuestionId(form)
 
   const [displays] = await getDbCollection("feedback_display_counts")
     .aggregate<{ total: number; since: string }>([{ $match: { form_slug: slug } }, { $group: { _id: null, total: { $sum: "$displays" }, since: { $min: "$day" } } }])
@@ -192,16 +204,11 @@ export async function getFeedbackFormResults(slug: string): Promise<IFeedbackFor
             { $group: { _id: { question_id: "$answers.question_id", value: "$answers.choices" }, count: { $sum: 1 } } },
           ],
           comments: [
-            {
-              $addFields: {
-                rating: {
-                  $first: { $map: { input: { $filter: { input: "$answers", cond: { $eq: ["$$this.question_id", ratingQuestionId] } } }, in: { $first: "$$this.choices" } } },
-                },
-              },
-            },
+            { $addFields: { rating: answerOf(ratingQuestionId, "choices") } },
             { $unwind: "$answers" },
             { $match: { "answers.text": { $exists: true } } },
-            { $sort: { updated_at: -1 } },
+            // même ordre que listFeedbackFormComments : l'aperçu est le début de la première page
+            { $sort: { updated_at: -1, _id: -1 } },
             {
               $group: {
                 _id: "$answers.question_id",
@@ -209,7 +216,7 @@ export async function getFeedbackFormResults(slug: string): Promise<IFeedbackFor
                 latest: { $push: { text: "$answers.text", date: "$updated_at", rating: { $ifNull: ["$rating", null] } } },
               },
             },
-            { $project: { total: 1, latest: { $slice: ["$latest", FEEDBACK_RESULTS_MAX_COMMENTS] } } },
+            { $project: { total: 1, latest: { $slice: ["$latest", FEEDBACK_RESULTS_PREVIEW_COMMENTS] } } },
           ],
         },
       },
@@ -229,5 +236,47 @@ export async function getFeedbackFormResults(slug: string): Promise<IFeedbackFor
         comments: question.type === "text" ? { total: comments?.total ?? 0, latest: comments?.latest ?? [] } : null,
       }
     }),
+  }
+}
+
+/**
+ * Commentaires d'une question à texte libre, du plus récent au plus ancien, par pages de
+ * FEEDBACK_COMMENTS_PAGE_SIZE. Tri et curseur portent sur (`updated_at`, `_id`) : l'ordre reste
+ * total même quand deux parcours ont la même date.
+ */
+export async function listFeedbackFormComments(slug: string, questionId: string, cursor?: string): Promise<IFeedbackCommentsPage> {
+  const form = await getDbCollection("feedback_forms").findOne({ slug })
+  if (!form) {
+    throw notFound("Formulaire introuvable")
+  }
+  if (form.questions.find(({ id }) => id === questionId)?.type !== "text") {
+    throw badRequest("Cette question n'est pas à texte libre")
+  }
+
+  // format garanti par la route (FEEDBACK_COMMENTS_CURSOR) : date ISO et _id séparés par « _ »
+  const [cursorDate, cursorId] = cursor?.split("_") ?? []
+  const after = cursor ? { date: new Date(cursorDate), id: new ObjectId(cursorId) } : null
+
+  const rows = await getDbCollection("feedback_responses")
+    .aggregate<{ _id: ObjectId; updated_at: Date; text: string; rating: string | null }>([
+      {
+        $match: {
+          form_slug: slug,
+          answers: { $elemMatch: { question_id: questionId, text: { $exists: true } } },
+          ...(after ? { $or: [{ updated_at: { $lt: after.date } }, { updated_at: after.date, _id: { $lt: after.id } }] } : {}),
+        },
+      },
+      { $sort: { updated_at: -1, _id: -1 } },
+      // un de plus que la page : sa présence dit s'il reste des commentaires
+      { $limit: FEEDBACK_COMMENTS_PAGE_SIZE + 1 },
+      { $project: { updated_at: 1, text: answerOf(questionId, "text"), rating: { $ifNull: [answerOf(getRatingQuestionId(form), "choices"), null] } } },
+    ])
+    .toArray()
+
+  const page = rows.slice(0, FEEDBACK_COMMENTS_PAGE_SIZE)
+  const last = page.at(-1)
+  return {
+    comments: page.map(({ text, updated_at, rating }) => ({ text, date: updated_at, rating })),
+    next_cursor: rows.length > FEEDBACK_COMMENTS_PAGE_SIZE && last ? `${last.updated_at.toISOString()}_${last._id.toString()}` : null,
   }
 }

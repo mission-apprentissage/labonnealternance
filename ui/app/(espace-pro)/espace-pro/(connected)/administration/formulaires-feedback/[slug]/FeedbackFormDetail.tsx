@@ -185,7 +185,7 @@ export function FeedbackFormDetail() {
             <FeedbackFormResultsSummary results={results.data} questions={questions} />
             {questions.length > 0 && (
               <Box sx={{ mt: fr.spacing("6v") }}>
-                <FeedbackQuestionStats questions={questions} results={results.data} />
+                <FeedbackQuestionStats slug={slug} questions={questions} results={results.data} />
               </Box>
             )}
           </>
