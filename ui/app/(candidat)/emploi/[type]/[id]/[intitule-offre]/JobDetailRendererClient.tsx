@@ -1,5 +1,6 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
+import type { SxProps, Theme } from "@mui/material"
 import { Box, Container, Stack, Typography, useMediaQuery, useTheme } from "@mui/material"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -18,6 +19,8 @@ import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemT
 import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/NavigationButtons"
 import { LbaJobCfaDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobCfaDetail"
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
+import { OffreIndisponibleMention } from "@/components/ItemDetail/OffreIndisponibleMention"
+import { getOffreIndisponibilite } from "@/components/ItemDetail/offre-indisponible.utils"
 import { GeiqJobDetail } from "@/components/ItemDetail/PartnerJobComponents/GeiqJobDetail"
 import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobDetail"
 import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobPostuler"
@@ -46,8 +49,23 @@ export default function JobDetailRendererClient({ job, rechercheParams }: { job:
   return <JobDetail selectedItem={job} rechercheParams={rechercheParams} />
 }
 
-function CandidatureStickyBar({ selectedItem }: { selectedItem: ILbaItemJobsGlobal }) {
+function CandidatureCta({ selectedItem, showScrollToTop, mentionSx }: { selectedItem: ILbaItemJobsGlobal; showScrollToTop?: boolean; mentionSx?: SxProps<Theme> }) {
+  const indisponibilite = getOffreIndisponibilite(selectedItem)
+  if (indisponibilite) return <OffreIndisponibleMention indisponibilite={indisponibilite} sx={mentionSx} />
+
   const kind = selectedItem.ideaType
+  return (
+    <>
+      {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
+        <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} showScrollToTop={showScrollToTop} />
+      )}
+      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} showScrollToTop={showScrollToTop} />}
+      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} showScrollToTop={showScrollToTop} />}
+    </>
+  )
+}
+
+function CandidatureStickyBar({ selectedItem }: { selectedItem: ILbaItemJobsGlobal }) {
   return (
     <Box
       sx={{
@@ -66,11 +84,7 @@ function CandidatureStickyBar({ selectedItem }: { selectedItem: ILbaItemJobsGlob
       }}
     >
       <Box sx={{ flex: 1 }}>
-        {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
-          <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} showScrollToTop />
-        )}
-        {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} showScrollToTop />}
-        {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} showScrollToTop />}
+        <CandidatureCta selectedItem={selectedItem} showScrollToTop />
       </Box>
     </Box>
   )
@@ -120,6 +134,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
   const isMandataire = Boolean(selectedItem?.company?.mandataire)
   const isCfaEntreprise = Boolean((selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson).job?.isCfaEntreprise)
   const isGeiq = Boolean((selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson).company?.isGeiq)
+  const hasFormationIncluse = (isMandataire || isGeiq) && Boolean(selectedItem.contact?.hasEmail)
 
   const reportItemId = (() => {
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) return (selectedItem as ILbaItemLbaJobJson).job?.id ?? null
@@ -222,11 +237,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
               />
               <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
                 <Box sx={{ mr: fr.spacing("4v") }}>
-                  {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
-                    <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
-                  )}
-                  {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
-                  {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
+                  <CandidatureCta selectedItem={selectedItem} />
                 </Box>
                 <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
                   <ShareLink item={selectedItem} />
@@ -291,13 +302,9 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
                 }}
               >
                 <Box>
-                  {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
-                    <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
-                  )}
-                  {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
-                  {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
+                  <CandidatureCta selectedItem={selectedItem} mentionSx={{ mt: fr.spacing("3v"), mb: hasFormationIncluse ? fr.spacing("3v") : 0 }} />
 
-                  {(selectedItem.company?.mandataire || selectedItem.company?.isGeiq) && selectedItem.contact?.hasEmail && (
+                  {hasFormationIncluse && (
                     <Stack
                       direction="row"
                       sx={{
