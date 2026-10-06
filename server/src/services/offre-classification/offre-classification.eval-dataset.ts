@@ -207,6 +207,21 @@ export const ADVERSARIAL_CASES: IEvalCase[] = [
     categories: ["mineurs"],
     note: "formule de conformité contredite par le fait décrit",
   },
+  {
+    id: "A37",
+    champ: "job_employer_description",
+    text: "Profil recherché : candidat(e) âgé(e) de 18 à 22 ans, sérieux(se) et motivé(e).",
+    expected: "non_conforme",
+    categories: ["discrimination"],
+    note: "tranche d'âge plus étroite que les conditions légales d'accès, motif de dépublication le plus fréquent en prod (#5352)",
+  },
+  {
+    id: "A38",
+    champ: "job_description",
+    text: "Âge maximum : 21 ans.",
+    expected: "non_conforme",
+    categories: ["discrimination"],
+  },
 ]
 
 /** Cas devant passer. Les huit premiers sont les pièges à faux positifs. */
@@ -297,6 +312,63 @@ export const BENIGN_CASES: IEvalCase[] = [
   { id: "B30", champ: "job_employer_description", text: "La mutuelle d'entreprise et les tickets restaurant sont pris en charge à 60 %.", expected: "conforme" },
   { id: "B31", champ: "job_employer_description", text: "Poste basé à Lyon 7e, accessible en transports en commun.", expected: "conforme" },
   { id: "B32", champ: "job_employer_description", text: "PME de 40 personnes dans la distribution de matériel médical, présente sur trois régions.", expected: "conforme" },
+  // B33 à B40 : faux positifs observés sur les offres de prod (#5352), réécrits en texte synthétique.
+  {
+    id: "B33",
+    champ: "job_employer_description",
+    text: "Société créée le 3 février 2025, il y a huit mois, nous comptons déjà six collaborateurs.",
+    expected: "conforme",
+    note: "historique de l'entreprise classé en subordination",
+  },
+  {
+    id: "B34",
+    champ: "job_description",
+    text: "Poste ouvert uniquement aux candidats préparant un CAP ou un bac pro maintenance.",
+    expected: "conforme",
+    note: "niveau de diplôme préparé classé en discrimination",
+  },
+  {
+    id: "B35",
+    champ: "job_employer_description",
+    text: "Notre pharmacie est spécialisée dans les soins pour bébés et femmes enceintes.",
+    expected: "conforme",
+    note: "clientèle de l'entreprise prise pour un critère sur la grossesse",
+  },
+  {
+    id: "B36",
+    champ: "job_employer_description",
+    text: "Rejoignez une entreprise dynamique où chacun est motivé et force de proposition.",
+    expected: "conforme",
+    note: "« dynamique » sans référence à l'âge",
+  },
+  {
+    id: "B37",
+    champ: "job_description",
+    text: "Vous utiliserez nos outils numériques, dont un assistant d'intelligence artificielle, pour préparer les devis.",
+    expected: "conforme",
+    note: "outil de travail classé en tâche illégale",
+  },
+  {
+    id: "B38",
+    champ: "job_employer_description",
+    text: "Depuis dix ans, nous avons formé une quinzaine d'apprenties au salon.",
+    expected: "conforme",
+    note: "historique d'apprentis au féminin pris pour un critère de sexe",
+  },
+  {
+    id: "B39",
+    champ: "job_description",
+    text: "Six semaines de congés payés par an et deux jours de repos consécutifs chaque semaine.",
+    expected: "conforme",
+    note: "avantage au salarié classé en subordination",
+  },
+  {
+    id: "B40",
+    champ: "job_description",
+    text: "Conditions d'accès à l'apprentissage : avoir entre 16 et 29 ans révolus, sauf dérogations prévues par la loi.",
+    expected: "conforme",
+    note: "rappel des conditions légales d'âge, à distinguer de A37",
+  },
 ]
 
 export const EVAL_CASES: IEvalCase[] = [...ADVERSARIAL_CASES, ...BENIGN_CASES]

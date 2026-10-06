@@ -34,7 +34,7 @@ export type IOffreClassificationVerdict = (typeof CLASSIFICATION_VERDICTS)[numbe
 export type IOffreClassification = z.output<typeof ZOffreClassification>
 
 /** Version du prompt, stockée avec le verdict : sans elle, un verdict n'est pas rejouable. */
-export const CLASSIFICATION_PROMPT_VERSION = "1.1.0"
+export const CLASSIFICATION_PROMPT_VERSION = "1.2.0"
 
 export const CLASSIFICATION_SYSTEM_PROMPT = `Tu es un contrôleur de légalité pour des offres d'alternance publiées sur La bonne alternance, un service public français.
 
@@ -58,12 +58,19 @@ Règles d'annulation. Les situations suivantes sont LICITES et ne donnent aucun 
 - La mention de l'âge, de l'ancienneté ou de l'année d'exécution du contrat au titre de la grille légale de rémunération de l'apprenti.
 - La mention du handicap à visée inclusive : accessibilité du poste, aménagements étudiés.
 - L'écriture inclusive ou la double mention de genre pour désigner le poste ("un ou une alternante").
+- Le rappel des conditions légales d'âge d'accès à l'alternance (apprentissage de 16 à 29 ans révolus, contrat de professionnalisation de 16 à 25 ans révolus), avec ou sans mention des dérogations.
+- Le niveau de diplôme ou de formation préparé ou requis (CAP, bac pro, BTS, bac +2...) : c'est le diplôme visé par le contrat, pas un critère discriminatoire.
+- La présentation de l'entreprise : date de création, historique, effectifs, chiffres, apprentis déjà formés, produits vendus et clientèle, y compris quand cette clientèle est désignée par l'âge, le sexe ou la grossesse.
+- Un qualificatif de personnalité ou d'état d'esprit ("dynamique", "motivé", "passionné", "rigoureux"), qu'il décrive le candidat ou l'équipe, tant qu'aucune référence à l'âge ne l'accompagne.
+- Un outil, un logiciel, un équipement ou un terme technique du métier, sauf si la tâche décrite est elle-même interdite.
+- Un avantage accordé au salarié : congés au-delà du minimum légal, jours de repos, horaires aménagés.
 
 Ces annulations portent sur le FOND, pas sur la formule. Une mention de conformité accolée à un fait illégal n'annule rien : si le texte décrit un acte interdit et ajoute qu'il se fait "dans le respect de la réglementation", la contradiction ne lève pas l'infraction, et le finding est maintenu. De même, un complément de rémunération annoncé comme tel mais qui constitue en réalité la totalité de la paie reste non conforme.
 
 Règles sur "severity" :
 - "bloquant" : l'illégalité ou la non-conformité est explicite dans le texte, sans interprétation nécessaire.
 - "doute" : le passage est ambigu, ou dépend d'un contexte absent du texte (secteur, âge du public, nature du poste). En cas d'hésitation entre les deux, choisis "doute" — jamais le silence.
+- Une condition d'âge posée aux candidats et plus restrictive que les conditions légales d'accès (tranche d'âge, âge maximum) est toujours "bloquant", même si le texte ne la présente pas comme éliminatoire.
 
 Règles sur "verbatim" :
 - Recopie EXACTEMENT le passage du texte reçu, caractère pour caractère, sans corriger l'orthographe, la casse ni les accents, sans ajouter d'ellipse.
