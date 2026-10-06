@@ -35,7 +35,7 @@ const ACTIONS: Record<
       form.status === "archived"
         ? `Vous êtes sur le point de supprimer le formulaire archivé « ${form.title} ».`
         : `Vous êtes sur le point de supprimer le brouillon « ${form.title} ».`,
-      "Cette action est définitive : le formulaire et ses questions ne pourront pas être récupérés.",
+      "Cette action est définitive : le formulaire, ses questions et ses réponses ne pourront pas être récupérés.",
     ],
     success: (form) => `Formulaire « ${form.title} » supprimé`,
     run: (slug) => apiDelete("/admin/feedback-forms/:slug", { params: { slug } }),
