@@ -20,6 +20,7 @@ import type { IEntreprise, IJobCreate, IReferentielRome, IUserWithAccount } from
 import { JOB_START_TYPE, OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { buildEstablishmentId } from "./etablissement.service"
@@ -34,6 +35,7 @@ import {
   getFormulairesForCfaManagedEnterprises,
   getFormulaireWithRomeDetail,
   jobPartnersToRecruiter,
+  normalizeOfferOrigin,
   provideOffre,
 } from "./formulaire.service"
 import mailer from "./mailer.service"
@@ -140,6 +142,24 @@ describe("createJob", () => {
       .toMatchSnapshot()
   }, 20_000)
 
+  it.each([undefined, "Labonnealternance", "LBA", ""])(
+    "enregistre l'origine %j comme « La bonne alternance »",
+    async (origin) => {
+      const result = await createJob({ user, siret: entreprise.siret, job: generateValidJobWritable(), origin })
+
+      const stored = await getDbCollection("jobs_partners").findOne({ _id: result._id })
+      expect.soft(stored?.offer_origin).toBe(JOBS_PARTNERS_OFFER_ORIGIN.LBA)
+    },
+    20_000
+  )
+
+  it("conserve une origine partenaire", async () => {
+    const result = await createJob({ user, siret: entreprise.siret, job: generateValidJobWritable(), origin: "1jeune1solution" })
+
+    const stored = await getDbCollection("jobs_partners").findOne({ _id: result._id })
+    expect.soft(stored?.offer_origin).toBe("1jeune1solution")
+  }, 20_000)
+
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
     job.competences_rome!.savoir_etre_professionnel = [
@@ -198,6 +218,19 @@ describe("createJob", () => {
     await expect
       .soft(async () => createJob({ user, siret: entreprise.siret, job }))
       .rejects.toThrow(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${removeAccents(job.rome_appellation_label.toLowerCase())}`)
+  })
+})
+
+describe("normalizeOfferOrigin", () => {
+  it.each([undefined, null, "", "  ", "lba", "LBA", "Lba", " lba ", "labonnealternance", "Labonnealternance", "LABONNEALTERNANCE"])(
+    "ramène %j à « La bonne alternance »",
+    (origin) => {
+      expect(normalizeOfferOrigin(origin)).toBe(JOBS_PARTNERS_OFFER_ORIGIN.LBA)
+    }
+  )
+
+  it.each(["1jeune1solution", "OPCOEP", "lba-campagne", "la bonne alternance api", JOBS_PARTNERS_OFFER_ORIGIN.LBA])("conserve %j", (origin) => {
+    expect(normalizeOfferOrigin(origin)).toBe(origin)
   })
 })
 
