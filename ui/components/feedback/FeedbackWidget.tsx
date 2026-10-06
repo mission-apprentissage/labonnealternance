@@ -199,6 +199,7 @@ function QuestionStep({ question, headingId, initialValue, progress, onAnswer, o
   const [error, setError] = useState<string | null>(null)
   const groupRef = useRef<HTMLDivElement>(null)
   const errorId = `${headingId}-erreur`
+  const requiredId = `${headingId}-obligatoire`
 
   const isText = question.type === "text"
   const isEmpty = isText ? !text.trim() : selection.length === 0
@@ -228,14 +229,21 @@ function QuestionStep({ question, headingId, initialValue, progress, onAnswer, o
 
   const errorColor = fr.colors.decisions.text.default.error.default
   const counterId = `${headingId}-compteur`
+  const describedBy = (ids: (string | null)[]) => ids.filter(Boolean).join(" ") || undefined
 
   return (
     <>
+      {question.required && (
+        <Typography id={requiredId} className={fr.cx("fr-hint-text")} sx={{ mb: 0 }}>
+          Réponse obligatoire
+        </Typography>
+      )}
       <Box
         ref={groupRef}
         role={isText ? undefined : multiple ? "group" : "radiogroup"}
         aria-labelledby={isText ? undefined : headingId}
-        aria-describedby={!isText && error ? errorId : undefined}
+        aria-describedby={isText ? undefined : describedBy([question.required ? requiredId : null, error ? errorId : null])}
+        aria-required={!isText && !multiple && question.required ? true : undefined}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -248,8 +256,9 @@ function QuestionStep({ question, headingId, initialValue, progress, onAnswer, o
             <textarea
               className={fr.cx("fr-input", error ? "fr-input--error" : undefined)}
               aria-labelledby={headingId}
-              aria-describedby={[counterId, error ? errorId : null].filter(Boolean).join(" ")}
+              aria-describedby={describedBy([question.required ? requiredId : null, counterId, error ? errorId : null])}
               aria-invalid={error ? true : undefined}
+              aria-required={question.required || undefined}
               placeholder={question.type === "text" ? question.placeholder : undefined}
               maxLength={question.type === "text" ? question.maxLength : undefined}
               rows={3}
