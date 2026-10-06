@@ -12,7 +12,9 @@ import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherch
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
+import { useStoredApplicationDate } from "@/components/ItemDetail/CandidatureLba/services/submit-candidature"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
+import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
 import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
@@ -20,6 +22,7 @@ import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/Na
 import { LbaJobCfaDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobCfaDetail"
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
 import { OffreIndisponibleMention } from "@/components/ItemDetail/OffreIndisponibleMention"
+import type { IOffreIndisponibilite } from "@/components/ItemDetail/offre-indisponible.utils"
 import { getOffreIndisponibilite } from "@/components/ItemDetail/offre-indisponible.utils"
 import { GeiqJobDetail } from "@/components/ItemDetail/PartnerJobComponents/GeiqJobDetail"
 import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobDetail"
@@ -51,7 +54,7 @@ export default function JobDetailRendererClient({ job, rechercheParams }: { job:
 
 function CandidatureCta({ selectedItem, showScrollToTop, mentionSx }: { selectedItem: ILbaItemJobsGlobal; showScrollToTop?: boolean; mentionSx?: SxProps<Theme> }) {
   const indisponibilite = getOffreIndisponibilite(selectedItem)
-  if (indisponibilite) return <OffreIndisponibleMention indisponibilite={indisponibilite} sx={mentionSx} />
+  if (indisponibilite) return <OffreIndisponible selectedItem={selectedItem} indisponibilite={indisponibilite} mentionSx={mentionSx} />
 
   const kind = selectedItem.ideaType
   return (
@@ -61,6 +64,21 @@ function CandidatureCta({ selectedItem, showScrollToTop, mentionSx }: { selected
       )}
       {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} showScrollToTop={showScrollToTop} />}
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} showScrollToTop={showScrollToTop} />}
+    </>
+  )
+}
+
+// Le candidat qui a déjà postulé garde l'information, comme sur une offre active (cf. CandidaterButton).
+function OffreIndisponible({ selectedItem, indisponibilite, mentionSx }: { selectedItem: ILbaItemJobsGlobal; indisponibilite: IOffreIndisponibilite; mentionSx?: SxProps<Theme> }) {
+  const { storedValue: applicationDate } = useStoredApplicationDate(selectedItem)
+  return (
+    <>
+      <OffreIndisponibleMention indisponibilite={indisponibilite} sx={mentionSx} />
+      {applicationDate ? (
+        <Box sx={{ mt: fr.spacing("1v"), mb: fr.spacing("2v") }}>
+          <ItemDetailApplicationsStatus item={selectedItem} />
+        </Box>
+      ) : null}
     </>
   )
 }
