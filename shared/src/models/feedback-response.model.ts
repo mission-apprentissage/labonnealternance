@@ -41,8 +41,6 @@ export default {
   zod: ZFeedbackResponse,
   indexes: [[{ form_slug: 1, created_at: -1 }, {}]],
   collectionName: "feedback_responses" as const,
-  // tolérant aux champs hors schéma jusqu'à la stabilisation du modèle, cf. feedback-form.model
-  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor
 
 /** Nombre de commentaires rapportés au plus par question à texte libre, du plus récent au plus ancien. */

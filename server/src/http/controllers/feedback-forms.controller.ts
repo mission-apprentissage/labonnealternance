@@ -15,7 +15,6 @@ export default (server: Server) => {
     },
     async (_req, res) => {
       const forms = await listActiveFeedbackForms()
-      // une activation met au plus une minute à atteindre les navigateurs
       return res.status(200).header("Cache-Control", "public, max-age=60").send({ forms })
     }
   )

@@ -307,7 +307,7 @@ const ZFeedbackFormTriggerInput = ZFeedbackFormTrigger.extend({
  * `ZFeedbackFormPublishable`, vérifié au moment de l'activation. La page de déclenchement, elle,
  * est exigée dès la saisie (`ZFeedbackFormTriggerInput`).
  */
-export const ZFeedbackFormFields = z.object({
+export const ZFeedbackFormFields = z.strictObject({
   slug: z
     .string({ error: "Le slug est obligatoire" })
     .min(3, "Le slug doit faire au moins 3 caractères")
@@ -367,9 +367,4 @@ export default {
     [{ updated_at: -1 }, {}],
   ],
   collectionName: "feedback_forms" as const,
-  // Tolérant aux champs hors schéma le temps que le modèle se stabilise (#5247) : des documents
-  // locaux portent des champs retirés depuis (ex. `version`). z.object écarte ces champs des réponses
-  // de l'API au lieu de les rejeter, et le validateur Mongo les accepte. À resserrer
-  // (z.strictObject, authorizeAdditionalProperties: false) avant la mise en production.
-  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor
