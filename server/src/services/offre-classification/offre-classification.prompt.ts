@@ -20,7 +20,7 @@ export const CLASSIFICATION_VERDICTS = ["conforme", "a_verifier", "non_conforme"
 export const ZOffreClassificationFinding = z.object({
   category: z.enum(CLASSIFICATION_CATEGORIES),
   severity: z.enum(CLASSIFICATION_SEVERITIES),
-  verbatim: z.string().min(1),
+  verbatim: z.string().trim().min(1),
 })
 
 export const ZOffreClassification = z.object({

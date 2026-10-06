@@ -73,6 +73,10 @@ describe("classifyFreeText", () => {
     ["a failed Mistral call", null],
     ["a non-JSON response", "désolé, je ne peux pas"],
     ["a response with an unknown category", mistralResponse({ verdict: "non_conforme", findings: [{ category: "inconnue", severity: "bloquant", verbatim: "x" }] })],
+    [
+      "a response with a whitespace-only verbatim",
+      mistralResponse({ verdict: "non_conforme", findings: [{ category: "discrimination", severity: "bloquant", verbatim: " \n\t" }] }),
+    ],
     ["a response with an unknown verdict", mistralResponse({ verdict: "peut-etre", findings: [] })],
     ["a response missing the verdict", mistralResponse({ findings: [] })],
   ])("should fall back to a_verifier and status indisponible on %s", async (_label, response) => {
