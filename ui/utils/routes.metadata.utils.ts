@@ -397,6 +397,15 @@ export const METADATA = {
     adminProcessorCronTask: (props: { name: string; id: string }): Metadata => ({
       title: `Tâche CRON ${props.id} - La bonne alternance`,
     }),
+    backAdminFeedbackFormDetail: (): Metadata => ({
+      title: "Résultats d'un formulaire de feedback - La bonne alternance",
+    }),
+    backAdminFeedbackFormEdit: (): Metadata => ({
+      title: "Modifier un formulaire de feedback - La bonne alternance",
+    }),
+    backAdminFeedbackFormPreview: (): Metadata => ({
+      title: "Prévisualiser un formulaire de feedback - La bonne alternance",
+    }),
   },
 } as const satisfies {
   static: Partial<Record<keyof typeof PAGES.static, () => Metadata>>

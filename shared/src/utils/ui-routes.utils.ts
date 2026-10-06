@@ -84,16 +84,15 @@ export function scopePatternsOverlap(a: string, b: string): boolean {
 }
 
 /**
- * Valeurs des segments `:param` du motif pour la page courante : `/formation/:id/:titre` sur
- * `/formation/123/cap` donne `{ id: "123", titre: "cap" }`. Avec un `*` final, le reste du chemin
- * va sous la clé `*`. `null` si le motif ne couvre pas la page.
+ * Noms des paramètres d'un motif : ses segments `:param` sans les deux-points, plus `*` s'il
+ * couvre une sous-arborescence. Ce sont les seules clés que `extractScopeParams` peut produire.
  */
-/** Clés que `extractScopeParams` peut produire pour ce motif : ses segments `:param`, plus `*` s'il couvre une sous-arborescence. */
 export function getScopeParamNames(pattern: string): string[] {
   const { segments, isPrefix } = parseScopePattern(pattern)
   return [...segments.filter(isParam).map((segment) => segment.slice(1)), ...(isPrefix ? ["*"] : [])]
 }
 
+/** Décode un segment d'URL, ou le renvoie tel quel s'il est mal encodé (`%E9` isolé). */
 const safeDecode = (segment: string) => {
   try {
     return decodeURIComponent(segment)
@@ -102,6 +101,11 @@ const safeDecode = (segment: string) => {
   }
 }
 
+/**
+ * Valeurs des segments `:param` pour la page courante : `/formation/:id/:titre` sur `/formation/123/cap`
+ * donne `{ id: "123", titre: "cap" }`. Avec un `*` final, le reste du chemin va sous la clé `*`.
+ * `null` si le motif ne couvre pas la page.
+ */
 export function extractScopeParams(pattern: string, pathname: string): Record<string, string> | null {
   if (!matchesScope(pattern, pathname)) return null
   const { segments, isPrefix } = parseScopePattern(pattern)

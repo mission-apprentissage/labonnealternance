@@ -5,7 +5,7 @@ import { METADATA } from "@/utils/routes.metadata.utils"
 import { FeedbackFormEdition } from "./FeedbackFormEdition"
 
 export const metadata: Metadata = {
-  title: METADATA.static.backAdminFeedbackForms().title,
+  title: METADATA.dynamic.backAdminFeedbackFormEdit().title,
 }
 
 export default async function AdministrationModificationFormulaireFeedback({ params }: { params: Promise<{ slug: string }> }) {
