@@ -23,11 +23,13 @@ import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/context
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
+import { frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
@@ -252,20 +254,18 @@ export default function DetailEntreprise({
           validationSchema={Yup.object().shape({
             last_name: Yup.string().required("champ obligatoire"),
             first_name: Yup.string().required("champ obligatoire"),
-            phone: Yup.string()
-              .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-              .min(10, "le téléphone est sur 10 chiffres")
-              .max(10, "le téléphone est sur 10 chiffres")
-              .required("champ obligatoire"),
-            email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+            phone: frenchPhoneValidation().required("champ obligatoire"),
+            email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
             opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
             ...isDeclarationExactValidation,
           })}
-          onSubmit={async (values, { setFieldError, setSubmitting }) => {
+          onSubmit={async (values, { setFieldError, setFieldValue, setSubmitting }) => {
             setSubmitting(true)
+            const phone = toSubmittedPhone(values.phone)
+            setFieldValue("phone", phone, false)
             // For companies we update the User Collection and the Formulaire collection at the same time
-            userMutation.mutate({ userId: userRecruteur._id, values, siret: userRecruteur.establishment_siret, setFieldError })
+            userMutation.mutate({ userId: userRecruteur._id, values: { ...values, phone }, siret: userRecruteur.establishment_siret, setFieldError })
             setSubmitting(false)
           }}
         >
@@ -298,7 +298,7 @@ export default function DetailEntreprise({
                             mt: fr.spacing("8v"),
                           }}
                         >
-                          <ContactInfoFields />
+                          <ContactInfoFields thirdParty />
                           {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
                             <OpcoSelect
                               value={values.opco}

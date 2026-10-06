@@ -1,9 +1,10 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
-import Input from "@codegouvfr/react-dsfr/Input"
-import { Box, Checkbox, CircularProgress, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import type { CSSProperties } from "react"
 import { useMemo, useState } from "react"
 import type { IJobsPartnersOfferForAdminJSON } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
@@ -11,6 +12,9 @@ import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jo
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { getJobsPartnersForAdmin } from "@/utils/api"
+import { AdminSearchInput } from "../_components/AdminSearchInput"
+import { MultiSelect } from "../_components/MultiSelect"
+import { OFFER_ID_EXAMPLE, validateOfferId } from "../_utils/admin-search-validation"
 import { getOffresPartenairesColumns } from "../_utils/offresPartenairesColumns"
 import { ConfirmationClassificationOffre, ConfirmationDesactivationOffre } from "./OffresPartenairesModals"
 
@@ -18,13 +22,54 @@ const partnerLabelOptions = Object.values(JOBPARTNERS_LABEL).filter((label) => !
 
 const PAGE_SIZE = 50
 
+// aria-disabled plutôt que disabled : un bouton désactivé perd le focus, qui retombe en haut de page. Le DSFR ne stylant que :disabled, l'apparence est reproduite ici
+function PaginationButton({
+  label,
+  targetPage,
+  pageCount,
+  isAvailable,
+  onClick,
+}: {
+  label: string
+  targetPage: number
+  pageCount: number
+  isAvailable: boolean
+  onClick: () => void
+}) {
+  return (
+    <Button
+      priority="secondary"
+      onClick={() => {
+        if (isAvailable) onClick()
+      }}
+      nativeButtonProps={{
+        "aria-disabled": !isAvailable,
+        "aria-label": isAvailable ? `${label}, page ${targetPage} sur ${pageCount}` : undefined,
+      }}
+      style={
+        isAvailable
+          ? undefined
+          : ({
+              color: "var(--text-disabled-grey)",
+              boxShadow: "inset 0 0 0 1px var(--border-disabled-grey)",
+              backgroundColor: "transparent",
+              cursor: "not-allowed",
+              "--hover": "inherit",
+              "--active": "inherit",
+            } as CSSProperties)
+      }
+    >
+      {label}
+    </Button>
+  )
+}
+
 export function OffresPartenairesList() {
   const [selectedPartnerLabels, setSelectedPartnerLabels] = useState<string[]>([])
-  const [idInput, setIdInput] = useState("")
   const [submittedId, setSubmittedId] = useState("")
   const [offset, setOffset] = useState(0)
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, isPlaceholderData, isFetching } = useQuery({
     queryKey: ["/admin/jobs-partners", selectedPartnerLabels, submittedId, offset],
     queryFn: () =>
       getJobsPartnersForAdmin({
@@ -35,12 +80,14 @@ export function OffresPartenairesList() {
       }),
     staleTime: 1000 * 30,
     placeholderData: keepPreviousData,
+    retry: false,
   })
 
   const jobs = useMemo(() => data?.jobs ?? [], [data])
   const total = data?.pagination.total ?? 0
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const currentPage = Math.floor(offset / PAGE_SIZE) + 1
+  const isPageLoading = isFetching && isPlaceholderData
 
   const [currentOffer, setCurrentOffer] = useState<IJobsPartnersOfferForAdminJSON | null>(null)
   const confirmationDesactivationOffre = useDisclosure()
@@ -51,9 +98,14 @@ export function OffresPartenairesList() {
     [confirmationDesactivationOffre, confirmationClassificationOffre]
   )
 
-  const onSearch = () => {
+  const onSearch = (search: string) => {
     setOffset(0)
-    setSubmittedId(idInput.trim())
+    setSubmittedId(search)
+  }
+
+  const onReset = () => {
+    setSelectedPartnerLabels([])
+    onSearch("")
   }
 
   return (
@@ -62,26 +114,20 @@ export function OffresPartenairesList() {
       <ConfirmationClassificationOffre offer={currentOffer} isOpen={confirmationClassificationOffre.isOpen} onClose={confirmationClassificationOffre.onClose} />
 
       {/* Ligne 1 : recherche par id */}
-      <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-end", mb: fr.spacing("3v") }}>
-        <Input
+      <Box sx={{ mb: fr.spacing("6v") }}>
+        <AdminSearchInput
           label="Rechercher par identifiant (_id)"
-          nativeInputProps={{
-            value: idInput,
-            placeholder: "Identifiant de l'offre...",
-            onChange: (e) => setIdInput(e.target.value),
-            onKeyDown: (e) => {
-              if (e.key === "Enter") onSearch()
-            },
-            style: { minWidth: "360px" },
-          }}
+          placeholder="Identifiant de l'offre..."
+          onSearch={onSearch}
+          onReset={onReset}
+          validate={validateOfferId}
+          hintText={`24 caractères hexadécimaux (chiffres 0 à 9, lettres a à f), par exemple ${OFFER_ID_EXAMPLE}`}
+          inputWidth="420px"
         />
-        <Button iconId="fr-icon-search-line" priority="primary" onClick={onSearch} style={{ marginBottom: "1.5rem" }}>
-          Rechercher
-        </Button>
       </Box>
 
       {/* Ligne 2 : filtres */}
-      <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("4v"), alignItems: "center" }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), "& > .MuiFormControl-root": { mb: fr.spacing("6v") } }}>
         <MultiSelect
           id="partner-label-offres-partenaires"
           label="Partenaire"
@@ -99,81 +145,41 @@ export function OffresPartenairesList() {
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
           <CircularProgress />
         </Box>
-      ) : jobs.length === 0 ? (
+      ) : isError ? (
+        <Alert severity="error" small description="La recherche des offres a échoué. Réessayez." />
+      ) : jobs.length === 0 && !isPlaceholderData ? (
         <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>Aucun résultat.</Box>
       ) : (
         <>
-          <VirtualTable caption={`Offres partenaires (${total} au total)`} columns={columns} data={jobs} hideSearch={true} />
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}>
-            <Button priority="secondary" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>
-              Précédent
-            </Button>
-            <Typography sx={{ fontSize: ".875rem", color: "#666666" }}>
-              Page {currentPage} / {pageCount}
+          {/* Tableau et pagination restent montés pendant le chargement : les démonter ferait perdre le focus du bouton cliqué */}
+          <Box aria-busy={isPageLoading} sx={{ opacity: isPageLoading ? 0.5 : 1, transition: "opacity .2s" }}>
+            <VirtualTable caption={`Offres partenaires (${total} au total)`} columns={columns} data={jobs} hideSearch={true} />
+          </Box>
+          <Box
+            component="nav"
+            aria-label="Pagination des offres partenaires"
+            sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}
+          >
+            <PaginationButton
+              label="Précédent"
+              targetPage={currentPage - 1}
+              pageCount={pageCount}
+              isAvailable={currentPage > 1}
+              onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
+            />
+            <Typography role="status" sx={{ fontSize: ".875rem", color: "#666666" }}>
+              {isPageLoading ? `Chargement de la page ${currentPage} sur ${pageCount}…` : `Page ${currentPage} sur ${pageCount}`}
             </Typography>
-            <Button priority="secondary" disabled={currentPage >= pageCount} onClick={() => setOffset(offset + PAGE_SIZE)}>
-              Suivant
-            </Button>
+            <PaginationButton
+              label="Suivant"
+              targetPage={currentPage + 1}
+              pageCount={pageCount}
+              isAvailable={currentPage < pageCount}
+              onClick={() => setOffset(offset + PAGE_SIZE)}
+            />
           </Box>
         </>
       )}
     </>
-  )
-}
-
-function MultiSelect<T extends string>({
-  id,
-  label,
-  width,
-  items,
-  value,
-  onChange,
-}: {
-  id: string
-  label: string
-  width: number
-  items: { value: T; label: string }[]
-  value: T[]
-  onChange: (newValue: T[]) => void
-}) {
-  const allSelected = value.length === items.length
-  const someSelected = value.length > 0 && !allSelected
-
-  function handleChange(selected: string[]) {
-    if (selected.includes("__all__")) {
-      onChange(allSelected ? [] : items.map((i) => i.value))
-    } else {
-      onChange(selected as T[])
-    }
-  }
-
-  const displayLabel = value.length === 0 ? "Tous" : value.map((v) => items.find((i) => i.value === v)?.label ?? v).join(", ")
-
-  return (
-    <FormControl sx={{ width }} size="small">
-      <InputLabel id={`${id}-label`} sx={{ fontSize: ".875rem" }}>
-        {label}
-      </InputLabel>
-      <Select
-        labelId={`${id}-label`}
-        multiple
-        value={value}
-        onChange={(e) => handleChange(e.target.value as string[])}
-        input={<OutlinedInput label={label} />}
-        renderValue={() => displayLabel}
-        MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
-      >
-        <MenuItem value="__all__" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
-          <Checkbox checked={allSelected} indeterminate={someSelected} size="small" />
-          <ListItemText primary={allSelected ? "Tout désélectionner" : "Tout sélectionner"} slotProps={{ primary: { fontSize: ".875rem" } }} />
-        </MenuItem>
-        {items.map((item) => (
-          <MenuItem key={item.value} value={item.value}>
-            <Checkbox checked={value.includes(item.value)} size="small" />
-            <ListItemText primary={item.label} slotProps={{ primary: { fontSize: ".875rem" } }} />
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
   )
 }

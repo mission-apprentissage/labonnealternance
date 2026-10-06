@@ -10,6 +10,7 @@ import { type IJob, ZJobFields } from "shared"
 import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import type z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
+import { submitOrFocusFirstInvalidField } from "@/app/_components/submit-with-focus-on-error"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { getRelatedEtablissementsFromRome } from "@/utils/api"
@@ -149,20 +150,23 @@ const QuestionsList = ({ name, options, label, infoText }: { name: string; optio
           <InfoText>{infoText}</InfoText>
         </Box>
       )}
-      <Checkbox
-        legend={label}
-        options={options.map((option) => ({
-          label: option,
-          nativeInputProps: {
-            checked: isOptionChecked(option),
-            onChange: () => {
-              toggleOption(option)
+      {/* data-field-name : cible du focus sur erreur, cf. findFieldElement */}
+      <Box data-field-name={name}>
+        <Checkbox
+          legend={label}
+          options={options.map((option) => ({
+            label: option,
+            nativeInputProps: {
+              checked: isOptionChecked(option),
+              onChange: () => {
+                toggleOption(option)
+              },
             },
-          },
-        }))}
-        state={displayedErrorOpt ? "error" : "default"}
-        stateRelatedMessage={displayedErrorOpt ? `${error}` : undefined}
-      />
+          }))}
+          state={displayedErrorOpt ? "error" : "default"}
+          stateRelatedMessage={displayedErrorOpt ? `${error}` : undefined}
+        />
+      </Box>
     </>
   )
 }
@@ -192,7 +196,9 @@ const Buttons = ({
   hasCfa: boolean
   isPendingCfaCheck: boolean
 }) => {
-  const { isValid, isSubmitting, submitForm, values } = useFormikContext<IStep2Form>()
+  const formik = useFormikContext<IStep2Form>()
+  const { isSubmitting, values } = formik
+  const onSubmitClick = () => submitOrFocusFirstInvalidField(formik)
 
   const willContinue = isFtEligible || hasCfa
 
@@ -212,16 +218,11 @@ const Buttons = ({
           <CircularProgress size={16} color="inherit" />
         </Button>
       ) : willContinue ? (
-        <Button
-          disabled={!isValid || isSubmitting}
-          aria-label="Continuer vers l'étape suivante du formulaire de dépôt d'offre"
-          onClick={submitForm}
-          data-testid="continuer-creer-offre"
-        >
+        <Button disabled={isSubmitting} aria-label="Continuer vers l'étape suivante du formulaire de dépôt d'offre" onClick={onSubmitClick} data-testid="continuer-creer-offre">
           Continuer
         </Button>
       ) : (
-        <Button disabled={!isValid || isSubmitting} onClick={submitForm} data-testid="creer-offre">
+        <Button disabled={isSubmitting} onClick={onSubmitClick} data-testid="creer-offre">
           {offre?._id ? "Mettre à jour l'offre" : "Créer l'offre"}
         </Button>
       )}

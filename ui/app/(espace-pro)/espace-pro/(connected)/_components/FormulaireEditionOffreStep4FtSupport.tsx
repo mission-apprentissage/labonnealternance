@@ -134,14 +134,8 @@ const FtSupportCheckbox = () => {
     <Checkbox
       options={[
         {
-          label: (
-            <>
-              Oui, je souhaite être accompagné(e) pour recruter sur cette offre
-              <Typography fontSize="12px" lineHeight="20px" color="#666" mt={fr.spacing("1v")}>
-                Votre offre et vos coordonnées seront transmises au conseiller France Travail qui vous recontactera dans les jours à venir.
-              </Typography>
-            </>
-          ),
+          label: "Oui, je souhaite être accompagné(e) pour recruter sur cette offre",
+          hintText: "Votre offre et vos coordonnées seront transmises au conseiller France Travail qui vous recontactera dans les jours à venir.",
           nativeInputProps: {
             checked: input.value,
             onChange: (e) => {

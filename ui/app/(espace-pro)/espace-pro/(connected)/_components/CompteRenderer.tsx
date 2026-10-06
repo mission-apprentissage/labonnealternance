@@ -21,8 +21,10 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { useToast } from "@/app/hooks/useToast"
 import { AUTHTYPE } from "@/common/contants"
+import { frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { getUser, updateUserWithAccountFields } from "@/utils/api"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import ModificationCompteEmail from "./ModificationCompteEmail"
 
@@ -108,12 +110,8 @@ export default function CompteRenderer() {
         validationSchema={Yup.object().shape({
           last_name: Yup.string().required("champ obligatoire"),
           first_name: Yup.string().required("champ obligatoire"),
-          phone: Yup.string()
-            .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-            .min(10, "le téléphone est sur 10 chiffres")
-            .max(10, "le téléphone est sur 10 chiffres")
-            .required("champ obligatoire"),
-          email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+          phone: frenchPhoneValidation().required("champ obligatoire"),
+          email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
           // Requis uniquement quand le champ est effectivement affiché et modifiable : masqué (source France
           // Travail) ou verrouillé (déjà "oui" via La bonne alternance), sa valeur est déjà figée par ailleurs.
           handiEngagement:
@@ -121,14 +119,16 @@ export default function CompteRenderer() {
               ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire")
               : Yup.string(),
         })}
-        onSubmit={async (values, { setSubmitting }) => {
+        onSubmit={async (values, { setFieldValue, setSubmitting }) => {
           setSubmitting(true)
+          const phone = toSubmittedPhone(values.phone)
+          setFieldValue("phone", phone, false)
           const isChangingEmail = data.email !== values.email
           // "" (aucun choix, champ non affiché ou non encore sélectionné) n'est pas une valeur valide pour
           // l'API : on ne transmet le champ que lorsqu'il a réellement une valeur.
           const { handiEngagement, ...rest } = values
           userMutation.mutate({
-            values: { ...rest, ...(handiEngagement === "oui" || handiEngagement === "non" ? { handiEngagement } : {}) },
+            values: { ...rest, phone, ...(handiEngagement === "oui" || handiEngagement === "non" ? { handiEngagement } : {}) },
             isChangingEmail,
           })
           setSubmitting(false)

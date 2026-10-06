@@ -2,15 +2,15 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Checkbox, Divider, Link, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { Formik, useField, useFormikContext } from "formik"
-import Image from "next/image"
 import type { IJob } from "shared"
 import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
-import { CfaSolicitationIntro, InfoDelegation } from "@/app/(espace-pro)/_components/CfaDelegationContent"
+import { InfoDelegation } from "@/app/(espace-pro)/_components/CfaDelegationContent"
+import { CfaSelectionList } from "@/app/(espace-pro)/_components/CfaSelectionList"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
-// texte et présentation mutualisés avec la page /espace-pro/entreprise/offre/:id/mise-en-relation (cf. CfaDelegationContent).
+// texte et présentation mutualisés avec la page /espace-pro/entreprise/offre/:id/mise-en-relation (cf. CfaSelectionList).
 type IStep3Form = {
   etablissementCatalogueIds: string[]
 }
@@ -18,7 +18,7 @@ type IStep3Form = {
 const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: IEtablissementCatalogueProcheWithDistanceJSON[]; disabledIds: string[] }) => {
   const [input, , helper] = useField<string[]>("etablissementCatalogueIds")
 
-  const toggleEtablissement = (id: string, siret: string) => {
+  const toggleEtablissement = ({ _id: id, siret }: IEtablissementCatalogueProcheWithDistanceJSON) => {
     const checked = !input.value.includes(id)
     const newValue = checked ? [...input.value, id] : input.value.filter((x) => x !== id)
     helper.setValue(newValue)
@@ -26,65 +26,13 @@ const EtablissementsList = ({ etablissements, disabledIds }: { etablissements: I
   }
 
   return (
-    <Box sx={{ mt: fr.spacing("5v") }}>
-      {etablissements.map((etablissement, index) => {
-        const isDisabled = disabledIds.includes(etablissement._id)
-        const isChecked = input.value.includes(etablissement._id)
-        return (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              gap: fr.spacing("4v"),
-              borderStyle: "solid",
-              borderWidth: "1px",
-              borderColor: isDisabled ? "#E5E5E5" : isChecked ? "#000091" : "#DDDDDD",
-              mb: fr.spacing("4v"),
-            }}
-            key={etablissement._id}
-            data-testid={`cfa-${index}`}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row", pl: fr.spacing("1v") }}>
-              <Checkbox
-                sx={{ "&.Mui-disabled .MuiSvgIcon-root": { display: "none" } }}
-                disabled={isDisabled}
-                checked={isChecked}
-                onChange={() => toggleEtablissement(etablissement._id, etablissement.siret)}
-              />
-            </Box>
-            <Box sx={{ py: fr.spacing("4v"), flex: 1 }}>
-              {isDisabled && (
-                <Box sx={{ display: "flex", alignItems: "flex-start", backgroundColor: "#F6F6F6", width: "fit-content", px: fr.spacing("2v"), py: fr.spacing("1v") }}>
-                  <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" style={{ margin: "4px" }} unoptimized width={16} height={16} />
-                  <Typography sx={{ fontSize: "12px", color: "#666666", mb: fr.spacing("2v") }}>CFA déjà contacté</Typography>
-                </Box>
-              )}
-              <Typography sx={{ fontSize: "16px", lineHeight: "25px", fontWeight: "400", color: "#161616", textTransform: "capitalize", pr: fr.spacing("3v") }}>
-                {etablissement.entreprise_raison_sociale}
-              </Typography>
-              <Typography sx={{ fontSize: "12px", lineHeight: "25px", color: "#666666", textTransform: "capitalize", pr: fr.spacing("3v") }}>
-                {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.localite}
-              </Typography>
-              <Link
-                underline="hover"
-                href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
-                sx={{ color: "#000091" }}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => pushMatomoEvent({ event: MATOMO_EVENTS.CFA_DETAILS_CLICKED, cfa_siret: etablissement.siret })}
-              >
-                En savoir plus
-                <span className="fr-sr-only">{" - Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"}</span>
-              </Link>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Divider aria-hidden="true" orientation="vertical" />
-              <Typography sx={{ fontSize: "12px", fontWeight: "700", color: "#666666", px: fr.spacing("4v") }}>à {etablissement.distance_en_km} km</Typography>
-            </Box>
-          </Box>
-        )
-      })}
-    </Box>
+    <CfaSelectionList
+      etablissements={etablissements}
+      isChecked={(id) => input.value.includes(id)}
+      isDisabled={(id) => disabledIds.includes(id)}
+      onToggle={toggleEtablissement}
+      onDetailsClick={(siret) => pushMatomoEvent({ event: MATOMO_EVENTS.CFA_DETAILS_CLICKED, cfa_siret: siret })}
+    />
   )
 }
 
@@ -153,7 +101,6 @@ export const FormulaireEditionOffreStep3 = ({
           </Typography>
           <Box sx={{ display: "flex" }}>
             <Box sx={{ minWidth: { xs: "100%", md: "50%" } }}>
-              <CfaSolicitationIntro />
               <EtablissementsList etablissements={etablissements} disabledIds={disabledIds} />
             </Box>
             <InfoDelegation />

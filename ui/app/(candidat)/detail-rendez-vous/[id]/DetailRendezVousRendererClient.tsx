@@ -37,8 +37,6 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
     initialValues: {
       message: "",
     },
-    validateOnChange: false,
-    validateOnBlur: true,
     validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
     onSubmit: async (values) => {
       setCurrentState("sending")

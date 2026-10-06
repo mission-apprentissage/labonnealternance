@@ -1,13 +1,21 @@
 import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "shared/validators/name-validator"
+import { toFrenchNationalPhone } from "shared/validators/phone-validator"
 import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
 
+import { PHONE_FORMAT_ERROR, SIRET_KEY_ERROR } from "@/utils/validation-messages"
+
 export const phoneValidation = () => {
-  return Yup.string()
-    .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-    .min(10, "le téléphone est sur 10 chiffres")
-    .max(10, "le téléphone est sur 10 chiffres")
+  return Yup.string().matches(/^[0-9]{10}$/, PHONE_FORMAT_ERROR)
 }
+
+// Accepte les écritures usuelles d'un numéro français (espaces, points, +33…) : toSubmittedPhone le ramène à 10 chiffres
+export const frenchPhoneValidation = () => {
+  return Yup.string().test("french-phone", PHONE_FORMAT_ERROR, (phone) => !phone || toFrenchNationalPhone(phone) !== null)
+}
+
+// Formik transmet à onSubmit les valeurs saisies, pas la sortie du schéma : la normalisation se fait à l'envoi
+export const toSubmittedPhone = (phone: string | undefined) => (phone ? (toFrenchNationalPhone(phone) ?? phone) : "")
 
 export const personNameValidation = () => {
   return Yup.string()
@@ -21,5 +29,5 @@ export const SIRETValidation = () => {
     .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
     .min(14, "le siret est sur 14 chiffres")
     .max(14, "le siret est sur 14 chiffres")
-    .test("test-luhn", "Le numéro de SIRET saisi n’est pas valide", (value) => validateSIRET(value))
+    .test("test-luhn", SIRET_KEY_ERROR, (value) => validateSIRET(value))
 }

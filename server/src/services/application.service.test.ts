@@ -886,6 +886,23 @@ describe("accusé de candidature — lien vers d'autres offres", () => {
     expect(new URL(getCandidatEmailData().sendOtherApplicationsUrl).searchParams.get("mode")).toBe("emplois")
   })
 
+  it("remonte offres et entreprises à contacter, même si la recherche d'origine filtrait les offres seules", async () => {
+    const from = encodeURIComponent("/recherche?q=Boulanger&is_algo_company=false")
+    await sendFor(`https://labonnealternance.apprentissage.beta.gouv.fr/emploi/recruteurs_lba/12345678901234/boulanger?from=${from}`)
+
+    const url = new URL(getCandidatEmailData().sendOtherApplicationsUrl)
+    expect(url.searchParams.get("q")).toBe("Boulanger")
+    expect(url.searchParams.has("is_algo_company")).toBe(false)
+  })
+
+  it("ne rejoue pas displayEntreprises=false d'une application_url legacy", async () => {
+    await sendFor("https://labonnealternance.apprentissage.beta.gouv.fr/recherche?job_name=Boulanger&displayEntreprises=false")
+
+    const url = new URL(getCandidatEmailData().sendOtherApplicationsUrl)
+    expect(url.pathname).toBe("/recherche")
+    expect(url.searchParams.has("is_algo_company")).toBe(false)
+  })
+
   it("retombe sur l'accueil quand la fiche détail ne porte aucune recherche", async () => {
     await sendFor("https://labonnealternance.apprentissage.beta.gouv.fr/emploi/recruteurs_lba/12345678901234/boulanger")
 
