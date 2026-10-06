@@ -207,16 +207,21 @@ export async function getFeedbackFormResults(slug: string): Promise<IFeedbackFor
             { $addFields: { rating: answerOf(ratingQuestionId, "choices") } },
             { $unwind: "$answers" },
             { $match: { "answers.text": { $exists: true } } },
-            // même ordre que listFeedbackFormComments : l'aperçu est le début de la première page
-            { $sort: { updated_at: -1, _id: -1 } },
             {
               $group: {
                 _id: "$answers.question_id",
                 total: { $sum: 1 },
-                latest: { $push: { text: "$answers.text", date: "$updated_at", rating: { $ifNull: ["$rating", null] } } },
+                // même ordre que listFeedbackFormComments : l'aperçu est le début de la première page.
+                // $topN ne garde que l'aperçu en mémoire, sans accumuler tous les textes
+                latest: {
+                  $topN: {
+                    n: FEEDBACK_RESULTS_PREVIEW_COMMENTS,
+                    sortBy: { updated_at: -1, _id: -1 },
+                    output: { text: "$answers.text", date: "$updated_at", rating: { $ifNull: ["$rating", null] } },
+                  },
+                },
               },
             },
-            { $project: { total: 1, latest: { $slice: ["$latest", FEEDBACK_RESULTS_PREVIEW_COMMENTS] } } },
           ],
         },
       },
