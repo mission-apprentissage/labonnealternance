@@ -53,9 +53,8 @@ export function FeedbackFormPreview() {
   const [currentTrial] = trials
 
   const restart = () => {
-    const next = createTrial(currentTrial.id + 1)
-    setTrials([next, ...trials])
-    setAnnouncement(`Essai ${next.id} commencé`)
+    setTrials((previous) => [createTrial(previous[0].id + 1), ...previous])
+    setAnnouncement(`Essai ${currentTrial.id + 1} commencé`)
   }
 
   if (isLoading) {

@@ -89,6 +89,7 @@ export function useFeedbackTrigger(): IFeedbackTrigger {
     const unsubscribe = onFeedbackEvent((emitted) => {
       const path = window.location.pathname
       loadActiveForms().then((loaded) => {
+        setForms(loaded)
         const target = findFeedbackFormForPath(loaded, path)
         if (target && getFeedbackTriggerType(target.trigger) === "event" && target.trigger.event === emitted) markReached(`${target.slug}|${path}`)
       })
