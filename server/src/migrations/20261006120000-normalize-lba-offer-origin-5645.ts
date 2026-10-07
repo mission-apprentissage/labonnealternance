@@ -11,7 +11,11 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
  */
 export const up = async () => {
   const { modifiedCount } = await getDbCollection("jobs_partners").updateMany(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_origin: { $regex: /^\s*(labonnealternance|lba)?\s*$/i } },
+    {
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_origin: { $type: "string" },
+      $expr: { $in: [{ $toLower: { $trim: { input: "$offer_origin" } } }, ["", "lba", "labonnealternance"]] },
+    },
     { $set: { offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.LBA } },
     { bypassDocumentValidation: true }
   )

@@ -76,9 +76,9 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
  * L'origine du compte (userswithaccounts.origin) est recopiée sur l'offre en dépôt simplifié. Les valeurs
  * qui désignent le site lui-même sont ramenées à l'enum, les origines partenaires sont conservées (#5645).
  */
-const LBA_ORIGIN_PATTERN = /^\s*(labonnealternance|lba)?\s*$/i
+const LBA_ORIGINS = new Set(["", "lba", "labonnealternance"])
 
-export const normalizeOfferOrigin = (origin?: string | null): string => (origin == null || LBA_ORIGIN_PATTERN.test(origin) ? JOBS_PARTNERS_OFFER_ORIGIN.LBA : origin)
+export const normalizeOfferOrigin = (origin?: string | null): string => (origin == null || LBA_ORIGINS.has(origin.trim().toLowerCase()) ? JOBS_PARTNERS_OFFER_ORIGIN.LBA : origin)
 
 export const createJob = async ({
   job,
