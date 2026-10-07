@@ -630,8 +630,9 @@ export function SearchBar({
           // La 1re option (suggestion ou « France entière ») est pré-surlignée : Entrée la
           // sélectionne au lieu de laisser un texte non validé.
           autoHighlight
-          // Ouvre le dropdown au focus : l'option « France entière » est proposée avant toute saisie.
-          openOnFocus
+          // Pas d'openOnFocus : ouverte à l'arrivée du focus, la liste rendrait une option active
+          // sans action de l'usager. VoiceOver la suit, le focus clavier quitte le champ et la
+          // liste se ferme. Elle s'ouvre au clic ou au toucher, à la saisie et avec ↓.
           // Le champ affiche « France entière » : le focus sélectionne le texte pour qu'une
           // saisie le remplace directement (sinon l'usager doit l'effacer à la main).
           selectOnFocus={showsFranceEntiere}
