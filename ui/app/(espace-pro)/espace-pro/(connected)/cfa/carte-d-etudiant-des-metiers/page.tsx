@@ -51,7 +51,7 @@ const CarteDEtudiantDesMetiersPage = () => (
             <DsfrIcon name="fr-icon-download-line" size={16} />
             Télécharger la carte (ZIP)
             <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
-              (2 Mo)
+              (200 Ko)
             </Typography>
             {/* RGAA 6.1 : le lien enregistre un fichier sans ouvrir de fenêtre, il faut l'annoncer. */}
             <span className="fr-sr-only">{CONTEXT_CHANGE_HINT.download}</span>
