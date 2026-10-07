@@ -55,8 +55,8 @@ const CarteDEtudiantDesMetiersPage = () => (
         <Grid size={{ md: 8, xs: 12 }} display={"flex"} flexDirection={"column"} gap={{ md: fr.spacing("3w"), xs: fr.spacing("2w") }}>
           <Typography>Le .ZIP mis à disposition comporte 3 fichiers au format PDF.</Typography>
           <Typography>
-            La version Carte_etudiant_bureautique.pdf est le fichier classique. Le fichier Carte_etudiante_imprimeur.pdf vous permet de l’imprimer chez un imprimeur. Le fichier
-            Carte_etudiante_numerique.pdf vous permet de le compléter pour chaque étudiant depuis votre ordinateur avant impression.
+            La version "Carte des metiers 26-27-classique.pdf" est le fichier classique. Le fichier "Carte des metiers 26-27-imprimeur.pdf" vous permet de l’imprimer chez un
+            imprimeur. Le fichier "Carte des metiers 26-27-numerique.pdf" vous permet de le compléter pour chaque étudiant depuis votre ordinateur avant impression.
           </Typography>
         </Grid>
       </Grid>
