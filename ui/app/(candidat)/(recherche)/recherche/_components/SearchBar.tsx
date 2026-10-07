@@ -5,7 +5,7 @@ import type { PopperProps } from "@mui/material"
 import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
-import type { KeyboardEvent, ReactNode } from "react"
+import type { FocusEvent, KeyboardEvent, ReactNode } from "react"
 import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { flushSync } from "react-dom"
 import { searchAddress } from "@/services/base-adresse"
@@ -140,6 +140,13 @@ export function highlightMatch(label: string, input: string): ReactNode {
     </>
   )
 }
+
+/**
+ * VoiceOver suit l'option active (aria-activedescendant) et le focus clavier l'accompagne : le
+ * champ le perd en pleine saisie. MUI prévoit alors de le lui rendre (handleBlur), mais teste
+ * document.activeElement, qui vaut encore <body> pendant le blur : on se fie à relatedTarget.
+ */
+const isBlurToListbox = (event: { relatedTarget?: EventTarget | null }) => event.relatedTarget instanceof Element && event.relatedTarget.closest('[role="listbox"]') !== null
 
 type LieuOption = { label: string; latitude: number; longitude: number; adminArea?: string; displayLabel?: string }
 
@@ -297,6 +304,9 @@ export function SearchBar({
 
   const metierListbox = useListboxMaxHeight()
   const lieuListbox = useListboxMaxHeight()
+  // Ouverture contrôlée : un blur vers la liste ne doit pas la fermer (cf. isBlurToListbox).
+  const [metierOpen, setMetierOpen] = useState(false)
+  const [lieuOpen, setLieuOpen] = useState(false)
 
   // Champ en cours de saisie de l'écran de saisie mobile — piloté par focus/blur des
   // Autocomplete (les clics sur les options ne blurent pas : MUI garde le focus dans
@@ -484,11 +494,25 @@ export function SearchBar({
           slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
           blurOnSelect={inlineSuggestions}
           onFocus={() => changeActiveField("metier")}
-          onBlur={() => changeActiveField(null)}
+          onBlur={(e) => {
+            if (isBlurToListbox(e)) {
+              metierListbox.inputRef.current?.focus()
+              return
+            }
+            changeActiveField(null)
+          }}
           // Mode inline : le cap de hauteur du listbox est inutile (cf. INLINE_PAPER_SX), on n'arme
           // pas le hook (listeners visualViewport + setState à chaque resize/scroll du clavier).
-          onOpen={inlineSuggestions ? undefined : metierListbox.onOpen}
-          onClose={inlineSuggestions ? undefined : metierListbox.onClose}
+          open={metierOpen}
+          onOpen={() => {
+            setMetierOpen(true)
+            if (!inlineSuggestions) metierListbox.onOpen()
+          }}
+          onClose={(e, reason) => {
+            if (reason === "blur" && isBlurToListbox(e as FocusEvent)) return
+            setMetierOpen(false)
+            if (!inlineSuggestions) metierListbox.onClose()
+          }}
           inputValue={inputValue}
           onInputChange={(_e, value, reason) => {
             // "reset" est déclenché par la sélection d'une option : c'est onChange qui reflète la
@@ -604,6 +628,8 @@ export function SearchBar({
                   // Clavier virtuel : touche « rechercher » (loupe) à la place de « retour ».
                   enterKeyHint: "search",
                   "aria-labelledby": metierLabelId,
+                  // Absent chez MUI : sans lui, VoiceOver ne traite pas le champ en combobox ARIA 1.2.
+                  "aria-haspopup": "listbox",
                   "aria-describedby": qError ? metierErrorId : undefined,
                   "aria-invalid": Boolean(qError),
                 },
@@ -650,12 +676,24 @@ export function SearchBar({
           slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
           blurOnSelect={inlineSuggestions}
           // Mode inline : cap listbox inutile — hook non armé (cf. champ métier).
-          onOpen={inlineSuggestions ? undefined : lieuListbox.onOpen}
-          onClose={inlineSuggestions ? undefined : lieuListbox.onClose}
+          open={lieuOpen}
+          onOpen={() => {
+            setLieuOpen(true)
+            if (!inlineSuggestions) lieuListbox.onOpen()
+          }}
+          onClose={(e, reason) => {
+            if (reason === "blur" && isBlurToListbox(e as FocusEvent)) return
+            setLieuOpen(false)
+            if (!inlineSuggestions) lieuListbox.onClose()
+          }}
           inputValue={lieuInput}
           value={lieuValue}
           onFocus={() => changeActiveField("lieu")}
-          onBlur={() => {
+          onBlur={(e) => {
+            if (isBlurToListbox(e)) {
+              lieuListbox.inputRef.current?.focus()
+              return
+            }
             changeActiveField(null)
             handleLieuBlur()
           }}
@@ -723,6 +761,7 @@ export function SearchBar({
                   ...params.inputProps,
                   enterKeyHint: "search",
                   "aria-labelledby": lieuLabelId,
+                  "aria-haspopup": "listbox",
                   "aria-describedby": lieuError ? lieuErrorId : undefined,
                   "aria-invalid": Boolean(lieuError),
                 },
