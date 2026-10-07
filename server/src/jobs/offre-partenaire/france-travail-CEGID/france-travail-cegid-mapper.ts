@@ -4,8 +4,10 @@ import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { z } from "zod"
 import { blankComputedJobPartner } from "@/jobs/offre-partenaire/fill-computed-jobs-partners"
+import { isDirectemploiApplyUrl } from "@/jobs/offre-partenaire/france-travail/france-travail-mapper"
 import { getGeolocationFromCodeInsee } from "@/services/geolocation.service"
 import type { IAgenceCEGID } from "./mapping-agences"
 import { regionsToAgence } from "./mapping-agences"
@@ -152,6 +154,7 @@ export const franceTravailCEGIDMapper = async (job: IFranceTravailCEGIDJob, cont
     workplace_address_label: [zipcode, city].filter((x) => x).join(" "),
 
     apply_url: offerUrl || null,
+    business_error: isDirectemploiApplyUrl(offerUrl) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
   }
   return partnerJob
 }
