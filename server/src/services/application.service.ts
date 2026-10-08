@@ -1,4 +1,4 @@
-import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
+import { badRequest, internal, notFound, serverUnavailable, tooManyRequests } from "@hapi/boom"
 import { captureException } from "@sentry/node"
 import axios from "axios"
 import { isEmailBurner } from "burner-email-providers"
@@ -310,15 +310,13 @@ export const sendApplicationV2 = async ({
     }
   }
 
+  let application: IApplication
   try {
-    const application = await newApplicationToApplicationDocumentV2({ ...newApplication, applicant_answers_to_recruiter_questions }, applicant, lbaJob, caller)
+    application = await newApplicationToApplicationDocumentV2({ ...newApplication, applicant_answers_to_recruiter_questions }, applicant, lbaJob, caller)
     await s3WriteString("applications", getApplicationCvS3Filename(application), {
       Body: applicant_attachment_content,
     })
     await getDbCollection("applications").insertOne(application)
-    await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: applicant.email, source })
-
-    return { _id: application._id }
   } catch (err) {
     if (caller) {
       await manageApiError({
@@ -329,12 +327,22 @@ export const sendApplicationV2 = async ({
       })
     }
     logger.error(err)
-    // Erreur d'infrastructure (S3, Mongo) : nouvelle erreur sans `data`, car errorMiddleware recopierait dans
-    // la réponse celui de l'erreur d'origine (bucket et clé S3). errorMiddleware la remonte à Sentry, cause comprise.
-    const error = internal("Application could not be saved, please retry later")
+    // Erreur d'infrastructure (S3, Mongo) : 503 pour que l'appelant réessaie. Nouvelle erreur sans `data` ni message
+    // d'origine, qu'errorMiddleware recopierait dans la réponse (bucket et clé S3). Remontée à Sentry avec sa cause.
+    const error = serverUnavailable("Application could not be saved, please retry later")
     error.cause = err
     throw error
   }
+
+  // La candidature est enregistrée et sera envoyée : une erreur ici pousserait l'appelant à la renvoyer en doublon.
+  try {
+    await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: applicant.email, source })
+  } catch (err) {
+    logger.error(err)
+    sentryCaptureException(err, { extra: { application_id: application._id.toString() } })
+  }
+
+  return { _id: application._id }
 }
 
 /**

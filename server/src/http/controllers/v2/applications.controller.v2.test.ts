@@ -380,7 +380,7 @@ describe("POST /v2/application", () => {
     })
   })
 
-  it("return 500 without internal details when the CV cannot be written to S3", async () => {
+  it("return 503 without internal details when the CV cannot be written to S3", async () => {
     vi.mocked(s3WriteString).mockRejectedValueOnce(internal("Error writing S3 file", { key: "cv-key", bucket: "applications-bucket" }))
     const body: IApplicationApiPublic = {
       applicant_attachment_name: "cv.pdf",
@@ -400,10 +400,10 @@ describe("POST /v2/application", () => {
       headers: { authorization: `Bearer ${token}` },
     })
 
-    expect.soft(response.statusCode).toEqual(500)
+    expect.soft(response.statusCode).toEqual(503)
     expect.soft(response.json()).toEqual({
-      statusCode: 500,
-      error: "Internal Server Error",
+      statusCode: 503,
+      error: "Service Unavailable",
       message: "Application could not be saved, please retry later",
     })
     expect(await getDbCollection("applications").countDocuments()).toBe(applicationCount)

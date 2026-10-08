@@ -59,7 +59,7 @@ describe("POST /application/hellowork", () => {
     expect.soft(response.statusCode).toEqual(500)
     expect.soft(response.json()).toEqual({ message: "Erreur interne du serveur", code: "InternalServerError" })
     expect.soft(await getDbCollection("applications").countDocuments()).toBe(0)
-    // beforeSend écarte les Boom < 500 : l'erreur capturée doit être un 500 portant l'erreur S3 en cause
-    expect(captureException).toHaveBeenCalledWith(expect.objectContaining({ output: expect.objectContaining({ statusCode: 500 }), cause: s3Error }), expect.anything())
+    // beforeSend écarte les Boom < 500 : l'erreur capturée doit être une 5xx portant l'erreur S3 en cause
+    expect(captureException).toHaveBeenCalledWith(expect.objectContaining({ output: expect.objectContaining({ statusCode: 503 }), cause: s3Error }), expect.anything())
   })
 })
