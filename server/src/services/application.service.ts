@@ -320,7 +320,6 @@ export const sendApplicationV2 = async ({
 
     return { _id: application._id }
   } catch (err) {
-    sentryCaptureException(err)
     if (caller) {
       await manageApiError({
         error: err,
@@ -330,7 +329,11 @@ export const sendApplicationV2 = async ({
       })
     }
     logger.error(err)
-    throw badRequest(BusinessErrorCodes.UNKNOWN)
+    // Erreur d'infrastructure (S3, Mongo) : nouvelle erreur sans `data`, car errorMiddleware recopierait dans
+    // la réponse celui de l'erreur d'origine (bucket et clé S3). errorMiddleware la remonte à Sentry, cause comprise.
+    const error = internal("Application could not be saved, please retry later")
+    error.cause = err
+    throw error
   }
 }
 

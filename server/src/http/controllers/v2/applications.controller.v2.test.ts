@@ -1,3 +1,4 @@
+import { internal } from "@hapi/boom"
 import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
@@ -377,6 +378,35 @@ describe("POST /v2/application", () => {
       error: "Bad Request",
       message: "File type is not supported",
     })
+  })
+
+  it("return 500 without internal details when the CV cannot be written to S3", async () => {
+    vi.mocked(s3WriteString).mockRejectedValueOnce(internal("Error writing S3 file", { key: "cv-key", bucket: "applications-bucket" }))
+    const body: IApplicationApiPublic = {
+      applicant_attachment_name: "cv.pdf",
+      applicant_attachment_content: applicationTestFile,
+      applicant_email: "jeam.dupont@mail.com",
+      applicant_first_name: "Jean",
+      applicant_last_name: "Dupont",
+      applicant_phone: "0101010101",
+      recipient_id: getRecipientID(JobCollectionName.partners, jobPartner._id.toString()),
+    }
+    const applicationCount = await getDbCollection("applications").countDocuments()
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v2/application",
+      body,
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(500)
+    expect.soft(response.json()).toEqual({
+      statusCode: 500,
+      error: "Internal Server Error",
+      message: "Application could not be saved, please retry later",
+    })
+    expect(await getDbCollection("applications").countDocuments()).toBe(applicationCount)
   })
 
   it("save scheduled intention when link in email is followed", async () => {
