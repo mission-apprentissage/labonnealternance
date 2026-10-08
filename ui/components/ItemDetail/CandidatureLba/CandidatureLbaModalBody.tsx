@@ -6,7 +6,7 @@ import type { Result } from "email-misspelled"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import type { ChangeEvent } from "react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
@@ -342,6 +342,7 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
 
 const EmailInput = ({ formik }: { formik: FormikType }) => {
   const [suggestedEmails, setSuggestedEmails] = useState<Result[]>([])
+  const emailInputRef = useRef<HTMLInputElement>(null)
 
   const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     const checkedEmail = emailChecker(e.target.value)
@@ -352,6 +353,8 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
   const clickSuggestion = (value: string) => {
     formik.setFieldValue("applicant_email", value)
     setSuggestedEmails([])
+    // Le bouton cliqué disparaît avec les suggestions : sans cela, la modale renvoie le focus sur « Fermer ».
+    emailInputRef.current?.focus()
   }
 
   return (
@@ -365,6 +368,7 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
         type: "email",
         autoComplete: "email",
         onChange: onEmailChange,
+        inputRef: emailInputRef,
       }}
       postInput={
         <>

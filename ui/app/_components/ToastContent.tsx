@@ -6,12 +6,11 @@ import type { CustomContentProps } from "notistack"
 import { SnackbarContent } from "notistack"
 import { forwardRef } from "react"
 
-// Remplace MaterialDesignContent, qui code role="alert" en dur : un succès est restitué en
-// role="status" et n'interrompt pas la lecture (RGAA 7.5). Le rôle est porté par le conteneur,
-// l'Alert DSFR n'en a pas (role={undefined}) pour ne pas imbriquer deux zones live.
+// Remplace MaterialDesignContent, qui code role="alert" en dur. Le toast n'est pas une zone live :
+// l'annonce passe par ToastAnnouncer (RGAA 7.5), d'où role={undefined} sur l'Alert DSFR.
 export const ToastContent = forwardRef<HTMLDivElement, CustomContentProps>(function ToastContent({ message, variant, style, className }, ref) {
   return (
-    <SnackbarContent ref={ref} role={variant === "error" || variant === "warning" ? "alert" : "status"} style={style} className={className}>
+    <SnackbarContent ref={ref} style={style} className={className}>
       <Alert
         small
         severity={variant === "default" ? "info" : variant}

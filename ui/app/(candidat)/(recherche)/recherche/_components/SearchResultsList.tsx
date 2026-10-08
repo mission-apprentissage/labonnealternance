@@ -38,6 +38,19 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = result
 
   const cardRefs = useRef(new Map<string, HTMLElement>())
+  const hitsListRef = useRef<HTMLDivElement>(null)
+  // Index du premier résultat de la page demandée par « Voir plus de résultats » : le focus y est
+  // placé à son arrivée, le bouton pouvant disparaître avec la dernière page (RGAA 12.8).
+  const focusHitIndexRef = useRef<number | null>(null)
+  const hitsCount = data?.pages.reduce((count, page) => count + page.hits.length, 0) ?? 0
+
+  useEffect(() => {
+    const index = focusHitIndexRef.current
+    if (index === null || isFetchingNextPage) return
+    focusHitIndexRef.current = null
+    hitsListRef.current?.children[index]?.querySelector<HTMLElement>(".fr-card__title a")?.focus()
+  }, [hitsCount, isFetchingNextPage])
+
   const [highlightedHitId, setHighlightedHitId] = useState<string | null>(null)
 
   // `scrollToHitId` repasse par null entre deux fermetures de fiche (nettoyage de l'URL par
@@ -115,7 +128,7 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
 
   return (
     <Box>
-      <Box>
+      <Box ref={hitsListRef}>
         {allHits.map((hit, index) => (
           <SearchHitCard
             key={String(hit._id)}
@@ -145,7 +158,9 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
             priority="secondary"
             nativeButtonProps={{ "aria-disabled": isFetchingNextPage }}
             onClick={() => {
-              if (!isFetchingNextPage) fetchNextPage()
+              if (isFetchingNextPage) return
+              focusHitIndexRef.current = allHits.length
+              fetchNextPage()
             }}
           >
             {isFetchingNextPage ? "Chargement…" : "Voir plus de résultats"}

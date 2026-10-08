@@ -218,6 +218,7 @@ const EmailField = () => {
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [field, meta, helper] = useField("email")
   const emailDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const emailInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     return () => {
@@ -237,6 +238,8 @@ const EmailField = () => {
   const onClickEmailSuggestion = (e) => {
     helper.setValue(e.currentTarget.innerHTML, true)
     setSuggestedEmails([])
+    // cf. clickSuggestion dans CandidatureLbaModalBody
+    emailInputRef.current?.focus()
   }
 
   const displayedError = meta.touched && meta.error
@@ -248,6 +251,7 @@ const EmailField = () => {
       <Input
         className={fr.cx("fr-input")}
         data-testid="email"
+        inputRef={emailInputRef}
         id="email"
         name="email"
         type="email"

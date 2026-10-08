@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Button, CircularProgress, Typography } from "@mui/material"
 import { captureMessage, setTag } from "@sentry/nextjs"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { DropzoneOptions } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
 import { LiveStatus } from "@/app/_components/LiveStatus"
@@ -14,8 +14,13 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   )
   const [fileLoading, setFileLoading] = useState(false)
   const [showUnacceptedFileMessages, setShowUnacceptedFileMessages] = useState(false)
+  const removeButtonRef = useRef<HTMLButtonElement>(null)
+  // Le champ et le bouton « supprimer » se remplacent l'un l'autre : sans report du focus, la modale
+  // le renvoie sur « Fermer » (RGAA 12.8).
+  const pendingFocusRef = useRef<"remove" | "input" | null>(null)
 
   const onRemoveFile = () => {
+    pendingFocusRef.current = "input"
     setFileValue(null)
     setFileData(null)
   }
@@ -46,6 +51,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     }
 
     if (files.length) {
+      pendingFocusRef.current = "remove"
       applicant_attachment_name = files[0].name
       reader.readAsDataURL(files[0])
     } else {
@@ -55,7 +61,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   }
 
   // noKeyboard : c'est l'input natif, étiqueté, qui reçoit le focus, et non la racine du dropzone (role="presentation")
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, inputRef } = useDropzone({
     noKeyboard: true,
     onDrop,
     accept: {
@@ -94,6 +100,15 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     },
   })
 
+  const isFileShown = Boolean(fileData?.applicant_attachment_name) && !fileLoading
+
+  useEffect(() => {
+    if (pendingFocusRef.current === "remove" && isFileShown) removeButtonRef.current?.focus()
+    else if (pendingFocusRef.current === "input" && !isFileShown) inputRef.current?.focus()
+    else return
+    pendingFocusRef.current = null
+  }, [isFileShown, inputRef])
+
   const mandatoryFileError = formik.touched.applicant_attachment_name && formik.errors?.applicant_attachment_name
   const hasError = Boolean(mandatoryFileError || showUnacceptedFileMessages)
   const inputId = "applicant_attachment_name"
@@ -115,16 +130,12 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
         }}
         {...getRootProps()}
       >
-        {fileLoading ? (
-          <Box sx={{ display: "flex", ml: fr.spacing("4v"), alignItems: "center", flexDirection: "row" }}>
-            <CircularProgress size={14} />
-            <Typography sx={{ ml: fr.spacing("2v"), fontSize: "14px", color: "grey.700" }}>Chargement du fichier en cours</Typography>
-          </Box>
-        ) : hasSelectedFile() ? (
+        {isFileShown ? (
           <Box sx={{ fontSize: "14px", fontWeight: 700, color: "grey.700" }} data-testid="selectedFile">
             Pièce jointe : {fileData.applicant_attachment_name}
             {
               <Button
+                ref={removeButtonRef}
                 onClick={onRemoveFile}
                 variant="text"
                 sx={{
@@ -143,7 +154,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
                   },
                 }}
               >
-                supprimer
+                supprimer<span className={fr.cx("fr-sr-only")}> la pièce jointe {fileData.applicant_attachment_name}</span>
               </Button>
             }
           </Box>
@@ -162,6 +173,12 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
               Le CV doit être au format PDF ou Docx et ne doit pas dépasser 3 Mo
             </Typography>
             <input {...getInputProps({ id: inputId, tabIndex: 0, "aria-describedby": describedBy, "aria-invalid": hasError })} style={{ display: "block" }} />
+            {fileLoading && (
+              <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row", mt: fr.spacing("2v") }}>
+                <CircularProgress size={14} />
+                <Typography sx={{ ml: fr.spacing("2v"), fontSize: "14px", color: "grey.700" }}>Chargement du fichier en cours</Typography>
+              </Box>
+            )}
             {showUnacceptedFileMessages && (
               <Typography id={formatErrorId} sx={{ color: "error.main", fontSize: "14px" }}>
                 <span aria-hidden="true">⚠</span> Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)

@@ -1,6 +1,7 @@
 import type { SharedProps } from "notistack"
 import { enqueueSnackbar } from "notistack"
 import { useCallback } from "react"
+import { announceToast } from "@/app/_components/ToastAnnouncer"
 
 interface ToastOptions extends Pick<SharedProps, "variant" | "autoHideDuration"> {
   title?: string
@@ -18,10 +19,9 @@ export function useToast() {
       </>
     )
 
-    enqueueSnackbar(message, {
-      variant: opts.variant ?? "success",
-      autoHideDuration: opts.autoHideDuration ?? 3000,
-      anchorOrigin: { horizontal: "right", vertical: "top" },
-    })
+    const variant = opts.variant ?? "success"
+    const autoHideDuration = opts.autoHideDuration ?? 3000
+    enqueueSnackbar(message, { variant, autoHideDuration, anchorOrigin: { horizontal: "right", vertical: "top" } })
+    announceToast([opts.title, opts.description].filter(Boolean).join(". "), variant === "error" || variant === "warning" ? "alert" : "status", autoHideDuration)
   }, [])
 }

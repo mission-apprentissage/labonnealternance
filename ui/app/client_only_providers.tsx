@@ -5,6 +5,7 @@ import { SnackbarProvider } from "notistack"
 import type { PropsWithChildren } from "react"
 import { Suspense, useEffect } from "react"
 
+import { ToastAnnouncer } from "@/app/_components/ToastAnnouncer"
 import { ToastContent } from "@/app/_components/ToastContent"
 import Providers from "@/context/Providers"
 import { setIsTrackingEnabled, setTrackingCookies } from "@/tracking/tracking-cookie-utils"
@@ -31,6 +32,7 @@ export default function RootTemplate({ children }: PropsWithChildren) {
           <Tracking />
         </Suspense>
         <Providers>{children}</Providers>
+        <ToastAnnouncer />
       </SnackbarProvider>
     </MuiDsfrThemeProvider>
   )
