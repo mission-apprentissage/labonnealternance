@@ -6,7 +6,7 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { getDatabase, getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
 
 import { opcoReminderJob } from "./opco-reminder-job"
@@ -25,7 +25,7 @@ describe("opco-reminder-job", () => {
     await getDbCollection("rolemanagements").deleteMany({})
     await getDbCollection("entreprises").deleteMany({})
     await getDbCollection("userswithaccounts").deleteMany({})
-    await getDbCollection("job_processor.jobs").deleteMany({})
+    await getDatabase().collection("job_processor.jobs").deleteMany({})
   })
 
   it("ne compte que les entreprises ayant rejoint l'OPCO depuis le dernier envoi", async () => {
@@ -34,7 +34,7 @@ describe("opco-reminder-job", () => {
     const recentEntreprise = await saveEntreprise({ _id: new ObjectId(), opco: OPCOS_LABEL.AKTO })
     const opcoUser = await saveUserWithAccount({ email: "opco@example.com" })
 
-    await getDbCollection("job_processor.jobs").insertOne({
+    await getDatabase().collection("job_processor.jobs").insertOne({
       _id: new ObjectId(),
       type: "cron_task",
       name: "Envoi du rappel de validation des utilisateurs en attente aux OPCOs",
@@ -98,7 +98,7 @@ describe("opco-reminder-job", () => {
     const entreprise = await saveEntreprise({ _id: new ObjectId(), opco: OPCOS_LABEL.AKTO })
     const opcoUser = await saveUserWithAccount({ email: "opco@example.com" })
 
-    await getDbCollection("job_processor.jobs").insertOne({
+    await getDatabase().collection("job_processor.jobs").insertOne({
       _id: new ObjectId(),
       type: "cron_task",
       name: "Envoi du rappel de validation des utilisateurs en attente aux OPCOs",

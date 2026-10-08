@@ -5,14 +5,14 @@ import { AccessEntityType, AccessStatus } from "shared/models/role-management.mo
 
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
-import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { getDatabase, getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import mailer from "@/services/mailer.service"
 
 const OPCO_REMINDER_JOB_NAME = "Envoi du rappel de validation des utilisateurs en attente aux OPCOs"
 
 const getLastOpcoReminderDate = async (): Promise<Date | null> => {
-  const lastReminder = await getDbCollection("job_processor.jobs").findOne(
+  const lastReminder = await getDatabase().collection("job_processor.jobs").findOne(
     { type: "cron_task", name: OPCO_REMINDER_JOB_NAME, status: "finished" },
     { projection: { updated_at: 1, ended_at: 1, started_at: 1 }, sort: { ended_at: -1, started_at: -1, updated_at: -1 } }
   )
