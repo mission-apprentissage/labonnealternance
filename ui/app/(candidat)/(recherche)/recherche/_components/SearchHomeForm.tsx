@@ -229,6 +229,7 @@ export function SearchHomeForm({ id }: { id: string }) {
               mode={mode}
               layout="column"
               inlineSuggestions
+              autoFocusMetier
               onActiveFieldChange={(field) => setMobileFieldActive(field !== null)}
               initialQ={q}
               initialLieuLabel={lieu?.label}

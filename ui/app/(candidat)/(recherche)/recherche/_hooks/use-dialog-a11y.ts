@@ -8,7 +8,9 @@ const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled
  * Accessibilité clavier des dialogues plein écran / bottom-sheet (RGAA) :
  * - Escape ferme le dialogue (les Autocomplete MUI stoppent la propagation quand leur
  *   dropdown est ouvert → Escape ferme d'abord le dropdown, puis le dialogue) ;
- * - focus initial sur le premier élément focusable (le bouton « Fermer », en tête du DOM) ;
+ * - focus initial sur l'élément marqué `data-autofocus`, sinon sur le premier élément focusable
+ *   (le bouton « Fermer », en tête du DOM). Un `autoFocus` React ne convient pas : posé au montage
+ *   de l'enfant, il serait repris par cet effet, qui s'exécute après ;
  * - Tab/Shift+Tab bouclent à l'intérieur du dialogue (focus trap). Focus perdu sur `<body>`
  *   (champ blurré après une sélection, cf. `blurOnSelect` de SearchBar) : Tab repart du dernier
  *   élément focus du dialogue, pas de sa tête ;
@@ -28,15 +30,21 @@ export function useDialogA11y(onClose: () => void) {
     if (!container) return
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
 
-    // tabIndex >= 0 : exclut les boutons hors tabulation (croix et chevron des Autocomplete MUI).
-    const focusables = () => Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((el) => el.offsetParent !== null && el.tabIndex >= 0)
-    focusables()[0]?.focus()
-
+    // tabIndex >= 0 : exclut les boutons hors tabulation (chevron des Autocomplete MUI). visibility : la croix
+    // d'effacement des champs de SearchBar reste dans la mise en page, masquée hors focus, et ne peut pas recevoir le focus.
+    const focusables = () =>
+      Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+        (el) => el.offsetParent !== null && el.tabIndex >= 0 && getComputedStyle(el).visibility !== "hidden"
+      )
+    // Écouteur posé avant le focus initial : le champ autofocus doit servir de repère au Tab depuis <body>
     let lastFocused: HTMLElement | null = null
     const handleFocusIn = (event: FocusEvent) => {
       if (event.target instanceof HTMLElement) lastFocused = event.target
     }
     container.addEventListener("focusin", handleFocusIn)
+
+    const initialFocus = container.querySelector<HTMLElement>("[data-autofocus]") ?? focusables()[0]
+    initialFocus?.focus()
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
