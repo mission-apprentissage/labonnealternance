@@ -388,6 +388,9 @@ export const FormulaireEditionOffreStep1 = ({
   const minStartDate = dayjs().startOf("day")
   const maxStartDate = dayjs().add(2, "years")
   let jobStartDateYup = Yup.date()
+    // un input type="date" vide ou incomplet renvoie "" : absence de saisie, pas erreur de type
+    .transform((value, originalValue) => (originalValue === "" ? undefined : value))
+    .typeError("Date de début invalide : saisissez une date au format JJ/MM/AAAA")
   if (!offre) {
     jobStartDateYup = jobStartDateYup.min(minStartDate, `La date de début doit être après le ${minStartDate.format(FR_DATE_FORMAT)}`)
   }
@@ -432,9 +435,10 @@ export const FormulaireEditionOffreStep1 = ({
           job_start_type: Yup.mixed<JOB_START_TYPE>().oneOf([JOB_START_TYPE.DES_QUE_POSSIBLE, JOB_START_TYPE.PRECISE_DATE], "Champ obligatoire").required("Champ obligatoire"),
           job_start_date_flexible: Yup.boolean().default(false),
           job_start_date: jobStartDateYup,
-          job_type: Yup.array().required("Champ obligatoire"),
+          // un tableau vide satisfait required() en Yup 1.x
+          job_type: Yup.array().min(1, "Sélectionnez au moins un type de contrat").required("Sélectionnez au moins un type de contrat"),
           job_rythm: Yup.string()
-            .max(100)
+            .max(100, "Le rythme de l'alternance ne doit pas dépasser 100 caractères")
             .test("no-url", "Les urls sont interdites", (value) => !value || !value.split(/\s+/).some((token) => token && detectUrls(token).length > 0)),
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").required("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()

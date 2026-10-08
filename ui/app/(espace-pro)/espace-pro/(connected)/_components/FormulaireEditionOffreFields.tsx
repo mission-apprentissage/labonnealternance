@@ -184,7 +184,7 @@ export const FormulaireEditionOffreFields = ({
                 Rythme de l’alternance école/entreprise <span style={{ color: "#666666" }}>(Facultatif)</span>
               </>
             }
-            hintText="Ex: 1 semaine à l’école / 2 semaines en entreprise"
+            hintText="100 caractères maximum. Ex : 1 semaine à l’école / 2 semaines en entreprise"
             name="job_rythm"
           />
         </Box>

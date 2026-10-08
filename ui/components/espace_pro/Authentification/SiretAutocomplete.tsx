@@ -32,7 +32,8 @@ export const SiretAutocomplete = ({
       validateOnMount
       initialValues={{ establishment_siret: undefined }}
       validationSchema={Yup.object().shape({
-        establishment_siret: SIRETValidation().required("champ obligatoire"),
+        // la saisie seule ne renseigne pas la valeur : seule la sélection d'un résultat le fait (cf. onSelectItem)
+        establishment_siret: SIRETValidation().required("Sélectionnez votre établissement dans la liste des résultats, par son nom ou son SIRET (14 chiffres, sans espace)"),
       })}
       onSubmit={onSubmit}
     >

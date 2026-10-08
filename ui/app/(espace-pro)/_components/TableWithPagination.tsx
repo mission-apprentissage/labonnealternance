@@ -269,6 +269,8 @@ function TableWithPagination({
               label={<span className="fr-sr-only">Aller à la page</span>}
               options={[...new Array(pageCount)].map((_, index) => (index + 1).toString()).map((value) => ({ value, label: value }))}
               nativeSelectProps={{
+                // étiquette masquée : le title la rend lisible au survol et en commande vocale (RGAA 11.1)
+                title: "Aller à la page",
                 value: (finalPageIndex + 1).toString(),
                 onChange: (event) => {
                   const { value: newValue } = event.target

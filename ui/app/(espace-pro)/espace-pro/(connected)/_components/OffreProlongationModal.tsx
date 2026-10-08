@@ -28,6 +28,9 @@ export const OffreProlongationModal = ({
   const maxStartDate = dayjs().add(2, "years")
 
   const jobStartDateYup = Yup.date()
+    // cf. FormulaireEditionOffreStep1 : "" d'un input date vide ou incomplet
+    .transform((value, originalValue) => (originalValue === "" ? undefined : value))
+    .typeError("Date de début invalide : saisissez une date au format JJ/MM/AAAA")
     .min(minStartDate.toDate(), `La date de début doit être à partir du ${minStartDate.format(FR_DATE_FORMAT)}`)
     .max(maxStartDate.toDate(), `La date de début doit être avant le ${maxStartDate.format(FR_DATE_FORMAT)}`)
     .required("Champ obligatoire")

@@ -410,10 +410,9 @@ const FormikInput = ({
   const errorId = `${name}-error`
 
   return (
-    <FormControl error={Boolean(displayedErrorOpt)} fullWidth>
-      <FormLabel htmlFor={name} {...(required ? { required } : {})}>
-        {label}
-      </FormLabel>
+    // required sur le FormControl : Input le pose sur l'<input>, l'astérisque du FormLabel étant aria-hidden
+    <FormControl required={required} error={Boolean(displayedErrorOpt)} fullWidth>
+      <FormLabel htmlFor={name}>{label}</FormLabel>
       {hint && <HintText id={hintId}>{hint}</HintText>}
       <Input
         fullWidth={true}
@@ -520,8 +519,8 @@ const TextareaInput = ({
   const errorId = `${name}-error`
 
   return (
-    <FormControl error={Boolean(displayedErrorOpt)} fullWidth>
-      <FormLabel htmlFor={name} sx={{ mb: fr.spacing("1v"), fontSize: "16px", lineHeight: "24px" }} {...(required ? { required } : {})}>
+    <FormControl required={required} error={Boolean(displayedErrorOpt)} fullWidth>
+      <FormLabel htmlFor={name} sx={{ mb: fr.spacing("1v"), fontSize: "16px", lineHeight: "24px" }}>
         {label}
       </FormLabel>
       {description && <HintText id={hintId}>{description}</HintText>}
@@ -537,7 +536,8 @@ const TextareaInput = ({
         onBlur={formik.handleBlur}
         onChange={formik.handleChange}
         value={value}
-        // TextareaAutosize n'est pas un InputBase : l'état d'erreur du FormControl ne lui parvient pas
+        // TextareaAutosize n'est pas un InputBase : ni l'état d'erreur ni required du FormControl ne lui parviennent
+        required={required}
         aria-invalid={Boolean(displayedErrorOpt)}
         aria-describedby={describedBy(description && hintId, displayedErrorOpt && errorId)}
       />
