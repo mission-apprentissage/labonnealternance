@@ -2,11 +2,12 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, ButtonBase, ClickAwayListener, Grow, Paper, Popper } from "@mui/material"
-import { type KeyboardEvent, type ReactNode, useId, useRef, useState } from "react"
+import { type FocusEvent, type KeyboardEvent, type ReactNode, useId, useRef, useState } from "react"
 
 /**
  * Chip pill de filtre (design « Nouvelle recherche »). Deux comportements :
- * - avec `popperContent` : dropdown (caret) ouvrant un panneau flottant — fermeture clic extérieur / Échap ;
+ * - avec `popperContent` : dropdown (caret) ouvrant un panneau flottant — fermeture clic extérieur,
+ *   Échap, focus sorti du chip (Tab) ou `close` passé au contenu ;
  * - sans : toggle on/off via `onToggle`.
  *
  * La sélection est signalée par l'inversion du fond (pas de badge ✓) et le libellé
@@ -22,8 +23,11 @@ interface SearchFilterChipProps {
   activeLabel?: string
   active: boolean
   disabled?: boolean
-  /** Contenu du panneau flottant — présence = variante dropdown. */
-  popperContent?: ReactNode
+  /**
+   * Contenu du panneau flottant — présence = variante dropdown. En fonction, reçoit `close` qui
+   * ferme le panneau et rend le focus au chip (validation depuis un champ, ex. Entrée).
+   */
+  popperContent?: ReactNode | ((close: () => void) => ReactNode)
   /** Variante toggle : bascule à chaque clic. */
   onToggle?: () => void
   /**
@@ -76,6 +80,11 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
 
   const close = () => setOpenNotified(false)
 
+  const closeAndFocusAnchor = () => {
+    close()
+    anchorRef.current?.focus()
+  }
+
   const handleClick = () => {
     if (isDropdown) setOpenNotified(!open)
     else onToggle?.()
@@ -84,8 +93,7 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape" && open) {
       event.stopPropagation()
-      close()
-      anchorRef.current?.focus()
+      closeAndFocusAnchor()
       return
     }
 
@@ -116,17 +124,32 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
     focusables[nextIndex].focus()
   }
 
+  // Focus sorti du chip et de son panneau (Tab vers le filtre suivant) → fermeture. Le Popper
+  // est rendu dans ce conteneur (disablePortal). Sans `relatedTarget` (clic hors élément
+  // focusable, fenêtre qui perd le focus, calendrier natif), c'est ClickAwayListener qui tranche.
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    if (!open || !(event.relatedTarget instanceof Node) || event.currentTarget.contains(event.relatedTarget)) return
+    close()
+  }
+
   const palette = active ? CHIP_COLORS.active : CHIP_COLORS.default
+  const displayedLabel = active ? (activeLabel ?? label) : label
+  // Chip à panneau affichant une valeur : le nom du filtre disparaît du texte visible, on le
+  // rétablit dans le nom accessible (texte visible inclus, WCAG 2.5.3).
+  const ariaLabel = isDropdown && displayedLabel !== label ? `${label} : ${displayedLabel}` : undefined
 
   return (
-    <Box sx={{ position: "relative", display: "inline-flex" }}>
+    <Box sx={{ position: "relative", display: "inline-flex" }} onBlur={handleBlur}>
       <ButtonBase
         ref={anchorRef}
         disabled={disabled}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
+        aria-label={ariaLabel}
+        // Panneau = bouton de divulgation (aria-expanded + aria-controls) : aria-haspopup="true"
+        // annoncerait un menu, que le panneau n'est pas.
         aria-expanded={isDropdown ? open : undefined}
-        aria-haspopup={isDropdown ? "true" : dialogTrigger ? "dialog" : undefined}
+        aria-haspopup={dialogTrigger ? "dialog" : undefined}
         aria-controls={isDropdown && open ? popperId : undefined}
         aria-pressed={!isDropdown && !dialogTrigger ? active : undefined}
         sx={{
@@ -148,7 +171,7 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
           },
         }}
       >
-        {active ? (activeLabel ?? label) : label}
+        {displayedLabel}
         {(isDropdown || dialogTrigger) && (
           <Box component="span" className={fr.cx(open ? "fr-icon-arrow-up-s-line" : "fr-icon-arrow-down-s-line", "fr-icon--sm")} aria-hidden="true" />
         )}
@@ -194,7 +217,11 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
             >
               <Paper onKeyDown={handleKeyDown} elevation={0} sx={{ mt: "4px", borderRadius: "4px", py: "8px", minWidth: 240, boxShadow: "0 6px 18px rgba(0,0,18,0.16)" }}>
                 <ClickAwayListener onClickAway={close}>
-                  <Box ref={popperContentRef}>{popperContent}</Box>
+                  {/* inert pendant l'animation de sortie : sinon Shift+Tab juste après la fermeture
+                      revient dans le panneau, qui disparaît en laissant le focus sur <body>. */}
+                  <Box ref={popperContentRef} inert={!open}>
+                    {typeof popperContent === "function" ? popperContent(closeAndFocusAnchor) : popperContent}
+                  </Box>
                 </ClickAwayListener>
               </Paper>
             </Grow>

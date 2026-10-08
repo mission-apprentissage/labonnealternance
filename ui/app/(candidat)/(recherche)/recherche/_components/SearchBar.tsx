@@ -5,8 +5,9 @@ import type { PopperProps } from "@mui/material"
 import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
-import type { ReactNode } from "react"
+import type { FocusEvent, KeyboardEvent, ReactNode } from "react"
 import { useCallback, useEffect, useId, useRef, useState } from "react"
+import { flushSync } from "react-dom"
 import { searchAddress } from "@/services/base-adresse"
 import { apiGet } from "@/utils/api.utils"
 import type { SearchMode } from "../_utils/search.params.utils"
@@ -140,6 +141,13 @@ export function highlightMatch(label: string, input: string): ReactNode {
   )
 }
 
+/**
+ * VoiceOver suit l'option active (aria-activedescendant) et le focus clavier l'accompagne : le
+ * champ le perd en pleine saisie. MUI prévoit alors de le lui rendre (handleBlur), mais teste
+ * document.activeElement, qui vaut encore <body> pendant le blur : on se fie à relatedTarget.
+ */
+const isBlurToListbox = (event: { relatedTarget?: EventTarget | null }) => event.relatedTarget instanceof Element && event.relatedTarget.closest('[role="listbox"]') !== null
+
 type LieuOption = { label: string; latitude: number; longitude: number; adminArea?: string; displayLabel?: string }
 
 // Identité d'une option lieu : le libellé ne suffit pas, une région et une commune peuvent
@@ -258,6 +266,7 @@ export function SearchBar({
   const lieuLabelId = useId()
   const metierErrorId = useId()
   const lieuErrorId = useId()
+  const metierListboxGroupIdPrefix = useId()
   const [inputValue, setInputValue] = useState(initialQ)
   const emptyLieuLabel = franceEntiereIfEmpty ? FRANCE_ENTIERE_OPTION.label : ""
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? emptyLieuLabel)
@@ -295,6 +304,9 @@ export function SearchBar({
 
   const metierListbox = useListboxMaxHeight()
   const lieuListbox = useListboxMaxHeight()
+  // Ouverture contrôlée : un blur vers la liste ne doit pas la fermer (cf. isBlurToListbox).
+  const [metierOpen, setMetierOpen] = useState(false)
+  const [lieuOpen, setLieuOpen] = useState(false)
 
   // Champ en cours de saisie de l'écran de saisie mobile — piloté par focus/blur des
   // Autocomplete (les clics sur les options ne blurent pas : MUI garde le focus dans
@@ -304,6 +316,15 @@ export function SearchBar({
     if (!inlineSuggestions) return
     setActiveField(field)
     onActiveFieldChange?.(field)
+  }
+
+  // Écran de saisie : tout ce qui précède et suit le champ actif est masqué, Tab n'a nulle part
+  // où aller et le focus trap du panneau le renverrait en tête. On en sort de façon synchrone,
+  // avant la navigation native, pour que Tab atteigne l'élément voisin réaffiché. Suppose ce
+  // gestionnaire React exécuté avant le keydown du focus trap (cf. useDialogA11y).
+  const exitInputScreenOnTab = (event: KeyboardEvent) => {
+    if (event.key !== "Tab" || !activeField) return
+    flushSync(() => changeActiveField(null))
   }
 
   const isColumn = layout === "column"
@@ -454,7 +475,7 @@ export function SearchBar({
       }}
     >
       {/* Champ métier */}
-      <Box sx={metierWrapperSx}>
+      <Box sx={metierWrapperSx} onKeyDown={exitInputScreenOnTab}>
         <FieldLabel id={metierLabelId} error={Boolean(qError)}>
           Que recherchez-vous ?
         </FieldLabel>
@@ -473,11 +494,25 @@ export function SearchBar({
           slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
           blurOnSelect={inlineSuggestions}
           onFocus={() => changeActiveField("metier")}
-          onBlur={() => changeActiveField(null)}
+          onBlur={(e) => {
+            if (isBlurToListbox(e)) {
+              metierListbox.inputRef.current?.focus()
+              return
+            }
+            changeActiveField(null)
+          }}
           // Mode inline : le cap de hauteur du listbox est inutile (cf. INLINE_PAPER_SX), on n'arme
           // pas le hook (listeners visualViewport + setState à chaque resize/scroll du clavier).
-          onOpen={inlineSuggestions ? undefined : metierListbox.onOpen}
-          onClose={inlineSuggestions ? undefined : metierListbox.onClose}
+          open={metierOpen}
+          onOpen={() => {
+            setMetierOpen(true)
+            if (!inlineSuggestions) metierListbox.onOpen()
+          }}
+          onClose={(e, reason) => {
+            if (reason === "blur" && isBlurToListbox(e as FocusEvent)) return
+            setMetierOpen(false)
+            if (!inlineSuggestions) metierListbox.onClose()
+          }}
           inputValue={inputValue}
           onInputChange={(_e, value, reason) => {
             // "reset" est déclenché par la sélection d'une option : c'est onChange qui reflète la
@@ -549,10 +584,19 @@ export function SearchBar({
           }
           // Deux groupes consécutifs : "" (ligne « Rechercher », sans en-tête) puis "Suggestions".
           groupBy={(option) => (option.kind === "suggestion" ? "Suggestions" : "")}
+          // listbox ARIA : enfants `option` ou `group` uniquement, d'où le <li> neutralisé et le
+          // <ul> en groupe, nommé par son en-tête quand il en a un.
           renderGroup={(params) => (
-            <Box component="li" key={params.key}>
-              {params.group && <Box sx={{ px: "16px", lineHeight: "36px", fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>{params.group}</Box>}
-              <Box component="ul" sx={{ p: 0, m: 0, listStyle: "none" }}>
+            <Box component="li" key={params.key} role="presentation">
+              {params.group && (
+                <Box
+                  id={`${metierListboxGroupIdPrefix}-${params.key}`}
+                  sx={{ px: "16px", lineHeight: "36px", fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}
+                >
+                  {params.group}
+                </Box>
+              )}
+              <Box component="ul" role="group" aria-labelledby={params.group ? `${metierListboxGroupIdPrefix}-${params.key}` : undefined} sx={{ p: 0, m: 0, listStyle: "none" }}>
                 {params.children}
               </Box>
               {/* État de chargement sous la ligne « Rechercher » (remplace le loadingText MUI, cf. Autocomplete). */}
@@ -584,6 +628,8 @@ export function SearchBar({
                   // Clavier virtuel : touche « rechercher » (loupe) à la place de « retour ».
                   enterKeyHint: "search",
                   "aria-labelledby": metierLabelId,
+                  // Absent chez MUI : sans lui, VoiceOver ne traite pas le champ en combobox ARIA 1.2.
+                  "aria-haspopup": "listbox",
                   "aria-describedby": qError ? metierErrorId : undefined,
                   "aria-invalid": Boolean(qError),
                 },
@@ -597,7 +643,7 @@ export function SearchBar({
       </Box>
 
       {/* Champ lieu */}
-      <Box sx={lieuWrapperSx}>
+      <Box sx={lieuWrapperSx} onKeyDown={exitInputScreenOnTab}>
         <Box sx={{ mb: fr.spacing("1v") }}>
           <FieldLabel id={lieuLabelId} error={Boolean(lieuError)}>
             Lieu
@@ -610,8 +656,9 @@ export function SearchBar({
           // La 1re option (suggestion ou « France entière ») est pré-surlignée : Entrée la
           // sélectionne au lieu de laisser un texte non validé.
           autoHighlight
-          // Ouvre le dropdown au focus : l'option « France entière » est proposée avant toute saisie.
-          openOnFocus
+          // Pas d'openOnFocus : ouverte à l'arrivée du focus, la liste rendrait une option active
+          // sans action de l'usager. VoiceOver la suit, le focus clavier quitte le champ et la
+          // liste se ferme. Elle s'ouvre au clic ou au toucher, à la saisie et avec ↓.
           // Le champ affiche « France entière » : le focus sélectionne le texte pour qu'une
           // saisie le remplace directement (sinon l'usager doit l'effacer à la main).
           selectOnFocus={showsFranceEntiere}
@@ -629,12 +676,24 @@ export function SearchBar({
           slots={inlineSuggestions ? { popper: InlineSuggestionsContainer } : undefined}
           blurOnSelect={inlineSuggestions}
           // Mode inline : cap listbox inutile — hook non armé (cf. champ métier).
-          onOpen={inlineSuggestions ? undefined : lieuListbox.onOpen}
-          onClose={inlineSuggestions ? undefined : lieuListbox.onClose}
+          open={lieuOpen}
+          onOpen={() => {
+            setLieuOpen(true)
+            if (!inlineSuggestions) lieuListbox.onOpen()
+          }}
+          onClose={(e, reason) => {
+            if (reason === "blur" && isBlurToListbox(e as FocusEvent)) return
+            setLieuOpen(false)
+            if (!inlineSuggestions) lieuListbox.onClose()
+          }}
           inputValue={lieuInput}
           value={lieuValue}
           onFocus={() => changeActiveField("lieu")}
-          onBlur={() => {
+          onBlur={(e) => {
+            if (isBlurToListbox(e)) {
+              lieuListbox.inputRef.current?.focus()
+              return
+            }
             changeActiveField(null)
             handleLieuBlur()
           }}
@@ -702,6 +761,7 @@ export function SearchBar({
                   ...params.inputProps,
                   enterKeyHint: "search",
                   "aria-labelledby": lieuLabelId,
+                  "aria-haspopup": "listbox",
                   "aria-describedby": lieuError ? lieuErrorId : undefined,
                   "aria-invalid": Boolean(lieuError),
                 },
