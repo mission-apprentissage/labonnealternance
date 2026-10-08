@@ -111,6 +111,86 @@ describe("verdict reconciliation", () => {
     expect(parsed?.verdict).toBe("non_conforme")
   })
 
+  // Arbitrage de la modération (#5352) : les règles de la charte envoient en revue, jamais en blocage,
+  // même quand le modèle les juge bloquantes.
+  it("should never block on charter findings alone", () => {
+    const parsed = parseClassification(
+      mistralResponse({ verdict: "non_conforme", findings: [{ category: "candidature_hors_plateforme", severity: "bloquant", verbatim: "candidatures par e-mail uniquement" }] })
+    )
+    expect(parsed).toEqual({
+      verdict: "a_verifier",
+      findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim: "candidatures par e-mail uniquement" }],
+    })
+  })
+
+  it("should flag charter findings announced as conforme", () => {
+    const parsed = parseClassification(
+      mistralResponse({ verdict: "conforme", findings: [{ category: "experience_exigee", severity: "doute", verbatim: "deux ans d'expérience" }] })
+    )
+    expect(parsed?.verdict).toBe("a_verifier")
+  })
+
+  it("should still block a legal finding reported alongside a charter finding", () => {
+    const parsed = parseClassification(
+      mistralResponse({
+        verdict: "non_conforme",
+        findings: [
+          { category: "teletravail_integral", severity: "bloquant", verbatim: "100 % télétravail" },
+          { category: "discrimination", severity: "bloquant", verbatim: "âgé de 18 à 22 ans" },
+        ],
+      })
+    )
+    expect(parsed?.verdict).toBe("non_conforme")
+    expect(parsed?.findings.map(({ severity }) => severity)).toEqual(["doute", "bloquant"])
+  })
+
+  it("should not cap a non_conforme verdict whose findings are legal doubts", () => {
+    const parsed = parseClassification(mistralResponse({ verdict: "non_conforme", findings: [{ category: "mineurs", severity: "doute", verbatim: "service en bar" }] }))
+    expect(parsed?.verdict).toBe("non_conforme")
+  })
+
+  it("should treat a contact_bypass on already masked coordinates as an off-platform application", () => {
+    const parsed = parseClassification(
+      mistralResponse({ verdict: "non_conforme", findings: [{ category: "contact_bypass", severity: "bloquant", verbatim: "au 06xxxxxxxx ou à emxxx@xxx.fr" }] })
+    )
+    expect(parsed).toEqual({
+      verdict: "a_verifier",
+      findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim: "au 06xxxxxxxx ou à emxxx@xxx.fr" }],
+    })
+  })
+
+  it("should block an off-platform application whose coordinate is disguised", () => {
+    const parsed = parseClassification(
+      mistralResponse({
+        verdict: "a_verifier",
+        findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim: "CV à recrutement arobase monentreprise point fr" }],
+      })
+    )
+    expect(parsed).toEqual({
+      verdict: "non_conforme",
+      findings: [{ category: "contact_bypass", severity: "bloquant", verbatim: "CV à recrutement arobase monentreprise point fr" }],
+    })
+  })
+
+  it("should keep blocking a disguised coordinate written next to a masked one", () => {
+    const parsed = parseClassification(
+      mistralResponse({ verdict: "non_conforme", findings: [{ category: "contact_bypass", severity: "bloquant", verbatim: "emxxx@xxx.fr ou jean arobase gmail point com" }] })
+    )
+    expect(parsed?.verdict).toBe("non_conforme")
+    expect(parsed?.findings[0].category).toBe("contact_bypass")
+  })
+
+  it("should not mistake ordinary wording for a disguised coordinate", () => {
+    const parsed = parseClassification(
+      mistralResponse({
+        verdict: "a_verifier",
+        findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim: "déposez votre CV au point de vente ou sur emxxx@xxx.fr" }],
+      })
+    )
+    expect(parsed?.verdict).toBe("a_verifier")
+    expect(parsed?.findings[0].category).toBe("candidature_hors_plateforme")
+  })
+
   it("should derive the verdict from the severities of the findings", () => {
     expect(verdictFromFindings([])).toBe("conforme")
     expect(verdictFromFindings([{ category: "mineurs", severity: "doute", verbatim: "x" }])).toBe("a_verifier")
