@@ -29,6 +29,9 @@ export const ZUserStatusValidation = z.strictObject({
 // le nom stocké ne la satisfait pas (nom vide, une lettre…).
 export const ZPersonNameInput = extensions.withoutUrls().refine(validatePersonName, PERSON_NAME_VALIDATION_MESSAGE)
 
+// Bodies uniquement, pour la même raison que ZPersonNameInput : des origines de campagne historiques dépassent 100 caractères.
+export const ZUserOriginInput = z.string().max(255).nullish().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi")
+
 export const ZUserRecruteurWritable = z.strictObject({
   last_name: extensions.withoutUrls().describe("Nom de l'utilisateur"),
   first_name: extensions.withoutUrls().describe("Prénom de l'utilisateur"),
