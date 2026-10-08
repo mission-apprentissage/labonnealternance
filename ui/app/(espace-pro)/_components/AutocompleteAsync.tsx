@@ -1,6 +1,7 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useCombobox } from "downshift"
-import { useMemo, useState } from "react"
+import { useId, useMemo, useRef, useState } from "react"
 
 import CustomInput from "@/app/_components/CustomInput"
 import { LiveStatus } from "@/app/_components/LiveStatus"
@@ -11,6 +12,11 @@ export default function AutocompleteAsync<T>({
   onSelectItem,
   handleSearch,
   initInputValue: value,
+  label,
+  info,
+  required = true,
+  hideAsterisk,
+  requiredMention,
   placeholder,
   name,
   dataTestId,
@@ -26,11 +32,15 @@ export default function AutocompleteAsync<T>({
       <CircularProgress size={30} sx={{ fontWeight: "bold", color: "#CFCFCF" }} />
     </Box>
   ),
-  noResultText = "Aucun résultat",
-  errorText = "",
+  noResultText = "Pas de résultats pour votre recherche",
   allowHealFromError,
 }: {
   name: string
+  label: React.ReactNode
+  info?: React.ReactNode
+  required?: boolean
+  hideAsterisk?: boolean
+  requiredMention?: boolean
   placeholder?: string
   handleSearch: (input: string) => Promise<T[]>
   onSelectItem: (item: T | null) => void
@@ -46,10 +56,10 @@ export default function AutocompleteAsync<T>({
   renderLoading?: React.ReactNode
   /** Équivalent textuel de renderNoResult, annoncé aux lecteurs d'écran. */
   noResultText?: string
-  /** Équivalent textuel de renderError, annoncé en role="alert". */
-  errorText?: string
   allowHealFromError: boolean
 }) {
+  const searchErrorId = useId()
+  const inputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [inputItems, setInputJobItems] = useState([])
@@ -95,7 +105,24 @@ export default function AutocompleteAsync<T>({
   const shouldRenderLoading = !error && loading && !inputItems.length
   const shouldRenderItems = Boolean(!error && inputItems.length)
 
-  const shouldRenderDropdown = shouldRenderError || shouldRenderEmptyResult || shouldRenderLoading || shouldRenderItems
+  const shouldRenderDropdown = shouldRenderEmptyResult || shouldRenderLoading || shouldRenderItems
+
+  const {
+    ref,
+    // downshift pointe vers un label qu'il n'a pas rendu : le nom vient du <label for> de CustomInput (RGAA 11.1)
+    "aria-labelledby": _ariaLabelledBy,
+    role,
+    "aria-activedescendant": ariaActiveDescendant,
+    "aria-autocomplete": ariaAutocomplete,
+    "aria-controls": ariaControls,
+    "aria-expanded": ariaExpanded,
+    ...comboboxProps
+  } = getInputProps({
+    ref: inputRef,
+    onFocus() {
+      openMenu()
+    },
+  })
 
   // Annonce hors listbox, sans getA11yStatusMessage de downshift : ses dépendances n'incluent pas
   // les items, le message partirait avant l'arrivée des résultats asynchrones.
@@ -112,18 +139,33 @@ export default function AutocompleteAsync<T>({
     <Box data-testid={dataTestId} sx={{ width: "100%", position: "relative" }}>
       <CustomInput
         pb="0"
-        required={false}
+        required={required}
+        hideAsterisk={hideAsterisk}
+        requiredMention={requiredMention}
+        label={label}
+        info={info}
         name={name}
         placeholder={placeholder}
-        {...{
-          ...getInputProps({
-            onFocus() {
-              openMenu()
-            },
-          }),
-          ref: undefined,
+        {...comboboxProps}
+        // MUI Input pose les attributs inconnus sur sa div racine : ref, role et aria-* passent par inputProps pour atteindre l'<input>
+        inputProps={{
+          ref,
+          role,
+          "aria-activedescendant": ariaActiveDescendant,
+          "aria-autocomplete": ariaAutocomplete,
+          "aria-controls": ariaControls,
+          "aria-expanded": ariaExpanded,
         }}
+        aria-describedby={shouldRenderError ? searchErrorId : undefined}
       />
+      {/* Hors de la listbox pour être restitué et lié au champ (RGAA 11.10) ; la zone live existe avant le message */}
+      <div aria-live="polite">
+        {shouldRenderError && (
+          <p id={searchErrorId} className={fr.cx("fr-message", "fr-message--error")}>
+            <span>{renderError(error)}</span>
+          </p>
+        )}
+      </div>
       {/* getMenuProps() pose role="listbox" : la cible doit être un <ul>, et ses enfants des <li>.
           Les <li> vivaient dans des <div> intermédiaires — document invalide (RGAA 8.2) et nombre
           d'éléments non restitué. Le padding vertical, porté avant par un div interne, est appliqué
@@ -145,7 +187,7 @@ export default function AutocompleteAsync<T>({
           borderRadius: "6px",
           maxH: "50vh",
         }}
-        {...getMenuProps()}
+        {...getMenuProps({ "aria-label": typeof label === "string" ? label : undefined })}
       >
         {isOpen && shouldRenderDropdown && (
           <>
@@ -155,14 +197,12 @@ export default function AutocompleteAsync<T>({
                   {renderItem(item, index === highlightedIndex, index)}
                 </li>
               ))}
-            {shouldRenderError && <li role="presentation">{renderError(error)}</li>}
             {shouldRenderEmptyResult && <li role="presentation">{renderNoResult}</li>}
             {shouldRenderLoading && <li role="presentation">{renderLoading}</li>}
           </>
         )}
       </Box>
       <LiveStatus message={statusMessage} />
-      <LiveStatus role="alert" message={isOpen && shouldRenderError ? errorText : ""} />
     </Box>
   )
 }

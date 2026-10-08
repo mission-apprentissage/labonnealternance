@@ -176,6 +176,19 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response.statusCode).toBe(400)
     })
 
+    it.each([
+      { length: 255, statusCode: 200 },
+      { length: 256, statusCode: 400 },
+    ])(
+      "Limite l'origine à 255 caractères (longueur $length → $statusCode)",
+      async ({ length, statusCode }) => {
+        const response = await callCreation({ ...defaultCreationEntreprisePayload, origin: "a".repeat(length) })
+
+        expect.soft(response.statusCode).toBe(statusCode)
+      },
+      10_000
+    )
+
     it("Envoie un email de confirmation dès la création de compte entreprise", async () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
 
@@ -251,6 +264,12 @@ describe("POST /etablissement/creation", () => {
     })
   })
   describe("Création de CFA", () => {
+    it("Refuse une origine de plus de 255 caractères", async () => {
+      const response = await callCreation({ ...defaultCreationCFAPayload, origin: "a".repeat(256) })
+
+      expect.soft(response.statusCode).toBe(400)
+    })
+
     it("Vérifie que le CFA est créé", async () => {
       const response = await callCreation(defaultCreationCFAPayload)
       expect.soft(response.statusCode).toBe(200)

@@ -5,8 +5,6 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { DsfrIcon } from "@/components/DsfrIcon"
-import { CONTEXT_CHANGE_HINT } from "@/components/dsfr/link.utils"
 import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 export const metadata: Metadata = METADATA.static.espaceProCfaCarteDEtudiantDesMetiers()
@@ -44,24 +42,21 @@ const CarteDEtudiantDesMetiersPage = () => (
               style={{ height: "100%" }}
             />
           </Box>
+          {/* RGAA 6.1 et 13.3 : l'intitulé annonce à lui seul le téléchargement, le format et le poids. */}
           <Button
+            iconId="fr-icon-download-line"
+            iconPosition="left"
             linkProps={{ href: "/ressources/carte-d-etudiant-des-metiers.zip", download: "carte-d-etudiant-des-metiers.zip" }}
             style={{ margin: "auto", marginTop: fr.spacing("3w") }}
           >
-            <DsfrIcon name="fr-icon-download-line" size={16} />
-            Télécharger la carte (ZIP)
-            <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
-              (2 Mo)
-            </Typography>
-            {/* RGAA 6.1 : le lien enregistre un fichier sans ouvrir de fenêtre, il faut l'annoncer. */}
-            <span className="fr-sr-only">{CONTEXT_CHANGE_HINT.download}</span>
+            Télécharger la carte (ZIP, 200 Ko)
           </Button>
         </Grid>
         <Grid size={{ md: 8, xs: 12 }} display={"flex"} flexDirection={"column"} gap={{ md: fr.spacing("3w"), xs: fr.spacing("2w") }}>
           <Typography>Le .ZIP mis à disposition comporte 3 fichiers au format PDF.</Typography>
           <Typography>
-            La version Carte_etudiant_bureautique.pdf est le fichier classique. Le fichier Carte_etudiante_imprimeur.pdf vous permet de l’imprimer chez un imprimeur.Le fichier
-            Carte_etudiante_numerique.pdf vous permet de le compléter pour chaque étudiant depuis votre ordinateur avant impression.
+            La version "Carte des metiers 26-27-classique.pdf" est le fichier classique. Le fichier "Carte des metiers 26-27-imprimeur.pdf" vous permet de l’imprimer chez un
+            imprimeur. Le fichier "Carte des metiers 26-27-numerique.pdf" vous permet de le compléter pour chaque étudiant depuis votre ordinateur avant impression.
           </Typography>
         </Grid>
       </Grid>

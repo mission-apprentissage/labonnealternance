@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import ClotureRecrutementForm, { type IClotureRecrutementPayload } from "@/app/(espace-pro)/_components/ClotureRecrutementForm"
 import { cancelOffre, cancelPartnerJob, fillOffre, providedPartnerJob } from "@/utils/api"
 import { apiGet } from "@/utils/api.utils"

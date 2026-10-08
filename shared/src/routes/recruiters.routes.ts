@@ -10,7 +10,7 @@ import { ZEntreprise } from "../models/entreprise.model.js"
 import { ZRecruiter } from "../models/recruiter.model.js"
 import { EntrepriseEngagementSources, HANDI_ENGAGEMENT_VALUES } from "../models/referentiel-engagement-entreprise.model.js"
 import { ZUserWithAccount } from "../models/user-with-account.model.js"
-import { ZPersonNameInput, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/users-recruteur.model.js"
+import { ZPersonNameInput, ZUserOriginInput, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/users-recruteur.model.js"
 import type { IRoutesDef } from "./common.routes.js"
 
 export const ZEntrepriseInformations = z.strictObject({
@@ -147,10 +147,10 @@ export const zRecruiterRoutes = {
           .extend({
             last_name: ZPersonNameInput,
             first_name: ZPersonNameInput,
+            origin: ZUserOriginInput,
             ...ZUserRecruteurWritable.pick({
               phone: true,
               email: true,
-              origin: true,
               establishment_siret: true,
               opco: true,
             }).shape,
@@ -165,10 +165,10 @@ export const zRecruiterRoutes = {
           .extend({
             last_name: ZPersonNameInput,
             first_name: ZPersonNameInput,
+            origin: ZUserOriginInput,
             ...ZUserRecruteurWritable.pick({
               phone: true,
               email: true,
-              origin: true,
               establishment_siret: true,
             }).shape,
           }),

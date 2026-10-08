@@ -1,4 +1,3 @@
-import type { ColumnOption } from "csv-stringify/sync"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { UserEventType } from "shared/models/user-with-account.model"
 import { Transform } from "stream"
@@ -11,6 +10,7 @@ import { notifyToSlack } from "@/common/utils/slack-utils"
 import { groupStreamData } from "@/common/utils/stream-utils"
 import config from "@/config"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
+import type { BrevoContactColumn } from "@/services/brevo-contact-attributes"
 
 type IBrevoContact = {
   user_origin: string
@@ -33,7 +33,7 @@ type IBrevoContact = {
 
 let contactCount = 0
 
-const contactMapper: ColumnOption[] = [
+const contactMapper: BrevoContactColumn[] = [
   {
     key: "user_email",
     header: "EMAIL",
@@ -94,11 +94,10 @@ const contactMapper: ColumnOption[] = [
   },
 ]
 
-const postToBrevo = async (contacts: IBrevoContact[]) => {
+const postToBrevo = async (contacts: IBrevoContact[], listId: string) => {
   contactCount += contacts.length
 
-  await uploadContactListToBrevo("TRANSACTIONAL", contacts, contactMapper, config.smtp.brevoContactListId!)
-  await uploadContactListToBrevo("MARKETING", contacts, contactMapper, config.smtp.brevoMarketingContactListId!)
+  await uploadContactListToBrevo(contacts, contactMapper, listId)
 }
 
 const getRoleManagement360Stream = async (type: AccessEntityType) => {
@@ -202,14 +201,14 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
   }
 }
 
-const sendContacts = async (type: AccessEntityType) => {
+const sendContacts = async (type: AccessEntityType, listId: string) => {
   const cursor = await getRoleManagement360Stream(type)
 
   const postingTransform = new Transform({
     objectMode: true,
     async transform(contacts, _, callback) {
       try {
-        await postToBrevo(contacts as IBrevoContact[])
+        await postToBrevo(contacts as IBrevoContact[], listId)
         callback()
       } catch (err) {
         callback(err as Error)
@@ -221,12 +220,18 @@ const sendContacts = async (type: AccessEntityType) => {
 }
 
 export const sendContactsToBrevo = async () => {
+  const listId = config.brevo.listIds.contacts
+  if (!listId) {
+    logger.warn("sendContactsToBrevo: LBA_BREVO_CONTACT_LIST_ID non configuré, job ignoré")
+    return
+  }
+
   contactCount = 0
   logger.info("Sending contacts to Brevo ...")
 
   try {
-    await sendContacts(AccessEntityType.CFA)
-    await sendContacts(AccessEntityType.ENTREPRISE)
+    await sendContacts(AccessEntityType.CFA, listId)
+    await sendContacts(AccessEntityType.ENTREPRISE, listId)
 
     await notifyToSlack({
       subject: `Envoi des contacts vers Brevo`,

@@ -3,6 +3,7 @@ import { processEnedis } from "@/jobs/offre-partenaire/enedis/process-enedis"
 import { processMissingRomeAndImportToJobPartners } from "@/jobs/offre-partenaire/process-missing-rome-and-import-to-job-partners"
 import { analyzeCfaBlockList } from "@/jobs/one-time-job/analyze-cfa-block-list"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { syncBrevoContactAttributes } from "@/services/brevo-contact-attributes"
 import { reviewJobPartnersClassification } from "@/services/cache-classification.service"
 import { applyClassificationBatch, applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
@@ -337,6 +338,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Emission des intentions des recruteurs.",
   },
 
+  {
+    fct: syncBrevoContactAttributes,
+    description: "Compare les attributs de contact du compte Brevo à ceux qu'attendent les imports, et crée les manquants avec --apply",
+    cliOptions: [{ flags: "--apply", description: "Crée les attributs manquants (sans --apply : rapport seul)" }],
+  },
   {
     fct: sendContactsToBrevo,
     description: "Envoi à Brevo la liste des contacts",

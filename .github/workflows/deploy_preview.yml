@@ -142,7 +142,7 @@ jobs:
           ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           message: |
-            ### :rocket: Prévisualisation
+            ### :rocket: ✅ Prévisualisation
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
             You can access runner logs in ${{ steps.run_url.outputs.url }}
@@ -191,3 +191,119 @@ jobs:
           comment-tag: deployment
           mode: recreate
           pr-number: ${{ github.event.issue.number }}
+
+  # Job distinct : PROJECT_TOKEN reste hors du runner qui exécute le code de la PR.
+  notify_ready_to_test:
+    needs: deploy_preview
+    if: github.event.issue.state != 'closed'
+    name: Notify ready to test ${{ github.event.issue.number }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Notify linked issues ready to test
+        shell: bash
+        run: |
+          DEPLOY_COMMENT_ID=$(gh api "repos/$OWNER/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.body | contains("<!-- thollander/actions-comment-pull-request \"deployment\" -->")) | .id' \
+            | tail -n 1)
+          if [ -z "$DEPLOY_COMMENT_ID" ]; then
+            echo "::error::Commentaire de déploiement introuvable sur la PR #$PR"
+            exit 1
+          fi
+          DEPLOY_COMMENT=$(gh api "repos/$OWNER/$REPO/issues/comments/$DEPLOY_COMMENT_ID" --jq '.body')
+
+          if ! { [[ "$DEPLOY_COMMENT" == *"🚀"* || "$DEPLOY_COMMENT" == *":rocket:"* ]] && [[ "$DEPLOY_COMMENT" == *"✅"* ]]; }; then
+            echo "::warning::Commentaire de déploiement sans 🚀 et ✅, tickets non notifiés"
+            exit 0
+          fi
+
+          ISSUE_NUMBERS=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $pr: Int!) {
+              repository(owner: $owner, name: $repo) {
+                pullRequest(number: $pr) {
+                  closingIssuesReferences(first: 10) {
+                    nodes { number }
+                  }
+                }
+              }
+            }' -f owner="$OWNER" -f repo="$REPO" -F pr="$PR" \
+            --jq '.data.repository.pullRequest.closingIssuesReferences.nodes[].number')
+
+          if [ -z "$ISSUE_NUMBERS" ]; then
+            echo "::warning::Aucun ticket lié à la PR #$PR (Closes #XXX), statut non mis à jour"
+            exit 0
+          fi
+
+          PREVIEW_URL="https://${PR}.labonnealternance-preview.apprentissage.beta.gouv.fr/"
+          FAILED=0
+          for ISSUE in $ISSUE_NUMBERS; do
+            [[ "$ISSUE" =~ ^[0-9]+$ ]] || continue
+
+            ITEM=$(GH_TOKEN="$PROJECT_TOKEN" gh api graphql -f query='
+              query($owner: String!, $repo: String!, $issue: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  issue(number: $issue) {
+                    projectItems(first: 100) {
+                      nodes {
+                        id isArchived project { number }
+                        status: fieldValueByName(name: "Status") {
+                          ... on ProjectV2ItemFieldSingleSelectValue { name }
+                        }
+                      }
+                    }
+                  }
+                }
+              }' -f owner="$OWNER" -f repo="$REPO" -F issue="$ISSUE" \
+              --jq '[.data.repository.issue.projectItems.nodes[] | select(.project.number == 14) | "\(.id) \(.isArchived) \(.status.name // "")"] | first // empty' || true)
+
+            read -r ITEM_ID ITEM_ARCHIVED ITEM_STATUS <<< "$ITEM"
+
+            if [ "$ITEM_ARCHIVED" = "true" ]; then
+              echo "::warning::Issue #$ISSUE → item archivé dans le projet, statut non mis à jour"
+              continue
+            fi
+
+            if [[ ! "$ITEM_ID" =~ ^PVTI_[A-Za-z0-9_-]+$ ]]; then
+              echo "::error::Issue #$ISSUE → item introuvable dans le projet 14"
+              FAILED=1
+              continue
+            fi
+
+            # Un redéploiement ne relance pas la recette ni ne fait reculer un ticket déjà testé ou bloqué.
+            case "$ITEM_STATUS" in
+              ""|a-faire|en-cours|en-revu-technique) ;;
+              *)
+                echo "Issue #$ISSUE → statut $ITEM_STATUS conservé, pas de notification"
+                continue
+                ;;
+            esac
+
+            gh issue comment "$ISSUE" --repo "$OWNER/$REPO" --body "### ✅ Prévisualisation disponible
+          ${PREVIEW_URL}
+
+          @claire-arnaud-beta @AurelieGonter la PR #${PR} est prête à tester." \
+              || { echo "::error::Issue #$ISSUE → échec du commentaire"; FAILED=1; }
+
+            GH_TOKEN="$PROJECT_TOKEN" gh api graphql -f query='
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                updateProjectV2ItemFieldValue(input: {
+                  projectId: $projectId itemId: $itemId fieldId: $fieldId
+                  value: { singleSelectOptionId: $optionId }
+                }) { projectV2Item { id } }
+              }' \
+              -f projectId="PVT_kwDOA8sl_s4BW3Li" \
+              -f itemId="$ITEM_ID" \
+              -f fieldId="PVTSSF_lADOA8sl_s4BW3LizhSIG_8" \
+              -f optionId="61e4505c" \
+              && echo "Issue #$ISSUE → pret-a-tester" \
+              || { echo "::error::Issue #$ISSUE → échec de la mise à jour du statut"; FAILED=1; }
+          done
+          [ $FAILED -eq 0 ] || exit 1
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          PR: ${{ github.event.issue.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
