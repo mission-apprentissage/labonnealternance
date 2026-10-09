@@ -8,6 +8,7 @@ import type { IJobsPartnersOfferPrivateWithDistance } from "shared/models/jobs-p
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { isCfaEntreprise } from "shared/services/is-cfa-entreprise"
 import { isGeiqEntreprise } from "shared/services/is-geiq-entreprise"
+import { isOfferExpired } from "shared/utils/offer-expiration"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { generateApplicationToken } from "./app-links.service"
@@ -33,8 +34,8 @@ function transformPartnerJob(
   const isLbaOffer = partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA
   const recipient_id = isLbaOffer ? getRecipientID(JobCollectionName.recruiters, id) : getRecipientID(JobCollectionName.partners, id)
 
-  // Offre LBA non active (annulée, pourvue, en attente) : le téléphone du recruteur ne doit plus être exposé aux candidats.
-  const isPhoneVisible = !isLbaOffer || partnerJob.offer_status === JOB_STATUS_ENGLISH.ACTIVE
+  // Offre LBA non active (annulée, pourvue, en attente) ou expirée : le téléphone du recruteur ne doit plus être exposé aux candidats.
+  const isPhoneVisible = !isLbaOffer || (partnerJob.offer_status === JOB_STATUS_ENGLISH.ACTIVE && !isOfferExpired(partnerJob.offer_expiration))
 
   const resultJob: ILbaItemPartnerJob = {
     id,

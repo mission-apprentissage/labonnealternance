@@ -18,6 +18,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ITrackingCookies } from "shared/models/traffic-sources.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { isOfferExpired } from "shared/utils/offer-expiration"
 import { resolveSearchParamsFromUrl, SEARCH_PAGE_PATH } from "shared/utils/search-url-compat"
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
@@ -281,8 +282,7 @@ export const sendApplicationV2 = async ({
   if (!job) {
     throw badRequest(BusinessErrorCodes.NOTFOUND)
   }
-  const { offer_expiration } = job
-  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE || (offer_expiration && dayjs(offer_expiration).add(1, "day").isBefore(dayjs()))) {
+  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE || isOfferExpired(job.offer_expiration)) {
     throw badRequest(BusinessErrorCodes.EXPIRED)
   }
 
