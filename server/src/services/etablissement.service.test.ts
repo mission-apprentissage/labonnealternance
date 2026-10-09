@@ -1,15 +1,23 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { roleManagementEventFactory } from "@tests/utils/user.test.utils"
+import { roleManagementEventFactory, saveEntreprise, saveUserWithAccount } from "@tests/utils/user.test.utils"
 import { ObjectId } from "mongodb"
+import nock from "nock"
 import { AccessEntityType, AccessStatus } from "shared"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
+import { ENTREPRISE, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateRoleManagementFixture } from "shared/fixtures/role-management.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
-import { describe, expect, it } from "vitest"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { getLastStatusEvent } from "shared/utils/get-last-status-event"
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { verifyRecruiterEmailInUse } from "./etablissement.service"
+import config from "@/config"
+import { autoValidateUserRoleOnCompany, verifyRecruiterEmailInUse } from "./etablissement.service"
+
+vi.mock("@/common/utils/sentry-utils")
 
 useMongo()
 
@@ -196,5 +204,88 @@ describe("checkEmailCreationAccess", () => {
     })
     expect(result?.errorCode).toBe(BusinessErrorCodes.ROLE_DENIED)
     expect(result?.message).toContain("10/02/2026")
+  })
+})
+
+describe("autoValidateUserRoleOnCompany : raison enregistrée sur le rôle", () => {
+  const siret = "42476141900045"
+  const email = "contact@entreprise.exemple.fr"
+  const balUrl = new URL(config.bal.baseUrl)
+  const mockBal = () => nock(balUrl.origin).post(`${balUrl.pathname.replace(/\/$/, "")}/organisation/validation`)
+
+  beforeAll(() => {
+    nock.disableNetConnect()
+  })
+
+  beforeEach(() => {
+    nock.cleanAll()
+  })
+
+  afterAll(() => {
+    nock.cleanAll()
+    nock.enableNetConnect()
+  })
+
+  const validate = async () => {
+    const entreprise = await saveEntreprise({ siret })
+    const user = await saveUserWithAccount({ email })
+    const { validated } = await autoValidateUserRoleOnCompany({ user, organization: { type: ENTREPRISE, entreprise } })
+    const role = await getDbCollection("rolemanagements").findOne({ user_id: user._id })
+    const lastEvent = getLastStatusEvent(role?.status)
+    return { validated, status: lastEvent?.status, reason: lastEvent?.reason, validation_type: lastEvent?.validation_type }
+  }
+
+  it.each([
+    ["l'e-mail", email, "email"],
+    ["le domaine", "rh@entreprise.exemple.fr", "domaine"],
+  ])("valide par les recruteurs LBA sur %s, sans appeler BAL", async (_label, recruteurEmail, correspondance) => {
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, workplace_siret: siret, apply_email: recruteurEmail })
+    )
+
+    expect(await validate()).toEqual({
+      validated: true,
+      status: AccessStatus.GRANTED,
+      reason: `validation par : recruteurs LBA (correspondance : ${correspondance})`,
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
+    })
+  })
+
+  it.each([
+    [
+      "valide avec sources et correspondance",
+      { status: "valid", is_valid: true, on: "email", sources: ["akto"] },
+      AccessStatus.GRANTED,
+      "validation par : BAL (sources : akto ; correspondance : email)",
+    ],
+    [
+      "valide, ancien format sans source",
+      { is_valid: true, on: "domain", sources: [] },
+      AccessStatus.GRANTED,
+      "validation par : BAL (sources : non transmises ; correspondance : domaine)",
+    ],
+    ["refus ferme", { status: "invalid", is_valid: false, is_company_email: true }, AccessStatus.AWAITING_VALIDATION, "pas de validation automatique possible"],
+    [
+      "indéterminé sur un fournisseur",
+      { status: "indeterminate", is_valid: false, is_company_email: true, unavailable_sources: ["akto"] },
+      AccessStatus.AWAITING_VALIDATION,
+      "validation automatique indéterminée : akto indisponible",
+    ],
+    [
+      "indéterminé sur deux fournisseurs",
+      { status: "indeterminate", is_valid: false, is_company_email: true, unavailable_sources: ["akto", "opco_ep"] },
+      AccessStatus.AWAITING_VALIDATION,
+      "validation automatique indéterminée : akto, opco_ep indisponibles",
+    ],
+  ])("enregistre la réponse BAL %s", async (_label, body, status, reason) => {
+    mockBal().reply(200, body)
+
+    expect(await validate()).toMatchObject({ validated: status === AccessStatus.GRANTED, status, reason, validation_type: VALIDATION_UTILISATEUR.AUTO })
+  })
+
+  it("distingue BAL indisponible d'un refus", async () => {
+    mockBal().reply(503)
+
+    expect(await validate()).toMatchObject({ validated: false, status: AccessStatus.AWAITING_VALIDATION, reason: "validation automatique indéterminée : BAL indisponible" })
   })
 })
