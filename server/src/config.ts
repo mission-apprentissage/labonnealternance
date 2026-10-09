@@ -82,6 +82,14 @@ const config = {
     authUrl: "https://entreprise.francetravail.fr/connexion/oauth2/access_token",
     depotUrl: "https://portail-partenaire.francetravail.fr/partenaire/depotcurl ",
   },
+  autoValidationAlert: {
+    recentDays: env.get("LBA_AUTO_VALIDATION_ALERT_RECENT_DAYS").default(7).asIntPositive(),
+    baselineDays: env.get("LBA_AUTO_VALIDATION_ALERT_BASELINE_DAYS").default(28).asIntPositive(),
+    // Volume minimum de rôles tranchés (auto ou refus) dans chaque fenêtre : en dessous, l'écart n'est pas significatif.
+    minVolume: env.get("LBA_AUTO_VALIDATION_ALERT_MIN_VOLUME").default(30).asIntPositive(),
+    dropThresholdPoints: env.get("LBA_AUTO_VALIDATION_ALERT_DROP_POINTS").default(10).asIntPositive(),
+    indeterminateThresholdPercent: env.get("LBA_AUTO_VALIDATION_ALERT_INDETERMINATE_PERCENT").default(5).asIntPositive(),
+  },
   bal: {
     baseUrl: env.get("LBA_BAL_ENV_URL").required().asString(),
     apiKey: env.get("LBA_BAL_API_KEY").required().asString(),

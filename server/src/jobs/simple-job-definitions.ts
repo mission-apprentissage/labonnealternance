@@ -97,6 +97,7 @@ import { repriseEnvoiEmailsPRDV } from "./rdv/reprise-envoi-prdv"
 import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
+import { autoValidationRateAlert, replayAutoValidationRateAlert } from "./recruiters/auto-validation-rate-alert"
 import { opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
 import { importReferentielRome } from "./referentiel-rome/referentiel-rome"
@@ -143,6 +144,18 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: createRoleManagement360,
     description: "Crée une collection jointure entre userWithAccounts, roleManagements, cfas et entreprises pour metabase",
+  },
+  {
+    fct: autoValidationRateAlert,
+    description: "Compare le taux d'auto-validation des comptes récent à la période précédente et alerte sur Slack en cas de chute",
+  },
+  {
+    fct: replayAutoValidationRateAlert,
+    description: "Rejoue jour par jour l'alerte sur le taux d'auto-validation des comptes, sans notifier",
+    cliOptions: [
+      { flags: "--from <date>", description: "Premier jour évalué (date ISO)" },
+      { flags: "--to <date>", description: "Dernier jour évalué (date ISO)" },
+    ],
   },
   {
     fct: opcoReminderJob,
