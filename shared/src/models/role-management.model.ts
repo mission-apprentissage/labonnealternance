@@ -1,4 +1,5 @@
 import type { Jsonify } from "type-fest"
+import { OPCOS_LABEL } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 
@@ -31,6 +32,9 @@ export const ZRoleManagementEvent = z.strictObject({
 
 export const ZAccessEntityType = extensions.buildEnum(AccessEntityType)
 
+/** Valeur de `opco_at_creation` pour un rôle CFA : un CFA n'a pas d'OPCO, à ne pas confondre avec une entreprise à l'OPCO inconnu. */
+export const ROLE_OPCO_NOT_APPLICABLE = "sans objet" as const
+
 const collectionName = "rolemanagements" as const
 
 export const ZRoleManagement = z.strictObject({
@@ -45,6 +49,12 @@ export const ZRoleManagement = z.strictObject({
     .enum(HANDI_ENGAGEMENT_VALUES)
     .nullish()
     .describe("Choix (ENTREPRISE) déclaré à la création du compte de valoriser l'engagement handicap referentiel_engagement_entreprise"),
+  opco_at_creation: z
+    .union([extensions.buildEnum(OPCOS_LABEL), z.literal(ROLE_OPCO_NOT_APPLICABLE)])
+    .optional()
+    .describe(
+      "OPCO de l'entreprise figé à la création du rôle : « inconnu » si aucun, « sans objet » pour un CFA. Absent sur les rôles OPCO et ADMIN, et sur les rôles créés avant ce champ (pas de reprise : l'OPCO de l'époque n'est pas connu)."
+    ),
 })
 
 export type IRoleManagement = z.output<typeof ZRoleManagement>

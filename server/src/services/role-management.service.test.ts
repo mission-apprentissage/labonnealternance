@@ -1,11 +1,12 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { roleManagementEventFactory, saveEntreprise } from "@tests/utils/user.test.utils"
+import { roleManagementEventFactory, saveCfa, saveEntreprise } from "@tests/utils/user.test.utils"
 import { ObjectId } from "mongodb"
-import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { generateRoleManagementFixture } from "shared/fixtures/role-management.fixture"
 import type { IRoleManagement } from "shared/models/index"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
+import { ROLE_OPCO_NOT_APPLICABLE } from "shared/models/role-management.model"
 import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { isGrantedAndAutoValidatedRole, modifyPermissionToUser } from "./role-management.service"
@@ -173,6 +174,77 @@ describe("role-management.service", () => {
       )
 
       expect.soft(await getDbCollection("referentiel_engagement_entreprise").countDocuments({})).toBe(0)
+    })
+  })
+
+  describe("opco_at_creation", () => {
+    useMongo()
+
+    const awaitingEvent = { status: AccessStatus.AWAITING_VALIDATION, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "création de compte" }
+    const findRole = (user_id: ObjectId) => getDbCollection("rolemanagements").findOne({ user_id })
+
+    it("fige l'OPCO de l'entreprise à la création du rôle", async () => {
+      const entreprise = await saveEntreprise({ opco: OPCOS_LABEL.AKTO })
+      const user_id = new ObjectId()
+
+      await modifyPermissionToUser({ user_id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }, awaitingEvent)
+
+      expect((await findRole(user_id))?.opco_at_creation).toBe(OPCOS_LABEL.AKTO)
+    })
+
+    it("stocke « inconnu » pour une entreprise sans OPCO", async () => {
+      const entreprise = await saveEntreprise({ opco: null })
+      const user_id = new ObjectId()
+
+      await modifyPermissionToUser({ user_id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }, awaitingEvent)
+
+      expect((await findRole(user_id))?.opco_at_creation).toBe(OPCOS_LABEL.UNKNOWN_OPCO)
+    })
+
+    it("stocke « sans objet » pour un rôle CFA", async () => {
+      const cfa = await saveCfa()
+      const user_id = new ObjectId()
+
+      await modifyPermissionToUser({ user_id, authorized_id: cfa._id.toString(), authorized_type: AccessEntityType.CFA }, awaitingEvent)
+
+      expect((await findRole(user_id))?.opco_at_creation).toBe(ROLE_OPCO_NOT_APPLICABLE)
+    })
+
+    it.each([AccessEntityType.OPCO, AccessEntityType.ADMIN])("ne renseigne pas le champ pour un rôle %s", async (authorized_type) => {
+      const user_id = new ObjectId()
+
+      await modifyPermissionToUser({ user_id, authorized_id: "", authorized_type }, { ...awaitingEvent, status: AccessStatus.GRANTED })
+
+      expect(await findRole(user_id)).not.toHaveProperty("opco_at_creation")
+    })
+
+    it("garde l'OPCO de la création quand celui de l'entreprise change ensuite", async () => {
+      const entreprise = await saveEntreprise({ opco: OPCOS_LABEL.AKTO })
+      const user_id = new ObjectId()
+      const roleProps = { user_id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }
+      await modifyPermissionToUser(roleProps, awaitingEvent)
+
+      await getDbCollection("entreprises").updateOne({ _id: entreprise._id }, { $set: { opco: OPCOS_LABEL.CONSTRUCTYS } })
+      await modifyPermissionToUser(roleProps, { ...awaitingEvent, status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.MANUAL })
+
+      expect((await findRole(user_id))?.opco_at_creation).toBe(OPCOS_LABEL.AKTO)
+    })
+
+    it("n'ajoute pas le champ à un rôle créé avant son introduction", async () => {
+      const entreprise = await saveEntreprise({ opco: OPCOS_LABEL.AKTO })
+      const legacyRole = generateRoleManagementFixture({
+        authorized_id: entreprise._id.toString(),
+        authorized_type: AccessEntityType.ENTREPRISE,
+        status: [roleManagementEventFactory({ status: AccessStatus.AWAITING_VALIDATION })],
+      })
+      await getDbCollection("rolemanagements").insertOne(legacyRole)
+
+      await modifyPermissionToUser(
+        { user_id: legacyRole.user_id, authorized_id: legacyRole.authorized_id, authorized_type: AccessEntityType.ENTREPRISE },
+        { ...awaitingEvent, status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.MANUAL }
+      )
+
+      expect(await findRole(legacyRole.user_id)).not.toHaveProperty("opco_at_creation")
     })
   })
 })
