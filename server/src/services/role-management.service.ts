@@ -5,7 +5,7 @@ import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import type { ComputedUserAccess, IUserRecruteurPublic, IUserWithAccount } from "shared/models/index"
 import type { IRoleManagement, IRoleManagementEvent } from "shared/models/role-management.model"
-import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import { AccessEntityType, AccessStatus, ROLE_OPCO_NOT_APPLICABLE } from "shared/models/role-management.model"
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last-status-event"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
@@ -19,6 +19,23 @@ import mailer from "./mailer.service"
 import { applyPendingHandiEngagementIfGranted } from "./organization.service"
 import { sendWelcomeEmailToUserRecruteur } from "./user-recruteur.service"
 import { activateUser, hasActiveRoleOnAnotherOrganization } from "./user-with-account.service"
+
+/**
+ * OPCO figé à la création du rôle (#5410). Relu en base : l'appelant détient parfois une entreprise lue avant la mise à jour de son OPCO.
+ */
+const getOpcoAtCreation = async ({
+  authorized_type,
+  authorized_id,
+}: Pick<IRoleManagement, "authorized_id" | "authorized_type">): Promise<Pick<IRoleManagement, "opco_at_creation">> => {
+  if (authorized_type === AccessEntityType.CFA) {
+    return { opco_at_creation: ROLE_OPCO_NOT_APPLICABLE }
+  }
+  if (authorized_type !== AccessEntityType.ENTREPRISE) {
+    return {}
+  }
+  const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(authorized_id) }, { projection: { opco: 1 } })
+  return { opco_at_creation: entreprise?.opco ?? OPCOS_LABEL.UNKNOWN_OPCO }
+}
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id"> & Partial<Pick<IRoleManagement, "handiEngagement">>,
@@ -53,6 +70,7 @@ export const modifyPermissionToUser = async (
   } else {
     const newRole: IRoleManagement = {
       ...props,
+      ...(await getOpcoAtCreation(props)),
       _id: new ObjectId(),
       status: [event],
       updatedAt: now,
