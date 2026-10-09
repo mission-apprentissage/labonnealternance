@@ -30,6 +30,7 @@ import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createValidationMagicLink } from "./app-links.service"
+import { API_KEY_CREATION_REASON, balValidReason, indeterminateReason, recruteursLbaReason } from "./auto-validation-reasons"
 import { validationOrganisation } from "./bal.service"
 import { getSiretInfos } from "./cache-infos-siret.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
@@ -177,22 +178,6 @@ export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOr
   }
   return { validated: validation.isValid }
 }
-
-/**
- * Raisons des rôles validés ou mis en attente par la validation automatique (#5409).
- * Les raisons antérieures ne sont pas réécrites : `validaton par : BAL` n'enregistrait ni source ni correspondance,
- * `validaton par : bonnes boites ou referentiel opco` couvrait aussi le référentiel OPCO jusqu'à sa suppression (v1.711.3).
- * Un résultat indéterminé n'est pas un refus (vocabulaire fixé sur #5405) : il part en validation manuelle comme un refus.
- */
-const formatCorrespondance = (on: "email" | "domain" | null) => (on === "domain" ? "domaine" : on === "email" ? "email" : "non transmise")
-
-const recruteursLbaReason = (on: "email" | "domain") => `validation par : recruteurs LBA (correspondance : ${formatCorrespondance(on)})`
-
-const balValidReason = ({ sources, on }: { sources: string[]; on: "email" | "domain" | null }) =>
-  `validation par : BAL (sources : ${sources.length ? sources.join(", ") : "non transmises"} ; correspondance : ${formatCorrespondance(on)})`
-
-const indeterminateReason = (unavailableSources: string[]) =>
-  `validation automatique indéterminée : ${unavailableSources.join(", ")} indisponible${unavailableSources.length > 1 ? "s" : ""}`
 
 const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: true; reason: string } | { isValid: false; reason?: string }> => {
   const {
@@ -526,7 +511,7 @@ export const entrepriseOnboardingWorkflow = {
     if (isUserValidated) {
       await modifyPermissionToUser(
         { user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE },
-        { validation_type: VALIDATION_UTILISATEUR.AUTO, status: AccessStatus.GRANTED, reason: "création par clef API" }
+        { validation_type: VALIDATION_UTILISATEUR.AUTO, status: AccessStatus.GRANTED, reason: API_KEY_CREATION_REASON }
       )
       validated = true
     } else {
