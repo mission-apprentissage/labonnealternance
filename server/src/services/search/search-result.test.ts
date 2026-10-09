@@ -1,5 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { beforeAll, describe, expect, it } from "vitest"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
@@ -386,6 +387,8 @@ const CORPUS = [
     organization_name: "TRAVAUX EXPRESS",
     publication_date: new Date("2026-07-12T08:14:04.000Z"),
     is_algo_company: true,
+    opco: OPCOS_LABEL.ATLAS,
+    opco_url: "www.concepteursdavenirs.fr",
   }),
   generateSearchItemFixture({
     url_id: "offre-conducteur-travaux",
@@ -395,6 +398,7 @@ const CORPUS = [
     rome_labels: ["Conduite de travaux du BTP et de travaux paysagers"],
     organization_name: "BTP Construction",
     publication_date: new Date("2026-05-01T00:00:00.000Z"),
+    opco: OPCOS_LABEL.CONSTRUCTYS,
   }),
   // — la couverture par description suffisait à passer la porte → traîne
   //   d'incohérents ["chargé de déploiement" remontait du cross-marketing].
@@ -1075,6 +1079,24 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
 
       expect(ids(result)).toContain("offre-conducteur-travaux")
       expect(ids(result)).not.toContain("recruteur-travaux")
+    })
+
+    it("opco : uniquement les offres des entreprises de cet OPCO", async () => {
+      const result = await search({ q: "conduite de travaux", opco: OPCOS_LABEL.CONSTRUCTYS })
+
+      expect(ids(result)).toEqual(["offre-conducteur-travaux"])
+    })
+
+    it("opcoUrl : uniquement les offres des entreprises de la branche du site", async () => {
+      const result = await search({ q: "conduite de travaux", opcoUrl: "www.concepteursdavenirs.fr" })
+
+      expect(ids(result)).toEqual(["recruteur-travaux"])
+    })
+
+    it("opco : sans effet sur les formations, qui n'ont pas d'OPCO", async () => {
+      const result = await search({ mode: "formations", opco: OPCOS_LABEL.CONSTRUCTYS })
+
+      expect(ids(result)).toContain("formation-mco")
     })
 
     it("smart_apply=true : uniquement les offres avec candidature simplifiée", async () => {

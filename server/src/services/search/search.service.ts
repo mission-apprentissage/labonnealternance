@@ -132,6 +132,9 @@ interface ISearchFilters {
    * filtrage ; la paire lat/lon reste utilisée pour le tri par proximité et la distance affichée.
    */
   admin_area?: string
+  /** Libellé d'OPCO (cf. route `/v1/search`, qui le déduit de la clé courte). */
+  opco?: string
+  opcoUrl?: string
 }
 
 interface ISearchFacets {
@@ -416,6 +419,15 @@ function buildGeoClause(filters: ISearchFilters): object | null {
   }
 }
 
+// Filtre OPCO : offres d'emploi seulement, les formations n'ont pas d'OPCO (cf. opco-search-filter).
+function buildOpcoClauses({ opco, opcoUrl }: ISearchFilters, corpus: SearchCorpus): object[] {
+  if (corpus === SEARCH_CORPORA.formations) return []
+  const clauses: object[] = []
+  if (opco) clauses.push({ equals: { path: "opco", value: opco } })
+  if (opcoUrl) clauses.push({ equals: { path: "opco_url", value: opcoUrl } })
+  return clauses
+}
+
 function buildCompoundOperator(filters: ISearchFilters, corpus: SearchCorpus, simplifyQuery: boolean) {
   const {
     q,
@@ -452,6 +464,7 @@ function buildCompoundOperator(filters: ISearchFilters, corpus: SearchCorpus, si
   // Type d'offres d'emploi : true = entreprises à contacter (candidatures spontanées de
   // l'algo), false = offres d'emploi. Absent = les deux (aucun filtre).
   if (is_algo_company !== undefined) filter.push({ equals: { path: "is_algo_company", value: is_algo_company } })
+  filter.push(...buildOpcoClauses(filters, corpus))
   const geoClause = buildGeoClause(filters)
   if (geoClause) filter.push(geoClause)
 
@@ -552,6 +565,7 @@ function buildFacetCompound(filters: ISearchFilters, corpus: SearchCorpus, exclu
   if (start_date) filter.push(buildStartDateFilter(start_date))
   if (smart_apply) filter.push({ equals: { path: "smart_apply", value: true } })
   if (is_algo_company !== undefined) filter.push({ equals: { path: "is_algo_company", value: is_algo_company } })
+  filter.push(...buildOpcoClauses(filters, corpus))
   const geoClause = buildGeoClause(filters)
   if (geoClause) filter.push(geoClause)
 

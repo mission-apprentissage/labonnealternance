@@ -1,6 +1,7 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query"
 
 import { apiGet } from "@/utils/api.utils"
+import { readOpcoFilterQuerystring } from "@/utils/opco-search-filter.utils"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 
@@ -36,8 +37,10 @@ export function paramsToQuerystring(params: ISearchPageParams) {
 }
 
 export function useSearchResults(params: ISearchPageParams, { enabled = true }: { enabled?: boolean } = {}) {
-  // page exclu du queryKey — chaque page est chargée via pageParam par useInfiniteQuery
-  const baseQs = paramsToQuerystring(params)
+  // page exclu du queryKey — chaque page est chargée via pageParam par useInfiniteQuery.
+  // Filtre OPCO de session hors de l'URL de page (cf. applyOpcoFilterFromUrl). Absent au rendu
+  // serveur, sans effet sur le balisage : la requête ne part que du navigateur.
+  const baseQs = { ...paramsToQuerystring(params), ...(typeof document === "undefined" ? {} : readOpcoFilterQuerystring(document.cookie)) }
 
   return useInfiniteQuery({
     queryKey: ["/v1/search", baseQs],

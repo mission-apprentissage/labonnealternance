@@ -24,7 +24,8 @@ import { NIVEAUX_POUR_LBA } from "../constants/recruteur.js"
  * | `displayFormations=true`   | `mode=emplois_formation`|                                             |
  * | `displayEntreprises=false` | `is_algo_company=false` | masquait les recruteurs LBA                 |
  * | `scrollToRecruteursLba`    | `is_algo_company=true`  | mise en avant des entreprises à contacter   |
- * | `romes`, `rncp`, `opco`    | —                       | pas d'équivalent (cf. LEGACY_PARAMS_SANS_EQUIVALENT)|
+ * | `opco`, `opcoUrl`          | —                       | filtre de session posé par le proxy UI (cf. opco-search-filter)|
+ * | `romes`, `rncp`            | —                       | pas d'équivalent (cf. LEGACY_PARAMS_SANS_EQUIVALENT)|
  * | `displayFilters`, `activeItems` | —                  | notions disparues du nouveau moteur         |
  *
  * `romes` n'est PAS traduit : le nouveau moteur cherche sur un libellé texte (`q`), pas sur des
@@ -34,7 +35,7 @@ import { NIVEAUX_POUR_LBA } from "../constants/recruteur.js"
  */
 
 /** Clés legacy sans équivalent : consommées puis abandonnées, listées pour l'audit. */
-const LEGACY_PARAMS_SANS_EQUIVALENT = ["romes", "rncp", "opco", "displayFilters", "activeItems"] as const
+const LEGACY_PARAMS_SANS_EQUIVALENT = ["romes", "rncp", "opco", "opcoUrl", "displayFilters", "activeItems"] as const
 
 const LEGACY_PARAMS_TRADUITS = ["job_name", "address", "lat", "lon", "diploma", "displayFormations", "displayEntreprises", "scrollToRecruteursLba"] as const
 

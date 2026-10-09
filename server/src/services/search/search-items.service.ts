@@ -7,6 +7,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ISearchItem } from "shared/models/search-corpus.model"
 import { isGeiqEntreprise } from "shared/services/is-geiq-entreprise"
+import { getOpcoUrlByIdcc } from "shared/utils/opco-search-filter"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
@@ -59,6 +60,8 @@ export const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>>
   workplace_siret: 1,
   workplace_brand: 1,
   workplace_name: 1,
+  workplace_opco: 1,
+  workplace_idcc: 1,
 
   partner_label: 1,
   apply_email: 1,
@@ -86,6 +89,8 @@ type ProjectedJobFields =
   | "workplace_siret"
   | "workplace_brand"
   | "workplace_name"
+  | "workplace_opco"
+  | "workplace_idcc"
   | "partner_label"
   | "apply_email"
   | "is_delegated"
@@ -355,6 +360,8 @@ const buildFormationSearchItemFrom = (formation: IFormationForSearchItem, point:
   // géopoint ne sert qu'à trancher un CP à cheval.
   ...resolveAdminCodes({ insee: formation.code_commune_insee, zipcode: formation.code_postal, geopoint: formation.lieu_formation_geopoint }, ctx.adminCodes),
   organization_name: canonicalizeCase(ctx.organizationCaseMap, formation.etablissement_formateur_entreprise_raison_sociale || ""),
+  opco: null,
+  opco_url: null,
   level: convertFormationNiveauDiplome(formation.niveau || ""),
   activity_sector: null,
   keywords: null,
@@ -382,6 +389,11 @@ export const getJobOrganizationName = (
   const name = job.is_delegated ? job.cfa_legal_name : job.workplace_name || job.workplace_brand || job.workplace_legal_name
   return canonicalizeCase(ctx.organizationCaseMap, name || "")
 }
+
+const getOpcoFields = (job: Pick<IJobPartnerForSearchItem, "workplace_opco" | "workplace_idcc">): Pick<ISearchItem, "opco" | "opco_url"> => ({
+  opco: job.workplace_opco ?? null,
+  opco_url: getOpcoUrlByIdcc(job.workplace_idcc),
+})
 
 export const buildJobOfferSearchItem = (job: IJobPartnerForSearchItem, ctx: SearchItemBuildContext): ISearchItem => ({
   _id: job._id,
@@ -414,6 +426,8 @@ export const buildJobOfferSearchItem = (job: IJobPartnerForSearchItem, ctx: Sear
   // Toujours l'entreprise d'accueil, comme `location` : l'emprise suit le lieu de travail.
   ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
   organization_name: getJobOrganizationName(job, ctx),
+  // Entreprise d'accueil, y compris pour une offre déléguée : le filtre OPCO vise l'employeur.
+  ...getOpcoFields(job),
   level: job.offer_target_diploma?.label || "",
   activity_sector: job.workplace_naf_label ? canonicalizeCase(ctx.sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
   keywords: null,
@@ -453,6 +467,7 @@ export const buildRecruteurSearchItem = (job: IJobPartnerForSearchItem, ctx: Sea
     },
     ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
     organization_name: organizationName,
+    ...getOpcoFields(job),
     level: job.offer_target_diploma?.label || "",
     activity_sector: job.workplace_naf_label ? canonicalizeCase(ctx.sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
     keywords: null,

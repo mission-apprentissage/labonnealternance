@@ -42,6 +42,9 @@ export const ZSearchItem = z.object({
   departement_code: z.string().nullable().optional().describe("Code INSEE du département du lieu (01…95, 2A, 2B, 971…976) ; absent sur un item indexé avant le backfill"),
   region_code: z.string().nullable().optional().describe("Code INSEE de la région du lieu ; absent sur un item indexé avant le backfill"),
   organization_name: z.string().describe("Nom de l'entreprise"),
+  // Optionnels, cf. departement_code. null pour les formations.
+  opco: z.string().nullable().optional().describe("OPCO de l'entreprise (libellé de jobs_partners.workplace_opco), filtre `opco` de la recherche"),
+  opco_url: z.string().nullable().optional().describe("Site d'OPCO de la branche de l'entreprise, déduit de son IDCC (cf. getOpcoUrlByIdcc), filtre `opcoUrl` de la recherche"),
   level: z.string().nullable().describe("Niveau de diplôme visé"),
   activity_sector: z.string().nullable().describe("Secteur d'activité"),
   keywords: z.array(z.string()).nullable().describe("Mots-clés associés à l'offre (enrichissement Mistral)"),
@@ -86,6 +89,8 @@ export const SEARCH_ITEM_INDEX_DEFINITION = {
       location: { type: "geo" },
       departement_code: { type: "token" },
       region_code: { type: "token" },
+      opco: { type: "token" },
+      opco_url: { type: "token" },
     },
   },
   analyzers: [
