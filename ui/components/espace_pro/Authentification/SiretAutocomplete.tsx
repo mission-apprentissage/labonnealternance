@@ -4,7 +4,7 @@ import { Box, CircularProgress, Typography } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
 import type { FormikHelpers } from "formik"
 import { Formik } from "formik"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
@@ -16,15 +16,37 @@ type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
 const isInvalidSiret = (value: string | undefined) => /^[0-9]{14}$/.test(value ?? "") && !validateSIRET(value)
 
-export const SiretAutocomplete = ({
-  label = "Nom ou SIRET de votre établissement",
-  onSelectOrganisation,
-  onSubmit,
-}: {
+type SiretAutocompleteProps = {
   label?: string
   onSelectOrganisation?: (organisation: Organisation) => void
   onSubmit: (props: { establishment_siret: string }, formik: FormikHelpers<{ establishment_siret: string }>) => void
-}) => {
+}
+
+export const SiretAutocomplete = ({ onSubmit, ...props }: SiretAutocompleteProps) => {
+  // <Activity> garde la page montée après la redirection qui suit la soumission : au retour, le formulaire
+  // réapparaîtrait avec le SIRET précédent et isSubmitting figé. Les effets sont rejoués au réaffichage,
+  // le changement de key remonte alors Formik, la saisie interne de downshift et l'établissement sélectionné.
+  const [formKey, setFormKey] = useState(0)
+  const submitted = useRef(false)
+  useEffect(() => {
+    if (!submitted.current) return
+    submitted.current = false
+    setFormKey((key) => key + 1)
+  }, [])
+
+  return (
+    <SiretAutocompleteForm
+      key={formKey}
+      {...props}
+      onSubmit={(values, formik) => {
+        submitted.current = true
+        onSubmit(values, formik)
+      }}
+    />
+  )
+}
+
+const SiretAutocompleteForm = ({ label = "Nom ou SIRET de votre établissement", onSelectOrganisation, onSubmit }: SiretAutocompleteProps) => {
   const formRef = useRef<HTMLFormElement>(null)
   const [selectedEntreprise, setSelectedEntreprise] = useState<Organisation | null>(null)
   return (
