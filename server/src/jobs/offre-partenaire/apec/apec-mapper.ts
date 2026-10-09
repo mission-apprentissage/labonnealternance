@@ -84,7 +84,7 @@ export const apecJobToJobsPartners = async (job: IApecJob): Promise<IComputedJob
     offer_creation: dayjs(job.Date_parution).tz().toDate(),
     offer_expiration: dayjs(job.Date_parution).tz().add(2, "months").toDate(),
     offer_opening_count: toInteger(job.Nombre_postes),
-    offer_multicast: false,
+    offer_multicast: true,
     workplace_name: job.Nom_entreprise,
     workplace_address_label: `${job.Lieu.Libelle_lieu} ${codePostal ?? ""}`.trim(),
     workplace_address_zipcode: codePostal,

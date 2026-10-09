@@ -128,7 +128,7 @@ describe("apecJobToJobsPartners", () => {
       offer_title: "SDR (Sales Development Representative) F/H",
       offer_description: "<p>Description détaillée de l'offre d'alternance pour un SDR.</p>",
       offer_opening_count: 1,
-      offer_multicast: false,
+      offer_multicast: true,
       workplace_name: "AROLLA",
       workplace_address_label: "PARIS 01",
       workplace_address_city: "PARIS 01",
