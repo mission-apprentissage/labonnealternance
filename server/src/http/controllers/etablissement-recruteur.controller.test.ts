@@ -34,7 +34,7 @@ vi.mock("@/services/mailer.service", () => {
 // (GRANTED) — rendant les tests dépendants d'un réseau externe non maîtrisé. Forcé à false : aucun des
 // tests existants de ce fichier n'asserte sur le statut du rôle, seuls les tests handiEngagement en ont besoin.
 vi.mock("@/services/bal.service", () => ({
-  validationOrganisation: vi.fn().mockResolvedValue({ is_valid: false }),
+  validationOrganisation: vi.fn().mockResolvedValue({ status: "invalid" }),
 }))
 
 describe("POST /etablissement/creation", () => {
