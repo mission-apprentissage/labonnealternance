@@ -12,6 +12,7 @@ import type { ILbaCompanyForAdminSearchJSON, ILbaCompanySearchField } from "shar
 import * as Yup from "yup"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import CustomInput from "@/app/_components/CustomInput"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useToast } from "@/app/hooks/useToast"
@@ -19,6 +20,7 @@ import { phoneValidation } from "@/common/validation/field-validations"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { getCompanyContactInfo, putCompanyContactInfo, searchLbaCompanies } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { pluralize } from "@/utils/strutils"
 import { EMAIL_FORMAT_ERROR, EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
 import { SearchClearButton, searchClearButtonSx } from "../_components/SearchClearButton"
 import { validateLbaCompanySearch } from "../_utils/admin-search-validation"
@@ -257,6 +259,8 @@ export default function GestionEntreprises() {
   })
 
   const companies = useMemo(() => (data as ILbaCompanyForAdminSearchJSON[]) ?? [], [data])
+  // isLoading et non isFetching : le rechargement qui suit un enregistrement ne réannonce pas le compte.
+  const searchStatus = !isEnabled || isLoading ? "" : companies.length === 0 ? "Aucun résultat" : pluralize(companies.length, "entreprise trouvée", "entreprises trouvées")
   const columns = useMemo(() => getLbaCompaniesColumns({ onSelect: setSiret }), [])
 
   const onSearch = (search: string, field: ILbaCompanySearchField) => {
@@ -285,6 +289,7 @@ export default function GestionEntreprises() {
         {PAGES.static.backAdminGestionDesEntreprises.title}
       </Typography>
       <EntreprisesSearchForm onSearch={onSearch} onReset={onReset} />
+      <LiveStatus message={searchStatus} />
 
       {!isEnabled ? (
         <Box component="p" sx={{ py: 6, m: 0, textAlign: "center", color: "text.secondary" }}>

@@ -23,7 +23,7 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
     <div>
       <Box sx={{ mb: fr.spacing("4v"), display: "flex", alignItems: "center" }}>
         <Box component="img" src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
-        <ModalTitle>
+        <ModalTitle focusOnMount>
           Voilà une bonne chose de faite {data.user.firstname} {data.user.lastname} !
         </ModalTitle>
       </Box>

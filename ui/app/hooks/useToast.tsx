@@ -1,7 +1,7 @@
-import { Box } from "@mui/material"
 import type { SharedProps } from "notistack"
 import { enqueueSnackbar } from "notistack"
 import { useCallback } from "react"
+import { announceToast } from "@/app/_components/ToastAnnouncer"
 
 interface ToastOptions extends Pick<SharedProps, "variant" | "autoHideDuration"> {
   title?: string
@@ -10,21 +10,18 @@ interface ToastOptions extends Pick<SharedProps, "variant" | "autoHideDuration">
 
 export function useToast() {
   return useCallback((opts: ToastOptions) => {
+    // Contenu phrasé : il est rendu dans le <p> de description de l'Alert DSFR (cf. ToastContent).
     const message = (
-      <div>
-        {opts.title && (
-          <Box component="span" sx={{ fontWeight: 700 }}>
-            {opts.title}
-          </Box>
-        )}
-        {opts.description && <div>{opts.description}</div>}
-      </div>
+      <>
+        {opts.title && <strong>{opts.title}</strong>}
+        {opts.title && opts.description && <br />}
+        {opts.description}
+      </>
     )
 
-    enqueueSnackbar(message, {
-      variant: opts.variant ?? "success",
-      autoHideDuration: opts.autoHideDuration ?? 3000,
-      anchorOrigin: { horizontal: "right", vertical: "top" },
-    })
+    const variant = opts.variant ?? "success"
+    const autoHideDuration = opts.autoHideDuration ?? 3000
+    enqueueSnackbar(message, { variant, autoHideDuration, anchorOrigin: { horizontal: "right", vertical: "top" } })
+    announceToast([opts.title, opts.description].filter(Boolean).join(". "), variant === "error" || variant === "warning" ? "alert" : "status", autoHideDuration)
   }, [])
 }

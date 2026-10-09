@@ -12,7 +12,7 @@ import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_START_TYPE } from "shared/models/job.model"
 
-import { LoadingEmptySpace } from "@/components/espace_pro"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import fetchLbaJobDetails from "@/services/fetch-lba-job-details"
 import { LbaNew } from "@/theme/components/logos/LbaNew"
 import { PAGES } from "@/utils/routes.utils"

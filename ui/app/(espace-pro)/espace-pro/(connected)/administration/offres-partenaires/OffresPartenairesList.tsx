@@ -9,9 +9,11 @@ import { useMemo, useState } from "react"
 import type { IJobsPartnersOfferForAdminJSON } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
 
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { getJobsPartnersForAdmin } from "@/utils/api"
+import { pluralize } from "@/utils/strutils"
 import { AdminSearchInput } from "../_components/AdminSearchInput"
 import { MultiSelect } from "../_components/MultiSelect"
 import { OFFER_ID_EXAMPLE, validateOfferId } from "../_utils/admin-search-validation"
@@ -88,6 +90,15 @@ export function OffresPartenairesList() {
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const currentPage = Math.floor(offset / PAGE_SIZE) + 1
   const isPageLoading = isFetching && isPlaceholderData
+  // Hors de la ternaire ci-dessous : la zone reste montée quand la liste passe à « Aucun résultat ».
+  const searchStatus =
+    isLoading || isError
+      ? ""
+      : isPageLoading
+        ? `Chargement de la page ${currentPage} sur ${pageCount}…`
+        : jobs.length === 0
+          ? "Aucun résultat"
+          : `${pluralize(total, "offre")}, page ${currentPage} sur ${pageCount}`
 
   const [currentOffer, setCurrentOffer] = useState<IJobsPartnersOfferForAdminJSON | null>(null)
   const confirmationDesactivationOffre = useDisclosure()
@@ -141,6 +152,7 @@ export function OffresPartenairesList() {
         />
       </Box>
 
+      <LiveStatus message={searchStatus} />
       {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
           <CircularProgress />
@@ -167,7 +179,7 @@ export function OffresPartenairesList() {
               isAvailable={currentPage > 1}
               onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
             />
-            <Typography role="status" sx={{ fontSize: ".875rem", color: "#666666" }}>
+            <Typography sx={{ fontSize: ".875rem", color: "#666666" }}>
               {isPageLoading ? `Chargement de la page ${currentPage} sur ${pageCount}…` : `Page ${currentPage} sur ${pageCount}`}
             </Typography>
             <PaginationButton

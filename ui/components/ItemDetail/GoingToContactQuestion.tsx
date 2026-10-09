@@ -4,6 +4,7 @@ import { Box, Typography } from "@mui/material"
 import type { ILbaItemJobsGlobal } from "shared"
 import type { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { useLocalStorage } from "@/app/hooks/use-local-storage"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
@@ -40,6 +41,8 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
       data-testid="GoingToContactQuestion"
     >
       <Typography sx={{ fontWeight: 700 }}>Allez-vous contacter {workplace} ?</Typography>
+      {/* Vide au chargement si la réponse est déjà enregistrée : seul le clic est annoncé. */}
+      <LiveStatus message={storedValue ? "Merci pour votre réponse !" : ""} />
       {storedValue ? (
         <Typography sx={{ fontWeight: 700 }}>
           Merci pour votre réponse ! <span aria-hidden="true">👌</span>

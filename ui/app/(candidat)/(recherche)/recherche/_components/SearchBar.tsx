@@ -8,8 +8,10 @@ import { useQuery } from "@tanstack/react-query"
 import type { FocusEvent, KeyboardEvent, ReactNode } from "react"
 import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { flushSync } from "react-dom"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { searchAddress } from "@/services/base-adresse"
 import { apiGet } from "@/utils/api.utils"
+import { pluralize } from "@/utils/strutils"
 import type { SearchMode } from "../_utils/search.params.utils"
 
 function useThrottle(value: string, delay: number) {
@@ -305,6 +307,7 @@ export function SearchBar({
   const metierListbox = useListboxMaxHeight()
   const lieuListbox = useListboxMaxHeight()
   // Ouverture contrôlée : un blur vers la liste ne doit pas la fermer (cf. isBlurToListbox).
+  // Suivie dans tous les modes, elle conditionne aussi les annonces de LiveStatus.
   const [metierOpen, setMetierOpen] = useState(false)
   const [lieuOpen, setLieuOpen] = useState(false)
 
@@ -365,7 +368,7 @@ export function SearchBar({
     ? [{ kind: "free_text", value: inputValue }, ...(suggestionsLoading ? [] : suggestions).map((value): MetierOption => ({ kind: "suggestion", value }))]
     : []
 
-  const { data: lieuOptions } = useQuery({
+  const { data: lieuOptions, isFetching: lieuFetching } = useQuery({
     queryKey: ["lieu-suggestions", debouncedLieu],
     // withAdminAreas : les départements et régions remontent dans les suggestions (index poi).
     queryFn: ({ signal }) => searchAddress(debouncedLieu, undefined, signal, true),
@@ -385,6 +388,22 @@ export function SearchBar({
   // les suggestions BAN.
   const showsFranceEntiere = isFranceEntiereLabel(lieuInput)
   const lieuDropdownOptions: LieuDropdownOption[] = lieuInput.trim() && !showsFranceEntiere ? lieuSuggestions : [FRANCE_ENTIERE_OPTION]
+
+  // Annonces des listes (RGAA 7.5) : rien pendant le chargement, pour ne pas annoncer un compte
+  // périmé. Avec freeSolo, MUI n'affiche pas son noOptionsText : « Aucune suggestion » n'est dit qu'ici.
+  const metierStatus =
+    !metierOpen || trimmedInput.length < 3 || suggestionsLoading
+      ? ""
+      : suggestions.length === 0
+        ? "Aucune suggestion"
+        : `${pluralize(suggestions.length, "suggestion")}, utilisez les flèches pour naviguer`
+  const lieuLoading = lieuInput.trim() !== debouncedLieu.trim() || lieuFetching
+  const lieuStatus =
+    !lieuOpen || showsFranceEntiere || lieuInput.trim().length < 2 || lieuLoading
+      ? ""
+      : lieuSuggestions.length === 0
+        ? "Aucun lieu trouvé"
+        : `${pluralize(lieuSuggestions.length, "lieu proposé", "lieux proposés")}, utilisez les flèches pour naviguer`
 
   // Origine de la saisie métier courante, pour un lancement depuis le champ lieu ou le bouton
   // (une suggestion acceptée puis relancée depuis ailleurs reste une « suggestion »).
@@ -601,9 +620,7 @@ export function SearchBar({
               </Box>
               {/* État de chargement sous la ligne « Rechercher » (remplace le loadingText MUI, cf. Autocomplete). */}
               {!params.group && suggestionsLoading && (
-                <Box sx={{ px: "16px", lineHeight: "36px", fontSize: "0.875rem", color: fr.colors.decisions.text.mention.grey.default }} aria-live="polite">
-                  Recherche de suggestions…
-                </Box>
+                <Box sx={{ px: "16px", lineHeight: "36px", fontSize: "0.875rem", color: fr.colors.decisions.text.mention.grey.default }}>Recherche de suggestions…</Box>
               )}
             </Box>
           )}
@@ -639,6 +656,7 @@ export function SearchBar({
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
+        <LiveStatus message={metierStatus} />
         {qError && <FieldError id={metierErrorId}>{qError}</FieldError>}
       </Box>
 
@@ -771,6 +789,7 @@ export function SearchBar({
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
+        <LiveStatus message={lieuStatus} />
         {lieuError && <FieldError id={lieuErrorId}>{lieuError}</FieldError>}
       </Box>
       {/* Bouton submit par défaut du formulaire (soumission implicite sur Entrée). `hidden` : hors

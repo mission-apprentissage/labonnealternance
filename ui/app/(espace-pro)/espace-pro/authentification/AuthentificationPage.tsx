@@ -9,6 +9,7 @@ import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
@@ -71,7 +72,9 @@ export default function Authentification() {
       })
   }
 
-  const Alerts = () => (
+  const magicLinkConfirmed = magicLinkSent && !loading && !errorMessage
+
+  const alerts = (
     <>
       {errorMessage && (
         <Box
@@ -86,13 +89,14 @@ export default function Authentification() {
           />
         </Box>
       )}
-      {magicLinkSent && !loading && !errorMessage && (
+      {magicLinkConfirmed && (
         <Box
           sx={{
             mb: fr.spacing("4v"),
           }}
         >
-          <Alert severity="success" title="Un lien de connexion a été envoyé" description="Vérifiez votre boite mail et cliquez sur le lien pour vous connecter" />
+          {/* Annoncé par le LiveStatus du formulaire : une zone role="status" insérée avec son contenu n'est pas restituée de façon fiable. */}
+          <Alert severity="success" role={undefined} title="Un lien de connexion a été envoyé" description="Vérifiez votre boite mail et cliquez sur le lien pour vous connecter" />
         </Box>
       )}
     </>
@@ -146,7 +150,8 @@ export default function Authentification() {
                     value={values.email}
                     autoFocus
                   />
-                  <Alerts />
+                  {alerts}
+                  <LiveStatus message={magicLinkConfirmed ? "Un lien de connexion a été envoyé. Vérifiez votre boite mail et cliquez sur le lien pour vous connecter." : ""} />
                   <Button type="submit" disabled={isSubmitting} style={{ width: "100%", justifyContent: "center" }}>
                     Se connecter
                   </Button>

@@ -59,7 +59,7 @@ export const RomeDetailWithQuery = ({
       <Typography variant="h4" sx={{ mb: fr.spacing("6v") }}>
         {title}
       </Typography>
-      <Typography>
+      <Typography role="alert">
         La fiche métier n'a pas pu être trouvée, merci de le{" "}
         <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Dépôt%20offre%20-%20ROME%20manquant-${title}`} external>
           signaler à notre équipe support

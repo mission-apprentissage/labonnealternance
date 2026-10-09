@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react"
 import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import * as Yup from "yup"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
@@ -191,7 +192,7 @@ export const DemandeDeContactForm = ({
                   pt: fr.spacing("8v"),
                 }}
               >
-                <Typography data-testid="prdv-submit-error" color="redmarianne">
+                <Typography data-testid="prdv-submit-error" role="alert" color="redmarianne">
                   {error}
                 </Typography>
               </Box>
@@ -217,6 +218,7 @@ const EmailField = () => {
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [field, meta, helper] = useField("email")
   const emailDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const emailInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     return () => {
@@ -236,6 +238,8 @@ const EmailField = () => {
   const onClickEmailSuggestion = (e) => {
     helper.setValue(e.currentTarget.innerHTML, true)
     setSuggestedEmails([])
+    // cf. clickSuggestion dans CandidatureLbaModalBody
+    emailInputRef.current?.focus()
   }
 
   const displayedError = meta.touched && meta.error
@@ -247,6 +251,7 @@ const EmailField = () => {
       <Input
         className={fr.cx("fr-input")}
         data-testid="email"
+        inputRef={emailInputRef}
         id="email"
         name="email"
         type="email"
@@ -270,7 +275,7 @@ const EmailField = () => {
               mr: fr.spacing("4v"),
             }}
           >
-            Voulez vous dire ?
+            Voulez-vous dire ?
           </Typography>
           {suggestedEmails.map((suggestedEmail) => (
             <Button type="button" key={suggestedEmail.corrected} onClick={onClickEmailSuggestion} priority="tertiary no outline" size="small">
@@ -279,6 +284,7 @@ const EmailField = () => {
           ))}
         </Box>
       )}
+      <LiveStatus message={suggestedEmails.length > 0 ? `Voulez-vous dire ${suggestedEmails.map(({ corrected }) => corrected).join(" ou ")} ?` : ""} />
       <FormHelperText id="email-error">{displayedError}</FormHelperText>
     </FormControl>
   )

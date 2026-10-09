@@ -6,9 +6,10 @@ import { Box, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import ClotureRecrutementForm, { type IClotureRecrutementPayload } from "@/app/(espace-pro)/_components/ClotureRecrutementForm"
 import { cancelOffre, cancelPartnerJob, fillOffre, providedPartnerJob } from "@/utils/api"
 import { apiGet } from "@/utils/api.utils"
@@ -51,7 +52,6 @@ export function OffreActionPage({
 }) {
   const [result, setResult] = useState("")
   const [isPending, setIsPending] = useState(false)
-  const resultHeadingRef = useRef<HTMLHeadingElement>(null)
   const router = useRouter()
 
   // Pour les offres LBA, l'annulation passe par le formulaire "Clôturer votre recrutement" (motif obligatoire).
@@ -64,13 +64,6 @@ export function OffreActionPage({
     enabled: Boolean(action),
     retry: false,
   })
-
-  // le bouton cliqué disparaît avec le formulaire : le focus suit le résultat
-  useEffect(() => {
-    if (result === "ok" || result === "already-closed") {
-      resultHeadingRef.current?.focus()
-    }
-  }, [result])
 
   // Rien n'est exécuté au chargement : la messagerie peut précharger le lien, et un clic involontaire
   // ne doit pas suffire à clore l'offre (RGAA 11.12).
@@ -111,9 +104,9 @@ export function OffreActionPage({
 
       {isClotureForm ? (
         result === "ok" || result === "already-closed" ? (
-          <Typography component="h2" ref={resultHeadingRef} tabIndex={-1} sx={homeEditorialH2}>
+          <FocusedTitle sx={homeEditorialH2}>
             {result === "already-closed" ? "Cette offre était déjà clôturée. Votre réponse a bien été enregistrée." : "Votre offre a été modifiée"}
-          </Typography>
+          </FocusedTitle>
         ) : (
           <ClotureRecrutementForm
             offreId={jobId}
@@ -125,9 +118,7 @@ export function OffreActionPage({
       ) : !action ? (
         <ErrorMessage>Cette action n'est pas prise en charge.</ErrorMessage>
       ) : result === "ok" ? (
-        <Typography component="h2" ref={resultHeadingRef} tabIndex={-1} sx={homeEditorialH2}>
-          Votre offre a été modifiée
-        </Typography>
+        <FocusedTitle sx={homeEditorialH2}>Votre offre a été modifiée</FocusedTitle>
       ) : (
         <>
           {result && <ErrorMessage>{result}</ErrorMessage>}

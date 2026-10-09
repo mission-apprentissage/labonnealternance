@@ -6,7 +6,7 @@ import type { Result } from "email-misspelled"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import type { ChangeEvent } from "react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
@@ -14,6 +14,7 @@ import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 import { MultiSelectField } from "@/app/_components/FormComponents/MultiSelectField"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -341,6 +342,7 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
 
 const EmailInput = ({ formik }: { formik: FormikType }) => {
   const [suggestedEmails, setSuggestedEmails] = useState<Result[]>([])
+  const emailInputRef = useRef<HTMLInputElement>(null)
 
   const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     const checkedEmail = emailChecker(e.target.value)
@@ -351,6 +353,8 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
   const clickSuggestion = (value: string) => {
     formik.setFieldValue("applicant_email", value)
     setSuggestedEmails([])
+    // Le bouton cliqué disparaît avec les suggestions : sans cela, la modale renvoie le focus sur « Fermer ».
+    emailInputRef.current?.focus()
   }
 
   return (
@@ -364,13 +368,14 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
         type: "email",
         autoComplete: "email",
         onChange: onEmailChange,
+        inputRef: emailInputRef,
       }}
       postInput={
         <>
           {suggestedEmails.length > 0 && (
             <Box sx={{ mt: 2, fontSize: "12px", color: "grey.600" }}>
               <Typography component="span" sx={{ mr: fr.spacing("4v") }}>
-                Voulez vous dire ?
+                Voulez-vous dire ?
               </Typography>
               {suggestedEmails.map((suggestedEmail) => (
                 <Button key={suggestedEmail.corrected} type="button" onClick={() => clickSuggestion(suggestedEmail.corrected)} priority="tertiary no outline" size="small">
@@ -379,6 +384,7 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
               ))}
             </Box>
           )}
+          <LiveStatus message={suggestedEmails.length > 0 ? `Voulez-vous dire ${suggestedEmails.map(({ corrected }) => corrected).join(" ou ")} ?` : ""} />
         </>
       }
     />

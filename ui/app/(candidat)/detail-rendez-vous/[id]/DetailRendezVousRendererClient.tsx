@@ -9,6 +9,7 @@ import { useState } from "react"
 import type { IAppointmentRecapJson } from "shared"
 import * as Yup from "yup"
 
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { FormLayoutComponent } from "@/components/espace_pro/Candidat/layout/FormLayoutComponent"
 import { CfaCandidatInformationAnswered } from "@/components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationAnswered"
 import { CfaCandidatInformationForm } from "@/components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationForm"
@@ -178,6 +179,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
             )}
           </Box>
           <hr aria-hidden="true" />
+          <LiveStatus message={currentState === "sending" ? "Envoi en cours" : ""} />
           {currentState === "initial" && (
             <CfaCandidatInformationForm formik={formik} setCurrentState={setCurrentState} otherClicked={otherClicked} unreachableClicked={unreachableClicked} />
           )}
@@ -191,7 +193,9 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
           {currentState === "unreachable" && <CfaCandidatInformationUnreachable />}
           {currentState === "error" && (
             <Box sx={{ mt: fr.spacing("8v"), p: fr.spacing("8v"), backgroundColor: "#F5F5FE" }}>
-              <Typography sx={{ fontWeight: 700, color: "#CE0500", mb: fr.spacing("4v") }}>Une erreur est survenue. Veuillez réessayer.</Typography>
+              <Typography role="alert" sx={{ fontWeight: 700, color: "#CE0500", mb: fr.spacing("4v") }}>
+                Une erreur est survenue. Veuillez réessayer.
+              </Typography>
               <Button priority="secondary" onClick={() => setCurrentState("initial")}>
                 Réessayer
               </Button>

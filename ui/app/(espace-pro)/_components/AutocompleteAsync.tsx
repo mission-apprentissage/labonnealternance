@@ -4,7 +4,9 @@ import { useCombobox } from "downshift"
 import { useId, useMemo, useRef, useState } from "react"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { debounce } from "@/utils/debounce"
+import { pluralize } from "@/utils/strutils"
 
 export default function AutocompleteAsync<T>({
   onSelectItem,
@@ -30,6 +32,7 @@ export default function AutocompleteAsync<T>({
       <CircularProgress size={30} sx={{ fontWeight: "bold", color: "#CFCFCF" }} />
     </Box>
   ),
+  noResultText = "Pas de résultats pour votre recherche",
   allowHealFromError,
 }: {
   name: string
@@ -51,6 +54,8 @@ export default function AutocompleteAsync<T>({
   renderError: (error: any) => React.ReactNode
   renderNoResult?: React.ReactNode
   renderLoading?: React.ReactNode
+  /** Équivalent textuel de renderNoResult, annoncé aux lecteurs d'écran. */
+  noResultText?: string
   allowHealFromError: boolean
 }) {
   const searchErrorId = useId()
@@ -62,7 +67,7 @@ export default function AutocompleteAsync<T>({
     return debounce(handleSearch, debounceDelayInMs)
   }, [])
 
-  const { isOpen, getMenuProps, getInputProps, getItemProps, highlightedIndex, openMenu } = useCombobox<T>({
+  const { isOpen, inputValue, getMenuProps, getInputProps, getItemProps, highlightedIndex, openMenu } = useCombobox<T>({
     itemToString,
     onInputValueChange: ({ inputValue }) => {
       if (!inputValue || (error && !allowHealFromError)) {
@@ -118,6 +123,17 @@ export default function AutocompleteAsync<T>({
       openMenu()
     },
   })
+
+  // Annonce hors listbox, sans getA11yStatusMessage de downshift : ses dépendances n'incluent pas
+  // les items, le message partirait avant l'arrivée des résultats asynchrones.
+  const statusMessage =
+    !isOpen || loading
+      ? ""
+      : shouldRenderItems
+        ? `${pluralize(inputItems.length, "résultat")}, utilisez les flèches pour naviguer`
+        : shouldRenderEmptyResult && inputValue
+          ? noResultText
+          : ""
 
   return (
     <Box data-testid={dataTestId} sx={{ width: "100%", position: "relative" }}>
@@ -186,6 +202,7 @@ export default function AutocompleteAsync<T>({
           </>
         )}
       </Box>
+      <LiveStatus message={statusMessage} />
     </Box>
   )
 }
