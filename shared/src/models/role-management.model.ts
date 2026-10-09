@@ -22,7 +22,9 @@ export enum AccessStatus {
 }
 
 export const ZRoleManagementEvent = z.strictObject({
-  validation_type: ZValidationUtilisateur.describe("Indique si l'action est ordonnée par un utilisateur ou le serveur"),
+  validation_type: ZValidationUtilisateur.describe(
+    "Auteur de l'action : AUTOMATIQUE si le serveur l'a ordonnée, MANUELLE si un utilisateur (admin, OPCO). Ne dit pas comment le rôle a été résolu : c'est le rôle de `reason`, à lire avec `status`."
+  ),
   status: extensions.buildEnum(AccessStatus).describe("Statut de l'accès"),
   reason: z.string().describe("Raison du changement de statut"),
   date: z.date().describe("Date de l'évènement"),
