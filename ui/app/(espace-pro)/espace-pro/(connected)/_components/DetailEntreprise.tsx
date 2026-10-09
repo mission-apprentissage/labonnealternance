@@ -8,7 +8,7 @@ import { Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useRef } from "react"
 import type { INewSuperUser, IUserStatusValidationJson } from "shared"
-import { EntrepriseErrorCodes } from "shared/constants/error-codes"
+import { BusinessErrorCodes, EntrepriseErrorCodes } from "shared/constants/error-codes"
 import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
@@ -29,7 +29,7 @@ import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationM
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
-import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
+import { EMAIL_ALREADY_USED_ERROR, EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
@@ -142,6 +142,8 @@ export default function DetailEntreprise({
           serverFieldErrors.setServerFieldError(setFieldError, "phone", values.phone, err.message)
         } else if (err.message === EntrepriseErrorCodes.EMAIL_SAME_AS_CFA) {
           serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, err.message)
+        } else if (err instanceof ApiError && err.context.errorData?.error === BusinessErrorCodes.EMAIL_ALREADY_EXISTS) {
+          serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, EMAIL_ALREADY_USED_ERROR)
         } else {
           throw err
         }

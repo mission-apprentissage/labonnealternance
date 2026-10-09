@@ -7,6 +7,7 @@ import { FormikProvider, useFormik } from "formik"
 import { useRef } from "react"
 import type { IRoleManagementEvent, IRoleManagementJson } from "shared"
 import { AccessStatus, getLastStatusEvent, parseEnum } from "shared"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import type { INewSuperUser, IUserWithAccountJson } from "shared/models/user-with-account.model"
@@ -14,14 +15,14 @@ import type { Jsonify } from "type-fest"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
 import { toSubmittedPhone } from "@/common/validation/field-validations"
 import { createSuperUser, updateUser } from "@/utils/api"
 import { ApiError, apiDelete } from "@/utils/api.utils"
-import { EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
+import { EMAIL_ALREADY_USED_ERROR, EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
 import { AdminConfirmationModal } from "./AdminConfirmationModal"
 import { buildAdminUserFormSchema } from "./admin-user-form.schema"
 
@@ -45,7 +46,11 @@ export const AdminUserForm = ({
   const deleteModal = useDisclosure()
   const { activate: activateUser, deactivate: deactivateUser } = useUserPermissionsActions(user?._id.toString(), role?.authorized_id ?? "")
 
-  const errorHandler = (error: any) => {
+  const errorHandler = (onEmailAlreadyUsed: (message: string) => void) => (error: any) => {
+    if (error instanceof ApiError && error.context.errorData?.error === BusinessErrorCodes.EMAIL_ALREADY_EXISTS) {
+      onEmailAlreadyUsed(EMAIL_ALREADY_USED_ERROR)
+      return
+    }
     if (error && error instanceof ApiError && error.context?.statusCode >= 400) {
       error = error.context.message
     }
@@ -55,7 +60,7 @@ export const AdminUserForm = ({
     })
   }
 
-  const onSubmit = async (values: INewSuperUser) => {
+  const onSubmit = async (values: INewSuperUser, onEmailAlreadyUsed: (message: string) => void) => {
     if (user) {
       const { email, first_name, last_name, phone = "" } = values
       await updateUser(user._id.toString(), { email, first_name, last_name, phone })
@@ -65,7 +70,7 @@ export const AdminUserForm = ({
           })
           onUpdate?.()
         })
-        .catch(errorHandler)
+        .catch(errorHandler(onEmailAlreadyUsed))
     } else {
       const { email, first_name, last_name, phone = "", type } = values
       const commonFields = { email, first_name, last_name, phone, type }
@@ -78,7 +83,7 @@ export const AdminUserForm = ({
           })
           onCreate?.(user._id.toString())
         })
-        .catch(errorHandler)
+        .catch(errorHandler(onEmailAlreadyUsed))
     }
   }
 
@@ -181,9 +186,10 @@ const UserFieldsForm = ({
   user?: IUserWithAccountJson
   opco?: OPCOS_LABEL
   type?: typeof AUTHTYPE.ADMIN | typeof AUTHTYPE.OPCO
-  onSubmit: (values: INewSuperUser) => void
+  onSubmit: (values: INewSuperUser, onEmailAlreadyUsed: (message: string) => void) => void
 }) => {
   const formRef = useRef<HTMLFormElement>(null)
+  const serverFieldErrors = useServerFieldErrors()
   const isCreation = !user
   const formik = useFormik({
     initialValues: {
@@ -195,12 +201,13 @@ const UserFieldsForm = ({
       opco,
     },
     validationSchema: toFormikValidationSchema(buildAdminUserFormSchema(isCreation)),
+    validate: serverFieldErrors.validate,
     enableReinitialize: true,
     // le champ affiche la valeur envoyée : sans changement de valeur initiale, enableReinitialize ne le remettrait pas à jour
-    onSubmit: (submittedValues, { setFieldValue }) => {
+    onSubmit: (submittedValues, { setFieldValue, setFieldError }) => {
       const phone = toSubmittedPhone(submittedValues.phone)
       setFieldValue("phone", phone, false)
-      return onSubmit({ ...submittedValues, phone })
+      return onSubmit({ ...submittedValues, phone }, (message) => serverFieldErrors.setServerFieldError(setFieldError, "email", submittedValues.email, message))
     },
   })
   const { values, errors, touched, isSubmitting } = formik
