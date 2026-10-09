@@ -9,7 +9,7 @@ import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, setFieldErrorAndFocus } from "@/app/_components/submit-with-focus-on-error"
 import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -40,7 +40,8 @@ export default function Authentification() {
       .catch(({ context }) => {
         switch (context?.errorData) {
           case "DISABLED":
-            setFieldError(
+            setFieldErrorAndFocus(
+              setFieldError,
               "email",
               // Message rendu en HTML par `parse()` dans CustomInput : DsfrLink n'est pas utilisable ici,
               // la mention de changement de contexte est donc écrite à la main (RGAA 6.1).
@@ -49,19 +50,19 @@ export default function Authentification() {
             setErrorMessage("Le compte utilisateur est désactivé")
             break
           case "INVALID":
-            setFieldError("email", "L’email saisi est incorrect. Vérifiez votre email ou créez un compte.")
+            setFieldErrorAndFocus(setFieldError, "email", "L’email saisi est incorrect. Vérifiez votre email ou créez un compte.")
             setErrorMessage("Email incorrect")
             break
           case "VALIDATION":
-            setFieldError("email", "Le compte utilisateur est en attente de validation")
+            setFieldErrorAndFocus(setFieldError, "email", "Le compte utilisateur est en attente de validation")
             setErrorMessage("Le compte utilisateur est en attente de validation")
             break
           case "VERIFY":
-            setFieldError("email", "Votre adresse n’a pas été vérifiée. Cliquez sur le lien que nous venons de vous transmettre pour vérifier votre compte")
+            setFieldErrorAndFocus(setFieldError, "email", "Votre adresse n’a pas été vérifiée. Cliquez sur le lien que nous venons de vous transmettre pour vérifier votre compte")
             setErrorMessage("Votre adresse n’a pas été vérifiée")
             break
           default:
-            setFieldError("email", "une erreur est survenue")
+            setFieldErrorAndFocus(setFieldError, "email", "une erreur est survenue")
             setErrorMessage("Une erreur est survenue")
             break
         }

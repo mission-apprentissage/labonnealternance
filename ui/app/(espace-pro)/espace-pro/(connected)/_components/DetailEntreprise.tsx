@@ -14,7 +14,7 @@ import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
@@ -55,6 +55,7 @@ export default function DetailEntreprise({
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
   const formRef = useRef<HTMLFormElement>(null)
+  const serverFieldErrors = useServerFieldErrors()
 
   const toast = useToast()
   const { user } = useConnectedSessionClient()
@@ -138,9 +139,9 @@ export default function DetailEntreprise({
         })
       } catch (err: any) {
         if (err.message === EntrepriseErrorCodes.PHONE_SAME_AS_CFA) {
-          setFieldError("phone", err.message)
+          serverFieldErrors.setServerFieldError(setFieldError, "phone", values.phone, err.message)
         } else if (err.message === EntrepriseErrorCodes.EMAIL_SAME_AS_CFA) {
-          setFieldError("email", err.message)
+          serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, err.message)
         } else {
           throw err
         }
@@ -260,6 +261,7 @@ export default function DetailEntreprise({
             opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
             ...isDeclarationExactValidation,
           })}
+          validate={serverFieldErrors.validate}
           onSubmit={async (values, { setFieldError, setFieldValue, setSubmitting }) => {
             setSubmitting(true)
             const phone = toSubmittedPhone(values.phone)

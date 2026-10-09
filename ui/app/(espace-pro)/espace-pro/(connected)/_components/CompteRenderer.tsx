@@ -12,7 +12,7 @@ import type { HandiEngagement } from "shared/models/referentiel-engagement-entre
 import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
@@ -42,6 +42,7 @@ export default function CompteRenderer() {
   const toast = useToast()
   const ModificationEmailPopup = useDisclosure()
   const formRef = useRef<HTMLFormElement>(null)
+  const serverFieldErrors = useServerFieldErrors()
 
   const { data, isLoading } = useQuery({
     queryKey: ["user"],
@@ -114,6 +115,7 @@ export default function CompteRenderer() {
               ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire")
               : Yup.string(),
         })}
+        validate={serverFieldErrors.validate}
         onSubmit={async (values, { setFieldValue, setFieldError, setSubmitting }) => {
           setSubmitting(true)
           const phone = toSubmittedPhone(values.phone)
@@ -131,8 +133,14 @@ export default function CompteRenderer() {
               onError: (error) => {
                 // { error, reason: "EMAIL_TAKEN" } est hors format IResErrorJson : seul le statut arrive dans ApiError
                 if (isChangingEmail && error instanceof ApiError && error.context.statusCode === 400) {
-                  setFieldError("email", "Cette adresse e-mail est déjà associée à un compte La bonne alternance. Saisissez une autre adresse, par exemple nom@domaine.fr")
-                  formRef.current?.querySelector<HTMLElement>('[name="email"]')?.focus()
+                  // L'erreur est portée par le champ : isError ne doit pas afficher l'Alert générique
+                  userMutation.reset()
+                  serverFieldErrors.setServerFieldError(
+                    setFieldError,
+                    "email",
+                    values.email,
+                    "Cette adresse e-mail est déjà associée à un compte La bonne alternance. Saisissez une autre adresse, par exemple nom@domaine.fr"
+                  )
                 }
               },
             }
@@ -173,7 +181,7 @@ export default function CompteRenderer() {
                       )}
                       <Box sx={{ mt: fr.spacing("6v") }}>
                         <ContactInfoFields />
-                        {userMutation.isError && !formik.errors.email && (
+                        {userMutation.isError && (
                           <Alert sx={{ mb: fr.spacing("4v") }} severity="error">
                             La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement.
                           </Alert>

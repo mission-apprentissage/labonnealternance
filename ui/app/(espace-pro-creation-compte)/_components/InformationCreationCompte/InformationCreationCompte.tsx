@@ -14,7 +14,7 @@ import type { HandiEngagement } from "shared/models/referentiel-engagement-entre
 import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/InformationOpco"
@@ -54,6 +54,7 @@ const HandiEngagementValueSync = ({ hide, locked }: { hide: boolean; locked: boo
 
 const Formulaire = ({
   onSubmit,
+  validate,
   siret: establishment_siret,
   type,
   origin,
@@ -61,6 +62,7 @@ const Formulaire = ({
   viewerType,
 }: {
   onSubmit: (values: any, { setSubmitting, setFieldError }: any) => void
+  validate: ReturnType<typeof useServerFieldErrors>["validate"]
   siret: string
   type: "CFA" | "ENTREPRISE"
   origin: string
@@ -111,6 +113,7 @@ const Formulaire = ({
         opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
         handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire") : Yup.string(),
       })}
+      validate={validate}
       onSubmit={onSubmit}
     >
       {({ values, isSubmitting, setFieldValue, errors, touched, validateForm, setTouched, submitForm }) => {
@@ -212,6 +215,7 @@ export const InformationCreationCompte = ({
   type: "CFA" | "ENTREPRISE"
 }) => {
   const router = useRouter()
+  const serverFieldErrors = useServerFieldErrors()
 
   const submitForm = (values: any, { setSubmitting, setFieldError, setFieldValue }: any) => {
     const phone = toSubmittedPhone(values.phone)
@@ -264,7 +268,7 @@ export const InformationCreationCompte = ({
       })
       .catch((error) => {
         if (error instanceof ApiError) {
-          setFieldError("email", error.message)
+          serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, error.message)
           setSubmitting(false)
         }
       })
@@ -272,7 +276,7 @@ export const InformationCreationCompte = ({
 
   return (
     <AnimationContainer>
-      <Formulaire onSubmit={submitForm} siret={establishment_siret} type={type} origin={origin} email={email} viewerType={type} />
+      <Formulaire onSubmit={submitForm} validate={serverFieldErrors.validate} siret={establishment_siret} type={type} origin={origin} email={email} viewerType={type} />
     </AnimationContainer>
   )
 }
