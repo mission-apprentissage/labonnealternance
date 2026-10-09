@@ -120,6 +120,7 @@ export default function CompteRenderer() {
               : Yup.string(),
         })}
         onSubmit={async (values, { setFieldValue, setSubmitting }) => {
+          if (userMutation.isPending) return
           setSubmitting(true)
           const phone = toSubmittedPhone(values.phone)
           setFieldValue("phone", phone, false)
@@ -135,7 +136,7 @@ export default function CompteRenderer() {
         }}
       >
         {(formik) => {
-          const { values, isSubmitting, setFieldValue } = formik
+          const { values, setFieldValue } = formik
           // Le bouton "Enregistrer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
           const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
 
@@ -185,8 +186,9 @@ export default function CompteRenderer() {
                     </>
                   }
                   buttons={
-                    <Button type="submit" disabled={isSubmitting}>
-                      {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                    // aria-disabled plutôt que disabled : un bouton désactivé perd le focus, ce qui peut couper l'annonce du toast (RGAA 12.8)
+                    <Button type="submit" nativeButtonProps={{ "aria-disabled": userMutation.isPending }}>
+                      {userMutation.isPending && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
                       Enregistrer
                     </Button>
                   }

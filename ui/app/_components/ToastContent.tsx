@@ -16,7 +16,13 @@ export const ToastContent = forwardRef<HTMLDivElement, CustomContentProps>(funct
         severity={variant === "default" ? "info" : variant}
         role={undefined}
         description={message}
-        style={{ backgroundColor: fr.colors.decisions.background.default.grey.default, boxShadow: "0 6px 18px rgba(0, 0, 18, 0.16)", maxWidth: 400 }}
+        // fr-alert--sm a 1v de padding bas contre 2v en haut : on aligne le bas sur le haut pour centrer le texte
+        style={{
+          backgroundColor: fr.colors.decisions.background.default.grey.default,
+          boxShadow: "0 6px 18px rgba(0, 0, 18, 0.16)",
+          maxWidth: 400,
+          paddingBottom: fr.spacing("2v"),
+        }}
       />
     </SnackbarContent>
   )

@@ -18,9 +18,11 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   // Le champ et le bouton « supprimer » se remplacent l'un l'autre : sans report du focus, la modale
   // le renvoie sur « Fermer » (RGAA 12.8).
   const pendingFocusRef = useRef<"remove" | "input" | null>(null)
+  const [confirmedFileName, setConfirmedFileName] = useState<string | null>(null)
 
   const onRemoveFile = () => {
     pendingFocusRef.current = "input"
+    setConfirmedFileName(null)
     setFileValue(null)
     setFileData(null)
   }
@@ -100,14 +102,22 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     },
   })
 
-  const isFileShown = Boolean(fileData?.applicant_attachment_name) && !fileLoading
+  const shownFileName = fileLoading ? null : (fileData?.applicant_attachment_name ?? null)
+  const isFileShown = Boolean(shownFileName)
 
   useEffect(() => {
-    if (pendingFocusRef.current === "remove" && isFileShown) removeButtonRef.current?.focus()
-    else if (pendingFocusRef.current === "input" && !isFileShown) inputRef.current?.focus()
-    else return
-    pendingFocusRef.current = null
-  }, [isFileShown, inputRef])
+    if (pendingFocusRef.current === "remove" && shownFileName) {
+      pendingFocusRef.current = null
+      removeButtonRef.current?.focus()
+      // Le passage du focus interrompt la lecture en cours : la confirmation est émise après l'annonce du bouton.
+      const timer = setTimeout(() => setConfirmedFileName(shownFileName), 500)
+      return () => clearTimeout(timer)
+    }
+    if (pendingFocusRef.current === "input" && !shownFileName) {
+      pendingFocusRef.current = null
+      inputRef.current?.focus()
+    }
+  }, [shownFileName, inputRef])
 
   const mandatoryFileError = formik.touched.applicant_attachment_name && formik.errors?.applicant_attachment_name
   const hasError = Boolean(mandatoryFileError || showUnacceptedFileMessages)
@@ -117,7 +127,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const errorId = `${inputId}-error`
   const describedBy = [hintId, showUnacceptedFileMessages && formatErrorId, mandatoryFileError && errorId].filter(Boolean).join(" ")
 
-  const fileStatus = fileLoading ? "Chargement du fichier en cours" : hasSelectedFile() ? `Pièce jointe ajoutée : ${fileData.applicant_attachment_name}` : ""
+  const fileStatus = fileLoading ? "Chargement du fichier en cours" : confirmedFileName ? `Pièce jointe ${confirmedFileName} ajoutée` : ""
 
   return (
     <>

@@ -103,7 +103,17 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                       Annuler
                     </Button>
                   </Box>
-                  <Button type="submit" aria-label="Continuer la création de l'entreprise" disabled={informationForm.isSubmitting}>
+                  {/* aria-disabled plutôt que disabled : cf. le bouton « Enregistrer » de CompteRenderer */}
+                  <Button
+                    type="submit"
+                    aria-label="Continuer la création de l'entreprise"
+                    nativeButtonProps={{
+                      "aria-disabled": informationForm.isSubmitting,
+                      onClick: (event) => {
+                        if (informationForm.isSubmitting) event.preventDefault()
+                      },
+                    }}
+                  >
                     {informationForm.isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
                     Continuer
                   </Button>
