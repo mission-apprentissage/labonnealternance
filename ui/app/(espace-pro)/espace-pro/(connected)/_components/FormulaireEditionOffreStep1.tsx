@@ -45,7 +45,7 @@ const FIELD_ACCESSIBLE_LABEL: Record<FreeTextFieldName, string> = {
 }
 
 /**
- * Encart d'amélioration IA affiché au-dessus du champ libre, en 4 états : au repos (aide + CTA),
+ * Encart d'amélioration IA affiché sous le champ libre (l'étiquette reste accolée au champ, RGAA 11.4), en 4 états : au repos (aide + CTA),
  * en cours d'appel, proposition à arbitrer, et quota épuisé (CTA désactivé).
  * L'IA ne réécrit jamais le champ à la place du recruteur : sa version est proposée dans l'encart,
  * le texte saisi reste intact dans le textarea tant que "Utiliser ce texte" n'a pas été confirmé.
@@ -103,7 +103,7 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   return (
     <Box
       sx={{
-        // encart autonome : détaché du hint au-dessus comme du textarea en dessous
+        // encart autonome : détaché du textarea au-dessus comme du champ suivant
         mt: fr.spacing("2v"),
         mb: fr.spacing("2v"),
         backgroundColor: isProposalOpen || loading ? fr.colors.decisions.background.alt.blueFrance.default : fr.colors.decisions.background.contrast.grey.default,
@@ -249,24 +249,26 @@ const JobDescriptionField = ({ establishmentId, token }: { establishmentId?: str
           limitée à {JOB_DESCRIPTION_MAX} caractères.
         </span>
       </label>
+      <Box sx={{ mt: fr.spacing("2v") }}>
+        <Input
+          label=""
+          state={errors.job_description ? "error" : "default"}
+          stateRelatedMessage={errors.job_description as string}
+          textArea
+          nativeTextAreaProps={{
+            id: "job_description",
+            name: "job_description",
+            value: values.job_description,
+            maxLength: JOB_DESCRIPTION_MAX,
+            rows: 8,
+            style: { resize: "none" },
+            onChange: (e) => setFieldValue("job_description", e.target.value),
+            // aria-invalid : cf. HandiEngagementSelect
+            "aria-invalid": Boolean(errors.job_description),
+          }}
+        />
+      </Box>
       <AmeliorerIaPanel fieldName="job_description" establishmentId={establishmentId} token={token} />
-      <Input
-        label=""
-        state={errors.job_description ? "error" : "default"}
-        stateRelatedMessage={errors.job_description as string}
-        textArea
-        nativeTextAreaProps={{
-          id: "job_description",
-          name: "job_description",
-          value: values.job_description,
-          maxLength: JOB_DESCRIPTION_MAX,
-          rows: 8,
-          style: { resize: "none" },
-          onChange: (e) => setFieldValue("job_description", e.target.value),
-          // aria-invalid : cf. HandiEngagementSelect
-          "aria-invalid": Boolean(errors.job_description),
-        }}
-      />
     </Box>
   )
 }
@@ -282,24 +284,26 @@ const EmployerDescriptionField = ({ establishmentId, token }: { establishmentId?
           est limitée à {EMPLOYER_DESCRIPTION_MAX} caractères.
         </span>
       </label>
+      <Box sx={{ mt: fr.spacing("2v") }}>
+        <Input
+          label=""
+          state={errors.job_employer_description ? "error" : "default"}
+          stateRelatedMessage={errors.job_employer_description as string}
+          textArea
+          nativeTextAreaProps={{
+            id: "job_employer_description",
+            name: "job_employer_description",
+            value: values.job_employer_description,
+            maxLength: EMPLOYER_DESCRIPTION_MAX,
+            rows: 6,
+            placeholder: "Saisissez votre texte ici",
+            style: { resize: "none" },
+            onChange: (e) => setFieldValue("job_employer_description", e.target.value),
+            "aria-invalid": Boolean(errors.job_employer_description),
+          }}
+        />
+      </Box>
       <AmeliorerIaPanel fieldName="job_employer_description" establishmentId={establishmentId} token={token} />
-      <Input
-        label=""
-        state={errors.job_employer_description ? "error" : "default"}
-        stateRelatedMessage={errors.job_employer_description as string}
-        textArea
-        nativeTextAreaProps={{
-          id: "job_employer_description",
-          name: "job_employer_description",
-          value: values.job_employer_description,
-          maxLength: EMPLOYER_DESCRIPTION_MAX,
-          rows: 6,
-          placeholder: "Saisissez votre texte ici",
-          style: { resize: "none" },
-          onChange: (e) => setFieldValue("job_employer_description", e.target.value),
-          "aria-invalid": Boolean(errors.job_employer_description),
-        }}
-      />
     </Box>
   )
 }
@@ -388,6 +392,9 @@ export const FormulaireEditionOffreStep1 = ({
   const minStartDate = dayjs().startOf("day")
   const maxStartDate = dayjs().add(2, "years")
   let jobStartDateYup = Yup.date()
+    // un input type="date" vide ou incomplet renvoie "" : absence de saisie, pas erreur de type
+    .transform((value, originalValue) => (originalValue === "" ? undefined : value))
+    .typeError("Date de début invalide : saisissez une date au format JJ/MM/AAAA")
   if (!offre) {
     jobStartDateYup = jobStartDateYup.min(minStartDate, `La date de début doit être après le ${minStartDate.format(FR_DATE_FORMAT)}`)
   }
@@ -432,9 +439,10 @@ export const FormulaireEditionOffreStep1 = ({
           job_start_type: Yup.mixed<JOB_START_TYPE>().oneOf([JOB_START_TYPE.DES_QUE_POSSIBLE, JOB_START_TYPE.PRECISE_DATE], "Champ obligatoire").required("Champ obligatoire"),
           job_start_date_flexible: Yup.boolean().default(false),
           job_start_date: jobStartDateYup,
-          job_type: Yup.array().required("Champ obligatoire"),
+          // un tableau vide satisfait required() en Yup 1.x
+          job_type: Yup.array().min(1, "Sélectionnez au moins un type de contrat").required("Sélectionnez au moins un type de contrat"),
           job_rythm: Yup.string()
-            .max(100)
+            .max(100, "Le rythme de l'alternance ne doit pas dépasser 100 caractères")
             .test("no-url", "Les urls sont interdites", (value) => !value || !value.split(/\s+/).some((token) => token && detectUrls(token).length > 0)),
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").required("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()

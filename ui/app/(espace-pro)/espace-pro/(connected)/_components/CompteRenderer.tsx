@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Box, CircularProgress, Typography } from "@mui/material"
+import { Alert, Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Formik } from "formik"
 import { useRef } from "react"
@@ -12,7 +12,7 @@ import type { HandiEngagement } from "shared/models/referentiel-engagement-entre
 import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
@@ -24,6 +24,7 @@ import { AUTHTYPE } from "@/common/contants"
 import { frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { getUser, updateUserWithAccountFields } from "@/utils/api"
+import { ApiError } from "@/utils/api.utils"
 import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import ModificationCompteEmail from "./ModificationCompteEmail"
@@ -41,6 +42,7 @@ export default function CompteRenderer() {
   const toast = useToast()
   const ModificationEmailPopup = useDisclosure()
   const formRef = useRef<HTMLFormElement>(null)
+  const serverFieldErrors = useServerFieldErrors()
 
   const { data, isLoading } = useQuery({
     queryKey: ["user"],
@@ -82,12 +84,6 @@ export default function CompteRenderer() {
         ModificationEmailPopup.onOpen()
       }
     },
-
-    onError: (error: any, variables: any) => {
-      if (error.response.data.reason === "EMAIL_TAKEN") {
-        variables.setFieldError("email", "L'adresse mail est déjà associée à un compte La bonne alternance.")
-      }
-    },
   })
 
   if (isLoading || isEntrepriseInfoPending) {
@@ -119,7 +115,8 @@ export default function CompteRenderer() {
               ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire")
               : Yup.string(),
         })}
-        onSubmit={async (values, { setFieldValue, setSubmitting }) => {
+        validate={serverFieldErrors.validate}
+        onSubmit={async (values, { setFieldValue, setFieldError, setSubmitting }) => {
           setSubmitting(true)
           const phone = toSubmittedPhone(values.phone)
           setFieldValue("phone", phone, false)
@@ -127,10 +124,27 @@ export default function CompteRenderer() {
           // "" (aucun choix, champ non affiché ou non encore sélectionné) n'est pas une valeur valide pour
           // l'API : on ne transmet le champ que lorsqu'il a réellement une valeur.
           const { handiEngagement, ...rest } = values
-          userMutation.mutate({
-            values: { ...rest, phone, ...(handiEngagement === "oui" || handiEngagement === "non" ? { handiEngagement } : {}) },
-            isChangingEmail,
-          })
+          userMutation.mutate(
+            {
+              values: { ...rest, phone, ...(handiEngagement === "oui" || handiEngagement === "non" ? { handiEngagement } : {}) },
+              isChangingEmail,
+            },
+            {
+              onError: (error) => {
+                // { error, reason: "EMAIL_TAKEN" } est hors format IResErrorJson : seul le statut arrive dans ApiError
+                if (isChangingEmail && error instanceof ApiError && error.context.statusCode === 400) {
+                  // L'erreur est portée par le champ : isError ne doit pas afficher l'Alert générique
+                  userMutation.reset()
+                  serverFieldErrors.setServerFieldError(
+                    setFieldError,
+                    "email",
+                    values.email,
+                    "Cette adresse e-mail est déjà associée à un compte La bonne alternance. Saisissez une autre adresse, par exemple nom@domaine.fr"
+                  )
+                }
+              },
+            }
+          )
           setSubmitting(false)
         }}
       >
@@ -167,6 +181,11 @@ export default function CompteRenderer() {
                       )}
                       <Box sx={{ mt: fr.spacing("6v") }}>
                         <ContactInfoFields />
+                        {userMutation.isError && (
+                          <Alert sx={{ mb: fr.spacing("4v") }} severity="error">
+                            La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement.
+                          </Alert>
+                        )}
                         {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
                           <HandiEngagementSelect
                             name="handiEngagement"

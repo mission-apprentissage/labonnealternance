@@ -11,7 +11,7 @@ import * as Yup from "yup"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
@@ -26,6 +26,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const toast = useToast()
   const { user } = useConnectedSessionClient()
   const formRef = useRef<HTMLFormElement>(null)
+  const serverFieldErrors = useServerFieldErrors()
 
   const submitForm = (values, { setSubmitting, setFieldError, setFieldValue }) => {
     const phone = toSubmittedPhone(values.phone)
@@ -40,9 +41,9 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
       })
       .catch((err) => {
         if (err.message.includes("phone")) {
-          setFieldError("phone", err.message)
+          serverFieldErrors.setServerFieldError(setFieldError, "phone", phone, err.message)
         } else {
-          setFieldError("email", err.message)
+          serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, err.message)
         }
         setSubmitting(false)
       })
@@ -65,6 +66,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         phone: frenchPhoneValidation().required("champ obligatoire"),
         isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations"),
       })}
+      validate={serverFieldErrors.validate}
       onSubmit={submitForm}
     >
       {(informationForm) => {

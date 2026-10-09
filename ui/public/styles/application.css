@@ -69,6 +69,23 @@ l'espace avant chargement et éviter le layout shift (audit Lighthouse unsized-i
 }
 
 /**
+Champs MUI (Input, TextField) habillés en .fr-input : la classe est posée sur la racine, alors que le focus et
+le remplissage automatique portent sur l'input interne.
+- MUI retire l'outline DSFR (.MuiInputBase-input:focus { outline: 0 }) : on le restitue sur la racine, comme
+  pour les select DSFR (RGAA 10.7).
+- La règle DSFR .fr-input:-webkit-autofill ne s'applique pas à la racine : sans ce masque, l'input interne
+  prend le fond bleu clair du navigateur.
+*/
+.fr-input.MuiInputBase-root:focus-within {
+  outline: 2px solid #0a76f6;
+  outline-offset: 2px;
+}
+.fr-input.MuiInputBase-root .MuiInputBase-input:-webkit-autofill {
+  box-shadow: inset 0 0 0 1000px var(--background-contrast-grey);
+  -webkit-text-fill-color: var(--text-default-grey);
+}
+
+/**
 PAGE NOTION
 */
 .disable-chakra {

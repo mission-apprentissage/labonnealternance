@@ -46,7 +46,8 @@ export default function OptOutUnsubscribe({ id, token, etablissement }: { id: st
   const [textarea, setTextarea] = useState("")
   const [hasJustUnsubscribed, setHasJustUnsubscribed] = useState(false)
   const [isQuestionSent, setIsQuestionSent] = useState(false)
-  const [radioValue, setRadioValue] = useState(radioOptions.UNSUBSCRIBE_NO_DETAILS)
+  // Aucune option par défaut : la désinscription doit résulter d'un choix explicite (RGAA 11.12)
+  const [radioValue, setRadioValue] = useState<string | null>(null)
   const [hasSubmitAttempt, setHasSubmitAttempt] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasSubmitError, setHasSubmitError] = useState(false)
@@ -57,11 +58,13 @@ export default function OptOutUnsubscribe({ id, token, etablissement }: { id: st
   const etablissementId = `${fieldId}-etablissement`
   const noDetailsId = `${fieldId}-no-details`
   const moreDetailsId = `${fieldId}-more-details`
+  const decisionErrorId = `${fieldId}-decision-error`
 
   const hasBeenUnsubscribed = hasJustUnsubscribed || Boolean(etablissement.optout_refusal_date)
   const isMoreDetails = radioValue === radioOptions.UNSUBSCRIBE_MORE_DETAILS
   const question = textarea.trim()
   const hasQuestionError = hasSubmitAttempt && isMoreDetails && !question
+  const hasDecisionError = hasSubmitAttempt && radioValue === null
 
   // Saisir une question sélectionne la seconde option, sans quoi la question serait ignorée à l'envoi.
   const handleTextarea = (event) => {
@@ -75,6 +78,10 @@ export default function OptOutUnsubscribe({ id, token, etablissement }: { id: st
     event.preventDefault()
     setHasSubmitAttempt(true)
     setHasSubmitError(false)
+    if (radioValue === null) {
+      document.getElementById(noDetailsId)?.focus()
+      return
+    }
     if (isMoreDetails && !question) {
       questionRef.current?.focus()
       return
@@ -132,9 +139,21 @@ export default function OptOutUnsubscribe({ id, token, etablissement }: { id: st
       {!hasBeenUnsubscribed && !isQuestionSent && (
         <form onSubmit={submit} noValidate>
           <Typography id={legendId} sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>
-            Votre décision concernant le service RDV Apprentissage
+            Votre décision concernant le service RDV Apprentissage (obligatoire)
           </Typography>
-          <RadioGroup name="decision" aria-labelledby={legendId} onChange={(e) => setRadioValue(e.target.value)} value={radioValue}>
+          {hasDecisionError && (
+            <p id={decisionErrorId} className={fr.cx("fr-message", "fr-message--error")}>
+              Sélectionnez votre décision : désinscription ou demande d’informations complémentaires.
+            </p>
+          )}
+          <RadioGroup
+            name="decision"
+            aria-labelledby={legendId}
+            aria-describedby={hasDecisionError ? decisionErrorId : undefined}
+            aria-invalid={hasDecisionError}
+            onChange={(e) => setRadioValue(e.target.value)}
+            value={radioValue ?? ""}
+          >
             <Stack gap={fr.spacing("4v")}>
               <FormControlLabel
                 htmlFor={noDetailsId}
