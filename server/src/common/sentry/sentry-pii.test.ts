@@ -155,6 +155,7 @@ describe("Sentry : aucune donnée personnelle envoyée", () => {
     ).toBe(true)
     const event = sentEvents("event").find((sent) => sent.exception?.values?.[0]?.value === "S3 indisponible")
     expect(event?.user).toEqual({ segment: "api-apprentissage", organisation: partner.organisation, ip_address: "127.0.0.1" })
+    expect(event?.extra?.body_keys).toEqual(expect.arrayContaining(["applicant_email", "applicant_attachment_content", "recipient_id"]))
     expect(event?.tags?.reqId).toEqual(expect.any(String))
     expect(event?.request?.url).toBe(`${baseUrl}/api/v2/application`)
   })
@@ -187,6 +188,15 @@ describe("Sentry : aucune donnée personnelle envoyée", () => {
     await assertNoPersonalDataSent({ apiKey: apiAccount.apiKey })
     const event = sentEvents("event").find((sent) => sent.exception?.values?.[0]?.value === "base indisponible")
     expect(event?.user).toEqual({ segment: "api-key", id: credential._id.toString(), ip_address: "127.0.0.1" })
+  })
+
+  it("query entrante : les valeurs des paramètres déclarés par la route restent, les autres sont masquées", async () => {
+    await send(`/api/_private/geo/commune/reverse?latitude=48.85&longitude=2.35&email=${encodeURIComponent(applicant.email)}`, { method: "GET" })
+
+    await assertNoPersonalDataSent()
+    const event = sentEvents("event").find((sent) => sent.exception?.values?.[0]?.value === "No commune found for this point")
+    expect(event?.extra?.query).toEqual({ latitude: "48.85", longitude: "2.35", email: "[Filtered]" })
+    expect(event?.request?.url).toBe(`${baseUrl}/api/_private/geo/commune/reverse`)
   })
 
   it("création de compte : ni le corps ni les captures explicites, le SIRET des appels à API Entreprise reste", async () => {
@@ -274,7 +284,8 @@ describe("Sentry : aucune donnée personnelle envoyée", () => {
     await assertNoPersonalDataSent({ sessionToken: token })
     const [event] = sentEvents("event")
     expect(event?.user).toEqual({ segment: "session", id: user._id.toString(), ip_address: "127.0.0.1" })
-    expect(event?.extra?.query_keys).toEqual(["email", "telephone"])
+    // PUT /user/:userId ne déclare aucune query : toutes les valeurs sont masquées.
+    expect(event?.extra?.query).toEqual({ email: "[Filtered]", telephone: "[Filtered]" })
     expect(event?.request?.headers?.referer).toBe("https://labonnealternance.exemple.fr/espace-pro/compte")
   })
 

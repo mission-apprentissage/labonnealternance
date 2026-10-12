@@ -26,7 +26,7 @@ function getProfilingIntegration(): SentryIntegration | null {
 // avec Bearer, client_secret ou clé d'API. Les clients API capturent donc une erreur dédiée à la
 // place ; ce scrub par nom de clé est le filet de sécurité.
 const SENSITIVE_KEY_PATTERN = /(authorization|cookie|secret|password|passwd|token|api[-_]?key|credential)/i
-const REDACTED = "[Filtered]"
+export const REDACTED = "[Filtered]"
 
 // Objets internes Node/axios (ClientRequest brut, socket, buffers de flux multipart...) : sans
 // valeur de diagnostic, et le secret peut y apparaître sous une forme qu'aucune regex par
@@ -44,8 +44,8 @@ const BEARER_TOKEN_PATTERN = /(Bearer\s+)([A-Za-z0-9\-._~+/]+=*)/gi
 // Quantificateurs bornés : coût linéaire même sur une longue chaîne qui contient un `@`.
 const EMAIL_PATTERN = /[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]{1,63}(?:\.[A-Za-z0-9-]{1,63})*\.[A-Za-z]{2,24}/g
 
-// Query des URL entrantes et sortantes : e-mail, jeton ou adresse en valeur. Seuls les noms des
-// paramètres entrants sont gardés (`extra.query_keys`, cf. initSentryFastify).
+// Query des URL entrantes et sortantes : e-mail, jeton ou adresse en valeur. La query entrante utile
+// au diagnostic part dans `extra.query` (cf. getDiagnosticQuery).
 const URL_QUERY_KEYS: ReadonlySet<string> = new Set(["query_string", "url.query", "http.query", "http.fragment"])
 const URL_KEYS: ReadonlySet<string> = new Set(["url", "http.url", "url.full", "url.path", "http.target", "referer", "http.request.header.referer"])
 

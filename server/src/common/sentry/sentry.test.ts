@@ -6,6 +6,7 @@ import nock from "nock"
 import { afterEach, describe, expect, it } from "vitest"
 
 import { scrubSensitiveEventData } from "./sentry"
+import { getDiagnosticQuery } from "./sentry.fastify"
 
 /**
  * Reproduit exactement l'étape qui sérialise l'AxiosError dans `event.contexts` en production
@@ -148,5 +149,19 @@ describe("scrubSensitiveEventData — régression sur de vraies AxiosError (axio
     const event = await captureRealAxiosError(() => axios.get("http://fake-diag.test/z"))
 
     expect(JSON.stringify(scrubSensitiveEventData(event))).toContain("siret invalide")
+  })
+})
+
+describe("getDiagnosticQuery", () => {
+  it("garde les valeurs des paramètres déclarés et masque les autres, ainsi que la recherche libre de l'admin", () => {
+    const declared = new Set(["q", "romes", "radius", "search"])
+
+    expect(getDiagnosticQuery({ q: "boulanger", romes: ["D1102", "D1104"], radius: "30", search: "Nomfictif", email: "x" }, declared)).toEqual({
+      q: "boulanger",
+      romes: ["D1102", "D1104"],
+      radius: "30",
+      search: "[Filtered]",
+      email: "[Filtered]",
+    })
   })
 })
