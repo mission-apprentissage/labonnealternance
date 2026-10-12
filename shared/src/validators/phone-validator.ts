@@ -34,7 +34,8 @@ const FRENCH_NUMBERING_PLAN_COUNTRIES = ["FR", "GP", "MQ", "GF", "RE", "YT", "PM
  */
 export const toFrenchNationalPhone = (phone: string): string | null => {
   const compactPhone = phone.replace(/[\s.\-()]/g, "")
-  if (!validatePhone(compactPhone)) return null
+  // libphonenumber extrait un numéro d'un texte et ignore ce qui l'entoure (« +33 6 12 34 56 78ssss »)
+  if (!/^\+?[0-9]+$/.test(compactPhone) || !validatePhone(compactPhone)) return null
 
   const phoneNumber = parseMax(/^0[1-9]/.test(compactPhone) ? "+33" + compactPhone.substring(1) : compactPhone)
   if (!phoneNumber?.country || !FRENCH_NUMBERING_PLAN_COUNTRIES.includes(phoneNumber.country)) return null

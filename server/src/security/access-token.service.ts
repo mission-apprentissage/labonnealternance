@@ -8,6 +8,7 @@ import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import type { Jsonify } from "type-fest"
 import type { z } from "zod"
+import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
@@ -186,7 +187,9 @@ export const verifyJwtToken = (jwtToken: string) => {
     if (errorStr === "TokenExpiredError: jwt expired") {
       throw forbidden("JWT expired")
     }
-    console.warn("invalid jwt token", jwtToken, err)
+    // Ni le jeton (il porte l'e-mail du titulaire) ni le message d'une erreur de décodage : une SyntaxError cite un extrait
+    // du payload. Seules les erreurs de jsonwebtoken ont des messages fixes.
+    logger.warn({ jwtError: { name: err?.name, message: err instanceof jwt.JsonWebTokenError ? err.message : undefined } }, "invalid jwt token")
     throw forbidden()
   }
 }

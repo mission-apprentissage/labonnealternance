@@ -10,13 +10,19 @@ import type { Filter } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { logger } from "@/common/logger"
+import { withoutChildSpans } from "@/common/utils/sentry-utils"
 import { cancelRemovedJobsPartners } from "@/jobs/offre-partenaire/cancel-removed-jobs-partners"
 import { fillComputedRecruteursLba } from "@/jobs/offre-partenaire/fill-computed-recruteurs-lba"
 import { fillLbaUrl } from "@/jobs/offre-partenaire/fill-lba-url"
 import { importFromComputedToJobsPartners } from "@/jobs/offre-partenaire/import-from-computed-to-jobs-partners"
 import { checkIfAlgoFileAlreadyProcessed, importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./import-recruteurs-lba-raw"
 
-export const processRecruteursLba = async ({ sourceFileReadStream, skipCheckFileDate = false }: { sourceFileReadStream?: Stream.Readable; skipCheckFileDate?: boolean } = {}) => {
+type ProcessRecruteursLbaOptions = { sourceFileReadStream?: Stream.Readable; skipCheckFileDate?: boolean }
+
+// ~350 000 recruteurs, une requête MongoDB par document à plusieurs étapes, cf. withoutChildSpans.
+export const processRecruteursLba = (options: ProcessRecruteursLbaOptions = {}) => withoutChildSpans(() => runProcessRecruteursLba(options))
+
+const runProcessRecruteursLba = async ({ sourceFileReadStream, skipCheckFileDate = false }: ProcessRecruteursLbaOptions) => {
   logger.info("début de processRecruteursLba")
   if (!skipCheckFileDate) {
     const fileAlreadyProcessed = await checkIfAlgoFileAlreadyProcessed()
@@ -27,7 +33,7 @@ export const processRecruteursLba = async ({ sourceFileReadStream, skipCheckFile
   }
 
   const raw = await importRecruteursLbaRaw(sourceFileReadStream)
-  const rest = await processRecruteursLbaRawToEnd()
+  const rest = await runProcessRecruteursLbaRawToEnd()
   logger.info("fin de processRecruteursLba")
   return { raw, ...rest }
 }
@@ -44,7 +50,9 @@ export const cancelRemovedJobsPartnersRecruteursLba = async () => {
   await cancelRemovedJobsPartners(recruteursLbaFilter)
 }
 
-export async function processRecruteursLbaRawToEnd() {
+export const processRecruteursLbaRawToEnd = () => withoutChildSpans(runProcessRecruteursLbaRawToEnd)
+
+async function runProcessRecruteursLbaRawToEnd() {
   const computed = await importRecruteurLbaToComputed()
   await fillComputedRecruteursLba()
 

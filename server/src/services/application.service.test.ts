@@ -15,6 +15,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
+import { saveApplicationTrafficSourceIfAny } from "@/services/traffic-source.service"
 import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, removeEmailFromLbaCompanies, sendApplicationV2 } from "./application.service"
 
 vi.mock("@/common/utils/aws-utils", () => {
@@ -23,6 +24,11 @@ vi.mock("@/common/utils/aws-utils", () => {
     s3ReadAsString: vi.fn().mockResolvedValue(applicationTestFile),
     s3Delete: vi.fn().mockResolvedValue(undefined),
   }
+})
+
+vi.mock("@/services/traffic-source.service", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@/services/traffic-source.service")>()
+  return { ...mod, saveApplicationTrafficSourceIfAny: vi.fn(mod.saveApplicationTrafficSourceIfAny) }
 })
 
 vi.mock("@/services/clamav.service", () => {
@@ -99,6 +105,26 @@ describe("Sending application", () => {
       },
     })
     expect.soft(omit(result, ["_id"])).toMatchSnapshot()
+  })
+  it("Should succeed when the application is saved but its traffic source cannot be", async () => {
+    vi.mocked(saveApplicationTrafficSourceIfAny).mockRejectedValueOnce(new Error("trafficsources unavailable"))
+    const job = await createJobPartner({
+      apply_email: "email@gmail.com",
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(1, "day").toDate(),
+    })
+
+    const result = await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "partners", jobId: job._id.toString() },
+      },
+      source: { referer: "https://www.example.com", utm_campaign: "campagne", utm_medium: null, utm_source: null },
+    })
+
+    expect(await getDbCollection("applications").findOne({ _id: result._id })).not.toBeNull()
   })
   it("Should refuse sending application to non existent job", async () => {
     await expect(

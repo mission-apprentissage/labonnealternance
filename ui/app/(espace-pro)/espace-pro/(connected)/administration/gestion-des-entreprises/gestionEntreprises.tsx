@@ -15,11 +15,11 @@ import CustomInput from "@/app/_components/CustomInput"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useToast } from "@/app/hooks/useToast"
-import { phoneValidation } from "@/common/validation/field-validations"
+import { emailValidation, phoneValidation } from "@/common/validation/field-validations"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { getCompanyContactInfo, putCompanyContactInfo, searchLbaCompanies } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
-import { EMAIL_FORMAT_ERROR, EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
+import { EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
 import { SearchClearButton, searchClearButtonSx } from "../_components/SearchClearButton"
 import { validateLbaCompanySearch } from "../_utils/admin-search-validation"
 import { getLbaCompaniesColumns } from "../_utils/lbaCompaniesColumns"
@@ -65,18 +65,20 @@ function FormulaireModificationEntreprise({ siret, onCancel, onSaved }: { siret:
   }
 
   const currentCompany = data
+  // société déréférencée : au moins un des deux champs est requis (CustomInput n'affiche l'erreur d'un champ vide que s'il est required)
+  const contactRequired = !currentCompany.active
 
   return (
     <Formik
       validate={(values) => {
-        if (!currentCompany.active && !values.email && !values.phone) return { email: unreferencedLbaRecruteurWarning, phone: unreferencedLbaRecruteurWarning }
+        if (contactRequired && !values.email && !values.phone) return { email: unreferencedLbaRecruteurWarning, phone: unreferencedLbaRecruteurWarning }
         return {}
       }}
       enableReinitialize
       validateOnMount
       initialValues={{ phone: currentCompany.phone, email: currentCompany.email }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().email(EMAIL_FORMAT_ERROR).nullable(),
+        email: emailValidation().nullable(),
         phone: phoneValidation().nullable(),
       })}
       onSubmit={(values) => {
@@ -104,11 +106,11 @@ function FormulaireModificationEntreprise({ siret, onCancel, onSaved }: { siret:
                 </Box>
                 .
                 <br />
-                Seules les mises à jour seront enregistrées.
+                Seules les mises à jour seront enregistrées. Renseignez au moins le téléphone ou l’e-mail de contact.
               </Typography>
             )}
             <CustomInput
-              required={false}
+              required={contactRequired && !values.email}
               name="phone"
               label="Nouveau numéro de téléphone"
               info={PHONE_FORMAT_HINT}
@@ -118,7 +120,15 @@ function FormulaireModificationEntreprise({ siret, onCancel, onSaved }: { siret:
               autoComplete="off"
               value={values.phone}
             />
-            <CustomInput required={false} name="email" label="Nouvel e-mail de contact" info={EMAIL_FORMAT_HINT} type="email" autoComplete="off" value={values.email} />
+            <CustomInput
+              required={contactRequired && !values.phone}
+              name="email"
+              label="Nouvel e-mail de contact"
+              info={EMAIL_FORMAT_HINT}
+              type="email"
+              autoComplete="off"
+              value={values.email}
+            />
             {updateError && <Alert title="Erreur" description={updateError.message} severity="error" />}
             <Box sx={{ display: "flex", justifyContent: "flex-end", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}>
               <Button type="button" priority="secondary" onClick={onCancel}>

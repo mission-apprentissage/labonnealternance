@@ -51,7 +51,8 @@
     "foreach:seq": "yarn workspaces foreach -Av --exclude mna-lba",
     "foreach:parallel": "yarn foreach:seq -pi",
     "foreach:ci": "yarn foreach:seq -p",
-    "knip": "knip"
+    "knip": "knip",
+    "generate:ui-routes": "node ui/scripts/generate-ui-routes.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.7",

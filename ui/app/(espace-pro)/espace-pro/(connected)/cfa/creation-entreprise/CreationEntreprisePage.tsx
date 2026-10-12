@@ -19,17 +19,14 @@ const CreationCompte = () => {
   return (
     <SiretAutocomplete
       label="Nom ou SIRET de l’entreprise partenaire"
-      onSubmit={({ establishment_siret }, { setSubmitting, setFieldError }) => {
+      onSubmit={({ establishment_siret }, { setSubmitting, setSiretError }) => {
         const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
         getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret }).then((entrepriseData) => {
           if (entrepriseData.error === true) {
             if (entrepriseData.statusCode >= 500) {
               router.push(PAGES.dynamic.backCfaEntrepriseCreationDetail(formattedSiret).getPath())
             } else {
-              setFieldError(
-                "establishment_siret",
-                entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message
-              )
+              setSiretError(entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
               setSubmitting(false)
             }
           } else if (entrepriseData.error === false) {
