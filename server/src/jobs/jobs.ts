@@ -65,7 +65,7 @@ import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-f
 import { createApiUser } from "./recruiters/create-api-user"
 import { disableApiUser } from "./recruiters/disable-api-user"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
-import { opcoReminderJob } from "./recruiters/opco-reminder-job"
+import { OPCO_REMINDER_JOB_NAME, opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiter-offer-expiration-reminder-job"
 import { resetApiKey } from "./recruiters/reset-api-key"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
@@ -168,7 +168,7 @@ export async function setupJobProcessor() {
             cron_string: "25 9 * * *",
             handler: async () => recruiterOfferExpirationReminderJob(1),
           },
-          "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
+          [OPCO_REMINDER_JOB_NAME]: {
             cron_string: "30 0 * * 1,3,5",
             handler: opcoReminderJob,
             tag: "main",

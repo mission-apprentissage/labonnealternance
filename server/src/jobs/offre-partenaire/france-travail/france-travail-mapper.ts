@@ -9,6 +9,12 @@ import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed
 import { DEPARTEMENTS_BY_CODE } from "@/common/utils/departements"
 import { blankComputedJobPartner } from "@/jobs/offre-partenaire/fill-computed-jobs-partners"
 
+// Solution temporaire (#5656) : les offres ISCOD relayées par France Travail renvoient vers directemploi.
+// À retirer, avec ses appels dans les mappers France Travail et France Travail CEGID, quand le flux sera corrigé.
+const DIRECTEMPLOI_APPLY_URL_PATTERN = /directemploi/i
+
+export const isDirectemploiApplyUrl = (applyUrl: string | null | undefined): boolean => Boolean(applyUrl && DIRECTEMPLOI_APPLY_URL_PATTERN.test(applyUrl))
+
 export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPartners => {
   const now = new Date()
   const expirationDate = dayjs(job.dateCreation).tz().add(2, "months").toDate()
@@ -17,6 +23,11 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
   const workplace_address_label = getAddressLabel(job.lieuTravail)
   if (!workplace_address_label) {
     businessError = JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND
+  }
+
+  const apply_url = job.contact?.urlPostulation || job.origineOffre.partenaires?.[0]?.url || job.origineOffre.urlOrigine
+  if (isDirectemploiApplyUrl(apply_url)) {
+    businessError = JOB_PARTNER_BUSINESS_ERROR.CFA
   }
 
   return {
@@ -44,7 +55,7 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
     workplace_naf_code: job.codeNAF,
     workplace_naf_label: job.secteurActiviteLibelle,
     workplace_website: job.entreprise.url,
-    apply_url: job.contact?.urlPostulation || job.origineOffre.partenaires?.[0]?.url || job.origineOffre.urlOrigine,
+    apply_url,
     business_error: businessError,
   }
 }

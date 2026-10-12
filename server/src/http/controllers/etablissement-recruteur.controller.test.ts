@@ -7,6 +7,7 @@ import { roleManagementEventFactory, saveAdminUserTest, saveCfaUserTest, saveRol
 import { ObjectId } from "bson"
 import { omit } from "lodash-es"
 import nock from "nock"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
@@ -176,6 +177,19 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response.statusCode).toBe(400)
     })
 
+    it.each([
+      { length: 255, statusCode: 200 },
+      { length: 256, statusCode: 400 },
+    ])(
+      "Limite l'origine à 255 caractères (longueur $length → $statusCode)",
+      async ({ length, statusCode }) => {
+        const response = await callCreation({ ...defaultCreationEntreprisePayload, origin: "a".repeat(length) })
+
+        expect.soft(response.statusCode).toBe(statusCode)
+      },
+      10_000
+    )
+
     it("Envoie un email de confirmation dès la création de compte entreprise", async () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
 
@@ -251,6 +265,12 @@ describe("POST /etablissement/creation", () => {
     })
   })
   describe("Création de CFA", () => {
+    it("Refuse une origine de plus de 255 caractères", async () => {
+      const response = await callCreation({ ...defaultCreationCFAPayload, origin: "a".repeat(256) })
+
+      expect.soft(response.statusCode).toBe(400)
+    })
+
     it("Vérifie que le CFA est créé", async () => {
       const response = await callCreation(defaultCreationCFAPayload)
       expect.soft(response.statusCode).toBe(200)
@@ -265,6 +285,7 @@ describe("POST /etablissement/creation", () => {
       const response2 = await callCreation({ ...defaultCreationCFAPayload, establishment_siret: "13002172800261" })
       expect.soft(response2.statusCode).toBe(403)
       expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
+      expect.soft(response2.json().data.reason).toBe(BusinessErrorCodes.ALREADY_EXISTS)
     })
     it("Vérifie que 2 emails ne peuvent pas avoir un compte sur le même CFA", async () => {
       const response = await callCreation(defaultCreationCFAPayload)
@@ -272,6 +293,7 @@ describe("POST /etablissement/creation", () => {
       const response2 = await callCreation({ ...defaultCreationCFAPayload, email: "email2@email.fr" })
       expect.soft(response2.statusCode).toBe(403)
       expect.soft(response2.json().message).toBe("Ce numéro siret est déjà associé à un compte utilisateur.")
+      expect.soft(response2.json().data.reason).toBe(BusinessErrorCodes.SIRET_ALREADY_EXISTS)
     })
     it("Vérifie qu'un email ne peut pas créer un compte si l utilisateur existe déjà", async () => {
       // given

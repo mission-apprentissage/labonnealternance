@@ -79,6 +79,24 @@ describe("jobs.controller", () => {
         expect.soft(response.statusCode).toBe(200)
         expect.soft(response.json().contact.phone).toBeNull()
       })
+
+      it("ne remonte pas le téléphone si l'offre active est expirée depuis plus de 24 h", async () => {
+        const job = generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          offer_expiration: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+          apply_phone: "0600000000",
+        })
+        await getDbCollection("jobs_partners").insertOne(job)
+
+        const response = await httpClient().inject({
+          method: "GET",
+          path: `/api/_private/jobs/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job._id.toString()}`,
+        })
+
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(response.json().contact.phone).toBeNull()
+      })
     })
 
     describe(`source: ${LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}`, () => {

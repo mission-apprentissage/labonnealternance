@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useCombobox } from "downshift"
+import { useField } from "formik"
 import { useId, useMemo, useRef, useState } from "react"
 
 import CustomInput from "@/app/_components/CustomInput"
@@ -54,6 +55,7 @@ export default function AutocompleteAsync<T>({
   allowHealFromError: boolean
 }) {
   const searchErrorId = useId()
+  const [, meta] = useField(name)
   const inputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -115,7 +117,8 @@ export default function AutocompleteAsync<T>({
   } = getInputProps({
     ref: inputRef,
     onFocus() {
-      openMenu()
+      // Champ en erreur (focus posé sur l'erreur après la soumission) : la liste masquerait le message, elle se rouvre à la saisie
+      if (!(meta.touched && meta.error)) openMenu()
     },
   })
 

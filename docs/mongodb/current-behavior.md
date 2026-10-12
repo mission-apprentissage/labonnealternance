@@ -108,7 +108,7 @@ Vestiges de vocabulaire à normaliser (aucun impact fonctionnel, mais trompeurs 
 
 ### Champ Lieu
 
-Autocomplete BAN (≥ 2 caractères), `autoHighlight` (Entrée = 1ʳᵉ suggestion). **Champ vide** : le dropdown (ouvert au focus) propose l'option « France entière » — la sélectionner (clic ou Entrée) retire le lieu de la recherche, équivalent de la croix. Jamais de texte fantôme : au blur sans sélection, le libellé du lieu appliqué est restauré.
+Autocomplete BAN (≥ 2 caractères), `autoHighlight` (Entrée = 1ʳᵉ suggestion). **Champ vide** : le dropdown (ouvert au clic, au toucher ou avec ↓, pas au focus : cf. VoiceOver dans `SearchBar.tsx`) propose l'option « France entière » — la sélectionner (clic, ou ↓ puis Entrée) retire le lieu de la recherche, équivalent de la croix. Jamais de texte fantôme : au blur sans sélection, le libellé du lieu appliqué est restauré.
 
 ### Rayon automatique
 

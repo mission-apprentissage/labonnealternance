@@ -68,7 +68,11 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // Champ en cours de saisie dans la modale « Modifier la recherche » : SearchBar passe en
   // « écran de saisie » (suggestions inline plein écran) — le reste du formulaire est masqué.
   const [searchFieldActive, setSearchFieldActive] = useState(false)
+  // Saisie métier pas encore lancée (champ quitté sans Entrée ni sélection) : le bouton
+  // Rechercher du panneau la lance, comme celui de la home.
+  const pendingQRef = useRef<{ q: string; source: "suggestion" | "free_text" } | null>(null)
   const closeSearchPanel = () => {
+    pendingQRef.current = null
     setPanel(null)
     // Fermeture possible pendant une saisie (croix, Escape) : sans reset, la prochaine
     // ouverture masquerait type de recherche et bouton.
@@ -197,6 +201,13 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       q_source: source,
     })
     navigateSilent({ ...params, q: q || undefined, q_source: q ? source : undefined, page: 0 })
+  }
+
+  function submitSearchPanel() {
+    const pending = pendingQRef.current
+    const q = pending?.q.trim() ?? ""
+    if (pending && q !== (params.q ?? "")) handleSearch(q, pending.source)
+    closeSearchPanel()
   }
 
   function handleLieuChange(lieu: { label: string; latitude: number; longitude: number; adminArea?: string } | null) {
@@ -382,7 +393,13 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                 initialLieuLabel={params.lieu_label}
                 franceEntiereIfEmpty
                 submitOnSelect
-                onSubmit={handleSearch}
+                onSubmit={(q, source) => {
+                  pendingQRef.current = null
+                  handleSearch(q, source)
+                }}
+                onQChange={(q, source) => {
+                  pendingQRef.current = { q, source }
+                }}
                 onLieuChange={handleLieuChange}
               />
               {/* Masqués pendant la saisie : l'écran est réservé au champ actif + suggestions. */}
@@ -397,7 +414,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                     }))}
                   />
                   <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
-                    <Button priority="primary" iconId="fr-icon-search-line" onClick={closeSearchPanel} style={{ width: "100%", justifyContent: "center" }}>
+                    <Button priority="primary" iconId="fr-icon-search-line" onClick={submitSearchPanel} style={{ width: "100%", justifyContent: "center" }}>
                       Rechercher
                     </Button>
                   </Box>
@@ -426,7 +443,15 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               </Box>
             }
           >
-            <SearchFilters variant="sections" params={params} facets={facets} counts={counts} nbHits={result.data ? nbHits : undefined} onNavigate={handleFilterChange} />
+            <SearchFilters
+              variant="sections"
+              params={params}
+              facets={facets}
+              counts={counts}
+              nbHits={result.data ? nbHits : undefined}
+              onNavigate={handleFilterChange}
+              onClose={() => setPanel(null)}
+            />
           </SearchMobilePanel>
         )}
       </Box>

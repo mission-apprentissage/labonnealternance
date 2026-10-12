@@ -209,6 +209,26 @@ describe("franceTravailJobsToJobsPartners", () => {
       apply_url: "https://postuler.fr/123",
     })
   })
+
+  it.each([
+    ["urlPostulation", { contact: { urlPostulation: "https://www.directemploi.com/offre/123" } }],
+    [
+      "url partenaire, casse mixte",
+      { origineOffre: { origine: "2", urlOrigine: "https://francetravail.fr/offre/FT-001", partenaires: [{ nom: "P", url: "https://www.DirectEmploi.com/offre/123", logo: "" }] } },
+    ],
+  ])("should block the job as CFA when apply_url contains directemploi (%s)", (_label, override) => {
+    expect(franceTravailJobsToJobsPartners({ ...baseJob, ...override }).business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CFA)
+  })
+
+  it("should block the job as CFA when apply_url contains directemploi, even without geolocation", () => {
+    const job = {
+      ...baseJob,
+      contact: { urlPostulation: "https://www.directemploi.com/offre/123" },
+      lieuTravail: { libelle: "France" },
+    }
+
+    expect(franceTravailJobsToJobsPartners(job).business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.CFA)
+  })
 })
 
 describe("exactractFTContractDuration", () => {
