@@ -233,7 +233,7 @@ describe("Sentry : aucune donnée personnelle envoyée", () => {
     expect(apiEntrepriseSpan?.data).not.toHaveProperty(["url.query"])
   })
 
-  it("lien magique : pas l'e-mail saisi", async () => {
+  it("lien magique, route sans authentification : pas l'e-mail saisi, utilisateur anonyme", async () => {
     await saveEntrepriseUserTest(
       { email: magicLinkUser.email, first_name: magicLinkUser.firstName, last_name: magicLinkUser.lastName, status: validatedUserStatus },
       {},
@@ -244,6 +244,8 @@ describe("Sentry : aucune donnée personnelle envoyée", () => {
     await send("/api/login/magiclink", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: magicLinkUser.email }) })
 
     await assertNoPersonalDataSent()
+    const event = sentEvents("event").find((sent) => sent.exception?.values?.[0]?.value === "SMTP indisponible")
+    expect(event?.user).toEqual({ segment: "anonymous", ip_address: "127.0.0.1" })
   })
 
   it("espace pro : ni le corps, ni la query, ni le referer, ni le cookie de session ; l'utilisateur est identifié sans e-mail", async () => {
