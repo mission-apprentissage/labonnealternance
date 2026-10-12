@@ -5,7 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box, ButtonBase } from "@mui/material"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState } from "react"
 
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
@@ -28,11 +28,13 @@ const FAKE_FIELD_PLACEHOLDER = "Recherche par mot clé"
  * bouton qui ouvre la modale de saisie plein écran — au milieu de page, le dropdown de
  * suggestions serait masqué par le clavier virtuel.
  */
-function MobileFakeField({ value, onOpen }: { value?: string; onOpen: () => void }) {
+function MobileFakeField({ value, labelId, onOpen }: { value?: string; labelId: string; onOpen: () => void }) {
+  const valueId = useId()
   return (
     <ButtonBase
       onClick={onOpen}
       aria-haspopup="dialog"
+      aria-labelledby={`${labelId} ${valueId}`}
       sx={{
         display: "flex",
         justifyContent: "flex-start",
@@ -55,7 +57,7 @@ function MobileFakeField({ value, onOpen }: { value?: string; onOpen: () => void
     >
       {/* minWidth 0 : sans lui, l'enfant flex ne rétrécit pas sous la largeur du texte
           nowrap → débordement horizontal de la page en mobile (l'ellipsis ne s'applique jamais). */}
-      <Box component="span" sx={{ minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+      <Box component="span" id={valueId} sx={{ minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
         {value || FAKE_FIELD_PLACEHOLDER}
       </Box>
     </ButtonBase>
@@ -71,6 +73,7 @@ function MobileFakeField({ value, onOpen }: { value?: string; onOpen: () => void
  */
 export function SearchHomeForm({ id }: { id: string }) {
   const router = useRouter()
+  const fakeFieldLabelId = useId()
   const [q, setQ] = useState("")
   // Source de la valeur du champ métier pour la télémétrie ("suggestion" si elle vient
   // d'une sélection dans l'autocomplete, "free_text" dès que l'utilisateur retape).
@@ -174,15 +177,19 @@ export function SearchHomeForm({ id }: { id: string }) {
       <RechercheFormTitle />
 
       {/* Tablette et Mobile : faux champ + bouton loupe → modale plein écran (métier, lieu, type de recherche). */}
-      <Box aria-hidden={true} sx={{ display: { xs: "block", lg: "none" } }}>
-        <Box component="span" sx={{ display: "block", fontSize: "1rem", fontWeight: 700, color: fr.colors.decisions.text.default.grey.default, mb: fr.spacing("1v") }}>
+      <Box sx={{ display: { xs: "block", lg: "none" } }}>
+        <Box
+          component="span"
+          id={fakeFieldLabelId}
+          sx={{ display: "block", fontSize: "1rem", fontWeight: 700, color: fr.colors.decisions.text.default.grey.default, mb: fr.spacing("1v") }}
+        >
           Que recherchez-vous ?
         </Box>
         {/* minWidth 0 sur la rangée ET le wrapper flex du faux champ : sans eux, le contenu
             nowrap impose sa largeur min → le champ déborde de l'écran. */}
         <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <MobileFakeField value={q} onOpen={() => setMobilePanelOpen(true)} />
+            <MobileFakeField value={q} labelId={fakeFieldLabelId} onOpen={() => setMobilePanelOpen(true)} />
           </Box>
           <Button
             priority="primary"
@@ -222,6 +229,7 @@ export function SearchHomeForm({ id }: { id: string }) {
               mode={mode}
               layout="column"
               inlineSuggestions
+              autoFocusMetier
               onActiveFieldChange={(field) => setMobileFieldActive(field !== null)}
               initialQ={q}
               initialLieuLabel={lieu?.label}

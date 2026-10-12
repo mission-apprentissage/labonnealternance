@@ -127,8 +127,11 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
   // Focus sorti du chip et de son panneau (Tab vers le filtre suivant) → fermeture. Le Popper
   // est rendu dans ce conteneur (disablePortal). Sans `relatedTarget` (clic hors élément
   // focusable, fenêtre qui perd le focus, calendrier natif), c'est ClickAwayListener qui tranche.
+  // De même vers un ancêtre : au mousedown sur un contenu non focusable du panneau (libellé d'une
+  // case), le focus part sur <main tabIndex={-1}> (cible du lien d'évitement), avant le clic.
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
-    if (!open || !(event.relatedTarget instanceof Node) || event.currentTarget.contains(event.relatedTarget)) return
+    const next = event.relatedTarget
+    if (!open || !(next instanceof Node) || event.currentTarget.contains(next) || next.contains(event.currentTarget)) return
     close()
   }
 

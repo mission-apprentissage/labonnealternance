@@ -2,8 +2,15 @@ import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "shared/valid
 import { toFrenchNationalPhone } from "shared/validators/phone-validator"
 import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
+import { z } from "zod"
 
-import { PHONE_FORMAT_ERROR, SIRET_KEY_ERROR } from "@/utils/validation-messages"
+import { EMAIL_FORMAT_ERROR, PHONE_FORMAT_ERROR, SIRET_KEY_ERROR } from "@/utils/validation-messages"
+
+// Même règle que le serveur (z.email() des modèles shared) : Yup.string().email() accepte a.b@c ou nom@domaine sans
+// extension, que l'API rejette ensuite en 400.
+export const emailValidation = (message = EMAIL_FORMAT_ERROR) => {
+  return Yup.string().test("email", message, (email) => !email || z.email().safeParse(email).success)
+}
 
 export const phoneValidation = () => {
   return Yup.string().matches(/^[0-9]{10}$/, PHONE_FORMAT_ERROR)

@@ -1,6 +1,7 @@
 import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import type { INewSuperUser } from "shared"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { ADMIN, OPCO } from "shared/constants/index"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
@@ -144,7 +145,7 @@ export const isUserDisabled = (user: IUserWithAccount): boolean =>
 export const createSuperUser = async (userFields: INewSuperUser, { grantedBy, origin }: { grantedBy: string; origin: string }) => {
   const { email, type } = userFields
   if (await emailHasActiveRole(email)) {
-    throw badRequest(`User ${email} already have an active role`)
+    throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
   }
   const reason = ""
 

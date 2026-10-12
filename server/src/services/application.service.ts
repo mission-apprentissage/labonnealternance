@@ -1,4 +1,4 @@
-import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
+import { badRequest, internal, notFound, serverUnavailable, tooManyRequests } from "@hapi/boom"
 import { captureException } from "@sentry/node"
 import axios from "axios"
 import { isEmailBurner } from "burner-email-providers"
@@ -18,6 +18,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ITrackingCookies } from "shared/models/traffic-sources.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { isOfferExpired } from "shared/utils/offer-expiration"
 import { resolveSearchParamsFromUrl, SEARCH_PAGE_PATH } from "shared/utils/search-url-compat"
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
@@ -281,8 +282,7 @@ export const sendApplicationV2 = async ({
   if (!job) {
     throw badRequest(BusinessErrorCodes.NOTFOUND)
   }
-  const { offer_expiration } = job
-  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE || (offer_expiration && dayjs(offer_expiration).add(1, "day").isBefore(dayjs()))) {
+  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE || isOfferExpired(job.offer_expiration)) {
     throw badRequest(BusinessErrorCodes.EXPIRED)
   }
 
@@ -310,17 +310,14 @@ export const sendApplicationV2 = async ({
     }
   }
 
+  let application: IApplication
   try {
-    const application = await newApplicationToApplicationDocumentV2({ ...newApplication, applicant_answers_to_recruiter_questions }, applicant, lbaJob, caller)
+    application = await newApplicationToApplicationDocumentV2({ ...newApplication, applicant_answers_to_recruiter_questions }, applicant, lbaJob, caller)
     await s3WriteString("applications", getApplicationCvS3Filename(application), {
       Body: applicant_attachment_content,
     })
     await getDbCollection("applications").insertOne(application)
-    await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: applicant.email, source })
-
-    return { _id: application._id }
   } catch (err) {
-    sentryCaptureException(err)
     if (caller) {
       await manageApiError({
         error: err,
@@ -330,8 +327,22 @@ export const sendApplicationV2 = async ({
       })
     }
     logger.error(err)
-    throw badRequest(BusinessErrorCodes.UNKNOWN)
+    // Erreur d'infrastructure (S3, Mongo) : 503 pour que l'appelant réessaie. Nouvelle erreur sans `data` ni message
+    // d'origine, qu'errorMiddleware recopierait dans la réponse (bucket et clé S3). Remontée à Sentry avec sa cause.
+    const error = serverUnavailable("Application could not be saved, please retry later")
+    error.cause = err
+    throw error
   }
+
+  // La candidature est enregistrée et sera envoyée : une erreur ici pousserait l'appelant à la renvoyer en doublon.
+  try {
+    await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: applicant.email, source })
+  } catch (err) {
+    logger.error(err)
+    sentryCaptureException(err, { extra: { application_id: application._id.toString() } })
+  }
+
+  return { _id: application._id }
 }
 
 /**

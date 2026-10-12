@@ -20,10 +20,12 @@ export const UserMenu = ({
   const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)
   const canDeactivate = [ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.ATTENTE].includes(status)
 
+  // raison sociale facultative : sans repli, le nom du menu devient « … entreprise null »
+  const entrepriseLabel = row.establishment_raison_sociale || `SIRET ${row.establishment_siret}`
   const actions: PopoverMenuAction[] = [
     {
       label: "Voir les informations",
-      hint: `${row.establishment_raison_sociale}`,
+      hint: entrepriseLabel,
       type: "link",
       link: `/espace-pro/administration/users/${row._id}?organizationId=${row.organizationId || "unused"}`,
     },
@@ -31,7 +33,7 @@ export const UserMenu = ({
       ? {
           label: "Activer le compte",
           type: "button",
-          hint: `${row.establishment_raison_sociale}`,
+          hint: entrepriseLabel,
           onClick: () => {
             confirmationActivationUtilisateur.onOpen()
             setCurrentEntreprise(row)
@@ -41,7 +43,7 @@ export const UserMenu = ({
     canDeactivate
       ? {
           label: "Désactiver le compte",
-          hint: `${row.establishment_raison_sociale}`,
+          hint: entrepriseLabel,
           type: "button",
           onClick: () => {
             confirmationDesactivationUtilisateur.onOpen()
@@ -51,5 +53,5 @@ export const UserMenu = ({
       : null,
   ]
 
-  return <PopoverMenu actions={actions.filter((action) => action !== null)} title={`Actions sur le compte de l'entreprise ${row.establishment_raison_sociale}`} />
+  return <PopoverMenu actions={actions.filter((action) => action !== null)} title={`Actions sur le compte de l'entreprise ${entrepriseLabel}`} />
 }

@@ -11,21 +11,21 @@ import * as Yup from "yup"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
-import { frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
+import { emailValidation, frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
-import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 
 const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const router = useRouter()
   const toast = useToast()
   const { user } = useConnectedSessionClient()
   const formRef = useRef<HTMLFormElement>(null)
+  const serverFieldErrors = useServerFieldErrors()
 
   const submitForm = (values, { setSubmitting, setFieldError, setFieldValue }) => {
     const phone = toSubmittedPhone(values.phone)
@@ -40,9 +40,9 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
       })
       .catch((err) => {
         if (err.message.includes("phone")) {
-          setFieldError("phone", err.message)
+          serverFieldErrors.setServerFieldError(setFieldError, "phone", phone, err.message)
         } else {
-          setFieldError("email", err.message)
+          serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, err.message)
         }
         setSubmitting(false)
       })
@@ -59,12 +59,13 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         isDeclarationExact: false,
       }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
+        email: emailValidation().required("champ obligatoire"),
         last_name: personNameValidation().required("champ obligatoire"),
         first_name: personNameValidation().required("champ obligatoire"),
         phone: frenchPhoneValidation().required("champ obligatoire"),
         isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations"),
       })}
+      validate={serverFieldErrors.validate}
       onSubmit={submitForm}
     >
       {(informationForm) => {

@@ -9,6 +9,7 @@ import { EApplicantType } from "shared/constants/rdva"
 import * as Yup from "yup"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { emailValidation } from "@/common/validation/field-validations"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { apiPost } from "@/utils/api.utils"
@@ -48,7 +49,7 @@ export const DemandeDeContactForm = ({
         phone: Yup.string()
           .matches(/^[0-9]{10}$/, "Le numéro doit comporter 10 chiffres, par exemple 0612345678")
           .required("Le numéro de téléphone est obligatoire"),
-        email: Yup.string().email("Format attendu : nom@domaine.fr").required("L'adresse e-mail est obligatoire"),
+        email: emailValidation("Format attendu : nom@domaine.fr").required("L'adresse e-mail est obligatoire"),
         applicantMessageToCfa: Yup.string(),
         applicantType: Yup.mixed().oneOf(Object.values(EApplicantType)),
         applicantReasons: Yup.array(Yup.mixed().oneOf(RdvReasons.map((item) => item.key)))

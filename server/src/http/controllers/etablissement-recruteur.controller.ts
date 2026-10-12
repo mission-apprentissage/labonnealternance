@@ -267,7 +267,8 @@ export default (server: Server) => {
 
           const isValid = await isCfaCreationValid(establishment_siret)
           if (!isValid) {
-            throw forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
+            // Code distinct de l'e-mail déjà utilisé (ALREADY_EXISTS) : le formulaire n'affiche que ce dernier sur le champ e-mail
+            throw forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.SIRET_ALREADY_EXISTS })
           }
 
           const {
