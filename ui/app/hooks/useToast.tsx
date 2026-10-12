@@ -10,7 +10,7 @@ interface ToastOptions extends Pick<SharedProps, "variant" | "autoHideDuration">
 
 export function useToast() {
   return useCallback((opts: ToastOptions) => {
-    // Contenu phrasé : il est rendu dans le <p> de description de l'Alert DSFR (cf. ToastContent).
+    // Contenu phrasé : il est rendu dans la description de l'Alert DSFR (cf. ToastContent).
     const message = (
       <>
         {opts.title && <strong>{opts.title}</strong>}
