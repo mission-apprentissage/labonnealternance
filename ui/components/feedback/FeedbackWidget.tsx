@@ -148,7 +148,7 @@ export function FeedbackWidget({ questions, variant = "inline", onProgress, clos
         tabIndex={-1}
         data-feedback-heading
         // titre focalisé par programme, sans contour ; « :focus » requis pour passer devant la règle DSFR `[tabindex]:focus`
-        sx={{ fontSize: "15px", fontWeight: 700, lineHeight: "22px", mb: 0, "&:focus, &:focus-visible": { outline: "none" } }}
+        sx={{ fontSize: "16px", fontWeight: 700, lineHeight: "22px", mb: 0, "&:focus, &:focus-visible": { outline: "none" } }}
       >
         {current ? current.label : "Merci pour votre retour"}
       </Typography>
@@ -234,7 +234,7 @@ function QuestionStep({ question, headingId, initialValue, progress, onAnswer, o
   return (
     <>
       {question.required && (
-        <Typography id={requiredId} className={fr.cx("fr-hint-text")} sx={{ mb: 0 }}>
+        <Typography id={requiredId} className={fr.cx("fr-hint-text")} sx={{ fontSize: "0.8rem", lineHeight: "1.25rem", mb: 0 }}>
           Réponse obligatoire
         </Typography>
       )}
