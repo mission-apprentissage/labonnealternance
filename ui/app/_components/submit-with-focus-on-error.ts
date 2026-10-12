@@ -1,5 +1,6 @@
 import type { FormikProps } from "formik"
-import type { RefObject } from "react"
+import { type RefObject, useCallback, useRef } from "react"
+import { flushSync } from "react-dom"
 
 /**
  * Fabrique un handler onSubmit pour un formulaire Formik dont le bouton n'est pas désactivé par
@@ -80,4 +81,37 @@ export const submitOrFocusFirstInvalidField = async ({ validateForm, setTouched,
   }
 
   await submitForm()
+}
+
+/**
+ * Erreur renvoyée par l'API sur un champ (ex. e-mail déjà utilisé) : la soumission a déjà eu lieu, le focus
+ * n'est donc pas pris en charge par les helpers ci-dessus. flushSync rend le message et son lien
+ * aria-describedby avant le focus, pour qu'il soit annoncé avec le champ (RGAA 11.10).
+ */
+export const setFieldErrorAndFocus = (setFieldError: (field: string, message: string) => void, name: string, message: string) => {
+  flushSync(() => setFieldError(name, message))
+  focusFirstInvalidField([name])
+}
+
+/**
+ * Erreur API rattachée à un champ et maintenue tant que la valeur rejetée n'a pas changé : un setFieldError seul
+ * est écrasé à la validation suivante (dès la sortie du champ), ce qui rend le lien du message (« Connexion »)
+ * inatteignable au clavier. `validate` se passe à <Formik> en plus de validationSchema : Formik fusionne les deux,
+ * et la même valeur ne peut pas être soumise à nouveau.
+ */
+export const useServerFieldErrors = () => {
+  const rejected = useRef(new Map<string, { value: unknown; message: string }>())
+
+  const validate = useCallback(
+    (values: Record<string, unknown>) =>
+      Object.fromEntries([...rejected.current].filter(([name, { value }]) => values[name] === value).map(([name, { message }]) => [name, message])),
+    []
+  )
+
+  const setServerFieldError = useCallback((setFieldError: (field: string, message: string) => void, name: string, value: unknown, message: string) => {
+    rejected.current.set(name, { value, message })
+    setFieldErrorAndFocus(setFieldError, name, message)
+  }, [])
+
+  return { validate, setServerFieldError }
 }

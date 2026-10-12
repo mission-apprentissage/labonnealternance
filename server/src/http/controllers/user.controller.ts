@@ -304,7 +304,7 @@ export default (server: Server) => {
       const result = await updateUserWithAccountFields(userId, userFields)
 
       if ("error" in result) {
-        return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
+        throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
       }
 
       // "non" est un no-op garanti côté service : on évite les deux aller-retours DB (rôles + entreprise)
