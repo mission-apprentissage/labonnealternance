@@ -155,11 +155,7 @@ const OrganizationInfoFields = ({
               {(viewerType === ENTREPRISE && engagementHandicapLabels[engagementHandicapOrigin]?.tooltip) || (
                 <>
                   La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par France
-                  Travail, Cap emploi et leurs partenaires.{" "}
-                  <DsfrLink href="/faq?engagement-handicap=1" external>
-                    En savoir plus
-                    <span className="fr-sr-only">{" - Employeur handi-engagé avec France Travail"}</span>
-                  </DsfrLink>
+                  Travail, Cap emploi et leurs partenaires. En savoir plus dans la FAQ.
                 </>
               )}
             </InfoTooltip>
