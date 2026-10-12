@@ -23,13 +23,13 @@ import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/context
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
-import { frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
+import { emailValidation, frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
-import { EMAIL_ALREADY_USED_ERROR, EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
+import { EMAIL_ALREADY_USED_ERROR } from "@/utils/validation-messages"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
@@ -258,7 +258,7 @@ export default function DetailEntreprise({
             last_name: Yup.string().required("champ obligatoire"),
             first_name: Yup.string().required("champ obligatoire"),
             phone: frenchPhoneValidation().required("champ obligatoire"),
-            email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
+            email: emailValidation().required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
             opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
             ...isDeclarationExactValidation,

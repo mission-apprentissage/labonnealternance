@@ -245,7 +245,7 @@ export const zUserRecruteurRoutes = {
         .strict(),
       response: {
         "200": z.object({}),
-        "400": z.union([ZResError, z.strictObject({ error: z.boolean(), reason: z.string() })]),
+        "400": ZResError,
       },
       securityScheme: {
         auth: "cookie-session",

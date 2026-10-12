@@ -16,10 +16,9 @@ import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
-import { frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
+import { emailValidation, frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
-import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 
 const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const router = useRouter()
@@ -60,7 +59,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         isDeclarationExact: false,
       }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
+        email: emailValidation().required("champ obligatoire"),
         last_name: personNameValidation().required("champ obligatoire"),
         first_name: personNameValidation().required("champ obligatoire"),
         phone: frenchPhoneValidation().required("champ obligatoire"),

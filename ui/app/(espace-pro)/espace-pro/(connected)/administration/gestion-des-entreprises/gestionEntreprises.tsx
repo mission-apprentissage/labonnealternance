@@ -15,11 +15,11 @@ import CustomInput from "@/app/_components/CustomInput"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useToast } from "@/app/hooks/useToast"
-import { phoneValidation } from "@/common/validation/field-validations"
+import { emailValidation, phoneValidation } from "@/common/validation/field-validations"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { getCompanyContactInfo, putCompanyContactInfo, searchLbaCompanies } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
-import { EMAIL_FORMAT_ERROR, EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
+import { EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
 import { SearchClearButton, searchClearButtonSx } from "../_components/SearchClearButton"
 import { validateLbaCompanySearch } from "../_utils/admin-search-validation"
 import { getLbaCompaniesColumns } from "../_utils/lbaCompaniesColumns"
@@ -78,7 +78,7 @@ function FormulaireModificationEntreprise({ siret, onCancel, onSaved }: { siret:
       validateOnMount
       initialValues={{ phone: currentCompany.phone, email: currentCompany.email }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().email(EMAIL_FORMAT_ERROR).nullable(),
+        email: emailValidation().nullable(),
         phone: phoneValidation().nullable(),
       })}
       onSubmit={(values) => {

@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Formik } from "formik"
 import { useRef } from "react"
 import type { IUserWithAccountFields } from "shared"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
 import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
@@ -21,11 +22,11 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { useToast } from "@/app/hooks/useToast"
 import { AUTHTYPE } from "@/common/contants"
-import { frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
+import { emailValidation, frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { getUser, updateUserWithAccountFields } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
-import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
+import { EMAIL_ALREADY_USED_ERROR } from "@/utils/validation-messages"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import ModificationCompteEmail from "./ModificationCompteEmail"
 
@@ -107,7 +108,7 @@ export default function CompteRenderer() {
           last_name: Yup.string().required("champ obligatoire"),
           first_name: Yup.string().required("champ obligatoire"),
           phone: frenchPhoneValidation().required("champ obligatoire"),
-          email: Yup.string().email(EMAIL_FORMAT_ERROR).required("champ obligatoire"),
+          email: emailValidation().required("champ obligatoire"),
           // Requis uniquement quand le champ est effectivement affiché et modifiable : masqué (source France
           // Travail) ou verrouillé (déjà "oui" via La bonne alternance), sa valeur est déjà figée par ailleurs.
           handiEngagement:
@@ -131,16 +132,11 @@ export default function CompteRenderer() {
             },
             {
               onError: (error) => {
-                // { error, reason: "EMAIL_TAKEN" } est hors format IResErrorJson : seul le statut arrive dans ApiError
-                if (isChangingEmail && error instanceof ApiError && error.context.statusCode === 400) {
+                // Tout autre 400 (validation du body…) passe par l'Alert générique
+                if (error instanceof ApiError && error.context.errorData?.error === BusinessErrorCodes.EMAIL_ALREADY_EXISTS) {
                   // L'erreur est portée par le champ : isError ne doit pas afficher l'Alert générique
                   userMutation.reset()
-                  serverFieldErrors.setServerFieldError(
-                    setFieldError,
-                    "email",
-                    values.email,
-                    "Cette adresse e-mail est déjà associée à un compte La bonne alternance. Saisissez une autre adresse, par exemple nom@domaine.fr"
-                  )
+                  serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, EMAIL_ALREADY_USED_ERROR)
                 }
               },
             }

@@ -23,14 +23,13 @@ import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { AUTHTYPE } from "@/common/contants"
-import { frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
+import { emailValidation, frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { AnimationContainer, LoadingEmptySpace } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { infosOpcos } from "@/theme/components/logos/infos-opcos"
 import { getEntrepriseOpco } from "@/utils/api"
 import { ApiError, apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
-import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 
 /**
  * Synchronise values.handiEngagement avec l'état dérivé de get-entreprise (masqué/verrouillé), qui ne
@@ -109,7 +108,7 @@ const Formulaire = ({
         last_name: personNameValidation().required("champ obligatoire"),
         first_name: personNameValidation().required("champ obligatoire"),
         phone: frenchPhoneValidation().required("champ obligatoire"),
-        email: Yup.string().email(EMAIL_FORMAT_ERROR).lowercase().required("champ obligatoire"),
+        email: emailValidation().lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
         handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire") : Yup.string(),
       })}
