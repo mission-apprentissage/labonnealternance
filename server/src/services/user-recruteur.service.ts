@@ -21,7 +21,7 @@ import config from "@/config"
 import type { RoleManagement360Document } from "@/jobs/metabase/metabase-role-management360"
 import { roleManagement360AggregationStages } from "@/jobs/metabase/metabase-role-management360"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { createAuthMagicLink } from "./app-links.service"
+import { createAuthMagicLink, createCharteRedactionLink } from "./app-links.service"
 import { buildEstablishmentId } from "./etablissement.service"
 import mailer from "./mailer.service"
 import type { Organization, UserAndOrganization } from "./organization.service"
@@ -390,6 +390,8 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount, ro
   const jobsCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id })
   const hasJobs = jobsCount > 0
 
+  const utmCampaign = isCfa ? "mail-bienvenue-cfa" : "mail-bienvenue-entreprise"
+
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
@@ -406,7 +408,8 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount, ro
       establishment_name: organization.raison_sociale,
       publicEmail: config.publicEmail,
       isCfa,
-      utmCampaign: isCfa ? "mail-bienvenue-cfa" : "mail-bienvenue-entreprise",
+      utmCampaign,
+      charteRedactionUrl: createCharteRedactionLink(isCfa, utmCampaign),
     },
   })
 }

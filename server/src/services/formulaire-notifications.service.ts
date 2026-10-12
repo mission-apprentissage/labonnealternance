@@ -9,7 +9,7 @@ import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
-import { createViewDelegationLink } from "./app-links.service"
+import { createCharteRedactionLink, createViewDelegationLink } from "./app-links.service"
 import { buildEstablishmentId } from "./etablissement.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
@@ -95,6 +95,7 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
         workplace_siret,
       },
       lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, workplace_siret, job.offer_title),
+      charteRedactionUrl: createCharteRedactionLink(Boolean(is_delegated), is_delegated ? "mail-nouvelle-offre-cfa" : "mail-nouvelle-offre-entreprise"),
       publicEmail: config.publicEmail,
     },
   })
