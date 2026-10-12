@@ -108,11 +108,8 @@ const OrganizationInfoFields = ({
         tooltip={
           type === ENTREPRISE ? (
             <InfoTooltip label="Informations sur le SIRET Organisme">
-              La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en suivant{" "}
-              <DsfrLink href="https://www.insee.fr/fr/information/2015441">
-                la marche à suivre.
-                <span className="fr-sr-only">{" - Accès au site de l'INSEE"}</span>
-              </DsfrLink>
+              La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en vous rendant sur
+              https://www.insee.fr/fr/information/2015441
             </InfoTooltip>
           ) : (
             <InfoTooltip label="Informations sur le SIRET Organisme">
