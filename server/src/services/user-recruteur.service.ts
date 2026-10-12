@@ -406,6 +406,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount, ro
       establishment_name: organization.raison_sociale,
       publicEmail: config.publicEmail,
       isCfa,
+      utmCampaign: isCfa ? "mail-bienvenue-cfa" : "mail-bienvenue-entreprise",
     },
   })
 }
