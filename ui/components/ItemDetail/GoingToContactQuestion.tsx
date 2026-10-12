@@ -41,7 +41,7 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
       data-testid="GoingToContactQuestion"
     >
       <Typography sx={{ fontWeight: 700 }}>Allez-vous contacter {workplace} ?</Typography>
-      {/* Vide au chargement si la réponse est déjà enregistrée : seul le clic est annoncé. */}
+      {/* Déjà rempli au chargement si la réponse est enregistrée : seul le changement au clic est annoncé. */}
       <LiveStatus message={storedValue ? "Merci pour votre réponse !" : ""} />
       {storedValue ? (
         <Typography sx={{ fontWeight: 700 }}>
