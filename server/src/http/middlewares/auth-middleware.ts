@@ -14,6 +14,7 @@ import type {
 } from "fastify"
 import type { IRouteSchema, SecurityScheme, WithSecurityScheme } from "shared/routes/common.routes"
 
+import { setSentryUser } from "@/common/sentry/sentry.fastify"
 import { createAccessLog } from "@/security/access-log.service"
 import { authenticationMiddleware } from "@/security/authentication.service"
 import { authorizationMiddleware } from "@/security/authorisation.service"
@@ -24,6 +25,7 @@ export function auth<S extends IRouteSchema & WithSecurityScheme>(schema: S) {
   const authMiddleware = async (req: FastifyRequest) => {
     try {
       await authenticationMiddleware(schema, req)
+      setSentryUser(req)
       await authorizationMiddleware(schema, req)
       await createAccessLog(schema, req, true)
     } catch (error: any) {

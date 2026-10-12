@@ -47,7 +47,7 @@ describe("scrubSensitiveEventData", () => {
         url: "https://francetravail.io/offres/search",
         headers: { Authorization: "[Filtered]", Accept: "application/json" },
         params: { token: "[Filtered]" },
-        data: "grant_type=client_credentials&client_id=abc&client_secret=[Filtered]",
+        data: "[Filtered]",
       },
       response: { status: 500, data: { message: "erreur" } },
     })

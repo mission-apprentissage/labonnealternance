@@ -523,7 +523,7 @@ export const entrepriseOnboardingWorkflow = {
           },
           "Failed to send user confirmation email after enterprise account creation"
         )
-        sentryCaptureException(error, { extra: { userId: managingUser._id, email: managingUser.email } })
+        sentryCaptureException(error, { extra: { userId: managingUser._id } })
       }
     }
 
