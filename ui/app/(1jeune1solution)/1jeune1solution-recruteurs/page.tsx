@@ -2,14 +2,13 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
-import type { FormikHelpers } from "formik"
 import NextImage from "next/image"
 import { useRouter } from "next/navigation"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import Social from "@/app/(1jeune1solution)/components/Social"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { SiretAutocomplete } from "@/components/espace_pro/Authentification/SiretAutocomplete"
+import { SiretAutocomplete, type SiretSubmitHelpers } from "@/components/espace_pro/Authentification/SiretAutocomplete"
 import type { searchEntreprise } from "@/services/search-entreprises"
 import { getEntrepriseInformation, validateCfaCreation } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
@@ -22,7 +21,7 @@ const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=recruteurs_lan
 export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: string; onSelectOrganisation: (organisation: Organisation | null) => void }) => {
   const router = useRouter()
 
-  const submitSiret = ({ establishment_siret }: { establishment_siret: string }, { setSubmitting, setFieldError }: FormikHelpers<{ establishment_siret: string }>) => {
+  const submitSiret = ({ establishment_siret }: { establishment_siret: string }, { setSubmitting, setSiretError }: SiretSubmitHelpers) => {
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
 
     let nextUri = PAGES.dynamic.espaceProCreationDetail({ siret: formattedSiret, type: AUTHTYPE.ENTREPRISE, origin, isWidget: false }).getPath()
@@ -46,15 +45,15 @@ export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: s
                   if (statusCode >= 400 && statusCode < 500) {
                     const { reason } = errorData
                     if (reason === BusinessErrorCodes.ALREADY_EXISTS) {
-                      setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
+                      setSiretError("Ce numéro siret est déjà associé à un compte utilisateur.")
                     } else if (reason === BusinessErrorCodes.NOT_QUALIOPI) {
-                      setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
+                      setSiretError("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
                     } else if (reason === BusinessErrorCodes.CLOSED) {
-                      setFieldError("establishment_siret", "Le numéro siret indique un établissement fermé.")
+                      setSiretError("Le numéro siret indique un établissement fermé.")
                     } else if (reason === BusinessErrorCodes.UNKNOWN) {
-                      setFieldError("establishment_siret", "Le numéro siret n'est pas référencé comme centre de formation.")
+                      setSiretError("Le numéro siret n'est pas référencé comme centre de formation.")
                     } else if (reason === BusinessErrorCodes.UNSUPPORTED) {
-                      setFieldError("establishment_siret", "Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.")
+                      setSiretError("Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.")
                     }
                   }
                 }
@@ -62,7 +61,7 @@ export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: s
                 setSubmitting(false)
               })
           } else {
-            setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
+            setSiretError(entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
             setSubmitting(false)
           }
         }

@@ -7,7 +7,7 @@ import { Formik } from "formik"
 import { useEffect, useRef, useState } from "react"
 import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import AutocompleteAsync from "@/app/(espace-pro)/_components/AutocompleteAsync"
 import { SIRETValidation } from "@/common/validation/field-validations"
 import { searchEntreprise } from "@/services/search-entreprises"
@@ -16,10 +16,13 @@ type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
 const isInvalidSiret = (value: string | undefined) => /^[0-9]{14}$/.test(value ?? "") && !validateSIRET(value)
 
+/** `setSiretError` : erreur de l'API sur le SIRET, avec focus, maintenue tant que l'établissement choisi ne change pas. */
+export type SiretSubmitHelpers = FormikHelpers<{ establishment_siret: string }> & { setSiretError: (message: string) => void }
+
 type SiretAutocompleteProps = {
   label?: string
   onSelectOrganisation?: (organisation: Organisation) => void
-  onSubmit: (props: { establishment_siret: string }, formik: FormikHelpers<{ establishment_siret: string }>) => void
+  onSubmit: (props: { establishment_siret: string }, formik: SiretSubmitHelpers) => void
 }
 
 export const SiretAutocomplete = ({ onSubmit, ...props }: SiretAutocompleteProps) => {
@@ -49,6 +52,7 @@ export const SiretAutocomplete = ({ onSubmit, ...props }: SiretAutocompleteProps
 const SiretAutocompleteForm = ({ label = "Nom ou SIRET de votre établissement", onSelectOrganisation, onSubmit }: SiretAutocompleteProps) => {
   const formRef = useRef<HTMLFormElement>(null)
   const [selectedEntreprise, setSelectedEntreprise] = useState<Organisation | null>(null)
+  const serverFieldErrors = useServerFieldErrors()
   return (
     <Formik
       validateOnMount
@@ -57,7 +61,13 @@ const SiretAutocompleteForm = ({ label = "Nom ou SIRET de votre établissement",
         // la saisie seule ne renseigne pas la valeur : seule la sélection d'un résultat le fait (cf. onSelectItem)
         establishment_siret: SIRETValidation().required("Sélectionnez votre établissement dans la liste des résultats, par son nom ou son SIRET (14 chiffres, sans espace)"),
       })}
-      onSubmit={onSubmit}
+      validate={serverFieldErrors.validate}
+      onSubmit={(values, helpers) =>
+        onSubmit(values, {
+          ...helpers,
+          setSiretError: (message) => serverFieldErrors.setServerFieldError(helpers.setFieldError, "establishment_siret", values.establishment_siret, message),
+        })
+      }
     >
       {({ values, errors, touched, isSubmitting, setFieldValue, setFieldTouched, validateForm, setTouched, submitForm }) => {
         // Le bouton "Continuer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
