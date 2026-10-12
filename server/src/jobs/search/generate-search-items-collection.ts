@@ -60,13 +60,6 @@ const processCursorStream = async <T extends { _id: ObjectId }>(
 /** Une collection par mode de recherche, cf. getSearchCorpusCollection. */
 const SEARCH_INDEX_COLLECTIONS = ["search_jobs", "search_jobs_with_training", "search_trainings"] as const
 
-/**
- * Réconciliation complète des sources (formations, offres actives, recruteurs) vers
- * les collections par mode. Sert de batch initial ET de réconciliation nightly (cron ~06:00, après
- * processComputedAndImportToJobPartners) : rattrape tout ce que la sync incrémentale
- * (appels explicites + cron delta, cf. search-items.service.ts) aurait manqué, et purge
- * les documents orphelins (disparus des sources — suppressions physiques comprises).
- */
 const reconcileSearchItems = async () => {
   // _id présents AVANT le run : seuls ceux-là sont purgeables. Un item indexé pendant le run par
   // la sync incrémentale n'est pas dans les curseurs et ne doit pas être pris pour un orphelin.
@@ -198,5 +191,13 @@ const reconcileSearchItems = async () => {
   // search-items-keywords.service.ts.
 }
 
-// Un updateOne par item sur tout le corpus, cf. withoutChildSpans.
+/**
+ * Réconciliation complète des sources (formations, offres actives, recruteurs) vers
+ * les collections par mode. Sert de batch initial ET de réconciliation nightly (cron ~06:00, après
+ * processComputedAndImportToJobPartners) : rattrape tout ce que la sync incrémentale
+ * (appels explicites + cron delta, cf. search-items.service.ts) aurait manqué, et purge
+ * les documents orphelins (disparus des sources — suppressions physiques comprises).
+ *
+ * Un updateOne par item sur tout le corpus, cf. withoutChildSpans.
+ */
 export const fillSearchItemsCollection = () => withoutChildSpans(reconcileSearchItems)

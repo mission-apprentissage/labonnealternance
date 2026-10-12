@@ -149,7 +149,9 @@ const toUpsertOperation = (
 const failedIndexes = (err: unknown, batchSize: number): Map<number, unknown> => {
   if (err instanceof MongoBulkWriteError) {
     const writeErrors = [err.writeErrors].flat()
-    if (writeErrors.length > 0) return new Map(writeErrors.map((writeError) => [writeError.index, writeError.errmsg ?? writeError]))
+    // Une Error plutôt que errmsg : logger.error(chaîne, message) ne garderait que la chaîne.
+    if (writeErrors.length > 0)
+      return new Map(writeErrors.map((writeError) => [writeError.index, Object.assign(new Error(writeError.errmsg ?? "écriture refusée"), { code: writeError.code })]))
   }
   return new Map(Array.from({ length: batchSize }, (_, index) => [index, err]))
 }

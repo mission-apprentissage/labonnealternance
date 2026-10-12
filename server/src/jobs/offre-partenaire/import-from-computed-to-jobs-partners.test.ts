@@ -7,6 +7,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { getRootLogger } from "@/common/logger"
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import * as sentryUtils from "@/common/utils/sentry-utils"
@@ -354,6 +355,8 @@ describe("import par lots", () => {
     const succeeding = await createComputedJobPartner({ partner_job_id: "healthy_1", validated: true })
     // biome-ignore lint/suspicious/noEmptyBlockStatements: test
     vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
+    // `logger` est un Proxy vers l'instance racine hors requête HTTP : c'est elle qu'on espionne.
+    const loggerErrorSpy = vi.spyOn(getRootLogger(), "error")
 
     let importedIds: ObjectId[] = []
     const counters = await importFromComputedToJobsPartners(undefined, (ids) => {
@@ -368,6 +371,8 @@ describe("import par lots", () => {
     expect.soft(failingComputed?.errors.map((error) => error?.source)).toContain(COMPUTED_ERROR_SOURCE.DB_ERROR)
     const succeedingComputed = await getDbCollection("computed_jobs_partners").findOne({ _id: succeeding._id })
     expect.soft(succeedingComputed?.validated).toBe(true)
+    // pino ne sérialise que les Error : avec une chaîne en premier argument, le message de contexte serait perdu.
+    expect.soft(loggerErrorSpy).toHaveBeenCalledWith(expect.any(Error), expect.stringContaining("partner_job_id=corrupted_1"))
   })
 
   it("distingue deux offres de même partner_job_id chez deux partenaires dans le même lot", async () => {
