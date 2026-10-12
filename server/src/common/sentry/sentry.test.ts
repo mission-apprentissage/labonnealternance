@@ -3,6 +3,7 @@ import * as SentryNode from "@sentry/node"
 import axios from "axios"
 import FormData from "form-data"
 import nock from "nock"
+import { zRoutes } from "shared"
 import { afterEach, describe, expect, it } from "vitest"
 
 import { scrubSensitiveEventData } from "./sentry"
@@ -163,5 +164,80 @@ describe("getDiagnosticQuery", () => {
       search: "[Filtered]",
       email: "[Filtered]",
     })
+  })
+})
+
+// Classement revu de chaque paramètre de query déclaré par une route : un nouveau paramètre fait échouer
+// le test tant qu'il n'est pas classé. Un paramètre personnel ou secret va dans QUERY_PARAMS_MASKED et,
+// s'il n'est pas déjà masqué par son nom (cf. scrubSensitiveData), dans PERSONAL_QUERY_PARAMS.
+const QUERY_PARAMS_MASKED = ["apiKey", "search", "token"]
+const QUERY_PARAMS_KEPT = [
+  "activity_sector",
+  "admin_area",
+  "appointmentId",
+  "cfa_delegated_siret",
+  "cleMinistereEducatif",
+  "contract_type",
+  "departements",
+  "elligibleHandicapFilter",
+  "field",
+  "hitsPerPage",
+  "id",
+  "intention",
+  "internal",
+  "is_algo_company",
+  "is_disabled_elligible",
+  "itemId",
+  "label",
+  "latitude",
+  "level",
+  "limit",
+  "longitude",
+  "mode",
+  "offer_status",
+  "offset",
+  "opco",
+  "organization_name",
+  "page",
+  "partner_label",
+  "partners_to_exclude",
+  "q",
+  "radius",
+  "referrer",
+  "rncp",
+  "rome",
+  "romes",
+  "search_item",
+  "search_source",
+  "siret_formateur",
+  "skipUpdate",
+  "smart_apply",
+  "sort",
+  "source",
+  "start_date",
+  "start_type",
+  "status",
+  "target_diploma_level",
+  "title",
+  "type",
+  "type_filter_label",
+  "withRomeLabels",
+]
+
+describe("paramètres de query déclarés par les routes", () => {
+  const declared = new Set(
+    Object.values(zRoutes).flatMap((routes) => Object.values(routes).flatMap((route) => Object.keys((route as { querystring?: { shape?: object } }).querystring?.shape ?? {})))
+  )
+
+  it("sont tous classés", () => {
+    expect([...declared].sort()).toEqual([...QUERY_PARAMS_MASKED, ...QUERY_PARAMS_KEPT].sort())
+  })
+
+  it("ne gardent dans Sentry que la valeur des paramètres classés pour le diagnostic", () => {
+    const query = Object.fromEntries([...declared].map((key) => [key, `valeur-${key}`]))
+
+    const event = scrubSensitiveEventData({ extra: { query: getDiagnosticQuery(query, declared) } } as unknown as Sentry.ErrorEvent)
+
+    expect(event.extra?.query).toEqual(Object.fromEntries([...declared].map((key) => [key, QUERY_PARAMS_MASKED.includes(key) ? "[Filtered]" : `valeur-${key}`])))
   })
 })

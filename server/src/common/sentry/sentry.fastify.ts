@@ -33,7 +33,8 @@ function extractUserData(request: FastifyRequest): Sentry.User {
   assertUnreachable(userType)
 }
 
-// Recherche en texte libre de l'admin : nom ou e-mail d'un compte.
+// Recherche en texte libre de l'admin : nom ou e-mail d'un compte. Classement de tous les paramètres
+// déclarés : cf. QUERY_PARAMS_MASKED dans sentry.test.ts.
 const PERSONAL_QUERY_PARAMS: ReadonlySet<string> = new Set(["search"])
 
 /**
