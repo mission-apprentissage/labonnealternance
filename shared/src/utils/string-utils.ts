@@ -29,6 +29,9 @@ export const stringNormaliser = (str: string): string => {
     .replace(/\s+/g, " ")
 }
 
+/** Identifiant lisible et stable dérivé d'un libellé, en snake_case : "Fiche entreprise — utilité" -> "fiche_entreprise_utilite" */
+export const toSnakeCaseSlug = (str: string, maxLength = 80): string => stringNormaliser(str).replace(/ /g, "_").slice(0, maxLength).replace(/_+$/, "")
+
 const SANITIZED_ENTITIES: Record<string, string> = { "&amp;": "&", "&lt;": "<", "&gt;": ">" }
 
 /**
