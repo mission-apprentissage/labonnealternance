@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { useEffect, useSyncExternalStore } from "react"
+import { Suspense, useEffect, useSyncExternalStore } from "react"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 
 type Announcement = { message: string; role: "status" | "alert" }
@@ -52,20 +52,28 @@ const repeatAfterNavigation = () => {
 
 // Monté une fois dans le layout racine : il survit à la navigation qui suit souvent un toast.
 // notistack insère chaque toast avec son contenu, ce qu'une zone live ne restitue pas de façon fiable.
-export function ToastAnnouncer() {
+// usePathname hors <Suspense> bloque le prérendu (cacheComponents) : isolé ici pour que les zones live,
+// elles, restent dans le HTML initial.
+function NavigationWatcher() {
   const pathname = usePathname()
+  useEffect(() => {
+    repeatAfterNavigation()
+  }, [pathname])
+  return null
+}
+
+export function ToastAnnouncer() {
   const { message, role } = useSyncExternalStore(
     subscribe,
     () => current,
     () => EMPTY
   )
 
-  useEffect(() => {
-    repeatAfterNavigation()
-  }, [pathname])
-
   return (
     <>
+      <Suspense fallback={null}>
+        <NavigationWatcher />
+      </Suspense>
       <LiveStatus message={role === "status" ? message : ""} />
       <LiveStatus role="alert" message={role === "alert" ? message : ""} />
     </>
