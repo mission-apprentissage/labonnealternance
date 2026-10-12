@@ -1,13 +1,16 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { Formik, useFormikContext } from "formik"
+import parse from "html-react-parser"
 import { useRouter } from "next/navigation"
-import { useContext, useEffect, useRef } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { assertUnreachable, parseEnum } from "shared"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
@@ -54,6 +57,7 @@ const HandiEngagementValueSync = ({ hide, locked }: { hide: boolean; locked: boo
 const Formulaire = ({
   onSubmit,
   validate,
+  submitError,
   siret: establishment_siret,
   type,
   origin,
@@ -62,6 +66,8 @@ const Formulaire = ({
 }: {
   onSubmit: (values: any, { setSubmitting, setFieldError }: any) => void
   validate: ReturnType<typeof useServerFieldErrors>["validate"]
+  /** Erreur de l'API sans champ du formulaire auquel la rattacher (établissement : SIRET, état…). */
+  submitError: string | null
   siret: string
   type: "CFA" | "ENTREPRISE"
   origin: string
@@ -71,6 +77,13 @@ const Formulaire = ({
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
   const formRef = useRef<HTMLFormElement>(null)
+  const submitErrorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!submitError) return
+    submitErrorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+    submitErrorRef.current?.focus({ preventScroll: true })
+  }, [submitError])
 
   const { data: opcoData } = useQuery({
     queryKey: ["getEntrepriseOpco", establishment_siret],
@@ -168,6 +181,12 @@ const Formulaire = ({
                       disabled={isHandiEngagementLocked}
                     />
                   )}
+                  {submitError && (
+                    <Box ref={submitErrorRef} tabIndex={-1} sx={{ mt: fr.spacing("4v") }}>
+                      {/* parse : le message « non diffusible » du serveur contient un lien vers le support */}
+                      <Alert severity="error" small description={parse(submitError)} />
+                    </Box>
+                  )}
                 </>
               }
               right={
@@ -215,8 +234,10 @@ export const InformationCreationCompte = ({
 }) => {
   const router = useRouter()
   const serverFieldErrors = useServerFieldErrors()
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const submitForm = (values: any, { setSubmitting, setFieldError, setFieldValue }: any) => {
+    setSubmitError(null)
     const phone = toSubmittedPhone(values.phone)
     setFieldValue("phone", phone, false)
     const payload = { ...values, phone, type, establishment_siret }
@@ -266,16 +287,29 @@ export const InformationCreationCompte = ({
         setSubmitting(false)
       })
       .catch((error) => {
-        if (error instanceof ApiError) {
+        setSubmitting(false)
+        // errorCode (parcours entreprise) ou reason (parcours CFA), selon la route
+        const errorCode = error instanceof ApiError ? (error.context.errorData?.errorCode ?? error.context.errorData?.reason) : undefined
+        if (errorCode === BusinessErrorCodes.ALREADY_EXISTS || errorCode === BusinessErrorCodes.ROLE_DENIED) {
           serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, error.message)
-          setSubmitting(false)
+          return
         }
+        setSubmitError(error instanceof ApiError && error.message ? error.message : "La création du compte n'a pas abouti. Veuillez réessayer ultérieurement.")
       })
   }
 
   return (
     <AnimationContainer>
-      <Formulaire onSubmit={submitForm} validate={serverFieldErrors.validate} siret={establishment_siret} type={type} origin={origin} email={email} viewerType={type} />
+      <Formulaire
+        onSubmit={submitForm}
+        validate={serverFieldErrors.validate}
+        submitError={submitError}
+        siret={establishment_siret}
+        type={type}
+        origin={origin}
+        email={email}
+        viewerType={type}
+      />
     </AnimationContainer>
   )
 }
