@@ -409,7 +409,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount, ro
       siret: organization.siret,
       publicEmail: config.publicEmail,
       isCfa,
-      utmCampaign,
+      lbaHomeUrl: `${config.publicUrl}/?utm_source=lba&utm_medium=email&utm_campaign=${utmCampaign}`,
       charteRedactionUrl: createCharteRedactionLink(isCfa, utmCampaign),
     },
   })
