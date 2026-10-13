@@ -74,9 +74,10 @@ describe("applyLegacySearchParams", () => {
       expect(translate("job_name=Boulanger&scrollToRecruteursLba=true")).toEqual({ q: "Boulanger", is_algo_company: "true" })
     })
 
-    it("conserve les utm et le caller, retire les paramètres legacy sans équivalent", () => {
+    it("conserve les utm, le caller et l'OPCO, retire les paramètres legacy sans équivalent", () => {
       expect(translate("job_name=Boulanger&romes=D1102&opco=akto&rncp=RNCP123&displayFilters=false&activeItems=x&utm_source=lba-brevo&caller=1jeune1solution")).toEqual({
         q: "Boulanger",
+        opco: "akto",
         utm_source: "lba-brevo",
         caller: "1jeune1solution",
       })

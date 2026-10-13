@@ -388,7 +388,6 @@ const CORPUS = [
     publication_date: new Date("2026-07-12T08:14:04.000Z"),
     is_algo_company: true,
     opco: OPCOS_LABEL.ATLAS,
-    opco_url: "www.concepteursdavenirs.fr",
   }),
   generateSearchItemFixture({
     url_id: "offre-conducteur-travaux",
@@ -1085,12 +1084,6 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       const result = await search({ q: "conduite de travaux", opco: OPCOS_LABEL.CONSTRUCTYS })
 
       expect(ids(result)).toEqual(["offre-conducteur-travaux"])
-    })
-
-    it("opcoUrl : uniquement les offres des entreprises de la branche du site", async () => {
-      const result = await search({ q: "conduite de travaux", opcoUrl: "www.concepteursdavenirs.fr" })
-
-      expect(ids(result)).toEqual(["recruteur-travaux"])
     })
 
     it("opco : sans effet sur les formations, qui n'ont pas d'OPCO", async () => {

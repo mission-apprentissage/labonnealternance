@@ -118,7 +118,7 @@ export type ILbaItemCompanyHQ = z.output<typeof ZLbaItemCompanyHQ>
 
 const ZLbaItemOpco = z.strictObject({
   label: z.string().nullable(), // lba -> opco
-  url: z.string().nullable(), // lba -> opco_url
+  url: z.string().nullable(),
 })
 
 export type ILbaItemOpco = z.output<typeof ZLbaItemOpco>

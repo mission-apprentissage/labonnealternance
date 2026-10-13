@@ -178,15 +178,15 @@ describe("searchItems.service — synchronisation jobs_partners → index de rec
       expect(doc?.address).toBe("3 place du Four 75012 Paris")
     })
 
-    it("indexe l'OPCO de l'entreprise et le site d'OPCO déduit de son IDCC", async () => {
-      const job = generateJobsPartnersOfferPrivate({ workplace_opco: OPCOS_LABEL.ATLAS, workplace_idcc: 787 })
-      const sansIdcc = generateJobsPartnersOfferPrivate({ workplace_opco: null, workplace_idcc: null })
-      await getDbCollection("jobs_partners").insertMany([job, sansIdcc])
+    it("indexe l'OPCO de l'entreprise", async () => {
+      const job = generateJobsPartnersOfferPrivate({ workplace_opco: OPCOS_LABEL.ATLAS })
+      const sansOpco = generateJobsPartnersOfferPrivate({ workplace_opco: null })
+      await getDbCollection("jobs_partners").insertMany([job, sansOpco])
 
-      await upsertJobPartnersToSearchItems([job._id, sansIdcc._id])
+      await upsertJobPartnersToSearchItems([job._id, sansOpco._id])
 
-      expect(await findIndexed(job._id)).toMatchObject({ opco: OPCOS_LABEL.ATLAS, opco_url: "www.jecompte.fr" })
-      expect(await findIndexed(sansIdcc._id)).toMatchObject({ opco: null, opco_url: null })
+      expect(await findIndexed(job._id)).toMatchObject({ opco: OPCOS_LABEL.ATLAS })
+      expect(await findIndexed(sansOpco._id)).toMatchObject({ opco: null })
     })
 
     it("préserve les keywords Mistral lors d'un ré-upsert", async () => {

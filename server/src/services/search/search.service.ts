@@ -134,7 +134,6 @@ interface ISearchFilters {
   admin_area?: string
   /** Libellé d'OPCO (cf. route `/v1/search`, qui le déduit de la clé courte). */
   opco?: string
-  opcoUrl?: string
 }
 
 interface ISearchFacets {
@@ -420,12 +419,9 @@ function buildGeoClause(filters: ISearchFilters): object | null {
 }
 
 // Filtre OPCO : offres d'emploi seulement, les formations n'ont pas d'OPCO (cf. opco-search-filter).
-function buildOpcoClauses({ opco, opcoUrl }: ISearchFilters, corpus: SearchCorpus): object[] {
-  if (corpus === SEARCH_CORPORA.formations) return []
-  const clauses: object[] = []
-  if (opco) clauses.push({ equals: { path: "opco", value: opco } })
-  if (opcoUrl) clauses.push({ equals: { path: "opco_url", value: opcoUrl } })
-  return clauses
+function buildOpcoClauses({ opco }: ISearchFilters, corpus: SearchCorpus): object[] {
+  if (!opco || corpus === SEARCH_CORPORA.formations) return []
+  return [{ equals: { path: "opco", value: opco } }]
 }
 
 function buildCompoundOperator(filters: ISearchFilters, corpus: SearchCorpus, simplifyQuery: boolean) {

@@ -1,7 +1,7 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query"
 
 import { apiGet } from "@/utils/api.utils"
-import { readOpcoFilterQuerystring } from "@/utils/opco-search-filter.utils"
+import { readOpcoFilterCookie } from "@/utils/opco-search-filter.utils"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 
@@ -33,14 +33,16 @@ export function paramsToQuerystring(params: ISearchPageParams) {
   if (params.latitude !== undefined) qs.latitude = params.latitude
   if (params.longitude !== undefined) qs.longitude = params.longitude
   if (params.admin_area) qs.admin_area = params.admin_area
+  if (params.opco) qs.opco = params.opco
   return qs
 }
 
 export function useSearchResults(params: ISearchPageParams, { enabled = true }: { enabled?: boolean } = {}) {
   // page exclu du queryKey — chaque page est chargée via pageParam par useInfiniteQuery.
-  // Filtre OPCO de session hors de l'URL de page (cf. applyOpcoFilterFromUrl). Absent au rendu
-  // serveur, sans effet sur le balisage : la requête ne part que du navigateur.
-  const baseQs = { ...paramsToQuerystring(params), ...(typeof document === "undefined" ? {} : readOpcoFilterQuerystring(document.cookie)) }
+  // Sans `opco` dans l'URL, repli sur le cookie de session (cf. applyOpcoFilterFromUrl). Absent au
+  // rendu serveur, sans effet sur le balisage : la requête ne part que du navigateur.
+  const opco = params.opco ?? (typeof document === "undefined" ? undefined : readOpcoFilterCookie(document.cookie))
+  const baseQs = paramsToQuerystring({ ...params, opco })
 
   return useInfiniteQuery({
     queryKey: ["/v1/search", baseQs],
