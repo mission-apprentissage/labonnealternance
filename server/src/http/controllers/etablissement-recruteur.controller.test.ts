@@ -7,12 +7,13 @@ import { roleManagementEventFactory, saveAdminUserTest, saveCfaUserTest, saveRol
 import { ObjectId } from "bson"
 import { omit } from "lodash-es"
 import nock from "nock"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { UserEventType } from "shared/models/index"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
-import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import { AccessEntityType, AccessStatus, ROLE_OPCO_NOT_APPLICABLE } from "shared/models/role-management.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/api-referentiel-catalogue.fixture"
@@ -34,7 +35,7 @@ vi.mock("@/services/mailer.service", () => {
 // (GRANTED) — rendant les tests dépendants d'un réseau externe non maîtrisé. Forcé à false : aucun des
 // tests existants de ce fichier n'asserte sur le statut du rôle, seuls les tests handiEngagement en ont besoin.
 vi.mock("@/services/bal.service", () => ({
-  validationOrganisation: vi.fn().mockResolvedValue({ is_valid: false }),
+  validationOrganisation: vi.fn().mockResolvedValue({ status: "invalid" }),
 }))
 
 describe("POST /etablissement/creation", () => {
@@ -125,6 +126,15 @@ describe("POST /etablissement/creation", () => {
       })
       const { formulaire: formulaire2 } = response2.json() as CreationResponse
       expect.soft(formulaire2?.opco).toBe(OPCOS_LABEL.AKTO)
+    })
+
+    it("fige sur le rôle l'OPCO de l'entreprise, y compris celui posé par l'inscription", async () => {
+      const response = await callCreation(defaultCreationEntreprisePayload)
+      const response2 = await callCreation({ ...defaultCreationEntreprisePayload, email: "email2@email.com", opco: OPCOS_LABEL.CONSTRUCTYS })
+      const users = [response, response2].map((res) => (res.json() as CreationResponse).user)
+
+      const roles = await Promise.all(users.map((user) => getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(user._id) })))
+      expect(roles.map((role) => role?.opco_at_creation)).toEqual([OPCOS_LABEL.AKTO, OPCOS_LABEL.AKTO])
     })
 
     it("Vérifie qu'un email ne peut pas créer plusieurs comptes", async () => {
@@ -278,12 +288,21 @@ describe("POST /etablissement/creation", () => {
       expect.soft(omit(user, ["_id", "createdAt", "updatedAt", "last_action_date", "status"])).toMatchSnapshot()
       expect.soft(user.status[0].status).toBe(UserEventType.ACTIF)
     })
+    it("stocke « sans objet » comme OPCO du rôle CFA", async () => {
+      const response = await callCreation(defaultCreationCFAPayload)
+      const { user } = response.json() as CreationResponse
+
+      const role = await getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(user._id) })
+      expect(role?.opco_at_creation).toBe(ROLE_OPCO_NOT_APPLICABLE)
+    })
+
     it("Vérifie qu un email ne peut pas créer 2 comptes CFA", async () => {
       const response = await callCreation(defaultCreationCFAPayload)
       expect.soft(response.statusCode).toBe(200)
       const response2 = await callCreation({ ...defaultCreationCFAPayload, establishment_siret: "13002172800261" })
       expect.soft(response2.statusCode).toBe(403)
       expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
+      expect.soft(response2.json().data.reason).toBe(BusinessErrorCodes.ALREADY_EXISTS)
     })
     it("Vérifie que 2 emails ne peuvent pas avoir un compte sur le même CFA", async () => {
       const response = await callCreation(defaultCreationCFAPayload)
@@ -291,6 +310,7 @@ describe("POST /etablissement/creation", () => {
       const response2 = await callCreation({ ...defaultCreationCFAPayload, email: "email2@email.fr" })
       expect.soft(response2.statusCode).toBe(403)
       expect.soft(response2.json().message).toBe("Ce numéro siret est déjà associé à un compte utilisateur.")
+      expect.soft(response2.json().data.reason).toBe(BusinessErrorCodes.SIRET_ALREADY_EXISTS)
     })
     it("Vérifie qu'un email ne peut pas créer un compte si l utilisateur existe déjà", async () => {
       // given

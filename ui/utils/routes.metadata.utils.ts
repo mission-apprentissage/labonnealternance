@@ -275,6 +275,12 @@ export const METADATA = {
     backAdminGestionDesOffresPartenaires: () => ({
       title: "Offres partenaires - La bonne alternance",
     }),
+    backAdminFeedbackForms: () => ({
+      title: "Formulaires de feedback - La bonne alternance",
+    }),
+    backAdminFeedbackFormCreation: () => ({
+      title: "Créer un formulaire de feedback - La bonne alternance",
+    }),
     backOpcoHome: () => ({
       title: "Accueil espace OPCO - La bonne alternance",
     }),
@@ -390,6 +396,15 @@ export const METADATA = {
     }),
     adminProcessorCronTask: (props: { name: string; id: string }): Metadata => ({
       title: `Tâche CRON ${props.id} - La bonne alternance`,
+    }),
+    backAdminFeedbackFormDetail: (): Metadata => ({
+      title: "Résultats d'un formulaire de feedback - La bonne alternance",
+    }),
+    backAdminFeedbackFormEdit: (): Metadata => ({
+      title: "Modifier un formulaire de feedback - La bonne alternance",
+    }),
+    backAdminFeedbackFormPreview: (): Metadata => ({
+      title: "Prévisualiser un formulaire de feedback - La bonne alternance",
     }),
   },
 } as const satisfies {
