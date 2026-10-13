@@ -1,4 +1,5 @@
 import type { Jsonify } from "type-fest"
+import { OPCOS_LABEL } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 
@@ -22,7 +23,9 @@ export enum AccessStatus {
 }
 
 export const ZRoleManagementEvent = z.strictObject({
-  validation_type: ZValidationUtilisateur.describe("Indique si l'action est ordonnée par un utilisateur ou le serveur"),
+  validation_type: ZValidationUtilisateur.describe(
+    "Auteur de l'action : AUTOMATIQUE si le serveur l'a ordonnée, MANUELLE si un utilisateur (admin, OPCO). Ne dit pas comment le rôle a été résolu : c'est le rôle de `reason`, à lire avec `status`."
+  ),
   status: extensions.buildEnum(AccessStatus).describe("Statut de l'accès"),
   reason: z.string().describe("Raison du changement de statut"),
   date: z.date().describe("Date de l'évènement"),
@@ -30,6 +33,9 @@ export const ZRoleManagementEvent = z.strictObject({
 })
 
 export const ZAccessEntityType = extensions.buildEnum(AccessEntityType)
+
+/** Valeur de `opco_at_creation` pour un rôle CFA : un CFA n'a pas d'OPCO, à ne pas confondre avec une entreprise à l'OPCO inconnu. */
+export const ROLE_OPCO_NOT_APPLICABLE = "sans objet" as const
 
 const collectionName = "rolemanagements" as const
 
@@ -45,6 +51,12 @@ export const ZRoleManagement = z.strictObject({
     .enum(HANDI_ENGAGEMENT_VALUES)
     .nullish()
     .describe("Choix (ENTREPRISE) déclaré à la création du compte de valoriser l'engagement handicap referentiel_engagement_entreprise"),
+  opco_at_creation: z
+    .union([extensions.buildEnum(OPCOS_LABEL), z.literal(ROLE_OPCO_NOT_APPLICABLE)])
+    .optional()
+    .describe(
+      "OPCO de l'entreprise figé à la création du rôle : « inconnu » si aucun, « sans objet » pour un CFA. Absent sur les rôles OPCO et ADMIN, et sur les rôles créés avant ce champ (pas de reprise : l'OPCO de l'époque n'est pas connu)."
+    ),
 })
 
 export type IRoleManagement = z.output<typeof ZRoleManagement>
@@ -60,6 +72,7 @@ export default {
     [{ user_id: 1, authorized_id: 1, authorized_type: 1 }, { unique: true }],
     [{ "status.status": 1 }, {}],
     [{ "status.date": 1 }, {}],
+    [{ authorized_type: 1, createdAt: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
