@@ -406,6 +406,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount, ro
       confirmation_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
       email: sanitizeTextField(user.email),
       establishment_name: organization.raison_sociale,
+      siret: organization.siret,
       publicEmail: config.publicEmail,
       isCfa,
       utmCampaign,
