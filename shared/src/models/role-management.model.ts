@@ -62,6 +62,7 @@ export default {
     [{ user_id: 1, authorized_id: 1, authorized_type: 1 }, { unique: true }],
     [{ "status.status": 1 }, {}],
     [{ "status.date": 1 }, {}],
+    [{ authorized_type: 1, createdAt: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

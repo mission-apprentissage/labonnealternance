@@ -62,6 +62,7 @@ import { removeEligibleTrainingsForAppointmentsNotInCatalogue } from "./rdv/remo
 import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
+import { autoValidationRateAlert } from "./recruiters/auto-validation-rate-alert"
 import { createApiUser } from "./recruiters/create-api-user"
 import { disableApiUser } from "./recruiters/disable-api-user"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
@@ -116,6 +117,11 @@ export async function setupJobProcessor() {
           "Clôture des offres jobs_partners au seuil de candidatures": {
             cron_string: "*/30 * * * *",
             handler: async () => closeJobsPartnersOnApplicationThreshold(),
+            tag: "main",
+          },
+          "Alerte sur le taux d'auto-validation des comptes": {
+            cron_string: "0 7 * * *",
+            handler: async () => autoValidationRateAlert(),
             tag: "main",
           },
           "Mise à jour des adresses emails bloquées": {

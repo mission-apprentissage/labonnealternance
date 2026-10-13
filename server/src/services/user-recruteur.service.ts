@@ -22,6 +22,7 @@ import type { RoleManagement360Document } from "@/jobs/metabase/metabase-role-ma
 import { roleManagement360AggregationStages } from "@/jobs/metabase/metabase-role-management360"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createAuthMagicLink } from "./app-links.service"
+import { AUTO_VALIDATION_REFUSED_REASON } from "./auto-validation-reasons"
 import { buildEstablishmentId } from "./etablissement.service"
 import mailer from "./mailer.service"
 import type { Organization, UserAndOrganization } from "./organization.service"
@@ -367,7 +368,7 @@ export const autoValidateUser = async (props: UserAndOrganization, reason: strin
   await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED, reason)
 }
 
-export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, reason = "pas de validation automatique possible") => {
+export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, reason = AUTO_VALIDATION_REFUSED_REASON) => {
   await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION, reason)
 }
 
