@@ -9,7 +9,7 @@ import { OPCOS_LABEL } from "../constants/recruteur.js"
 export const OPCO_FILTER_PARAM = "opco"
 
 // « inconnu » et « OPCO multiple » ne désignent pas un OPCO : pas de clé de filtre.
-const OPCO_FILTER_KEYS = [
+export const OPCO_FILTER_KEYS = [
   "AFDAS",
   "AKTO",
   "ATLAS",

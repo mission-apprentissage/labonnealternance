@@ -18,7 +18,8 @@ export function applyOpcoFilterFromUrl(searchParams: URLSearchParams, cookies: N
   if (!searchParams.has(OPCO_FILTER_PARAM)) return
   const raw = searchParams.get(OPCO_FILTER_PARAM)
   if (!raw?.trim()) {
-    cookies.set(OPCO_FILTER_COOKIE_NAME, "", { ...OPCO_FILTER_COOKIE_OPTIONS, maxAge: 0 })
+    // `expires` et non `maxAge: 0` : Next réémet un second Set-Cookie sans Max-Age, qui recrée un cookie vide.
+    cookies.set(OPCO_FILTER_COOKIE_NAME, "", { ...OPCO_FILTER_COOKIE_OPTIONS, expires: new Date(0) })
     return
   }
   const opco = parseOpcoFilter(raw)

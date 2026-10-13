@@ -26,7 +26,10 @@ describe("applyOpcoFilterFromUrl", () => {
   })
 
   it("retire le filtre sur un paramètre vide", () => {
-    expect(apply("opco=").get(OPCO_FILTER_COOKIE_NAME)).toMatchObject({ value: "", maxAge: 0 })
+    const cookie = apply("opco=").get(OPCO_FILTER_COOKIE_NAME)
+
+    expect(cookie?.value).toBe("")
+    expect(cookie?.expires).toEqual(new Date(0))
   })
 })
 
