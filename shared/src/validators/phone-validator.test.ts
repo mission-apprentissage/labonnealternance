@@ -29,5 +29,8 @@ describe("toFrenchNationalPhone", () => {
     ["+32470123456", "belge, 10 chiffres en national mais hors plan français"],
     ["+447400123456", "britannique"],
     ["+687123456", "calédonien, 6 chiffres"],
+    ["+33 6 30 10 41 52ssss", "lettres en fin de saisie"],
+    ["06a12345678", "lettre au milieu"],
+    ["tel: 0612345678", "texte autour du numéro"],
   ])("refuse %s (%s)", (phone) => expect(toFrenchNationalPhone(phone)).toBeNull())
 })

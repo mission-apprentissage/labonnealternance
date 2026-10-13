@@ -3,9 +3,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
+import { emitFeedbackEvent } from "@/components/feedback/feedbackEvents"
 import { useSubmitCandidature } from "@/components/ItemDetail/CandidatureLba/services/submit-candidature"
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import { notifyJobPostulerV3 } from "@/utils/api"
@@ -34,8 +35,15 @@ export function CandidaterButton({
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)
   const { applicationDate } = submitControls
-  const { onOpen } = modalControls
+  const { onOpen, isOpen } = modalControls
   const kind = item.ideaType
+
+  // formulaire de candidature fermé sans avoir été envoyé : peut déclencher un formulaire de feedback
+  const wasOpen = useRef(false)
+  useEffect(() => {
+    if (wasOpen.current && !isOpen && !submitControls.isSuccess) emitFeedbackEvent("application_abandoned")
+    wasOpen.current = isOpen
+  }, [isOpen, submitControls.isSuccess])
 
   const openApplicationForm = () => {
     // re-instancie la modal

@@ -17,17 +17,19 @@ export const EntreprisesGereesParCfaMenu = ({
   setCurrentEntreprise: (entreprise: IRecruiterJson | null) => void
   confirmationSuppression: { onOpen: () => void }
 }) => {
+  // cf. administration/users/_component/UserMenu
+  const entrepriseLabel = row.establishment_raison_sociale || `SIRET ${row.establishment_siret}`
   const actions: PopoverMenuAction[] = [
     {
       label: "Voir les informations",
-      hint: `${row.establishment_raison_sociale}`,
+      hint: entrepriseLabel,
       link: `${PAGES.dynamic.backAdminUserCfaEntreprise({ user_id: userId, establishment_id: row.establishment_id }).getPath()}?cfaId=${cfaId}`,
       type: "link",
       icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
     },
     {
       label: "Supprimer l'entreprise",
-      hint: `${row.establishment_raison_sociale}`,
+      hint: entrepriseLabel,
       onClick: () => {
         confirmationSuppression.onOpen()
         setCurrentEntreprise(row)
@@ -36,5 +38,5 @@ export const EntreprisesGereesParCfaMenu = ({
       icon: <DsfrIcon name="fr-icon-delete-line" size={16} />,
     },
   ]
-  return <PopoverMenu actions={actions} title={`Actions sur l'entreprise ${row.establishment_raison_sociale}`} />
+  return <PopoverMenu actions={actions} title={`Actions sur l'entreprise ${entrepriseLabel}`} />
 }

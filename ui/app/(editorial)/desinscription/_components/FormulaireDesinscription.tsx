@@ -9,9 +9,9 @@ import { FormikContext, useFormik } from "formik"
 import { useRef, useState } from "react"
 import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
-
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
 import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { emailValidation } from "@/common/validation/field-validations"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { publicConfig } from "@/config.public"
@@ -187,7 +187,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
   const formik = useFormik({
     validationSchema: Yup.object().shape({
       reason: Yup.string().required("Sélectionnez un motif"),
-      email: Yup.string().email("Saisissez une adresse e-mail valide, par exemple nom@domaine.fr").required("Saisissez l’e-mail de l’établissement"),
+      email: emailValidation().required("Saisissez l’e-mail de l’établissement"),
     }),
     initialValues: { email: companyEmail ?? "", reason: "" },
     onSubmit: onUnsubscribeSubmit,
