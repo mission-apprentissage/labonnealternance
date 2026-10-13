@@ -71,7 +71,7 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
   const establishmentTitle = workplace_name || workplace_siret
   await mailer.sendEmail({
     to: email,
-    subject: raisonSocialeEntreprise ? `Votre offre d'alternance pour ${raisonSocialeEntreprise} publiée` : "Votre offre d'alternance est publiée",
+    subject: raisonSocialeEntreprise ? `Votre offre d'alternance pour ${raisonSocialeEntreprise} est publiée` : "Votre offre d'alternance est publiée",
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
