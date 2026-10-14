@@ -32,19 +32,15 @@ export enum JOB_STATUS_ENGLISH {
  * (cf. resolveEspaceProClosureOrigin) : les quatre rôles passent par la même route, et ne pas les
  * distinguer revenait à ranger l'annulation d'un administrateur avec celle du recruteur lui-même.
  *
- * Les valeurs ESPACE_PRO_* ne concernent que les offres OFFRES_EMPLOI_LBA, seules gérées depuis
- * l'espace pro. MAIL_RECRUTEUR couvre en plus les offres partenaires : le lien envoyé au recruteur
- * est le même, seule la route appelée derrière change selon le type d'offre.
+ * Ces valeurs ne concernent que les offres OFFRES_EMPLOI_LBA. Des offres partenaires portent
+ * MAIL_RECRUTEUR dans leur historique : elles ont été closes par une route supprimée depuis (#5563).
  */
 export enum JOB_CLOSURE_ORIGIN {
   /**
-   * Routes en access-token, atteintes depuis la page `(from-mail)` où le lien du mail dépose le
-   * recruteur : PUT /formulaire/offre/:jobId/cancel et /provided pour les offres LBA, POST
-   * /v2/_private/jobs/canceled|provided/:id pour les offres partenaires. Un même jeton, signé par
-   * createCancelJobLink / createProvidedJobLink, porte les scopes des deux familles de routes et est
-   * lié à l'identifiant de l'offre : malgré leur préfixe v2, ces routes ne sont pas une API ouverte
-   * aux partenaires. Libellé volontairement neutre : le même canal porte l'annulation et la
-   * déclaration « offre pourvue ».
+   * PUT /formulaire/offre/:jobId/cancel en access-token, appelée par le formulaire de clôture de la
+   * page `(from-mail)` où le lien du mail dépose le recruteur. Le jeton, signé par
+   * createCancelJobLink, est lié à l'identifiant de l'offre. Libellé volontairement neutre : le
+   * formulaire déclare l'offre annulée ou pourvue.
    */
   MAIL_RECRUTEUR = "action du recruteur depuis un mail",
   ESPACE_PRO_RECRUTEUR = "clôture par le recruteur depuis l'espace pro",

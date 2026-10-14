@@ -12,7 +12,7 @@ import type { z } from "shared/helpers/zod-with-open-api"
 import type { zRoutes } from "shared/routes/index"
 import { expect } from "vitest"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { createCancelJobLink, createProvidedJobLink, createValidationMagicLink, generateDepotSimplifieToken } from "@/services/app-links.service"
+import { createCancelJobLink, createValidationMagicLink, generateDepotSimplifieToken } from "@/services/app-links.service"
 
 export type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creation"]["body"]>
 export type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>
@@ -125,19 +125,6 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
         Authorization: `Bearer ${token}`,
       },
       body,
-    })
-    return response
-  },
-  async providedOffer({ jobId, user }: { jobId: string; user: IUserWithAccount }) {
-    const url = createProvidedJobLink(userWithAccountToUserForToken(user), jobId, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
-    const token = new URL(url).searchParams.get("token")
-
-    const response = await httpClient().inject({
-      method: "PUT",
-      path: `/api/formulaire/offre/${jobId}/provided`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     })
     return response
   },

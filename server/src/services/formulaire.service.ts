@@ -15,7 +15,7 @@ import type {
   IUserRecruteur,
   zRoutes,
 } from "shared"
-import { assertUnreachable, JOB_CLOSURE_ORIGIN, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, removeAccents } from "shared"
+import { assertUnreachable, type JOB_CLOSURE_ORIGIN, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, removeAccents } from "shared"
 import { EntrepriseErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
@@ -63,7 +63,6 @@ type ISentDelegation = {
 
 export interface IOffreExtended extends IJob {
   candidatures: number
-  pourvue: string
   supprimer: string
 }
 
@@ -729,23 +728,6 @@ export const updateJobDelegation = async (jobId: ObjectId, delegation: IDelegati
     ],
     { ordered: true }
   )
-}
-
-export const provideOffre = async (id: ObjectId): Promise<void> => {
-  const now = new Date()
-  const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
-    buildJobStatusChangeUpdate({
-      status: JOB_STATUS_ENGLISH.POURVUE,
-      reason: "offre déclarée pourvue par le recruteur",
-      grantedBy: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
-      date: now,
-    })
-  )
-  if (!found) {
-    throw new Error(`could not find lba offer with id=${id}`)
-  }
-  syncJobPartnersToSearchItemsInBackground([id])
 }
 
 /**

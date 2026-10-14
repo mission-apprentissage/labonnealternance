@@ -317,22 +317,6 @@ export const zFormulaireRoute = {
         },
       },
     },
-    "/formulaire/offre/:jobId/provided": {
-      method: "put",
-      path: "/formulaire/offre/:jobId/provided",
-      params: z.strictObject({ jobId: zObjectId }),
-      response: {
-        "2xx": z.strictObject({}),
-        "400": z.union([ZResError, zInvalidRessourceError]),
-      },
-      securityScheme: {
-        auth: "access-token",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-    },
     "/formulaire/offre/:jobId/extend": {
       method: "put",
       path: "/formulaire/offre/:jobId/extend",

@@ -19,7 +19,6 @@ import {
   getFormulaireWithRomeDetailAndApplicationCount,
   getJobWithRomeDetail,
   patchOffre,
-  provideOffre,
   updateCfaManagedRecruiter,
   updateJobDelegation,
   validateDelegatedCompanyPhoneAndEmail,
@@ -406,27 +405,6 @@ export default (server: Server) => {
         id: req.params.jobId,
       })
       return res.status(200).send({ alreadyClosed })
-    }
-  )
-
-  /**
-   * Permet de passer une offre en statut POURVUE (mail transactionnel)
-   */
-  server.put(
-    "/formulaire/offre/:jobId/provided",
-    {
-      schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
-      onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/provided"])],
-    },
-    async (req, res) => {
-      const { jobId } = req.params
-      const exists = await checkOffreExists(jobId)
-      if (!exists) {
-        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
-      }
-      await provideOffre(jobId)
-      await validateUserEmailFromJobId(jobId)
-      return res.status(200).send({})
     }
   )
 

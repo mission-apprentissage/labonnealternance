@@ -36,7 +36,6 @@ import {
   getFormulaireWithRomeDetail,
   jobPartnersToRecruiter,
   normalizeOfferOrigin,
-  provideOffre,
 } from "./formulaire.service"
 import mailer from "./mailer.service"
 
@@ -824,19 +823,6 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
           job_status_comment: "Je ne suis plus en recherche",
         })
       ).rejects.toThrow(/could not find lba offer/)
-    })
-  })
-
-  describe("provideOffre", () => {
-    it("trace le passage en pourvue", async () => {
-      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId())
-
-      await provideOffre(id)
-
-      const job = await readOffer(id)
-      expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.POURVUE)
-      expect.soft(job.offer_status_history).toHaveLength(1)
-      expect.soft(job.offer_status_history[0]).toMatchObject({ status: JOB_STATUS_ENGLISH.POURVUE, granted_by: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR })
     })
   })
 
