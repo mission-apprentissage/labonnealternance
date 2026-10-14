@@ -63,6 +63,18 @@ describe("jobs.controller", () => {
         expect.soft(response.json().contact.phone).toBe("0600000000")
       })
 
+      it("n'a pas de fiche pour une offre en modération (#5498)", async () => {
+        const job = generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: JOB_STATUS_ENGLISH.EN_MODERATION })
+        await getDbCollection("jobs_partners").insertOne(job)
+
+        const response = await httpClient().inject({
+          method: "GET",
+          path: `/api/_private/jobs/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job._id.toString()}`,
+        })
+
+        expect(response.statusCode).toBe(404)
+      })
+
       it.each([JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.POURVUE, JOB_STATUS_ENGLISH.EN_ATTENTE])("ne remonte pas le téléphone si l'offre est %s", async (offer_status) => {
         const job = generateJobsPartnersOfferPrivate({
           partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,

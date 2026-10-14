@@ -672,8 +672,11 @@ function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpp
   return parsedJob.data
 }
 
+// Une offre en modération n'existe pas pour l'API publique (#5498).
+const NOT_IN_REVIEW = { offer_status: { $ne: JOB_STATUS_ENGLISH.EN_MODERATION } }
+
 export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId): Promise<IJobOfferApiReadV3 | null> {
-  const job = await getDbCollection("jobs_partners").findOne({ _id: id })
+  const job = await getDbCollection("jobs_partners").findOne({ _id: id, ...NOT_IN_REVIEW })
   if (!job) {
     return null
   }
@@ -681,7 +684,7 @@ export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId): Promise<IJ
 }
 
 export async function getJobsPartnersPublishing(id: ObjectId): Promise<IJobOfferPublishingV3 | null> {
-  const job = await getDbCollection("jobs_partners").findOne({ _id: id })
+  const job = await getDbCollection("jobs_partners").findOne({ _id: id, ...NOT_IN_REVIEW })
   const computedJob = await getDbCollection("computed_jobs_partners").findOne({ _id: id })
   if (job) {
     if (computedJob) {

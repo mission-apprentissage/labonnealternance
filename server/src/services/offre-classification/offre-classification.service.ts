@@ -1,3 +1,6 @@
+import type { IModerationField } from "shared/models/jobs-partners-moderation.model"
+import { MODERATION_FIELDS } from "shared/models/jobs-partners-moderation.model"
+
 import { maskPersonalData } from "@/common/utils/mask-personal-data"
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
@@ -10,12 +13,10 @@ import {
   parseClassification,
 } from "./offre-classification.prompt"
 
-/** Modèle figé explicitement : il est stocké avec le verdict pour que celui-ci reste rejouable. */
-export const CLASSIFICATION_MODEL = "mistral-large-latest"
+/** Modèle figé explicitement, sans alias `-latest` : il est stocké avec le verdict pour que celui-ci reste rejouable. */
+export const CLASSIFICATION_MODEL = "mistral-large-2512"
 
-export const CLASSIFICATION_FIELDS = ["job_description", "job_employer_description"] as const
-
-export type IClassificationField = (typeof CLASSIFICATION_FIELDS)[number]
+export type IClassificationField = IModerationField
 
 export type IClassifiedFinding = IOffreClassificationFinding & { champ: IClassificationField }
 
@@ -53,7 +54,7 @@ const emptyResult = (status: IOffreClassificationResult["status"], verdict: IOff
  * l'étage bloquant ne doit pas ouvrir la publication. Les 429 Mistral sont un événement quotidien
  * documenté dans mistralai.service.ts.
  */
-export const classifyFreeText = async (rawText: string | null | undefined, champ: IClassificationField): Promise<IOffreClassificationResult> => {
+export const classifyFreeText = async (rawText: string | null | undefined, champ: IClassificationField, signal?: AbortSignal): Promise<IOffreClassificationResult> => {
   const trimmed = rawText?.trim()
   // Rien à contrôler : un champ vide ne peut pas porter d'infraction, et n'a pas à être facturé.
   if (!trimmed) return emptyResult("ok", "conforme")
@@ -64,6 +65,7 @@ export const classifyFreeText = async (rawText: string | null | undefined, champ
       { role: "user", content: maskPersonalData(trimmed) },
     ],
     model: CLASSIFICATION_MODEL,
+    signal,
   })
 
   if (!response) return emptyResult("indisponible", "a_verifier")
@@ -82,10 +84,13 @@ export const classifyFreeText = async (rawText: string | null | undefined, champ
 
 /**
  * Contrôle les deux champs libres d'une offre. Le verdict retenu est le plus sévère des deux, et le
- * statut passe à "indisponible" dès qu'un seul des appels a échoué.
+ * statut passe à "indisponible" dès qu'un seul des appels a échoué ou que `signal` a expiré.
  */
-export const classifyOffreFreeTexts = async (texts: Partial<Record<IClassificationField, string | null | undefined>>): Promise<IOffreClassificationResult> => {
-  const results = await Promise.all(CLASSIFICATION_FIELDS.map((champ) => classifyFreeText(texts[champ], champ)))
+export const classifyOffreFreeTexts = async (
+  texts: Partial<Record<IClassificationField, string | null | undefined>>,
+  { signal }: { signal?: AbortSignal } = {}
+): Promise<IOffreClassificationResult> => {
+  const results = await Promise.all(MODERATION_FIELDS.map((champ) => classifyFreeText(texts[champ], champ, signal)))
 
   return {
     verdict: results.reduce<IOffreClassificationVerdict>((acc, { verdict }) => escalateVerdict(acc, verdict), "conforme"),

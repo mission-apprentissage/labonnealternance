@@ -16,6 +16,7 @@ const statusTagColor: Record<JOB_STATUS_ENGLISH, CustomTagColor> = {
   [JOB_STATUS_ENGLISH.POURVUE]: "darkBlue",
   [JOB_STATUS_ENGLISH.ANNULEE]: "red",
   [JOB_STATUS_ENGLISH.EN_ATTENTE]: "yellow",
+  [JOB_STATUS_ENGLISH.EN_MODERATION]: "yellow",
 }
 
 export function getOffresPartenairesColumns({

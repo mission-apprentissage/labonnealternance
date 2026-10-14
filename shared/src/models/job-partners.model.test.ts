@@ -3,7 +3,7 @@ import { describe, expectTypeOf, it } from "vitest"
 
 import type { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 
-import type { JOB_STATUS_ENGLISH } from "./job.model.js"
+import type { JOB_STATUS_ENGLISH_PUBLIC } from "./job.model.js"
 import type {
   /*IJobsPartnersOfferApi,*/ IJobsPartnersOfferHistoryEvent,
   IJobsPartnersRecruiterApi,
@@ -68,7 +68,7 @@ type IJobOfferApiExpected = IJobWorkplaceApiExpected &
     offer_creation: Date | null
     offer_expiration: Date | null
     offer_opening_count: number
-    offer_status: JOB_STATUS_ENGLISH
+    offer_status: JOB_STATUS_ENGLISH_PUBLIC
     contract_rythm: string | null | undefined
     contract_is_disabled_elligible: boolean | null
     offer_to_be_acquired_knowledge: string[] | null | undefined
@@ -127,7 +127,7 @@ type IJobOfferWritableInputExpected = {
   offer_opening_count?: number | undefined
   offer_origin?: string | null | undefined
   offer_multicast?: boolean | undefined
-  offer_status?: JOB_STATUS_ENGLISH | undefined
+  offer_status?: JOB_STATUS_ENGLISH_PUBLIC | undefined
 
   apply_url?: string | null | undefined
   apply_phone?: string | null | undefined

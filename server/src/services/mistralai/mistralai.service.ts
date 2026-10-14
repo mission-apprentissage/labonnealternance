@@ -36,22 +36,29 @@ export const sendMistralMessages = async ({
   maxTokens = 2048,
   model = "mistral-large-latest",
   responseFormat = { type: "json_object" },
+  signal,
 }: {
   messages: Message[]
   model?: string
   randomSeed?: number
   maxTokens?: number
   responseFormat?: { type: "text" | "json_object" }
+  /** Échéance de l'appelant, attente sur 429 comprise : une fois dépassée, renvoie null sans capture Sentry. */
+  signal?: AbortSignal
 }): Promise<string | null> => {
   for (let attempt = 0; ; attempt++) {
+    if (signal?.aborted) return null
     try {
-      const response = await mistral.chat.complete({
-        model,
-        messages,
-        maxTokens,
-        ...(randomSeed ? { randomSeed } : {}),
-        responseFormat,
-      })
+      const response = await mistral.chat.complete(
+        {
+          model,
+          messages,
+          maxTokens,
+          ...(randomSeed ? { randomSeed } : {}),
+          responseFormat,
+        },
+        signal ? { signal } : undefined
+      )
 
       if (!response.choices?.length || !response.choices[0].message) {
         logger.info({ response }, "No response from Mistral")
@@ -64,6 +71,10 @@ export const sendMistralMessages = async ({
       }
       return message
     } catch (error) {
+      if (signal?.aborted) {
+        logger.warn({ attempt }, "Mistral — échéance de l'appelant dépassée")
+        return null
+      }
       if (isMistralRateLimitError(error) && attempt < RATE_LIMIT_RETRY_DELAYS_MS.length) {
         const delayMs = getRateLimitRetryDelayMs(error, attempt)
         logger.warn(
@@ -75,7 +86,8 @@ export const sendMistralMessages = async ({
           },
           "Mistral 429 — retry après backoff"
         )
-        await sleep(delayMs)
+        // Rejetée seulement si l'échéance tombe pendant l'attente : le tour suivant renvoie alors null.
+        await sleep(delayMs, undefined, { signal }).catch(() => undefined)
         continue
       }
       sentryCaptureException(error)

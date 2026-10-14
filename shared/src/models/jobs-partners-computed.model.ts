@@ -2,7 +2,7 @@ import { z } from "zod"
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
-import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "./jobs-partners.model.js"
+import { JOBPARTNERS_LABEL, ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate } from "./jobs-partners.model.js"
 
 // Ces partenaires sont exclus des processus de classification et de blacklistage.
 export const PARTNER_WHITELIST: string[] = [
@@ -104,6 +104,10 @@ export const ZComputedJobsPartnersBase = extensions
     partner_label: true,
     created_at: true,
     lba_url: true,
+    // Modération des seules offres LBA (#5497), qui ne passent pas par computed.
+    offer_moderation_verdict: true,
+    offer_moderation_status: true,
+    offer_moderation_review: true,
   })
   .extend({
     _id: zObjectId,
@@ -127,6 +131,7 @@ export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({
 }).extend({
   offer_creation: z.iso.datetime(),
   offer_expiration: z.iso.datetime(),
+  offer_status: ZJobsPartnersOfferApi.shape.offer_status.nullish(),
 })
 
 export type IComputedJobsPartnersWrite = z.output<typeof ZComputedJobsPartnersWrite>
