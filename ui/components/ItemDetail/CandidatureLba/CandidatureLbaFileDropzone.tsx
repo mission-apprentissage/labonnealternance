@@ -6,6 +6,10 @@ import type { DropzoneOptions } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 
+// Le passage du focus sur « supprimer » coupe la lecture en cours : il attend que la confirmation
+// d'ajout, émise pendant que le focus est encore sur le champ, ait pu être lue.
+const CONFIRMATION_READ_DELAY_IN_MS = 2500
+
 export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState<{ applicant_attachment_name: string; applicant_attachment_content: string | ArrayBuffer } | null>(
     formik.values.applicant_attachment_name
@@ -34,11 +38,14 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const onDrop: DropzoneOptions["onDrop"] = (files) => {
     const reader = new FileReader()
     let applicant_attachment_name: string | null = null
+    let isLoaded = false
 
     reader.onload = (e) => {
+      isLoaded = true
       const readFileData = { applicant_attachment_name, applicant_attachment_content: e.target.result }
       setFileData(readFileData)
       setFileValue(readFileData)
+      setConfirmedFileName(applicant_attachment_name)
     }
 
     reader.onloadstart = () => {
@@ -47,9 +54,12 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     }
 
     reader.onloadend = () => {
-      setTimeout(() => {
-        setFileLoading(false)
-      }, 300)
+      setTimeout(
+        () => {
+          setFileLoading(false)
+        },
+        isLoaded ? CONFIRMATION_READ_DELAY_IN_MS : 300
+      )
     }
 
     if (files.length) {
@@ -109,11 +119,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     if (pendingFocusRef.current === "remove" && shownFileName) {
       pendingFocusRef.current = null
       removeButtonRef.current?.focus()
-      // Le passage du focus interrompt la lecture en cours : la confirmation est émise après l'annonce du bouton.
-      const timer = setTimeout(() => setConfirmedFileName(shownFileName), 500)
-      return () => clearTimeout(timer)
-    }
-    if (pendingFocusRef.current === "input" && !shownFileName) {
+    } else if (pendingFocusRef.current === "input" && !shownFileName) {
       pendingFocusRef.current = null
       inputRef.current?.focus()
     }
@@ -127,7 +133,12 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const errorId = `${inputId}-error`
   const describedBy = [hintId, showUnacceptedFileMessages && formatErrorId, mandatoryFileError && errorId].filter(Boolean).join(" ")
 
-  const fileStatus = fileLoading ? "Chargement du fichier en cours" : confirmedFileName ? `Pièce jointe ${confirmedFileName} ajoutée` : ""
+  const fileStatus = fileLoading && !confirmedFileName ? "Chargement du fichier en cours" : ""
+  const fileAlert = showUnacceptedFileMessages
+    ? "Le fichier n'est pas au bon format (autorisé : .docx ou .pdf, moins de 3 Mo, 1 fichier maximum)"
+    : confirmedFileName
+      ? `Pièce jointe ${confirmedFileName} ajoutée`
+      : ""
 
   return (
     <>
@@ -185,8 +196,10 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
             <input {...getInputProps({ id: inputId, tabIndex: 0, "aria-describedby": describedBy, "aria-invalid": hasError })} style={{ display: "block" }} />
             {fileLoading && (
               <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row", mt: fr.spacing("2v") }}>
-                <CircularProgress size={14} />
-                <Typography sx={{ ml: fr.spacing("2v"), fontSize: "14px", color: "grey.700" }}>Chargement du fichier en cours</Typography>
+                {!confirmedFileName && <CircularProgress size={14} />}
+                <Typography sx={{ ml: confirmedFileName ? 0 : fr.spacing("2v"), fontSize: "14px", color: "grey.700" }}>
+                  {confirmedFileName ? `Pièce jointe ${confirmedFileName} ajoutée` : "Chargement du fichier en cours"}
+                </Typography>
               </Box>
             )}
             {showUnacceptedFileMessages && (
@@ -203,7 +216,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
         )}
       </Box>
       <LiveStatus message={fileStatus} />
-      <LiveStatus role="alert" message={showUnacceptedFileMessages ? "Le fichier n'est pas au bon format (autorisé : .docx ou .pdf, moins de 3 Mo, 1 fichier maximum)" : ""} />
+      <LiveStatus role="alert" message={fileAlert} />
     </>
   )
 }

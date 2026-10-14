@@ -7,7 +7,6 @@ import { LiveStatus } from "@/app/_components/LiveStatus"
 type Announcement = { message: string; role: "status" | "alert" }
 
 const EMPTY: Announcement = { message: "", role: "status" }
-const NAVIGATION_WINDOW_IN_MS = 5000
 const AFTER_NAVIGATION_DELAY_IN_MS = 1000
 
 let current = EMPTY
@@ -36,13 +35,20 @@ const fill = ({ message, role }: Announcement, durationInMs: number, delayInMs: 
   clearTimer = setTimeout(() => emit(EMPTY), delayInMs + durationInMs)
 }
 
+// Temps laissé à la lecture d'un toast : une navigation plus tardive ne l'a pas coupé.
+const TOAST_READING_TIME_IN_MS = 2500
+
+/** À attendre entre un toast et une redirection, pour que le message soit lu sur la page qui l'émet. */
+export const waitForToastReading = () => new Promise<void>((resolve) => setTimeout(resolve, TOAST_READING_TIME_IN_MS))
+
 export function announceToast(message: string, role: Announcement["role"], durationInMs: number) {
-  beforeNavigation = { message, role, durationInMs, expiresAt: Date.now() + NAVIGATION_WINDOW_IN_MS }
+  beforeNavigation = { message, role, durationInMs, expiresAt: Date.now() + TOAST_READING_TIME_IN_MS }
   fill({ message, role }, durationInMs, 100)
 }
 
 // Next annonce le titre de la nouvelle page en role="alert" et la page peut placer le focus : l'un comme
-// l'autre coupe un toast émis juste avant un router.push. Le message est donc répété une fois la page affichée.
+// l'autre coupe un toast émis juste avant un router.push sans waitForToastReading. Le message est donc
+// répété une fois la page affichée.
 const repeatAfterNavigation = () => {
   if (!beforeNavigation || Date.now() > beforeNavigation.expiresAt) return
   const { durationInMs, ...announcement } = beforeNavigation
@@ -50,8 +56,6 @@ const repeatAfterNavigation = () => {
   fill(announcement, durationInMs, AFTER_NAVIGATION_DELAY_IN_MS)
 }
 
-// Monté une fois dans le layout racine : il survit à la navigation qui suit souvent un toast.
-// notistack insère chaque toast avec son contenu, ce qu'une zone live ne restitue pas de façon fiable.
 // usePathname hors <Suspense> bloque le prérendu (cacheComponents) : isolé ici pour que les zones live,
 // elles, restent dans le HTML initial.
 function NavigationWatcher() {
@@ -62,6 +66,8 @@ function NavigationWatcher() {
   return null
 }
 
+// Monté une fois dans le layout racine : il survit à la navigation qui suit souvent un toast.
+// notistack insère chaque toast avec son contenu, ce qu'une zone live ne restitue pas de façon fiable.
 export function ToastAnnouncer() {
   const { message, role } = useSyncExternalStore(
     subscribe,
