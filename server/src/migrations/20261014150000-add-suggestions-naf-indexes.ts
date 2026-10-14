@@ -1,6 +1,6 @@
 import { recreateIndexes } from "@/jobs/database/recreate-indexes"
 
-// Index de referentiel_rome_naf (#5688) : un index n'est créé en prod que par une migration.
+// Index de referentiel_rome_naf et applicants.createdAt (#5688) : un index n'est créé en prod que par une migration.
 export const up = async () => {
   await recreateIndexes()
 }
