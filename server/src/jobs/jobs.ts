@@ -27,6 +27,7 @@ import { processRecruiterIntentions } from "./applications/process-recruiter-int
 import { purgeApplicationCvFiles } from "./applications/purge-application-cv-files"
 import { relanceCandidatsInactifs } from "./applications/relance-candidats-inactifs"
 import { relanceIncitationSpontanee } from "./applications/relance-incitation-spontanee"
+import { importReferentielRomeNaf } from "./cross-naf/import-referentiel-rome-naf"
 import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
@@ -462,6 +463,11 @@ export async function setupJobProcessor() {
           "Mise à jour mensuelle des contrats DECA": {
             cron_string: "15 5 1 * *",
             handler: async () => importDecaContratsParAnnee(),
+          },
+          // Fichier déposé par l'équipe data en début de semaine (constaté le lundi après-midi)
+          "Mise à jour hebdomadaire du référentiel ROME × NAF": {
+            cron_string: "30 5 * * TUE",
+            handler: async () => importReferentielRomeNaf(),
           },
         },
     jobs: {
