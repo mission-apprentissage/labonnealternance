@@ -32,7 +32,6 @@ import { zUpdateLbaCompanyRoutes } from "./update-lba-company.routes.js"
 import { zUserRecruteurRoutes } from "./user.routes.js"
 import { zApplicationRoutesV2 } from "./v2/application.routes.v2.js"
 import { zAppointmentsRouteV2 } from "./v2/appointments.routes.v2.js"
-import { zJobsRoutesV2 } from "./v2/jobs.routes.v2.js"
 import { zJobsRoutesV3 } from "./v3/jobs/jobs.routes.v3.js"
 
 const zRoutesGetP1 = {
@@ -103,7 +102,6 @@ const zRoutesPost3 = {
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
-  ...zJobsRoutesV2.post,
   ...zReportedCompanyRoutes.post,
   ...zJobsRoutesV3.post,
   ...zProcessorAdminRoutes.post,

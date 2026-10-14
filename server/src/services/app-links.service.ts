@@ -154,15 +154,6 @@ export function createCancelJobLink(user: UserForAccessToken, jobId: string, job
           querystring: undefined,
         },
       }),
-      generateScope({
-        schema: zRoutes.post["/v2/_private/jobs/canceled/:id"],
-        options: {
-          params: {
-            id: jobId,
-          },
-          querystring: undefined,
-        },
-      }),
     ],
     {
       expiresIn: "30d",
@@ -170,33 +161,6 @@ export function createCancelJobLink(user: UserForAccessToken, jobId: string, job
   )
 
   return `${config.publicUrl}/espace-pro/offre/${jobOrigin}/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
-}
-
-export function createProvidedJobLink(user: UserForAccessToken, jobId: string, jobOrigin: LBA_ITEM_TYPE, utmData: string | undefined = undefined) {
-  const token = generateAccessToken(
-    user,
-    [
-      generateScope({
-        schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
-        options: {
-          params: { jobId },
-          querystring: undefined,
-        },
-      }),
-      generateScope({
-        schema: zRoutes.post["/v2/_private/jobs/provided/:id"],
-        options: {
-          params: { id: jobId },
-          querystring: undefined,
-        },
-      }),
-    ],
-    {
-      expiresIn: "30d",
-    }
-  )
-
-  return `${config.publicUrl}/espace-pro/offre/${jobOrigin}/${jobId}/provided?${utmData ? utmData : ""}&token=${token}`
 }
 
 export function createViewDelegationLink(email: string, establishment_id: string, job_id: string, siret_formateur: string) {
