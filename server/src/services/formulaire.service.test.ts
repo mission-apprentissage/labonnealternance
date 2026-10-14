@@ -878,6 +878,22 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
         expect.soft(job.offer_status_history).toHaveLength(2)
         expect.soft(job.job_status_comment).toEqual("Je ne suis plus en recherche")
       })
+
+      it.each([
+        ["admin@beta.gouv.fr", "doublon signalé"],
+        ["archive-formulaire", "formulaire archivé"],
+        ["détecteur de doublons", "offre en doublon"],
+      ])("n'ajoute rien après une clôture par « %s », qui n'attend pas de réponse", async (granted_by, reason) => {
+        const updated_at = new Date("2026-10-01T00:00:00.000Z")
+        const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), { updated_at, offer_status_history: [autoClosure(granted_by, reason)] })
+
+        const { alreadyClosed } = await answerByMail(id, "Je ne suis plus en recherche")
+
+        expect.soft(alreadyClosed).toBe(true)
+        const job = await readOffer(id)
+        expect.soft(job.offer_status_history).toEqual([autoClosure(granted_by, reason)])
+        expect.soft(job.updated_at).toEqual(updated_at)
+      })
     })
 
     it("avance offer_expiration à la date de clôture sur une offre encore active", async () => {

@@ -13,7 +13,7 @@ import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink } from "@/services/app-links.service"
-import { changeJobsPartnersStatus } from "@/services/job-partner-status.service"
+import { changeJobsPartnersStatus, JOB_AUTO_CLOSURE_ORIGIN } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 
 const getReminderCompanyName = ({
@@ -87,7 +87,7 @@ export const expireJobsPartners = async () => {
   const result = await changeJobsPartnersStatus(filter, {
     status: JOB_STATUS_ENGLISH.ANNULEE,
     reason: "offre expirée (date dépassée)",
-    grantedBy: "expire-jobs-partners",
+    grantedBy: JOB_AUTO_CLOSURE_ORIGIN.EXPIRATION,
     date: now,
   })
   logger.info(`expireJobsPartners: ${result.modifiedCount} offres expirées`)

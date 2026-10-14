@@ -44,7 +44,7 @@ import { getUserManagingOffer } from "./application.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDataFromSiret } from "./etablissement.service"
 import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-notifications.service"
-import { buildJobStatusChangeUpdate, changeJobsPartnersStatus } from "./job-partner-status.service"
+import { buildJobStatusChangeUpdate, changeJobsPartnersStatus, JOB_AUTO_CLOSURE_ORIGIN } from "./job-partner-status.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
 import { moderateFreeText } from "./offre-moderation.service"
@@ -777,19 +777,20 @@ export const closeOffreWithMotif = async ({
   // Sur une offre déjà close, offer_expiration garde la date à laquelle elle a cessé d'être visible.
   const wasOpen = current.offer_status !== JOB_STATUS_ENGLISH.ANNULEE && current.offer_status !== JOB_STATUS_ENGLISH.POURVUE
 
-  // Écriture si le statut change, ou si la dernière entrée de l'historique vient d'un job automatique :
-  // le lien du mail d'expiration ou du seuil de candidatures arrive sur une offre déjà Cancelled, et
-  // la réponse du recruteur s'ajoute à la clôture automatique (#5722). Un lien cliqué deux fois
-  // trouve sa propre entrée en dernier et n'écrit pas de doublon (#5429).
+  // Écriture si le statut change, ou si la dernière entrée de l'historique est une expiration ou le
+  // seuil de candidatures : leur mail arrive sur une offre déjà Cancelled, et la réponse du recruteur
+  // s'ajoute à la clôture automatique (#5722). Un lien cliqué deux fois trouve sa propre entrée en
+  // dernier et n'écrit pas de doublon (#5429). Les autres clôtures (désactivation admin, archivage,
+  // doublons) ne sollicitent pas de réponse et ne reçoivent pas d'entrée supplémentaire.
   //
   // returnDocument: "before" pour distinguer une clôture d'une offre déjà close : `alreadyClosed`
   // pilote l'écran de confirmation côté recruteur.
   //
   // `reason` dit comment l'offre a été fermée, déduit de l'origine (cf. JOB_CLOSURE_REASON) ; le
   // motif de la modale va dans job_status_comment, sans être recopié dans l'historique.
-  const lastEntryIsHumanClosure = { $in: [{ $last: "$offer_status_history.granted_by" }, Object.values(JOB_CLOSURE_ORIGIN)] }
+  const lastEntryAwaitsMailAnswer = { $in: [{ $last: "$offer_status_history.granted_by" }, Object.values(JOB_AUTO_CLOSURE_ORIGIN)] }
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { ...offerFilter, $or: [{ offer_status: { $ne: offer_status } }, { $expr: { $not: [lastEntryIsHumanClosure] } }] },
+    { ...offerFilter, $or: [{ offer_status: { $ne: offer_status } }, { $expr: lastEntryAwaitsMailAnswer }] },
     buildJobStatusChangeUpdate({
       status: offer_status,
       reason: JOB_CLOSURE_REASON_BY_ORIGIN[origin],

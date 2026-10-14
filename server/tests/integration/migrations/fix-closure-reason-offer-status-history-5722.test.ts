@@ -83,11 +83,20 @@ describe("migration fix-closure-reason-offer-status-history-5722", () => {
             entry(MAIL, "offre déclarée pourvue par le recruteur", JOB_STATUS_ENGLISH.POURVUE, new Date("2026-10-02T10:00:00.000Z")),
           ],
         }),
+        // la route v2 d'annulation n'écrit pas job_status_comment non plus
+        lbaOffer("puis-annulee-en-un-clic", {
+          job_status_comment: null,
+          offer_status_history: [
+            entry(RECRUTEUR, "J'ai pourvu l'offre avec La bonne alternance", JOB_STATUS_ENGLISH.POURVUE),
+            entry(MAIL, "offre annulée par le recruteur", JOB_STATUS_ENGLISH.ANNULEE, new Date("2026-10-02T10:00:00.000Z")),
+          ],
+        }),
       ])
 
       await up()
       const byId = await readAll()
 
+      expect.soft(byId.get("puis-annulee-en-un-clic")?.job_status_comment).toBe("J'ai pourvu l'offre avec La bonne alternance")
       expect.soft(byId.get("comment-absent")?.job_status_comment).toBe("Autre")
       expect.soft(byId.get("puis-mail")?.job_status_comment).toBe("J'ai pourvu l'offre sans l'aide de La bonne alternance")
       expect.soft(byId.get("puis-mail")?.offer_status_history[0].reason).toBe("Désactivation manuelle")

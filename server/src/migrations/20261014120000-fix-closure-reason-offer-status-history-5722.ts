@@ -19,13 +19,10 @@ const ORIGIN = {
 const MANUAL_CLOSURE_REASON = "Désactivation manuelle"
 const ADMIN_CLOSURE_REASON = "Action admin"
 const MAIL_CLOSURE_REASON = "Réponse recruteur par mail"
-/** Écrit par provideOffre (lien « pourvue » en un clic), qui ne touche pas job_status_comment. */
-const PROVIDED_BY_MAIL_REASON = "offre déclarée pourvue par le recruteur"
-/**
- * `reason` d'une clôture humaine qui ne porte pas de motif de la modale : les libellés cibles, et ceux
- * que provideOffre et les routes v2 des offres partenaires écrivent sous l'origine mail.
- */
-const NOT_A_MOTIF = [MANUAL_CLOSURE_REASON, ADMIN_CLOSURE_REASON, MAIL_CLOSURE_REASON, PROVIDED_BY_MAIL_REASON, "offre annulée par le recruteur"]
+/** Écrits sous l'origine mail par provideOffre et les routes v2, qui ne touchent pas job_status_comment. */
+const ONE_CLICK_MAIL_REASONS = ["offre déclarée pourvue par le recruteur", "offre annulée par le recruteur"]
+/** `reason` d'une clôture humaine qui ne porte pas de motif de la modale. */
+const NOT_A_MOTIF = [MANUAL_CLOSURE_REASON, ADMIN_CLOSURE_REASON, MAIL_CLOSURE_REASON, ...ONE_CLICK_MAIL_REASONS]
 
 /**
  * Depuis #5479, closeOffreWithMotif écrit le motif de la modale dans `offer_status_history[].reason`
@@ -61,9 +58,9 @@ const requalifyClosures = async (volet: string, origins: string[], reason: strin
 }
 
 /**
- * Recopie dans `job_status_comment` le motif de la dernière clôture humaine, toutes origines
- * confondues : c'est elle qui a écrit `job_status_comment` en dernier. Sans effet si cette entrée
- * ne porte pas de motif (cf. NOT_A_MOTIF).
+ * Recopie dans `job_status_comment` le motif de la dernière clôture humaine qui l'a écrit, toutes
+ * origines confondues (les clics sans modale, cf. ONE_CLICK_MAIL_REASONS, sont sautés). Sans effet si
+ * cette entrée ne porte pas de motif (cf. NOT_A_MOTIF).
  */
 const saveLastMotifInComment = async (filter: object) =>
   getDbCollection("jobs_partners").updateMany(
@@ -78,7 +75,7 @@ const saveLastMotifInComment = async (filter: object) =>
                   $last: {
                     $filter: {
                       input: "$offer_status_history",
-                      cond: { $and: [{ $in: ["$$this.granted_by", Object.values(ORIGIN)] }, { $ne: ["$$this.reason", PROVIDED_BY_MAIL_REASON] }] },
+                      cond: { $and: [{ $in: ["$$this.granted_by", Object.values(ORIGIN)] }, { $not: [{ $in: ["$$this.reason", ONE_CLICK_MAIL_REASONS] }] }] },
                     },
                   },
                 },
