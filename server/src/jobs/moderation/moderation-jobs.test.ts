@@ -269,17 +269,20 @@ describe("première publication d'une offre bloquée dès son dépôt", () => {
 describe("repriseExhaustedClassifications", () => {
   it("laisse l'offre epuise quand le classifieur reste indisponible, et alerte", async () => {
     const account = await saveAccount()
-    const offers = await Promise.all([1, 2].map(() => saveOffer(account, { offer_moderation_status: "epuise" })))
+    // La reprise commence par l'offre restée le plus longtemps sans changement : updated_at distincts, sinon l'ordre est libre.
+    const [newest, oldest] = await Promise.all(
+      [1, 2].map((hours) => saveOffer(account, { offer_moderation_status: "epuise", updated_at: new Date(T0.getTime() - hours * 60 * MINUTE) }))
+    )
     classifierFails()
 
     expect(await repriseExhaustedClassifications()).toMatchObject({ pending: 2, attempted: 1, unavailable: 1, circuitOpen: true })
 
-    const [first] = offers
-    expect(await getDbCollection("jobs_partners").findOne({ _id: first._id })).toMatchObject({
+    expect(await getModerations(newest._id)).toEqual([])
+    expect(await getDbCollection("jobs_partners").findOne({ _id: oldest._id })).toMatchObject({
       offer_status: JOB_STATUS_ENGLISH.EN_MODERATION,
       offer_moderation_status: "epuise",
     })
-    expect(await getModerations(first._id)).toEqual([expect.objectContaining({ trigger: "reprise", status: "indisponible" })])
+    expect(await getModerations(oldest._id)).toEqual([expect.objectContaining({ trigger: "reprise", status: "indisponible" })])
     expect(notifyToSlack).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Classifieur indisponible") }))
   })
 })
