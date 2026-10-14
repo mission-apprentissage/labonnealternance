@@ -116,7 +116,8 @@ function transformPartnerJob(
 }
 
 export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPartnerJob> => {
-  const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+  // Une offre en modération n'a pas de fiche publique, même pour qui en connaît le lien (#5498).
+  const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: jobId, offer_status: { $ne: JOB_STATUS_ENGLISH.EN_MODERATION } })
 
   if (!rawPartnerJob) {
     throw notFound("Job not found")

@@ -196,6 +196,12 @@ const config = {
   mistralai: {
     apiKey: env.get("MISTALAI_API_KEY").required().asString(),
   },
+  moderation: {
+    // À false, les offres LBA sont classifiées après la réponse, sans effet sur leur statut (#5498).
+    enforce: env.get("LBA_MODERATION_ENFORCE").default("false").asBool(),
+    // Au-delà, la classification est indisponible : l'offre passe InReview et sera réessayée.
+    classificationTimeoutMs: env.get("LBA_MODERATION_CLASSIFICATION_TIMEOUT_MS").default(10_000).asIntPositive(),
+  },
   inserjeunes: {
     apiKey: env.get("IJ_MEN_API_KEY").required().asString(),
     clientId: env.get("IJ_MEN_CLIENT_ID").required().asString(),

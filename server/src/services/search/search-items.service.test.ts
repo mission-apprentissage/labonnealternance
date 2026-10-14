@@ -191,13 +191,13 @@ describe("searchItems.service — synchronisation jobs_partners → index de rec
       expect(doc?.keywords).toEqual(["javascript", "react"])
     })
 
-    it("retire une offre passée non-ACTIVE", async () => {
+    it.each([JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.EN_MODERATION])("retire une offre passée %s", async (offer_status) => {
       const job = generateJobsPartnersOfferPrivate({})
       await getDbCollection("jobs_partners").insertOne(job)
       await upsertJobPartnersToSearchItems([job._id])
       expect(await countIndexed(job._id)).toBe(1)
 
-      await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
+      await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { offer_status } })
       const result = await upsertJobPartnersToSearchItems([job._id])
 
       expect(result.removed).toBe(1)

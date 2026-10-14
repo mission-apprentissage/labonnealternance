@@ -69,10 +69,19 @@ describe("export-jobs-to-s3-v2", () => {
     expect.soft(jobs.length).toBe(1)
     expect.soft(jobs).toMatchSnapshot()
   })
+  it("n'exporte aucun champ de modération (#5497)", async () => {
+    await createJobPartner(generateJobsPartnersFull({ offer_moderation_verdict: "a_verifier", offer_moderation_status: "ok", offer_moderation_review: "validee" }))
+
+    const jobs = await exportJobsToS3V2ForTests()
+
+    expect(jobs).toHaveLength(1)
+    expect(JSON.stringify(jobs)).not.toMatch(/moderation|validee|a_verifier/)
+  })
   it("should not publish a job partner that is not active", async () => {
     // given
     await createJobPartner(generateJobsPartnersFull({ offer_status: JOB_STATUS_ENGLISH.ANNULEE }))
     await createJobPartner(generateJobsPartnersFull({ offer_status: JOB_STATUS_ENGLISH.POURVUE }))
+    await createJobPartner(generateJobsPartnersFull({ offer_status: JOB_STATUS_ENGLISH.EN_MODERATION }))
     // when
     const jobs = await exportJobsToS3V2ForTests()
     // then

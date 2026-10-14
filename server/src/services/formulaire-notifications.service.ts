@@ -58,9 +58,9 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobsPartner
   })
 }
 
+/** « Votre offre est publiée » : rien pour une offre en attente du compte ni pour une offre en modération. */
 export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPartnersOfferPrivate) {
-  const isRecruteurAwaiting = job.offer_status === JOB_STATUS_ENGLISH.EN_ATTENTE
-  if (isRecruteurAwaiting) {
+  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
     return
   }
   const { email, last_name, first_name } = user

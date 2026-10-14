@@ -1,3 +1,5 @@
+import type { IModerationCategory, IModerationVerdict } from "shared/models/jobs-partners-moderation.model"
+import { MODERATION_CATEGORIES, MODERATION_CHARTER_CATEGORIES, MODERATION_SEVERITIES, MODERATION_VERDICTS } from "shared/models/jobs-partners-moderation.model"
 import { z } from "zod"
 
 import { EMAIL_MASK, PHONE_MASK, URL_MASK } from "@/common/utils/mask-personal-data"
@@ -11,34 +13,20 @@ import { EMAIL_MASK, PHONE_MASK, URL_MASK } from "@/common/utils/mask-personal-d
  * le rendre acceptable. Le test adversarial du 02/09 a montré 4 segments illégaux sur 4 rendus
  * publiables. Ne jamais ajouter ici de champ `text`, `suggestion` ou équivalent.
  */
-export const LEGAL_CATEGORIES = ["discrimination", "remuneration", "subordination", "taches_illegales", "mineurs", "contact_bypass"] as const
-
-/**
- * Règles de la charte de rédaction, hors légalité : relevées pour la revue humaine, jamais
- * bloquantes (arbitrage de la modération, #5352). parseClassification ramène leur sévérité à "doute".
- */
-export const CHARTER_CATEGORIES = ["candidature_hors_plateforme", "experience_exigee", "teletravail_integral", "melange_contrats", "poste_salarie", "intermediaire"] as const
-
-export const CLASSIFICATION_CATEGORIES = [...LEGAL_CATEGORIES, ...CHARTER_CATEGORIES] as const
-
-export const CLASSIFICATION_SEVERITIES = ["bloquant", "doute"] as const
-
-export const CLASSIFICATION_VERDICTS = ["conforme", "a_verifier", "non_conforme"] as const
-
 export const ZOffreClassificationFinding = z.object({
-  category: z.enum(CLASSIFICATION_CATEGORIES),
-  severity: z.enum(CLASSIFICATION_SEVERITIES),
+  category: z.enum(MODERATION_CATEGORIES),
+  severity: z.enum(MODERATION_SEVERITIES),
   verbatim: z.string().trim().min(1),
 })
 
 export const ZOffreClassification = z.object({
-  verdict: z.enum(CLASSIFICATION_VERDICTS),
+  verdict: z.enum(MODERATION_VERDICTS),
   findings: z.array(ZOffreClassificationFinding),
 })
 
 export type IOffreClassificationFinding = z.output<typeof ZOffreClassificationFinding>
-export type IOffreClassificationCategory = (typeof CLASSIFICATION_CATEGORIES)[number]
-export type IOffreClassificationVerdict = (typeof CLASSIFICATION_VERDICTS)[number]
+export type IOffreClassificationCategory = IModerationCategory
+export type IOffreClassificationVerdict = IModerationVerdict
 export type IOffreClassification = z.output<typeof ZOffreClassification>
 
 /** Version du prompt, stockée avec le verdict : sans elle, un verdict n'est pas rejouable. */
@@ -120,7 +108,7 @@ export const verdictFromFindings = (findings: IOffreClassificationFinding[]): IO
   return "conforme"
 }
 
-const isCharterCategory = (category: IOffreClassificationCategory): boolean => (CHARTER_CATEGORIES as readonly string[]).includes(category)
+const isCharterCategory = (category: IOffreClassificationCategory): boolean => (MODERATION_CHARTER_CATEGORIES as readonly string[]).includes(category)
 
 const OBFUSCATED_CONTACT = /arobase|[([](?:at|dot)[)\]]|\b(?:point|dot)\s+(?:fr|com|net|org|eu|io)\b|\bz[ée]ro\s+(?:un|deux|trois|quatre|cinq|six|sept|huit|neuf)\b/i
 const CONTACT_MASKS = [PHONE_MASK, EMAIL_MASK, URL_MASK]
@@ -144,7 +132,7 @@ const reconcileContactCategory = (finding: IOffreClassificationFinding): IOffreC
  * en listant un finding bloquant ne doit pas pouvoir laisser passer l'offre, et un modèle qui
  * annonce "non_conforme" sans finding reste traité comme tel — c'est au relecteur de trancher.
  * Seule exception : des findings uniquement de charte plafonnent le verdict à "a_verifier", quel
- * que soit le verdict annoncé (cf. CHARTER_CATEGORIES, reconcileContactCategory).
+ * que soit le verdict annoncé (cf. MODERATION_CHARTER_CATEGORIES, reconcileContactCategory).
  * Retourne null si la réponse n'est pas exploitable : l'appelant doit alors basculer en "a_verifier",
  * jamais en "conforme".
  */

@@ -81,3 +81,35 @@ describe("sendMistralMessages — backoff sur 429", () => {
     expect(sleep).not.toHaveBeenCalled()
   })
 })
+
+describe("sendMistralMessages — échéance de l'appelant", () => {
+  it("returns null without calling Mistral when the deadline has already expired", async () => {
+    const controller = new AbortController()
+    controller.abort()
+    await expect(sendMistralMessages({ messages: [...MESSAGES], signal: controller.signal })).resolves.toBeNull()
+    expect(completeMock).not.toHaveBeenCalled()
+  })
+
+  it("returns null without capture when the deadline expires during the request", async () => {
+    const controller = new AbortController()
+    completeMock.mockImplementation(async () => {
+      controller.abort()
+      throw new Error("Request aborted by client")
+    })
+    await expect(sendMistralMessages({ messages: [...MESSAGES], signal: controller.signal })).resolves.toBeNull()
+    expect(completeMock).toHaveBeenCalledWith(expect.anything(), { signal: controller.signal })
+    expect(sentryCaptureException).not.toHaveBeenCalled()
+  })
+
+  it("stops retrying a 429 once the deadline expires during the backoff", async () => {
+    const controller = new AbortController()
+    completeMock.mockRejectedValue(rateLimitError())
+    vi.mocked(sleep).mockImplementationOnce(async () => {
+      controller.abort()
+      throw new Error("The operation was aborted")
+    })
+    await expect(sendMistralMessages({ messages: [...MESSAGES], signal: controller.signal })).resolves.toBeNull()
+    expect(completeMock).toHaveBeenCalledTimes(1)
+    expect(sentryCaptureException).not.toHaveBeenCalled()
+  })
+})
