@@ -8,6 +8,18 @@
 }
 
 /*
+ * RGAA 10.7 : react-notion-x supprime tout indicateur de focus (`.notion *:focus { outline: 0 }`,
+ * plus spécifique que le `a:focus` du DSFR). On rétablit l'outline du DSFR au focus clavier.
+ */
+.notion a:focus-visible,
+.notion button:focus-visible,
+.notion summary:focus-visible,
+.notion [tabindex]:focus-visible {
+  outline: 2px solid #0a76f6;
+  outline-offset: 2px;
+}
+
+/*
  * RGAA 6.1 : react-notion-x insère devant chaque titre un lien d'ancre réduit à une icône,
  * dont le nom accessible (son title) duplique à l'identique le titre qui suit, sans exprimer
  * sa fonction. Les pages éditoriales ne s'appuient pas sur ces ancres : display:none les
@@ -15,4 +27,9 @@
  */
 .notion-hash-link {
   display: none;
+}
+
+/* Texte d'un bloc Notion qui a des blocs enfants (cf. .yarn/patches/react-notion-x-*.patch) : sans ce reset, le <p> prend la marge basse du DSFR. */
+.notion-text-content {
+  margin: 0;
 }

@@ -23,8 +23,9 @@ export const HandiEngagementSelect = ({ name, onChange, value, disabled = false 
       disabled={disabled}
       // Pas de `required` natif : on ne veut pas de la bulle de validation HTML5 flottante du navigateur au
       // submit, seulement notre propre affichage d'erreur (state/stateRelatedMessage) piloté par Formik/Yup.
-      // aria-required informe les technologies d'assistance du caractère obligatoire sans déclencher la validation native
-      nativeSelectProps={{ name, value, "aria-required": true, onBlur: field.onBlur, onChange: (e) => onChange?.(e.target.value as HandiEngagement) }}
+      // aria-required informe les technologies d'assistance du caractère obligatoire sans déclencher la validation native.
+      // aria-invalid : le Select de react-dsfr 1.33 ne le pose pas en state="error".
+      nativeSelectProps={{ name, value, "aria-required": true, "aria-invalid": hasError, onBlur: field.onBlur, onChange: (e) => onChange?.(e.target.value as HandiEngagement) }}
       state={hasError ? "error" : "default"}
       stateRelatedMessage={hasError ? meta.error : undefined}
     >

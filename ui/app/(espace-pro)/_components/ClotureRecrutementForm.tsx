@@ -1,13 +1,17 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, Typography } from "@mui/material"
+import { captureException } from "@sentry/nextjs"
 import { FormikProvider, useFormik } from "formik"
+import { useRef, useState } from "react"
 import { JOB_STATUS } from "shared"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 
 export const motifsPourvus = ["J'ai pourvu l'offre avec La bonne alternance", "J'ai pourvu l'offre sans l'aide de La bonne alternance"]
 const motifSansAideLba = motifsPourvus[1]
@@ -34,7 +38,7 @@ export const canaux = [
 ]
 
 const zodSchema = z.object({
-  motif: z.string().min(1),
+  motif: z.string({ error: "Sélectionnez un motif" }).min(1, "Sélectionnez un motif"),
   motifPrecision: z.string().optional(),
   canal: z.string().optional(),
   canalPrecision: z.string().optional(),
@@ -57,6 +61,8 @@ export interface ClotureRecrutementFormProps {
 }
 
 export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, submit }: ClotureRecrutementFormProps) {
+  const [submitError, setSubmitError] = useState(false)
+
   const onSubmit = async (values: IClotureRecrutementFormValues) => {
     const { motif, motifPrecision, canal, canalPrecision } = values
     const estPourvueSansAideLba = motif === motifSansAideLba
@@ -65,12 +71,21 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
     const job_recruitment_channel = estPourvueSansAideLba ? (canal === canalAutre ? canalPrecision || undefined : canal) || undefined : undefined
     const job_status_comment_precision = motif === motifAutre ? motifPrecision || undefined : undefined
 
-    const result = await submit(offreId, {
-      job_status: jobStatus,
-      job_status_comment: motif,
-      job_status_comment_precision,
-      job_recruitment_channel,
-    })
+    setSubmitError(false)
+    let result: unknown
+    try {
+      result = await submit(offreId, {
+        job_status: jobStatus,
+        job_status_comment: motif,
+        job_status_comment_precision,
+        job_recruitment_channel,
+      })
+    } catch (error) {
+      // createSubmitWithFocusOnError ne capture pas le rejet de submitForm : l'échec est rapporté ici
+      captureException(error)
+      setSubmitError(true)
+      return
+    }
     onSuccess(result as { alreadyClosed?: boolean } | undefined)
   }
 
@@ -87,6 +102,8 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
   })
 
   const { motif, canal } = formik.values
+  const motifError = formik.touched.motif && formik.errors.motif
+  const formRef = useRef<HTMLFormElement>(null)
 
   return (
     <FormikProvider value={formik}>
@@ -94,7 +111,9 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
           au lieu des marges par défaut de DSFR (24px entre deux .fr-select-group / .fr-input-group consécutifs). */}
       <Box
         component="form"
-        onSubmit={formik.handleSubmit}
+        ref={formRef}
+        noValidate
+        onSubmit={createSubmitWithFocusOnError(formRef, formik)}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -110,10 +129,15 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
 
         <Select
           label="Motif (obligatoire)"
+          state={motifError ? "error" : "default"}
+          stateRelatedMessage={motifError}
           nativeSelectProps={{
             onChange: async (event) => formik.setFieldValue("motif", event.target.value, true),
+            onBlur: formik.handleBlur,
             name: "motif",
             required: true,
+            // aria-invalid : cf. HandiEngagementSelect
+            "aria-invalid": Boolean(motifError),
           }}
         >
           <option disabled hidden selected value="">
@@ -151,6 +175,8 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
 
         {motif === motifAutre && <CustomInput label="Précisez votre motif (facultatif)" name="motifPrecision" required={false} pb={0} />}
 
+        {submitError && <Alert severity="error" small description="La clôture n'a pas pu être enregistrée. Réessayez ou contactez le support de La bonne alternance." />}
+
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Box sx={{ ml: fr.spacing("3v") }}>
             <Button type="button" priority="secondary" onClick={() => onCancel()}>
@@ -158,7 +184,7 @@ export default function ClotureRecrutementForm({ offreId, onSuccess, onCancel, s
             </Button>
           </Box>
           <Box sx={{ ml: fr.spacing("3v") }}>
-            <Button type="submit" disabled={!formik.dirty || !formik.isValid}>
+            <Button type="submit" disabled={formik.isSubmitting}>
               Confirmer
             </Button>
           </Box>

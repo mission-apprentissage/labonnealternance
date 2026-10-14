@@ -17,17 +17,19 @@ export const UserMenu = ({
   confirmationActivationUtilisateur: any
   confirmationDesactivationUtilisateur: any
 }) => {
+  // cf. administration/users/_component/UserMenu
+  const entrepriseLabel = row.establishment_raison_sociale || `SIRET ${row.establishment_siret}`
   const actions: PopoverMenuAction[] = [
     {
       label: "Voir les informations",
-      hint: `${row.establishment_raison_sociale}`,
+      hint: entrepriseLabel,
       link: PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath(),
       type: "link",
     },
     tabIndex === "disabled" || tabIndex === "awaiting"
       ? {
           label: "Activer le compte",
-          hint: `${row.establishment_raison_sociale}`,
+          hint: entrepriseLabel,
           onClick: () => {
             confirmationActivationUtilisateur.onOpen()
             setCurrentEntreprise(row)
@@ -38,7 +40,7 @@ export const UserMenu = ({
     tabIndex === "active" || tabIndex === "awaiting"
       ? {
           label: "Désactiver le compte",
-          hint: `${row.establishment_raison_sociale}`,
+          hint: entrepriseLabel,
           onClick: () => {
             confirmationDesactivationUtilisateur.onOpen()
             setCurrentEntreprise(row)
@@ -48,5 +50,5 @@ export const UserMenu = ({
       : null,
   ]
 
-  return <PopoverMenu actions={actions.filter((action) => action !== null)} title={`Actions sur les comptes de l'entreprise ${row.establishment_raison_sociale}`} />
+  return <PopoverMenu actions={actions.filter((action) => action !== null)} title={`Actions sur les comptes de l'entreprise ${entrepriseLabel}`} />
 }

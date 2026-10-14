@@ -313,7 +313,7 @@ program
   .action(createJobAction("francetravail:jobs:classify"))
 program
   .command("search:apply-keywords-batch")
-  .description("Applique un fichier JSONL de sortie batch Mistral aux mots-clés de la collection search_items")
+  .description("Applique un fichier JSONL de sortie batch Mistral aux mots-clés des offres indexées")
   .requiredOption("-f, --file <path>", "Chemin du fichier JSONL de sortie téléchargé depuis Mistral")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("search:apply-keywords-batch"))

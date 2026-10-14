@@ -28,7 +28,11 @@ export function SectionTitle({
         {highlightedText && <span style={{ color: fr.colors.decisions.text.default.info.default }}> {highlightedText}</span>}
         {highlightedSuffix && ` ${highlightedSuffix}`}
       </Typography>
-      <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1, mb: fr.spacing("6v") }} />
+      <Box
+        aria-hidden="true"
+        component="hr"
+        sx={{ maxWidth: "93px", border: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1, mb: fr.spacing("6v") }}
+      />
       {description && <Typography sx={{ fontSize: "18px", lineHeight: "28px" }}>{description}</Typography>}
     </Box>
   )

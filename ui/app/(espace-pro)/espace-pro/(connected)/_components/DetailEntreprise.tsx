@@ -8,13 +8,13 @@ import { Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useRef } from "react"
 import type { INewSuperUser, IUserStatusValidationJson } from "shared"
-import { EntrepriseErrorCodes } from "shared/constants/error-codes"
+import { BusinessErrorCodes, EntrepriseErrorCodes } from "shared/constants/error-codes"
 import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
@@ -23,10 +23,13 @@ import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/context
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
+import { emailValidation, frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
+import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { EMAIL_ALREADY_USED_ERROR } from "@/utils/validation-messages"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
@@ -52,6 +55,7 @@ export default function DetailEntreprise({
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
   const formRef = useRef<HTMLFormElement>(null)
+  const serverFieldErrors = useServerFieldErrors()
 
   const toast = useToast()
   const { user } = useConnectedSessionClient()
@@ -135,9 +139,11 @@ export default function DetailEntreprise({
         })
       } catch (err: any) {
         if (err.message === EntrepriseErrorCodes.PHONE_SAME_AS_CFA) {
-          setFieldError("phone", err.message)
+          serverFieldErrors.setServerFieldError(setFieldError, "phone", values.phone, err.message)
         } else if (err.message === EntrepriseErrorCodes.EMAIL_SAME_AS_CFA) {
-          setFieldError("email", err.message)
+          serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, err.message)
+        } else if (err instanceof ApiError && err.context.errorData?.error === BusinessErrorCodes.EMAIL_ALREADY_EXISTS) {
+          serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, EMAIL_ALREADY_USED_ERROR)
         } else {
           throw err
         }
@@ -201,8 +207,8 @@ export default function DetailEntreprise({
         <Box sx={{ display: user.type !== "CFA" ? "flex" : "none", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
           {showAccountLifecycle && (
             <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
-              <Typography component="h2" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
-                Statut:{" "}
+              <Typography component="p" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
+                Statut :
               </Typography>
               {getUserBadge(lastUserState)}
             </Box>
@@ -251,20 +257,19 @@ export default function DetailEntreprise({
           validationSchema={Yup.object().shape({
             last_name: Yup.string().required("champ obligatoire"),
             first_name: Yup.string().required("champ obligatoire"),
-            phone: Yup.string()
-              .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-              .min(10, "le téléphone est sur 10 chiffres")
-              .max(10, "le téléphone est sur 10 chiffres")
-              .required("champ obligatoire"),
-            email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+            phone: frenchPhoneValidation().required("champ obligatoire"),
+            email: emailValidation().required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
             opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
             ...isDeclarationExactValidation,
           })}
-          onSubmit={async (values, { setFieldError, setSubmitting }) => {
+          validate={serverFieldErrors.validate}
+          onSubmit={async (values, { setFieldError, setFieldValue, setSubmitting }) => {
             setSubmitting(true)
+            const phone = toSubmittedPhone(values.phone)
+            setFieldValue("phone", phone, false)
             // For companies we update the User Collection and the Formulaire collection at the same time
-            userMutation.mutate({ userId: userRecruteur._id, values, siret: userRecruteur.establishment_siret, setFieldError })
+            userMutation.mutate({ userId: userRecruteur._id, values: { ...values, phone }, siret: userRecruteur.establishment_siret, setFieldError })
             setSubmitting(false)
           }}
         >
@@ -297,7 +302,7 @@ export default function DetailEntreprise({
                             mt: fr.spacing("8v"),
                           }}
                         >
-                          <ContactInfoFields />
+                          <ContactInfoFields thirdParty />
                           {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
                             <OpcoSelect
                               value={values.opco}
@@ -313,15 +318,21 @@ export default function DetailEntreprise({
                           {user.type === AUTHTYPE.CFA && (
                             <>
                               <Typography sx={{ color: "#0063CB" }}>
-                                <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par
-                                nos équipes à des fins de contrôles.
+                                <Box component="span" sx={{ fontWeight: 700 }}>
+                                  Important :
+                                </Box>{" "}
+                                Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des fins de
+                                contrôles.
                               </Typography>
                               <DeclarationExactCheckbox />
                             </>
                           )}
                           {userMutation.error && (
                             <Alert sx={{ marginTop: fr.spacing("4v") }} severity="error">
-                              {userMutation.error + ""}
+                              {/* Affiche le message d'erreur métier quand il est disponible, sinon un message générique en français (RGAA 8.7). */}
+                              {userMutation.error instanceof ApiError && userMutation.error.context.statusCode === 400
+                                ? userMutation.error.message
+                                : "La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement."}
                             </Alert>
                           )}
                         </Box>

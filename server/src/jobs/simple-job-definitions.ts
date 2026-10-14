@@ -3,6 +3,7 @@ import { processEnedis } from "@/jobs/offre-partenaire/enedis/process-enedis"
 import { processMissingRomeAndImportToJobPartners } from "@/jobs/offre-partenaire/process-missing-rome-and-import-to-job-partners"
 import { analyzeCfaBlockList } from "@/jobs/one-time-job/analyze-cfa-block-list"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { syncBrevoContactAttributes } from "@/services/brevo-contact-attributes"
 import { reviewJobPartnersClassification } from "@/services/cache-classification.service"
 import { applyClassificationBatch, applyPendingClassificationBatches, submitClassificationBatch } from "@/services/classification/classification-mistral-batch.service"
 import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/search-items.service"
@@ -76,7 +77,6 @@ import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offre-parte
 import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offre-partenaire/recruteur-lba/process-recruteurs-lba"
 import { processRhAlternance } from "./offre-partenaire/rh-alternance/process-rh-alternance"
 import { analyzeClosedCompanies } from "./one-time-job/analyze-closed-companies"
-import { cleanClosedCompanies } from "./one-time-job/clean-closed-companies"
 import { renvoiMailCreationCompte } from "./one-time-job/renvoi-mail-creation-compte"
 import { exportFileForAlgo } from "./partenaire-export/export-blacklist-algo"
 import { sendContactsToBrevo } from "./partenaire-export/export-contacts-to-brevo"
@@ -97,6 +97,7 @@ import { repriseEnvoiEmailsPRDV } from "./rdv/reprise-envoi-prdv"
 import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
+import { autoValidationRateAlert, replayAutoValidationRateAlert } from "./recruiters/auto-validation-rate-alert"
 import { opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
 import { importReferentielRome } from "./referentiel-rome/referentiel-rome"
@@ -143,6 +144,18 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: createRoleManagement360,
     description: "Crée une collection jointure entre userWithAccounts, roleManagements, cfas et entreprises pour metabase",
+  },
+  {
+    fct: autoValidationRateAlert,
+    description: "Compare le taux d'auto-validation des comptes récent à la période précédente et alerte sur Slack en cas de chute",
+  },
+  {
+    fct: replayAutoValidationRateAlert,
+    description: "Rejoue jour par jour l'alerte sur le taux d'auto-validation des comptes, sans notifier",
+    cliOptions: [
+      { flags: "--from <date>", description: "Premier jour évalué (date ISO)" },
+      { flags: "--to <date>", description: "Dernier jour évalué (date ISO)" },
+    ],
   },
   {
     fct: opcoReminderJob,
@@ -339,6 +352,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
 
   {
+    fct: syncBrevoContactAttributes,
+    description: "Compare les attributs de contact du compte Brevo à ceux qu'attendent les imports, et crée les manquants avec --apply",
+    cliOptions: [{ flags: "--apply", description: "Crée les attributs manquants (sans --apply : rapport seul)" }],
+  },
+  {
     fct: sendContactsToBrevo,
     description: "Envoi à Brevo la liste des contacts",
   },
@@ -411,11 +429,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: fillSearchItemsCollection,
-    description: "Génère/met à jour la collection search_items (formations, jobs, recruteurs) pour MongoDB Search",
+    description: "Génère/met à jour les collections de recherche par mode (search_jobs, search_jobs_with_training, search_trainings)",
   },
   {
     fct: generateSearchItemsKeywordsContinuous,
-    description: "Génère les mots-clés des search_items sans keywords : cache puis API Mistral immédiate (plafonné par run)",
+    description: "Génère les mots-clés des offres indexées sans keywords : cache puis API Mistral immédiate (plafonné par run)",
     cliOptions: [{ flags: "--limit <n>", description: "Plafond d'appels API immédiats pour ce run (défaut 300)" }],
   },
   {
@@ -429,12 +447,12 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: syncSearchItemsDelta,
-    description: "Synchronise vers search_items les jobs_partners modifiés récemment (updated_at, fenêtre 10 min par défaut)",
+    description: "Synchronise vers l'index de recherche les jobs_partners modifiés récemment (updated_at, fenêtre 10 min par défaut)",
     cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à synchroniser (défaut : now − 10 min)" }],
   },
   {
     fct: controlSearchItemsDrift,
-    description: "Contrôle la dérive jobs_partners ↔ search_items et alerte Slack en cas d'écart",
+    description: "Contrôle la dérive jobs_partners ↔ index de recherche et alerte Slack en cas d'écart",
   },
   {
     fct: analyzeSearchQueries,
@@ -551,10 +569,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: updateHandiEngagement,
     description: "Télécharge le référentiel handi-engagement depuis S3 (siretlist/lba_handi_engage_flag.ndjson) et met à jour le référentiel d'engagement handicap",
-  },
-  {
-    fct: cleanClosedCompanies,
-    description: "Traite les recruteurs dont l'entreprise a fermé en les archivant et en désactivant les comptes associés",
   },
   {
     fct: processApec,

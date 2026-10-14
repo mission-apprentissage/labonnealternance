@@ -35,7 +35,9 @@ interface ILinks {
 
 const defaultUtmData = { utm_source: "lba", utm_medium: "email", utm_campaign: "promotion-emploi-jeunes-voeux" }
 
-const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche?mode=emplois`, params }: { baseUrl?: string; params: Record<string, string | null | undefined> }) => {
+const EMPLOI_SEARCH_RADIUS = "60"
+
+export const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche?mode=emplois`, params }: { baseUrl?: string; params: Record<string, string | null | undefined> }) => {
   const url = new URL(baseUrl)
 
   Object.entries(params).forEach(([key, value]) => {
@@ -58,6 +60,13 @@ const getFormationCoordinates = (formation: IFormationCatalogue): { latitude: st
 const getFormationSearchLabel = (formation: IFormationCatalogue, romeLabelByCode: Map<string, string>): string | null => {
   const [romeLabel] = resolveRomeLabels(formation.rome_codes, romeLabelByCode)
   return romeLabel ?? formation.intitule_long ?? null
+}
+
+// Sans vœu candidat, la recherche est centrée sur le lieu de formation (liens partenaires PRDV).
+export const buildFormationEmploiUrl = (formation: IFormationCatalogue, romeLabelByCode: Map<string, string>, trackingParams: Record<string, string>): string => {
+  const { latitude, longitude } = getFormationCoordinates(formation)
+  const locationParams = latitude && longitude ? { lieu_label: formation.localite, latitude, longitude, radius: EMPLOI_SEARCH_RADIUS } : {}
+  return buildEmploiUrl({ params: { q: getFormationSearchLabel(formation, romeLabelByCode), ...locationParams, ...trackingParams } })
 }
 
 const getFormations = (
@@ -241,7 +250,7 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
     // No formation found: fall back to a location-only search
     const { latitude, longitude, lieuLabel } = await getWishCommune()
     if (latitude && longitude) {
-      return buildEmploiUrl({ params: { lieu_label: lieuLabel, latitude, longitude, radius: "60", search_source: "training_links", ...utmParams } })
+      return buildEmploiUrl({ params: { lieu_label: lieuLabel, latitude, longitude, radius: EMPLOI_SEARCH_RADIUS, search_source: "training_links", ...utmParams } })
     }
     return buildEmploiUrl({ baseUrl: config.publicUrl, params: { search_source: "training_links", ...utmParams } })
   }
@@ -271,7 +280,7 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
   // formation retenue : elle peut être loin du candidat (repli sur les identifiants seuls) alors
   // qu'il cherche un emploi près de chez lui. Sans commune connue, recherche sur le métier seul.
   const { latitude, longitude, lieuLabel } = await getWishCommune()
-  const locationParams = latitude && longitude ? { lieu_label: lieuLabel, latitude, longitude, radius: "60" } : {}
+  const locationParams = latitude && longitude ? { lieu_label: lieuLabel, latitude, longitude, radius: EMPLOI_SEARCH_RADIUS } : {}
 
   return buildEmploiUrl({ params: { q, ...locationParams, search_source: "training_links", ...utmParams } })
 }

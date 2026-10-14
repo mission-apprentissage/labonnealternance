@@ -4,6 +4,23 @@ location / {
 
     client_max_body_size 0;
 
+    # Next 16 répond 500 quand le slug d'une fiche n'est pas décodable, avant même d'appeler proxy.ts :
+    # UTF-8 invalide (liens partenaires encodés en Latin-1, `%E9`) ou `%` littéral, que cacheComponents
+    # décode une seconde fois. Le slug est décoratif : on redirige vers la fiche avec un slug neutre (#5456).
+    # La regex porte sur $uri, décodé ; l'id est repris brut de $request_uri pour rester encodé.
+    # Location relative : en absolu, nginx y mettrait son port d'écoute interne.
+    location ~ "^/(?:emploi/[^/]+/[^/]+|formation/[^/]+)/(?!(?:[\x00-\x24\x26-\x7F]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*$)" {
+        absolute_redirect off;
+        if ($request_uri ~ "^/(emploi/[^/?]+/[^/?]+)/") {
+            return 308 /$1/offre$is_args$args;
+        }
+        if ($request_uri ~ "^/(formation/[^/?]+)/") {
+            return 308 /$1/formation$is_args$args;
+        }
+        set $upstream http://ui:3000;
+        include includes/proxy.conf;
+    }
+
     location /recherche {
         set $upstream http://ui:3000;
         include extra-includes/proxy-iframe.conf;

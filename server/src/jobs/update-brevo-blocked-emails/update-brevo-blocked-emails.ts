@@ -76,7 +76,7 @@ const updateBlockedEmails = async ({ AllAddresses }: { AllAddresses?: boolean })
   logger.info(`Début mise à jour blacklist Brevo`)
 
   const clientBrevo = new brevo.TransactionalEmailsApi()
-  clientBrevo.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, config.smtp.brevoApiKey)
+  clientBrevo.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, config.brevo.apiKey)
 
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)

@@ -23,8 +23,10 @@ export const ZSearchQuery = z.object({
   // Pas `source` : paramètre réservé de Plausible (attribution d'acquisition), banni de toute la
   // chaîne (URL, API, base) pour ne pas polluer les stats. L'URL et l'API acceptent `source` en alias.
   search_source: z
-    .enum(["suggestion", "free_text", "training_links", "external_sites"])
-    .describe("Suggestion d'autocomplete sélectionnée vs texte libre vs lien généré côté serveur (traininglinks, vœux Parcoursup) vs lien personnalisé posé par un site externe"),
+    .enum(["suggestion", "free_text", "training_links", "external_sites", "partner_links"])
+    .describe(
+      "Suggestion d'autocomplete sélectionnée vs texte libre vs lien généré côté serveur (traininglinks, vœux Parcoursup) vs lien personnalisé posé par un site externe vs lien généré pour un partenaire PRDV (/v2/appointment/links)"
+    ),
   filters: z
     .object({
       type: z.string().nullable(),

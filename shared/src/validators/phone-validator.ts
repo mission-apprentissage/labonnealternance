@@ -23,3 +23,23 @@ export const validatePhone = (phone: string) => {
 
   return true
 }
+
+// Métropole, DROM et collectivités du plan de numérotation français : numéros à 10 chiffres commençant par 0 depuis la métropole.
+// Hors de ce plan, un numéro peut aussi s'écrire en 10 chiffres (mobile belge 0470…) sans être joignable sous cette forme.
+const FRENCH_NUMBERING_PLAN_COUNTRIES = ["FR", "GP", "MQ", "GF", "RE", "YT", "PM", "BL", "MF"]
+
+/**
+ * Numéro valide pour `validatePhone`, ramené au format national à 10 chiffres sans séparateur (0612345678) :
+ * accepte espaces, points, tirets et préfixe +33 / +262… ; renvoie null pour un numéro invalide ou hors plan français.
+ */
+export const toFrenchNationalPhone = (phone: string): string | null => {
+  const compactPhone = phone.replace(/[\s.\-()]/g, "")
+  // libphonenumber extrait un numéro d'un texte et ignore ce qui l'entoure (« +33 6 12 34 56 78ssss »)
+  if (!/^\+?[0-9]+$/.test(compactPhone) || !validatePhone(compactPhone)) return null
+
+  const phoneNumber = parseMax(/^0[1-9]/.test(compactPhone) ? "+33" + compactPhone.substring(1) : compactPhone)
+  if (!phoneNumber?.country || !FRENCH_NUMBERING_PLAN_COUNTRIES.includes(phoneNumber.country)) return null
+
+  const nationalPhone = phoneNumber.formatNational().replace(/\D/g, "")
+  return /^0[1-9][0-9]{8}$/.test(nationalPhone) ? nationalPhone : null
+}

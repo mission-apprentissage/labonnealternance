@@ -14,7 +14,7 @@ Code : [relance-candidats-inactifs.ts](../server/src/jobs/applications/relance-c
 2. Ne garde que les inactifs ayant **au moins une candidature spontanée** (`job_origin = recruteurs_lba`) — les autres relèvent de la liste B.
 3. Exclut les candidats **déjà relancés** (log `RELANCE_INACTIVITE` dans `applicants_email_logs`).
 4. Pour chaque candidat, reconstruit un **lien de recherche personnalisé** à partir de `applications.application_url` (le `window.location.href` au moment de postuler), via le helper partagé [relance-search-url.ts](../server/src/jobs/applications/relance-search-url.ts). Depuis le nouveau moteur, cette URL est la fiche détail et la recherche d'origine est portée par son `?from=` ; les URL legacy encore en base (`?job_name=…&lat=…`) sont traduites par [search-url-compat.ts](../shared/src/utils/search-url-compat.ts).
-5. **Écrit d'abord le log `RELANCE_INACTIVITE`**, puis pousse `EMAIL / PRENOM / LIEN_RECHERCHE / METIER` dans la liste marketing Brevo via `uploadContactListToBrevo("MARKETING", …)`. L'ordre log-avant-envoi garantit le cap d'**une seule relance** même en cas de crash entre les deux (on préfère rater une relance qu'en envoyer deux). Un échec Brevo déclenche une alerte Slack.
+5. **Écrit d'abord le log `RELANCE_INACTIVITE`**, puis pousse `EMAIL / PRENOM / LIEN_RECHERCHE / METIER` dans la liste Brevo via `uploadContactListToBrevo`. L'ordre log-avant-envoi garantit le cap d'**une seule relance** même en cas de crash entre les deux (on préfère rater une relance qu'en envoyer deux). Un échec Brevo déclenche une alerte Slack.
 
 ### Personnalisation et fallback (2 templates côté Brevo)
 
@@ -25,7 +25,7 @@ Côté Brevo, growth segmente sur la présence de `LIEN_RECHERCHE` : rempli → 
 
 ## Configuration
 
-- `LBA_BREVO_RELANCE_CANDIDATS_LIST_ID` (→ `config.smtp.brevoRelanceCandidatsListId`) : ID de la liste Brevo, dans les secrets SOPS. **Garde-fou** : tant que la variable est absente, le job logue un warning et ne fait rien.
+- `LBA_BREVO_RELANCE_CANDIDATS_LIST_ID` (→ `config.brevo.listIds.relanceCandidats`) : ID de la liste Brevo, dans les secrets SOPS. **Garde-fou** : tant que la variable est absente, le job logue un warning et ne fait rien.
 - Index dédiés : `applicants_email_logs { applicant_id: 1, type: 1 }` et `applicants { last_connection: 1 }`.
 
 ## Tests

@@ -6,7 +6,6 @@ import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 
 import { ZPointGeometry } from "./address.model.js"
-import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 import { ZJob } from "./job.model.js"
 import { ZReferentielRome } from "./rome.model.js"
@@ -46,8 +45,6 @@ const ZRecruiterWritable = z.object({
   managed_by: z.string().describe("Id de l'utilisateur gestionnaire"),
 })
 
-const collectionName = "recruiters" as const
-
 export const ZRecruiter = ZRecruiterWritable.extend({
   _id: zObjectId,
   distance: z.number().nullish(),
@@ -77,64 +74,3 @@ export const ZRecruiterWithRomeDetailAndApplicationCount = ZRecruiter.omit({ job
 })
 
 export type IRecruiterWithRomeDetailAndApplicationCount = z.output<typeof ZRecruiterWithRomeDetailAndApplicationCount>
-
-export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
-  establishment_id: true,
-  establishment_raison_sociale: true,
-  establishment_enseigne: true,
-  establishment_siret: true,
-  address_detail: true,
-  address: true,
-  geo_coordinates: true,
-  geopoint: true,
-  is_delegated: true,
-  cfa_delegated_siret: true,
-  jobs: true,
-  origin: true,
-  opco: true,
-  idcc: true,
-  status: true,
-  naf_code: true,
-  naf_label: true,
-  establishment_size: true,
-  establishment_creation_date: true,
-})
-
-export type IAnonymizedRecruiter = z.output<typeof ZAnonymizedRecruiter>
-
-export default {
-  zod: ZRecruiter,
-  indexes: [
-    [{ geopoint: "2dsphere", status: 1, "jobs.job_status": 1, "jobs.rome_code": 1, "jobs.job_expiration_date": 1 }, {}],
-    [{ establishment_id: 1 }, {}],
-    [{ establishment_siret: 1 }, {}],
-    [{ cfa_delegated_siret: 1 }, {}],
-    [{ email: 1, establishment_siret: 1 }, { unique: true }],
-    [{ establishment_enseigne: 1 }, {}],
-    [{ establishment_raison_sociale: 1 }, {}],
-    [{ managed_by: 1 }, {}],
-    [{ "jobs.relance_mail_expiration_J1": 1 }, {}],
-    [{ "jobs.relance_mail_expiration_J7": 1 }, {}],
-    [{ "jobs.job_expiration_date": 1 }, {}],
-    [{ "jobs.job_status": 1 }, {}],
-
-    // Support API v2 request (by ROME without location)
-    [
-      {
-        "jobs.status": 1,
-        "jobs.rome_code": 1,
-        "jobs.job_creation_date": -1,
-      },
-      {},
-    ],
-    // Support API v2 request (without params)
-    [
-      {
-        "jobs.status": 1,
-        "jobs.job_creation_date": -1,
-      },
-      {},
-    ],
-  ],
-  collectionName,
-} as const satisfies IModelDescriptor

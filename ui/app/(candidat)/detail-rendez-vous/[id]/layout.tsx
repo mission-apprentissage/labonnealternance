@@ -6,6 +6,7 @@ import { Suspense } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader, PublicHeaderStatic } from "@/app/_components/PublicHeader"
 import { footerId, headerId, mainId } from "@/app/_components/zone-ids"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getSession } from "@/utils/get-session"
 
 export default function Layout({ children }: PropsWithChildren) {
@@ -22,7 +23,8 @@ export default function Layout({ children }: PropsWithChildren) {
         <DetailRendezVousHeaderWithUser />
       </Suspense>
       <Box id={mainId("detail-rendez-vous")} sx={{ pt: fr.spacing("4v") }} tabIndex={-1} role="main" component="main">
-        {children}
+        {/* cf. app/(editorial)/layout.tsx */}
+        <Suspense fallback={<LoadingEmptySpace />}>{children}</Suspense>
       </Box>
       <Footer zone="detail-rendez-vous" />
     </>

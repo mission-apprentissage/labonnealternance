@@ -25,7 +25,7 @@ Attributs poussés : `EMAIL`, `PRENOM`, `RAISON_SOCIALE`, `METIER` (titre de la 
 
 ## Configuration
 
-- `LBA_BREVO_NURTURING_ENTREPRISES_LIST_ID` (→ `config.smtp.brevoNurturingEntreprisesListId`) : ID de la liste Brevo (liste `nurturing-entreprises-plus-d'un-an`, compte Brevo Marketing), dans les secrets SOPS production. **Garde-fou** : job inactif si absente.
+- `LBA_BREVO_NURTURING_ENTREPRISES_LIST_ID` (→ `config.brevo.listIds.nurturingEntreprises`) : ID de la liste Brevo (liste `nurturing-entreprises-plus-d'un-an`), dans les secrets SOPS production. **Garde-fou** : job inactif si absente.
 - Côté Brevo : template + automation sur la liste (déclencheur : ajout à la liste, entrée unique).
 - Le `$match` initial porte sur `offer_creation` (indexée) + `partner_label` — volumétrie d'une tranche de 24 h, pas d'index supplémentaire requis. `relance_mail_nurturing` n'a pas d'index dédié (lookup par `managed_by`, déjà indexé).
 

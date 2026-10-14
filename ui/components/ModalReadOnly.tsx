@@ -12,12 +12,14 @@ export const ModalReadOnly = ({
   onClose,
   size = "md",
   hideCloseButton = false,
+  ariaLabelledBy,
 }: {
   children: React.ReactNode
   isOpen: boolean
   onClose: () => void
   size?: "xs" | "sm" | "md" | "lg" | "xl"
   hideCloseButton?: boolean
+  ariaLabelledBy?: string
 }) => {
   const isMobile = useIsMobileDevice()
 
@@ -31,6 +33,7 @@ export const ModalReadOnly = ({
   return (
     <Dialog
       open={isOpen}
+      aria-labelledby={ariaLabelledBy}
       onClose={(event: SyntheticEvent) => {
         event.stopPropagation()
         onClose()

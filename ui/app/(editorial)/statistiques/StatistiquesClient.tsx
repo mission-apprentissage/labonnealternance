@@ -32,7 +32,7 @@ function TabContent({ title, children }: { title: string; children: React.ReactN
       <Typography sx={{ mb: fr.spacing("6v"), fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
         {title}
       </Typography>
-      <hr />
+      <hr aria-hidden="true" />
       {children}
     </Box>
   )

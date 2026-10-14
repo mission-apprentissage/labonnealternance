@@ -54,7 +54,35 @@ const ZAppointmentResponseUnavailable = z.object({
 const ZAppointmentResponseSchema = z.union([ZAppointmentResponseAvailable, ZAppointmentResponseUnavailable])
 export type IAppointmentResponseSchema = z.output<typeof ZAppointmentResponseSchema>
 
+export const APPOINTMENT_LINKS_REFERRERS = [ReferrerApiEnum.PARCOURSUP, ReferrerApiEnum.AFFELNET, ReferrerApiEnum.ONISEP] as const
+
+export const ZAppointmentLink = z.strictObject({
+  id: z
+    .string()
+    .describe(
+      "Identifiant de la formation chez le partenaire : parcoursup_id pour Parcoursup, cle_ministere_educatif pour Affelnet, identifiant d'action IDEO2 pour ONISEP (répété si l'action couvre plusieurs formations)"
+    ),
+  url_rdva: z.string().describe("Lien de prise de rendez-vous La bonne alternance, identique au form_url de POST /v2/appointment"),
+  url_emploi: z.string().describe("Lien de recherche d'entreprises La bonne alternance pour le métier de la formation, autour du lieu de formation"),
+})
+export type IAppointmentLink = z.output<typeof ZAppointmentLink>
+
+const ZAppointmentLinksResponse = z.strictObject({
+  data: z.array(ZAppointmentLink).describe("Formations ouvertes à la prise de rendez-vous pour le partenaire appelant"),
+})
+export type IAppointmentLinksResponse = z.output<typeof ZAppointmentLinksResponse>
+
 export const zAppointmentsRouteV2 = {
+  get: {
+    "/v2/appointment/links": {
+      method: "get",
+      path: "/v2/appointment/links",
+      response: {
+        "200": ZAppointmentLinksResponse,
+      },
+      securityScheme: { auth: "api-apprentissage", access: "api-apprentissage:appointment", resources: {} },
+    },
+  },
   post: {
     "/v2/appointment": {
       method: "post",

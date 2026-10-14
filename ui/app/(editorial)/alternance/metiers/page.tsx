@@ -115,6 +115,7 @@ export default function AlternanceMetiers() {
             Tous les métiers accessibles en alternance
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{
               maxWidth: "93px",

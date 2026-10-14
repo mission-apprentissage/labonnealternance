@@ -1,6 +1,6 @@
 import { z } from "../helpers/zod-with-open-api.js"
 import { JOB_START_TYPE } from "../models/job.model.js"
-import { ZSearchItem } from "../models/search-items.model.js"
+import { ZSearchItem } from "../models/search-corpus.model.js"
 import { ADMIN_AREA_PATTERN } from "../utils/admin-area.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam } from "./params.js"
@@ -12,11 +12,11 @@ export const zSearchRoutes = {
       path: "/v1/search",
       querystring: z.strictObject({
         q: z.string().max(200).optional().describe("Texte libre de recherche (fuzzy, analyse française, 200 caractères max)"),
-        type: z.string().optional().describe("Type de résultat : offre ou formation"),
+        type: z.string().optional().describe("Déprécié : sans `mode`, type=formation équivaut à mode=formations, toute autre valeur à mode=emplois"),
         mode: z
           .enum(["emplois", "formations", "emplois_formation"])
           .optional()
-          .describe("Type de recherche : emplois (offres hors CFA/GEIQ), formations, ou emplois avec formation incluse (offres CFA/GEIQ)"),
+          .describe("Type de recherche : emplois (offres hors CFA/GEIQ), formations, ou emplois avec formation incluse (offres CFA/GEIQ). Défaut : emplois"),
         type_filter_label: z
           .union([z.array(z.string()), z.string().transform((v) => [v])])
           .optional()
@@ -73,10 +73,10 @@ export const zSearchRoutes = {
         page: z.coerce.number<number>().min(0).default(0).describe("Index de page (0-based)"),
         hitsPerPage: z.coerce.number<number>().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
         search_source: z
-          .enum(["suggestion", "free_text", "training_links", "external_sites"])
+          .enum(["suggestion", "free_text", "training_links", "external_sites", "partner_links"])
           .optional()
           .describe(
-            "Origine de la requête (télémétrie autocomplete UI, lien généré côté serveur par traininglinks pour les vœux Parcoursup, ou lien de recherche personnalisé posé par un site externe — sans effet sur les résultats)"
+            "Origine de la requête (télémétrie autocomplete UI, lien généré côté serveur par traininglinks pour les vœux Parcoursup, lien de recherche personnalisé posé par un site externe, ou lien généré pour un partenaire PRDV — sans effet sur les résultats)"
           ),
         // Alias déprécié de search_source (renommé : « source » est un paramètre réservé de
         // Plausible, mais seul le nom dans l'URL de page compte pour le tracker — pas les appels
@@ -84,7 +84,7 @@ export const zSearchRoutes = {
         // pré-renommage rejetterait search_source, clé inconnue du strictObject), et présent dans
         // les liens traininglinks émis avant le renommage (dernière campagne : 2026-08-24).
         // search_source prime si les deux sont fournis.
-        source: z.enum(["suggestion", "free_text", "training_links", "external_sites"]).optional().describe("Déprécié : utiliser search_source"),
+        source: z.enum(["suggestion", "free_text", "training_links", "external_sites", "partner_links"]).optional().describe("Déprécié : utiliser search_source"),
         internal: z
           .enum(["true", "false"])
           .transform((v) => v === "true")
@@ -134,6 +134,7 @@ export const zSearchRoutes = {
       querystring: z.strictObject({
         q: z.string().trim().min(3).max(200).describe("Texte de saisie (autocomplétion par préfixe, 3 à 200 caractères après trim)"),
         limit: z.coerce.number<number>().min(1).max(20).default(8).describe("Nombre de suggestions (max 20)"),
+        mode: z.enum(["emplois", "formations", "emplois_formation"]).default("emplois").describe("Type de recherche : les suggestions viennent du seul corpus de ce mode"),
       }),
       headers: z.looseObject({ referer: z.string().optional() }),
       response: {

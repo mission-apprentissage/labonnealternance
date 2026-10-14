@@ -2,8 +2,15 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import type { Filter, ObjectId } from "mongodb"
 import type { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
+import { ReferrerApiEnum } from "shared/constants/referers"
 import type { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
-import type { IAppointMentResponseAvailable, IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
+import type {
+  APPOINTMENT_LINKS_REFERRERS,
+  IAppointMentResponseAvailable,
+  IAppointmentContextAPI,
+  IAppointmentLink,
+  IAppointmentResponseSchema,
+} from "shared/routes/v2/appointments.routes.v2"
 import { logger } from "@/common/logger"
 import { isValidEmail } from "@/common/utils/is-valid-email"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -12,6 +19,8 @@ import config from "@/config"
 import { isEmailBlacklisted } from "./application.service"
 import { getMostFrequentEmailByGestionnaireSiret } from "./formation.service"
 import { getReferrerByKeyName } from "./referrers.service"
+import { loadRomeLabelByCode } from "./search/search-items.service"
+import { buildEmploiUrl, buildFormationEmploiUrl } from "./training-links.service"
 
 export const find = (conditions: Filter<IEligibleTrainingsForAppointment>, options = {}) =>
   getDbCollection("eligible_trainings_for_appointments").find(conditions, options).toArray()
@@ -77,6 +86,9 @@ const findEligibleTrainingByActionFormation = async (idActionFormation: string) 
     cle_ministere_educatif: referentielOnisepIdActionFormation.cle_ministere_educatif,
   })
 }
+
+const buildRdvaUrl = (referrerName: string, cleMinistereEducatif: string) =>
+  `${config.publicUrl}/rdva?referrer=${referrerName.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(cleMinistereEducatif)}`
 
 function isOpenForAppointments(eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerName: string) {
   return eligibleTrainingsForAppointment.referrers.includes(referrerName) && eligibleTrainingsForAppointment.lieu_formation_email
@@ -187,9 +199,7 @@ export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmen
     cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
     localite: eligibleTrainingsForAppointment.lieu_formation_city,
     cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-    form_url: `${config.publicUrl}/rdva?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
-      eligibleTrainingsForAppointment.cle_ministere_educatif
-    )}`,
+    form_url: buildRdvaUrl(referrerObj.name, eligibleTrainingsForAppointment.cle_ministere_educatif),
   }
 }
 
@@ -220,8 +230,78 @@ export const findElligibleTrainingForAppointmentPrivate = async (referrer: strin
     cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
     localite: eligibleTrainingsForAppointment.lieu_formation_city,
     cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-    form_url: `${config.publicUrl}/rdva?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
-      eligibleTrainingsForAppointment.cle_ministere_educatif
-    )}`,
+    form_url: buildRdvaUrl(referrerObj.name, eligibleTrainingsForAppointment.cle_ministere_educatif),
   }
+}
+
+type IAppointmentLinksReferrer = (typeof APPOINTMENT_LINKS_REFERRERS)[number]
+
+// Même critère d'éligibilité que isOpenForAppointments, appliqué en masse.
+export const getAppointmentLinks = async (referrer: IAppointmentLinksReferrer): Promise<IAppointmentLink[]> => {
+  const referrerObj = getReferrerByKeyName(referrer)
+  const trainings = await getDbCollection("eligible_trainings_for_appointments")
+    .find(
+      { referrers: referrerObj.name, lieu_formation_email: { $nin: [null, ""] } },
+      { projection: { _id: 0, cle_ministere_educatif: 1, parcoursup_id: 1, training_intitule_long: 1, etablissement_formateur_siret: 1 } }
+    )
+    .toArray()
+  const cles = trainings.map((training) => training.cle_ministere_educatif)
+  const sirets = [...new Set(trainings.map((training) => training.etablissement_formateur_siret).filter((siret) => siret != null))]
+
+  const [formations, romeLabelByCode, onisepIdsByCle, knownSirets] = await Promise.all([
+    getDbCollection("formationcatalogues")
+      .find(
+        { cle_ministere_educatif: { $in: cles } },
+        { projection: { _id: 0, cle_ministere_educatif: 1, localite: 1, intitule_long: 1, lieu_formation_geopoint: 1, rome_codes: 1 } }
+      )
+      .toArray(),
+    loadRomeLabelByCode(),
+    referrer === ReferrerApiEnum.ONISEP ? getOnisepIdsByCle(cles) : new Map<string, string[]>(),
+    getDbCollection("etablissements").distinct("formateur_siret", { formateur_siret: { $in: sirets } }),
+  ])
+  const siretSet = new Set<unknown>(knownSirets)
+  const formationByCle = new Map(formations.map((formation) => [formation.cle_ministere_educatif as string, formation as IFormationCatalogue]))
+  const trackingParams = { search_source: "partner_links", utm_source: referrer }
+
+  const links = trainings.flatMap(({ cle_ministere_educatif, parcoursup_id, training_intitule_long, etablissement_formateur_siret }) => {
+    // Sans établissement formateur, POST /v2/appointment répond 500 : formation exclue du lot.
+    if (!siretSet.has(etablissement_formateur_siret)) return []
+    const ids = getPartnerIds(referrer, { cle_ministere_educatif, parcoursup_id }, onisepIdsByCle)
+    if (!ids.length) return []
+
+    const formation = formationByCle.get(cle_ministere_educatif)
+    const url_emploi = formation
+      ? buildFormationEmploiUrl(formation, romeLabelByCode, trackingParams)
+      : buildEmploiUrl({ params: { q: training_intitule_long, ...trackingParams } })
+    const url_rdva = buildRdvaUrl(referrerObj.name, cle_ministere_educatif)
+    return ids.map((id) => ({ id, url_rdva, url_emploi }))
+  })
+
+  return links.sort((a, b) => a.id.localeCompare(b.id) || a.url_rdva.localeCompare(b.url_rdva))
+}
+
+const getPartnerIds = (
+  referrer: IAppointmentLinksReferrer,
+  training: Pick<IEligibleTrainingsForAppointment, "cle_ministere_educatif" | "parcoursup_id">,
+  onisepIdsByCle: Map<string, string[]>
+): string[] => {
+  switch (referrer) {
+    case ReferrerApiEnum.PARCOURSUP:
+      return training.parcoursup_id ? [training.parcoursup_id] : []
+    case ReferrerApiEnum.ONISEP:
+      return onisepIdsByCle.get(training.cle_ministere_educatif) ?? []
+    case ReferrerApiEnum.AFFELNET:
+      return [training.cle_ministere_educatif]
+  }
+}
+
+const getOnisepIdsByCle = async (cles: string[]): Promise<Map<string, string[]>> => {
+  const mappings = await getDbCollection("referentieloniseps")
+    .find({ cle_ministere_educatif: { $in: cles } }, { projection: { _id: 0, id_action_ideo2: 1, cle_ministere_educatif: 1 } })
+    .toArray()
+  const idsByCle = new Map<string, string[]>()
+  for (const { cle_ministere_educatif, id_action_ideo2 } of mappings) {
+    idsByCle.set(cle_ministere_educatif, [...new Set([...(idsByCle.get(cle_ministere_educatif) ?? []), id_action_ideo2])])
+  }
+  return idsByCle
 }

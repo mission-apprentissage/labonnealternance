@@ -1,8 +1,6 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
-import Input from "@codegouvfr/react-dsfr/Input"
-import { Box, Checkbox, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Stack, Typography } from "@mui/material"
+import { Box, Stack, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useState } from "react"
 import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
@@ -18,6 +16,8 @@ import ConfirmationActivationUtilisateur from "@/components/espace_pro/Confirmat
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
+import { AdminSearchInput } from "../_components/AdminSearchInput"
+import { MultiSelect } from "../_components/MultiSelect"
 import { getRecruteursColumns } from "../_utils/recruteursColumns"
 
 const accountTypes = [CFA, ENTREPRISE] as const
@@ -77,15 +77,15 @@ export function UsersList() {
     [attenteQuery.data, errorQuery.data]
   )
 
-  const [searchInput, setSearchInput] = useState("")
+  const [submittedSearch, setSubmittedSearch] = useState("")
   const [selectedStatuses, setSelectedStatuses] = useState<ETAT_UTILISATEUR[]>([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR])
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<AccountTypeValue[]>([...accountTypes])
   const [selectedOpcos, setSelectedOpcos] = useState<OpcoValue[]>([...opcoValues])
 
   const filteredUsers = useMemo(() => {
     let users = allUsers
-    if (searchInput) {
-      const q = searchInput.toLowerCase()
+    if (submittedSearch) {
+      const q = submittedSearch.toLowerCase()
       users = users.filter((u) => [u.establishment_raison_sociale, u.email, u.first_name, u.last_name, u.phone, u.establishment_siret].some((v) => v?.toLowerCase().includes(q)))
     }
     users = users.filter((u) => selectedStatuses.includes(getUserStatus(u.status as unknown as IUserRecruteur["status"]) as ETAT_UTILISATEUR))
@@ -95,7 +95,7 @@ export function UsersList() {
       users = users.filter((u) => selectedOpcos.includes(u.opco as OpcoValue))
     }
     return users
-  }, [allUsers, searchInput, selectedStatuses, selectedAccountTypes, selectedOpcos])
+  }, [allUsers, submittedSearch, selectedStatuses, selectedAccountTypes, selectedOpcos])
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -113,8 +113,13 @@ export function UsersList() {
       statusLabel={`Recruteurs à traiter (${filteredUsers.length})`}
       userRecruteurs={filteredUsers}
       onInvalidateData={refetch}
-      searchInput={searchInput}
-      onSearchInputChange={setSearchInput}
+      onSearch={setSubmittedSearch}
+      onReset={() => {
+        setSubmittedSearch("")
+        setSelectedStatuses([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR])
+        setSelectedAccountTypes([...accountTypes])
+        setSelectedOpcos([...opcoValues])
+      }}
       selectedStatuses={selectedStatuses}
       onSelectedStatusesChange={setSelectedStatuses}
       selectedAccountTypes={selectedAccountTypes}
@@ -130,8 +135,8 @@ function UserContent({
   statusLabel,
   userRecruteurs,
   onInvalidateData,
-  searchInput,
-  onSearchInputChange,
+  onSearch,
+  onReset,
   selectedStatuses,
   onSelectedStatusesChange,
   selectedAccountTypes,
@@ -143,8 +148,8 @@ function UserContent({
   statusLabel: string
   userRecruteurs: IUserRecruteurJson[]
   onInvalidateData: () => void
-  searchInput: string
-  onSearchInputChange: (v: string) => void
+  onSearch: (search: string) => void
+  onReset: () => void
   selectedStatuses: ETAT_UTILISATEUR[]
   onSelectedStatusesChange: (v: ETAT_UTILISATEUR[]) => void
   selectedAccountTypes: AccountTypeValue[]
@@ -171,23 +176,12 @@ function UserContent({
         onConfirmation={onInvalidateData}
       />
       {/* Ligne 1 : recherche */}
-      <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-end", mb: fr.spacing("3v") }}>
-        <Input
-          label="Rechercher"
-          nativeInputProps={{
-            value: searchInput,
-            placeholder: "Raison sociale, email, téléphone...",
-            onChange: (e) => onSearchInputChange(e.target.value),
-            style: { minWidth: "360px" },
-          }}
-        />
-        <Button iconId="fr-icon-search-line" priority="primary" style={{ marginBottom: "1.5rem" }}>
-          Rechercher
-        </Button>
+      <Box sx={{ mb: fr.spacing("6v") }}>
+        <AdminSearchInput label="Rechercher" placeholder="Raison sociale, email, téléphone..." onSearch={onSearch} onReset={onReset} />
       </Box>
 
       {/* Ligne 2 : filtres */}
-      <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("4v"), alignItems: "center" }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), "& > .MuiFormControl-root": { mb: fr.spacing("6v") } }}>
         <MultiSelect
           id="status"
           label="Statut"
@@ -216,64 +210,5 @@ function UserContent({
       </Box>
       <VirtualTable caption={statusLabel} columns={columns} data={userRecruteurs} defaultSortBy={[{ id: "createdAt", desc: false }]} hideSearch={true} />
     </>
-  )
-}
-
-function MultiSelect<T extends string>({
-  id,
-  label,
-  width,
-  items,
-  value,
-  onChange,
-  disabled = false,
-}: {
-  id: string
-  label: string
-  width: number
-  items: { value: T; label: string }[]
-  value: T[]
-  onChange: (newValue: T[]) => void
-  disabled?: boolean
-}) {
-  const allSelected = value.length === items.length
-  const someSelected = value.length > 0 && !allSelected
-
-  function handleChange(selected: string[]) {
-    if (selected.includes("__all__")) {
-      onChange(allSelected ? [] : items.map((i) => i.value))
-    } else {
-      onChange(selected as T[])
-    }
-  }
-
-  const displayLabel = value.length === 0 ? "Tous" : value.map((v) => items.find((i) => i.value === v)?.label ?? v).join(", ")
-
-  return (
-    <FormControl sx={{ width }} size="small" disabled={disabled}>
-      <InputLabel id={`${id}-label`} sx={{ fontSize: ".875rem" }}>
-        {label}
-      </InputLabel>
-      <Select
-        labelId={`${id}-label`}
-        multiple
-        value={value}
-        onChange={(e) => handleChange(e.target.value as string[])}
-        input={<OutlinedInput label={label} />}
-        renderValue={() => displayLabel}
-        MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
-      >
-        <MenuItem value="__all__" sx={{ borderBottom: "1px solid", borderColor: "divider" }}>
-          <Checkbox checked={allSelected} indeterminate={someSelected} size="small" />
-          <ListItemText primary={allSelected ? "Tout désélectionner" : "Tout sélectionner"} slotProps={{ primary: { fontSize: ".875rem" } }} />
-        </MenuItem>
-        {items.map((item) => (
-          <MenuItem key={item.value} value={item.value}>
-            <Checkbox checked={value.includes(item.value)} size="small" />
-            <ListItemText primary={item.label} slotProps={{ primary: { fontSize: ".875rem" } }} />
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
   )
 }

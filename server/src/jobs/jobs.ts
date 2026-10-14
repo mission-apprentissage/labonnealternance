@@ -62,10 +62,11 @@ import { removeEligibleTrainingsForAppointmentsNotInCatalogue } from "./rdv/remo
 import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
+import { autoValidationRateAlert } from "./recruiters/auto-validation-rate-alert"
 import { createApiUser } from "./recruiters/create-api-user"
 import { disableApiUser } from "./recruiters/disable-api-user"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
-import { opcoReminderJob } from "./recruiters/opco-reminder-job"
+import { OPCO_REMINDER_JOB_NAME, opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiter-offer-expiration-reminder-job"
 import { resetApiKey } from "./recruiters/reset-api-key"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
@@ -118,6 +119,11 @@ export async function setupJobProcessor() {
             handler: async () => closeJobsPartnersOnApplicationThreshold(),
             tag: "main",
           },
+          "Alerte sur le taux d'auto-validation des comptes": {
+            cron_string: "0 7 * * *",
+            handler: async () => autoValidationRateAlert(),
+            tag: "main",
+          },
           "Mise à jour des adresses emails bloquées": {
             cron_string: "5 0 * * *",
             handler: async () => updateBrevoBlockedEmails({}),
@@ -168,7 +174,7 @@ export async function setupJobProcessor() {
             cron_string: "25 9 * * *",
             handler: async () => recruiterOfferExpirationReminderJob(1),
           },
-          "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
+          [OPCO_REMINDER_JOB_NAME]: {
             cron_string: "30 0 * * 1,3,5",
             handler: opcoReminderJob,
             tag: "main",
@@ -277,7 +283,9 @@ export async function setupJobProcessor() {
           // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners ci-dessus) : mesuré en prod
           // le 29/08/2026, ce cron perdait 127 slots par 24 h en `noConcurrent_conflict`, soit un sur deux ;
           // la cadence effective de 10 min égalait DELTA_DEFAULT_WINDOW_MS, sans marge de recouvrement.
-          // Deux runs concurrents sont idempotents (lecture de jobs_partners, upsert search_items par _id).
+          // Noms « search_items » conservés : job-processor en fait le monitorSlug Sentry, un renommage
+          // recréerait les moniteurs et perdrait leur historique.
+          // Deux runs concurrents sont idempotents (lecture de jobs_partners, upsert par _id).
           "Sync delta search_items (jobs_partners modifiés)": {
             cron_string: "*/5 * * * *",
             handler: async () => syncSearchItemsDelta(),
@@ -297,8 +305,9 @@ export async function setupJobProcessor() {
             handler: controlSearchItemsDrift,
             tag: "main",
           },
-          "Analyse mensuelle des recherches utilisateurs (autocomplete + synonymes)": {
-            cron_string: "0 7 1 * *",
+          // Nom sans fréquence : job-processor en fait le monitorSlug Sentry (cf. noms « search_items »).
+          "Analyse des recherches utilisateurs (autocomplete + synonymes)": {
+            cron_string: "0 7 1,16 * *",
             handler: analyzeSearchQueries,
             tag: "slave",
             maxRuntimeInMinutes: 60,

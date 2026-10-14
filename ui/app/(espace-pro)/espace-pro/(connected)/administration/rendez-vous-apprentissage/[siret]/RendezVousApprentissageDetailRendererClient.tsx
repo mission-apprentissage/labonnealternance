@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Checkbox, FormControlLabel, Input, Typography } from "@mui/material"
 import { useParams, useRouter } from "next/navigation"
-import { createRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { IEligibleTrainingsForAppointmentJson, IETFAParametersJson, IEtablissementJson } from "shared"
 import { referrers } from "shared/constants/referers"
 import { z } from "zod"
@@ -16,6 +16,124 @@ import { formatDate } from "@/common/dayjs"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { apiPatch } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { EMAIL_FORMAT_ERROR, EMAIL_FORMAT_HINT } from "@/utils/validation-messages"
+
+function LieuFormationEmailField({ parameter, onSave }: { parameter: IEligibleTrainingsForAppointmentJson; onSave: (email: string) => Promise<void> }) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [error, setError] = useState<string | null>(null)
+  const inputId = `email-${parameter._id}`
+  const hintId = `${inputId}-hint`
+  const errorId = `${inputId}-error`
+
+  const save = async () => {
+    const email = inputRef.current.value.trim()
+    if (!z.email().safeParse(email).success) {
+      setError(EMAIL_FORMAT_ERROR)
+      inputRef.current.focus()
+      return
+    }
+    setError(null)
+    await onSave(email)
+  }
+
+  return (
+    <>
+      <label htmlFor={inputId} className={fr.cx("fr-sr-only")}>
+        E-mail du lieu de formation {parameter.training_intitule_long} (obligatoire)
+      </label>
+      <Typography id={hintId} className={fr.cx("fr-hint-text")} sx={{ fontSize: "12px" }}>
+        {EMAIL_FORMAT_HINT}
+      </Typography>
+      <Input
+        sx={{ mt: "8px !important", fontSize: "12px", width: 250 }}
+        className={fr.cx("fr-input")}
+        id={inputId}
+        inputRef={inputRef}
+        defaultValue={parameter?.lieu_formation_email}
+        type="email"
+        required
+        autoComplete="off"
+        error={Boolean(error)}
+        aria-describedby={error ? `${hintId} ${errorId}` : hintId}
+      />
+      {error && (
+        <Typography id={errorId} className={fr.cx("fr-message--error")} sx={{ mt: fr.spacing("1v"), fontSize: "12px", width: 250, whiteSpace: "normal" }}>
+          {error}
+        </Typography>
+      )}
+      <Box sx={{ mt: fr.spacing("4v") }}>
+        <Button onClick={save}>
+          Enregistrer l'e-mail
+          <span className="fr-sr-only"> de la formation {parameter.training_intitule_long}</span>
+        </Button>
+      </Box>
+    </>
+  )
+}
+
+function ReferrersField({ parameter, onSave, onSaved }: { parameter: IEligibleTrainingsForAppointmentJson; onSave: (referrers: string[]) => Promise<void>; onSaved: () => void }) {
+  const toast = useToast()
+  // État local mis à jour au clic : les props ne changent qu'au router.refresh(), un second clic entre-temps partirait d'une liste périmée
+  const [selectedReferrers, setSelectedReferrers] = useState<string[]>(parameter.referrers ?? [])
+  const [isPending, setIsPending] = useState(false)
+  const pendingRef = useRef(false)
+  const legendId = `referrers-${parameter._id}`
+  const serverReferrers = (parameter.referrers ?? []).join(",")
+
+  useEffect(() => {
+    if (!pendingRef.current) setSelectedReferrers(serverReferrers ? serverReferrers.split(",") : [])
+  }, [serverReferrers])
+
+  const onChange = async (referrer: (typeof referrers)[keyof typeof referrers], checked: boolean) => {
+    // Pas de `disabled` pendant l'envoi : il retirerait le focus de la case au clavier
+    if (pendingRef.current) return
+    const previous = selectedReferrers
+    const next = checked ? previous.concat(referrer.name) : previous.filter((item) => item !== referrer.name)
+    pendingRef.current = true
+    setIsPending(true)
+    setSelectedReferrers(next)
+    try {
+      await onSave(next)
+      toast({
+        title: `Prise de rendez-vous ${checked ? "activée" : "désactivée"} sur ${referrer.full_name} pour la formation ${parameter.training_intitule_long}.`,
+      })
+      onSaved()
+    } catch (_error) {
+      setSelectedReferrers(previous)
+      toast({ title: `La diffusion sur ${referrer.full_name} n'a pas pu être enregistrée. Réessayez.`, variant: "error" })
+    } finally {
+      pendingRef.current = false
+      setIsPending(false)
+    }
+  }
+
+  return (
+    <Box role="group" aria-labelledby={legendId} aria-busy={isPending} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+      <span id={legendId} className="fr-sr-only">
+        Plateformes de diffusion de la prise de rendez-vous pour {parameter.training_intitule_long}
+      </span>
+      {Object.values(referrers).map((referrer) => {
+        const checkboxId = `${parameter._id}-${referrer.name}`
+        return (
+          <FormControlLabel
+            key={referrer.name}
+            htmlFor={checkboxId}
+            label={referrer.full_name}
+            control={
+              <Checkbox
+                id={checkboxId}
+                sx={{ pt: 0, pb: fr.spacing("1v") }}
+                checked={selectedReferrers.includes(referrer.name)}
+                value={referrer.name}
+                onChange={(event) => onChange(referrer, event.target.checked)}
+              />
+            }
+          />
+        )
+      })}
+    </Box>
+  )
+}
 
 export default function RendezVousApprentissageDetailRendererClient({
   eligibleTrainingsForAppointmentResult,
@@ -36,10 +154,6 @@ export default function RendezVousApprentissageDetailRendererClient({
   }
 
   const saveEmail = async (parameterId, email, cle_ministere_educatif) => {
-    if (!email || !z.email().safeParse(email).success) {
-      return toast({ title: "Email de contact non valide.", variant: "error" })
-    }
-
     await patchEligibleTrainingsForAppointment(parameterId, { lieu_formation_email: email, cle_ministere_educatif, is_lieu_formation_email_customized: true })
 
     toast({ title: "Email de contact mis à jour." })
@@ -57,33 +171,24 @@ export default function RendezVousApprentissageDetailRendererClient({
     refreshPage()
   }
 
-  const onCheckboxChange = async ({ parameter, checked, referrer }) => {
-    if (checked) {
-      await patchEligibleTrainingsForAppointment(parameter._id, { referrers: parameter.referrers.map((ref) => ref).concat(referrer.name) })
-      refreshPage()
-    } else {
-      await patchEligibleTrainingsForAppointment(parameter._id, { referrers: parameter.referrers.map((ref) => ref).filter((item) => item !== referrer.name) })
-      refreshPage()
-    }
-  }
-
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
-      <Typography component="h2" sx={{ fontWeight: 700, mt: fr.spacing("4v") }}>
+      <Typography variant="h2" component="h1" gutterBottom>
         {title}
       </Typography>
       <Box>
         {eligibleTrainingsForAppointmentResult ? (
           <>
             <EtablissementComponent id={etablissement?._id.toString()} />
-            <Box sx={{ display: "flex", backgroundColor: "white", mt: fr.spacing("10v"), border: "1px solid #E0E5ED", borderRadius: "4px", borderBottom: "none" }}>
-              <Typography sx={{ flex: "1", fontSize: "20px", fontWeight: 700, p: fr.spacing("4v") }}>Formations</Typography>
-            </Box>
-            <Box sx={{ border: "1px solid #E0E5ED", overflow: "auto", cursor: "pointer" }}>
-              <Box className="fr-table">
+            <Typography variant="h3" component="h2" gutterBottom sx={{ mt: fr.spacing("10v") }}>
+              Formations
+            </Typography>
+            <Box sx={{ overflow: "hidden", cursor: "pointer" }}>
+              <Box className={fr.cx("fr-table", "fr-mb-0")}>
                 <Box className="fr-table__wrapper">
-                  <Box className="fr-table__container">
+                  {/* Défilement vertical dans le conteneur qui défile aussi à l'horizontale : sa barre horizontale reste à l'écran sur desktop */}
+                  <Box className="fr-table__container" sx={{ maxHeight: { md: "70vh" }, "& thead th": { position: { md: "sticky" }, top: 0, zIndex: 1 } }}>
                     <Box className="fr-table__content">
                       <Box component="table" sx={{ backgroundColor: "white" }}>
                         <Box component="thead" sx={{ color: "#ADB2BC" }}>
@@ -91,7 +196,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                             <Box component="th">FORMATION</Box>
                             <Box component="th">ADRESSE</Box>
                             <Box component="th" sx={{ width: "250px" }}>
-                              LIEU FORMATION EMAIL
+                              LIEU FORMATION EMAIL (OBLIGATOIRE)
                             </Box>
                             <Box component="th" sx={{ width: "450px" }}>
                               CATALOGUE
@@ -101,8 +206,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                         </Box>
                         <Box component="tbody">
                           {eligibleTrainingsForAppointmentResult.parameters.map((parameter: IEligibleTrainingsForAppointmentJson, i) => {
-                            const emailRef = createRef()
-                            const emailFocusRef = createRef()
+                            const disableOverridingId = `disable-overriding-${parameter._id}`
 
                             return (
                               <Box component="tr" key={i} sx={{ _hover: { bg: "#f4f4f4", transition: "0.5s" } }}>
@@ -137,27 +241,13 @@ export default function RendezVousApprentissageDetailRendererClient({
                                   </Box>
                                 </Box>
                                 <Box component="td" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important" }}>
-                                  <Box sx={{ width: 180 }}>
+                                  <Box sx={{ width: 180, whiteSpace: "normal" }}>
                                     <Typography>{parameter.etablissement_formateur_street}</Typography>
                                     <Typography>{parameter.etablissement_formateur_zip_code}</Typography>
                                   </Box>
                                 </Box>
-                                {/* @ts-expect-error: TODO */}
-                                <Box component="td" onClick={() => emailFocusRef.current.focus()} sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important" }}>
-                                  <Input
-                                    sx={{ mt: "8px !important", fontSize: "12px", width: 250 }}
-                                    className={fr.cx("fr-input")}
-                                    inputRef={emailRef}
-                                    defaultValue={parameter?.lieu_formation_email}
-                                  />
-                                  <Box
-                                    sx={{
-                                      mt: fr.spacing("4v"),
-                                    }}
-                                  >
-                                    {/* @ts-expect-error: TODO */}
-                                    <Button onClick={async () => saveEmail(parameter._id, emailRef.current.value, parameter.cle_ministere_educatif)}>OK</Button>
-                                  </Box>
+                                <Box component="td" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important" }}>
+                                  <LieuFormationEmailField parameter={parameter} onSave={(email) => saveEmail(parameter._id, email, parameter.cle_ministere_educatif)} />
                                 </Box>
                                 <Box component="td" align="center" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important", width: "350px" }}>
                                   <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
@@ -165,14 +255,26 @@ export default function RendezVousApprentissageDetailRendererClient({
                                       <InfoTooltip label="Informations sur la désactivation de l'écrasement du mail">
                                         Désactiver l'écrasement du mail via la synchronisation catalogue
                                       </InfoTooltip>
-                                      <Typography sx={{ ml: fr.spacing("1v"), width: 140 }}>DESACTIVER</Typography>
                                     </Box>
-                                    <Checkbox
-                                      sx={{ pt: 0, pb: fr.spacing("1v") }}
-                                      checked={parameter?.is_lieu_formation_email_customized}
-                                      defaultChecked={parameter?.is_lieu_formation_email_customized}
-                                      onChange={async (event) => disableEmailOverriding(parameter._id, event.target.checked)}
-                                      className={fr.cx("fr-mt-0")}
+                                    <FormControlLabel
+                                      htmlFor={disableOverridingId}
+                                      labelPlacement="start"
+                                      sx={{ ml: fr.spacing("1v"), mr: 0, alignItems: "flex-start" }}
+                                      label={
+                                        <Typography sx={{ width: 140, textAlign: "left" }}>
+                                          DESACTIVER
+                                          <span className="fr-sr-only"> l'écrasement de l'e-mail par la synchronisation catalogue</span>
+                                        </Typography>
+                                      }
+                                      control={
+                                        <Checkbox
+                                          id={disableOverridingId}
+                                          sx={{ pt: 0, pb: fr.spacing("1v") }}
+                                          checked={parameter?.is_lieu_formation_email_customized}
+                                          onChange={async (event) => disableEmailOverriding(parameter._id, event.target.checked)}
+                                          className={fr.cx("fr-mt-0")}
+                                        />
+                                      }
                                     />
                                   </Box>
                                   <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
@@ -191,25 +293,11 @@ export default function RendezVousApprentissageDetailRendererClient({
                                   </Box>
                                 </Box>
                                 <Box component="td" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important" }}>
-                                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                                    {Object.values(referrers).map((referrer, i) => {
-                                      const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
-                                      return (
-                                        <FormControlLabel
-                                          key={`${referrer.name}-${i}`}
-                                          label={referrer.name}
-                                          control={
-                                            <Checkbox
-                                              sx={{ pt: 0, pb: fr.spacing("1v") }}
-                                              checked={!!parameterReferrers}
-                                              value={referrer.name}
-                                              onChange={async (event) => onCheckboxChange({ parameter, referrer, checked: event.target.checked })}
-                                            />
-                                          }
-                                        />
-                                      )
-                                    })}
-                                  </Box>
+                                  <ReferrersField
+                                    parameter={parameter}
+                                    onSave={(next) => patchEligibleTrainingsForAppointment(parameter._id, { referrers: next })}
+                                    onSaved={refreshPage}
+                                  />
                                 </Box>
                               </Box>
                             )

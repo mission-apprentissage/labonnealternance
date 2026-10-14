@@ -33,7 +33,9 @@ export function LbaItemTags({
         width={383}
         tooltipContent={
           <Typography
+            component="span"
             sx={{
+              display: "block",
               fontSize: "12px",
               lineHeight: "21px",
               padding: fr.spacing("2v"),
@@ -68,10 +70,12 @@ export function LbaItemTags({
 
   return (
     <Box
+      component="p"
       sx={{
         display: "flex",
         flexWrap: "wrap",
         gap: "4px",
+        m: 0,
       }}
     >
       {tags}

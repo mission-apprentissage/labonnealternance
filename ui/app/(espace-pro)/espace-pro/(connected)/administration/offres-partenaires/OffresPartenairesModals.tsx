@@ -3,19 +3,24 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, Typography } from "@mui/material"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { IJobsPartnersOfferForAdminJSON } from "shared/models/jobs-partners.model"
 import { useJobsPartnersAdminActions } from "@/app/hooks/use-jobs-partners-admin-actions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
 export function ConfirmationDesactivationOffre({ offer, isOpen, onClose }: { offer: IJobsPartnersOfferForAdminJSON | null; isOpen: boolean; onClose: () => void }) {
   const [reason, setReason] = useState("")
+  const [showError, setShowError] = useState(false)
+  const reasonRef = useRef<HTMLTextAreaElement>(null)
   const { deactivate } = useJobsPartnersAdminActions()
 
   if (!offer) return null
 
+  const reasonError = showError && !reason.trim() ? "Précisez la raison de la désactivation" : null
+
   const handleClose = () => {
     setReason("")
+    setShowError(false)
     onClose()
   }
 
@@ -28,7 +33,13 @@ export function ConfirmationDesactivationOffre({ offer, isOpen, onClose }: { off
         <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>
           Vous êtes sur le point de désactiver l'offre « {offer.offer_title} ». Pouvez-vous préciser pour quelle raison ?
         </Typography>
-        <Input label="Raison de la désactivation" nativeTextAreaProps={{ value: reason, onChange: (e) => setReason(e.target.value), rows: 3 }} textArea />
+        <Input
+          label="Raison de la désactivation (obligatoire)"
+          state={reasonError ? "error" : "default"}
+          stateRelatedMessage={reasonError}
+          nativeTextAreaProps={{ ref: reasonRef, value: reason, onChange: (e) => setReason(e.target.value), rows: 3, required: true, "aria-invalid": Boolean(reasonError) }}
+          textArea
+        />
         <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", mt: fr.spacing("3v") }}>
           <Box sx={{ mr: fr.spacing("3v") }}>
             <Button priority="secondary" onClick={handleClose}>
@@ -36,8 +47,12 @@ export function ConfirmationDesactivationOffre({ offer, isOpen, onClose }: { off
             </Button>
           </Box>
           <Button
-            disabled={!reason.trim()}
             onClick={async () => {
+              if (!reason.trim()) {
+                setShowError(true)
+                reasonRef.current?.focus()
+                return
+              }
               await deactivate(offer._id, reason.trim())
               handleClose()
             }}

@@ -1,10 +1,11 @@
 import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
 import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveDbEntity, saveEntrepriseUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
+import { roleManagementEventFactory, saveDbEntity, saveEntreprise, saveEntrepriseUserTest, saveRoleManagement, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { AccessEntityType, AccessStatus, JOB_CLOSURE_ORIGIN, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -16,11 +17,13 @@ import type { ICFA } from "shared/models/cfa.model"
 import type { IFormationCatalogue } from "shared/models/formation.model"
 import { zFormationCatalogueSchema } from "shared/models/formation.model"
 import type { IEntreprise, IJobCreate, IReferentielRome, IUserWithAccount } from "shared/models/index"
-import { JOB_START_TYPE } from "shared/models/job.model"
+import { JOB_START_TYPE, OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { buildEstablishmentId } from "./etablissement.service"
 import {
   ARCHIVE_FORMULAIRE_REASON,
   archiveFormulaire,
@@ -30,7 +33,9 @@ import {
   createJobDelegations,
   getCompetencesRomeFromPartnerJob,
   getFormulairesForCfaManagedEnterprises,
+  getFormulaireWithRomeDetail,
   jobPartnersToRecruiter,
+  normalizeOfferOrigin,
   provideOffre,
 } from "./formulaire.service"
 import mailer from "./mailer.service"
@@ -137,6 +142,24 @@ describe("createJob", () => {
       .toMatchSnapshot()
   }, 20_000)
 
+  it.each([undefined, "Labonnealternance", "LBA", ""])(
+    "enregistre l'origine %j comme « La bonne alternance »",
+    async (origin) => {
+      const result = await createJob({ user, siret: entreprise.siret, job: generateValidJobWritable(), origin })
+
+      const stored = await getDbCollection("jobs_partners").findOne({ _id: result._id })
+      expect.soft(stored?.offer_origin).toBe(JOBS_PARTNERS_OFFER_ORIGIN.LBA)
+    },
+    20_000
+  )
+
+  it("conserve une origine partenaire", async () => {
+    const result = await createJob({ user, siret: entreprise.siret, job: generateValidJobWritable(), origin: "1jeune1solution" })
+
+    const stored = await getDbCollection("jobs_partners").findOne({ _id: result._id })
+    expect.soft(stored?.offer_origin).toBe("1jeune1solution")
+  }, 20_000)
+
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
     job.competences_rome!.savoir_etre_professionnel = [
@@ -195,6 +218,19 @@ describe("createJob", () => {
     await expect
       .soft(async () => createJob({ user, siret: entreprise.siret, job }))
       .rejects.toThrow(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${removeAccents(job.rome_appellation_label.toLowerCase())}`)
+  })
+})
+
+describe("normalizeOfferOrigin", () => {
+  it.each([undefined, null, "", "  ", "lba", "LBA", "Lba", " lba ", "labonnealternance", "Labonnealternance", "LABONNEALTERNANCE"])(
+    "ramène %j à « La bonne alternance »",
+    (origin) => {
+      expect(normalizeOfferOrigin(origin)).toBe(JOBS_PARTNERS_OFFER_ORIGIN.LBA)
+    }
+  )
+
+  it.each(["1jeune1solution", "OPCOEP", "lba-campagne", "la bonne alternance api", JOBS_PARTNERS_OFFER_ORIGIN.LBA])("conserve %j", (origin) => {
+    expect(normalizeOfferOrigin(origin)).toBe(origin)
   })
 })
 
@@ -273,6 +309,28 @@ describe("jobPartnersToRecruiter", () => {
   it("should keep a description that merely starts with the rome definition", () => {
     const written = `${referentielRome.definition} Chez nous, un tuteur vous accompagne dès la première semaine.`
     expect(jobDescriptionOf(written)).toBe(written)
+  })
+
+  describe("with a stored description mode", () => {
+    const recruiterJobOf = (overrides: Partial<IJobsPartnersOfferPrivate>) =>
+      jobPartnersToRecruiter([{ ...generateJobsPartnersOfferPrivate(overrides), rome_detail: referentielRome }], role, user, entreprise).jobs[0]
+
+    it("should trust the structured mode over a description that no longer matches the rome definition", () => {
+      // définition recopiée au dépôt puis modifiée par un réimport du référentiel
+      const job = recruiterJobOf({
+        offer_description: "Ancienne définition ROME, remplacée depuis dans le référentiel.",
+        offer_description_mode: OFFER_DESCRIPTION_MODE.STRUCTURED,
+      })
+      expect.soft(job.job_description).toBeNull()
+      expect.soft(job.competences_rome).not.toBeNull()
+    })
+
+    it("should return the description of a custom offer, without competences", () => {
+      const written = "Vous rejoindrez notre atelier de 12 personnes pour préparer un BTS maintenance."
+      const job = recruiterJobOf({ offer_description: written, offer_description_mode: OFFER_DESCRIPTION_MODE.CUSTOM })
+      expect.soft(job.job_description).toBe(written)
+      expect.soft(job.competences_rome).toBeNull()
+    })
   })
 })
 
@@ -823,5 +881,22 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       expect.soft(job.updated_at).toEqual(updated_at)
       expect.soft(job.offer_status_history).toHaveLength(0)
     })
+  })
+})
+
+describe("getFormulaireWithRomeDetail — utilisateur rattaché à plusieurs entreprises", () => {
+  it("should derive the recruiter status from the role on the requested company", async () => {
+    const { user } = await saveEntrepriseUserTest({}, { status: [roleManagementEventFactory({ status: AccessStatus.DENIED })] }, { siret: "11111111100011" })
+    const entrepriseValidee = await saveEntreprise({ siret: "22222222200022" })
+    await saveRoleManagement({
+      user_id: user._id,
+      authorized_id: entrepriseValidee._id.toString(),
+      authorized_type: AccessEntityType.ENTREPRISE,
+      status: [roleManagementEventFactory({ status: AccessStatus.GRANTED })],
+    })
+
+    const recruiter = await getFormulaireWithRomeDetail({ establishment_id: buildEstablishmentId(user._id, entrepriseValidee.siret) })
+
+    expect(recruiter?.status).toBe(RECRUITER_STATUS.ACTIF)
   })
 })

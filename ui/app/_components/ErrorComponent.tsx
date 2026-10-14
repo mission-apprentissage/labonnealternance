@@ -119,7 +119,9 @@ export function ErrorComponent({ error }: ErrorProps) {
           <Box tabIndex={-1} id={mainId("error")} role="main" sx={{ flex: 1 }}>
             <Typography variant="h1">Erreur</Typography>
 
-            <Typography variant="h2">Un problème technique est survenu</Typography>
+            <Typography component="p" variant="h2">
+              Un problème technique est survenu
+            </Typography>
 
             <Typography
               sx={{

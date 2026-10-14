@@ -1,9 +1,13 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { findIndexed } from "@tests/utils/search-index.test.utils"
 import type { ObjectId } from "mongodb"
+import { generateComputedJobsPartnersFixture, generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { getRootLogger } from "@/common/logger"
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import * as sentryUtils from "@/common/utils/sentry-utils"
@@ -59,7 +63,7 @@ describe("Importing computed_jobs_partners into jobs_partners", () => {
     it("remonte les _id jobs_partners des offres importées, y compris quand ils diffèrent du computed", async () => {
       // "existing_3" est déjà dans jobs_partners avec son propre _id, et son document computed en a
       // un autre : c'est l'_id de jobs_partners qu'il faut remonter, sinon l'appelant travaille sur
-      // un _id qui n'existe pas dans la collection (l'indexation search_items le traiterait comme
+      // un _id qui n'existe pas dans la collection (l'indexation le traiterait comme
       // une offre disparue et tenterait de la retirer de l'index).
       const existingJobPartner = await getDbCollection("jobs_partners").findOne({ partner_job_id: "existing_3" })
       const computedOfExisting = await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: "existing_3" })
@@ -109,7 +113,7 @@ describe("when computed_jobs_partners updateOne in the catch block fails", () =>
       if (name === "jobs_partners") {
         return new Proxy(collection, {
           get(target, prop, receiver) {
-            if (prop === "updateOne") return () => Promise.reject(new Error("jobs_partners DB error"))
+            if (prop === "bulkWrite") return () => Promise.reject(new Error("jobs_partners DB error"))
             const value = Reflect.get(target, prop, receiver)
             return typeof value === "function" ? value.bind(target) : value
           },
@@ -242,7 +246,7 @@ describe("offer_status_history lors de l'import", () => {
   })
 })
 
-describe("updated_at posé par l'import et fenêtre du cron delta search_items", () => {
+describe("updated_at posé par l'import et fenêtre du cron delta de l'index de recherche", () => {
   useMongo()
 
   afterEach(async () => {
@@ -250,7 +254,6 @@ describe("updated_at posé par l'import et fenêtre du cron delta search_items",
     vi.restoreAllMocks()
     await getDbCollection("computed_jobs_partners").deleteMany({})
     await getDbCollection("jobs_partners").deleteMany({})
-    await getDbCollection("search_items").deleteMany({})
   })
 
   /**
@@ -258,8 +261,8 @@ describe("updated_at posé par l'import et fenêtre du cron delta search_items",
    * position indexée périmée. Cf. le commentaire sur updated_at dans importFromComputedToJobsPartners.
    *
    * L'horloge est simulée sur Date seulement (le driver Mongo dépend des timers) et avance de
-   * 6 min avant chaque écriture : 1re offre à t0+6, 2e à t0+12. Le delta suivant (fenêtre
-   * [t0+2, t0+12]) doit voir les deux ; datées de t0, il n'en verrait aucune.
+   * 6 min entre la lecture du lot et son écriture : les offres sont écrites à t0+6. Le delta suivant
+   * (fenêtre [t0−4, t0+6]) doit les voir ; datées de t0, elles seraient hors fenêtre.
    */
   it("un document écrit tard dans un import long est repris par le delta : updated_at doit dater de l'écriture, pas du début de l'import", async () => {
     const t0 = new Date("2026-09-11T00:01:00.000Z")
@@ -286,24 +289,27 @@ describe("updated_at posé par l'import et fenêtre du cron delta search_items",
       })
     }
 
-    // L'import lit l'offre existante (findOne) puis l'écrit (updateOne) : avancer l'horloge à la
-    // RÉSOLUTION de la lecture place chaque écriture 6 min plus tard que la précédente. Ni à
-    // l'appel de findOne (les deux lectures partent ensemble, l'horloge avancerait deux fois avant
-    // la première écriture), ni sur updateOne (ses arguments, dont l'horodatage, sont évalués
-    // avant l'appel).
+    // L'import lit les offres existantes du lot (find) puis l'écrit (bulkWrite) : avancer l'horloge à
+    // la RÉSOLUTION de la lecture, pas sur bulkWrite (ses arguments, dont l'horodatage, sont
+    // évalués avant l'appel).
     const getDbCollectionOriginal = mongodbUtils.getDbCollection
-    vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
+    const getDbCollectionSpy = vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
       const collection = getDbCollectionOriginal(name)
       if (name !== "jobs_partners") return collection
       return new Proxy(collection, {
         get(target, prop, receiver) {
           const value = Reflect.get(target, prop, receiver)
-          if (prop === "findOne") {
-            return (...args: unknown[]) =>
-              ((value as (...a: unknown[]) => Promise<unknown>).apply(target, args) as Promise<unknown>).then((found) => {
-                vi.setSystemTime(new Date(Date.now() + 6 * 60_000))
-                return found
-              })
+          if (prop === "find") {
+            return (...args: unknown[]) => {
+              const cursor = (value as (...a: unknown[]) => { toArray: () => Promise<unknown[]> }).apply(target, args)
+              return {
+                toArray: async () => {
+                  const found = await cursor.toArray()
+                  vi.setSystemTime(new Date(Date.now() + 6 * 60_000))
+                  return found
+                },
+              }
+            }
           }
           return typeof value === "function" ? value.bind(target) : value
         },
@@ -311,6 +317,7 @@ describe("updated_at posé par l'import et fenêtre du cron delta search_items",
     })
 
     await importFromComputedToJobsPartners()
+    getDbCollectionSpy.mockRestore()
 
     // Le delta tourne juste après la fin de l'import, avec sa fenêtre par défaut de 10 min.
     const { scanned } = await syncSearchItemsDelta()
@@ -318,13 +325,85 @@ describe("updated_at posé par l'import et fenêtre du cron delta search_items",
     const written = await getDbCollection("jobs_partners")
       .find({ partner_job_id: { $in: ["late_1", "late_2"] } })
       .toArray()
-    // Chaque document est horodaté à sa propre écriture : deux valeurs distinctes, toutes ≥ t0+6.
-    expect(new Set(written.map((d) => d.updated_at.getTime())).size).toBe(2)
-    for (const d of written) expect(d.updated_at.getTime()).toBeGreaterThanOrEqual(t0.getTime() + 6 * 60_000)
+    // Horodatés à l'écriture du lot (t0+6), pas au début de l'import (t0).
+    for (const d of written) expect(d.updated_at.getTime()).toBe(t0.getTime() + 6 * 60_000)
     expect(scanned).toBe(2)
     for (const s of stale) {
-      const indexed = await getDbCollection("search_items").findOne({ _id: s._id })
+      const indexed = await findIndexed(s._id)
       expect(indexed?.location?.coordinates).toEqual([-1.264835, 47.08357])
     }
+  })
+})
+
+describe("import par lots", () => {
+  useMongo()
+
+  afterEach(async () => {
+    vi.restoreAllMocks()
+    await getDbCollection("computed_jobs_partners").deleteMany({})
+    await getDbCollection("jobs_partners").deleteMany({})
+  })
+
+  it("une écriture en échec n'invalide que son offre, pas le reste du lot", async () => {
+    // offer_status_history corrompu : le $push de cette seule offre est refusé par MongoDB.
+    await getDbCollection("jobs_partners").insertOne(
+      { ...generateJobsPartnersOfferPrivate({ partner_job_id: "corrupted_1" }), offer_status_history: "corrompu" as never },
+      { bypassDocumentValidation: true }
+    )
+    const historyEntry = { date: new Date(), status: JOB_STATUS_ENGLISH.ACTIVE, reason: "test", granted_by: "test" }
+    const failing = await createComputedJobPartner({ partner_job_id: "corrupted_1", validated: true, offer_status_history: [historyEntry] })
+    const succeeding = await createComputedJobPartner({ partner_job_id: "healthy_1", validated: true })
+    // biome-ignore lint/suspicious/noEmptyBlockStatements: test
+    vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
+    // `logger` est un Proxy vers l'instance racine hors requête HTTP : c'est elle qu'on espionne.
+    const loggerErrorSpy = vi.spyOn(getRootLogger(), "error")
+
+    let importedIds: ObjectId[] = []
+    const counters = await importFromComputedToJobsPartners(undefined, (ids) => {
+      importedIds = ids
+    })
+
+    expect.soft(counters).toEqual({ total: 2, success: 1, error: 1 })
+    expect.soft(importedIds.map((id) => id.toString())).toEqual([succeeding._id.toString()])
+    expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: "healthy_1" })).toBe(1)
+    const failingComputed = await getDbCollection("computed_jobs_partners").findOne({ _id: failing._id })
+    expect.soft(failingComputed?.validated).toBe(false)
+    expect.soft(failingComputed?.errors.map((error) => error?.source)).toContain(COMPUTED_ERROR_SOURCE.DB_ERROR)
+    const succeedingComputed = await getDbCollection("computed_jobs_partners").findOne({ _id: succeeding._id })
+    expect.soft(succeedingComputed?.validated).toBe(true)
+    // pino ne sérialise que les Error : avec une chaîne en premier argument, le message de contexte serait perdu.
+    expect.soft(loggerErrorSpy).toHaveBeenCalledWith(expect.any(Error), expect.stringContaining("partner_job_id=corrupted_1"))
+  })
+
+  it("distingue deux offres de même partner_job_id chez deux partenaires dans le même lot", async () => {
+    await createJobPartner({
+      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+      partner_job_id: "shared_id",
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      offer_status_history: [{ date: new Date(), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "seuil de candidatures atteint", granted_by: "application.service" }],
+    })
+    await createComputedJobPartner({ partner_label: JOBPARTNERS_LABEL.HELLOWORK, partner_job_id: "shared_id", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
+    await createComputedJobPartner({ partner_label: JOBPARTNERS_LABEL.JOBTEASER, partner_job_id: "shared_id", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
+
+    await importFromComputedToJobsPartners()
+
+    const hellowork = await getDbCollection("jobs_partners").findOne({ partner_label: JOBPARTNERS_LABEL.HELLOWORK, partner_job_id: "shared_id" })
+    const jobteaser = await getDbCollection("jobs_partners").findOne({ partner_label: JOBPARTNERS_LABEL.JOBTEASER, partner_job_id: "shared_id" })
+    // La fermeture au seuil de l'offre Hellowork ne doit ni être levée, ni bloquer l'offre Jobteaser.
+    expect.soft(hellowork?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(jobteaser?.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(jobteaser?.offer_status_history).toEqual([])
+  })
+
+  it("importe toutes les offres quand leur nombre dépasse la taille d'un lot", async () => {
+    const count = 2_345
+    await getDbCollection("computed_jobs_partners").insertMany(
+      Array.from({ length: count }, (_, index) => ({ ...generateComputedJobsPartnersFixture(), partner_job_id: `bulk_${index}`, validated: true }))
+    )
+
+    const counters = await importFromComputedToJobsPartners()
+
+    expect.soft(counters).toEqual({ total: count, success: count, error: 0 })
+    expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: { $regex: /^bulk_/ } })).toBe(count)
   })
 })

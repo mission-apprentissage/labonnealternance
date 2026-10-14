@@ -3,48 +3,101 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
 import type { FormikHelpers } from "formik"
-import { Form, Formik } from "formik"
-import { useState } from "react"
+import { Formik } from "formik"
+import { useEffect, useRef, useState } from "react"
 import { validateSIRET } from "shared/validators/siret-validator"
 import * as Yup from "yup"
-
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import AutocompleteAsync from "@/app/(espace-pro)/_components/AutocompleteAsync"
 import { SIRETValidation } from "@/common/validation/field-validations"
 import { searchEntreprise } from "@/services/search-entreprises"
 
 type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
-export const SiretAutocomplete = ({
-  onSelectOrganisation,
-  onSubmit,
-}: {
+const isInvalidSiret = (value: string | undefined) => /^[0-9]{14}$/.test(value ?? "") && !validateSIRET(value)
+
+/** `setSiretError` : erreur de l'API sur le SIRET, avec focus, maintenue tant que l'établissement choisi ne change pas. */
+export type SiretSubmitHelpers = FormikHelpers<{ establishment_siret: string }> & { setSiretError: (message: string) => void }
+
+type SiretAutocompleteProps = {
+  label?: string
   onSelectOrganisation?: (organisation: Organisation) => void
-  onSubmit: (props: { establishment_siret: string }, formik: FormikHelpers<{ establishment_siret: string }>) => void
-}) => {
-  const [searchInput, setSearchInput] = useState<string>()
+  onSubmit: (props: { establishment_siret: string }, formik: SiretSubmitHelpers) => void
+}
+
+export const SiretAutocomplete = ({ onSubmit, ...props }: SiretAutocompleteProps) => {
+  // <Activity> garde la page montée après la redirection qui suit la soumission : au retour, le formulaire
+  // réapparaîtrait avec le SIRET précédent et isSubmitting figé. Les effets sont rejoués au réaffichage,
+  // le changement de key remonte alors Formik, la saisie interne de downshift et l'établissement sélectionné.
+  const [formKey, setFormKey] = useState(0)
+  const submitted = useRef(false)
+  useEffect(() => {
+    if (!submitted.current) return
+    submitted.current = false
+    setFormKey((key) => key + 1)
+  }, [])
+
+  return (
+    <SiretAutocompleteForm
+      key={formKey}
+      {...props}
+      onSubmit={(values, formik) => {
+        submitted.current = true
+        onSubmit(values, formik)
+      }}
+    />
+  )
+}
+
+const SiretAutocompleteForm = ({ label = "Nom ou SIRET de votre établissement", onSelectOrganisation, onSubmit }: SiretAutocompleteProps) => {
+  const formRef = useRef<HTMLFormElement>(null)
   const [selectedEntreprise, setSelectedEntreprise] = useState<Organisation | null>(null)
+  const serverFieldErrors = useServerFieldErrors()
   return (
     <Formik
       validateOnMount
       initialValues={{ establishment_siret: undefined }}
       validationSchema={Yup.object().shape({
-        establishment_siret: SIRETValidation().required("champ obligatoire"),
+        // la saisie seule ne renseigne pas la valeur : seule la sélection d'un résultat le fait (cf. onSelectItem)
+        establishment_siret: SIRETValidation().required("Sélectionnez votre établissement dans la liste des résultats, par son nom ou son SIRET (14 chiffres, sans espace)"),
       })}
-      onSubmit={onSubmit}
+      validate={serverFieldErrors.validate}
+      onSubmit={(values, helpers) =>
+        onSubmit(values, {
+          ...helpers,
+          setSiretError: (message) => serverFieldErrors.setServerFieldError(helpers.setFieldError, "establishment_siret", values.establishment_siret, message),
+        })
+      }
     >
-      {({ values, errors, isValid, isSubmitting, setFieldValue, setFieldTouched }) => {
+      {({ values, errors, touched, isSubmitting, setFieldValue, setFieldTouched, validateForm, setTouched, submitForm }) => {
+        // Le bouton "Continuer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
+        const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
         return (
-          <Form>
+          <form ref={formRef} onSubmit={handleSubmit} noValidate>
             <AutocompleteAsync
               name="establishment_siret"
+              label={label}
+              hideAsterisk
+              requiredMention
+              info="Pour le SIRET : 14 chiffres, sans espace"
               handleSearch={(search: string) => searchEntreprise(search)}
               renderItem={({ raison_sociale, siret, adresse }, highlighted) => <EntrepriseCard {...{ raison_sociale, siret, adresse, highlighted }} />}
               itemToString={({ siret }) => siret}
               onInputFieldChange={(value, hasError) => {
-                setSearchInput(value)
-                if (!hasError) return
-                setFieldTouched("establishment_siret", true, false)
-                setFieldValue("establishment_siret", value, true)
+                if (hasError) {
+                  setFieldTouched("establishment_siret", true, false)
+                  setFieldValue("establishment_siret", value, true)
+                  return
+                }
+                // Un SIRET à 14 chiffres dont la clé est fausse ne renvoie aucun résultat : l'erreur passe par Formik
+                // pour être liée au champ (RGAA 11.10). Toute autre saisie masque l'erreur affichée, le temps de choisir un résultat.
+                if (isInvalidSiret(value)) {
+                  setFieldTouched("establishment_siret", true, false)
+                  setFieldValue("establishment_siret", value, true)
+                  return
+                }
+                if (touched.establishment_siret) setFieldTouched("establishment_siret", false, false)
+                if (isInvalidSiret(values.establishment_siret)) setFieldValue("establishment_siret", undefined, true)
               }}
               onSelectItem={(organisation) => {
                 setSelectedEntreprise(organisation)
@@ -58,22 +111,11 @@ export const SiretAutocomplete = ({
                 setFieldValue("establishment_siret", inputValue, true)
               }}
               allowHealFromError={false}
-              renderNoResult={
-                /^[0-9]{14}$/.test(searchInput) && !validateSIRET(searchInput) ? (
-                  <Box>
-                    <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#CE0500", padding: "8px 16px" }}>Le numéro de SIRET saisi n’est pas valide</Typography>
-                  </Box>
-                ) : undefined
-              }
               renderError={() =>
                 values?.establishment_siret && !errors?.establishment_siret ? null : (
-                  <Box>
-                    <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#CE0500", padding: "8px 16px" }}>
-                      La recherche par raison sociale est temporairement indisponible.
-                      <br />
-                      <b>Veuillez renseigner votre numéro de SIRET.</b>
-                    </Typography>
-                  </Box>
+                  <>
+                    La recherche par raison sociale est temporairement indisponible. <strong>Veuillez renseigner votre numéro de SIRET.</strong>
+                  </>
                 )
               }
             />
@@ -86,11 +128,11 @@ export const SiretAutocomplete = ({
               </Box>
             )}
             <Box sx={{ display: "flex", justifyItems: "flex-start", mt: fr.spacing("8v") }}>
-              <Button type="submit" disabled={!isValid || isSubmitting}>
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <CircularProgress size={24} thickness={4} sx={{ color: "inherit", mr: fr.spacing("2v") }} />}Continuer
               </Button>
             </Box>
-          </Form>
+          </form>
         )
       }}
     </Formik>

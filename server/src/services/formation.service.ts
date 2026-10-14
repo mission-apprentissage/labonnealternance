@@ -10,6 +10,10 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { isEmailBlacklisted } from "./application.service"
 import type { ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
 
+// Le catalogue laisse intitule_long vide sur certaines formations dont seul intitule_rco est renseigné.
+export const getFormationTitle = (formation: Pick<IFormationCatalogue, "intitule_long" | "intitule_court" | "intitule_rco">) =>
+  (formation.intitule_long || formation.intitule_court || formation.intitule_rco) ?? null
+
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
@@ -67,7 +71,7 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue, priseDeRendezVo
       },
     },
     training: {
-      title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
+      title: getFormationTitle(rawFormation),
       idRco: rawFormation.id_formation ?? null,
       cleMinistereEducatif: rawFormation.cle_ministere_educatif ?? null,
       target_diploma_level: rawFormation.niveau ?? null,

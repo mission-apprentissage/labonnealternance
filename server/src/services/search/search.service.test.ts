@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest"
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
 import * as sentryUtils from "@/common/utils/sentry-utils"
-import { searchItems } from "@/services/search/search.service"
+import { resolveSearchMode, searchItems, tokenizeQuery } from "@/services/search/search.service"
 
 /**
  * Repli sans fuzzy ni synonymes quand mongot dépasse maxClauseCount=1024 (#5153). Ni un plafond
@@ -21,7 +21,7 @@ const RUN_RELEVANCE = process.env.SEARCH_RELEVANCE_TESTS === "true"
 const CORPUS = [generateSearchItemFixture()]
 
 async function seedCorpus() {
-  await getDbCollection("search_items").insertMany(CORPUS)
+  await getDbCollection("search_jobs").insertMany(CORPUS)
 }
 
 async function waitForSearchIndexSync(timeoutMs = 120_000) {
@@ -40,14 +40,14 @@ async function waitForSearchIndexSync(timeoutMs = 120_000) {
   }
 }
 
-// Intercepte les appels `aggregate` sur search_items pour simuler un échec mongot précis,
+// Intercepte les appels `aggregate` sur search_jobs (corpus du mode par défaut) pour simuler un échec mongot précis,
 // sans toucher au reste (les autres appels passent par le vrai driver / la vraie stack locale).
 function mockFirstAggregateCallToFail(errorMessage: string) {
   const getDbCollectionOriginal = mongodbUtils.getDbCollection
   let aggregateCalls = 0
   return vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
     const collection = getDbCollectionOriginal(name)
-    if (name !== "search_items") return collection
+    if (name !== "search_jobs") return collection
     return new Proxy(collection, {
       get(target, prop, receiver) {
         if (prop === "aggregate") {
@@ -78,7 +78,7 @@ describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy ni synonymes sur
     // biome-ignore lint/suspicious/noEmptyBlockStatements: test
     const sentrySpy = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
     const getDbCollectionSpy = mockFirstAggregateCallToFail(
-      "MongoServerError: Executor error during aggregate command on namespace: labonnealternance.search_items :: caused by :: maxClauseCount is set to 1024"
+      "MongoServerError: Executor error during aggregate command on namespace: labonnealternance.search_jobs :: caused by :: maxClauseCount is set to 1024"
     )
 
     const result = await searchItems({ q: "développeur", radius: 30, page: 0, hitsPerPage: 10 })
@@ -103,7 +103,7 @@ describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy ni synonymes sur
     // biome-ignore lint/suspicious/noEmptyBlockStatements: test
     const sentrySpy = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
     const getDbCollectionSpy = mockFirstAggregateCallToFail(
-      "MongoServerError: Executor error during aggregate command on namespace: labonnealternance.search_items :: caused by :: maxClauseCount is set to 1024"
+      "MongoServerError: Executor error during aggregate command on namespace: labonnealternance.search_jobs :: caused by :: maxClauseCount is set to 1024"
     )
 
     // "de la le en" : uniquement des stopwords → tokenizeQuery(q) = [] côté couverture, mais la
@@ -116,5 +116,30 @@ describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy ni synonymes sur
 
     sentrySpy.mockRestore()
     getDbCollectionSpy.mockRestore()
+  })
+})
+
+describe("tokenizeQuery", () => {
+  it("retire les mots vides et les mots de diplôme par défaut (clé d'agrégation de search_queries)", () => {
+    expect(tokenizeQuery("BTS MCO en alternance")).toEqual(["mco"])
+  })
+
+  it("diplomaWords : ne garde que les mots de diplôme", () => {
+    expect(tokenizeQuery("Licence pro commerce", { diplomaWords: true })).toEqual(["licence", "pro"])
+  })
+
+  it("diplomaWords : near-miss, un mot qui contient un mot de diplôme n'en est pas un", () => {
+    expect(tokenizeQuery("capitaine boulanger", { diplomaWords: true })).toEqual([])
+  })
+})
+
+describe("resolveSearchMode", () => {
+  it.each([
+    [{}, "emplois"],
+    [{ type: "offre" }, "emplois"],
+    [{ type: "formation" }, "formations"],
+    [{ mode: "emplois_formation" as const, type: "formation" }, "emplois_formation"],
+  ])("%j → %s", (filters, mode) => {
+    expect(resolveSearchMode(filters)).toBe(mode)
   })
 })

@@ -44,7 +44,7 @@ const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret:
       </Typography>
       {!raisonSociale && (
         <Box sx={{ display: "flex", alignItems: "flex-start", mb: fr.spacing("8v") }}>
-          <Typography color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
+          <Typography component="span" aria-hidden="true" color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
           <Box sx={{ ml: fr.spacing("2v") }}>
             <Typography mb={4}>Suite à un problème technique, nous ne sommes pas en mesure d’afficher votre raison sociale et l'adresse de votre établissement.</Typography>
             <Typography>Nous vous invitons à poursuivre votre parcours. Les informations de votre entreprise seront remplies automatiquement ultérieurement.</Typography>
@@ -108,11 +108,8 @@ const OrganizationInfoFields = ({
         tooltip={
           type === ENTREPRISE ? (
             <InfoTooltip label="Informations sur le SIRET Organisme">
-              La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en suivant{" "}
-              <DsfrLink href="https://www.insee.fr/fr/information/2015441">
-                la marche à suivre.
-                <span className="fr-sr-only">{" - Accès au site de l'INSEE"}</span>
-              </DsfrLink>
+              La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en vous rendant sur
+              https://www.insee.fr/fr/information/2015441
             </InfoTooltip>
           ) : (
             <InfoTooltip label="Informations sur le SIRET Organisme">
@@ -158,11 +155,7 @@ const OrganizationInfoFields = ({
               {(viewerType === ENTREPRISE && engagementHandicapLabels[engagementHandicapOrigin]?.tooltip) || (
                 <>
                   La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par France
-                  Travail, Cap emploi et leurs partenaires.{" "}
-                  <DsfrLink href="/faq?engagement-handicap=1" external>
-                    En savoir plus
-                    <span className="fr-sr-only">{" - Employeur handi-engagé avec France Travail"}</span>
-                  </DsfrLink>
+                  Travail, Cap emploi et leurs partenaires. En savoir plus dans la FAQ.
                 </>
               )}
             </InfoTooltip>

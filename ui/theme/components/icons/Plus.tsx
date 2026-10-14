@@ -3,5 +3,5 @@ import { Typography } from "@mui/material"
 import React from "react"
 
 export function Plus({ sx = {} }) {
-  return <Typography sx={{ ...sx }} className={fr.cx("fr-icon-add-line")} />
+  return <Typography component="span" aria-hidden="true" sx={{ ...sx }} className={fr.cx("fr-icon-add-line")} />
 }

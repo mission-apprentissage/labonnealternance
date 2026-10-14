@@ -26,7 +26,7 @@ const UserValidationHistory = ({ histories }: { histories: IUserStatusValidation
 
   return (
     <Box sx={{ mt: fr.spacing("10v") }}>
-      <hr />
+      <hr aria-hidden="true" />
       <Box sx={{ mt: fr.spacing("5v") }}>
         <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>Historique du compte</Typography>
         <Box sx={{ mt: fr.spacing("4v") }}>

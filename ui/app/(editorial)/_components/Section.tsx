@@ -10,6 +10,7 @@ export const Section = ({ id, title, children }: { id?: string; title?: string; 
           {title}
         </Typography>
         <Divider
+          aria-hidden="true"
           sx={{
             padding: 0,
             width: fr.spacing("16v"),

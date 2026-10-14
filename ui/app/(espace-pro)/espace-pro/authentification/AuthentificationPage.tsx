@@ -9,11 +9,12 @@ import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, setFieldErrorAndFocus } from "@/app/_components/submit-with-focus-on-error"
 import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
+import { EMAIL_FORMAT_ERROR } from "@/utils/validation-messages"
 
 export default function Authentification() {
   const { error } = useSearchParamsRecord()
@@ -39,7 +40,8 @@ export default function Authentification() {
       .catch(({ context }) => {
         switch (context?.errorData) {
           case "DISABLED":
-            setFieldError(
+            setFieldErrorAndFocus(
+              setFieldError,
               "email",
               // Message rendu en HTML par `parse()` dans CustomInput : DsfrLink n'est pas utilisable ici,
               // la mention de changement de contexte est donc écrite à la main (RGAA 6.1).
@@ -48,19 +50,19 @@ export default function Authentification() {
             setErrorMessage("Le compte utilisateur est désactivé")
             break
           case "INVALID":
-            setFieldError("email", "L’email saisi est incorrect. Vérifiez votre email ou créez un compte.")
+            setFieldErrorAndFocus(setFieldError, "email", "L’email saisi est incorrect. Vérifiez votre email ou créez un compte.")
             setErrorMessage("Email incorrect")
             break
           case "VALIDATION":
-            setFieldError("email", "Le compte utilisateur est en attente de validation")
+            setFieldErrorAndFocus(setFieldError, "email", "Le compte utilisateur est en attente de validation")
             setErrorMessage("Le compte utilisateur est en attente de validation")
             break
           case "VERIFY":
-            setFieldError("email", "Votre adresse n’a pas été vérifiée. Cliquez sur le lien que nous venons de vous transmettre pour vérifier votre compte")
+            setFieldErrorAndFocus(setFieldError, "email", "Votre adresse n’a pas été vérifiée. Cliquez sur le lien que nous venons de vous transmettre pour vérifier votre compte")
             setErrorMessage("Votre adresse n’a pas été vérifiée")
             break
           default:
-            setFieldError("email", "une erreur est survenue")
+            setFieldErrorAndFocus(setFieldError, "email", "une erreur est survenue")
             setErrorMessage("Une erreur est survenue")
             break
         }
@@ -124,7 +126,7 @@ export default function Authentification() {
             initialValues={{ email: undefined }}
             validationSchema={toFormikValidationSchema(
               z.object({
-                email: z.string({ error: "Champ obligatoire" }).email("Insérez un email valide"),
+                email: z.email({ error: (issue) => (issue.input === undefined ? "Champ obligatoire" : EMAIL_FORMAT_ERROR) }),
               })
             )}
             onSubmit={submitEmail}
@@ -134,17 +136,20 @@ export default function Authentification() {
               // de l'erreur et déplace le focus sur le champ invalide (RGAA 11.10, 12.8).
               const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
               return (
-                <form ref={formRef} onSubmit={handleSubmit} noValidate autoComplete="off">
-                  <CustomInput name="email" label="Votre email" type="email" value={values.email} autoFocus />
+                <form ref={formRef} onSubmit={handleSubmit} noValidate>
+                  <CustomInput
+                    hideAsterisk
+                    name="email"
+                    label="E-mail (obligatoire)"
+                    type="email"
+                    autoComplete="email"
+                    info="Format attendu : nom@domaine.fr"
+                    value={values.email}
+                    autoFocus
+                  />
                   <Alerts />
-                  <Button type="submit" disabled={isSubmitting} style={{ width: "100%" }}>
-                    <Box
-                      sx={{
-                        margin: "auto",
-                      }}
-                    >
-                      Se connecter
-                    </Box>
+                  <Button type="submit" disabled={isSubmitting} style={{ width: "100%", justifyContent: "center" }}>
+                    Se connecter
                   </Button>
                 </form>
               )
@@ -152,7 +157,7 @@ export default function Authentification() {
           </Formik>
         </Box>
 
-        <Divider />
+        <Divider aria-hidden="true" />
 
         <Typography variant="h5" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
           Vous n'avez pas de compte ?
@@ -178,8 +183,11 @@ export default function Authentification() {
           </Button>
         </Box>
         <Typography sx={{ mt: fr.spacing("4v") }}>
-          <strong>Vous êtes candidat ?</strong> La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les
-          offres d’emploi et de formation sans vous créer de compte.
+          <Box component="span" sx={{ fontWeight: 700 }}>
+            Vous êtes candidat ?
+          </Box>{" "}
+          La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les offres d’emploi et de formation sans vous
+          créer de compte.
         </Typography>
         <Box sx={{ mt: fr.spacing("4v") }}>
           <Button linkProps={{ href: PAGES.static.home.getPath() }} priority="secondary" style={{ width: "100%" }}>

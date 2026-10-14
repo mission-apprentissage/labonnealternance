@@ -45,71 +45,70 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
 
   beforeEach(async () => {
     vi.clearAllMocks()
-    await getDbCollection("search_items").deleteMany({})
-    await getDbCollection("search_items_keywords").deleteMany({})
+    await getDbCollection("search_jobs_keywords").deleteMany({})
     await getDbCollection("mistral_batch_jobs").deleteMany({})
   })
 
   describe("generateSearchItemsKeywordsContinuous", () => {
-    it("cache miss (offre) : appel immédiat, search_items et cache remplis", async () => {
+    it("cache miss (offre) : appel immédiat, offre indexée et cache remplis", async () => {
       const offre = offreFixture({ title: "Développeur web", description: "Stack JS moderne." })
-      await getDbCollection("search_items").insertOne(offre)
+      await getDbCollection("search_jobs").insertOne(offre)
       vi.mocked(sendMistralMessages).mockResolvedValue('{"keywords":["javascript","web"]}')
 
       const counters = await generateSearchItemsKeywordsContinuous()
 
       expect(counters.generated).toBe(1)
-      const doc = await getDbCollection("search_items").findOne({ _id: offre._id })
+      const doc = await getDbCollection("search_jobs").findOne({ _id: offre._id })
       expect(doc?.keywords).toEqual(["javascript", "web"])
-      const cached = await getDbCollection("search_items_keywords").findOne({ source_hash: hashOf(offre) })
+      const cached = await getDbCollection("search_jobs_keywords").findOne({ source_hash: hashOf(offre) })
       expect(cached).toMatchObject({ keywords: ["javascript", "web"], origin: "immediate" })
     })
 
     it("cache hit : aucun appel API, keywords propagés depuis le cache", async () => {
       const offre = offreFixture({ title: "Boulanger", description: "Fournil artisanal." })
-      await getDbCollection("search_items").insertOne(offre)
+      await getDbCollection("search_jobs").insertOne(offre)
       await writeKeywordsToCache({ sourceHash: hashOf(offre), keywords: ["boulangerie"], origin: "batch" })
 
       const counters = await generateSearchItemsKeywordsContinuous()
 
       expect(counters.cacheHits).toBe(1)
       expect(sendMistralMessages).not.toHaveBeenCalled()
-      const doc = await getDbCollection("search_items").findOne({ _id: offre._id })
+      const doc = await getDbCollection("search_jobs").findOne({ _id: offre._id })
       expect(doc?.keywords).toEqual(["boulangerie"])
     })
 
     it("recruteur en cache miss : laissé au batch hebdo (aucun appel immédiat)", async () => {
       const recruteur = recruteurFixture({ rome_labels: ["Boucherie"] })
-      await getDbCollection("search_items").insertOne(recruteur)
+      await getDbCollection("search_jobs").insertOne(recruteur)
 
       await generateSearchItemsKeywordsContinuous()
 
       expect(sendMistralMessages).not.toHaveBeenCalled()
-      const doc = await getDbCollection("search_items").findOne({ _id: recruteur._id })
+      const doc = await getDbCollection("search_jobs").findOne({ _id: recruteur._id })
       expect(doc?.keywords).toBeNull()
     })
 
     it("recruteur en cache hit : propagé (résultat du batch hebdo)", async () => {
       const recruteur = recruteurFixture({ rome_labels: ["Boucherie"] })
-      await getDbCollection("search_items").insertOne(recruteur)
+      await getDbCollection("search_jobs").insertOne(recruteur)
       await writeKeywordsToCache({ sourceHash: hashOf(recruteur), keywords: ["viande", "commerce"], origin: "batch" })
 
       const counters = await generateSearchItemsKeywordsContinuous()
 
       expect(counters.cacheHits).toBe(1)
-      const doc = await getDbCollection("search_items").findOne({ _id: recruteur._id })
+      const doc = await getDbCollection("search_jobs").findOne({ _id: recruteur._id })
       expect(doc?.keywords).toEqual(["viande", "commerce"])
     })
 
     it("réponse invalide : [] posé (doc et cache), le doc sort de la file", async () => {
       const offre = offreFixture({ title: "Titre", description: "Texte." })
-      await getDbCollection("search_items").insertOne(offre)
+      await getDbCollection("search_jobs").insertOne(offre)
       vi.mocked(sendMistralMessages).mockResolvedValue("pas du json")
 
       const counters = await generateSearchItemsKeywordsContinuous()
 
       expect(counters.unusable).toBe(1)
-      const doc = await getDbCollection("search_items").findOne({ _id: offre._id })
+      const doc = await getDbCollection("search_jobs").findOne({ _id: offre._id })
       expect(doc?.keywords).toEqual([])
       // Second run : plus rien à traiter (keywords [] ≠ null), aucun nouvel appel.
       vi.mocked(sendMistralMessages).mockClear()
@@ -119,24 +118,24 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
 
     it("doc sans texte source : [] posé directement, aucun appel API", async () => {
       const vide = offreFixture({ title: "", description: "", rome_labels: [] })
-      await getDbCollection("search_items").insertOne(vide)
+      await getDbCollection("search_jobs").insertOne(vide)
 
       await generateSearchItemsKeywordsContinuous()
 
       expect(sendMistralMessages).not.toHaveBeenCalled()
-      const doc = await getDbCollection("search_items").findOne({ _id: vide._id })
+      const doc = await getDbCollection("search_jobs").findOne({ _id: vide._id })
       expect(doc?.keywords).toEqual([])
     })
 
     it("erreur API : le doc reste null (retenté au prochain tick)", async () => {
       const offre = offreFixture({ title: "Titre", description: "Texte." })
-      await getDbCollection("search_items").insertOne(offre)
+      await getDbCollection("search_jobs").insertOne(offre)
       vi.mocked(sendMistralMessages).mockResolvedValue(null)
 
       const counters = await generateSearchItemsKeywordsContinuous()
 
       expect(counters.failures).toBe(1)
-      const doc = await getDbCollection("search_items").findOne({ _id: offre._id })
+      const doc = await getDbCollection("search_jobs").findOne({ _id: offre._id })
       expect(doc?.keywords).toBeNull()
     })
   })
@@ -147,7 +146,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
       const jumeau1 = recruteurFixture({ rome_labels: ["Boucherie", "Vente"] })
       const jumeau2 = recruteurFixture({ rome_labels: ["Boucherie", "Vente"] })
       const dejaEnCache = recruteurFixture({ rome_labels: ["Plomberie"] })
-      await getDbCollection("search_items").insertMany([jumeau1, jumeau2, dejaEnCache])
+      await getDbCollection("search_jobs").insertMany([jumeau1, jumeau2, dejaEnCache])
       await writeKeywordsToCache({ sourceHash: hashOf(dejaEnCache), keywords: ["plomberie"], origin: "batch" })
       vi.mocked(submitMistralBatch).mockResolvedValue("mistral-job-1")
 
@@ -159,7 +158,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
       expect(requests).toHaveLength(1)
       expect(requests[0].customId).toBe(hashOf(jumeau1))
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "mistral-job-1" })
-      expect(tracked).toMatchObject({ kind: "search_items_keywords", status: "submitted", request_count: 1 })
+      expect(tracked).toMatchObject({ kind: "search_jobs_keywords", status: "submitted", request_count: 1 })
     })
   })
 
@@ -167,7 +166,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
     const trackedJob = (jobId: string) => ({
       _id: new ObjectId(),
       job_id: jobId,
-      kind: "search_items_keywords" as const,
+      kind: "search_jobs_keywords" as const,
       status: "submitted" as const,
       request_count: 1,
       applied_count: null,
@@ -185,7 +184,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
       const counters = await applyPendingMistralBatches()
 
       expect(counters.applied).toBe(1)
-      const cached = await getDbCollection("search_items_keywords").findOne({ source_hash: "hash-abc" })
+      const cached = await getDbCollection("search_jobs_keywords").findOne({ source_hash: "hash-abc" })
       expect(cached).toMatchObject({ keywords: ["forêt"], origin: "batch" })
       const tracked = await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-ok" })
       expect(tracked).toMatchObject({ status: "applied", applied_count: 1 })
@@ -219,7 +218,7 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
   describe("applyKeywordsBatchFile (import manuel)", () => {
     it("supporte les deux formats de custom_id : ObjectId (historique) et hash (courant)", async () => {
       const offre = offreFixture({ title: "Cuisinier", description: "Restaurant gastronomique." })
-      await getDbCollection("search_items").insertOne(offre)
+      await getDbCollection("search_jobs").insertOne(offre)
 
       const lines = [
         JSON.stringify({ custom_id: offre._id.toString(), response: { body: { choices: [{ message: { content: '{"keywords":["cuisine"]}' } }] } } }),
@@ -230,14 +229,56 @@ describe("searchItemsKeywords.service — génération continue des keywords", (
 
       await applyKeywordsBatchFile({ file })
 
-      const doc = await getDbCollection("search_items").findOne({ _id: offre._id })
+      const doc = await getDbCollection("search_jobs").findOne({ _id: offre._id })
       expect(doc?.keywords).toEqual(["cuisine"])
       // Format historique : le cache est alimenté via le texte source du doc.
-      const cachedFromDoc = await getDbCollection("search_items_keywords").findOne({ source_hash: hashOf(offre) })
+      const cachedFromDoc = await getDbCollection("search_jobs_keywords").findOne({ source_hash: hashOf(offre) })
       expect(cachedFromDoc).toMatchObject({ keywords: ["cuisine"], origin: "manual_import" })
       // Format hash : écrit directement au cache.
-      const cachedFromHash = await getDbCollection("search_items_keywords").findOne({ source_hash: "hash-manuel-1" })
+      const cachedFromHash = await getDbCollection("search_jobs_keywords").findOne({ source_hash: "hash-manuel-1" })
       expect(cachedFromHash).toMatchObject({ keywords: ["manuel"], origin: "manual_import" })
     })
+  })
+})
+
+describe("searchItemsKeywords.service — corpus d'offres par mode (#5389)", () => {
+  useMongo()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("génération immédiate : une offre avec formation incluse reçoit ses keywords dans search_jobs_with_training", async () => {
+    const offre = offreFixture({ title: "BTS MCO en alternance", description: "Vente en magasin.", is_formation_included: true })
+    await getDbCollection("search_jobs_with_training").insertOne(offre)
+    vi.mocked(sendMistralMessages).mockResolvedValue('{"keywords":["vente"]}')
+
+    await generateSearchItemsKeywordsContinuous()
+
+    expect(sendMistralMessages).toHaveBeenCalledTimes(1)
+    expect((await getDbCollection("search_jobs_with_training").findOne({ _id: offre._id }))?.keywords).toEqual(["vente"])
+  })
+
+  it("offre réinsérée dans search_jobs_with_training (changement de corpus) : rattrapée par le cache", async () => {
+    const offre = offreFixture({ title: "BTS MCO en alternance", description: "Vente en magasin.", is_formation_included: true })
+    await getDbCollection("search_jobs_with_training").insertOne(offre)
+    await writeKeywordsToCache({ sourceHash: hashOf(offre), keywords: ["vente"], origin: "immediate" })
+
+    const counters = await generateSearchItemsKeywordsContinuous()
+
+    expect(counters.cacheHits).toBe(1)
+    expect(sendMistralMessages).not.toHaveBeenCalled()
+    expect((await getDbCollection("search_jobs_with_training").findOne({ _id: offre._id }))?.keywords).toEqual(["vente"])
+  })
+
+  it("batch hebdo : un recruteur en attente dans search_jobs seulement est soumis", async () => {
+    const recruteur = recruteurFixture({ rome_labels: ["Boulangerie - viennoiserie"] })
+    await getDbCollection("search_jobs").insertOne(recruteur)
+    vi.mocked(submitMistralBatch).mockResolvedValue("job-mode")
+
+    const result = await submitSearchItemsKeywordsBatch()
+
+    expect(result.uniqueTexts).toBe(1)
+    expect(await getDbCollection("mistral_batch_jobs").findOne({ job_id: "job-mode" })).toMatchObject({ kind: "search_jobs_keywords" })
   })
 })

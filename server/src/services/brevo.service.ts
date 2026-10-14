@@ -1,11 +1,11 @@
 import brevo, { CreateWebhook } from "@getbrevo/brevo"
 import { internal } from "@hapi/boom"
-import type { ColumnOption } from "csv-stringify"
 import { stringify } from "csv-stringify/sync"
 import dayjs from "shared/helpers/dayjs"
 
 import { logger } from "@/common/logger"
 import config from "@/config"
+import type { BrevoContactColumn } from "@/services/brevo-contact-attributes"
 
 /**
  * Décrit une erreur de l'API Brevo sans reprendre l'objet d'erreur brut : l'erreur du SDK porte
@@ -13,7 +13,7 @@ import config from "@/config"
  * `extraErrorDataIntegration` la sérialiserait dans Sentry (`sendDefaultPii` actif) et aucune clé de ce
  * corps ne correspond au scrub par nom de `sentry.ts` (constaté en production, LBA-SERVER-5J7KF4ZZZTAAB).
  */
-const describeBrevoError = (error: any): { status: number | undefined; brevoMessage: string | undefined; message: string } => ({
+export const describeBrevoError = (error: any): { status: number | undefined; brevoMessage: string | undefined; message: string } => ({
   // Le SDK Brevo expose selon les appels `response.statusCode` (superagent) ou `response.status`
   // (axios) — la boucle de retry ci-dessous lit déjà les deux.
   status: error?.response?.statusCode ?? error?.response?.status,
@@ -22,7 +22,7 @@ const describeBrevoError = (error: any): { status: number | undefined; brevoMess
 })
 
 const clientBrevo = new brevo.WebhooksApi()
-clientBrevo.setApiKey(brevo.WebhooksApiApiKeys.apiKey, config.smtp.brevoApiKey)
+clientBrevo.setApiKey(brevo.WebhooksApiApiKeys.apiKey, config.brevo.apiKey)
 
 export const enum BrevoEventStatus {
   HARDBOUNCE = "hardBounce",
@@ -37,13 +37,13 @@ export const enum BrevoEventStatus {
 
 const emailWebhook = {
   description: "Changements d'états des emails de candidatures ou de rendez-vous ou de marketing",
-  url: `${config.publicUrl}/api/emails/webhook?apiKey=${config.smtp.brevoWebhookApiKey}`,
+  url: `${config.publicUrl}/api/emails/webhook?apiKey=${config.brevo.webhookApiKey}`,
   events: [CreateWebhook.EventsEnum.Delivered, CreateWebhook.EventsEnum.Request, CreateWebhook.EventsEnum.Click, CreateWebhook.EventsEnum.UniqueOpened],
 }
 
 const hardBounceWebhook = {
   description: "Hardbounce des emails de candidatures ou de rendez-vous ou de marketing",
-  url: `${config.publicUrl}/api/emails/webhookHardbounce?apiKey=${config.smtp.brevoWebhookApiKey}`,
+  url: `${config.publicUrl}/api/emails/webhookHardbounce?apiKey=${config.brevo.webhookApiKey}`,
   events: [CreateWebhook.EventsEnum.HardBounce, CreateWebhook.EventsEnum.Blocked, CreateWebhook.EventsEnum.Spam, CreateWebhook.EventsEnum.Unsubscribed],
 }
 
@@ -104,7 +104,7 @@ export const initBrevoWebhooks = () => {
     )
 }
 
-export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKETING", contacts: any[], contactMapper: ColumnOption[], listId: string) => {
+export const uploadContactListToBrevo = async (contacts: any[], contactMapper: BrevoContactColumn[], listId: string) => {
   const fileBody = stringify(contacts, {
     delimiter: ";",
     header: true,
@@ -117,7 +117,7 @@ export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKE
   })
 
   const clientBrevo = new brevo.ContactsApi()
-  clientBrevo.setApiKey(brevo.ContactsApiApiKeys.apiKey, account === "TRANSACTIONAL" ? config.smtp.brevoApiKey : config.smtp.brevoMarketingApiKey)
+  clientBrevo.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.brevo.apiKey)
 
   const requestContactImport = new brevo.RequestContactImport()
 
@@ -135,7 +135,7 @@ export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKE
   // statut, le message renvoyé par Brevo, la liste ciblée et le nombre de contacts.
   const toImportError = (error: unknown) => {
     const { status, brevoMessage, message } = describeBrevoError(error)
-    return internal(`brevo: échec de l'import de contacts (${brevoMessage ?? message})`, { account, listId, status, contactCount: contacts.length })
+    return internal(`brevo: échec de l'import de contacts (${brevoMessage ?? message})`, { listId, status, contactCount: contacts.length })
   }
 
   while (attempt < maxRetries) {

@@ -16,12 +16,12 @@ export function ConseilsEntretienBlock() {
         <Typography component="div" sx={{ fontWeight: 700, fontSize: "20px", color: "#3a3a3a" }}>
           Psst !
         </Typography>
-        <Box sx={{ color: "grey.700" }}>
+        <Typography sx={{ color: "grey.700" }}>
           Pour convaincre l'entreprise de vous embaucher,{" "}
           <Link href={CONSEILS_ENTRETIEN_URL} target="_blank" rel="noopener noreferrer" underline="always">
             on vous donne des conseils ici pour vous aider !<span className="fr-sr-only"> - nouvelle fenêtre</span>
           </Link>
-        </Box>
+        </Typography>
       </Box>
     </Stack>
   )

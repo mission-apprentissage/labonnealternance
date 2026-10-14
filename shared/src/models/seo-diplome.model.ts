@@ -36,6 +36,9 @@ export const ZSeoDiplome = z.strictObject({
   slug: z.string(),
   titre: z.string(),
   intituleLongFormation: z.string(),
+  // Type de diplôme du catalogue (formationcatalogues.diplome) : restreint le bloc « Écoles » quand
+  // plusieurs diplômes portent le même intitulé (ex. CAP, bac pro et BP « CUISINE »).
+  diplomeFormation: z.string().nullish(),
   romes: z.array(z.string()),
   sousTitre: z.string(),
   kpis: ZSeoDiplomeKpis,

@@ -4,6 +4,8 @@
 
 import type { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
+import { getOffreIndisponibilite } from "@/components/ItemDetail/offre-indisponible.utils"
+
 type JobPostingSchemaProps = {
   title: string
   description: string
@@ -12,6 +14,10 @@ type JobPostingSchemaProps = {
 }
 
 export const JobPostingSchema = (props: JobPostingSchemaProps) => {
+  // Google demande de retirer le JobPosting d'une offre fermée aux candidatures (cf. lien en tête de fichier).
+  // Une offre en attente n'est pas encore publiée : même traitement.
+  if (getOffreIndisponibilite(props.job)) return null
+
   return (
     <script type="application/ld+json" id="job-posting-schema">
       {JSON.stringify(buildJobPostingSchema(props))}

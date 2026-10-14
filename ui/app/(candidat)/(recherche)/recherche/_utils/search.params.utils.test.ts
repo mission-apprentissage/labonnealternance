@@ -32,6 +32,7 @@ describe("parse de `q` (trim au parse : un métier d'espaces n'est pas une inten
 describe("search_source (origine de q)", () => {
   it("parse search_source, valeurs inconnues ignorées", () => {
     expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=suggestion")).q_source).toBe("suggestion")
+    expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=partner_links")).q_source).toBe("partner_links")
     expect(parseSearchPageParams(new URLSearchParams("q=boulanger&search_source=bogus")).q_source).toBeUndefined()
     expect(parseSearchPageParams(new URLSearchParams("q=boulanger")).q_source).toBeUndefined()
   })

@@ -30,6 +30,7 @@ import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createValidationMagicLink } from "./app-links.service"
+import { API_KEY_CREATION_REASON, balValidReason, indeterminateReason, recruteursLbaReason } from "./auto-validation-reasons"
 import { validationOrganisation } from "./bal.service"
 import { getSiretInfos } from "./cache-infos-siret.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
@@ -169,44 +170,51 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
 }
 
 export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOrganization) => {
-  const { isValid: validated, validator } = await isCompanyValid(userAndEntreprise)
-  const reason = `validaton par : ${validator}`
-  if (validated) {
-    await authorizeUserOnEntreprise(userAndEntreprise, reason)
+  const validation = await isCompanyValid(userAndEntreprise)
+  if (validation.isValid) {
+    await authorizeUserOnEntreprise(userAndEntreprise, validation.reason)
   } else {
-    await setUserHasToBeManuallyValidated(userAndEntreprise)
+    await setUserHasToBeManuallyValidated(userAndEntreprise, validation.reason)
   }
-  return { validated }
+  return { validated: validation.isValid }
 }
 
-const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: boolean; validator: string }> => {
+const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: true; reason: string } | { isValid: false; reason?: string }> => {
   const {
     organization,
     user: { email },
   } = props
   const siret = organization.type === CFA ? organization.cfa.siret : organization.entreprise.siret
   if (!siret) {
-    return { isValid: false, validator: "siret manquant" }
+    return { isValid: false }
   }
 
   const siren = siret.slice(0, 9)
   const sirenRegex = `^${siren}`
-  const bonneBoiteList = await getAllEstablishmentFromLbaCompany({
+  const recruteursLbaList = await getAllEstablishmentFromLbaCompany({
     workplace_siret: { $regex: sirenRegex },
     apply_email: { $nin: ["", null] },
     partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   })
 
-  const bonneBoiteEmailList = bonneBoiteList.map(({ apply_email }) => apply_email)
+  const validEmails = [...new Set(recruteursLbaList.map(({ apply_email }) => apply_email))]
+  if (validEmails.includes(email)) {
+    return { isValid: true, reason: recruteursLbaReason("email") }
+  }
+  if (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail))) {
+    return { isValid: true, reason: recruteursLbaReason("domain") }
+  }
 
-  const validEmails = [...new Set([...bonneBoiteEmailList])]
-
-  const isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
-  if (isValid) {
-    return { isValid: true, validator: "bonnes boites ou referentiel opco" }
-  } else {
-    const balControl = await validationOrganisation(siret, email)
-    return { isValid: balControl.is_valid, validator: "BAL" }
+  const balResult = await validationOrganisation(siret, email)
+  switch (balResult.status) {
+    case "valid":
+      return { isValid: true, reason: balValidReason(balResult) }
+    case "invalid":
+      return { isValid: false }
+    case "indeterminate":
+      return { isValid: false, reason: indeterminateReason(balResult.unavailableSources.length ? balResult.unavailableSources : ["BAL"]) }
+    case "unavailable":
+      return { isValid: false, reason: indeterminateReason(["BAL"]) }
   }
 }
 
@@ -503,7 +511,7 @@ export const entrepriseOnboardingWorkflow = {
     if (isUserValidated) {
       await modifyPermissionToUser(
         { user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE },
-        { validation_type: VALIDATION_UTILISATEUR.AUTO, status: AccessStatus.GRANTED, reason: "création par clef API" }
+        { validation_type: VALIDATION_UTILISATEUR.AUTO, status: AccessStatus.GRANTED, reason: API_KEY_CREATION_REASON }
       )
       validated = true
     } else {
@@ -523,7 +531,7 @@ export const entrepriseOnboardingWorkflow = {
           },
           "Failed to send user confirmation email after enterprise account creation"
         )
-        sentryCaptureException(error, { extra: { userId: managingUser._id, email: managingUser.email } })
+        sentryCaptureException(error, { extra: { userId: managingUser._id } })
       }
     }
 

@@ -11,8 +11,10 @@ import dayjs from "dayjs"
 import { Formik, useFormikContext } from "formik"
 import { useState } from "react"
 import type { IJob, IReferentielRomeForJob } from "shared"
+import type { OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails, detectUrls } from "shared/utils/detect-url-and-emails"
+import { decodeSanitizedText } from "shared/utils/string-utils"
 import * as Yup from "yup"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
@@ -36,8 +38,14 @@ const TRACKED_FIELD: Record<FreeTextFieldName, "offer" | "company"> = {
   job_employer_description: "company",
 }
 
+// complète le nom accessible des boutons « Améliorer », identiques à l'écran (RGAA 11.9)
+const FIELD_ACCESSIBLE_LABEL: Record<FreeTextFieldName, string> = {
+  job_description: "la description du poste",
+  job_employer_description: "la présentation de l'entreprise",
+}
+
 /**
- * Encart d'amélioration IA affiché au-dessus du champ libre, en 4 états : au repos (aide + CTA),
+ * Encart d'amélioration IA affiché sous le champ libre (l'étiquette reste accolée au champ, RGAA 11.4), en 4 états : au repos (aide + CTA),
  * en cours d'appel, proposition à arbitrer, et quota épuisé (CTA désactivé).
  * L'IA ne réécrit jamais le champ à la place du recruteur : sa version est proposée dans l'encart,
  * le texte saisi reste intact dans le textarea tant que "Utiliser ce texte" n'a pas été confirmé.
@@ -69,7 +77,7 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
       // lien magique : jamais de cookie de session, d'où la route jumelle par-token.
       const result = token ? await ameliorerTexteOffreByToken(establishmentId, fieldName, text, token) : await ameliorerTexteOffre(establishmentId, fieldName, text)
       if (result && "text" in result && result.text) {
-        setProposal({ text: result.text, attempt })
+        setProposal({ text: decodeSanitizedText(result.text), attempt })
       } else {
         setHasError(true)
         setRemaining((r) => Math.min(r + 1, AMELIORER_IA_MAX_USAGES))
@@ -90,11 +98,12 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   const paddingX = fr.spacing("3v")
   const paddingY = fr.spacing("2v")
   const separator = `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`
+  const buttonLabel = `Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`
 
   return (
     <Box
       sx={{
-        // encart autonome : détaché du hint au-dessus comme du textarea en dessous
+        // encart autonome : détaché du textarea au-dessus comme du champ suivant
         mt: fr.spacing("2v"),
         mb: fr.spacing("2v"),
         backgroundColor: isProposalOpen || loading ? fr.colors.decisions.background.alt.blueFrance.default : fr.colors.decisions.background.contrast.grey.default,
@@ -132,8 +141,17 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
                 ? "L'amélioration a échoué, veuillez réessayer."
                 : `Notre IA peut améliorer votre texte jusqu'à ${AMELIORER_IA_MAX_USAGES} fois (orthographe, structure, formulation)`}
         </Typography>
-        <Button type="button" priority="tertiary" size="small" iconId="ri-magic-line" iconPosition="left" disabled={!establishmentId || !canImprove} onClick={handleClick}>
-          {`Améliorer (${remaining}/${AMELIORER_IA_MAX_USAGES})`}
+        <Button
+          type="button"
+          priority="tertiary"
+          size="small"
+          iconId="ri-magic-line"
+          iconPosition="left"
+          disabled={!establishmentId || !canImprove}
+          onClick={handleClick}
+          aria-label={`${buttonLabel} ${FIELD_ACCESSIBLE_LABEL[fieldName]}`}
+        >
+          {buttonLabel}
         </Button>
       </Box>
       {isProposalOpen && (
@@ -171,7 +189,7 @@ const AmeliorerIaPanel = ({ fieldName, establishmentId, token }: { fieldName: Fr
   )
 }
 
-type DescriptionMode = "structured" | "custom"
+type DescriptionMode = OFFER_DESCRIPTION_MODE
 
 const DescriptionModeToggle = ({ mode, onChange }: { mode: DescriptionMode; onChange: (mode: DescriptionMode) => void }) => (
   // Le DSFR n'a pas de variante "cartes de largeur égale" : fr-fieldset--inline aligne en baseline
@@ -231,22 +249,26 @@ const JobDescriptionField = ({ establishmentId, token }: { establishmentId?: str
           limitée à {JOB_DESCRIPTION_MAX} caractères.
         </span>
       </label>
+      <Box sx={{ mt: fr.spacing("2v") }}>
+        <Input
+          label=""
+          state={errors.job_description ? "error" : "default"}
+          stateRelatedMessage={errors.job_description as string}
+          textArea
+          nativeTextAreaProps={{
+            id: "job_description",
+            name: "job_description",
+            value: values.job_description,
+            maxLength: JOB_DESCRIPTION_MAX,
+            rows: 8,
+            style: { resize: "none" },
+            onChange: (e) => setFieldValue("job_description", e.target.value),
+            // aria-invalid : cf. HandiEngagementSelect
+            "aria-invalid": Boolean(errors.job_description),
+          }}
+        />
+      </Box>
       <AmeliorerIaPanel fieldName="job_description" establishmentId={establishmentId} token={token} />
-      <Input
-        label=""
-        state={errors.job_description ? "error" : "default"}
-        stateRelatedMessage={errors.job_description as string}
-        textArea
-        nativeTextAreaProps={{
-          id: "job_description",
-          name: "job_description",
-          value: values.job_description,
-          maxLength: JOB_DESCRIPTION_MAX,
-          rows: 8,
-          style: { resize: "none" },
-          onChange: (e) => setFieldValue("job_description", e.target.value),
-        }}
-      />
     </Box>
   )
 }
@@ -262,23 +284,26 @@ const EmployerDescriptionField = ({ establishmentId, token }: { establishmentId?
           est limitée à {EMPLOYER_DESCRIPTION_MAX} caractères.
         </span>
       </label>
+      <Box sx={{ mt: fr.spacing("2v") }}>
+        <Input
+          label=""
+          state={errors.job_employer_description ? "error" : "default"}
+          stateRelatedMessage={errors.job_employer_description as string}
+          textArea
+          nativeTextAreaProps={{
+            id: "job_employer_description",
+            name: "job_employer_description",
+            value: values.job_employer_description,
+            maxLength: EMPLOYER_DESCRIPTION_MAX,
+            rows: 6,
+            placeholder: "Saisissez votre texte ici",
+            style: { resize: "none" },
+            onChange: (e) => setFieldValue("job_employer_description", e.target.value),
+            "aria-invalid": Boolean(errors.job_employer_description),
+          }}
+        />
+      </Box>
       <AmeliorerIaPanel fieldName="job_employer_description" establishmentId={establishmentId} token={token} />
-      <Input
-        label=""
-        state={errors.job_employer_description ? "error" : "default"}
-        stateRelatedMessage={errors.job_employer_description as string}
-        textArea
-        nativeTextAreaProps={{
-          id: "job_employer_description",
-          name: "job_employer_description",
-          value: values.job_employer_description,
-          maxLength: EMPLOYER_DESCRIPTION_MAX,
-          rows: 6,
-          placeholder: "Saisissez votre texte ici",
-          style: { resize: "none" },
-          onChange: (e) => setFieldValue("job_employer_description", e.target.value),
-        }}
-      />
     </Box>
   )
 }
@@ -313,13 +338,11 @@ export const FormulaireEditionOffreStep1 = ({
   })
 
   const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? formValues?.competences_rome ?? null)
-  const [competencesDirty, setCompetencesDirty] = useState(Boolean(formValues))
   const [descriptionMode, setDescriptionMode] = useState<DescriptionMode>(offre?.job_description || formValues?.job_description ? "custom" : "structured")
 
   const onRomeChange = (rome: string, appellation: string) => {
     setRomeAndAppellation({ rome, appellation })
     setSelectedCompetences(null)
-    setCompetencesDirty(true)
   }
 
   const onSelectedCompetencesChange = (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => {
@@ -347,7 +370,6 @@ export const FormulaireEditionOffreStep1 = ({
       }),
     }
     setSelectedCompetences(savedCompetences)
-    setCompetencesDirty(true)
   }
 
   if (!establishment_id) return <></>
@@ -370,6 +392,9 @@ export const FormulaireEditionOffreStep1 = ({
   const minStartDate = dayjs().startOf("day")
   const maxStartDate = dayjs().add(2, "years")
   let jobStartDateYup = Yup.date()
+    // un input type="date" vide ou incomplet renvoie "" : absence de saisie, pas erreur de type
+    .transform((value, originalValue) => (originalValue === "" ? undefined : value))
+    .typeError("Date de début invalide : saisissez une date au format JJ/MM/AAAA")
   if (!offre) {
     jobStartDateYup = jobStartDateYup.min(minStartDate, `La date de début doit être après le ${minStartDate.format(FR_DATE_FORMAT)}`)
   }
@@ -392,8 +417,8 @@ export const FormulaireEditionOffreStep1 = ({
     job_duration: offre?.job_duration ?? 12,
     job_rythm: offre?.job_rythm ?? "",
     offer_title_custom: offre?.offer_title_custom ?? "",
-    job_employer_description: offre?.job_employer_description ?? "",
-    job_description: offre?.job_description ?? "",
+    job_employer_description: decodeSanitizedText(offre?.job_employer_description ?? ""),
+    job_description: decodeSanitizedText(offre?.job_description ?? ""),
     ...formValues,
   }
   // localOnSubmit normalise les champs libres vides à null avant de les remonter : au retour sur
@@ -414,9 +439,10 @@ export const FormulaireEditionOffreStep1 = ({
           job_start_type: Yup.mixed<JOB_START_TYPE>().oneOf([JOB_START_TYPE.DES_QUE_POSSIBLE, JOB_START_TYPE.PRECISE_DATE], "Champ obligatoire").required("Champ obligatoire"),
           job_start_date_flexible: Yup.boolean().default(false),
           job_start_date: jobStartDateYup,
-          job_type: Yup.array().required("Champ obligatoire"),
+          // un tableau vide satisfait required() en Yup 1.x
+          job_type: Yup.array().min(1, "Sélectionnez au moins un type de contrat").required("Sélectionnez au moins un type de contrat"),
           job_rythm: Yup.string()
-            .max(100)
+            .max(100, "Le rythme de l'alternance ne doit pas dépasser 100 caractères")
             .test("no-url", "Les urls sont interdites", (value) => !value || !value.split(/\s+/).some((token) => token && detectUrls(token).length > 0)),
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").required("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()
@@ -474,7 +500,7 @@ export const FormulaireEditionOffreStep1 = ({
               >
                 Votre offre
               </Typography>
-              <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
+              <Typography component="p" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
                 Tous les champs sont obligatoires, sauf mention contraire "Facultatif".
               </Typography>
               <Box
@@ -500,7 +526,7 @@ export const FormulaireEditionOffreStep1 = ({
                       border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
                     }}
                   >
-                    <Typography component="h2" sx={{ fontWeight: 700 }}>
+                    <Typography component="h3" sx={{ fontWeight: 700 }}>
                       Le contrat
                     </Typography>
                     <Box sx={{ mt: fr.spacing("4v") }}>
@@ -523,6 +549,7 @@ export const FormulaireEditionOffreStep1 = ({
                     }}
                   >
                     <Typography
+                      component="span"
                       className={`ri-information-line ${fr.cx("fr-icon--sm")}`}
                       aria-hidden="true"
                       sx={{ color: fr.colors.decisions.text.active.blueFrance.default, flexShrink: 0 }}
@@ -543,14 +570,14 @@ export const FormulaireEditionOffreStep1 = ({
                       </Typography>
                     </Box>
                   </Box>
-                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
+                  <Typography variant="h4" component="h3" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
                     La présentation de l'entreprise
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
                     <EmployerDescriptionField establishmentId={establishment_id} token={token} />
                   </Box>
 
-                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
+                  <Typography variant="h4" component="h3" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
                     La description du poste
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
@@ -588,7 +615,7 @@ export const FormulaireEditionOffreStep1 = ({
                 </Box>
               </Box>
               <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v") }}>
-                <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
+                <FormulaireEditionOffreButtons />
               </Box>
             </div>
           )

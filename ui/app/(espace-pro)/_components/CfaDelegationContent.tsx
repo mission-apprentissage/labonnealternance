@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material"
 import type { SxProps, Theme } from "@mui/material/styles"
 
 // Textes mutualisés entre la page /espace-pro/entreprise/offre/:id/mise-en-relation (MiseEnRelation.tsx)
-// et l'étape 3 du tunnel de dépôt d'offre rapide (FormulaireEditionOffreStep3CFA.tsx).
+// et l'étape 3 du tunnel de dépôt d'offre rapide (FormulaireEditionOffreStep3CFA.tsx), cf. CfaSelectionList.
 
 export function InfoDelegation() {
   return (
@@ -16,11 +16,15 @@ export function InfoDelegation() {
         </Typography>
         <Box>
           <Typography sx={{ mt: fr.spacing("6v") }}>
-            <strong>Gagner du temps : </strong>Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre
-            région.
+            <Box component="span" sx={{ fontWeight: 700 }}>
+              Gagner du temps :{" "}
+            </Box>
+            Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre région.
           </Typography>
           <Typography sx={{ mt: fr.spacing("6v") }}>
-            <strong>Rejoindre le réseau des acteurs de l'apprentissage de votre territoire : </strong>
+            <Box component="span" sx={{ fontWeight: 700 }}>
+              Rejoindre le réseau des acteurs de l'apprentissage de votre territoire :{" "}
+            </Box>
             Développez des relations de confiance avec les acteurs de l'apprentissage de votre territoire afin de promouvoir votre entreprise et vos métiers auprès des jeunes.
           </Typography>
         </Box>
@@ -29,9 +33,9 @@ export function InfoDelegation() {
   )
 }
 
-export function CfaSolicitationIntro({ sx }: { sx?: SxProps<Theme> }) {
+export function CfaSolicitationIntro({ sx, id }: { sx?: SxProps<Theme>; id?: string }) {
   return (
-    <Typography sx={sx}>
+    <Typography id={id} sx={sx}>
       Les CFA suivants proposent des formations en lien avec votre offre et sont localisés dans un rayon de 100km près de votre entreprise.
       <br />
       Choisissez ceux que vous souhaitez solliciter : <strong>votre offre et vos informations de contact leur seront partagées par email.</strong>

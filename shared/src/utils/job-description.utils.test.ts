@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { isRomeDefinition } from "./job-description.utils.js"
+import { isRecruiterWrittenDescription, isRomeDefinition } from "./job-description.utils.js"
 
 const ROME_DEFINITION =
   "Réalise des travaux de maintenance préventive et corrective sur des équipements industriels, selon les règles de sécurité et les impératifs de production. Peut coordonner une équipe."
@@ -28,5 +28,21 @@ describe("isRomeDefinition", () => {
     expect(isRomeDefinition(undefined, ROME_DEFINITION)).toBe(false)
     expect(isRomeDefinition(ROME_DEFINITION, null)).toBe(false)
     expect(isRomeDefinition("", "")).toBe(false)
+  })
+})
+
+describe("isRecruiterWrittenDescription", () => {
+  it("reconnaît une description rédigée", () => {
+    expect(isRecruiterWrittenDescription("Vous rejoindrez notre atelier de 12 personnes pour préparer un BTS maintenance.", ROME_DEFINITION)).toBe(true)
+  })
+
+  it("écarte la fiche ROME recopiée, même réindentée", () => {
+    expect(isRecruiterWrittenDescription(`  ${ROME_DEFINITION}\n`, ROME_DEFINITION)).toBe(false)
+  })
+
+  it("écarte une description vide ou faite d'espaces", () => {
+    expect(isRecruiterWrittenDescription("", ROME_DEFINITION)).toBe(false)
+    expect(isRecruiterWrittenDescription("  \n ", ROME_DEFINITION)).toBe(false)
+    expect(isRecruiterWrittenDescription(null, ROME_DEFINITION)).toBe(false)
   })
 })

@@ -40,14 +40,17 @@ const config = {
       user: env.get("LBA_SMTP_AUTH_USER").required().asString(),
       pass: env.get("LBA_SMTP_AUTH_PASS").required().asString(),
     },
-    brevoWebhookApiKey: env.get("LBA_BREVO_WEBHOOK_API_KEY").required().asString(),
-    brevoApiKey: env.get("LBA_BREVO_API_KEY").required().asString(),
-    brevoContactListId: env.get("LBA_BREVO_CONTACT_LIST_ID").asString(),
-    brevoMarketingApiKey: env.get("LBA_BREVO_MARKETING_API_KEY").required().asString(),
-    brevoMarketingContactListId: env.get("LBA_BREVO_MARKETING_CONTACT_LIST_ID").asString(),
-    brevoRelanceCandidatsListId: env.get("LBA_BREVO_RELANCE_CANDIDATS_LIST_ID").asString(),
-    brevoRelanceSpontaneeListId: env.get("LBA_BREVO_RELANCE_SPONTANEE_LIST_ID").asString(),
-    brevoNurturingEntreprisesListId: env.get("LBA_BREVO_NURTURING_ENTREPRISES_LIST_ID").asString(),
+  },
+  brevo: {
+    apiKey: env.get("LBA_BREVO_API_KEY").required().asString(),
+    webhookApiKey: env.get("LBA_BREVO_WEBHOOK_API_KEY").required().asString(),
+    listIds: {
+      contacts: env.get("LBA_BREVO_CONTACT_LIST_ID").asString(),
+      reponsesRecruteurs: env.get("LBA_BREVO_REPONSES_RECRUTEURS_LIST_ID").asString(),
+      relanceCandidats: env.get("LBA_BREVO_RELANCE_CANDIDATS_LIST_ID").asString(),
+      relanceSpontanee: env.get("LBA_BREVO_RELANCE_SPONTANEE_LIST_ID").asString(),
+      nurturingEntreprises: env.get("LBA_BREVO_NURTURING_ENTREPRISES_LIST_ID").asString(),
+    },
   },
   auth: {
     passwordHashRounds: env.get("LBA_AUTH_PASSWORD_HASH_ROUNDS").required().asInt(),
@@ -78,6 +81,14 @@ const config = {
     baseUrl: "https://api.francetravail.io/partenaire",
     authUrl: "https://entreprise.francetravail.fr/connexion/oauth2/access_token",
     depotUrl: "https://portail-partenaire.francetravail.fr/partenaire/depotcurl ",
+  },
+  autoValidationAlert: {
+    recentDays: env.get("LBA_AUTO_VALIDATION_ALERT_RECENT_DAYS").default(7).asIntPositive(),
+    baselineDays: env.get("LBA_AUTO_VALIDATION_ALERT_BASELINE_DAYS").default(28).asIntPositive(),
+    // Volume minimum de rôles tranchés (auto ou refus) dans chaque fenêtre : en dessous, l'écart n'est pas significatif.
+    minVolume: env.get("LBA_AUTO_VALIDATION_ALERT_MIN_VOLUME").default(30).asIntPositive(),
+    dropThresholdPoints: env.get("LBA_AUTO_VALIDATION_ALERT_DROP_POINTS").default(10).asIntPositive(),
+    indeterminateThresholdPercent: env.get("LBA_AUTO_VALIDATION_ALERT_INDETERMINATE_PERCENT").default(5).asIntPositive(),
   },
   bal: {
     baseUrl: env.get("LBA_BAL_ENV_URL").required().asString(),

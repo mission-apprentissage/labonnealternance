@@ -17,7 +17,10 @@ export const ContactCfaSummary = (props: Props) => {
     <Box sx={{ mb: fr.spacing("6v") }}>
       <ModalTitle sx={{ mb: fr.spacing("6v") }}>{`Contacter l’établissement ${entrepriseRaisonSociale}`}</ModalTitle>
       <Typography sx={{ mb: fr.spacing("2v") }}>
-        à propos de la formation : <strong>{intitule}</strong>
+        à propos de la formation :{" "}
+        <Box component="span" sx={{ fontWeight: 700 }}>
+          {intitule}
+        </Box>
       </Typography>
       {adresse && codePostal && (
         <Box

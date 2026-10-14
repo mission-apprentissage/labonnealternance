@@ -7,7 +7,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { sentryCaptureException, withoutChildSpans } from "@/common/utils/sentry-utils"
 import { limitStream } from "@/common/utils/stream-utils"
 import type { IJobPartnerForSearchItem } from "@/services/search/search-items.service"
 import {
@@ -57,19 +57,20 @@ const processCursorStream = async <T extends { _id: ObjectId }>(
   logger.info(`fillSearchItemsCollection: ${label} — ${count} documents traités`)
 }
 
-/**
- * Réconciliation complète des sources (formations, offres actives, recruteurs) vers
- * `search_items`. Sert de batch initial ET de réconciliation nightly (cron ~06:00, après
- * processComputedAndImportToJobPartners) : rattrape tout ce que la sync incrémentale
- * (appels explicites + cron delta, cf. search-items.service.ts) aurait manqué, et purge
- * les documents orphelins (disparus des sources — suppressions physiques comprises).
- */
-export const fillSearchItemsCollection = async () => {
-  // Récupérer les _id existants : on saute les docs déjà présents et on identifie les suppressions.
-  const existingDocs = await getDbCollection("search_items")
-    .find({}, { projection: { _id: 1 } })
-    .toArray()
-  const existingIds = new Set(existingDocs.map((doc) => doc._id.toString()))
+/** Une collection par mode de recherche, cf. getSearchCorpusCollection. */
+const SEARCH_INDEX_COLLECTIONS = ["search_jobs", "search_jobs_with_training", "search_trainings"] as const
+
+const reconcileSearchItems = async () => {
+  // _id présents AVANT le run : seuls ceux-là sont purgeables. Un item indexé pendant le run par
+  // la sync incrémentale n'est pas dans les curseurs et ne doit pas être pris pour un orphelin.
+  const existingIdsByCollection = await Promise.all(
+    SEARCH_INDEX_COLLECTIONS.map(async (name) => {
+      const docs = await getDbCollection(name)
+        .find({}, { projection: { _id: 1 } })
+        .toArray()
+      return { name, ids: docs.map((doc) => doc._id.toString()) }
+    })
+  )
 
   // Curseurs streamés (pas de .toArray() : les sources complètes ne tiennent pas en mémoire).
   const formationsCursor = getDbCollection("formationcatalogues").find({}, { projection: formationProjection })
@@ -151,7 +152,6 @@ export const fillSearchItemsCollection = async () => {
   const ctx = await loadSearchItemBuildContext()
 
   const processedIds = new Set<string>()
-  const searchItemsCollection = getDbCollection("search_items")
 
   // Un seul chemin par source, item nouveau ou déjà indexé : upsertSearchItem réécrit tous les
   // champs sauf `keywords`. Un $set sur une liste fermée de champs laisse dériver les autres
@@ -175,11 +175,12 @@ export const fillSearchItemsCollection = async () => {
     await upsertSearchItem(buildRecruteurSearchItem(job, ctx))
   })
 
-  const idsToDelete = [...existingIds].filter((id) => !processedIds.has(id))
-  if (idsToDelete.length > 0) {
-    await searchItemsCollection.deleteMany({
-      _id: { $in: idsToDelete.map((id) => new ObjectId(id)) },
-    })
+  // Une offre passée d'un corpus à l'autre a déjà été retirée de l'ancien par upsertSearchItem.
+  for (const { name, ids } of existingIdsByCollection) {
+    const idsToDelete = ids.filter((id) => !processedIds.has(id))
+    if (idsToDelete.length > 0) {
+      await getDbCollection(name).deleteMany({ _id: { $in: idsToDelete.map((id) => new ObjectId(id)) } })
+    }
   }
 
   // Observable en Loki, pas un warn avalé : une correction de données source doit se voir.
@@ -189,3 +190,14 @@ export const fillSearchItemsCollection = async () => {
   // (generateSearchItemsKeywordsContinuous / submitSearchItemsKeywordsBatch), cf.
   // search-items-keywords.service.ts.
 }
+
+/**
+ * Réconciliation complète des sources (formations, offres actives, recruteurs) vers
+ * les collections par mode. Sert de batch initial ET de réconciliation nightly (cron ~06:00, après
+ * processComputedAndImportToJobPartners) : rattrape tout ce que la sync incrémentale
+ * (appels explicites + cron delta, cf. search-items.service.ts) aurait manqué, et purge
+ * les documents orphelins (disparus des sources — suppressions physiques comprises).
+ *
+ * Un updateOne par item sur tout le corpus, cf. withoutChildSpans.
+ */
+export const fillSearchItemsCollection = () => withoutChildSpans(reconcileSearchItems)

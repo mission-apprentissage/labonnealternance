@@ -5,16 +5,26 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { IFormationCatalogueJson } from "shared"
+import { z } from "zod"
+import { toFormikValidationSchema } from "zod-formik-adapter"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { useToast } from "@/app/hooks/useToast"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
+const KEYWORD_REQUIRED_ERROR = "Saisissez un SIRET, un UAI, une clé ministère éducatif ou un identifiant RCO"
+
+const ZSearchForm = z.object({
+  keyword: z.string({ error: KEYWORD_REQUIRED_ERROR }).trim().min(1, KEYWORD_REQUIRED_ERROR),
+})
+
 export default function RendezVousApprentissage() {
   const [loading, setLoading] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
   const router = useRouter()
   const toast = useToast()
 
@@ -40,28 +50,31 @@ export default function RendezVousApprentissage() {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.rendezVousApprentissageRecherche]} />
-      <Box sx={{ border: "1px solid #E0E5ED", backgroundColor: "white" }}>
-        <Typography component="h2" sx={{ fontWeight: 700, p: fr.spacing("4v"), borderBottom: "1px solid #E0E5ED" }}>
+      <Box>
+        <Typography variant="h2" component="h1" gutterBottom>
           Rechercher un établissement
         </Typography>
-        <Box sx={{ mt: fr.spacing("4v"), px: fr.spacing("4v") }}>
-          <Formik initialValues={{ keyword: "" }} onSubmit={search}>
-            <Form>
-              <Box sx={{ mb: fr.spacing("4v") }}>
-                <CustomDSFRInput
-                  label="Identification de l'établissement *"
-                  required={true}
-                  name="keyword"
-                  nativeInputProps={{
-                    type: "text",
-                    placeholder: "Siret formateur / Cle ministère educatif / UAI / Identifiant RCO formation",
-                  }}
-                />
-              </Box>
-              <Button type="submit" disabled={loading} style={{ marginBottom: "10px" }}>
-                Rechercher
-              </Button>
-            </Form>
+        <Box sx={{ mt: fr.spacing("4v") }}>
+          <Formik initialValues={{ keyword: "" }} validationSchema={toFormikValidationSchema(ZSearchForm)} onSubmit={search}>
+            {(formik) => (
+              <Form ref={formRef} onSubmit={createSubmitWithFocusOnError(formRef, formik)} noValidate>
+                <Box sx={{ mb: fr.spacing("4v") }}>
+                  <CustomDSFRInput
+                    label="Identification de l'établissement (obligatoire)"
+                    hintText="SIRET formateur (14 chiffres, sans espace), UAI (7 chiffres et 1 lettre, par exemple 0751234A), clé ministère éducatif ou identifiant RCO de la formation"
+                    required={true}
+                    name="keyword"
+                    nativeInputProps={{
+                      type: "text",
+                      required: true,
+                    }}
+                  />
+                </Box>
+                <Button type="submit" disabled={loading} style={{ marginBottom: "10px" }}>
+                  Rechercher
+                </Button>
+              </Form>
+            )}
           </Formik>
         </Box>
       </Box>

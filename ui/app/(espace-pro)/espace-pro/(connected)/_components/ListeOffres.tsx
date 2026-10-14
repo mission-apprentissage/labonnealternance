@@ -57,18 +57,13 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
             mr: fr.spacing("6v"),
           }}
         >
-          <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
-            {user.type === AUTHTYPE.ENTREPRISE ? (
-              <>
-                <Typography mr={fr.spacing("2v")} className={fr.cx("fr-icon-hotel-line")} />
-                Mes informations
-              </>
-            ) : (
-              <>
-                <Typography mr={fr.spacing("2v")} className={fr.cx("fr-icon-user-line")} />
-                Modifier l'entreprise
-              </>
-            )}
+          <Button
+            priority="secondary"
+            iconId={user.type === AUTHTYPE.ENTREPRISE ? "fr-icon-hotel-line" : "fr-icon-user-line"}
+            iconPosition="left"
+            onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}
+          >
+            {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
           </Button>
         </Box>
       )}

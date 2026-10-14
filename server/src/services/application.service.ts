@@ -1,4 +1,4 @@
-import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
+import { badRequest, internal, notFound, serverUnavailable, tooManyRequests } from "@hapi/boom"
 import { captureException } from "@sentry/node"
 import axios from "axios"
 import { isEmailBurner } from "burner-email-providers"
@@ -18,6 +18,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ITrackingCookies } from "shared/models/traffic-sources.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { isOfferExpired } from "shared/utils/offer-expiration"
 import { resolveSearchParamsFromUrl, SEARCH_PAGE_PATH } from "shared/utils/search-url-compat"
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
@@ -32,6 +33,7 @@ import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
+import { resetReplayedSearchParams } from "@/jobs/applications/relance-search-url"
 import type { UserForAccessToken } from "@/security/access-token.service"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
@@ -216,6 +218,34 @@ async function validateApplicationFileType(filename: string, base64String: strin
   }
 }
 
+const normalizeQuestionWhitespace = (question: string) => question.replace(/\s+/g, " ").trim()
+
+// Renvoie les réponses avec le libellé exact de l'offre : la comparaison tolère les écarts d'espaces
+// d'une plateforme qui recopie la question, le mail au recruteur reprend le texte qu'il a saisi.
+const matchAnswersToOfferQuestions = (
+  answers: IApplicationApiPublicOutput["applicant_answers_to_recruiter_questions"],
+  offerQuestions: IJobsPartnersOfferPrivate["to_applicant_questions"]
+): IApplicationApiPublicOutput["applicant_answers_to_recruiter_questions"] => {
+  if (!answers?.length) {
+    return answers
+  }
+  const askedQuestions = new Map((offerQuestions ?? []).map((question) => [normalizeQuestionWhitespace(question), question]))
+  const matchedAnswers = answers.map(({ question, answer }) => {
+    const offerQuestion = askedQuestions.get(normalizeQuestionWhitespace(question))
+    if (offerQuestion === undefined) {
+      throw badRequest(BusinessErrorCodes.UNKNOWN_RECRUITER_QUESTION, { question })
+    }
+    return { question: offerQuestion, answer }
+  })
+  // Le plafond du schéma porte sur le nombre d'entrées : sans ce contrôle, un appelant pourrait
+  // répondre trois fois à la même question et faire gonfler le mail envoyé au recruteur.
+  const answeredQuestions = new Set(matchedAnswers.map(({ question }) => question))
+  if (answeredQuestions.size !== matchedAnswers.length) {
+    throw badRequest(BusinessErrorCodes.DUPLICATE_RECRUITER_ANSWER)
+  }
+  return matchedAnswers
+}
+
 export const sendApplicationV2 = async ({
   newApplication,
   caller,
@@ -252,10 +282,14 @@ export const sendApplicationV2 = async ({
   if (!job) {
     throw badRequest(BusinessErrorCodes.NOTFOUND)
   }
-  const { offer_expiration } = job
-  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE || (offer_expiration && dayjs(offer_expiration).add(1, "day").isBefore(dayjs()))) {
+  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE || isOfferExpired(job.offer_expiration)) {
     throw badRequest(BusinessErrorCodes.EXPIRED)
   }
+
+  // Les réponses restent facultatives, y compris sur une offre qui pose des questions : une plateforme partenaire
+  // n'affiche pas nos questions dans son propre formulaire de candidature. En revanche, si des réponses sont
+  // transmises, elles doivent porter sur les questions réellement posées par l'offre.
+  const applicant_answers_to_recruiter_questions = matchAnswersToOfferQuestions(newApplication.applicant_answers_to_recruiter_questions, job.to_applicant_questions)
 
   const lbaJob: IJobOrCompanyV2 = {
     job,
@@ -276,17 +310,14 @@ export const sendApplicationV2 = async ({
     }
   }
 
+  let application: IApplication
   try {
-    const application = await newApplicationToApplicationDocumentV2(newApplication, applicant, lbaJob, caller)
+    application = await newApplicationToApplicationDocumentV2({ ...newApplication, applicant_answers_to_recruiter_questions }, applicant, lbaJob, caller)
     await s3WriteString("applications", getApplicationCvS3Filename(application), {
       Body: applicant_attachment_content,
     })
     await getDbCollection("applications").insertOne(application)
-    await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: applicant.email, source })
-
-    return { _id: application._id }
   } catch (err) {
-    sentryCaptureException(err)
     if (caller) {
       await manageApiError({
         error: err,
@@ -296,8 +327,22 @@ export const sendApplicationV2 = async ({
       })
     }
     logger.error(err)
-    throw badRequest(BusinessErrorCodes.UNKNOWN)
+    // Erreur d'infrastructure (S3, Mongo) : 503 pour que l'appelant réessaie. Nouvelle erreur sans `data` ni message
+    // d'origine, qu'errorMiddleware recopierait dans la réponse (bucket et clé S3). Remontée à Sentry avec sa cause.
+    const error = serverUnavailable("Application could not be saved, please retry later")
+    error.cause = err
+    throw error
   }
+
+  // La candidature est enregistrée et sera envoyée : une erreur ici pousserait l'appelant à la renvoyer en doublon.
+  try {
+    await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: applicant.email, source })
+  } catch (err) {
+    logger.error(err)
+    sentryCaptureException(err, { extra: { application_id: application._id.toString() } })
+  }
+
+  return { _id: application._id }
 }
 
 /**
@@ -1119,13 +1164,10 @@ const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM
 
   const searchParams = application_url ? resolveSearchParamsFromApplicationUrl(application_url) : null
   if (searchParams) {
-    searchParams.delete("page")
+    resetReplayedSearchParams(searchParams)
     // Le CTA promet des candidatures : on force les offres même si la recherche d'origine affichait
     // aussi des formations (« Emplois avec formations »), auxquelles on ne candidate pas.
     searchParams.set("mode", "emplois")
-    for (const utmParam of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
-      searchParams.delete(utmParam)
-    }
     searchParams.set("utm_source", "lba-brevo-transactionnel")
     searchParams.set("utm_medium", "email")
     searchParams.set("utm_campaign", "accuse-envoi-candidature-lien-recherche")

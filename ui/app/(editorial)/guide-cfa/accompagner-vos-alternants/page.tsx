@@ -59,25 +59,19 @@ const AccompagnerVosAlternantsPage = async () => {
       </Section>
       <Section title="Ce que ça change pour votre accompagnement">
         <Paragraph>En tant que CFA, vous avez un rôle clé pour rendre cette démarche concrète. Quelques pistes :</Paragraph>
-        <Paragraph>
-          <strong>Présenter la plateforme tôt dans le parcours.</strong>
-        </Paragraph>
+        <Paragraph bold>Présenter la plateforme tôt dans le parcours.</Paragraph>
         <Paragraph>
           Idéalement avant même que vos alternants commencent à postuler, pour qu'ils comprennent qu'il existe deux viviers d’opportunités distincts sur la plateforme et comment
           les utiliser ensemble. Les entreprises auxquelles adresser des candidatures spontanées sont étiquetées “candidature spontanée”.
         </Paragraph>
-        <Paragraph>
-          <strong>Travailler la recherche avec eux :</strong>
-        </Paragraph>
+        <Paragraph bold>Travailler la recherche avec eux :</Paragraph>
         <ParagraphList
           listItems={[
             "La qualité des résultats dépend du métier et de la zone géographique renseignés. Les jeunes se limitent parfois aux intitulés d’offres qu’ils connaissent déjà. Il est alors intéressant de leur montrer comment étendre leurs critères de recherche, et se laisser surprendre par des offres un peu plus originales.",
             "Les entreprises proposées pour des candidatures spontanées n’ont pas d’intitulé d’offre explicite, ni de description de poste. C’est au candidat de se renseigner sur l’entreprise, de vérifier si les activités de l’entreprise correspondent aux compétences que le jeune va devoir développer lors de ses missions.",
           ]}
         />
-        <Paragraph>
-          <strong>Rappeler les principes clés d’une candidature spontanée :</strong>
-        </Paragraph>
+        <Paragraph bold>Rappeler les principes clés d’une candidature spontanée :</Paragraph>
         <ParagraphList
           listItems={[
             "L’entreprise ne sait pas pourquoi le candidat la contacte, le message d’accroche doit être limpide et aller droit au but, sans oublier les informations essentielles pour que le recruteur puisse se projeter : quelle formation prépare le candidat (éviter les acronymes peu parlant) ? quel poste vise-t-il ? Quel est le rythme de la formation ? etc.",
@@ -87,25 +81,39 @@ const AccompagnerVosAlternantsPage = async () => {
       </Section>
       <Section title="Conseils concrets à transmettre aux jeunes">
         <Paragraph>
-          <strong>Personnaliser chaque message.</strong> Un message générique, ça se voit immédiatement. Le candidat doit montrer qu'il a regardé ce que fait l'entreprise : son
-          secteur, ses services ou produits, ses valeurs si elles sont accessibles. Une ou deux phrases qui prouvent qu'il a fait le minimum de recherche suffisent à sortir du lot.
+          <Typography component="span" fontWeight="bold">
+            Personnaliser chaque message.
+          </Typography>{" "}
+          Un message générique, ça se voit immédiatement. Le candidat doit montrer qu'il a regardé ce que fait l'entreprise : son secteur, ses services ou produits, ses valeurs si
+          elles sont accessibles. Une ou deux phrases qui prouvent qu'il a fait le minimum de recherche suffisent à sortir du lot.
         </Paragraph>
         <Paragraph>
-          <strong>Être direct sur ce qu'il cherche.</strong> Pas besoin d'un roman. Un objet clair ("Candidature alternance BTS Commerce, rentrée septembre 2025"), une présentation
-          en deux phrases, ce qu'il peut apporter, et une invitation à échanger.
+          <Typography component="span" fontWeight="bold">
+            Être direct sur ce qu'il cherche.
+          </Typography>{" "}
+          Pas besoin d'un roman. Un objet clair ("Candidature alternance BTS Commerce, rentrée septembre 2025"), une présentation en deux phrases, ce qu'il peut apporter, et une
+          invitation à échanger.
         </Paragraph>
         <Paragraph>
-          <strong>Joindre un CV à jour.</strong> Évident, mais souvent bâclé. Le CV doit correspondre à la cible : mettre en avant les expériences ou compétences en lien avec
-          l'activité de l'entreprise, même si elles viennent de jobs d'été ou d'engagements associatifs.
+          <Typography component="span" fontWeight="bold">
+            Joindre un CV à jour.
+          </Typography>{" "}
+          Évident, mais souvent bâclé. Le CV doit correspondre à la cible : mettre en avant les expériences ou compétences en lien avec l'activité de l'entreprise, même si elles
+          viennent de jobs d'été ou d'engagements associatifs.
         </Paragraph>
         <Paragraph>
-          <strong>Ne pas attendre une réponse pour relancer.</strong> Une relance polie une à deux semaines après, si le candidat n'a pas eu de retour, est tout à fait légitime.
-          Elle montre de la persévérance sans être insistant. La bonne alternance propose un fichier de suivi pour aider les candidats à ne pas perdre le fil.
+          <Typography component="span" fontWeight="bold">
+            Ne pas attendre une réponse pour relancer.
+          </Typography>{" "}
+          Une relance polie une à deux semaines après, si le candidat n'a pas eu de retour, est tout à fait légitime. Elle montre de la persévérance sans être insistant. La bonne
+          alternance propose un fichier de suivi pour aider les candidats à ne pas perdre le fil.
         </Paragraph>
         <Paragraph>
-          <strong>Viser large, mais pas n'importe comment.</strong> Envoyer 50 mails identiques ne sert à rien. Envoyer 15 mails personnalisés à des entreprises réellement
-          identifiées comme pertinentes, c'est une stratégie. Aider vos alternants à se fixer un objectif hebdomadaire réaliste (5 à 7 candidatures ciblées) structure la démarche
-          et évite le découragement.
+          <Typography component="span" fontWeight="bold">
+            Viser large, mais pas n'importe comment.
+          </Typography>{" "}
+          Envoyer 50 mails identiques ne sert à rien. Envoyer 15 mails personnalisés à des entreprises réellement identifiées comme pertinentes, c'est une stratégie. Aider vos
+          alternants à se fixer un objectif hebdomadaire réaliste (5 à 7 candidatures ciblées) structure la démarche et évite le découragement.
         </Paragraph>
         <Paragraph>
           La plateforme La bonne alternance permet à vos alternants d'accéder à un vivier d'entreprises que les autres <span lang="en">jobboards</span> ne voient pas. Mais cet

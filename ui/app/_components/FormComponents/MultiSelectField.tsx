@@ -165,6 +165,9 @@ export function MultiSelectField({
             <Checkbox
               small
               style={{ margin: 0 }}
+              // l'intitulé est déjà visible sur le select : légende réservée aux lecteurs d'écran
+              legend={label}
+              classes={{ legend: "fr-sr-only" }}
               options={options.map((option, index) => ({
                 label: option.label,
                 hintText: option.hintText,

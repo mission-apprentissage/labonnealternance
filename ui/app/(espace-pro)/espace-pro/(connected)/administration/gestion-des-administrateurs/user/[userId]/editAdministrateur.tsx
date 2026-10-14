@@ -1,6 +1,7 @@
 "use client"
+import { Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { LoadingEmptySpace } from "@/components/espace_pro"
@@ -29,12 +30,13 @@ const AdminUserView = ({ userId }: { userId: string }) => {
   return <AdminUserForm user={user} role={user.role} onUpdate={refetchUser} onDelete={() => router.push(PAGES.static.backAdminGestionDesAdministrateurs.getPath())} />
 }
 
-export default function EditAdministrateur() {
-  const { userId } = useParams() as { userId: string }
-
+export default function EditAdministrateur({ userId }: { userId: string }) {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs, PAGES.dynamic.backEditAdministrator({ userId })]} />
+      <Typography variant="h2" component="h1" gutterBottom>
+        {PAGES.dynamic.backEditAdministrator({ userId }).title}
+      </Typography>
       <AdminUserView userId={userId} />
     </>
   )

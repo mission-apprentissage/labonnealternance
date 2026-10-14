@@ -153,7 +153,7 @@ describe("POST /v2/appointment", () => {
     })
   })
 
-  it("Return 400 using LBA referrer", async () => {
+  it("Return 403 using LBA referrer", async () => {
     const response = await httpClient().inject({
       method: "POST",
       path: "/api/v2/appointment",
@@ -163,6 +163,7 @@ describe("POST /v2/appointment", () => {
       headers: { authorization: `Bearer ${lbaToken}` },
     })
 
-    expect.soft(response.statusCode).toEqual(401)
+    expect.soft(response.statusCode).toEqual(403)
+    expect(response.json()).toEqual({ statusCode: 403, error: "Forbidden", message: "Organisation not allowed" })
   })
 })

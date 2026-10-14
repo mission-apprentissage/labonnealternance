@@ -179,7 +179,7 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
         {
           path: "/alternance/diplomes",
           label: "Diplômes en alternance",
-          description: "Tous les diplômes accessibles en alternance (BTS, BUT, Licence Pro, CAP, Titres Pro) : programme, durée et débouchés.",
+          description: "Tous les diplômes accessibles en alternance (CAP, bac pro, BTS, titres pro, licence pro) : programme, durée et débouchés.",
         },
       ],
     },

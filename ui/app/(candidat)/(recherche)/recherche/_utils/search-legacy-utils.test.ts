@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { PAGES } from "@/utils/routes.utils"
-import { IRechercheMode, parseRecherchePageParams } from "./recherche.route.utils"
+import { IRechercheMode, parseRecherchePageParams, toURLSearchParams } from "./recherche.route.utils"
 import { buildRecruteursLbaSearchUrl, parseSearchPageParamsWithLegacy } from "./search-legacy-utils"
 
 const BASE = "https://labonnealternance.apprentissage.beta.gouv.fr"
@@ -29,6 +29,18 @@ describe("parseSearchPageParamsWithLegacy", () => {
     expect(params.q).toBeUndefined()
     expect(params.latitude).toBeUndefined()
     expect(params.mode).toBe("emplois")
+  })
+
+  describe("depuis les searchParams d'un Server Component", () => {
+    it("garde séparées les valeurs d'un filtre répété", () => {
+      const params = parseSearchPageParamsWithLegacy(toURLSearchParams({ q: "Data Analyst", contract_type: ["Apprentissage", "Professionnalisation"] }))
+      expect(params.contract_type).toEqual(["Apprentissage", "Professionnalisation"])
+    })
+
+    it("garde séparés des niveaux dont les libellés contiennent une virgule", () => {
+      const params = parseSearchPageParamsWithLegacy(toURLSearchParams({ q: "Data Analyst", level: ["CAP, BEP (Infrabac)", "BTS, DEUST (Bac+2)"] }))
+      expect(params.level).toEqual(["CAP, BEP (Infrabac)", "BTS, DEUST (Bac+2)"])
+    })
   })
 })
 

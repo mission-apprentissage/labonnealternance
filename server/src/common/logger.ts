@@ -7,7 +7,55 @@ import pino from "pino"
 
 import config from "@/config"
 
-const SENSIBLE_KEYS = new Set(["authorization", "password", "applicant_file_content", "apikey"])
+const SENSIBLE_KEYS = new Set(["authorization", "password", "applicant_file_content", "apikey", "cookie", "set-cookie"])
+
+const REDACTED = "[Filtered]"
+
+const isSensibleQueryParam = (key: string): boolean => {
+  const lower = key.toLowerCase()
+  return lower.includes("token") || lower === "email" || SENSIBLE_KEYS.has(lower) || SENSIBLE_KEYS.has(lower.replace(/[-_]/g, ""))
+}
+
+/**
+ * Le masquage par nom de clé ne voit pas un secret porté dans la valeur d'une URL : lien magique en
+ * query string du referer, route qui lit son jeton dans la query. On masque ces paramètres (et
+ * l'email) au niveau de la chaîne, sans parser l'URL : chemin, ordre et encodage restent intacts.
+ */
+const redactUrl = (value: unknown): unknown => {
+  if (typeof value !== "string") return value
+  const queryStart = value.indexOf("?")
+  if (queryStart === -1) return value
+  const hashStart = value.indexOf("#", queryStart)
+  const query = value.slice(queryStart + 1, hashStart === -1 ? undefined : hashStart)
+  const redactedQuery = query
+    .split("&")
+    .map((pair) => {
+      const separator = pair.indexOf("=")
+      if (separator === -1) return pair
+      const rawKey = pair.slice(0, separator)
+      let key = rawKey
+      try {
+        key = decodeURIComponent(rawKey)
+      } catch {
+        // clé mal encodée : on la compare telle quelle
+      }
+      return isSensibleQueryParam(key) ? `${rawKey}=${REDACTED}` : pair
+    })
+    .join("&")
+  return value.slice(0, queryStart + 1) + redactedQuery + (hashStart === -1 ? "" : value.slice(hashStart))
+}
+
+const withRedactedQueryParams = (query: unknown): unknown => {
+  if (query == null || typeof query !== "object") return query
+  return Object.fromEntries(Object.entries(query).map(([key, value]) => [key, isSensibleQueryParam(key) ? REDACTED : value]))
+}
+
+const URL_HEADERS = new Set(["referer", "location"])
+
+const withRedactedUrlHeaders = (headers: unknown): unknown => {
+  if (headers == null || typeof headers !== "object") return headers
+  return Object.fromEntries(Object.entries(headers).map(([key, value]) => [key, URL_HEADERS.has(key.toLowerCase()) ? redactUrl(value) : value]))
+}
 
 const withoutSensibleFields = (obj: unknown, seen: Set<unknown>): unknown => {
   if (obj == null) return obj
@@ -51,18 +99,18 @@ const withoutSensibleFields = (obj: unknown, seen: Set<unknown>): unknown => {
   return obj
 }
 
-const serializers = {
+export const serializers = {
   req: (request: FastifyRequest) => {
     return {
       method: request.method,
-      url: request.url,
+      url: redactUrl(request.url),
       hostname: request.hostname,
       remoteAddress: request.ip,
       remotePort: request.socket?.remotePort,
       requestId: request.id,
-      headers: withoutSensibleFields(request.headers, new Set()),
-      query: withoutSensibleFields(request.query, new Set()),
-      params: request.params,
+      headers: withRedactedUrlHeaders(withoutSensibleFields(request.headers, new Set())),
+      query: withoutSensibleFields(withRedactedQueryParams(request.query), new Set()),
+      params: withoutSensibleFields(request.params, new Set()),
       body: typeof request.body === "object" ? withoutSensibleFields(request.body, new Set()) : null,
     }
   },
@@ -71,10 +119,10 @@ const serializers = {
     return {
       requestId: request?.id,
       method: request?.method,
-      url: request?.url,
+      url: redactUrl(request?.url),
       responseTime: res.elapsedTime ?? null,
       statusCode: res.statusCode,
-      headers: typeof res.getHeaders === "function" ? withoutSensibleFields(res.getHeaders(), new Set()) : {},
+      headers: typeof res.getHeaders === "function" ? withRedactedUrlHeaders(withoutSensibleFields(res.getHeaders(), new Set())) : {},
     }
   },
   err: (err: FastifyError & { errInfo?: unknown }) => {

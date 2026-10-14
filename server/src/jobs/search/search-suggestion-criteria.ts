@@ -31,10 +31,10 @@ export const CRITERIA = {
   /** S12 — confiance IA minimale. */
   SUGGESTION_MIN_CONFIDENCE: 0.8,
   /** Garde-fou : insertions max par run (tri par fréquence décroissante au-delà). Le job tourne
-   * en cron mensuel (cf. jobs.ts), WINDOW_DAYS couvre donc à peu près un cycle. Dimensionné pour
-   * absorber un cycle complet : un run réel a produit ~166 candidats légitimes (97 insérées +
-   * 69 suggestion_capped). Les candidats capés sont réévalués au run suivant (cf.
-   * analyzeSearchQueries), mais un quota trop juste retarde leur mise en autocomplete. */
+   * le 1er et le 16 du mois (cf. jobs.ts) sur une fenêtre de WINDOW_DAYS : deux runs consécutifs
+   * se recouvrent, les candidats déjà traités sont écartés (`already_processed`). Les candidats
+   * capés sont réévalués au run suivant (cf. analyzeSearchQueries) : un quota trop juste retarde
+   * leur mise en autocomplete. */
   MAX_SUGGESTIONS_PER_RUN: 200,
 
   // ── Candidat → synonyme (impacte le matching global → plus strict) ──────
@@ -147,4 +147,14 @@ export function decideSynonym(stats: IQueryStats, analysis: IQueryAnalysis): IVe
   if (!analysis.synonym_of?.trim()) return { verdict: "reject", reason: "no_synonym_target" }
   if (analysis.confidence < CRITERIA.SYNONYM_MIN_CONFIDENCE) return { verdict: "reject", reason: "low_confidence" }
   return { verdict: "pass", reason: null }
+}
+
+/**
+ * Motif de rejet d'un candidat refusé sur les deux routes. Un candidat éligible à la seule route
+ * synonyme échoue d'office en suggestion (`not_suggestion_candidate`) : ce motif masquerait la
+ * vraie cause, celle de la route synonyme.
+ */
+export function resolveRejectionReason(suggestion: IVerdict, synonym: IVerdict): string {
+  if (suggestion.reason === "not_suggestion_candidate") return synonym.reason ?? suggestion.reason
+  return suggestion.reason ?? synonym.reason ?? "rejected_both_routes"
 }

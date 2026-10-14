@@ -161,6 +161,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
                 <span style={{ color: "#161616" }}>{data.ville},</span> {data.content.description_ville.title}
               </Typography>
               <Box
+                aria-hidden="true"
                 component="hr"
                 sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
               />
@@ -201,6 +202,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
             La vie d'alternant <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
@@ -262,6 +264,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
             en alternance <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
@@ -345,6 +348,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
             La mobilité et le logement
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
@@ -460,6 +464,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
             Les loisirs <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
           <Box
+            aria-hidden="true"
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />

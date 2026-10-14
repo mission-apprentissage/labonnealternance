@@ -1,7 +1,7 @@
 "use client"
 
 import { Box, Typography } from "@mui/material"
-import type { UseComboboxState } from "downshift"
+import type { UseComboboxGetInputPropsReturnValue, UseComboboxState } from "downshift"
 import { useCombobox } from "downshift"
 import { useField } from "formik"
 import { useState } from "react"
@@ -65,14 +65,16 @@ export default function DropdownCombobox(props) {
         name={name}
         info={"Sélectionnez un métier pour référencer l'offre"}
         placeholder={placeholder || "sélectionner un métier"}
-        {...getInputProps({
-          onFocus() {
-            openMenu()
-          },
-          onBlur() {
-            helpers.setTouched(true)
-          },
-        })}
+        {...toCustomInputComboboxProps(
+          getInputProps({
+            onFocus() {
+              openMenu()
+            },
+            onBlur() {
+              helpers.setTouched(true)
+            },
+          })
+        )}
       />
       {/* getMenuProps() pose role="listbox" : la cible doit être un <ul> et ses enfants des <li>
           (RGAA 8.2). Les marges et le listStyle sont déjà neutralisés ici ; la mise en forme des
@@ -92,7 +94,7 @@ export default function DropdownCombobox(props) {
           boxShadow: "0px 1px 8px rgba(8, 67, 85, 0.24)",
           maxH: "50vh",
         }}
-        {...getMenuProps()}
+        {...getMenuProps({ "aria-label": label })}
       >
         {isOpen &&
           inputItems.map((item, index) => (
@@ -122,10 +124,31 @@ export default function DropdownCombobox(props) {
           ))}
         {isOpen && inputItems.length === 0 && (
           <Box component="li" role="presentation" key="nomatch" {...neutralItemProps}>
-            Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche
+            <Typography>Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche</Typography>
           </Box>
         )}
       </Box>
     </div>
   )
+}
+
+/**
+ * MUI Input pose les attributs inconnus sur sa div racine : ref, role et aria-* passent par inputProps pour
+ * atteindre l'<input> (cf. AutocompleteAsync). Le label pointé par downshift n'est jamais rendu : le nom vient
+ * du <label for> de CustomInput (RGAA 11.1).
+ */
+function toCustomInputComboboxProps({
+  ref,
+  "aria-labelledby": _ariaLabelledBy,
+  role,
+  "aria-activedescendant": ariaActiveDescendant,
+  "aria-autocomplete": ariaAutocomplete,
+  "aria-controls": ariaControls,
+  "aria-expanded": ariaExpanded,
+  ...comboboxProps
+}: UseComboboxGetInputPropsReturnValue & { ref?: React.Ref<HTMLInputElement> }) {
+  return {
+    ...comboboxProps,
+    inputProps: { ref, role, "aria-activedescendant": ariaActiveDescendant, "aria-autocomplete": ariaAutocomplete, "aria-controls": ariaControls, "aria-expanded": ariaExpanded },
+  }
 }

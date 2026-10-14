@@ -102,7 +102,9 @@ export function buildSearchMatchWords(highlights: Highlight[]): Array<{ word: st
 
 type SortOption = "proximity" | "date" | "applications" | "start_date"
 
-type SearchMode = "emplois" | "formations" | "emplois_formation"
+export type SearchMode = "emplois" | "formations" | "emplois_formation"
+
+export const DEFAULT_SEARCH_MODE: SearchMode = "emplois"
 
 interface ISearchFilters {
   q?: string
@@ -193,24 +195,13 @@ const QUERY_STOPWORDS = new Set([
   "alternant",
   "alternance",
   "apprentissage",
-  // Mots de diplôme : très fréquents dans les titres/descriptions d'offres, ils couvrent
-  // sans discriminer le métier ("bac pro commerce" matchait carrossier/serveur via
-  // bac + pro, recette #3). Le niveau se filtre par la facette dédiée ; le bonus phrase
-  // (requête entière) continue de favoriser les intitulés exacts type "Bac pro commerce".
-  "bac",
-  "bachelor",
-  "bp",
-  "bts",
-  "but",
-  "cap",
-  "deust",
-  "diplome",
-  "dut",
-  "licence",
-  "master",
-  "mastere",
-  "pro",
 ])
+
+// Mots de diplôme : très fréquents dans les titres/descriptions d'offres, ils couvrent sans
+// discriminer le métier ("bac pro commerce" matchait carrossier/serveur via bac + pro, recette #3).
+// Le niveau se filtre par la facette dédiée ; le bonus phrase (requête entière) continue de
+// favoriser les intitulés exacts type "Bac pro commerce". Hors mode emplois, cf. DiplomaTermsPolicy.
+const DIPLOMA_WORDS = new Set(["bac", "bachelor", "bp", "bts", "but", "cap", "deust", "diplome", "dut", "licence", "master", "mastere", "pro"])
 
 const QUERY_DIACRITICS = /[̀-ͯ]/g
 export const normalizeTerm = (s: string) => s.normalize("NFD").replace(QUERY_DIACRITICS, "").toLowerCase()
@@ -233,15 +224,22 @@ const dedupKey = (normalized: string): string => {
   return t
 }
 
-/** Découpe la requête en termes utiles : minuscules, split non-alphanumérique, stopwords, dédup M/F. */
-export function tokenizeQuery(q: string): string[] {
+const isStopword = (normalized: string) => QUERY_STOPWORDS.has(normalized) || DIPLOMA_WORDS.has(normalized)
+
+/**
+ * Découpe la requête en termes utiles : minuscules, split non-alphanumérique, stopwords, dédup M/F.
+ * `diplomaWords: true` ne garde au contraire que les mots de diplôme (cf. DiplomaTermsPolicy).
+ * Aussi clé d'agrégation de `search_queries` (search-query-log.service.ts), indépendante du mode.
+ */
+export function tokenizeQuery(q: string, { diplomaWords = false }: { diplomaWords?: boolean } = {}): string[] {
   const seen = new Set<string>()
   const terms: string[] = []
   for (const raw of q.toLowerCase().split(/[^\p{L}\p{N}]+/u)) {
     if (!raw) continue
     const normalized = normalizeTerm(raw)
     const key = dedupKey(normalized)
-    if (QUERY_STOPWORDS.has(normalized) || QUERY_STOPWORDS.has(key) || seen.has(key)) continue
+    const skip = diplomaWords ? !DIPLOMA_WORDS.has(normalized) && !DIPLOMA_WORDS.has(key) : isStopword(normalized) || isStopword(key)
+    if (skip || seen.has(key)) continue
     seen.add(key)
     terms.push(raw)
   }
@@ -262,8 +260,8 @@ const msmFor = (n: number): number => (n <= 2 ? n : n <= 4 ? n - 1 : Math.ceil(0
 // « A une vraie valeur » : seule une valeur indexée matche un range. `exists` est inutilisable
 // ici : il matche aussi les champs à null, donc tous les docs.
 const HAS_START_DATE = { range: { path: "start_date", gte: new Date("1900-01-01T00:00:00.000Z") } }
+// Offres sans `offer_creation` : publication_date nulle dans les corpus d'offres aussi.
 const HAS_PUBLICATION_DATE = { range: { path: "publication_date", gte: new Date("1900-01-01T00:00:00.000Z") } }
-const HAS_APPLICATION_COUNT = { range: { path: "application_count", gte: 0 } }
 
 // Tri par date de début : les docs sans start_date trieraient en tête (valeur manquante avant
 // toute date en ordre croissant), on les écarte, sauf les candidatures spontanées (cf. buildSortStage).
@@ -289,27 +287,28 @@ const buildStartDateFilter = (start_date: Date) => ({
   },
 })
 
-// Type de recherche (champ « Type de recherche » du front) : « emplois » exclut les offres
-// avec formation incluse (CFA/GEIQ, cf. isFormationIncluded dans search-items.service.ts)
-// en plus des formations ; « emplois_formation » ne renvoie QUE ces offres CFA/GEIQ.
-const buildModeFilter = (mode: SearchMode): object => {
-  switch (mode) {
-    case "formations":
-      return { equals: { path: "type", value: "formation" } }
-    case "emplois_formation":
-      return { equals: { path: "is_formation_included", value: true } }
-    case "emplois":
-      return {
-        compound: {
-          must: [{ equals: { path: "type", value: "offre" } }],
-          mustNot: [{ equals: { path: "is_formation_included", value: true } }],
-        },
-      }
-  }
-}
+/**
+ * Traitement des mots de diplôme (DIPLOMA_WORDS) par corpus :
+ * - "stopword" (emplois) : ignorés, ils couvrent sans discriminer le métier ;
+ * - "qualifier" (formations, emplois avec formation incluse, dont les titres ressemblent à des
+ *   intitulés de formation : « BTS MCO en alternance ») : bonus de score, et porte de pertinence
+ *   seulement quand la requête n'a pas d'autre terme (« bts »). Les compter comme des termes
+ *   ordinaires laisserait « bac pro commerce » ramener « Bac pro cuisine » via bac + pro.
+ */
+type DiplomaTermsPolicy = "stopword" | "qualifier"
+
+// Un mode = un corpus : sa collection, son index Atlas Search et ses réglages (#5389). La
+// répartition des items entre collections suit getSearchCorpusCollection (search-items.service.ts).
+const SEARCH_CORPORA = {
+  emplois: { collection: "search_jobs", index: "search_jobs_index", diplomaTerms: "stopword" },
+  emplois_formation: { collection: "search_jobs_with_training", index: "search_jobs_with_training_index", diplomaTerms: "qualifier" },
+  formations: { collection: "search_trainings", index: "search_trainings_index", diplomaTerms: "qualifier" },
+} as const satisfies Record<SearchMode, { collection: string; index: string; diplomaTerms: DiplomaTermsPolicy }>
+
+type SearchCorpus = (typeof SEARCH_CORPORA)[SearchMode]
 
 // Sémantique INCLUSIVE du filtre niveau : un doc sans niveau précisé ("" — recruteurs et
-// offres sans diplôme cible, ~83 % du corpus) ou "Indifférent" (fallback formations) est
+// offres sans diplôme cible, corpus d'offres) ou "Indifférent" (niveau inconnu, corpus formations) est
 // compatible avec tout niveau sélectionné — il n'est pas incompatible, il est indifférent.
 const LEVEL_AGNOSTIC_VALUES = ["", "Indifférent"]
 const buildLevelFilter = (level: string[]) => ({ in: { path: "level", value: [...level, ...LEVEL_AGNOSTIC_VALUES] } })
@@ -366,9 +365,10 @@ function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQu
  * peu utile sur ces requêtes de toute façon : `phrase`/`slop:0` exige une correspondance quasi
  * exacte, peu probable sur un texte libre long.
  */
-function buildTextGate(q: string | undefined, simplifyQuery: boolean): object | null {
+function buildTextGate(q: string | undefined, simplifyQuery: boolean, corpus: SearchCorpus): object | null {
   if (!q?.trim()) return null
-  const terms = tokenizeQuery(q)
+  const contentTerms = tokenizeQuery(q)
+  const terms = !contentTerms.length && corpus.diplomaTerms === "qualifier" ? tokenizeQuery(q, { diplomaWords: true }) : contentTerms
   const coverage = terms.length
     ? [{ compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1, simplifyQuery)), minimumShouldMatch: msmFor(terms.length) } }]
     : []
@@ -384,13 +384,15 @@ function buildTextGate(q: string | undefined, simplifyQuery: boolean): object | 
 // Bonus de score (bloc `should`, n'élargit pas le result set). phrase sur title/rome_labels
 // favorise les termes adjacents (« Product Manager ») ; phrase sur organization_name fait
 // passer le match employeur devant les mentions en description.
-function buildTextBonusClauses(q?: string): object[] {
+function buildTextBonusClauses(q: string | undefined, corpus: SearchCorpus): object[] {
   if (!q?.trim()) return []
+  const diplomaTerms = corpus.diplomaTerms === "qualifier" ? tokenizeQuery(q, { diplomaWords: true }) : []
   return [
     { phrase: { query: q, path: ["title", "rome_labels"], slop: 2, score: { boost: { value: 10 } } } },
     { phrase: { query: q, path: "organization_name", slop: 1, score: { boost: { value: 8 } } } },
     { text: { query: q, path: "keywords", score: { boost: { value: 3 } } } },
     { text: { query: q, path: "description", score: { boost: { value: 1 } } } },
+    ...(diplomaTerms.length ? [{ text: { query: diplomaTerms.join(" "), path: "title", score: { boost: { value: 7 } } } }] : []),
   ]
 }
 
@@ -414,11 +416,9 @@ function buildGeoClause(filters: ISearchFilters): object | null {
   }
 }
 
-function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) {
+function buildCompoundOperator(filters: ISearchFilters, corpus: SearchCorpus, simplifyQuery: boolean) {
   const {
     q,
-    type,
-    mode,
     type_filter_label,
     contract_type,
     level,
@@ -436,12 +436,10 @@ function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) 
   const hasGeo = latitude !== undefined && longitude !== undefined
   const proximity = sort === "proximity" && hasGeo
 
-  const gate = buildTextGate(q, simplifyQuery)
+  const gate = buildTextGate(q, simplifyQuery, corpus)
 
   const filter: object[] = []
 
-  if (type) filter.push({ equals: { path: "type", value: type } })
-  if (mode) filter.push(buildModeFilter(mode))
   if (type_filter_label?.length) filter.push({ in: { path: "type_filter_label", value: type_filter_label } })
   if (contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type } })
   if (level?.length) filter.push(buildLevelFilter(level))
@@ -458,12 +456,10 @@ function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) 
   if (geoClause) filter.push(geoClause)
 
   // Tris sur un champ : les docs sans valeur trieraient en tête (valeur manquante avant toute
-  // valeur en ordre croissant), on les écarte.
+  // valeur en ordre croissant), on les écarte. Pas de garde sur application_count : toujours
+  // renseigné dans les corpus d'offres, toujours nul dans celui des formations.
   if (sort === "date") {
     filter.push(HAS_PUBLICATION_DATE)
-  }
-  if (sort === "applications") {
-    filter.push(HAS_APPLICATION_COUNT)
   }
   if (sort === "start_date") {
     filter.push(START_DATE_SORT_FILTER)
@@ -488,7 +484,7 @@ function buildCompoundOperator(filters: ISearchFilters, simplifyQuery: boolean) 
   // Porte de pertinence en `must` (gate le result set — vaut pour TOUS les tris, y compris
   // date : un doc trop peu couvrant n'apparaît plus, quel que soit l'ordre) ; bonus phrase
   // en `should` pur (score uniquement, n'élargit pas les résultats).
-  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q) } : {}), filter }
+  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q, corpus) } : {}), filter }
 }
 
 // Les candidatures spontanées (is_algo_company) passent en fin de liste sur les tris par date :
@@ -539,28 +535,12 @@ function isDimensionActive(filters: ISearchFilters, key: FacetDimension): boolea
 // Faceting DISJONCTIF : compound = texte + géo + type + tous les filtres de dimension
 // SAUF `exclude`. Ainsi une facette ne masque pas ses propres options en multi-sélection,
 // mais reflète bien les restrictions imposées par les AUTRES filtres (filtres synchronisés).
-function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | null, simplifyQuery: boolean) {
-  const {
-    q,
-    type,
-    mode,
-    type_filter_label,
-    contract_type,
-    level,
-    activity_sector,
-    organization_name,
-    is_disabled_elligible,
-    start_type,
-    start_date,
-    smart_apply,
-    is_algo_company,
-  } = filters
+function buildFacetCompound(filters: ISearchFilters, corpus: SearchCorpus, exclude: FacetDimension | null, simplifyQuery: boolean) {
+  const { q, type_filter_label, contract_type, level, activity_sector, organization_name, is_disabled_elligible, start_type, start_date, smart_apply, is_algo_company } = filters
   // Même porte de pertinence que la recherche → les counts de facettes reflètent le même result set.
-  const gate = buildTextGate(q, simplifyQuery)
+  const gate = buildTextGate(q, simplifyQuery, corpus)
   const filter: object[] = []
 
-  if (type) filter.push({ equals: { path: "type", value: type } })
-  if (mode) filter.push(buildModeFilter(mode))
   if (exclude !== "type_filter_label" && type_filter_label?.length) filter.push({ in: { path: "type_filter_label", value: type_filter_label } })
   if (exclude !== "contract_type" && contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type } })
   if (exclude !== "level" && level?.length) filter.push(buildLevelFilter(level))
@@ -579,9 +559,6 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   if (filters.sort === "date") {
     filter.push(HAS_PUBLICATION_DATE)
   }
-  if (filters.sort === "applications") {
-    filter.push(HAS_APPLICATION_COUNT)
-  }
   if (filters.sort === "start_date") {
     filter.push(START_DATE_SORT_FILTER)
   }
@@ -597,14 +574,14 @@ type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: nu
 // mongot ne supportent que string/number/date) → un count dédié par chip via $searchMeta.
 // Disjonctif comme les facettes : le filtre de la chip est exclu de son propre compound
 // pour que le compteur reste stable quand l'utilisateur active le filtre.
-function buildChipCountCompounds(filters: ISearchFilters, simplifyQuery: boolean) {
-  const handi = buildFacetCompound({ ...filters, is_disabled_elligible: undefined }, null, simplifyQuery)
+function buildChipCountCompounds(filters: ISearchFilters, corpus: SearchCorpus, simplifyQuery: boolean) {
+  const handi = buildFacetCompound({ ...filters, is_disabled_elligible: undefined }, corpus, null, simplifyQuery)
   handi.filter.push({ equals: { path: "is_disabled_elligible", value: true } })
 
-  const urgent = buildFacetCompound({ ...filters, start_type: undefined }, null, simplifyQuery)
+  const urgent = buildFacetCompound({ ...filters, start_type: undefined }, corpus, null, simplifyQuery)
   urgent.filter.push({ equals: { path: "start_type", value: JOB_START_TYPE.DES_QUE_POSSIBLE } })
 
-  const smartApply = buildFacetCompound({ ...filters, smart_apply: undefined }, null, simplifyQuery)
+  const smartApply = buildFacetCompound({ ...filters, smart_apply: undefined }, corpus, null, simplifyQuery)
   smartApply.filter.push({ equals: { path: "smart_apply", value: true } })
 
   return { is_disabled_elligible: handi, urgent, smart_apply: smartApply }
@@ -615,12 +592,12 @@ function buildChipCountCompounds(filters: ISearchFilters, simplifyQuery: boolean
 //   compteurs informatifs — sub_type alimente le détail par type d'offre de l'événement
 //   Matomo search_results_displayed), calculé avec tous les filtres actifs ;
 // - 1 groupe par dimension sélectionnée, calculé en excluant cette dimension.
-function buildFacetGroups(filters: ISearchFilters, simplifyQuery: boolean): { keys: string[]; compound: object }[] {
+function buildFacetGroups(filters: ISearchFilters, corpus: SearchCorpus, simplifyQuery: boolean): { keys: string[]; compound: object }[] {
   const activeDims = FACET_DIMENSIONS.filter((k) => isDimensionActive(filters, k))
   const inactiveDims = FACET_DIMENSIONS.filter((k) => !activeDims.includes(k))
 
-  const groups: { keys: string[]; compound: object }[] = [{ keys: [...inactiveDims, "type", "sub_type"], compound: buildFacetCompound(filters, null, simplifyQuery) }]
-  for (const dim of activeDims) groups.push({ keys: [dim], compound: buildFacetCompound(filters, dim, simplifyQuery) })
+  const groups: { keys: string[]; compound: object }[] = [{ keys: [...inactiveDims, "type", "sub_type"], compound: buildFacetCompound(filters, corpus, null, simplifyQuery) }]
+  for (const dim of activeDims) groups.push({ keys: [dim], compound: buildFacetCompound(filters, corpus, dim, simplifyQuery) })
   return groups
 }
 
@@ -643,11 +620,18 @@ function isMaxClauseCountError(err: unknown): boolean {
   return err instanceof Error && err.message.includes("maxClauseCount")
 }
 
+/**
+ * Mode servi par une requête. Sans `mode`, le paramètre `type` historique désigne le corpus
+ * (`type=formation` → formations) ; il ne filtre plus rien, chaque corpus étant homogène.
+ */
+export const resolveSearchMode = ({ mode, type }: Pick<ISearchFilters, "mode" | "type">): SearchMode => mode ?? (type === "formation" ? "formations" : DEFAULT_SEARCH_MODE)
+
 async function runSearchAggregations(params: ISearchFilters, simplifyQuery: boolean) {
   const { page, hitsPerPage } = params
-  const compound = buildCompoundOperator(params, simplifyQuery)
-  const facetGroups = buildFacetGroups(params, simplifyQuery)
-  const chipCountCompounds = buildChipCountCompounds(params, simplifyQuery)
+  const corpus = SEARCH_CORPORA[resolveSearchMode(params)]
+  const compound = buildCompoundOperator(params, corpus, simplifyQuery)
+  const facetGroups = buildFacetGroups(params, corpus, simplifyQuery)
+  const chipCountCompounds = buildChipCountCompounds(params, corpus, simplifyQuery)
   const chipCountKeys = Object.keys(chipCountCompounds) as (keyof typeof chipCountCompounds)[]
 
   // Retry unique si mongot annule une des requêtes (transitoire — cf. search-transient-retry.ts) ;
@@ -655,12 +639,12 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
   const [rows, chipCountArrays, ...metaArrays] = await retryOnTransientSearchCancellation(
     () =>
       Promise.all([
-        getDbCollection("search_items")
+        getDbCollection(corpus.collection)
           .aggregate<SearchRow>(
             [
               {
                 $search: {
-                  index: "search_items_index",
+                  index: corpus.index,
                   compound,
                   sort: buildSortStage(params),
                   highlight: {
@@ -686,12 +670,12 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
 
         Promise.all(
           chipCountKeys.map((key) =>
-            getDbCollection("search_items")
+            getDbCollection(corpus.collection)
               .aggregate<{ count?: { total?: number } }>(
                 [
                   {
                     $searchMeta: {
-                      index: "search_items_index",
+                      index: corpus.index,
                       compound: chipCountCompounds[key],
                       count: { type: "total" },
                     },
@@ -704,12 +688,12 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
         ),
 
         ...facetGroups.map((group) =>
-          getDbCollection("search_items")
+          getDbCollection(corpus.collection)
             .aggregate<FacetMetaRow>(
               [
                 {
                   $searchMeta: {
-                    index: "search_items_index",
+                    index: corpus.index,
                     facet: {
                       operator: { compound: group.compound },
                       facets: Object.fromEntries(group.keys.map((key) => [key, FACET_FIELD_DEFS[key]])),
@@ -803,15 +787,15 @@ export async function searchItems(params: ISearchFilters): Promise<{
   return { hits, nbHits, page, nbPages, facets, counts, degraded }
 }
 
-async function suggestFromItems(q: string, limit: number): Promise<string[]> {
+async function suggestFromItems(q: string, limit: number, corpus: SearchCorpus): Promise<string[]> {
   const rows = await retryOnTransientSearchCancellation(
     () =>
-      getDbCollection("search_items")
+      getDbCollection(corpus.collection)
         .aggregate<{ title: string; rome_labels: string[] | null }>(
           [
             {
               $search: {
-                index: "search_items_index",
+                index: corpus.index,
                 compound: {
                   should: [
                     { autocomplete: { query: q, path: "title", fuzzy: { maxEdits: 1 }, score: { boost: { value: 2 } } } },
@@ -834,8 +818,9 @@ async function suggestFromItems(q: string, limit: number): Promise<string[]> {
 
 // Autocomplétion sur les suggestions issues des recherches utilisateurs (collection
 // `search_suggestions`, alimentée par le job analyzeSearchQueries — seuls les termes
-// `active` sont servis ; kill-switch : passer origin user_queries en disabled).
-async function suggestFromUserSuggestions(q: string, limit: number): Promise<string[]> {
+// `active` sont servis ; kill-switch : passer origin user_queries en disabled). En mode emplois,
+// les termes classés `formation` sont écartés pour la même raison que les intitulés RCO (#5389).
+async function suggestFromUserSuggestions(q: string, limit: number, mode: SearchMode): Promise<string[]> {
   const rows = await getDbCollection("search_suggestions")
     .aggregate<{ term: string }>(
       [
@@ -845,6 +830,7 @@ async function suggestFromUserSuggestions(q: string, limit: number): Promise<str
             compound: {
               must: [{ autocomplete: { query: q, path: "term", fuzzy: { maxEdits: 1 } } }],
               filter: [{ equals: { path: "status", value: "active" } }],
+              ...(mode === "emplois" ? { mustNot: [{ equals: { path: "category", value: "formation" } }] } : {}),
             },
           },
         },
@@ -859,15 +845,15 @@ async function suggestFromUserSuggestions(q: string, limit: number): Promise<str
 
 /**
  * Autocomplétion par préfixe pour la barre de recherche : fusionne le contenu réellement
- * indexé (title/rome_labels — prioritaire) et les suggestions apprises des recherches
- * utilisateurs (en complément jusqu'à `limit`). Les deux requêtes $search partent en
+ * indexé du corpus du mode (title/rome_labels — prioritaire) et les suggestions apprises des
+ * recherches utilisateurs (en complément jusqu'à `limit`). Les deux requêtes $search partent en
  * parallèle ; la déduplication et le filtre anti-bruit fuzzy s'appliquent aux deux listes.
  */
-export async function suggestSearchTerms({ q, limit }: { q: string; limit: number }): Promise<{ suggestions: string[] }> {
+export async function suggestSearchTerms({ q, limit, mode = DEFAULT_SEARCH_MODE }: { q: string; limit: number; mode?: SearchMode }): Promise<{ suggestions: string[] }> {
   const [itemCandidates, userCandidates] = await Promise.all([
-    suggestFromItems(q, limit),
+    suggestFromItems(q, limit, SEARCH_CORPORA[mode]),
     // La collection peut ne pas exister / index absent (env de test) → dégradation silencieuse.
-    suggestFromUserSuggestions(q, limit).catch(() => [] as string[]),
+    suggestFromUserSuggestions(q, limit, mode).catch(() => [] as string[]),
   ])
 
   const diacritics = new RegExp("[\\u0300-\\u036f]", "g")

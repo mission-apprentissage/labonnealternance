@@ -36,7 +36,7 @@ export type IJobStatusChange = {
  * anonymisation des comptes — d'où des offres Cancelled avec offer_status_history vide, sans aucun
  * motif exploitable pour la mesure d'impact (issue #5429).
  *
- * `updated_at` est toujours rafraîchi : le cron delta search_items (syncSearchItemsDelta) s'en sert
+ * `updated_at` est toujours rafraîchi : le cron delta de l'index de recherche (syncSearchItemsDelta) s'en sert
  * pour retirer l'offre de l'index de recherche.
  *
  * Renvoie un document d'update utilisable tel quel par updateOne, updateMany, findOneAndUpdate et

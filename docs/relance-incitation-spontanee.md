@@ -28,7 +28,7 @@ Code : [relance-incitation-spontanee.ts](../server/src/jobs/applications/relance
 
 ## Configuration
 
-- `LBA_BREVO_RELANCE_SPONTANEE_LIST_ID` (→ `config.smtp.brevoRelanceSpontaneeListId`) : ID de la liste Brevo B, dans les secrets SOPS. **Garde-fou** : tant que la variable est absente, le job ne fait rien.
+- `LBA_BREVO_RELANCE_SPONTANEE_LIST_ID` (→ `config.brevo.listIds.relanceSpontanee`) : ID de la liste Brevo B, dans les secrets SOPS. **Garde-fou** : tant que la variable est absente, le job ne fait rien.
 
 ## Tests
 

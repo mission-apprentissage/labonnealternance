@@ -1,14 +1,16 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box, Stack, TextField, Typography } from "@mui/material"
 import { Formik } from "formik"
 import Image from "next/image"
+import { useId, useRef } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 import { CustomFormControl } from "@/app/_components/CustomFormControl"
-import { CustomRadio } from "@/app/_components/CustomRadio"
+import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useLocalStorage } from "@/app/hooks/use-local-storage"
@@ -57,7 +59,7 @@ const contentByItemType: Partial<
 }
 
 const ZFormValues = z.object({
-  reason: z.string(),
+  reason: z.string({ error: "Sélectionnez un motif de signalement" }),
   reason_details: z.string().nullish(),
 })
 
@@ -78,6 +80,8 @@ export const ReportJobLink = ({
 }) => {
   const { storedValue, setLocalStorage } = useLocalStorage(`report-job-${itemId}`, false)
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
+  const reasonDetailsId = useId()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const onReport = async ({ reason, reason_details }: IFormValues) => {
     if (storedValue) {
@@ -118,29 +122,29 @@ export const ReportJobLink = ({
               validationSchema={toFormikValidationSchema(ZFormValues)}
               onSubmit={async (formikValues) => onReport(formikValues)}
             >
-              {({ values, handleChange, handleBlur, submitForm, dirty, isValid, isSubmitting, setFieldValue }) => {
+              {(formik) => {
+                const { values, errors, touched, handleChange, handleBlur, isSubmitting, setFieldValue } = formik
+                const reasonError = touched.reason && errors.reason
+                // Le bouton ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
+                const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
                 return (
-                  <Stack direction="column" spacing={2}>
-                    <Typography sx={{ fontWeight: 700 }}>Veuillez sélectionner un motif dans la liste ci-dessous :</Typography>
-                    <CustomRadio
-                      radioProps={{
-                        sx: {
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: fr.spacing("2v"),
-                          mb: fr.spacing("2v"),
-                        },
-                      }}
-                      size="small"
+                  <Stack component="form" ref={formRef} onSubmit={handleSubmit} noValidate direction="column" spacing={2}>
+                    <RadioButtons
+                      small
                       name="reason"
-                      value={values.reason}
-                      onChange={async (_, newValue) => setFieldValue("reason", newValue, true)}
-                      possibleValues={content.motifs}
+                      legend="Veuillez sélectionner un motif dans la liste ci-dessous :"
+                      state={reasonError ? "error" : "default"}
+                      stateRelatedMessage={reasonError || undefined}
+                      options={content.motifs.map((motif) => ({
+                        label: motif,
+                        nativeInputProps: { value: motif, checked: values.reason === motif, onChange: () => setFieldValue("reason", motif, true) },
+                      }))}
                     />
                     {values.reason && !noAdditionalMessage.includes(values.reason) && (
                       <CustomFormControl
                         required={false}
                         name="reason_details"
+                        fieldId={reasonDetailsId}
                         label={
                           <>
                             <Box sx={{ fontWeight: 400 }}>
@@ -154,6 +158,7 @@ export const ReportJobLink = ({
                         }
                       >
                         <TextField
+                          id={reasonDetailsId}
                           multiline
                           rows={4}
                           data-testid="reason_details"
@@ -164,7 +169,7 @@ export const ReportJobLink = ({
                         />
                       </CustomFormControl>
                     )}
-                    <Button disabled={!(isValid && dirty) || isSubmitting} onClick={submitForm} data-testid="report_offer">
+                    <Button type="submit" disabled={isSubmitting} data-testid="report_offer">
                       Envoyer le signalement
                     </Button>
                   </Stack>
@@ -192,7 +197,7 @@ const ReportedAcknowledgement = () => {
         <Image width={23} height={23} src="/images/icons/coche_verte.svg" alt="" />
         <ModalTitle>Votre signalement a bien été envoyé à notre équipe.</ModalTitle>
       </Stack>
-      <Typography component="span">Merci de votre participation à l'amélioration du service La bonne alternance.</Typography>
+      <Typography>Merci de votre participation à l'amélioration du service La bonne alternance.</Typography>
     </Box>
   )
 }

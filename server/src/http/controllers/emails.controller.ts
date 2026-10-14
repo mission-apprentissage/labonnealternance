@@ -13,7 +13,7 @@ export default (server: Server) => {
       schema: zRoutes.post["/emails/webhook"],
     },
     async (req, res) => {
-      if (req.query.apiKey !== config.smtp.brevoWebhookApiKey) {
+      if (req.query.apiKey !== config.brevo.webhookApiKey) {
         throw forbidden()
       }
 
@@ -29,7 +29,7 @@ export default (server: Server) => {
       schema: zRoutes.post["/emails/webhookHardbounce"],
     },
     async (req, res) => {
-      if (req.query.apiKey !== config.smtp.brevoWebhookApiKey) {
+      if (req.query.apiKey !== config.brevo.webhookApiKey) {
         throw forbidden()
       }
 

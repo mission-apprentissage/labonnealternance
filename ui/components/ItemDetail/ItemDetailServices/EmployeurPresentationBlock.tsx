@@ -8,6 +8,7 @@ import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJo
 import { isOfferActive } from "@/utils/is-offer-active"
 import { getCompanySize } from "./get-company-size"
 import HiringCountBox from "./HiringCountBox"
+import { InlineField } from "./InlineField"
 import ItemDistanceToCenter from "./ItemDistanceToCenter"
 import ItemGoogleSearchLink from "./ItemGoogleSearchLink"
 import ItemLocalisation from "./ItemLocalisation"
@@ -47,15 +48,17 @@ export const EmployeurPresentationBlock = ({
         {title}
       </Typography>
 
-      {(description || emptyStateText) && (
+      {description ? (
         <Box
           sx={{
             whiteSpace: "pre-wrap",
             mb: fr.spacing("6v"),
           }}
-          dangerouslySetInnerHTML={{ __html: description || emptyStateText }}
+          dangerouslySetInnerHTML={{ __html: description }}
         />
-      )}
+      ) : emptyStateText ? (
+        <Typography sx={{ whiteSpace: "pre-wrap", mb: fr.spacing("6v") }}>{emptyStateText}</Typography>
+      ) : null}
 
       {isHandicapEngaged && (
         <Box sx={{ mb: fr.spacing("6v") }}>
@@ -71,33 +74,31 @@ export const EmployeurPresentationBlock = ({
 
       <Stack spacing={fr.spacing("2v")} sx={{ mb: fr.spacing("4v") }}>
         {cityOnly ? (
-          <div>
-            <strong>Localisation :</strong> {item?.place?.city}
+          <Typography>
+            <Box component="span" sx={{ fontWeight: 700 }}>
+              Localisation :
+            </Box>{" "}
+            {item?.place?.city}
             <ItemDistanceToCenter item={item as any} />
-          </div>
+          </Typography>
         ) : (
           <ItemLocalisation item={item as any} />
         )}
 
-        <div>
-          <strong>Taille de l'entreprise : </strong> {getCompanySize(item as any)}
-        </div>
+        <Stack component="dl" spacing={fr.spacing("2v")} sx={{ m: 0, p: 0 }}>
+          <InlineField label="Taille de l'entreprise :">{getCompanySize(item as any)}</InlineField>
 
-        {(item.nafs as ILbaItemNaf[])[0]?.label && (
-          <div>
-            <strong>Secteur d&apos;activité : </strong> {(item.nafs as ILbaItemNaf[])[0].label}
-          </div>
-        )}
+          {(item.nafs as ILbaItemNaf[])[0]?.label && <InlineField label="Secteur d'activité :">{(item.nafs as ILbaItemNaf[])[0].label}</InlineField>}
 
-        {phone && (
-          <div>
-            <strong>Téléphone : </strong>
-            <DsfrLink href={`tel:${phone}`}>
-              {phone}
-              <span className="fr-sr-only"> - appeler la société</span>
-            </DsfrLink>
-          </div>
-        )}
+          {phone && (
+            <InlineField label="Téléphone :">
+              <DsfrLink href={`tel:${phone}`}>
+                {phone}
+                <span className="fr-sr-only"> - appeler la société</span>
+              </DsfrLink>
+            </InlineField>
+          )}
+        </Stack>
 
         {showWebsite && <ItemWebsiteLink item={item} />}
         {showGoogleSearch && <ItemGoogleSearchLink item={item as any} />}

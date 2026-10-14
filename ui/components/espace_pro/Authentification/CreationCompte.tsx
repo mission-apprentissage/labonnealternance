@@ -3,7 +3,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { Box, Link, Typography } from "@mui/material"
-import type { FormikHelpers } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
@@ -22,7 +21,7 @@ import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 import { AnimationContainer } from ".."
-import { SiretAutocomplete } from "./SiretAutocomplete"
+import { SiretAutocomplete, type SiretSubmitHelpers } from "./SiretAutocomplete"
 
 type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
 
@@ -44,7 +43,7 @@ export const CreationCompteForm = ({
   const router = useRouter()
   const [isCfa, setIsCfa] = useState(false)
 
-  const submitSiret = ({ establishment_siret }: { establishment_siret: string }, { setSubmitting, setFieldError }: FormikHelpers<{ establishment_siret: string }>) => {
+  const submitSiret = ({ establishment_siret }: { establishment_siret: string }, { setSubmitting, setSiretError }: SiretSubmitHelpers) => {
     setBandeau(null)
 
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
@@ -57,7 +56,7 @@ export const CreationCompteForm = ({
           if (entrepriseData.statusCode >= 500) {
             router.push(nextUri)
           } else {
-            setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
+            setSiretError(entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
             setIsCfa(entrepriseData?.data?.errorCode === BusinessErrorCodes.IS_CFA)
             setSubmitting(false)
           }
@@ -78,9 +77,9 @@ export const CreationCompteForm = ({
             if (statusCode >= 400 && statusCode < 500) {
               const { reason } = errorData
               if (reason === BusinessErrorCodes.ALREADY_EXISTS) {
-                setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
+                setSiretError("Ce numéro siret est déjà associé à un compte utilisateur.")
               } else if (reason === BusinessErrorCodes.NOT_QUALIOPI) {
-                setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
+                setSiretError("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
                 setBandeau({
                   type: "error",
                   header: "Votre centre de formation n’est pas certifié Qualiopi.",
@@ -88,14 +87,14 @@ export const CreationCompteForm = ({
                   lien: "https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs",
                 })
               } else if (reason === BusinessErrorCodes.CLOSED) {
-                setFieldError("establishment_siret", "Le numéro siret indique un établissement fermé.")
+                setSiretError("Le numéro siret indique un établissement fermé.")
                 setBandeau({
                   type: "error",
                   header: "Votre centre de formation est renseigné comme fermé.",
                   description: "Pour modifier les caractéristiques de votre organisme, vous pouvez vous rapprocher de l’INSEE afin de réaliser les modifications à la source.",
                 })
               } else if (reason === BusinessErrorCodes.UNKNOWN) {
-                setFieldError("establishment_siret", "Le numéro siret n'est pas référencé comme centre de formation.")
+                setSiretError("Le numéro siret n'est pas référencé comme centre de formation.")
                 setBandeau({
                   type: "error",
                   header: "Votre centre de formation n’est pas référencé dans notre catalogue.",
@@ -103,7 +102,7 @@ export const CreationCompteForm = ({
                   lien: "https://reseau.intercariforef.org/referencer-son-offre-de-formation",
                 })
               } else if (reason === BusinessErrorCodes.UNSUPPORTED) {
-                setFieldError("establishment_siret", "Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.")
+                setSiretError("Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.")
                 setBandeau({
                   type: "error",
                   header: "Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.",
@@ -196,7 +195,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "Labon
           <Typography component="h1" sx={{ fontSize: "32px", fontWeight: 700 }}>
             Vous recrutez des alternants ?
           </Typography>
-          <Typography component="div" sx={{ fontSize: "20px", lineHeight: "24px", mb: fr.spacing("4v"), mt: fr.spacing("8v") }}>
+          <Typography sx={{ fontSize: "20px", lineHeight: "24px", mb: fr.spacing("4v"), mt: fr.spacing("8v") }}>
             Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
           </Typography>
           <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />

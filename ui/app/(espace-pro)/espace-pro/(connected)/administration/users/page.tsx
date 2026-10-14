@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material"
 import type { Metadata } from "next"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { METADATA } from "@/utils/routes.metadata.utils"
@@ -11,6 +12,9 @@ export default async function AccueilAdministration() {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backAdminHome]} />
+      <Typography variant="h2" component="h1" gutterBottom>
+        Recruteurs en attente de validation
+      </Typography>
       <UsersList />
     </>
   )

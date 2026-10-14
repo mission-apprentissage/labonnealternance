@@ -1,6 +1,30 @@
+import he from "he"
+import { decodeSanitizedText } from "shared/utils/string-utils"
 import { describe, expect, it } from "vitest"
 
 import { isNormalizedStringInSetOrArray, removeLineBreaks, sanitizeTextField, sanitizeToPlainText } from "./string-utils"
+
+describe("sanitizeTextField — entités produites, cf. decodeSanitizedText", () => {
+  const printableAscii = Array.from({ length: 95 }, (_, index) => String.fromCharCode(32 + index)).join("")
+  const inputs = [
+    printableAscii,
+    "R&D, 3 < 5 > 2",
+    "espace\u00a0insécable",
+    "accents éèàçœ « guillemets » — tiret … points",
+    "emoji 🎓",
+    "<b>gras</b> <p>paragraphe</p> <script>x</script>",
+    "entités saisies &amp;lt; &eacute; &#39; &nbsp;",
+    "ligne 1\nligne 2\ttab",
+  ]
+
+  it("ne produit que des entités que decodeSanitizedText décode comme un décodeur HTML complet", () => {
+    expect(sanitizeTextField("R&D", true)).toBe("R&amp;D")
+    for (const input of inputs) {
+      const stored = sanitizeTextField(input, true)
+      expect.soft(decodeSanitizedText(stored), input).toBe(he.decode(stored))
+    }
+  })
+})
 
 describe("sanitizeToPlainText — texte brut (rendu children React, jamais innerHTML)", () => {
   it("décode les entités HTML résiduelles", () => {

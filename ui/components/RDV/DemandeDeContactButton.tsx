@@ -5,7 +5,7 @@ export const DemandeDeContactButton = ({ isCollapsedHeader, onClick }: { isColla
   return (
     <Box data-testid="DemandeDeContact">
       <Box sx={{ my: isCollapsedHeader ? 1 : 2 }}>
-        <Button data-testid="prdvButton" onClick={onClick} aria-label="Ouvrir le formulaire de demande de contact">
+        <Button data-testid="prdvButton" onClick={onClick}>
           Je contacte l'établissement
         </Button>
       </Box>

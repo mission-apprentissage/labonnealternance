@@ -40,7 +40,7 @@ const isAlgoCompany = (hit: Hit) => hit.is_algo_company === true
 const isFormation = (hit: Hit) => hit.type === "formation"
 
 // Mêmes badges que la carte legacy (composants feuilles réutilisés), pilotés par les
-// champs de search_items au lieu de l'ideaType legacy.
+// champs des documents de recherche au lieu de l'ideaType legacy.
 function HitTags({ hit }: { hit: Hit }) {
   const tags: React.ReactNode[] = []
 
@@ -58,7 +58,13 @@ function HitTags({ hit }: { hit: Hit }) {
 function CompanyLine({ hit }: { hit: Hit }) {
   // Candidature spontanée : le titre est déjà le nom d'entreprise → on affiche le secteur.
   if (isAlgoCompany(hit)) return <>Secteur d'activité : {hit.activity_sector ?? ""}</>
-  return hit.organization_name ? <>{hit.organization_name}</> : <i>Offre anonyme</i>
+  return hit.organization_name ? (
+    <>{hit.organization_name}</>
+  ) : (
+    <Box component="span" sx={{ fontStyle: "italic" }}>
+      Offre anonyme
+    </Box>
+  )
 }
 
 function DatePublication({ hit }: { hit: Hit }) {

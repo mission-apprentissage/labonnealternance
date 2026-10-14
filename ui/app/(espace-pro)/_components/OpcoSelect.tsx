@@ -11,13 +11,16 @@ interface Props {
 }
 
 export const OpcoSelect = ({ name, onChange, value, errors, touched }: Props) => {
+  const hasError = Boolean(errors?.[name] && touched?.[name])
+
   return (
     <Select
       label="OPCO"
       hint="Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance."
-      nativeSelectProps={{ name, value, required: true, onChange: (e) => onChange?.(e.target.value as OPCOS_LABEL) }}
-      state={errors?.opco && touched?.opco ? "error" : "default"}
-      stateRelatedMessage={errors?.opco && touched?.opco ? (errors.opco as string) : undefined}
+      // aria-invalid : cf. HandiEngagementSelect
+      nativeSelectProps={{ name, value, required: true, "aria-invalid": hasError, onChange: (e) => onChange?.(e.target.value as OPCOS_LABEL) }}
+      state={hasError ? "error" : "default"}
+      stateRelatedMessage={hasError ? (errors[name] as string) : undefined}
     >
       <option value="" hidden>
         Sélectionnez un OPCO

@@ -75,7 +75,7 @@ const JeSuisRecruteurPage = () => {
               <Typography variant="h1" component="h1" gutterBottom color={fr.colors.decisions.text.title.blueFrance.default}>
                 Vous êtes une entreprise
               </Typography>
-              <Typography variant="h2" component="h2" gutterBottom color={fr.colors.decisions.text.default.grey.default}>
+              <Typography variant="h2" component="p" gutterBottom color={fr.colors.decisions.text.default.grey.default}>
                 Diffusez simplement et gratuitement vos offres en alternance
               </Typography>
               <Typography variant="body1" gutterBottom>
@@ -332,12 +332,13 @@ const JeSuisRecruteurPage = () => {
           >
             <Grid size={12} spacing={fr.spacing("8v")}>
               <Typography component="h2" variant="h2">
-                La bonne alternance révèle
-              </Typography>
-              <Typography component="h2" variant="h2" color={fr.colors.decisions.text.default.info.default}>
-                le marché caché de l’emploi
+                La bonne alternance révèle{" "}
+                <Box component="span" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default }}>
+                  le marché caché de l’emploi
+                </Box>
               </Typography>
               <Divider
+                aria-hidden="true"
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>

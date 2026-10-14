@@ -2,17 +2,18 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Box, CircularProgress, Typography } from "@mui/material"
+import { Alert, Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Formik } from "formik"
 import { useRef } from "react"
 import type { IUserWithAccountFields } from "shared"
+import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
 import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
-import { createSubmitWithFocusOnError } from "@/app/_components/submit-with-focus-on-error"
+import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
@@ -21,8 +22,11 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { useToast } from "@/app/hooks/useToast"
 import { AUTHTYPE } from "@/common/contants"
+import { emailValidation, frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { getUser, updateUserWithAccountFields } from "@/utils/api"
+import { ApiError } from "@/utils/api.utils"
+import { EMAIL_ALREADY_USED_ERROR } from "@/utils/validation-messages"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import ModificationCompteEmail from "./ModificationCompteEmail"
 
@@ -39,6 +43,7 @@ export default function CompteRenderer() {
   const toast = useToast()
   const ModificationEmailPopup = useDisclosure()
   const formRef = useRef<HTMLFormElement>(null)
+  const serverFieldErrors = useServerFieldErrors()
 
   const { data, isLoading } = useQuery({
     queryKey: ["user"],
@@ -80,12 +85,6 @@ export default function CompteRenderer() {
         ModificationEmailPopup.onOpen()
       }
     },
-
-    onError: (error: any, variables: any) => {
-      if (error.response.data.reason === "EMAIL_TAKEN") {
-        variables.setFieldError("email", "L'adresse mail est déjà associée à un compte La bonne alternance.")
-      }
-    },
   })
 
   if (isLoading || isEntrepriseInfoPending) {
@@ -108,12 +107,8 @@ export default function CompteRenderer() {
         validationSchema={Yup.object().shape({
           last_name: Yup.string().required("champ obligatoire"),
           first_name: Yup.string().required("champ obligatoire"),
-          phone: Yup.string()
-            .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-            .min(10, "le téléphone est sur 10 chiffres")
-            .max(10, "le téléphone est sur 10 chiffres")
-            .required("champ obligatoire"),
-          email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+          phone: frenchPhoneValidation().required("champ obligatoire"),
+          email: emailValidation().required("champ obligatoire"),
           // Requis uniquement quand le champ est effectivement affiché et modifiable : masqué (source France
           // Travail) ou verrouillé (déjà "oui" via La bonne alternance), sa valeur est déjà figée par ailleurs.
           handiEngagement:
@@ -121,16 +116,31 @@ export default function CompteRenderer() {
               ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire")
               : Yup.string(),
         })}
-        onSubmit={async (values, { setSubmitting }) => {
+        validate={serverFieldErrors.validate}
+        onSubmit={async (values, { setFieldValue, setFieldError, setSubmitting }) => {
           setSubmitting(true)
+          const phone = toSubmittedPhone(values.phone)
+          setFieldValue("phone", phone, false)
           const isChangingEmail = data.email !== values.email
           // "" (aucun choix, champ non affiché ou non encore sélectionné) n'est pas une valeur valide pour
           // l'API : on ne transmet le champ que lorsqu'il a réellement une valeur.
           const { handiEngagement, ...rest } = values
-          userMutation.mutate({
-            values: { ...rest, ...(handiEngagement === "oui" || handiEngagement === "non" ? { handiEngagement } : {}) },
-            isChangingEmail,
-          })
+          userMutation.mutate(
+            {
+              values: { ...rest, phone, ...(handiEngagement === "oui" || handiEngagement === "non" ? { handiEngagement } : {}) },
+              isChangingEmail,
+            },
+            {
+              onError: (error) => {
+                // Tout autre 400 (validation du body…) passe par l'Alert générique
+                if (error instanceof ApiError && error.context.errorData?.error === BusinessErrorCodes.EMAIL_ALREADY_EXISTS) {
+                  // L'erreur est portée par le champ : isError ne doit pas afficher l'Alert générique
+                  userMutation.reset()
+                  serverFieldErrors.setServerFieldError(setFieldError, "email", values.email, EMAIL_ALREADY_USED_ERROR)
+                }
+              },
+            }
+          )
           setSubmitting(false)
         }}
       >
@@ -167,6 +177,11 @@ export default function CompteRenderer() {
                       )}
                       <Box sx={{ mt: fr.spacing("6v") }}>
                         <ContactInfoFields />
+                        {userMutation.isError && (
+                          <Alert sx={{ mb: fr.spacing("4v") }} severity="error">
+                            La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement.
+                          </Alert>
+                        )}
                         {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
                           <HandiEngagementSelect
                             name="handiEngagement"

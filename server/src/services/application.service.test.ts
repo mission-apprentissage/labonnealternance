@@ -15,6 +15,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import mailer from "@/services/mailer.service"
+import { saveApplicationTrafficSourceIfAny } from "@/services/traffic-source.service"
 import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, removeEmailFromLbaCompanies, sendApplicationV2 } from "./application.service"
 
 vi.mock("@/common/utils/aws-utils", () => {
@@ -23,6 +24,11 @@ vi.mock("@/common/utils/aws-utils", () => {
     s3ReadAsString: vi.fn().mockResolvedValue(applicationTestFile),
     s3Delete: vi.fn().mockResolvedValue(undefined),
   }
+})
+
+vi.mock("@/services/traffic-source.service", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@/services/traffic-source.service")>()
+  return { ...mod, saveApplicationTrafficSourceIfAny: vi.fn(mod.saveApplicationTrafficSourceIfAny) }
 })
 
 vi.mock("@/services/clamav.service", () => {
@@ -99,6 +105,26 @@ describe("Sending application", () => {
       },
     })
     expect.soft(omit(result, ["_id"])).toMatchSnapshot()
+  })
+  it("Should succeed when the application is saved but its traffic source cannot be", async () => {
+    vi.mocked(saveApplicationTrafficSourceIfAny).mockRejectedValueOnce(new Error("trafficsources unavailable"))
+    const job = await createJobPartner({
+      apply_email: "email@gmail.com",
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(1, "day").toDate(),
+    })
+
+    const result = await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "partners", jobId: job._id.toString() },
+      },
+      source: { referer: "https://www.example.com", utm_campaign: "campagne", utm_medium: null, utm_source: null },
+    })
+
+    expect(await getDbCollection("applications").findOne({ _id: result._id })).not.toBeNull()
   })
   it("Should refuse sending application to non existent job", async () => {
     await expect(
@@ -884,6 +910,23 @@ describe("accusé de candidature — lien vers d'autres offres", () => {
 
     // Le bouton promet des candidatures : rejouer emplois_formation renverrait vers des formations.
     expect(new URL(getCandidatEmailData().sendOtherApplicationsUrl).searchParams.get("mode")).toBe("emplois")
+  })
+
+  it("remonte offres et entreprises à contacter, même si la recherche d'origine filtrait les offres seules", async () => {
+    const from = encodeURIComponent("/recherche?q=Boulanger&is_algo_company=false")
+    await sendFor(`https://labonnealternance.apprentissage.beta.gouv.fr/emploi/recruteurs_lba/12345678901234/boulanger?from=${from}`)
+
+    const url = new URL(getCandidatEmailData().sendOtherApplicationsUrl)
+    expect(url.searchParams.get("q")).toBe("Boulanger")
+    expect(url.searchParams.has("is_algo_company")).toBe(false)
+  })
+
+  it("ne rejoue pas displayEntreprises=false d'une application_url legacy", async () => {
+    await sendFor("https://labonnealternance.apprentissage.beta.gouv.fr/recherche?job_name=Boulanger&displayEntreprises=false")
+
+    const url = new URL(getCandidatEmailData().sendOtherApplicationsUrl)
+    expect(url.pathname).toBe("/recherche")
+    expect(url.searchParams.has("is_algo_company")).toBe(false)
   })
 
   it("retombe sur l'accueil quand la fiche détail ne porte aucune recherche", async () => {
