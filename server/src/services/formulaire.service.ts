@@ -15,7 +15,7 @@ import type {
   IUserRecruteur,
   zRoutes,
 } from "shared"
-import { assertUnreachable, JOB_CLOSURE_ORIGIN, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, removeAccents } from "shared"
+import { assertUnreachable, JOB_CLOSURE_ORIGIN, JOB_CLOSURE_REASON_BY_ORIGIN, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, removeAccents } from "shared"
 import { EntrepriseErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
@@ -770,29 +770,32 @@ export const closeOffreWithMotif = async ({
   const now = new Date()
   const offerFilter = { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id }
 
-  // `offer_status: { $ne: offer_status }` restreint l'écriture aux transitions réelles. Un lien de
-  // clôture cliqué deux fois arrivait sinon jusqu'au $push et comptait la même clôture deux fois
-  // dans les tableaux de bord de l'issue #5429 — le trou de mesure que cette écriture est censée
-  // combler. Conséquence assumée : sur un second passage vers le même statut, le motif n'est plus
-  // réécrit. Changer d'avis reste possible tant que le statut change (annulée puis pourvue).
+  const current = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { offer_status: 1 } })
+  if (!current) {
+    throw new Error(`could not find lba offer with id=${id}`)
+  }
+  // Sur une offre déjà close, offer_expiration garde la date à laquelle elle a cessé d'être visible.
+  const wasOpen = current.offer_status !== JOB_STATUS_ENGLISH.ANNULEE && current.offer_status !== JOB_STATUS_ENGLISH.POURVUE
+
+  // Écriture si le statut change, ou si la dernière entrée de l'historique vient d'un job automatique :
+  // le lien du mail d'expiration ou du seuil de candidatures arrive sur une offre déjà Cancelled, et
+  // la réponse du recruteur s'ajoute à la clôture automatique (#5722). Un lien cliqué deux fois
+  // trouve sa propre entrée en dernier et n'écrit pas de doublon (#5429).
   //
   // returnDocument: "before" pour distinguer une clôture d'une offre déjà close : `alreadyClosed`
   // pilote l'écran de confirmation côté recruteur.
   //
-  // Le motif est écrit deux fois, et ce n'est pas redondant : job_status_comment porte le dernier
-  // motif connu de l'offre (relu par l'espace pro), offer_status_history en garde la trace datée,
-  // seul champ commun à toutes les origines d'annulation — les annulations automatiques
-  // (expiration, seuil de candidatures, doublons) ne renseignent jamais job_status_comment.
-  // `reason` reçoit le motif brut de la modale pour rester regroupable tel quel ; la précision
-  // libre du motif "Autre" et le canal de recrutement gardent leurs champs dédiés.
+  // `reason` dit comment l'offre a été fermée, déduit de l'origine (cf. JOB_CLOSURE_REASON) ; le
+  // motif de la modale va dans job_status_comment, sans être recopié dans l'historique.
+  const lastEntryIsHumanClosure = { $in: [{ $last: "$offer_status_history.granted_by" }, Object.values(JOB_CLOSURE_ORIGIN)] }
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { ...offerFilter, offer_status: { $ne: offer_status } },
+    { ...offerFilter, $or: [{ offer_status: { $ne: offer_status } }, { $expr: { $not: [lastEntryIsHumanClosure] } }] },
     buildJobStatusChangeUpdate({
       status: offer_status,
-      reason: job_status_comment,
+      reason: JOB_CLOSURE_REASON_BY_ORIGIN[origin],
       grantedBy: origin,
       date: now,
-      extraSet: { offer_expiration: now, job_status_comment, job_status_comment_precision, job_recruitment_channel },
+      extraSet: { ...(wasOpen && { offer_expiration: now }), job_status_comment, job_status_comment_precision, job_recruitment_channel },
     }),
     {
       returnDocument: "before",
@@ -800,12 +803,6 @@ export const closeOffreWithMotif = async ({
   )
 
   if (!found) {
-    // Deux causes possibles, à ne pas confondre : l'offre n'existe pas, ou elle porte déjà ce
-    // statut. Le second cas est le double-clic, et doit rendre la même réponse qu'avant le filtre.
-    const existing = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { _id: 1 } })
-    if (!existing) {
-      throw new Error(`could not find lba offer with id=${id}`)
-    }
     return { alreadyClosed: true }
   }
 
