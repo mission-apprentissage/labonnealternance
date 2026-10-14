@@ -225,7 +225,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                                     </Box>
                                     <Box>
                                       <Typography sx={{ fontWeight: 700 }}>
-                                        <span lang="en">Id</span> parcoursup{" "}
+                                        <span lang="en">Id</span> Parcoursup{" "}
                                       </Typography>{" "}
                                       {parameter?.parcoursup_id || "N/C"}
                                     </Box>

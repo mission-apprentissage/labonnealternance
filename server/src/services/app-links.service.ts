@@ -533,3 +533,7 @@ export function createMERInvitationLink(user: IUserWithAccount, jobId: string, e
 
   return `${config.publicUrl}/espace-pro/mise-en-relation/${establishmentId}/${jobId}?token=${encodeURIComponent(token)}`
 }
+
+export function createCharteRedactionLink(isCfa: boolean, utmCampaign: string): string {
+  return `${config.publicUrl}/guide/rediger-son-offre-d-alternance?guide_source=${isCfa ? "guide-cfa" : "guide-recruteur"}&utm_source=lba&utm_medium=email&utm_campaign=${utmCampaign}`
+}
