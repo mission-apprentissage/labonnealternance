@@ -48,7 +48,7 @@ const buildApplicant = (applications: { job_id: ObjectId | null; job_origin: LBA
   _id: new ObjectId(),
   email: "candidat@example.com",
   firstname: "Camille",
-  applications: applications.map(({ job_id, job_origin }, index) => ({ _id: new ObjectId(), job_id, job_origin, created_at: new Date(2026, 9, 13, 10, index) })),
+  applications: applications.map(({ job_id, job_origin }) => ({ _id: new ObjectId(), job_id, job_origin })),
 })
 
 const summarize = async (applicant: SuggestionsNafApplicant) => {

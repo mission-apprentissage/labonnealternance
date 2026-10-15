@@ -19,7 +19,7 @@ export type SuggestionsNafApplicant = {
   _id: ObjectId
   email: string
   firstname: string
-  applications: Pick<IApplication, "_id" | "job_id" | "job_origin" | "created_at">[]
+  applications: Pick<IApplication, "_id" | "job_id" | "job_origin">[]
 }
 
 export const getPreviousDayWindow = (now = new Date()): SuggestionsNafWindow => {
@@ -45,7 +45,8 @@ export const findSuggestionsNafApplicants = async ({ from, to }: SuggestionsNafW
           from: "applications",
           localField: "_id",
           foreignField: "applicant_id",
-          pipeline: [{ $sort: { created_at: 1 } }, { $project: { _id: 1, job_id: 1, job_origin: 1, created_at: 1 } }],
+          // Une candidature de plus que le plafond suffit à écarter le candidat (RG 9)
+          pipeline: [{ $sort: { created_at: 1 } }, { $limit: MAX_APPLICATIONS + 1 }, { $project: { _id: 1, job_id: 1, job_origin: 1 } }],
           as: "applications",
         },
       },

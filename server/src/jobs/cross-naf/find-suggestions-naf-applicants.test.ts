@@ -44,7 +44,7 @@ describe("findSuggestionsNafApplicants", () => {
         _id: applicantId,
         email: expect.any(String),
         firstname: expect.any(String),
-        applications: [{ _id: expect.any(ObjectId), job_id: expect.any(ObjectId), job_origin: OFFRES_EMPLOI_LBA, created_at: IN_WINDOW }],
+        applications: [{ _id: expect.any(ObjectId), job_id: expect.any(ObjectId), job_origin: OFFRES_EMPLOI_LBA }],
       },
     ])
   })
@@ -89,6 +89,18 @@ describe("findSuggestionsNafApplicants", () => {
     ])
 
     expect(await findApplicantIds()).toEqual([three.toString()])
+  })
+
+  it("renvoie les candidatures de la plus ancienne à la plus récente (cf. buildTargetDrafts)", async () => {
+    const applicantId = await createApplicant([
+      { job_origin: OFFRES_EMPLOI_PARTENAIRES, created_at: AFTER_WINDOW },
+      { job_origin: OFFRES_EMPLOI_LBA, created_at: IN_WINDOW },
+    ])
+    const expectedOrder = await getDbCollection("applications").find({ applicant_id: applicantId }).sort({ created_at: 1 }).toArray()
+
+    const [{ applications }] = await findSuggestionsNafApplicants(window)
+
+    expect(applications.map(({ _id }) => _id)).toEqual(expectedOrder.map(({ _id }) => _id))
   })
 
   it("écarte les candidats ayant déjà reçu l'email de suggestions", async () => {
