@@ -12,17 +12,17 @@ export default function Social({ utmParams }: { utmParams: string }) {
         sx={{
           display: "flex",
           flexDirection: "row",
-          alignItems: "center",
-          color: "#FFFFFF",
+          color: "#000091",
           gap: fr.spacing("10v"),
-          background: "#566BB1",
+          background: "#A9FB68",
+          mt: { md: fr.spacing("8v") },
           pl: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 },
           pr: { xs: fr.spacing("3v"), md: 0 },
         }}
       >
         <Box sx={{ flex: 1, px: { xs: fr.spacing("3v"), md: fr.spacing("6v") }, py: fr.spacing("4v") }}>
-          <Typography sx={{ fontSize: { xs: "28px", md: "32px" }, fontWeight: 700, lineHeight: { xs: "36px", md: "40px" } }}>À chacun sa solution.</Typography>
-          <Typography sx={{ fontSize: { xs: "22px", md: "24px" }, fontWeight: 700, lineHeight: { xs: "28px", md: "32px" } }}>
+          <Typography sx={{ mb: fr.spacing("6v"), fontSize: "32px", fontWeight: 700, lineHeight: "40px" }}>À chacun sa solution.</Typography>
+          <Typography sx={{ mb: fr.spacing("6v"), fontSize: "24px", fontWeight: 700, lineHeight: "32px" }}>
             Vous avez entre 15 et 30 ans ? Découvrez toutes les solutions pour votre avenir !
           </Typography>
           <Button
@@ -34,8 +34,17 @@ export default function Social({ utmParams }: { utmParams: string }) {
             Visiter le site 1jeune1solution.gouv.fr
           </Button>
         </Box>
-        <Box sx={{ display: { xs: "none", md: "block" }, maxHeight: 229, overflow: "hidden" }}>
-          <NextImage src="/images/1j1s/jeunes.webp" alt="" aria-hidden="true" width={460} height={229} unoptimized />
+        {/* Image en position absolue : la hauteur du bandeau suit le texte et l'image déborde au-dessus,
+            dans l'espace réservé par le mt du bandeau. */}
+        <Box
+          sx={{
+            display: { xs: "none", lg: "block" },
+            position: "relative",
+            flex: "0 1 539px",
+            "& > img": { position: "absolute", bottom: 0, right: 0, width: "100%", height: "auto" },
+          }}
+        >
+          <NextImage src="/images/1j1s/personna_10_26.png" alt="" aria-hidden="true" width={539} height={299} unoptimized />
         </Box>
       </Box>
 
