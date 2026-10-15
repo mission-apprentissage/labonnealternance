@@ -52,6 +52,8 @@ export const OffresTabsMenu = ({
         }
   const directLink = `${publicConfig.baseUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
   const isDisabled = row.job_status === "Annulée" || row.job_status === "Pourvue"
+  // Une offre en modération n'a pas de page publique : ses liens mèneraient à une 404.
+  const isInReview = row.job_status === JOB_STATUS.EN_MODERATION
 
   const actions: PopoverMenuAction[] = [
     {
@@ -74,15 +76,17 @@ export const OffresTabsMenu = ({
       type: "button",
       icon: <DsfrIcon name="fr-icon-refresh-line" size={16} />,
     },
-    {
-      label: "Voir l'offre en ligne",
-      hint: `${offerTitle}`,
-      link: directLink,
-      type: "externalLink",
-      onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_VIEW_ONLINE_CLICKED }),
-      icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
-    },
-    row.job_status !== JOB_STATUS.EN_ATTENTE
+    isInReview
+      ? null
+      : {
+          label: "Voir l'offre en ligne",
+          hint: `${offerTitle}`,
+          link: directLink,
+          type: "externalLink",
+          onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_VIEW_ONLINE_CLICKED }),
+          icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
+        },
+    row.job_status !== JOB_STATUS.EN_ATTENTE && !isInReview
       ? {
           label: "Imprimer l'offre",
           hint: `${offerTitle}`,
@@ -92,24 +96,26 @@ export const OffresTabsMenu = ({
           type: "externalLink",
         }
       : null,
-    {
-      label: copied ? <Box color={fr.colors.decisions.text.default.success.default}>Lien copié</Box> : "Copier le lien de l'offre",
-      onClick: (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        navigator.clipboard.writeText(directLink).then(function () {
-          pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_LINK_COPIED })
-          setCopied(true)
-        })
-      },
-      hint: `${offerTitle}`,
-      type: "button",
-      icon: (
-        <Box color={copied ? fr.colors.decisions.text.default.success.default : undefined}>
-          <DsfrIcon name="fr-icon-link" size={16} />
-        </Box>
-      ),
-    },
+    isInReview
+      ? null
+      : {
+          label: copied ? <Box color={fr.colors.decisions.text.default.success.default}>Lien copié</Box> : "Copier le lien de l'offre",
+          onClick: (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            navigator.clipboard.writeText(directLink).then(function () {
+              pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_LINK_COPIED })
+              setCopied(true)
+            })
+          },
+          hint: `${offerTitle}`,
+          type: "button",
+          icon: (
+            <Box color={copied ? fr.colors.decisions.text.default.success.default : undefined}>
+              <DsfrIcon name="fr-icon-link" size={16} />
+            </Box>
+          ),
+        },
     user.type !== AUTHTYPE.CFA && !hideCfaShareAction
       ? ({
           label: "Partager aux CFA à proximité",

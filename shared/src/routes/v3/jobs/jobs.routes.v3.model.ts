@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { OPCOS_LABEL, TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
 import { extensions } from "../../../helpers/zod-helpers/zod-primitives.js"
-import { JOB_START_TYPE, JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH, toPublicJobStatus } from "../../../models/job.model.js"
 import type { IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, JOBPARTNERS_LABEL } from "../../../models/jobs-partners.model.js"
 import { ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, ZJobsPartnersRecruiterApi, zDiplomaEuropeanLevel } from "../../../models/jobs-partners.model.js"
 
@@ -215,7 +215,7 @@ export const zJobOfferApiWriteV3 = z.object({
     opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.default(1),
     origin: ZJobsPartnersOfferPrivate.shape.offer_origin,
     multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast,
-    status: ZJobsPartnersOfferPrivate.shape.offer_status.default(JOB_STATUS_ENGLISH.ACTIVE),
+    status: ZJobsPartnersOfferApi.shape.offer_status.default(JOB_STATUS_ENGLISH.ACTIVE),
     to_applicant_questions: ZJobsPartnersOfferPrivate.shape.to_applicant_questions.default(null),
   }),
   apply: z
@@ -253,7 +253,10 @@ export const zJobOfferApiWriteV3 = z.object({
 export type IJobOfferApiWriteV3 = z.output<typeof zJobOfferApiWriteV3>
 export type IJobOfferApiWriteV3Input = z.input<typeof zJobOfferApiWriteV3>
 
-function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["workplace"] {
+/** Offre lue en base, dont le statut peut encore être un statut non public (cf. toPublicJobStatus). */
+type IJobsPartnersOfferConvertible = Omit<IJobsPartnersOfferApi, "offer_status"> & { offer_status: JOB_STATUS_ENGLISH }
+
+function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferConvertible | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["workplace"] {
   return {
     siret: input.is_delegated ? input.cfa_siret! : input.workplace_siret,
     brand: input.is_delegated ? null : input.workplace_brand,
@@ -274,7 +277,7 @@ function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartner
   }
 }
 
-function convertToJobApplyReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["apply"] {
+function convertToJobApplyReadV3(input: IJobsPartnersOfferConvertible | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["apply"] {
   return {
     url: input.apply_url,
     phone: null,
@@ -282,7 +285,7 @@ function convertToJobApplyReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRec
   }
 }
 
-function convertToJobOfferApiReadV3(input: IJobsPartnersOfferApi): IJobOfferApiReadV3 {
+function convertToJobOfferApiReadV3(input: IJobsPartnersOfferConvertible): IJobOfferApiReadV3 {
   return {
     identifier: {
       id: input._id,
@@ -315,7 +318,7 @@ function convertToJobOfferApiReadV3(input: IJobsPartnersOfferApi): IJobOfferApiR
         expiration: input.offer_expiration,
       },
       opening_count: input.offer_opening_count,
-      status: input.offer_status,
+      status: toPublicJobStatus(input.offer_status),
       to_applicant_questions: input.to_applicant_questions ?? null,
     },
 

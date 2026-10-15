@@ -14,13 +14,37 @@ export enum JOB_STATUS {
   POURVUE = "Pourvue",
   ANNULEE = "Annulée",
   EN_ATTENTE = "En attente",
+  EN_MODERATION = "En modération",
 }
 
+/**
+ * `EN_ATTENTE` attend la validation du compte ou de l'e-mail, `EN_MODERATION` une décision humaine sur
+ * le contenu (#5498) : valider le compte publie la première, jamais la seconde (cf. checkForJobActivations).
+ */
 export enum JOB_STATUS_ENGLISH {
   ACTIVE = "Active",
   POURVUE = "Filled",
   ANNULEE = "Cancelled",
   EN_ATTENTE = "Pending",
+  EN_MODERATION = "InReview",
+}
+
+/** Statuts du contrat de l'API publique : une offre en modération n'y est ni lue ni écrite. */
+export const JOB_STATUS_ENGLISH_PUBLIC = {
+  ACTIVE: JOB_STATUS_ENGLISH.ACTIVE,
+  POURVUE: JOB_STATUS_ENGLISH.POURVUE,
+  ANNULEE: JOB_STATUS_ENGLISH.ANNULEE,
+  EN_ATTENTE: JOB_STATUS_ENGLISH.EN_ATTENTE,
+} as const
+
+export type JOB_STATUS_ENGLISH_PUBLIC = (typeof JOB_STATUS_ENGLISH_PUBLIC)[keyof typeof JOB_STATUS_ENGLISH_PUBLIC]
+
+/** Une offre en modération n'a pas de représentation publique : la sélectionner est une erreur de l'appelant. */
+export function toPublicJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS_ENGLISH_PUBLIC {
+  if (status === JOB_STATUS_ENGLISH.EN_MODERATION) {
+    throw new Error("inattendu : une offre en modération ne doit pas être exposée")
+  }
+  return status
 }
 
 /**
@@ -103,6 +127,7 @@ export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | und
     case JOB_STATUS.ANNULEE:
       return JOB_STATUS_ENGLISH.ANNULEE
     case JOB_STATUS.EN_ATTENTE:
+    case JOB_STATUS.EN_MODERATION:
       return undefined
     default:
       assertUnreachable(status)
@@ -119,6 +144,8 @@ export function traductionJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS {
       return JOB_STATUS.ANNULEE
     case JOB_STATUS_ENGLISH.EN_ATTENTE:
       return JOB_STATUS.EN_ATTENTE
+    case JOB_STATUS_ENGLISH.EN_MODERATION:
+      return JOB_STATUS.EN_MODERATION
     default: {
       assertUnreachable(status)
     }

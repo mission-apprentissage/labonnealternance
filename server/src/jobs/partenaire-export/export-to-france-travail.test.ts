@@ -187,6 +187,16 @@ describe("getJobsToExport", () => {
     expect(jobsConfiee.map((j) => j._id.toString())).toEqual([jobConfiee._id.toString()])
   })
 
+  it("exclut une offre en modération et n'exporte aucun champ de modération (#5497, #5498)", async () => {
+    const { job } = await insertExportableJob({ offer_moderation_verdict: "a_verifier", offer_moderation_status: "ok", offer_moderation_review: "validee" })
+    await insertExportableJob({ offer_status: JOB_STATUS_ENGLISH.EN_MODERATION })
+
+    const jobs = await getJobsToExport()
+
+    expect(jobs.map((j) => j._id.toString())).toEqual([job._id.toString()])
+    expect(JSON.stringify(jobs.map((j) => offerToFTOffer(j)))).not.toMatch(/moderation|validee|a_verifier/)
+  })
+
   it("fait échouer le job (rejet) quand le flux principal est vide, pour que le run soit marqué errored", async () => {
     await expect(exportJobsToFranceTravail()).rejects.toThrow("Aucune offre à exporter")
   })
