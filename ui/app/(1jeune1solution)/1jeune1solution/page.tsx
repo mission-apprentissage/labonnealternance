@@ -84,33 +84,18 @@ export default function unJeune1Solution() {
       </Box>
 
       <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
-        <Typography variant="h1">
-          La bonne alternance vous connecte
-          <br />
-          <Box component="span" sx={{ color: "#EA619E" }}>
-            aux entreprises qui recrutent en alternance
-          </Box>
-        </Typography>
-        <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: "#EA619E", mt: fr.spacing("9v") }} />
-
-        <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: "row", marginTop: fr.spacing("4v") }}>
+        <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: "row" }}>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ fontSize: "18px" }}>La bonne alternance expose différents types d’opportunités d’emplois :</Typography>
-              <Typography
-                sx={{
-                  background: "#FFE817",
-                  width: "fit-content",
-                  padding: "0",
-                  fontWeight: 700,
-                  lineHeight: "32px",
-                  fontSize: "20px",
-                  mt: fr.spacing("6v"),
-                  mb: fr.spacing("6v"),
-                }}
-              >
-                LES OFFRES D'EMPLOI
+              <Typography variant="h1" sx={{ fontSize: { xs: "32px", lg: "40px" }, lineHeight: { xs: "40px", lg: "48px" } }}>
+                La bonne alternance vous connecte
+                <br />
+                <Box component="span" sx={{ color: "#6A6AF4" }}>
+                  aux entreprises qui recrutent
+                </Box>
               </Typography>
+              <Typography sx={{ fontSize: "18px" }}>La bonne alternance expose différents types d’opportunités d’emplois :</Typography>
+              <Typography sx={{ ...featureTitleSx, color: "#000091", mt: fr.spacing("6v"), mb: fr.spacing("6v") }}>Les offres d’emploi</Typography>
               <Box>
                 <Typography sx={{ fontSize: "18px" }}>
                   <Box component="span" sx={{ fontWeight: 700 }}>
@@ -125,31 +110,20 @@ export default function unJeune1Solution() {
               </Box>
             </Box>
           </Box>
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
-            <NextImage src="/images/1j1s/mobile-right.webp" alt="" aria-hidden="true" width={320} height={356} unoptimized />
+          <Box
+            sx={{ display: { xs: "none", md: "block" }, flex: { md: "0 1 40%", lg: "0 1 499px" }, minWidth: 0, "& > img": { display: "block", maxWidth: "100%", height: "auto" } }}
+          >
+            <NextImage src="/images/1j1s/mobile_right_10_26.png" alt="" aria-hidden="true" width={499} height={596} unoptimized />
           </Box>
         </Box>
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("6v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
-          <Box sx={{ display: { md: "block" }, margin: "auto", "& > img": { maxWidth: "100%", height: "auto" } }}>
-            <NextImage src="/images/1j1s/mobile-left.webp" alt="" aria-hidden="true" width={314} height={339} unoptimized />
+          <Box sx={{ flex: { md: "0 1 40%", lg: "0 1 446px" }, minWidth: 0, margin: "auto", "& > img": { display: "block", maxWidth: "100%", height: "auto" } }}>
+            <NextImage src="/images/1j1s/mobile_left_10_26.png" alt="" aria-hidden="true" width={446} height={482} unoptimized />
           </Box>
 
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography
-                sx={{
-                  background: "#FFE817",
-                  width: "fit-content",
-                  padding: "0",
-                  fontWeight: 700,
-                  lineHeight: "32px",
-                  fontSize: "20px",
-                  mt: fr.spacing("6v"),
-                  mb: fr.spacing("6v"),
-                }}
-              >
-                LES CANDIDATURES SPONTANÉES
-              </Typography>{" "}
+              <Typography sx={{ ...featureTitleSx, color: "#000091", mt: fr.spacing("6v"), mb: fr.spacing("6v") }}>Les candidatures spontanées</Typography>
               <Typography sx={{ fontSize: "18px" }}>
                 C'est ce qu'on appelle le marché caché de l'emploi — et c'est là que ça devient intéressant ! Chaque semaine, La bonne alternance analyse pour vous diverses données
                 sur les entreprises (recrutements passés, données financières, candidatures déjà reçues, ...) pour vous suggérer des entreprises auxquelles adresser vos
