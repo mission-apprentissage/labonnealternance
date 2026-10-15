@@ -32,6 +32,7 @@ const buildApplicant = (targets: SuggestionsNafTarget[], appliedJobIds: ObjectId
   _id: new ObjectId(),
   email: "candidat@example.com",
   firstname: "Camille",
+  lastname: "Martin",
   applications: appliedJobIds.map((job_id) => ({ _id: new ObjectId(), job_id, job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA })),
   targets,
 })

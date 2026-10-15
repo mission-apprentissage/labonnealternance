@@ -44,6 +44,7 @@ describe("findSuggestionsNafApplicants", () => {
         _id: applicantId,
         email: expect.any(String),
         firstname: expect.any(String),
+        lastname: expect.any(String),
         applications: [{ _id: expect.any(ObjectId), job_id: expect.any(ObjectId), job_origin: OFFRES_EMPLOI_LBA }],
       },
     ])

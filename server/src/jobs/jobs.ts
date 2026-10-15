@@ -28,6 +28,7 @@ import { purgeApplicationCvFiles } from "./applications/purge-application-cv-fil
 import { relanceCandidatsInactifs } from "./applications/relance-candidats-inactifs"
 import { relanceIncitationSpontanee } from "./applications/relance-incitation-spontanee"
 import { importReferentielRomeNaf } from "./cross-naf/import-referentiel-rome-naf"
+import { processSuggestionsNaf } from "./cross-naf/process-suggestions-naf"
 import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
@@ -285,6 +286,10 @@ export async function setupJobProcessor() {
           "Incitation aux candidatures spontanées (J+7 sans candidature spontanée)": {
             cron_string: "10 7 * * *",
             handler: config.env === "production" ? async () => relanceIncitationSpontanee() : async () => Promise.resolve(0),
+          },
+          "Suggestions d'offres sur d'autres secteurs aux nouveaux candidats de la veille": {
+            cron_string: "20 7 * * *",
+            handler: config.env === "production" ? async () => processSuggestionsNaf() : async () => Promise.resolve(0),
           },
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
             cron_string: "0 5 * * *",

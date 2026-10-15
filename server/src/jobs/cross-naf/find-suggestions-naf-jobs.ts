@@ -12,7 +12,16 @@ export const MIN_SUGGESTIONS = 3
 
 export type SuggestionsNafJob = Pick<
   IJobsPartnersOfferPrivate,
-  "_id" | "partner_label" | "offer_title" | "workplace_name" | "workplace_legal_name" | "workplace_brand" | "workplace_address_city" | "workplace_address_label"
+  | "_id"
+  | "partner_label"
+  | "offer_title"
+  | "workplace_name"
+  | "workplace_legal_name"
+  | "workplace_brand"
+  | "workplace_address_city"
+  | "workplace_address_label"
+  | "workplace_siret"
+  | "workplace_naf_label"
 > & { distance_km: number }
 
 export type SuggestionsNafSuggestion = { sector: SuggestionsNafSector; job: SuggestionsNafJob }
@@ -30,6 +39,8 @@ const JOB_PROJECTION = {
   workplace_brand: "$workplace_brand",
   workplace_address_city: "$workplace_address_city",
   workplace_address_label: "$workplace_address_label",
+  workplace_siret: "$workplace_siret",
+  workplace_naf_label: "$workplace_naf_label",
   distance_km: "$distance_km",
 }
 

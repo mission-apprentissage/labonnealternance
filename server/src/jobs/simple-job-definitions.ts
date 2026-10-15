@@ -293,6 +293,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processSuggestionsNafLast24h,
     description: "Suggestions d'offres sur d'autres secteurs (NAF) aux candidats dont la 1re candidature date des dernières 24 h (test manuel)",
+    cliOptions: [{ flags: "--dry-run", description: "Calcule et journalise les suggestions sans envoyer d'email" }],
   },
   // IMPORT RAW AND COMPUTED JOBS PARTNERS
   {

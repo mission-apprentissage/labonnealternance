@@ -48,6 +48,7 @@ const buildApplicant = (applications: { job_id: ObjectId | null; job_origin: LBA
   _id: new ObjectId(),
   email: "candidat@example.com",
   firstname: "Camille",
+  lastname: "Martin",
   applications: applications.map(({ job_id, job_origin }) => ({ _id: new ObjectId(), job_id, job_origin })),
 })
 

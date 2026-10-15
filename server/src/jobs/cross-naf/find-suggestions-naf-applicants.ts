@@ -19,6 +19,7 @@ export type SuggestionsNafApplicant = {
   _id: ObjectId
   email: string
   firstname: string
+  lastname: string
   applications: Pick<IApplication, "_id" | "job_id" | "job_origin">[]
 }
 
@@ -66,6 +67,6 @@ export const findSuggestionsNafApplicants = async ({ from, to }: SuggestionsNafW
         },
       },
       { $match: { suggestions_logs: { $size: 0 } } },
-      { $project: { _id: 1, email: 1, firstname: 1, applications: 1 } },
+      { $project: { _id: 1, email: 1, firstname: 1, lastname: 1, applications: 1 } },
     ])
     .toArray()
