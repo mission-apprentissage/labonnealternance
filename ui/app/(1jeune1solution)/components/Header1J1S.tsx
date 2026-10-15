@@ -28,7 +28,7 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
         display: "flex",
         width: "fit-content",
         marginLeft: "auto",
-        flexDirection: { xs: "column", md: "row" },
+        flexDirection: { xs: "column", sm: "row" },
         alignItems: "center",
         gap: { xs: fr.spacing("2v"), md: fr.spacing("4v") },
         "& > img": { xs: { maxWidth: "89px", height: "auto" }, md: { maxWidth: "155px", height: "auto" } },
