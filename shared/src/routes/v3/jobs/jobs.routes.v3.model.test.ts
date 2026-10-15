@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest"
 import type { z } from "zod"
 
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../../../constants/recruteur.js"
-import { JOB_START_TYPE, JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH, type JOB_STATUS_ENGLISH_PUBLIC } from "../../../models/job.model.js"
 import type { IJobsPartnersOfferApi } from "../../../models/jobs-partners.model.js"
 import type { IJobOfferApiReadV3, zJobOfferApiReadV3, zJobRecruiterApiReadV3 } from "./jobs.routes.v3.model.js"
 import { jobsRouteApiv3Converters, zJobOfferApiWriteV3 } from "./jobs.routes.v3.model.js"
@@ -75,7 +75,7 @@ type IJobOfferExpected = {
       expiration: Date | null
     }
     opening_count: number
-    status: JOB_STATUS_ENGLISH
+    status: JOB_STATUS_ENGLISH_PUBLIC
     to_applicant_questions: string[] | null
   }
   is_delegated: boolean
@@ -107,7 +107,7 @@ type IJobOfferApiWriteV3Expected = {
     opening_count?: number
     origin?: string | null
     multicast?: boolean
-    status?: JOB_STATUS_ENGLISH
+    status?: JOB_STATUS_ENGLISH_PUBLIC
     to_applicant_questions?: string[] | null
   }
   apply: {
@@ -352,6 +352,14 @@ describe("IJobOfferApiWriteV3", () => {
 
       expect(result.success).toBe(true)
       expect(result.data?.offer.status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    })
+
+    it("refuse le statut de modération, réservé aux offres LBA (#5498)", () => {
+      const inReview = zJobOfferApiWriteV3.safeParse({ ...data, offer: { ...data.offer, status: JOB_STATUS_ENGLISH.EN_MODERATION } })
+      const pending = zJobOfferApiWriteV3.safeParse({ ...data, offer: { ...data.offer, status: JOB_STATUS_ENGLISH.EN_ATTENTE } })
+
+      expect(inReview.success).toBe(false)
+      expect(pending.success).toBe(true)
     })
   })
 
@@ -712,5 +720,7 @@ describe("convertToJobOfferApiReadV3", () => {
     }
 
     expect(jobsRouteApiv3Converters.convertToJobOfferApiReadV3(jobPartner)).toEqual(expected)
+    // Une offre en modération sélectionnée par erreur ne doit pas sortir avec un statut hors contrat.
+    expect(() => jobsRouteApiv3Converters.convertToJobOfferApiReadV3({ ...jobPartner, offer_status: JOB_STATUS_ENGLISH.EN_MODERATION })).toThrow()
   })
 })

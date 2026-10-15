@@ -177,7 +177,7 @@ const ZLbaItemJob = z.strictObject({
   elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
   dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat | partner -> contract_duration
   quantiteContrat: z.number().nullish(), // matcha -> offres.quantite | partner -> offer_opening_count
-  status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullish(),
+  status: z.enum(["Active", "Pourvue", "Annulée", "En attente", "En modération"]).nullish(),
   type: ZJobType.nullish(), // partner -> contract_type
   partner_label: z.string().nullish(), // partner -> partner_label
   origin: z.string().nullish(), // partner -> offer_origin. Déprécié 06/2026

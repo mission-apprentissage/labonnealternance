@@ -3,7 +3,7 @@ import { captureException } from "@sentry/node"
 import type { Filter as MongoDBFilter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, ITrackingCookies } from "shared"
-import { parseEnum, TrafficType, ZCfaReferentielData } from "shared"
+import { JOB_STATUS_ENGLISH, parseEnum, TrafficType, ZCfaReferentielData } from "shared"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
@@ -672,7 +672,8 @@ export const sendEmailConfirmationEntreprise = async (userId: ObjectId, accessSt
   const isUserAwaiting = accessStatus === AccessStatus.AWAITING_VALIDATION
   const jobs = await getDbCollection("jobs_partners").find({ managed_by: userId }).toArray()
   const offre = jobs.at(0)
-  if (jobs.length === 1 && offre && offre.is_delegated === false) {
+  // Une offre en modération n'est pas annoncée : elle le sera à sa publication (#5498).
+  if (jobs.length === 1 && offre && offre.is_delegated === false && offre.offer_status !== JOB_STATUS_ENGLISH.EN_MODERATION) {
     const url = createValidationMagicLink(userWithAccountToUserForToken(user))
     const firstRomeCode = offre.offer_rome_codes.at(0)
     const referentielRomeOpt = firstRomeCode ? await getDbCollection("referentielromes").findOne({ "rome.code_rome": firstRomeCode }) : null

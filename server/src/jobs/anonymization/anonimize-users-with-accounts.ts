@@ -24,7 +24,7 @@ const anonymize = async () => {
     {
       managed_by: { $in: userObjectIds },
       partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-      offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_ATTENTE] },
+      offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION] },
     },
     { status: JOB_STATUS_ENGLISH.ANNULEE, reason: "compte recruteur anonymisé RGPD", grantedBy: "anonimize-users-with-accounts" }
   )

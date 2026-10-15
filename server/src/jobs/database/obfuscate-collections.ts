@@ -362,6 +362,8 @@ export async function obfuscateCollections(): Promise<void> {
     "customemailetfas",
     "emailblacklists",
     "jobs",
+    // Textes d'offre avant masquage (#5497) : la recette n'en a pas besoin, ses offres sont elles-mêmes obfusquées.
+    "jobs_partners_moderations",
     "opcos",
     "recruteurlbaupdateevents",
     "reported_companies",

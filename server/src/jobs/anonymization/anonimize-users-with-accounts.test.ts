@@ -44,11 +44,12 @@ describe("anonimize-users-with-accounts", () => {
     const user = await saveStaleUser()
     await insertOffer("active", user._id, { offer_status: JOB_STATUS_ENGLISH.ACTIVE })
     await insertOffer("en-attente", user._id, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE })
+    await insertOffer("en-moderation", user._id, { offer_status: JOB_STATUS_ENGLISH.EN_MODERATION })
 
     await anonimizeUsersWithAccounts()
     const byId = await readAll()
 
-    for (const id of ["active", "en-attente"]) {
+    for (const id of ["active", "en-attente", "en-moderation"]) {
       expect.soft(byId.get(id)?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
       expect.soft(byId.get(id)?.offer_status_history).toEqual([
         expect.objectContaining({

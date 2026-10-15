@@ -9,7 +9,7 @@ import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
-import { createViewDelegationLink } from "./app-links.service"
+import { createCharteRedactionLink, createViewDelegationLink } from "./app-links.service"
 import { buildEstablishmentId } from "./etablissement.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
@@ -58,9 +58,9 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobsPartner
   })
 }
 
+/** « Votre offre est publiée » : rien pour une offre en attente du compte ni pour une offre en modération. */
 export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPartnersOfferPrivate) {
-  const isRecruteurAwaiting = job.offer_status === JOB_STATUS_ENGLISH.EN_ATTENTE
-  if (isRecruteurAwaiting) {
+  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
     return
   }
   const { email, last_name, first_name } = user
@@ -71,7 +71,7 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
   const establishmentTitle = workplace_name || workplace_siret
   await mailer.sendEmail({
     to: email,
-    subject: raisonSocialeEntreprise ? `Votre offre d'alternance pour ${raisonSocialeEntreprise} publiée` : "Votre offre d'alternance est publiée",
+    subject: raisonSocialeEntreprise ? `Votre offre d'alternance pour ${raisonSocialeEntreprise} est publiée` : "Votre offre d'alternance est publiée",
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
@@ -95,6 +95,7 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
         workplace_siret,
       },
       lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, workplace_siret, job.offer_title),
+      charteRedactionUrl: createCharteRedactionLink(Boolean(is_delegated), is_delegated ? "mail-nouvelle-offre-cfa" : "mail-nouvelle-offre-entreprise"),
       publicEmail: config.publicEmail,
     },
   })
