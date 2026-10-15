@@ -9,6 +9,7 @@ import { useEffect, useId, useRef, useState } from "react"
 
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
+import { readOpcoFilterCookie } from "@/utils/opco-search-filter.utils"
 
 import type { QSource, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, DEFAULT_SEARCH_MODE } from "../_utils/search.params.utils"
@@ -140,6 +141,8 @@ export function SearchHomeForm({ id }: { id: string }) {
         radius: 20,
         page: 0,
         hitsPerPage: 20,
+        // Filtre de session reporté dans l'URL pour que le rendu serveur le voie aussi (cf. RechercheSeoContent).
+        opco: readOpcoFilterCookie(document.cookie),
       })
     )
   }

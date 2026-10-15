@@ -2,8 +2,11 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { Select } from "@codegouvfr/react-dsfr/Select"
 import { Box, FormLabel, Input, Stack, Typography } from "@mui/material"
 import { useState } from "react"
+import type { IOpcoFilterKey } from "shared/utils/opco-search-filter"
+import { getOpcoFilterLabel, OPCO_FILTER_KEYS, OPCO_FILTER_PARAM } from "shared/utils/opco-search-filter"
 import { SearchBar } from "@/app/(candidat)/(recherche)/recherche/_components/SearchBar"
 import { SearchTypeRechercheSelect } from "@/app/(candidat)/(recherche)/recherche/_components/SearchTypeRechercheSelect"
 import type { QSource, SearchMode } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
@@ -34,6 +37,7 @@ export function WidgetTester() {
   const [lieu, setLieu] = useState<Lieu | null>(null)
   const [mode, setMode] = useState<SearchMode>(DEFAULT_SEARCH_MODE)
   const [caller, setCaller] = useState("")
+  const [opco, setOpco] = useState<IOpcoFilterKey | "">("")
 
   const [widgetUrl, setWidgetUrl] = useState(`${baseUrl}/recherche`)
 
@@ -48,9 +52,12 @@ export function WidgetTester() {
       radius: 20,
       page: 0,
       hitsPerPage: 20,
+      opco: opco || undefined,
     })
     const url = new URL(`${baseUrl}${path}`)
     if (caller) url.searchParams.append("caller", caller)
+    // Sans `opco=` vide, le cookie de session posé par l'aperçu précédent filtrerait encore (cf. applyOpcoFilterFromUrl).
+    if (!opco && new URL(widgetUrl).searchParams.get(OPCO_FILTER_PARAM)) url.searchParams.set(OPCO_FILTER_PARAM, "")
     setWidgetUrl(url.toString())
   }
 
@@ -81,6 +88,18 @@ export function WidgetTester() {
         <SearchTypeRechercheSelect value={mode} onChange={setMode} fullWidth />
         <FormLabel htmlFor="caller">Identifiant appelant (caller)</FormLabel>
         <Input onChange={(e) => setCaller(e.target.value)} id="caller" name="caller" type="text" placeholder="ex: nom_site" className={fr.cx("fr-input")} />
+        <Select
+          label="Filtrage des offres d'emploi par OPCO (opco)"
+          hint="Optionnel. Les formations ne sont pas filtrées."
+          nativeSelectProps={{ name: "opco", value: opco, onChange: (e) => setOpco(e.target.value as IOpcoFilterKey | "") }}
+        >
+          <option value="">Aucun</option>
+          {OPCO_FILTER_KEYS.map((key) => (
+            <option key={key} value={key}>
+              {getOpcoFilterLabel(key) === key ? key : `${key} (${getOpcoFilterLabel(key)})`}
+            </option>
+          ))}
+        </Select>
         <Button type="button" title="Rafraîchir les widgets" onClick={refreshWidgets}>
           Rafraîchir les <span lang="en">widgets</span>
         </Button>

@@ -1,5 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { describe, expect, it, vi } from "vitest"
 
@@ -291,6 +292,61 @@ describe("search.controller", () => {
 
     it("refuse un mode inconnu sur le suggest", async () => {
       const response = await httpClient().inject({ method: "GET", path: "/api/v1/search/suggest?q=boulanger&mode=tout" })
+      expect(response.statusCode).toBe(400)
+    })
+  })
+
+  describe("filtre opco", () => {
+    // Pipelines `$search` envoyés à chaque corpus : vérifie la traduction clé → libellé et la clause
+    // posée, sans dépendre de l'indexation asynchrone de mongot.
+    const searchPipelines = async (path: string) => {
+      const getDbCollectionOriginal = mongodbUtils.getDbCollection
+      const pipelines: { collection: string; pipeline: string }[] = []
+      const spy = vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
+        const collection = getDbCollectionOriginal(name)
+        if (!name.startsWith("search_") || name === "search_queries") return collection
+        return new Proxy(collection, {
+          get(target, prop, receiver) {
+            if (prop === "aggregate") {
+              return (...args: Parameters<typeof collection.aggregate>) => {
+                pipelines.push({ collection: name, pipeline: JSON.stringify(args[0]) })
+                return target.aggregate(...args)
+              }
+            }
+            const value = Reflect.get(target, prop, receiver)
+            return typeof value === "function" ? value.bind(target) : value
+          },
+        }) as typeof collection
+      })
+      try {
+        const response = await httpClient().inject({ method: "GET", path })
+        return { statusCode: response.statusCode, pipelines }
+      } finally {
+        spy.mockRestore()
+      }
+    }
+
+    const opcoClause = JSON.stringify({ equals: { path: "opco", value: OPCOS_LABEL.AKTO } })
+
+    it("filtre le corpus emplois sur le libellé de l'OPCO, clé insensible à la casse", async () => {
+      const { statusCode, pipelines } = await searchPipelines("/api/v1/search?q=boulanger&opco=akto")
+
+      expect(statusCode).toBe(200)
+      const jobs = pipelines.filter(({ collection }) => collection === "search_jobs")
+      expect(jobs.length).toBeGreaterThan(0)
+      for (const { pipeline } of jobs) expect(pipeline).toContain(opcoClause)
+    })
+
+    it("ne filtre pas les formations, qui n'ont pas d'OPCO", async () => {
+      const { statusCode, pipelines } = await searchPipelines("/api/v1/search?mode=formations&opco=akto")
+
+      expect(statusCode).toBe(200)
+      expect(pipelines.length).toBeGreaterThan(0)
+      for (const { pipeline } of pipelines) expect(pipeline).not.toContain('"path":"opco"')
+    })
+
+    it.each(["inconnu", "UNKNOWN_OPCO", encodeURIComponent(OPCOS_LABEL.AKTO)])("retourne 400 sur opco=%s", async (opco) => {
+      const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?opco=${opco}` })
       expect(response.statusCode).toBe(400)
     })
   })

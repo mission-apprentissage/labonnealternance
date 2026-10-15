@@ -6,6 +6,7 @@ import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, SESSION_RETRY_PARAM } from
 
 import { publicConfig } from "./config.public"
 import { apiPost } from "./utils/api.utils"
+import { applyOpcoFilterFromUrl } from "./utils/opco-search-filter.utils"
 import { PAGES } from "./utils/routes.utils"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
@@ -142,6 +143,12 @@ const renderAuthenticationPage = (request: NextRequest, options: { purgeCookie: 
 }
 
 export async function proxy(request: NextRequest) {
+  const response = await routeRequest(request)
+  applyOpcoFilterFromUrl(request.nextUrl.searchParams, response.cookies)
+  return response
+}
+
+async function routeRequest(request: NextRequest): Promise<NextResponse> {
   const { pathname, search } = request.nextUrl
   const query = new URLSearchParams(search)
 

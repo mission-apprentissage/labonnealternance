@@ -59,6 +59,7 @@ export const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>>
   workplace_siret: 1,
   workplace_brand: 1,
   workplace_name: 1,
+  workplace_opco: 1,
 
   partner_label: 1,
   apply_email: 1,
@@ -86,6 +87,7 @@ type ProjectedJobFields =
   | "workplace_siret"
   | "workplace_brand"
   | "workplace_name"
+  | "workplace_opco"
   | "partner_label"
   | "apply_email"
   | "is_delegated"
@@ -355,6 +357,7 @@ const buildFormationSearchItemFrom = (formation: IFormationForSearchItem, point:
   // géopoint ne sert qu'à trancher un CP à cheval.
   ...resolveAdminCodes({ insee: formation.code_commune_insee, zipcode: formation.code_postal, geopoint: formation.lieu_formation_geopoint }, ctx.adminCodes),
   organization_name: canonicalizeCase(ctx.organizationCaseMap, formation.etablissement_formateur_entreprise_raison_sociale || ""),
+  opco: null,
   level: convertFormationNiveauDiplome(formation.niveau || ""),
   activity_sector: null,
   keywords: null,
@@ -414,6 +417,8 @@ export const buildJobOfferSearchItem = (job: IJobPartnerForSearchItem, ctx: Sear
   // Toujours l'entreprise d'accueil, comme `location` : l'emprise suit le lieu de travail.
   ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
   organization_name: getJobOrganizationName(job, ctx),
+  // Entreprise d'accueil, y compris pour une offre déléguée : le filtre OPCO vise l'employeur.
+  opco: job.workplace_opco ?? null,
   level: job.offer_target_diploma?.label || "",
   activity_sector: job.workplace_naf_label ? canonicalizeCase(ctx.sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
   keywords: null,
@@ -453,6 +458,7 @@ export const buildRecruteurSearchItem = (job: IJobPartnerForSearchItem, ctx: Sea
     },
     ...resolveAdminCodes({ zipcode: job.workplace_address_zipcode, geopoint: job.workplace_geopoint }, ctx.adminCodes),
     organization_name: organizationName,
+    opco: job.workplace_opco ?? null,
     level: job.offer_target_diploma?.label || "",
     activity_sector: job.workplace_naf_label ? canonicalizeCase(ctx.sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
     keywords: null,

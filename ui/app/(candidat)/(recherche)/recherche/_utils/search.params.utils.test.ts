@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { ISearchPageParams } from "./search.params.utils"
-import { buildRechercheH1, buildSearchPageTitle, buildSearchUrl, parseSearchPageParams } from "./search.params.utils"
+import { buildRechercheH1, buildSearchPageCanonical, buildSearchPageTitle, buildSearchUrl, parseSearchPageParams } from "./search.params.utils"
 
 const base: ISearchPageParams = { mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 }
 
@@ -18,6 +18,23 @@ describe("is_algo_company multi-valeurs (type d'offres d'emploi)", () => {
     const url = buildSearchUrl({ ...base, is_algo_company: [false, true] })
     expect(url).toBe("/recherche?is_algo_company=false&is_algo_company=true")
     expect(parseSearchPageParams(new URL(url, "https://x").searchParams).is_algo_company).toEqual([false, true])
+  })
+})
+
+describe("opco (filtre imposé par un site partenaire)", () => {
+  it("normalise la clé courte et ignore une valeur inconnue", () => {
+    expect(parseSearchPageParams(new URLSearchParams("opco=akto")).opco).toBe("AKTO")
+    expect(parseSearchPageParams(new URLSearchParams("opco=inconnu")).opco).toBeUndefined()
+  })
+
+  it("round-trip URL : le filtre survit à la navigation dans /recherche", () => {
+    const url = buildSearchUrl({ ...base, q: "boulanger", opco: "AKTO" })
+    expect(url).toBe("/recherche?q=boulanger&opco=AKTO")
+    expect(parseSearchPageParams(new URL(url, "https://x").searchParams).opco).toBe("AKTO")
+  })
+
+  it("reste hors du canonical", () => {
+    expect(buildSearchPageCanonical({ ...base, q: "boulanger", opco: "AKTO" })).toBe("/recherche?q=boulanger")
   })
 })
 

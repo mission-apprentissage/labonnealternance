@@ -280,3 +280,19 @@ describe("proxy - connexion par magic link (pose du cookie de session)", () => {
     expect(setCookie.toLowerCase()).toMatch(/max-age=0|expires=thu, 01 jan 1970/)
   })
 })
+
+describe("proxy - filtre OPCO de session", () => {
+  it("pose le cookie depuis une page publique d'arrivée, sans appel d'API de session", async () => {
+    const response = await proxy(new NextRequest(new URL("/?opco=ep", BASE_URL)))
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(response.cookies.get("lba_opco")?.value).toBe("EP")
+  })
+
+  it("le pose aussi sur une redirection (page protégée sans session)", async () => {
+    const response = await proxy(new NextRequest(new URL("/espace-pro/cfa?opco=akto", BASE_URL)))
+
+    expect(response.status).toBe(307)
+    expect(response.cookies.get("lba_opco")?.value).toBe("AKTO")
+  })
+})
