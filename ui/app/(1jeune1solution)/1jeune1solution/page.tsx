@@ -8,6 +8,8 @@ import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureS
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 
 const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=landinglba1j1s"
+const featureTitleSx = { color: "#161616", fontWeight: 700, fontSize: "28px", lineHeight: "36px" }
+
 export default function unJeune1Solution() {
   return (
     <Container
@@ -22,61 +24,22 @@ export default function unJeune1Solution() {
       }}
       maxWidth="xl"
     >
-      <Box
-        component="section"
-        sx={{
-          position: "relative",
-          borderRadius: { xs: 0, lg: fr.spacing("2v") },
-        }}
-      >
-        <Box sx={{ pb: fr.spacing("5v"), "& > #sky-background": { borderRadius: { xs: 0, md: fr.spacing("2v") } } }}>
-          <NextImage
-            fetchPriority="low"
-            src="/images/1j1s/ciel.webp"
-            alt=""
-            id="sky-background"
-            aria-hidden="true"
-            width={1120}
-            height={334}
-            unoptimized
-            style={{
-              height: "100%",
-              width: "100%",
-              top: "20px",
-              position: "absolute",
-              objectFit: "cover",
-            }}
-          />
-          <Box
-            sx={{
-              top: { xs: "-10px", lg: "-20px" },
-              left: { xs: "10px", lg: "-20px" },
-              position: "absolute",
-            }}
-          >
-            <NextImage fetchPriority="low" src="/images/1j1s/sparks-left.svg" alt="" aria-hidden="true" width={108} height={133} unoptimized />
-          </Box>
-          <Box
-            sx={{
-              bottom: { xs: "-10px", lg: "-20px" },
-              right: { xs: "10px", lg: "-20px" },
-              position: "absolute",
-            }}
-          >
-            <NextImage fetchPriority="low" src="/images/1j1s/sparks-right.svg" alt="" aria-hidden="true" width={108} height={133} unoptimized />
+      <Box component="section" sx={{ px: { xs: fr.spacing("4v"), md: fr.spacing("8v"), lg: 0 } }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("8v") }}>
+          <Typography component="h1" sx={{ flex: 1, mb: { xs: fr.spacing("8v"), lg: 0 }, fontSize: "56px", lineHeight: "64px", fontWeight: 700 }}>
+            À chacun
+            <br />
+            <Box component="span" sx={{ color: "#6A6AF4" }}>
+              son alternance
+            </Box>
+          </Typography>
+          {/* mb négatif : le formulaire recouvre les 76 px du bas de l'image. */}
+          <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, mb: "-76px", "& > img": { display: "block", maxWidth: "100%", height: "auto", ml: "auto" } }}>
+            <NextImage src="/images/1j1s/personna_10_26.png" alt="" aria-hidden="true" width={626} height={347} unoptimized />
           </Box>
         </Box>
-        <Box
-          sx={{
-            position: "relative",
-            display: "grid",
-            paddingY: { xs: fr.spacing("8v"), md: fr.spacing("12v") },
-            paddingX: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
-            gap: fr.spacing("8v"),
-            gridTemplateColumns: "1fr",
-          }}
-        >
-          <SearchHomeForm id={zoneScopedId("1jeune1solution", "search-form")} />
+        <Box sx={{ position: "relative" }}>
+          <SearchHomeForm id={zoneScopedId("1jeune1solution", "search-form")} showTitle={false} />
         </Box>
       </Box>
 
@@ -84,70 +47,35 @@ export default function unJeune1Solution() {
         sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 }, py: fr.spacing("8v") }}
       >
         <Box sx={{ flex: 1 }}>
-          <NextImage src="/images/1j1s/bulb.svg" width={78} height={83} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
-          <Typography
-            sx={{
-              background: "#FFE817",
-              width: "fit-content",
-              padding: "0",
-              fontWeight: 700,
-              lineHeight: "32px",
-              fontSize: "20px",
-              mt: fr.spacing("6v"),
-              textTransform: "uppercase",
-            }}
-          >
-            350 000 opportunités
-          </Typography>
-          <Typography
-            sx={{
-              background: "#FFE817",
-              width: "fit-content",
-              padding: "0",
-              fontWeight: 700,
-              lineHeight: "32px",
-              fontSize: "20px",
-              mt: fr.spacing("2v"),
-              mb: fr.spacing("3v"),
-              textTransform: "uppercase",
-            }}
-          >
-            pour lancer votre carrière
-          </Typography>
+          <NextImage src="/images/1j1s/france_10_26.png" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" style={{ display: "block" }} />
+          <Typography sx={{ ...featureTitleSx, mt: fr.spacing("8v") }}>350 000 opportunités</Typography>
+          <Typography sx={{ ...featureTitleSx, mt: fr.spacing("2v"), mb: fr.spacing("3v") }}>pour lancer votre carrière</Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
             Renseignez{" "}
-            <Box component="span" sx={{ color: "#EA619E" }}>
+            <Box component="span" sx={{ color: "#6A6AF4" }}>
               le métier
             </Box>{" "}
             que vous souhaitez faire et{" "}
-            <Box component="span" sx={{ color: "#EA619E" }}>
+            <Box component="span" sx={{ color: "#6A6AF4" }}>
               la localisation
             </Box>
           </Typography>
         </Box>
         <Box sx={{ flex: 1 }}>
-          <NextImage src="/images/1j1s/arrow.svg" width={71} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
-          <Typography
-            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
-          >
-            EN UN CLIN D’OEIL
-          </Typography>
+          <NextImage src="/images/1j1s/loupe_10_26.png" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" style={{ display: "block" }} />
+          <Typography sx={{ ...featureTitleSx, mt: fr.spacing("8v"), mb: fr.spacing("3v") }}>En un clin d’oeil</Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
             Obtenez en un clin d’oeil la{" "}
-            <Box component="span" sx={{ color: "#EA619E" }}>
+            <Box component="span" sx={{ color: "#6A6AF4" }}>
               liste des formations et entreprises proche de chez vous
             </Box>
           </Typography>
         </Box>
         <Box sx={{ flex: 1 }}>
-          <NextImage src="/images/1j1s/dialog.svg" width={78} height={78} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
-          <Typography
-            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
-          >
-            UN CONTACT FACILE
-          </Typography>
+          <NextImage src="/images/1j1s/enveloppe_10_26.png" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" style={{ display: "block" }} />
+          <Typography sx={{ ...featureTitleSx, mt: fr.spacing("8v"), mb: fr.spacing("3v") }}>Un contact facile</Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
-            <Box component="span" sx={{ color: "#EA619E" }}>
+            <Box component="span" sx={{ color: "#6A6AF4" }}>
               Contactez facilement
             </Box>{" "}
             les centres de formations ou les entreprises pour postuler

@@ -72,7 +72,7 @@ function MobileFakeField({ value, labelId, onOpen }: { value?: string; labelId: 
  * champ (cf. handleQChange). En mobile, la saisie passe par une modale plein écran ouverte par
  * un faux champ, pour garder les suggestions au-dessus du clavier.
  */
-export function SearchHomeForm({ id }: { id: string }) {
+export function SearchHomeForm({ id, showTitle = true }: { id: string; showTitle?: boolean }) {
   const router = useRouter()
   const fakeFieldLabelId = useId()
   const [q, setQ] = useState("")
@@ -177,7 +177,7 @@ export function SearchHomeForm({ id }: { id: string }) {
         boxShadow: "0px 2px 6px 0px #00001229",
       }}
     >
-      <RechercheFormTitle />
+      {showTitle && <RechercheFormTitle />}
 
       {/* Tablette et Mobile : faux champ + bouton loupe → modale plein écran (métier, lieu, type de recherche). */}
       <Box sx={{ display: { xs: "block", lg: "none" } }}>
