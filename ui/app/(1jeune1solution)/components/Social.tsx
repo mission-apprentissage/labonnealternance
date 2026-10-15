@@ -29,7 +29,7 @@ export default function Social({ utmParams }: { utmParams: string }) {
             linkProps={{ href: `https://www.1jeune1solution.gouv.fr/?${utmParams}` }}
             size="large"
             priority="tertiary"
-            style={{ fontSize: "16px", background: "#FFF", marginTop: fr.spacing("2v") }}
+            style={{ fontSize: "16px", background: "#FFF", marginTop: fr.spacing("2v"), border: "1px solid #DDD" }}
           >
             Visiter le site 1jeune1solution.gouv.fr
           </Button>
@@ -56,76 +56,66 @@ export default function Social({ utmParams }: { utmParams: string }) {
           px: { xs: fr.spacing("3v"), md: 0 },
         }}
       >
-        <Box sx={{ flex: 1, display: "flex", flexDirection: { xs: "column", sm: "row" }, background: "#000091", maxHeight: { xs: "unset", sm: "280px" } }}>
-          <Box sx={{ flex: 1, p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-            <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#FFFFFF", lineHeight: "30px" }}>Retrouvez 1jeune1solution sur Instagram et Tiktok :</Typography>
-            <Box
-              sx={{
-                "& > a:hover": { background: "#000091" },
-                "& .fr-btn::after": {
-                  display: "none",
-                },
-                "& .fr-btn": {
-                  whiteSpace: { xs: "wrap", sm: "nowrap" },
-                },
+        <Box sx={{ flex: 1, p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v"), background: "#000091" }}>
+          <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#FFFFFF", lineHeight: "30px" }}>
+            Retrouvez 1jeune1solution sur
+            <br />
+            Instagram et Tiktok&nbsp;:
+          </Typography>
+          <Box
+            sx={{
+              "& > a:hover": { background: "#000091" },
+              "& .fr-btn::after": {
+                display: "none",
+              },
+              "& .fr-btn": {
+                whiteSpace: { xs: "wrap", sm: "nowrap" },
+              },
+            }}
+          >
+            <Button
+              linkProps={{
+                href: `https://www.instagram.com/1jeune1solution/?${utmParams}`,
+                // RGAA 6.1 : deux liens voisins affichent « @1jeune1solution ». L'aria-label les
+                // distingue, il doit donc commencer par cet intitulé visible pour rester atteignable
+                // à la commande vocale.
+                "aria-label": "@1jeune1solution - compte Instagram de 1jeune1solution",
               }}
+              size="large"
+              priority="tertiary"
+              style={{ color: "#FFFFFF", fontSize: "16px" }}
             >
-              <Button
-                linkProps={{
-                  href: `https://www.instagram.com/1jeune1solution/?${utmParams}`,
-                  // RGAA 6.1 : deux liens voisins affichent « @1jeune1solution ». L'aria-label les
-                  // distingue, il doit donc commencer par cet intitulé visible pour rester atteignable
-                  // à la commande vocale.
-                  "aria-label": "@1jeune1solution - compte Instagram de 1jeune1solution",
-                }}
-                size="large"
-                priority="tertiary"
-                style={{ color: "#FFFFFF", fontSize: "16px" }}
-              >
-                @1jeune1solution <DsfrIcon style={{ marginLeft: "8px", marginRight: "-3px" }} name="fr-icon-instagram-fill" size={24} />
-              </Button>
-            </Box>
-            <Box
-              sx={{
-                "& > a:hover": { background: "#000091" },
-                "& .fr-btn::after": {
-                  display: "none",
-                },
-                "& .fr-btn": {
-                  whiteSpace: { xs: "wrap", sm: "nowrap" },
-                },
-              }}
-            >
-              <Button
-                linkProps={{
-                  href: `https://www.tiktok.com/@1jeune_1solution/?${utmParams}`,
-                  "aria-label": "@1jeune1solution - compte Tiktok de 1jeune1solution",
-                }}
-                size="large"
-                priority="tertiary"
-                style={{ color: "#FFFFFF", fontSize: "16px" }}
-              >
-                @1jeune1solution <DsfrIcon style={{ marginLeft: "8px", marginRight: "-3px" }} name="fr-icon-tiktok-fill" size={24} />
-              </Button>
-            </Box>
+              @1jeune1solution <DsfrIcon style={{ marginLeft: "8px", marginRight: "-3px" }} name="fr-icon-instagram-fill" size={24} />
+            </Button>
           </Box>
           <Box
             sx={{
-              position: "relative",
-              bottom: { xs: 0, sm: 0, md: 3 },
-              right: { xs: -1, sm: 0, md: -1 },
-              overflow: { xs: "hidden", md: "visible" },
-              maxHeight: { xs: "150px", sm: "unset" },
-              textAlign: "right",
+              "& > a:hover": { background: "#000091" },
+              "& .fr-btn::after": {
+                display: "none",
+              },
+              "& .fr-btn": {
+                whiteSpace: { xs: "wrap", sm: "nowrap" },
+              },
             }}
           >
-            <NextImage src="/images/1j1s/jeune-garcon.webp" alt="" aria-hidden="true" width={220} height={284} unoptimized />
+            <Button
+              linkProps={{
+                href: `https://www.tiktok.com/@1jeune_1solution/?${utmParams}`,
+                "aria-label": "@1jeune1solution - compte Tiktok de 1jeune1solution",
+              }}
+              size="large"
+              priority="tertiary"
+              style={{ color: "#FFFFFF", fontSize: "16px" }}
+            >
+              @1jeune1solution <DsfrIcon style={{ marginLeft: "8px", marginRight: "-3px" }} name="fr-icon-tiktok-fill" size={24} />
+            </Button>
           </Box>
         </Box>
         <Box sx={{ flex: 1, display: "flex", flexDirection: { xs: "column", lg: "row" }, background: "#EEDBF5", maxHeight: { xs: "unset", sm: "280px" } }}>
           <Box sx={{ flex: 1, p: fr.spacing("6v"), alignItems: "top", display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
             <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#000091", lineHeight: "30px" }}>
-              Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités :
+              Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités&nbsp;:
             </Typography>
             <Box sx={{ "& > a:hover": { background: "#EEDBF5" }, "& > a": { whiteSpace: { xs: "wrap", sm: "nowrap" } } }}>
               <Box
