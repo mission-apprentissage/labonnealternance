@@ -26,7 +26,8 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
     <Box
       sx={{
         display: "flex",
-        flex: 1,
+        width: "fit-content",
+        marginLeft: "auto",
         flexDirection: { xs: "column", md: "row" },
         alignItems: "center",
         gap: { xs: fr.spacing("2v"), md: fr.spacing("4v") },
