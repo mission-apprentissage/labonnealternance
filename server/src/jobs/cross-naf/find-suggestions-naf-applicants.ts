@@ -7,11 +7,11 @@ import type { IApplication } from "shared/models/applications.model"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 const TIMEZONE = "Europe/Paris"
-const MAX_APPLICATIONS = 3
+export const MAX_APPLICATIONS = 3
 
 // Une candidature partenaire n'est enregistrée chez nous que si elle passe par notre formulaire (smart apply).
 // Les candidatures spontanées (recruteurs_lba) portent sur des offres multi-ROME, d'où leur exclusion (RG 5).
-const SUGGESTION_SOURCE_JOB_ORIGINS = [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]
+export const SUGGESTION_SOURCE_JOB_ORIGINS = [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]
 
 export type SuggestionsNafWindow = { from: Date; to: Date }
 
