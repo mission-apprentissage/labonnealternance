@@ -110,7 +110,7 @@ export default function UnJeune1Solution() {
               <Typography component={"h2"} sx={{ fontSize: { xs: "28px", md: "32px" }, fontWeight: 800, lineHeight: { xs: "36px", md: "40px" }, mt: fr.spacing("6v") }}>
                 Publier une offre en alternance
               </Typography>
-              <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v") }}>Pour démarrer, recherchez le nom ou le SIRET de votre entreprise :</Typography>
+              <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("2v") }}>Pour démarrer, recherchez le nom ou le SIRET de votre entreprise :</Typography>
               <CreationCompteForm origin="1jeune1solution" onSelectOrganisation={onSelectOrganisation} />
             </Box>
           </Box>
