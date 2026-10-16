@@ -11,7 +11,6 @@ import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
 import { APPLICANT_ANSWER_MAX_LENGTH } from "shared/models/applications.model"
-import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 import { MultiSelectField } from "@/app/_components/FormComponents/MultiSelectField"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
@@ -23,7 +22,7 @@ import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { sessionStorageGet, sessionStorageSet } from "@/utils/local-storage"
 import { CandidatureLbaFileDropzone } from "./CandidatureLbaFileDropzone"
 import type { IApplicationSchemaInitValues } from "./services/get-schema"
-import { ApplicationFormikSchema, getInitialSchemaValues } from "./services/get-schema"
+import { ApplicationFormikSchema, formatCount, getInitialSchemaValues, QuestionAnswerSchema } from "./services/get-schema"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -53,19 +52,7 @@ export const CandidatureLbaModalBody = ({
   // on utilise donc un nom de champ indexé, et on rétablit l'intitulé de la question à la soumission.
   const questionFields = customQuestions.map((question, index) => ({ question, name: `custom_question_${index}` }))
 
-  // .trim().min(1) en plus du message de type : formik convertit la chaîne vide en undefined avant validation,
-  // mais une réponse composée uniquement d'espaces lui parvient telle quelle.
-  // .max() avant .trim() : la réponse est envoyée sans trim, le serveur borne sa longueur brute.
-  const questionZodExtension = Object.fromEntries(
-    questionFields.map(({ name }) => [
-      name,
-      z
-        .string({ error: "Une réponse est obligatoire" })
-        .max(APPLICANT_ANSWER_MAX_LENGTH, `${APPLICANT_ANSWER_MAX_LENGTH} caractères maximum`)
-        .trim()
-        .min(1, "Une réponse est obligatoire"),
-    ])
-  )
+  const questionZodExtension = Object.fromEntries(questionFields.map(({ name }) => [name, QuestionAnswerSchema]))
 
   const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
   const questionsInitValues = Object.fromEntries(questionFields.map(({ question, name }) => [name, applicantAnswersSession?.[question] ?? ""]))
@@ -185,7 +172,7 @@ export const CandidatureLbaModalBody = ({
                   </Box>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
                     {questionFields.map(({ question, name }) => (
-                      <TextareaInput key={name} formik={formik} name={name} label={question} description={`${APPLICANT_ANSWER_MAX_LENGTH} caractères maximum`} required />
+                      <TextareaInput key={name} formik={formik} name={name} label={question} maxLength={APPLICANT_ANSWER_MAX_LENGTH} required />
                     ))}
                   </Box>
                 </>
@@ -517,6 +504,7 @@ const TextareaInput = ({
   label,
   required,
   description,
+  maxLength,
   infoText,
 }: {
   formik: FormikType
@@ -524,6 +512,8 @@ const TextareaInput = ({
   label: string
   required?: boolean
   description?: string
+  /** Affiche la limite avant la saisie et un compteur sous le champ, sans bloquer la frappe : le dépassement passe par la validation. */
+  maxLength?: number
   infoText?: string
 }) => {
   const value = formik.values[name]
@@ -531,14 +521,18 @@ const TextareaInput = ({
   const error = formik.errors[name] as string
   const displayedErrorOpt = touched && error
   const hintId = `${name}-hint`
+  const counterId = `${name}-counter`
   const errorId = `${name}-error`
+  const hint = maxLength !== undefined ? [description, `${formatCount(maxLength)} caractères maximum`].filter(Boolean).join(". ") : description
+  const length = value?.length ?? 0
+  const isOverLimit = maxLength !== undefined && length > maxLength
 
   return (
     <FormControl required={required} error={Boolean(displayedErrorOpt)} fullWidth>
       <FormLabel htmlFor={name} sx={{ mb: fr.spacing("1v"), fontSize: "16px", lineHeight: "24px" }}>
         {label}
       </FormLabel>
-      {description && <HintText id={hintId}>{description}</HintText>}
+      {hint && <HintText id={hintId}>{hint}</HintText>}
       <TextareaAutosize
         style={{
           marginTop: fr.spacing("2v"),
@@ -554,8 +548,17 @@ const TextareaInput = ({
         // TextareaAutosize n'est pas un InputBase : ni l'état d'erreur ni required du FormControl ne lui parviennent
         required={required}
         aria-invalid={Boolean(displayedErrorOpt)}
-        aria-describedby={describedBy(description && hintId, displayedErrorOpt && errorId)}
+        aria-describedby={describedBy(hint && hintId, maxLength !== undefined && counterId, displayedErrorOpt && errorId)}
       />
+      {maxLength !== undefined && (
+        <>
+          <Typography id={counterId} sx={{ mt: fr.spacing("1v"), alignSelf: "flex-end", fontSize: "12px", lineHeight: "20px", color: isOverLimit ? "#ce0500" : "grey.600" }}>
+            {formatCount(length)} {length > 1 ? "caractères" : "caractère"} sur {formatCount(maxLength)}
+          </Typography>
+          {/* Annonce le passage de la limite pendant la frappe, l'erreur formik n'apparaissant qu'à la sortie du champ. */}
+          <LiveStatus message={isOverLimit ? `Votre réponse dépasse ${formatCount(maxLength)} caractères.` : ""} />
+        </>
+      )}
       <FormHelperText id={errorId}>{displayedErrorOpt}</FormHelperText>
       {Boolean(infoText) && (
         <Box sx={{ mt: fr.spacing("6v") }}>
