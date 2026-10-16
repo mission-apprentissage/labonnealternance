@@ -10,6 +10,7 @@ import { useRef, useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
+import { APPLICANT_ANSWER_MAX_LENGTH } from "shared/models/applications.model"
 import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 import { MultiSelectField } from "@/app/_components/FormComponents/MultiSelectField"
@@ -54,8 +55,16 @@ export const CandidatureLbaModalBody = ({
 
   // .trim().min(1) en plus du message de type : formik convertit la chaîne vide en undefined avant validation,
   // mais une réponse composée uniquement d'espaces lui parvient telle quelle.
+  // .max() avant .trim() : la réponse est envoyée sans trim, le serveur borne sa longueur brute.
   const questionZodExtension = Object.fromEntries(
-    questionFields.map(({ name }) => [name, z.string({ error: "Une réponse est obligatoire" }).trim().min(1, "Une réponse est obligatoire")])
+    questionFields.map(({ name }) => [
+      name,
+      z
+        .string({ error: "Une réponse est obligatoire" })
+        .max(APPLICANT_ANSWER_MAX_LENGTH, `${APPLICANT_ANSWER_MAX_LENGTH} caractères maximum`)
+        .trim()
+        .min(1, "Une réponse est obligatoire"),
+    ])
   )
 
   const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
@@ -176,7 +185,7 @@ export const CandidatureLbaModalBody = ({
                   </Box>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
                     {questionFields.map(({ question, name }) => (
-                      <TextareaInput key={name} formik={formik} name={name} label={question} required />
+                      <TextareaInput key={name} formik={formik} name={name} label={question} description={`${APPLICANT_ANSWER_MAX_LENGTH} caractères maximum`} required />
                     ))}
                   </Box>
                 </>
