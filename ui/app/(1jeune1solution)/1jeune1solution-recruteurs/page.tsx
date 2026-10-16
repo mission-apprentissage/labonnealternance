@@ -102,7 +102,7 @@ export default function UnJeune1Solution() {
               <Typography component={"h1"} sx={{ fontSize: "56px", fontWeight: 800, lineHeight: "64px" }}>
                 À chacun
                 <br />
-                <Box component="span" sx={{ color: "#00A95F" }}>
+                <Box component="span" sx={{ color: "#000091" }}>
                   sa solution
                 </Box>
               </Typography>
