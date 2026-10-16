@@ -10,7 +10,7 @@ describe("QuestionAnswerSchema", () => {
   })
 
   it("refuse une réponse plus longue que la limite du serveur", () => {
-    expect(errorsOf("a".repeat(APPLICANT_ANSWER_MAX_LENGTH + 1))).toEqual(["Votre réponse dépasse 2\u202f000 caractères, raccourcissez-la."])
+    expect(errorsOf("a".repeat(APPLICANT_ANSWER_MAX_LENGTH + 1))).toEqual(["Votre réponse dépasse 2\u202f000 caractères, veuillez la raccourcir."])
   })
 
   it("compte les espaces de fin, envoyés tels quels au serveur", () => {
