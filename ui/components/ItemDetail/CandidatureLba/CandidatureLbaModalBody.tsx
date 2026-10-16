@@ -550,16 +550,23 @@ const TextareaInput = ({
         aria-invalid={Boolean(displayedErrorOpt)}
         aria-describedby={describedBy(hint && hintId, maxLength !== undefined && counterId, displayedErrorOpt && errorId)}
       />
-      {maxLength !== undefined && (
+      {maxLength !== undefined ? (
         <>
-          <Typography id={counterId} sx={{ mt: fr.spacing("1v"), alignSelf: "flex-end", fontSize: "12px", lineHeight: "20px", color: isOverLimit ? "#ce0500" : "grey.600" }}>
-            {formatCount(length)} {length > 1 ? "caractères" : "caractère"} sur {formatCount(maxLength)}
-          </Typography>
+          {/* wrap-reverse : l'erreur partage la ligne du compteur, et passe dessous quand la place manque. */}
+          <Box sx={{ display: "flex", flexWrap: "wrap-reverse", alignItems: "baseline", columnGap: fr.spacing("4v"), mt: fr.spacing("1v") }}>
+            <FormHelperText id={errorId} sx={{ m: 0 }}>
+              {displayedErrorOpt}
+            </FormHelperText>
+            <Typography id={counterId} sx={{ ml: "auto", fontSize: "12px", lineHeight: "20px", color: isOverLimit ? "#ce0500" : "grey.600" }}>
+              {formatCount(length)} {length > 1 ? "caractères" : "caractère"} sur {formatCount(maxLength)}
+            </Typography>
+          </Box>
           {/* Annonce le passage de la limite pendant la frappe, l'erreur formik n'apparaissant qu'à la sortie du champ. */}
           <LiveStatus message={isOverLimit ? `Votre réponse dépasse ${formatCount(maxLength)} caractères.` : ""} />
         </>
+      ) : (
+        <FormHelperText id={errorId}>{displayedErrorOpt}</FormHelperText>
       )}
-      <FormHelperText id={errorId}>{displayedErrorOpt}</FormHelperText>
       {Boolean(infoText) && (
         <Box sx={{ mt: fr.spacing("6v") }}>
           <InfoText>{infoText}</InfoText>
