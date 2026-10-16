@@ -8,7 +8,7 @@ import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureS
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 
 const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=landinglba1j1s"
-const featureTitleSx = { color: fr.colors.decisions.text.title.grey.default, fontWeight: 700, fontSize: "28px", lineHeight: "36px" }
+const featureTitleSx = { color: fr.colors.decisions.text.title.grey.default, fontWeight: 800, fontSize: "28px", lineHeight: "36px" }
 
 export default function unJeune1Solution() {
   return (
@@ -26,7 +26,7 @@ export default function unJeune1Solution() {
     >
       <Box component="section" sx={{ px: { xs: fr.spacing("4v"), md: fr.spacing("8v"), lg: 0 } }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("8v") }}>
-          <Typography component="h1" sx={{ flex: 1, mb: { xs: fr.spacing("8v"), lg: 0 }, fontSize: "56px", lineHeight: "64px", fontWeight: 700 }}>
+          <Typography component="h1" sx={{ flex: 1, mb: { xs: fr.spacing("8v"), lg: 0 }, fontSize: "56px", lineHeight: "64px", fontWeight: 800 }}>
             À chacun
             <br />
             <Box component="span" sx={{ color: "#6A6AF4" }}>
@@ -87,7 +87,7 @@ export default function unJeune1Solution() {
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: "row" }}>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography variant="h1" component="h2" sx={{ fontSize: { xs: "32px", lg: "40px" }, lineHeight: { xs: "40px", lg: "48px" } }}>
+              <Typography variant="h1" component="h2" sx={{ fontWeight: 800, fontSize: { xs: "32px", lg: "40px" }, lineHeight: { xs: "40px", lg: "48px" } }}>
                 La bonne alternance vous connecte
                 <br />
                 <Box component="span" sx={{ color: "#6A6AF4" }}>

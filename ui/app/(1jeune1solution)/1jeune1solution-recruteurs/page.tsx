@@ -17,8 +17,8 @@ import { PAGES } from "@/utils/routes.utils"
 type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
 const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=recruteurs_landinglba1j1s"
-const statValueSx = { color: fr.colors.decisions.text.title.blueFrance.default, fontWeight: 700, fontSize: "56px", lineHeight: "64px", mt: fr.spacing("6v"), mb: fr.spacing("1v") }
-const statLabelSx = { color: fr.colors.decisions.text.title.grey.default, fontWeight: 700, fontSize: "28px", lineHeight: "36px", mb: fr.spacing("3v") }
+const statValueSx = { color: fr.colors.decisions.text.title.blueFrance.default, fontWeight: 800, fontSize: "56px", lineHeight: "64px", mt: fr.spacing("6v"), mb: fr.spacing("1v") }
+const statLabelSx = { color: fr.colors.decisions.text.title.grey.default, fontWeight: 800, fontSize: "28px", lineHeight: "36px", mb: fr.spacing("3v") }
 
 export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: string; onSelectOrganisation: (organisation: Organisation | null) => void }) => {
   const router = useRouter()
@@ -99,7 +99,7 @@ export default function UnJeune1Solution() {
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "start" }}>
             <Box>
-              <Typography component={"h1"} sx={{ fontSize: "56px", fontWeight: 700, lineHeight: "64px" }}>
+              <Typography component={"h1"} sx={{ fontSize: "56px", fontWeight: 800, lineHeight: "64px" }}>
                 À chacun
                 <br />
                 <Box component="span" sx={{ color: "#00A95F" }}>
@@ -107,7 +107,7 @@ export default function UnJeune1Solution() {
                 </Box>
               </Typography>
               <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v") }}>Trouvez votre future recrue avec 1jeune1solution et La bonne alternance.</Typography>
-              <Typography component={"h2"} sx={{ fontSize: { xs: "28px", md: "32px" }, fontWeight: 700, lineHeight: { xs: "36px", md: "40px" }, mt: fr.spacing("6v") }}>
+              <Typography component={"h2"} sx={{ fontSize: { xs: "28px", md: "32px" }, fontWeight: 800, lineHeight: { xs: "36px", md: "40px" }, mt: fr.spacing("6v") }}>
                 Publier une offre en alternance
               </Typography>
               <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v") }}>Pour démarrer, recherchez le nom ou le SIRET de votre entreprise :</Typography>
@@ -162,7 +162,7 @@ export default function UnJeune1Solution() {
           </Box>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>
+              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
                 Postez votre offre d’alternance en quelques secondes
               </Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>Sélectionnez le métier sur lequel vous recrutez, nous générons votre offre instantanément.</Typography>
@@ -173,7 +173,7 @@ export default function UnJeune1Solution() {
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>
+              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
                 Nous la diffusons gratuitement au plus près des candidats
               </Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
@@ -198,7 +198,7 @@ export default function UnJeune1Solution() {
           </Box>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>
+              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
                 Recevez les profils des candidats dans votre boite mail
               </Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>

@@ -21,7 +21,7 @@ export default function Social({ utmParams }: { utmParams: string }) {
         }}
       >
         <Box sx={{ flex: 1, px: { xs: fr.spacing("3v"), md: fr.spacing("6v") }, py: fr.spacing("4v") }}>
-          <Typography sx={{ mb: fr.spacing("6v"), fontSize: "32px", fontWeight: 700, lineHeight: "40px" }}>À chacun sa solution.</Typography>
+          <Typography sx={{ mb: fr.spacing("6v"), fontSize: "32px", fontWeight: 800, lineHeight: "40px" }}>À chacun sa solution.</Typography>
           <Typography sx={{ mb: fr.spacing("6v"), fontSize: "24px", fontWeight: 700, lineHeight: "32px" }}>
             Vous avez entre 15 et 30 ans ? Découvrez toutes les solutions pour votre avenir !
           </Typography>
@@ -57,7 +57,7 @@ export default function Social({ utmParams }: { utmParams: string }) {
         }}
       >
         <Box sx={{ flex: 1, p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v"), background: "#000091" }}>
-          <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#FFFFFF", lineHeight: "30px" }}>
+          <Typography sx={{ fontSize: "24px", fontWeight: 800, color: "#FFFFFF", lineHeight: "30px" }}>
             Retrouvez 1jeune1solution sur
             <br />
             Instagram et Tiktok&nbsp;:
