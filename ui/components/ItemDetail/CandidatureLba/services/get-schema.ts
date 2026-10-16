@@ -47,6 +47,6 @@ export const formatCount = (count: number) => count.toLocaleString("fr-FR")
 // .max() avant .trim() : la réponse est envoyée sans trim, le serveur borne sa longueur brute.
 export const QuestionAnswerSchema = z
   .string({ error: "Une réponse est obligatoire" })
-  .max(APPLICANT_ANSWER_MAX_LENGTH, `Votre réponse dépasse ${formatCount(APPLICANT_ANSWER_MAX_LENGTH)} caractères, raccourcissez-la.`)
+  .max(APPLICANT_ANSWER_MAX_LENGTH, `Votre réponse dépasse ${formatCount(APPLICANT_ANSWER_MAX_LENGTH)} caractères, veuillez la raccourcir.`)
   .trim()
   .min(1, "Une réponse est obligatoire")
