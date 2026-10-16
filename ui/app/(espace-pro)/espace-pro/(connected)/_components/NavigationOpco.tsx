@@ -2,11 +2,12 @@
 
 import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { usePathname } from "next/navigation"
+import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 const OPCO_NAV_ITEMS = [
   { text: "Entreprises", href: PAGES.static.backOpcoHome.getPath() },
-  { text: "Offres à modérer", href: PAGES.static.backOpcoOffresAModerer.getPath() },
+  { text: "Offres à modérer", href: MODERATION_PAGES.opcoQueue.getPath() },
 ]
 
 // « Entreprises » couvre l'accueil OPCO et les fiches entreprise (/espace-pro/opco/users/…).

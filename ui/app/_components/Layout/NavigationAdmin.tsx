@@ -4,6 +4,7 @@ import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { usePathname } from "next/navigation"
 import type { ComponentProps } from "react"
 
+import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 type AdminNavLink = {
@@ -25,7 +26,7 @@ const ADMIN_NAV_ITEMS: AdminNavEntry[] = [
   {
     text: "Offres",
     children: [
-      { text: "Offres à modérer", href: PAGES.static.backAdminOffresAModerer.getPath() },
+      { text: "Offres à modérer", href: MODERATION_PAGES.adminQueue.getPath() },
       { text: "Offres partenaires", href: PAGES.static.backAdminGestionDesOffresPartenaires.getPath() },
     ],
   },

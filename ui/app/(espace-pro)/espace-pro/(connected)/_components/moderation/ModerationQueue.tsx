@@ -23,6 +23,7 @@ import { PaginationButton } from "@/app/(espace-pro)/espace-pro/(connected)/admi
 import { useToast } from "@/app/hooks/useToast"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { getModerationQueue, reclassifyFailedModerationJobs } from "@/utils/api"
+import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { pluralize } from "@/utils/strutils"
 import { AccountStatusBadge, AccountTypeBadge, ConformityBadge, OfferStatusBadge } from "./ModerationBadges"
@@ -56,7 +57,7 @@ const ModerationQueueMenu = ({ row, userType }: { row: IModerationQueueItemJson;
     {
       label: "Modérer l’offre",
       hint: row.offer_title,
-      link: PAGES.dynamic.backModerationOffre({ job_id: row._id, userType }).getPath(),
+      link: MODERATION_PAGES.offre({ job_id: row._id, userType }).getPath(),
       type: "link",
       icon: <DsfrIcon name="fr-icon-scales-3-line" size={16} />,
     },
@@ -84,7 +85,7 @@ const getColumns = (userType: IModerationUserType): ColumnDef<IModerationQueueIt
       const { _id, offer_title, offer_rome_appellation } = info.row.original
       return (
         <Stack spacing={0.5}>
-          <Link underline="hover" fontWeight={700} fontSize=".875rem" href={PAGES.dynamic.backModerationOffre({ job_id: _id, userType }).getPath()}>
+          <Link underline="hover" fontWeight={700} fontSize=".875rem" href={MODERATION_PAGES.offre({ job_id: _id, userType }).getPath()}>
             {offer_title}
           </Link>
           {offer_rome_appellation && <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>{offer_rome_appellation}</Typography>}

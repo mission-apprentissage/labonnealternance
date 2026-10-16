@@ -10,6 +10,7 @@ import { OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getModerationJob } from "@/utils/api"
+import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { AccountStatusBadge, AccountTypeBadge } from "./ModerationBadges"
 import { ModerationPanel } from "./ModerationPanel"
@@ -121,12 +122,12 @@ export function ModerationJobDetail({ jobId, userType }: { jobId: string; userTy
     return <LoadingEmptySpace />
   }
 
-  const queuePage = userType === "OPCO" ? PAGES.static.backOpcoOffresAModerer : PAGES.static.backAdminOffresAModerer
+  const queuePage = userType === "OPCO" ? MODERATION_PAGES.opcoQueue : MODERATION_PAGES.adminQueue
   const recruiterPath = getRecruiterAccountPath(data.recruiter, userType)
 
   return (
     <Box sx={{ maxWidth: 1200, marginX: "auto", mt: fr.spacing("4v"), px: { xs: fr.spacing("4v"), md: 0 } }}>
-      <Breadcrumb pages={[queuePage, PAGES.dynamic.backModerationOffre({ job_id: jobId, userType, offer_title: data.offer.offer_title })]} />
+      <Breadcrumb pages={[queuePage, MODERATION_PAGES.offre({ job_id: jobId, userType, offer_title: data.offer.offer_title })]} />
       {recruiterPath && (
         <Button priority="secondary" size="small" iconId="fr-icon-arrow-left-line" linkProps={{ href: recruiterPath }} style={{ marginBottom: fr.spacing("4v") }}>
           Voir le compte recruteur
