@@ -97,8 +97,12 @@ export default function UnJeune1Solution() {
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "start" }}>
             <Box>
-              <Typography component={"h1"} sx={{ fontSize: { xs: "32px", md: "40px" }, fontWeight: 700, lineHeight: { xs: "40px", md: "48px" } }}>
-                LES APPRENTIS SONT TOUS DIFFÉRENTS !
+              <Typography component={"h1"} sx={{ fontSize: "56px", fontWeight: 700, lineHeight: "64px" }}>
+                À chacun
+                <br />
+                <Box component="span" sx={{ color: "#77B645" }}>
+                  sa solution
+                </Box>
               </Typography>
               <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v") }}>Trouvez votre future recrue avec 1jeune1solution et La bonne alternance.</Typography>
               <Typography component={"h2"} sx={{ fontSize: { xs: "28px", md: "32px" }, fontWeight: 700, lineHeight: { xs: "36px", md: "40px" }, mt: fr.spacing("6v") }}>
@@ -108,8 +112,8 @@ export default function UnJeune1Solution() {
               <CreationCompteForm origin="1jeune1solution" onSelectOrganisation={onSelectOrganisation} />
             </Box>
           </Box>
-          <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>
-            <NextImage src="/images/1j1s/personna.png" alt="" aria-hidden="true" width={567} height={480} unoptimized />
+          <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, alignSelf: "center", "& > img": { display: "block", maxWidth: "100%", height: "auto" } }}>
+            <NextImage src="/images/1j1s/personna_10_26.png" alt="" aria-hidden="true" width={626} height={347} unoptimized />
           </Box>
         </Box>
       </Box>
