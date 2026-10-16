@@ -3,7 +3,7 @@
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, Typography } from "@mui/material"
-import { type ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, type SortingState, useReactTable } from "@tanstack/react-table"
+import { type ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, type SortDirection, type SortingState, useReactTable } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { matchSorter } from "match-sorter"
 import type React from "react"
@@ -20,6 +20,8 @@ declare module "@tanstack/react-table" {
     srOnly?: string
   }
 }
+
+const ARIA_SORT = { asc: "ascending", desc: "descending", none: "none" } as const satisfies Record<SortDirection | "none", React.AriaAttributes["aria-sort"]>
 
 function fuzzyFilter<T>(row: import("@tanstack/react-table").Row<T>, columnId: string, filterValue: string): boolean {
   const value = row.getValue(columnId)
@@ -156,28 +158,52 @@ export function VirtualTable<T>({
               <tr key={headerGroup.id} role="row" style={{ display: "flex", width: "100%" }}>
                 {headerGroup.headers.map((header) => {
                   const srOnly = header.column.columnDef.meta?.srOnly
+                  const canSort = header.column.getCanSort()
+                  const sorted = header.column.getIsSorted()
+                  const label = <span className={srOnly ? "fr-sr-only" : "fr-cell__title"}>{srOnly ?? flexRender(header.column.columnDef.header, header.getContext())}</span>
                   return (
                     <th
                       key={header.id}
                       role="columnheader"
                       scope="col"
-                      onClick={header.column.getToggleSortingHandler()}
+                      aria-sort={canSort ? ARIA_SORT[sorted || "none"] : undefined}
                       style={{
-                        cursor: header.column.getCanSort() ? "pointer" : "default",
                         flex: `${header.column.getSize()} 0 0`,
                         minWidth: `${header.column.getSize()}px`,
                         boxSizing: "border-box",
                         overflow: "hidden",
+                        position: "relative",
                       }}
                     >
-                      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                        <span className={srOnly ? "fr-sr-only" : "fr-cell__title"}>{srOnly ?? flexRender(header.column.columnDef.header, header.getContext())}</span>
-                        {header.column.getCanSort() && (
+                      {canSort ? (
+                        <Box
+                          component="button"
+                          type="button"
+                          onClick={header.column.getToggleSortingHandler()}
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            width: "100%",
+                            background: "none",
+                            border: "none",
+                            padding: 0,
+                            cursor: "pointer",
+                            font: "inherit",
+                            color: "inherit",
+                            textAlign: "left",
+                            // étend la zone cliquable au th entier, padding DSFR compris
+                            "&::after": { content: '""', position: "absolute", inset: 0 },
+                          }}
+                        >
+                          {label}
                           <Box component="span" sx={{ pl: 1 }}>
-                            {header.column.getIsSorted() === "asc" ? <ArrowUpLine /> : header.column.getIsSorted() === "desc" ? <ArrowDownLine /> : <ArrowUpDownLine />}
+                            {sorted === "asc" ? <ArrowUpLine /> : sorted === "desc" ? <ArrowDownLine /> : <ArrowUpDownLine />}
                           </Box>
-                        )}
-                      </Box>
+                        </Box>
+                      ) : (
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>{label}</Box>
+                      )}
                     </th>
                   )
                 })}
