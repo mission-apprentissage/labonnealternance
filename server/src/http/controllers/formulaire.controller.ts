@@ -200,7 +200,7 @@ export default (server: Server) => {
         origin: user.origin ?? undefined,
       })
       const token = generateOffreToken(user, createdOffer)
-      return res.status(200).send({ job_id: createdOffer._id.toString(), token })
+      return res.status(200).send({ job_id: createdOffer._id.toString(), token, in_review: createdOffer.offer_status === JOB_STATUS_ENGLISH.EN_MODERATION })
     }
   )
 

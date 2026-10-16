@@ -299,6 +299,14 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/offres-partenaires` as string,
       title: "Offres partenaires",
     },
+    backAdminOffresAModerer: {
+      getPath: () => `/espace-pro/administration/offres-a-moderer` as string,
+      title: "Offres à modérer",
+    },
+    backOpcoOffresAModerer: {
+      getPath: () => `/espace-pro/opco/offres-a-moderer` as string,
+      title: "Offres à modérer",
+    },
     backAdminFeedbackForms: {
       getPath: () => `/espace-pro/administration/formulaires-feedback` as string,
       title: "Formulaires de feedback",
@@ -480,14 +488,20 @@ export const PAGES = {
       userId: string
       token?: string
       isWidget: boolean
+      inReview?: boolean
     }): IPage => ({
       getPath: () => {
-        const { isWidget, fromDashboard, withDelegation, ...querystring } = props
+        const { isWidget, fromDashboard, withDelegation, inReview, ...querystring } = props
 
         const path = isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"
 
         return generateUri(path, {
-          querystring: removeUndefinedFields({ ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() }),
+          querystring: removeUndefinedFields({
+            ...querystring,
+            fromDashboard: fromDashboard.toString(),
+            withDelegation: withDelegation.toString(),
+            inReview: inReview ? "true" : undefined,
+          }),
         }) as string
       },
       title: props.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
@@ -595,6 +609,10 @@ export const PAGES = {
     backEntrepriseMiseEnRelation: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}/mise-en-relation` as string,
       title: "Mise en relation avec des organismes de formation",
+    }),
+    backModerationOffre: ({ job_id, userType, offer_title }: { job_id: string; userType: "ADMIN" | "OPCO"; offer_title?: string }): IPage => ({
+      getPath: () => `${userType === "OPCO" ? "/espace-pro/opco" : "/espace-pro/administration"}/offres-a-moderer/${job_id}` as string,
+      title: offer_title ?? "Modération de l'offre",
     }),
     backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/opco/users/${user_id}` as string,

@@ -20,6 +20,12 @@ const ADMIN_NAV_ITEMS: AdminNavEntry[] = [
       { text: "Recruteurs en attente de validation", href: PAGES.static.backAdminHome.getPath() },
       { text: "Gestion des recruteurs", href: PAGES.static.backAdminGestionDesRecruteurs.getPath() },
       { text: "Entreprises de l'algorithme", href: PAGES.static.backAdminGestionDesEntreprises.getPath() },
+    ],
+  },
+  {
+    text: "Offres",
+    children: [
+      { text: "Offres à modérer", href: PAGES.static.backAdminOffresAModerer.getPath() },
       { text: "Offres partenaires", href: PAGES.static.backAdminGestionDesOffresPartenaires.getPath() },
     ],
   },

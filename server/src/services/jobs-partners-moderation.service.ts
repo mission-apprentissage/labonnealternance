@@ -1,14 +1,17 @@
 import { ObjectId } from "mongodb"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { IJobsPartnersModeration, IModerationTrigger } from "shared/models/jobs-partners-moderation.model"
-import { MODERATION_CLASSIFICATION_STATUS } from "shared/models/jobs-partners-moderation.model"
+import { MODERATION_CLASSIFICATION_STATUS, MODERATION_TRIGGER } from "shared/models/jobs-partners-moderation.model"
 
 import { logger } from "@/common/logger"
 import { maskPersonalData } from "@/common/utils/mask-personal-data"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
+import { alertClassifierIndisponibleSansBlocage } from "./jobs-partners-moderation-alerts"
 import { classifyOffreFreeTexts, type IOffreClassificationResult } from "./offre-classification/offre-classification.service"
+
+const UNAVAILABLE_ALERT_WINDOW_MS = 60 * 60 * 1000
 
 /** Champs libres d'une offre LBA, sous leur nom du formulaire. */
 export type IModerationTexts = { job_description: string | null; job_employer_description: string | null }
@@ -112,6 +115,24 @@ export const classifyAndRecordInBackground = ({
   originalText: IModerationTexts | null
 }): void => {
   classifyOffreTexts(texts)
-    .then((classification) => recordClassification({ jobId, trigger, classification, texts, originalText, updateOffer: true }))
+    .then(async (classification) => {
+      const moderation = await recordClassification({ jobId, trigger, classification, texts, originalText, updateOffer: true })
+      if (moderation.status === MODERATION_CLASSIFICATION_STATUS.INDISPONIBLE) {
+        await alertUnavailableWithoutEnforcement(moderation)
+      }
+    })
     .catch((error) => sentryCaptureException(error, { extra: { jobId: jobId.toString(), trigger } }))
+}
+
+/** Sans blocage, aucune nouvelle tentative n'a lieu : une alerte par heure de panne au plus, sinon elle ne se voit que dans la collection. */
+const alertUnavailableWithoutEnforcement = async (moderation: IJobsPartnersModeration) => {
+  const alreadyAlerted = await getDbCollection("jobs_partners_moderations").findOne({
+    _id: { $ne: moderation._id },
+    trigger: { $in: [MODERATION_TRIGGER.CREATION, MODERATION_TRIGGER.EDITION] },
+    status: MODERATION_CLASSIFICATION_STATUS.INDISPONIBLE,
+    created_at: { $gte: new Date(moderation.created_at.getTime() - UNAVAILABLE_ALERT_WINDOW_MS) },
+  })
+  if (!alreadyAlerted) {
+    await alertClassifierIndisponibleSansBlocage()
+  }
 }

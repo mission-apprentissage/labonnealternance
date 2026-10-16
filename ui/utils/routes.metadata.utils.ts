@@ -284,6 +284,12 @@ export const METADATA = {
     backOpcoHome: () => ({
       title: "Accueil espace OPCO - La bonne alternance",
     }),
+    backAdminOffresAModerer: () => ({
+      title: "Offres à modérer - La bonne alternance",
+    }),
+    backOpcoOffresAModerer: () => ({
+      title: "Offres à modérer - La bonne alternance",
+    }),
     backHomeEntreprise: () => ({
       title: "Accueil espace recruteur - La bonne alternance",
     }),
@@ -372,6 +378,9 @@ export const METADATA = {
     }),
     backEntrepriseMiseEnRelation: ({ job_id }: { job_id: string }): Metadata => ({
       title: "Mise en relation avec des organismes de formation - La bonne alternance",
+    }),
+    backModerationOffre: (): Metadata => ({
+      title: "Modération d'une offre - La bonne alternance",
     }),
     backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): Metadata => ({
       title: `${user_label ?? "Informations de l'entreprise"} - La bonne alternance`,

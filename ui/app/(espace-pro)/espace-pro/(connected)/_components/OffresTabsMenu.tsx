@@ -13,6 +13,7 @@ import { DsfrIcon } from "@/components/DsfrIcon"
 import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
+import { PAGES } from "@/utils/routes.utils"
 
 export const OffresTabsMenu = ({
   row,
@@ -20,12 +21,15 @@ export const OffresTabsMenu = ({
   buildOfferEditionUrl,
   onOffreProlongationClick,
   hideCfaShareAction = false,
+  isModerable = false,
 }: {
   row: any
   openSuppression: (row: any) => any
   buildOfferEditionUrl: (offerId: string) => string
   onOffreProlongationClick: (offerId: string) => void
   hideCfaShareAction?: boolean
+  /** L'offre est dans le périmètre de modération de l'utilisateur : sinon la page de modération renverrait 403. */
+  isModerable?: boolean
 }) => {
   const router = useRouter()
   const { user } = useAuth()
@@ -52,10 +56,21 @@ export const OffresTabsMenu = ({
         }
   const directLink = `${publicConfig.baseUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
   const isDisabled = row.job_status === "Annulée" || row.job_status === "Pourvue"
-  // Une offre en modération n'a pas de page publique : ses liens mèneraient à une 404.
+  // Une offre en modération n'a pas de page publique, ses liens mèneraient à une 404 ; elle ne se prolonge ni ne se
+  // partage avant sa publication, et un modérateur la refuse depuis la modération plutôt que de la supprimer (#5499).
   const isInReview = row.job_status === JOB_STATUS.EN_MODERATION
+  const isModerator = user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO
 
   const actions: PopoverMenuAction[] = [
+    isModerator && isModerable
+      ? {
+          label: "Modérer l'offre",
+          hint: `${offerTitle}`,
+          link: PAGES.dynamic.backModerationOffre({ job_id: row._id, userType: user.type as "ADMIN" | "OPCO" }).getPath(),
+          type: "link",
+          icon: <DsfrIcon name="fr-icon-scales-3-line" size={16} />,
+        }
+      : null,
     {
       label: "Éditer l'offre",
       hint: `${offerTitle}`,
@@ -66,16 +81,18 @@ export const OffresTabsMenu = ({
       type: "button",
       icon: <DsfrIcon name="fr-icon-edit-line" size={16} />,
     },
-    {
-      label: "Prolonger l'offre",
-      hint: `${offerTitle}`,
-      onClick: () => {
-        pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_EXTEND_CLICKED })
-        onOffreProlongationClick(row._id)
-      },
-      type: "button",
-      icon: <DsfrIcon name="fr-icon-refresh-line" size={16} />,
-    },
+    isInReview
+      ? null
+      : {
+          label: "Prolonger l'offre",
+          hint: `${offerTitle}`,
+          onClick: () => {
+            pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_EXTEND_CLICKED })
+            onOffreProlongationClick(row._id)
+          },
+          type: "button",
+          icon: <DsfrIcon name="fr-icon-refresh-line" size={16} />,
+        },
     isInReview
       ? null
       : {
@@ -116,7 +133,7 @@ export const OffresTabsMenu = ({
             </Box>
           ),
         },
-    user.type !== AUTHTYPE.CFA && !hideCfaShareAction
+    user.type !== AUTHTYPE.CFA && !hideCfaShareAction && !isInReview
       ? ({
           label: "Partager aux CFA à proximité",
           link: cfaOptionParams.link,
@@ -126,18 +143,20 @@ export const OffresTabsMenu = ({
           icon: <DsfrIcon name="fr-icon-presentation-line" size={16} />,
         } as PopoverMenuAction)
       : null,
-    {
-      label: "Supprimer l'offre",
-      hint: `${offerTitle}`,
-      onClick: (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_DELETE_CLICKED })
-        openSuppression(row)
-      },
-      type: "button",
-      icon: <DsfrIcon name="fr-icon-delete-line" size={16} />,
-    },
+    isInReview && isModerator
+      ? null
+      : {
+          label: "Supprimer l'offre",
+          hint: `${offerTitle}`,
+          onClick: (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_DELETE_CLICKED })
+            openSuppression(row)
+          },
+          type: "button",
+          icon: <DsfrIcon name="fr-icon-delete-line" size={16} />,
+        },
   ]
 
   return !isDisabled && <PopoverMenu actions={actions} title={`Actions sur l'offre ${offerTitle}`} resetFlagsOnClose={[setCopied]} />

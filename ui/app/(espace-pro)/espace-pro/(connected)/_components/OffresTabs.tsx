@@ -1,22 +1,26 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Tooltip from "@codegouvfr/react-dsfr/Tooltip"
 import { Box, Typography } from "@mui/material"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import type { IJobJson, IRecruiterJson, JOB_START_TYPE } from "shared"
 import { JOB_STATUS } from "shared"
-import { RECRUITER_STATUS } from "shared/constants/index"
+import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants/index"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import Table from "@/app/(espace-pro)/_components/Table"
 import { OffreProlongationModal } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffreProlongationModal"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useToast } from "@/app/hooks/useToast"
-import { extendOffre } from "@/utils/api"
+import { useAuth } from "@/context/UserContext"
+import { extendOffre, getModerationSummaries } from "@/utils/api"
 import { sortReactTableDate } from "@/utils/date-utils"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
+import { getAgentNoteLines } from "./moderation/AgentNote"
+import { ConformityBadge } from "./moderation/ModerationBadges"
 import { OffresTabsMenu } from "./OffresTabsMenu"
 
 const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
@@ -103,6 +107,15 @@ export const OffresTabs = ({
   const offreProlongationModalControls = useDisclosure(Boolean(searchParams.get("action") === "prolonger" && currentOffre))
   const toast = useToast()
   const client = useQueryClient()
+  const { user } = useAuth()
+  const isModerator = user?.type === AUTHTYPE.ADMIN || user?.type === AUTHTYPE.OPCO
+  // La route n'accepte que 200 identifiants : au-delà, les offres les plus anciennes restent sans conformité affichée.
+  const moderationJobIds = jobs.map(({ _id }) => _id).slice(0, 200)
+  const { data: moderationSummaries } = useQuery({
+    queryKey: ["moderation-summaries", moderationJobIds],
+    queryFn: () => getModerationSummaries(moderationJobIds),
+    enabled: isModerator && moderationJobIds.length > 0,
+  })
 
   if (jobs.length === 0) {
     return (
@@ -198,6 +211,18 @@ export const OffresTabs = ({
       accessor: ({ job_expiration_date }) => dayjs(job_expiration_date).format("DD/MM/YYYY"),
     },
   ]
+  const summariesById = new Map((moderationSummaries?.jobs ?? []).map((summary) => [summary._id, summary]))
+  const conformityColumns = isModerator
+    ? [
+        {
+          Header: "Conformité",
+          id: "conformity",
+          width: "190",
+          disableSortBy: true,
+          accessor: ({ _id }) => <ConformityCell summary={summariesById.get(_id)} />,
+        },
+      ]
+    : []
   const statsColumns = showStats
     ? [
         {
@@ -241,6 +266,7 @@ export const OffresTabs = ({
             buildOfferEditionUrl={buildOfferEditionUrl}
             row={row}
             hideCfaShareAction={hideCfaShareAction}
+            isModerable={summariesById.has(row._id)}
             onOffreProlongationClick={() => {
               setCurrentOfferId(row._id)
               offreProlongationModalControls.onOpen()
@@ -249,7 +275,9 @@ export const OffresTabs = ({
         )
       },
     },
-    ...commonColumns,
+    ...commonColumns.slice(0, 2),
+    ...conformityColumns,
+    ...commonColumns.slice(2),
     ...statsColumns,
   ]
 
@@ -260,6 +288,25 @@ export const OffresTabs = ({
       <Table caption={caption} columns={columns} data={jobsWithGeoCoords} />
     </>
   )
+}
+
+type IModerationSummaryJson = NonNullable<Awaited<ReturnType<typeof getModerationSummaries>>>["jobs"][number]
+
+/** Conformité de l'offre et, au survol ou au focus, la note de l'agent (#5499). */
+const ConformityCell = ({ summary }: { summary: IModerationSummaryJson | undefined }) => {
+  const badge = <ConformityBadge verdict={summary?.offer_moderation_verdict} status={summary?.offer_moderation_status} />
+  if (!summary?.offer_moderation_verdict || summary.offer_moderation_status !== "ok") return badge
+  const title = (
+    <>
+      <strong>Note de l’agent :</strong>
+      {getAgentNoteLines(summary.findings).map((line) => (
+        <span key={line} style={{ display: "block" }}>
+          {line}
+        </span>
+      ))}
+    </>
+  )
+  return <Tooltip title={title}>{badge}</Tooltip>
 }
 
 const NumberCell = ({ children }) => {
