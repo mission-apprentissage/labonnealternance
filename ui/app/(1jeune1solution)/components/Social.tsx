@@ -12,7 +12,7 @@ export default function Social({ utmParams }: { utmParams: string }) {
         sx={{
           display: "flex",
           flexDirection: "row",
-          color: "#000091",
+          color: fr.colors.decisions.text.title.blueFrance.default,
           gap: fr.spacing("10v"),
           background: "#A9FB68",
           mt: { md: fr.spacing("8v") },
@@ -44,7 +44,7 @@ export default function Social({ utmParams }: { utmParams: string }) {
             "& > img": { position: "absolute", bottom: 0, right: 0, width: "100%", height: "auto" },
           }}
         >
-          <NextImage src="/images/1j1s/personna_10_26.png" alt="" aria-hidden="true" width={539} height={299} unoptimized />
+          <NextImage src="/images/1j1s/personna.webp" alt="" aria-hidden="true" width={539} height={299} unoptimized />
         </Box>
       </Box>
 

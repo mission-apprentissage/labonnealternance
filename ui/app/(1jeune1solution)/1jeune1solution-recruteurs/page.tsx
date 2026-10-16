@@ -17,8 +17,8 @@ import { PAGES } from "@/utils/routes.utils"
 type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
 const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=recruteurs_landinglba1j1s"
-const statValueSx = { color: "#000091", fontWeight: 700, fontSize: "56px", lineHeight: "64px", mt: fr.spacing("6v"), mb: fr.spacing("1v") }
-const statLabelSx = { color: "#161616", fontWeight: 700, fontSize: "28px", lineHeight: "36px", mb: fr.spacing("3v") }
+const statValueSx = { color: fr.colors.decisions.text.title.blueFrance.default, fontWeight: 700, fontSize: "56px", lineHeight: "64px", mt: fr.spacing("6v"), mb: fr.spacing("1v") }
+const statLabelSx = { color: fr.colors.decisions.text.title.grey.default, fontWeight: 700, fontSize: "28px", lineHeight: "36px", mb: fr.spacing("3v") }
 
 export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: string; onSelectOrganisation: (organisation: Organisation | null) => void }) => {
   const router = useRouter()
@@ -102,7 +102,7 @@ export default function UnJeune1Solution() {
               <Typography component={"h1"} sx={{ fontSize: "56px", fontWeight: 700, lineHeight: "64px" }}>
                 À chacun
                 <br />
-                <Box component="span" sx={{ color: "#77B645" }}>
+                <Box component="span" sx={{ color: "#00A95F" }}>
                   sa solution
                 </Box>
               </Typography>
@@ -115,7 +115,7 @@ export default function UnJeune1Solution() {
             </Box>
           </Box>
           <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, alignSelf: "center", "& > img": { display: "block", maxWidth: "100%", height: "auto" } }}>
-            <NextImage src="/images/1j1s/personna_10_26.png" alt="" aria-hidden="true" width={626} height={347} unoptimized />
+            <NextImage src="/images/1j1s/personna.webp" alt="" aria-hidden="true" width={626} height={347} unoptimized />
           </Box>
         </Box>
       </Box>
@@ -134,7 +134,7 @@ export default function UnJeune1Solution() {
         }}
       >
         <Box sx={{ flex: 1 }}>
-          <NextImage src="/images/1j1s/france_10_26.png" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <NextImage src="/images/1j1s/france.webp" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
 
           <Typography sx={statValueSx}>3,5 M</Typography>
           <Typography sx={statLabelSx}>de visiteurs</Typography>
@@ -142,13 +142,13 @@ export default function UnJeune1Solution() {
         </Box>
 
         <Box sx={{ flex: 1 }}>
-          <NextImage src="/images/1j1s/enveloppe_10_26.png" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <NextImage src="/images/1j1s/enveloppe.webp" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography sx={statValueSx}>200 000</Typography>
           <Typography sx={statLabelSx}>candidats</Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>postulent aux offres chaque année</Typography>
         </Box>
         <Box sx={{ flex: 1 }}>
-          <NextImage src="/images/1j1s/mains_10_26.png" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <NextImage src="/images/1j1s/mains.webp" width={80} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography sx={statValueSx}>30%</Typography>
           <Typography sx={statLabelSx}>1 apprenti sur 3</Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>reste dans l'entreprise qui l'a formé</Typography>
@@ -158,11 +158,13 @@ export default function UnJeune1Solution() {
       <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ flex: 1, minWidth: 0, "& > img": { display: "block", width: "100%", maxWidth: "622px", height: "auto" } }}>
-            <NextImage src="/images/1j1s/job_post_10_26.png" alt="" aria-hidden="true" width={622} height={385} unoptimized />
+            <NextImage src="/images/1j1s/job-post.webp" alt="" aria-hidden="true" width={622} height={385} unoptimized />
           </Box>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ color: "#000091", fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>Postez votre offre d’alternance en quelques secondes</Typography>
+              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>
+                Postez votre offre d’alternance en quelques secondes
+              </Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>Sélectionnez le métier sur lequel vous recrutez, nous générons votre offre instantanément.</Typography>
             </Box>
           </Box>
@@ -171,7 +173,9 @@ export default function UnJeune1Solution() {
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ color: "#000091", fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>Nous la diffusons gratuitement au plus près des candidats</Typography>
+              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>
+                Nous la diffusons gratuitement au plus près des candidats
+              </Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
                 Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
                 <DsfrLink href={PAGES.static.home.getPath()}>La bonne alternance</DsfrLink>, <DsfrLink href="https://www.francetravail.fr/accueil/">France Travail</DsfrLink>,{" "}
@@ -184,17 +188,19 @@ export default function UnJeune1Solution() {
             </Box>
           </Box>
           <Box sx={{ flex: 1, minWidth: 0, "& > img": { display: "block", width: "100%", maxWidth: "697px", height: "auto" } }}>
-            <NextImage src="/images/1j1s/partner_10_26.png" alt="" aria-hidden="true" width={697} height={417} unoptimized />
+            <NextImage src="/images/1j1s/partner.webp" alt="" aria-hidden="true" width={697} height={417} unoptimized />
           </Box>
         </Box>
 
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ flex: 1, minWidth: 0, "& > img": { display: "block", width: "100%", maxWidth: "519px", height: "auto" } }}>
-            <NextImage src="/images/1j1s/sourcing_10_26.png" alt="" aria-hidden="true" width={519} height={441} unoptimized />
+            <NextImage src="/images/1j1s/sourcing.webp" alt="" aria-hidden="true" width={519} height={441} unoptimized />
           </Box>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              <Typography sx={{ color: "#000091", fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>Recevez les profils des candidats dans votre boite mail</Typography>
+              <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>
+                Recevez les profils des candidats dans votre boite mail
+              </Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
                 Les candidats vous partagent leurs coordonnées et leur CV directement par email, à vous de répondre !
               </Typography>
