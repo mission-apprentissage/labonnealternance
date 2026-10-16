@@ -1,6 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
@@ -10,6 +11,7 @@ import { OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getModerationJob } from "@/utils/api"
+import { ApiError } from "@/utils/api.utils"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { AccountStatusBadge, AccountTypeBadge } from "./ModerationBadges"
@@ -113,16 +115,33 @@ const OfferContent = ({ offer }: { offer: IModerationJobDetailJson["offer"] }) =
 }
 
 export function ModerationJobDetail({ jobId, userType }: { jobId: string; userType: IModerationUserType }) {
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["moderation-job", jobId],
     queryFn: () => getModerationJob(jobId),
+    retry: false,
   })
+  const queuePage = userType === "OPCO" ? MODERATION_PAGES.opcoQueue : MODERATION_PAGES.adminQueue
+
+  if (isError) {
+    const isNotFound = error instanceof ApiError && error.context.statusCode === 404
+    return (
+      <Box sx={{ maxWidth: 1200, marginX: "auto", my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: 0 } }}>
+        <Alert
+          severity="error"
+          title={isNotFound ? "Offre introuvable" : "La page de modération n’a pas pu être chargée"}
+          description={isNotFound ? "Cette offre n’existe plus, ou son lien est erroné." : "Réessayez dans un instant."}
+        />
+        <Button priority="secondary" iconId="fr-icon-arrow-left-line" linkProps={{ href: queuePage.getPath() }} style={{ marginTop: fr.spacing("4v") }}>
+          Retour aux offres à modérer
+        </Button>
+      </Box>
+    )
+  }
 
   if (isLoading || !data) {
     return <LoadingEmptySpace />
   }
 
-  const queuePage = userType === "OPCO" ? MODERATION_PAGES.opcoQueue : MODERATION_PAGES.adminQueue
   const recruiterPath = getRecruiterAccountPath(data.recruiter, userType)
 
   return (
