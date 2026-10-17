@@ -15,7 +15,7 @@ import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink } from "@/services/app-links.service"
 import { getApplicationByJobCount } from "@/services/application.service"
-import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
+import { buildJobStatusChangeUpdate, JOB_AUTO_CLOSURE_ORIGIN } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 
 const APPLICATION_COUNT_THRESHOLD = 80
@@ -115,7 +115,7 @@ export const closeJobsPartnersOnApplicationThreshold = async (payload?: { thresh
       buildJobStatusChangeUpdate({
         status: JOB_STATUS_ENGLISH.ANNULEE,
         reason: `seuil de ${threshold} candidatures atteint`,
-        grantedBy: "close-jobs-partners-on-application-threshold",
+        grantedBy: JOB_AUTO_CLOSURE_ORIGIN.APPLICATION_THRESHOLD,
         date: now,
       }),
       { returnDocument: "after" }

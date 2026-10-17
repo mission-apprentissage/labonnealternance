@@ -4,7 +4,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { roleManagementEventFactory, saveDbEntity, saveEntreprise, saveEntrepriseUserTest, saveRoleManagement, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { AccessEntityType, AccessStatus, JOB_CLOSURE_ORIGIN, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { AccessEntityType, AccessStatus, JOB_CLOSURE_ORIGIN, JOB_CLOSURE_REASON, JOB_STATUS_ENGLISH, removeAccents } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
@@ -725,44 +725,45 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
   }
 
   describe("closeOffreWithMotif", () => {
-    it("trace le motif de la modale et l'origine mail transactionnel", async () => {
+    it.each([
+      [JOB_CLOSURE_ORIGIN.ESPACE_PRO_RECRUTEUR, JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE],
+      [JOB_CLOSURE_ORIGIN.ESPACE_PRO_CFA, JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE],
+      [JOB_CLOSURE_ORIGIN.ESPACE_PRO_OPCO, JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE],
+      [JOB_CLOSURE_ORIGIN.ESPACE_PRO_INDETERMINE, JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE],
+      [JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN, JOB_CLOSURE_REASON.ACTION_ADMIN],
+      [JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR, JOB_CLOSURE_REASON.REPONSE_MAIL],
+    ])("trace « %s » avec reason « %s » et garde le motif dans job_status_comment", async (origin, reason) => {
       const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId())
 
       await closeOffreWithMotif({
         id,
         offer_status: JOB_STATUS_ENGLISH.ANNULEE,
-        origin: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
+        origin,
         job_status_comment: "Je ne reçois pas de candidature",
       })
 
       const job = await readOffer(id)
       expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
       expect.soft(job.offer_status_history).toHaveLength(1)
-      expect.soft(job.offer_status_history[0]).toMatchObject({
-        status: JOB_STATUS_ENGLISH.ANNULEE,
-        reason: "Je ne reçois pas de candidature",
-        granted_by: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
-      })
-      // Le motif reste aussi dans son champ dédié, relu par l'espace pro.
+      expect.soft(job.offer_status_history[0]).toMatchObject({ status: JOB_STATUS_ENGLISH.ANNULEE, reason, granted_by: origin })
       expect.soft(job.job_status_comment).toEqual("Je ne reçois pas de candidature")
     })
 
-    it("distingue l'acteur d'une clôture faite depuis l'espace pro", async () => {
+    it("enregistre la précision du motif « Autre »", async () => {
       const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId())
 
       await closeOffreWithMotif({
         id,
-        offer_status: JOB_STATUS_ENGLISH.POURVUE,
-        origin: JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN,
-        job_status_comment: "J'ai pourvu l'offre avec La bonne alternance",
+        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+        origin: JOB_CLOSURE_ORIGIN.ESPACE_PRO_CFA,
+        job_status_comment: "Autre",
+        job_status_comment_precision: "poste supprimé",
       })
 
       const job = await readOffer(id)
-      expect.soft(job.offer_status_history[0]).toMatchObject({
-        status: JOB_STATUS_ENGLISH.POURVUE,
-        reason: "J'ai pourvu l'offre avec La bonne alternance",
-        granted_by: JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN,
-      })
+      expect.soft(job.offer_status_history[0].reason).toEqual(JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE)
+      expect.soft(job.job_status_comment).toEqual("Autre")
+      expect.soft(job.job_status_comment_precision).toEqual("poste supprimé")
     })
 
     it("conserve les transitions déjà enregistrées", async () => {
@@ -816,9 +817,19 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       expect.soft((await readOffer(id)).offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
     })
 
-    it("ne réécrit ni updated_at ni le motif sur une offre portant déjà le statut demandé", async () => {
+    it("ne réécrit ni updated_at ni le motif sur une offre déjà clôturée par un humain avec ce statut", async () => {
       const updated_at = new Date("2026-02-01T00:00:00.000Z")
-      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), { updated_at, job_status_comment: "Je ne suis plus en recherche" })
+      const humanClosure = {
+        date: updated_at,
+        status: JOB_STATUS_ENGLISH.ANNULEE,
+        reason: JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE,
+        granted_by: JOB_CLOSURE_ORIGIN.ESPACE_PRO_RECRUTEUR,
+      }
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), {
+        updated_at,
+        job_status_comment: "Je ne suis plus en recherche",
+        offer_status_history: [humanClosure],
+      })
 
       const { alreadyClosed } = await closeOffreWithMotif({
         id,
@@ -831,11 +842,10 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       const job = await readOffer(id)
       expect.soft(job.updated_at).toEqual(updated_at)
       expect.soft(job.job_status_comment).toEqual("Je ne suis plus en recherche")
-      expect.soft(job.offer_status_history).toHaveLength(0)
+      expect.soft(job.offer_status_history).toHaveLength(1)
     })
 
     it("trace le changement d'avis d'une offre annulée vers pourvue", async () => {
-      // Le filtre ne bloque que les passages vers le même statut : une vraie transition reste écrite.
       const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId())
 
       const { alreadyClosed } = await closeOffreWithMotif({
@@ -850,6 +860,89 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.POURVUE)
       expect.soft(job.offer_status_history).toHaveLength(1)
       expect.soft(job.offer_status_history[0]).toMatchObject({ status: JOB_STATUS_ENGLISH.POURVUE })
+    })
+
+    describe("réponse au mail après une clôture automatique", () => {
+      const offer_expiration = new Date("2026-10-01T00:00:00.000Z")
+      const autoClosure = (granted_by: string, reason: string) => ({ date: offer_expiration, status: JOB_STATUS_ENGLISH.ANNULEE, reason, granted_by })
+      const answerByMail = (id: ObjectId, job_status_comment: string, offer_status = JOB_STATUS_ENGLISH.ANNULEE) =>
+        closeOffreWithMotif({ id, offer_status, origin: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR, job_status_comment })
+
+      it.each([
+        ["expire-jobs-partners", "offre expirée (date dépassée)"],
+        ["close-jobs-partners-on-application-threshold", "seuil de 80 candidatures atteint"],
+      ])("ajoute la réponse après la clôture de « %s », même sans changement de statut", async (granted_by, reason) => {
+        const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), { offer_expiration, offer_status_history: [autoClosure(granted_by, reason)] })
+
+        const { alreadyClosed } = await answerByMail(id, "Je ne suis plus en recherche")
+
+        expect.soft(alreadyClosed).toBe(true)
+        const job = await readOffer(id)
+        expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+        expect.soft(job.offer_status_history).toHaveLength(2)
+        expect.soft(job.offer_status_history[0]).toEqual(autoClosure(granted_by, reason))
+        expect.soft(job.offer_status_history[1]).toMatchObject({
+          status: JOB_STATUS_ENGLISH.ANNULEE,
+          reason: JOB_CLOSURE_REASON.REPONSE_MAIL,
+          granted_by: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
+        })
+        expect.soft(job.job_status_comment).toEqual("Je ne suis plus en recherche")
+        expect.soft(job.offer_expiration).toEqual(offer_expiration)
+      })
+
+      it("passe l'offre en Filled pour un motif « pourvue »", async () => {
+        const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), {
+          offer_expiration,
+          offer_status_history: [autoClosure("expire-jobs-partners", "offre expirée (date dépassée)")],
+        })
+
+        await answerByMail(id, "J'ai pourvu l'offre avec La bonne alternance", JOB_STATUS_ENGLISH.POURVUE)
+
+        const job = await readOffer(id)
+        expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.POURVUE)
+        expect.soft(job.offer_status_history.at(-1)).toMatchObject({ status: JOB_STATUS_ENGLISH.POURVUE, reason: JOB_CLOSURE_REASON.REPONSE_MAIL })
+        expect.soft(job.offer_expiration).toEqual(offer_expiration)
+      })
+
+      it("n'enregistre qu'une réponse quand le lien est utilisé deux fois", async () => {
+        const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), {
+          offer_status_history: [autoClosure("expire-jobs-partners", "offre expirée (date dépassée)")],
+        })
+
+        await answerByMail(id, "Je ne suis plus en recherche")
+        await answerByMail(id, "Je ne reçois pas de candidature")
+
+        const job = await readOffer(id)
+        expect.soft(job.offer_status_history).toHaveLength(2)
+        expect.soft(job.job_status_comment).toEqual("Je ne suis plus en recherche")
+      })
+
+      it.each([
+        ["admin@beta.gouv.fr", "doublon signalé"],
+        ["archive-formulaire", "formulaire archivé"],
+        ["détecteur de doublons", "offre en doublon"],
+      ])("n'ajoute rien après une clôture par « %s », qui n'attend pas de réponse", async (granted_by, reason) => {
+        const updated_at = new Date("2026-10-01T00:00:00.000Z")
+        const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), { updated_at, offer_status_history: [autoClosure(granted_by, reason)] })
+
+        const { alreadyClosed } = await answerByMail(id, "Je ne suis plus en recherche")
+
+        expect.soft(alreadyClosed).toBe(true)
+        const job = await readOffer(id)
+        expect.soft(job.offer_status_history).toEqual([autoClosure(granted_by, reason)])
+        expect.soft(job.updated_at).toEqual(updated_at)
+      })
+    })
+
+    it("avance offer_expiration à la date de clôture sur une offre encore active", async () => {
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId(), { offer_expiration: new Date("2099-01-01T00:00:00.000Z") })
+      const before = new Date()
+
+      await closeOffreWithMotif({ id, offer_status: JOB_STATUS_ENGLISH.ANNULEE, origin: JOB_CLOSURE_ORIGIN.ESPACE_PRO_RECRUTEUR, job_status_comment: "Autre" })
+
+      const job = await readOffer(id)
+      expect(job.offer_expiration?.getTime()).toBeGreaterThanOrEqual(before.getTime())
+      expect(job.offer_expiration?.getTime()).toBeLessThanOrEqual(Date.now())
     })
 
     it("échoue toujours sur une offre inexistante", async () => {
