@@ -3,7 +3,6 @@ import type { Metadata } from "next"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { ModerationQueue } from "@/app/(espace-pro)/espace-pro/(connected)/_components/moderation/ModerationQueue"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
-import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
   title: "Offres à modérer - La bonne alternance",

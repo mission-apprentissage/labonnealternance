@@ -292,7 +292,10 @@ export const OffresTabs = ({
 
 type IModerationSummaryJson = NonNullable<Awaited<ReturnType<typeof getModerationSummaries>>>["jobs"][number]
 
-/** Conformité de l'offre et, au survol ou au focus, la note de l'agent (#5499). */
+/**
+ * Conformité de l'offre et la note de l'agent derrière un bouton d'information (#5499) : une infobulle au survol
+ * se poserait sur un élément non focalisable, inaccessible au clavier.
+ */
 const ConformityCell = ({ summary }: { summary: IModerationSummaryJson | undefined }) => {
   const badge = <ConformityBadge verdict={summary?.offer_moderation_verdict} status={summary?.offer_moderation_status} />
   if (!summary?.offer_moderation_verdict || summary.offer_moderation_status !== "ok") return badge
@@ -306,7 +309,12 @@ const ConformityCell = ({ summary }: { summary: IModerationSummaryJson | undefin
       ))}
     </>
   )
-  return <Tooltip title={title}>{badge}</Tooltip>
+  return (
+    <Box sx={{ display: "inline-flex", alignItems: "center", gap: fr.spacing("1v") }}>
+      {badge}
+      <Tooltip kind="click" title={title} />
+    </Box>
+  )
 }
 
 const NumberCell = ({ children }) => {

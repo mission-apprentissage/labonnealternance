@@ -2,6 +2,7 @@ import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { entrepriseStatusEventFactory, roleManagementEventFactory, saveCfaUserTest, saveEntrepriseUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
+import { addJob } from "job-processor"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -35,11 +36,19 @@ const FINDING = { champ: "job_description", category: "mineurs", severity: "bloq
 let siretSequence = 0
 const nextSiret = () => String(12000001500000 + ++siretSequence)
 
-const saveRecruiter = async ({ roleStatus = AccessStatus.GRANTED, email }: { roleStatus?: AccessStatus; email?: string } = {}) =>
+const saveRecruiter = async ({
+  roleStatus = AccessStatus.GRANTED,
+  email,
+  raisonSociale = "Boulangerie du test",
+}: {
+  roleStatus?: AccessStatus
+  email?: string
+  raisonSociale?: string
+} = {}) =>
   saveEntrepriseUserTest(
     { status: validatedUserStatus, ...(email ? { email } : {}) },
     { status: [roleManagementEventFactory({ status: roleStatus })] },
-    { siret: nextSiret(), status: [entrepriseStatusEventFactory()], raison_sociale: "Boulangerie du test" }
+    { siret: nextSiret(), status: [entrepriseStatusEventFactory()], raison_sociale: raisonSociale }
   )
 
 type IRecruiter = Awaited<ReturnType<typeof saveRecruiter>>
@@ -416,6 +425,21 @@ describe("modération des offres libres (#5499)", () => {
       expect(response.statusCode).toBe(400)
       expect(sendMistralMessages).not.toHaveBeenCalled()
     })
+
+    it("lance la reprise en masse quand des analyses en échec l'attendent, et seulement alors", async () => {
+      vi.mocked(addJob).mockClear()
+      const { bearerToken } = await loginAdmin()
+
+      const sansAttente = await inject({ method: "POST", path: "/moderation/jobs/reclassify", headers: bearerToken })
+      expect(sansAttente.json()).toEqual({ pending: 0 })
+      expect(addJob).not.toHaveBeenCalled()
+
+      await saveModeratedOffer(await saveRecruiter(), { offer: { offer_moderation_verdict: "a_verifier", offer_moderation_status: "epuise" } })
+      const avecAttente = await inject({ method: "POST", path: "/moderation/jobs/reclassify", headers: bearerToken })
+
+      expect(avecAttente.json()).toEqual({ pending: 1 })
+      expect(addJob).toHaveBeenCalledExactlyOnceWith({ name: "repriseExhaustedClassifications", queued: true })
+    })
   })
 
   describe("file des offres à modérer", () => {
@@ -484,12 +508,12 @@ describe("modération des offres libres (#5499)", () => {
     })
 
     it("trie la file sur toutes les offres, pas seulement sur la page affichée", async () => {
-      const recruiter = await saveRecruiter()
-      const nonConforme = await saveModeratedOffer(recruiter, { offer: { offer_title: "Boulanger", workplace_legal_name: "Zénith" } })
-      const indisponible = await saveModeratedOffer(recruiter, {
-        offer: { offer_title: "agent d'accueil", workplace_legal_name: "atelier", offer_moderation_verdict: "a_verifier", offer_moderation_status: "epuise" },
+      // Raisons sociales de l'offre croisées avec celles des entreprises : le tri par recruteur suit le nom affiché.
+      const nonConforme = await saveModeratedOffer(await saveRecruiter({ raisonSociale: "Zénith" }), { offer: { offer_title: "Boulanger", workplace_legal_name: "atelier" } })
+      const indisponible = await saveModeratedOffer(await saveRecruiter({ raisonSociale: "atelier" }), {
+        offer: { offer_title: "agent d'accueil", workplace_legal_name: "Zénith", offer_moderation_verdict: "a_verifier", offer_moderation_status: "epuise" },
       })
-      const aVerifier = await saveModeratedOffer(recruiter, {
+      const aVerifier = await saveModeratedOffer(await saveRecruiter({ raisonSociale: "Bistrot" }), {
         offer: { offer_title: "Cuisinier", workplace_legal_name: "Bistrot", offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_verdict: "a_verifier" },
       })
       const { bearerToken } = await loginAdmin()
@@ -500,6 +524,7 @@ describe("modération des offres libres (#5499)", () => {
       expect(await firstOfPage("sort=conformity&order=desc")).toBe(indisponible.offer._id.toString())
       expect(await firstOfPage("sort=recruiter&order=asc")).toBe(indisponible.offer._id.toString())
       expect(await firstOfPage("sort=recruiter&order=desc")).toBe(nonConforme.offer._id.toString())
+      expect(await firstOfPage(`sort=recruiter&order=asc&account_status=${AccessStatus.GRANTED}`)).toBe(indisponible.offer._id.toString())
       expect(await firstOfPage("sort=offer_status&order=asc")).toBe(aVerifier.offer._id.toString())
     })
 
@@ -535,6 +560,24 @@ describe("modération des offres libres (#5499)", () => {
       }
       expect(detail.json().moderation.findings).toEqual([FINDING])
       expect(history.json().moderations[0].original_text).toEqual({ job_description: ORIGINAL_TEXT, job_employer_description: null })
+    })
+
+    it("résume pour la fiche entreprise les constats de la dernière classification de chaque offre", async () => {
+      const recruiter = await saveRecruiter()
+      const { offer, moderation } = await saveModeratedOffer(recruiter)
+      await getDbCollection("jobs_partners_moderations").insertOne({
+        ...moderation,
+        _id: new ObjectId(),
+        findings: [{ ...FINDING, category: "remuneration", verbatim: "extrait d'une analyse plus ancienne" }],
+        created_at: dayjs(T0).subtract(1, "day").toDate(),
+      })
+      const { bearerToken } = await loginAdmin()
+
+      const response = await inject({ method: "GET", path: `/moderation/jobs/summary?ids=${offer._id}`, headers: bearerToken })
+
+      expect(response.json().jobs).toEqual([
+        { _id: offer._id.toString(), offer_moderation_verdict: "non_conforme", offer_moderation_status: "ok", offer_moderation_review: null, findings: [FINDING] },
+      ])
     })
   })
 

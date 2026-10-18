@@ -141,7 +141,7 @@ const SUMMARY_PROJECTION = {
   recruiter: 1,
 } as const
 
-/** Clés de tri de la file, calculées sur l'offre seule : le tri ne dépend pas des jointures sur le compte. */
+/** Clés de tri de la file. Seule celle du recruteur lit les jointures, pour trier sur la raison sociale affichée. */
 const SORT_KEYS: Record<IModerationQueueSort, unknown> = {
   created_at: "$created_at",
   offer_title: { $toLower: "$offer_title" },
@@ -155,7 +155,7 @@ const SORT_KEYS: Record<IModerationQueueSort, unknown> = {
       default: 0,
     },
   },
-  recruiter: { $toLower: { $ifNull: [{ $cond: [{ $eq: ["$is_delegated", true] }, "$cfa_legal_name", "$workplace_legal_name"] }, ""] } },
+  recruiter: { $toLower: { $ifNull: ["$recruiter.raison_sociale", ""] } },
 }
 
 const SIRET_PATTERN = /^\d{14}$/
@@ -203,12 +203,13 @@ export const listModerationQueue = async ({
   if (scope.admin && opco?.length) filters.push({ workplace_opco: { $in: opco } })
   if (search) filters.push(await buildSearchFilter(search))
 
-  // Sans filtre sur le compte, les jointures ne portent que sur la page affichée.
-  const filterOnAccount = Boolean(account_status?.length)
+  // Les jointures ne portent que sur la page affichée, sauf quand le filtre sur le compte ou le tri par recruteur les lit.
+  const lookupBeforePaging = Boolean(account_status?.length) || sort === "recruiter"
   const [{ data, totalCount }] = await getDbCollection("jobs_partners")
     .aggregate<{ data: IModerationQueueItem[]; totalCount: [{ count: number }] | [] }>([
       { $match: { $and: filters } },
-      ...(filterOnAccount ? [...RECRUITER_LOOKUP_STAGES, { $match: { "recruiter.account_status": { $in: account_status } } }] : []),
+      ...(lookupBeforePaging ? RECRUITER_LOOKUP_STAGES : []),
+      ...(account_status?.length ? [{ $match: { "recruiter.account_status": { $in: account_status } } }] : []),
       {
         $facet: {
           data: [
@@ -216,7 +217,7 @@ export const listModerationQueue = async ({
             { $sort: { _sort: order === "asc" ? 1 : -1, _id: -1 } },
             { $skip: offset },
             { $limit: limit },
-            ...(filterOnAccount ? [] : RECRUITER_LOOKUP_STAGES),
+            ...(lookupBeforePaging ? [] : RECRUITER_LOOKUP_STAGES),
             { $project: SUMMARY_PROJECTION },
           ],
           totalCount: [{ $count: "count" }],

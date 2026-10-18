@@ -14,7 +14,6 @@ import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
-import { PAGES } from "@/utils/routes.utils"
 
 export const OffresTabsMenu = ({
   row,
