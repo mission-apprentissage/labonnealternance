@@ -45,6 +45,19 @@ location /api/v1/_private/ {
     include includes/proxy.conf;
 }
 
+# Insensible à la casse comme le routeur Fastify (caseSensitive: false) ; /suggest n'est pas concerné.
+location ~* ^/api/v1/search/?$ {
+    if ($lba_denied) {
+        return 403;
+    }
+
+    limit_req zone=lba_public_search burst=60 nodelay;
+
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}
+
 location ~* ^/api/v1/application$ {
     client_max_body_size    5M;
 
