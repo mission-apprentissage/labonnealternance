@@ -11,6 +11,7 @@ import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
 import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { appartements, loisirs, transports } from "@/app/(editorial)/alternance/_components/ville_data"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
@@ -47,9 +48,10 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   }
 }
 
+// Hauteur d'écran réservée pendant le streaming du contenu : évite que le pied de page ne saute à son arrivée (#5759)
 export default function Ville({ params }: { params: Promise<{ ville: string }> }) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoadingEmptySpace />}>
       <VilleContent params={params} />
     </Suspense>
   )
