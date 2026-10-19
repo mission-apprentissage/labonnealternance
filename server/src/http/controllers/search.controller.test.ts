@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import * as searchService from "@/services/search/search.service"
 
 // Intercepte les appels `aggregate` sur search_jobs (corpus du mode par défaut) pour simuler un échec mongot précis
 // (même pattern que search.service.test.ts), sans toucher au reste de la stack.
@@ -289,6 +290,82 @@ describe("search.controller", () => {
           spy.mockRestore()
         }
       })
+    })
+  })
+
+  // cf. PUBLIC_MAX_HITS_PER_PAGE et PUBLIC_MAX_PAGES dans search.controller.ts
+  describe("plafonds hors réseau interne", () => {
+    const PUBLIC_IP = "203.0.113.10"
+    const BROWSER = { "sec-fetch-site": "same-origin" }
+
+    type Caller = { remoteAddress?: string; headers?: Record<string, string> }
+    const publicBrowser: Caller = { remoteAddress: PUBLIC_IP, headers: BROWSER }
+    const publicScript: Caller = { remoteAddress: PUBLIC_IP }
+    const publicCrossSite: Caller = { remoteAddress: PUBLIC_IP, headers: { "sec-fetch-site": "cross-site" } }
+    const internal: Caller = {}
+
+    const call = (path: string, caller: Caller) => httpClient().inject({ method: "GET", path, ...caller })
+
+    const hitsPerPageSent = async (path: string, caller: Caller) => {
+      const spy = vi.spyOn(searchService, "searchItems")
+      try {
+        expect((await call(path, caller)).statusCode).toBe(200)
+        return spy.mock.calls[0][0].hitsPerPage
+      } finally {
+        spy.mockRestore()
+      }
+    }
+
+    const nbPagesReturned = async (caller: Caller) => {
+      const original = searchService.searchItems
+      const spy = vi.spyOn(searchService, "searchItems").mockImplementation(async (params) => ({ ...(await original(params)), nbHits: 1140, nbPages: 57 }))
+      try {
+        const response = await call("/api/v1/search?q=plafond", caller)
+        expect(response.statusCode).toBe(200)
+        return response.json()
+      } finally {
+        spy.mockRestore()
+      }
+    }
+
+    it("ramène hitsPerPage à 20 pour une IP publique, navigateur ou non", async () => {
+      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", publicBrowser)).toBe(20)
+      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", publicScript)).toBe(20)
+      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=10", publicBrowser)).toBe(10)
+    })
+
+    it("laisse hitsPerPage intact depuis le réseau interne", async () => {
+      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", internal)).toBe(100)
+    })
+
+    it("plafonne nbPages à 20 pour un navigateur public, sans toucher à nbHits", async () => {
+      expect(await nbPagesReturned(publicBrowser)).toMatchObject({ nbPages: 20, nbHits: 1140 })
+    })
+
+    it("plafonne nbPages à 1 sans Sec-Fetch-Site same-origin, ce qui masque « Voir plus » au rendu Googlebot", async () => {
+      expect(await nbPagesReturned(publicScript)).toMatchObject({ nbPages: 1, nbHits: 1140 })
+      expect(await nbPagesReturned(publicCrossSite)).toMatchObject({ nbPages: 1 })
+    })
+
+    it("ne plafonne pas nbPages depuis le réseau interne, même sans l'en-tête", async () => {
+      expect(await nbPagesReturned(internal)).toMatchObject({ nbPages: 57 })
+    })
+
+    it("navigateur public : pages 0 à 19 servies, 400 au-delà", async () => {
+      expect((await call("/api/v1/search?page=19", publicBrowser)).statusCode).toBe(200)
+      expect((await call("/api/v1/search?page=20", publicBrowser)).statusCode).toBe(400)
+    })
+
+    it("sans Sec-Fetch-Site same-origin : page 0 servie, 400 dès la page 1", async () => {
+      expect((await call("/api/v1/search?page=0", publicScript)).statusCode).toBe(200)
+      expect((await call("/api/v1/search", publicScript)).statusCode).toBe(200)
+      expect((await call("/api/v1/search?page=1", publicScript)).statusCode).toBe(400)
+      expect((await call("/api/v1/search?page=1", publicCrossSite)).statusCode).toBe(400)
+    })
+
+    it("réseau interne : aucune limite de page, avec ou sans l'en-tête", async () => {
+      expect((await call("/api/v1/search?page=20", internal)).statusCode).toBe(200)
+      expect((await call("/api/v1/search?page=20", { headers: BROWSER })).statusCode).toBe(200)
     })
   })
 
