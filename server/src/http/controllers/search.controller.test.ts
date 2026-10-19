@@ -227,6 +227,38 @@ describe("search.controller", () => {
         expect(await getDbCollection("search_queries").findOne({ q: "page1" })).toBeNull()
       })
 
+      it("logue une requête marquée internal venant d'une IP publique", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=internePublique&page=0&internal=true", remoteAddress: "203.0.113.10" })
+        expect(response.statusCode).toBe(200)
+
+        await waitForLoggedQuery("internePublique")
+      })
+
+      it("ignore un X-Forwarded-For privé forgé : seul le dernier saut ajouté par le proxy compte", async () => {
+        const response = await httpClient().inject({
+          method: "GET",
+          path: "/api/v1/search?q=xffForge&page=0&internal=true",
+          remoteAddress: "172.18.0.1",
+          headers: { "x-forwarded-for": "10.0.0.1, 203.0.113.10" },
+        })
+        expect(response.statusCode).toBe(200)
+
+        await waitForLoggedQuery("xffForge")
+      })
+
+      it("ne logue pas une requête internal relayée par le proxy pour notre SSR", async () => {
+        const response = await httpClient().inject({
+          method: "GET",
+          path: "/api/v1/search?q=ssrViaProxy&page=0&internal=true",
+          remoteAddress: "172.18.0.1",
+          headers: { "x-forwarded-for": "172.18.0.1" },
+        })
+        expect(response.statusCode).toBe(200)
+
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        expect(await getDbCollection("search_queries").findOne({ q: "ssrViaProxy" })).toBeNull()
+      })
+
       it("logue status=degraded quand searchItems replie après un dépassement de maxClauseCount", async () => {
         const spy = mockFirstAggregateCallToFail("Query exceeded maxClauseCount")
         try {

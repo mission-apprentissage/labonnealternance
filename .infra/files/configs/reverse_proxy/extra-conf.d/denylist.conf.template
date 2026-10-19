@@ -1,0 +1,8 @@
+# IP refusées sur les routes /api (403). Liste séparée par des virgules dans LBA_NGINX_DENYLIST
+# (env chiffré) ; vide par défaut.
+geo $lba_denied {
+    default 0;
+{% for ip in (LBA_NGINX_DENYLIST | default('')).split(',') if ip | trim %}
+    {{ ip | trim }} 1;
+{% endfor %}
+}

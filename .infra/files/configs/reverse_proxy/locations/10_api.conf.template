@@ -1,4 +1,8 @@
 location /api {
+    if ($lba_denied) {
+        return 403;
+    }
+
     set $upstream http://server:5000;
     include includes/error_page_json.conf;
     include includes/proxy.conf;
@@ -6,6 +10,10 @@ location /api {
 
 # Routes réservées au front : rate limiting nginx (zones dans extra-conf.d/rate-limit.conf.template)
 location /api/rome {
+    if ($lba_denied) {
+        return 403;
+    }
+
     limit_req zone=lba_autocomplete burst=40 nodelay;
 
     set $upstream http://server:5000;
@@ -14,6 +22,10 @@ location /api/rome {
 }
 
 location /api/_private/ {
+    if ($lba_denied) {
+        return 403;
+    }
+
     limit_req zone=lba_search burst=60 nodelay;
 
     set $upstream http://server:5000;
@@ -22,6 +34,10 @@ location /api/_private/ {
 }
 
 location /api/v1/_private/ {
+    if ($lba_denied) {
+        return 403;
+    }
+
     limit_req zone=lba_search burst=60 nodelay;
 
     set $upstream http://server:5000;

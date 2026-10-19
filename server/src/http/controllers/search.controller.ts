@@ -1,4 +1,5 @@
 import { zRoutes } from "shared"
+import { isPrivateIp } from "@/common/utils/private-network"
 
 import type { Server } from "@/http/server"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
@@ -16,9 +17,12 @@ export default (server: Server) => {
       // sur la latence), page 0 uniquement (l'infinite scroll rejoue le même q à chaque page).
       // `internal` exclut les requêtes non issues d'un utilisateur (ex. prefetch SSR pour le SEO
       // de /recherche), qui rejouent sinon le même q que le fetch client et faussent les stats.
+      // Honoré seulement depuis notre réseau (le SSR passe par la passerelle docker) : un client
+      // externe ne peut pas sortir ses requêtes des stats.
       // Loggé aussi en cas d'échec (#5153), puis re-throw : comportement d'erreur inchangé pour
       // le client et pour la capture Sentry.
-      const shouldLog = !req.query.internal && req.query.q?.trim() && req.query.page === 0
+      const isInternal = req.query.internal === true && isPrivateIp(req.ip)
+      const shouldLog = !isInternal && req.query.q?.trim() && req.query.page === 0
       try {
         const { degraded, ...result } = await searchItems(req.query)
         if (shouldLog) {
