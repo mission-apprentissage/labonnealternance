@@ -198,7 +198,7 @@ const config = {
   },
   moderation: {
     // À false, les offres LBA sont classifiées après la réponse, sans effet sur leur statut (#5498).
-    enforce: env.get("LBA_MODERATION_ENFORCE").default("false").asBool(),
+    enforce: env.get("LBA_MODERATION_ENFORCE").default("true").asBool(),
     // Au-delà, la classification est indisponible : l'offre passe InReview et sera réessayée.
     classificationTimeoutMs: env.get("LBA_MODERATION_CLASSIFICATION_TIMEOUT_MS").default(10_000).asIntPositive(),
   },
