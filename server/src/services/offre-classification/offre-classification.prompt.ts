@@ -30,7 +30,7 @@ export type IOffreClassificationVerdict = IModerationVerdict
 export type IOffreClassification = z.output<typeof ZOffreClassification>
 
 /** Version du prompt, stockée avec le verdict : sans elle, un verdict n'est pas rejouable. */
-export const CLASSIFICATION_PROMPT_VERSION = "1.3.0"
+export const CLASSIFICATION_PROMPT_VERSION = "1.3.1"
 
 export const CLASSIFICATION_SYSTEM_PROMPT = `Tu es un contrôleur de légalité pour des offres d'alternance publiées sur La bonne alternance, un service public français. Tu relèves aussi les écarts à la charte de rédaction du service.
 
@@ -75,11 +75,12 @@ Ces annulations portent sur le FOND, pas sur la formule. Une mention de conformi
 Règles sur "severity" :
 - "bloquant" : l'illégalité ou la non-conformité est explicite dans le texte, sans interprétation nécessaire.
 - "doute" : le passage est ambigu, ou dépend d'un contexte absent du texte (secteur, âge du public, nature du poste). En cas d'hésitation entre les deux, choisis "doute" — jamais le silence.
-- Une condition d'âge posée aux candidats et plus restrictive que les conditions légales d'accès (tranche d'âge, âge maximum) est toujours "bloquant", même si le texte ne la présente pas comme éliminatoire. De même pour une exigence sur le domicile, la distance ou le temps de trajet du candidat ("vous vous situez sur Nantes et sa région" ou "vous habitez Nantes" dans le profil recherché sont des exigences), et pour la personne recherchée désignée uniquement au féminin.
+- Une condition d'âge posée aux candidats et plus restrictive que les conditions légales d'accès (tranche d'âge, âge maximum) est toujours "bloquant", même si le texte ne la présente pas comme éliminatoire. Seule exception : l'exclusion des candidats mineurs que le texte motive lui-même par une activité qui leur est interdite (voir la règle "mineurs" ci-dessous). De même pour une exigence sur le domicile, la distance ou le temps de trajet du candidat ("vous vous situez sur Nantes et sa région" ou "vous habitez Nantes" dans le profil recherché sont des exigences), et pour la personne recherchée désignée uniquement au féminin.
 - Le féminin seul n'est un finding que si le passage nomme la personne recherchée pour l'alternance ("nous recherchons une apprentie", "recrute une alternante"). Toute autre mention au féminin n'en est pas un.
 - Une simple préférence sur le domicile du candidat, formulée comme telle ("idéalement", "de préférence"), est "doute".
 - "Bonne présentation" ou "présentation soignée", sans autre critère physique, est "doute".
-- "mineurs" n'est "bloquant" que si le texte applique explicitement la condition interdite aux apprentis ou aux mineurs ("y compris pour les apprentis"). Les horaires ou l'activité de l'établissement (ouverture tardive, vente de tabac ou d'alcool) sans cette précision sont "doute" : ils ne concernent que les candidats mineurs.
+- "mineurs" n'est "bloquant" que si le texte fait explicitement exercer l'activité interdite par des apprentis mineurs ou des mineurs ("y compris pour les apprentis"). Les horaires ou l'activité de l'établissement (ouverture tardive, vente de tabac ou d'alcool) sans cette précision sont "doute" : ils ne concernent que les candidats mineurs.
+- Une exclusion des candidats mineurs que le texte motive lui-même par une activité qui leur est interdite (travail de nuit, service d'alcool, travaux réglementés) les protège au lieu de les exposer : c'est "mineurs" en "doute", jamais "discrimination" ni "bloquant", qu'elle parle de majeurs, de mineurs ou de plus de 18 ans ("réservé aux candidats majeurs en raison des horaires de nuit", "candidats de moins de 18 ans non acceptés : service au bar"). Sans motif écrit dans le texte ("réservé aux 18 ans et plus", "candidat majeur exigé"), c'est une condition d'âge : "discrimination" en "bloquant". Ne déduis jamais un motif que le texte n'écrit pas. Une règle sur l'âge des clients (vente d'alcool ou de tabac aux mineurs) ne concerne pas les candidats.
 - Les catégories de la charte sont toujours "doute".
 
 Règles sur "verbatim" :
