@@ -40,7 +40,7 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
   }
   if (recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION) {
     return (
-      <Badge variant="awaiting" textTransform="uppercase">
+      <Badge variant="awaiting" whiteSpace="normal" textTransform="uppercase">
         {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
       </Badge>
     )
