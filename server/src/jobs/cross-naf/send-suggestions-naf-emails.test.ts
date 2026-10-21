@@ -142,10 +142,10 @@ describe("sendSuggestionsNafEmails", () => {
     vi.restoreAllMocks()
   })
 
-  it("envoie un email par ROME ayant au moins 3 suggestions et trace chaque envoi", async () => {
+  it("envoie un email par ROME ayant au moins 2 suggestions (RG 4) et trace chaque envoi", async () => {
     const sendEmail = vi.spyOn(mailer, "sendEmail").mockResolvedValue({ messageId: "<message@brevo>" })
-    const sendable = buildTarget(3)
-    const applicant = buildApplicant([sendable, buildTarget(2, "M1607")])
+    const sendable = buildTarget(2)
+    const applicant = buildApplicant([sendable, buildTarget(1, "M1607")])
 
     expect(await sendSuggestionsNafEmails([applicant])).toEqual({ sent: 1, failed: 0, blacklisted: 0 })
     expect(sendEmail).toHaveBeenCalledOnce()

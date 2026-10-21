@@ -8,7 +8,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { SuggestionsNafApplicantWithTargets, SuggestionsNafSector, SuggestionsNafTarget } from "./find-suggestions-naf-targets"
 
 export const MAX_DISTANCE_KM = 100
-export const MIN_SUGGESTIONS = 3
+export const MIN_SUGGESTIONS = 2
 
 export type SuggestionsNafJob = Pick<
   IJobsPartnersOfferPrivate,

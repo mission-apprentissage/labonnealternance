@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 
 import { LiveStatus } from "@/app/_components/LiveStatus"
+import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 
 type TriggerableJob =
@@ -16,7 +17,7 @@ type TriggerableJob =
   | "updateHandiEngagementForce"
   | "processSuggestionsNafLast24h"
 
-const JOBS: { name: TriggerableJob; label: string; confirmMessage?: string }[] = [
+const JOBS: { name: TriggerableJob; label: string; confirmMessage?: string; hiddenInProduction?: boolean }[] = [
   { name: "processApplications", label: "Traitement des candidatures" },
   { name: "processRecruiterIntentions", label: "Émission des intentions recruteurs" },
   { name: "processJobPartnersForApi", label: "Traitement des offres partenaires (API)" },
@@ -30,6 +31,8 @@ const JOBS: { name: TriggerableJob; label: string; confirmMessage?: string }[] =
     name: "processSuggestionsNafLast24h",
     label: "Suggestions d'offres sur d'autres secteurs (dernières 24 h)",
     confirmMessage: "Ce job envoie l'email de suggestions aux nouveaux candidats des dernières 24 h qui ne l'ont pas encore reçu. Confirmer l'envoi ?",
+    // Test en recette uniquement : en production, le cron quotidien envoie l'email le lendemain de la candidature (RG 3).
+    hiddenInProduction: true,
   },
 ]
 
@@ -82,7 +85,7 @@ export function ProcessorTriggerButtons() {
         Déclencher un job manuellement
       </Typography>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        {JOBS.map((job) => (
+        {JOBS.filter(({ hiddenInProduction }) => !(hiddenInProduction && publicConfig.env === "production")).map((job) => (
           <TriggerButton key={job.name} name={job.name} label={job.label} confirmMessage={job.confirmMessage} />
         ))}
       </Box>
