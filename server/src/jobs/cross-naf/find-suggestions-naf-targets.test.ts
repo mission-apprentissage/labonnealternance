@@ -38,8 +38,17 @@ const seedReferentiel = async () => {
   )
 }
 
+const SOURCE_JOB = {
+  offer_title: "Conducteur d'engins agricoles",
+  workplace_name: null,
+  workplace_brand: "AGRI SERVICES",
+  workplace_legal_name: "SARL AGRI SERVICES",
+  workplace_naf_label: "Culture de céréales",
+  workplace_address_city: "Chartres",
+}
+
 const createJob = async (rome_codes: string[], naf: string | null, geopoint = PARIS) => {
-  const job = generateJobsPartnersOfferPrivate({ offer_rome_codes: rome_codes, workplace_naf_code: naf, workplace_geopoint: geopoint })
+  const job = generateJobsPartnersOfferPrivate({ ...SOURCE_JOB, offer_rome_codes: rome_codes, workplace_naf_code: naf, workplace_geopoint: geopoint })
   await getDbCollection("jobs_partners").insertOne(job)
   return job._id
 }
@@ -48,7 +57,6 @@ const buildApplicant = (applications: { job_id: ObjectId | null; job_origin: LBA
   _id: new ObjectId(),
   email: "candidat@example.com",
   firstname: "Camille",
-  lastname: "Martin",
   applications: applications.map(({ job_id, job_origin }) => ({ _id: new ObjectId(), job_id, job_origin })),
 })
 
@@ -75,6 +83,7 @@ describe("findSuggestionsNafTargets", () => {
         rome_libelle: "libellé A1101",
         source_application_id: applicant.applications[0]._id,
         source_geopoint: PARIS,
+        source_job: SOURCE_JOB,
         sectors: ["01.61Z", "01.21Z", "01.50Z", "78.30Z", "01.13Z"].map((naf) => ({
           naf,
           naf_libelle: `libellé ${naf}`,

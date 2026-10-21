@@ -1,6 +1,6 @@
 <mjml>
   <mj-head>
-    <mj-preview></mj-preview>
+    <mj-preview>Votre métier recrute aussi dans d’autres secteurs : <%= data.suggestions.length %> offres en alternance sélectionnées pour vous.</mj-preview>
     <mj-breakpoint width="480px"></mj-breakpoint>
     <mj-attributes>
       <mj-all padding="0"></mj-all>
@@ -78,28 +78,53 @@
       <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 16px 0px">
-              Bonjour <%= data.firstname %> <%= data.lastname %>,
-              <br /><br />
-              Vous avez candidaté pour le métier <span style="font-weight: 700;"><%= data.rome_libelle %></span>. D’autres secteurs d’activité recrutent aussi sur ce métier, près du lieu de votre candidature :
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px 0px 16px 0px">
+              Bonjour <%= data.firstname %>,
             </mj-text>
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px 0px 16px 0px">
+              Vous avez postulé à l’offre de <span style="font-weight: 700; color: #161616;"><%= data.source.title %></span> pour l’établissement <span style="font-weight: 700; color: #161616;"><%= data.source.company %></span><% if (data.source.sector) { %>, une entreprise du secteur <span style="font-weight: 700; color: #161616;"><%= data.source.sector %></span><% } %>.
+            </mj-text>
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="26px" padding="0px 0px 16px 0px">
+              Bonne nouvelle ! D’autres secteurs d’activités recrutent sur ce métier sans qu’on y pense spontanément.
+            </mj-text>
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px 0px 24px 0px">
+              Nous avons regardé, pour votre métier, les types d’entreprises qui ont signé le plus de contrats en alternance ces douze derniers mois. Voici <%= data.suggestions.length %> offres qui vous permettent de diversifier vos candidatures et d’augmenter vos chances de trouver un employeur :
+            </mj-text>
+
             <% data.suggestions.forEach((suggestion) => { %>
-            <mj-divider border-color="#e3e3fd" border-width="1px" padding="0px 0px 16px 0px"></mj-divider>
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 16px 0px">
-              <a href="<%= suggestion.url %>" style="text-decoration: underline; color: #000091; font-weight: 700;"><%= suggestion.title %></a>
-              <br />
-              <%= suggestion.company %>, <%= suggestion.city %>
-              <br />
-              <span style="color: #666666;">Secteur : <%= suggestion.sector %></span>
-              <% if (suggestion.contracts) { %>
-              <br />
-              <span style="color: #666666;"><%= suggestion.contracts.toLocaleString("fr-FR") %> contrat<%= suggestion.contracts > 1 ? "s" : "" %> en alternance signé<%= suggestion.contracts > 1 ? "s" : "" %> dans ce secteur pour ce métier depuis <%= suggestion.contractsSince %></span>
-              <% } %>
-            </mj-text>
+              <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="15px" font-weight="400" line-height="22px" padding="0px 0px 12px 0px">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                  <tr>
+                    <td style="padding: 18px 20px; border: 1px solid #cacafb; border-radius: 4px; background-color: #ffffff;">
+                      <div style="font-size: 17px; line-height: 24px; font-weight: 700; color: #161616;"><%= suggestion.title %></div>
+                      <div style="padding-top: 4px;"><%= suggestion.company %> · <%= suggestion.city %></div>
+                      <div style="padding-top: 8px; font-size: 14px; line-height: 20px; color: #666666;">Secteur : <%= suggestion.sector %></div>
+                      <% if (suggestion.contracts) { %>
+                        <div style="padding-top: 4px; font-size: 14px; line-height: 20px; font-weight: 700; color: #18753c;">
+                          <%= suggestion.contracts.toLocaleString("fr-FR") %> contrat<%= suggestion.contracts > 1 ? "s" : "" %> en alternance signé<%= suggestion.contracts > 1 ? "s" : "" %> dans ce secteur en <%= data.contractsYear %> en France
+                        </div>
+                      <% } %>
+                      <div style="padding-top: 12px;">
+                        <a href="<%= suggestion.url %>" style="font-weight: 700; color: #000091; text-decoration: underline;">Voir l’offre</a>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </mj-text>
             <% }) %>
-            <mj-button align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="10px 0px 10px 0px" width="238px" href="<%= data.searchUrl %>">
-              Voir plus d’offres
+
+            <mj-button align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" inner-padding="12px 24px 12px 24px" line-height="22px" padding="12px 0px 28px 0px" href="<%= data.searchUrl %>">
+              Voir toutes les offres pour mon métier
             </mj-button>
+
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px 0px 16px 0px">
+              Élargir ses candidatures à ces secteurs, c’est souvent multiplier ses chances de décrocher un contrat. À vous de jouer !
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px">
+              Bonne recherche,
+              <br />
+              L’équipe La bonne alternance
+            </mj-text>
           </mj-column>
         </mj-group>
       </mj-section>

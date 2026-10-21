@@ -25,6 +25,14 @@ const buildTarget = (rome: string, nafs: string[]): SuggestionsNafTarget => ({
   rome_libelle: `libellé ${rome}`,
   source_application_id: new ObjectId(),
   source_geopoint: PARIS,
+  source_job: {
+    offer_title: "Conducteur d'engins agricoles",
+    workplace_name: null,
+    workplace_brand: null,
+    workplace_legal_name: "SARL AGRI",
+    workplace_naf_label: null,
+    workplace_address_city: "Paris",
+  },
   sectors: nafs.map((naf, index) => sector(naf, index + 2)),
 })
 
@@ -32,7 +40,6 @@ const buildApplicant = (targets: SuggestionsNafTarget[], appliedJobIds: ObjectId
   _id: new ObjectId(),
   email: "candidat@example.com",
   firstname: "Camille",
-  lastname: "Martin",
   applications: appliedJobIds.map((job_id) => ({ _id: new ObjectId(), job_id, job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA })),
   targets,
 })

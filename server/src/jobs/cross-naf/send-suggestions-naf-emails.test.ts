@@ -15,8 +15,9 @@ const buildSuggestion = (
   naf: string,
   data: Partial<SuggestionsNafSuggestion["job"]> = {},
   contrats_par_annee = [
-    { annee: 2023, n_contrats: 900 },
-    { annee: 2024, n_contrats: 312 },
+    { annee: 2024, n_contrats: 900 },
+    { annee: 2025, n_contrats: 4820 },
+    { annee: 2026, n_contrats: 312 },
   ]
 ): SuggestionsNafSuggestion => ({
   sector: { naf, naf_libelle: `Secteur ${naf}`, rang: 2, contrats_par_annee },
@@ -41,6 +42,14 @@ const buildTarget = (suggestionsCount: number, rome = "A1101"): SuggestionsNafTa
   rome_libelle: "Conducteur / Conductrice d'engins agricoles",
   source_application_id: new ObjectId(),
   source_geopoint: { type: "Point", coordinates: [2.347, 48.859] },
+  source_job: {
+    offer_title: "Conducteur d'engins",
+    workplace_name: null,
+    workplace_brand: "AGRI SERVICES",
+    workplace_legal_name: "SARL AGRI SERVICES",
+    workplace_naf_label: "Culture de céréales",
+    workplace_address_city: "Paris",
+  },
   sectors: [],
   suggestions: ["01.11Z", "01.21Z", "01.50Z", "78.30Z", "01.13Z"].slice(0, suggestionsCount).map((naf) => buildSuggestion(naf)),
 })
@@ -49,7 +58,6 @@ const buildApplicant = (targets: SuggestionsNafTargetWithSuggestions[], email = 
   _id: new ObjectId(),
   email,
   firstname: "Camille",
-  lastname: "Martin",
   applications: [],
   targets,
 })
@@ -60,30 +68,70 @@ const findLogs = () =>
     .toArray()
 
 describe("buildSuggestionsNafEmail", () => {
-  it("rend le message nominatif, la liste des offres et les liens UTM", async () => {
-    const target = buildTarget(3)
-    target.suggestions.push(buildSuggestion("01.13Z", { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, offer_title: "<b>injection</b>" }, []))
-    const { subject, data } = buildSuggestionsNafEmail(buildApplicant([target]), target)
+  const NOW = new Date("2026-10-21T08:00:00.000Z")
 
-    const html = await mailer.renderEmail(getEmailTemplate("mail-candidat-suggestions-naf"), data)
+  const render = async (target: SuggestionsNafTargetWithSuggestions) => {
+    const { subject, data } = buildSuggestionsNafEmail(buildApplicant([target]), target, NOW)
+    return { subject, data, html: await mailer.renderEmail(getEmailTemplate("mail-candidat-suggestions-naf"), data) }
+  }
+
+  it("rend l'introduction, les offres et la conclusion de la maquette", async () => {
+    const target = buildTarget(3)
+    target.suggestions.push(buildSuggestion("01.13Z", { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, offer_title: "<b>injection</b>" }, [{ annee: 2025, n_contrats: 1 }]))
+
+    const { subject, html } = await render(target)
 
     expect(subject).toBe("Votre métier Conducteur / Conductrice d'engins agricoles est recherché dans d'autres secteurs, tentez votre chance !")
-    expect(html).toContain("Bonjour Camille Martin,")
-    expect(html).toContain("Offre 01.11Z")
-    expect(html).toContain("SARL EXEMPLE, Meaux")
-    expect(html).not.toContain("km")
+    expect(html).toContain("Votre métier recrute aussi dans d’autres secteurs : 4 offres en alternance sélectionnées pour vous.")
+    expect(html).toContain("Bonjour Camille,")
+    expect(html).toMatch(
+      /Vous avez postulé à l’offre de <span[^>]*>Conducteur d&#39;engins<\/span> pour l’établissement <span[^>]*>AGRI SERVICES<\/span>, une entreprise du secteur <span[^>]*>Culture de céréales<\/span>\./
+    )
+    expect(html).toContain("Voici 4 offres qui vous permettent")
+    expect(html).toContain("SARL EXEMPLE · Meaux")
     expect(html).toContain("Secteur : Secteur 01.21Z")
-    expect(html).toMatch(/1\s212 contrats en alternance signés dans ce secteur pour ce métier depuis 2023/)
-    expect(html.match(/contrats? en alternance/g)).toHaveLength(3)
+    expect(html).toMatch(/4\s820 contrats en alternance signés dans ce secteur en 2025 en France/)
+    expect(html).toContain("1 contrat en alternance signé dans ce secteur en 2025 en France")
     expect(html).toContain("Candidature spontanée")
     expect(html).not.toContain("injection")
-    expect(data.suggestions[0].url).toMatch(
-      /\/emploi\/offres_emploi_lba\/[a-f0-9]{24}\/[a-z0-9-]+\?utm_source=lba-transactionnel&utm_medium=email&utm_campaign=2610_lba_candidats_suggestions-naf-recherche-emplois&utm_content=offre$/
-    )
+    expect(html).toContain("Voir toutes les offres pour mon métier")
+    expect(html).toContain("À vous de jouer !")
+  })
+
+  it("omet le secteur de l'offre source et les contrats quand ils sont inconnus", async () => {
+    const target = buildTarget(3)
+    target.source_job.workplace_naf_label = null
+    target.suggestions = target.suggestions.map(({ job }) => buildSuggestion("01.11Z", job, [{ annee: 2026, n_contrats: 12 }]))
+
+    const { html } = await render(target)
+
+    expect(html).toMatch(/<span[^>]*>AGRI SERVICES<\/span>\./)
+    expect(html).not.toContain("une entreprise du secteur")
+    expect(html).not.toContain("signés dans ce secteur")
+  })
+
+  it("tague les liens et rejoue la recherche du métier autour de la candidature source", async () => {
+    const target = buildTarget(3)
+    target.suggestions.push(buildSuggestion("01.13Z", { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }))
+
+    const { data } = await render(target)
+
+    const utm = "utm_source=lba-transactionnel&utm_medium=email&utm_campaign=2610_lba_candidats_suggestions-naf-recherche-emplois"
+    expect(data.suggestions[0].url).toMatch(new RegExp(`/emploi/offres_emploi_lba/[a-f0-9]{24}/[a-z0-9-]+\\?${utm}&utm_content=offre$`))
     expect(data.suggestions[3].url).toContain("/emploi/recruteurs_lba/42476141900045/")
-    expect(data.searchUrl).toMatch(
-      /\/recherche\?utm_source=lba-transactionnel&utm_medium=email&utm_campaign=2610_lba_candidats_suggestions-naf-recherche-emplois&utm_content=recherche$/
-    )
+    const searchUrl = new URL(data.searchUrl)
+    expect(searchUrl.pathname).toBe("/recherche")
+    expect(Object.fromEntries(searchUrl.searchParams)).toEqual({
+      q: "Conducteur / Conductrice d'engins agricoles",
+      lieu_label: "Paris",
+      latitude: "48.859",
+      longitude: "2.347",
+      radius: "100",
+      utm_source: "lba-transactionnel",
+      utm_medium: "email",
+      utm_campaign: "2610_lba_candidats_suggestions-naf-recherche-emplois",
+      utm_content: "recherche",
+    })
   })
 })
 
