@@ -8,7 +8,13 @@ import { useEffect, useRef, useState } from "react"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { apiPost } from "@/utils/api.utils"
 
-type TriggerableJob = "processApplications" | "processRecruiterIntentions" | "processJobPartnersForApi" | "importCatalogueFormationJob" | "updateHandiEngagementForce"
+type TriggerableJob =
+  | "processApplications"
+  | "processRecruiterIntentions"
+  | "processJobPartnersForApi"
+  | "importCatalogueFormationJob"
+  | "updateHandiEngagementForce"
+  | "processSuggestionsNafLast24h"
 
 const JOBS: { name: TriggerableJob; label: string; confirmMessage?: string }[] = [
   { name: "processApplications", label: "Traitement des candidatures" },
@@ -19,6 +25,11 @@ const JOBS: { name: TriggerableJob; label: string; confirmMessage?: string }[] =
     name: "updateHandiEngagementForce",
     label: "Mise à jour de l'engagement handicap (force)",
     confirmMessage: "Ce job ignore le garde-fou de marge ±20% et peut supprimer des entrées du référentiel d'engagement handicap. Confirmer le déclenchement ?",
+  },
+  {
+    name: "processSuggestionsNafLast24h",
+    label: "Suggestions d'offres sur d'autres secteurs (dernières 24 h)",
+    confirmMessage: "Ce job envoie l'email de suggestions aux nouveaux candidats des dernières 24 h qui ne l'ont pas encore reçu. Confirmer l'envoi ?",
   },
 ]
 

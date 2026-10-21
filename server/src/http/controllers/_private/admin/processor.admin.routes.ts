@@ -7,6 +7,7 @@ import type { zTriggerableJobs } from "shared/routes/_private/admin/processor.ad
 import type { Server } from "@/http/server"
 import { processApplications } from "@/jobs/applications/process-applications"
 import { processRecruiterIntentions } from "@/jobs/applications/process-recruiter-intentions"
+import { processSuggestionsNafLast24h } from "@/jobs/cross-naf/process-suggestions-naf"
 import { updateHandiEngagement } from "@/jobs/engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "@/jobs/formations-catalogue/formations-catalogue"
 import { processJobPartnersForApi } from "@/jobs/offre-partenaire/process-job-partners-for-api"
@@ -20,6 +21,7 @@ const jobHandlers: Record<TriggerableJob, () => Promise<unknown>> = {
   importCatalogueFormationJob,
   // Déclenchement manuel : ignore le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
   updateHandiEngagementForce: () => updateHandiEngagement({ force: true }),
+  processSuggestionsNafLast24h: () => processSuggestionsNafLast24h(),
 }
 
 // zProcessorStatus (job-processor, dépendance externe déjà à sa dernière version publiée) utilise
