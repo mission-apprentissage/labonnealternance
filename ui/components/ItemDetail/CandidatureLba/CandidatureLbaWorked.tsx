@@ -27,7 +27,7 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: fr.spacing("8v") }}>
         <Image src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" width={23} height={23} />
         <Box sx={{ ml: fr.spacing("4v") }}>
-          <ModalTitle>Votre candidature a bien été envoyée à {company}</ModalTitle>
+          <ModalTitle focusOnMount>Votre candidature a bien été envoyée à {company}</ModalTitle>
         </Box>
       </Box>
       <Typography sx={{ fontSize: "18px" }}>

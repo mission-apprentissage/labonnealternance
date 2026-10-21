@@ -10,7 +10,14 @@ export const FormulaireEditionOffreButtons = () => {
 
   return (
     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-      <Button disabled={formik.isSubmitting} onClick={() => submitOrFocusFirstInvalidField(formik)} data-testid="creer-offre">
+      {/* aria-disabled plutôt que disabled : cf. le bouton « Enregistrer » de CompteRenderer */}
+      <Button
+        nativeButtonProps={{ "aria-disabled": formik.isSubmitting }}
+        onClick={() => {
+          if (!formik.isSubmitting) submitOrFocusFirstInvalidField(formik)
+        }}
+        data-testid="creer-offre"
+      >
         Continuer
       </Button>
     </Box>

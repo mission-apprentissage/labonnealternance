@@ -17,13 +17,13 @@ import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_compo
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
 import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { useToast } from "@/app/hooks/useToast"
 import { AUTHTYPE } from "@/common/contants"
 import { emailValidation, frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
-import { LoadingEmptySpace } from "@/components/espace_pro"
 import { getUser, updateUserWithAccountFields } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { EMAIL_ALREADY_USED_ERROR } from "@/utils/validation-messages"
@@ -118,6 +118,7 @@ export default function CompteRenderer() {
         })}
         validate={serverFieldErrors.validate}
         onSubmit={async (values, { setFieldValue, setFieldError, setSubmitting }) => {
+          if (userMutation.isPending) return
           setSubmitting(true)
           const phone = toSubmittedPhone(values.phone)
           setFieldValue("phone", phone, false)
@@ -145,7 +146,7 @@ export default function CompteRenderer() {
         }}
       >
         {(formik) => {
-          const { values, isSubmitting, setFieldValue } = formik
+          const { values, setFieldValue } = formik
           // Le bouton "Enregistrer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
           const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
 
@@ -200,8 +201,9 @@ export default function CompteRenderer() {
                     </>
                   }
                   buttons={
-                    <Button type="submit" disabled={isSubmitting}>
-                      {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                    // aria-disabled plutôt que disabled : un bouton désactivé perd le focus, ce qui peut couper l'annonce du toast (RGAA 12.8)
+                    <Button type="submit" nativeButtonProps={{ "aria-disabled": userMutation.isPending }}>
+                      {userMutation.isPending && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
                       Enregistrer
                     </Button>
                   }

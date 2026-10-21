@@ -7,6 +7,7 @@ import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IUserRecruteur } from "shared/models/users-recruteur.model"
 import { getUserStatus } from "shared/models/users-recruteur.model"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
@@ -15,6 +16,7 @@ import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { pluralize } from "@/utils/strutils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 import { AdminSearchInput } from "../_components/AdminSearchInput"
 import { MultiSelect } from "../_components/MultiSelect"
@@ -208,6 +210,7 @@ function UserContent({
           disabled={opcoDisabled}
         />
       </Box>
+      <LiveStatus message={userRecruteurs.length === 0 ? "Aucun résultat" : pluralize(userRecruteurs.length, "recruteur à traiter", "recruteurs à traiter")} />
       <VirtualTable caption={statusLabel} columns={columns} data={userRecruteurs} defaultSortBy={[{ id: "createdAt", desc: false }]} hideSearch={true} />
     </>
   )

@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
+import { FocusedTitle } from "@/app/_components/FocusedTitle"
 
 export const CfaCandidatInformationUnreachable = () => {
   return (
@@ -7,9 +8,10 @@ export const CfaCandidatInformationUnreachable = () => {
       <Typography variant="h2" sx={{ fontWeight: 700, color: "#000091", fontSize: "22px", lineHeight: "36px" }}>
         Votre réponse au candidat
       </Typography>
-      <Typography component="p" sx={{ mt: 4, fontWeight: 700, color: "#1E1E1E", fontSize: "18px", lineHeight: "28px" }}>
+      {/* Remplace le formulaire de réponse : le focus est placé sur la confirmation, plus parlante que le titre. */}
+      <FocusedTitle component="p" sx={{ mt: 4, fontWeight: 700, color: "#1E1E1E", fontSize: "18px", lineHeight: "28px" }}>
         Merci pour votre réponse !
-      </Typography>
+      </FocusedTitle>
       <Typography component="p" sx={{ mt: 2, fontWeight: 400, color: "#929292", fontSize: "16px", lineHeight: "24px" }}>
         Vous nous avez indiqué que le candidat n'était pas joignable.
       </Typography>

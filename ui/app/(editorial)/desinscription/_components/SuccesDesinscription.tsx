@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 
+import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { baseUrl } from "@/config/config"
 
@@ -11,9 +12,9 @@ const SuccesDesinscription = () => (
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", gap: fr.spacing("4v") }}>
         <Image width={250} height={50} src="/images/home_pics/mail-in-clouds.svg" alt="" />
         <Box>
-          <Typography variant="h1" sx={{ mb: fr.spacing("4v") }}>
+          <FocusedTitle variant="h1" component="h1" sx={{ mb: fr.spacing("4v") }}>
             Merci pour votre signalement.
-          </Typography>
+          </FocusedTitle>
           <Typography
             sx={{
               fontSize: "18px",

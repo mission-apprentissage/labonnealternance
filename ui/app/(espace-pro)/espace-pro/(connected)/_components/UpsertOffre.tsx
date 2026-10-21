@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import type { IJob } from "shared"
+import { waitForToastReading } from "@/app/_components/ToastAnnouncer"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { useToast } from "@/app/hooks/useToast"
@@ -42,6 +43,7 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
         toast({
           title: "Offre mise à jour avec succès.",
         })
+        await waitForToastReading()
         onSuccess()
       })
     } else {
@@ -50,6 +52,7 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
       toast({
         title: "Offre enregistrée avec succès.",
       })
+      await waitForToastReading()
       onSuccess()
     }
   }

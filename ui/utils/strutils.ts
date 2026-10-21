@@ -17,4 +17,7 @@ const formatDate = (d: number | string | Date) => {
   return resultDate
 }
 
-export { countInstances, endsWithNumber, formatDate, isNonEmptyString }
+/** « 1 résultat », « 3 résultats » : `singular` et `plural` peuvent porter l'accord (« lieu proposé »). */
+const pluralize = (count: number, singular: string, plural = `${singular}s`) => `${count} ${count > 1 ? plural : singular}`
+
+export { countInstances, endsWithNumber, formatDate, isNonEmptyString, pluralize }
