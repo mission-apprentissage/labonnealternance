@@ -30,6 +30,7 @@ import { relanceIncitationSpontanee } from "./applications/relance-incitation-sp
 import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
+import { DETECTION_TICK_MINUTES, runDetectionRules } from "./detection/detection-engine"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
 import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
@@ -119,6 +120,12 @@ export async function setupJobProcessor() {
           "Clôture des offres jobs_partners au seuil de candidatures": {
             cron_string: "*/30 * * * *",
             handler: async () => closeJobsPartnersOnApplicationThreshold(),
+            tag: "main",
+          },
+          // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners) : chaque règle réserve son créneau (cf. claimSlot).
+          "Évaluation des règles de détection": {
+            cron_string: `*/${DETECTION_TICK_MINUTES} * * * *`,
+            handler: async () => runDetectionRules(),
             tag: "main",
           },
           "Alerte sur le taux d'auto-validation des comptes": {

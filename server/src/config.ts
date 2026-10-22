@@ -21,6 +21,8 @@ const config = {
   },
   slackWebhookUrl: env.get("LBA_SLACK_WEBHOOK_URL").asString(),
   jobSlackWebhook: env.get("LBA_JOB_SLACK_WEBHOOK").asString(),
+  // Canal des alertes de détection (#5421) ; à défaut, celui des jobs.
+  detectionSlackWebhook: env.get("LBA_DETECTION_SLACK_WEBHOOK").asString(),
   // map pseudo -> member ID Slack (ex: {"kevin":"U04XXXXXXXX"}), utilisée par slackMention
   slackTeamMemberIds: env.get("LBA_SLACK_TEAM_MEMBER_IDS").default("{}").asJsonObject() as Record<string, string>,
   mongodb: {

@@ -19,6 +19,9 @@ import { processRecruiterIntentions } from "./applications/process-recruiter-int
 import { purgeApplicationCvFiles } from "./applications/purge-application-cv-files"
 import { obfuscateCollections } from "./database/obfuscate-collections"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
+import { configureDetectionRule, listDetectionRules, qualifyDetectionAlert } from "./detection/detection-cli"
+import { runDetectionRules } from "./detection/detection-engine"
+import { sendDetectionTestAlert } from "./detection/detection-notification"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
 import { buildMappingRomeRNCP } from "./domaines-metiers/build-mapping-rome-rncp"
 import {
@@ -147,6 +150,40 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: createRoleManagement360,
     description: "Crée une collection jointure entre userWithAccounts, roleManagements, cfas et entreprises pour metabase",
+  },
+  {
+    fct: runDetectionRules,
+    description: "Évalue les règles de détection dont le créneau est échu et notifie les entrées, rappels et sorties d'alerte",
+    cliOptions: [
+      { flags: "--rule <id>", description: "Une seule règle" },
+      { flags: "--dry-run", description: "Évalue sans réserver le créneau, sans écrire ni notifier" },
+    ],
+  },
+  {
+    fct: listDetectionRules,
+    description: "Liste les règles de détection : réglages effectifs, surcharges, épisodes en cours",
+  },
+  {
+    fct: configureDetectionRule,
+    description: "Règle l'activation et les seuils d'une règle de détection, sans redéploiement",
+    cliOptions: [
+      { flags: "--rule <id>", description: "Identifiant de la règle" },
+      { flags: "--enabled <bool>", description: "true ou false" },
+      { flags: "--thresholds <json>", description: `Seuils à surcharger, ex. '{"minVolume":50}'` },
+      { flags: "--reset", description: "Revient à l'activation et aux seuils du code" },
+    ],
+  },
+  {
+    fct: qualifyDetectionAlert,
+    description: "Qualifie une alerte de détection en vrai ou faux positif",
+    cliOptions: [
+      { flags: "--id <id>", description: "Identifiant de l'alerte (donné dans le message Slack)" },
+      { flags: "--verdict <verdict>", description: "vrai_positif ou faux_positif" },
+    ],
+  },
+  {
+    fct: sendDetectionTestAlert,
+    description: "Envoie une alerte de test sur le canal des alertes de détection",
   },
   {
     fct: autoValidationRateAlert,
