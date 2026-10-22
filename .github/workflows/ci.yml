@@ -51,6 +51,7 @@ jobs:
         run: yarn check:ci
 
       - name: start mongodb service
+        id: mongodb
         run: |
           docker compose up --build -d --wait mongodb
           yarn setup:mongodb
@@ -58,6 +59,7 @@ jobs:
       # mongot (MongoDB Search) : nécessaire aux tests du contrôleur /v1/search — sans lui,
       # $search échoue. Mot de passe jetable généré pour le job (aucun secret requis).
       - name: start mongot service
+        id: mongot
         run: |
           openssl rand -hex 24 > .infra/local/mongot_password
           chmod 600 .infra/local/mongot_password
@@ -70,6 +72,15 @@ jobs:
           docker compose exec mongodb mongosh \
             "mongodb://__system:password@localhost:27017/ci_probe?authSource=local&directConnection=true" \
             --eval 'let ok = false; for (let i = 0; i < 45 && !ok; i++) { try { db.probe.aggregate([{ $search: { index: "probe", exists: { path: "x" } } }]).toArray(); ok = true } catch (e) { sleep(2000) } } if (!ok) throw new Error("canal $search indisponible après 90s")' --quiet
+
+      # Un conteneur qui sort au démarrage repasse en « restarting » (restart: unless-stopped) :
+      # `--wait` le rapporte « unhealthy » sans sa sortie, d'où l'état et les logs ici.
+      - name: diagnostic mongodb / mongot
+        if: failure() && (steps.mongodb.outcome == 'failure' || steps.mongot.outcome == 'failure')
+        run: |
+          uname -r
+          docker compose ps -a
+          docker compose logs --tail 100 mongodb mongot
 
       - name: test
         run: yarn test:ci
