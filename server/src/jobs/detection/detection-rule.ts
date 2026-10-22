@@ -1,8 +1,11 @@
 import type { IDetectionAlert, IDetectionMetrics, IDetectionSeverity } from "shared/models/detection-alerts.model"
 import type { z } from "zod"
 
+/** Clé d'un constat qui porte sur l'ensemble, pas sur un objet. */
+export const DETECTION_GLOBAL_KEY = "global"
+
 export type IDetectionFinding = {
-  /** Objet du constat, stable d'une exécution à l'autre : identifiant technique, ou « global ». */
+  /** Objet du constat, stable d'une exécution à l'autre : identifiant technique, ou `DETECTION_GLOBAL_KEY`. */
   key: string
   metrics: IDetectionMetrics
   /** Une phrase lisible dans Slack, construite à partir des métriques. */
