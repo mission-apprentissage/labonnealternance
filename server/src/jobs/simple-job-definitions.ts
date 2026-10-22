@@ -19,7 +19,7 @@ import { processRecruiterIntentions } from "./applications/process-recruiter-int
 import { purgeApplicationCvFiles } from "./applications/purge-application-cv-files"
 import { obfuscateCollections } from "./database/obfuscate-collections"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
-import { configureDetectionRule, listDetectionRules, qualifyDetectionAlert } from "./detection/detection-cli"
+import { configureDetectionRule, listDetectionRules, qualifyDetectionAlert, replayDetectionRules } from "./detection/detection-cli"
 import { runDetectionRules } from "./detection/detection-engine"
 import { sendDetectionTestAlert } from "./detection/detection-notification"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
@@ -103,7 +103,6 @@ import { repriseEnvoiEmailsPRDV } from "./rdv/reprise-envoi-prdv"
 import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
-import { autoValidationRateAlert, replayAutoValidationRateAlert } from "./recruiters/auto-validation-rate-alert"
 import { opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
 import { importReferentielRome } from "./referentiel-rome/referentiel-rome"
@@ -182,20 +181,18 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     ],
   },
   {
+    fct: replayDetectionRules,
+    description: "Rejoue les règles de détection sur une période passée, avec la déduplication du cron, sans écrire ni notifier",
+    cliOptions: [
+      { flags: "--from <date>", description: "Premier jour rejoué (date ISO)" },
+      { flags: "--to <date>", description: "Dernier jour rejoué, inclus (date ISO)" },
+      { flags: "--rule <id>", description: "Une seule règle" },
+      { flags: "--thresholds <json>", description: `Seuils à simuler par règle, ex. '{"auto_validation_part_bal":{"dropRatio":0.4}}'` },
+    ],
+  },
+  {
     fct: sendDetectionTestAlert,
     description: "Envoie une alerte de test sur le canal des alertes de détection",
-  },
-  {
-    fct: autoValidationRateAlert,
-    description: "Compare le taux d'auto-validation des comptes récent à la période précédente et alerte sur Slack en cas de chute",
-  },
-  {
-    fct: replayAutoValidationRateAlert,
-    description: "Rejoue jour par jour l'alerte sur le taux d'auto-validation des comptes, sans notifier",
-    cliOptions: [
-      { flags: "--from <date>", description: "Premier jour évalué (date ISO)" },
-      { flags: "--to <date>", description: "Dernier jour évalué (date ISO)" },
-    ],
   },
   {
     fct: retryUnavailableClassifications,

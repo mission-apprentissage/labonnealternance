@@ -65,7 +65,6 @@ import { removeEligibleTrainingsForAppointmentsNotInCatalogue } from "./rdv/remo
 import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
-import { autoValidationRateAlert } from "./recruiters/auto-validation-rate-alert"
 import { createApiUser } from "./recruiters/create-api-user"
 import { disableApiUser } from "./recruiters/disable-api-user"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
@@ -126,11 +125,6 @@ export async function setupJobProcessor() {
           "Évaluation des règles de détection": {
             cron_string: `*/${DETECTION_TICK_MINUTES} * * * *`,
             handler: async () => runDetectionRules(),
-            tag: "main",
-          },
-          "Alerte sur le taux d'auto-validation des comptes": {
-            cron_string: "0 7 * * *",
-            handler: async () => autoValidationRateAlert(),
             tag: "main",
           },
           // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners) : deux exécutions concurrentes classifient au

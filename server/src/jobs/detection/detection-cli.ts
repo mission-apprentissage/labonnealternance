@@ -7,6 +7,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { resolveRuleSettings } from "./detection-engine"
+import { replayDetectionRule } from "./detection-replay"
 import type { IDetectionRule } from "./detection-rule"
 import { detectionRules } from "./detection-rules"
 
@@ -60,12 +61,14 @@ const parseEnabled = (value: string) => {
   return value === "true"
 }
 
-const parseThresholds = (value: string): Record<string, unknown> => {
+const isPlainObject = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value)
+
+const parseThresholds = (value: string, example = `'{"minVolume":50}'`): Record<string, unknown> => {
   const parsed: unknown = JSON.parse(value)
-  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-    throw new Error(`--thresholds attend un objet JSON, ex. '{"minVolume":50}'`)
+  if (!isPlainObject(parsed)) {
+    throw new Error(`--thresholds attend un objet JSON, ex. ${example}`)
   }
-  return parsed as Record<string, unknown>
+  return parsed
 }
 
 /**
@@ -124,4 +127,56 @@ export const qualifyDetectionAlert = async ({ id, verdict }: { id?: string; verd
     throw new Error(`alerte introuvable ou jamais notifiée : ${id}`)
   }
   logger.info({ id, verdict }, "alerte de détection qualifiée")
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000
+
+const parseDay = (value: string | undefined, option: string): Date => {
+  const date = new Date(value ?? "")
+  if (!value || Number.isNaN(date.getTime())) {
+    throw new Error(`${option} attend une date ISO (ex. 2025-05-01)`)
+  }
+  return date
+}
+
+/**
+ * Rejoue les règles sur une période passée, `--to` inclus, sans rien écrire ni notifier : une ligne par créneau avec les
+ * mesures de la règle et les notifications qui seraient parties, puis les épisodes. Seuils en vigueur, ou ceux de `--thresholds`.
+ */
+export const replayDetectionRules = async ({
+  from,
+  to,
+  rule: ruleId,
+  thresholds,
+  rules = detectionRules,
+}: {
+  from?: string
+  to?: string
+  rule?: string
+  thresholds?: string
+  rules?: IDetectionRule[]
+}) => {
+  const start = parseDay(from, "--from")
+  const end = new Date(parseDay(to, "--to").getTime() + DAY_MS)
+  const selected = ruleId ? [findRule(ruleId, rules)] : rules
+  const overrides = thresholds ? parseThresholds(thresholds, `'{"auto_validation_part_bal":{"dropRatio":0.4}}'`) : {}
+  for (const [overrideRuleId, override] of Object.entries(overrides)) {
+    findRule(overrideRuleId, selected)
+    if (!isPlainObject(override)) {
+      throw new Error(`--thresholds : les seuils de ${overrideRuleId} doivent former un objet JSON`)
+    }
+  }
+  const states = await getDbCollection("detection_rules")
+    .find({ rule_id: { $in: selected.map(({ id }) => id) } })
+    .toArray()
+  const results: Array<{ rule: string } & Awaited<ReturnType<typeof replayDetectionRule>>> = []
+  for (const rule of selected) {
+    const state = states.find(({ rule_id }) => rule_id === rule.id)
+    const effective = rule.thresholds.parse({ ...(state?.thresholds ?? {}), ...(overrides[rule.id] as Record<string, unknown> | undefined) })
+    const replay = await replayDetectionRule({ rule, from: start, to: end, thresholds: effective })
+    replay.lines.forEach((line) => logger.info({ rule: rule.id, ...line }, "rejeu d'une règle de détection"))
+    logger.info({ rule: rule.id, thresholds: effective, episodes: replay.episodes }, "épisodes du rejeu d'une règle de détection")
+    results.push({ rule: rule.id, ...replay })
+  }
+  return results
 }
