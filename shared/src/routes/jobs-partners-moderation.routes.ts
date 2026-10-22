@@ -131,6 +131,9 @@ const moderationJobAccess = {
   resources: { job: [{ _id: { type: "params", key: "id" } }] },
 } as const
 
+// Décider et relancer l'analyse sont réservés aux administrateurs : un OPCO consulte la modération de son périmètre.
+const moderationDecisionAccess = { auth: "cookie-session", access: "admin", resources: {} } as const
+
 export const zJobsPartnersModerationRoutes = {
   get: {
     "/moderation/jobs": {
@@ -199,7 +202,7 @@ export const zJobsPartnersModerationRoutes = {
       params: z.strictObject({ id: zObjectId }),
       body: z.strictObject({ moderation_id: zObjectId.describe("Classification sur laquelle porte la décision") }),
       response: { "200": z.strictObject({ offer_status: offerShape.offer_status }) },
-      securityScheme: moderationJobAccess,
+      securityScheme: moderationDecisionAccess,
     },
     "/moderation/jobs/:id/refuse": {
       method: "post",
@@ -211,7 +214,7 @@ export const zJobsPartnersModerationRoutes = {
         comment: z.string().trim().max(2000).nullish().describe("Commentaire personnalisé inséré dans l'e-mail au recruteur"),
       }),
       response: { "200": z.strictObject({ offer_status: offerShape.offer_status, email_sent: z.boolean() }) },
-      securityScheme: moderationJobAccess,
+      securityScheme: moderationDecisionAccess,
     },
     "/moderation/jobs/:id/reclassify": {
       method: "post",
@@ -224,13 +227,13 @@ export const zJobsPartnersModerationRoutes = {
           offer_status: offerShape.offer_status,
         }),
       },
-      securityScheme: moderationJobAccess,
+      securityScheme: moderationDecisionAccess,
     },
     "/moderation/jobs/reclassify": {
       method: "post",
       path: "/moderation/jobs/reclassify",
       response: { "200": z.strictObject({ pending: z.number().int() }) },
-      securityScheme: { auth: "cookie-session", access: "admin", resources: {} },
+      securityScheme: moderationDecisionAccess,
     },
   },
 } as const satisfies IRoutesDef

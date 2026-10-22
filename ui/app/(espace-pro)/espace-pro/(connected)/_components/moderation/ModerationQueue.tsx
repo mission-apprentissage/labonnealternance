@@ -54,7 +54,7 @@ const ModerationQueueMenu = ({ row, userType }: { row: IModerationQueueItemJson;
   // Une offre en modération n'a pas de page publique : seules la modération et l'édition ont un sens (#5499).
   const actions: PopoverMenuAction[] = [
     {
-      label: "Modérer l’offre",
+      label: userType === "OPCO" ? "Voir la modération" : "Modérer l’offre",
       hint: row.offer_title,
       link: MODERATION_PAGES.offre({ job_id: row._id, userType }).getPath(),
       type: "link",
@@ -134,7 +134,7 @@ const getColumns = (userType: IModerationUserType): ColumnDef<IModerationQueueIt
   },
 ]
 
-/** File « Offres à modérer » (#5499). Pour un OPCO, le serveur la limite aux offres de son OPCO. */
+/** File « Offres à modérer » (#5499). Un OPCO la consulte en lecture seule, limitée par le serveur aux offres de son OPCO. */
 export function ModerationQueue({ userType }: { userType: IModerationUserType }) {
   const toast = useToast()
   const [conformity, setConformity] = useState<IModerationQueueConformity[]>([])
@@ -174,6 +174,7 @@ export function ModerationQueue({ userType }: { userType: IModerationUserType })
   const currentPage = Math.floor(offset / PAGE_SIZE) + 1
   const isPageLoading = isFetching && isPlaceholderData
   const columns = useMemo(() => getColumns(userType), [userType])
+  const queueTitle = (userType === "OPCO" ? MODERATION_PAGES.opcoQueue : MODERATION_PAGES.adminQueue).title
 
   const withFirstPage =
     <T,>(setter: (value: T) => void) =>
@@ -238,15 +239,15 @@ export function ModerationQueue({ userType }: { userType: IModerationUserType })
           <CircularProgress />
         </Box>
       ) : isError ? (
-        <Alert severity="error" small description="La file des offres à modérer n’a pas pu être chargée. Réessayez." />
+        <Alert severity="error" small description={`La file des ${queueTitle.toLowerCase()} n’a pas pu être chargée. Réessayez.`} />
       ) : jobs.length === 0 && !isPlaceholderData ? (
-        <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>Aucune offre à modérer.</Box>
+        <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>{userType === "OPCO" ? "Aucune offre en modération." : "Aucune offre à modérer."}</Box>
       ) : (
         <>
           {/* Tableau et pagination restent montés pendant le chargement : cf. OffresPartenairesList */}
           <Box aria-busy={isPageLoading} sx={{ opacity: isPageLoading ? 0.5 : 1, transition: "opacity .2s" }}>
             <VirtualTable
-              caption={`Offres à modérer (${total} au total)`}
+              caption={`${queueTitle} (${total} au total)`}
               columns={columns}
               data={jobs}
               hideSearch
@@ -261,7 +262,7 @@ export function ModerationQueue({ userType }: { userType: IModerationUserType })
           </Box>
           <Box
             component="nav"
-            aria-label="Pagination des offres à modérer"
+            aria-label={`Pagination des ${queueTitle.toLowerCase()}`}
             sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}
           >
             <PaginationButton

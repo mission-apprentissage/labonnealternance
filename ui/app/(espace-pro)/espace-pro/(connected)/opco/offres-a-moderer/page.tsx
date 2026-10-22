@@ -6,7 +6,7 @@ import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
-  title: "Offres à modérer - La bonne alternance",
+  title: `${MODERATION_PAGES.opcoQueue.title} - La bonne alternance`,
 }
 
 export default async function OffresAModererOpcoPage() {

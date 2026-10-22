@@ -7,7 +7,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 const OPCO_NAV_ITEMS = [
   { text: "Entreprises", href: PAGES.static.backOpcoHome.getPath() },
-  { text: "Offres à modérer", href: MODERATION_PAGES.opcoQueue.getPath() },
+  { text: MODERATION_PAGES.opcoQueue.title, href: MODERATION_PAGES.opcoQueue.getPath() },
 ]
 
 // « Entreprises » couvre l'accueil OPCO et les fiches entreprise (/espace-pro/opco/users/…).

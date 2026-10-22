@@ -163,29 +163,38 @@ describe("modération des offres libres (#5499)", () => {
       expect((await getOffer(offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
     })
 
-    it("laisse un OPCO valider et refuser les offres de son OPCO comme un administrateur", async () => {
+    it("laisse un OPCO consulter la modération des offres de son OPCO, sans décider ni relancer l'analyse", async () => {
       const recruiter = await saveRecruiter()
-      const toValidate = await saveModeratedOffer(recruiter)
-      const toRefuse = await saveModeratedOffer(recruiter)
-      const { bearerToken, user } = await loginOpcoAkto()
+      const { offer, moderation } = await saveModeratedOffer(recruiter)
+      const enEchec = await saveModeratedOffer(recruiter, { offer: { offer_moderation_verdict: "a_verifier", offer_moderation_status: "indisponible" } })
+      const { bearerToken: adminToken } = await loginAdmin()
+      await loginOpcoAkto()
+      const headers = async () => (await logUser(httpClient, "opco-moderation")).bearerToken
 
-      const validate = await inject({
-        method: "POST",
-        path: `/moderation/jobs/${toValidate.offer._id}/validate`,
-        headers: bearerToken,
-        body: { moderation_id: toValidate.moderation._id.toString() },
-      })
-      const refuse = await inject({
-        method: "POST",
-        path: `/moderation/jobs/${toRefuse.offer._id}/refuse`,
-        headers: bearerToken,
-        body: { moderation_id: toRefuse.moderation._id.toString(), agent_note: true },
-      })
+      const queue = await inject({ method: "GET", path: "/moderation/jobs", headers: await headers() })
+      const detail = await inject({ method: "GET", path: `/moderation/jobs/${enEchec.offer._id}`, headers: await headers() })
+      const history = await inject({ method: "GET", path: `/moderation/jobs/${offer._id}/history`, headers: await headers() })
+      const body = { moderation_id: moderation._id.toString() }
+      const validate = await inject({ method: "POST", path: `/moderation/jobs/${offer._id}/validate`, headers: await headers(), body })
+      const refuse = await inject({ method: "POST", path: `/moderation/jobs/${offer._id}/refuse`, headers: await headers(), body: { ...body, agent_note: true } })
+      const reclassify = await inject({ method: "POST", path: `/moderation/jobs/${enEchec.offer._id}/reclassify`, headers: await headers() })
+      // Le témoin : sur la même offre, un administrateur peut relancer l'analyse.
+      const adminDetail = await inject({ method: "GET", path: `/moderation/jobs/${enEchec.offer._id}`, headers: adminToken })
 
-      expect(validate.json()).toEqual({ offer_status: JOB_STATUS_ENGLISH.ACTIVE })
-      expect(refuse.json()).toEqual({ offer_status: JOB_STATUS_ENGLISH.ANNULEE, email_sent: true })
-      expect((await getModeration(toValidate.moderation._id))?.review).toMatchObject({ status: "validee", by: user.email })
-      expect((await getModeration(toRefuse.moderation._id))?.review).toMatchObject({ status: "refusee", by: user.email })
+      expect([queue.statusCode, detail.statusCode, history.statusCode]).toEqual([200, 200, 200])
+      expect(
+        queue
+          .json()
+          .jobs.map(({ _id }) => _id)
+          .sort()
+      ).toEqual([offer._id.toString(), enEchec.offer._id.toString()].sort())
+      expect(detail.json().can_reclassify).toBe(false)
+      expect(adminDetail.json().can_reclassify).toBe(true)
+      expect([validate.statusCode, refuse.statusCode, reclassify.statusCode]).toEqual([403, 403, 403])
+      expect((await getOffer(offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
+      expect((await getModeration(moderation._id))?.review).toBeNull()
+      expect(sentEmails()).toEqual([])
+      expect(sendMistralMessages).not.toHaveBeenCalled()
     })
 
     it("réserve la relance en masse aux administrateurs", async () => {

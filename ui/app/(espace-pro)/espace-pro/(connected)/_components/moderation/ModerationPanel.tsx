@@ -32,8 +32,11 @@ const InlineField = ({ label, children }: { label: string; children: React.React
   </Box>
 )
 
-/** Encart de modération d'une offre : la décision est unique, Valider et Refuser disparaissent une fois l'offre tranchée. */
-export function ModerationPanel({ detail, onChange }: { detail: IModerationJobDetailJson; onChange: () => void }) {
+/**
+ * Encart de modération d'une offre : la décision est unique, Valider et Refuser disparaissent une fois l'offre tranchée.
+ * En lecture seule (OPCO), aucune action : le serveur réserve décisions et relances aux administrateurs, et un 403 fermerait la session.
+ */
+export function ModerationPanel({ detail, onChange, readOnly = false }: { detail: IModerationJobDetailJson; onChange: () => void; readOnly?: boolean }) {
   const { offer, moderation, decision_blocked_reason, can_reclassify, reports_count } = detail
   const refusModal = useDisclosure()
   const toast = useToast()
@@ -88,7 +91,7 @@ export function ModerationPanel({ detail, onChange }: { detail: IModerationJobDe
 
   return (
     <Box component="section" aria-label="Modération de l’offre" sx={{ border: "1px solid", borderColor: fr.colors.decisions.border.default.grey.default, p: fr.spacing("4v") }}>
-      <RefusOffreModal isOpen={refusModal.isOpen} onClose={refusModal.onClose} findings={moderation?.findings ?? []} onConfirm={refuse} />
+      {!readOnly && <RefusOffreModal isOpen={refusModal.isOpen} onClose={refusModal.onClose} findings={moderation?.findings ?? []} onConfirm={refuse} />}
       <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), rowGap: fr.spacing("2v"), mb: fr.spacing("3v") }}>
         <InlineField label="Statut de l’offre">
           <OfferStatusBadge status={offer.offer_status} />
@@ -109,42 +112,50 @@ export function ModerationPanel({ detail, onChange }: { detail: IModerationJobDe
         {!moderation ? (
           <Typography sx={{ fontSize: "inherit" }}>Cette offre n’a pas été analysée.</Typography>
         ) : isAnalysisUnavailable ? (
-          <Typography sx={{ fontSize: "inherit" }}>L’analyse automatique n’a pas abouti : relancez-la, ou décidez sans verdict.</Typography>
+          <Typography sx={{ fontSize: "inherit" }}>
+            {readOnly ? "L’analyse automatique n’a pas abouti." : "L’analyse automatique n’a pas abouti : relancez-la, ou décidez sans verdict."}
+          </Typography>
         ) : (
           <AgentNoteLines findings={moderation.findings} />
         )}
       </AgentNoteBox>
       {moderation?.review?.without_verdict && <Typography sx={{ fontSize: "0.875rem", mt: fr.spacing("2v") }}>Décision prise sans verdict IA.</Typography>}
-      <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}>
-        {hint && (
-          <Typography sx={{ fontStyle: "italic", fontSize: "0.875rem", color: fr.colors.decisions.text.mention.grey.default }} id={`hint-${offer._id}`}>
-            {hint}
-          </Typography>
-        )}
-        {can_reclassify && (
-          <Button priority="tertiary" size="small" iconId="fr-icon-refresh-line" onClick={reclassify} disabled={pendingAction !== null}>
-            {moderation ? "Relancer l’analyse" : "Lancer l’analyse"}
+      {readOnly ? (
+        <Typography sx={{ fontStyle: "italic", fontSize: "0.875rem", color: fr.colors.decisions.text.mention.grey.default, mt: fr.spacing("4v") }}>
+          Consultation seule : la décision revient à l’équipe de La bonne alternance.
+        </Typography>
+      ) : (
+        <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end", alignItems: "center", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}>
+          {hint && (
+            <Typography sx={{ fontStyle: "italic", fontSize: "0.875rem", color: fr.colors.decisions.text.mention.grey.default }} id={`hint-${offer._id}`}>
+              {hint}
+            </Typography>
+          )}
+          {can_reclassify && (
+            <Button priority="tertiary" size="small" iconId="fr-icon-refresh-line" onClick={reclassify} disabled={pendingAction !== null}>
+              {moderation ? "Relancer l’analyse" : "Lancer l’analyse"}
+            </Button>
+          )}
+          <Button
+            size="small"
+            onClick={validate}
+            disabled={isDecisionBlocked || pendingAction !== null}
+            nativeButtonProps={hint ? { "aria-describedby": `hint-${offer._id}` } : undefined}
+          >
+            {review === "validee" ? "Offre validée" : "Valider l’offre"}
           </Button>
-        )}
-        <Button
-          size="small"
-          onClick={validate}
-          disabled={isDecisionBlocked || pendingAction !== null}
-          nativeButtonProps={hint ? { "aria-describedby": `hint-${offer._id}` } : undefined}
-        >
-          {review === "validee" ? "Offre validée" : "Valider l’offre"}
-        </Button>
-        <Button
-          size="small"
-          priority="secondary"
-          iconId="fr-icon-delete-line"
-          onClick={refusModal.onOpen}
-          disabled={isDecisionBlocked || pendingAction !== null}
-          nativeButtonProps={hint ? { "aria-describedby": `hint-${offer._id}` } : undefined}
-        >
-          {review === "refusee" ? "Offre refusée" : "Refuser l’offre"}
-        </Button>
-      </Box>
+          <Button
+            size="small"
+            priority="secondary"
+            iconId="fr-icon-delete-line"
+            onClick={refusModal.onOpen}
+            disabled={isDecisionBlocked || pendingAction !== null}
+            nativeButtonProps={hint ? { "aria-describedby": `hint-${offer._id}` } : undefined}
+          >
+            {review === "refusee" ? "Offre refusée" : "Refuser l’offre"}
+          </Button>
+        </Box>
+      )}
     </Box>
   )
 }

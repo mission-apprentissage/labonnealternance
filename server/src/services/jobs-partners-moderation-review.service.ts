@@ -33,7 +33,7 @@ import { classifyOffreTexts, getLatestModeration } from "./jobs-partners-moderat
 import { MODERATION_REFUSED_REASON, MODERATION_VALIDATED_REASON } from "./jobs-partners-moderation-reasons"
 import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
 
-/** Un administrateur modère toutes les offres, un OPCO celles des entreprises de son OPCO (#5499). */
+/** Un administrateur modère toutes les offres ; un OPCO consulte celles des entreprises de son OPCO, sans décider (#5499). */
 export type IModerationScope = { admin: true } | { admin: false; opcos: OPCOS_LABEL[] }
 
 export const getModerationScope = (userAccess: ComputedUserAccess | undefined): IModerationScope => {
@@ -300,7 +300,7 @@ export const getModerationJobDetail = async ({ scope, id }: { scope: IModeration
     moderation: moderation ? (pick(moderation, Object.keys(ZModerationLatestClassification.shape)) as IModerationJobDetail["moderation"]) : null,
     reports_count: reportsCount,
     decision_blocked_reason: getDecisionBlockedReason(offer, moderation),
-    can_reclassify: canReclassify(offer, moderation),
+    can_reclassify: scope.admin && canReclassify(offer, moderation),
   }
 }
 

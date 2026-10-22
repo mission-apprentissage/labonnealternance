@@ -64,7 +64,7 @@ export const OffresTabsMenu = ({
   const actions: PopoverMenuAction[] = [
     isModerator && isModerable
       ? {
-          label: "Modérer l'offre",
+          label: user.type === AUTHTYPE.OPCO ? "Voir la modération" : "Modérer l'offre",
           hint: `${offerTitle}`,
           link: MODERATION_PAGES.offre({ job_id: row._id, userType: user.type as "ADMIN" | "OPCO" }).getPath(),
           type: "link",

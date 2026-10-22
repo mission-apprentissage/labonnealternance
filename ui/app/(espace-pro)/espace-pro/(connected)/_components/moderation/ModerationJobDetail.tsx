@@ -131,7 +131,7 @@ export function ModerationJobDetail({ jobId, userType }: { jobId: string; userTy
           description={isNotFound ? "Cette offre n’existe plus, ou son lien est erroné." : "Réessayez dans un instant."}
         />
         <Button priority="secondary" iconId="fr-icon-arrow-left-line" linkProps={{ href: queuePage.getPath() }} style={{ marginTop: fr.spacing("4v") }}>
-          Retour aux offres à modérer
+          Retour aux {queuePage.title.toLowerCase()}
         </Button>
       </Box>
     )
@@ -156,7 +156,7 @@ export function ModerationJobDetail({ jobId, userType }: { jobId: string; userTy
           <RecruiterCards detail={data} />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
-          <ModerationPanel detail={data} onChange={() => refetch()} />
+          <ModerationPanel detail={data} onChange={() => refetch()} readOnly={userType === "OPCO"} />
           <OfferContent offer={data.offer} />
         </Box>
       </Box>
