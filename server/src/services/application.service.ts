@@ -36,7 +36,7 @@ import config from "@/config"
 import { resetReplayedSearchParams } from "@/jobs/applications/relance-search-url"
 import type { UserForAccessToken } from "@/security/access-token.service"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
+import { APPLICATION_COUNT_THRESHOLD, closeJobsOnApplicationThreshold } from "@/services/application-threshold.service"
 import { createCancelJobLink, createCloturerOffreMagicLink, createProvidedJobLink, generateApplicationReplyToken } from "./app-links.service"
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { getApplicationCvS3Key } from "./application-cv.service"
@@ -45,14 +45,12 @@ import { isInfected } from "./clamav.service"
 import { buildEstablishmentId } from "./etablissement.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
-import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
 import { saveApplicationTrafficSourceIfAny } from "./traffic-source.service"
 import { validateUserWithAccountEmail } from "./user-with-account.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
 const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
-const MAX_APPLICATIONS_PER_OFFER = 80
 
 const publicUrl = config.publicUrl
 
@@ -301,7 +299,6 @@ export const sendApplicationV2 = async ({
           : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
   }
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
-  await checkMaxApplicationCount(lbaJob)
 
   if (!PARTNERS_WITH_APPLICATION_API.includes(job.partner_label)) {
     const recruteurEmail = job.apply_email?.toLowerCase()
@@ -340,6 +337,14 @@ export const sendApplicationV2 = async ({
   } catch (err) {
     logger.error(err)
     sentryCaptureException(err, { extra: { application_id: application._id.toString() } })
+  }
+
+  // Même raison : le cron closeJobsPartnersOnApplicationThreshold rattrape une offre restée ouverte.
+  try {
+    await closeOfferIfApplicationThresholdReached(lbaJob)
+  } catch (err) {
+    logger.error(err)
+    sentryCaptureException(err, { extra: { job_id: job._id.toString() } })
   }
 
   return { _id: application._id }
@@ -649,28 +654,19 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
   }
 }
 
-const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
-  const { job, type } = lbaJob
-
-  // règle qui ne concerne que les offres LBA et partenaires
+/**
+ * Ferme l'offre dès que la candidature qui vient d'être enregistrée atteint le seuil : la suivante
+ * est refusée par le contrôle de statut de sendApplicationV2. Les offres partenaires sont concernées
+ * aussi, sur les seules candidatures reçues via LBA (cf. closeJobsOnApplicationThreshold).
+ */
+const closeOfferIfApplicationThresholdReached = async ({ job, type }: IJobOrCompanyV2) => {
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return
   }
 
-  const applicationCount = await getDbCollection("applications").countDocuments({
-    job_id: job._id,
-  })
-
-  if (applicationCount + 1 > MAX_APPLICATIONS_PER_OFFER) {
-    await getDbCollection("jobs_partners").updateOne(
-      { _id: job._id, partner_label: job.partner_label },
-      buildJobStatusChangeUpdate({
-        status: JOB_STATUS_ENGLISH.ANNULEE,
-        reason: `nombre maximum de candidatures atteint (${MAX_APPLICATIONS_PER_OFFER})`,
-        grantedBy: "application.service",
-      })
-    )
-    syncJobPartnersToSearchItemsInBackground([job._id])
+  const applicationCount = await getDbCollection("applications").countDocuments({ job_id: job._id })
+  if (applicationCount >= APPLICATION_COUNT_THRESHOLD) {
+    await closeJobsOnApplicationThreshold([job._id])
   }
 }
 

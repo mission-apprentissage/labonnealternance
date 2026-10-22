@@ -210,4 +210,26 @@ describe("migration fix-closure-reason-offer-status-history-5722", () => {
       expect.soft(offer?.job_status_comment).toBeNull()
     })
   })
+
+  describe("volet 4 — clôtures au seuil de candidatures faites au dépôt", () => {
+    it("prend le libellé du cron et garde granted_by, partenaires compris", async () => {
+      const depositClosure = entry("application.service", "nombre maximum de candidatures atteint (80)")
+      await getDbCollection("jobs_partners").insertMany([
+        lbaOffer("lba", { offer_status_history: [depositClosure] }),
+        generateJobsPartnersOfferPrivate({
+          partner_job_id: "partenaire",
+          partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+          offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+          offer_status_history: [depositClosure],
+        }),
+      ])
+
+      await up()
+      const byId = await readAll()
+
+      for (const id of ["lba", "partenaire"]) {
+        expect.soft(byId.get(id)?.offer_status_history).toEqual([entry("application.service", "seuil de 80 candidatures atteint")])
+      }
+    })
+  })
 })

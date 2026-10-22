@@ -26,8 +26,9 @@ const NOT_A_MOTIF = [MANUAL_CLOSURE_REASON, ADMIN_CLOSURE_REASON, MAIL_CLOSURE_R
 
 /**
  * Depuis #5479, closeOffreWithMotif écrit le motif de la modale dans `offer_status_history[].reason`
- * au lieu de l'origine de la clôture (issue #5722). Chaque volet sauve d'abord le motif dans
- * `job_status_comment`, puis réécrit `reason`.
+ * au lieu de l'origine de la clôture (issue #5722). Les volets 1 à 3 sauvent d'abord le motif dans
+ * `job_status_comment`, puis réécrivent `reason`. Le volet 4 unifie le libellé des clôtures au seuil
+ * de candidatures.
  *
  * `updated_at` n'est pas touché : les tableaux de bord datent les clôtures sur ce champ.
  */
@@ -39,6 +40,8 @@ export const up = async () => {
   // Volet 3 — réponses du recruteur via le lien d'un mail. Seules les réponses qui changeaient le
   // statut ont été écrites : les autres sont perdues (cf. closeOffreWithMotif).
   await requalifyClosures("volet 3", [ORIGIN.MAIL_RECRUTEUR], MAIL_CLOSURE_REASON)
+  // Volet 4 — clôtures au seuil de candidatures faites au dépôt
+  await unifyApplicationThresholdReason()
 }
 
 /** Sauve le motif dans `job_status_comment`, puis remplace par `reason` le motif des entrées des origines données. */
@@ -55,6 +58,21 @@ const requalifyClosures = async (volet: string, origins: string[], reason: strin
     { arrayFilters: [{ "entry.granted_by": { $in: origins }, "entry.reason": { $nin: NOT_A_MOTIF } }], bypassDocumentValidation: true }
   )
   logger.info(`${volet} — ${modifiedCount}/${matchedCount} offres requalifiées en "${reason}"`)
+}
+
+/**
+ * Les clôtures au seuil faites au dépôt (granted_by « application.service ») prennent le libellé du cron, désormais seul libellé de cette règle (cf.
+ * closeJobsOnApplicationThreshold). `granted_by` est conservé : il signale les offres fermées sans
+ * mail au recruteur. Toutes les offres sont concernées, partenaires comprises.
+ */
+const unifyApplicationThresholdReason = async () => {
+  const faultyEntry = { granted_by: "application.service", reason: "nombre maximum de candidatures atteint (80)" }
+  const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(
+    { offer_status_history: { $elemMatch: faultyEntry } },
+    { $set: { "offer_status_history.$[entry].reason": "seuil de 80 candidatures atteint" } },
+    { arrayFilters: [{ "entry.granted_by": faultyEntry.granted_by, "entry.reason": faultyEntry.reason }], bypassDocumentValidation: true }
+  )
+  logger.info(`volet 4 — ${modifiedCount}/${matchedCount} offres requalifiées en "seuil de 80 candidatures atteint"`)
 }
 
 /**

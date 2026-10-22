@@ -8,6 +8,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { applicationTestFile, generateApplicantFixture, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
+import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { ApplicationScanStatus, JOB_STATUS_ENGLISH } from "shared/models/index"
@@ -554,120 +555,102 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
   })
 })
 
-describe("checkMaxApplicationCount", () => {
+describe("clôture au seuil de candidatures au dépôt", () => {
+  const mailerSendEmailSpy = vi.mocked(mailer.sendEmail)
+  const thresholdMailSent = () => mailerSendEmailSpy.mock.calls.some(([args]) => args.template.includes("mail-offre-seuil-candidatures"))
+
+  beforeEach(async () => {
+    mailerSendEmailSpy.mockClear()
+    await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
+  })
+
   afterEach(async () => {
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("applications").deleteMany({})
     await getDbCollection("applicants").deleteMany({})
     await getDbCollection("referentielromes").deleteMany({})
+    await getDbCollection("userswithaccounts").deleteMany({})
   })
 
-  it("Should not update offer status when application count is at the limit (RECRUTEURS_LBA)", async () => {
-    const partnerJob = generateJobsPartnersOfferPrivate({
-      _id: new ObjectId("6081289803569600282e0030"),
-      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      apply_email: "employer@test.fr",
-      workplace_siret: "12345678901234",
-    })
-    await getDbCollection("jobs_partners").insertOne(partnerJob)
-
-    // 79 existing + current submission = 80 total, condition (79+1) > 80 is false
-    const applications = Array.from({ length: 79 }, () => generateApplicationFixture({ company_siret: "12345678901234" }))
-    await getDbCollection("applications").insertMany(applications)
-
-    await sendApplicationV2({
-      newApplication: {
-        ...fakeApplication,
-        recipient_id: { collectionName: "partners", jobId: "6081289803569600282e0030" },
-      },
-    })
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId("6081289803569600282e0030") })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
-  })
-
-  it("Should NOT update offer status to ANNULEE when application count exceeds limit (RECRUTEURS_LBA)", async () => {
-    const partnerJob = generateJobsPartnersOfferPrivate({
-      _id: new ObjectId("6081289803569600282e0031"),
-      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      apply_email: "employer@test.fr",
-      workplace_siret: "98765432109876",
-    })
-    await getDbCollection("jobs_partners").insertOne(partnerJob)
-
-    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
-    const applications = Array.from({ length: 80 }, () =>
-      generateApplicationFixture({ job_id: new ObjectId("6081289803569600282e0031"), company_siret: "98765432109876", created_at: new Date() })
+  const insertOfferWithApplications = async (partner_label: string, existingApplications: number, overrides = {}) => {
+    const jobId = new ObjectId()
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({ _id: jobId, partner_label, offer_status: JOB_STATUS_ENGLISH.ACTIVE, apply_email: "employer@test.fr", ...overrides })
     )
-    await getDbCollection("applications").insertMany(applications)
+    if (existingApplications) {
+      await getDbCollection("applications").insertMany(Array.from({ length: existingApplications }, () => generateApplicationFixture({ job_id: jobId, created_at: new Date() })))
+    }
+    return jobId
+  }
 
-    await sendApplicationV2({
-      newApplication: {
-        ...fakeApplication,
-        recipient_id: { collectionName: "partners", jobId: "6081289803569600282e0031" },
-      },
+  const apply = (jobId: ObjectId) => sendApplicationV2({ newApplication: { ...fakeApplication, recipient_id: { collectionName: "recruiters", jobId: jobId.toString() } } })
+
+  it("ferme l'offre LBA à la candidature qui atteint le seuil et prévient le recruteur", async () => {
+    const recruiter = generateUserWithAccountFixture({ email: "recruteur@test.fr" })
+    await getDbCollection("userswithaccounts").insertOne(recruiter)
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, 79, { managed_by: recruiter._id })
+
+    await apply(jobId)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect.soft(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(job?.offer_status_history.at(-1)).toMatchObject({
+      status: JOB_STATUS_ENGLISH.ANNULEE,
+      reason: "seuil de 80 candidatures atteint",
+      granted_by: "close-jobs-partners-on-application-threshold",
     })
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId("6081289803569600282e0031") })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(await getDbCollection("applications").countDocuments({ job_id: jobId })).toBe(80)
+    expect.soft(mailerSendEmailSpy.mock.calls.find(([args]) => args.template.includes("mail-offre-seuil-candidatures"))?.[0].to).toBe("recruteur@test.fr")
   })
 
-  it("Should update offer status to ANNULEE when application count exceeds limit (OFFRES_EMPLOI_LBA)", async () => {
-    const jobId = new ObjectId("6081289803569600282e0033")
+  it("refuse la candidature suivante", async () => {
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, 79)
 
-    await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
+    await apply(jobId)
+
+    await expect(apply(jobId)).rejects.toThrow(BusinessErrorCodes.EXPIRED)
+    expect.soft(await getDbCollection("applications").countDocuments({ job_id: jobId })).toBe(80)
+  })
+
+  it("laisse l'offre ouverte sous le seuil", async () => {
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, 78)
+
+    await apply(jobId)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect.soft(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(thresholdMailSent()).toBe(false)
+  })
+
+  it("ferme aussi une offre partenaire, sans mail", async () => {
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.FRANCE_TRAVAIL, 79, { managed_by: new ObjectId() })
+
+    await sendApplicationV2({ newApplication: { ...fakeApplication, recipient_id: { collectionName: "partners", jobId: jobId.toString() } } })
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect.soft(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(thresholdMailSent()).toBe(false)
+  })
+
+  it("ne ferme pas une entreprise RECRUTEURS_LBA", async () => {
+    const jobId = new ObjectId()
     await getDbCollection("jobs_partners").insertOne(
       generateJobsPartnersOfferPrivate({
         _id: jobId,
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
         offer_status: JOB_STATUS_ENGLISH.ACTIVE,
         apply_email: "employer@test.fr",
-        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        workplace_siret: "98765432109876",
       })
     )
-
-    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
-    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: jobId, created_at: new Date() }))
-    await getDbCollection("applications").insertMany(applications)
-
-    await sendApplicationV2({
-      newApplication: {
-        ...fakeApplication,
-        recipient_id: { collectionName: "recruiters", jobId: jobId.toString() },
-      },
-    })
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
-  })
-
-  it("Should update offer status to ANNULEE when application count exceeds limit (OFFRES_EMPLOI_PARTENAIRES)", async () => {
-    const jobId = new ObjectId("6081289803569600282e0034")
-
-    await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
-    await getDbCollection("jobs_partners").insertOne(
-      generateJobsPartnersOfferPrivate({
-        _id: jobId,
-        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-        apply_email: "employer@test.fr",
-        partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
-      })
+    await getDbCollection("applications").insertMany(
+      Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: jobId, company_siret: "98765432109876", created_at: new Date() }))
     )
 
-    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
-    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: jobId, created_at: new Date() }))
-    await getDbCollection("applications").insertMany(applications)
+    await sendApplicationV2({ newApplication: { ...fakeApplication, recipient_id: { collectionName: "partners", jobId: jobId.toString() } } })
 
-    await sendApplicationV2({
-      newApplication: {
-        ...fakeApplication,
-        recipient_id: { collectionName: "partners", jobId: jobId.toString() },
-      },
-    })
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
   })
 })
 
