@@ -2,7 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 import { ReviewStatusBadge } from "./ModerationBadges"
 
-const label = (props: Parameters<typeof ReviewStatusBadge>[0]) => renderToStaticMarkup(<ReviewStatusBadge {...props} />).replace(/<[^>]+>/g, "")
+// Le badge ne contient qu'un nœud texte : on le lit entre les balises plutôt que de retirer celles-ci.
+const label = (props: Parameters<typeof ReviewStatusBadge>[0]) => renderToStaticMarkup(<ReviewStatusBadge {...props} />).match(/>([^<>]+)</)?.[1]
 
 describe("ReviewStatusBadge", () => {
   it("n'attend aucune décision sur une offre jugée conforme", () => {
