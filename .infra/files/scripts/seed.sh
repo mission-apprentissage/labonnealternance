@@ -4,7 +4,7 @@ set -euo pipefail
 
 readonly TARGET_DB=${1:?"Merci de préciser le nom de la base de donnée cible"}
 shift
-# MongoDB partagé du stack preview-system (une base preview_<PR> par preview).
+# MongoDB partagé de la preview, cf. docker-compose.preview.yml (une base preview_<PR> par preview).
 readonly MONGODB_CONTAINER="lba_mongodb"
 readonly PASSPHRASE=$(mktemp passphrase.XXXXXXXXXX)
 readonly SEED_ARCHIVE="$(mktemp /tmp/seed-XXXXXXXXXX)"

@@ -92,8 +92,8 @@
     - "{{inventory_dir}}/../docker-compose.recette.yml"
   when: env_type == 'recette'
 
-- name: creation du fichier docker compose preview system
+- name: creation du fichier docker compose preview
   ansible.builtin.template:
-    src: "{{inventory_dir}}/../docker-compose.preview-system.yml"
-    dest: "/opt/app/docker-compose.preview-system.yml"
+    src: "{{inventory_dir}}/../docker-compose.preview.yml"
+    dest: "/opt/app/docker-compose.preview.yml"
   when: env_type == 'preview'
