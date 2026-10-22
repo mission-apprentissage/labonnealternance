@@ -6,9 +6,10 @@ import { z } from "zod"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
-import { configureDetectionRule, listDetectionRules, qualifyDetectionAlert } from "./detection-cli"
+import { configureDetectionRule, listDetectionRules, qualifyDetectionAlert, replayDetectionRules } from "./detection-cli"
 import { assertValidRules, EVALUATION_FAILURE_KEY, getSlotStart, reconcileFindings, resolveRuleSettings, runDetectionRules } from "./detection-engine"
 import { assertNoEmailInFinding } from "./detection-notification"
+import { replayDetectionRule } from "./detection-replay"
 import type { IDetectionFinding, IDetectionRule } from "./detection-rule"
 import { detectionRules } from "./detection-rules"
 
@@ -390,5 +391,63 @@ describe("runDetectionRules", () => {
       await expect(qualifyDetectionAlert({ id: insertedId.toString(), verdict: "vrai_positif" })).rejects.toThrow("jamais notifiée")
       await expect(qualifyDetectionAlert({ id: insertedId.toString(), verdict: "peut-être" })).rejects.toThrow("--verdict")
     })
+  })
+})
+
+describe("rejeu", () => {
+  useMongo()
+
+  // Règle quotidienne en alerte du 03/10 au 10/10 inclus, objet « global ».
+  const dailyRule = () =>
+    buildRule({
+      periodicity: { everyMinutes: 24 * 60 },
+      confirmations: 2,
+      reminderEveryHours: 72,
+      evaluate: vi.fn(async ({ now, thresholds }) => {
+        const inIncident = now >= new Date("2026-10-03T00:00:00Z") && now < new Date("2026-10-11T00:00:00Z")
+        return { findings: inIncident ? [finding("global", thresholds.minCount)] : [], observations: { jour: now.toISOString().slice(0, 10) } }
+      }),
+    }).rule
+
+  beforeEach(() => {
+    vi.mocked(notifyToSlack).mockReset()
+  })
+
+  it("rejoue chaque créneau avec la déduplication du cron, sans écrire ni notifier", async () => {
+    const { lines, episodes } = await replayDetectionRule({
+      rule: dailyRule(),
+      from: new Date("2026-10-01T00:00:00Z"),
+      to: new Date("2026-10-16T00:00:00Z"),
+      thresholds: { minCount: 10 },
+    })
+
+    expect(lines).toHaveLength(15)
+    expect(lines.filter(({ notifications }) => notifications.length).map(({ slot, notifications }) => [slot.slice(0, 10), ...notifications])).toEqual([
+      ["2026-10-04", "entree"],
+      ["2026-10-07", "rappel"],
+      ["2026-10-10", "rappel"],
+      ["2026-10-11", "sortie"],
+    ])
+    expect(lines[3]).toMatchObject({ en_alerte: true, observations: { jour: "2026-10-04" } })
+    expect(episodes).toEqual([{ key: "global", opened_at: new Date("2026-10-04T00:00:00Z"), closed_at: new Date("2026-10-11T00:00:00Z"), notifications: 4 }])
+    expect(notifyToSlack).not.toHaveBeenCalled()
+    expect(await getDbCollection("detection_alerts").countDocuments()).toBe(0)
+    expect(await getDbCollection("detection_rules").countDocuments()).toBe(0)
+  })
+
+  it("inclut le jour de --to et applique les seuils simulés par règle", async () => {
+    const rule = dailyRule()
+    const [result] = await replayDetectionRules({ from: "2026-10-01", to: "2026-10-03", thresholds: '{"regle_factice":{"minCount":20}}', rules: [rule] })
+
+    expect(result?.lines.map(({ slot }) => slot.slice(0, 10))).toEqual(["2026-10-01", "2026-10-02", "2026-10-03"])
+    expect(vi.mocked(rule.evaluate).mock.calls.at(-1)?.[0]).toMatchObject({ thresholds: { minCount: 20 } })
+  })
+
+  it.each([
+    ["une règle inconnue", '{"regle_inconnue":{"minCount":20}}'],
+    ["des seuils qui ne forment pas un objet", '{"regle_factice":20}'],
+    ["un seuil mal orthographié", '{"regle_factice":{"minCont":20}}'],
+  ])("refuse %s dans les seuils simulés", async (_, thresholds) => {
+    await expect(replayDetectionRules({ from: "2026-10-01", to: "2026-10-03", thresholds, rules: [dailyRule()] })).rejects.toThrow()
   })
 })
