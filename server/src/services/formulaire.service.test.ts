@@ -934,15 +934,15 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       })
     })
 
-    it("avance offer_expiration à la date de clôture sur une offre encore active", async () => {
-      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId(), { offer_expiration: new Date("2099-01-01T00:00:00.000Z") })
-      const before = new Date()
+    it("garde la date d'expiration initiale d'une offre fermée en avance", async () => {
+      const offer_expiration = new Date("2099-01-01T00:00:00.000Z")
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, new ObjectId(), { offer_expiration })
 
       await closeOffreWithMotif({ id, offer_status: JOB_STATUS_ENGLISH.ANNULEE, origin: JOB_CLOSURE_ORIGIN.ESPACE_PRO_RECRUTEUR, job_status_comment: "Autre" })
 
       const job = await readOffer(id)
-      expect(job.offer_expiration?.getTime()).toBeGreaterThanOrEqual(before.getTime())
-      expect(job.offer_expiration?.getTime()).toBeLessThanOrEqual(Date.now())
+      expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+      expect.soft(job.offer_expiration).toEqual(offer_expiration)
     })
 
     it("échoue toujours sur une offre inexistante", async () => {
@@ -972,11 +972,12 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
   })
 
   describe("archiveFormulaire", () => {
-    it("annule et trace les offres actives, en attente et en modération", async () => {
+    it("annule et trace les offres actives, en attente et en modération, sans changer leur date d'expiration", async () => {
       const managed_by = new ObjectId()
-      const activeId = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, managed_by)
-      const pendingId = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_ATTENTE, managed_by)
-      const inReviewId = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_MODERATION, managed_by)
+      const offer_expiration = new Date("2099-01-01T00:00:00.000Z")
+      const activeId = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, managed_by, { offer_expiration })
+      const pendingId = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_ATTENTE, managed_by, { offer_expiration })
+      const inReviewId = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_MODERATION, managed_by, { offer_expiration })
 
       await archiveFormulaire(managed_by, siret)
 
@@ -985,6 +986,7 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
         expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
         expect.soft(job.offer_status_history).toHaveLength(1)
         expect.soft(job.offer_status_history[0]).toMatchObject({ status: JOB_STATUS_ENGLISH.ANNULEE, reason: ARCHIVE_FORMULAIRE_REASON, granted_by: "archive-formulaire" })
+        expect.soft(job.offer_expiration).toEqual(offer_expiration)
       }
     })
 

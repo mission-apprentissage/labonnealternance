@@ -730,14 +730,14 @@ export const archiveFormulaire = async (userId: ObjectId, siret: string) => {
   const change = { reason: ARCHIVE_FORMULAIRE_REASON, grantedBy: "archive-formulaire", date: now, status: JOB_STATUS_ENGLISH.ANNULEE } as const
   const recruiterOffersFilter = { managed_by: userId, workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA }
 
-  await changeJobsPartnersStatus({ ...recruiterOffersFilter, offer_status: JOB_STATUS_ENGLISH.ACTIVE }, { ...change, extraSet: { offer_expiration: now } })
-  // Second passage restreint aux offres EN ATTENTE ou EN MODERATION : elles ne sont pas publiées, les archiver
-  // avec le reste du formulaire est bien l'intention. Le filtre portait auparavant sur
-  // `$ne: ACTIVE`, ce qui repassait en Cancelled les offres POURVUE — un recrutement réussi
-  // réécrit en annulation, donc perdu pour la mesure d'impact — et réécrivait `updated_at` sur des
-  // offres déjà annulées, qui remontaient alors dans les tableaux de bord datés sur ce champ
-  // (issue #5429). Une offre déjà close, quelle qu'en soit l'issue, n'a plus à être touchée ici.
-  await changeJobsPartnersStatus({ ...recruiterOffersFilter, offer_status: { $in: [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION] } }, change)
+  // Les offres déjà closes ne sont pas touchées : repasser une offre POURVUE en Cancelled perdrait un
+  // recrutement réussi pour la mesure d'impact, et réécrire updated_at ferait remonter des
+  // annulations anciennes dans les tableaux de bord datés sur ce champ (#5429). offer_expiration
+  // garde sa date initiale, la date de clôture est dans offer_status_history.
+  await changeJobsPartnersStatus(
+    { ...recruiterOffersFilter, offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION] } },
+    change
+  )
   const mainRole = await getMainRoleManagement(userId)
   if (mainRole?.authorized_type === AccessEntityType.CFA) {
     const entreprise = await getDbCollection("entreprises").findOne({ siret })
@@ -923,13 +923,6 @@ export const closeOffreWithMotif = async ({
   const now = new Date()
   const offerFilter = { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id }
 
-  const current = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { offer_status: 1 } })
-  if (!current) {
-    throw new Error(`could not find lba offer with id=${id}`)
-  }
-  // Sur une offre déjà close, offer_expiration garde la date à laquelle elle a cessé d'être visible.
-  const wasOpen = current.offer_status !== JOB_STATUS_ENGLISH.ANNULEE && current.offer_status !== JOB_STATUS_ENGLISH.POURVUE
-
   // Écriture si le statut change, ou si la dernière entrée de l'historique est une expiration ou le
   // seuil de candidatures : leur mail arrive sur une offre déjà Cancelled, et la réponse du recruteur
   // s'ajoute à la clôture automatique (#5722). Un lien cliqué deux fois trouve sa propre entrée en
@@ -941,6 +934,7 @@ export const closeOffreWithMotif = async ({
   //
   // `reason` dit comment l'offre a été fermée, déduit de l'origine (cf. JOB_CLOSURE_REASON) ; le
   // motif de la modale va dans job_status_comment, sans être recopié dans l'historique.
+  // offer_expiration garde sa date initiale, la date de clôture est dans offer_status_history.
   const lastEntryAwaitsMailAnswer = { $in: [{ $last: "$offer_status_history.granted_by" }, Object.values(JOB_AUTO_CLOSURE_ORIGIN)] }
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
     { ...offerFilter, $or: [{ offer_status: { $ne: offer_status } }, { $expr: lastEntryAwaitsMailAnswer }] },
@@ -949,7 +943,7 @@ export const closeOffreWithMotif = async ({
       reason: JOB_CLOSURE_REASON_BY_ORIGIN[origin],
       grantedBy: origin,
       date: now,
-      extraSet: { ...(wasOpen && { offer_expiration: now }), job_status_comment, job_status_comment_precision, job_recruitment_channel },
+      extraSet: { job_status_comment, job_status_comment_precision, job_recruitment_channel },
     }),
     {
       returnDocument: "before",
@@ -957,6 +951,11 @@ export const closeOffreWithMotif = async ({
   )
 
   if (!found) {
+    // Deux causes possibles : l'offre n'existe pas, ou la clôture est déjà enregistrée (double-clic).
+    const existing = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { _id: 1 } })
+    if (!existing) {
+      throw new Error(`could not find lba offer with id=${id}`)
+    }
     return { alreadyClosed: true }
   }
 
