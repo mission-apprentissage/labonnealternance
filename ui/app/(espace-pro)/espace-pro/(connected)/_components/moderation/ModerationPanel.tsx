@@ -94,7 +94,7 @@ export function ModerationPanel({ detail, onChange }: { detail: IModerationJobDe
           <OfferStatusBadge status={offer.offer_status} />
         </InlineField>
         <InlineField label="Modération">
-          <ReviewStatusBadge review={review} isClassified={Boolean(moderation)} />
+          <ReviewStatusBadge review={review} isClassified={Boolean(moderation)} verdict={offer.offer_moderation_verdict} status={offer.offer_moderation_status} />
         </InlineField>
         <InlineField label="Conformité">
           <ConformityBadge verdict={moderation ? offer.offer_moderation_verdict : null} status={moderation ? offer.offer_moderation_status : null} />

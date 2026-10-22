@@ -40,11 +40,25 @@ export const AccountStatusBadge = ({ status }: { status: AccessStatus | null }) 
 
 export const AccountTypeBadge = ({ type }: { type: "ENTREPRISE" | "CFA" }) => <ModerationBadge tone="info">{type === "CFA" ? "CFA" : "Entreprise"}</ModerationBadge>
 
-/** Une offre jamais classifiée n'a ni décision ni conformité : « non applicable ». */
-export const ReviewStatusBadge = ({ review, isClassified }: { review: IModerationReviewStatus | null | undefined; isClassified: boolean }) => {
+/**
+ * Une offre jamais classifiée n'a ni décision ni conformité : « non applicable ». Une offre jugée conforme n'entre pas
+ * dans la file et n'attend aucune décision : « non requise ».
+ */
+export const ReviewStatusBadge = ({
+  review,
+  isClassified,
+  verdict,
+  status,
+}: {
+  review: IModerationReviewStatus | null | undefined
+  isClassified: boolean
+  verdict: IModerationVerdict | null | undefined
+  status: IOfferModerationStatus | null | undefined
+}) => {
   if (!isClassified) return <ModerationBadge tone="na">Non applicable</ModerationBadge>
   if (review === "validee") return <ModerationBadge tone="success">Validé</ModerationBadge>
   if (review === "refusee") return <ModerationBadge tone="error">Refusé</ModerationBadge>
+  if (verdict === "conforme" && status === OFFER_MODERATION_STATUS.OK) return <ModerationBadge tone="na">Non requise</ModerationBadge>
   return <ModerationBadge tone="new">En attente</ModerationBadge>
 }
 
