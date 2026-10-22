@@ -61,9 +61,9 @@ const requalifyClosures = async (volet: string, origins: string[], reason: strin
 }
 
 /**
- * Les clôtures au seuil faites au dépôt (granted_by « application.service ») prennent le libellé du cron, désormais seul libellé de cette règle (cf.
- * closeJobsOnApplicationThreshold). `granted_by` est conservé : il signale les offres fermées sans
- * mail au recruteur. Toutes les offres sont concernées, partenaires comprises.
+ * Les clôtures au seuil faites au dépôt (granted_by « application.service ») prennent le libellé
+ * du cron, seul libellé de cette règle (cf. closeJobsOnApplicationThreshold). `granted_by` est
+ * conservé : il signale les offres fermées sans mail au recruteur. Partenaires comprises.
  */
 const unifyApplicationThresholdReason = async () => {
   const faultyEntry = { granted_by: "application.service", reason: "nombre maximum de candidatures atteint (80)" }

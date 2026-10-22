@@ -732,8 +732,8 @@ export const archiveFormulaire = async (userId: ObjectId, siret: string) => {
 
   // Les offres déjà closes ne sont pas touchées : repasser une offre POURVUE en Cancelled perdrait un
   // recrutement réussi pour la mesure d'impact, et réécrire updated_at ferait remonter des
-  // annulations anciennes dans les tableaux de bord datés sur ce champ (#5429). offer_expiration
-  // garde sa date initiale, la date de clôture est dans offer_status_history.
+  // annulations anciennes dans les tableaux de bord datés sur ce champ (#5429). offer_expiration :
+  // cf. closeOffreWithMotif.
   await changeJobsPartnersStatus(
     { ...recruiterOffersFilter, offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION] } },
     change

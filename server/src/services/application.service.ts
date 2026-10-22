@@ -339,7 +339,8 @@ export const sendApplicationV2 = async ({
     sentryCaptureException(err, { extra: { application_id: application._id.toString() } })
   }
 
-  // Même raison : le cron closeJobsPartnersOnApplicationThreshold rattrape une offre restée ouverte.
+  // Même raison : le cron closeJobsPartnersOnApplicationThreshold rattrape une offre LBA restée
+  // ouverte. Une offre partenaire reste ouverte jusqu'à la candidature suivante.
   try {
     await closeOfferIfApplicationThresholdReached(lbaJob)
   } catch (err) {
