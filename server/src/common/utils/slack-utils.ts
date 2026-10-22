@@ -34,12 +34,26 @@ export const formatSlackTable = (header: string[], rows: string[][], { alignRigh
   return ["```", formatRow(header), ...rows.map(formatRow), "```"]
 }
 
-export const notifyToSlack = async ({ subject, message, error, mentions }: { subject: string; message: string; error?: boolean; mentions?: string[] }) => {
+export const notifyToSlack = async ({
+  subject,
+  message,
+  error,
+  mentions,
+  webhook,
+}: {
+  subject: string
+  message: string
+  error?: boolean
+  mentions?: string[]
+  /** Webhook d'un canal dédié ; à défaut, celui des jobs. */
+  webhook?: string
+}) => {
   const mentionText = mentions?.length ? ` — cc ${mentions.map(slackMention).join(" ")}` : ""
   const text = `[${config.env.toUpperCase()} — LBA ${subject && `- ${subject}`}] ${error ? "— :warning:" : "— :white_check_mark:"} — ${message}${mentionText}`
-  if (config.jobSlackWebhook) {
+  const url = webhook || config.jobSlackWebhook
+  if (url) {
     const payload: SlackWebhookPayload = { text }
-    await axios.post(config.jobSlackWebhook, payload)
+    await axios.post(url, payload)
   } else {
     console.info(text)
   }
