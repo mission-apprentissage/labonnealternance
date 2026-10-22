@@ -1,16 +1,21 @@
-# Limitation de débit par IP sur les routes réservées au front (anti-scraping).
+# Limitation de débit par IP sur la recherche et l'autocomplétion (anti-scraping).
 # Un usage humain fait des rafales courtes ; un scraper tient un débit soutenu.
 # Les zones limitent donc le débit continu avec un burst généreux.
 # Les dépassements sont logués dans error.log et alimentent le jail fail2ban
 # nginx-req-limit (ban iptables 1h au-delà de 50 dépassements sur 1h).
 
-# Les IPs internes (healthchecks, réseau docker) ne sont pas limitées.
+# Les IPs internes (healthchecks, réseau docker) ne sont pas limitées, ni celles de
+# LBA_NGINX_RATELIMIT_ALLOWLIST (env chiffré, IP séparées par des virgules) : serveurs
+# qui agrègent plusieurs consommateurs, limités en amont (cf. issue #4806).
 geo $lba_limited {
     default        1;
     127.0.0.1      0;
     10.0.0.0/8     0;
     172.16.0.0/12  0;
     192.168.0.0/16 0;
+{% for ip in (LBA_NGINX_RATELIMIT_ALLOWLIST | default('')).split(',') if ip | trim %}
+    {{ ip | trim }} 0;
+{% endfor %}
 }
 
 map $lba_limited $lba_limit_key {
@@ -20,6 +25,10 @@ map $lba_limited $lba_limit_key {
 
 # Recherche d'offres du front (/api/v1/_private/, /api/_private/).
 limit_req_zone $lba_limit_key zone=lba_search:10m rate=30r/m;
+
+# Recherche publique (/api/v1/search), appelée aussi par le front. Zone distincte de
+# lba_search pour qu'une session de navigation ne consomme pas le quota de recherche.
+limit_req_zone $lba_limit_key zone=lba_public_search:10m rate=30r/m;
 
 # Autocomplétion métiers (/api/rome) : 1 appel par frappe, rafales tolérées.
 limit_req_zone $lba_limit_key zone=lba_autocomplete:10m rate=2r/s;
