@@ -219,5 +219,22 @@ describe("jobs.controller", () => {
       expect(response.statusCode).toBe(200)
       expect(response.json()).toEqual({})
     })
+
+    it.each([
+      ["un navigateur", 1, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"],
+      ["Googlebot", 0, "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"],
+    ])("pour %s, stats_detail_view vaut %i après l'appel", async (_, expectedCount, userAgent) => {
+      const job = generateJobsPartnersOfferPrivate({ _id: new ObjectId() })
+      await getDbCollection("jobs_partners").insertOne(job)
+
+      const response = await httpClient().inject({
+        method: "POST",
+        path: `/api/v1/jobs/matcha/${job._id}/stats/view-details`,
+        headers: { "user-agent": userAgent },
+      })
+
+      expect(response.statusCode).toBe(200)
+      expect((await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.stats_detail_view).toBe(expectedCount)
+    })
   })
 })
