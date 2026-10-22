@@ -290,6 +290,26 @@ describe("modération des offres libres (#5499)", () => {
       expect(detail.json().decision_blocked_reason).toBe("compte_non_valide")
       expect(sentEmails()).toEqual([])
     })
+
+    it("motive par le compte, et non par la clôture, le blocage d'une offre en attente de la validation du compte", async () => {
+      const recruiter = await saveRecruiter({ roleStatus: AccessStatus.AWAITING_VALIDATION })
+      const enAttente = await saveModeratedOffer(recruiter, { offer: { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE, offer_status_history: [] } })
+      const close = await saveModeratedOffer(recruiter, { offer: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_status_history: [] } })
+      const { bearerToken } = await loginAdmin()
+      const blockedReason = async (id: ObjectId) => (await inject({ method: "GET", path: `/moderation/jobs/${id}`, headers: bearerToken })).json().decision_blocked_reason
+
+      const validate = await inject({
+        method: "POST",
+        path: `/moderation/jobs/${enAttente.offer._id}/validate`,
+        headers: bearerToken,
+        body: { moderation_id: enAttente.moderation._id.toString() },
+      })
+
+      expect(await blockedReason(enAttente.offer._id)).toBe("compte_non_valide")
+      expect(await blockedReason(close.offer._id)).toBe("statut")
+      expect(validate.statusCode).toBe(400)
+      expect((await getOffer(enAttente.offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_ATTENTE)
+    })
   })
 
   describe("refuser", () => {

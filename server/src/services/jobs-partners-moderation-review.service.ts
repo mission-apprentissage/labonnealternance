@@ -269,6 +269,8 @@ const getScopedOffer = async (scope: IModerationScope, id: ObjectId): Promise<IM
 const getDecisionBlockedReason = (offer: IModerationOfferWithRecruiter, moderation: IJobsPartnersModeration | null) => {
   if (!moderation) return MODERATION_DECISION_BLOCKED_REASONS.NON_CLASSIFIEE
   if (offer.offer_moderation_review || moderation.review) return MODERATION_DECISION_BLOCKED_REASONS.DECISION_PRISE
+  // Une offre Pending n'est pas close : elle attend la validation du compte ou de l'entreprise (cf. getPublicationStatus).
+  if (offer.offer_status === JOB_STATUS_ENGLISH.EN_ATTENTE) return MODERATION_DECISION_BLOCKED_REASONS.COMPTE_NON_VALIDE
   if (!MODERATED_STATUSES.includes(offer.offer_status)) return MODERATION_DECISION_BLOCKED_REASONS.STATUT
   if (offer.recruiter.account_status !== AccessStatus.GRANTED) return MODERATION_DECISION_BLOCKED_REASONS.COMPTE_NON_VALIDE
   return null
