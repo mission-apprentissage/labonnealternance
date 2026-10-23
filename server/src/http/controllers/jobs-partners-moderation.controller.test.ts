@@ -342,7 +342,7 @@ describe("modération des offres libres (#5499)", () => {
       const [email] = sentEmails()
       expect(email).toMatchObject({ to: recruiter.user.email, subject: MAIL_OFFRE_REFUSEE_SUBJECT })
       expect(email.data.comment).toBe("Merci de préciser les horaires.")
-      expect(email.data.agent_note).toEqual([`Dans la description de l’offre, vous avez écrit “réservé aux majeurs”. ${MODERATION_CATEGORY_NOTES.mineurs}`])
+      expect(email.data.agent_note).toEqual([["Dans la description de l’offre, vous avez écrit “réservé aux majeurs”.", MODERATION_CATEGORY_NOTES.mineurs]])
     })
 
     it("envoie un e-mail générique sans note ni commentaire, y compris pour une offre en ligne", async () => {

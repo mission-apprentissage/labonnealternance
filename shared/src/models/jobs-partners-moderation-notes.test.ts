@@ -14,7 +14,7 @@ describe("textes de la note de l'agent", () => {
 })
 
 describe("buildAgentNoteParagraphs", () => {
-  it("regroupe les extraits d'une catégorie par champ et n'écrit son texte qu'une fois", () => {
+  it("regroupe les extraits d'une catégorie par champ, une ligne par champ, et n'écrit son texte qu'une fois, sur sa propre ligne", () => {
     const paragraphs = buildAgentNoteParagraphs([
       { champ: "job_description", category: "mineurs", verbatim: "majeurs uniquement" },
       { champ: "job_employer_description", category: "mineurs", verbatim: "équipe de nuit" },
@@ -22,7 +22,11 @@ describe("buildAgentNoteParagraphs", () => {
     ])
 
     expect(paragraphs).toEqual([
-      `Dans la description de l’offre, vous avez écrit “majeurs uniquement” et “service en salle jusqu'à 2 h”. Dans la description de l’entreprise, vous avez écrit “équipe de nuit”. ${MODERATION_CATEGORY_NOTES.mineurs}`,
+      [
+        "Dans la description de l’offre, vous avez écrit “majeurs uniquement” et “service en salle jusqu'à 2 h”.",
+        "Dans la description de l’entreprise, vous avez écrit “équipe de nuit”.",
+        MODERATION_CATEGORY_NOTES.mineurs,
+      ],
     ])
   })
 
@@ -34,8 +38,8 @@ describe("buildAgentNoteParagraphs", () => {
     ])
 
     expect(paragraphs).toEqual([
-      `Dans la description de l’offre, vous avez écrit “3 ans d'expérience”. ${MODERATION_CATEGORY_NOTES.experience_exigee}`,
-      MODERATION_CATEGORY_NOTES.discrimination,
+      ["Dans la description de l’offre, vous avez écrit “3 ans d'expérience”.", MODERATION_CATEGORY_NOTES.experience_exigee],
+      [MODERATION_CATEGORY_NOTES.discrimination],
     ])
   })
 

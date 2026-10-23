@@ -60,10 +60,11 @@ const joinWithEt = (items: string[]) => (items.length < 2 ? items.join("") : `${
 type IAgentNoteFinding = Pick<IJobsPartnersModerationFinding, "champ" | "category" | "verbatim">
 
 /**
- * Note de l'agent de l'e-mail de refus : un paragraphe par catégorie, dans l'ordre des constats. Les extraits d'une même
- * catégorie sont regroupés par champ et son texte n'apparaît qu'une fois. Un extrait purgé laisse le texte seul.
+ * Note de l'agent de l'e-mail de refus : un paragraphe par catégorie, dans l'ordre des constats, fait de lignes à afficher
+ * chacune à la ligne. Une ligne par champ cité, extraits regroupés, puis le texte de la catégorie, une seule fois. Un
+ * extrait purgé laisse le texte seul.
  */
-export const buildAgentNoteParagraphs = (findings: IAgentNoteFinding[]): string[] => {
+export const buildAgentNoteParagraphs = (findings: IAgentNoteFinding[]): string[][] => {
   const extractsByCategory = new Map<IModerationCategory, Map<IModerationField, string[]>>()
   for (const { category, champ, verbatim } of findings) {
     const extractsByField = extractsByCategory.get(category) ?? new Map<IModerationField, string[]>()
@@ -78,6 +79,6 @@ export const buildAgentNoteParagraphs = (findings: IAgentNoteFinding[]): string[
       const extracts = extractsByField.get(field) ?? []
       return extracts.length ? [`Dans ${FIELDS_IN_SENTENCE[field]}, vous avez écrit ${joinWithEt(extracts.map((extract) => `“${extract}”`))}.`] : []
     })
-    return [...sentences, MODERATION_CATEGORY_NOTES[category]].join(" ")
+    return [...sentences, MODERATION_CATEGORY_NOTES[category]]
   })
 }

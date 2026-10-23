@@ -78,9 +78,13 @@ export function RefusOffreModal({
               ]}
             />
             <Box sx={{ backgroundColor: fr.colors.decisions.background.alt.grey.default, p: fr.spacing("3v"), mb: fr.spacing("4v"), opacity: withAgentNote ? 1 : 0.6 }}>
-              {paragraphs.map((paragraph) => (
-                <Typography key={paragraph} sx={{ fontSize: "0.875rem", "& + &": { mt: fr.spacing("3v") } }}>
-                  {paragraph}
+              {paragraphs.map((lines) => (
+                <Typography key={lines.join("\n")} sx={{ fontSize: "0.875rem", "& + &": { mt: fr.spacing("3v") } }}>
+                  {lines.map((line) => (
+                    <Box component="span" key={line} sx={{ display: "block" }}>
+                      {line}
+                    </Box>
+                  ))}
                 </Typography>
               ))}
             </Box>

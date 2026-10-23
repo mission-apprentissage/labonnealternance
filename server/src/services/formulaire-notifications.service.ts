@@ -69,7 +69,7 @@ export async function sendMailOffreRefusee({
 }: {
   user: IUserWithAccount
   job: IJobsPartnersOfferPrivate
-  agentNote: string[]
+  agentNote: string[][]
   comment: string | null
 }) {
   const { is_delegated, workplace_name, workplace_legal_name, workplace_brand, workplace_siret } = job
