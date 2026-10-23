@@ -777,3 +777,52 @@ describe("GET /v3/jobs/:id", () => {
     })
   })
 })
+
+describe("POST /v3/jobs/:id/stats/detail_view", () => {
+  // Sans en-tête explicite, inject envoie l'UA « lightMyRequest », qu'isbot classe robot : chaque test fixe le sien.
+  const googlebotSmartphone =
+    "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.122 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+  const chrome = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+
+  const job = generateJobsPartnersOfferPrivate({ _id: new ObjectId() })
+
+  beforeEach(async () => {
+    await getDbCollection("jobs_partners").insertOne(job)
+  })
+
+  const postDetailView = (userAgent: string | undefined) =>
+    httpClient().inject({ method: "POST", path: `/api/v3/jobs/${job._id}/stats/detail_view`, headers: { "user-agent": userAgent } })
+  const getDetailViewCount = async () => (await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.stats_detail_view
+
+  it("incrémente le compteur pour un navigateur", async () => {
+    const response = await postDetailView(chrome)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getDetailViewCount()).toBe(1)
+  })
+
+  it("répond 200 sans incrémenter le compteur pour un robot", async () => {
+    const response = await postDetailView(googlebotSmartphone)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getDetailViewCount()).toBe(0)
+  })
+
+  it("répond 200 sans incrémenter le compteur sans user-agent", async () => {
+    const response = await postDetailView(undefined)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getDetailViewCount()).toBe(0)
+  })
+
+  it("incrémente toujours postuler_click pour un robot", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: `/api/v3/jobs/${job._id}/stats/postuler_click`,
+      headers: { "user-agent": googlebotSmartphone },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect((await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.stats_postuler).toBe(1)
+  })
+})
