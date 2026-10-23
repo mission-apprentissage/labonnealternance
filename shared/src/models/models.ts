@@ -18,6 +18,8 @@ import type { IModelDescriptor } from "./common.js"
 import credentialsModel from "./credentials.model.js"
 import customEmailETFAModel from "./custom-email-etfa.model.js"
 import decaContratsModel from "./deca-contrats.model.js"
+import detectionAlertsModel from "./detection-alerts.model.js"
+import detectionRulesModel from "./detection-rules.model.js"
 import diplomesMetiersModel from "./diplomes-metiers.model.js"
 import domainesMetiersModel from "./domaines-metiers.model.js"
 import elligibleTrainingModel from "./elligible-training.model.js"
@@ -108,6 +110,8 @@ const modelDescriptorMap = {
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
   [decaContratsModel.collectionName]: decaContratsModel,
+  [detectionAlertsModel.collectionName]: detectionAlertsModel,
+  [detectionRulesModel.collectionName]: detectionRulesModel,
   [diplomesMetiersModel.collectionName]: diplomesMetiersModel,
   [domainesMetiersModel.collectionName]: domainesMetiersModel,
   [elligibleTrainingModel.collectionName]: elligibleTrainingModel,
