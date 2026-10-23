@@ -34,7 +34,7 @@
 
     - name: "[{{ pr_number }}] creation du fichier docker compose"
       ansible.builtin.template:
-        src: "{{inventory_dir}}/../docker-compose.preview.yml"
+        src: "{{inventory_dir}}/../docker-compose.preview-pr.yml"
         dest: "/opt/app/projects/{{ pr_number }}/docker-compose.yml"
 
     - name: "Check if repository exists"
@@ -95,7 +95,7 @@
     - name: "[{{ pr_number }}] Check if database is already seeded"
       shell:
         cmd: >
-          docker compose -f /opt/app/docker-compose.preview-system.yml exec -T mongodb
+          docker compose -f /opt/app/docker-compose.preview.yml exec -T mongodb
           mongosh
           "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/preview_{{ pr_number }}?authSource=local&directConnection=true"
           --eval "db.getCollectionNames().length"
@@ -158,7 +158,7 @@
           exit 1
 
     # Crée aussi les MongoDB Search indexes de la base preview_<PR> via le driver
-    # (createSearchIndexes) et seed les synonymes — mongot tourne dans preview-system.
+    # (createSearchIndexes) et seed les synonymes — mongot tourne dans la pile partagée de la preview (docker-compose.preview.yml).
     - name: "[{{ pr_number }}] Create MongoDB indexes (before migrations)"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
@@ -179,7 +179,7 @@
     - name: "[{{ pr_number }}] Trigger ACME companion"
       shell:
         chdir: /opt/app
-        cmd: docker exec nginx-proxy-acme /app/signal_le_service
+        cmd: docker exec "$(docker ps -q --filter label=com.docker.compose.project=app --filter label=com.docker.compose.service=acme-companion)" /app/signal_le_service
 
     - name: "[{{ pr_number }}] Register database in Metabase"
       shell:
@@ -225,7 +225,7 @@
     - name: "[{{ pr_number }}] Remove database"
       shell:
         cmd: >
-          docker compose -f /opt/app/docker-compose.preview-system.yml exec -T mongodb
+          docker compose -f /opt/app/docker-compose.preview.yml exec -T mongodb
           mongosh
           "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/preview_{{ pr_number }}?authSource=local&directConnection=true"
           --eval "db.dropDatabase()"
