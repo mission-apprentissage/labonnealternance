@@ -1,10 +1,8 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
-import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import type { CSSProperties } from "react"
 import { useMemo, useState } from "react"
 import type { IJobsPartnersOfferForAdminJSON } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobs-partners.model"
@@ -16,6 +14,7 @@ import { getJobsPartnersForAdmin } from "@/utils/api"
 import { pluralize } from "@/utils/strutils"
 import { AdminSearchInput } from "../_components/AdminSearchInput"
 import { MultiSelect } from "../_components/MultiSelect"
+import { PaginationButton } from "../_components/PaginationButton"
 import { OFFER_ID_EXAMPLE, validateOfferId } from "../_utils/admin-search-validation"
 import { getOffresPartenairesColumns } from "../_utils/offresPartenairesColumns"
 import { ConfirmationClassificationOffre, ConfirmationDesactivationOffre } from "./OffresPartenairesModals"
@@ -23,48 +22,6 @@ import { ConfirmationClassificationOffre, ConfirmationDesactivationOffre } from 
 const partnerLabelOptions = Object.values(JOBPARTNERS_LABEL).filter((label) => !jobPartnersExcludedFromFlux.includes(label))
 
 const PAGE_SIZE = 50
-
-// aria-disabled plutôt que disabled : un bouton désactivé perd le focus, qui retombe en haut de page. Le DSFR ne stylant que :disabled, l'apparence est reproduite ici
-function PaginationButton({
-  label,
-  targetPage,
-  pageCount,
-  isAvailable,
-  onClick,
-}: {
-  label: string
-  targetPage: number
-  pageCount: number
-  isAvailable: boolean
-  onClick: () => void
-}) {
-  return (
-    <Button
-      priority="secondary"
-      onClick={() => {
-        if (isAvailable) onClick()
-      }}
-      nativeButtonProps={{
-        "aria-disabled": !isAvailable,
-        "aria-label": isAvailable ? `${label}, page ${targetPage} sur ${pageCount}` : undefined,
-      }}
-      style={
-        isAvailable
-          ? undefined
-          : ({
-              color: "var(--text-disabled-grey)",
-              boxShadow: "inset 0 0 0 1px var(--border-disabled-grey)",
-              backgroundColor: "transparent",
-              cursor: "not-allowed",
-              "--hover": "inherit",
-              "--active": "inherit",
-            } as CSSProperties)
-      }
-    >
-      {label}
-    </Button>
-  )
-}
 
 export function OffresPartenairesList() {
   const [selectedPartnerLabels, setSelectedPartnerLabels] = useState<string[]>([])
