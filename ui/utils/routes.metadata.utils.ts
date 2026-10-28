@@ -322,9 +322,11 @@ export const METADATA = {
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): Metadata => ({
       title: `Informations de contact - ${ESPACE_LABEL[userType]} - La bonne alternance`,
     }),
+    // Fiches secteur /metiers/[slug] (#4573) : le title reprend la forme des requêtes qui y mènent
+    // (« alternance rh », « alternance sport »…) et la description décrit ce que la page liste.
     metierJobById: (metier: string): Metadata => ({
-      title: `${metier} en alternance - Découvrez les opportunités`,
-      description: `Explorez les différents métiers accessibles en ${metier} en alternance et trouvez celui qui correspond à votre projet professionnel.`,
+      title: `Alternance ${metier.charAt(0).toLowerCase()}${metier.slice(1)} : offres et formations | La bonne alternance`,
+      description: `${metier} en alternance : offres d'emploi en apprentissage ou en contrat pro, entreprises qui recrutent et formations du CAP au master partout en France. Service public gratuit.`,
     }),
     modificationEntreprise: (userType: string, establishment_id?: string): Metadata => ({ title: "Modification entreprise - La bonne alternance" }),
     offreUpsert: ({
