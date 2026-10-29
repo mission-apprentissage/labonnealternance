@@ -90,6 +90,22 @@ describe("buildRecherchePageMetadata — canonical auto-référent (découple le
     expect(canonicalOf("q=boulanger&contract_type=Apprentissage&page=2&lat=45.75&lon=4.85&address=Lyon")).toBe("/recherche?q=boulanger")
   })
 
+  it("garde le lieu libellé d'une recherche métier + ville dans le canonical `q` (cohérent avec le titre « à {lieu} », #5738)", () => {
+    expect(canonicalOf("q=boulanger&lieu_label=Lyon&latitude=45.75&longitude=4.85&radius=30&page=2&sort=date")).toBe(
+      "/recherche?q=boulanger&lieu_label=Lyon&latitude=45.75&longitude=4.85"
+    )
+  })
+
+  it("garde l'emprise d'un département ou d'une région dans le canonical `q`", () => {
+    expect(canonicalOf("q=boulanger&lieu_label=Bretagne&admin_area=region:53&latitude=48.2&longitude=-2.9")).toBe(
+      "/recherche?q=boulanger&lieu_label=Bretagne&admin_area=region%3A53"
+    )
+  })
+
+  it("ne change pas le canonical d'une URL `q` sans lieu libellé", () => {
+    expect(canonicalOf("q=boulanger&latitude=45.75&longitude=4.85")).toBe("/recherche?q=boulanger")
+  })
+
   it("garde le canonical métier legacy auto-référent sur les pages `job_name` réel", () => {
     expect(canonicalOf("job_name=Data analyst&romes=M1403")).toBe("/recherche?romes=M1403&job_name=Data+analyst")
   })
