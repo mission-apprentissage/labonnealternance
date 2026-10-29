@@ -95,7 +95,7 @@ Le serveur preview ne fait plus que :
 
 1. [../../.github/workflows/deploy_preview.yml](../../.github/workflows/deploy_preview.yml)
 2. [../../.infra/ansible/tasks/preview_pr.yml](../../.infra/ansible/tasks/preview_pr.yml)
-3. [../../.infra/docker-compose.preview.yml](../../.infra/docker-compose.preview.yml)
+3. [../../.infra/docker-compose.preview-pr.yml](../../.infra/docker-compose.preview-pr.yml)
 4. [../../docker-bake.json](../../docker-bake.json)
 5. [../../.bin/scripts/app-build.sh](../../.bin/scripts/app-build.sh)
 
@@ -237,7 +237,7 @@ Cela évite de déplacer le goulot d’étranglement du build vers une instabili
 
 ### Étape 6. Forcer le runtime à consommer la dernière image preview
 
-Le fichier [../../.infra/docker-compose.preview.yml](../../.infra/docker-compose.preview.yml) peut être renforcé avec `pull_policy: always` sur :
+Le fichier [../../.infra/docker-compose.preview-pr.yml](../../.infra/docker-compose.preview-pr.yml) peut être renforcé avec `pull_policy: always` sur :
 
 1. `server`
 2. `ui`
@@ -300,7 +300,7 @@ La phase 3 sera considérée comme correctement mise en place si :
 
 1. vérifier le rendu de `docker buildx bake --print preview`
 2. vérifier que les tags preview générés sont bien `mna_lba_server:<pr_number>` et `mna_lba_ui:<pr_number>`
-3. vérifier que [../../.infra/docker-compose.preview.yml](../../.infra/docker-compose.preview.yml) consomme ces tags exacts
+3. vérifier que [../../.infra/docker-compose.preview-pr.yml](../../.infra/docker-compose.preview-pr.yml) consomme ces tags exacts
 4. vérifier que le cleanup existant supprime bien ces mêmes tags
 
 ### Vérifications après bascule
@@ -336,7 +336,7 @@ Le rollback est simple car il remet en place le flux historique sans modifier l�
 2. compléter [../../.github/workflows/deploy_preview.yml](../../.github/workflows/deploy_preview.yml) avec Buildx, login GHCR et build push
 3. tester le build preview sur une PR dédiée
 4. supprimer clone Git et build local de [../../.infra/ansible/tasks/preview_pr.yml](../../.infra/ansible/tasks/preview_pr.yml)
-5. ajouter si nécessaire `pull_policy: always` dans [../../.infra/docker-compose.preview.yml](../../.infra/docker-compose.preview.yml)
+5. ajouter si nécessaire `pull_policy: always` dans [../../.infra/docker-compose.preview-pr.yml](../../.infra/docker-compose.preview-pr.yml)
 6. valider un cycle complet : déploiement, redéploiement, fermeture de PR et cleanup
 
 ## Résultat attendu en fin de phase

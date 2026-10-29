@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container, Typography } from "@mui/material"
+import { Box, Container, List, ListItem, Typography } from "@mui/material"
 import NextImage from "next/image"
 import { useRouter } from "next/navigation"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
@@ -207,6 +207,26 @@ export default function UnJeune1Solution() {
             </Box>
           </Box>
         </Box>
+      </Box>
+
+      <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
+        <Typography sx={{ color: fr.colors.decisions.text.title.blueFrance.default, fontSize: "28px", fontWeight: 800, lineHeight: "36px" }}>
+          Recrutez un jeune qui se forme tout en bénéficiant, sous certaines conditions, d’aides financières
+        </Typography>
+        <Typography sx={{ mt: fr.spacing("4v") }}>
+          Une aide permet d’accompagner financièrement les employeurs qui recrutent un apprenti. Elle est versée uniquement pendant la première année du contrat d’apprentissage.
+        </Typography>
+        <List sx={{ listStyleType: "disc", pl: 4, "& .MuiListItem-root": { display: "list-item", p: 0 } }}>
+          <ListItem>Pour les entreprises de moins de 250 salariés, l’aide peut aller jusqu’à 5 000 €.</ListItem>
+          <ListItem>Pour les entreprises de 250 salariés ou plus, l’aide peut aller jusqu’à 2 000 €.</ListItem>
+          <ListItem>Quel que soit l’effectif de l’entreprise, s’il s’agit d’un apprenti en situation de handicap, le montant de l’aide est de 6 000 €.</ListItem>
+        </List>
+        <Typography>
+          <DsfrLink href="https://travail-emploi.gouv.fr/laide-aux-employeurs-qui-recrutent-en-apprentissage">
+            En savoir plus
+            <span className="fr-sr-only">{" sur l’aide aux employeurs qui recrutent en apprentissage"}</span>
+          </DsfrLink>
+        </Typography>
       </Box>
       <Social utmParams={utmParams} />
     </Container>

@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 import type { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { isBotUserAgent } from "@/common/utils/bot-user-agent"
 import type { Server } from "@/http/server"
 import { addOffreDetailView } from "@/services/lbajob.service"
 import { getPartnerJobByIdV2 } from "@/services/partner-job.service"
@@ -53,7 +54,9 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { id } = req.params
-      await addOffreDetailView(id)
+      if (!isBotUserAgent(req.headers["user-agent"])) {
+        await addOffreDetailView(id)
+      }
       return res.send({})
     }
   )

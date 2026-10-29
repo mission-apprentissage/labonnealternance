@@ -11354,6 +11354,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isbot@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "isbot@npm:5.2.2"
+  checksum: b5bdcaf50959bfe79772125e09e7bbc7dd20440eb25ba48e0e230bfa068d80b636e5f0ac98d95adcb812c3436c496ea9f1518fabe28b1346aa4d3bc557e5cad0
+  languageName: node
+  linkType: hard
+
 "isexe@npm:^2.0.0":
   version: 2.0.0
   resolution: "isexe@npm:2.0.0"
@@ -16606,6 +16613,7 @@ __metadata:
     he: ^1.2.0
     iconv-lite: ^0.7.0
     is-semver: ^1.0.12
+    isbot: ^5.2.2
     job-processor: ^3.0.0
     jsonwebtoken: ^9.0.3
     lil-http-terminator: ^1.2.3
