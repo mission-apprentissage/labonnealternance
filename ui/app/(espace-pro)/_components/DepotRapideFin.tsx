@@ -24,6 +24,10 @@ const ZComponentProps = z.strictObject({
   fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
   userId: z.union([z.string(), zObjectId]),
   token: z.string().optional(),
+  inReview: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((value) => value === "true"),
 })
 
 type ComponentProps = z.output<typeof ZComponentProps>
@@ -43,7 +47,7 @@ export function DepotRapideFin() {
 function FinComponent(props: ComponentProps) {
   const toast = useToast()
 
-  const { jobId, email, withDelegation, fromDashboard, userId, token } = props
+  const { jobId, email, withDelegation, fromDashboard, userId, token, inReview } = props
 
   const resendMail = () => {
     sendValidationLink(userId.toString(), token)
@@ -129,7 +133,7 @@ function FinComponent(props: ComponentProps) {
             {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
           </Typography>
           {shouldDisplayAccountInformation ? (
-            <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} skipAccountValidationStep={userIsValidated} />
+            <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} skipAccountValidationStep={userIsValidated} inReview={inReview} />
           ) : null}
         </Box>
       </BorderedBox>
@@ -142,11 +146,14 @@ const AwaitingAccountDescription = ({
   email,
   onResendEmail,
   skipAccountValidationStep = false,
+  inReview = false,
 }: {
   withDelegation: boolean
   email: string
   onResendEmail: () => void
   skipAccountValidationStep?: boolean
+  /** Offre bloquée en modération : on ne dit pas pourquoi au recruteur (#5499). */
+  inReview?: boolean
 }) => {
   const lastStepNumber = skipAccountValidationStep ? 2 : 3
 
@@ -174,7 +181,7 @@ const AwaitingAccountDescription = ({
       )}
       <ContenuAvecPuce contenuPuce={lastStepNumber}>
         <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
-          Ensuite, votre offre sera publiée !
+          {inReview ? "Votre offre sera publiée après vérification par notre équipe" : "Ensuite, votre offre sera publiée !"}
         </Typography>
         <Typography>
           Elle sera visible pour les candidats depuis La bonne alternance, sur les <DsfrLink href={`${PAGES.static.aPropos.getPath()}#nos-partenaires`}>sites partenaires</DsfrLink>
