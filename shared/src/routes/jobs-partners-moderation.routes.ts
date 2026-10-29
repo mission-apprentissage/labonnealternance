@@ -118,17 +118,11 @@ export const ZModerationJobDetail = z.object({
 })
 export type IModerationJobDetail = z.output<typeof ZModerationJobDetail>
 
+// Sans ressource `job` : le service restreint au périmètre de l'utilisateur et répond 404 hors de celui-ci (cf. getScopedOffer).
 const moderationAccess = {
   auth: "cookie-session",
   access: "job:manage",
   resources: {},
-} as const
-
-// Le recruteur de l'offre a aussi `job:manage` : chaque handler vérifie en plus que l'utilisateur est admin ou OPCO de l'offre.
-const moderationJobAccess = {
-  auth: "cookie-session",
-  access: "job:manage",
-  resources: { job: [{ _id: { type: "params", key: "id" } }] },
 } as const
 
 // Décider et relancer l'analyse sont réservés aux administrateurs : un OPCO consulte la modération de son périmètre.
@@ -185,14 +179,14 @@ export const zJobsPartnersModerationRoutes = {
       path: "/moderation/jobs/:id",
       params: z.strictObject({ id: zObjectId }),
       response: { "200": ZModerationJobDetail },
-      securityScheme: moderationJobAccess,
+      securityScheme: moderationAccess,
     },
     "/moderation/jobs/:id/history": {
       method: "get",
       path: "/moderation/jobs/:id/history",
       params: z.strictObject({ id: zObjectId }),
       response: { "200": z.strictObject({ moderations: z.array(ZJobsPartnersModeration) }) },
-      securityScheme: moderationJobAccess,
+      securityScheme: moderationAccess,
     },
   },
   post: {

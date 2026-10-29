@@ -33,7 +33,10 @@ import { classifyOffreTexts, getLatestModeration } from "./jobs-partners-moderat
 import { MODERATION_REFUSED_REASON, MODERATION_VALIDATED_REASON } from "./jobs-partners-moderation-reasons"
 import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
 
-/** Un administrateur modère toutes les offres ; un OPCO consulte celles des entreprises de son OPCO, sans décider (#5499). */
+/**
+ * Un administrateur modère toutes les offres ; un OPCO consulte celles des entreprises de son OPCO, sans décider, et pas
+ * celles déposées par un CFA, comme dans le reste de son espace (cf. getUserRecruteursForManagement) (#5499).
+ */
 export type IModerationScope = { admin: true } | { admin: false; opcos: OPCOS_LABEL[] }
 
 export const getModerationScope = (userAccess: ComputedUserAccess | undefined): IModerationScope => {
@@ -43,7 +46,10 @@ export const getModerationScope = (userAccess: ComputedUserAccess | undefined): 
   return { admin: false, opcos }
 }
 
-const scopeFilter = (scope: IModerationScope): Filter<IJobsPartnersOfferPrivate> => (scope.admin ? {} : { workplace_opco: { $in: scope.opcos } })
+const scopeFilter = (scope: IModerationScope): Filter<IJobsPartnersOfferPrivate> => (scope.admin ? {} : { workplace_opco: { $in: scope.opcos }, is_delegated: { $ne: true } })
+
+const isInScope = (scope: IModerationScope, offer: IJobsPartnersOfferPrivate) =>
+  scope.admin || Boolean(offer.workplace_opco && scope.opcos.includes(offer.workplace_opco) && !offer.is_delegated)
 
 const MODERATED_STATUSES = [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MODERATION]
 
@@ -258,10 +264,8 @@ const getOfferWithRecruiter = async (id: ObjectId): Promise<IModerationOfferWith
 
 const getScopedOffer = async (scope: IModerationScope, id: ObjectId): Promise<IModerationOfferWithRecruiter> => {
   const offer = await getOfferWithRecruiter(id)
-  if (!offer) throw notFound("Offre introuvable")
-  if (!scope.admin && !(offer.workplace_opco && scope.opcos.includes(offer.workplace_opco))) {
-    throw forbidden("Cette offre ne relève pas de votre OPCO")
-  }
+  // 404 hors périmètre : un 403 fermerait la session de l'OPCO (cf. errorMiddleware) et confirmerait que l'offre existe.
+  if (!offer || !isInScope(scope, offer)) throw notFound("Offre introuvable")
   return offer
 }
 

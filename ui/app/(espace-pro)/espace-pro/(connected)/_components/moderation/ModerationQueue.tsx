@@ -134,7 +134,7 @@ const getColumns = (userType: IModerationUserType): ColumnDef<IModerationQueueIt
   },
 ]
 
-/** File « Offres à modérer » (#5499). Un OPCO la consulte en lecture seule, limitée par le serveur aux offres de son OPCO. */
+/** File « Offres à modérer » (#5499). Un OPCO la consulte en lecture seule, limitée par le serveur aux entreprises de son OPCO. */
 export function ModerationQueue({ userType }: { userType: IModerationUserType }) {
   const toast = useToast()
   const [conformity, setConformity] = useState<IModerationQueueConformity[]>([])
@@ -228,7 +228,9 @@ export function ModerationQueue({ userType }: { userType: IModerationUserType })
           value={accountStatus}
           onChange={withFirstPage(setAccountStatus)}
         />
-        <MultiSelect id="moderation-type-compte" label="Type de compte" width={200} items={ACCOUNT_TYPE_OPTIONS} value={accountType} onChange={withFirstPage(setAccountType)} />
+        {userType === "ADMIN" && (
+          <MultiSelect id="moderation-type-compte" label="Type de compte" width={200} items={ACCOUNT_TYPE_OPTIONS} value={accountType} onChange={withFirstPage(setAccountType)} />
+        )}
         {userType === "ADMIN" && <MultiSelect id="moderation-opco" label="OPCO" width={260} items={OPCO_OPTIONS} value={opco} onChange={withFirstPage(setOpco)} />}
       </Box>
 

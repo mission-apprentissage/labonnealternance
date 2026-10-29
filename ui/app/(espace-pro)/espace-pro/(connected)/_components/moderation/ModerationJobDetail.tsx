@@ -122,7 +122,8 @@ export function ModerationJobDetail({ jobId, userType }: { jobId: string; userTy
   const queuePage = userType === "OPCO" ? MODERATION_PAGES.opcoQueue : MODERATION_PAGES.adminQueue
 
   if (isError) {
-    const isNotFound = error instanceof ApiError && error.context.statusCode === 404
+    // 400 : identifiant malformé dans l'URL.
+    const isNotFound = error instanceof ApiError && [400, 404].includes(error.context.statusCode)
     return (
       <Box sx={{ maxWidth: 1200, marginX: "auto", my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: 0 } }}>
         <Alert

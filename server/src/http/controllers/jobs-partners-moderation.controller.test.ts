@@ -140,27 +140,50 @@ describe("modération des offres libres (#5499)", () => {
       expect((await getOffer(offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
     })
 
-    it("refuse à un OPCO une offre d'une entreprise d'un autre OPCO, et la retire de sa file", async () => {
+    it("répond 404 à un identifiant d'offre inconnu", async () => {
+      const { bearerToken } = await loginAdmin()
+
+      const response = await inject({ method: "GET", path: `/moderation/jobs/${new ObjectId()}`, headers: bearerToken })
+
+      expect(response.statusCode).toBe(404)
+    })
+
+    it("masque à un OPCO une offre d'une entreprise d'un autre OPCO, sans fermer sa session", async () => {
       const recruiter = await saveRecruiter()
-      const { offer, moderation } = await saveModeratedOffer(recruiter, { offer: { workplace_opco: OPCOS_LABEL.ATLAS } })
-      await loginOpcoAkto()
-      const headers = async () => (await logUser(httpClient, "opco-moderation")).bearerToken
+      const { offer } = await saveModeratedOffer(recruiter, { offer: { workplace_opco: OPCOS_LABEL.ATLAS } })
+      const { bearerToken } = await loginOpcoAkto()
 
-      const detail = await inject({ method: "GET", path: `/moderation/jobs/${offer._id}`, headers: await headers() })
-      const refuse = await inject({
-        method: "POST",
-        path: `/moderation/jobs/${offer._id}/refuse`,
-        headers: await headers(),
-        body: { moderation_id: moderation._id.toString(), agent_note: false },
-      })
+      const detail = await inject({ method: "GET", path: `/moderation/jobs/${offer._id}`, headers: bearerToken })
+      const history = await inject({ method: "GET", path: `/moderation/jobs/${offer._id}/history`, headers: bearerToken })
       // Le filtre OPCO de l'écran ne permet pas d'élargir le périmètre.
-      const queue = await inject({ method: "GET", path: `/moderation/jobs?opco=${encodeURIComponent(OPCOS_LABEL.ATLAS)}`, headers: await headers() })
-      const summary = await inject({ method: "GET", path: `/moderation/jobs/summary?ids=${offer._id}`, headers: await headers() })
+      const queue = await inject({ method: "GET", path: `/moderation/jobs?opco=${encodeURIComponent(OPCOS_LABEL.ATLAS)}`, headers: bearerToken })
+      const summary = await inject({ method: "GET", path: `/moderation/jobs/summary?ids=${offer._id}`, headers: bearerToken })
 
-      expect([detail.statusCode, refuse.statusCode]).toEqual([403, 403])
+      expect([detail.statusCode, history.statusCode]).toEqual([404, 404])
+      expect(queue.statusCode).toBe(200)
       expect(queue.json().jobs).toEqual([])
       expect(summary.json().jobs).toEqual([])
-      expect((await getOffer(offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
+    })
+
+    it("masque à un OPCO les offres déposées par un CFA, même pour une entreprise de son OPCO", async () => {
+      const entrepriseOffer = await saveModeratedOffer(await saveRecruiter())
+      const {
+        user: cfaUser,
+        cfa,
+        entreprise,
+      } = await saveCfaUserTest({ status: validatedUserStatus }, { siret: nextSiret(), raison_sociale: "CFA du test" }, { siret: nextSiret() })
+      const delegated = await saveModeratedOffer({ user: cfaUser, entreprise } as IRecruiter, {
+        offer: { is_delegated: true, cfa_siret: cfa.siret, cfa_legal_name: cfa.raison_sociale },
+      })
+      const { bearerToken } = await loginOpcoAkto()
+
+      const queue = await inject({ method: "GET", path: "/moderation/jobs", headers: bearerToken })
+      const summary = await inject({ method: "GET", path: `/moderation/jobs/summary?ids=${delegated.offer._id}&ids=${entrepriseOffer.offer._id}`, headers: bearerToken })
+      const detail = await inject({ method: "GET", path: `/moderation/jobs/${delegated.offer._id}`, headers: bearerToken })
+
+      expect(queue.json().jobs.map(({ _id }) => _id)).toEqual([entrepriseOffer.offer._id.toString()])
+      expect(summary.json().jobs.map(({ _id }) => _id)).toEqual([entrepriseOffer.offer._id.toString()])
+      expect(detail.statusCode).toBe(404)
     })
 
     it("laisse un OPCO consulter la modération des offres de son OPCO, sans décider ni relancer l'analyse", async () => {
