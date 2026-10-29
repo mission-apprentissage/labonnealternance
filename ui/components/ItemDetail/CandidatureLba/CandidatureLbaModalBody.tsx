@@ -6,14 +6,15 @@ import type { Result } from "email-misspelled"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import type { ChangeEvent } from "react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
-import z from "zod"
+import { APPLICANT_ANSWER_MAX_LENGTH } from "shared/models/applications.model"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 import { MultiSelectField } from "@/app/_components/FormComponents/MultiSelectField"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -21,7 +22,7 @@ import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { sessionStorageGet, sessionStorageSet } from "@/utils/local-storage"
 import { CandidatureLbaFileDropzone } from "./CandidatureLbaFileDropzone"
 import type { IApplicationSchemaInitValues } from "./services/get-schema"
-import { ApplicationFormikSchema, getInitialSchemaValues } from "./services/get-schema"
+import { ApplicationFormikSchema, formatCount, getInitialSchemaValues, QuestionAnswerSchema } from "./services/get-schema"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -51,11 +52,7 @@ export const CandidatureLbaModalBody = ({
   // on utilise donc un nom de champ indexé, et on rétablit l'intitulé de la question à la soumission.
   const questionFields = customQuestions.map((question, index) => ({ question, name: `custom_question_${index}` }))
 
-  // .trim().min(1) en plus du message de type : formik convertit la chaîne vide en undefined avant validation,
-  // mais une réponse composée uniquement d'espaces lui parvient telle quelle.
-  const questionZodExtension = Object.fromEntries(
-    questionFields.map(({ name }) => [name, z.string({ error: "Une réponse est obligatoire" }).trim().min(1, "Une réponse est obligatoire")])
-  )
+  const questionZodExtension = Object.fromEntries(questionFields.map(({ name }) => [name, QuestionAnswerSchema]))
 
   const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
   const questionsInitValues = Object.fromEntries(questionFields.map(({ question, name }) => [name, applicantAnswersSession?.[question] ?? ""]))
@@ -175,7 +172,7 @@ export const CandidatureLbaModalBody = ({
                   </Box>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
                     {questionFields.map(({ question, name }) => (
-                      <TextareaInput key={name} formik={formik} name={name} label={question} required />
+                      <TextareaInput key={name} formik={formik} name={name} label={question} maxLength={APPLICANT_ANSWER_MAX_LENGTH} required />
                     ))}
                   </Box>
                 </>
@@ -341,6 +338,7 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
 
 const EmailInput = ({ formik }: { formik: FormikType }) => {
   const [suggestedEmails, setSuggestedEmails] = useState<Result[]>([])
+  const emailInputRef = useRef<HTMLInputElement>(null)
 
   const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     const checkedEmail = emailChecker(e.target.value)
@@ -351,6 +349,8 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
   const clickSuggestion = (value: string) => {
     formik.setFieldValue("applicant_email", value)
     setSuggestedEmails([])
+    // Le bouton cliqué disparaît avec les suggestions : sans cela, la modale renvoie le focus sur « Fermer ».
+    emailInputRef.current?.focus()
   }
 
   return (
@@ -364,13 +364,14 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
         type: "email",
         autoComplete: "email",
         onChange: onEmailChange,
+        inputRef: emailInputRef,
       }}
       postInput={
         <>
           {suggestedEmails.length > 0 && (
             <Box sx={{ mt: 2, fontSize: "12px", color: "grey.600" }}>
               <Typography component="span" sx={{ mr: fr.spacing("4v") }}>
-                Voulez vous dire ?
+                Voulez-vous dire ?
               </Typography>
               {suggestedEmails.map((suggestedEmail) => (
                 <Button key={suggestedEmail.corrected} type="button" onClick={() => clickSuggestion(suggestedEmail.corrected)} priority="tertiary no outline" size="small">
@@ -379,6 +380,7 @@ const EmailInput = ({ formik }: { formik: FormikType }) => {
               ))}
             </Box>
           )}
+          <LiveStatus message={suggestedEmails.length > 0 ? `Voulez-vous dire ${suggestedEmails.map(({ corrected }) => corrected).join(" ou ")} ?` : ""} />
         </>
       }
     />
@@ -502,6 +504,7 @@ const TextareaInput = ({
   label,
   required,
   description,
+  maxLength,
   infoText,
 }: {
   formik: FormikType
@@ -509,6 +512,8 @@ const TextareaInput = ({
   label: string
   required?: boolean
   description?: string
+  /** Affiche la limite avant la saisie et un compteur sous le champ, sans bloquer la frappe : le dépassement passe par la validation. */
+  maxLength?: number
   infoText?: string
 }) => {
   const value = formik.values[name]
@@ -516,14 +521,18 @@ const TextareaInput = ({
   const error = formik.errors[name] as string
   const displayedErrorOpt = touched && error
   const hintId = `${name}-hint`
+  const counterId = `${name}-counter`
   const errorId = `${name}-error`
+  const hint = maxLength !== undefined ? [description, `${formatCount(maxLength)} caractères maximum`].filter(Boolean).join(". ") : description
+  const length = value?.length ?? 0
+  const isOverLimit = maxLength !== undefined && length > maxLength
 
   return (
     <FormControl required={required} error={Boolean(displayedErrorOpt)} fullWidth>
       <FormLabel htmlFor={name} sx={{ mb: fr.spacing("1v"), fontSize: "16px", lineHeight: "24px" }}>
         {label}
       </FormLabel>
-      {description && <HintText id={hintId}>{description}</HintText>}
+      {hint && <HintText id={hintId}>{hint}</HintText>}
       <TextareaAutosize
         style={{
           marginTop: fr.spacing("2v"),
@@ -539,9 +548,25 @@ const TextareaInput = ({
         // TextareaAutosize n'est pas un InputBase : ni l'état d'erreur ni required du FormControl ne lui parviennent
         required={required}
         aria-invalid={Boolean(displayedErrorOpt)}
-        aria-describedby={describedBy(description && hintId, displayedErrorOpt && errorId)}
+        aria-describedby={describedBy(hint && hintId, maxLength !== undefined && counterId, displayedErrorOpt && errorId)}
       />
-      <FormHelperText id={errorId}>{displayedErrorOpt}</FormHelperText>
+      {maxLength !== undefined ? (
+        <>
+          {/* wrap-reverse : l'erreur partage la ligne du compteur, et passe dessous quand la place manque. */}
+          <Box sx={{ display: "flex", flexWrap: "wrap-reverse", alignItems: "baseline", columnGap: fr.spacing("4v"), mt: fr.spacing("1v") }}>
+            <FormHelperText id={errorId} sx={{ m: 0 }}>
+              {displayedErrorOpt}
+            </FormHelperText>
+            <Typography id={counterId} sx={{ ml: "auto", fontSize: "12px", lineHeight: "20px", color: isOverLimit ? "#ce0500" : "grey.600" }}>
+              {formatCount(length)} {length > 1 ? "caractères" : "caractère"} sur {formatCount(maxLength)}
+            </Typography>
+          </Box>
+          {/* Annonce le passage de la limite pendant la frappe, l'erreur formik n'apparaissant qu'à la sortie du champ. */}
+          <LiveStatus message={isOverLimit ? `Votre réponse dépasse ${formatCount(maxLength)} caractères.` : ""} />
+        </>
+      ) : (
+        <FormHelperText id={errorId}>{displayedErrorOpt}</FormHelperText>
+      )}
       {Boolean(infoText) && (
         <Box sx={{ mt: fr.spacing("6v") }}>
           <InfoText>{infoText}</InfoText>

@@ -9,6 +9,7 @@ import { useEffect, useId, useRef, useState } from "react"
 
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
+import { readOpcoFilterCookie } from "@/utils/opco-search-filter.utils"
 
 import type { QSource, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, DEFAULT_SEARCH_MODE } from "../_utils/search.params.utils"
@@ -71,7 +72,7 @@ function MobileFakeField({ value, labelId, onOpen }: { value?: string; labelId: 
  * champ (cf. handleQChange). En mobile, la saisie passe par une modale plein écran ouverte par
  * un faux champ, pour garder les suggestions au-dessus du clavier.
  */
-export function SearchHomeForm({ id }: { id: string }) {
+export function SearchHomeForm({ id, showTitle = true }: { id: string; showTitle?: boolean }) {
   const router = useRouter()
   const fakeFieldLabelId = useId()
   const [q, setQ] = useState("")
@@ -140,6 +141,8 @@ export function SearchHomeForm({ id }: { id: string }) {
         radius: 20,
         page: 0,
         hitsPerPage: 20,
+        // Filtre de session reporté dans l'URL pour que le rendu serveur le voie aussi (cf. RechercheSeoContent).
+        opco: readOpcoFilterCookie(document.cookie),
       })
     )
   }
@@ -174,7 +177,7 @@ export function SearchHomeForm({ id }: { id: string }) {
         boxShadow: "0px 2px 6px 0px #00001229",
       }}
     >
-      <RechercheFormTitle />
+      {showTitle && <RechercheFormTitle />}
 
       {/* Tablette et Mobile : faux champ + bouton loupe → modale plein écran (métier, lieu, type de recherche). */}
       <Box sx={{ display: { xs: "block", lg: "none" } }}>

@@ -9,9 +9,11 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { zoneScopedId } from "@/app/_components/zone-ids"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
-import { useAutoRadius } from "../_hooks/use-auto-radius"
+import { pluralize } from "@/utils/strutils"
+import { isAutoRadiusActive, RADIUS_MAX, useAutoRadius } from "../_hooks/use-auto-radius"
 import { useSearchResults } from "../_hooks/use-search-results"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { ACTIVE_HIT_PARAM, buildSearchUrl } from "../_utils/search.params.utils"
@@ -101,6 +103,13 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const nbHits = result.data?.pages.at(-1)?.nbHits ?? 0
   const facets = result.data?.pages[0]?.facets
   const counts = result.data?.pages[0]?.counts
+
+  // Compteur annoncé, commun aux arbres desktop et mobile (RGAA 7.5). Vidé pendant chaque requête
+  // (hors « Voir plus », cf. SearchResultsList) : un tri ou une recherche qui donne le même nombre
+  // est annoncé à nouveau. Rien tant que l'élargissement automatique du rayon est en cours.
+  const isRefreshing = result.isFetching && !result.isFetchingNextPage
+  const stillWidening = nbHits === 0 && isAutoRadiusActive(params) && params.radius < RADIUS_MAX
+  const resultsStatus = !result.data || isRefreshing || stillWidening ? "" : nbHits === 0 ? "Aucun résultat" : pluralize(nbHits, "résultat")
 
   // Changements de filtres en attente de leurs compteurs : la spec veut results_count et
   // active_filters_count APRÈS application — on mémorise le diff au clic et on pousse les
@@ -261,6 +270,8 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
 
   return (
     <>
+      {/* Panneau mobile ouvert (aria-modal) : il porte sa propre annonce, celle-ci se tait. */}
+      <LiveStatus message={panel ? "" : resultsStatus} />
       <Box sx={{ display: "flex", flexDirection: "column", backgroundColor: fr.colors.decisions.background.alt.grey.default, minHeight: "100dvh" }}>
         {/* Desktop : bandeau de recherche + liste mono-colonne (affichage piloté par CSS pour éviter le flash d'hydratation).
             overflow-x clip : le fond blanc 100vw du bandeau collé inclut la scrollbar — clip
@@ -329,7 +340,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", py: fr.spacing("4v") }}>
               <SearchSortSelect params={params} onNavigate={handleFilterChange} />
               {result.data && (
-                <Box role="status" sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
+                <Box sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
                   {nbHits} résultat{nbHits > 1 ? "s" : ""}
                 </Box>
               )}
@@ -452,6 +463,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               onNavigate={handleFilterChange}
               onClose={() => setPanel(null)}
             />
+            <LiveStatus message={resultsStatus} />
           </SearchMobilePanel>
         )}
       </Box>

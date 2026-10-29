@@ -4,8 +4,8 @@ import { Box, Typography } from "@mui/material"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { DsfrIcon } from "@/components/DsfrIcon"
-import { LoadingEmptySpace } from "@/components/espace_pro"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
 import type { IntentionPageFormValues } from "./IntentionPageForm"
@@ -74,7 +74,10 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
   if (error || !data) {
     return (
       <Box sx={{ width: "80%", maxWidth: "800px", margin: "auto", pt: fr.spacing("5v"), display: "flex" }}>
-        <Box sx={{ fontSize: "20px", margin: "auto" }}>{error?.message ?? "Une erreur technique s'est produite"}</Box>
+        {/* Remplace le formulaire quand l'envoi ou l'annulation échoue : annoncé à l'affichage. */}
+        <Box role="alert" sx={{ fontSize: "20px", margin: "auto" }}>
+          {error?.message ?? "Une erreur technique s'est produite"}
+        </Box>
       </Box>
     )
   }

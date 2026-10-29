@@ -130,10 +130,11 @@ const config = {
     // Le rate-limit par consommateur est posé côté api-apprentissage (cf. issue #4806) ;
     // ces IPs sont allowlistées pour éviter qu'un consommateur sature le bucket des autres.
     // On ne charge que l'IP de l'environnement courant pour ne pas élargir la surface.
+    // Source : .infra/inventories/env.ini du repo api-apprentissage, à reporter à chaque migration de serveur.
     serverIps: (
       {
-        production: ["54.38.65.110"],
-        recette: ["162.19.79.129"],
+        production: ["51.178.234.4"],
+        recette: ["57.128.45.157"],
         local: [],
         pentest: [],
         preview: [],

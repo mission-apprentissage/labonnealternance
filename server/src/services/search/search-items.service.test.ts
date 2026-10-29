@@ -1,6 +1,7 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { countIndexed, findIndexed } from "@tests/utils/search-index.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
@@ -175,6 +176,17 @@ describe("searchItems.service — synchronisation jobs_partners → index de rec
       const doc = await findIndexed(job._id)
       expect(doc?.organization_name).toBe("Boulangerie du Marché")
       expect(doc?.address).toBe("3 place du Four 75012 Paris")
+    })
+
+    it("indexe l'OPCO de l'entreprise", async () => {
+      const job = generateJobsPartnersOfferPrivate({ workplace_opco: OPCOS_LABEL.ATLAS })
+      const sansOpco = generateJobsPartnersOfferPrivate({ workplace_opco: null })
+      await getDbCollection("jobs_partners").insertMany([job, sansOpco])
+
+      await upsertJobPartnersToSearchItems([job._id, sansOpco._id])
+
+      expect(await findIndexed(job._id)).toMatchObject({ opco: OPCOS_LABEL.ATLAS })
+      expect(await findIndexed(sansOpco._id)).toMatchObject({ opco: null })
     })
 
     it("préserve les keywords Mistral lors d'un ré-upsert", async () => {

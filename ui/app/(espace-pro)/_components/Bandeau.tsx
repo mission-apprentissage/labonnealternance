@@ -37,7 +37,7 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
         mb: fr.spacing("2v"),
       }}
     >
-      <Alert severity={type === "success" ? "success" : "error"} title={header} description={descriptionContent} />
+      <Alert severity={type === "success" ? "success" : "error"} role={type === "success" ? "status" : "alert"} title={header} description={descriptionContent} />
     </Box>
   )
 }

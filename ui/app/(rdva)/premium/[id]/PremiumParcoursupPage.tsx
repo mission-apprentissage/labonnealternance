@@ -6,6 +6,7 @@ import { Box, Container, Stack, Typography } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { IEtablissementJson } from "shared"
+import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { SuccessCircle } from "@/theme/components/icons"
@@ -28,6 +29,8 @@ export default function PremiumParcoursup() {
 
   const [hasRefused, setHasRefused] = useState(false)
   const [hasAccepted, setHasAccepted] = useState(false)
+  // Choix fait sur cette page, et non déjà enregistré au chargement : cf. FocusedTitle.
+  const [hasJustDecided, setHasJustDecided] = useState(false)
   const [etablissement, setEtablissement]: [IPremiumEtablissement | null, (e: any) => void] = useState()
 
   const accept = async () => {
@@ -38,6 +41,7 @@ export default function PremiumParcoursup() {
       },
     })
     setHasAccepted(true)
+    setHasJustDecided(true)
     window.scrollTo(0, 0)
   }
 
@@ -49,6 +53,7 @@ export default function PremiumParcoursup() {
       },
     })
     setHasRefused(true)
+    setHasJustDecided(true)
     window.scrollTo(0, 0)
   }
 
@@ -91,20 +96,20 @@ export default function PremiumParcoursup() {
           <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("6v"), alignItems: "center" }}>
             <SuccessCircle width={33} fillHexaColor="#000091" />
 
-            <Typography sx={{ fontWeight: 700 }}>
+            <FocusedTitle component="p" autoFocus={hasJustDecided} sx={{ fontWeight: 700 }}>
               Votre choix a bien été pris en compte Le service RDV Apprentissage ne sera pas activé pour vos formations. <br /> Si vous changez d'avis, merci de nous contacter à
               l'adresse suivante: <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Formulaire%20premium%20-%20Activer%20RDVA`}>{publicConfig.publicEmail}</DsfrLink>
-            </Typography>
+            </FocusedTitle>
           </Box>
         )}
         {hasAccepted && (
           <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("6v"), alignItems: "center" }}>
             <SuccessCircle width={33} fillHexaColor="#000091" />
-            <Typography sx={{ fontWeight: 700 }}>
+            <FocusedTitle component="p" autoFocus={hasJustDecided} sx={{ fontWeight: 700 }}>
               Félicitations, votre choix a bien été pris en compte.
               <br />
               Le service RDV Apprentissage est désormais activé sur Parcoursup.
-            </Typography>
+            </FocusedTitle>
           </Box>
         )}
         {!hasRefused && !hasAccepted && (

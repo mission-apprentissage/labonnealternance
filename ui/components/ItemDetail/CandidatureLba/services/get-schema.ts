@@ -1,5 +1,6 @@
 import type { IApplicationApiPrivateJSON } from "shared"
 import { ZApplicationApiPrivate } from "shared"
+import { APPLICANT_ANSWER_MAX_LENGTH } from "shared/models/applications.model"
 import { validatePhone } from "shared/validators/phone-validator"
 import { z } from "zod"
 
@@ -38,3 +39,14 @@ export const ApplicationFormikSchema = ZApplicationApiPrivate.pick({
     .trim()
     .refine(validatePhone, { message: "Téléphone non valide : veuillez utiliser le format international (+33XXX...) ou national (06XXX...)" }),
 })
+
+export const formatCount = (count: number) => count.toLocaleString("fr-FR")
+
+// .trim().min(1) en plus du message de type : formik convertit la chaîne vide en undefined avant validation,
+// mais une réponse composée uniquement d'espaces lui parvient telle quelle.
+// .max() avant .trim() : la réponse est envoyée sans trim, le serveur borne sa longueur brute.
+export const QuestionAnswerSchema = z
+  .string({ error: "Une réponse est obligatoire" })
+  .max(APPLICANT_ANSWER_MAX_LENGTH, `Votre réponse dépasse ${formatCount(APPLICANT_ANSWER_MAX_LENGTH)} caractères, veuillez la raccourcir.`)
+  .trim()
+  .min(1, "Une réponse est obligatoire")
