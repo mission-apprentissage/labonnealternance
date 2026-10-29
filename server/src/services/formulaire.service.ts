@@ -26,6 +26,8 @@ import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
+import type { IModerationTrigger, IOfferModerationStatus } from "shared/models/jobs-partners-moderation.model"
+import { MODERATION_CLASSIFICATION_STATUS, MODERATION_TRIGGER } from "shared/models/jobs-partners-moderation.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
@@ -36,6 +38,7 @@ import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mail-utils"
+import { maskPersonalData } from "@/common/utils/mask-personal-data"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/string-utils"
@@ -46,6 +49,17 @@ import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDat
 import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-notifications.service"
 import { buildJobStatusChangeUpdate, changeJobsPartnersStatus } from "./job-partner-status.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
+import {
+  buildOfferModerationFields,
+  classifyAndRecordInBackground,
+  classifyOffreTexts,
+  type IModerationTexts,
+  type ITimedClassification,
+  isBlockingClassification,
+  recordClassification,
+} from "./jobs-partners-moderation.service"
+import { alertOffreNonConforme } from "./jobs-partners-moderation-alerts"
+import { MODERATION_GRANTED_BY, MODERATION_RELEASED_REASON, moderationBlockReason } from "./jobs-partners-moderation-reasons"
 import mailer from "./mailer.service"
 import { moderateFreeText } from "./offre-moderation.service"
 import { getEntrepriseEngagementFranceTravail } from "./referentiel-engagement-entreprise.service"
@@ -78,6 +92,81 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
 const LBA_ORIGINS = new Set(["", "lba", "labonnealternance"])
 
 export const normalizeOfferOrigin = (origin?: string | null): string => (origin == null || LBA_ORIGINS.has(origin.trim().toLowerCase()) ? JOBS_PARTNERS_OFFER_ORIGIN.LBA : origin)
+
+type IPublicationStatus = JOB_STATUS_ENGLISH.ACTIVE | JOB_STATUS_ENGLISH.EN_ATTENTE
+
+/** Statut d'une offre LBA hors modération : publiée si le compte peut publier et que l'e-mail est confirmé, en attente sinon. */
+const getPublicationStatus = async ({ user, entreprise, isDelegated }: { user: IUserWithAccount; entreprise: IEntreprise; isDelegated: boolean }): Promise<IPublicationStatus> => {
+  let isOrganizationValid = false
+  if (isDelegated) {
+    isOrganizationValid = true
+  } else if ("status" in entreprise) {
+    const entrepriseStatus = getLastStatusEvent(entreprise.status)?.status ?? null
+    isOrganizationValid = entrepriseStatus === EntrepriseStatus.VALIDE && (await isAuthorizedToPublishJob({ userId: user._id, entrepriseId: entreprise._id }))
+  }
+  return isOrganizationValid && isUserEmailChecked(user) ? JOB_STATUS_ENGLISH.ACTIVE : JOB_STATUS_ENGLISH.EN_ATTENTE
+}
+
+const getOfferPublicationStatus = async (offer: IJobsPartnersOfferPrivate): Promise<IPublicationStatus> => {
+  const [user, entreprise] = await Promise.all([
+    offer.managed_by ? getDbCollection("userswithaccounts").findOne({ _id: offer.managed_by }) : null,
+    offer.workplace_siret ? getDbCollection("entreprises").findOne({ siret: offer.workplace_siret }) : null,
+  ])
+  if (!user || !entreprise) return JOB_STATUS_ENGLISH.EN_ATTENTE
+  return getPublicationStatus({ user, entreprise, isDelegated: Boolean(offer.is_delegated) })
+}
+
+/**
+ * Partie déterministe de moderateFreeText (masquage puis nettoyage), idempotente sur un texte déjà enregistré : le
+ * formulaire renvoie le texte stocké, que la passe IA, variable d'un appel à l'autre, ne permet pas de comparer.
+ */
+const normalizeFreeText = (text: string | null | undefined): string | null => {
+  const trimmed = text?.trim()
+  return trimmed ? sanitizeTextField(maskPersonalData(trimmed), true) || null : null
+}
+
+/** Textes classifiés d'une offre enregistrée : la description n'en fait partie que si le recruteur l'a rédigée. */
+export const getStoredModerationTexts = (offer: Pick<IJobsPartnersOfferPrivate, "offer_description" | "offer_description_mode" | "workplace_description">): IModerationTexts => ({
+  job_description: offer.offer_description_mode === OFFER_DESCRIPTION_MODE.CUSTOM ? offer.offer_description || null : null,
+  job_employer_description: offer.workplace_description || null,
+})
+
+/**
+ * Offre bloquée dès son dépôt et jamais publiée depuis : le mail « offre publiée » et le partage aux CFA n'ont pas
+ * encore eu lieu (cf. createJob, createJobDelegations). Le blocage au dépôt est la seule trace datée de la création.
+ */
+const isFirstPublication = (offer: Pick<IJobsPartnersOfferPrivate, "offer_status_history" | "created_at">): boolean => {
+  const [first] = offer.offer_status_history
+  const blockedAtCreation = first?.status === JOB_STATUS_ENGLISH.EN_MODERATION && first.date.getTime() === offer.created_at.getTime()
+  return blockedAtCreation && !offer.offer_status_history.some(({ status }) => status === JOB_STATUS_ENGLISH.ACTIVE)
+}
+
+/** Enregistre une classification dont l'issue est déjà écrite sur l'offre, et alerte sur un blocage pour non-conformité. */
+const recordEnforcedClassification = async ({
+  offer,
+  trigger,
+  classification,
+  texts,
+  originalText,
+  isBlocked,
+}: {
+  offer: Pick<IJobsPartnersOfferPrivate, "_id" | "managed_by">
+  trigger: IModerationTrigger
+  classification: ITimedClassification
+  texts: IModerationTexts
+  originalText: IModerationTexts | null
+  isBlocked: boolean
+}) => {
+  try {
+    await recordClassification({ jobId: offer._id, trigger, classification, texts, originalText, updateOffer: false })
+    if (isBlocked && classification.result.status === MODERATION_CLASSIFICATION_STATUS.OK) {
+      await alertOffreNonConforme(offer)
+    }
+  } catch (error) {
+    // Le statut de l'offre est déjà écrit : la trace manquante ne doit pas faire échouer le dépôt ou l'édition.
+    sentryCaptureException(error, { extra: { jobId: offer._id.toString(), trigger } })
+  }
+}
 
 export const createJob = async ({
   job,
@@ -115,22 +204,14 @@ export const createJob = async ({
     }
   }
 
-  const userId = user._id
-
   const is_delegated = mainRole.authorized_type === AccessEntityType.CFA
 
-  let isOrganizationValid = false
-  let entrepriseStatus: EntrepriseStatus | null = null
-  if (is_delegated) {
-    isOrganizationValid = true
-  } else if ("status" in entreprise) {
-    entrepriseStatus = getLastStatusEvent(entreprise.status)?.status ?? null
-    isOrganizationValid = entrepriseStatus === EntrepriseStatus.VALIDE && (await isAuthorizedToPublishJob({ userId, entrepriseId: entreprise._id }))
-  }
-  const isUserEmailConfirmed = isUserEmailChecked(user)
-  const isJobActive = isOrganizationValid && isUserEmailConfirmed
-
-  const newJobStatus = isJobActive ? JOB_STATUS_ENGLISH.ACTIVE : JOB_STATUS_ENGLISH.EN_ATTENTE
+  const texts: IModerationTexts = { job_description: moderatedDescription, job_employer_description: moderatedEmployerDescription }
+  const originalText: IModerationTexts = { job_description: job.job_description || null, job_employer_description: job.job_employer_description || null }
+  // Blocage actif : la classification a lieu pendant le dépôt, le statut en dépend. Sinon, après la réponse.
+  const classification = config.moderation.enforce ? await classifyOffreTexts(texts) : null
+  const isBlocked = classification !== null && isBlockingClassification(classification.result)
+  const newJobStatus = isBlocked ? JOB_STATUS_ENGLISH.EN_MODERATION : await getPublicationStatus({ user, entreprise, isDelegated: is_delegated })
   const codeRome = job.rome_code.at(0)
   if (!codeRome) {
     throw internal(`inattendu : pas de code rome pour une création d'offre pour siret=${siret}, role._id=${mainRole._id}`)
@@ -152,10 +233,28 @@ export const createJob = async ({
     status: newJobStatus,
     origin: normalizeOfferOrigin(origin),
   })
+  if (classification) {
+    Object.assign(newJobPartner, buildOfferModerationFields(classification.result))
+  }
+  if (classification && isBlocked) {
+    // Daté de la création : cf. isFirstPublication.
+    newJobPartner.offer_status_history.push({
+      status: JOB_STATUS_ENGLISH.EN_MODERATION,
+      reason: moderationBlockReason(classification.result),
+      date: newJobPartner.created_at,
+      granted_by: MODERATION_GRANTED_BY,
+    })
+  }
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
-  // Indexation immédiate dans l'index de recherche (no-op si l'offre est EN_ATTENTE).
+  // Indexation immédiate dans l'index de recherche (no-op si l'offre n'est pas active).
   syncJobPartnersToSearchItemsInBackground([newJobPartner._id])
+
+  if (classification) {
+    await recordEnforcedClassification({ offer: newJobPartner, trigger: MODERATION_TRIGGER.CREATION, classification, texts, originalText, isBlocked })
+  } else {
+    classifyAndRecordInBackground({ jobId: newJobPartner._id, trigger: MODERATION_TRIGGER.CREATION, texts, originalText })
+  }
 
   const userJobCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret })
 
@@ -321,8 +420,9 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     }
   })
   // les mails (CFA + confirmation recruteur) ne doivent partir qu'une fois le compte réellement validé :
-  // rôle GRANTED sur l'entreprise ET adresse email du recruteur confirmée.
-  if (shouldSentMailToCfa && isUserEmailChecked(managingUser)) {
+  // rôle GRANTED sur l'entreprise ET adresse email du recruteur confirmée. Une offre en modération n'est partagée
+  // qu'à sa publication (cf. notifyFirstPublication).
+  if (shouldSentMailToCfa && isUserEmailChecked(managingUser) && offer.offer_status !== JOB_STATUS_ENGLISH.EN_MODERATION) {
     // `formations` a déjà été chargé ci-dessus pour construire les délégations : il couvre les mêmes établissements
     // et projette déjà tous les champs nécessaires au récap (cf. notifyCfaDelegations), pas besoin de le relire.
     await notifyCfaDelegations(offer, delegations, managingUser, formations)
@@ -630,13 +730,13 @@ export const archiveFormulaire = async (userId: ObjectId, siret: string) => {
   const recruiterOffersFilter = { managed_by: userId, workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA }
 
   await changeJobsPartnersStatus({ ...recruiterOffersFilter, offer_status: JOB_STATUS_ENGLISH.ACTIVE }, { ...change, extraSet: { offer_expiration: now } })
-  // Second passage restreint aux offres EN ATTENTE : elles n'ont jamais été publiées, les archiver
+  // Second passage restreint aux offres EN ATTENTE ou EN MODERATION : elles ne sont pas publiées, les archiver
   // avec le reste du formulaire est bien l'intention. Le filtre portait auparavant sur
   // `$ne: ACTIVE`, ce qui repassait en Cancelled les offres POURVUE — un recrutement réussi
   // réécrit en annulation, donc perdu pour la mesure d'impact — et réécrivait `updated_at` sur des
   // offres déjà annulées, qui remontaient alors dans les tableaux de bord datés sur ce champ
   // (issue #5429). Une offre déjà close, quelle qu'en soit l'issue, n'a plus à être touchée ici.
-  await changeJobsPartnersStatus({ ...recruiterOffersFilter, offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE }, change)
+  await changeJobsPartnersStatus({ ...recruiterOffersFilter, offer_status: { $in: [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION] } }, change)
   const mainRole = await getMainRoleManagement(userId)
   if (mainRole?.authorized_type === AccessEntityType.CFA) {
     const entreprise = await getDbCollection("entreprises").findOne({ siret })
@@ -655,7 +755,7 @@ export const archiveFormulaire = async (userId: ObjectId, siret: string) => {
 export const archiveDelegatedFormulaire = async (userId: ObjectId, cfaId: ObjectId) => {
   const delegatedEntreprises = await getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfaId }).toArray()
   await asyncForEach(delegatedEntreprises, async (managedEntreprise) => {
-    const entreprise = await getDbCollection("entreprises").findOne({ _id: managedEntreprise._id })
+    const entreprise = await getDbCollection("entreprises").findOne({ _id: managedEntreprise.entreprise_id })
     if (entreprise) {
       await archiveFormulaire(userId, entreprise.siret)
     }
@@ -692,13 +792,39 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
 
   const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
 
+  const texts: IModerationTexts = {
+    job_description: moderatedDescription,
+    job_employer_description: job.job_employer_description !== undefined ? moderatedEmployerDescription || null : existingJob.workplace_description,
+  }
+  const originalText: IModerationTexts = {
+    job_description: job.job_description || null,
+    job_employer_description: job.job_employer_description || null,
+  }
+  const storedTexts = getStoredModerationTexts(existingJob)
+  // Seuls les textes libres sont classifiés : une édition qui ne les change pas ne remet pas l'offre en revue.
+  const textsChanged =
+    normalizeFreeText(job.job_description) !== storedTexts.job_description ||
+    (job.job_employer_description !== undefined && normalizeFreeText(job.job_employer_description) !== storedTexts.job_employer_description)
+  const wasInReview = existingJob.offer_status === JOB_STATUS_ENGLISH.EN_MODERATION
+  // Une offre déjà en modération y reste tant qu'un verdict ne l'en sort pas, même blocage désactivé.
+  const enforce = config.moderation.enforce || wasInReview
+  const classification = enforce && textsChanged ? await classifyOffreTexts(texts) : null
+  const isBlocked = classification !== null && isBlockingClassification(classification.result)
+
+  let offerStatus = getOfferStatus(job.job_status, RECRUITER_STATUS.ACTIF)
+  if (wasInReview) {
+    offerStatus = classification && !isBlocked ? await getOfferPublicationStatus(existingJob) : JOB_STATUS_ENGLISH.EN_MODERATION
+  } else if (isBlocked && (offerStatus === JOB_STATUS_ENGLISH.ACTIVE || offerStatus === JOB_STATUS_ENGLISH.EN_ATTENTE)) {
+    offerStatus = JOB_STATUS_ENGLISH.EN_MODERATION
+  }
+
   const jobPartnerUpdate: Partial<IJobsPartnersOfferPrivate> = {
     offer_opening_count: job.job_count ?? 1,
     offer_expiration: job.job_expiration_date,
     contract_start: resolveContractStartFromJob(job, existingJob.created_at),
     contract_start_type: job.job_start_type,
     contract_start_is_flexible: job.job_start_type === JOB_START_TYPE.PRECISE_DATE ? Boolean(job.job_start_date_flexible) : false,
-    offer_status: getOfferStatus(job.job_status, RECRUITER_STATUS.ACTIF),
+    offer_status: offerStatus,
     contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     updated_at: now,
     offer_rome_codes: job.rome_code ?? null,
@@ -713,9 +839,36 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     to_applicant_questions: job.to_applicant_questions,
     contract_rythm: job.job_rythm,
     ...(job.ft_support !== undefined && { ft_support: job.ft_support }),
+    ...(classification && buildOfferModerationFields(classification.result)),
   }
 
-  await getDbCollection("jobs_partners").updateOne({ _id: id }, { $set: jobPartnerUpdate })
+  const isModerationTransition = offerStatus !== existingJob.offer_status && (wasInReview || offerStatus === JOB_STATUS_ENGLISH.EN_MODERATION)
+  if (isModerationTransition && classification) {
+    const { offer_status, updated_at, ...extraSet } = jobPartnerUpdate
+    const updated = await getDbCollection("jobs_partners").findOneAndUpdate(
+      { _id: id },
+      buildJobStatusChangeUpdate({
+        status: offerStatus,
+        reason: isBlocked ? moderationBlockReason(classification.result) : MODERATION_RELEASED_REASON,
+        grantedBy: MODERATION_GRANTED_BY,
+        date: now,
+        extraSet,
+      }),
+      { returnDocument: "after" }
+    )
+    syncJobPartnersToSearchItemsInBackground([id])
+    if (updated && offerStatus === JOB_STATUS_ENGLISH.ACTIVE) {
+      await notifyFirstPublication(existingJob, updated)
+    }
+  } else {
+    await getDbCollection("jobs_partners").updateOne({ _id: id }, { $set: jobPartnerUpdate })
+  }
+
+  if (classification) {
+    await recordEnforcedClassification({ offer: existingJob, trigger: MODERATION_TRIGGER.EDITION, classification, texts, originalText, isBlocked })
+  } else if (textsChanged) {
+    classifyAndRecordInBackground({ jobId: id, trigger: MODERATION_TRIGGER.EDITION, texts, originalText })
+  }
 }
 
 export const updateJobDelegation = async (jobId: ObjectId, delegation: IDelegation) => {
@@ -792,7 +945,7 @@ export const closeOffreWithMotif = async ({
   }
 
   syncJobPartnersToSearchItemsInBackground([id])
-  return { alreadyClosed: found.offer_status !== JOB_STATUS_ENGLISH.ACTIVE }
+  return { alreadyClosed: found.offer_status !== JOB_STATUS_ENGLISH.ACTIVE && found.offer_status !== JOB_STATUS_ENGLISH.EN_MODERATION }
 }
 
 export const extendOffre = async (id: ObjectId, jobFields: Pick<IJobCreate, "job_start_date" | "job_start_type" | "job_start_date_flexible">): Promise<Date> => {
@@ -857,13 +1010,75 @@ const activateAndExtendOffre = async (id: ObjectId) => {
   return found
 }
 
+/** Première publication d'une offre bloquée dès son dépôt : mail « offre publiée » et partage aux CFA, différés jusque-là. */
+const notifyFirstPublication = async (before: IJobsPartnersOfferPrivate, published: IJobsPartnersOfferPrivate) => {
+  if (!isFirstPublication(before) || !published.managed_by) return
+  const user = await getDbCollection("userswithaccounts").findOne({ _id: published.managed_by })
+  if (!user) return
+  await sendMailNouvelleOffre(user, published)
+  await notifyCfaDelegations(published, published.delegations ?? [], user)
+}
+
 /**
- * activate offers if they are awaiting validation and the user is ready to publish its offers
+ * Applique une nouvelle classification à une offre en modération (nouvelle tentative, reprise) : un verdict réel la
+ * publie selon l'état du compte, comme à son dépôt ; sinon elle reste en modération avec l'issue de la tentative.
+ * N'agit que si l'offre est toujours en modération, pour ne pas écraser une décision prise entre-temps.
  */
-export const checkForJobActivations = async (userId: ObjectId, entrepriseId: ObjectId) => {
+export const applyClassificationToOfferInReview = async ({
+  offer,
+  trigger,
+  classification,
+  grantedBy,
+  offerModerationStatus,
+}: {
+  offer: IJobsPartnersOfferPrivate
+  trigger: IModerationTrigger
+  classification: ITimedClassification
+  grantedBy: string
+  /** Issue à écrire sur l'offre si la classification est indisponible : `epuise` après la dernière nouvelle tentative. */
+  offerModerationStatus?: IOfferModerationStatus
+}): Promise<{ released: boolean }> => {
+  const texts = getStoredModerationTexts(offer)
+  const previous = await getDbCollection("jobs_partners_moderations").findOne({ job_id: offer._id, original_text: { $ne: null } }, { sort: { created_at: -1 } })
+  await recordClassification({ jobId: offer._id, trigger, classification, texts, originalText: previous?.original_text ?? null, updateOffer: false })
+
+  const isBlocked = isBlockingClassification(classification.result)
+  const isUnavailable = classification.result.status !== MODERATION_CLASSIFICATION_STATUS.OK
+  const moderationFields = {
+    ...buildOfferModerationFields(classification.result),
+    ...(isUnavailable && offerModerationStatus ? { offer_moderation_status: offerModerationStatus } : {}),
+  }
+  const inReviewFilter = { _id: offer._id, offer_status: JOB_STATUS_ENGLISH.EN_MODERATION }
+  if (isBlocked) {
+    await getDbCollection("jobs_partners").updateOne(inReviewFilter, { $set: moderationFields })
+    if (!isUnavailable) {
+      await alertOffreNonConforme(offer).catch((error) => sentryCaptureException(error))
+    }
+    return { released: false }
+  }
+
+  const status = await getOfferPublicationStatus(offer)
+  const published = await getDbCollection("jobs_partners").findOneAndUpdate(
+    inReviewFilter,
+    buildJobStatusChangeUpdate({ status, reason: MODERATION_RELEASED_REASON, grantedBy, extraSet: moderationFields }),
+    { returnDocument: "after" }
+  )
+  if (!published) return { released: false }
+  syncJobPartnersToSearchItemsInBackground([offer._id])
+  if (status === JOB_STATUS_ENGLISH.ACTIVE) {
+    await notifyFirstPublication(offer, published)
+  }
+  return { released: true }
+}
+
+/**
+ * Publie les offres EN_ATTENTE d'un recruteur dont le compte peut désormais publier, et les renvoie. Une offre en
+ * modération n'en fait jamais partie : seul un verdict ou une décision humaine la publie.
+ */
+export const checkForJobActivations = async (userId: ObjectId, entrepriseId: ObjectId): Promise<IJobsPartnersOfferPrivate[]> => {
   const entreprise = await getDbCollection("entreprises").findOne({ _id: entrepriseId })
   if (!entreprise) {
-    return
+    return []
   }
   const awaitingJobs = await getDbCollection("jobs_partners")
     .find({
@@ -872,17 +1087,20 @@ export const checkForJobActivations = async (userId: ObjectId, entrepriseId: Obj
       workplace_siret: entreprise.siret,
     })
     .toArray()
-  if (!awaitingJobs.length) return
+  if (!awaitingJobs.length) return []
   const managedByObjectId = userId
   const [userOpt, roles] = await Promise.all([getDbCollection("userswithaccounts").findOne({ _id: managedByObjectId }), getGrantedRoles(userId.toString())])
-  if (!userOpt || !isUserEmailChecked(userOpt) || !entreprise) return
+  if (!userOpt || !isUserEmailChecked(userOpt) || !entreprise) return []
   const recruiterRole = roles.find((role) => role.authorized_id === entreprise._id.toString())
-  if (!recruiterRole) return
+  if (!recruiterRole) return []
+  const activatedOffers: IJobsPartnersOfferPrivate[] = []
   await asyncForEach(awaitingJobs, async (job) => {
     const extendedOffer = await activateAndExtendOffre(job._id)
     const delegations = extendedOffer.delegations ?? []
     await notifyCfaDelegations(extendedOffer, delegations, userOpt)
+    activatedOffers.push(extendedOffer)
   })
+  return activatedOffers
 }
 
 export function addExpirationPeriod(fromDate: Date | dayjs.Dayjs): dayjs.Dayjs {
@@ -1051,6 +1269,8 @@ function getOfferStatus(job_status: JOB_STATUS, recruiter_status: RECRUITER_STAT
       return JOB_STATUS_ENGLISH.ANNULEE
     case JOB_STATUS.EN_ATTENTE:
       return JOB_STATUS_ENGLISH.EN_ATTENTE
+    case JOB_STATUS.EN_MODERATION:
+      return JOB_STATUS_ENGLISH.EN_MODERATION
     default:
       assertUnreachable(`Unexpected job status ${job_status} in getOfferStatus` as never)
   }
@@ -1333,6 +1553,7 @@ const jobPartnerStatusToIJobStatus: Record<JOB_STATUS_ENGLISH, JOB_STATUS> = {
   [JOB_STATUS_ENGLISH.POURVUE]: JOB_STATUS.POURVUE,
   [JOB_STATUS_ENGLISH.ANNULEE]: JOB_STATUS.ANNULEE,
   [JOB_STATUS_ENGLISH.EN_ATTENTE]: JOB_STATUS.EN_ATTENTE,
+  [JOB_STATUS_ENGLISH.EN_MODERATION]: JOB_STATUS.EN_MODERATION,
 }
 
 export function jobPartnersToRecruiter(

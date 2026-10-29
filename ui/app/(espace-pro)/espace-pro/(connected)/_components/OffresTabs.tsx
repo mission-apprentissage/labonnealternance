@@ -55,7 +55,9 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
           {JOB_STATUS.ACTIVE}
         </Badge>
       )
+    // En modération, l'offre attend une décision sur son contenu : même libellé que l'attente de validation du compte.
     case JOB_STATUS.EN_ATTENTE:
+    case JOB_STATUS.EN_MODERATION:
       return (
         <Badge variant="awaiting" whiteSpace="normal" textTransform="uppercase">
           {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}

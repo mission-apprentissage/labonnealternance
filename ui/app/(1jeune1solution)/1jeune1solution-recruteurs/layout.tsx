@@ -9,6 +9,7 @@ import { footerId, mainId } from "@/app/_components/zone-ids"
 import { DsfrHeaderProps1J1S } from "@/app/(1jeune1solution)/components/Header1J1S"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { METADATA } from "@/utils/routes.metadata.utils"
+import "@/public/styles/fonts-marianne-extrabold.css"
 
 // Sans metadata ici, la page n'émettait aucun <title> : ni la page, ni ce layout, ni le
 // layout racine n'en déclaraient (RGAA 8.5).

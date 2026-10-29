@@ -2,6 +2,8 @@
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { ADMIN_AREA_PATTERN } from "shared/utils/admin-area"
+import type { IOpcoFilterKey } from "shared/utils/opco-search-filter"
+import { OPCO_FILTER_PARAM, parseOpcoFilter } from "shared/utils/opco-search-filter"
 import { toKebabCase } from "shared/utils/string-utils"
 
 export interface ISearchPageParams {
@@ -29,6 +31,12 @@ export interface ISearchPageParams {
    * pour la distance affichée et le tri par proximité.
    */
   admin_area?: string
+  /**
+   * OPCO imposé par un site partenaire (widget). Porté par l'URL pour survivre à la navigation dans
+   * `/recherche` sans cookie (iframe tierce, cookies bloqués) ; le cookie de session couvre les
+   * autres pages d'arrivée (cf. useSearchResults). Jamais exposé dans les filtres modifiables.
+   */
+  opco?: IOpcoFilterKey
   page: number
   hitsPerPage: number
 }
@@ -117,6 +125,7 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     longitude: hasGeoPair ? longitude : undefined,
     radius: getInt("radius", 20),
     admin_area: ADMIN_AREA_PATTERN.test(search.get("admin_area") ?? "") ? search.get("admin_area")! : undefined,
+    opco: parseOpcoFilter(search.get(OPCO_FILTER_PARAM)) ?? undefined,
     page: getInt("page", 0),
     hitsPerPage: getInt("hitsPerPage", 20),
   }
@@ -146,6 +155,7 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/recherche
   if (params.longitude !== undefined) query.set("longitude", params.longitude.toString())
   if (params.radius !== 20) query.set("radius", params.radius.toString())
   if (params.admin_area) query.set("admin_area", params.admin_area)
+  if (params.opco) query.set(OPCO_FILTER_PARAM, params.opco)
   if (params.page !== 0) query.set("page", params.page.toString())
   if (params.hitsPerPage !== 20) query.set("hitsPerPage", params.hitsPerPage.toString())
 
@@ -175,16 +185,34 @@ export function buildSearchPageTitle(params: ISearchPageParams): string {
 
 /**
  * Canonical auto-référent d'une page de résultats du nouveau moteur (`q`) : chemin + le métier
- * recherché (et le `mode` s'il n'est pas la valeur par défaut). Débarrassé du bruit d'URL (géo,
- * filtres, pagination, tri, toggles) pour consolider les variantes d'une même recherche métier sur
- * une page indexable unique. Indispensable avec le noindex de `/recherche` nue (#5034) : sans
- * canonical propre, les pages `?q=` héritent du canonical racine (`"./"` → `/recherche`) et seraient
- * dé-indexées avec elle. Sans `q`, renvoie `/recherche` (la page nue, cible de noindex).
+ * recherché, le lieu quand il est libellé (et le `mode` s'il n'est pas la valeur par défaut).
+ * Débarrassé du bruit d'URL (rayon, filtres, pagination, tri, toggles) pour consolider les variantes
+ * d'une même recherche métier + lieu sur une page indexable unique. Indispensable avec le noindex de
+ * `/recherche` nue (#5034) : sans canonical propre, les pages `?q=` héritent du canonical racine
+ * (`"./"` → `/recherche`) et seraient dé-indexées avec elle. Sans `q`, renvoie `/recherche` (la page
+ * nue, cible de noindex).
+ *
+ * Le lieu est gardé pour un métier + lieu (règle de #5044, appliquée ici à la suite de #5738) : le
+ * titre et le H1 disent « à {lieu} », le canonical doit désigner la même page. Il n'est repris que s'il
+ * suffit à reconstruire la recherche : libellé + emprise administrative (`admin_area`, département ou
+ * région : l'API filtre dessus et ignore le rayon) ou libellé + coordonnées (ville). Un libellé sans
+ * l'un des deux, ou des coordonnées seules, reste consolidé sur le métier seul (pas de variantes
+ * illimitées). Même logique que le canonical legacy (`buildRechercheCanonical`).
  */
 export function buildSearchPageCanonical(params: ISearchPageParams): string {
   if (!params.q) return "/recherche"
   const query = new URLSearchParams()
   query.set("q", params.q)
+  if (params.lieu_label) {
+    if (params.admin_area) {
+      query.set("lieu_label", params.lieu_label)
+      query.set("admin_area", params.admin_area)
+    } else if (params.latitude !== undefined && params.longitude !== undefined) {
+      query.set("lieu_label", params.lieu_label)
+      query.set("latitude", params.latitude.toString())
+      query.set("longitude", params.longitude.toString())
+    }
+  }
   if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
   return `/recherche?${query.toString()}`
 }

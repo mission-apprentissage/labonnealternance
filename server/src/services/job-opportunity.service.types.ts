@@ -16,7 +16,6 @@ export type TJobSearchQuery = {
   // sources?: LBA_ITEM_TYPE
   diploma?: INiveauDiplomeEuropeen
   opco?: string
-  opcoUrl?: string
   isMinimalData: boolean
   elligibleHandicapFilter?: boolean
 }

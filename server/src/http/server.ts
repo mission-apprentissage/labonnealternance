@@ -12,6 +12,7 @@ import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.rout
 import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/is-origin-local"
+import { PRIVATE_NETWORKS } from "@/common/utils/private-network"
 import config from "@/config"
 import { initBrevoWebhooks } from "@/services/brevo.service"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
@@ -70,13 +71,7 @@ export async function bind(app: Server) {
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
-  const allowedIps = [
-    new Netmask("127.0.0.0/8"),
-    new Netmask("10.0.0.0/8"),
-    new Netmask("172.16.0.0/12"),
-    new Netmask("192.168.0.0/16"),
-    ...config.apiApprentissage.serverIps.map((ip) => new Netmask(`${ip}/32`)),
-  ]
+  const allowedIps = [...PRIVATE_NETWORKS, ...config.apiApprentissage.serverIps.map((ip) => new Netmask(`${ip}/32`))]
   await app.register(fastifyRateLimt, {
     global: false,
     allowList: (req) => {

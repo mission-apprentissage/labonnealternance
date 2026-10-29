@@ -33,7 +33,7 @@
     - name: List all preview databases in MongoDB
       shell:
         cmd: >
-          docker compose -f /opt/app/docker-compose.preview-system.yml exec -T mongodb
+          docker compose -f /opt/app/docker-compose.preview.yml exec -T mongodb
           mongosh
           "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/admin?authSource=local&directConnection=true"
           --eval "db.adminCommand({ listDatabases: 1, nameOnly: true, filter: { name: /^preview_/ } }).databases.map(d => d.name).join('\n')"
@@ -45,7 +45,7 @@
       shell:
         cmd: |
           if [ ! -d "/opt/app/projects/{{ item | replace('preview_', '') }}" ]; then
-            docker compose -f /opt/app/docker-compose.preview-system.yml exec -T mongodb \
+            docker compose -f /opt/app/docker-compose.preview.yml exec -T mongodb \
               mongosh \
               "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/{{ item }}?authSource=local&directConnection=true" \
               --eval "db.dropDatabase()" --quiet

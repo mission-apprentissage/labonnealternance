@@ -38,6 +38,8 @@ import { generateFranceTravailAccess } from "./france-travail/generate-france-tr
 import { createRoleManagement360 } from "./metabase/metabase-role-management360"
 import { create as createMigration, status as statusMigration, up as upMigration } from "./migrations/migrations"
 import { sendMiseEnRelation } from "./mise-en-relation/send-mise-en-relation"
+import { purgeModerationTexts } from "./moderation/purge-moderation-texts"
+import { repriseExhaustedClassifications, retryUnavailableClassifications } from "./moderation/retry-classification"
 import { closeJobsPartnersOnApplicationThreshold } from "./offre-partenaire/close-jobs-partners-on-application-threshold"
 import { expireJobsPartners } from "./offre-partenaire/expire-jobs-partners"
 import { importers } from "./offre-partenaire/jobs-partners.importer"
@@ -122,6 +124,23 @@ export async function setupJobProcessor() {
           "Alerte sur le taux d'auto-validation des comptes": {
             cron_string: "0 7 * * *",
             handler: async () => autoValidationRateAlert(),
+            tag: "main",
+          },
+          // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners) : deux exécutions concurrentes classifient au
+          // pire deux fois la même offre, seule la première tentative concluante la sort de modération.
+          "Nouvelle tentative de classification des offres bloquées": {
+            cron_string: "*/5 * * * *",
+            handler: async () => retryUnavailableClassifications(),
+            tag: "main",
+          },
+          "Reprise de la classification des offres bloquées sans verdict": {
+            cron_string: "0 6 * * *",
+            handler: async () => repriseExhaustedClassifications(),
+            tag: "main",
+          },
+          "Purge des textes de modération de plus d'un (1) an": {
+            cron_string: "40 0 * * *",
+            handler: async () => purgeModerationTexts(),
             tag: "main",
           },
           "Mise à jour des adresses emails bloquées": {

@@ -1,10 +1,12 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { describe, expect, it, vi } from "vitest"
 
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import * as searchService from "@/services/search/search.service"
 
 // Intercepte les appels `aggregate` sur search_jobs (corpus du mode par défaut) pour simuler un échec mongot précis
 // (même pattern que search.service.test.ts), sans toucher au reste de la stack.
@@ -226,6 +228,38 @@ describe("search.controller", () => {
         expect(await getDbCollection("search_queries").findOne({ q: "page1" })).toBeNull()
       })
 
+      it("logue une requête marquée internal venant d'une IP publique", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=internePublique&page=0&internal=true", remoteAddress: "203.0.113.10" })
+        expect(response.statusCode).toBe(200)
+
+        await waitForLoggedQuery("internePublique")
+      })
+
+      it("ignore un X-Forwarded-For privé forgé : seul le dernier saut ajouté par le proxy compte", async () => {
+        const response = await httpClient().inject({
+          method: "GET",
+          path: "/api/v1/search?q=xffForge&page=0&internal=true",
+          remoteAddress: "172.18.0.1",
+          headers: { "x-forwarded-for": "10.0.0.1, 203.0.113.10" },
+        })
+        expect(response.statusCode).toBe(200)
+
+        await waitForLoggedQuery("xffForge")
+      })
+
+      it("ne logue pas une requête internal relayée par le proxy pour notre SSR", async () => {
+        const response = await httpClient().inject({
+          method: "GET",
+          path: "/api/v1/search?q=ssrViaProxy&page=0&internal=true",
+          remoteAddress: "172.18.0.1",
+          headers: { "x-forwarded-for": "172.18.0.1" },
+        })
+        expect(response.statusCode).toBe(200)
+
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        expect(await getDbCollection("search_queries").findOne({ q: "ssrViaProxy" })).toBeNull()
+      })
+
       it("logue status=degraded quand searchItems replie après un dépassement de maxClauseCount", async () => {
         const spy = mockFirstAggregateCallToFail("Query exceeded maxClauseCount")
         try {
@@ -256,6 +290,82 @@ describe("search.controller", () => {
           spy.mockRestore()
         }
       })
+    })
+  })
+
+  // cf. PUBLIC_MAX_HITS_PER_PAGE et PUBLIC_MAX_PAGES dans search.controller.ts
+  describe("plafonds hors réseau interne", () => {
+    const PUBLIC_IP = "203.0.113.10"
+    const BROWSER = { "sec-fetch-site": "same-origin" }
+
+    type Caller = { remoteAddress?: string; headers?: Record<string, string> }
+    const publicBrowser: Caller = { remoteAddress: PUBLIC_IP, headers: BROWSER }
+    const publicScript: Caller = { remoteAddress: PUBLIC_IP }
+    const publicCrossSite: Caller = { remoteAddress: PUBLIC_IP, headers: { "sec-fetch-site": "cross-site" } }
+    const internal: Caller = {}
+
+    const call = (path: string, caller: Caller) => httpClient().inject({ method: "GET", path, ...caller })
+
+    const hitsPerPageSent = async (path: string, caller: Caller) => {
+      const spy = vi.spyOn(searchService, "searchItems")
+      try {
+        expect((await call(path, caller)).statusCode).toBe(200)
+        return spy.mock.calls[0][0].hitsPerPage
+      } finally {
+        spy.mockRestore()
+      }
+    }
+
+    const nbPagesReturned = async (caller: Caller) => {
+      const original = searchService.searchItems
+      const spy = vi.spyOn(searchService, "searchItems").mockImplementation(async (params) => ({ ...(await original(params)), nbHits: 1140, nbPages: 57 }))
+      try {
+        const response = await call("/api/v1/search?q=plafond", caller)
+        expect(response.statusCode).toBe(200)
+        return response.json()
+      } finally {
+        spy.mockRestore()
+      }
+    }
+
+    it("ramène hitsPerPage à 20 pour une IP publique, navigateur ou non", async () => {
+      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", publicBrowser)).toBe(20)
+      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", publicScript)).toBe(20)
+      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=10", publicBrowser)).toBe(10)
+    })
+
+    it("laisse hitsPerPage intact depuis le réseau interne", async () => {
+      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", internal)).toBe(100)
+    })
+
+    it("plafonne nbPages à 20 pour un navigateur public, sans toucher à nbHits", async () => {
+      expect(await nbPagesReturned(publicBrowser)).toMatchObject({ nbPages: 20, nbHits: 1140 })
+    })
+
+    it("plafonne nbPages à 1 sans Sec-Fetch-Site same-origin, ce qui masque « Voir plus » au rendu Googlebot", async () => {
+      expect(await nbPagesReturned(publicScript)).toMatchObject({ nbPages: 1, nbHits: 1140 })
+      expect(await nbPagesReturned(publicCrossSite)).toMatchObject({ nbPages: 1 })
+    })
+
+    it("ne plafonne pas nbPages depuis le réseau interne, même sans l'en-tête", async () => {
+      expect(await nbPagesReturned(internal)).toMatchObject({ nbPages: 57 })
+    })
+
+    it("navigateur public : pages 0 à 19 servies, 400 au-delà", async () => {
+      expect((await call("/api/v1/search?page=19", publicBrowser)).statusCode).toBe(200)
+      expect((await call("/api/v1/search?page=20", publicBrowser)).statusCode).toBe(400)
+    })
+
+    it("sans Sec-Fetch-Site same-origin : page 0 servie, 400 dès la page 1", async () => {
+      expect((await call("/api/v1/search?page=0", publicScript)).statusCode).toBe(200)
+      expect((await call("/api/v1/search", publicScript)).statusCode).toBe(200)
+      expect((await call("/api/v1/search?page=1", publicScript)).statusCode).toBe(400)
+      expect((await call("/api/v1/search?page=1", publicCrossSite)).statusCode).toBe(400)
+    })
+
+    it("réseau interne : aucune limite de page, avec ou sans l'en-tête", async () => {
+      expect((await call("/api/v1/search?page=20", internal)).statusCode).toBe(200)
+      expect((await call("/api/v1/search?page=20", { headers: BROWSER })).statusCode).toBe(200)
     })
   })
 
@@ -291,6 +401,61 @@ describe("search.controller", () => {
 
     it("refuse un mode inconnu sur le suggest", async () => {
       const response = await httpClient().inject({ method: "GET", path: "/api/v1/search/suggest?q=boulanger&mode=tout" })
+      expect(response.statusCode).toBe(400)
+    })
+  })
+
+  describe("filtre opco", () => {
+    // Pipelines `$search` envoyés à chaque corpus : vérifie la traduction clé → libellé et la clause
+    // posée, sans dépendre de l'indexation asynchrone de mongot.
+    const searchPipelines = async (path: string) => {
+      const getDbCollectionOriginal = mongodbUtils.getDbCollection
+      const pipelines: { collection: string; pipeline: string }[] = []
+      const spy = vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
+        const collection = getDbCollectionOriginal(name)
+        if (!name.startsWith("search_") || name === "search_queries") return collection
+        return new Proxy(collection, {
+          get(target, prop, receiver) {
+            if (prop === "aggregate") {
+              return (...args: Parameters<typeof collection.aggregate>) => {
+                pipelines.push({ collection: name, pipeline: JSON.stringify(args[0]) })
+                return target.aggregate(...args)
+              }
+            }
+            const value = Reflect.get(target, prop, receiver)
+            return typeof value === "function" ? value.bind(target) : value
+          },
+        }) as typeof collection
+      })
+      try {
+        const response = await httpClient().inject({ method: "GET", path })
+        return { statusCode: response.statusCode, pipelines }
+      } finally {
+        spy.mockRestore()
+      }
+    }
+
+    const opcoClause = JSON.stringify({ equals: { path: "opco", value: OPCOS_LABEL.AKTO } })
+
+    it("filtre le corpus emplois sur le libellé de l'OPCO, clé insensible à la casse", async () => {
+      const { statusCode, pipelines } = await searchPipelines("/api/v1/search?q=boulanger&opco=akto")
+
+      expect(statusCode).toBe(200)
+      const jobs = pipelines.filter(({ collection }) => collection === "search_jobs")
+      expect(jobs.length).toBeGreaterThan(0)
+      for (const { pipeline } of jobs) expect(pipeline).toContain(opcoClause)
+    })
+
+    it("ne filtre pas les formations, qui n'ont pas d'OPCO", async () => {
+      const { statusCode, pipelines } = await searchPipelines("/api/v1/search?mode=formations&opco=akto")
+
+      expect(statusCode).toBe(200)
+      expect(pipelines.length).toBeGreaterThan(0)
+      for (const { pipeline } of pipelines) expect(pipeline).not.toContain('"path":"opco"')
+    })
+
+    it.each(["inconnu", "UNKNOWN_OPCO", encodeURIComponent(OPCOS_LABEL.AKTO)])("retourne 400 sur opco=%s", async (opco) => {
+      const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?opco=${opco}` })
       expect(response.statusCode).toBe(400)
     })
   })

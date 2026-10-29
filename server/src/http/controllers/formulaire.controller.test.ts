@@ -7,16 +7,21 @@ import { useServer } from "@tests/utils/server.test.utils"
 import { saveAdminUserTest, saveCfaUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import type { IJob } from "shared"
+import { JOB_STATUS } from "shared"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { generateJobFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
-import { AccessEntityType, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { AccessEntityType, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import config from "@/config"
 import { buildEstablishmentId } from "@/services/etablissement.service"
+import mailer from "@/services/mailer.service"
+import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
+import { CLASSIFICATION_SYSTEM_PROMPT } from "@/services/offre-classification/offre-classification.prompt"
 
 // Mock mailer service to avoid sending actual emails during tests
 vi.mock("@/services/mailer.service", () => {
@@ -613,6 +618,247 @@ describe("formulaire.controller", () => {
       const entrepriseManagedByCfa = await getDbCollection("entreprise_managed_by_cfa").findOne({ cfa_id: cfa._id, entreprise_id: entreprise._id })
       expect.soft(entrepriseManagedByCfa?.email).toBe(newContactInfo.email)
       expect.soft(entrepriseManagedByCfa?.phone).toBe(newContactInfo.phone)
+    })
+  })
+
+  describe("modération des textes libres (#5497, #5498)", () => {
+    type IClassifierReply = "conforme" | "a_verifier" | "non_conforme" | "panne"
+    const BLOQUANT = "Texte qui déclenche un verdict bloquant pour le test."
+    const DOUTEUX = "Texte qui déclenche un verdict à vérifier pour le test."
+    const CONFORME = "Vous participerez au développement de nos outils internes."
+    const EN_PANNE = "Texte dont la classification échoue pour le test."
+
+    const replyFor = (text: string): IClassifierReply => {
+      if (text.includes(BLOQUANT)) return "non_conforme"
+      if (text.includes(DOUTEUX)) return "a_verifier"
+      if (text.includes(EN_PANNE)) return "panne"
+      return "conforme"
+    }
+
+    // moderateFreeText reçoit null (texte masqué gardé tel quel) ; le classifieur répond selon le texte reçu.
+    const mockClassifier = () =>
+      vi.mocked(sendMistralMessages).mockImplementation(async ({ messages }) => {
+        if (messages[0]?.content !== CLASSIFICATION_SYSTEM_PROMPT) return null
+        const reply = replyFor(messages.find(({ role }) => role === "user")?.content ?? "")
+        if (reply === "panne") return null
+        const findings = reply === "conforme" ? [] : [{ category: "discrimination", severity: reply === "non_conforme" ? "bloquant" : "doute", verbatim: "extrait" }]
+        return JSON.stringify({ verdict: reply, findings })
+      })
+
+    const createOfferWithTexts = async ({
+      cookies,
+      establishment_id,
+      job_description,
+      job_employer_description,
+    }: {
+      cookies: Record<string, string>
+      establishment_id: string
+      job_description?: string
+      job_employer_description?: string
+    }) => {
+      const response = await entrepriseSdkInstance.createOffer({
+        establishment_id,
+        cookies,
+        job: { ...buildCreateJobDataFromReferentiel(referentielRome), job_description, job_employer_description },
+      })
+      expect(response.statusCode).toBe(200)
+      const { _id } = response.json() as OfferCreationResponse
+      return new ObjectId(_id)
+    }
+
+    const updateOfferTexts = async ({ jobId, cookies, job_description }: { jobId: ObjectId; cookies: Record<string, string>; job_description: string }) => {
+      const offer = (await entrepriseSdkInstance.getOffer({ jobId: jobId.toString(), cookies })).json() as GetOfferResponse
+      // Le formulaire renvoie toujours les compétences, que validateFieldsFromReferentielRome exige.
+      return entrepriseSdkInstance.updateOffer({
+        jobId: jobId.toString(),
+        cookies,
+        body: { ...jobToJobPatch(offer), competences_rome: referentielRome.competences, job_description },
+      })
+    }
+
+    const getModerations = (jobId: ObjectId) =>
+      getDbCollection("jobs_partners_moderations")
+        .find({ job_id: jobId }, { sort: { created_at: 1 } })
+        .toArray()
+    const publishedMails = () => vi.mocked(mailer.sendEmail).mock.calls.filter(([{ subject }]) => subject.includes("est publiée"))
+
+    beforeEach(() => {
+      mockClassifier()
+      return () => {
+        vi.mocked(sendMistralMessages).mockReset().mockResolvedValue(null)
+        return getDbCollection("jobs_partners_moderations").deleteMany({})
+      }
+    })
+
+    describe("blocage désactivé", () => {
+      it("classifie le dépôt après la réponse, sans effet sur le statut", async () => {
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: BLOQUANT })
+
+        await vi.waitFor(async () => expect(await getModerations(jobId)).toHaveLength(1))
+        const [moderation] = await getModerations(jobId)
+        expect(moderation).toMatchObject({ trigger: "creation", verdict: "non_conforme", status: "ok", review: null })
+        await vi.waitFor(async () =>
+          expect(await getDbCollection("jobs_partners").findOne({ _id: jobId })).toMatchObject({
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            offer_moderation_verdict: "non_conforme",
+            offer_moderation_status: "ok",
+            offer_moderation_review: null,
+          })
+        )
+      })
+
+      it("ne classifie pas une édition qui ne change aucun texte libre", async () => {
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: CONFORME })
+        await vi.waitFor(async () => expect(await getModerations(jobId)).toHaveLength(1))
+
+        const response = await updateOfferTexts({ jobId, cookies, job_description: CONFORME })
+
+        expect(response.statusCode).toBe(200)
+        // Le témoin : un texte modifié, lui, est reclassifié.
+        await updateOfferTexts({ jobId, cookies, job_description: `${CONFORME} Modifié.` })
+        await vi.waitFor(async () => expect((await getModerations(jobId)).map(({ trigger }) => trigger)).toEqual(["creation", "edition"]))
+      })
+    })
+
+    describe("blocage activé", () => {
+      beforeEach(() => {
+        config.moderation.enforce = true
+      })
+      afterEach(() => {
+        config.moderation.enforce = false
+      })
+
+      it.each([
+        ["conforme", JOB_STATUS_ENGLISH.ACTIVE, "ok", CONFORME],
+        ["a_verifier", JOB_STATUS_ENGLISH.ACTIVE, "ok", DOUTEUX],
+        ["non_conforme", JOB_STATUS_ENGLISH.EN_MODERATION, "ok", BLOQUANT],
+        ["indisponible", JOB_STATUS_ENGLISH.EN_MODERATION, "indisponible", EN_PANNE],
+      ] as const)("dépôt classifié %s ⇒ %s", async (_label, expectedStatus, expectedModerationStatus, text) => {
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: text })
+
+        const offer = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+        expect(offer?.offer_status).toBe(expectedStatus)
+        expect(offer?.offer_moderation_status).toBe(expectedModerationStatus)
+        expect(offer?.offer_moderation_review).toBeNull()
+        // Écrit pendant le dépôt, sans attente.
+        expect(await getModerations(jobId)).toEqual([expect.objectContaining({ trigger: "creation", status: expectedModerationStatus })])
+        if (expectedStatus === JOB_STATUS_ENGLISH.EN_MODERATION) {
+          expect(offer?.offer_status_history).toEqual([expect.objectContaining({ status: JOB_STATUS_ENGLISH.EN_MODERATION, granted_by: "classifier" })])
+        }
+      })
+
+      it("bloque une offre dont un seul champ n'a pas pu être classifié, même si l'autre est conforme", async () => {
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: CONFORME, job_employer_description: EN_PANNE })
+
+        // En échec, le classifieur rend a_verifier : le gate doit lire le statut avant le verdict.
+        expect(await getModerations(jobId)).toEqual([expect.objectContaining({ verdict: "a_verifier", status: "indisponible" })])
+        expect((await getDbCollection("jobs_partners").findOne({ _id: jobId }))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
+      })
+
+      it("bloque une offre dont la classification dépasse l'échéance", async () => {
+        const timeoutMs = config.moderation.classificationTimeoutMs
+        config.moderation.classificationTimeoutMs = 50
+        vi.mocked(sendMistralMessages).mockImplementation(async ({ messages, signal }) => {
+          if (messages[0]?.content !== CLASSIFICATION_SYSTEM_PROMPT) return null
+          await new Promise((resolve) => signal?.addEventListener("abort", resolve))
+          return null
+        })
+        try {
+          const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+          const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: CONFORME })
+
+          const [moderation] = await getModerations(jobId)
+          expect(moderation).toMatchObject({ status: "indisponible" })
+          expect(moderation.duration_ms).toBeGreaterThanOrEqual(50)
+          expect((await getDbCollection("jobs_partners").findOne({ _id: jobId }))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
+        } finally {
+          config.moderation.classificationTimeoutMs = timeoutMs
+        }
+      })
+
+      it("n'envoie aucun e-mail au recruteur à l'entrée en modération", async () => {
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const establishment_id = formulaire!.establishment_id
+        // La première offre d'un compte n'a jamais de mail « publiée » (cf. createJob) : seules les suivantes comptent.
+        await createOfferWithTexts({ cookies, establishment_id, job_description: CONFORME })
+        vi.mocked(mailer.sendEmail).mockClear()
+
+        await createOfferWithTexts({ cookies, establishment_id, job_description: BLOQUANT })
+        expect(publishedMails()).toHaveLength(0)
+
+        // Le témoin : une offre conforme déposée dans les mêmes conditions est annoncée.
+        await createOfferWithTexts({ cookies, establishment_id, job_description: CONFORME })
+        expect(publishedMails()).toHaveLength(1)
+      })
+
+      it("met en modération une offre active dont l'édition est non conforme", async () => {
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: CONFORME })
+
+        const response = await updateOfferTexts({ jobId, cookies, job_description: BLOQUANT })
+
+        expect(response.statusCode).toBe(200)
+        const offer = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+        expect(offer).toMatchObject({ offer_status: JOB_STATUS_ENGLISH.EN_MODERATION, offer_moderation_verdict: "non_conforme", offer_moderation_review: null })
+        expect(offer?.offer_status_history).toEqual([expect.objectContaining({ status: JOB_STATUS_ENGLISH.EN_MODERATION, granted_by: "classifier" })])
+        expect((await getModerations(jobId)).map(({ trigger, verdict }) => [trigger, verdict])).toEqual([
+          ["creation", "conforme"],
+          ["edition", "non_conforme"],
+        ])
+      })
+
+      it("publie une offre en modération corrigée par le recruteur, avec le mail de première publication", async () => {
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: BLOQUANT })
+        vi.mocked(mailer.sendEmail).mockClear()
+
+        const response = await updateOfferTexts({ jobId, cookies, job_description: CONFORME })
+
+        expect(response.statusCode).toBe(200)
+        const offer = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+        expect(offer).toMatchObject({ offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_verdict: "conforme" })
+        expect(offer?.offer_status_history.map(({ status }) => status)).toEqual([JOB_STATUS_ENGLISH.EN_MODERATION, JOB_STATUS_ENGLISH.ACTIVE])
+        expect(publishedMails()).toHaveLength(1)
+      })
+
+      it("ne reclassifie pas une édition qui renvoie le texte enregistré, même si la passe IA varie", async () => {
+        let moderationCalls = 0
+        const classifier = vi.mocked(sendMistralMessages).getMockImplementation()
+        vi.mocked(sendMistralMessages).mockImplementation(async (params) => {
+          if (params.messages[0]?.content === CLASSIFICATION_SYSTEM_PROMPT) return classifier!(params)
+          const userText = params.messages.find(({ role }) => role === "user")?.content ?? ""
+          return JSON.stringify({ text: `${userText} (passe ${++moderationCalls})` })
+        })
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: CONFORME })
+        const stored = (await entrepriseSdkInstance.getOffer({ jobId: jobId.toString(), cookies })).json() as GetOfferResponse
+
+        const response = await updateOfferTexts({ jobId, cookies, job_description: stored.job_description! })
+
+        expect(response.statusCode).toBe(200)
+        expect(moderationCalls).toBeGreaterThanOrEqual(2)
+        expect(await getModerations(jobId)).toHaveLength(1)
+      })
+
+      it("garde en modération une offre éditée sans changement de texte, quel que soit le statut envoyé", async () => {
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: BLOQUANT })
+        const offer = (await entrepriseSdkInstance.getOffer({ jobId: jobId.toString(), cookies })).json() as GetOfferResponse
+
+        const response = await entrepriseSdkInstance.updateOffer({
+          jobId: jobId.toString(),
+          cookies,
+          body: { ...jobToJobPatch(offer), competences_rome: referentielRome.competences, job_status: JOB_STATUS.ACTIVE, job_description: BLOQUANT },
+        })
+
+        expect(response.statusCode).toBe(200)
+        expect((await getDbCollection("jobs_partners").findOne({ _id: jobId }))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
+        expect(await getModerations(jobId)).toHaveLength(1)
+      })
     })
   })
 })

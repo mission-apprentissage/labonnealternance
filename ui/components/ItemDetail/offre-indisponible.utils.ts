@@ -11,6 +11,6 @@ export function getOffreIndisponibilite(item: ILbaItemJobsGlobal, now: Date = ne
   const { status, jobExpirationDate } = item.job ?? {}
   // Une offre en attente mais déjà expirée ne sera jamais publiée : « plus disponible » l'emporte.
   if (status === JOB_STATUS.POURVUE || status === JOB_STATUS.ANNULEE || isOfferExpired(jobExpirationDate, now)) return "plus_disponible"
-  if (status === JOB_STATUS.EN_ATTENTE) return "en_attente"
+  if (status === JOB_STATUS.EN_ATTENTE || status === JOB_STATUS.EN_MODERATION) return "en_attente"
   return null
 }

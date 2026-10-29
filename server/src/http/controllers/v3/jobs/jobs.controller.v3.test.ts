@@ -12,6 +12,7 @@ import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, ma
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IGeoPoint, IReferentielRome } from "shared/models/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { IJobOfferApiReadV3, IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { zJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
@@ -645,6 +646,28 @@ describe("GET /v3/jobs/:id", () => {
     expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unable to parse token invalid-signature" })
   })
 
+  it("ignore une offre en modération et n'expose aucun champ de modération (#5498)", async () => {
+    const inReview = generateJobsPartnersOfferPrivate({ offer_status: JOB_STATUS_ENGLISH.EN_MODERATION })
+    await getDbCollection("jobs_partners").insertOne(inReview)
+    await getDbCollection("jobs_partners").updateOne(
+      { _id: jobPartnerId },
+      { $set: { offer_moderation_verdict: "a_verifier", offer_moderation_status: "ok", offer_moderation_review: "validee" } }
+    )
+
+    const hidden = await httpClient().inject({ method: "GET", path: `/api/v3/jobs/${inReview._id}`, headers: { authorization: `Bearer ${token}` } })
+    const hiddenPublishing = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${inReview._id}/publishing-informations`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    const published = await httpClient().inject({ method: "GET", path: `/api/v3/jobs/${jobPartnerId}`, headers: { authorization: `Bearer ${token}` } })
+
+    expect(hidden.statusCode).toBe(404)
+    expect(hiddenPublishing.statusCode).toBe(404)
+    expect(published.statusCode).toBe(200)
+    expect(published.body).not.toMatch(/moderation|validee|a_verifier/)
+  })
+
   it("should return valid jobOpportunity data from jobs_partners collection", async () => {
     const response = await httpClient().inject({
       method: "GET",
@@ -752,5 +775,54 @@ describe("GET /v3/jobs/:id", () => {
       error: "Not Found",
       message: `Aucune offre d'emploi trouvée pour l'ID: ${nonExistentId.toString()}`,
     })
+  })
+})
+
+describe("POST /v3/jobs/:id/stats/detail_view", () => {
+  // Sans en-tête explicite, inject envoie l'UA « lightMyRequest », qu'isbot classe robot : chaque test fixe le sien.
+  const googlebotSmartphone =
+    "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.122 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+  const chrome = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+
+  const job = generateJobsPartnersOfferPrivate({ _id: new ObjectId() })
+
+  beforeEach(async () => {
+    await getDbCollection("jobs_partners").insertOne(job)
+  })
+
+  const postDetailView = (userAgent: string | undefined) =>
+    httpClient().inject({ method: "POST", path: `/api/v3/jobs/${job._id}/stats/detail_view`, headers: { "user-agent": userAgent } })
+  const getDetailViewCount = async () => (await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.stats_detail_view
+
+  it("incrémente le compteur pour un navigateur", async () => {
+    const response = await postDetailView(chrome)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getDetailViewCount()).toBe(1)
+  })
+
+  it("répond 200 sans incrémenter le compteur pour un robot", async () => {
+    const response = await postDetailView(googlebotSmartphone)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getDetailViewCount()).toBe(0)
+  })
+
+  it("répond 200 sans incrémenter le compteur sans user-agent", async () => {
+    const response = await postDetailView(undefined)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getDetailViewCount()).toBe(0)
+  })
+
+  it("incrémente toujours postuler_click pour un robot", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: `/api/v3/jobs/${job._id}/stats/postuler_click`,
+      headers: { "user-agent": googlebotSmartphone },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect((await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.stats_postuler).toBe(1)
   })
 })

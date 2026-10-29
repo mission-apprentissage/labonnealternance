@@ -41,6 +41,9 @@ import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formation
 import { generateFranceTravailAccess } from "./france-travail/generate-france-travail-access"
 import { createRoleManagement360 } from "./metabase/metabase-role-management360"
 import { sendMiseEnRelation } from "./mise-en-relation/send-mise-en-relation"
+import { purgeModerationTexts } from "./moderation/purge-moderation-texts"
+import { rejeuClassificationOffres } from "./moderation/rejeu-classification"
+import { repriseExhaustedClassifications, retryUnavailableClassifications } from "./moderation/retry-classification"
 import { processApec } from "./offre-partenaire/apec/process-apec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offre-partenaire/clever-connect/process-clever-connect"
 import { closeJobsPartnersOnApplicationThreshold } from "./offre-partenaire/close-jobs-partners-on-application-threshold"
@@ -156,6 +159,26 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
       { flags: "--from <date>", description: "Premier jour évalué (date ISO)" },
       { flags: "--to <date>", description: "Dernier jour évalué (date ISO)" },
     ],
+  },
+  {
+    fct: retryUnavailableClassifications,
+    description: "Nouvelle tentative de classification des offres LBA bloquées faute de verdict (backoff 5 min, 20 min, 1 h)",
+  },
+  {
+    fct: repriseExhaustedClassifications,
+    description: "Reprise de la classification des offres LBA bloquées dont toutes les nouvelles tentatives ont échoué",
+  },
+  {
+    fct: rejeuClassificationOffres,
+    description: "Rejoue le classifieur sur les offres LBA actives à texte libre, sans effet sur les offres : taux par verdict et latence",
+    cliOptions: [
+      { flags: "--limit <n>", description: "Nombre d'offres, les plus récentes d'abord (défaut : toutes)" },
+      { flags: "--concurrency <n>", description: "Classifications simultanées (défaut 2, la clé Mistral est partagée)" },
+    ],
+  },
+  {
+    fct: purgeModerationTexts,
+    description: "Purge les textes et extraits des classifications de plus d'un an",
   },
   {
     fct: opcoReminderJob,

@@ -1,6 +1,7 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { countIndexed, findIndexed } from "@tests/utils/search-index.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
@@ -177,6 +178,17 @@ describe("searchItems.service — synchronisation jobs_partners → index de rec
       expect(doc?.address).toBe("3 place du Four 75012 Paris")
     })
 
+    it("indexe l'OPCO de l'entreprise", async () => {
+      const job = generateJobsPartnersOfferPrivate({ workplace_opco: OPCOS_LABEL.ATLAS })
+      const sansOpco = generateJobsPartnersOfferPrivate({ workplace_opco: null })
+      await getDbCollection("jobs_partners").insertMany([job, sansOpco])
+
+      await upsertJobPartnersToSearchItems([job._id, sansOpco._id])
+
+      expect(await findIndexed(job._id)).toMatchObject({ opco: OPCOS_LABEL.ATLAS })
+      expect(await findIndexed(sansOpco._id)).toMatchObject({ opco: null })
+    })
+
     it("préserve les keywords Mistral lors d'un ré-upsert", async () => {
       const job = generateJobsPartnersOfferPrivate({ offer_title: "Titre initial" })
       await getDbCollection("jobs_partners").insertOne(job)
@@ -191,13 +203,13 @@ describe("searchItems.service — synchronisation jobs_partners → index de rec
       expect(doc?.keywords).toEqual(["javascript", "react"])
     })
 
-    it("retire une offre passée non-ACTIVE", async () => {
+    it.each([JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.EN_MODERATION])("retire une offre passée %s", async (offer_status) => {
       const job = generateJobsPartnersOfferPrivate({})
       await getDbCollection("jobs_partners").insertOne(job)
       await upsertJobPartnersToSearchItems([job._id])
       expect(await countIndexed(job._id)).toBe(1)
 
-      await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
+      await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { offer_status } })
       const result = await upsertJobPartnersToSearchItems([job._id])
 
       expect(result.removed).toBe(1)

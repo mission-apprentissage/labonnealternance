@@ -586,6 +586,19 @@ describe("createJobDelegations", () => {
     )
   })
 
+  it("enregistre la délégation d'une offre en modération sans la partager aux CFA (#5498)", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+    const job = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_MODERATION })
+    const etablissementId = new ObjectId().toString()
+    await saveFormationCatalogue({ etablissement_formateur_id: etablissementId, etablissement_formateur_siret: CFA_SIRET, etablissement_formateur_courriel: "cfa@mail.fr" })
+
+    await createJobDelegations({ jobId: job._id, etablissementCatalogueIds: [etablissementId] })
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
+    expect(updatedJob?.delegations).toHaveLength(1)
+    expect(mailer.sendEmail).not.toHaveBeenCalled()
+  })
+
   it("should create the delegation but send no mail when the recruiter's role is not GRANTED yet", async () => {
     const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, { status: [] }, { siret: ENTREPRISE_SIRET })
     const job = await saveJob(user, entreprise)
@@ -668,11 +681,22 @@ describe("checkForJobActivations", () => {
     expect(mailer.sendEmail).not.toHaveBeenCalled()
   })
 
+  it("ne publie jamais une offre en modération, et renvoie les offres publiées (#5498)", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+    const pending = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE })
+    const inReview = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_MODERATION })
+
+    const activated = await checkForJobActivations(user._id, entreprise._id)
+
+    expect(activated.map(({ _id }) => _id.toString())).toEqual([pending._id.toString()])
+    expect((await getDbCollection("jobs_partners").findOne({ _id: inReview._id }))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
+  })
+
   it("should do nothing when there is no awaiting job for this entreprise", async () => {
     const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
     await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.ACTIVE })
 
-    await expect(checkForJobActivations(user._id, entreprise._id)).resolves.toBeUndefined()
+    await expect(checkForJobActivations(user._id, entreprise._id)).resolves.toEqual([])
     expect(mailer.sendEmail).not.toHaveBeenCalled()
   })
 })
@@ -777,6 +801,20 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       expect.soft(job.offer_status_history).toHaveLength(1)
     })
 
+    it("clôt une offre en modération sans la présenter comme déjà close (#5498)", async () => {
+      const id = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_MODERATION, new ObjectId())
+
+      const { alreadyClosed } = await closeOffreWithMotif({
+        id,
+        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+        origin: JOB_CLOSURE_ORIGIN.ESPACE_PRO_RECRUTEUR,
+        job_status_comment: "Je ne suis plus en recherche",
+      })
+
+      expect.soft(alreadyClosed).toBe(false)
+      expect.soft((await readOffer(id)).offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+    })
+
     it("ne réécrit ni updated_at ni le motif sur une offre portant déjà le statut demandé", async () => {
       const updated_at = new Date("2026-02-01T00:00:00.000Z")
       const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), { updated_at, job_status_comment: "Je ne suis plus en recherche" })
@@ -827,14 +865,15 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
   })
 
   describe("archiveFormulaire", () => {
-    it("annule et trace les offres actives et en attente", async () => {
+    it("annule et trace les offres actives, en attente et en modération", async () => {
       const managed_by = new ObjectId()
       const activeId = await insertLbaOffer(JOB_STATUS_ENGLISH.ACTIVE, managed_by)
       const pendingId = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_ATTENTE, managed_by)
+      const inReviewId = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_MODERATION, managed_by)
 
       await archiveFormulaire(managed_by, siret)
 
-      for (const id of [activeId, pendingId]) {
+      for (const id of [activeId, pendingId, inReviewId]) {
         const job = await readOffer(id)
         expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
         expect.soft(job.offer_status_history).toHaveLength(1)

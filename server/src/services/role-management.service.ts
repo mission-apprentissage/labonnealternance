@@ -9,12 +9,14 @@ import { AccessEntityType, AccessStatus, ROLE_OPCO_NOT_APPLICABLE } from "shared
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last-status-event"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
+import { asyncForEach } from "@/common/utils/async-utils"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { buildEstablishmentId } from "./etablissement.service"
 import { archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations } from "./formulaire.service"
+import { sendMailNouvelleOffre } from "./formulaire-notifications.service"
 import mailer from "./mailer.service"
 import { applyPendingHandiEngagementIfGranted } from "./organization.service"
 import { sendWelcomeEmailToUserRecruteur } from "./user-recruteur.service"
@@ -401,14 +403,17 @@ export const activateUserRole = async ({ userId, organizationId, requestedBy }: 
     status: AccessStatus.GRANTED,
   })
 
-  if (updatedRole.authorized_type === AccessEntityType.ENTREPRISE) {
-    await checkForJobActivations(updatedRole.user_id, new ObjectId(updatedRole.authorized_id))
-  }
+  const activatedOffers =
+    updatedRole.authorized_type === AccessEntityType.ENTREPRISE ? await checkForJobActivations(updatedRole.user_id, new ObjectId(updatedRole.authorized_id)) : []
 
   await activateUser(user, requestedBy._id.toString())
 
   // validate user email addresse
   await sendWelcomeEmailToUserRecruteur(user, updatedRole)
+  // Le mail de bienvenue vaut confirmation de la validation ; chaque offre qu'elle publie est annoncée à part (#5498).
+  if (config.moderation.enforce) {
+    await asyncForEach(activatedOffers, (offer) => sendMailNouvelleOffre(user, offer))
+  }
 }
 
 export const isGrantedAndAutoValidatedRole = (role: IRoleManagement): boolean => {

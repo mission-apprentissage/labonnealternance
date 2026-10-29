@@ -130,10 +130,11 @@ const config = {
     // Le rate-limit par consommateur est posé côté api-apprentissage (cf. issue #4806) ;
     // ces IPs sont allowlistées pour éviter qu'un consommateur sature le bucket des autres.
     // On ne charge que l'IP de l'environnement courant pour ne pas élargir la surface.
+    // Source : .infra/inventories/env.ini du repo api-apprentissage, à reporter à chaque migration de serveur.
     serverIps: (
       {
-        production: ["54.38.65.110"],
-        recette: ["162.19.79.129"],
+        production: ["51.178.234.4"],
+        recette: ["57.128.45.157"],
         local: [],
         pentest: [],
         preview: [],
@@ -195,6 +196,12 @@ const config = {
   },
   mistralai: {
     apiKey: env.get("MISTALAI_API_KEY").required().asString(),
+  },
+  moderation: {
+    // À false, les offres LBA sont classifiées après la réponse, sans effet sur leur statut (#5498).
+    enforce: env.get("LBA_MODERATION_ENFORCE").default("false").asBool(),
+    // Au-delà, la classification est indisponible : l'offre passe InReview et sera réessayée.
+    classificationTimeoutMs: env.get("LBA_MODERATION_CLASSIFICATION_TIMEOUT_MS").default(10_000).asIntPositive(),
   },
   inserjeunes: {
     apiKey: env.get("IJ_MEN_API_KEY").required().asString(),

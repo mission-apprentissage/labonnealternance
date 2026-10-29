@@ -304,7 +304,8 @@ export default (server: Server) => {
       if (!job) {
         throw notFound("L'offre n'existe pas.")
       }
-      if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
+      // Une offre en modération reste modifiable : la modification relance la classification (#5498).
+      if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE && job.offer_status !== JOB_STATUS_ENGLISH.EN_MODERATION) {
         throw conflict("Offer is not active")
       }
       await patchOffre(jobId, req.body)

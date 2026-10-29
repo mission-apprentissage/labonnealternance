@@ -9,8 +9,9 @@ import type { IDiplomaParam } from "../routes/params.js"
 import { ZPointGeometry } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
-import { JOB_START_TYPE, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, ZDelegation, ZToApplicantQuestions } from "./job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH, JOB_STATUS_ENGLISH_PUBLIC, OFFER_DESCRIPTION_MODE, ZDelegation, ZToApplicantQuestions } from "./job.model.js"
 import { ZComputedJobPartnersDuplicateRef } from "./job-partners-duplicate-ref.js"
+import { MODERATION_REVIEW_STATUS, MODERATION_VERDICTS, OFFER_MODERATION_STATUS } from "./jobs-partners-moderation.model.js"
 import { zOpcoLabel } from "./opco.model.js"
 
 const collectionName = "jobs_partners" as const
@@ -146,7 +147,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_creation: z.date().nullable().describe("Date de creation de l'offre"),
   offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j"),
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
-  offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
+  offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH_PUBLIC).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
   offer_status_history: z.array(ZJobsPartnersOfferHistoryEvent).default([]).describe("Historique de l'offre"),
   to_applicant_questions: ZToApplicantQuestions,
 
@@ -206,6 +207,14 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
   .extend({
     _id: zObjectId,
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
+    offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Statut de l'offre"),
+    // Dernière classification de l'offre (détail dans jobs_partners_moderations, #5497), absente de l'API et des exports.
+    offer_moderation_verdict: z.enum(MODERATION_VERDICTS).nullish().describe("Pour les offres LBA uniquement, verdict de la dernière classification"),
+    offer_moderation_status: extensions.buildEnum(OFFER_MODERATION_STATUS).nullish().describe("Pour les offres LBA uniquement, issue de la dernière classification"),
+    offer_moderation_review: extensions
+      .buildEnum(MODERATION_REVIEW_STATUS)
+      .nullish()
+      .describe("Pour les offres LBA uniquement, décision humaine sur la dernière classification : null tant qu'elle est à traiter"),
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
     lba_url: z.string().nullable().default(null).optional(),
@@ -298,7 +307,7 @@ export const ZJobsPartnersPostApiBodyBase = z.object({
     .default(null),
   offer_opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.default(1),
   offer_origin: ZJobsPartnersOfferPrivate.shape.offer_origin,
-  offer_status: ZJobsPartnersOfferPrivate.shape.offer_status.default(JOB_STATUS_ENGLISH.ACTIVE),
+  offer_status: ZJobsPartnersOfferApi.shape.offer_status.default(JOB_STATUS_ENGLISH.ACTIVE),
   offer_multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast,
 
   workplace_siret: extensions.siret,

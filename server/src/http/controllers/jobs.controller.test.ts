@@ -63,6 +63,18 @@ describe("jobs.controller", () => {
         expect.soft(response.json().contact.phone).toBe("0600000000")
       })
 
+      it("n'a pas de fiche pour une offre en modération (#5498)", async () => {
+        const job = generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: JOB_STATUS_ENGLISH.EN_MODERATION })
+        await getDbCollection("jobs_partners").insertOne(job)
+
+        const response = await httpClient().inject({
+          method: "GET",
+          path: `/api/_private/jobs/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job._id.toString()}`,
+        })
+
+        expect(response.statusCode).toBe(404)
+      })
+
       it.each([JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.POURVUE, JOB_STATUS_ENGLISH.EN_ATTENTE])("ne remonte pas le téléphone si l'offre est %s", async (offer_status) => {
         const job = generateJobsPartnersOfferPrivate({
           partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
@@ -206,6 +218,23 @@ describe("jobs.controller", () => {
 
       expect(response.statusCode).toBe(200)
       expect(response.json()).toEqual({})
+    })
+
+    it.each([
+      ["un navigateur", 1, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"],
+      ["Googlebot", 0, "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"],
+    ])("pour %s, stats_detail_view vaut %i après l'appel", async (_, expectedCount, userAgent) => {
+      const job = generateJobsPartnersOfferPrivate({ _id: new ObjectId() })
+      await getDbCollection("jobs_partners").insertOne(job)
+
+      const response = await httpClient().inject({
+        method: "POST",
+        path: `/api/v1/jobs/matcha/${job._id}/stats/view-details`,
+        headers: { "user-agent": userAgent },
+      })
+
+      expect(response.statusCode).toBe(200)
+      expect((await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.stats_detail_view).toBe(expectedCount)
     })
   })
 })

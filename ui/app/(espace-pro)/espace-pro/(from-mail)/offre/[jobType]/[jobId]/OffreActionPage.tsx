@@ -1,11 +1,12 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Link, Typography } from "@mui/material"
+import { Box, Link } from "@mui/material"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import ClotureRecrutementForm, { type IClotureRecrutementPayload } from "@/app/(espace-pro)/_components/ClotureRecrutementForm"
 import { cancelOffre } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -19,15 +20,7 @@ const homeEditorialH2 = {
 
 export function OffreActionPage({ jobId, token }: { jobId: string; token: string }) {
   const [result, setResult] = useState<"ok" | "already-closed" | null>(null)
-  const resultHeadingRef = useRef<HTMLHeadingElement>(null)
   const router = useRouter()
-
-  // le bouton cliqué disparaît avec le formulaire : le focus suit le résultat
-  useEffect(() => {
-    if (result) {
-      resultHeadingRef.current?.focus()
-    }
-  }, [result])
 
   const cancelAction = () => router.push(PAGES.static.home.getPath())
 
@@ -40,9 +33,9 @@ export function OffreActionPage({ jobId, token }: { jobId: string; token: string
       }}
     >
       {result ? (
-        <Typography component="h2" ref={resultHeadingRef} tabIndex={-1} sx={homeEditorialH2}>
+        <FocusedTitle sx={homeEditorialH2}>
           {result === "already-closed" ? "Cette offre était déjà clôturée. Votre réponse a bien été enregistrée." : "Votre offre a été modifiée"}
-        </Typography>
+        </FocusedTitle>
       ) : (
         <ClotureRecrutementForm
           offreId={jobId}
