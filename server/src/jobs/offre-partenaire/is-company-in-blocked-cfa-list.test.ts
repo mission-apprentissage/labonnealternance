@@ -40,6 +40,13 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
     expect(isCompanyInBlockedCfaList("IEF2I EDUCATION")).toBe(true)
     expect(isCompanyInBlockedCfaList("IFCE")).toBe(true)
     expect(isCompanyInBlockedCfaList("IFCE INSTITUT FORMATION COMPTABLE EUROPE")).toBe(true)
+    expect(isCompanyInBlockedCfaList("My-BS")).toBe(true)
+    expect(isCompanyInBlockedCfaList("ISTEC - Ecole Supérieure de Commerce et de Marketing")).toBe(true)
+    expect(isCompanyInBlockedCfaList("HBC SCHOOL")).toBe(true)
+    expect(isCompanyInBlockedCfaList("Campus Pro")).toBe(true)
+    expect(isCompanyInBlockedCfaList("ESUP VANNES")).toBe(true)
+    expect(isCompanyInBlockedCfaList("UIMM")).toBe(true)
+    expect(isCompanyInBlockedCfaList("SmartForum")).toBe(true)
   })
 
   it("devrait trouver les CFA lorsqu'ils sont mentionnés dans un texte", () => {
