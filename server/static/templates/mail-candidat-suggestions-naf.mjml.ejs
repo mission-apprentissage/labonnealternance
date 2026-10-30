@@ -1,0 +1,165 @@
+<mjml>
+  <mj-head>
+    <mj-preview>Votre métier recrute aussi dans d’autres secteurs : <%= data.suggestions.length %> offres en alternance sélectionnées pour vous.</mj-preview>
+    <mj-breakpoint width="480px"></mj-breakpoint>
+    <mj-attributes>
+      <mj-all padding="0"></mj-all>
+      <mj-all font-family="Arial, sans-serif" />
+    </mj-attributes>
+    <mj-style>
+      @media only screen and (max-width: 799px) {
+      .text > div {
+      text-align: inherit !important;
+      }
+
+      .wrapper > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+
+      .section > table > tbody > tr > td {
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      }
+
+      .column > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+
+      .padB40 {
+      padding-bottom: 40px !important;
+      }
+
+      .image {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+
+      .image > table {
+      text-align: center !important;
+      margin: 0 auto !important;
+      }
+
+      .divider {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+
+      .button > table {
+      width: 100% !important;
+      }
+
+      .button > table > tbody > tr > td > a {
+      width: 80% !important;
+      }
+      }
+    </mj-style>
+    <mj-style inline="inline">
+      .column > table { border-collapse: separate; }
+    </mj-style>
+    <mj-font href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&display=swap" name="DM Sans"></mj-font>
+    <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
+  </mj-head>
+  <mj-body background-color="#f5f5fe" name="Candidat - Suggestions d’offres dans d’autres secteurs" width="800px">
+    <mj-column border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+            <mj-image align="left" alt="" css-class="image" href="#" src="<%= data.images.logoRf %>" width="89px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+            <mj-image align="left" alt="" css-class="image" href="#" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px 0px 16px 0px">
+              Bonjour <%= data.firstname %>,
+            </mj-text>
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px 0px 16px 0px">
+              Vous avez postulé à l’offre de <span style="font-weight: 700; color: #161616;"><%= data.source.title %></span> pour l’établissement <span style="font-weight: 700; color: #161616;"><%= data.source.company %></span><% if (data.source.sector) { %>, une entreprise du secteur <span style="font-weight: 700; color: #161616;"><%= data.source.sector %></span><% } %>.
+            </mj-text>
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="26px" padding="0px 0px 16px 0px">
+              Bonne nouvelle ! D’autres secteurs d’activités recrutent sur ce métier sans qu’on y pense spontanément.
+            </mj-text>
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px 0px 24px 0px">
+              Nous avons regardé, pour votre métier, les types d’entreprises qui ont signé le plus de contrats en alternance ces douze derniers mois. Voici <%= data.suggestions.length %> offres qui vous permettent de diversifier vos candidatures et d’augmenter vos chances de trouver un employeur :
+            </mj-text>
+
+            <% data.suggestions.forEach((suggestion) => { %>
+              <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="15px" font-weight="400" line-height="22px" padding="0px 0px 12px 0px">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                  <tr>
+                    <td style="padding: 18px 20px; border: 1px solid #cacafb; border-radius: 4px; background-color: #ffffff;">
+                      <div style="font-size: 17px; line-height: 24px; font-weight: 700; color: #161616;"><%= suggestion.title %></div>
+                      <div style="padding-top: 4px;"><%= suggestion.company %> · <%= suggestion.city %></div>
+                      <div style="padding-top: 8px; font-size: 14px; line-height: 20px; color: #666666;">Secteur : <%= suggestion.sector %></div>
+                      <% if (suggestion.contracts) { %>
+                        <div style="padding-top: 4px; font-size: 14px; line-height: 20px; font-weight: 700; color: #18753c;">
+                          <%= suggestion.contracts.toLocaleString("fr-FR") %> contrat<%= suggestion.contracts > 1 ? "s" : "" %> en alternance signé<%= suggestion.contracts > 1 ? "s" : "" %> dans ce secteur en <%= data.contractsYear %> en France
+                        </div>
+                      <% } %>
+                      <div style="padding-top: 12px;">
+                        <a href="<%= suggestion.url %>" style="font-weight: 700; color: #000091; text-decoration: underline;">Voir l’offre</a>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </mj-text>
+            <% }) %>
+
+            <mj-button align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" inner-padding="12px 24px 12px 24px" line-height="22px" padding="12px 0px 28px 0px" href="<%= data.searchUrl %>">
+              Voir toutes les offres pour mon métier
+            </mj-button>
+
+            <mj-text align="left" color="#3a3a3a" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px 0px 16px 0px">
+              Élargir ses candidatures à ces secteurs, c’est souvent multiplier ses chances de décrocher un contrat. À vous de jouer !
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="26px" padding="0px">
+              Bonne recherche,
+              <br />
+              L’équipe La bonne alternance
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px"></mj-spacer>
+
+      <mj-section border-radius="4px" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+              <br />Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq" style="text-decoration: underline; color: inherit;">FAQ</a> ou écrivez-nous à <a href="mailto:<%= data.publicEmail %>" style="text-decoration: underline; color: inherit;"><%= data.publicEmail %></a>
+              <br />
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      <mj-section border-radius="4px" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
+              <br />
+              <br />Nous vous contactons car vous avez candidaté à une entreprise identifiée par La bonne alternance.
+              <br />
+              <br />Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;"><%= data.publicEmail %></a>
+              <br />
+              <br />Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a> de La bonne alternance.
+              <br />
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+    </mj-column>
+  </mj-body>
+</mjml>

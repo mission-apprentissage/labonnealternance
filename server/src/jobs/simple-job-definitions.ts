@@ -17,6 +17,8 @@ import { removeBrevoContacts } from "./anonymization/remove-brevo-contacts"
 import { processApplications } from "./applications/process-applications"
 import { processRecruiterIntentions } from "./applications/process-recruiter-intentions"
 import { purgeApplicationCvFiles } from "./applications/purge-application-cv-files"
+import { importReferentielRomeNaf } from "./cross-naf/import-referentiel-rome-naf"
+import { processSuggestionsNaf, processSuggestionsNafLast24h } from "./cross-naf/process-suggestions-naf"
 import { obfuscateCollections } from "./database/obfuscate-collections"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
@@ -279,6 +281,19 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: importDecaContratsParAnnee,
     description: "Télécharge et importe (upsert) le référentiel des contrats d'alternance par année depuis S3 (siretlist/lba_deca_contrats_par_annee.ndjson)",
+  },
+  {
+    fct: importReferentielRomeNaf,
+    description: "Télécharge et remplace le référentiel des secteurs (NAF) qui recrutent par métier (ROME) depuis S3 (cross_naf/naf_par_rome.json)",
+  },
+  {
+    fct: processSuggestionsNaf,
+    description: "Suggestions d'offres sur d'autres secteurs (NAF) aux candidats dont la 1re candidature date de la veille",
+  },
+  {
+    fct: processSuggestionsNafLast24h,
+    description: "Suggestions d'offres sur d'autres secteurs (NAF) aux candidats dont la 1re candidature date des dernières 24 h (test manuel)",
+    cliOptions: [{ flags: "--dry-run", description: "Calcule et journalise les suggestions sans envoyer d'email" }],
   },
   // IMPORT RAW AND COMPUTED JOBS PARTNERS
   {
