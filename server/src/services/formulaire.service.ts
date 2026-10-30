@@ -75,11 +75,6 @@ type ISentDelegation = {
   adresse_etablissement: string
 }
 
-export interface IOffreExtended extends IJob {
-  candidatures: number
-  supprimer: string
-}
-
 const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectId; entrepriseId: ObjectId }) => {
   const access = getComputedUserAccess(userId.toString(), await getGrantedRoles(userId.toString()))
   return access.admin || access.entreprises.includes(entrepriseId.toString())
