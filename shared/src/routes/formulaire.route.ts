@@ -158,6 +158,7 @@ export const zFormulaireRoute = {
         "200": z.strictObject({
           job_id: z.string(),
           token: z.string(),
+          in_review: z.boolean().describe("Offre bloquée en modération : publiée après vérification (#5499)"),
         }),
       },
       securityScheme: {

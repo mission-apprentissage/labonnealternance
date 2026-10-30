@@ -19,6 +19,7 @@ import { zFormulaireRoute } from "./formulaire.route.js"
 import { zInserJeunesRoutes } from "./inserjeunes.routes.js"
 import { zV1JobsRoutes } from "./jobs.routes.js"
 import { zJobsPartnersAdminRoutes } from "./jobs-partners-admin.routes.js"
+import { zJobsPartnersModerationRoutes } from "./jobs-partners-moderation.routes.js"
 import { zLoginRoutes } from "./login.routes.js"
 import { zPartnersRoutes } from "./partners.routes.js"
 import { zRecruiterRoutes } from "./recruiters.routes.js"
@@ -71,6 +72,7 @@ const zRoutesGetP5 = {
   ...zJobsRoutesV3.get,
   ...zSearchRoutes.get,
   ...zJobsPartnersAdminRoutes.get,
+  ...zJobsPartnersModerationRoutes.get,
   ...zFeedbackFormsRoutes.get,
   ...zAppointmentsRouteV2.get,
 } as const
@@ -108,6 +110,7 @@ const zRoutesPost3 = {
   ...zJobsRoutesV3.post,
   ...zProcessorAdminRoutes.post,
   ...zJobsPartnersAdminRoutes.post,
+  ...zJobsPartnersModerationRoutes.post,
   ...zFeedbackFormsRoutes.post,
 }
 
