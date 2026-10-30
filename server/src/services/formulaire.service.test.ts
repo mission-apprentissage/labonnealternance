@@ -945,6 +945,34 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       expect.soft(job.offer_expiration).toEqual(offer_expiration)
     })
 
+    describe("offre en modération (#5499)", () => {
+      it.each([JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN, JOB_CLOSURE_ORIGIN.ESPACE_PRO_OPCO])("refuse la clôture par « %s »", async (origin) => {
+        const id = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_MODERATION, new ObjectId())
+
+        await expect(closeOffreWithMotif({ id, offer_status: JOB_STATUS_ENGLISH.ANNULEE, origin, job_status_comment: "Autre" })).rejects.toThrow(/en modération/)
+
+        const job = await readOffer(id)
+        expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.EN_MODERATION)
+        expect.soft(job.offer_status_history).toHaveLength(0)
+      })
+
+      it("laisse le recruteur clore son offre", async () => {
+        const id = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_MODERATION, new ObjectId())
+
+        const { alreadyClosed } = await closeOffreWithMotif({
+          id,
+          offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+          origin: JOB_CLOSURE_ORIGIN.ESPACE_PRO_RECRUTEUR,
+          job_status_comment: "Autre",
+        })
+
+        expect.soft(alreadyClosed).toBe(false)
+        const job = await readOffer(id)
+        expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+        expect.soft(job.offer_status_history.at(-1)).toMatchObject({ reason: JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE })
+      })
+    })
+
     it("échoue toujours sur une offre inexistante", async () => {
       // Le filtre de transition ne doit pas transformer un 404 en no-op silencieux.
       await expect(

@@ -15,6 +15,7 @@ import { ApplicationScanStatus, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { closeJobsOnApplicationThreshold } from "@/services/application-threshold.service"
 import mailer from "@/services/mailer.service"
 import { saveApplicationTrafficSourceIfAny } from "@/services/traffic-source.service"
 import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, removeEmailFromLbaCompanies, sendApplicationV2 } from "./application.service"
@@ -30,6 +31,11 @@ vi.mock("@/common/utils/aws-utils", () => {
 vi.mock("@/services/traffic-source.service", async (importOriginal) => {
   const mod = await importOriginal<typeof import("@/services/traffic-source.service")>()
   return { ...mod, saveApplicationTrafficSourceIfAny: vi.fn(mod.saveApplicationTrafficSourceIfAny) }
+})
+
+vi.mock("@/services/application-threshold.service", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@/services/application-threshold.service")>()
+  return { ...mod, closeJobsOnApplicationThreshold: vi.fn(mod.closeJobsOnApplicationThreshold) }
 })
 
 vi.mock("@/services/clamav.service", () => {
@@ -601,6 +607,17 @@ describe("clôture au seuil de candidatures au dépôt", () => {
     })
     expect.soft(await getDbCollection("applications").countDocuments({ job_id: jobId })).toBe(80)
     expect.soft(mailerSendEmailSpy.mock.calls.find(([args]) => args.template.includes("mail-offre-seuil-candidatures"))?.[0].to).toBe("recruteur@test.fr")
+  })
+
+  it("enregistre la candidature même si la clôture échoue", async () => {
+    vi.mocked(closeJobsOnApplicationThreshold).mockRejectedValueOnce(new Error("jobs_partners unavailable"))
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, 79)
+
+    await expect(apply(jobId)).resolves.toHaveProperty("_id")
+
+    expect.soft(closeJobsOnApplicationThreshold).toHaveBeenCalledWith([jobId])
+    expect.soft(await getDbCollection("applications").countDocuments({ job_id: jobId })).toBe(80)
+    expect.soft((await getDbCollection("jobs_partners").findOne({ _id: jobId }))?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
   })
 
   it("refuse la candidature suivante", async () => {
