@@ -8,6 +8,7 @@ import type {
   ILbaItemPartnerJobJson,
   INewDelegations,
   INewSuperUser,
+  IQuery,
   IRecruiterJson,
   IResponse,
   IRoutes,
@@ -127,6 +128,24 @@ export const deactivateJobPartner = async (id: string, reason: string) => apiPos
 
 export const setJobPartnerClassification = async (id: string, classification: "publish" | "unpublish") =>
   apiPost("/admin/jobs-partners/:id/classification", { params: { id }, body: { classification } })
+
+/**
+ * Modération des offres libres (#5499)
+ */
+export const getModerationQueue = async (querystring: IQuery<IRoutes["get"]["/moderation/jobs"]>) => apiGet("/moderation/jobs", { querystring: removeUndefinedFields(querystring) })
+
+export const getModerationSummaries = async (ids: string[]) => apiGet("/moderation/jobs/summary", { querystring: { ids } })
+
+export const getModerationJob = async (id: string) => apiGet("/moderation/jobs/:id", { params: { id } })
+
+export const validateModerationJob = async (id: string, moderationId: string) => apiPost("/moderation/jobs/:id/validate", { params: { id }, body: { moderation_id: moderationId } })
+
+export const refuseModerationJob = async (id: string, body: IBody<IRoutes["post"]["/moderation/jobs/:id/refuse"]>) =>
+  apiPost("/moderation/jobs/:id/refuse", { params: { id }, body })
+
+export const reclassifyModerationJob = async (id: string) => apiPost("/moderation/jobs/:id/reclassify", { params: { id } })
+
+export const reclassifyFailedModerationJobs = async () => apiPost("/moderation/jobs/reclassify", {})
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**
