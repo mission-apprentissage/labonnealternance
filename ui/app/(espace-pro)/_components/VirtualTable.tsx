@@ -57,6 +57,9 @@ interface VirtualTableProps<T> {
   hideCount?: boolean
   onRowClick?: (rowData: T) => void
   getRowStyle?: (rowData: T) => React.CSSProperties | undefined
+  /** Tri contrôlé par l'appelant, qui trie côté serveur : les lignes s'affichent dans l'ordre reçu. */
+  sorting?: SortingState
+  onSortingChange?: (sorting: SortingState) => void
 }
 
 export function VirtualTable<T>({
@@ -74,16 +77,20 @@ export function VirtualTable<T>({
   hideCount,
   onRowClick,
   getRowStyle,
+  sorting: controlledSorting,
+  onSortingChange,
 }: VirtualTableProps<T>) {
   const [globalFilter, setGlobalFilter] = useState("")
-  const [sorting, setSorting] = useState<SortingState>(defaultSortBy)
+  const [localSorting, setLocalSorting] = useState<SortingState>(defaultSortBy)
+  const sorting = onSortingChange ? (controlledSorting ?? []) : localSorting
 
   const table = useReactTable({
     data,
     columns,
     state: { globalFilter, sorting },
     onGlobalFilterChange: setGlobalFilter,
-    onSortingChange: setSorting,
+    onSortingChange: onSortingChange ? (updater) => onSortingChange(typeof updater === "function" ? updater(sorting) : updater) : setLocalSorting,
+    manualSorting: Boolean(onSortingChange),
     globalFilterFn: fuzzyFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

@@ -35,6 +35,7 @@ import formationsPrivateRoute from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
 import inserjeunesRoute from "./controllers/inserjeunes.controller"
 import jobsV1Route from "./controllers/jobs.controller"
+import jobsPartnersModerationRoute from "./controllers/jobs-partners-moderation.controller"
 import login from "./controllers/login.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reported-company.controller"
@@ -143,6 +144,7 @@ export async function bind(app: Server) {
       formulaireRoute(typedSubApp)
       etablissementsRecruteurRoute(typedSubApp)
       jobsPartnersAdminRoute(typedSubApp)
+      jobsPartnersModerationRoute(typedSubApp)
       adminFeedbackFormsRoute(typedSubApp)
       feedbackFormsRoute(typedSubApp)
 
