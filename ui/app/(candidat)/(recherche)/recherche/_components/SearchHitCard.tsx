@@ -14,7 +14,7 @@ import { TagEmploiFormation } from "@/components/ItemDetail/TagEmploiFormation"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { TagRecrutementUrgent } from "@/components/ItemDetail/TagRecrutementUrgent"
-import { getDaysSinceDate } from "@/utils/date-utils"
+import { getDaysSinceDate } from "@/utils/days-since-date"
 import type { ILbaItem } from "@/utils/lba-item.types"
 import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
 

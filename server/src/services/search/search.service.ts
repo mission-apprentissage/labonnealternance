@@ -6,6 +6,7 @@ import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { buildAdminAreaClause } from "@/services/geo-administrative/admin-area"
+import { promoteSmartApplyHits } from "@/services/search/promote-smart-apply"
 import { retryOnTransientSearchCancellation } from "@/services/search/search-transient-retry"
 
 const HIGHLIGHT_MAX_PASSAGES = 5
@@ -794,7 +795,7 @@ export async function searchItems(params: ISearchFilters): Promise<{
     number
   >
 
-  return { hits, nbHits, page, nbPages, facets, counts, degraded }
+  return { hits: promoteSmartApplyHits(hits, { page, mode: resolveSearchMode(params) }), nbHits, page, nbPages, facets, counts, degraded }
 }
 
 async function suggestFromItems(q: string, limit: number, corpus: SearchCorpus): Promise<string[]> {
