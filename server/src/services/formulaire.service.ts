@@ -15,7 +15,7 @@ import type {
   IUserRecruteur,
   zRoutes,
 } from "shared"
-import { assertUnreachable, JOB_CLOSURE_ORIGIN, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, removeAccents } from "shared"
+import { assertUnreachable, JOB_CLOSURE_ORIGIN, JOB_CLOSURE_REASON_BY_ORIGIN, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, OFFER_DESCRIPTION_MODE, removeAccents } from "shared"
 import { EntrepriseErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
@@ -47,7 +47,7 @@ import { getUserManagingOffer } from "./application.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDataFromSiret } from "./etablissement.service"
 import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-notifications.service"
-import { buildJobStatusChangeUpdate, changeJobsPartnersStatus } from "./job-partner-status.service"
+import { buildJobStatusChangeUpdate, changeJobsPartnersStatus, JOB_AUTO_CLOSURE_ORIGIN } from "./job-partner-status.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import {
   buildOfferModerationFields,
@@ -734,14 +734,14 @@ export const archiveFormulaire = async (userId: ObjectId, siret: string) => {
   const change = { reason: ARCHIVE_FORMULAIRE_REASON, grantedBy: "archive-formulaire", date: now, status: JOB_STATUS_ENGLISH.ANNULEE } as const
   const recruiterOffersFilter = { managed_by: userId, workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA }
 
-  await changeJobsPartnersStatus({ ...recruiterOffersFilter, offer_status: JOB_STATUS_ENGLISH.ACTIVE }, { ...change, extraSet: { offer_expiration: now } })
-  // Second passage restreint aux offres EN ATTENTE ou EN MODERATION : elles ne sont pas publiées, les archiver
-  // avec le reste du formulaire est bien l'intention. Le filtre portait auparavant sur
-  // `$ne: ACTIVE`, ce qui repassait en Cancelled les offres POURVUE — un recrutement réussi
-  // réécrit en annulation, donc perdu pour la mesure d'impact — et réécrivait `updated_at` sur des
-  // offres déjà annulées, qui remontaient alors dans les tableaux de bord datés sur ce champ
-  // (issue #5429). Une offre déjà close, quelle qu'en soit l'issue, n'a plus à être touchée ici.
-  await changeJobsPartnersStatus({ ...recruiterOffersFilter, offer_status: { $in: [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION] } }, change)
+  // Les offres déjà closes ne sont pas touchées : repasser une offre POURVUE en Cancelled perdrait un
+  // recrutement réussi pour la mesure d'impact, et réécrire updated_at ferait remonter des
+  // annulations anciennes dans les tableaux de bord datés sur ce champ (#5429). offer_expiration :
+  // cf. closeOffreWithMotif.
+  await changeJobsPartnersStatus(
+    { ...recruiterOffersFilter, offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION] } },
+    change
+  )
   const mainRole = await getMainRoleManagement(userId)
   if (mainRole?.authorized_type === AccessEntityType.CFA) {
     const entreprise = await getDbCollection("entreprises").findOne({ siret })
@@ -930,31 +930,29 @@ export const closeOffreWithMotif = async ({
   // Le recruteur peut clore son offre en modération. Un administrateur ou un OPCO la refuse par la modération (#5499),
   // qui trace la décision et prévient le recruteur.
   const isModerator = origin === JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN || origin === JOB_CLOSURE_ORIGIN.ESPACE_PRO_OPCO
-  const untouchedStatuses = isModerator ? [offer_status, JOB_STATUS_ENGLISH.EN_MODERATION] : [offer_status]
+  const moderationFilter = isModerator ? { offer_status: { $ne: JOB_STATUS_ENGLISH.EN_MODERATION } } : {}
 
-  // Exclure le statut cible restreint l'écriture aux transitions réelles. Un lien de
-  // clôture cliqué deux fois arrivait sinon jusqu'au $push et comptait la même clôture deux fois
-  // dans les tableaux de bord de l'issue #5429 — le trou de mesure que cette écriture est censée
-  // combler. Conséquence assumée : sur un second passage vers le même statut, le motif n'est plus
-  // réécrit. Changer d'avis reste possible tant que le statut change (annulée puis pourvue).
+  // Écriture si le statut change, ou si la dernière entrée de l'historique est une expiration ou le
+  // seuil de candidatures : leur mail arrive sur une offre déjà Cancelled, et la réponse du recruteur
+  // s'ajoute à la clôture automatique (#5722). Un lien cliqué deux fois trouve sa propre entrée en
+  // dernier et n'écrit pas de doublon (#5429). Les autres clôtures (désactivation admin, archivage,
+  // doublons) ne sollicitent pas de réponse et ne reçoivent pas d'entrée supplémentaire.
   //
   // returnDocument: "before" pour distinguer une clôture d'une offre déjà close : `alreadyClosed`
   // pilote l'écran de confirmation côté recruteur.
   //
-  // Le motif est écrit deux fois, et ce n'est pas redondant : job_status_comment porte le dernier
-  // motif connu de l'offre (relu par l'espace pro), offer_status_history en garde la trace datée,
-  // seul champ commun à toutes les origines d'annulation — les annulations automatiques
-  // (expiration, seuil de candidatures, doublons) ne renseignent jamais job_status_comment.
-  // `reason` reçoit le motif brut de la modale pour rester regroupable tel quel ; la précision
-  // libre du motif "Autre" et le canal de recrutement gardent leurs champs dédiés.
+  // `reason` dit comment l'offre a été fermée, déduit de l'origine (cf. JOB_CLOSURE_REASON) ; le
+  // motif de la modale va dans job_status_comment, sans être recopié dans l'historique.
+  // offer_expiration garde sa date initiale, la date de clôture est dans offer_status_history.
+  const lastEntryAwaitsMailAnswer = { $in: [{ $last: "$offer_status_history.granted_by" }, Object.values(JOB_AUTO_CLOSURE_ORIGIN)] }
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { ...offerFilter, offer_status: { $nin: untouchedStatuses } },
+    { ...offerFilter, ...moderationFilter, $or: [{ offer_status: { $ne: offer_status } }, { $expr: lastEntryAwaitsMailAnswer }] },
     buildJobStatusChangeUpdate({
       status: offer_status,
-      reason: job_status_comment,
+      reason: JOB_CLOSURE_REASON_BY_ORIGIN[origin],
       grantedBy: origin,
       date: now,
-      extraSet: { offer_expiration: now, job_status_comment, job_status_comment_precision, job_recruitment_channel },
+      extraSet: { job_status_comment, job_status_comment_precision, job_recruitment_channel },
     }),
     {
       returnDocument: "before",
@@ -962,8 +960,8 @@ export const closeOffreWithMotif = async ({
   )
 
   if (!found) {
-    // Deux causes possibles, à ne pas confondre : l'offre n'existe pas, ou elle porte déjà ce
-    // statut. Le second cas est le double-clic, et doit rendre la même réponse qu'avant le filtre.
+    // Trois causes possibles : l'offre n'existe pas, elle est en modération et l'acteur est un modérateur,
+    // ou la clôture est déjà enregistrée (double-clic).
     const existing = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { _id: 1, offer_status: 1 } })
     if (!existing) {
       throw new Error(`could not find lba offer with id=${id}`)

@@ -49,7 +49,7 @@ export function toPublicJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS_ENGLIS
 
 /**
  * Qui a clôturé une offre, et par quel canal. Reporté dans `offer_status_history[].granted_by`,
- * `reason` portant le motif choisi dans la modale.
+ * `reason` portant le mode de clôture (cf. JOB_CLOSURE_REASON).
  *
  * Le canal vient de la route : lien signé reçu par mail (auth access-token) ou espace pro connecté
  * (auth cookie-session). Sur l'espace pro, l'acteur est déduit des rôles de la session
@@ -77,6 +77,27 @@ export enum JOB_CLOSURE_ORIGIN {
   ESPACE_PRO_ADMIN = "clôture par un administrateur depuis l'espace pro",
   /** Repli quand la session n'expose aucun rôle exploitable : le canal reste sûr, pas l'acteur. */
   ESPACE_PRO_INDETERMINE = "clôture depuis l'espace pro (acteur indéterminé)",
+}
+
+/**
+ * Comment une offre a été fermée par un humain, reporté dans `offer_status_history[].reason`. Le motif
+ * choisi dans la modale va dans `job_status_comment`, sa précision libre dans
+ * `job_status_comment_precision` (issue #5722).
+ */
+export enum JOB_CLOSURE_REASON {
+  DESACTIVATION_MANUELLE = "Désactivation manuelle",
+  ACTION_ADMIN = "Action admin",
+  REPONSE_MAIL = "Réponse recruteur par mail",
+}
+
+/** Hors administrateur, toute clôture depuis l'espace pro est une désactivation manuelle : `granted_by` garde l'acteur. */
+export const JOB_CLOSURE_REASON_BY_ORIGIN: Record<JOB_CLOSURE_ORIGIN, JOB_CLOSURE_REASON> = {
+  [JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR]: JOB_CLOSURE_REASON.REPONSE_MAIL,
+  [JOB_CLOSURE_ORIGIN.ESPACE_PRO_RECRUTEUR]: JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE,
+  [JOB_CLOSURE_ORIGIN.ESPACE_PRO_CFA]: JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE,
+  [JOB_CLOSURE_ORIGIN.ESPACE_PRO_OPCO]: JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE,
+  [JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN]: JOB_CLOSURE_REASON.ACTION_ADMIN,
+  [JOB_CLOSURE_ORIGIN.ESPACE_PRO_INDETERMINE]: JOB_CLOSURE_REASON.DESACTIVATION_MANUELLE,
 }
 
 export const JOB_START_TYPE = {
