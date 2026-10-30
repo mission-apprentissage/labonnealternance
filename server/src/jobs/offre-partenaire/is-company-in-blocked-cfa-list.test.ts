@@ -41,12 +41,20 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
     expect(isCompanyInBlockedCfaList("IFCE")).toBe(true)
     expect(isCompanyInBlockedCfaList("IFCE INSTITUT FORMATION COMPTABLE EUROPE")).toBe(true)
     expect(isCompanyInBlockedCfaList("My-BS")).toBe(true)
+    expect(isCompanyInBlockedCfaList("ISTEC")).toBe(true)
     expect(isCompanyInBlockedCfaList("ISTEC - Ecole Supérieure de Commerce et de Marketing")).toBe(true)
     expect(isCompanyInBlockedCfaList("HBC SCHOOL")).toBe(true)
     expect(isCompanyInBlockedCfaList("Campus Pro")).toBe(true)
     expect(isCompanyInBlockedCfaList("ESUP VANNES")).toBe(true)
-    expect(isCompanyInBlockedCfaList("UIMM")).toBe(true)
+    expect(isCompanyInBlockedCfaList("Pôle Formation UIMM Bretagne")).toBe(true)
+    expect(isCompanyInBlockedCfaList("La formation sera assurée par le Pôle formation UIMM de Vannes")).toBe(true)
     expect(isCompanyInBlockedCfaList("SmartForum")).toBe(true)
+  })
+
+  it("ne doit pas bloquer un employeur qui mentionne seulement l'UIMM", () => {
+    // l'UIMM est la fédération patronale de la métallurgie : la citer est courant dans une offre industrielle
+    expect(isCompanyInBlockedCfaList("Notre entreprise adhère à l'UIMM et recrute un apprenti en usinage")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Safran Nacelles recherche un alternant, partenariat UIMM Normandie")).toBe(false)
   })
 
   it("devrait trouver les CFA lorsqu'ils sont mentionnés dans un texte", () => {
