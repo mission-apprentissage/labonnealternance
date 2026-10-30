@@ -5,7 +5,6 @@ import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import type { TestHttpClient } from "@tests/utils/server.test.utils"
 import { type IJobCreate, type IUserWithAccount, JOB_START_TYPE, JOB_STATUS } from "shared"
 import { ENTREPRISE } from "shared/constants/index"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import type { z } from "shared/helpers/zod-with-open-api"
@@ -115,7 +114,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
     user: IUserWithAccount
     body?: z.input<(typeof zRoutes)["put"]["/formulaire/offre/:jobId/cancel"]["body"]>
   }) {
-    const url = createCancelJobLink(userWithAccountToUserForToken(user), jobId, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
+    const url = createCancelJobLink(userWithAccountToUserForToken(user), jobId)
     const token = new URL(url).searchParams.get("token")
 
     const response = await httpClient().inject({

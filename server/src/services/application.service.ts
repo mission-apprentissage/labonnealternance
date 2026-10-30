@@ -469,7 +469,7 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
             establishment_id: buildEstablishmentId(user._id, lbaJob.workplace_siret),
             userType: lbaJob.is_delegated ? CFA : ENTREPRISE,
           })
-        : createCancelJobLink(userForToken, application.job_id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, utmRecruiterData)
+        : createCancelJobLink(userForToken, application.job_id.toString(), utmRecruiterData)
   }
 
   return urls
