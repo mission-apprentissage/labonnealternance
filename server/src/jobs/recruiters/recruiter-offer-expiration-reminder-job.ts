@@ -3,7 +3,6 @@ import { groupBy } from "lodash-es"
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import { CFA, ENTREPRISE } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
@@ -17,7 +16,7 @@ import { notifyToSlack } from "@/common/utils/slack-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { createAuthMagicLink, createCloturerOffreMagicLink, createProlongerOffreLink, createProvidedJobLink } from "@/services/app-links.service"
+import { createAuthMagicLink, createCloturerOffreMagicLink, createProlongerOffreLink } from "@/services/app-links.service"
 import { buildEstablishmentId } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
 
@@ -114,7 +113,6 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
                   userType: is_delegated ? CFA : ENTREPRISE,
                 })
               : createAuthMagicLink(userWithAccountToUserForToken(contactUser)),
-            pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             prolonger: job.workplace_siret
               ? createProlongerOffreLink(userWithAccountToUserForToken(contactUser), {
                   jobId: job._id.toString(),

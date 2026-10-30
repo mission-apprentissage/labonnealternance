@@ -37,7 +37,7 @@ import { resetReplayedSearchParams } from "@/jobs/applications/relance-search-ur
 import type { UserForAccessToken } from "@/security/access-token.service"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
-import { createCancelJobLink, createCloturerOffreMagicLink, createProvidedJobLink, generateApplicationReplyToken } from "./app-links.service"
+import { createCancelJobLink, createCloturerOffreMagicLink, generateApplicationReplyToken } from "./app-links.service"
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { getApplicationCvS3Key } from "./application-cv.service"
 import type { BrevoEventStatus } from "./brevo.service"
@@ -451,24 +451,25 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
     unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}-desinscription`,
     lbaUrl: `${config.publicUrl}?${utmRecruiterData}-home`,
     faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}-faq`,
-    jobProvidedUrl: "",
     cancelJobUrl: "",
     jobPartnerLabel,
   }
 
   if (application.job_id) {
     urls.jobUrl = `${config.publicUrl}${buildJobUrlPath(application.job_origin, application.job_id.toString())}${utmRecruiterData}`
-    urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
-    // Offre LBA gérée par un recruteur identifié : lien qui le connecte et ouvre la modale « Clôturer
-    // votre recrutement » (motif obligatoire). Sinon, lien par jeton qui exécute l'action sur une page autonome.
+  }
+
+  // Offre LBA gérée par un recruteur identifié : lien qui le connecte et ouvre la modale « Clôturer votre
+  // recrutement ». Sinon, lien par jeton vers la page autonome qui affiche le même formulaire (motif obligatoire).
+  if (application.job_id && lbaJob) {
     urls.cancelJobUrl =
-      user && lbaJob?.workplace_siret
+      user && lbaJob.workplace_siret
         ? createCloturerOffreMagicLink(userWithAccountToUserForToken(user), {
             jobId: application.job_id.toString(),
             establishment_id: buildEstablishmentId(user._id, lbaJob.workplace_siret),
             userType: lbaJob.is_delegated ? CFA : ENTREPRISE,
           })
-        : createCancelJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
+        : createCancelJobLink(userForToken, application.job_id.toString(), utmRecruiterData)
   }
 
   return urls

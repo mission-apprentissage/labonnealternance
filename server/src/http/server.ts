@@ -48,7 +48,6 @@ import updateLbaCompany from "./controllers/update-recruteur-lba.controller"
 import userRoute from "./controllers/user.controller"
 import applicationRouteV2 from "./controllers/v2/application.controller.v2"
 import appointmentRequestRouteV2 from "./controllers/v2/appointment.controller.v2"
-import jobsRouteV2 from "./controllers/v2/jobs.controller.v2"
 import { jobsApiV3Routes } from "./controllers/v3/jobs/jobs.controller.v3"
 import version from "./controllers/version.controller"
 import { auth } from "./middlewares/auth-middleware"
@@ -144,7 +143,6 @@ export async function bind(app: Server) {
       userRoute(typedSubApp)
       formulaireRoute(typedSubApp)
       etablissementsRecruteurRoute(typedSubApp)
-      jobsRouteV2(typedSubApp)
       jobsPartnersAdminRoute(typedSubApp)
       jobsPartnersModerationRoute(typedSubApp)
       adminFeedbackFormsRoute(typedSubApp)

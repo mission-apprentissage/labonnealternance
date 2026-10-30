@@ -90,6 +90,15 @@ describe("proxy - aucun cookie de session", () => {
     expect(location.searchParams.get("sessionRetry")).toBeNull()
     expect(response.cookies.get("lba_session")).toBeUndefined()
   })
+
+  it("sert sans session la page de clôture ouverte depuis le lien par jeton d'un mail", async () => {
+    const request = new NextRequest(new URL("/espace-pro/offre/offres_emploi_lba/6650a1b2c3d4e5f6a7b8c9d0/cancel?token=some.jwt.token", BASE_URL))
+
+    const response = await proxy(request)
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get("location")).toBeNull()
+  })
 })
 
 describe("proxy - panne API ambiguë (ni confirmée invalide, ni confirmée valide)", () => {

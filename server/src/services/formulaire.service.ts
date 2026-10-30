@@ -75,12 +75,6 @@ type ISentDelegation = {
   adresse_etablissement: string
 }
 
-export interface IOffreExtended extends IJob {
-  candidatures: number
-  pourvue: string
-  supprimer: string
-}
-
 const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectId; entrepriseId: ObjectId }) => {
   const access = getComputedUserAccess(userId.toString(), await getGrantedRoles(userId.toString()))
   return access.admin || access.entreprises.includes(entrepriseId.toString())
@@ -887,23 +881,6 @@ export const updateJobDelegation = async (jobId: ObjectId, delegation: IDelegati
     ],
     { ordered: true }
   )
-}
-
-export const provideOffre = async (id: ObjectId): Promise<void> => {
-  const now = new Date()
-  const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
-    buildJobStatusChangeUpdate({
-      status: JOB_STATUS_ENGLISH.POURVUE,
-      reason: "offre déclarée pourvue par le recruteur",
-      grantedBy: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR,
-      date: now,
-    })
-  )
-  if (!found) {
-    throw new Error(`could not find lba offer with id=${id}`)
-  }
-  syncJobPartnersToSearchItemsInBackground([id])
 }
 
 /**
