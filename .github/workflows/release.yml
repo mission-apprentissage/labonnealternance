@@ -9,7 +9,7 @@ jobs:
 
   npm-packages-check:
     name: NPM dependency check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
@@ -36,7 +36,7 @@ jobs:
     outputs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
       PREV_VERSION: ${{ steps.get-prev-version.outputs.VERSION }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
@@ -87,7 +87,7 @@ jobs:
     name: Build UI image (recette)
     needs: ["release"]
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
@@ -97,7 +97,10 @@ jobs:
 
       - name: Initialize the GnuPG keyring
         run: |
-          echo -n "$OPENPGP_KEY" | gpg --import
+          install -d -m 700 "${RUNNER_TEMP}/gnupg"
+          echo "GNUPGHOME=${RUNNER_TEMP}/gnupg" >> "${GITHUB_ENV}"
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          echo -n "$OPENPGP_KEY" | gpg --batch --import
         env:
           OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
 
@@ -136,7 +139,7 @@ jobs:
     name: Docker Scout scan (server)
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     needs: ["release"]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Authenticate to Docker
         uses: docker/login-action@v4
@@ -174,7 +177,7 @@ jobs:
     name: Docker Scout scan (UI)
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     needs: ["release"]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Authenticate to Docker
         uses: docker/login-action@v4
@@ -226,7 +229,7 @@ jobs:
   sentry:
     name: Upload sourcemaps to Sentry
     needs: ["release"]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
@@ -237,7 +240,10 @@ jobs:
 
       - name: Initialize the GnuPG keyring
         run: |
-          echo -n "$OPENPGP_KEY" | gpg --import
+          install -d -m 700 "${RUNNER_TEMP}/gnupg"
+          echo "GNUPGHOME=${RUNNER_TEMP}/gnupg" >> "${GITHUB_ENV}"
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          echo -n "$OPENPGP_KEY" | gpg --batch --import
         env:
           OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
 

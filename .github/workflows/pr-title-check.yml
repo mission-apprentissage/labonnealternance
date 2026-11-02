@@ -10,7 +10,7 @@ on:
 
 jobs:
   pr-title-check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     name: Control pull request title
     steps:
       - uses: thehanimo/pr-title-checker@v1.4.3

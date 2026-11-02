@@ -10,7 +10,7 @@ jobs:
 
   deploy_comment:
     name: Preview instructions
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Comment PR Preview
         if: github.event.pull_request.state != 'closed'

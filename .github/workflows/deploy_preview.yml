@@ -17,7 +17,7 @@ jobs:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}
       cancel-in-progress: true
     name: Deploy Preview ${{ github.event.issue.number }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Get Run URL
         id: run_url
@@ -73,7 +73,10 @@ jobs:
 
       - name: Initialize the GnuPG keyring
         run: |
-          echo -n "$OPENPGP_KEY" | gpg --import
+          install -d -m 700 "${RUNNER_TEMP}/gnupg"
+          echo "GNUPGHOME=${RUNNER_TEMP}/gnupg" >> "${GITHUB_ENV}"
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          echo -n "$OPENPGP_KEY" | gpg --batch --import
         env:
           OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
 
@@ -197,7 +200,7 @@ jobs:
     needs: deploy_preview
     if: github.event.issue.state != 'closed'
     name: Notify ready to test ${{ github.event.issue.number }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       issues: write
       pull-requests: read
