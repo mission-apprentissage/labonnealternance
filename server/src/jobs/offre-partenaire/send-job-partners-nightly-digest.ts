@@ -2,6 +2,7 @@ import type { IJobsCronTask } from "job-processor"
 import { findJobs } from "job-processor"
 import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slack-utils"
+import { formatFluxCadenceSection } from "./flux-cadence-digest"
 import { importers } from "./jobs-partners.importer"
 import { formatGuardrailDigestLines } from "./jobs-partners-guardrails"
 import { buildPartnerPublicationReport } from "./partner-publication-report"
@@ -124,7 +125,9 @@ export const sendJobPartnersNightlyDigest = async () => {
     anomalousJobs.length === 0 ? `${okCount}/${jobs.length} jobs offre-partenaire OK, aucune anomalie.` : `${okCount}/${jobs.length} jobs OK, ${anomalousJobs.length} en erreur :`
 
   const anomalyLines = groupByName(anomalousJobs).map(([name, jobsForName]) => formatAnomalyGroup(name, jobsForName))
-  let message = [summaryLine, ...formatGuardrailDigestLines(jobs), ...anomalyLines, ...(await buildPartnerPublicationReport())].join("\n")
+  let message = [summaryLine, ...formatGuardrailDigestLines(jobs), ...anomalyLines, ...(await buildPartnerPublicationReport()), ...(await formatFluxCadenceSection(since))].join(
+    "\n"
+  )
   if (message.length > MAX_MESSAGE_LENGTH) {
     message = `${message.slice(0, MAX_MESSAGE_LENGTH)}\n… (message tronqué, voir les logs pour le détail complet)`
   }
