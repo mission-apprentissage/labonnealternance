@@ -1,7 +1,10 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { acquirePartnerLock, isPartnerLocked, PartnerLockUnavailableError, releasePartnerLock, withPartnerLocks } from "./partner-processing-lock"
+
+vi.mock("@/common/utils/sentry-utils", () => ({ sentryCaptureException: vi.fn() }))
 
 useMongo()
 
@@ -9,6 +12,7 @@ const locks = () => getDbCollection("jobs_partners_processing_locks")
 
 describe("verrou par partenaire", () => {
   beforeEach(() => {
+    vi.mocked(sentryCaptureException).mockClear()
     return async () => {
       await locks().deleteMany({})
     }
@@ -108,6 +112,44 @@ describe("verrou par partenaire", () => {
       const locked = await withPartnerLocks(["Hellowork"], async (lockedPartnerLabels) => lockedPartnerLabels, { waitMs: 5_000, pollIntervalMs: 50 })
 
       expect(locked).toEqual(["Hellowork"])
+    })
+
+    it("rafraîchit les verrous déjà obtenus pendant l'attente des autres", async () => {
+      await acquirePartnerLock("B", "autre")
+      setTimeout(() => releasePartnerLock("B", "autre"), 800)
+      // le TTL initial de A (300 ms) est dépassé pendant que l'appel attend encore B
+      const intrusion = new Promise<boolean>((resolve) => setTimeout(() => resolve(acquirePartnerLock("A", "intrus")), 500))
+
+      const ownersDuringRun = await withPartnerLocks(
+        ["A", "B"],
+        async () =>
+          (
+            await locks()
+              .find({ _id: { $in: ["A", "B"] } })
+              .toArray()
+          ).map(({ _id, owner }) => ({ _id, owner })),
+        { ttlMs: 300, waitMs: 2_000, pollIntervalMs: 50 }
+      )
+
+      expect.soft(await intrusion).toBe(false)
+      expect.soft(ownersDuringRun).toHaveLength(2)
+      expect.soft(new Set(ownersDuringRun.map(({ owner }) => owner)).size).toBe(1)
+      expect.soft(ownersDuringRun.map(({ owner }) => owner)).not.toContain("intrus")
+      expect.soft(sentryCaptureException).not.toHaveBeenCalled()
+    })
+
+    it("(near-miss) sans attente, y compris en réentrance sans verrou propre, le rafraîchissement ne signale aucune perte", async () => {
+      await withPartnerLocks(
+        ["A"],
+        async () => {
+          await withPartnerLocks(["A"], () => new Promise((resolve) => setTimeout(resolve, 400)), { ttlMs: 300 })
+          await new Promise((resolve) => setTimeout(resolve, 400))
+        },
+        { ttlMs: 300 }
+      )
+
+      expect.soft(await locks().countDocuments({})).toBe(0)
+      expect.soft(sentryCaptureException).not.toHaveBeenCalled()
     })
 
     it("est réentrant : un appel imbriqué ne réacquiert ni ne libère les verrous de l'appel englobant", async () => {

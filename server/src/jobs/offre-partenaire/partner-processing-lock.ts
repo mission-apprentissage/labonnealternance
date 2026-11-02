@@ -55,6 +55,7 @@ export const isPartnerLocked = async (partnerLabel: string, { exceptOwner }: { e
 }
 
 const refreshPartnerLocks = async (partnerLabels: string[], owner: string, ttlMs: number) => {
+  if (!partnerLabels.length) return
   const { matchedCount } = await lockCollection().updateMany({ _id: { $in: partnerLabels }, owner }, { $set: { expires_at: new Date(Date.now() + ttlMs) } })
   if (matchedCount < partnerLabels.length) {
     const error = new Error(`verrou partenaire perdu en cours de traitement (${matchedCount}/${partnerLabels.length} rafraîchis) pour ${partnerLabels.join(", ")}`)
@@ -97,7 +98,15 @@ export const withPartnerLocks = async <T>(
   }
   const missing = () => partnerLabels.filter((partnerLabel) => !alreadyHeld.has(partnerLabel) && !acquired.includes(partnerLabel))
 
-  let heartbeat: NodeJS.Timeout | undefined
+  // Démarré avant l'attente : un verrou obtenu au premier essai expirerait sinon pendant qu'on attend les autres.
+  // `acquired` est lu à chaque tick, les verrous obtenus ensuite sont donc rafraîchis aussi.
+  const heartbeat = setInterval(() => {
+    refreshPartnerLocks(acquired, owner, ttlMs).catch((err) => {
+      logger.error(err, "échec du rafraîchissement des verrous partenaires")
+      sentryCaptureException(err)
+    })
+  }, ttlMs / 3)
+  heartbeat.unref()
   try {
     await tryAcquireMissing()
     while (missing().length && Date.now() < deadline) {
@@ -112,16 +121,6 @@ export const withPartnerLocks = async <T>(
     }
     if (unavailable.length) {
       logger.warn({ unavailable, owner }, "partenaires ignorés : verrou détenu par un autre traitement")
-    }
-
-    if (acquired.length) {
-      heartbeat = setInterval(() => {
-        refreshPartnerLocks(acquired, owner, ttlMs).catch((err) => {
-          logger.error(err, "échec du rafraîchissement des verrous partenaires")
-          sentryCaptureException(err)
-        })
-      }, ttlMs / 3)
-      heartbeat.unref()
     }
 
     const locked = partnerLabels.filter((partnerLabel) => !unavailable.includes(partnerLabel))
