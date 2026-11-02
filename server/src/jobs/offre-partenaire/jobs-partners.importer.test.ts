@@ -8,10 +8,10 @@ const loadImporters = async (daytimeRefreshPartners: string) => {
   return Object.entries(importers).filter(([name]) => name.startsWith("Cycle de journée"))
 }
 
-describe("jobs-partners.importer et configuration du cycle de journée", () => {
+// Chaque test réévalue tout le graphe des importeurs : plus de 5 s sur un runner chargé.
+describe("jobs-partners.importer et configuration du cycle de journée", { timeout: 60_000 }, () => {
   afterEach(() => {
     delete process.env.LBA_DAYTIME_REFRESH_PARTNERS
-    vi.resetModules()
   })
 
   it("une configuration invalide n'empêche pas le chargement : un seul cron de cycle, qui échoue avec l'erreur de configuration", async () => {

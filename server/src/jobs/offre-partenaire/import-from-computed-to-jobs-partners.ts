@@ -25,62 +25,66 @@ const IMPORT_BATCH_CONCURRENCY = 4
 // `validated: true` garantit la conformité au modèle jobs_partners, cf. validateComputedJobPartners.
 type ValidatedComputedJobPartner = Omit<IJobsPartnersOfferPrivate, "created_at">
 
-// Réduit à EXISTING_JOB_PROJECTION.
-type ExistingJobPartner = IJobsPartnersOfferPrivate
-
 // Écrits par l'import mais lus seulement par la chaîne d'import (détection de doublons) : absents de l'API, de l'index et des pages.
-const UNPUBLISHED_FIELDS = new Set<string>(["rank", "duplicates"])
+type UnpublishedField = "rank" | "duplicates"
+const UNPUBLISHED_FIELDS = new Set<string>(["rank", "duplicates"] satisfies UnpublishedField[])
 
 const jobPartnerKey = ({ partner_label, partner_job_id }: { partner_label: string; partner_job_id: string }) => `${partner_label}\u0000${partner_job_id}`
 
-const toJobPartner = (computedJobPartner: ValidatedComputedJobPartner): Partial<IJobsPartnersOfferPrivate> => ({
-  partner_label: computedJobPartner.partner_label,
-  partner_job_id: computedJobPartner.partner_job_id,
-  contract_start: computedJobPartner.contract_start ?? null,
-  contract_duration: computedJobPartner.contract_duration ?? null,
-  contract_type: computedJobPartner.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-  contract_remote: computedJobPartner.contract_remote ?? null,
-  contract_is_disabled_elligible: computedJobPartner.contract_is_disabled_elligible ?? false,
-  offer_title: computedJobPartner.offer_title,
-  offer_rome_codes: computedJobPartner.offer_rome_codes,
-  offer_description: computedJobPartner.offer_description,
-  offer_target_diploma: computedJobPartner.offer_target_diploma ?? null,
-  offer_desired_skills: computedJobPartner.offer_desired_skills ?? [],
-  offer_to_be_acquired_skills: computedJobPartner.offer_to_be_acquired_skills ?? [],
-  offer_access_conditions: computedJobPartner.offer_access_conditions ?? [],
-  offer_creation: computedJobPartner.offer_creation ?? null,
-  offer_expiration: computedJobPartner.offer_expiration ?? null,
-  offer_opening_count: computedJobPartner.offer_opening_count ?? 1,
-  offer_status: computedJobPartner.offer_status ?? JOB_STATUS_ENGLISH.ACTIVE,
-  workplace_siret: computedJobPartner.workplace_siret ?? null,
-  workplace_brand: computedJobPartner.workplace_brand ?? null,
-  workplace_legal_name: computedJobPartner.workplace_legal_name ?? null,
-  workplace_website: computedJobPartner.workplace_website ?? null,
-  workplace_name: computedJobPartner.workplace_name ?? null,
-  workplace_description: computedJobPartner.workplace_description ?? null,
-  workplace_size: computedJobPartner.workplace_size ?? null,
-  workplace_address_label: computedJobPartner.workplace_address_label,
-  workplace_address_street_label: computedJobPartner.workplace_address_street_label,
-  workplace_address_zipcode: computedJobPartner.workplace_address_zipcode,
-  workplace_address_city: computedJobPartner.workplace_address_city,
-  workplace_geopoint: computedJobPartner.workplace_geopoint,
-  workplace_idcc: computedJobPartner.workplace_idcc ?? null,
-  workplace_opco: computedJobPartner.workplace_opco ?? null,
-  workplace_naf_code: computedJobPartner.workplace_naf_code ?? null,
-  workplace_naf_label: computedJobPartner.workplace_naf_label ?? null,
-  apply_url: computedJobPartner.apply_url,
-  apply_phone: computedJobPartner.apply_phone ?? null,
-  apply_email: computedJobPartner.apply_email ?? null,
-  offer_multicast: computedJobPartner.offer_multicast ?? true,
-  offer_origin: computedJobPartner.offer_origin ?? null,
-  rank: computedJobPartner.rank ?? null,
-  duplicates: computedJobPartner.duplicates ?? null,
-  cfa_siret: null,
-  cfa_apply_email: null,
-  cfa_address_label: null,
-  cfa_legal_name: null,
-  cfa_apply_phone: null,
-})
+const toJobPartner = (computedJobPartner: ValidatedComputedJobPartner) =>
+  ({
+    partner_label: computedJobPartner.partner_label,
+    partner_job_id: computedJobPartner.partner_job_id,
+    contract_start: computedJobPartner.contract_start ?? null,
+    contract_duration: computedJobPartner.contract_duration ?? null,
+    contract_type: computedJobPartner.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    contract_remote: computedJobPartner.contract_remote ?? null,
+    contract_is_disabled_elligible: computedJobPartner.contract_is_disabled_elligible ?? false,
+    offer_title: computedJobPartner.offer_title,
+    offer_rome_codes: computedJobPartner.offer_rome_codes,
+    offer_description: computedJobPartner.offer_description,
+    offer_target_diploma: computedJobPartner.offer_target_diploma ?? null,
+    offer_desired_skills: computedJobPartner.offer_desired_skills ?? [],
+    offer_to_be_acquired_skills: computedJobPartner.offer_to_be_acquired_skills ?? [],
+    offer_access_conditions: computedJobPartner.offer_access_conditions ?? [],
+    offer_creation: computedJobPartner.offer_creation ?? null,
+    offer_expiration: computedJobPartner.offer_expiration ?? null,
+    offer_opening_count: computedJobPartner.offer_opening_count ?? 1,
+    offer_status: computedJobPartner.offer_status ?? JOB_STATUS_ENGLISH.ACTIVE,
+    workplace_siret: computedJobPartner.workplace_siret ?? null,
+    workplace_brand: computedJobPartner.workplace_brand ?? null,
+    workplace_legal_name: computedJobPartner.workplace_legal_name ?? null,
+    workplace_website: computedJobPartner.workplace_website ?? null,
+    workplace_name: computedJobPartner.workplace_name ?? null,
+    workplace_description: computedJobPartner.workplace_description ?? null,
+    workplace_size: computedJobPartner.workplace_size ?? null,
+    workplace_address_label: computedJobPartner.workplace_address_label,
+    workplace_address_street_label: computedJobPartner.workplace_address_street_label,
+    workplace_address_zipcode: computedJobPartner.workplace_address_zipcode,
+    workplace_address_city: computedJobPartner.workplace_address_city,
+    workplace_geopoint: computedJobPartner.workplace_geopoint,
+    workplace_idcc: computedJobPartner.workplace_idcc ?? null,
+    workplace_opco: computedJobPartner.workplace_opco ?? null,
+    workplace_naf_code: computedJobPartner.workplace_naf_code ?? null,
+    workplace_naf_label: computedJobPartner.workplace_naf_label ?? null,
+    apply_url: computedJobPartner.apply_url,
+    apply_phone: computedJobPartner.apply_phone ?? null,
+    apply_email: computedJobPartner.apply_email ?? null,
+    offer_multicast: computedJobPartner.offer_multicast ?? true,
+    offer_origin: computedJobPartner.offer_origin ?? null,
+    rank: computedJobPartner.rank ?? null,
+    duplicates: computedJobPartner.duplicates ?? null,
+    cfa_siret: null,
+    cfa_apply_email: null,
+    cfa_address_label: null,
+    cfa_legal_name: null,
+    cfa_apply_phone: null,
+  }) satisfies Partial<IJobsPartnersOfferPrivate>
+
+type PublishedField = Exclude<keyof ReturnType<typeof toJobPartner>, UnpublishedField>
+
+// Champs relus par EXISTING_JOB_PROJECTION.
+type ExistingJobPartner = Pick<IJobsPartnersOfferPrivate, "_id" | "offer_status_history" | PublishedField>
 
 // Dérivés de toJobPartner, qui ne fait que lire ses entrées : la comparaison et la projection ne peuvent pas diverger du $set.
 const PUBLISHED_FIELDS = Object.keys(toJobPartner({} as ValidatedComputedJobPartner)).filter((field) => !UNPUBLISHED_FIELDS.has(field))
@@ -96,7 +100,7 @@ const findExistingJobPartners = async (batch: ValidatedComputedJobPartner[]): Pr
     else jobIdsByLabel.set(partner_label, [partner_job_id])
   }
   const existingJobs = await getDbCollection("jobs_partners")
-    .find(
+    .find<ExistingJobPartner>(
       { $or: [...jobIdsByLabel].map(([partner_label, partner_job_ids]) => ({ partner_label, partner_job_id: { $in: partner_job_ids } })) },
       { projection: EXISTING_JOB_PROJECTION }
     )
