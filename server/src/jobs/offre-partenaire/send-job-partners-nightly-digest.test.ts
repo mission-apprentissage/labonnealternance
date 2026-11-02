@@ -13,6 +13,7 @@ const buildPartnerPublicationReportMock = vi.fn(async () => [] as string[])
 vi.mock("./partner-publication-report", () => ({ buildPartnerPublicationReport: buildPartnerPublicationReportMock }))
 
 const { sendJobPartnersNightlyDigest } = await import("./send-job-partners-nightly-digest")
+const { JobPartnersGuardrailError } = await import("./jobs-partners-guardrails")
 
 const cronTask = (params: { name: string; status: string; result?: unknown; error?: string | null; started_at?: Date; ended_at?: Date }) => {
   const { name, status, result = null, error = null, started_at, ended_at } = params
@@ -178,5 +179,31 @@ describe("sendJobPartnersNightlyDigest", () => {
     const [payload] = notifySpy.mock.calls[0]
     expect(payload.message).toContain("1/1 jobs offre-partenaire OK")
     expect(payload.message).toContain("• ALERTE PASS : 392 reçues — 0 offre publiée")
+  })
+
+  it("liste les blocages par garde-fou dans une section dédiée, sans y mêler les autres erreurs", async () => {
+    // même troncature que job-processor (stringifyError) : 3 premières lignes de la stack
+    const asJobProcessorError = (err: Error) => err.stack?.split("\n").slice(0, 3).join("\n") ?? err.message
+    const blockMessage = "Hellowork : 450 offres actives sur 1000 (45 %) absentes du flux, seuil 30 %."
+    findJobsMock.mockResolvedValueOnce([
+      cronTask({
+        name: "Process computed and import to Jobs Partners",
+        status: "errored",
+        error: asJobProcessorError(new JobPartnersGuardrailError(blockMessage)),
+        ended_at: new Date("2026-11-02T03:00:00Z"),
+      }),
+      cronTask({ name: "Import EDF", status: "errored", error: asJobProcessorError(new Error("connexion interrompue")) }),
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.error).toBe(true)
+    const lines = payload.message.split("\n")
+    const sectionStart = lines.findIndex((line) => line.startsWith("Garde-fous déclenchés (1)"))
+    expect(sectionStart).toBe(1)
+    expect(lines[sectionStart + 1]).toBe(`• Process computed and import to Jobs Partners : ${blockMessage}`)
+    expect(lines.filter((line) => line.includes("connexion interrompue"))).toHaveLength(1)
   })
 })

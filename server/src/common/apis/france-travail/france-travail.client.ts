@@ -175,11 +175,15 @@ export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => 
   }
 }
 
+export const FT_SEARCH_MAX_ATTEMPTS = 4
+export const FT_SEARCH_RETRY_DELAY_MS = 10_000
+
 // Documentation https://francetravail.io/produits-partages/catalogue/offres-emploi/documentation#/api-reference/operations/recupererListeOffre
 export async function* getAllFTJobsByDepartments(departement: string): AsyncGenerator<Omit<IFTJobRaw, "_id" | "createdAt">[], void, void> {
   const jobLimit = 150
   let start = 0
   let total = 1
+  let failedAttempts = 0
 
   while (start < total) {
     const range = `${start}-${start + jobLimit - 1}`
@@ -216,6 +220,7 @@ export async function* getAllFTJobsByDepartments(departement: string): AsyncGene
       }
 
       start += jobLimit
+      failedAttempts = 0
     } catch (error: any) {
       if (error.response?.data?.message === "La position de début doit être inférieure ou égale à 3000.") {
         // Erreur dédiée (cf. SENSITIVE_KEY_PATTERN) ; l'erreur d'origine est rethrow pour l'appelant.
@@ -233,7 +238,16 @@ export async function* getAllFTJobsByDepartments(departement: string): AsyncGene
         // code region or departement not found
         break
       }
-      logger.error(error, "Error while fetching jobs")
+      failedAttempts++
+      // Erreur dédiée sans `cause` : l'AxiosError porte le Bearer token, cf. SENSITIVE_KEY_PATTERN.
+      const attemptError = new Error(
+        `france-travail: échec de récupération des offres (dept: ${departement}, range: ${range}, tentative ${failedAttempts}/${FT_SEARCH_MAX_ATTEMPTS}, status: ${error.response?.status ?? "?"}) : ${error.message ?? "erreur inconnue"}`
+      )
+      logger.error(attemptError.message)
+      if (failedAttempts >= FT_SEARCH_MAX_ATTEMPTS) {
+        throw attemptError
+      }
+      await sleep(FT_SEARCH_RETRY_DELAY_MS * failedAttempts)
     }
   }
 }

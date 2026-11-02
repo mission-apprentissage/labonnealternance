@@ -9,6 +9,7 @@ import { blockBadRomeJobsPartners } from "./block-bad-rome-jobs-partners"
 import { fillLbaUrl } from "./fill-lba-url"
 import { fillRomeForPartners } from "./fill-rome-for-partners"
 import { importFromComputedToJobsPartners } from "./import-from-computed-to-jobs-partners"
+import { withPartnerLocks } from "./partner-processing-lock"
 import { jobPartnersByFlux } from "./process-job-partners"
 import { buildUnlockedComputedJobPartnersFilter } from "./process-job-partners-for-api"
 import { validateComputedJobPartners } from "./validate-computed-job-partners"
@@ -45,11 +46,24 @@ export const fillLbaUrlForProcessedComputed = async (processFilter: Filter<IComp
   }
 }
 
+/**
+ * Ne verrouille que les partenaires qui ont des offres à reprendre, sans attente : un partenaire verrouillé
+ * par un autre traitement est repris au run suivant, 15 min plus tard.
+ */
 export const processMissingRomeAndImportToJobPartners = async () => {
+  const partnerLabels = await getDbCollection("computed_jobs_partners").distinct("partner_label", buildMissingRomeSelectionFilter())
+  if (!partnerLabels.length) {
+    return { selected: 0 }
+  }
+  return withPartnerLocks(partnerLabels, processMissingRome, { requireAll: false })
+}
+
+const processMissingRome = async (lockedPartnerLabels: string[]) => {
   const processId = new ObjectId().toString()
-  const { modifiedCount: selected } = await getDbCollection("computed_jobs_partners").updateMany(buildMissingRomeSelectionFilter(), {
-    $set: { currently_processed_id: processId },
-  })
+  const { modifiedCount: selected } = await getDbCollection("computed_jobs_partners").updateMany(
+    { $and: [buildMissingRomeSelectionFilter(), { partner_label: { $in: lockedPartnerLabels } }] },
+    { $set: { currently_processed_id: processId } }
+  )
 
   if (!selected) {
     return { selected }

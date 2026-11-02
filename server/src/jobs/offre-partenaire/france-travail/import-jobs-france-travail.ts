@@ -10,6 +10,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 import config from "@/config"
+import { JobPartnersGuardrailError } from "@/jobs/offre-partenaire/jobs-partners-guardrails"
 import { rawToComputedJobsPartners } from "@/jobs/offre-partenaire/raw-to-computed-jobs-partners"
 import { franceTravailJobsToJobsPartners } from "./france-travail-mapper"
 
@@ -31,6 +32,7 @@ export const importFranceTravailRaw = async () => {
             filter: { id: rawFtJob.id as string },
             update: {
               $set: { ...rawFtJob, updatedAt: now },
+              $unset: { unpublishedAt: "" },
               $setOnInsert: { _id: new ObjectId(), createdAt: now },
             },
             upsert: true,
@@ -44,10 +46,14 @@ export const importFranceTravailRaw = async () => {
     }
   }
 
+  // Une erreur de récupération interrompt l'import plus haut : seul un import complet marque les offres non revues comme dépubliées.
   const count = await getDbCollection("raw_francetravail").countDocuments({
     updatedAt: now,
     unpublishedAt: { $exists: false },
   })
+  if (count === 0) {
+    throw new JobPartnersGuardrailError(`import ${JOBPARTNERS_LABEL.FRANCE_TRAVAIL} : aucune offre importée, aucune offre n'est marquée dépubliée`)
+  }
   await getDbCollection("raw_francetravail").updateMany({ updatedAt: { $lt: now } }, { $set: { unpublishedAt: now, updatedAt: now } })
 
   logger.info(`import France Travail terminé : ${count} offres importées`)
