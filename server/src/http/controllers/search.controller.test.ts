@@ -216,6 +216,32 @@ describe("search.controller", () => {
         expect(response.statusCode).toBe(400)
       })
 
+      // Base vide : toute recherche renvoie 0 résultat (cas nb_hits > 0 : cf. tests de isAutoRadiusWidening).
+      it("marque auto_radius_intermediate une recherche autour d'un point sans résultat sous 100 km", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=palierRayon&page=0&latitude=45&longitude=2&radius=40" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("palierRayon")
+        expect(doc).toMatchObject({ radius: 40, nb_hits: 0, auto_radius_intermediate: true })
+      })
+
+      it.each([
+        ["à 100 km, dernier palier", "&latitude=45&longitude=2&radius=100", "palierFinal"],
+        ["en emprise administrative", "&latitude=45&longitude=2&radius=20&admin_area=departement:15", "palierDepartement"],
+        ["sans lieu", "", "palierSansLieu"],
+      ])("ne marque pas auto_radius_intermediate %s", async (_label, params, q) => {
+        const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?q=${q}&page=0${params}` })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery(q)
+        expect(doc).not.toHaveProperty("auto_radius_intermediate")
+      })
+
+      it("rejette un paramètre auto_radius_step déclaré par l'appelant (400)", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=palierDeclare&page=0&auto_radius_step=true" })
+        expect(response.statusCode).toBe(400)
+      })
+
       it("ne logue pas une requête interne ni une page > 0", async () => {
         const response1 = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=interne&page=0&internal=true" })
         const response2 = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=page1&page=1" })

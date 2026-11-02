@@ -4,9 +4,9 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Skeleton, Typography } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { isAutoRadiusWidening } from "shared/utils/auto-radius"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { pluralize } from "@/utils/strutils"
-import { isAutoRadiusActive, RADIUS_MAX } from "../_hooks/use-auto-radius"
 import type { useSearchResults } from "../_hooks/use-search-results"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { SearchHitCard } from "./SearchHitCard"
@@ -115,10 +115,8 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
 
   if (allHits.length === 0) {
     // L'élargissement automatique du rayon (useAutoRadius) est encore en cours : l'état vide
-    // ne s'affiche qu'une fois tous les paliers épuisés (100 km). Même condition d'activation
-    // que le hook (pas d'élargissement en emprise administrative, l'état vide s'affiche direct).
-    const stillWidening = isAutoRadiusActive(params) && params.radius < RADIUS_MAX
-    if (stillWidening) return <LoadingSkeletons />
+    // ne s'affiche qu'une fois tous les paliers épuisés (100 km).
+    if (isAutoRadiusWidening(params, 0)) return <LoadingSkeletons />
 
     return (
       <Box sx={{ mt: fr.spacing("8v"), textAlign: "center" }}>

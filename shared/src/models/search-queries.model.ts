@@ -42,6 +42,12 @@ export const ZSearchQuery = z.object({
   geo: z.object({ lat: z.number(), lng: z.number() }).nullable().describe("Position arrondie à 1 décimale (~11 km)"),
   radius: z.number().nullable(),
   admin_area: z.string().nullable().describe("Emprise administrative demandée (region:53, departement:44), null pour une recherche par point + rayon ou sans lieu"),
+  auto_radius_intermediate: z
+    .literal(true)
+    .optional()
+    .describe(
+      "Présent uniquement quand la réponse déclenche un palier d'élargissement automatique du rayon de l'UI (0 résultat autour d'un point, rayon < 100 km) : résultat jamais vu par l'usager (#5634)"
+    ),
   created_at: z.date(),
 })
 
