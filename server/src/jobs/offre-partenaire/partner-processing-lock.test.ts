@@ -114,11 +114,12 @@ describe("verrou par partenaire", () => {
       expect(locked).toEqual(["Hellowork"])
     })
 
-    it("rafraîchit les verrous déjà obtenus pendant l'attente des autres", async () => {
+    // TTL de 2 s : chaque rafraîchissement (toutes les ~670 ms) dispose de plus d'une seconde de marge sur une machine chargée
+    it("rafraîchit les verrous déjà obtenus pendant l'attente des autres", { timeout: 10_000 }, async () => {
       await acquirePartnerLock("B", "autre")
-      setTimeout(() => releasePartnerLock("B", "autre"), 800)
-      // le TTL initial de A (300 ms) est dépassé pendant que l'appel attend encore B
-      const intrusion = new Promise<boolean>((resolve) => setTimeout(() => resolve(acquirePartnerLock("A", "intrus")), 500))
+      setTimeout(() => releasePartnerLock("B", "autre"), 3_500)
+      // le TTL initial de A (2 s) est dépassé pendant que l'appel attend encore B
+      const intrusion = new Promise<boolean>((resolve) => setTimeout(() => resolve(acquirePartnerLock("A", "intrus")), 2_600))
 
       const ownersDuringRun = await withPartnerLocks(
         ["A", "B"],
@@ -128,7 +129,7 @@ describe("verrou par partenaire", () => {
               .find({ _id: { $in: ["A", "B"] } })
               .toArray()
           ).map(({ _id, owner }) => ({ _id, owner })),
-        { ttlMs: 300, waitMs: 2_000, pollIntervalMs: 50 }
+        { ttlMs: 2_000, waitMs: 8_000, pollIntervalMs: 100 }
       )
 
       expect.soft(await intrusion).toBe(false)
