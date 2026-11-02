@@ -202,6 +202,40 @@ export const METADATA = {
       description: "Consultez nos statistiques et analyses sur le marché de l’alternance en France.",
     }),
     barometre: () => ({
+      title: "Baromètre de l’alternance T3 2026 - La bonne alternance",
+      description:
+        "Baromètre T3 2026 de l’alternance : offres, candidatures, métiers les plus recherchés, secteurs qui recrutent, secteurs sous tension. Données La bonne alternance.",
+      keywords: [
+        "baromètre alternance",
+        "marché de l’alternance",
+        "alternance T3 2026",
+        "candidatures alternance",
+        "offres apprentissage",
+        "métiers en alternance",
+        "secteurs qui recrutent en alternance",
+        "secteurs sous tension en alternance",
+        "La bonne alternance",
+      ],
+      openGraph: {
+        title: "Baromètre de l’alternance T3 2026 - La bonne alternance",
+        description:
+          "Baromètre T3 2026 de l’alternance : offres, candidatures, métiers les plus recherchés, secteurs qui recrutent, secteurs sous tension. Données La bonne alternance.",
+        url: `/barometre`,
+        siteName: "La bonne alternance",
+        locale: "fr_FR",
+        type: "article",
+        images: [
+          {
+            url: "/favicon/android-chrome-512x512.png",
+            width: 512,
+            height: 512,
+            alt: "La bonne alternance",
+          },
+        ],
+      },
+    }),
+    barometreT1: () => ({
+      robots: { index: false, follow: true },
       title: "Baromètre de l’alternance T1 2026 - La bonne alternance",
       description:
         "Baromètre T1 2026 de l’alternance : offres, candidatures, métiers les plus recherchés, secteurs qui recrutent, tensions par région. Données La bonne alternance.",
@@ -220,7 +254,7 @@ export const METADATA = {
         title: "Baromètre de l’alternance T1 2026 - La bonne alternance",
         description:
           "Baromètre T1 2026 de l’alternance : offres, candidatures, métiers les plus recherchés, secteurs qui recrutent, tensions par région. Données La bonne alternance.",
-        url: `/barometre`,
+        url: `/barometre/t1-2026`,
         siteName: "La bonne alternance",
         locale: "fr_FR",
         type: "article",

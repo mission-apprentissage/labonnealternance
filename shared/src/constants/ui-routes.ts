@@ -15,6 +15,7 @@ export const UI_ROUTE_PATTERNS = [
   "/alternance/ville/:ville",
   "/alternance/villes",
   "/barometre",
+  "/barometre/t1-2026",
   "/conditions-generales-utilisation",
   "/contact",
   "/desinscription",

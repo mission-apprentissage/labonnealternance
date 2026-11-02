@@ -51,7 +51,7 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
         {
           path: "/barometre",
           label: "Baromètre de l'alternance",
-          description: "Baromètre trimestriel de l'alternance : offres, candidatures, métiers et secteurs qui recrutent, tensions par région.",
+          description: "Baromètre trimestriel de l'alternance : offres, candidatures, métiers et secteurs qui recrutent, secteurs sous tension.",
         },
         { path: "/contact", label: "Contact", description: "Contacter l'équipe de La bonne alternance." },
         { path: "/developpeurs", label: "Espace développeurs", description: "API publique et documentation technique pour réutiliser les données de La bonne alternance." },
