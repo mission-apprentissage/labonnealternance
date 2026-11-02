@@ -12,6 +12,9 @@ const buildPartnerPublicationReportMock = vi.fn(async () => [] as string[])
 
 vi.mock("./partner-publication-report", () => ({ buildPartnerPublicationReport: buildPartnerPublicationReportMock }))
 
+// section couverte par flux-cadence-digest.test.ts, qui a besoin de MongoDB
+vi.mock("./flux-cadence-digest", () => ({ formatFluxCadenceSection: vi.fn().mockResolvedValue([]) }))
+
 const { sendJobPartnersNightlyDigest } = await import("./send-job-partners-nightly-digest")
 const { JobPartnersGuardrailError } = await import("./jobs-partners-guardrails")
 

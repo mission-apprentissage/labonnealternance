@@ -1,5 +1,6 @@
 import type { CronDef } from "job-processor"
 import { processEtudiant } from "@/jobs/offre-partenaire/etudiant/process-etudiant"
+import type { FluxImportOptions } from "@/jobs/offre-partenaire/import-flux-if-changed"
 import { processApec } from "./apec/process-apec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./clever-connect/process-clever-connect"
 // import { processEngagementJeunes } from "./engagement-jeunes/import-engagement-jeunes"
@@ -22,6 +23,10 @@ import { processMissingRomeAndImportToJobPartners } from "./process-missing-rome
 import { processNeverValidatedJobPartners } from "./process-never-validated-jobs-partners"
 import { processRhAlternance } from "./rh-alternance/process-rh-alternance"
 import { JOB_PARTNERS_DIGEST_JOB_NAME, sendJobPartnersNightlyDigest } from "./send-job-partners-nightly-digest"
+
+// Le run de nuit reconstruit toujours, même un flux inchangé (cf. FluxImportOptions). L'appel explicite
+// évite aussi de recevoir l'AbortSignal que job-processor passe en premier argument du handler.
+const nightly = (process: (options: FluxImportOptions) => Promise<unknown>) => () => process({ skipIfUnchanged: false })
 
 const timings = {
   import_source: "0 0 * * *",
@@ -46,7 +51,7 @@ export const importers: Record<string, CronDef> = {
   },
   "Import Hellowork": {
     cron_string: timings.import_source,
-    handler: processHellowork,
+    handler: nightly(processHellowork),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
@@ -67,35 +72,35 @@ export const importers: Record<string, CronDef> = {
   },
   "Import Meteojob": {
     cron_string: timings.import_source,
-    handler: processMeteojob,
+    handler: nightly(processMeteojob),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
   "Import Kelio": {
     cron_string: timings.import_source,
-    handler: processKelio,
+    handler: nightly(processKelio),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
   "Import La Poste": {
     cron_string: timings.import_source,
-    handler: processLaposte,
+    handler: nightly(processLaposte),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
   "Import Le bon coin emploi": {
     cron_string: timings.import_source,
-    handler: processLeboncoin,
+    handler: nightly(processLeboncoin),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
   "Import Jobteaser": {
     cron_string: timings.import_source,
-    handler: processJobteaser,
+    handler: nightly(processJobteaser),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
@@ -109,31 +114,31 @@ export const importers: Record<string, CronDef> = {
   // },
   "Import PASS": {
     cron_string: timings.import_source,
-    handler: processPass,
+    handler: nightly(processPass),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Atlas": {
     cron_string: timings.import_source,
-    handler: processAtlas,
+    handler: nightly(processAtlas),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Vite un emploi": {
     cron_string: timings.import_source,
-    handler: processViteUnEmploi,
+    handler: nightly(processViteUnEmploi),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Nos Talents Nos Emplois": {
     cron_string: timings.import_source,
-    handler: processNosTalentsNosEmplois,
+    handler: nightly(processNosTalentsNosEmplois),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Toulouse Metropole": {
     cron_string: timings.import_source,
-    handler: processToulouseMetropole,
+    handler: nightly(processToulouseMetropole),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
@@ -145,31 +150,31 @@ export const importers: Record<string, CronDef> = {
   // },
   "Import Decathlon": {
     cron_string: timings.import_source,
-    handler: processDecathlon,
+    handler: nightly(processDecathlon),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import EDF": {
     cron_string: timings.import_source,
-    handler: processEdf,
+    handler: nightly(processEdf),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Enedis": {
     cron_string: timings.import_source,
-    handler: processEnedis,
+    handler: nightly(processEnedis),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import APEC": {
     cron_string: timings.import_source,
-    handler: processApec,
+    handler: nightly(processApec),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import LinkedIn": {
     cron_string: timings.import_source,
-    handler: processLinkedin,
+    handler: nightly(processLinkedin),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
