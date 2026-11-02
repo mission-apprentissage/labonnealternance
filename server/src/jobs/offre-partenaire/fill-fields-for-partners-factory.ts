@@ -48,6 +48,7 @@ export const buildComputedPartnersCandidateFilter = <SourceFields extends keyof 
  * @param getData: fonction récupérant les nouvelles données.
  * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
  * Les valeurs retournées seront modifiées et écraseront les anciennes données.
+ * Une offre absente du tableau retourné reçoit l'erreur « data not found » ; l'ordre du tableau est libre.
  */
 export const fillFieldsForComputedPartnersFactory = async <SourceFields extends keyof IComputedJobsPartners, FilledFields extends keyof IComputedJobsPartners | "business_error">({
   job,
@@ -119,20 +120,15 @@ export const fillFieldsForComputedPartnersFactory = async <SourceFields extends 
           counters.success += responses.length
         }
 
-        const missing = documents.filter((_, i) => !responses[i])
+        const respondedIds = new Set(responses.map(({ _id }) => _id.toString()))
+        const missing = documents.filter((doc) => !respondedIds.has(doc._id.toString()))
         if (missing.length) {
           await getDbCollection("computed_jobs_partners").bulkWrite(
-            missing.map((doc) => ({
-              updateOne: {
-                filter: { _id: doc._id },
-                update: {
-                  $push: {
-                    errors: { source: job, error: `data not found` },
-                  },
-                },
-              },
-            })),
-            { ordered: false }
+            missing.flatMap((doc) => [
+              { updateOne: { filter: { _id: doc._id }, update: { $pull: { errors: { source: job } } } } },
+              { updateOne: { filter: { _id: doc._id }, update: { $push: { errors: { source: job, error: `data not found` } } } } },
+            ]),
+            { ordered: true }
           )
           counters.error += missing.length
         }
