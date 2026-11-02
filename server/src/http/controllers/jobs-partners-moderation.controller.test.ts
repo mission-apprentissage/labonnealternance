@@ -660,5 +660,30 @@ describe("modération des offres libres (#5499)", () => {
       expect(byRecruiter.statusCode).toBe(200)
       expect((await getOffer(offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
     })
+
+    it("refuse la clôture par un administrateur d'une offre en ligne qui attend une décision, pas celle d'une offre conforme, tranchée ou en attente du compte", async () => {
+      const recruiter = await saveRecruiter({ email: "recruteur-cloture-en-ligne@mail.com" })
+      const online = { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_status_history: [] }
+      const awaitingDecision = await saveModeratedOffer(recruiter, { offer: { ...online, offer_moderation_verdict: "a_verifier" } })
+      const conforme = await saveModeratedOffer(recruiter, { offer: { ...online, offer_moderation_verdict: "conforme" } })
+      const decided = await saveModeratedOffer(recruiter, { offer: { ...online, offer_moderation_review: "validee" } })
+      // Hors de la file : elle attend la validation du compte, pas une décision de modération.
+      const awaitingAccount = await saveModeratedOffer(recruiter, {
+        offer: { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE, offer_status_history: [], offer_moderation_verdict: "a_verifier" },
+      })
+      const body = { job_status: JOB_STATUS.ANNULEE, job_status_comment: "Autre" }
+      const { bearerToken: adminToken } = await loginAdmin()
+      const closeByAdmin = async (id: ObjectId) =>
+        (await httpClient().inject({ method: "PUT", path: `/api/formulaire/offre/f/${id}/cancel`, headers: adminToken, body })).statusCode
+
+      expect(await closeByAdmin(awaitingDecision.offer._id)).toBe(400)
+      expect([await closeByAdmin(conforme.offer._id), await closeByAdmin(decided.offer._id), await closeByAdmin(awaitingAccount.offer._id)]).toEqual([200, 200, 200])
+      expect((await getOffer(awaitingDecision.offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+
+      const { bearerToken: recruiterToken } = await logUser(httpClient, "recruteur-cloture-en-ligne")
+      const byRecruiter = await httpClient().inject({ method: "PUT", path: `/api/formulaire/offre/f/${awaitingDecision.offer._id}/cancel`, headers: recruiterToken, body })
+      expect(byRecruiter.statusCode).toBe(200)
+      expect((await getOffer(awaitingDecision.offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    })
   })
 })

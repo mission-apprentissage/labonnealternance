@@ -27,6 +27,8 @@ export const MODERATION_CATEGORIES = [...MODERATION_LEGAL_CATEGORIES, ...MODERAT
 export const MODERATION_SEVERITIES = ["bloquant", "doute"] as const
 
 export const MODERATION_VERDICTS = ["conforme", "a_verifier", "non_conforme"] as const
+/** Verdicts qui laissent une offre publiée ou bloquée en attente d'une décision humaine, tant qu'elle n'est pas tranchée (#5499). */
+export const MODERATION_PENDING_VERDICTS = ["a_verifier", "non_conforme"] as const satisfies readonly (typeof MODERATION_VERDICTS)[number][]
 
 /** Champs libres classifiés, sous leur nom du formulaire : `job_employer_description` est stocké dans `workplace_description`. */
 export const MODERATION_FIELDS = ["job_description", "job_employer_description"] as const
