@@ -7,13 +7,15 @@ import { Box } from "@mui/material"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { isAutoRadiusWidening } from "shared/utils/auto-radius"
 import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { zoneScopedId } from "@/app/_components/zone-ids"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
 import { pluralize } from "@/utils/strutils"
-import { isAutoRadiusActive, RADIUS_MAX, useAutoRadius } from "../_hooks/use-auto-radius"
+import type { AutoRadiusChain } from "../_hooks/use-auto-radius"
+import { autoRadiusTracking, extendAutoRadiusChain, useAutoRadius } from "../_hooks/use-auto-radius"
 import { useSearchResults } from "../_hooks/use-search-results"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { ACTIVE_HIT_PARAM, buildSearchUrl } from "../_utils/search.params.utils"
@@ -35,10 +37,18 @@ interface SearchPageClientProps {
 
 type MobilePanel = null | "search" | "filters" | "tri"
 
+// Identifie une recherche distincte pour la télémétrie : pagination et origine de q exclues.
+const searchKeyOf = (p: ISearchPageParams) => {
+  const { page: _page, hitsPerPage: _hitsPerPage, q_source: _qSource, ...trackedParams } = p
+  return JSON.stringify(trackedParams)
+}
+
 export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const rawSearchParams = useSearchParams()
   const params = rawSearchParams ? parseSearchPageParamsWithLegacy(new URLSearchParams(rawSearchParams.toString())) : initialParams
 
+  const searchKey = searchKeyOf(params)
+  const [autoRadiusChain, setAutoRadiusChain] = useState<AutoRadiusChain | null>(null)
   const result = useSearchResults(params)
   const router = useRouter()
 
@@ -93,8 +103,11 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     return () => observer.disconnect()
   }, [])
 
+  // Navigation à l'initiative de l'usager : clôt la chaîne d'élargissement en cours, sinon un
+  // retour aux params de son dernier palier (filtre coché puis décoché) serait compté comme palier.
   const navigateSilent = useCallback(
     (newParams: ISearchPageParams) => {
+      setAutoRadiusChain(null)
       router.replace(buildSearchUrl(newParams))
     },
     [router]
@@ -108,7 +121,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // (hors « Voir plus », cf. SearchResultsList) : un tri ou une recherche qui donne le même nombre
   // est annoncé à nouveau. Rien tant que l'élargissement automatique du rayon est en cours.
   const isRefreshing = result.isFetching && !result.isFetchingNextPage
-  const stillWidening = nbHits === 0 && isAutoRadiusActive(params) && params.radius < RADIUS_MAX
+  const stillWidening = isAutoRadiusWidening(params, nbHits)
   const resultsStatus = !result.data || isRefreshing || stillWidening ? "" : nbHits === 0 ? "Aucun résultat" : pluralize(nbHits, "résultat")
 
   // Changements de filtres en attente de leurs compteurs : la spec veut results_count et
@@ -119,21 +132,19 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // contrat excluent des documents → results_count post-application signifiant.
   const pendingSortChangeRef = useRef<{ searchKey: string; change: SortChange } | null>(null)
 
-  const searchKeyOf = (p: ISearchPageParams) => {
-    const { page: _page, hitsPerPage: _hitsPerPage, q_source: _qSource, ...trackedParams } = p
-    return JSON.stringify(trackedParams)
-  }
-
   // search_results_displayed : une fois par recherche distincte (q/lieu/mode/filtres/tri),
-  // pas à chaque page chargée via « Voir plus » — même événement que le legacy, enrichi de
-  // search_engine. Les compteurs par type viennent de la facette `type` du result set.
+  // pas à chaque page chargée via « Voir plus » ni à chaque palier d'élargissement du rayon
+  // (#5634) — même événement que le legacy, enrichi de search_engine. Les compteurs par type
+  // viennent de la facette `type` du result set.
   const lastTrackedSearchKeyRef = useRef<string | null>(null)
   useEffect(() => {
     if (!result.data) return
     // keepPreviousData : pendant le refetch, result.data appartient à la recherche PRÉCÉDENTE
     // → attendre les données fraîches (sinon compteurs faux sur les événements ci-dessous).
     if (result.isPlaceholderData) return
-    const searchKey = searchKeyOf(params)
+    // Palier intermédiaire : rien n'est encore affiché à l'usager, les événements attendent le
+    // dernier palier (cf. handleAutoRadiusStep, qui y reporte les changements en attente).
+    if (stillWidening) return
 
     // Flush des search_filter_applied/removed de la recherche affichée (compteurs post-application).
     if (pendingFilterChangesRef.current?.searchKey === searchKey) {
@@ -179,6 +190,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       // d'une recherche par point + rayon, que search_address seul ne permet pas.
       search_admin_area: params.admin_area ?? "non_renseigné",
       search_diploma: params.level?.[0] ?? "indifferent",
+      ...autoRadiusTracking(autoRadiusChain, searchKey, params.radius),
       search_engine: SEARCH_ENGINES.BETA,
     })
   })
@@ -239,11 +251,17 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     navigateSilent({ ...cleared, mode, sort: sortValidInMode ? params.sort : undefined })
   }
 
-  function handleRadiusChange(radius: number) {
-    navigateSilent({ ...params, radius, page: 0 })
+  function handleAutoRadiusStep(radius: number) {
+    const newParams = { ...params, radius, page: 0 }
+    const newSearchKey = searchKeyOf(newParams)
+    setAutoRadiusChain((chain) => extendAutoRadiusChain(chain, { searchKey, radius: params.radius }, newSearchKey))
+    // Filtres et tri en attente : poussés avec le results_count du dernier palier, pas du premier.
+    if (pendingFilterChangesRef.current?.searchKey === searchKey) pendingFilterChangesRef.current.searchKey = newSearchKey
+    if (pendingSortChangeRef.current?.searchKey === searchKey) pendingSortChangeRef.current.searchKey = newSearchKey
+    router.replace(buildSearchUrl(newParams))
   }
 
-  useAutoRadius({ params, result, onRadiusChange: handleRadiusChange })
+  useAutoRadius({ params, result, onRadiusChange: handleAutoRadiusStep })
 
   function handleFilterChange(newParams: ISearchPageParams) {
     // Mémorise le diff de filtres (un événement par valeur modifiée) — poussé avec les

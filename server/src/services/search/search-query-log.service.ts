@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb"
+import { isAutoRadiusWidening } from "shared/utils/auto-radius"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
@@ -89,6 +90,8 @@ export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOu
       geo: hasGeo ? { lat: roundCoord(query.latitude!), lng: roundCoord(query.longitude!) } : null,
       radius: hasGeo ? (query.radius ?? null) : null,
       admin_area: query.admin_area ?? null,
+      // Calculé, pas déclaré par l'appelant (falsifiable) : cf. isAutoRadiusWidening.
+      ...(isAutoRadiusWidening(query, outcome.nbHits) ? { auto_radius_intermediate: true as const } : {}),
       created_at: now,
     })
   } catch (error) {
