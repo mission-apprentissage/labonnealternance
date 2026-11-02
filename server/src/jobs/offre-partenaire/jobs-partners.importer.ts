@@ -19,6 +19,7 @@ import { processLinkedin } from "./linkedin/process-linkedin"
 import { processPass } from "./pass/process-pass"
 import { processComputedAndImportToJobPartners } from "./process-job-partners"
 import { processMissingRomeAndImportToJobPartners } from "./process-missing-rome-and-import-to-job-partners"
+import { processNeverValidatedJobPartners } from "./process-never-validated-jobs-partners"
 import { processRhAlternance } from "./rh-alternance/process-rh-alternance"
 import { JOB_PARTNERS_DIGEST_JOB_NAME, sendJobPartnersNightlyDigest } from "./send-job-partners-nightly-digest"
 
@@ -28,8 +29,11 @@ const timings = {
   // 24 h/24 : les offres dont le romage échoue au nightly (00h35) sont reprises sans attendre le
   // matin (848 offres le 02/09/2026, 1 907 le 29/08, servies depuis cache_diagoriente en 2 à 3 s).
   // Le job pose son verrou (currently_processed_id) et n'importe que son périmètre, comme le cron
-  // API `*/5`.
+  // API `*/5`. Seules les offres sorties d'une chaîne complète sont reprises, cf. buildMissingRomeSelectionFilter.
   process_missing_rome: "*/15 * * * *",
+  // Hors 00h00–02h00 (run de nuit, fenêtre de MEP). Les offres de moins de 2 h sont ignorées, cf.
+  // NEVER_VALIDATED_MIN_AGE_MS.
+  process_never_validated: "30 2-23 * * *",
 }
 
 export const importers: Record<string, CronDef> = {
@@ -186,6 +190,15 @@ export const importers: Record<string, CronDef> = {
     handler: processMissingRomeAndImportToJobPartners,
     checkinMargin: 350,
     maxRuntimeInMinutes: 15,
+    tag: "slave",
+    resumable: true,
+  },
+
+  "Rattrapage des offres flux jamais validées": {
+    cron_string: timings.process_never_validated,
+    handler: processNeverValidatedJobPartners,
+    checkinMargin: 30,
+    maxRuntimeInMinutes: 60,
     tag: "slave",
     resumable: true,
   },

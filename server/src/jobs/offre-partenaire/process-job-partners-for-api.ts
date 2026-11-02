@@ -50,6 +50,16 @@ const syncImportedJobsToSearchItems = async (jobPartnerIds: ObjectId[]) => {
  */
 const STALE_PROCESS_ID_AFTER_MS = 60 * 60 * 1000
 
+/**
+ * Documents libres ou revendiqués par un run périmé (cf. STALE_PROCESS_ID_AFTER_MS). Les 4 premiers
+ * octets d'un ObjectId encodent sa date de création et l'hexadécimal se compare dans le même ordre :
+ * un `$lt` sur la chaîne suffit à détecter un processId périmé.
+ */
+export const buildUnlockedComputedJobPartnersFilter = (): Filter<IComputedJobsPartners> => {
+  const staleProcessIdBefore = ObjectId.createFromTime(Math.floor((Date.now() - STALE_PROCESS_ID_AFTER_MS) / 1000)).toString()
+  return { $or: [{ currently_processed_id: null }, { currently_processed_id: { $lt: staleProcessIdBefore } }] }
+}
+
 export const processJobPartnersForApi = async () => {
   logger.info("début de processJobPartnersForApi")
   const processId: string = new ObjectId().toString()
@@ -58,14 +68,11 @@ export const processJobPartnersForApi = async () => {
   // Ne revendiquer que les documents libres, comme processMissingRomeAndImportToJobPartners : ce
   // job n'est pas réentrant, et sans ce filtre un run concurrent réattribue les documents du run en
   // cours, dont l'import ne matche alors plus rien et se perd sans erreur.
-  // Les 4 premiers octets d'un ObjectId encodent sa date de création et l'hexadécimal se compare
-  // dans le même ordre : un `$lt` sur la chaîne suffit à détecter un processId périmé.
-  const staleProcessIdBefore = ObjectId.createFromTime(Math.floor((Date.now() - STALE_PROCESS_ID_AFTER_MS) / 1000)).toString()
   await getDbCollection("computed_jobs_partners").updateMany(
     {
       partner_label: { $nin: excludedJobPartnersFromApi },
       updated_at: { $gte: last2Days },
-      $or: [{ currently_processed_id: null }, { currently_processed_id: { $lt: staleProcessIdBefore } }],
+      ...buildUnlockedComputedJobPartnersFilter(),
     },
     { $set: { currently_processed_id: processId, errors: [] } }
   )

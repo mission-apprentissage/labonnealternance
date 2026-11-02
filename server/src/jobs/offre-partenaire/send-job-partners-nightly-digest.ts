@@ -3,6 +3,7 @@ import { findJobs } from "job-processor"
 import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import { importers } from "./jobs-partners.importer"
+import { buildPartnerPublicationReport } from "./partner-publication-report"
 
 const DIGEST_WINDOW_HOURS = 24
 const MAX_MESSAGE_LENGTH = 35_000 // marge sous la limite Slack (~40k caractères) pour le champ `text`
@@ -122,7 +123,7 @@ export const sendJobPartnersNightlyDigest = async () => {
     anomalousJobs.length === 0 ? `${okCount}/${jobs.length} jobs offre-partenaire OK, aucune anomalie.` : `${okCount}/${jobs.length} jobs OK, ${anomalousJobs.length} en erreur :`
 
   const anomalyLines = groupByName(anomalousJobs).map(([name, jobsForName]) => formatAnomalyGroup(name, jobsForName))
-  let message = [summaryLine, ...anomalyLines].join("\n")
+  let message = [summaryLine, ...anomalyLines, ...(await buildPartnerPublicationReport())].join("\n")
   if (message.length > MAX_MESSAGE_LENGTH) {
     message = `${message.slice(0, MAX_MESSAGE_LENGTH)}\n… (message tronqué, voir les logs pour le détail complet)`
   }

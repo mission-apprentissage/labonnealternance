@@ -8,6 +8,10 @@ vi.mock("job-processor", async (importOriginal) => {
   return { ...mod, findJobs: findJobsMock }
 })
 
+const buildPartnerPublicationReportMock = vi.fn(async () => [] as string[])
+
+vi.mock("./partner-publication-report", () => ({ buildPartnerPublicationReport: buildPartnerPublicationReportMock }))
+
 const { sendJobPartnersNightlyDigest } = await import("./send-job-partners-nightly-digest")
 
 const cronTask = (params: { name: string; status: string; result?: unknown; error?: string | null; started_at?: Date; ended_at?: Date }) => {
@@ -162,5 +166,17 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(payload.message).toContain("filled.fillSiretInfosForPartners.error : 35/15334")
     expect(payload.message).toContain("filled.fillRomeForPartners.error : 2929/7223")
     expect(payload.message).toContain("filled.validateComputedJobPartners.error : 2795/22524")
+  })
+
+  it("ajoute au bilan la section du taux de publication par partenaire", async () => {
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import RHAlternance", status: "finished", result: { offerInsertCount: 42 } })])
+    buildPartnerPublicationReportMock.mockResolvedValueOnce(["", "Taux de publication par partenaire flux (1 à surveiller) :", "• ALERTE PASS : 392 reçues — 0 offre publiée"])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message).toContain("1/1 jobs offre-partenaire OK")
+    expect(payload.message).toContain("• ALERTE PASS : 392 reçues — 0 offre publiée")
   })
 })
