@@ -23,7 +23,7 @@ jobs:
   perf-budget:
     name: Measure bundle size
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v7

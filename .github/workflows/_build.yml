@@ -22,7 +22,7 @@ on:
 jobs:
   npm-packages-check:
     name: NPM dependency check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
@@ -46,7 +46,7 @@ jobs:
     concurrency:
       group: "build-${{ github.workflow }}-${{ github.ref }}"
     permissions: write-all
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
@@ -56,7 +56,10 @@ jobs:
 
       - name: Initialize the GnuPG keyring
         run: |
-          echo -n "$OPENPGP_KEY" | gpg --import
+          install -d -m 700 "${RUNNER_TEMP}/gnupg"
+          echo "GNUPGHOME=${RUNNER_TEMP}/gnupg" >> "${GITHUB_ENV}"
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          echo -n "$OPENPGP_KEY" | gpg --batch --import
         env:
           OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
 

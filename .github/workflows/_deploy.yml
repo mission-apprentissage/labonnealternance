@@ -50,7 +50,7 @@ on:
 jobs:
   version:
     name: Get Version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
     steps:
@@ -75,7 +75,7 @@ jobs:
 
   npm-packages-check:
     name: NPM dependency check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
@@ -96,7 +96,7 @@ jobs:
     if: ${{ success() }}
     needs: ["version", "npm-packages-check"]
     name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment: ${{ inputs.environment }}
     steps:
       - name: Get Action IP
@@ -110,7 +110,10 @@ jobs:
 
       - name: Initialize the GnuPG keyring
         run: |
-          echo -n "$OPENPGP_KEY" | gpg --import
+          install -d -m 700 "${RUNNER_TEMP}/gnupg"
+          echo "GNUPGHOME=${RUNNER_TEMP}/gnupg" >> "${GITHUB_ENV}"
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          echo -n "$OPENPGP_KEY" | gpg --batch --import
         env:
           OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
 
@@ -188,7 +191,7 @@ jobs:
     if: ${{ success() && inputs.environment == 'production' }}
     needs: ["version", "deploy"]
     name: Post changelog to Slack
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       actions: read
       issues: write
