@@ -3,6 +3,7 @@ import { processEtudiant } from "@/jobs/offre-partenaire/etudiant/process-etudia
 import type { FluxImportOptions } from "@/jobs/offre-partenaire/import-flux-if-changed"
 import { processApec } from "./apec/process-apec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./clever-connect/process-clever-connect"
+import { buildDaytimeRefreshCrons } from "./daytime-refresh-cycle"
 // import { processEngagementJeunes } from "./engagement-jeunes/import-engagement-jeunes"
 import { processDecathlon } from "./decathlon/import-decathlon"
 import { processEdf } from "./edf/process-edf"
@@ -208,17 +209,22 @@ export const importers: Record<string, CronDef> = {
     resumable: true,
   },
 
+  // Déclarés ici pour que le bilan quotidien les couvre (cf. getJobPartnersNightlyJobNames).
+  ...buildDaytimeRefreshCrons(),
+
   // Keep at the end
   "Process computed and import to Jobs Partners": {
     cron_string: timings.process_computed,
     handler: processComputedAndImportToJobPartners,
     checkinMargin: 350,
-    maxRuntimeInMinutes: 300,
+    // Seuil de timeout du moniteur Sentry, pas une limite d'exécution. Mesuré sur 91 nuits : 26 min en moyenne, 40 au pire ;
+    // plus du double du pire cas pour ne pas alerter sur une nuit chargée, et signaler un run bloqué bien avant le bilan de 05h30.
+    maxRuntimeInMinutes: 90,
     tag: "slave",
     resumable: true,
   },
 
-  // Bilan unique des jobs ci-dessus, envoyé une fois le pire cas (5h de "Process computed...") passé
+  // Bilan unique des jobs ci-dessus, envoyé bien après la fin attendue de "Process computed..." (cf. son maxRuntimeInMinutes)
   [JOB_PARTNERS_DIGEST_JOB_NAME]: {
     cron_string: "30 5 * * *",
     handler: sendJobPartnersNightlyDigest,

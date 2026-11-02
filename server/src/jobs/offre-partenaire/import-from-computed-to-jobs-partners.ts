@@ -1,7 +1,8 @@
 import { pipeline } from "node:stream/promises"
+import { isDeepStrictEqual } from "node:util"
 import { internal } from "@hapi/boom"
 import type { AnyBulkWriteOperation, Filter, ObjectId } from "mongodb"
-import { MongoBulkWriteError } from "mongodb"
+import { BSON, MongoBulkWriteError } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
@@ -24,7 +25,11 @@ const IMPORT_BATCH_CONCURRENCY = 4
 // `validated: true` garantit la conformité au modèle jobs_partners, cf. validateComputedJobPartners.
 type ValidatedComputedJobPartner = Omit<IJobsPartnersOfferPrivate, "created_at">
 
-type ExistingJobPartner = Pick<IJobsPartnersOfferPrivate, "_id" | "partner_label" | "partner_job_id" | "offer_status" | "offer_status_history">
+// Réduit à EXISTING_JOB_PROJECTION.
+type ExistingJobPartner = IJobsPartnersOfferPrivate
+
+// Écrits par l'import mais lus seulement par la chaîne d'import (détection de doublons) : absents de l'API, de l'index et des pages.
+const UNPUBLISHED_FIELDS = new Set<string>(["rank", "duplicates"])
 
 const jobPartnerKey = ({ partner_label, partner_job_id }: { partner_label: string; partner_job_id: string }) => `${partner_label}\u0000${partner_job_id}`
 
@@ -77,6 +82,12 @@ const toJobPartner = (computedJobPartner: ValidatedComputedJobPartner): Partial<
   cfa_apply_phone: null,
 })
 
+// Dérivés de toJobPartner, qui ne fait que lire ses entrées : la comparaison et la projection ne peuvent pas diverger du $set.
+const PUBLISHED_FIELDS = Object.keys(toJobPartner({} as ValidatedComputedJobPartner)).filter((field) => !UNPUBLISHED_FIELDS.has(field))
+
+// Historique réduit à la dernière transition : seule la garde de réactivation le lit.
+const EXISTING_JOB_PROJECTION = { _id: 1, ...Object.fromEntries(PUBLISHED_FIELDS.map((field) => [field, 1])), offer_status_history: { $slice: -1 } }
+
 const findExistingJobPartners = async (batch: ValidatedComputedJobPartner[]): Promise<Map<string, ExistingJobPartner>> => {
   const jobIdsByLabel = new Map<string, string[]>()
   for (const { partner_label, partner_job_id } of batch) {
@@ -87,10 +98,20 @@ const findExistingJobPartners = async (batch: ValidatedComputedJobPartner[]): Pr
   const existingJobs = await getDbCollection("jobs_partners")
     .find(
       { $or: [...jobIdsByLabel].map(([partner_label, partner_job_ids]) => ({ partner_label, partner_job_id: { $in: partner_job_ids } })) },
-      { projection: { partner_label: 1, partner_job_id: 1, offer_status: 1, offer_status_history: { $slice: -1 } } }
+      { projection: EXISTING_JOB_PROJECTION }
     )
     .toArray()
-  return new Map(existingJobs.map((job) => [jobPartnerKey(job), job as ExistingJobPartner]))
+  return new Map(existingJobs.map((job) => [jobPartnerKey(job), job]))
+}
+
+/**
+ * Champ publié (PUBLISHED_FIELDS) : tout champ du $set de l'import hors UNPUBLISHED_FIELDS, statut compris (après la
+ * garde de réactivation). `updated_at` déclenche la réindexation (syncSearchItemsDelta) : sans cette comparaison, chaque
+ * run réindexe tout le catalogue du partenaire. L'aller-retour BSON compare ce que MongoDB stockera (undefined écrit null).
+ */
+const hasPublishedChange = (partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate>, existingJob: ExistingJobPartner): boolean => {
+  const written = BSON.deserialize(BSON.serialize(partnerJobToUpsert))
+  return PUBLISHED_FIELDS.some((field) => !isDeepStrictEqual(written[field] ?? null, existingJob[field as keyof ExistingJobPartner] ?? null))
 }
 
 const toUpsertOperation = (
@@ -98,7 +119,7 @@ const toUpsertOperation = (
   existingJob: ExistingJobPartner | undefined,
   importDate: Date,
   writeDate: Date
-): AnyBulkWriteOperation<IJobsPartnersOfferPrivate> => {
+): { operation: AnyBulkWriteOperation<IJobsPartnersOfferPrivate>; isPublishedChange: boolean } => {
   const partnerJobToUpsert = toJobPartner(computedJobPartner)
 
   // Une offre annulée n'est réactivée par le flux que si c'est le flux qui l'avait annulée.
@@ -120,28 +141,33 @@ const toUpsertOperation = (
       : []),
   ]
 
+  const isPublishedChange = !existingJob || historyEntriesToPush.length > 0 || hasPublishedChange(partnerJobToUpsert, existingJob)
+
   return {
-    updateOne: {
-      filter: { partner_job_id: computedJobPartner.partner_job_id, partner_label: computedJobPartner.partner_label },
-      update: {
-        // updated_at horodaté à l'écriture du lot, pas au début de l'import : le cron delta de l'index
-        // de recherche lit `updated_at >= now − 10 min` toutes les 5 min et l'import dure
-        // ~26 min, un document daté du début serait déjà hors fenêtre (965 offres à position
-        // périmée en prod le 2026-09-11). `importDate` date l'import (created_at, historique).
-        $set: { ...partnerJobToUpsert, updated_at: writeDate },
-        $setOnInsert: {
-          created_at: importDate,
-          _id: computedJobPartner._id,
-          stats_detail_view: 0,
-          stats_postuler: 0,
-          stats_search_view: 0,
-          ft_support: false,
-          // $push crée le tableau à l'insertion ; un $setOnInsert sur le même chemin serait refusé par MongoDB.
-          ...(historyEntriesToPush.length ? {} : { offer_status_history: [] }),
+    isPublishedChange,
+    operation: {
+      updateOne: {
+        filter: { partner_job_id: computedJobPartner.partner_job_id, partner_label: computedJobPartner.partner_label },
+        update: {
+          // updated_at horodaté à l'écriture du lot, pas au début de l'import : le cron delta de l'index
+          // de recherche lit `updated_at >= now − 10 min` toutes les 5 min et l'import dure
+          // ~26 min, un document daté du début serait déjà hors fenêtre (965 offres à position
+          // périmée en prod le 2026-09-11). `importDate` date l'import (created_at, historique).
+          $set: { ...partnerJobToUpsert, ...(isPublishedChange ? { updated_at: writeDate } : {}) },
+          $setOnInsert: {
+            created_at: importDate,
+            _id: computedJobPartner._id,
+            stats_detail_view: 0,
+            stats_postuler: 0,
+            stats_search_view: 0,
+            ft_support: false,
+            // $push crée le tableau à l'insertion ; un $setOnInsert sur le même chemin serait refusé par MongoDB.
+            ...(historyEntriesToPush.length ? {} : { offer_status_history: [] }),
+          },
+          ...(historyEntriesToPush.length ? { $push: { offer_status_history: { $each: historyEntriesToPush } } } : {}),
         },
-        ...(historyEntriesToPush.length ? { $push: { offer_status_history: { $each: historyEntriesToPush } } } : {}),
+        upsert: true,
       },
-      upsert: true,
     },
   }
 }
@@ -202,6 +228,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
   const stream = getDbCollection("computed_jobs_partners").find({ $and: filters }).stream()
 
   const counters = { total: 0, success: 0, error: 0 }
+  let unchanged = 0
   const importedIds: ObjectId[] | null = onImported ? [] : null
   const importDate = new Date()
 
@@ -216,11 +243,13 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
 
     let failures = new Map<number, unknown>()
     let existingJobs = new Map<string, ExistingJobPartner>()
+    let upserts: ReturnType<typeof toUpsertOperation>[] = []
     try {
       existingJobs = await findExistingJobPartners(batch)
       const writeDate = new Date()
+      upserts = batch.map((computedJobPartner) => toUpsertOperation(computedJobPartner, existingJobs.get(jobPartnerKey(computedJobPartner)), importDate, writeDate))
       await getDbCollection("jobs_partners").bulkWrite(
-        batch.map((computedJobPartner) => toUpsertOperation(computedJobPartner, existingJobs.get(jobPartnerKey(computedJobPartner)), importDate, writeDate)),
+        upserts.map(({ operation }) => operation),
         { ordered: false }
       )
     } catch (err: unknown) {
@@ -233,6 +262,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
         await markAsImportFailed(computedJobPartner, failures.get(index))
       } else {
         counters.success++
+        if (!upserts[index].isPublishedChange) unchanged++
         // _id de l'offre existante s'il y en a une, sinon celui posé par $setOnInsert.
         importedIds?.push(existingJobs.get(jobPartnerKey(computedJobPartner))?._id ?? computedJobPartner._id)
       }
@@ -245,11 +275,11 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
     limitStream<ValidatedComputedJobPartner[]>({ concurrency: IMPORT_BATCH_CONCURRENCY, processItem: importBatch })
   )
 
-  logger.info({ counters }, "import dans jobs_partners terminé")
+  logger.info({ counters, unchanged }, "import dans jobs_partners terminé")
 
   if (importedIds?.length) {
     await onImported?.(importedIds)
   }
 
-  return counters
+  return { ...counters, unchanged }
 }

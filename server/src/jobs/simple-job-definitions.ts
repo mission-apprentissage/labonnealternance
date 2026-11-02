@@ -47,6 +47,7 @@ import { repriseExhaustedClassifications, retryUnavailableClassifications } from
 import { processApec } from "./offre-partenaire/apec/process-apec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offre-partenaire/clever-connect/process-clever-connect"
 import { closeJobsPartnersOnApplicationThreshold } from "./offre-partenaire/close-jobs-partners-on-application-threshold"
+import { runDaytimeRefreshUnit } from "./offre-partenaire/daytime-refresh-cycle"
 import { processDecathlon } from "./offre-partenaire/decathlon/import-decathlon"
 import { detectClassificationJobsPartners } from "./offre-partenaire/detect-classification-jobs-partners"
 import { processEmploiInclusion } from "./offre-partenaire/emploi-inclusion/import-emploi-inclusion"
@@ -534,6 +535,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: forceCancelRemovedJobsPartners,
     description: "Levier d'incident : annule sans garde-fou les offres d'un partenaire absentes de son flux, après vérification d'un blocage signalé par le garde-fou d'annulation",
     cliOptions: [{ flags: "--partnerLabel <label>", description: "Partenaire du flux concerné (ex. Hellowork)" }],
+  },
+  {
+    fct: runDaytimeRefreshUnit,
+    description: "Lance le cycle de journée d'une unité d'import (recette, incident), que LBA_DAYTIME_REFRESH_PARTNERS l'active ou non",
+    cliOptions: [{ flags: "--unit <name>", description: "Unité d'import (ex. Jobteaser, Hellowork)" }],
   },
   {
     fct: detectDuplicateJobPartnersFlux,

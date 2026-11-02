@@ -1,3 +1,4 @@
+import { addJob } from "job-processor"
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
@@ -9,6 +10,7 @@ import { syncJobPartnersToSearchItemsInChunks } from "@/services/search/search-i
 import { fillComputedJobsPartners } from "./fill-computed-jobs-partners"
 import { fillLbaUrl } from "./fill-lba-url"
 import { importFromComputedToJobsPartners } from "./import-from-computed-to-jobs-partners"
+import { withPartnerLocks } from "./partner-processing-lock"
 
 const excludedJobPartnersFromApi = Object.values(JOBPARTNERS_LABEL)
 
@@ -119,15 +121,48 @@ export const reprocessJobPartners = async (payload?: { filter?: string }) => {
   return processJobPartnersWithFilter(filter)
 }
 
+export const PROCESS_WITH_FILTER_RETRY_DELAY_MS = 15 * 60 * 1000
+
+/**
+ * Supprime les computed validés après import : sans verrou, un passage entre l'import et l'annulation d'un cycle
+ * de journée ferait annuler ces offres. Un partenaire verrouillé n'est pas attendu (job sans tag, il bloquerait
+ * le worker `main`) : sa part du filtre est replanifiée, reprise au plus tard à l'expiration du verrou (PARTNER_LOCK_TTL_MS).
+ */
 export const processJobPartnersWithFilter = async (filter: Filter<IComputedJobsPartners>) => {
-  logger.info({ filter }, "début de processJobPartnersWithFilter")
-  let importedIds: ObjectId[] = []
-  await fillComputedJobsPartners({ addedMatchFilter: filter })
-  await importFromComputedToJobsPartners(filter, (ids) => {
-    importedIds = ids
-  })
-  await fillLbaUrl()
-  await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
+  const partnerLabels: string[] = await getDbCollection("computed_jobs_partners").distinct("partner_label", filter)
+  if (!partnerLabels.length) {
+    logger.info({ filter }, "processJobPartnersWithFilter : aucune offre")
+    return
+  }
+  const importedIds = await withPartnerLocks(
+    partnerLabels,
+    async (lockedPartnerLabels) => {
+      const deferredPartnerLabels = partnerLabels.filter((partnerLabel) => !lockedPartnerLabels.includes(partnerLabel))
+      if (deferredPartnerLabels.length) {
+        const scheduledFor = new Date(Date.now() + PROCESS_WITH_FILTER_RETRY_DELAY_MS)
+        await addJob({
+          name: "processJobPartnersWithFilter",
+          payload: { $and: [filter, { partner_label: { $in: deferredPartnerLabels } }] },
+          queued: true,
+          scheduled_for: scheduledFor,
+        })
+        logger.info({ deferredPartnerLabels, scheduledFor }, "processJobPartnersWithFilter : partenaires verrouillés, reprise replanifiée")
+      }
+      if (!lockedPartnerLabels.length) return []
+
+      const lockedFilter = { $and: [filter, { partner_label: { $in: lockedPartnerLabels } }] }
+      logger.info({ filter: lockedFilter }, "début de processJobPartnersWithFilter")
+      let ids: ObjectId[] = []
+      await fillComputedJobsPartners({ addedMatchFilter: lockedFilter })
+      await importFromComputedToJobsPartners(lockedFilter, (imported) => {
+        ids = imported
+      })
+      await fillLbaUrl({ addedMatchFilter: { partner_label: { $in: lockedPartnerLabels } } })
+      await getDbCollection("computed_jobs_partners").deleteMany({ $and: [lockedFilter, { validated: true }] })
+      logger.info({ filter: lockedFilter }, "fin de processJobPartnersWithFilter")
+      return ids
+    },
+    { requireAll: false }
+  )
   await syncImportedJobsToSearchItems(importedIds)
-  logger.info({ filter }, "fin de processJobPartnersWithFilter")
 }
