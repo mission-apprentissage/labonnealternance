@@ -83,7 +83,9 @@ export const ZJobsPartnersModerationReview = z.object({
   status: buildEnum(MODERATION_REVIEW_STATUS),
   by: z.string().describe("Email de l'administrateur qui a tranché"),
   at: z.date(),
-  message: z.string().nullish().describe("Message envoyé au recruteur en cas de refus"),
+  message: z.string().nullish().describe("Commentaire personnalisé envoyé au recruteur en cas de refus"),
+  agent_note_sent: z.boolean().nullish().describe("Refus : la note de l'agent figurait dans l'e-mail au recruteur"),
+  without_verdict: z.boolean().nullish().describe("Validation d'une offre dont les nouvelles tentatives ont échoué : décision prise sans verdict IA"),
 })
 
 /**

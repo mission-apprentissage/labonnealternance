@@ -16,7 +16,7 @@ export function DepotSimplifieCreationOffre({ isWidget = false }: { isWidget?: b
 
   const submit = async (allValues: any) => {
     const { etablissementCatalogueIds, ...values } = allValues
-    const { job_id, token: jobToken } = await createOffreByToken(establishment_id, values, token)
+    const { job_id, token: jobToken, in_review } = await createOffreByToken(establishment_id, values, token)
 
     const withDelegation = Boolean(etablissementCatalogueIds?.length)
     if (withDelegation) {
@@ -36,6 +36,7 @@ export function DepotSimplifieCreationOffre({ isWidget = false }: { isWidget?: b
           userId: userId,
           token: jobToken ?? undefined,
           isWidget: isWidget,
+          inReview: in_review,
         })
         .getPath()
     )

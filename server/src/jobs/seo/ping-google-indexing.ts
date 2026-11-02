@@ -1,10 +1,10 @@
-import { JOB_STATUS_ENGLISH } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { isGoogleIndexingConfigured, publishUrlNotification } from "@/common/apis/google-indexing/google-indexing.client"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { buildLbaUrlFromJob } from "@/services/jobs/job-opportunity/job-opportunity.service"
+import { buildPublicStateChangeFilter } from "./ping-indexnow"
 
 /**
  * Notification Google Indexing API : pousse à Google en quasi temps réel les URLs d'offres
@@ -22,8 +22,8 @@ const PARTNER_LABELS_SCOPE: string[] = [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]
 const DELTA_DEFAULT_WINDOW_MS = 60 * 60 * 1000
 
 /**
- * Cron delta : notifie Google des offres du périmètre créées ou passées en ANNULEE/POURVUE
- * depuis `since` (défaut : 60 min). Toujours en URL_UPDATED : une offre retirée reste servie
+ * Cron delta : notifie Google des offres du périmètre dont l'état public a changé depuis `since`
+ * (défaut : 60 min, cf. buildPublicStateChangeFilter). Toujours en URL_UPDATED : une offre retirée reste servie
  * en 200 avec un contenu modifié (le bouton de candidature disparaît) — URL_DELETED est
  * réservé par Google aux pages réellement supprimées (404/410) et serait contredit au re-crawl.
  *
@@ -47,7 +47,7 @@ export const pingGoogleIndexing = async (payload?: { since?: Date | string }) =>
     .find(
       {
         partner_label: { $in: PARTNER_LABELS_SCOPE },
-        $or: [{ created_at: { $gte: since } }, { offer_status: { $ne: JOB_STATUS_ENGLISH.ACTIVE }, updated_at: { $gte: since } }],
+        ...buildPublicStateChangeFilter(since),
       },
       { projection: { _id: 1, partner_label: 1, workplace_siret: 1, offer_title: 1, workplace_naf_label: 1, updated_at: 1 } }
     )

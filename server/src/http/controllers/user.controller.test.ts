@@ -4,6 +4,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { entrepriseStatusEventFactory, saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { OPCOS_LABEL } from "shared/constants/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { beforeEach, describe, expect, it } from "vitest"
@@ -372,5 +373,28 @@ describe("Modification du compte par l'entreprise elle-même (PUT /user/:userId,
     expect.soft(referentiel).toBeNull()
     const updatedUser = await getDbCollection("userswithaccounts").findOne({ _id: entrepriseUser.user._id })
     expect.soft(updatedUser?.first_name).toBe("Nouveauprenom")
+  })
+})
+
+describe("GET /admin/users-recruteurs", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  it("n'indique des offres publiées que pour un recruteur qui a une offre en ligne", async () => {
+    const sansOffrePubliee = await saveEntrepriseUserTest({}, {}, { siret: "90000000000001", raison_sociale: "Boulangerie recette sans publication" })
+    const avecOffrePubliee = await saveEntrepriseUserTest({}, {}, { siret: "90000000000019", raison_sociale: "Boulangerie recette avec publication" })
+    // En attente du compte, en modération ou refusée : aucune n'est en ligne.
+    for (const offer_status of [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION, JOB_STATUS_ENGLISH.ANNULEE]) {
+      await createJobPartner({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: sansOffrePubliee.user._id, offer_status })
+    }
+    await createJobPartner({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: avecOffrePubliee.user._id, offer_status: JOB_STATUS_ENGLISH.ANNULEE })
+    await createJobPartner({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: avecOffrePubliee.user._id, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    const { bearerToken } = await createAndLogUser(httpClient, "admin-recruteurs", { type: "ADMIN" })
+
+    const response = await httpClient().inject({ method: "GET", path: "/api/admin/users-recruteurs?search=Boulangerie%20recette", headers: bearerToken })
+
+    expect(response.statusCode).toBe(200)
+    const hasJobsBySociete = Object.fromEntries(response.json().map(({ establishment_raison_sociale, hasJobs }) => [establishment_raison_sociale, hasJobs]))
+    expect(hasJobsBySociete).toEqual({ "Boulangerie recette sans publication": false, "Boulangerie recette avec publication": true })
   })
 })

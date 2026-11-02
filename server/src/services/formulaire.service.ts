@@ -186,7 +186,11 @@ export const createJob = async ({
 
   // Modération systématique des champs de description libre (correction + PII, cf #5006),
   // indépendamment du nombre d'utilisations restantes du CTA "Améliorer via l'IA" côté UI.
-  const [moderatedDescription, moderatedEmployerDescription] = await Promise.all([moderateFreeText(job.job_description), moderateFreeText(job.job_employer_description)])
+  const signal = AbortSignal.timeout(config.moderation.classificationTimeoutMs)
+  const [moderatedDescription, moderatedEmployerDescription] = await Promise.all([
+    moderateFreeText(job.job_description, { signal }),
+    moderateFreeText(job.job_employer_description, { signal }),
+  ])
   const moderatedJob: IJobCreate = { ...job, job_description: moderatedDescription, job_employer_description: moderatedEmployerDescription }
 
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
@@ -786,9 +790,10 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
 
   // Modération systématique des champs de description libre (correction + PII, cf #5006),
   // indépendamment du nombre d'utilisations restantes du CTA "Améliorer via l'IA" côté UI.
+  const signal = AbortSignal.timeout(config.moderation.classificationTimeoutMs)
   const [moderatedDescription, moderatedEmployerDescription] = await Promise.all([
-    moderateFreeText(job.job_description),
-    job.job_employer_description !== undefined ? moderateFreeText(job.job_employer_description) : undefined,
+    moderateFreeText(job.job_description, { signal }),
+    job.job_employer_description !== undefined ? moderateFreeText(job.job_employer_description, { signal }) : undefined,
   ])
 
   const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
@@ -922,8 +927,12 @@ export const closeOffreWithMotif = async ({
 }): Promise<{ alreadyClosed: boolean }> => {
   const now = new Date()
   const offerFilter = { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id }
+  // Le recruteur peut clore son offre en modération. Un administrateur ou un OPCO la refuse par la modération (#5499),
+  // qui trace la décision et prévient le recruteur.
+  const isModerator = origin === JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN || origin === JOB_CLOSURE_ORIGIN.ESPACE_PRO_OPCO
+  const untouchedStatuses = isModerator ? [offer_status, JOB_STATUS_ENGLISH.EN_MODERATION] : [offer_status]
 
-  // `offer_status: { $ne: offer_status }` restreint l'écriture aux transitions réelles. Un lien de
+  // Exclure le statut cible restreint l'écriture aux transitions réelles. Un lien de
   // clôture cliqué deux fois arrivait sinon jusqu'au $push et comptait la même clôture deux fois
   // dans les tableaux de bord de l'issue #5429 — le trou de mesure que cette écriture est censée
   // combler. Conséquence assumée : sur un second passage vers le même statut, le motif n'est plus
@@ -939,7 +948,7 @@ export const closeOffreWithMotif = async ({
   // `reason` reçoit le motif brut de la modale pour rester regroupable tel quel ; la précision
   // libre du motif "Autre" et le canal de recrutement gardent leurs champs dédiés.
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { ...offerFilter, offer_status: { $ne: offer_status } },
+    { ...offerFilter, offer_status: { $nin: untouchedStatuses } },
     buildJobStatusChangeUpdate({
       status: offer_status,
       reason: job_status_comment,
@@ -955,9 +964,12 @@ export const closeOffreWithMotif = async ({
   if (!found) {
     // Deux causes possibles, à ne pas confondre : l'offre n'existe pas, ou elle porte déjà ce
     // statut. Le second cas est le double-clic, et doit rendre la même réponse qu'avant le filtre.
-    const existing = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { _id: 1 } })
+    const existing = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { _id: 1, offer_status: 1 } })
     if (!existing) {
       throw new Error(`could not find lba offer with id=${id}`)
+    }
+    if (existing.offer_status === JOB_STATUS_ENGLISH.EN_MODERATION) {
+      throw badRequest("L'offre est en modération : elle se refuse depuis la page de modération de l'offre")
     }
     return { alreadyClosed: true }
   }
@@ -1037,6 +1049,40 @@ const notifyFirstPublication = async (before: IJobsPartnersOfferPrivate, publish
   await notifyCfaDelegations(published, published.delegations ?? [], user)
 }
 
+/** Texte saisi lors de la dernière classification qui le connaît : une reclassification part du texte enregistré, déjà masqué. */
+const getLatestOriginalText = async (jobId: ObjectId) =>
+  (await getDbCollection("jobs_partners_moderations").findOne({ job_id: jobId, original_text: { $ne: null } }, { sort: { created_at: -1 } }))?.original_text ?? null
+
+/**
+ * Reclassification d'une offre enregistrée (reprise, relance par un modérateur), avec la matrice du lot 1. Une offre en
+ * modération suit applyClassificationToOfferInReview. Une offre publiée n'est bloquée, blocage actif, que sur un verdict
+ * non conforme : une panne du classifieur ne retire pas une offre en ligne. Elle entre sinon dans la file de modération.
+ */
+export const applyStoredOfferClassification = async (params: Parameters<typeof applyClassificationToOfferInReview>[0]): Promise<{ released: boolean }> => {
+  const { offer, trigger, classification, grantedBy } = params
+  if (offer.offer_status === JOB_STATUS_ENGLISH.EN_MODERATION) {
+    return applyClassificationToOfferInReview(params)
+  }
+  const texts = getStoredModerationTexts(offer)
+  await recordClassification({ jobId: offer._id, trigger, classification, texts, originalText: await getLatestOriginalText(offer._id), updateOffer: false })
+  const { result } = classification
+  const moderationFields = buildOfferModerationFields(result)
+  const isNonConforme = result.status === MODERATION_CLASSIFICATION_STATUS.OK && isBlockingClassification(result)
+  if (config.moderation.enforce && isNonConforme && offer.offer_status === JOB_STATUS_ENGLISH.ACTIVE) {
+    const blocked = await getDbCollection("jobs_partners").updateOne(
+      { _id: offer._id, offer_status: JOB_STATUS_ENGLISH.ACTIVE },
+      buildJobStatusChangeUpdate({ status: JOB_STATUS_ENGLISH.EN_MODERATION, reason: moderationBlockReason(result), grantedBy, extraSet: moderationFields })
+    )
+    if (blocked.modifiedCount) {
+      syncJobPartnersToSearchItemsInBackground([offer._id])
+      await alertOffreNonConforme(offer).catch((error) => sentryCaptureException(error))
+    }
+    return { released: false }
+  }
+  await getDbCollection("jobs_partners").updateOne({ _id: offer._id }, { $set: moderationFields })
+  return { released: false }
+}
+
 /**
  * Applique une nouvelle classification à une offre en modération (nouvelle tentative, reprise) : un verdict réel la
  * publie selon l'état du compte, comme à son dépôt ; sinon elle reste en modération avec l'issue de la tentative.
@@ -1057,8 +1103,7 @@ export const applyClassificationToOfferInReview = async ({
   offerModerationStatus?: IOfferModerationStatus
 }): Promise<{ released: boolean }> => {
   const texts = getStoredModerationTexts(offer)
-  const previous = await getDbCollection("jobs_partners_moderations").findOne({ job_id: offer._id, original_text: { $ne: null } }, { sort: { created_at: -1 } })
-  await recordClassification({ jobId: offer._id, trigger, classification, texts, originalText: previous?.original_text ?? null, updateOffer: false })
+  await recordClassification({ jobId: offer._id, trigger, classification, texts, originalText: await getLatestOriginalText(offer._id), updateOffer: false })
 
   const isBlocked = isBlockingClassification(classification.result)
   const isUnavailable = classification.result.status !== MODERATION_CLASSIFICATION_STATUS.OK
@@ -1075,18 +1120,41 @@ export const applyClassificationToOfferInReview = async ({
     return { released: false }
   }
 
+  const published = await releaseOfferInReview({ offer, reason: MODERATION_RELEASED_REASON, grantedBy, extraSet: moderationFields })
+  return { released: published !== null }
+}
+
+/**
+ * Sortie de modération par un verdict ou une décision humaine : l'offre prend le statut qu'elle aurait eu à son dépôt, et
+ * une offre publiée repart pour une durée de publication complète. Renvoie null si l'offre n'est plus en modération.
+ */
+export const releaseOfferInReview = async ({
+  offer,
+  reason,
+  grantedBy,
+  extraSet = {},
+  extraFilter = {},
+}: {
+  offer: IJobsPartnersOfferPrivate
+  reason: string
+  grantedBy: string
+  extraSet?: Partial<IJobsPartnersOfferPrivate>
+  extraFilter?: Filter<IJobsPartnersOfferPrivate>
+}): Promise<IJobsPartnersOfferPrivate | null> => {
   const status = await getOfferPublicationStatus(offer)
+  const expirationFields =
+    status === JOB_STATUS_ENGLISH.ACTIVE ? { offer_expiration: addExpirationPeriod(dayjs()).toDate(), relance_mail_expiration_J7: null, relance_mail_expiration_J1: null } : {}
   const published = await getDbCollection("jobs_partners").findOneAndUpdate(
-    inReviewFilter,
-    buildJobStatusChangeUpdate({ status, reason: MODERATION_RELEASED_REASON, grantedBy, extraSet: moderationFields }),
+    { ...extraFilter, _id: offer._id, offer_status: JOB_STATUS_ENGLISH.EN_MODERATION },
+    buildJobStatusChangeUpdate({ status, reason, grantedBy, extraSet: { ...extraSet, ...expirationFields } }),
     { returnDocument: "after" }
   )
-  if (!published) return { released: false }
+  if (!published) return null
   syncJobPartnersToSearchItemsInBackground([offer._id])
   if (status === JOB_STATUS_ENGLISH.ACTIVE) {
     await notifyFirstPublication(offer, published)
   }
-  return { released: true }
+  return published
 }
 
 /**

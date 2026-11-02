@@ -62,6 +62,7 @@
     "he": "^1.2.0",
     "iconv-lite": "^0.7.0",
     "is-semver": "^1.0.12",
+    "isbot": "^5.2.2",
     "job-processor": "^3.0.0",
     "jsonwebtoken": "^9.0.3",
     "lil-http-terminator": "^1.2.3",

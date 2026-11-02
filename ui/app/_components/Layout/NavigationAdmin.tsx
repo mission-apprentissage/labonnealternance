@@ -4,6 +4,7 @@ import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { usePathname } from "next/navigation"
 import type { ComponentProps } from "react"
 
+import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 type AdminNavLink = {
@@ -20,6 +21,12 @@ const ADMIN_NAV_ITEMS: AdminNavEntry[] = [
       { text: "Recruteurs en attente de validation", href: PAGES.static.backAdminHome.getPath() },
       { text: "Gestion des recruteurs", href: PAGES.static.backAdminGestionDesRecruteurs.getPath() },
       { text: "Entreprises de l'algorithme", href: PAGES.static.backAdminGestionDesEntreprises.getPath() },
+    ],
+  },
+  {
+    text: "Offres",
+    children: [
+      { text: "Offres à modérer", href: MODERATION_PAGES.adminQueue.getPath() },
       { text: "Offres partenaires", href: PAGES.static.backAdminGestionDesOffresPartenaires.getPath() },
     ],
   },

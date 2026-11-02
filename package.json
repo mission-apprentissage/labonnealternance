@@ -71,7 +71,7 @@
     "lint-staged": "^16.2.6",
     "semantic-release": "^25.0.1",
     "semantic-release-slack-bot": "^4.0.2",
-    "sharp": "^0.34.1",
+    "sharp": "^0.35.5",
     "stream-json": "^1.9.1",
     "tsx": "^4.23.11",
     "type-fest": "^5.2.0",

@@ -172,11 +172,14 @@ describe("getDiagnosticQuery", () => {
 // s'il n'est pas déjà masqué par son nom (cf. scrubSensitiveData), dans PERSONAL_QUERY_PARAMS.
 const QUERY_PARAMS_MASKED = ["apiKey", "search", "token"]
 const QUERY_PARAMS_KEPT = [
+  "account_status",
+  "account_type",
   "activity_sector",
   "admin_area",
   "appointmentId",
   "cfa_delegated_siret",
   "cleMinistereEducatif",
+  "conformity",
   "contract_type",
   "cursor",
   "departements",
@@ -184,6 +187,7 @@ const QUERY_PARAMS_KEPT = [
   "field",
   "hitsPerPage",
   "id",
+  "ids",
   "intention",
   "internal",
   "is_algo_company",
@@ -198,6 +202,7 @@ const QUERY_PARAMS_KEPT = [
   "offer_status",
   "offset",
   "opco",
+  "order",
   "organization_name",
   "page",
   "partner_label",

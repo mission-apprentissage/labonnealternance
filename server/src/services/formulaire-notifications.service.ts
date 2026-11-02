@@ -58,6 +58,41 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobsPartner
   })
 }
 
+export const MAIL_OFFRE_REFUSEE_SUBJECT = "Votre offre en alternance ne peut pas être diffusée"
+
+/** Refus d'une offre par la modération (#5499). Sans note ni commentaire, l'e-mail reste générique. */
+export async function sendMailOffreRefusee({
+  user,
+  job,
+  agentNote,
+  comment,
+}: {
+  user: IUserWithAccount
+  job: IJobsPartnersOfferPrivate
+  agentNote: string[][]
+  comment: string | null
+}) {
+  const { is_delegated, workplace_name, workplace_legal_name, workplace_brand, workplace_siret } = job
+  await mailer.sendEmail({
+    to: user.email,
+    subject: MAIL_OFFRE_REFUSEE_SUBJECT,
+    template: getStaticFilePath("./templates/mail-offre-refusee.mjml.ejs"),
+    data: {
+      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
+      nom: sanitizeTextField(user.last_name),
+      prenom: sanitizeTextField(user.first_name),
+      date_depot: dayjs(job.created_at).tz().format("DD/MM/YYYY"),
+      job_title: job.offer_title,
+      // `||` : workplace_name peut valoir "" (champ sanitizé côté pipeline).
+      raison_sociale: workplace_name || workplace_legal_name || workplace_brand || workplace_siret,
+      agent_note: agentNote,
+      comment,
+      charteRedactionUrl: createCharteRedactionLink(Boolean(is_delegated), is_delegated ? "mail-offre-refusee-cfa" : "mail-offre-refusee-entreprise"),
+      publicEmail: config.publicEmail,
+    },
+  })
+}
+
 /** « Votre offre est publiée » : rien pour une offre en attente du compte ni pour une offre en modération. */
 export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPartnersOfferPrivate) {
   if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {

@@ -61,7 +61,7 @@ const IMPROVEMENT_SYSTEM_PROMPT = buildPrompt([
  * filet de sécurité après), puis passe IA. Le masquage déterministe reste la garantie en cas d'échec
  * de l'appel : ne bloque jamais l'appelant, et retourne alors le texte masqué non retravaillé.
  */
-const runTextPass = async (systemPrompt: string, rawText: string | null | undefined): Promise<string | null> => {
+const runTextPass = async (systemPrompt: string, rawText: string | null | undefined, signal?: AbortSignal): Promise<string | null> => {
   const trimmed = rawText?.trim()
   if (!trimmed) return null
 
@@ -72,6 +72,7 @@ const runTextPass = async (systemPrompt: string, rawText: string | null | undefi
       { role: "system", content: systemPrompt },
       { role: "user", content: maskedInput },
     ],
+    signal,
   })
 
   if (!response) {
@@ -89,8 +90,12 @@ const runTextPass = async (systemPrompt: string, rawText: string | null | undefi
   }
 }
 
-/** Modération d'un texte libre saisi par un recruteur (cf #5006), appliquée à chaque enregistrement. */
-export const moderateFreeText = (rawText: string | null | undefined): Promise<string | null> => runTextPass(MODERATION_SYSTEM_PROMPT, rawText)
+/**
+ * Modération d'un texte libre saisi par un recruteur (cf #5006), appliquée à chaque enregistrement. Passé `signal`, le texte
+ * est enregistré masqué sans la passe IA.
+ */
+export const moderateFreeText = (rawText: string | null | undefined, { signal }: { signal?: AbortSignal } = {}): Promise<string | null> =>
+  runTextPass(MODERATION_SYSTEM_PROMPT, rawText, signal)
 
 /** Réécriture de confort, sur demande explicite du recruteur (cf. AmeliorerIaPanel). */
 export const improveFreeText = (rawText: string | null | undefined): Promise<string | null> => runTextPass(IMPROVEMENT_SYSTEM_PROMPT, rawText)

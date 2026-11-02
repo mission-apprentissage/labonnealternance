@@ -100,6 +100,12 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
   if (!data) return null
 
   const allHits = data.pages.flatMap((p) => p.hits)
+  // L'API plafonne la pagination (cf. PUBLIC_MAX_PAGES dans search.controller.ts). Seulement après
+  // « Voir plus » : le rendu d'une page unique par les robots n'affiche pas ce message.
+  const truncatedHint =
+    !hasNextPage && data.pages.length > 1 && allHits.length < (data.pages.at(-1)?.nbHits ?? 0)
+      ? `Les ${allHits.length} premiers résultats sont affichés. Affinez votre recherche (mots-clés, lieu, filtres) pour voir les autres.`
+      : ""
   // Une seule page : rien à annoncer, le total passe par le compteur de SearchPageClient.
   const loadMoreStatus = isFetchingNextPage
     ? "Chargement de résultats supplémentaires"
@@ -167,6 +173,7 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
           </Button>
         </Box>
       )}
+      {truncatedHint && <Typography sx={{ mt: fr.spacing("4v"), textAlign: "center", color: fr.colors.decisions.text.mention.grey.default }}>{truncatedHint}</Typography>}
       <LiveStatus message={loadMoreStatus} />
     </Box>
   )

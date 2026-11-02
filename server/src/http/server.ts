@@ -12,6 +12,7 @@ import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.rout
 import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/is-origin-local"
+import { PRIVATE_NETWORKS } from "@/common/utils/private-network"
 import config from "@/config"
 import { initBrevoWebhooks } from "@/services/brevo.service"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
@@ -34,6 +35,7 @@ import formationsPrivateRoute from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
 import inserjeunesRoute from "./controllers/inserjeunes.controller"
 import jobsV1Route from "./controllers/jobs.controller"
+import jobsPartnersModerationRoute from "./controllers/jobs-partners-moderation.controller"
 import login from "./controllers/login.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reported-company.controller"
@@ -71,13 +73,7 @@ export async function bind(app: Server) {
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
-  const allowedIps = [
-    new Netmask("127.0.0.0/8"),
-    new Netmask("10.0.0.0/8"),
-    new Netmask("172.16.0.0/12"),
-    new Netmask("192.168.0.0/16"),
-    ...config.apiApprentissage.serverIps.map((ip) => new Netmask(`${ip}/32`)),
-  ]
+  const allowedIps = [...PRIVATE_NETWORKS, ...config.apiApprentissage.serverIps.map((ip) => new Netmask(`${ip}/32`))]
   await app.register(fastifyRateLimt, {
     global: false,
     allowList: (req) => {
@@ -150,6 +146,7 @@ export async function bind(app: Server) {
       etablissementsRecruteurRoute(typedSubApp)
       jobsRouteV2(typedSubApp)
       jobsPartnersAdminRoute(typedSubApp)
+      jobsPartnersModerationRoute(typedSubApp)
       adminFeedbackFormsRoute(typedSubApp)
       feedbackFormsRoute(typedSubApp)
 

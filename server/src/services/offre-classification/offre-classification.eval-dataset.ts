@@ -321,6 +321,39 @@ export const ADVERSARIAL_CASES: IEvalCase[] = [
     categories: ["discrimination"],
     note: "exigence de domicile dans le profil, à distinguer des zones d'intervention B54 et B55",
   },
+  // A52 à A55 : exclusion des mineurs, licite si une activité qui leur est interdite la justifie, mais contraire à la charte (arbitrage d'Aurélie, #5499).
+  {
+    id: "A52",
+    champ: "job_employer_description",
+    text: "Emploi de nuit nécessitant une personne majeure.",
+    expected: "a_verifier",
+    categories: ["mineurs"],
+    note: "exclusion des mineurs justifiée par le travail de nuit",
+  },
+  {
+    id: "A53",
+    champ: "job_description",
+    text: "Candidats mineurs non acceptés : travail de nuit.",
+    expected: "a_verifier",
+    categories: ["mineurs"],
+    note: "même fond que A52, formulé en exclusion directe : le mot « mineurs » ne rend pas le cas bloquant",
+  },
+  {
+    id: "A54",
+    champ: "job_description",
+    text: "Service de boissons alcoolisées au bar : poste réservé aux plus de 18 ans.",
+    expected: "a_verifier",
+    categories: ["mineurs"],
+    note: "exclusion des mineurs justifiée par le service d'alcool",
+  },
+  {
+    id: "A55",
+    champ: "job_description",
+    text: "Poste réservé aux personnes majeures.",
+    expected: "non_conforme",
+    categories: ["discrimination"],
+    note: "restriction d'âge sans justification, à distinguer de A52 à A54",
+  },
 ]
 
 /** Cas devant passer. Les huit premiers sont les pièges à faux positifs. */

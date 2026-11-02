@@ -125,6 +125,8 @@ export default (server: Server) => {
       const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) throw notFound("Offre introuvable")
       if (job.offer_status === JOB_STATUS_ENGLISH.ACTIVE) throw badRequest("L'offre est déjà active")
+      // Seule une décision de modération publie une offre en modération : elle est tracée et prévient le recruteur (#5499).
+      if (job.offer_status === JOB_STATUS_ENGLISH.EN_MODERATION) throw badRequest("L'offre est en modération : elle se valide depuis la page de modération de l'offre")
 
       const requestUser = getUserFromRequest(req, zRoutes.post["/admin/jobs-partners/:id/activate"]).value
 

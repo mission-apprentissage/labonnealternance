@@ -109,7 +109,7 @@ Résultat attendu : `{"status":"SERVING"}`
 
 ### Architecture preview
 
-Le stack partagé `docker-compose.preview-system.yml` porte un MongoDB 8.3 (`lba_mongodb`)
+La pile partagée `docker-compose.preview.yml` porte un MongoDB 8.3 (`lba_mongodb`)
 et un mongot (`lba_mongot`, `network_mode: service:mongodb`) communs à **toutes** les
 previews. Chaque preview utilise sa base `preview_<PR>` et y crée ses propres search
 indexes via `yarn cli indexes:recreate` (task `preview_pr.yml`). Le playbook

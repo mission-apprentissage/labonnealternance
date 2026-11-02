@@ -20,6 +20,15 @@ describe("moderateFreeText", () => {
     expect(sendMistralMessages).not.toHaveBeenCalled()
   })
 
+  it("transmet l'échéance de l'appelant à Mistral", async () => {
+    vi.mocked(sendMistralMessages).mockResolvedValue(null)
+    const signal = AbortSignal.timeout(10_000)
+
+    await moderateFreeText("un texte quelconque", { signal })
+
+    expect(sendMistralMessages).toHaveBeenCalledWith(expect.objectContaining({ signal }))
+  })
+
   it("should mask personal data before sending the text to Mistral", async () => {
     vi.mocked(sendMistralMessages).mockResolvedValue(null)
     await moderateFreeText("Contactez-moi au 06 12 34 56 78")

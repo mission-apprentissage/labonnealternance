@@ -826,6 +826,26 @@ describe("formulaire.controller", () => {
         expect(publishedMails()).toHaveLength(1)
       })
 
+      it("signale au dépôt par jeton une offre mise en modération, pour l'écran de fin (#5499)", async () => {
+        const { formulaire, user } = await entrepriseSdkInstance.createAndGetConnectedUser()
+        const createByToken = async (job_description: string) => {
+          const response = await entrepriseSdkInstance.createOfferByToken({
+            establishment_id: formulaire!.establishment_id,
+            user,
+            job: { ...buildCreateJobDataFromReferentiel(referentielRome), job_description },
+          })
+          expect(response.statusCode).toBe(200)
+          return response.json() as OfferCreationByTokenResponse
+        }
+
+        const bloquee = await createByToken(BLOQUANT)
+        const publiee = await createByToken(CONFORME)
+
+        expect(bloquee.in_review).toBe(true)
+        expect((await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(bloquee.job_id) }))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
+        expect(publiee.in_review).toBe(false)
+      })
+
       it("met en modération une offre active dont l'édition est non conforme", async () => {
         const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
         const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: CONFORME })

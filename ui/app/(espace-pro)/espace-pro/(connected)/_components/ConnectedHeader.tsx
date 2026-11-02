@@ -8,6 +8,7 @@ import { DsfrHeaderProps } from "@/app/_components/Header"
 import NavigationAdmin from "@/app/_components/Layout/NavigationAdmin"
 import { headerId } from "@/app/_components/zone-ids"
 import { ConnectedHeaderNavigation } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConnectedHeaderNavigation"
+import { NavigationOpco } from "@/app/(espace-pro)/espace-pro/(connected)/_components/NavigationOpco"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -19,6 +20,13 @@ export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
   const isAdminPage = pathname.startsWith(ADMIN_PATH_PREFIX)
 
   const { quickAccessItems, ...rest } = DsfrHeaderProps
+
+  const getNavigation = () => {
+    if (isAdminPage && user.type === AUTHTYPE.ADMIN) return <NavigationAdmin />
+    if (user.type === AUTHTYPE.CFA) return <ConnectedHeaderNavigation />
+    if (user.type === AUTHTYPE.OPCO) return <NavigationOpco />
+    return null
+  }
 
   const onLogout = async () => {
     await apiGet("/auth/logout", {})
@@ -52,7 +60,7 @@ export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
             }}
           />,
         ]}
-        navigation={isAdminPage && user.type === AUTHTYPE.ADMIN ? <NavigationAdmin /> : user.type === AUTHTYPE.CFA && <ConnectedHeaderNavigation />}
+        navigation={getNavigation()}
       />
     </>
   )

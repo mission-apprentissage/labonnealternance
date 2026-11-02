@@ -1,5 +1,7 @@
+import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { INDEXNOW_KEY } from "shared/constants/indexnow"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import getApiClient from "@/common/apis/client"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -31,6 +33,23 @@ type IndexNowPayload = {
   urlList: string[]
 }
 
+/**
+ * Offres dont l'état public a changé depuis `since` : créées, publiées après leur création (sortie de modération, #5499)
+ * ou passées hors ligne.
+ */
+export const buildPublicStateChangeFilter = (since: Date): Filter<IJobsPartnersOfferPrivate> => ({
+  $or: [
+    { created_at: { $gte: since } },
+    // `updated_at` borne la branche sur son index : une publication le rafraîchit (cf. buildJobStatusChangeUpdate).
+    {
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      updated_at: { $gte: since },
+      offer_status_history: { $elemMatch: { status: JOB_STATUS_ENGLISH.ACTIVE, date: { $gte: since } } },
+    },
+    { offer_status: { $ne: JOB_STATUS_ENGLISH.ACTIVE }, updated_at: { $gte: since } },
+  ],
+})
+
 export const buildIndexNowPayloads = (urls: string[], publicUrl: string): IndexNowPayload[] => {
   const host = new URL(publicUrl).host
   const payloads: IndexNowPayload[] = []
@@ -47,7 +66,7 @@ export const buildIndexNowPayloads = (urls: string[], publicUrl: string): IndexN
 
 /**
  * Cron delta : soumet à IndexNow les URLs des offres dont l'état public a réellement changé
- * depuis `since` (défaut : 60 min) — offres nouvellement créées, et passages en
+ * depuis `since` (défaut : 60 min) — offres nouvellement créées, publiées après leur création, et passages en
  * ANNULEE/POURVUE (la page reste en 200 mais son contenu change significativement — le bouton
  * de candidature disparaît, cf. PartnerJobPostuler — ce qui justifie la re-notification ; les
  * jobs d'expiration/annulation bumpent `updated_at` en changeant `offer_status`).
@@ -64,12 +83,9 @@ export const pingIndexNow = async (payload?: { since?: Date | string }) => {
   const since = payload?.since ? new Date(payload.since) : new Date(Date.now() - DELTA_DEFAULT_WINDOW_MS)
   if (Number.isNaN(since.getTime())) throw new Error(`pingIndexNow: paramètre since invalide (${payload?.since})`)
 
-  const cursor = getDbCollection("jobs_partners").find(
-    {
-      $or: [{ created_at: { $gte: since } }, { offer_status: { $ne: JOB_STATUS_ENGLISH.ACTIVE }, updated_at: { $gte: since } }],
-    },
-    { projection: { _id: 1, partner_label: 1, workplace_siret: 1, offer_title: 1, workplace_naf_label: 1 } }
-  )
+  const cursor = getDbCollection("jobs_partners").find(buildPublicStateChangeFilter(since), {
+    projection: { _id: 1, partner_label: 1, workplace_siret: 1, offer_title: 1, workplace_naf_label: 1 },
+  })
 
   const isDryRun = config.env !== "production"
   let scanned = 0

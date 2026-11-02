@@ -8,6 +8,7 @@ import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IRoleManagement, IRoleManagementEvent } from "shared/models/role-management.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
@@ -622,7 +623,8 @@ export const getUserRecruteursForManagement2 = async ({
       continue
     }
 
-    const jobsCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id })
+    // « A des offres publiées » : une offre en attente du compte, en modération ou close ne compte pas.
+    const publishedJobsCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
     const { _id, establishment_raison_sociale, establishment_siret, type, first_name, last_name, email, phone, createdAt, origin, opco, status } = userRecruteur
     const userRecruteurForAdmin: IUserRecruteurForAdmin = {
       _id,
@@ -638,7 +640,7 @@ export const getUserRecruteursForManagement2 = async ({
       opco,
       status,
       organizationId: organization._id.toString(),
-      hasJobs: jobsCount > 0,
+      hasJobs: publishedJobsCount > 0,
     }
     result.push(userRecruteurForAdmin)
   }

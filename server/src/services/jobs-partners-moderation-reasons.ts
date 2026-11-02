@@ -10,6 +10,9 @@ export const MODERATION_GRANTED_BY = "classifier"
 export const MODERATION_NON_CONFORME_REASON = "contenu non conforme selon le classifieur"
 export const MODERATION_INDISPONIBLE_REASON = "classification indisponible"
 export const MODERATION_RELEASED_REASON = "classification conforme ou à vérifier"
+// Décisions des modérateurs (#5499) : `granted_by` vaut l'e-mail de l'administrateur ou de l'OPCO.
+export const MODERATION_VALIDATED_REASON = "offre validée par la modération"
+export const MODERATION_REFUSED_REASON = "offre refusée par la modération"
 
 export const moderationBlockReason = ({ status }: Pick<IOffreClassificationResult, "status">) =>
   status === MODERATION_CLASSIFICATION_STATUS.OK ? MODERATION_NON_CONFORME_REASON : MODERATION_INDISPONIBLE_REASON

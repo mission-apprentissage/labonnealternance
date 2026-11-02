@@ -95,7 +95,7 @@ Les deux images preview utilisent désormais le même modèle :
 
 1. `docker-bake.json`
    Le groupe `preview` doit produire les images server et UI sans suffixe d’environnement pour les tags utilisés par les PRs.
-2. `.infra/docker-compose.preview.yml`
+2. `.infra/docker-compose.preview-pr.yml`
    Les services preview doivent pointer vers les tags `:<pr_number>` pour le server et l’UI.
 3. `.infra/ansible/tasks/preview_pr.yml`
    Le cleanup doit supprimer explicitement les tags `:<pr_number>` pour les images preview.
@@ -202,8 +202,8 @@ Retirer du flux preview ce qui ne sera plus nécessaire une fois le runtime par 
 4. [../../.infra/ansible/preview.yml](../../.infra/ansible/preview.yml) : bootstrap du système preview partagé et point d’entrée Ansible principal.
 5. [../../.infra/ansible/preview_cleanup.yml](../../.infra/ansible/preview_cleanup.yml) : nettoyage de l’environnement preview et des bases Mongo orphelines.
 6. [../../.infra/ansible/tasks/preview_pr.yml](../../.infra/ansible/tasks/preview_pr.yml) : cœur du déploiement et de la suppression par PR ; contient la logique de build locale à retirer et le cleanup à fiabiliser.
-7. [../../.infra/docker-compose.preview.yml](../../.infra/docker-compose.preview.yml) : définition runtime des services par PR.
-8. [../../.infra/docker-compose.preview-system.yml](../../.infra/docker-compose.preview-system.yml) : services partagés de l’environnement preview.
+7. [../../.infra/docker-compose.preview-pr.yml](../../.infra/docker-compose.preview-pr.yml) : définition runtime des services par PR.
+8. [../../.infra/docker-compose.preview.yml](../../.infra/docker-compose.preview.yml) : services partagés de l’environnement preview.
 9. [../../docker-bake.json](../../docker-bake.json) : source de vérité du schéma de tags des images Docker.
 10. [../../.bin/scripts/app-build.sh](../../.bin/scripts/app-build.sh) : build local actuel, à déprécier pour le flux preview cible.
 11. [../../.bin/shared/scripts/app-deploy.sh](../../.bin/shared/scripts/app-deploy.sh) : routage du déploiement preview via Ansible, à conserver mais simplifier lorsque le build sort de la VM.

@@ -1,4 +1,9 @@
-FROM mongodb/mongodb-community-server:8.3.4-ubuntu2204
+FROM mongodb/mongodb-community-server:8.3.13-ubuntu2204
+
+# Sur un noyau ≥ 6.19 (dont le 7.0.0-azure des runners GitHub ubuntu-24.04), mongod refuse de démarrer
+# tant que TCMalloc tient des caches par CPU (SERVER-125742, SERVER-131779). Laisser rseq à glibc les
+# désactive : TCMalloc passe en caches par thread, plus lents mais hors du bug noyau.
+ENV GLIBC_TUNABLES=glibc.pthread.rseq=1
 
 COPY --chown=mongodb:mongodb ./mongo_keyfile /tmp/mongo_keyfile
 COPY --chown=mongodb:mongodb ./mongod.conf /etc/mongod.conf

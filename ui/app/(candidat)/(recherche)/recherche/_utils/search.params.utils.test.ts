@@ -38,6 +38,56 @@ describe("opco (filtre imposé par un site partenaire)", () => {
   })
 })
 
+describe("buildSearchPageCanonical — lieu gardé pour un métier + lieu (#5738)", () => {
+  const marseille = { lieu_label: "Marseille", latitude: 43.2965, longitude: 5.3698 }
+
+  it("garde le libellé et les coordonnées d'une ville", () => {
+    expect(buildSearchPageCanonical({ ...base, q: "développeur web", ...marseille })).toBe(
+      "/recherche?q=d%C3%A9veloppeur+web&lieu_label=Marseille&latitude=43.2965&longitude=5.3698"
+    )
+  })
+
+  it("garde le libellé et l'emprise (sans coordonnées) pour un département ou une région", () => {
+    expect(buildSearchPageCanonical({ ...base, q: "boulanger", lieu_label: "Bretagne", admin_area: "region:53", latitude: 48.2, longitude: -2.9 })).toBe(
+      "/recherche?q=boulanger&lieu_label=Bretagne&admin_area=region%3A53"
+    )
+  })
+
+  it("partage la même adresse entre les variantes (rayon, filtres, tri, pagination, opco)", () => {
+    const canonical = buildSearchPageCanonical({ ...base, q: "boulanger", ...marseille })
+    const variant = buildSearchPageCanonical({
+      ...base,
+      q: "boulanger",
+      ...marseille,
+      radius: 60,
+      page: 2,
+      sort: "date",
+      contract_type: ["Apprentissage"],
+      opco: "AKTO",
+    })
+    expect(variant).toBe(canonical)
+  })
+
+  it("reste sur le métier seul sans libellé de lieu (coordonnées seules)", () => {
+    expect(buildSearchPageCanonical({ ...base, q: "boulanger", latitude: 43.2965, longitude: 5.3698 })).toBe("/recherche?q=boulanger")
+  })
+
+  it("reste sur le métier seul si le libellé n'a ni emprise ni coordonnées complètes", () => {
+    expect(buildSearchPageCanonical({ ...base, q: "boulanger", lieu_label: "Marseille" })).toBe("/recherche?q=boulanger")
+    expect(buildSearchPageCanonical({ ...base, q: "boulanger", lieu_label: "Marseille", latitude: 43.2965 })).toBe("/recherche?q=boulanger")
+  })
+
+  it("garde le `mode` non-défaut après le lieu", () => {
+    expect(buildSearchPageCanonical({ ...base, q: "boulanger", mode: "formations", ...marseille })).toBe(
+      "/recherche?q=boulanger&lieu_label=Marseille&latitude=43.2965&longitude=5.3698&mode=formations"
+    )
+  })
+
+  it("renvoie /recherche sans `q`, même avec un lieu", () => {
+    expect(buildSearchPageCanonical({ ...base, ...marseille })).toBe("/recherche")
+  })
+})
+
 describe("parse de `q` (trim au parse : un métier d'espaces n'est pas une intention)", () => {
   it("trim les espaces parasites, et un `q` fait d'espaces devient une absence", () => {
     expect(parseSearchPageParams(new URLSearchParams("q=%20boulanger%20")).q).toBe("boulanger")

@@ -480,14 +480,20 @@ export const PAGES = {
       userId: string
       token?: string
       isWidget: boolean
+      inReview?: boolean
     }): IPage => ({
       getPath: () => {
-        const { isWidget, fromDashboard, withDelegation, ...querystring } = props
+        const { isWidget, fromDashboard, withDelegation, inReview, ...querystring } = props
 
         const path = isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"
 
         return generateUri(path, {
-          querystring: removeUndefinedFields({ ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() }),
+          querystring: removeUndefinedFields({
+            ...querystring,
+            fromDashboard: fromDashboard.toString(),
+            withDelegation: withDelegation.toString(),
+            inReview: inReview ? "true" : undefined,
+          }),
         }) as string
       },
       title: props.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",

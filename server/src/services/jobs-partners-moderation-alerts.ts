@@ -19,6 +19,13 @@ export const alertClassifierIndisponible = async ({ jobName, pendingCount }: { j
     error: true,
   })
 
+export const alertClassifierIndisponibleSansBlocage = async () =>
+  notifyToSlack({
+    subject: SUBJECT,
+    message: "Classifieur indisponible au dépôt ou à l'édition d'une offre, blocage désactivé : l'offre est publiée sans verdict et attend une relance depuis la modération.",
+    error: true,
+  })
+
 export const alertClassifierRetryEpuise = async (offers: { _id: ObjectId; managed_by?: ObjectId | null }[]) =>
   notifyToSlack({
     subject: SUBJECT,

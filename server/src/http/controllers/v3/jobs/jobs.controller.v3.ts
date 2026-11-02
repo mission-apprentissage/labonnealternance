@@ -4,6 +4,7 @@ import { assertUnreachable, zRoutes } from "shared"
 
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getS3FileLastUpdate, s3SignedUrl } from "@/common/utils/aws-utils"
+import { isBotUserAgent } from "@/common/utils/bot-user-agent"
 import type { Server } from "@/http/server"
 import { EXPORT_JOBS_TO_S3_V2_FILENAME } from "@/jobs/partenaire-export/export-jobs-to-s3-v2"
 import { getUserFromRequest } from "@/security/authentication.service"
@@ -158,7 +159,9 @@ export const jobsApiV3Routes = (server: Server) => {
 
       switch (eventType) {
         case "detail_view": {
-          await incrementDetailViewCount(objectId)
+          if (!isBotUserAgent(req.headers["user-agent"])) {
+            await incrementDetailViewCount(objectId)
+          }
           break
         }
         case "postuler_click": {

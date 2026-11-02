@@ -285,6 +285,23 @@ describe("repriseExhaustedClassifications", () => {
     expect(await getModerations(oldest._id)).toEqual([expect.objectContaining({ trigger: "reprise", status: "indisponible" })])
     expect(notifyToSlack).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Classifieur indisponible") }))
   })
+
+  it("reclasse une offre publiée sans verdict sans toucher à son statut, et ignore celle qu'un modérateur a déjà tranchée", async () => {
+    const account = await saveAccount()
+    const published = await saveOffer(account, { offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    const decided = await saveOffer(account, { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_review: "validee" })
+    classifierReturns("non_conforme")
+
+    expect(await repriseExhaustedClassifications()).toMatchObject({ pending: 1, attempted: 1, released: 0 })
+
+    expect(await getDbCollection("jobs_partners").findOne({ _id: published._id })).toMatchObject({
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_moderation_verdict: "non_conforme",
+      offer_moderation_status: "ok",
+      offer_moderation_review: null,
+    })
+    expect(await getModerations(decided._id)).toEqual([])
+  })
 })
 
 describe("purgeModerationTexts", () => {

@@ -28,12 +28,12 @@
     - name: Démarrer MongoDB
       shell:
         chdir: /opt/app
-        cmd: docker compose -f docker-compose.preview-system.yml up -d --wait mongodb
+        cmd: docker compose -f docker-compose.preview.yml up -d --wait mongodb
 
     - name: Setup MongoDB ReplicaSet
       shell:
         chdir: /opt/app
-        cmd: 'docker compose -f docker-compose.preview-system.yml exec -it mongodb mongosh "{{ LBA_MONGODB_URI }}" --eval "try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }" --quiet'
+        cmd: 'docker compose -f docker-compose.preview.yml exec -it mongodb mongosh "{{ LBA_MONGODB_URI }}" --eval "try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }" --quiet'
       when: env_type == 'preview'
 
     # Lecture des octets exacts du fichier par Ansible (pas de $(cat) dans un scalaire shell) :
@@ -61,7 +61,7 @@
     - name: lancement preview system
       shell:
         chdir: /opt/app
-        cmd: docker compose -f docker-compose.preview-system.yml up -d --wait
+        cmd: docker compose -f docker-compose.preview.yml up -d --wait
 
     - name: Setup Metabase preview
       shell:

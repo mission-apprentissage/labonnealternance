@@ -1,9 +1,14 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import fs from "fs"
 import path from "path"
 import { INDEXNOW_KEY } from "shared/constants/indexnow"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
+import dayjs from "shared/helpers/dayjs"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { describe, expect, it } from "vitest"
 import { __dirname } from "@/common/utils/dirname"
-import { buildIndexNowPayloads } from "./ping-indexnow"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { buildIndexNowPayloads, buildPublicStateChangeFilter } from "./ping-indexnow"
 
 describe("clé IndexNow", () => {
   it("est servie par un fichier public dont le nom et le contenu correspondent à la constante", () => {
@@ -43,5 +48,33 @@ describe("buildIndexNowPayloads", () => {
     expect(payloads).toHaveLength(2)
     expect(payloads[0].urlList).toHaveLength(10_000)
     expect(payloads[1].urlList).toEqual([urls[10_000]])
+  })
+})
+
+describe("buildPublicStateChangeFilter", () => {
+  useMongo()
+
+  it("retient une offre publiée après sa création, pas une offre en ligne seulement rafraîchie par un import", async () => {
+    const now = new Date()
+    const since = dayjs(now).subtract(1, "hour").toDate()
+    const createdAt = dayjs(now).subtract(3, "day").toDate()
+    const historyEvent = (status: JOB_STATUS_ENGLISH, date: Date) => ({ status, date, reason: "test", granted_by: "test" })
+    const published = generateJobsPartnersOfferPrivate({
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      created_at: createdAt,
+      updated_at: now,
+      offer_status_history: [historyEvent(JOB_STATUS_ENGLISH.EN_MODERATION, createdAt), historyEvent(JOB_STATUS_ENGLISH.ACTIVE, now)],
+    })
+    const refreshed = generateJobsPartnersOfferPrivate({
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      created_at: createdAt,
+      updated_at: now,
+      offer_status_history: [historyEvent(JOB_STATUS_ENGLISH.ACTIVE, createdAt)],
+    })
+    await getDbCollection("jobs_partners").insertMany([published, refreshed])
+
+    const changed = await getDbCollection("jobs_partners").find(buildPublicStateChangeFilter(since)).toArray()
+
+    expect(changed.map(({ _id }) => _id.toString())).toEqual([published._id.toString()])
   })
 })

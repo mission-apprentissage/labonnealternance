@@ -1,4 +1,4 @@
-import type { ObjectId } from "mongodb"
+import type { Filter, ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
@@ -7,7 +7,7 @@ import { MODERATION_CLASSIFICATION_STATUS, MODERATION_TRIGGER, OFFER_MODERATION_
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { applyClassificationToOfferInReview, getStoredModerationTexts } from "@/services/formulaire.service"
+import { applyStoredOfferClassification, getStoredModerationTexts } from "@/services/formulaire.service"
 import { classifyOffreTexts } from "@/services/jobs-partners-moderation.service"
 import { alertClassifierIndisponible, alertClassifierRetryEpuise } from "@/services/jobs-partners-moderation-alerts"
 
@@ -40,7 +40,7 @@ const runAttempts = async ({ attempts, trigger, jobName }: { attempts: IAttempt[
   for (const { offer, isLastRetry } of attempts) {
     const classification = await classifyOffreTexts(getStoredModerationTexts(offer))
     const isUnavailable = classification.result.status === MODERATION_CLASSIFICATION_STATUS.INDISPONIBLE
-    const { released } = await applyClassificationToOfferInReview({
+    const { released } = await applyStoredOfferClassification({
       offer,
       trigger,
       classification,
@@ -111,21 +111,27 @@ export const retryUnavailableClassifications = async ({ now = new Date() }: { no
   return result
 }
 
+export const REPRISE_CLASSIFICATION_FILTER: Filter<IJobsPartnersOfferPrivate> = {
+  partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+  $or: [
+    { offer_status: JOB_STATUS_ENGLISH.EN_MODERATION, offer_moderation_status: OFFER_MODERATION_STATUS.EPUISE },
+    // Classifiée en échec et publiée, blocage désactivé : aucune nouvelle tentative ne la reprend.
+    {
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_moderation_status: { $in: [OFFER_MODERATION_STATUS.INDISPONIBLE, OFFER_MODERATION_STATUS.EPUISE] },
+      offer_moderation_review: null,
+    },
+  ],
+}
+
 /**
  * Reprise quotidienne des offres dont toutes les nouvelles tentatives ont échoué : une tentative chacune. C'est la
  * garantie de résorption du backlog après une panne longue. Une offre `epuise` ne se publie que sur un verdict réel
- * ou une décision humaine.
+ * ou une décision humaine. Lancée aussi par la relance en masse de la modération (#5499).
  */
 export const repriseExhaustedClassifications = async () => {
   const offers = await getDbCollection("jobs_partners")
-    .find(
-      {
-        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-        offer_status: JOB_STATUS_ENGLISH.EN_MODERATION,
-        offer_moderation_status: OFFER_MODERATION_STATUS.EPUISE,
-      },
-      { sort: { updated_at: 1 } }
-    )
+    .find(REPRISE_CLASSIFICATION_FILTER, { sort: { updated_at: 1 } })
     .toArray()
 
   const { stats } = await runAttempts({
