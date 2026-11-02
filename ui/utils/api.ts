@@ -150,6 +150,13 @@ export const reclassifyModerationJob = async (id: string) => apiPost("/moderatio
 
 export const reclassifyFailedModerationJobs = async () => apiPost("/moderation/jobs/reclassify", {})
 
+/**
+ * Effacement RGPD : l'e-mail voyage dans le corps de la requête, jamais dans l'URL.
+ */
+export const previewRgpdErasure = async (body: IBody<IRoutes["post"]["/admin/rgpd/preview"]>) => apiPost("/admin/rgpd/preview", { body })
+
+export const eraseRgpdUser = async (body: IBody<IRoutes["post"]["/admin/rgpd/erase"]>) => apiPost("/admin/rgpd/erase", { body })
+
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**
  * KBA 20230511 : (migration db) : casting des valueurs coté collection recruiter, car les champs ne sont plus identiques avec la collection userRecruteur.

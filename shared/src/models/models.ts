@@ -67,6 +67,7 @@ import { referentielCommuneModel } from "./referentiel/communes.model.js"
 import referentielEngagementEntrepriseModel from "./referentiel-engagement-entreprise.model.js"
 import referentielOnisepModel from "./referentiel-onisep.model.js"
 import reportedCompanyModel from "./reported-company.model.js"
+import rgpdErasureModel from "./rgpd-erasure.model.js"
 import roleManagementModel from "./role-management.model.js"
 import roleManagement360Model from "./role-management360.model.js"
 import romeModel from "./rome.model.js"
@@ -143,6 +144,7 @@ const modelDescriptorMap = {
   [romeModel.collectionName]: romeModel,
   [roleManagementModel.collectionName]: roleManagementModel,
   [roleManagement360Model.collectionName]: roleManagement360Model,
+  [rgpdErasureModel.collectionName]: rgpdErasureModel,
   [sessionModel.collectionName]: sessionModel,
   [unsubscribedLbaCompanyModel.collectionName]: unsubscribedLbaCompanyModel,
   [unsubscribeOFModel.collectionName]: unsubscribeOFModel,

@@ -29,6 +29,7 @@ const config = {
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").required().asString(),
   lbaSecret: env.get("LBA_SECRET").required().asString(),
+  rgpdAuditHmacSecret: env.get("LBA_RGPD_AUDIT_HMAC_SECRET").required().asString(),
   allowedSources: env.get("LBA_ALLOWED_SOURCES").required().asString(),
   esdClientId: env.get("LBA_ESD_CLIENT_ID").required().asString(),
   esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").required().asString(),

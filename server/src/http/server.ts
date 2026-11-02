@@ -39,6 +39,7 @@ import jobsPartnersModerationRoute from "./controllers/jobs-partners-moderation.
 import login from "./controllers/login.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reported-company.controller"
+import rgpdErasureRoute from "./controllers/rgpd-erasure.controller"
 import rome from "./controllers/rome.controller"
 import searchRoute from "./controllers/search.controller"
 import sitemapController from "./controllers/sitemap.controller"
@@ -147,6 +148,7 @@ export async function bind(app: Server) {
       jobsRouteV2(typedSubApp)
       jobsPartnersAdminRoute(typedSubApp)
       jobsPartnersModerationRoute(typedSubApp)
+      rgpdErasureRoute(typedSubApp)
       adminFeedbackFormsRoute(typedSubApp)
       feedbackFormsRoute(typedSubApp)
 

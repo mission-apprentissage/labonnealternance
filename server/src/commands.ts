@@ -253,6 +253,7 @@ program
   .description("Anonymize elements based on id")
   .requiredOption("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
   .requiredOption("-i, --id <string>", " <id> est l'identifiant de l'élément à anonymiser")
+  .option("-m, --mode <string>", "anonymize (copie non nominative dans anonymized_*) ou delete (suppression définitive)", "anonymize")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("anonymize-individual"))
 
