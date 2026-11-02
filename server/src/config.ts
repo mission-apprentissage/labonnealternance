@@ -203,6 +203,8 @@ const config = {
     // Au-delà, la classification est indisponible : l'offre passe InReview et sera réessayée.
     classificationTimeoutMs: env.get("LBA_MODERATION_CLASSIFICATION_TIMEOUT_MS").default(10_000).asIntPositive(),
   },
+  // Libellés de partenaires flux séparés par des virgules, cf. getDaytimeRefreshPartners.
+  daytimeRefreshPartners: env.get("LBA_DAYTIME_REFRESH_PARTNERS").default("").asArray(),
   inserjeunes: {
     apiKey: env.get("IJ_MEN_API_KEY").required().asString(),
     clientId: env.get("IJ_MEN_CLIENT_ID").required().asString(),

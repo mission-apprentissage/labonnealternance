@@ -1,10 +1,11 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { findIndexed } from "@tests/utils/search-index.test.utils"
-import type { ObjectId } from "mongodb"
+import { ObjectId } from "mongodb"
 import { generateComputedJobsPartnersFixture, generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getRootLogger } from "@/common/logger"
@@ -131,7 +132,7 @@ describe("when computed_jobs_partners updateOne in the catch block fails", () =>
       return collection
     })
 
-    await expect(importFromComputedToJobsPartners()).resolves.toEqual({ total: 1, success: 0, error: 1 })
+    await expect(importFromComputedToJobsPartners()).resolves.toEqual({ total: 1, success: 0, error: 1, unchanged: 0 })
     expect(sentrySpy).toHaveBeenCalledTimes(2)
 
     sentrySpy.mockRestore()
@@ -363,7 +364,7 @@ describe("import par lots", () => {
       importedIds = ids
     })
 
-    expect.soft(counters).toEqual({ total: 2, success: 1, error: 1 })
+    expect.soft(counters).toEqual({ total: 2, success: 1, error: 1, unchanged: 0 })
     expect.soft(importedIds.map((id) => id.toString())).toEqual([succeeding._id.toString()])
     expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: "healthy_1" })).toBe(1)
     const failingComputed = await getDbCollection("computed_jobs_partners").findOne({ _id: failing._id })
@@ -403,7 +404,155 @@ describe("import par lots", () => {
 
     const counters = await importFromComputedToJobsPartners()
 
-    expect.soft(counters).toEqual({ total: count, success: count, error: 0 })
+    expect.soft(counters).toEqual({ total: count, success: count, error: 0, unchanged: 0 })
     expect.soft(await getDbCollection("jobs_partners").countDocuments({ partner_job_id: { $regex: /^bulk_/ } })).toBe(count)
+  })
+})
+
+describe("updated_at n'avance que si un champ publié change (cf. hasPublishedChange)", () => {
+  useMongo()
+
+  const firstImport = new Date("2026-11-02T00:01:00.000Z")
+  const nextImport = new Date("2026-11-02T04:01:00.000Z")
+
+  afterEach(async () => {
+    vi.useRealTimers()
+    await getDbCollection("computed_jobs_partners").deleteMany({})
+    await getDbCollection("jobs_partners").deleteMany({})
+  })
+
+  // Une valeur non nulle de chaque forme (date, objet, tableau, géopoint) : des instances neuves de même valeur ne sont pas un changement.
+  const publishedData = () => ({
+    partner_job_id: "offer_1",
+    validated: true,
+    contract_start: new Date("2026-12-01T00:00:00.000Z"),
+    offer_target_diploma: { european: "5" as const, label: "BTS, DEUST (Bac+2)" },
+    offer_rome_codes: ["M1607"],
+    offer_desired_skills: ["Rigueur"],
+    workplace_geopoint: { type: "Point" as const, coordinates: [2.3, 48.8] as [number, number] },
+    rank: 100,
+  })
+
+  // Champ absent du computed et recopié sans `?? null` par toJobPartner : undefined à l'écriture, null à la relecture.
+  const dropStreetLabelFromComputed = () => getDbCollection("computed_jobs_partners").updateMany({}, { $unset: { workplace_address_street_label: "" } })
+
+  /** Deux runs successifs : le computed est reconstruit entre les deux, comme à chaque lecture du flux. */
+  const importTwice = async (nextComputed: Partial<IComputedJobsPartners> = {}, betweenImports?: () => Promise<void>) => {
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(firstImport)
+    await createComputedJobPartner(publishedData())
+    await dropStreetLabelFromComputed()
+    await importFromComputedToJobsPartners()
+    await betweenImports?.()
+
+    await getDbCollection("computed_jobs_partners").deleteMany({})
+    vi.setSystemTime(nextImport)
+    await createComputedJobPartner({
+      ...publishedData(),
+      _id: new ObjectId(),
+      created_at: nextImport,
+      updated_at: nextImport,
+      jobs_in_success: [COMPUTED_ERROR_SOURCE.FILL_LBA_URL],
+      errors: [{ source: COMPUTED_ERROR_SOURCE.API_SIRET, error: "data not found" }],
+      ...nextComputed,
+    })
+    await dropStreetLabelFromComputed()
+    await importFromComputedToJobsPartners()
+    return getDbCollection("jobs_partners").findOne({ partner_job_id: "offer_1" })
+  }
+
+  it("une offre inchangée garde son updated_at et n'est pas reprise par le cron delta de l'index", async () => {
+    const job = await importTwice()
+
+    expect.soft(job?.updated_at).toEqual(firstImport)
+    expect.soft((await syncSearchItemsDelta({ since: nextImport })).scanned).toBe(0)
+  })
+
+  it("un changement de rang ou de doublons seul est écrit sans avancer updated_at", async () => {
+    const duplicates = [{ partner_job_id: "other", partner_label: JOBPARTNERS_LABEL.JOBTEASER, collectionName: "jobs_partners" as const, reason: "test" }]
+    const job = await importTwice({ rank: 10, duplicates })
+
+    expect.soft(job?.rank).toBe(10)
+    expect.soft(job?.duplicates).toEqual(duplicates)
+    expect.soft(job?.updated_at).toEqual(firstImport)
+  })
+
+  it.each([
+    ["intitulé", { offer_title: "Un autre intitulé" }],
+    ["adresse", { workplace_address_label: "1 rue de Rivoli 75001 Paris", workplace_geopoint: { type: "Point" as const, coordinates: [2.35, 48.86] as [number, number] } }],
+    ["diplôme visé", { offer_target_diploma: { european: "6" as const, label: "Licence, BUT, Licence Pro (Bac+3)" } }],
+    ["date de début", { contract_start: new Date("2027-01-04T00:00:00.000Z") }],
+    ["tableau vidé", { offer_desired_skills: [] }],
+    ["statut", { offer_status: JOB_STATUS_ENGLISH.ANNULEE }],
+  ])("un changement publié (%s) avance updated_at et déclenche la réindexation", async (_, nextComputed) => {
+    const job = await importTwice(nextComputed)
+
+    expect.soft(job?.updated_at).toEqual(nextImport)
+    expect.soft((await syncSearchItemsDelta({ since: nextImport })).scanned).toBe(1)
+  })
+
+  const cancelBetweenImports = (granted_by: string) => async () => {
+    await getDbCollection("jobs_partners").updateOne(
+      { partner_job_id: "offer_1" },
+      { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE }, $push: { offer_status_history: { date: firstImport, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "test", granted_by } } }
+    )
+  }
+
+  it("une réactivation par le flux est un changement publié", async () => {
+    const job = await importTwice({}, cancelBetweenImports("cancel-removed-jobs-partners"))
+
+    expect.soft(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(job?.updated_at).toEqual(nextImport)
+  })
+
+  it("une offre fermée ailleurs et maintenue fermée par la garde de réactivation garde son updated_at", async () => {
+    const job = await importTwice({}, cancelBetweenImports("application.service"))
+
+    expect.soft(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(job?.updated_at).toEqual(firstImport)
+  })
+
+  it("renvoie le nombre d'offres écrites sans changement publié", async () => {
+    await createComputedJobPartner(publishedData())
+
+    expect.soft(await importFromComputedToJobsPartners()).toEqual({ total: 1, success: 1, error: 0, unchanged: 0 })
+    expect.soft(await importFromComputedToJobsPartners()).toEqual({ total: 1, success: 1, error: 0, unchanged: 1 })
+  })
+
+  it("ne relit des offres existantes que les champs comparés et ceux de la garde de réactivation", async () => {
+    const projections: Record<string, unknown>[] = []
+    const getDbCollectionOriginal = mongodbUtils.getDbCollection
+    const getDbCollectionSpy = vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
+      const collection = getDbCollectionOriginal(name)
+      if (name !== "jobs_partners") return collection
+      return new Proxy(collection, {
+        get(target, prop, receiver) {
+          const value = Reflect.get(target, prop, receiver)
+          if (prop === "find") {
+            return (...args: unknown[]) => {
+              projections.push((args[1] as { projection?: Record<string, unknown> } | undefined)?.projection ?? {})
+              return (value as (...a: unknown[]) => unknown).apply(target, args)
+            }
+          }
+          return typeof value === "function" ? value.bind(target) : value
+        },
+      }) as typeof collection
+    })
+
+    await importTwice()
+    getDbCollectionSpy.mockRestore()
+
+    const [projection] = projections
+    expect.soft(projection).toMatchObject({
+      _id: 1,
+      partner_label: 1,
+      partner_job_id: 1,
+      offer_status: 1,
+      offer_title: 1,
+      offer_description: 1,
+      workplace_geopoint: 1,
+      offer_status_history: { $slice: -1 },
+    })
+    expect.soft(Object.keys(projection ?? {}).filter((field) => ["lba_url", "stats_detail_view", "rank", "duplicates", "updated_at", "created_at"].includes(field))).toEqual([])
   })
 })
