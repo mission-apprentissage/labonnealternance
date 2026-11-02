@@ -7,6 +7,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { fillComputedJobsPartners } from "./fill-computed-jobs-partners"
 import { importFromComputedToJobsPartners } from "./import-from-computed-to-jobs-partners"
+import { withPartnerLocks } from "./partner-processing-lock"
 import { jobPartnersByFlux } from "./process-job-partners"
 import { buildUnlockedComputedJobPartnersFilter } from "./process-job-partners-for-api"
 import { fillLbaUrlForProcessedComputed } from "./process-missing-rome-and-import-to-job-partners"
@@ -35,10 +36,20 @@ export const buildNeverValidatedSelectionFilter = (now: Date = new Date()): Filt
  * a besoin, et ne lance jamais l'annulation.
  */
 export const processNeverValidatedJobPartners = async () => {
+  const partnerLabels = await getDbCollection("computed_jobs_partners").distinct("partner_label", buildNeverValidatedSelectionFilter())
+  if (!partnerLabels.length) {
+    return { selected: 0 }
+  }
+  // Sans attente, comme processMissingRomeAndImportToJobPartners : un partenaire verrouillé est repris au passage suivant.
+  return withPartnerLocks(partnerLabels, processNeverValidated, { requireAll: false })
+}
+
+const processNeverValidated = async (lockedPartnerLabels: string[]) => {
   const processId = new ObjectId().toString()
-  const { modifiedCount: selected } = await getDbCollection("computed_jobs_partners").updateMany(buildNeverValidatedSelectionFilter(), {
-    $set: { currently_processed_id: processId },
-  })
+  const { modifiedCount: selected } = await getDbCollection("computed_jobs_partners").updateMany(
+    { $and: [buildNeverValidatedSelectionFilter(), { partner_label: { $in: lockedPartnerLabels } }] },
+    { $set: { currently_processed_id: processId } }
+  )
 
   if (!selected) {
     return { selected }

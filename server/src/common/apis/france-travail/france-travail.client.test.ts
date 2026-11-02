@@ -1,15 +1,20 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { sleep } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { searchForFtJobs } from "./france-travail.client"
+import { FT_SEARCH_MAX_ATTEMPTS, FT_SEARCH_RETRY_DELAY_MS, getAllFTJobsByDepartments, searchForFtJobs } from "./france-travail.client"
 import { generateFtJobFixture, nockFranceTravailOffreSearch, nockFranceTravailTokenAccessOffre } from "./france-travail.client.fixture"
 
 useMongo()
 
 vi.mock("@/common/utils/sentry-utils")
+vi.mock("@/common/utils/async-utils", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/common/utils/async-utils")>()),
+  sleep: vi.fn(async () => undefined),
+}))
 
 describe("searchForFtJobs", () => {
   const jobs = [generateFtJobFixture({})]
@@ -107,5 +112,43 @@ describe("searchForFtJobs", () => {
       await expect(searchForFtJobs({ sort: 2, natureContrat: "E2,FS", range: "0-149" }, { throwOnError: true })).rejects.toThrow()
       expect(sentryCaptureException).toHaveBeenCalledTimes(0)
     })
+  })
+})
+
+describe("getAllFTJobsByDepartments", () => {
+  const searchParams = { natureContrat: "E2,FS", range: "0-149", departement: "75", sort: "1", partenaires: "LABONNEALTERNANCE", modeSelectionPartenaires: "EXCLU" }
+  const nockSearchFailure = (times: number) =>
+    nock("https://api.francetravail.io/partenaire").get("/offresdemploi/v2/offres/search").query(searchParams).times(times).reply(500, { message: "Erreur technique" })
+
+  const collect = async () => {
+    const pages: unknown[][] = []
+    for await (const jobs of getAllFTJobsByDepartments("75")) {
+      pages.push(jobs)
+    }
+    return pages
+  }
+
+  beforeEach(async () => {
+    vi.mocked(sleep).mockClear()
+    await getDbCollection("francetravail_access").insertOne({ _id: new ObjectId(), access_token: "ft_token_offre", access_type: "OFFRE", created_at: new Date() })
+    return () => {
+      nock.cleanAll()
+    }
+  })
+
+  it("retente une erreur passagère avec un délai croissant puis reprend la pagination", async () => {
+    const jobs = [generateFtJobFixture({})]
+    nockSearchFailure(2)
+    nockFranceTravailOffreSearch(searchParams, { resultats: jobs })
+
+    await expect(collect()).resolves.toEqual([jobs])
+    expect(vi.mocked(sleep).mock.calls.map(([ms]) => ms)).toEqual([FT_SEARCH_RETRY_DELAY_MS, 2 * FT_SEARCH_RETRY_DELAY_MS, 1500])
+  })
+
+  it("une erreur persistante fait échouer la récupération après un nombre borné de tentatives", async () => {
+    nockSearchFailure(FT_SEARCH_MAX_ATTEMPTS)
+
+    await expect(collect()).rejects.toThrow(`tentative ${FT_SEARCH_MAX_ATTEMPTS}/${FT_SEARCH_MAX_ATTEMPTS}`)
+    expect(nock.isDone()).toBe(true)
   })
 })

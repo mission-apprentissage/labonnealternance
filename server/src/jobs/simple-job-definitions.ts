@@ -72,6 +72,7 @@ import {
   cancelRemovedJobsPartnersFlux,
   detectDuplicateJobPartnersFlux,
   fillComputedJobsPartnersFlux,
+  forceCancelRemovedJobsPartners,
   processComputedAndImportToJobPartners,
   validateComputedJobPartnersFlux,
 } from "./offre-partenaire/process-job-partners"
@@ -528,6 +529,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: cancelRemovedJobsPartnersFlux,
     description: "Annule les offres des partenaires traités par flux absentes du flux source",
+  },
+  {
+    fct: forceCancelRemovedJobsPartners,
+    description: "Levier d'incident : annule sans garde-fou les offres d'un partenaire absentes de son flux, après vérification d'un blocage signalé par le garde-fou d'annulation",
+    cliOptions: [{ flags: "--partnerLabel <label>", description: "Partenaire du flux concerné (ex. Hellowork)" }],
   },
   {
     fct: detectDuplicateJobPartnersFlux,

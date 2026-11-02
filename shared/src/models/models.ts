@@ -35,6 +35,7 @@ import jobsModel from "./jobs.model.js"
 import jobsPartnersModel from "./jobs-partners.model.js"
 import jobsPartnersComputedModel from "./jobs-partners-computed.model.js"
 import jobsPartnersModerationModel from "./jobs-partners-moderation.model.js"
+import jobsPartnersProcessingLockModel from "./jobs-partners-processing-lock.model.js"
 import mistralBatchJobsModel from "./mistral-batch-jobs.model.js"
 import opcoModel from "./opco.model.js"
 import rawApecModel from "./raw-apec.model.js"
@@ -124,6 +125,7 @@ const modelDescriptorMap = {
   [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
   [jobsPartnersModerationModel.collectionName]: jobsPartnersModerationModel,
+  [jobsPartnersProcessingLockModel.collectionName]: jobsPartnersProcessingLockModel,
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawEdfModel.collectionName]: rawEdfModel,
