@@ -19,7 +19,7 @@ type OptionsWrite = {
 type IRequestOptions = OptionsGet | OptionsWrite | EmptyObject
 
 async function optionsToFetchParams(method: RequestInit["method"], options: IRequestOptions, fetchOptions: IRequestFetchOptions) {
-  const { timeout, headers: addedHeaders } = fetchOptions
+  const { timeout, headers: addedHeaders, keepalive } = fetchOptions
 
   const headers = await getHeaders(options)
 
@@ -43,6 +43,7 @@ async function optionsToFetchParams(method: RequestInit["method"], options: IReq
     mode: publicConfig.env === "local" ? "cors" : "same-origin",
     credentials: publicConfig.env === "local" ? "include" : "same-origin",
     signal: timeout ? AbortSignal.timeout(timeout) : undefined,
+    keepalive,
     body,
     method,
     headers,

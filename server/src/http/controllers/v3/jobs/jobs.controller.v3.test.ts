@@ -826,3 +826,56 @@ describe("POST /v3/jobs/:id/stats/detail_view", () => {
     expect((await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.stats_postuler).toBe(1)
   })
 })
+
+describe("POST /v3/jobs/stats/search_view", () => {
+  const googlebotSmartphone =
+    "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.122 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+  const chrome = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+
+  const lbaJob = generateJobsPartnersOfferPrivate({ _id: new ObjectId(), partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA })
+  const partnerJob = generateJobsPartnersOfferPrivate({ _id: new ObjectId(), partner_label: "Hellowork" })
+  const notDisplayedJob = generateJobsPartnersOfferPrivate({ _id: new ObjectId(), partner_label: "Hellowork" })
+
+  beforeEach(async () => {
+    await getDbCollection("jobs_partners").insertMany([lbaJob, partnerJob, notDisplayedJob])
+  })
+
+  const postSearchView = (userAgent: string | undefined) =>
+    httpClient().inject({
+      method: "POST",
+      path: "/api/v3/jobs/stats/search_view",
+      headers: { "user-agent": userAgent },
+      body: [lbaJob._id.toString(), partnerJob._id.toString()],
+    })
+  const getSearchViewCounts = async () => {
+    const jobs = await getDbCollection("jobs_partners")
+      .find({}, { projection: { stats_search_view: 1 } })
+      .toArray()
+    return Object.fromEntries(jobs.map((job) => [job._id.toString(), job.stats_search_view]))
+  }
+
+  it("incrémente les offres LBA et partenaires envoyées, et elles seules, pour un navigateur", async () => {
+    const response = await postSearchView(chrome)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getSearchViewCounts()).toEqual({
+      [lbaJob._id.toString()]: 1,
+      [partnerJob._id.toString()]: 1,
+      [notDisplayedJob._id.toString()]: 0,
+    })
+  })
+
+  it("répond 200 sans incrémenter les compteurs pour un robot", async () => {
+    const response = await postSearchView(googlebotSmartphone)
+
+    expect(response.statusCode).toBe(200)
+    expect(Object.values(await getSearchViewCounts())).toEqual([0, 0, 0])
+  })
+
+  it("répond 200 sans incrémenter les compteurs sans user-agent", async () => {
+    const response = await postSearchView(undefined)
+
+    expect(response.statusCode).toBe(200)
+    expect(Object.values(await getSearchViewCounts())).toEqual([0, 0, 0])
+  })
+})

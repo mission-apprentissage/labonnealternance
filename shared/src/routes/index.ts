@@ -198,6 +198,7 @@ export type IRequestFetchOptions = {
   headers?: Record<string, string>
   signal?: AbortSignal | null
   priority?: "low" | "auto" | "high"
+  keepalive?: boolean
 }
 
 export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never>
