@@ -202,24 +202,24 @@ export const METADATA = {
       description: "Consultez nos statistiques et analyses sur le marché de l’alternance en France.",
     }),
     barometre: () => ({
-      title: "Baromètre de l’alternance T3 2026 - La bonne alternance",
+      title: "Baromètre de l’alternance T2-T3 2026 - La bonne alternance",
       description:
-        "Baromètre T3 2026 de l’alternance : offres, candidatures, métiers les plus recherchés, secteurs qui recrutent, secteurs sous tension. Données La bonne alternance.",
+        "Baromètre T2-T3 2026 de La bonne alternance : usage du service, opportunités par taille d’entreprise et niveau de diplôme, métiers et régions où candidats et recruteurs se rencontrent mal.",
       keywords: [
         "baromètre alternance",
         "marché de l’alternance",
-        "alternance T3 2026",
+        "alternance 2026",
         "candidatures alternance",
         "offres apprentissage",
         "métiers en alternance",
         "secteurs qui recrutent en alternance",
-        "secteurs sous tension en alternance",
+        "TPE PME alternance",
         "La bonne alternance",
       ],
       openGraph: {
-        title: "Baromètre de l’alternance T3 2026 - La bonne alternance",
+        title: "Baromètre de l’alternance T2-T3 2026 - La bonne alternance",
         description:
-          "Baromètre T3 2026 de l’alternance : offres, candidatures, métiers les plus recherchés, secteurs qui recrutent, secteurs sous tension. Données La bonne alternance.",
+          "Baromètre T2-T3 2026 de La bonne alternance : usage du service, opportunités par taille d’entreprise et niveau de diplôme, métiers et régions où candidats et recruteurs se rencontrent mal.",
         url: `/barometre`,
         siteName: "La bonne alternance",
         locale: "fr_FR",

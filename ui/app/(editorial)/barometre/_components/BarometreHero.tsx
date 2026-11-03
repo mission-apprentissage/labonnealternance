@@ -1,108 +1,120 @@
 import { Box, Typography } from "@mui/material"
+import type { ReactNode } from "react"
 
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 
 const NAVY = "#000091"
 const WHITE = "#fff"
-const PLOT_HEIGHT = { xs: 190, md: 300 }
+const PLOT_HEIGHT = { xs: 120, md: 190 }
 
-export type HeroBar = { label: string; shortLabel: string; value: number; display: string; note?: string; highlighted?: boolean; showValue?: boolean }
+export type HeroMetric = { label: string; before: number; after: number; beforeDisplay: string; afterDisplay: string; change: string }
 
 // Le bandeau garde ses couleurs en thème sombre : c'est un aplat de marque, pas une surface de lecture.
-export function BarometreHero({ title, published, bars, chartLabel }: { title: string; published: string; bars: HeroBar[]; chartLabel: string }) {
-  const max = Math.max(...bars.map((bar) => bar.value))
-
+export function BarometreHero({
+  title,
+  published,
+  children,
+  metrics,
+  periodLabels,
+  chartTitle,
+}: {
+  title: string
+  published: string
+  children: ReactNode
+  metrics: HeroMetric[]
+  periodLabels: [string, string]
+  chartTitle: string
+}) {
   return (
-    <Box sx={{ backgroundColor: NAVY, color: WHITE, overflow: "hidden" }}>
+    <Box sx={{ backgroundColor: NAVY, color: WHITE }}>
       <DefaultContainer>
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 5fr) minmax(0, 7fr)" },
-            columnGap: 8,
-            rowGap: 5,
-            alignItems: "end",
-            pt: { xs: 5, md: 8 },
-            pb: { xs: 2, md: 3 },
+            gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 6fr) minmax(0, 6fr)" },
+            columnGap: 10,
+            rowGap: 6,
+            alignItems: "center",
+            py: { xs: 5, md: 8 },
+            "& p, & a": { color: WHITE },
           }}
         >
-          <Box sx={{ pb: { md: 6 }, alignSelf: "center" }}>
-            <Typography component="p" sx={{ fontSize: "14px", color: WHITE, mb: 2 }}>
+          <Box>
+            <Typography component="p" sx={{ fontSize: "14px", mb: 2 }}>
               {published}
             </Typography>
-            <Typography component="h1" sx={{ color: WHITE, fontWeight: 700, fontSize: { xs: "32px", md: "44px" }, lineHeight: { xs: "40px", md: "52px" }, m: 0 }}>
+            <Typography component="h1" sx={{ color: WHITE, fontWeight: 700, fontSize: { xs: "30px", md: "40px" }, lineHeight: { xs: "38px", md: "48px" }, mb: 4 }}>
               {title}
             </Typography>
+            <Box sx={{ "& p": { fontSize: "17px", lineHeight: "28px", mb: 2 } }}>{children}</Box>
           </Box>
 
-          <Box
-            role="img"
-            aria-label={chartLabel}
-            sx={{
-              display: "flex",
-              alignItems: "flex-end",
-              gap: { xs: "6px", md: "12px" },
-              height: { xs: `${PLOT_HEIGHT.xs + 88}px`, md: `${PLOT_HEIGHT.md + 110}px` },
-              "@keyframes barometreBarGrow": { from: { transform: "scaleY(0)" }, to: { transform: "scaleY(1)" } },
-            }}
-          >
-            {bars.map((bar, index) => (
-              <Box key={bar.label} sx={{ flex: 1, minWidth: 0, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%" }}>
-                {bar.highlighted || bar.showValue ? (
+          <Box component="figure" sx={{ m: 0 }}>
+            <Typography component="figcaption" sx={{ fontWeight: 700, fontSize: "16px", mb: 1, color: WHITE }}>
+              {chartTitle}
+            </Typography>
+            <Box sx={{ display: "flex", gap: 2, mb: 3, fontSize: "13px" }} aria-hidden="true">
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Box sx={{ width: 12, height: 12, borderRadius: "2px", backgroundColor: "rgba(255, 255, 255, 0.35)" }} />
+                {periodLabels[0]}
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Box sx={{ width: 12, height: 12, borderRadius: "2px", backgroundColor: WHITE }} />
+                {periodLabels[1]}
+              </Box>
+            </Box>
+            <Box component="ul" sx={{ listStyle: "none", m: 0, p: 0, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: { xs: 2, md: 4 } }}>
+              {metrics.map((metric) => (
+                <Box component="li" key={metric.label} sx={{ "&&": { p: 0 } }}>
+                  <Typography component="span" sx={{ display: "block", fontWeight: 700, fontSize: { xs: "20px", md: "30px" }, lineHeight: 1.1, color: WHITE }}>
+                    {metric.change}
+                  </Typography>
+                  <Typography component="span" sx={{ display: "block", fontSize: "13px", mb: 2, color: WHITE }}>
+                    {metric.label}
+                  </Typography>
                   <Box
                     sx={{
-                      position: "absolute",
-                      right: 0,
-                      bottom: { xs: `${(bar.value / max) * PLOT_HEIGHT.xs + 32}px`, md: `${(bar.value / max) * PLOT_HEIGHT.md + 34}px` },
-                      textAlign: "right",
-                      whiteSpace: "nowrap",
+                      display: "flex",
+                      alignItems: "flex-end",
+                      gap: "6px",
+                      height: { xs: `${PLOT_HEIGHT.xs}px`, md: `${PLOT_HEIGHT.md}px` },
+                      borderBottom: `1px solid ${WHITE}`,
+                      "@keyframes barometreBarGrow": { from: { transform: "scaleY(0)" }, to: { transform: "scaleY(1)" } },
                     }}
+                    aria-hidden="true"
                   >
-                    <Typography
-                      component="span"
-                      sx={{ display: "block", color: WHITE, fontWeight: 700, lineHeight: 1.1, fontSize: bar.highlighted ? { xs: "26px", md: "40px" } : { xs: "13px", md: "16px" } }}
-                    >
-                      {bar.display}
-                    </Typography>
-                    {bar.note ? (
-                      <Typography component="span" sx={{ display: "block", color: WHITE, fontSize: { xs: "13px", md: "15px" }, lineHeight: 1.3 }}>
-                        {bar.note}
-                      </Typography>
-                    ) : null}
+                    {[
+                      { value: metric.before, fill: "rgba(255, 255, 255, 0.35)" },
+                      { value: metric.after, fill: WHITE },
+                    ].map((bar, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          flex: 1,
+                          height: `${(bar.value / metric.after) * 100}%`,
+                          backgroundColor: bar.fill,
+                          borderRadius: "4px 4px 0 0",
+                          transformOrigin: "bottom",
+                          animation: `barometreBarGrow 700ms cubic-bezier(0.22, 1, 0.36, 1) ${index * 120}ms both`,
+                          "@media (prefers-reduced-motion: reduce)": { animation: "none" },
+                        }}
+                      />
+                    ))}
                   </Box>
-                ) : null}
-                <Box
-                  sx={{
-                    height: { xs: `${(bar.value / max) * PLOT_HEIGHT.xs}px`, md: `${(bar.value / max) * PLOT_HEIGHT.md}px` },
-                    backgroundColor: bar.highlighted ? WHITE : "rgba(255, 255, 255, 0.32)",
-                    borderRadius: "4px 4px 0 0",
-                    transformOrigin: "bottom",
-                    animation: `barometreBarGrow 700ms cubic-bezier(0.22, 1, 0.36, 1) ${index * 60}ms both`,
-                    "@media (prefers-reduced-motion: reduce)": { animation: "none" },
-                  }}
-                />
-                <Typography
-                  component="span"
-                  sx={{
-                    borderTop: `1px solid ${WHITE}`,
-                    pt: "6px",
-                    color: WHITE,
-                    textAlign: "center",
-                    fontSize: { xs: "11px", md: "13px" },
-                    lineHeight: "16px",
-                    fontWeight: bar.highlighted ? 700 : 400,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  <Box component="span" sx={{ display: { xs: "none", md: "inline" } }}>
-                    {bar.label}
+                  <Typography component="span" sx={{ display: "block", mt: 1, fontSize: { xs: "11px", md: "13px" }, lineHeight: 1.4, color: WHITE }}>
+                    {metric.beforeDisplay}
+                    <br />
+                    <strong>{metric.afterDisplay}</strong>
+                  </Typography>
+                  <Box component="span" sx={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)" }}>
+                    {`${metric.label} : ${metric.beforeDisplay} en ${periodLabels[0]}, ${metric.afterDisplay} en ${periodLabels[1]}, soit ${metric.change}.`}
                   </Box>
-                  <Box component="span" sx={{ display: { xs: "inline", md: "none" } }}>
-                    {bar.shortLabel}
-                  </Box>
-                </Typography>
-              </Box>
-            ))}
+                </Box>
+              ))}
+            </Box>
+            <Typography component="p" sx={{ mt: 2, mb: 0, fontSize: "12px" }}>
+              Source : Plausible (visites), La bonne alternance (candidats, candidatures)
+            </Typography>
           </Box>
         </Box>
       </DefaultContainer>

@@ -1,41 +1,37 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Highlight } from "@codegouvfr/react-dsfr/Highlight"
 import { Box, Grid, Typography } from "@mui/material"
 import type { Metadata } from "next"
+import type { ReactNode } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
+
 import { BarChartHorizontal } from "./_components/BarChartHorizontal"
-import { BarChartVertical } from "./_components/BarChartVertical"
 import { BarometreHero } from "./_components/BarometreHero"
-import { ChartFrame } from "./_components/ChartFrame"
-import { Insight } from "./_components/Insight"
-import { MetiersMosaic } from "./_components/MetiersMosaic"
-import { PictoRanking } from "./_components/PictoRanking"
+import { CompositionBars } from "./_components/CompositionBars"
 import { RegionsMap } from "./_components/RegionsMap"
 import { ShareBar } from "./_components/ShareBar"
 import {
   BAROMETRE_FAQ,
   BAROMETRE_KEYWORDS,
-  candidaturesHero,
-  candidaturesParType,
-  candidaturesParTypeLegend,
-  flopMetiersCandidats,
-  flopRegionsCandidatures,
-  flopRegionsOffres,
-  niveauDiplome,
+  clicsParNiveau,
+  clicsParTaille,
+  clicsParType,
+  clicsSeries,
+  metiersLesMoinsSollicites,
+  metiersLesPlusSollicites,
+  opportunitesParNiveau,
+  opportunitesParTaille,
+  opportunitesSeries,
   PUBLISHED_DATE,
-  secteursMoinsSousTension,
-  secteursSousTension,
-  topMetiersCandidats,
-  topMetiersRecruteurs,
-  topRegionsCandidatures,
-  topRegionsOffres,
-  topSecteursRecruteurs,
-  topSecteursSpontanees,
+  PUBLISHED_LABEL,
+  ratioClasses,
+  ratioParRegion,
+  usageMetrics,
 } from "./_data/t3-2026"
 
 export const metadata: Metadata = {
@@ -45,51 +41,41 @@ export const metadata: Metadata = {
   },
 }
 
-const positive = (s: string) => (
-  <Typography component="span" sx={{ color: fr.colors.decisions.text.default.success.default, fontWeight: 700 }}>
-    {s}
-  </Typography>
-)
-const strong = (s: string) => (
-  <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
-    {s}
-  </Typography>
-)
-const italic = (s: string) => (
-  <Typography component="span" sx={{ fontStyle: "italic" }}>
-    {s}
-  </Typography>
-)
-
-const subSectionTitleSx = {
-  mt: fr.spacing("8v"),
-  mb: fr.spacing("3v"),
-  color: fr.colors.decisions.text.title.grey.default,
-  fontWeight: 700,
-} as const
-
-const paragraphSx = { mb: fr.spacing("3v"), maxWidth: "72ch", color: fr.colors.decisions.text.default.grey.default } as const
+const paragraphSx = { mb: fr.spacing("4v"), maxWidth: "72ch", fontSize: "17px", lineHeight: "28px", color: fr.colors.decisions.text.default.grey.default } as const
 
 const sectionTitleSx = {
   mt: { xs: fr.spacing("12v"), md: fr.spacing("16v") },
-  mb: fr.spacing("4v"),
+  mb: fr.spacing("5v"),
   fontWeight: 700,
   fontSize: { xs: "28px", md: "32px" },
   lineHeight: { xs: "36px", md: "40px" },
-  maxWidth: "26em",
   color: fr.colors.decisions.text.title.grey.default,
 } as const
 
-const TAKEAWAYS = [
-  { title: "Un service de plus en plus utilisé", text: "Le nombre de candidatures a doublé en un an, avec environ 707 000 candidatures au 3e trimestre." },
-  {
-    title: "Un déséquilibre structurel",
-    text: "Les candidatures se concentrent sur les fonctions support et tertiaires, alors que les offres restent portées par la restauration et le commerce.",
-  },
-  { title: "76 % de candidatures spontanées", text: "La bonne alternance permet aux candidats d’aller chercher le marché caché là où les offres ne suffisent plus." },
-]
+const leverTitleSx = {
+  mt: fr.spacing("8v"),
+  mb: fr.spacing("2v"),
+  fontWeight: 700,
+  fontSize: "20px",
+  lineHeight: "28px",
+  color: fr.colors.decisions.text.title.grey.default,
+} as const
 
-const twoChartsSx = { display: "grid", gap: fr.spacing("4v"), gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "repeat(2, minmax(0, 1fr))" } } as const
+const twoChartsSx = { display: "grid", gap: fr.spacing("6v"), gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "repeat(2, minmax(0, 1fr))" } } as const
+
+const P = ({ children }: { children: ReactNode }) => (
+  <Typography component="p" sx={paragraphSx}>
+    {children}
+  </Typography>
+)
+
+const Note = ({ children }: { children: ReactNode }) => (
+  <Typography component="p" sx={{ ...paragraphSx, fontSize: "14px", lineHeight: "22px", fontStyle: "italic", color: fr.colors.decisions.text.mention.grey.default }}>
+    {children}
+  </Typography>
+)
+
+const WHITE_LINK = { color: "#fff" } as const
 
 export default function BarometrePage() {
   return (
@@ -113,277 +99,236 @@ export default function BarometrePage() {
       <Breadcrumb pages={[PAGES.static.barometre]} />
 
       <BarometreHero
-        title="La dynamique de l’alternance au 3e trimestre 2026 sur La bonne alternance"
-        published="Publié le 2 novembre 2026"
-        bars={candidaturesHero}
-        chartLabel="Candidatures par trimestre : 299 741 au T1 2025, 311 520 au T2 2025, 337 928 au T3 2025, 193 024 au T4 2025, 319 768 au T1 2026, 675 719 au T2 2026 et 707 059 au T3 2026, soit +109 % en un an."
-      />
+        title="Le marché de l’alternance vu par ses usagers : baromètre La bonne alternance T2-T3 2026"
+        published={PUBLISHED_LABEL}
+        metrics={usageMetrics}
+        periodLabels={["T2+T3 2025", "T2+T3 2026"]}
+        chartTitle="Usage du service, d’avril à septembre"
+      >
+        <Typography component="p">
+          Chaque mois, 500&nbsp;000 usagers candidats, recruteurs et organismes de formations utilisent le service gouvernemental La bonne alternance pour concrétiser leur projet
+          d’alternance.
+        </Typography>
+        <Typography component="p">
+          Ce volume d’utilisation permet d’observer de près ce que cherchent les candidats et ce dont les entreprises ont besoin. Ce baromètre partage ces observations avec
+          l’ensemble de l’écosystème avec un objectif&nbsp;: identifier des leviers concrets qui faciliteront les entrées en alternance futures.
+        </Typography>
+        <Typography component="p">La bonne alternance s’empare également de ces observations pour orienter ses prochaines évolutions, présentées en fin de baromètre.</Typography>
+      </BarometreHero>
 
       <DefaultContainer>
-        <Box component="article" sx={{ pb: fr.spacing("16v") }}>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "repeat(3, minmax(0, 1fr))" },
-              gap: { xs: fr.spacing("6v"), md: fr.spacing("8v") },
-              pt: fr.spacing("10v"),
-            }}
-          >
-            {TAKEAWAYS.map((takeaway) => (
-              <Box key={takeaway.title}>
-                <Typography component="p" sx={{ fontWeight: 700, fontSize: "20px", lineHeight: "28px", mb: fr.spacing("2v"), color: fr.colors.decisions.text.title.grey.default }}>
-                  {takeaway.title}
-                </Typography>
-                <Typography component="p" sx={{ m: 0, color: fr.colors.decisions.text.default.grey.default }}>
-                  {takeaway.text}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-
-          <Typography component="p" sx={{ mt: fr.spacing("6v"), mb: 0, maxWidth: "90ch", fontSize: "14px", color: fr.colors.decisions.text.mention.grey.default }}>
-            Les données présentées dans ce baromètre sont issues exclusivement de La bonne alternance et reflètent l’activité observée sur la plateforme. Elles ne constituent pas
-            un indicateur exhaustif du marché de l’alternance.
-          </Typography>
-
-          <Grid container>
-            <Grid size={{ md: 1, xs: 0 }} />
-            <Grid size={{ md: 10, xs: 12 }}>
+        <Grid container>
+          <Grid size={{ md: 1, xs: 0 }} />
+          <Grid size={{ md: 10, xs: 12 }}>
+            <Box component="article" sx={{ pb: fr.spacing("16v") }}>
               <Typography component="h2" sx={sectionTitleSx}>
-                Un aperçu des offres de recrutement sur La bonne alternance
+                Une audience qui donne à voir le marché
               </Typography>
 
-              <Typography component="p" sx={paragraphSx}>
-                Le 3e trimestre 2026 confirme la place notable de la restauration et du commerce dans le stock d’offres sur La bonne alternance, tout en révélant une
-                diversification progressive vers le tertiaire et les services.
+              <P>
+                Depuis janvier 2026, près de 5 millions de personnes ont utilisé le service La bonne alternance. Sur les deuxième et troisième trimestres de l’année, période
+                couverte par ce baromètre, la fréquentation a fortement augmenté par rapport à 2025&nbsp;: +66&nbsp;% de visiteurs, +56&nbsp;% de candidats et +156&nbsp;% de
+                candidatures envoyées.
+              </P>
+              <P>
+                Si les candidats sont toujours plus nombreux, c’est notamment parce que La bonne alternance rassemble en un seul endroit l’ensemble des emplois en alternance, avec
+                près de 500&nbsp;000 opportunités d’emploi en alternance exposées sur des deuxième et troisième trimestres 2026.
+              </P>
+              <P>
+                Le service La bonne alternance centralise en effet des offres d’emploi collectées directement auprès des recruteurs, des offres agrégées d’autres plateformes
+                (Hellowork, Meteojob, LinkedIn, Leboncoin, France Travail et bien d’autres) ainsi que des entreprises auprès desquelles adresser des candidatures spontanées.
+              </P>
+              <P>Les candidats, guidés tout au long de leur parcours, s’approprient cette diversité comme en témoigne le graphique ci-dessous.</P>
+
+              <ShareBar title="Clics « Postuler » par type d’opportunité" caption="D’avril à septembre 2026, 2 532 230 clics sur 468 911 offres publiées" items={clicsParType} />
+
+              <P>
+                L’usage croissant du service reflète notamment un attrait persistant des jeunes pour la voie de l’alternance, qui agit comme un tremplin vers l’emploi. Pourtant, le
+                nombre de contrats signés en alternance recule.
+              </P>
+              <P>Plus de candidats sur le service, moins de contrats signés&nbsp;: un décalage au cœur de ce baromètre, qui touche de manière inégale acteurs et secteurs.</P>
+
+              <Typography component="h2" sx={sectionTitleSx}>
+                Un accompagnement au plus près des besoins
               </Typography>
+
+              <P>
+                Côté employeur, 70&nbsp;% des contrats en alternance démarrés au cours des douze derniers mois l’ont été dans des petites et moyennes entreprises (source&nbsp;:
+                base DECA). Pourtant, recruter un alternant ne demande pas les mêmes efforts à une petite entreprise, peu connue et sans service RH, qu’à un grand groupe, reconnu
+                et structuré.
+              </P>
+              <P>Les petites et moyennes entreprises recrutent, mais publient rarement des offres. Leurs besoins en recrutement sont ainsi peu visibles, peu accessibles.</P>
+              <P>
+                Dans le cadre de sa mission de service public, La bonne alternance identifie les entreprises qui ont un fort potentiel d’embauche et les rend visibles auprès des
+                candidats, qui peuvent leur adresser une candidature spontanée. Il s’agit presque toujours de petites et moyennes entreprises, qui accèdent ainsi à des candidats
+                qu’elles n’auraient pas touchés autrement.
+              </P>
+              <P>
+                Le service collecte également des offres directement auprès des recruteurs, qui les publient gratuitement. Là encore, les petites structures sont les premières à
+                s’en saisir&nbsp;: la grande majorité de ces offres émanent d’entreprises de moins de 250 salariés.
+              </P>
+              <P>
+                Les offres d’emploi agrégées de sites partenaires, davantage tournées vers les grandes entreprises, complètent cet éventail et élargissent le choix des candidats.
+              </P>
+              <P>Le graphique qui suit détaille la répartition des opportunités d’emploi selon la taille de l’entreprise et leur provenance.</P>
+
+              <CompositionBars
+                title="Opportunités par type et par taille d’entreprise"
+                caption="D’avril à septembre 2026, 492 275 opportunités créées"
+                series={opportunitesSeries}
+                rows={opportunitesParTaille}
+                note="TPE = Très petites entreprises (1 à 9 salariés), PME = Petites et moyennes entreprises (10 à 249 salariés), ETI et GE = Entreprises de taille intermédiaire et Grandes entreprises (+250 salariés)"
+              />
+
+              <P>
+                Les candidats se saisissent largement de cette diversité d’opportunités. La candidature spontanée est de loin le premier canal de mise en relation avec les petites
+                et moyennes entreprises.
+              </P>
+
+              <CompositionBars
+                title="Clics « Postuler » par taille d’entreprise"
+                caption="D’avril à septembre 2026, 2 532 230 clics « Postuler »"
+                series={clicsSeries}
+                rows={clicsParTaille}
+              />
+
+              <P>
+                Côté candidats, l’apprentissage ouvre plus largement les portes de l’emploi, en particulier pour les jeunes les moins diplômés (source&nbsp;:{" "}
+                <DsfrLink href="https://www.education.gouv.fr/depp/insertion-professionnelle-des-apprentis-de-niveau-cap-bts-six-mois-apres-leur-sortie-d-etudes-en-468269">
+                  DEPP, 2025
+                </DsfrLink>
+                ). Ces jeunes, qui débutent et ont rarement un réseau professionnel, sont pourtant ceux pour qui l’accès à l’emploi reste le plus difficile (source&nbsp;:{" "}
+                <DsfrLink href="https://www.insee.fr/fr/statistiques/8305552?sommaire=8306008">Insee, 2025</DsfrLink>
+                ).
+              </P>
+              <P>La bonne alternance leur ouvre largement ses portes&nbsp;: près d’une offre sur deux dont le niveau de diplôme est connu est accessible avec un CAP ou un bac.</P>
+
+              <CompositionBars
+                title="Offres par type et par niveau de diplôme demandé"
+                caption="D’avril à septembre 2026, 81 522 offres dont le niveau de diplôme est connu"
+                series={opportunitesSeries.slice(0, 2)}
+                rows={opportunitesParNiveau}
+              />
+
+              <Note>
+                Note&nbsp;: les niveaux de diplôme recherchés par les recruteurs ne sont pas disponibles pour les candidatures spontanées (soit 80&nbsp;% des candidatures).
+              </Note>
+
+              <P>
+                Ces opportunités restent pourtant moins sollicitées. Ainsi, une offre de niveau CAP attire en moyenne trois fois moins de candidats qu’une offre de niveau bac+2.
+                Mieux les faire connaître est un enjeu fort pour le service.
+              </P>
+
+              <CompositionBars
+                title="Clics « Postuler » par niveau de diplôme demandé"
+                caption="D’avril à septembre 2026, 644 014 clics sur des offres dont le niveau de diplôme est connu"
+                series={clicsSeries.slice(1)}
+                rows={clicsParNiveau}
+              />
+
+              <Typography component="h2" sx={sectionTitleSx}>
+                Une demande qui ne rejoint pas toujours l’offre
+              </Typography>
+
+              <P>Au-delà de la taille des entreprises et du niveau de diplôme préparé, les écarts entre candidats et recruteurs se lisent aussi par métier et territoire.</P>
+              <P>
+                Sur La bonne alternance, une offre suscite en moyenne six intentions de candidature. Derrière cette moyenne, les situations sont très contrastées. Certains métiers,
+                dans le numérique notamment, attirent plus de vingt candidats par offre&nbsp;: la concurrence y est vive. À l’inverse, des métiers de l’aide à la personne, du
+                bâtiment ou de l’industrie peinent à dépasser une candidature par offre, alors même que de nombreuses entreprises y recrutent.
+              </P>
+              <P>
+                Pour illustrer ces propos, le graphique suivant s’attache à détailler les plus forts déséquilibres observés entre candidatures reçues et offres disponibles sur La
+                bonne alternance.
+              </P>
 
               <Box sx={twoChartsSx}>
-                <BarChartHorizontal title="Les 10 métiers les plus recherchés" caption="Part des offres" items={topMetiersRecruteurs} tone="info" />
-                <BarChartHorizontal title="Les 10 secteurs les plus représentés" caption="Part des offres" items={topSecteursRecruteurs} tone="info" />
+                <BarChartHorizontal
+                  title="Les 10 métiers les plus sollicités"
+                  caption="Clics « Postuler » par offre"
+                  items={metiersLesPlusSollicites}
+                  tone="contrast"
+                  maxValue={43}
+                />
+                <BarChartHorizontal
+                  title="Les 10 métiers les moins sollicités"
+                  caption="Clics « Postuler » par offre, même échelle"
+                  items={metiersLesMoinsSollicites}
+                  tone="info"
+                  maxValue={43}
+                />
               </Box>
 
-              <Insight>
-                <Typography component="p" sx={{ m: 0 }}>
-                  La restauration traditionnelle et rapide restent en tête du stock d’offres ({strong("12,5 %")} à elles deux), confirmant leur rôle de premier employeur en
-                  alternance sur la plateforme. Mais la présence des sièges sociaux (3,8 %), du conseil (3,4 %), de la comptabilité (2,7 %) et du conseil informatique (1,5 %) dans
-                  le top 10 traduit une diversification réelle&nbsp;: la plateforme attire désormais des recruteurs au-delà des secteurs traditionnellement dominants.
-                </Typography>
-              </Insight>
+              <Note>
+                Note&nbsp;: Seuil de significativité&nbsp;: un métier est éligible au classement s’il compte au moins 100 offres ET au moins 500 intentions de candidature sur la
+                période (93 métiers éligibles en T2+T3 2026).
+              </Note>
 
-              <Typography component="h2" sx={sectionTitleSx}>
-                Un aperçu des candidatures sur La bonne alternance
-              </Typography>
-
-              <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
-                Un volume de candidatures qui double en un an
-              </Typography>
-
-              <Typography component="p" sx={paragraphSx}>
-                Sur La bonne alternance, l’activité des candidats atteint un niveau sans précédent&nbsp;: {strong("707 059 candidatures")} ont été déposées au 3e trimestre 2026,
-                soit une progression de {positive("+109 %")} par rapport au 3e trimestre 2025. En un an, le volume de candidatures a été multiplié par deux sur ce trimestre.
-              </Typography>
-
-              <Typography component="p" sx={paragraphSx}>
-                Cette accélération ne s’explique pas uniquement par un surcroît d’intérêt pour l’alternance. Elle reflète aussi une tension sur le marché&nbsp;: les candidats
-                multiplient leurs démarches, élargissent le périmètre de leur recherche et activent tous les leviers disponibles, dont la candidature spontanée, pour se positionner
-                avant la rentrée de septembre. Une partie significative de cette hausse est directement imputable aux travaux conduits par l’équipe de La bonne alternance pour
-                améliorer la visibilité et la notoriété de la plateforme.
-              </Typography>
-
-              <Insight>
-                <Typography component="p" sx={{ m: 0 }}>
-                  La hausse des candidatures reflète à la fois une meilleure visibilité de La bonne alternance, une évolution des comportements de recherche et une réponse
-                  rationnelle à un marché où les offres publiées ne couvrent qu’une fraction des opportunités réelles.
-                </Typography>
-              </Insight>
-
-              <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
-                Où se situent les recruteurs qui déposent les offres sur La bonne alternance ?
-              </Typography>
-
-              <Typography component="p" sx={paragraphSx}>
-                La répartition géographique des offres confirme la concentration historique sur quelques grandes régions, avec quelques évolutions notables au 3e trimestre 2026.
-              </Typography>
+              <P>La plupart de ces métiers peu sollicités sont accessibles dès le CAP. Ils offrent de réelles perspectives aux candidats qui cherchent un premier contrat.</P>
+              <P>
+                Les déséquilibres observés varient également selon les régions. Sans surprise, l’Île-de-France se distingue nettement. Chaque offre y attire en moyenne plus de huit
+                candidats. À l’inverse, en Bretagne, en Corse et dans plusieurs territoires d’outre-mer (Guyane, Martinique, Guadeloupe), les offres sont deux à six fois moins
+                sollicitées. Dans ces territoires, les entreprises ont plus de mal à trouver des candidats.
+              </P>
 
               <RegionsMap
-                title="Part des offres par région — 3e trimestre 2026"
-                caption="Nombre d’offres et part du total national"
-                mapLabel="Carte de France des régions : l’Île-de-France concentre 37,1 % des offres, les territoires ultramarins et la Corse moins de 1 %. Le détail figure dans les listes voisines."
-                top={topRegionsOffres}
-                flop={flopRegionsOffres}
-                otherLabel="Autres régions : de 20 à 465 offres"
+                title="Clics « Postuler » par offre, par région"
+                caption="D’avril à septembre 2026, moyenne nationale : 5,4"
+                mapLabel="Carte de France des régions : l’Île-de-France compte 8,5 clics « Postuler » par offre, la Corse 0,9. Le détail figure dans les listes voisines."
+                regions={ratioParRegion}
+                classes={ratioClasses}
+                topTitle="Les 5 régions où les offres sont les plus sollicitées"
+                flopTitle="Les 5 régions où les offres sont les moins sollicitées"
+                note="Collectivités d’outre-mer : 3,2 clics par offre (13 clics pour 4 offres), non représentées sur la carte."
               />
 
-              <Insight>
-                <Typography component="p" sx={{ m: 0 }}>
-                  {strong("L’Île-de-France")} concentre à elle seule {strong("37,1 %")} des offres actives sur la plateforme, plus d’une offre sur trois. Auvergne-Rhône-Alpes,
-                  l’Occitanie, Provence-Alpes-Côte d’Azur et les Hauts-de-France complètent le classement, ces cinq premières régions représentant à elles seules {strong("72 %")}{" "}
-                  du total. À l’inverse, les territoires ultramarins restent quasi absents de la plateforme, ce qui illustre les marges de progression de La bonne alternance
-                  au-delà des régions historiquement dynamiques.
-                </Typography>
-              </Insight>
-
-              <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
-                Quels métiers ciblés par les candidats sur La bonne alternance ?
-              </Typography>
-
-              <Typography component="p" sx={{ ...paragraphSx, fontStyle: "italic" }}>
-                Fonctions tertiaires sous forte pression, métiers du soin et du commerce absents du radar.
-              </Typography>
-
-              <Typography component="p" sx={paragraphSx}>
-                Les métiers les plus recherchés par les candidats sur La bonne alternance sont massivement concentrés sur les fonctions support et tertiaires&nbsp;:{" "}
-                {italic("assistant RH, assistant commercial, chargé de communication, assistant comptable, secrétaire")}. Ces cinq profils totalisent à eux seuls près de{" "}
-                {strong("36 000 candidatures")}, soit environ une candidature sur cinq en réponse à une offre.
-              </Typography>
-
-              <Typography component="p" sx={paragraphSx}>
-                À l’opposé, la quasi-absence de candidatures pour des métiers comme{" "}
-                {italic("chargé de formation en entreprise, aide agricole en production végétale, agent de stérilisation de service hospitalier")} ou{" "}
-                {italic("agent de quai manutentionnaire")} signalerait potentiellement un décalage entre la plateforme et les canaux de recrutement habituels de ces secteurs. Ces
-                métiers passent par l’intérim, les groupements d’employeurs, la cooptation directe CFA-entreprises, ou des réseaux de proximité moins connectés aux outils
-                numériques.
-              </Typography>
-
-              <MetiersMosaic
-                title="Les 10 métiers qui reçoivent le plus de candidatures"
-                caption="Nombre de candidatures, chaque surface est proportionnelle au volume"
-                items={topMetiersCandidats}
-              />
-
-              <ChartFrame title="À l’autre bout du classement, des métiers avec une seule candidature">
-                <Box component="ul" sx={{ m: 0, p: 0, listStyle: "none", display: "flex", flexWrap: "wrap", gap: fr.spacing("2v") }}>
-                  {flopMetiersCandidats.map((metier) => (
-                    <Box
-                      component="li"
-                      key={metier}
-                      sx={{
-                        px: fr.spacing("3v"),
-                        py: fr.spacing("1v"),
-                        fontSize: "14px",
-                        borderRadius: "2px",
-                        backgroundColor: fr.colors.decisions.background.contrast.grey.default,
-                        color: fr.colors.decisions.text.default.grey.default,
-                      }}
-                    >
-                      {metier}
-                    </Box>
-                  ))}
-                </Box>
-              </ChartFrame>
-
-              <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
-                Où se situent les candidats sur La bonne alternance ?
-              </Typography>
-
-              <RegionsMap
-                title="Part des candidatures sur offre par région — 3e trimestre 2026"
-                caption="Nombre de candidatures en réponse à une offre et part du total national"
-                mapLabel="Carte de France des régions : l’Île-de-France capte 53,9 % des candidatures en réponse à une offre, les territoires ultramarins et la Corse moins de 1 %. Le détail figure dans les listes voisines."
-                top={topRegionsCandidatures}
-                flop={flopRegionsCandidatures}
-                otherLabel="Autres régions : de 491 à 9 260 candidatures"
-              />
-
-              <Insight>
-                <Typography component="p" sx={{ m: 0 }}>
-                  Du côté des candidatures, la concentration est encore plus marquée&nbsp;: {strong("l’Île-de-France capte 53,9 %")} des candidatures en réponse à une offre, soit
-                  plus d’une candidature sur deux. Auvergne-Rhône-Alpes (8,6 %), Provence-Alpes-Côte d’Azur (6,4 %) et l’Occitanie (6,4 %) suivent loin derrière. Ce déséquilibre
-                  s’explique par la surreprésentation des profils tertiaires franciliens parmi les candidats de la plateforme, et par la concentration naturelle des offres publiées
-                  en Île-de-France.
-                </Typography>
-              </Insight>
-
-              <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
-                Les secteurs sous tension sous l’angle de La bonne alternance
-              </Typography>
-
-              <Typography component="p" sx={paragraphSx}>
-                Parmi les secteurs ayant reçu au moins 1 000 candidatures, le numérique est le plus disputé&nbsp;: {italic("édition de logiciels, programmation informatique")} et{" "}
-                {italic("conseil en systèmes informatiques")} comptent 3 à 4 opportunités pour 100 candidatures. À l’inverse, la {italic("boulangerie")} en propose 20 pour 100
-                candidatures, devant la {italic("restauration")} et l’{italic("accueil de jeunes enfants")}.
-              </Typography>
-
-              <PictoRanking
-                title="Combien d’opportunités pour 100 candidatures ?"
-                caption="Chaque carré représente une opportunité pour 100 candidatures reçues (opp. = opportunités)"
-                groups={[
-                  { title: "Les secteurs les plus disputés", color: fr.colors.decisions.background.actionHigh.orangeTerreBattue.default, items: secteursSousTension },
-                  { title: "Les secteurs les moins disputés", color: fr.colors.decisions.background.actionHigh.blueFrance.default, items: secteursMoinsSousTension },
-                ]}
-              />
-
-              <Insight>
-                <Typography component="p" sx={{ m: 0 }}>
-                  Dans ce contexte, fluidifier la rencontre entre ces deux réalités devient un enjeu central et c’est précisément là que La bonne alternance a un rôle à jouer.
-                </Typography>
-              </Insight>
+              <P>Ces écarts traduisent un décalage net entre les souhaits d’orientation des candidats à l’alternance et les besoins en recrutement des entreprises.</P>
+              <P>Les observer permet de les comprendre. Les comprendre permet d’agir.</P>
+              <P>
+                Mieux informer les candidats, ouvrir leurs recherches à des métiers qui recrutent, valoriser les entreprises qui peinent à recruter&nbsp;: c’est sur ces leviers que
+                La bonne alternance concentre son action.
+              </P>
 
               <Typography component="h2" sx={sectionTitleSx}>
-                La bonne alternance : un service public facilitant la rencontre entre offre et demande
+                Des leviers pour rapprocher candidats et entreprises
               </Typography>
 
-              <Typography component="p" sx={paragraphSx}>
-                Dans un marché sous tension, La bonne alternance agit là où elle peut avoir un impact concret&nbsp;: réduire les frictions, élargir l’accès et mettre en relation
-                ceux qui cherchent avec ceux qui recrutent, indépendamment de leur réseau, de leur territoire ou de leur niveau de qualification. C’est cette ambition de service
-                public qui guide les actions engagées au 3e trimestre 2026 et que les données commencent à refléter.
+              <P>
+                En tant que service public, La bonne alternance soutient le recours à l’alternance comme tremplin vers un emploi durable. Différents leviers, en place ou à venir,
+                servent cet objectif.
+              </P>
+
+              <Typography component="h3" sx={leverTitleSx}>
+                Ouvrir les recherches au-delà des offres publiées
               </Typography>
+              <P>
+                Plus de la moitié des recrutements, en alternance comme ailleurs, se fait sans qu’aucune offre d’emploi n’ait été diffusée. La bonne alternance identifie les
+                entreprises qui recrutent sans publier d’offre, les rend visibles et permet aux candidats de leur adresser une candidature spontanée.
+              </P>
+              <P>Ce levier est aujourd’hui largement adopté&nbsp;: 3 candidatures sur 4 envoyées via le service sont spontanées.</P>
 
-              <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
-                Une plateforme où l’alternance est pour tous les niveaux
+              <Typography component="h3" sx={leverTitleSx}>
+                Faire connaître les opportunités accessibles dès le CAP
               </Typography>
+              <P>
+                Les offres d’emploi en alternance liées aux diplômes du secondaire sont nombreuses mais encore peu sollicitées, alors que c’est à ces niveaux de diplôme que
+                l’alternance a le plus grand impact sur l’insertion durable. Le service souhaite poursuivre ses actions de collecte et de mise en avant de ces opportunités auprès
+                des publics concernés, au plus tôt dans leur parcours de recherche d’alternance.
+              </P>
 
-              <ShareBar title="Niveau de diplôme recherché par les recruteurs" caption="Répartition des 6 167 offres du 3e trimestre 2026, du CAP au Bac+5" items={niveauDiplome} />
-
-              <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
-                Une plateforme où les candidatures spontanées sont un levier pour accéder au marché caché
+              <Typography component="h3" sx={leverTitleSx}>
+                Mieux informer les candidats sur les métiers qui recrutent
               </Typography>
-
-              <Typography component="p" sx={paragraphSx}>
-                Là où les offres publiées ne suffisent pas, La bonne alternance mobilise un levier distinctif&nbsp;: l’identification du marché caché. En croisant notamment les
-                recrutements passés des entreprises, leurs données financières et les candidatures déjà reçues, la plateforme établit une liste ciblée d’entreprises à fort
-                potentiel d’embauche en alternance permettant à tous les candidats d’engager des démarches spontanées éclairées.
-              </Typography>
-
-              <Typography component="p" sx={paragraphSx}>
-                Au 3e trimestre 2026, {strong("76 %")} des candidatures déposées sur La bonne alternance sont des candidatures spontanées. Ce chiffre marque une progression nette
-                par rapport au 3e trimestre 2025 (36 %). Ce basculement tient notamment aux travaux menés sur La bonne alternance pour améliorer le référencement et la mise en
-                avant des entreprises susceptibles de recruter grâce à notre algorithme prédictif.
-              </Typography>
-
-              <BarChartVertical
-                title="Comment les candidats envoient-ils leurs candidatures sur La bonne alternance ?"
-                caption="Répartition trimestrielle par type de candidature"
-                legend={candidaturesParTypeLegend}
-                items={candidaturesParType}
-              />
-
-              <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
-                Accompagner les candidats là où les offres ne suffisent pas
-              </Typography>
-
-              <Typography component="p" sx={paragraphSx}>
-                L’un des apports distinctifs de La bonne alternance est d’accompagner les candidats vers des secteurs et des entreprises qui recrutent sans nécessairement publier
-                d’offres. Au 3e trimestre 2026, le top 10 des secteurs en candidature spontanée diffère radicalement de celui des offres publiées.
-              </Typography>
-
-              <BarChartHorizontal title="Top 10 secteurs les plus sollicités en candidature spontanée — 3e trimestre 2026" items={topSecteursSpontanees} tone="success" />
-
-              <Typography component="p" sx={paragraphSx}>
-                La comptabilité (6,7 %) et le conseil informatique (4,7 %) dominent ce classement avec un écart sensible sur les autres secteurs. Cette concentration s’explique par
-                une double contrainte&nbsp;: ces secteurs affichent une faible représentation dans les offres publiées, ce qui réduit mécaniquement les opportunités visibles, tout
-                en étant parmi les plus recherchés par les candidats.
-              </Typography>
-
-              <Insight>
-                <Typography component="p" sx={{ m: 0 }}>
-                  La candidature spontanée devient une réponse rationnelle qui complète un marché visible insuffisant.
-                </Typography>
-              </Insight>
-            </Grid>
+              <P>
+                Une expérimentation visant à valoriser des filières d’avenir, qui recrutent dès maintenant, est en cours de mise en place sur le service La bonne alternance. Les
+                candidats pourront découvrir ces métiers et les opportunités disponibles afin, s’ils le souhaitent, d’y postuler.
+              </P>
+              <P>
+                Si l’expérimentation se montre concluante, elle sera étendue à un plus grand nombre de filières. La valorisation de ces filières pourra en outre être renforcée,
+                notamment auprès des candidats qui se tournent vers des métiers très demandés.
+              </P>
+            </Box>
           </Grid>
-        </Box>
+        </Grid>
       </DefaultContainer>
 
       <Box sx={{ backgroundColor: "#000091", color: "#fff" }}>
@@ -395,23 +340,38 @@ export default function BarometrePage() {
               gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 5fr) minmax(0, 7fr)" },
               columnGap: fr.spacing("12v"),
               rowGap: fr.spacing("4v"),
+              "& p": { color: "#fff", fontSize: "17px", lineHeight: "28px", mb: fr.spacing("4v") },
             }}
           >
-            <Typography component="h2" sx={{ color: "#fff", fontWeight: 700, fontSize: { xs: "28px", md: "32px" }, lineHeight: { xs: "36px", md: "40px" }, m: 0 }}>
-              Ce qu’il faudra surveiller au 4e trimestre 2026
+            <Typography component="h3" sx={{ color: "#fff", fontWeight: 700, fontSize: { xs: "28px", md: "32px" }, lineHeight: { xs: "36px", md: "40px" }, m: 0 }}>
+              Agir ensemble pour faciliter les entrées en alternance
             </Typography>
             <Box>
-              <Typography component="p" sx={{ color: "#fff", mb: fr.spacing("3v") }}>
-                Le 4e trimestre est historiquement un trimestre de repli des offres et d’essoufflement des candidatures, après le pic de rentrée. Deux questions structurelles se
-                posent. D’une part, les entreprises qui n’ont pas finalisé leurs recrutements à la rentrée de septembre vont-elles publier une dernière vague d’offres en
-                octobre-novembre, ou le marché se referme-t-il plus tôt que les années précédentes ? D’autre part, la part importante des candidatures spontanées permettra-t-elle
-                de compenser le manque structurel d’offres publiées ?
+              <Typography component="p">
+                Dans un contexte de recul des contrats signés, chaque mise en relation compte. En particulier pour les candidats et entreprises ayant le plus de difficultés à se
+                trouver. Ce baromètre met en lumière des principaux décalages entre candidats et recruteurs observés sur La bonne alternance qui caractérisent l’état actuel du
+                marché.
               </Typography>
-              <Typography component="p" sx={{ color: "#fff", mb: fr.spacing("6v") }}>
-                Le niveau exceptionnel de candidatures spontanées, 76 % au 3e trimestre, va-t-il se maintenir à mesure que les candidats non placés continuent leur recherche, ou
-                refluer avec la fin du cycle de rentrée ?
+              <Typography component="p">
+                Entreprises, vous souhaitez recruter un alternant mais peinez à trouver des candidats&nbsp;?{" "}
+                <a href={PAGES.static.accesRecruteur.getPath()} style={WHITE_LINK}>
+                  Publiez gratuitement votre offre sur La bonne alternance
+                </a>{" "}
+                ou{" "}
+                <a href={PAGES.static.contact.getPath()} style={WHITE_LINK}>
+                  contactez notre équipe
+                </a>
+                .
               </Typography>
-              <a href={PAGES.static.barometreT1.getPath()} style={{ color: "#fff" }}>
+              <Typography component="p">
+                CFA, prescripteurs, partenaires et plateformes, les données de La bonne alternance sont ouvertes et accessibles sur{" "}
+                <a href="https://api.apprentissage.beta.gouv.fr/" style={WHITE_LINK}>
+                  https://api.apprentissage.beta.gouv.fr/
+                </a>
+                . Rejoignez les plus de 300 organisations qui les utilisent déjà pour accompagner les candidats à l’alternance.
+              </Typography>
+              <Typography component="p">Rendez-vous dans une prochaine édition pour mesurer les premiers effets de ces actions.</Typography>
+              <a href={PAGES.static.barometreT1.getPath()} style={WHITE_LINK}>
                 Consulter le baromètre du premier trimestre 2026
               </a>
             </Box>

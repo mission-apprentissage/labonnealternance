@@ -7,16 +7,18 @@ import { useState } from "react"
 import { FRANCE_REGIONS, FRANCE_VIEWBOX, type FranceRegionName } from "../_data/france-regions"
 import { ChartFrame } from "./ChartFrame"
 
-export type RegionValue = { name: FranceRegionName; share: number; displayValue: string }
+export type RegionValue = { name: FranceRegionName; value: number; displayValue: string; detail?: string }
+type RegionClass = { min: number; label: string }
 
-// Mêmes classes pour toutes les cartes, pour que deux cartes restent comparables entre elles.
-const CLASSES = [
-  { min: 20, label: "20 % et plus", fill: fr.colors.options.blueFrance.sun113_625.default, text: fr.colors.decisions.text.inverted.grey.default },
-  { min: 8, label: "De 8 à 20 %", fill: fr.colors.options.blueFrance.main525.default, text: fr.colors.decisions.text.inverted.grey.default },
-  { min: 5, label: "De 5 à 8 %", fill: fr.colors.options.blueFrance._850_200.default, text: fr.colors.decisions.text.title.grey.default },
-  { min: 0, label: "Moins de 1 %", fill: fr.colors.options.blueFrance._925_125.default, text: fr.colors.decisions.text.title.grey.default },
+// Rampe d'une seule teinte, du plus foncé (valeurs hautes) au plus clair.
+const FILLS = [
+  { fill: fr.colors.options.blueFrance.sun113_625.default, text: fr.colors.decisions.text.inverted.grey.default },
+  { fill: fr.colors.options.blueFrance.main525.default, text: "#fff" },
+  { fill: fr.colors.options.blueFrance._850_200.default, text: fr.colors.decisions.text.title.grey.default },
+  { fill: fr.colors.options.blueFrance._925_125.default, text: fr.colors.decisions.text.title.grey.default },
+  { fill: fr.colors.options.blueFrance._950_100.default, text: fr.colors.decisions.text.title.grey.default },
 ]
-const OTHER_FILL = fr.colors.decisions.border.default.grey.default
+const MISSING_FILL = fr.colors.decisions.border.default.grey.default
 
 const OVERSEAS_LABELS: Partial<Record<FranceRegionName, { x: number; label: string }>> = {
   Guadeloupe: { x: 17, label: "Guad" },
@@ -26,9 +28,19 @@ const OVERSEAS_LABELS: Partial<Record<FranceRegionName, { x: number; label: stri
   Mayotte: { x: 280, label: "Mayotte" },
 }
 
-const getClass = (share: number) => CLASSES.find((entry) => share >= entry.min) ?? CLASSES[CLASSES.length - 1]
-
-function RankedList({ title, regions, active, onActive }: { title: string; regions: RegionValue[]; active: string | null; onActive: (name: string | null) => void }) {
+function RankedList({
+  title,
+  regions,
+  active,
+  onActive,
+  styleOf,
+}: {
+  title: string
+  regions: RegionValue[]
+  active: string | null
+  onActive: (name: string | null) => void
+  styleOf: (value: number) => { fill: string }
+}) {
   return (
     <Box>
       <Typography component="p" sx={{ fontSize: "13px", fontWeight: 700, color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("1v") }}>
@@ -49,16 +61,21 @@ function RankedList({ title, regions, active, onActive }: { title: string; regio
               backgroundColor: active === region.name ? fr.colors.decisions.background.contrast.grey.default : "transparent",
             }}
           >
-            <Box sx={{ width: "10px", height: "10px", borderRadius: "2px", flexShrink: 0, backgroundColor: getClass(region.share).fill }} aria-hidden="true" />
+            <Box sx={{ width: "10px", height: "10px", borderRadius: "2px", flexShrink: 0, backgroundColor: styleOf(region.value).fill }} aria-hidden="true" />
             <Typography component="dt" sx={{ p: 0, flex: 1, minWidth: 0, fontSize: "14px", lineHeight: 1.3, color: fr.colors.decisions.text.default.grey.default }}>
               {region.name}
+              {region.detail ? (
+                <Typography component="span" sx={{ display: "block", fontSize: "12px", color: fr.colors.decisions.text.mention.grey.default }}>
+                  {region.detail}
+                </Typography>
+              ) : null}
             </Typography>
             <Typography
               component="dd"
               sx={{
                 m: 0,
                 p: 0,
-                fontSize: "14px",
+                fontSize: "15px",
                 lineHeight: 1.3,
                 fontWeight: 700,
                 whiteSpace: "nowrap",
@@ -79,23 +96,36 @@ export function RegionsMap({
   title,
   caption,
   mapLabel,
-  top,
-  flop,
-  otherLabel,
+  regions,
+  classes,
+  topTitle,
+  flopTitle,
+  note,
 }: {
   title: string
   caption?: string
   /** Résumé textuel de la carte pour les lecteurs d'écran. */
   mapLabel: string
-  top: RegionValue[]
-  flop: RegionValue[]
-  otherLabel: string
+  regions: RegionValue[]
+  /** Classes triées par seuil décroissant, cinq au plus. */
+  classes: RegionClass[]
+  topTitle: string
+  flopTitle: string
+  note?: string
 }) {
   const [active, setActive] = useState<string | null>(null)
-  const values = new Map([...top, ...flop].map((region) => [region.name as string, region]))
-  const topNames = new Set<string>(top.map((region) => region.name))
+  const values = new Map(regions.map((region) => [region.name as string, region]))
+  const sorted = [...regions].sort((a, b) => b.value - a.value)
+  const styleOf = (value: number) =>
+    FILLS[
+      Math.max(
+        classes.findIndex((entry) => value >= entry.min),
+        0
+      )
+    ] ?? FILLS[FILLS.length - 1]
   const activeRegion = FRANCE_REGIONS.find((region) => region.name === active)
   const activeValue = active ? values.get(active) : undefined
+  const isOverseas = (name: string) => name in OVERSEAS_LABELS
 
   return (
     <ChartFrame title={title} caption={caption}>
@@ -108,16 +138,16 @@ export function RegionsMap({
                 <path
                   key={region.name}
                   d={region.d}
-                  fill={value ? getClass(value.share).fill : OTHER_FILL}
-                  stroke={active === region.name ? fr.colors.decisions.text.title.grey.default : fr.colors.decisions.background.default.grey.default}
-                  strokeWidth={active === region.name ? 2 : 1.5}
+                  fill={value ? styleOf(value.value).fill : MISSING_FILL}
+                  stroke={active === region.name ? fr.colors.decisions.text.title.grey.default : fr.colors.options.blueFrance._850_200.default}
+                  strokeWidth={active === region.name ? 2 : 1}
                   strokeLinejoin="round"
                   onPointerEnter={() => setActive(region.name)}
                   onPointerLeave={() => setActive(null)}
                 />
               )
             })}
-            {FRANCE_REGIONS.filter((region) => topNames.has(region.name)).map((region) => {
+            {FRANCE_REGIONS.filter((region) => !isOverseas(region.name) && region.name !== "Corse").map((region) => {
               const value = values.get(region.name)
               if (!value) return null
               return (
@@ -129,11 +159,11 @@ export function RegionsMap({
                   dominantBaseline="central"
                   fontSize={19}
                   fontWeight={700}
-                  fill={getClass(value.share).text}
+                  fill={styleOf(value.value).text}
                   pointerEvents="none"
                   aria-hidden="true"
                 >
-                  {value.share.toLocaleString("fr-FR")} %
+                  {value.displayValue}
                 </text>
               )
             })}
@@ -143,7 +173,7 @@ export function RegionsMap({
               </text>
             ))}
           </svg>
-          {activeRegion ? (
+          {activeRegion && activeValue ? (
             <Box
               sx={{
                 position: "absolute",
@@ -163,34 +193,35 @@ export function RegionsMap({
               }}
               aria-hidden="true"
             >
-              <Box sx={{ fontWeight: 700 }}>{activeRegion.name}</Box>
-              {activeValue?.displayValue ?? otherLabel}
+              <Box sx={{ fontWeight: 700 }}>
+                {activeRegion.name} : {activeValue.displayValue}
+              </Box>
+              {activeValue.detail}
             </Box>
           ) : null}
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-          <RankedList title="Les 5 premières régions" regions={top} active={active} onActive={setActive} />
-          <RankedList title="Les 5 dernières régions" regions={flop} active={active} onActive={setActive} />
+          <RankedList title={topTitle} regions={sorted.slice(0, 5)} active={active} onActive={setActive} styleOf={styleOf} />
+          <RankedList title={flopTitle} regions={sorted.slice(-5).reverse()} active={active} onActive={setActive} styleOf={styleOf} />
         </Box>
       </Box>
 
       <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), rowGap: fr.spacing("1v"), mt: fr.spacing("4v") }}>
-        {CLASSES.map((entry) => (
+        {classes.map((entry, index) => (
           <Box key={entry.label} sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
-            <Box sx={{ width: "12px", height: "12px", borderRadius: "2px", backgroundColor: entry.fill }} aria-hidden="true" />
+            <Box sx={{ width: "12px", height: "12px", borderRadius: "2px", backgroundColor: FILLS[index]?.fill }} aria-hidden="true" />
             <Typography component="span" sx={{ fontSize: "12px", color: fr.colors.decisions.text.mention.grey.default }}>
               {entry.label}
             </Typography>
           </Box>
         ))}
-        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
-          <Box sx={{ width: "12px", height: "12px", borderRadius: "2px", backgroundColor: OTHER_FILL }} aria-hidden="true" />
-          <Typography component="span" sx={{ fontSize: "12px", color: fr.colors.decisions.text.mention.grey.default }}>
-            {otherLabel}
-          </Typography>
-        </Box>
       </Box>
+      {note ? (
+        <Typography component="p" sx={{ mt: fr.spacing("3v"), mb: 0, fontSize: "13px", color: fr.colors.decisions.text.mention.grey.default }}>
+          {note}
+        </Typography>
+      ) : null}
     </ChartFrame>
   )
 }
