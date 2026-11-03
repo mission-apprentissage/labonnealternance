@@ -1,9 +1,11 @@
 import type { ObjectId } from "mongodb"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
-// Figés ici : la migration doit garder son effet si MODERATION_TRACE_ONLY_CATEGORIES ou SOCIAL_HANDLE évoluent.
+// Figés ici : la migration doit garder son effet si MODERATION_TRACE_ONLY_CATEGORIES ou SOCIAL_HANDLE évoluent. Ce motif,
+// plus large que SOCIAL_HANDLE (« @10h »), laisse en file au moindre doute.
 const TRACE_ONLY_CATEGORIES = ["candidature_hors_plateforme"]
 const SOCIAL_HANDLE = /(?:^|[\s:(])@[\w.]{2,}/
 
@@ -13,7 +15,7 @@ type IFinding = { category: string; verbatim: string | null }
 const isTraceOnly = ({ category, verbatim }: IFinding) => TRACE_ONLY_CATEGORIES.includes(category) && verbatim !== null && !SOCIAL_HANDLE.test(verbatim)
 
 /**
- * Sort de la file de revue les offres « à vérifier » dont la dernière classification ne relève que la candidature hors
+ * Sort de la file de revue (filtre de QUEUE_FILTER) les offres « à vérifier » dont la dernière classification ne relève que la candidature hors
  * plateforme, qui ne compte plus dans le verdict (#5843). Seul le verdict dénormalisé sur l'offre change : la
  * classification garde le verdict calculé à l'époque, avec sa version de prompt. Ce verdict ne bloquait pas : le
  * statut de l'offre est inchangé. Une offre dont un extrait contient un pseudo de réseau social reste en file.
@@ -23,6 +25,7 @@ const isTraceOnly = ({ category, verbatim }: IFinding) => TRACE_ONLY_CATEGORIES.
 export const up = async () => {
   const queueFilter = {
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+    offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MODERATION] },
     offer_moderation_verdict: "a_verifier",
     offer_moderation_status: "ok",
     offer_moderation_review: null,

@@ -124,20 +124,24 @@ export const verdictFromFindings = (findings: IOffreClassificationFinding[]): IO
 }
 
 const OBFUSCATED_CONTACT = /arobase|[([](?:at|dot)[)\]]|\b(?:point|dot)\s+(?:fr|com|net|org|eu|io)\b|\bz[ée]ro\s+(?:un|deux|trois|quatre|cinq|six|sept|huit|neuf)\b/i
-// Le `@` d'un pseudo suit un séparateur, celui d'une adresse (masquée en amont) suit une lettre.
-const SOCIAL_HANDLE = /(?:^|[\s:(])@[\w.]{2,}/
+// Le `@` d'un pseudo suit un séparateur, celui d'une adresse (masquée en amont) suit une lettre. La première lettre
+// imposée écarte les horaires (« @10h »).
+const SOCIAL_HANDLE = /(?:^|[\s:(])@[a-z_][\w.]+/i
 const CONTACT_MASKS = [PHONE_MASK, EMAIL_MASK, URL_MASK]
 
 /**
  * Le modèle confond "contact_bypass" et "candidature_hors_plateforme" dans les deux sens : l'extrait
  * tranche. Une coordonnée déguisée bloque ; un masque déjà appliqué ne relève que de la charte (#5352).
  * Un pseudo de réseau social, que le masquage ne couvre pas, reste un contournement : sinon il sortirait du verdict
- * avec la candidature hors plateforme (#5843).
+ * avec la candidature hors plateforme (#5843). Il ne garde la sévérité du modèle que si celui-ci l'a classé en
+ * contournement : une catégorie de la charte ne bloque jamais.
  */
 const reconcileContactCategory = (finding: IOffreClassificationFinding): IOffreClassificationFinding => {
   if (finding.category !== "contact_bypass" && finding.category !== "candidature_hors_plateforme") return finding
   if (OBFUSCATED_CONTACT.test(finding.verbatim)) return { ...finding, category: "contact_bypass", severity: "bloquant" }
-  if (SOCIAL_HANDLE.test(finding.verbatim)) return { ...finding, category: "contact_bypass" }
+  if (SOCIAL_HANDLE.test(finding.verbatim)) {
+    return { ...finding, category: "contact_bypass", severity: finding.category === "contact_bypass" ? finding.severity : "doute" }
+  }
   if (finding.category === "contact_bypass" && CONTACT_MASKS.some((mask) => finding.verbatim.includes(mask))) {
     return { ...finding, category: "candidature_hors_plateforme" }
   }
@@ -146,8 +150,8 @@ const reconcileContactCategory = (finding: IOffreClassificationFinding): IOffreC
 
 /**
  * Parse la réponse brute du modèle. Le verdict est celui des findings, jamais celui que le modèle annonce : une offre
- * bloquée doit toujours avoir un extrait bloquant à montrer au recruteur (#5843). Seule exception, un verdict non
- * conforme annoncé sans aucun finding part en "a_verifier" : la réponse se contredit, un relecteur tranche.
+ * bloquée doit toujours avoir un extrait bloquant à montrer au recruteur (#5843). Seule exception, un verdict autre que
+ * "conforme" annoncé sans aucun finding part en "a_verifier" : la réponse se contredit, un relecteur tranche.
  * Retourne null si la réponse n'est pas exploitable : l'appelant doit alors basculer en "a_verifier",
  * jamais en "conforme".
  */

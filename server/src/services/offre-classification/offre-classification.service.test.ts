@@ -218,13 +218,28 @@ describe("verdict reconciliation", () => {
     expect(parsed).toEqual({ verdict: "a_verifier", findings: [{ category: "contact_bypass", severity: "doute", verbatim }] })
   })
 
-  it.each(["Candidatures à emxxx@xxx.fr uniquement", "Suivez-nous sur Instagram pour candidater", "Envoyez votre CV @ l'accueil du magasin"])(
-    "should not mistake a masked address or a plain mention for a handle: %s",
-    (verbatim) => {
-      const parsed = parseClassification(mistralResponse({ verdict: "a_verifier", findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim }] }))
-      expect(parsed?.verdict).toBe("conforme")
-    }
-  )
+  it("should not let a charter finding announced as blocking block an offer through a handle", () => {
+    const verbatim = "Postulez via insta : @boulangerie_dupont"
+    const parsed = parseClassification(mistralResponse({ verdict: "non_conforme", findings: [{ category: "candidature_hors_plateforme", severity: "bloquant", verbatim }] }))
+    expect(parsed).toEqual({ verdict: "a_verifier", findings: [{ category: "contact_bypass", severity: "doute", verbatim }] })
+  })
+
+  it("should keep the severity of a handle the model already classified as a disguised contact", () => {
+    const parsed = parseClassification(
+      mistralResponse({ verdict: "non_conforme", findings: [{ category: "contact_bypass", severity: "bloquant", verbatim: "écrivez-moi sur snap @jean_dupont" }] })
+    )
+    expect(parsed?.verdict).toBe("non_conforme")
+  })
+
+  it.each([
+    "Candidatures à emxxx@xxx.fr uniquement",
+    "Suivez-nous sur Instagram pour candidater",
+    "Envoyez votre CV @ l'accueil du magasin",
+    "Venez déposer votre CV en boutique (@10h)",
+  ])("should not mistake a masked address or a plain mention for a handle: %s", (verbatim) => {
+    const parsed = parseClassification(mistralResponse({ verdict: "a_verifier", findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim }] }))
+    expect(parsed?.verdict).toBe("conforme")
+  })
 
   it("should keep blocking a disguised coordinate written next to a masked one", () => {
     const parsed = parseClassification(

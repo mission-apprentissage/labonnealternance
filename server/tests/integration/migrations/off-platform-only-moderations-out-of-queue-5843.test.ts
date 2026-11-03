@@ -1,6 +1,7 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IJobsPartnersModeration, IJobsPartnersModerationFinding, IModerationCategory } from "shared/models/jobs-partners-moderation.model"
 import { describe, expect, it } from "vitest"
@@ -95,7 +96,8 @@ describe("migration off-platform-only-moderations-out-of-queue-5843", () => {
     const reviewed = await saveOffer("tranchee", { offer_moderation_review: "validee" })
     const blocked = await saveOffer("non-conforme", { offer_moderation_verdict: "non_conforme" })
     const unavailable = await saveOffer("indisponible", { offer_moderation_status: "indisponible" })
-    for (const jobId of [reviewed, blocked, unavailable]) {
+    const closed = await saveOffer("close", { offer_status: JOB_STATUS_ENGLISH.ANNULEE })
+    for (const jobId of [reviewed, blocked, unavailable, closed]) {
       await saveModeration(jobId, [finding("candidature_hors_plateforme")])
     }
 
@@ -104,5 +106,6 @@ describe("migration off-platform-only-moderations-out-of-queue-5843", () => {
     expect.soft(await verdictOf("tranchee")).toBe("a_verifier")
     expect.soft(await verdictOf("non-conforme")).toBe("non_conforme")
     expect.soft(await verdictOf("indisponible")).toBe("a_verifier")
+    expect.soft(await verdictOf("close")).toBe("a_verifier")
   })
 })
