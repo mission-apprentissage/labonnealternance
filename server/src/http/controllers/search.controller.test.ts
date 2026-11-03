@@ -181,12 +181,52 @@ describe("search.controller", () => {
         expect(doc).toMatchObject({ status: "ok", nb_hits: 0 })
       })
 
-      it("logue search_source par défaut à free_text quand non fourni", async () => {
+      it("logue search_source=null quand l'origine n'est pas transmise", async () => {
         const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=sansSource&page=0" })
         expect(response.statusCode).toBe(200)
 
         const doc = await waitForLoggedQuery("sansSource")
+        expect(doc).toMatchObject({ search_source: null })
+      })
+
+      it("logue search_source=free_text quand l'UI le transmet", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=texteLibre&page=0&search_source=free_text" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("texteLibre")
         expect(doc).toMatchObject({ search_source: "free_text" })
+      })
+
+      it.each([
+        ["emplois", "&mode=emplois", "modeEmplois"],
+        ["emplois_formation", "&mode=emplois_formation", "modeEmploisFormation"],
+        // `type=formation` sert le corpus formations, mais le mode enregistré est celui transmis.
+        [null, "&type=formation", "modeAbsentType"],
+        [null, "", "modeAbsent"],
+      ])("logue mode=%s", async (mode, params, q) => {
+        const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?q=${q}&page=0${params}` })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery(q)
+        expect(doc).toMatchObject({ mode })
+      })
+
+      it.each([
+        ["site", "same-origin", "canalSite"],
+        // Sous-domaine du même site (same-site) ou site tiers : ce n'est pas notre page de recherche.
+        ["api", "same-site", "canalSameSite"],
+        ["api", "cross-site", "canalCrossSite"],
+        ["api", undefined, "canalSansEntete"],
+      ])("logue channel=%s pour Sec-Fetch-Site=%s", async (channel, secFetchSite, q) => {
+        const response = await httpClient().inject({
+          method: "GET",
+          path: `/api/v1/search?q=${q}&page=0`,
+          headers: secFetchSite ? { "sec-fetch-site": secFetchSite } : {},
+        })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery(q)
+        expect(doc).toMatchObject({ channel })
       })
 
       it.each([
@@ -201,8 +241,7 @@ describe("search.controller", () => {
         expect(doc).toMatchObject({ search_source: searchSource })
       })
 
-      // Alias déprécié : liens émis avant le renommage (campagne traininglinks du 2026-08-24)
-      // et bundles UI pré-renommage (version skew au déploiement).
+      // Alias déprécié : liens émis avant le renommage (campagne traininglinks du 2026-08-24).
       it("accepte l'alias déprécié source= et le logue en search_source", async () => {
         const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=aliasLegacy&page=0&source=training_links" })
         expect(response.statusCode).toBe(200)

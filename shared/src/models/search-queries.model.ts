@@ -24,8 +24,20 @@ export const ZSearchQuery = z.object({
   // chaîne (URL, API, base) pour ne pas polluer les stats. L'URL et l'API acceptent `source` en alias.
   search_source: z
     .enum(["suggestion", "free_text", "training_links", "external_sites", "partner_links"])
+    .nullable()
     .describe(
-      "Suggestion d'autocomplete sélectionnée vs texte libre vs lien généré côté serveur (traininglinks, vœux Parcoursup) vs lien personnalisé posé par un site externe vs lien généré pour un partenaire PRDV (/v2/appointment/links)"
+      "Suggestion d'autocomplete sélectionnée vs texte libre vs lien généré côté serveur (traininglinks, vœux Parcoursup) vs lien personnalisé posé par un site externe vs lien généré pour un partenaire PRDV (/v2/appointment/links). null : origine non transmise (navigation interne, moteur de recherche, rechargement, appel API). Les documents antérieurs à #5635 portent free_text dans ce cas"
+    ),
+  mode: z
+    .enum(["emplois", "formations", "emplois_formation"])
+    .nullable()
+    .optional()
+    .describe("Mode tel que transmis dans le querystring, null s'il est absent (appels API sans mode). Absent des documents antérieurs à #5635"),
+  channel: z
+    .enum(["site", "api"])
+    .optional()
+    .describe(
+      "site : appel du navigateur depuis notre domaine (Sec-Fetch-Site: same-origin, widget compris) ; api : tout autre appelant (scripts, robots, consommateurs directs). Signal statistique : un client hors navigateur peut poser l'en-tête lui-même. Absent des documents antérieurs à #5635"
     ),
   filters: z
     .object({
