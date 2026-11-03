@@ -207,6 +207,7 @@ const QUERY_PARAMS_KEPT = [
   "page",
   "partner_label",
   "partners_to_exclude",
+  "purpose",
   "q",
   "question_id",
   "radius",
