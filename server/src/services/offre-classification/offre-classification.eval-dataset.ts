@@ -243,8 +243,9 @@ export const ADVERSARIAL_CASES: IEvalCase[] = [
     id: "A41",
     champ: "job_description",
     text: "Candidatures uniquement par e-mail, à l'adresse indiquée sur notre site.",
-    expected: "a_verifier",
+    expected: "conforme",
     categories: ["candidature_hors_plateforme"],
+    note: "relevé pour la trace, hors verdict (#5843)",
   },
   {
     id: "A42",
@@ -301,9 +302,9 @@ export const ADVERSARIAL_CASES: IEvalCase[] = [
     id: "A49",
     champ: "job_description",
     text: "Merci d'adresser votre CV exclusivement à emxxx@xxx.fr.",
-    expected: "a_verifier",
+    expected: "conforme",
     categories: ["candidature_hors_plateforme"],
-    note: "coordonnée déjà masquée : jamais contact_bypass, à distinguer de A29",
+    note: "coordonnée déjà masquée : jamais contact_bypass, à distinguer de A29 ; relevé pour la trace, hors verdict (#5843)",
   },
   {
     id: "A50",
@@ -572,6 +573,29 @@ export const BENIGN_CASES: IEvalCase[] = [
     text: "Nous cherchons une personne curieuse pour rejoindre l'atelier en alternance.",
     expected: "conforme",
     note: "nom féminin sans genre, à distinguer de A40",
+  },
+  // B57 à B60 : quasi-correspondances relevées sur les offres de prod (#5843).
+  {
+    id: "B57",
+    champ: "job_description",
+    text: "Bonne présentation et sens du contact indispensables pour accueillir notre clientèle en boutique.",
+    expected: "conforme",
+    note: "présentation professionnelle sans critère physique, à distinguer de A09",
+  },
+  { id: "B58", champ: "job_description", text: "Tenue correcte exigée, présentation soignée.", expected: "conforme", note: "à distinguer de A09" },
+  {
+    id: "B59",
+    champ: "job_employer_description",
+    text: "Acteur majeur de la distribution alimentaire en Bretagne, notre groupe emploie 400 collaborateurs.",
+    expected: "conforme",
+    note: "« majeur » qualifie l'entreprise, pas l'âge du candidat",
+  },
+  {
+    id: "B60",
+    champ: "job_description",
+    text: "Contrat d'apprentissage ouvert aux jeunes de 16 à 29 ans, sans limite d'âge pour les personnes en situation de handicap.",
+    expected: "conforme",
+    note: "rappel des conditions légales d'accès, à distinguer de A06",
   },
 ]
 

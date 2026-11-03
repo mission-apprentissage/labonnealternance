@@ -5,6 +5,7 @@ import { maskPersonalData } from "@/common/utils/mask-personal-data"
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
 import {
+  CLASSIFICATION_MODEL,
   CLASSIFICATION_PROMPT_VERSION,
   CLASSIFICATION_SYSTEM_PROMPT,
   escalateVerdict,
@@ -12,9 +13,6 @@ import {
   type IOffreClassificationVerdict,
   parseClassification,
 } from "./offre-classification.prompt"
-
-/** Modèle figé explicitement, sans alias `-latest` : il est stocké avec le verdict pour que celui-ci reste rejouable. */
-export const CLASSIFICATION_MODEL = "mistral-large-2512"
 
 export type IClassificationField = IModerationField
 

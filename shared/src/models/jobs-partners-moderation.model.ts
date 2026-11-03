@@ -11,7 +11,8 @@ export const MODERATION_LEGAL_CATEGORIES = ["discrimination", "remuneration", "s
 
 /**
  * Règles de la charte de rédaction, hors légalité : relevées pour la revue humaine, jamais
- * bloquantes (arbitrage de la modération, #5352). parseClassification ramène leur sévérité à "doute".
+ * bloquantes (arbitrage de la modération, #5352). parseClassification ramène leur sévérité à "doute". Certaines ne
+ * comptent pas du tout dans le verdict (cf. MODERATION_TRACE_ONLY_CATEGORIES).
  */
 export const MODERATION_CHARTER_CATEGORIES = [
   "candidature_hors_plateforme",
@@ -21,6 +22,12 @@ export const MODERATION_CHARTER_CATEGORIES = [
   "poste_salarie",
   "intermediaire",
 ] as const
+
+/**
+ * Catégories de la charte relevées pour la trace seulement : elles ne comptent pas dans le verdict, donc n'amènent pas
+ * l'offre dans la file de revue (#5843). Le finding reste enregistré et affiché dans la note de l'agent.
+ */
+export const MODERATION_TRACE_ONLY_CATEGORIES = ["candidature_hors_plateforme"] as const satisfies readonly (typeof MODERATION_CHARTER_CATEGORIES)[number][]
 
 export const MODERATION_CATEGORIES = [...MODERATION_LEGAL_CATEGORIES, ...MODERATION_CHARTER_CATEGORIES] as const
 
