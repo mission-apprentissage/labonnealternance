@@ -82,7 +82,12 @@ export const notifyJobDetailViewV3 = async (job: ILbaItemLbaJobJson | ILbaItemLb
 export const notifyJobSearchViewV3 = async (ids: string[]) => {
   ids = ids.filter(lookLikeObjectId)
   if (!ids.length) return
-  return apiPost("/v3/jobs/stats/search_view", { body: ids })
+  try {
+    // keepalive : l'envoi déclenché au pagehide (cf. useSearchViewNotifier) doit survivre au déchargement
+    return await apiPost("/v3/jobs/stats/search_view", { body: ids }, { keepalive: true })
+  } catch {
+    // tracking non-critique, erreur ignorée intentionnellement
+  }
 }
 export const notifyJobPostulerV3 = async (job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson) => {
   const jobId = getObjectId(job)

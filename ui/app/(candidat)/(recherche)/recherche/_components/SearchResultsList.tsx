@@ -8,6 +8,7 @@ import { isAutoRadiusWidening } from "shared/utils/auto-radius"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { pluralize } from "@/utils/strutils"
 import type { useSearchResults } from "../_hooks/use-search-results"
+import { useSearchViewNotifier } from "../_hooks/use-search-view-notifier"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { SearchHitCard } from "./SearchHitCard"
 
@@ -43,6 +44,9 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
   // placé à son arrivée, le bouton pouvant disparaître avec la dernière page (RGAA 12.8).
   const focusHitIndexRef = useRef<number | null>(null)
   const hitsCount = data?.pages.reduce((count, page) => count + page.hits.length, 0) ?? 0
+  const allHits = data?.pages.flatMap((p) => p.hits) ?? []
+
+  useSearchViewNotifier(allHits.filter((hit) => hit.type !== "formation").map((hit) => String(hit._id)))
 
   useEffect(() => {
     const index = focusHitIndexRef.current
@@ -99,7 +103,6 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
 
   if (!data) return null
 
-  const allHits = data.pages.flatMap((p) => p.hits)
   // L'API plafonne la pagination (cf. PUBLIC_MAX_PAGES dans search.controller.ts). Seulement après
   // « Voir plus » : le rendu d'une page unique par les robots n'affiche pas ce message.
   const truncatedHint =
