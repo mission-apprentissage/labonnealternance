@@ -60,6 +60,10 @@ export const ZSearchQuery = z.object({
     .describe(
       "Présent uniquement quand la réponse déclenche un palier d'élargissement automatique du rayon de l'UI (0 résultat autour d'un point, rayon < 100 km) : résultat jamais vu par l'usager (#5634)"
     ),
+  purpose: z
+    .enum(["mode_fallback_count"])
+    .optional()
+    .describe("Présent quand l'appel n'est pas une recherche de l'usager mais un comptage de l'UI (cf. paramètre purpose de /v1/search)"),
   created_at: z.date(),
 })
 

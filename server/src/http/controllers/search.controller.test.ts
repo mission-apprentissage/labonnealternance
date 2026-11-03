@@ -250,6 +250,27 @@ describe("search.controller", () => {
         expect(doc).toMatchObject({ search_source: "training_links" })
       })
 
+      it("marque purpose un comptage lancé par l'UI", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=comptageRepli&page=0&hitsPerPage=1&mode=emplois&purpose=mode_fallback_count" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("comptageRepli")
+        expect(doc).toMatchObject({ purpose: "mode_fallback_count", mode: "emplois" })
+      })
+
+      it("ne marque pas purpose une recherche de l'usager", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=rechercheUsager&page=0&mode=emplois" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("rechercheUsager")
+        expect(doc).not.toHaveProperty("purpose")
+      })
+
+      it("rejette une valeur de purpose inconnue (400)", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=purposeInvalide&page=0&purpose=bogus" })
+        expect(response.statusCode).toBe(400)
+      })
+
       it("rejette une valeur de search_source inconnue (400)", async () => {
         const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=sourceInvalide&page=0&search_source=bogus" })
         expect(response.statusCode).toBe(400)

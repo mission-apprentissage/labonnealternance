@@ -13,15 +13,17 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { zoneScopedId } from "@/app/_components/zone-ids"
 import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-utils"
-import { pluralize } from "@/utils/strutils"
 import type { AutoRadiusChain } from "../_hooks/use-auto-radius"
 import { autoRadiusTracking, extendAutoRadiusChain, useAutoRadius } from "../_hooks/use-auto-radius"
+import { useEmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
 import { useSearchResults } from "../_hooks/use-search-results"
+import { emploisFallbackParams } from "../_utils/mode-fallback.utils"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { ACTIVE_HIT_PARAM, buildSearchUrl } from "../_utils/search.params.utils"
 import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
 import { diffFilterChanges, diffSortChange, searchTypeOf } from "../_utils/search.tracking.utils"
 import { parseSearchPageParamsWithLegacy } from "../_utils/search-legacy-utils"
+import { searchResultsStatus } from "../_utils/search-results-status"
 import { SearchBar } from "./SearchBar"
 import { clearedFilters, SearchFilters } from "./SearchFilters"
 import { SearchMobilePanel } from "./SearchMobilePanel"
@@ -122,7 +124,17 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // est annoncé à nouveau. Rien tant que l'élargissement automatique du rayon est en cours.
   const isRefreshing = result.isFetching && !result.isFetchingNextPage
   const stillWidening = isAutoRadiusWidening(params, nbHits)
-  const resultsStatus = !result.data || isRefreshing || stillWidening ? "" : nbHits === 0 ? "Aucun résultat" : pluralize(nbHits, "résultat")
+  const emploisFallbackCount = useEmploisFallbackCount(params, result, stillWidening)
+  const resultsStatus = searchResultsStatus({ hasData: Boolean(result.data), waiting: isRefreshing || stillWidening, nbHits, emploisFallback: emploisFallbackCount })
+
+  // Affichage de la proposition : une fois par recherche, pour mesurer son taux de clic.
+  const lastFallbackTrackedKeyRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (emploisFallbackCount.status !== "done" || emploisFallbackCount.count === 0) return
+    if (lastFallbackTrackedKeyRef.current === searchKey) return
+    lastFallbackTrackedKeyRef.current = searchKey
+    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_MODE_FALLBACK_DISPLAYED, results_count: emploisFallbackCount.count, search_engine: SEARCH_ENGINES.BETA })
+  })
 
   // Changements de filtres en attente de leurs compteurs : la spec veut results_count et
   // active_filters_count APRÈS application — on mémorise le diff au clic et on pousse les
@@ -251,6 +263,16 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     navigateSilent({ ...cleared, mode, sort: sortValidInMode ? params.sort : undefined })
   }
 
+  function handleEmploisFallbackSwitch() {
+    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf("emplois"), trigger: "empty_state", search_engine: SEARCH_ENGINES.BETA })
+    navigateSilent(emploisFallbackParams(params))
+    // Le bouton disparaît avec l'état vide : le focus passe sur la région des résultats visible
+    // (arbre desktop ou mobile), restée montée (RGAA 12.8).
+    const regions = [zoneScopedId("recherche", "search-content-container"), zoneScopedId("recherche", "search-content-container-mobile")].map((id) => document.getElementById(id))
+    regions.find((region) => region?.offsetParent)?.focus()
+  }
+  const emploisFallback = { count: emploisFallbackCount, onSwitch: handleEmploisFallbackSwitch }
+
   function handleAutoRadiusStep(radius: number) {
     const newParams = { ...params, radius, page: 0 }
     const newSearchKey = searchKeyOf(newParams)
@@ -365,7 +387,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             </Box>
 
             <Box role="region" id={zoneScopedId("recherche", "search-content-container")} tabIndex={-1} aria-label="Résultats de la recherche">
-              <SearchResultsList result={result} params={params} scrollToHitId={pendingScrollHitId} />
+              <SearchResultsList result={result} params={params} scrollToHitId={pendingScrollHitId} emploisFallback={emploisFallback} />
             </Box>
           </DefaultContainer>
         </Box>
@@ -404,7 +426,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             aria-label="Résultats de la recherche"
             sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}
           >
-            <SearchResultsList result={result} params={params} scrollToHitId={pendingScrollHitId} />
+            <SearchResultsList result={result} params={params} scrollToHitId={pendingScrollHitId} emploisFallback={emploisFallback} />
           </Box>
         </Box>
 

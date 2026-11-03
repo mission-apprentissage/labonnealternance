@@ -163,6 +163,15 @@ describe("analyzeSearchQueries", () => {
     expect(await getDbCollection("search_suggestions").countDocuments({})).toBe(0)
   })
 
+  it("ignore les comptages lancés par l'UI (purpose)", async () => {
+    await getDbCollection("search_queries").insertMany(queryLogs("data engineer", { total: 40, nbHits: 50 }, { purpose: "mode_fallback_count" }))
+
+    await analyzeSearchQueries()
+
+    expect(sendMistralBatch).not.toHaveBeenCalled()
+    expect(await getDbCollection("search_suggestions").countDocuments({})).toBe(0)
+  })
+
   it("compte les recherches du canal site et celles sans canal", async () => {
     await getDbCollection("search_queries").insertMany([
       ...queryLogs("data engineer", { total: 20, nbHits: 50 }, { channel: "site" }),

@@ -48,6 +48,7 @@ type SearchQuerystring = {
   longitude?: number
   radius?: number
   admin_area?: string
+  purpose?: "mode_fallback_count"
   search_source?: "suggestion" | "free_text" | "training_links" | "external_sites" | "partner_links"
   // Alias déprécié (cf. search.routes.ts) : liens traininglinks émis avant le 2026-08-24.
   source?: "suggestion" | "free_text" | "training_links" | "external_sites" | "partner_links"
@@ -96,6 +97,7 @@ export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOu
       admin_area: query.admin_area ?? null,
       // Calculé, pas déclaré par l'appelant (falsifiable) : cf. isAutoRadiusWidening.
       ...(isAutoRadiusWidening(query, outcome.nbHits) ? { auto_radius_intermediate: true as const } : {}),
+      ...(query.purpose ? { purpose: query.purpose } : {}),
       created_at: now,
     })
   } catch (error) {
