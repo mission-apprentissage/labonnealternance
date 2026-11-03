@@ -11,6 +11,7 @@ const goodStats = (overrides: Partial<IQueryStats> = {}): IQueryStats => ({
   days_seen: 12,
   zero_hits_count: 2,
   free_text_count: 45,
+  known_source_count: 50,
   median_nb_hits: 120,
   ...overrides,
 })
@@ -58,6 +59,21 @@ describe("search-suggestion-criteria", () => {
 
     it("une requête déjà servie par l'autocomplete (free_text faible) n'est pas candidate suggestion (S5)", () => {
       expect(isSuggestionCandidate(goodStats({ free_text_count: 10 }))).toBe(false)
+    })
+
+    it("le taux de S5 ignore les recherches sans origine connue", () => {
+      // 10 free_text sur 40 au total, mais sur 10 recherches d'origine connue.
+      expect(isSuggestionCandidate(goodStats({ total: 40, free_text_count: 10, known_source_count: 10 }))).toBe(true)
+      expect(isSuggestionCandidate(goodStats({ total: 40, free_text_count: 5, known_source_count: 10 }))).toBe(false)
+    })
+
+    it("une requête sans aucune origine connue n'est pas candidate suggestion (S5)", () => {
+      expect(isSuggestionCandidate(goodStats({ free_text_count: 0, known_source_count: 0 }))).toBe(false)
+    })
+
+    it("un taux de texte libre calculé sur trop peu de recherches d'origine connue ne qualifie pas (S5)", () => {
+      expect(isSuggestionCandidate(goodStats({ total: 40, free_text_count: 1, known_source_count: 1 }))).toBe(false)
+      expect(isSuggestionCandidate(goodStats({ total: 40, free_text_count: 9, known_source_count: 9 }))).toBe(false)
     })
 
     it("un candidat peu fréquent n'est pas candidat synonyme (Y1 plus strict)", () => {

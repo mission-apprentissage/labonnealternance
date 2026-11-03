@@ -4,6 +4,7 @@ import { isPrivateIp } from "@/common/utils/private-network"
 
 import type { Server } from "@/http/server"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
+import type { SearchChannel } from "@/services/search/search-query-log.service"
 import { logSearchQuery } from "@/services/search/search-query-log.service"
 
 // Plafonds hors réseau interne (anti-aspiration) : le front pagine par 20 et ne dépasse
@@ -32,7 +33,11 @@ export default (server: Server) => {
       // Loggé aussi en cas d'échec (#5153), puis re-throw : comportement d'erreur inchangé pour
       // le client et pour la capture Sentry.
       const fromPrivateNetwork = isPrivateIp(req.ip)
-      const maxPages = req.headers["sec-fetch-site"] === "same-origin" ? PUBLIC_MAX_PAGES : NON_BROWSER_MAX_PAGES
+      // Sec-Fetch-Site est posé par le navigateur, hors de portée du JS d'une page : le widget (iframe
+      // sur notre domaine) est same-origin, un site tiers ne l'est pas. Falsifiable par un client hors
+      // navigateur : signal de tri statistique et de pagination, pas de contrôle d'accès.
+      const channel: SearchChannel = req.headers["sec-fetch-site"] === "same-origin" ? "site" : "api"
+      const maxPages = channel === "site" ? PUBLIC_MAX_PAGES : NON_BROWSER_MAX_PAGES
       if (!fromPrivateNetwork && req.query.page >= maxPages) {
         throw badRequest(
           maxPages === PUBLIC_MAX_PAGES
@@ -48,12 +53,12 @@ export default (server: Server) => {
         const { degraded, ...searchResult } = await searchItems(query)
         const result = fromPrivateNetwork ? searchResult : { ...searchResult, nbPages: Math.min(searchResult.nbPages, maxPages) }
         if (shouldLog) {
-          void logSearchQuery(req.query, { status: degraded ? "degraded" : "ok", nbHits: result.nbHits })
+          void logSearchQuery(req.query, { status: degraded ? "degraded" : "ok", nbHits: result.nbHits }, channel)
         }
         return res.status(200).send(result)
       } catch (err) {
         if (shouldLog) {
-          void logSearchQuery(req.query, { status: "error", nbHits: null })
+          void logSearchQuery(req.query, { status: "error", nbHits: null }, channel)
         }
         throw err
       }

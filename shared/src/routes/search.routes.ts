@@ -89,10 +89,8 @@ export const zSearchRoutes = {
           ),
         // Alias déprécié de search_source (renommé : « source » est un paramètre réservé de
         // Plausible, mais seul le nom dans l'URL de page compte pour le tracker — pas les appels
-        // API). Encore émis volontairement par l'UI courante pour une release (un serveur
-        // pré-renommage rejetterait search_source, clé inconnue du strictObject), et présent dans
-        // les liens traininglinks émis avant le renommage (dernière campagne : 2026-08-24).
-        // search_source prime si les deux sont fournis.
+        // API). Présent dans les liens traininglinks émis avant le renommage (dernière campagne :
+        // 2026-08-24). search_source prime si les deux sont fournis.
         source: z.enum(["suggestion", "free_text", "training_links", "external_sites", "partner_links"]).optional().describe("Déprécié : utiliser search_source"),
         internal: z
           .enum(["true", "false"])

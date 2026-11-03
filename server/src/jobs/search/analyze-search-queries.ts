@@ -69,7 +69,17 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
       // `zero_hits_count` et ferait paraître le terme plus pertinent qu'il ne l'est (cf. #5166).
       // search_source=training_links / external_sites / partner_links exclus : trafic synthétique
       // (liens générés pour les vœux Parcoursup, par des sites tiers ou pour les partenaires PRDV).
-      { $match: { created_at: { $gte: since }, status: { $ne: "error" }, search_source: { $nin: ["training_links", "external_sites", "partner_links"] } } },
+      // channel=api exclu : scripts et collecteurs qui balaient un vocabulaire, pas des usagers (#5640).
+      // Paliers d'élargissement du rayon exclus : résultats jamais vus par l'usager (#5634).
+      {
+        $match: {
+          created_at: { $gte: since },
+          status: { $ne: "error" },
+          search_source: { $nin: ["training_links", "external_sites", "partner_links"] },
+          channel: { $ne: "api" },
+          auto_radius_intermediate: { $ne: true },
+        },
+      },
       {
         $group: {
           _id: "$q_normalized",
@@ -77,6 +87,7 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
           days: { $addToSet: { $dateTrunc: { date: "$created_at", unit: "day" } } },
           zero_hits_count: { $sum: { $cond: [{ $eq: ["$nb_hits", 0] }, 1, 0] } },
           free_text_count: { $sum: { $cond: [{ $eq: ["$search_source", "free_text"] }, 1, 0] } },
+          known_source_count: { $sum: { $cond: [{ $in: ["$search_source", ["free_text", "suggestion"]] }, 1, 0] } },
           median_nb_hits: { $median: { input: "$nb_hits", method: "approximate" } },
           // Forme brute représentative (toutes les variantes partagent la même normalisation ;
           // l'IA reçoit celle-ci et corrige l'orthographe/casse via `canonical`).
@@ -92,6 +103,7 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
           days_seen: { $size: "$days" },
           zero_hits_count: 1,
           free_text_count: 1,
+          known_source_count: 1,
           median_nb_hits: 1,
         },
       },
@@ -313,6 +325,7 @@ async function persistDecision(stats: IQueryStats, analysis: IQueryAnalysis | nu
           days_seen_30d: stats.days_seen,
           zero_hits_30d: stats.zero_hits_count,
           free_text_30d: stats.free_text_count,
+          known_source_30d: stats.known_source_count,
           median_nb_hits: stats.median_nb_hits,
         },
         confidence: analysis?.confidence ?? null,
