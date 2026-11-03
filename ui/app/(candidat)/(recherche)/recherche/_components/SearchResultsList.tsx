@@ -7,7 +7,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { isAutoRadiusWidening } from "shared/utils/auto-radius"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { pluralize } from "@/utils/strutils"
-import type { useEmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
+import type { EmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
 import type { useSearchResults } from "../_hooks/use-search-results"
 import { useSearchViewNotifier } from "../_hooks/use-search-view-notifier"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
@@ -26,7 +26,7 @@ interface SearchResultsListProps {
    */
   scrollToHitId?: string | null
   /** Proposition de bascule en mode emplois à l'état vide (cf. useEmploisFallbackCount). */
-  emploisFallback?: { count: ReturnType<typeof useEmploisFallbackCount>; onSwitch: () => void }
+  emploisFallback?: { count: EmploisFallbackCount; onSwitch: () => void }
 }
 
 function LoadingSkeletons() {
