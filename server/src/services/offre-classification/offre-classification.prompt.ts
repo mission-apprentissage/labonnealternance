@@ -1,5 +1,11 @@
 import type { IModerationCategory, IModerationVerdict } from "shared/models/jobs-partners-moderation.model"
-import { MODERATION_CATEGORIES, MODERATION_CHARTER_CATEGORIES, MODERATION_SEVERITIES, MODERATION_VERDICTS } from "shared/models/jobs-partners-moderation.model"
+import {
+  MODERATION_CATEGORIES,
+  MODERATION_CHARTER_CATEGORIES,
+  MODERATION_SEVERITIES,
+  MODERATION_TRACE_ONLY_CATEGORIES,
+  MODERATION_VERDICTS,
+} from "shared/models/jobs-partners-moderation.model"
 import { z } from "zod"
 
 import { EMAIL_MASK, PHONE_MASK, URL_MASK } from "@/common/utils/mask-personal-data"
@@ -30,7 +36,10 @@ export type IOffreClassificationVerdict = IModerationVerdict
 export type IOffreClassification = z.output<typeof ZOffreClassification>
 
 /** Version du prompt, stockée avec le verdict : sans elle, un verdict n'est pas rejouable. */
-export const CLASSIFICATION_PROMPT_VERSION = "1.3.1"
+export const CLASSIFICATION_PROMPT_VERSION = "1.4.0"
+
+/** Modèle figé explicitement, sans alias `-latest` : il est stocké avec le verdict pour que celui-ci reste rejouable. */
+export const CLASSIFICATION_MODEL = "mistral-large-2512"
 
 export const CLASSIFICATION_SYSTEM_PROMPT = `Tu es un contrôleur de légalité pour des offres d'alternance publiées sur La bonne alternance, un service public français. Tu relèves aussi les écarts à la charte de rédaction du service.
 
@@ -40,7 +49,7 @@ Réponds uniquement avec un objet JSON, sans commentaire ni texte hors du JSON, 
 {"verdict": "conforme" | "a_verifier" | "non_conforme", "findings": [{"category": "...", "severity": "bloquant" | "doute", "verbatim": "..."}]}
 
 Catégories légales :
-- "discrimination" : critère d'embauche fondé sur le sexe, l'origine, l'apparence physique, la situation de famille, la grossesse, l'état de santé, le handicap, l'orientation sexuelle, les opinions politiques ou religieuses, l'âge, le lieu de résidence. Inclut les critères codés ou implicites ("bonne présentation" comme critère de sélection, "jeune et dynamique" pour désigner un âge), une exigence sur le domicile du candidat, posée dans le profil recherché ou comme condition de candidature ("vous résidez dans le département", "ne postulez que si vous habitez à proximité", "inutile de postuler au-delà d'une heure de trajet") et la personne recherchée pour l'alternance désignée uniquement au féminin, sans forme masculine ou inclusive ("nous recherchons une apprentie", "une vendeuse en alternance").
+- "discrimination" : critère d'embauche fondé sur le sexe, l'origine, l'apparence physique, la situation de famille, la grossesse, l'état de santé, le handicap, l'orientation sexuelle, les opinions politiques ou religieuses, l'âge, le lieu de résidence. Inclut les critères codés ou implicites ("physique avantageux", "jeune et dynamique" pour désigner un âge), une exigence sur le domicile du candidat, posée dans le profil recherché ou comme condition de candidature ("vous résidez dans le département", "ne postulez que si vous habitez à proximité", "inutile de postuler au-delà d'une heure de trajet") et la personne recherchée pour l'alternance désignée uniquement au féminin, sans forme masculine ou inclusive ("nous recherchons une apprentie", "une vendeuse en alternance").
 - "remuneration" : rémunération qui REMPLACE le salaire légal ou le conditionne — pourboires tenant lieu de paie, rémunération intégralement à la performance ou au résultat, contrepartie en nature au lieu du salaire, absence de rémunération, salaire annoncé sous le minimum légal applicable à l'apprenti, retenue sur paie à titre de sanction.
 - "subordination" : condition de travail abusive ou lien de subordination hors cadre légal — disponibilité permanente, horaires à la seule discrétion de l'employeur sans cadre, formulation de sujétion personnelle, pression ou menace.
 - "taches_illegales" : mission illégale, dangereuse ou sans rapport avec un parcours de formation — activité interdite, travail dissimulé, tâche relevant de la vie privée de l'employeur.
@@ -66,6 +75,7 @@ Règles d'annulation. Les situations suivantes sont LICITES et ne donnent aucun 
 - Le niveau de diplôme ou de formation préparé ou requis (CAP, bac pro, BTS, bac +2...) : c'est le diplôme visé par le contrat, pas un critère discriminatoire.
 - La présentation de l'entreprise : date de création, historique, taille ("à taille humaine" décrit l'entreprise, pas une caractéristique physique), effectifs et composition de l'équipe ("des femmes et des hommes"), chiffres, apprentis déjà formés, activité et spécialité (restauration halal, produits pour femmes enceintes), clientèle et public servi, y compris quand ils sont réservés à un âge, à un sexe ou à la grossesse ("séjours réservés aux femmes") : ce ne sont pas des critères d'embauche.
 - Le lieu de travail, son accès, les déplacements demandés par le poste, la zone d'intervention ou le secteur commercial ("secteur Grand Ouest", "tournée sur le département"), ainsi qu'une organisation du travail adaptée au domicile du salarié ("vos interventions se font dans un rayon de 20 km autour de votre domicile"), qui est un avantage. Seule une condition de candidature portant sur le domicile du candidat est discriminatoire.
+- Une attente de tenue ou de présentation professionnelle ("bonne présentation", "présentation soignée", "tenue correcte exigée") sans autre critère physique : elle porte sur le comportement au travail, pas sur l'apparence physique. Un critère sur le physique lui-même ("physique avantageux", taille, poids) reste une discrimination.
 - Un qualificatif de personnalité ou d'état d'esprit ("dynamique", "motivé", "passionné", "rigoureux"), qu'il décrive le candidat ou l'équipe, tant qu'aucune référence à l'âge ne l'accompagne.
 - Un outil, un logiciel, un équipement ou un terme technique du métier, sauf si la tâche décrite est elle-même interdite.
 - Un avantage accordé au salarié : congés au-delà du minimum légal, jours de repos, horaires aménagés.
@@ -78,7 +88,6 @@ Règles sur "severity" :
 - Une condition d'âge posée aux candidats et plus restrictive que les conditions légales d'accès (tranche d'âge, âge maximum) est toujours "bloquant", même si le texte ne la présente pas comme éliminatoire. Seule exception : l'exclusion des candidats mineurs que le texte motive lui-même par une activité qui leur est interdite (voir la règle "mineurs" ci-dessous). De même pour une exigence sur le domicile, la distance ou le temps de trajet du candidat ("vous vous situez sur Nantes et sa région" ou "vous habitez Nantes" dans le profil recherché sont des exigences), et pour la personne recherchée désignée uniquement au féminin.
 - Le féminin seul n'est un finding que si le passage nomme la personne recherchée pour l'alternance ("nous recherchons une apprentie", "recrute une alternante"). Toute autre mention au féminin n'en est pas un.
 - Une simple préférence sur le domicile du candidat, formulée comme telle ("idéalement", "de préférence"), est "doute".
-- "Bonne présentation" ou "présentation soignée", sans autre critère physique, est "doute".
 - "mineurs" n'est "bloquant" que si le texte fait explicitement exercer l'activité interdite par des apprentis mineurs ou des mineurs ("y compris pour les apprentis"). Les horaires ou l'activité de l'établissement (ouverture tardive, vente de tabac ou d'alcool) sans cette précision sont "doute" : ils ne concernent que les candidats mineurs.
 - Une exclusion des candidats mineurs que le texte motive lui-même par une activité qui leur est interdite (travail de nuit, service d'alcool, travaux réglementés) les protège au lieu de les exposer : c'est "mineurs" en "doute", jamais "discrimination" ni "bloquant", qu'elle parle de majeurs, de mineurs ou de plus de 18 ans ("réservé aux candidats majeurs en raison des horaires de nuit", "candidats de moins de 18 ans non acceptés : service au bar"). Sans motif écrit dans le texte ("réservé aux 18 ans et plus", "candidat majeur exigé"), c'est une condition d'âge : "discrimination" en "bloquant". Ne déduis jamais un motif que le texte n'écrit pas. Une règle sur l'âge des clients (vente d'alcool ou de tabac aux mineurs) ne concerne pas les candidats.
 - Les catégories de la charte sont toujours "doute".
@@ -102,25 +111,37 @@ const VERDICT_RANK: Record<IOffreClassificationVerdict, number> = { conforme: 0,
 /** Retient le verdict le plus sévère des deux. */
 export const escalateVerdict = (a: IOffreClassificationVerdict, b: IOffreClassificationVerdict): IOffreClassificationVerdict => (VERDICT_RANK[a] >= VERDICT_RANK[b] ? a : b)
 
-/** Verdict déduit des seuls findings, indépendamment de ce que le modèle a annoncé. */
+const isCharterCategory = (category: IOffreClassificationCategory): boolean => (MODERATION_CHARTER_CATEGORIES as readonly string[]).includes(category)
+
+const isTraceOnlyCategory = (category: IOffreClassificationCategory): boolean => (MODERATION_TRACE_ONLY_CATEGORIES as readonly string[]).includes(category)
+
+/** Verdict déduit des seuls findings, hors catégories relevées pour la trace (cf. MODERATION_TRACE_ONLY_CATEGORIES). */
 export const verdictFromFindings = (findings: IOffreClassificationFinding[]): IOffreClassificationVerdict => {
-  if (findings.some(({ severity }) => severity === "bloquant")) return "non_conforme"
-  if (findings.length > 0) return "a_verifier"
+  const counted = findings.filter(({ category }) => !isTraceOnlyCategory(category))
+  if (counted.some(({ severity }) => severity === "bloquant")) return "non_conforme"
+  if (counted.length > 0) return "a_verifier"
   return "conforme"
 }
 
-const isCharterCategory = (category: IOffreClassificationCategory): boolean => (MODERATION_CHARTER_CATEGORIES as readonly string[]).includes(category)
-
 const OBFUSCATED_CONTACT = /arobase|[([](?:at|dot)[)\]]|\b(?:point|dot)\s+(?:fr|com|net|org|eu|io)\b|\bz[ée]ro\s+(?:un|deux|trois|quatre|cinq|six|sept|huit|neuf)\b/i
+// Le `@` d'un pseudo suit un séparateur, celui d'une adresse (masquée en amont) suit une lettre. La première lettre
+// imposée écarte les horaires (« @10h »).
+const SOCIAL_HANDLE = /(?:^|[\s:(])@[a-z_][\w.]+/i
 const CONTACT_MASKS = [PHONE_MASK, EMAIL_MASK, URL_MASK]
 
 /**
  * Le modèle confond "contact_bypass" et "candidature_hors_plateforme" dans les deux sens : l'extrait
  * tranche. Une coordonnée déguisée bloque ; un masque déjà appliqué ne relève que de la charte (#5352).
+ * Un pseudo de réseau social, que le masquage ne couvre pas, reste un contournement : sinon il sortirait du verdict
+ * avec la candidature hors plateforme (#5843). Il ne garde la sévérité du modèle que si celui-ci l'a classé en
+ * contournement : une catégorie de la charte ne bloque jamais.
  */
 const reconcileContactCategory = (finding: IOffreClassificationFinding): IOffreClassificationFinding => {
   if (finding.category !== "contact_bypass" && finding.category !== "candidature_hors_plateforme") return finding
   if (OBFUSCATED_CONTACT.test(finding.verbatim)) return { ...finding, category: "contact_bypass", severity: "bloquant" }
+  if (SOCIAL_HANDLE.test(finding.verbatim)) {
+    return { ...finding, category: "contact_bypass", severity: finding.category === "contact_bypass" ? finding.severity : "doute" }
+  }
   if (finding.category === "contact_bypass" && CONTACT_MASKS.some((mask) => finding.verbatim.includes(mask))) {
     return { ...finding, category: "candidature_hors_plateforme" }
   }
@@ -128,12 +149,9 @@ const reconcileContactCategory = (finding: IOffreClassificationFinding): IOffreC
 }
 
 /**
- * Parse la réponse brute du modèle et réconcilie le verdict annoncé avec celui que ses propres
- * findings impliquent, en retenant le plus sévère des deux : un modèle qui annonce "conforme" tout
- * en listant un finding bloquant ne doit pas pouvoir laisser passer l'offre, et un modèle qui
- * annonce "non_conforme" sans finding reste traité comme tel — c'est au relecteur de trancher.
- * Seule exception : des findings uniquement de charte plafonnent le verdict à "a_verifier", quel
- * que soit le verdict annoncé (cf. MODERATION_CHARTER_CATEGORIES, reconcileContactCategory).
+ * Parse la réponse brute du modèle. Le verdict est celui des findings, jamais celui que le modèle annonce : une offre
+ * bloquée doit toujours avoir un extrait bloquant à montrer au recruteur (#5843). Seule exception, un verdict autre que
+ * "conforme" annoncé sans aucun finding part en "a_verifier" : la réponse se contredit, un relecteur tranche.
  * Retourne null si la réponse n'est pas exploitable : l'appelant doit alors basculer en "a_verifier",
  * jamais en "conforme".
  */
@@ -151,7 +169,6 @@ export const parseClassification = (rawResponse: string): IOffreClassification |
   const findings = validation.data.findings
     .map(reconcileContactCategory)
     .map((finding) => (isCharterCategory(finding.category) ? { ...finding, severity: "doute" as const } : finding))
-  const charterOnly = findings.length > 0 && findings.every(({ category }) => isCharterCategory(category))
-  const announced = charterOnly ? "a_verifier" : validation.data.verdict
-  return { verdict: escalateVerdict(announced, verdictFromFindings(findings)), findings }
+  if (findings.length === 0 && validation.data.verdict !== "conforme") return { verdict: "a_verifier", findings }
+  return { verdict: verdictFromFindings(findings), findings }
 }
