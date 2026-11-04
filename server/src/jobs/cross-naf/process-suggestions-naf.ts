@@ -1,4 +1,5 @@
 import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 
 import type { SuggestionsNafWindow } from "./find-suggestions-naf-applicants"
@@ -7,7 +8,12 @@ import { findSuggestionsNafJobs, MIN_SUGGESTIONS } from "./find-suggestions-naf-
 import { findSuggestionsNafTargets } from "./find-suggestions-naf-targets"
 import { sendSuggestionsNafEmails } from "./send-suggestions-naf-emails"
 
+// Référentiel vide (import pas encore passé ou purgé) : sans échec explicite, le run annoncerait 0 email sans erreur
+// et les candidats de la fenêtre seraient perdus. En échec, un rejeu le jour même après l'import les reprend.
 const processSuggestionsNafForWindow = async (window: SuggestionsNafWindow) => {
+  if (!(await getDbCollection("referentiel_rome_naf").findOne({}, { projection: { _id: 1 } }))) {
+    throw new Error("processSuggestionsNaf: référentiel ROME × NAF vide, lancer importReferentielRomeNaf puis rejouer le job")
+  }
   const applicants = await findSuggestionsNafJobs(await findSuggestionsNafTargets(await findSuggestionsNafApplicants(window)))
   const targets = applicants.flatMap(({ targets }) => targets)
   const stats = { applicants: applicants.length, targets: targets.length, sendable: targets.filter(({ suggestions }) => suggestions.length >= MIN_SUGGESTIONS).length }
