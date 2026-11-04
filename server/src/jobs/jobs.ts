@@ -122,7 +122,7 @@ export async function setupJobProcessor() {
             handler: async () => closeJobsPartnersOnApplicationThreshold(),
             tag: "main",
           },
-          // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners) : chaque règle réserve son créneau (cf. claimSlot).
+          // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners) : une seule exécution évalue une règle à la fois (cf. acquireRuleLease).
           "Évaluation des règles de détection": {
             cron_string: `*/${DETECTION_TICK_MINUTES} * * * *`,
             handler: async () => runDetectionRules(),

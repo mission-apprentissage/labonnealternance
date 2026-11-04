@@ -8,7 +8,7 @@ Code : [server/src/jobs/detection/](../server/src/jobs/detection/). Un seul cron
 
 À chaque passage, pour chaque règle active dont le créneau est échu :
 
-1. Le créneau est réservé dans `detection_rules` : deux exécutions qui se chevauchent n'évaluent la règle qu'une fois.
+1. L'exécution prend un bail sur la règle dans `detection_rules` : une seule exécution évalue une règle à la fois, quel que soit le créneau. Le bail dure 10 minutes et se prolonge tant que l'évaluation tourne. Le créneau n'est marqué évalué qu'à la fin : si le process est tué, le bail expire et le passage suivant du cron réévalue le créneau.
 2. `evaluate` renvoie des constats, un par objet (`key`) : identifiants techniques, comptes, une phrase et des liens. Un constat qui contient une adresse email est écarté et la règle passe en échec.
 3. Chaque constat est rapproché de l'épisode en cours pour le même objet, dans `detection_alerts` :
 
@@ -19,7 +19,7 @@ Code : [server/src/jobs/detection/](../server/src/jobs/detection/). Un seul cron
 | Constat toujours présent | épisode maintenu | rappel tous les `reminderEveryHours` |
 | Constat disparu | épisode `fermee` (ou supprimé s'il était `en_attente`) | sortie d'alerte |
 
-Une règle en échec (exception, seuils invalides en base, constat refusé) ne bloque pas les autres. Son échec forme un épisode à part (clé `echec_evaluation`, notifié à l'entrée, rappelé chaque jour, clos à la reprise) et le job finit en erreur. Le créneau est libéré : la règle est réévaluée au passage suivant du cron.
+Une règle en échec (exception, seuils invalides en base, constat refusé) ne bloque pas les autres. Son échec forme un épisode à part (clé `echec_evaluation`, notifié à l'entrée, rappelé chaque jour, clos à la reprise) et le job finit en erreur. Le bail est libéré et le créneau n'a pas avancé : la règle est réévaluée au passage suivant du cron.
 
 Le canal est celui de `LBA_DETECTION_SLACK_WEBHOOK`, ou à défaut celui des jobs (`LBA_JOB_SLACK_WEBHOOK`).
 

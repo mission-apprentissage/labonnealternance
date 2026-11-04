@@ -63,7 +63,7 @@ export type IDetectionAlert = z.output<typeof ZDetectionAlert>
 export default {
   zod: ZDetectionAlert,
   indexes: [
-    // Un seul épisode actif par objet : garde-fou si deux exécutions évaluaient le même créneau (cf. claimSlot).
+    // Un seul épisode actif par objet : dernier rempart si deux exécutions évaluaient la même règle malgré le bail (cf. acquireRuleLease).
     [
       { rule_id: 1, key: 1 },
       { unique: true, partialFilterExpression: { status: { $in: [...DETECTION_ALERT_ACTIVE_STATUSES] } }, name: "rule_id_1_key_1_active_unique" },

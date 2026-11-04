@@ -192,89 +192,155 @@ const summarizeTransition = (transition: IDetectionTransition) => ({
 
 type IRuleReport = {
   rule: string
-  status: "desactivee" | "deja_evaluee" | "evaluee" | "echec"
+  status: "desactivee" | "deja_evaluee" | "en_cours" | "evaluee" | "echec" | "bail_perdu"
   slot?: Date
   observations?: IDetectionMetrics
   transitions?: ReturnType<typeof summarizeTransition>[]
 }
+
+/**
+ * Bail d'une évaluation, prolongé au tiers de sa durée tant qu'elle tourne. Plus court que la cadence du cron :
+ * le créneau d'une exécution tuée est réévalué au passage suivant.
+ */
+export const DETECTION_LEASE_MS = 10 * MINUTE_MS
+
+export class DetectionLeaseLostError extends Error {
+  constructor(ruleId: string) {
+    super(`bail de la règle ${ruleId} repris par une autre exécution`)
+    this.name = "DetectionLeaseLostError"
+  }
+}
+
+type ILeaseOptions = { leaseMs: number; clock: () => Date }
 
 const loadRuleState = async (ruleId: string, dryRun: boolean): Promise<IDetectionRuleState | null> =>
   dryRun
     ? getDbCollection("detection_rules").findOne({ rule_id: ruleId })
     : getDbCollection("detection_rules").findOneAndUpdate(
         { rule_id: ruleId },
-        { $setOnInsert: { enabled: null, thresholds: null, updated_at: null, last_slot_at: null } },
+        { $setOnInsert: { enabled: null, thresholds: null, updated_at: null, last_slot_at: null, lease_owner: null, lease_until: null } },
         { upsert: true, returnDocument: "after" }
       )
 
 /**
- * Réserve le créneau pour cette exécution : un cron sans `concurrency: exclusive` (cf. jobs.ts) peut lancer deux
- * évaluations en parallèle, une seule notifie. Renvoie `undefined` si le créneau est déjà pris.
+ * Une seule exécution évalue une règle à la fois, quel que soit le créneau : le cron n'a pas de `concurrency: exclusive`
+ * (cf. jobs.ts). Le créneau n'avance qu'à la fin de l'évaluation (`complete`) : le bail d'une exécution tuée expire et le
+ * créneau est réévalué. Renvoie null si le créneau est déjà évalué ou si une autre exécution détient le bail.
  */
-const claimSlot = async (ruleId: string, slot: Date): Promise<{ previousSlot: Date | null } | undefined> => {
-  const before = await getDbCollection("detection_rules").findOneAndUpdate(
-    { rule_id: ruleId, $or: [{ last_slot_at: null }, { last_slot_at: { $lt: slot } }] },
-    { $set: { last_slot_at: slot } },
-    { returnDocument: "before" }
+const acquireRuleLease = async (ruleId: string, slot: Date, { leaseMs, clock }: ILeaseOptions) => {
+  const states = getDbCollection("detection_rules")
+  const owner = new ObjectId().toString()
+  const expiry = () => new Date(clock().getTime() + leaseMs)
+  const acquired = await states.findOneAndUpdate(
+    {
+      rule_id: ruleId,
+      $and: [{ $or: [{ last_slot_at: null }, { last_slot_at: { $lt: slot } }] }, { $or: [{ lease_until: null }, { lease_until: { $lte: clock() } }] }],
+    },
+    { $set: { lease_owner: owner, lease_until: expiry() } }
   )
-  return before ? { previousSlot: before.last_slot_at } : undefined
+  if (!acquired) {
+    return null
+  }
+  /** Échoue si une autre exécution a repris le bail, expiré entre-temps (process gelé plus longtemps que le bail). */
+  const renew = async () => {
+    const { matchedCount } = await states.updateOne({ rule_id: ruleId, lease_owner: owner }, { $set: { lease_until: expiry() } })
+    if (!matchedCount) {
+      throw new DetectionLeaseLostError(ruleId)
+    }
+  }
+  const heartbeat = setInterval(() => {
+    renew().catch((error) => logger.warn({ rule: ruleId, error: errorName(error) }, "bail de règle de détection non prolongé"))
+  }, leaseMs / 3)
+  heartbeat.unref()
+  return {
+    renew,
+    complete: async () => {
+      const { matchedCount } = await states.updateOne({ rule_id: ruleId, lease_owner: owner }, { $set: { last_slot_at: slot, lease_owner: null, lease_until: null } })
+      if (!matchedCount) {
+        throw new DetectionLeaseLostError(ruleId)
+      }
+    },
+    release: async () => {
+      await states.updateOne({ rule_id: ruleId, lease_owner: owner }, { $set: { lease_owner: null, lease_until: null } })
+    },
+    stop: () => clearInterval(heartbeat),
+  }
 }
 
-const runRule = async (rule: IDetectionRule, at: Date, dryRun: boolean): Promise<IRuleReport> => {
+const runRule = async (rule: IDetectionRule, at: Date, dryRun: boolean, leaseOptions: ILeaseOptions): Promise<IRuleReport> => {
   const state = await loadRuleState(rule.id, dryRun)
   if (!(state?.enabled ?? rule.enabledByDefault)) {
     return { rule: rule.id, status: "desactivee" }
   }
   const slot = getSlotStart(rule.periodicity, at)
-  const claim = dryRun ? { previousSlot: null } : await claimSlot(rule.id, slot)
-  if (!claim) {
-    return { rule: rule.id, status: "deja_evaluee", slot }
+  const lease = dryRun ? null : await acquireRuleLease(rule.id, slot, leaseOptions)
+  if (!dryRun && !lease) {
+    const current = await getDbCollection("detection_rules").findOne({ rule_id: rule.id })
+    const evaluated = current?.last_slot_at && current.last_slot_at.getTime() >= slot.getTime()
+    return { rule: rule.id, status: evaluated ? "deja_evaluee" : "en_cours", slot }
   }
 
-  const activeAlerts = await getDbCollection("detection_alerts")
-    .find({ rule_id: rule.id, status: { $in: [...DETECTION_ALERT_ACTIVE_STATUSES] } })
-    .toArray()
-  const failureAlerts = activeAlerts.filter(({ key }) => key === EVALUATION_FAILURE_KEY)
-  const findingAlerts = activeAlerts.filter(({ key }) => key !== EVALUATION_FAILURE_KEY)
-
+  let failureAlerts: IDetectionAlert[] | null = null
   try {
+    const activeAlerts = await getDbCollection("detection_alerts")
+      .find({ rule_id: rule.id, status: { $in: [...DETECTION_ALERT_ACTIVE_STATUSES] } })
+      .toArray()
+    failureAlerts = activeAlerts.filter(({ key }) => key === EVALUATION_FAILURE_KEY)
+    const findingAlerts = activeAlerts.filter(({ key }) => key !== EVALUATION_FAILURE_KEY)
     const { thresholds } = resolveRuleSettings(rule, state)
     const { findings, observations } = await rule.evaluate({ now: slot, thresholds, activeAlerts: findingAlerts })
     assertValidFindings(rule, findings)
     const transitions = reconcileFindings({ findings, activeAlerts: findingAlerts, confirmations: rule.confirmations, reminderEveryHours: rule.reminderEveryHours, now: slot })
     const recovery = reconcileFindings({ findings: [], activeAlerts: failureAlerts, confirmations: 1, reminderEveryHours: FAILURE_REMINDER_HOURS, now: slot })
-    if (!dryRun) {
+    if (lease) {
       for (const transition of transitions) {
+        await lease.renew()
         await applyTransition(rule, transition, slot)
       }
       for (const transition of recovery) {
+        await lease.renew()
         await applyTransition(failureTarget(rule), transition, slot)
       }
+      await lease.complete()
     }
     return { rule: rule.id, status: "evaluee", slot, observations, transitions: [...transitions, ...recovery].map(summarizeTransition) }
   } catch (error) {
     sentryCaptureException(error, { tags: { detection_rule: rule.id } })
+    if (error instanceof DetectionLeaseLostError) {
+      // L'exécution qui a repris le bail évalue le créneau : rien à notifier ni à libérer ici.
+      logger.error({ rule: rule.id, slot }, "bail de règle de détection perdu en cours d'évaluation")
+      return { rule: rule.id, status: "bail_perdu", slot }
+    }
     logger.error({ rule: rule.id, error: errorName(error) }, "règle de détection en échec")
-    if (!dryRun) {
-      // Libère le créneau : la prochaine exécution du cron réessaie, sans attendre le créneau suivant de la règle.
-      await getDbCollection("detection_rules").updateOne({ rule_id: rule.id, last_slot_at: slot }, { $set: { last_slot_at: claim.previousSlot } })
+    if (lease) {
       try {
-        const failure = reconcileFindings({
-          findings: [failureFinding(errorName(error))],
-          activeAlerts: failureAlerts,
-          confirmations: 1,
-          reminderEveryHours: FAILURE_REMINDER_HOURS,
-          now: slot,
-        })
+        // Sans l'état des épisodes d'échec (lecture en échec), un nouvel épisode heurterait l'index unique.
+        const failure = failureAlerts
+          ? reconcileFindings({
+              findings: [failureFinding(errorName(error))],
+              activeAlerts: failureAlerts,
+              confirmations: 1,
+              reminderEveryHours: FAILURE_REMINDER_HOURS,
+              now: slot,
+            })
+          : []
         for (const transition of failure) {
+          await lease.renew()
           await applyTransition(failureTarget(rule), transition, slot)
         }
       } catch (notificationError) {
         sentryCaptureException(notificationError, { tags: { detection_rule: rule.id } })
         logger.error({ rule: rule.id, error: errorName(notificationError) }, "échec de la notification d'une règle de détection en échec")
       }
+      // Le créneau n'a pas avancé : libéré, le bail laisse le passage suivant du cron réévaluer la règle ; sinon il expire.
+      await lease.release().catch((releaseError) => {
+        sentryCaptureException(releaseError, { tags: { detection_rule: rule.id } })
+        logger.error({ rule: rule.id, error: errorName(releaseError) }, "bail de règle de détection non libéré")
+      })
     }
     return { rule: rule.id, status: "echec", slot }
+  } finally {
+    lease?.stop()
   }
 }
 
@@ -287,11 +353,16 @@ export const runDetectionRules = async ({
   dryRun = false,
   now = new Date(),
   rules = detectionRules,
+  leaseMs = DETECTION_LEASE_MS,
+  clock = () => new Date(),
 }: {
   rule?: string
   dryRun?: boolean
   now?: Date
   rules?: IDetectionRule[]
+  leaseMs?: number
+  /** Horloge du bail, distincte de `now` qui fixe le créneau évalué. */
+  clock?: () => Date
 } = {}) => {
   assertValidRules(rules)
   const selected = ruleId ? rules.filter(({ id }) => id === ruleId) : rules
@@ -300,11 +371,15 @@ export const runDetectionRules = async ({
   }
   const reports: IRuleReport[] = []
   for (const rule of selected) {
-    const report = await runRule(rule, now, dryRun)
+    const report = await runRule(rule, now, dryRun, { leaseMs, clock }).catch((error): IRuleReport => {
+      sentryCaptureException(error, { tags: { detection_rule: rule.id } })
+      logger.error({ rule: rule.id, error: errorName(error) }, "règle de détection en échec")
+      return { rule: rule.id, status: "echec" }
+    })
     logger.info({ ...report, dryRun }, "règle de détection")
     reports.push(report)
   }
-  const failed = reports.filter(({ status }) => status === "echec").map(({ rule }) => rule)
+  const failed = reports.filter(({ status }) => status === "echec" || status === "bail_perdu").map(({ rule }) => rule)
   if (failed.length) {
     throw new Error(`règles de détection en échec : ${failed.join(", ")}`)
   }

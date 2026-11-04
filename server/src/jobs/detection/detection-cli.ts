@@ -46,6 +46,7 @@ export const listDetectionRules = async ({ rules = detectionRules }: { rules?: I
       ...describeSettings(rule, state),
       overrides: { enabled: state?.enabled ?? null, thresholds: state?.thresholds ?? null, updated_at: state?.updated_at ?? null },
       last_slot_at: state?.last_slot_at ?? null,
+      lease_until: state?.lease_until ?? null,
       alerts: { ouvertes: countOf(DETECTION_ALERT_STATUS.OUVERTE), en_attente: countOf(DETECTION_ALERT_STATUS.EN_ATTENTE) },
     }
   })
@@ -100,7 +101,7 @@ export const configureDetectionRule = async ({
     rule.thresholds.parse(override)
     settings.thresholds = override as IDetectionRuleState["thresholds"]
   }
-  const defaults = { enabled: null, thresholds: null, last_slot_at: null }
+  const defaults = { enabled: null, thresholds: null, last_slot_at: null, lease_owner: null, lease_until: null }
   const setOnInsert = Object.fromEntries(Object.entries(defaults).filter(([field]) => !(field in settings)))
   await getDbCollection("detection_rules").updateOne({ rule_id: rule.id }, { $set: { ...settings, updated_at: new Date() }, $setOnInsert: setOnInsert }, { upsert: true })
   const [updated] = await listDetectionRules({ rules: [rule] })

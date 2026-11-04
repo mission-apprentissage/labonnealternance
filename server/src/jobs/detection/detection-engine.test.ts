@@ -1,6 +1,7 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { ObjectId } from "mongodb"
+import { Collection, ObjectId } from "mongodb"
 import type { IDetectionAlert } from "shared/models/detection-alerts.model"
+import type { IDetectionRuleState } from "shared/models/detection-rules.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
@@ -36,6 +37,18 @@ const alertFixture = (overrides: Partial<IDetectionAlert>): IDetectionAlert => (
   last_metrics: { count: 12 },
   summary: "12 éléments",
   qualification: null,
+  ...overrides,
+})
+
+const ruleStateFixture = (overrides: Partial<IDetectionRuleState>): IDetectionRuleState => ({
+  _id: new ObjectId(),
+  rule_id: "regle_factice",
+  enabled: null,
+  thresholds: null,
+  updated_at: null,
+  last_slot_at: null,
+  lease_owner: null,
+  lease_until: null,
   ...overrides,
 })
 
@@ -243,12 +256,10 @@ describe("runDetectionRules", () => {
       runDetectionRules({ rules: [rule], now: at("2026-10-22T08:06:00Z") }),
     ])
 
-    expect(
-      reports
-        .flat()
-        .map(({ status }) => status)
-        .sort()
-    ).toEqual(["deja_evaluee", "evaluee"])
+    // La seconde exécution trouve le bail détenu, ou le créneau déjà évalué si la première a fini.
+    const statuses = reports.flat().map(({ status }) => status)
+    expect(statuses.filter((status) => status === "evaluee")).toHaveLength(1)
+    expect(statuses.filter((status) => status !== "evaluee")).toEqual([expect.stringMatching(/^(deja_evaluee|en_cours)$/)])
     expect(notifyToSlack).toHaveBeenCalledTimes(1)
     expect(await alerts()).toHaveLength(1)
   })
@@ -319,6 +330,157 @@ describe("runDetectionRules", () => {
     await expect(insert("en_attente")).rejects.toThrow("E11000")
   })
 
+  describe("bail d'évaluation", () => {
+    const ruleState = () => getDbCollection("detection_rules").findOne({ rule_id: "regle_factice" })
+    const clockAt = (iso: string) => () => at(iso)
+    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+    const gated = () => {
+      let open: () => void = () => undefined
+      const gate = new Promise<void>((resolve) => {
+        open = resolve
+      })
+      return { gate, open }
+    }
+
+    it("réévalue le créneau d'une exécution tuée pendant l'évaluation, une fois son bail expiré", async () => {
+      const { rule, counts, evaluate } = buildRule({ periodicity: { everyMinutes: 24 * 60, offsetMinutes: 5 * 60 } })
+      counts.set("global", 12)
+      const slot = at("2026-10-22T05:00:00Z")
+      // État de la base au moment où le process meurt, en pleine évaluation : rien de ce qui suit n'est écrit.
+      const killed: { state?: IDetectionRuleState | null } = {}
+      evaluate.mockImplementationOnce(async () => {
+        killed.state = await ruleState()
+        return { findings: [], observations: { total: 0 } }
+      })
+      await runDetectionRules({ rules: [rule], now: at("2026-10-22T05:01:00Z"), clock: clockAt("2026-10-22T05:01:00Z") })
+      if (!killed.state) throw new Error("évaluation non atteinte")
+      await getDbCollection("detection_rules").replaceOne({ rule_id: rule.id }, killed.state)
+
+      expect(await runDetectionRules({ rules: [rule], now: at("2026-10-22T05:05:00Z"), clock: clockAt("2026-10-22T05:05:00Z") })).toMatchObject([{ status: "en_cours", slot }])
+      expect(evaluate).toHaveBeenCalledTimes(1)
+
+      expect(await runDetectionRules({ rules: [rule], now: at("2026-10-22T05:15:00Z"), clock: clockAt("2026-10-22T05:15:00Z") })).toMatchObject([{ status: "evaluee", slot }])
+      expect(evaluate).toHaveBeenLastCalledWith(expect.objectContaining({ now: slot }))
+      expect(messages()).toHaveLength(1)
+      expect(await ruleState()).toMatchObject({ last_slot_at: slot, lease_owner: null, lease_until: null })
+    })
+
+    it("ne renotifie pas une entrée déjà envoyée quand l'exécution est tuée avant de marquer le créneau évalué", async () => {
+      const { rule, counts } = buildRule()
+      counts.set("global", 12)
+      const slot = at("2026-10-22T08:00:00Z")
+      await getDbCollection("detection_alerts").insertOne(alertFixture({ first_seen_at: slot, last_seen_at: slot, opened_at: slot, last_notified_at: slot }))
+      await getDbCollection("detection_rules").insertOne(ruleStateFixture({ lease_owner: "execution_tuee", lease_until: at("2026-10-22T08:10:00Z") }))
+
+      const reports = await runDetectionRules({ rules: [rule], now: at("2026-10-22T08:15:00Z"), clock: clockAt("2026-10-22T08:15:00Z") })
+
+      expect(reports).toMatchObject([{ status: "evaluee", slot, transitions: [{ type: "maintien" }] }])
+      expect(notifyToSlack).not.toHaveBeenCalled()
+      expect(await alerts()).toMatchObject([{ hits: 1, notification_count: 1 }])
+    })
+
+    it("n'évalue pas en parallèle deux créneaux successifs d'une même règle", async () => {
+      const { rule, counts, evaluate } = buildRule({ periodicity: { everyMinutes: 15 } })
+      counts.set("global", 12)
+      const { gate, open } = gated()
+      evaluate.mockImplementationOnce(async () => {
+        await gate
+        return { findings: [{ ...finding("global"), links: [] }], observations: { total: 12 } }
+      })
+
+      const first = runDetectionRules({ rules: [rule], now: at("2026-10-22T08:00:30Z") })
+      await vi.waitFor(() => expect(evaluate).toHaveBeenCalledTimes(1))
+      const next = await runDetectionRules({ rules: [rule], now: at("2026-10-22T08:15:30Z") })
+      open()
+      await first
+
+      expect(next).toMatchObject([{ status: "en_cours", slot: at("2026-10-22T08:15:00Z") }])
+      expect(evaluate).toHaveBeenCalledTimes(1)
+      expect(messages()).toEqual([expect.stringMatching(/^Entrée en alerte · Règle factice/)])
+      expect((await alerts()).map(({ key }) => key)).toEqual(["global"])
+    })
+
+    it("prolonge le bail d'une évaluation qui dure plus longtemps que lui", async () => {
+      // Horloge réelle : le bail de 300 ms n'est tenu que par sa prolongation pendant l'attente de 900 ms.
+      const leaseMs = 300
+      const { rule, counts, evaluate } = buildRule({ periodicity: { everyMinutes: 15 } })
+      counts.set("global", 12)
+      const { gate, open } = gated()
+      evaluate.mockImplementationOnce(async () => {
+        await gate
+        return { findings: [{ ...finding("global"), links: [] }], observations: { total: 12 } }
+      })
+
+      const first = runDetectionRules({ rules: [rule], now: at("2026-10-22T08:00:30Z"), leaseMs })
+      await vi.waitFor(() => expect(evaluate).toHaveBeenCalledTimes(1))
+      await wait(3 * leaseMs)
+      const concurrent = await runDetectionRules({ rules: [rule], now: at("2026-10-22T08:15:30Z"), leaseMs })
+      open()
+      await first
+
+      expect(concurrent).toMatchObject([{ status: "en_cours" }])
+      expect(evaluate).toHaveBeenCalledTimes(1)
+      expect(messages()).toHaveLength(1)
+      expect(await ruleState()).toMatchObject({ last_slot_at: at("2026-10-22T08:00:00Z"), lease_owner: null })
+    })
+
+    it("abandonne sans notifier ni écrire quand une autre exécution a repris le bail pendant l'évaluation", async () => {
+      const { rule, evaluate } = buildRule()
+      evaluate.mockImplementationOnce(async () => {
+        // Process gelé plus longtemps que le bail : une autre exécution l'a repris.
+        await getDbCollection("detection_rules").updateOne({ rule_id: rule.id }, { $set: { lease_owner: "autre_execution" } })
+        return { findings: [{ ...finding("global"), links: [] }], observations: { total: 12 } }
+      })
+
+      await expect(runDetectionRules({ rules: [rule], now: at("2026-10-22T08:05:00Z") })).rejects.toThrow("règles de détection en échec : regle_factice")
+
+      expect(notifyToSlack).not.toHaveBeenCalled()
+      expect(await alerts()).toHaveLength(0)
+      expect(await ruleState()).toMatchObject({ lease_owner: "autre_execution", last_slot_at: null })
+    })
+
+    it("s'arrête avant la transition suivante quand le bail est repris pendant l'envoi des notifications", async () => {
+      const { rule, counts } = buildRule()
+      counts.set("a", 12)
+      counts.set("b", 12)
+      vi.mocked(notifyToSlack).mockImplementationOnce(async () => {
+        await getDbCollection("detection_rules").updateOne({ rule_id: rule.id }, { $set: { lease_owner: "autre_execution" } })
+      })
+
+      await expect(runDetectionRules({ rules: [rule], now: at("2026-10-22T08:05:00Z") })).rejects.toThrow()
+
+      expect(notifyToSlack).toHaveBeenCalledTimes(1)
+      expect((await alerts()).map(({ key }) => key)).toEqual(["a"])
+      expect(await ruleState()).toMatchObject({ last_slot_at: null })
+    })
+
+    it("passe aux règles suivantes quand la libération du bail échoue, puis réévalue le créneau à son expiration", async () => {
+      const { rule: failing, evaluate: failingEvaluate } = buildRule({ id: "regle_en_echec", title: "Règle en échec" })
+      failingEvaluate.mockRejectedValueOnce(new Error("panne"))
+      const { rule: healthy, counts } = buildRule({ id: "regle_saine", title: "Règle saine" })
+      counts.set("global", 12)
+      const realUpdateOne = Collection.prototype.updateOne
+      const releaseFails = vi.spyOn(Collection.prototype, "updateOne").mockImplementation(function (this: Collection, ...args: Parameters<Collection["updateOne"]>) {
+        const $set = (args[1] as { $set?: Record<string, unknown> }).$set
+        const isRelease = this.collectionName === "detection_rules" && $set?.lease_owner === null && !("last_slot_at" in $set)
+        return isRelease ? Promise.reject(new Error("mongod injoignable")) : realUpdateOne.apply(this, args)
+      })
+
+      try {
+        await expect(runDetectionRules({ rules: [failing, healthy], now: at("2026-10-22T08:05:00Z"), clock: clockAt("2026-10-22T08:05:00Z") })).rejects.toThrow(
+          "règles de détection en échec : regle_en_echec"
+        )
+      } finally {
+        releaseFails.mockRestore()
+      }
+      expect(messages().filter((message) => message.startsWith("Entrée en alerte · Règle saine"))).toHaveLength(1)
+
+      const retry = (clock: string) => runDetectionRules({ rules: [failing], now: at("2026-10-22T08:20:00Z"), clock: clockAt(clock) })
+      expect(await retry("2026-10-22T08:10:00Z")).toMatchObject([{ status: "en_cours" }])
+      expect(await retry("2026-10-22T08:20:00Z")).toMatchObject([{ status: "evaluee", slot: at("2026-10-22T08:00:00Z") }])
+    })
+  })
+
   describe("réglages sans redéploiement", () => {
     it("désactive une règle à l'exécution suivante", async () => {
       const { rule, counts, evaluate } = buildRule()
@@ -361,14 +523,7 @@ describe("runDetectionRules", () => {
 
     it("fait échouer la règle, de façon visible, sur une surcharge invalide écrite à la main", async () => {
       const { rule } = buildRule()
-      await getDbCollection("detection_rules").insertOne({
-        _id: new ObjectId(),
-        rule_id: rule.id,
-        enabled: null,
-        thresholds: { minCount: "dix" },
-        updated_at: null,
-        last_slot_at: null,
-      })
+      await getDbCollection("detection_rules").insertOne(ruleStateFixture({ rule_id: rule.id, thresholds: { minCount: "dix" } }))
 
       await expect(runDetectionRules({ rules: [rule], now: at("2026-10-22T08:05:00Z") })).rejects.toThrow()
       expect(messages()[0]).toContain("Évaluation impossible (ZodError)")

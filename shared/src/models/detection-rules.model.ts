@@ -6,8 +6,8 @@ import { zObjectId } from "./common.js"
 const collectionName = "detection_rules" as const
 
 /**
- * Réglages et créneau courant d'une règle de détection (#5421). Les règles sont déclarées dans le code :
- * ce document ne porte que ce qui se règle sans redéploiement, et le créneau déjà réservé par une exécution.
+ * Réglages et état d'exécution d'une règle de détection (#5421). Les règles sont déclarées dans le code :
+ * ce document ne porte que ce qui se règle sans redéploiement, le dernier créneau évalué et le bail de l'évaluation en cours.
  */
 export const ZDetectionRuleState = z.object({
   _id: zObjectId,
@@ -18,7 +18,9 @@ export const ZDetectionRuleState = z.object({
     .nullable()
     .describe("Seuils surchargés, validés par le schéma de la règle ; null : seuils par défaut"),
   updated_at: z.date().nullable().describe("Dernière modification des réglages"),
-  last_slot_at: z.date().nullable().describe("Dernier créneau réservé par une exécution"),
+  last_slot_at: z.date().nullable().describe("Dernier créneau évalué jusqu'au bout"),
+  lease_owner: z.string().nullable().describe("Exécution qui évalue la règle ; null hors évaluation"),
+  lease_until: z.date().nullable().describe("Fin du bail de lease_owner, prolongée tant que l'évaluation tourne"),
 })
 
 export type IDetectionRuleState = z.output<typeof ZDetectionRuleState>
