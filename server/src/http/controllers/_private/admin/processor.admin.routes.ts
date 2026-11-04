@@ -21,7 +21,7 @@ const jobHandlers: Record<TriggerableJob, () => Promise<unknown>> = {
   importCatalogueFormationJob,
   // Déclenchement manuel : ignore le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)
   updateHandiEngagementForce: () => updateHandiEngagement({ force: true }),
-  processSuggestionsNafLast24h: () => processSuggestionsNafLast24h(),
+  processSuggestionsNafLast24h,
 }
 
 // zProcessorStatus (job-processor, dépendance externe déjà à sa dernière version publiée) utilise

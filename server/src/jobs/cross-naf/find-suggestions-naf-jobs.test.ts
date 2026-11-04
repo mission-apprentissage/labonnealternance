@@ -120,4 +120,14 @@ describe("findSuggestionsNafJobs", () => {
 
     expect(await findSuggestedJobIds(buildApplicant([buildTarget("A1101", ["01.11Z"]), buildTarget("A1416", ["01.11Z"])]))).toEqual([[{ naf: "01.11Z", job_id: multiRome }], []])
   })
+
+  it("écarte un candidat dont la recherche échoue sans bloquer les suivants", async () => {
+    const jobId = await createJob({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
+    const failing = buildApplicant([{ ...buildTarget("A1101", ["01.11Z"]), source_geopoint: point(500, 500) }])
+    const ok = buildApplicant([buildTarget("A1101", ["01.11Z"])])
+
+    const result = await findSuggestionsNafJobs([failing, ok])
+    expect(result.map(({ _id }) => _id)).toEqual([ok._id])
+    expect(result[0].targets[0].suggestions.map(({ job }) => job._id)).toEqual([jobId])
+  })
 })

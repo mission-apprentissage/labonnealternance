@@ -7,19 +7,11 @@ import { findSuggestionsNafJobs, MIN_SUGGESTIONS } from "./find-suggestions-naf-
 import { findSuggestionsNafTargets } from "./find-suggestions-naf-targets"
 import { sendSuggestionsNafEmails } from "./send-suggestions-naf-emails"
 
-const processSuggestionsNafForWindow = async (window: SuggestionsNafWindow, { dryRun = false } = {}) => {
+const processSuggestionsNafForWindow = async (window: SuggestionsNafWindow) => {
   const applicants = await findSuggestionsNafJobs(await findSuggestionsNafTargets(await findSuggestionsNafApplicants(window)))
-  const targets = applicants.flatMap(({ _id, targets }) =>
-    targets.map(({ rome, suggestions }) => ({
-      applicant_id: _id.toString(),
-      rome,
-      sendable: suggestions.length >= MIN_SUGGESTIONS,
-      suggestions: suggestions.map(({ sector, job }) => `${sector.naf} ${job.partner_label} ${job.distance_km.toFixed(1)} km`),
-    }))
-  )
-  const stats = { applicants: applicants.length, targets: targets.length, sendable: targets.filter(({ sendable }) => sendable).length }
-  logger.info({ from: window.from, to: window.to, dryRun, ...stats, details: targets }, "processSuggestionsNaf: offres à suggérer par ROME")
-  if (dryRun) return stats
+  const targets = applicants.flatMap(({ targets }) => targets)
+  const stats = { applicants: applicants.length, targets: targets.length, sendable: targets.filter(({ suggestions }) => suggestions.length >= MIN_SUGGESTIONS).length }
+  logger.info({ from: window.from, to: window.to, ...stats }, "processSuggestionsNaf: synthèse des suggestions")
 
   const counters = await sendSuggestionsNafEmails(applicants)
   await notifyToSlack({
@@ -32,4 +24,4 @@ const processSuggestionsNafForWindow = async (window: SuggestionsNafWindow, { dr
 
 export const processSuggestionsNaf = async () => processSuggestionsNafForWindow(getPreviousDayWindow())
 
-export const processSuggestionsNafLast24h = async ({ dryRun = false }: { dryRun?: boolean } = {}) => processSuggestionsNafForWindow(getLast24hWindow(), { dryRun })
+export const processSuggestionsNafLast24h = async () => processSuggestionsNafForWindow(getLast24hWindow())

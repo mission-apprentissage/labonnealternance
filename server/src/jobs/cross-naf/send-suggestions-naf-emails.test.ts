@@ -11,7 +11,7 @@ import mailer from "@/services/mailer.service"
 import type { SuggestionsNafApplicantWithSuggestions, SuggestionsNafSuggestion, SuggestionsNafTargetWithSuggestions } from "./find-suggestions-naf-jobs"
 import { buildSuggestionsNafEmail, sendSuggestionsNafEmails } from "./send-suggestions-naf-emails"
 
-const loggerError = vi.fn()
+const { loggerError } = vi.hoisted(() => ({ loggerError: vi.fn() }))
 
 vi.mock("@/common/logger", async (importOriginal) => {
   const mod = await importOriginal<{ logger: Record<string, unknown> }>()

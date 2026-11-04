@@ -3,7 +3,9 @@ import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 
+import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
 
 import type { SuggestionsNafApplicantWithTargets, SuggestionsNafSector, SuggestionsNafTarget } from "./find-suggestions-naf-targets"
 
@@ -104,10 +106,16 @@ const findTargetsSuggestions = async ({ targets, applications }: SuggestionsNafA
   return targetsWithSuggestions
 }
 
+// Un candidat en erreur est écarté du run sans bloquer les autres. Sans log d'envoi, il reste repris par un rejeu de processSuggestionsNaf le jour même.
 export const findSuggestionsNafJobs = async (applicants: SuggestionsNafApplicantWithTargets[]): Promise<SuggestionsNafApplicantWithSuggestions[]> => {
   const result: SuggestionsNafApplicantWithSuggestions[] = []
   for (const applicant of applicants) {
-    result.push({ ...applicant, targets: await findTargetsSuggestions(applicant) })
+    try {
+      result.push({ ...applicant, targets: await findTargetsSuggestions(applicant) })
+    } catch (err) {
+      logger.error({ err, applicant_id: applicant._id.toString() }, "findSuggestionsNafJobs: échec de la recherche d'offres")
+      sentryCaptureException(err)
+    }
   }
   return result
 }
