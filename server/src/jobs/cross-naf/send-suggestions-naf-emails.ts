@@ -73,7 +73,8 @@ export const buildSuggestionsNafEmail = (applicant: Pick<SuggestionsNafApplicant
 }
 
 // Tracé avant l'envoi : un arrêt du job juste après l'envoi ne doit pas permettre un second envoi au rejeu.
-// Retiré en cas d'échec pour qu'un rejeu manuel puisse renvoyer l'email (cf. findSuggestionsNafApplicants).
+// Retiré en cas d'échec, mais un rejeu ne reprend que les candidats dont aucun envoi n'a abouti : un ROME en échec à côté
+// d'un ROME envoyé est perdu (cf. findSuggestionsNafApplicants).
 const sendTargetEmail = async (applicant: SuggestionsNafApplicantWithSuggestions, target: SuggestionsNafTargetWithSuggestions) => {
   const logId = new ObjectId()
   await getDbCollection("applicants_email_logs").insertOne({
