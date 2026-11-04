@@ -6,7 +6,7 @@ import type { IDetectionRuleState } from "shared/models/detection-rules.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
-import { resolveRuleSettings } from "./detection-engine"
+import { EVALUATION_FAILURE_KEY, resolveRuleSettings } from "./detection-engine"
 import type { IDetectionRule } from "./detection-rule"
 import { detectionRules } from "./detection-rules"
 
@@ -108,7 +108,10 @@ export const configureDetectionRule = async ({
   return updated
 }
 
-/** Qualifie un épisode notifié, pour mesurer le taux de faux positifs de chaque règle. */
+/**
+ * Qualifie un épisode notifié, pour mesurer le taux de faux positifs de chaque règle. Un épisode d'échec d'évaluation
+ * porte le `rule_id` de la règle mais ne dit rien de sa pertinence : il est refusé.
+ */
 export const qualifyDetectionAlert = async ({ id, verdict }: { id?: string; verdict?: string }) => {
   if (!id || !ObjectId.isValid(id)) {
     throw new Error(`--id attend l'identifiant d'une alerte, reçu ${id}`)
@@ -118,11 +121,11 @@ export const qualifyDetectionAlert = async ({ id, verdict }: { id?: string; verd
     throw new Error(`--verdict attend ${verdicts.join(" ou ")}, reçu ${verdict}`)
   }
   const { matchedCount } = await getDbCollection("detection_alerts").updateOne(
-    { _id: new ObjectId(id), status: { $ne: DETECTION_ALERT_STATUS.EN_ATTENTE } },
+    { _id: new ObjectId(id), status: { $ne: DETECTION_ALERT_STATUS.EN_ATTENTE }, key: { $ne: EVALUATION_FAILURE_KEY } },
     { $set: { qualification: { verdict: verdict as IDetectionQualificationVerdict, at: new Date() } } }
   )
   if (!matchedCount) {
-    throw new Error(`alerte introuvable ou jamais notifiée : ${id}`)
+    throw new Error(`alerte introuvable, jamais notifiée ou échec d'évaluation : ${id}`)
   }
   logger.info({ id, verdict }, "alerte de détection qualifiée")
 }

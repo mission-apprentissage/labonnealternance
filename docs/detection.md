@@ -21,11 +21,11 @@ Code : [server/src/jobs/detection/](../server/src/jobs/detection/). Un seul cron
 
 Une règle en échec (exception, seuils invalides en base, constat refusé) ne bloque pas les autres. Son échec forme un épisode à part (clé `echec_evaluation`, notifié à l'entrée, rappelé chaque jour, clos à la reprise) et le job finit en erreur. Le bail est libéré et le créneau n'a pas avancé : la règle est réévaluée au passage suivant du cron. Un envoi refusé par Slack n'ouvre pas d'épisode d'échec, qui partirait sur le même canal : l'épisode concerné n'est pas mis à jour, le job finit en erreur et le passage suivant retente l'envoi.
 
-Le canal est celui de `LBA_DETECTION_SLACK_WEBHOOK`, ou à défaut celui des jobs (`LBA_JOB_SLACK_WEBHOOK`).
+Le canal est celui de `LBA_DETECTION_SLACK_WEBHOOK`, ou à défaut celui des jobs (`LBA_JOB_SLACK_WEBHOOK`). La variable passe par [.infra/.env_server](../.infra/.env_server) : pour ouvrir le canal dédié, la renseigner dans le fichier sops de l'environnement (`.infra/env.<env>.yml`). Vide ou absente, les alertes partent sur le canal des jobs.
 
 ## Ajouter une règle
 
-Déclarer un `IDetectionRule` ([detection-rule.ts](../server/src/jobs/detection/detection-rule.ts)) et l'ajouter à `detectionRules` ([detection-rules.ts](../server/src/jobs/detection/detection-rules.ts)). La périodicité est un multiple de 15 minutes, comptée depuis minuit UTC. Les seuils sont un `z.strictObject` dont chaque champ a une valeur par défaut. Valider la requête par un `explain` dans le ticket de la règle.
+Déclarer un `IDetectionRule` ([detection-rule.ts](../server/src/jobs/detection/detection-rule.ts)) et l'ajouter à `detectionRules` ([detection-rules.ts](../server/src/jobs/detection/detection-rules.ts)). La périodicité est un multiple de 15 minutes, comptée depuis le 1er janvier 1970 à minuit UTC et décalée de `offsetMinutes` : une période qui divise 24 h part de minuit UTC chaque jour, une période hebdomadaire part du jeudi, jour de l'epoch. Les seuils sont un `z.strictObject` dont chaque champ a une valeur par défaut. Valider la requête par un `explain` dans le ticket de la règle.
 
 ## Exploitation
 
@@ -41,4 +41,4 @@ sudo ./scripts/cli.sh qualifyDetectionAlert --id <id de l'alerte> --verdict faux
 sudo ./scripts/cli.sh sendDetectionTestAlert
 ```
 
-Les réglages sont pris en compte au passage suivant du cron, sans redéploiement. L'identifiant de l'alerte figure dans chaque message Slack. Le taux de faux positifs d'une règle se lit sur `detection_alerts` (`qualification.verdict`).
+Les réglages sont pris en compte au passage suivant du cron, sans redéploiement. L'identifiant de l'alerte figure dans chaque message Slack. Le taux de faux positifs d'une règle se lit sur `detection_alerts` (`qualification.verdict`), hors épisodes d'échec d'évaluation (clé `echec_evaluation`), que `qualifyDetectionAlert` refuse.

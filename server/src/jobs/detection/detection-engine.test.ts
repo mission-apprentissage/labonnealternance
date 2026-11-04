@@ -559,5 +559,12 @@ describe("runDetectionRules", () => {
       await expect(qualifyDetectionAlert({ id: insertedId.toString(), verdict: "vrai_positif" })).rejects.toThrow("jamais notifiée")
       await expect(qualifyDetectionAlert({ id: insertedId.toString(), verdict: "peut-être" })).rejects.toThrow("--verdict")
     })
+
+    it("refuse un épisode d'échec d'évaluation, qui fausserait le taux de faux positifs de la règle", async () => {
+      const { insertedId } = await getDbCollection("detection_alerts").insertOne(alertFixture({ key: EVALUATION_FAILURE_KEY, status: "fermee", severity: "technique" }))
+
+      await expect(qualifyDetectionAlert({ id: insertedId.toString(), verdict: "faux_positif" })).rejects.toThrow("échec d'évaluation")
+      expect(await getDbCollection("detection_alerts").findOne({ _id: insertedId })).toMatchObject({ qualification: null })
+    })
   })
 })
