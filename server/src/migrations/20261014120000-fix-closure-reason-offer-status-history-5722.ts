@@ -46,7 +46,7 @@ export const up = async () => {
 
 /** Sauve le motif dans `job_status_comment`, puis remplace par `reason` le motif des entrées des origines données. */
 const requalifyClosures = async (volet: string, origins: string[], reason: string) => {
-  const faultyEntry = { granted_by: { $in: origins }, reason: { $nin: NOT_A_MOTIF } }
+  const faultyEntry = { granted_by: { $in: origins }, reason: { $exists: true, $nin: NOT_A_MOTIF } }
   const filter = { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status_history: { $elemMatch: faultyEntry } }
 
   const saved = await saveLastMotifInComment(filter)
@@ -55,7 +55,7 @@ const requalifyClosures = async (volet: string, origins: string[], reason: strin
   const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(
     filter,
     { $set: { "offer_status_history.$[entry].reason": reason } },
-    { arrayFilters: [{ "entry.granted_by": { $in: origins }, "entry.reason": { $nin: NOT_A_MOTIF } }], bypassDocumentValidation: true }
+    { arrayFilters: [{ "entry.granted_by": { $in: origins }, "entry.reason": { $exists: true, $nin: NOT_A_MOTIF } }], bypassDocumentValidation: true }
   )
   logger.info(`${volet} — ${modifiedCount}/${matchedCount} offres requalifiées en "${reason}"`)
 }
