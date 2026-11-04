@@ -11,6 +11,13 @@ import mailer from "@/services/mailer.service"
 import type { SuggestionsNafApplicantWithSuggestions, SuggestionsNafSuggestion, SuggestionsNafTargetWithSuggestions } from "./find-suggestions-naf-jobs"
 import { buildSuggestionsNafEmail, sendSuggestionsNafEmails } from "./send-suggestions-naf-emails"
 
+const loggerError = vi.fn()
+
+vi.mock("@/common/logger", async (importOriginal) => {
+  const mod = await importOriginal<{ logger: Record<string, unknown> }>()
+  return { ...mod, logger: { ...mod.logger, error: loggerError, warn: vi.fn(), info: vi.fn() } }
+})
+
 const buildSuggestion = (
   naf: string,
   data: Partial<SuggestionsNafSuggestion["job"]> = {},
@@ -170,5 +177,23 @@ describe("sendSuggestionsNafEmails", () => {
 
     expect(await sendSuggestionsNafEmails([applicant])).toEqual({ sent: 1, failed: 1, blacklisted: 0 })
     expect(await findLogs()).toEqual([expect.objectContaining({ application_id: applicant.targets[1].source_application_id, message_id: "<ok@brevo>" })])
+  })
+
+  it("journalise le code SMTP d'un échec sans l'adresse du candidat", async () => {
+    const smtpError = Object.assign(new Error("Can't send mail - all recipients were rejected: 550 <camille.martin@example.com>"), {
+      code: "EENVELOPE",
+      responseCode: 550,
+      rejected: ["camille.martin@example.com"],
+    })
+    vi.spyOn(mailer, "sendEmail").mockRejectedValue(smtpError)
+    loggerError.mockClear()
+    const applicant = buildApplicant([buildTarget(3)])
+
+    await sendSuggestionsNafEmails([applicant])
+    expect(loggerError).toHaveBeenCalledWith(
+      { applicant_id: applicant._id.toString(), rome: "A1101", code: "EENVELOPE", responseCode: 550 },
+      "sendSuggestionsNafEmails: échec de l'envoi"
+    )
+    expect(JSON.stringify(loggerError.mock.calls)).not.toContain("camille.martin@example.com")
   })
 })

@@ -110,7 +110,9 @@ export const sendSuggestionsNafEmails = async (applicants: SuggestionsNafApplica
         counters.sent++
       } catch (err) {
         counters.failed++
-        logger.error({ err, applicant_id: applicant._id.toString(), rome: target.rome }, "sendSuggestionsNafEmails: échec de l'envoi")
+        // Message, `rejected` et `envelope` d'une erreur nodemailer portent l'adresse du candidat, que le logger ne masque pas.
+        const { code, responseCode } = (err ?? {}) as { code?: string; responseCode?: number }
+        logger.error({ applicant_id: applicant._id.toString(), rome: target.rome, code, responseCode }, "sendSuggestionsNafEmails: échec de l'envoi")
         sentryCaptureException(err)
       }
     }
