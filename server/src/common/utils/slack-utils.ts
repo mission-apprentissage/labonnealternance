@@ -18,6 +18,22 @@ export const slackMention = (memberName: string): string => {
 }
 
 /**
+ * Erreur dédiée à la place de l'AxiosError : son `config.url` est le webhook, un secret que le scrub de sentry.ts
+ * ne retire pas (il ne coupe que la query). Ni l'erreur d'origine ni sa cause ne sont transmises.
+ */
+export class SlackNotificationError extends Error {
+  constructor(reason: string) {
+    super(`envoi Slack refusé (${reason})`)
+    this.name = "SlackNotificationError"
+  }
+}
+
+const slackNotificationError = (err: unknown): SlackNotificationError => {
+  const { response, code } = (err ?? {}) as { response?: { status?: number }; code?: string }
+  return new SlackNotificationError(response?.status ? `HTTP ${response.status}` : (code ?? "erreur réseau"))
+}
+
+/**
  * Tableau en bloc de code : seule mise en forme tabulaire rendue par le champ `text` d'un webhook Slack.
  * Les colonnes numériques (`alignRight`) sont alignées à droite.
  */
@@ -34,12 +50,30 @@ export const formatSlackTable = (header: string[], rows: string[][], { alignRigh
   return ["```", formatRow(header), ...rows.map(formatRow), "```"]
 }
 
-export const notifyToSlack = async ({ subject, message, error, mentions }: { subject: string; message: string; error?: boolean; mentions?: string[] }) => {
+export const notifyToSlack = async ({
+  subject,
+  message,
+  error,
+  mentions,
+  webhook,
+}: {
+  subject: string
+  message: string
+  error?: boolean
+  mentions?: string[]
+  /** Webhook d'un canal dédié ; à défaut, celui des jobs. */
+  webhook?: string
+}) => {
   const mentionText = mentions?.length ? ` — cc ${mentions.map(slackMention).join(" ")}` : ""
   const text = `[${config.env.toUpperCase()} — LBA ${subject && `- ${subject}`}] ${error ? "— :warning:" : "— :white_check_mark:"} — ${message}${mentionText}`
-  if (config.jobSlackWebhook) {
+  const url = webhook || config.jobSlackWebhook
+  if (url) {
     const payload: SlackWebhookPayload = { text }
-    await axios.post(config.jobSlackWebhook, payload)
+    try {
+      await axios.post(url, payload)
+    } catch (err) {
+      throw slackNotificationError(err)
+    }
   } else {
     console.info(text)
   }
