@@ -74,7 +74,7 @@ describe("migration fix-closure-reason-offer-status-history-5722", () => {
             entry(MAIL, "J'ai pourvu l'offre sans l'aide de La bonne alternance", JOB_STATUS_ENGLISH.POURVUE, new Date("2026-10-02T10:00:00.000Z")),
           ],
         }),
-        // provideOffre n'écrit pas job_status_comment : le motif reste celui de la modale
+        // le lien « pourvue » en un clic n'écrivait pas job_status_comment : le motif reste celui de la modale
         lbaOffer("puis-pourvue-en-un-clic", {
           offer_status: JOB_STATUS_ENGLISH.POURVUE,
           job_status_comment: "Je ne reçois pas de candidature",
@@ -83,7 +83,7 @@ describe("migration fix-closure-reason-offer-status-history-5722", () => {
             entry(MAIL, "offre déclarée pourvue par le recruteur", JOB_STATUS_ENGLISH.POURVUE, new Date("2026-10-02T10:00:00.000Z")),
           ],
         }),
-        // la route v2 d'annulation n'écrit pas job_status_comment non plus
+        // la route v2 d'annulation n'écrivait pas job_status_comment non plus
         lbaOffer("puis-annulee-en-un-clic", {
           job_status_comment: null,
           offer_status_history: [

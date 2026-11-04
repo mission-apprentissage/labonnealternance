@@ -1,6 +1,6 @@
 import { CFA, type ENTREPRISE } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
-import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { zRoutes } from "shared/routes/index"
@@ -141,7 +141,7 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
   )
 }
 
-export function createCancelJobLink(user: UserForAccessToken, jobId: string, jobOrigin: LBA_ITEM_TYPE, utmData: string | undefined = undefined) {
+export function createCancelJobLink(user: UserForAccessToken, jobId: string, utmData: string | undefined = undefined) {
   const token = generateAccessToken(
     user,
     [
@@ -154,49 +154,13 @@ export function createCancelJobLink(user: UserForAccessToken, jobId: string, job
           querystring: undefined,
         },
       }),
-      generateScope({
-        schema: zRoutes.post["/v2/_private/jobs/canceled/:id"],
-        options: {
-          params: {
-            id: jobId,
-          },
-          querystring: undefined,
-        },
-      }),
     ],
     {
       expiresIn: "30d",
     }
   )
 
-  return `${config.publicUrl}/espace-pro/offre/${jobOrigin}/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
-}
-
-export function createProvidedJobLink(user: UserForAccessToken, jobId: string, jobOrigin: LBA_ITEM_TYPE, utmData: string | undefined = undefined) {
-  const token = generateAccessToken(
-    user,
-    [
-      generateScope({
-        schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
-        options: {
-          params: { jobId },
-          querystring: undefined,
-        },
-      }),
-      generateScope({
-        schema: zRoutes.post["/v2/_private/jobs/provided/:id"],
-        options: {
-          params: { id: jobId },
-          querystring: undefined,
-        },
-      }),
-    ],
-    {
-      expiresIn: "30d",
-    }
-  )
-
-  return `${config.publicUrl}/espace-pro/offre/${jobOrigin}/${jobId}/provided?${utmData ? utmData : ""}&token=${token}`
+  return `${config.publicUrl}/espace-pro/offre/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
 }
 
 export function createViewDelegationLink(email: string, establishment_id: string, job_id: string, siret_formateur: string) {

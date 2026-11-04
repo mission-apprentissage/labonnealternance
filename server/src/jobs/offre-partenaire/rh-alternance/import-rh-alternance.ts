@@ -16,6 +16,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 import { blankComputedJobPartner } from "@/jobs/offre-partenaire/fill-computed-jobs-partners"
 
+import { commitRawImport, discardRawImport } from "@/jobs/offre-partenaire/raw-import-commit"
 import { rawToComputedJobsPartners } from "@/jobs/offre-partenaire/raw-to-computed-jobs-partners"
 
 const ZRawRHAlternanceJob = rawRHAlternanceModel.zod.shape.job
@@ -28,15 +29,28 @@ const ZRHAlternanceResponse = z.looseObject({
 const rawCollectionName = rawRHAlternanceModel.collectionName
 
 export const importRHAlternanceRaw = async () => {
-  logger.info("deleting old data")
-  await getDbCollection(rawCollectionName).deleteMany({})
   logger.info("import starting...")
 
+  const importDate = new Date()
+  const rawImport = { destinationCollection: rawCollectionName, importDate, importName: JOBPARTNERS_LABEL.RH_ALTERNANCE }
+  let jobCount: number
+  try {
+    jobCount = await fetchRHAlternanceJobs(importDate)
+  } catch (err) {
+    await discardRawImport(rawImport)
+    throw err
+  }
+  await commitRawImport({ ...rawImport, insertedCount: jobCount })
+
+  logger.info(`import RH Alternance terminé : ${jobCount} offres importées`)
+  return { jobCount }
+}
+
+const fetchRHAlternanceJobs = async (importDate: Date) => {
   let shouldContinue = true
   let currentPage = 1
   let pageCount: number | null = null
   let jobCount = 0
-  const importDate = new Date()
   while (shouldContinue) {
     logger.info(`import of RHAlternance: page ${currentPage} / ${pageCount ?? "?"}`)
     const response = await axios.request({
@@ -64,8 +78,7 @@ export const importRHAlternanceRaw = async () => {
     }
     jobCount += savedJobs.length
   }
-  logger.info(`import RH Alternance terminé : ${jobCount} offres importées`)
-  return { jobCount }
+  return jobCount
 }
 
 export const importRHAlternanceToComputed = async () => {

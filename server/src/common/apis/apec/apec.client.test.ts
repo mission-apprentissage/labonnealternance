@@ -11,9 +11,9 @@ describe("getFileFromApecFTP", () => {
     const xmlContent = `<?xml version="1.0" encoding="UTF-8"?><offres><offre><id>1</id></offre></offres>`
 
     const { downloadFileFromSFTP } = await import("@/common/utils/ftp-utils")
-    vi.mocked(downloadFileFromSFTP).mockResolvedValue(Readable.from(xmlContent))
+    vi.mocked(downloadFileFromSFTP).mockResolvedValue({ stream: Readable.from(xmlContent), stats: { mtime: new Date(), size: xmlContent.length } })
 
-    const stream = await getApecJobs()
+    const { stream } = await getApecJobs()
 
     const chunks: Buffer[] = []
     for await (const chunk of stream) {

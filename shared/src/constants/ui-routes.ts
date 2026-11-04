@@ -72,7 +72,6 @@ export const UI_ROUTE_PATTERNS = [
   "/espace-pro/entreprise/offre/:job_id/mise-en-relation",
   "/espace-pro/mise-en-relation/:establishment_id/:job_id",
   "/espace-pro/offre/:jobType/:jobId/cancel",
-  "/espace-pro/offre/:jobType/:jobId/provided",
   "/espace-pro/offre/impression/:jobId",
   "/espace-pro/opco",
   "/espace-pro/opco/compte",

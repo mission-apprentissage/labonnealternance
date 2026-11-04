@@ -19,7 +19,7 @@ const ORIGIN = {
 const MANUAL_CLOSURE_REASON = "Désactivation manuelle"
 const ADMIN_CLOSURE_REASON = "Action admin"
 const MAIL_CLOSURE_REASON = "Réponse recruteur par mail"
-/** Écrits sous l'origine mail par provideOffre et les routes v2, qui ne touchent pas job_status_comment. */
+/** Écrits sous l'origine mail, sans job_status_comment, par le lien « pourvue » en un clic et les routes v2 d'offres partenaires, supprimés par #5563. */
 const ONE_CLICK_MAIL_REASONS = ["offre déclarée pourvue par le recruteur", "offre annulée par le recruteur"]
 /** `reason` d'une clôture humaine qui ne porte pas de motif de la modale. */
 const NOT_A_MOTIF = [MANUAL_CLOSURE_REASON, ADMIN_CLOSURE_REASON, MAIL_CLOSURE_REASON, ...ONE_CLICK_MAIL_REASONS]

@@ -1,13 +1,22 @@
 import { text } from "node:stream/consumers"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { downloadFileFromSFTP, normalizeSshPrivateKey } from "./ftp-utils"
+import { logger } from "@/common/logger"
+import { downloadFileFromSFTP, normalizeSshPrivateKey, statFileOnSFTP } from "./ftp-utils"
 
 type ConnectOutcome = "handshake-timeout" | "auth-failure" | "ok"
 
 // Scénario consommé par chaque `connect()` successif ; vide = succès.
-const { connectOutcomes, connectCalls } = vi.hoisted(() => ({
+const { connectOutcomes, connectCalls, statFailures } = vi.hoisted(() => ({
   connectOutcomes: [] as ConnectOutcome[],
   connectCalls: [] as Array<Record<string, unknown>>,
+  // nombre de `stat` à faire échouer
+  statFailures: { count: 0 },
+}))
+
+// logger est un Proxy : vi.spyOn ne peut pas l'instrumenter
+vi.mock("@/common/logger", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/common/logger")>()),
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }))
 
 vi.mock("ssh2", async () => {
@@ -31,6 +40,13 @@ vi.mock("ssh2", async () => {
 
     sftp(cb: (err: undefined, sftp: unknown) => void) {
       cb(undefined, {
+        stat: (_remote: string, done: (err: Error | undefined, stats?: { mtime: number; size: number }) => void) => {
+          if (statFailures.count > 0) {
+            statFailures.count--
+            return done(new Error("Permission denied"))
+          }
+          done(undefined, { mtime: 1_761_998_400, size: 7 })
+        },
         fastGet: (_remote: string, local: string, _opts: unknown, done: (err?: Error) => void) => {
           writeFile(local, "<feed/>").then(() => done(), done)
         },
@@ -82,10 +98,11 @@ describe("downloadFileFromSFTP (connexion)", () => {
   beforeEach(() => {
     connectOutcomes.length = 0
     connectCalls.length = 0
+    statFailures.count = 0
   })
 
   it("porte le timeout de handshake ssh2 à 60 s", async () => {
-    const stream = await downloadFileFromSFTP("/feed.xml", options)
+    const { stream } = await downloadFileFromSFTP("/feed.xml", options)
     await text(stream)
 
     expect(connectCalls).toHaveLength(1)
@@ -95,9 +112,10 @@ describe("downloadFileFromSFTP (connexion)", () => {
   it("retente une fois après un timeout de handshake", async () => {
     connectOutcomes.push("handshake-timeout", "ok")
 
-    const stream = await downloadFileFromSFTP("/feed.xml", options)
+    const { stream, stats } = await downloadFileFromSFTP("/feed.xml", options)
 
     await expect(text(stream)).resolves.toBe("<feed/>")
+    expect(stats).toEqual({ mtime: new Date("2025-11-01T12:00:00.000Z"), size: 7 })
     expect(connectCalls).toHaveLength(2)
   })
 
@@ -112,6 +130,33 @@ describe("downloadFileFromSFTP (connexion)", () => {
     connectOutcomes.push("auth-failure")
 
     await expect(downloadFileFromSFTP("/feed.xml", options)).rejects.toThrow("All configured authentication methods failed")
+    expect(connectCalls).toHaveLength(1)
+  })
+
+  it("télécharge quand même le fichier si le stat échoue, avec des stats nulles", async () => {
+    statFailures.count = 1
+    const warnSpy = vi.mocked(logger.warn)
+
+    const { stream, stats } = await downloadFileFromSFTP("/feed.xml", options)
+
+    await expect(text(stream)).resolves.toBe("<feed/>")
+    expect(stats).toEqual({ mtime: null, size: null })
+    expect(warnSpy).toHaveBeenCalledWith(expect.objectContaining({ remotePath: "/feed.xml" }), expect.stringContaining("stat"))
+    expect(connectCalls).toHaveLength(1)
+  })
+})
+
+describe("statFileOnSFTP", () => {
+  beforeEach(() => {
+    connectOutcomes.length = 0
+    connectCalls.length = 0
+  })
+
+  it("lit la date de modification et la taille sans télécharger le fichier", async () => {
+    await expect(statFileOnSFTP("/feed.xml", { host: "sftp.invalid", username: "lba", password: "secret" })).resolves.toEqual({
+      mtime: new Date("2025-11-01T12:00:00.000Z"),
+      size: 7,
+    })
     expect(connectCalls).toHaveLength(1)
   })
 })

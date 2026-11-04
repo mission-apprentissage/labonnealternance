@@ -183,8 +183,9 @@ export const jobsApiV3Routes = (server: Server) => {
       config,
     },
     async (req, res) => {
-      const ids = req.body
-      await incrementSearchViewCount(ids)
+      if (!isBotUserAgent(req.headers["user-agent"])) {
+        await incrementSearchViewCount(req.body)
+      }
       return res.status(200).send({})
     }
   )

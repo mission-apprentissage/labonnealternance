@@ -6,7 +6,7 @@ import { CardStyling } from "@/app/(candidat)/(recherche)/recherche/_components/
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { publicConfig } from "@/config.public"
-import { getDaysSinceDate } from "@/utils/date-utils"
+import { OffrePublieeDepuis } from "./OffrePublieeDepuis"
 import { cardName } from "./offres-item-list"
 
 const CarteOffre = ({ card, utmParams }) => {
@@ -83,22 +83,7 @@ const CarteOffre = ({ card, utmParams }) => {
               component="span"
               sx={{ alignItems: { xs: "left", sm: "left", md: "center" }, display: "flex", gap: fr.spacing("2v"), flexDirection: { xs: "column", sm: "column", md: "row" } }}
             >
-              {card.offer_creation &&
-                (() => {
-                  const daysPublished = getDaysSinceDate(card.offer_creation)
-                  return (
-                    <Typography
-                      component="span"
-                      sx={{
-                        color: fr.colors.decisions.text.mention.grey.default,
-                        py: fr.spacing("1v"),
-                      }}
-                      className={fr.cx("fr-text--xs")}
-                    >
-                      Publiée {`${daysPublished ? `depuis ${daysPublished} jour(s)` : "aujourd'hui"}`}
-                    </Typography>
-                  )
-                })()}
+              {card.offer_creation && <OffrePublieeDepuis date={card.offer_creation} />}
               {[JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA].includes(card.partner_label) && (
                 <Typography
                   component="span"

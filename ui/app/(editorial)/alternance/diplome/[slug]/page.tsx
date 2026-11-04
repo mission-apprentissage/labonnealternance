@@ -10,6 +10,7 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { UTM_PARAMS } from "@/app/(editorial)/alternance/diplome/[slug]/_data/constants"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -83,9 +84,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
+// Hauteur d'écran réservée pendant le streaming du contenu : évite que le pied de page ne saute à son arrivée (#5759)
 export default function DiplomePage({ params }: { params: Promise<{ slug: string }> }) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoadingEmptySpace />}>
       <DiplomeContent params={params} />
     </Suspense>
   )

@@ -1,9 +1,16 @@
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
+import { notifyJobSearchViewV3 } from "@/utils/api"
+import { useSearchViewNotifier } from "../_hooks/use-search-view-notifier"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { SearchResultsList } from "./SearchResultsList"
 
 vi.mock("./SearchHitCard", () => ({ SearchHitCard: () => <article /> }))
+vi.mock("@/utils/api", () => ({ notifyJobSearchViewV3: vi.fn() }))
+vi.mock("../_hooks/use-search-view-notifier", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("../_hooks/use-search-view-notifier")>()
+  return { ...mod, useSearchViewNotifier: vi.fn(mod.useSearchViewNotifier) }
+})
 
 const HINT = "Affinez votre recherche"
 
@@ -39,5 +46,28 @@ describe("SearchResultsList, fin de liste plafonnée par l'API", () => {
     const html = render([page(0, 20, 1140), page(20, 20, 1140)], true)
     expect(html).not.toContain(HINT)
     expect(html).toContain("Voir plus de résultats")
+  })
+})
+
+describe("SearchResultsList, comptage des apparitions en recherche", () => {
+  const mixedPage = {
+    hits: [
+      { _id: "6650a0000000000000000001", url_id: "6650a0000000000000000001", type: "offre" },
+      { _id: "6650a0000000000000000002", url_id: "cle-ministere-educatif", type: "formation" },
+      { _id: "6650a0000000000000000003", url_id: "12345678900011", type: "offre" },
+    ],
+    nbHits: 3,
+  }
+
+  it("transmet les ids des offres affichées, sans les formations", () => {
+    render([mixedPage as never], false)
+
+    expect(vi.mocked(useSearchViewNotifier)).toHaveBeenLastCalledWith(["6650a0000000000000000001", "6650a0000000000000000003"])
+  })
+
+  it("n'envoie rien au rendu serveur, celui que voient les robots", () => {
+    render([mixedPage as never], false)
+
+    expect(vi.mocked(notifyJobSearchViewV3)).not.toHaveBeenCalled()
   })
 })

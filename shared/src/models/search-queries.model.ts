@@ -24,8 +24,20 @@ export const ZSearchQuery = z.object({
   // chaîne (URL, API, base) pour ne pas polluer les stats. L'URL et l'API acceptent `source` en alias.
   search_source: z
     .enum(["suggestion", "free_text", "training_links", "external_sites", "partner_links"])
+    .nullable()
     .describe(
-      "Suggestion d'autocomplete sélectionnée vs texte libre vs lien généré côté serveur (traininglinks, vœux Parcoursup) vs lien personnalisé posé par un site externe vs lien généré pour un partenaire PRDV (/v2/appointment/links)"
+      "Suggestion d'autocomplete sélectionnée vs texte libre vs lien généré côté serveur (traininglinks, vœux Parcoursup) vs lien personnalisé posé par un site externe vs lien généré pour un partenaire PRDV (/v2/appointment/links). null : origine non transmise (navigation interne, moteur de recherche, rechargement, appel API). Les documents antérieurs à #5635 portent free_text dans ce cas"
+    ),
+  mode: z
+    .enum(["emplois", "formations", "emplois_formation"])
+    .nullable()
+    .optional()
+    .describe("Mode tel que transmis dans le querystring, null s'il est absent (appels API sans mode). Absent des documents antérieurs à #5635"),
+  channel: z
+    .enum(["site", "api"])
+    .optional()
+    .describe(
+      "site : appel du navigateur depuis notre domaine (Sec-Fetch-Site: same-origin, widget compris) ; api : tout autre appelant (scripts, robots, consommateurs directs). Signal statistique : un client hors navigateur peut poser l'en-tête lui-même. Absent des documents antérieurs à #5635"
     ),
   filters: z
     .object({
@@ -42,6 +54,12 @@ export const ZSearchQuery = z.object({
   geo: z.object({ lat: z.number(), lng: z.number() }).nullable().describe("Position arrondie à 1 décimale (~11 km)"),
   radius: z.number().nullable(),
   admin_area: z.string().nullable().describe("Emprise administrative demandée (region:53, departement:44), null pour une recherche par point + rayon ou sans lieu"),
+  auto_radius_intermediate: z
+    .literal(true)
+    .optional()
+    .describe(
+      "Présent uniquement quand la réponse déclenche un palier d'élargissement automatique du rayon de l'UI (0 résultat autour d'un point, rayon < 100 km) : résultat jamais vu par l'usager (#5634)"
+    ),
   created_at: z.date(),
 })
 
