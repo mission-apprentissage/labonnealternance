@@ -154,7 +154,12 @@ describe("evaluateBalShare", () => {
   })
 
   it("reste en alerte quand le volume ne permet pas de conclure au retour de BAL", () => {
-    expect(evaluateBalShare(entreprise(30, 40), normalBaseline, thresholds, 0.39).alert).toBe(true)
+    expect(evaluateBalShare(entreprise(30, 40), normalBaseline, thresholds, 0.39)).toMatchObject({ alert: true, heldForVolume: true })
+  })
+
+  it("(faux positif) n'attribue pas au volume une alerte que la part seule maintient, ni une entrée en alerte", () => {
+    expect(evaluateBalShare(entreprise(2, 40), normalBaseline, thresholds, 0.39)).toMatchObject({ alert: true, heldForVolume: false })
+    expect(evaluateBalShare(entreprise(0, 50), normalBaseline, thresholds, null)).toMatchObject({ alert: true, heldForVolume: false })
   })
 })
 
@@ -268,6 +273,23 @@ describe("règles d'auto-validation dans le socle de détection", () => {
     await runDetectionRules({ rules: autoValidationRules, now: new Date("2026-05-21T05:10:00Z") })
     expect(messages()).toHaveLength(2)
     expect(messages()[1]).toContain("Entrée en alerte · Taux d'auto-validation des comptes (gravité moyenne)")
+  })
+
+  it("explique dans le rappel une alerte maintenue faute de volume alors que la part est revenue au-dessus du seuil", async () => {
+    const runBalShare = (iso: string) => runDetectionRules({ rules: autoValidationRules, rule: autoValidationBalShareRule.id, now: new Date(iso) })
+    await seedBalIncident()
+    await runBalShare("2026-05-20T05:10:00Z")
+    // BAL est revenu, mais avec 4 rôles entreprise tranchés par jour : 28 sur la semaine, sous les 50 attendus.
+    await getDbCollection("rolemanagements").deleteMany({ createdAt: { $gte: day("2026-05-20") } })
+    await insertDays("2026-05-20", "2026-05-26", { bal: 3, lba: 1, refused: 0 })
+
+    await runBalShare("2026-05-27T05:10:00Z")
+
+    expect(messages()).toHaveLength(2)
+    expect(messages()[1]).toContain("Rappel · Part BAL des validations automatiques")
+    expect(messages()[1]).toContain(
+      "75 % sur les 7 derniers jours (21 sur 28), contre 29 % sur les 28 jours précédents (80 sur 280). Seuil d'alerte : 19 %, calculé sur la part d'avant l'incident (39 %). L'alerte reste ouverte faute de volume pour conclure au retour de BAL : 28 rôles entreprise tranchés, 50 attendus."
+    )
   })
 
   it("n'alerte sur le taux global qu'au second constat, avec les taux, les volumes et la répartition", async () => {

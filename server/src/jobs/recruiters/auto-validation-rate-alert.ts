@@ -103,7 +103,7 @@ export const evaluateBalShare = (
   const enoughVolume = recent.entrepriseDecided >= minVolume
   const belowThreshold = recentShare !== null && referenceShare !== null && referenceShare > 0 && isBelow(recentShare, dropRatio * referenceShare)
   const alert = openingReference === null ? enoughVolume && belowThreshold : belowThreshold || !enoughVolume
-  return { recentShare, baselineShare, referenceShare, alert }
+  return { recentShare, baselineShare, referenceShare, alert, heldForVolume: alert && !belowThreshold }
 }
 
 export const evaluateRateDrop = (recent: IWindowStats, baseline: IWindowStats, { minVolume, dropThresholdPoints }: { minVolume: number; dropThresholdPoints: number }) => {
@@ -193,12 +193,16 @@ export const autoValidationBalShareRule: IDetectionRule<z.output<typeof balShare
   evaluate: async ({ now, thresholds, activeAlerts }) => {
     const { asOf, recent, baseline } = await loadWindows(now, thresholds.recentDays, thresholds.baselineDays)
     const openingReference = openingReferenceShare(activeAlerts)
-    const { recentShare, baselineShare, referenceShare, alert } = evaluateBalShare(recent, baseline, thresholds, openingReference)
+    const { recentShare, baselineShare, referenceShare, alert, heldForVolume } = evaluateBalShare(recent, baseline, thresholds, openingReference)
     const threshold = referenceShare === null ? null : thresholds.dropRatio * referenceShare
     const thresholdText =
       openingReference === null
         ? `Seuil d'alerte : ${formatPercent(threshold)}.`
         : `Seuil d'alerte : ${formatPercent(threshold)}, calculé sur la part d'avant l'incident (${formatPercent(referenceShare)}).`
+    // Sans cette phrase, un rappel afficherait une part au-dessus du seuil sans dire pourquoi l'alerte reste ouverte.
+    const volumeText = heldForVolume
+      ? ` L'alerte reste ouverte faute de volume pour conclure au retour de BAL : ${recent.entrepriseDecided} rôles entreprise tranchés, ${thresholds.minVolume} attendus.`
+      : ""
     return evaluation(
       alert,
       {
@@ -210,10 +214,11 @@ export const autoValidationBalShareRule: IDetectionRule<z.output<typeof balShare
         recent_share: roundRatio(recentShare),
         baseline_share: roundRatio(baselineShare),
         reference_share: roundRatio(referenceShare),
+        maintenue_faute_de_volume: heldForVolume,
         repartition: formatBreakdown(recent.breakdown),
       },
       [
-        `Part des rôles entreprise tranchés validés par BAL : ${formatPercent(recentShare)} sur les ${thresholds.recentDays} derniers jours (${recent.entrepriseBal} sur ${recent.entrepriseDecided}), contre ${formatPercent(baselineShare)} sur les ${thresholds.baselineDays} jours précédents (${baseline.entrepriseBal} sur ${baseline.entrepriseDecided}). ${thresholdText}`,
+        `Part des rôles entreprise tranchés validés par BAL : ${formatPercent(recentShare)} sur les ${thresholds.recentDays} derniers jours (${recent.entrepriseBal} sur ${recent.entrepriseDecided}), contre ${formatPercent(baselineShare)} sur les ${thresholds.baselineDays} jours précédents (${baseline.entrepriseBal} sur ${baseline.entrepriseDecided}). ${thresholdText}${volumeText}`,
         `Répartition sur ${thresholds.recentDays} jours : ${formatBreakdown(recent.breakdown)}`,
       ].join("\n")
     )
