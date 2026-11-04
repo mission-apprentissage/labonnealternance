@@ -31,7 +31,7 @@ const JOBS: { name: TriggerableJob; label: string; confirmMessage?: string; hidd
     name: "processSuggestionsNafLast24h",
     label: "Suggestions d'offres sur d'autres secteurs (dernières 24 h)",
     confirmMessage: "Ce job envoie l'email de suggestions aux nouveaux candidats des dernières 24 h qui ne l'ont pas encore reçu. Confirmer l'envoi ?",
-    // Test en recette uniquement : en production, le cron quotidien envoie l'email le lendemain de la candidature (RG 3).
+    // Refusé en production côté serveur, cf. processSuggestionsNafLast24h
     hiddenInProduction: true,
   },
 ]

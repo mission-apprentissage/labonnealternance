@@ -1,6 +1,7 @@
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
+import config from "@/config"
 
 import type { SuggestionsNafWindow } from "./find-suggestions-naf-applicants"
 import { findSuggestionsNafApplicants, getLast24hWindow, getPreviousDayWindow } from "./find-suggestions-naf-applicants"
@@ -30,4 +31,11 @@ const processSuggestionsNafForWindow = async (window: SuggestionsNafWindow) => {
 
 export const processSuggestionsNaf = async () => processSuggestionsNafForWindow(getPreviousDayWindow())
 
-export const processSuggestionsNafLast24h = async () => processSuggestionsNafForWindow(getLast24hWindow())
+// Test en recette : en production, l'email part le lendemain de la candidature (RG 3), via le cron ou un rejeu de processSuggestionsNaf.
+// Gardé ici et pas seulement côté UI : la route d'admin et la CLI l'appellent aussi.
+export const processSuggestionsNafLast24h = async () => {
+  if (config.env === "production") {
+    throw new Error("processSuggestionsNafLast24h: test manuel réservé hors production, utiliser processSuggestionsNaf")
+  }
+  return processSuggestionsNafForWindow(getLast24hWindow())
+}
