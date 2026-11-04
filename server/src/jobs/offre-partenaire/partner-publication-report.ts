@@ -5,6 +5,7 @@ import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.mode
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { formatSlackTable } from "@/common/utils/slack-utils"
 import { jobPartnersByFlux } from "./process-job-partners"
 
 /** Seuil d'alerte à confirmer (#5671). */
@@ -116,33 +117,57 @@ const getAlert = ({ received, validated, businessErrors, active }: PartnerPublic
   return null
 }
 
-const formatStats = (partnerStats: PartnerPublicationStats, alert: string | null): string => {
-  const { partner_label, received, validated, businessErrors, validationErrors, active } = partnerStats
+const PUBLICATION_TABLE_HEADER = ["Partenaire", "Reçues", "B.err", "Valid.", "Taux", "E.val", "Actives", "Motif principal"]
+const PUBLICATION_TABLE_ALIGN_RIGHT = [false, true, true, true, true, true, true, false]
+
+const PUBLICATION_TABLE_LEGEND = "B.err = business_error, E.val = erreur de validation, Taux = Valid. / (Reçues − B.err)"
+
+const getBlockedBreakdown = (businessErrors: PartnerPublicationStats["businessErrors"]) => {
   const blocked = Object.entries(businessErrors).sort(([reasonA, a], [reasonB, b]) => b - a || reasonA.localeCompare(reasonB))
-  const blockedCount = blocked.reduce((sum, [, count]) => sum + count, 0)
+  return { blocked, blockedCount: blocked.reduce((sum, [, count]) => sum + count, 0) }
+}
+
+// Offres ni validées, ni en erreur de validation, ni en business_error : le traitement de nuit ne les a pas tranchées.
+const getPendingCount = ({ received, validated, businessErrors, validationErrors }: PartnerPublicationStats) =>
+  received - getBlockedBreakdown(businessErrors).blockedCount - validated - validationErrors
+
+const toPublicationRow = ({ partner_label, received, validated, businessErrors, validationErrors, active }: PartnerPublicationStats, alert: string | null): string[] => {
+  const { blocked, blockedCount } = getBlockedBreakdown(businessErrors)
   const eligible = received - blockedCount
-  const pending = eligible - validated - validationErrors
-  const rate = eligible > 0 ? `${Math.round((validated / eligible) * 100)} %` : "n/a"
-  const blockedDetail = blocked.length ? ` (${blocked.map(([reason, count]) => `${reason} ${count}`).join(", ")})` : ""
-  const parts = [
-    `${received} reçues`,
-    `${validated} validées (${rate} hors business_error)`,
-    `${blockedCount} en business_error${blockedDetail}`,
-    `${validationErrors} en erreur de validation`,
-    ...(pending > 0 ? [`${pending} sans verdict de validation`] : []),
-    `${active} actives`,
+  const rate = eligible > 0 ? `${Math.round((validated / eligible) * 100)}%` : "n/a"
+  const [mainReason, ...otherReasons] = blocked
+  const otherReasonsSuffix = otherReasons.length ? ` (+${otherReasons.length} motif${otherReasons.length > 1 ? "s" : ""})` : ""
+  return [
+    `${alert ? "! " : ""}${partner_label}`,
+    String(received),
+    String(blockedCount),
+    String(validated),
+    rate,
+    String(validationErrors),
+    String(active),
+    mainReason ? `${mainReason[0]} ${mainReason[1]}${otherReasonsSuffix}` : "",
   ]
-  return `• ${alert ? "ALERTE " : ""}${partner_label} : ${parts.join(", ")}${alert ? ` — ${alert}` : ""}`
 }
 
 export const formatPartnerPublicationReport = (stats: PartnerPublicationStats[]): string[] => {
   const rows = stats.map((partnerStats) => ({ partnerStats, alert: getAlert(partnerStats) }))
   rows.sort((a, b) => Number(Boolean(b.alert)) - Number(Boolean(a.alert)) || a.partnerStats.partner_label.localeCompare(b.partnerStats.partner_label))
-  const alertCount = rows.filter(({ alert }) => alert).length
+  const alerts = rows.filter(({ alert }) => alert)
+  const pendingLines = rows.flatMap(({ partnerStats }) => {
+    const pending = getPendingCount(partnerStats)
+    return pending > 0 ? [`• ${partnerStats.partner_label} : ${pending} sans verdict de validation`] : []
+  })
   return [
     "",
-    `Taux de publication par partenaire flux${alertCount ? ` (${alertCount} à surveiller)` : ""} :`,
-    ...rows.map(({ partnerStats, alert }) => formatStats(partnerStats, alert)),
+    `Taux de publication par partenaire flux${alerts.length ? ` (${alerts.length} à surveiller)` : ""} :`,
+    ...formatSlackTable(
+      PUBLICATION_TABLE_HEADER,
+      rows.map(({ partnerStats, alert }) => toPublicationRow(partnerStats, alert)),
+      { alignRight: PUBLICATION_TABLE_ALIGN_RIGHT }
+    ),
+    PUBLICATION_TABLE_LEGEND,
+    ...alerts.map(({ partnerStats, alert }) => `• ALERTE ${partnerStats.partner_label} : ${alert}`),
+    ...pendingLines,
   ]
 }
 
