@@ -257,6 +257,26 @@ describe("règles d'auto-validation dans le socle de détection", () => {
     expect(await getDbCollection("detection_alerts").countDocuments()).toBe(0)
   })
 
+  it("notifie au cron, état relu en base chaque jour, exactement ce que le rejeu annonce", async () => {
+    await seedBalIncident()
+    const from = day("2026-05-05")
+    const to = day("2026-06-21")
+    const labels: Record<string, string> = { entree: "Entrée en alerte", rappel: "Rappel", sortie: "Sortie d'alerte" }
+
+    const { lines } = await replayDetectionRule({ rule: autoValidationBalShareRule, from, to, thresholds: autoValidationBalShareRule.thresholds.parse({}) })
+    const replayed = lines.flatMap(({ slot, notifications }) => notifications.map((type) => `${slot.slice(0, 10)} ${labels[type]}`))
+
+    const notified: string[] = []
+    for (let date = from; date < to; date = new Date(date.getTime() + DAY_MS)) {
+      vi.mocked(notifyToSlack).mockClear()
+      await runDetectionRules({ rules: autoValidationRules, rule: autoValidationBalShareRule.id, now: new Date(date.getTime() + (5 * 60 + 10) * 60 * 1000) })
+      notified.push(...messages().map((message) => `${date.toISOString().slice(0, 10)} ${message.split(" · ")[0]}`))
+    }
+
+    expect(replayed).toEqual(["2026-05-16 Entrée en alerte", "2026-05-23 Rappel", "2026-05-30 Rappel", "2026-06-06 Sortie d'alerte"])
+    expect(notified).toEqual(replayed)
+  })
+
   it("notifie la chute de la part BAL avec les volumes, puis le taux global au second constat, sans donnée de compte", async () => {
     await seedBalIncident()
 
