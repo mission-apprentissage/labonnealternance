@@ -66,19 +66,32 @@ export const formatDetectionNotification = (
   }
 }
 
+/** Envoi refusé : la règle a bien été évaluée, seul l'envoi est à retenter. */
+export class DetectionNotificationError extends Error {
+  constructor(cause: unknown) {
+    super(`notification de détection non envoyée (${cause instanceof Error ? cause.name : "Error"})`, { cause })
+    this.name = "DetectionNotificationError"
+  }
+}
+
 export const notifyDetection = async (
   target: IDetectionNotificationTarget,
   type: IDetectionNotificationType,
   alert: IDetectionAlert,
   links: IDetectionFinding["links"],
   now: Date
-) =>
-  notifyToSlack({
-    subject: SUBJECT,
-    message: formatDetectionNotification(target, type, alert, links, now),
-    error: type !== "sortie",
-    webhook: config.detectionSlackWebhook,
-  })
+) => {
+  try {
+    await notifyToSlack({
+      subject: SUBJECT,
+      message: formatDetectionNotification(target, type, alert, links, now),
+      error: type !== "sortie",
+      webhook: config.detectionSlackWebhook,
+    })
+  } catch (error) {
+    throw new DetectionNotificationError(error)
+  }
+}
 
 export const sendDetectionTestAlert = async () => {
   await notifyToSlack({

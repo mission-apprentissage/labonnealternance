@@ -299,17 +299,19 @@ describe("runDetectionRules", () => {
     expect(await getDbCollection("detection_alerts").findOne({ key: EVALUATION_FAILURE_KEY })).toMatchObject({ rule_id: "regle_en_echec", status: "fermee" })
   })
 
-  it("retente une entrée en alerte dont la notification a échoué, sans la marquer notifiée", async () => {
+  it("retente une entrée en alerte dont la notification a échoué, sans la marquer notifiée ni la signaler comme un échec d'évaluation", async () => {
     const { rule, counts } = buildRule()
     counts.set("global", 12)
     vi.mocked(notifyToSlack).mockRejectedValueOnce(new Error("Slack indisponible"))
 
-    await expect(runDetectionRules({ rules: [rule], now: at("2026-10-22T08:05:00Z") })).rejects.toThrow()
+    await expect(runDetectionRules({ rules: [rule], now: at("2026-10-22T08:05:00Z") })).rejects.toThrow("règles de détection en échec : regle_factice")
     expect(await getDbCollection("detection_alerts").findOne({ key: "global" })).toBeNull()
 
     await runDetectionRules({ rules: [rule], now: at("2026-10-22T08:20:00Z") })
     expect(await getDbCollection("detection_alerts").findOne({ key: "global" })).toMatchObject({ status: "ouverte" })
-    expect(messages().filter((message) => message.startsWith("Entrée en alerte · Règle factice"))).toHaveLength(2)
+    // L'envoi refusé, puis celui qui passe : aucun épisode « Évaluation de … » ouvert puis clos pour un simple refus de Slack.
+    expect(messages().map((message) => message.split("\n")[0])).toEqual(["Entrée en alerte · Règle factice (gravité haute)", "Entrée en alerte · Règle factice (gravité haute)"])
+    expect(await getDbCollection("detection_alerts").countDocuments({ key: EVALUATION_FAILURE_KEY })).toBe(0)
   })
 
   it("écarte un constat qui porte une adresse email, sans l'écrire ni l'envoyer", async () => {

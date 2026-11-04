@@ -7,7 +7,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import type { IDetectionNotificationTarget } from "./detection-notification"
-import { assertNoEmailInFinding, notifyDetection } from "./detection-notification"
+import { assertNoEmailInFinding, DetectionNotificationError, notifyDetection } from "./detection-notification"
 import type { IDetectionFinding, IDetectionRule } from "./detection-rule"
 import { detectionRules } from "./detection-rules"
 
@@ -311,19 +311,22 @@ const runRule = async (rule: IDetectionRule, at: Date, dryRun: boolean, leaseOpt
       logger.error({ rule: rule.id, slot }, "bail de règle de détection perdu en cours d'évaluation")
       return { rule: rule.id, status: "bail_perdu", slot }
     }
-    logger.error({ rule: rule.id, error: errorName(error) }, "règle de détection en échec")
+    // Évaluation réussie mais envoi refusé : un épisode d'échec partirait sur le même canal et dirait l'évaluation impossible.
+    const notificationFailed = error instanceof DetectionNotificationError
+    logger.error({ rule: rule.id, error: errorName(error) }, notificationFailed ? "notification d'une règle de détection en échec" : "règle de détection en échec")
     if (lease) {
       try {
         // Sans l'état des épisodes d'échec (lecture en échec), un nouvel épisode heurterait l'index unique.
-        const failure = failureAlerts
-          ? reconcileFindings({
-              findings: [failureFinding(errorName(error))],
-              activeAlerts: failureAlerts,
-              confirmations: 1,
-              reminderEveryHours: FAILURE_REMINDER_HOURS,
-              now: slot,
-            })
-          : []
+        const failure =
+          failureAlerts && !notificationFailed
+            ? reconcileFindings({
+                findings: [failureFinding(errorName(error))],
+                activeAlerts: failureAlerts,
+                confirmations: 1,
+                reminderEveryHours: FAILURE_REMINDER_HOURS,
+                now: slot,
+              })
+            : []
         for (const transition of failure) {
           await lease.renew()
           await applyTransition(failureTarget(rule), transition, slot)
