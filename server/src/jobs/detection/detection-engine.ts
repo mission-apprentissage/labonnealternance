@@ -7,8 +7,8 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import type { IDetectionNotificationTarget } from "./detection-notification"
-import { assertNoEmailInFinding, DetectionNotificationError, notifyDetection } from "./detection-notification"
-import type { IDetectionFinding, IDetectionRule } from "./detection-rule"
+import { assertNoEmailInFinding, assertNoEmailInObservations, DetectionNotificationError, notifyDetection } from "./detection-notification"
+import type { IDetectionEvaluation, IDetectionFinding, IDetectionRule } from "./detection-rule"
 import { detectionRules } from "./detection-rules"
 
 const MINUTE_MS = 60 * 1000
@@ -94,7 +94,7 @@ export const reconcileFindings = ({
   return transitions
 }
 
-const assertValidFindings = (rule: IDetectionRule, findings: IDetectionFinding[]) => {
+const assertValidEvaluation = (rule: IDetectionRule, { findings, observations }: IDetectionEvaluation) => {
   const keys = findings.map(({ key }) => key)
   if (new Set(keys).size !== keys.length) {
     throw new Error(`règle ${rule.id} : plusieurs constats pour une même clé`)
@@ -103,6 +103,7 @@ const assertValidFindings = (rule: IDetectionRule, findings: IDetectionFinding[]
     throw new Error(`règle ${rule.id} : clé réservée ${EVALUATION_FAILURE_KEY}`)
   }
   findings.forEach((finding) => assertNoEmailInFinding(rule.id, finding))
+  assertNoEmailInObservations(rule.id, observations)
 }
 
 /** État de l'épisode après la transition, `null` s'il est abandonné. */
@@ -289,7 +290,7 @@ const runRule = async (rule: IDetectionRule, at: Date, dryRun: boolean, leaseOpt
     const findingAlerts = activeAlerts.filter(({ key }) => key !== EVALUATION_FAILURE_KEY)
     const { thresholds } = resolveRuleSettings(rule, state)
     const { findings, observations } = await rule.evaluate({ now: slot, thresholds, activeAlerts: findingAlerts })
-    assertValidFindings(rule, findings)
+    assertValidEvaluation(rule, { findings, observations })
     const transitions = reconcileFindings({ findings, activeAlerts: findingAlerts, confirmations: rule.confirmations, reminderEveryHours: rule.reminderEveryHours, now: slot })
     const recovery = reconcileFindings({ findings: [], activeAlerts: failureAlerts, confirmations: 1, reminderEveryHours: FAILURE_REMINDER_HOURS, now: slot })
     if (lease) {

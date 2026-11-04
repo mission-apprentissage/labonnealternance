@@ -1,4 +1,4 @@
-import type { IDetectionAlert, IDetectionSeverity } from "shared/models/detection-alerts.model"
+import type { IDetectionAlert, IDetectionMetrics, IDetectionSeverity } from "shared/models/detection-alerts.model"
 
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import config from "@/config"
@@ -17,21 +17,38 @@ const SEVERITY_LABELS: Record<IDetectionSeverity, string> = {
   technique: "incident technique",
 }
 
-const EMAIL_PATTERN = /[^\s@<>|]+@[^\s@<>|]+\.[a-z]{2,}/i
+// Bornes de EMAIL_PATTERN (sentry.ts). La partie locale exclut « / » et « : » : une arobase dans un chemin d'URL
+// (`/package/@sentry/node.js`) n'est pas une adresse.
+const EMAIL_PATTERN = /[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]{1,63}(?:\.[A-Za-z0-9-]{1,63})*\.[A-Za-z]{2,24}/
+
+const decodeUrlEscapes = (text: string) => {
+  try {
+    return decodeURIComponent(text)
+  } catch {
+    return text
+  }
+}
+
+// Une adresse passée dans un lien par encodeURIComponent s'écrit `rh%40entreprise.fr`.
+const containsEmail = (text: string) => EMAIL_PATTERN.test(text) || EMAIL_PATTERN.test(decodeUrlEscapes(text))
+
+const metricTexts = (metrics: IDetectionMetrics) => Object.entries(metrics).flatMap(([name, value]) => (typeof value === "string" ? [name, value] : [name]))
 
 /**
  * Garde-fou de #5421 : un constat ne porte que des identifiants techniques, des comptes et des liens.
  * Seules les adresses email sont détectables ; le message d'erreur ne reprend pas la valeur en cause.
  */
 export const assertNoEmailInFinding = (ruleId: string, finding: IDetectionFinding) => {
-  const texts = [
-    finding.key,
-    finding.summary,
-    ...Object.values(finding.metrics).filter((value): value is string => typeof value === "string"),
-    ...(finding.links ?? []).flatMap(({ label, url }) => [label, url]),
-  ]
-  if (texts.some((text) => EMAIL_PATTERN.test(text))) {
+  const texts = [finding.key, finding.summary, ...metricTexts(finding.metrics), ...(finding.links ?? []).flatMap(({ label, url }) => [label, url])]
+  if (texts.some(containsEmail)) {
     throw new Error(`constat écarté de la règle ${ruleId} : adresse email détectée`)
+  }
+}
+
+/** Les mesures d'un passage sont journalisées à chaque évaluation, constat ou non : même garde-fou que les constats. */
+export const assertNoEmailInObservations = (ruleId: string, observations: IDetectionMetrics | undefined) => {
+  if (observations && metricTexts(observations).some(containsEmail)) {
+    throw new Error(`mesures écartées de la règle ${ruleId} : adresse email détectée`)
   }
 }
 

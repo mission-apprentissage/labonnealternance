@@ -9,7 +9,7 @@ Code : [server/src/jobs/detection/](../server/src/jobs/detection/). Un seul cron
 À chaque passage, pour chaque règle active dont le créneau est échu :
 
 1. L'exécution prend un bail sur la règle dans `detection_rules` : une seule exécution évalue une règle à la fois, quel que soit le créneau. Le bail dure 10 minutes et se prolonge tant que l'évaluation tourne. Le créneau n'est marqué évalué qu'à la fin : si le process est tué, le bail expire et le passage suivant du cron réévalue le créneau.
-2. `evaluate` renvoie des constats, un par objet (`key`) : identifiants techniques, comptes, une phrase et des liens. Un constat qui contient une adresse email est écarté et la règle passe en échec.
+2. `evaluate` renvoie des constats, un par objet (`key`) : identifiants techniques, comptes, une phrase et des liens. Un constat ou des mesures qui contiennent une adresse email, y compris dans un nom de métrique ou encodée dans un lien (`%40`), sont écartés et la règle passe en échec.
 3. Chaque constat est rapproché de l'épisode en cours pour le même objet, dans `detection_alerts` :
 
 | Situation | Effet | Notification |

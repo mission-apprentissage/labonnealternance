@@ -172,6 +172,7 @@ describe("assertNoEmailInFinding", () => {
     ["une mention Slack", { summary: "cc <@U04ABCDEF>" }],
     ["une arobase dans un chemin d'URL", { links: [{ label: "profil", url: "https://exemple.fr/@lba" }] }],
     ["une arobase isolée", { summary: "3 @ 50 rôles" }],
+    ["un paquet npm dans un chemin d'URL", { links: [{ label: "doc", url: "https://www.npmjs.com/package/@sentry/node.js" }] }],
   ])("laisse passer %s", (_, overrides) => {
     expect(() => assertNoEmailInFinding("regle_factice", { ...finding("global"), ...overrides })).not.toThrow()
   })
@@ -181,6 +182,8 @@ describe("assertNoEmailInFinding", () => {
     ["la phrase", { summary: "compte de prenom.nom@entreprise.fr" }],
     ["une métrique", { metrics: { domaine: "x", contact: "rh@entreprise.com" } }],
     ["un lien", { links: [{ label: "fiche", url: "https://exemple.fr/?email=rh@entreprise.com" }] }],
+    ["le nom d'une métrique", { metrics: { "rh@entreprise.fr": 1 } }],
+    ["un lien encodé", { links: [{ label: "fiche", url: "https://exemple.fr/admin/users?email=rh%40entreprise.fr" }] }],
   ])("écarte un constat qui porte une adresse email dans %s, sans la recopier dans l'erreur", (_, overrides) => {
     const check = () => assertNoEmailInFinding("regle_factice", { ...finding("global"), ...overrides })
     expect(check).toThrow("adresse email détectée")
@@ -320,6 +323,15 @@ describe("runDetectionRules", () => {
     await expect(runDetectionRules({ rules: [rule], now: at("2026-10-22T08:05:00Z") })).rejects.toThrow()
 
     expect(await getDbCollection("detection_alerts").findOne({ key: "global" })).toBeNull()
+    expect(messages().join("\n")).not.toContain("entreprise.fr")
+  })
+
+  it("écarte des mesures journalisées qui portent une adresse email, même sans constat", async () => {
+    const { rule } = buildRule({ evaluate: async () => ({ findings: [], observations: { dernier_compte: "rh@entreprise.fr" } }) })
+
+    await expect(runDetectionRules({ rules: [rule], now: at("2026-10-22T08:05:00Z") })).rejects.toThrow("règles de détection en échec : regle_factice")
+
+    expect(messages()).toEqual([expect.stringContaining("Évaluation impossible (Error)")])
     expect(messages().join("\n")).not.toContain("entreprise.fr")
   })
 
