@@ -56,8 +56,6 @@ export const ameliorerTexteOffreByToken = async (establishment_id: string, field
   apiPost("/formulaire/:establishment_id/offre/ameliorer-texte/by-token", { params: { establishment_id }, body: { field, text }, headers: { authorization: `Bearer ${token}` } })
 export const viewOffreDelegation = async (jobId: string, siret: string, token: string) =>
   apiPatch(`/formulaire/offre/:jobId/delegation/view`, { params: { jobId }, querystring: { siret_formateur: siret }, headers: { authorization: `Bearer ${token}` } })
-export const cancelPartnerJob = async (id: string, token: string) => apiPost("/v2/_private/jobs/canceled/:id", { params: { id }, headers: { authorization: `Bearer ${token}` } })
-export const providedPartnerJob = async (id: string, token: string) => apiPost("/v2/_private/jobs/provided/:id", { params: { id }, headers: { authorization: `Bearer ${token}` } })
 // once offres_emploi_lba are definitly stored in jobs partners, we can move this call to /jobs/:jobId/cancel
 export const cancelOffre = async (jobId: string, token: string, data: IRoutes["put"]["/formulaire/offre/:jobId/cancel"]["body"]["_input"]) =>
   apiPut(`/formulaire/offre/:jobId/cancel`, { params: { jobId }, body: data, headers: { authorization: `Bearer ${token}` } })
@@ -68,7 +66,6 @@ export const extendOffre = async (jobId: string, jobFields: Jsonify<IBody<IRoute
   const body: IBody<IRoutes["put"]["/formulaire/offre/:jobId/extend"]> = jobFields
   return apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId }, body })
 }
-export const fillOffre = async (jobId: string, token: string) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
 export const notifyJobDetailViewV3 = async (job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson) => {
   const jobId = getObjectId(job)

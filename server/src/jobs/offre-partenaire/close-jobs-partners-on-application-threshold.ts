@@ -1,6 +1,5 @@
 import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
@@ -67,7 +66,7 @@ const sendThresholdEmails = async (closedJobs: IJobsPartnersOfferPrivate[]) => {
           establishment_raison_sociale: getReminderCompanyName(firstJob),
           offres: jobsGroup.map((job) => ({
             job_title: job.offer_title,
-            cloturer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+            cloturer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
           })),
           publicEmail: config.publicEmail,
         },

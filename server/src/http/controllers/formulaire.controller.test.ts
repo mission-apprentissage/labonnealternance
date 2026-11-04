@@ -443,9 +443,10 @@ describe("formulaire.controller", () => {
       const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies: entrepriseCookies })
       const job = offerResponse.json() as GetOfferResponse
 
-      const cancelResponse = await entrepriseSdkInstance.providedOffer({
+      const cancelResponse = await entrepriseSdkInstance.cancelOffer({
         jobId,
         user,
+        body: { job_status: JOB_STATUS.POURVUE, job_status_comment: "J'ai pourvu l'offre avec La bonne alternance" },
       })
       expect.soft(cancelResponse.statusCode).toBe(200)
       // when
@@ -509,38 +510,6 @@ describe("formulaire.controller", () => {
 
       // when
       const response = await entrepriseSdkInstance.cancelOffer({
-        jobId: new ObjectId().toString(),
-        user,
-      })
-      expect.soft(response.statusCode).toBe(400)
-    })
-  })
-  describe("PUT /formulaire/offre/:jobId/provided", () => {
-    it("dépublie une offre avec status Pourvue", async () => {
-      // given
-      const { cookies: entrepriseCookies, formulaire, user } = await entrepriseSdkInstance.createAndGetConnectedUser()
-
-      const createOfferResponse = await entrepriseSdkInstance.createOffer({
-        establishment_id: formulaire!.establishment_id,
-        cookies: entrepriseCookies,
-        job: buildCreateJobDataFromReferentiel(referentielRome),
-      })
-      const { _id: jobObjectId } = createOfferResponse.json() as OfferCreationResponse
-      const jobId = jobObjectId.toString()
-
-      // when
-      const response = await entrepriseSdkInstance.providedOffer({
-        jobId,
-        user,
-      })
-      expect.soft(response.statusCode).toBe(200)
-    })
-    it("renvoie une 400 lorsque l'offre n'existe pas", async () => {
-      // given
-      const { user } = await entrepriseSdkInstance.createAndGetConnectedUser()
-
-      // when
-      const response = await entrepriseSdkInstance.providedOffer({
         jobId: new ObjectId().toString(),
         user,
       })

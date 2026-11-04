@@ -1,6 +1,7 @@
 import { badRequest } from "@hapi/boom"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import { omit } from "lodash-es"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
@@ -14,6 +15,7 @@ import { ApplicationScanStatus, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { verifyJwtToken } from "@/security/access-token.service"
 import mailer from "@/services/mailer.service"
 import { saveApplicationTrafficSourceIfAny } from "@/services/traffic-source.service"
 import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, removeEmailFromLbaCompanies, sendApplicationV2 } from "./application.service"
@@ -792,6 +794,72 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
     expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
+  })
+})
+
+describe("mail recruteur — lien de clôture de l'offre", () => {
+  const mailerSendEmailSpy = vi.mocked(mailer.sendEmail)
+  const companyEmail = "company@test.fr"
+
+  const sendRecruiterEmailFor = async ({ job_origin, workplace_siret }: { job_origin: LBA_ITEM_TYPE; workplace_siret: string | null }) => {
+    const user = await saveUserWithAccount()
+    const jobId = new ObjectId()
+    const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
+    await getDbCollection("applicants").insertOne(applicant)
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: jobId,
+        partner_label: job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA : JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+        managed_by: job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? user._id : null,
+        apply_email: companyEmail,
+        workplace_siret,
+      })
+    )
+    const application = generateApplicationFixture({
+      applicant_id: applicant._id,
+      job_origin,
+      job_id: jobId,
+      company_email: companyEmail,
+      to_company_message_id: null,
+      to_applicant_message_id: null,
+      scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
+    })
+    await getDbCollection("applications").insertOne(application)
+
+    await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
+
+    const call = mailerSendEmailSpy.mock.calls.find(([args]) => args.to === companyEmail)
+    if (!call) throw new Error("mail recruteur non envoyé")
+    return { jobId, cancelJobUrl: (call[0].data as Record<string, string>).cancelJobUrl }
+  }
+
+  beforeEach(async () => {
+    mailerSendEmailSpy.mockClear()
+  })
+
+  it("connecte le recruteur d'une offre LBA et ouvre la modale de clôture", async () => {
+    const { jobId, cancelJobUrl } = await sendRecruiterEmailFor({ job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, workplace_siret: "12345678901234" })
+
+    const url = new URL(cancelJobUrl)
+    expect.soft(url.pathname).toBe("/espace-pro/authentification")
+    expect.soft(url.searchParams.get("redirect")).toContain(`action=cloturer&jobId=${jobId}`)
+  })
+
+  it("renvoie vers la page autonome de clôture une offre LBA sans siret, avec un jeton limité à la route de clôture", async () => {
+    const { jobId, cancelJobUrl } = await sendRecruiterEmailFor({ job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, workplace_siret: null })
+
+    const url = new URL(cancelJobUrl)
+    expect.soft(url.pathname).toBe(`/espace-pro/offre/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${jobId}/cancel`)
+    const { scopes } = verifyJwtToken(url.searchParams.get("token")!)
+    expect
+      .soft(scopes.map(({ method, path, options }) => ({ method, path, options })))
+      .toEqual([{ method: "put", path: "/formulaire/offre/:jobId/cancel", options: { params: { jobId: jobId.toString() } } }])
+  })
+
+  it("ne propose aucun lien de clôture pour une offre partenaire", async () => {
+    const { cancelJobUrl } = await sendRecruiterEmailFor({ job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, workplace_siret: "12345678901234" })
+
+    expect.soft(cancelJobUrl).toBe("")
   })
 })
 
