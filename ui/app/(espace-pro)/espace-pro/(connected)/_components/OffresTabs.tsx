@@ -21,6 +21,7 @@ import { sortReactTableDate } from "@/utils/date-utils"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import { getAgentNoteLines } from "./moderation/AgentNote"
 import { ConformityBadge } from "./moderation/ModerationBadges"
+import { awaitsModerationDecision } from "./moderation/moderation.types"
 import { OffresTabsMenu } from "./OffresTabsMenu"
 
 const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
@@ -267,6 +268,7 @@ export const OffresTabs = ({
             row={row}
             hideCfaShareAction={hideCfaShareAction}
             isModerable={summariesById.has(row._id)}
+            awaitsModerationDecision={awaitsModerationDecision(row.job_status, summariesById.get(row._id))}
             onOffreProlongationClick={() => {
               setCurrentOfferId(row._id)
               offreProlongationModalControls.onOpen()

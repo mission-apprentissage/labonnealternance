@@ -22,6 +22,7 @@ export const OffresTabsMenu = ({
   onOffreProlongationClick,
   hideCfaShareAction = false,
   isModerable = false,
+  awaitsModerationDecision = false,
 }: {
   row: any
   openSuppression: (row: any) => any
@@ -30,6 +31,8 @@ export const OffresTabsMenu = ({
   hideCfaShareAction?: boolean
   /** L'offre est dans le périmètre de modération de l'utilisateur : sinon la page de modération renverrait 403. */
   isModerable?: boolean
+  /** L'offre en ligne attend une décision de modération. */
+  awaitsModerationDecision?: boolean
 }) => {
   const router = useRouter()
   const { user } = useAuth()
@@ -57,9 +60,11 @@ export const OffresTabsMenu = ({
   const directLink = `${publicConfig.baseUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
   const isDisabled = row.job_status === "Annulée" || row.job_status === "Pourvue"
   // Une offre en modération n'a pas de page publique, ses liens mèneraient à une 404 ; elle ne se prolonge ni ne se
-  // partage avant sa publication, et un modérateur la refuse depuis la modération plutôt que de la supprimer (#5499).
+  // partage avant sa publication (#5499).
   const isInReview = row.job_status === JOB_STATUS.EN_MODERATION
   const isModerator = user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO
+  // Une offre qui attend une décision se tranche depuis la modération, qui la trace, plutôt qu'en la supprimant (#5499).
+  const canDelete = !(isModerator && (isInReview || awaitsModerationDecision))
 
   const actions: PopoverMenuAction[] = [
     isModerator && isModerable
@@ -143,9 +148,8 @@ export const OffresTabsMenu = ({
           icon: <DsfrIcon name="fr-icon-presentation-line" size={16} />,
         } as PopoverMenuAction)
       : null,
-    isInReview && isModerator
-      ? null
-      : {
+    canDelete
+      ? {
           label: "Supprimer l'offre",
           hint: `${offerTitle}`,
           onClick: (e) => {
@@ -156,7 +160,8 @@ export const OffresTabsMenu = ({
           },
           type: "button",
           icon: <DsfrIcon name="fr-icon-delete-line" size={16} />,
-        },
+        }
+      : null,
   ]
 
   return !isDisabled && <PopoverMenu actions={actions} title={`Actions sur l'offre ${offerTitle}`} resetFlagsOnClose={[setCopied]} />
