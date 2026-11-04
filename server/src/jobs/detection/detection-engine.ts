@@ -94,7 +94,7 @@ export const reconcileFindings = ({
   return transitions
 }
 
-const assertValidEvaluation = (rule: IDetectionRule, { findings, observations }: IDetectionEvaluation) => {
+export const assertValidEvaluation = (rule: IDetectionRule, { findings, observations }: IDetectionEvaluation) => {
   const keys = findings.map(({ key }) => key)
   if (new Set(keys).size !== keys.length) {
     throw new Error(`règle ${rule.id} : plusieurs constats pour une même clé`)
