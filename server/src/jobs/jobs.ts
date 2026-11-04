@@ -290,6 +290,7 @@ export async function setupJobProcessor() {
           "Suggestions d'offres sur d'autres secteurs aux nouveaux candidats de la veille": {
             cron_string: "20 7 * * *",
             handler: config.env === "production" ? async () => processSuggestionsNaf() : async () => Promise.resolve(0),
+            maxRuntimeInMinutes: 90,
           },
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
             cron_string: "0 5 * * *",
