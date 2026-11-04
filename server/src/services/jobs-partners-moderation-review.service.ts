@@ -29,7 +29,7 @@ import { REPRISE_CLASSIFICATION_FILTER } from "@/jobs/moderation/retry-classific
 import { applyStoredOfferClassification, getStoredModerationTexts, releaseOfferInReview } from "./formulaire.service"
 import { sendMailOffreRefusee } from "./formulaire-notifications.service"
 import { buildJobStatusChangeUpdate } from "./job-partner-status.service"
-import { classifyOffreTexts, getLatestModeration } from "./jobs-partners-moderation.service"
+import { classifyOffreTexts, getLatestModeration, PENDING_MODERATION_DECISION_FILTER } from "./jobs-partners-moderation.service"
 import { MODERATION_REFUSED_REASON, MODERATION_VALIDATED_REASON } from "./jobs-partners-moderation-reasons"
 import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
 
@@ -56,9 +56,7 @@ const MODERATED_STATUSES = [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MOD
 /** File « à traiter » : offres classifiées non conformes ou à vérifier (une classification en échec rend `a_verifier`), sans décision, ni closes. */
 const QUEUE_FILTER: Filter<IJobsPartnersOfferPrivate> = {
   partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-  offer_status: { $in: MODERATED_STATUSES },
-  offer_moderation_verdict: { $in: ["a_verifier", "non_conforme"] },
-  offer_moderation_review: null,
+  ...PENDING_MODERATION_DECISION_FILTER,
 }
 
 // Le statut est testé avant le verdict : en échec, le verdict stocké vaut `a_verifier`.

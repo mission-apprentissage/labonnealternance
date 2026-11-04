@@ -35,8 +35,11 @@ describe("formatFluxCadenceSection", () => {
     await expect(formatFluxCadenceSection(since)).resolves.toEqual([
       "",
       "Cadence de changement des flux :",
-      "• APEC : 1 run(s) dont 1 sauté(s), 0 changement(s), dernier changement jamais",
-      "• PASS : 2 run(s) dont 1 sauté(s), 1 changement(s), dernier changement 01/11 14:05",
+      "```",
+      "Partenaire Runs Sautés Chgts Dernier chgt",
+      "APEC          1      1     0 jamais",
+      "PASS          2      1     1 01/11 14:05",
+      "```",
     ])
   })
 })

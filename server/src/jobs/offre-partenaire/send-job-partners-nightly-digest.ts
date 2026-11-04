@@ -4,7 +4,7 @@ import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import { formatFluxCadenceSection } from "./flux-cadence-digest"
 import { importers } from "./jobs-partners.importer"
-import { formatGuardrailDigestLines } from "./jobs-partners-guardrails"
+import { formatGuardrailDigestLines, GUARDRAIL_ERROR_MARKER } from "./jobs-partners-guardrails"
 import { buildPartnerPublicationReport } from "./partner-publication-report"
 
 const DIGEST_WINDOW_HOURS = 24
@@ -55,6 +55,22 @@ const isAnomalous = (job: IJobsCronTask): boolean => {
 
 const jobTimestamp = (job: IJobsCronTask): number => (job.ended_at ?? job.started_at ?? new Date(0)).getTime()
 
+const STACK_FRAME = /^\s+at /
+const MAX_ERROR_SUMMARY_LENGTH = 300
+
+// job-processor stocke le message, les premières lignes de stack puis « Caused by: » pour chaque cause :
+// la cause porte souvent l'erreur réelle (ex. ECONNRESET sous une erreur d'import), seules les lignes de stack sont retirées.
+const summarizeJobError = (error: string | null | undefined): string => {
+  const summary = (error ?? "")
+    .split("\n")
+    .filter((line) => !STACK_FRAME.test(line))
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join(" ")
+  if (!summary) return "erreur inconnue"
+  return summary.length > MAX_ERROR_SUMMARY_LENGTH ? `${summary.slice(0, MAX_ERROR_SUMMARY_LENGTH)}…` : summary
+}
+
 // headline : résumé tenant sur une ligne, toujours sûr à afficher entre parenthèses.
 // details : liste optionnelle de sous-puces (une par champ *error*), affichée après la parenthèse fermante.
 type AnomalyDescription = { headline: string; details?: string }
@@ -65,7 +81,7 @@ const describeAnomaly = (job: IJobsCronTask): AnomalyDescription => {
     return { headline: `toujours en cours, démarré à ${job.started_at?.toISOString() ?? "?"}` }
   }
   if (job.status === "errored" || job.status === "killed") {
-    return { headline: `${job.status}, ${duration} : ${job.output?.error ?? "erreur inconnue"}` }
+    return { headline: `${job.status}, ${duration} : ${summarizeJobError(job.output?.error)}` }
   }
   const signals = findErrorSignals(job.output?.result)
   if (signals.length === 0) return { headline: `${duration} : anomalie non détaillée` }
@@ -124,12 +140,23 @@ export const sendJobPartnersNightlyDigest = async () => {
   const summaryLine =
     anomalousJobs.length === 0 ? `${okCount}/${jobs.length} jobs offre-partenaire OK, aucune anomalie.` : `${okCount}/${jobs.length} jobs OK, ${anomalousJobs.length} en erreur :`
 
-  const anomalyLines = groupByName(anomalousJobs).map(([name, jobsForName]) => formatAnomalyGroup(name, jobsForName))
-  let message = [summaryLine, ...formatGuardrailDigestLines(jobs), ...anomalyLines, ...(await buildPartnerPublicationReport()), ...(await formatFluxCadenceSection(since))].join(
-    "\n"
-  )
+  const guardrailLines = formatGuardrailDigestLines(jobs)
+  // Un blocage par garde-fou est déjà détaillé dans sa section : le répéter en anomalie doublerait le message.
+  const otherAnomalies = anomalousJobs.filter((job) => !job.output?.error?.includes(GUARDRAIL_ERROR_MARKER))
+  const anomalyLines = groupByName(otherAnomalies).map(([name, jobsForName]) => formatAnomalyGroup(name, jobsForName))
+  let message = [
+    summaryLine,
+    ...guardrailLines,
+    ...(guardrailLines.length && anomalyLines.length ? ["Autres anomalies :"] : []),
+    ...anomalyLines,
+    ...(await buildPartnerPublicationReport()),
+    ...(await formatFluxCadenceSection(since)),
+  ].join("\n")
   if (message.length > MAX_MESSAGE_LENGTH) {
-    message = `${message.slice(0, MAX_MESSAGE_LENGTH)}\n… (message tronqué, voir les logs pour le détail complet)`
+    message = message.slice(0, MAX_MESSAGE_LENGTH)
+    // une coupure au milieu d'un tableau laisserait un bloc de code ouvert sur le reste du message
+    if ((message.match(/```/g)?.length ?? 0) % 2 === 1) message += "\n```"
+    message += "\n… (message tronqué, voir les logs pour le détail complet)"
   }
 
   await notifyToSlack({

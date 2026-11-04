@@ -46,7 +46,12 @@ describe("buildPartnerPublicationReport", () => {
     expect(lines).toEqual([
       "",
       "Taux de publication par partenaire flux :",
-      "• Hellowork : 6 reçues, 2 validées (50 % hors business_error), 2 en business_error (CFA 1, DUPLICATE 1), 1 en erreur de validation, 1 sans verdict de validation, 2 actives",
+      "```",
+      "Partenaire Reçues B.err Valid. Taux E.val Actives Motif principal",
+      "Hellowork       6     2      2  50%     1       2 CFA 1 (+1 motif)",
+      "```",
+      "B.err = business_error, E.val = erreur de validation, Taux = Valid. / (Reçues − B.err)",
+      "• Hellowork : 1 sans verdict de validation",
     ])
   })
 
@@ -67,10 +72,15 @@ describe("buildPartnerPublicationReport", () => {
     const lines = await buildPartnerPublicationReport([])
 
     expect(lines[1]).toBe("Taux de publication par partenaire flux (3 à surveiller) :")
-    expect(lines.slice(2).map((line) => line.split(" : ")[0])).toEqual(["• ALERTE APEC", "• ALERTE Jobteaser", "• ALERTE PASS", "• Hellowork"])
-    expect(lines.find((line) => line.startsWith("• ALERTE PASS"))).toMatch(/— 0 offre publiée$/)
-    expect(lines.find((line) => line.startsWith("• ALERTE APEC"))).toMatch(/1 validées \(25 % hors business_error\).*— taux de publication sous 50 %$/)
-    expect(lines.find((line) => line.startsWith("• ALERTE Jobteaser"))).toMatch(/— aucune offre reçue, 1 encore actives$/)
+    const tableRows = lines.slice(lines.indexOf("```") + 2, lines.lastIndexOf("```"))
+    expect(tableRows.map((row) => row.replace(/ +\d.*$/, ""))).toEqual(["! APEC", "! Jobteaser", "! PASS", "Hellowork"])
+    expect(tableRows[0]).toMatch(/^! APEC +4 +0 +1 +25% +3 +1$/)
+    expect(lines.slice(lines.lastIndexOf("```") + 1)).toEqual([
+      "B.err = business_error, E.val = erreur de validation, Taux = Valid. / (Reçues − B.err)",
+      "• ALERTE APEC : taux de publication sous 50 %",
+      "• ALERTE Jobteaser : aucune offre reçue, 1 encore actives",
+      "• ALERTE PASS : 0 offre publiée",
+    ])
   })
 
   it("ne signale pas un partenaire dont toutes les offres éligibles sont publiées malgré des blocages métier", async () => {
@@ -84,7 +94,8 @@ describe("buildPartnerPublicationReport", () => {
     const lines = await buildPartnerPublicationReport([])
 
     expect(lines[1]).toBe("Taux de publication par partenaire flux :")
-    expect(lines[2]).toMatch(/^• Hellowork : 4 reçues, 1 validées \(100 % hors business_error\)/)
+    expect(lines[4]).toMatch(/^Hellowork +4 +3 +1 +100% +0 +1 CFA 3$/)
+    expect(lines.filter((line) => line.startsWith("• ALERTE"))).toEqual([])
   })
 
   it("signale l'échec de la mesure dans le bilan au lieu de le faire échouer", async () => {
@@ -104,16 +115,15 @@ describe("buildPartnerPublicationReport", () => {
 
     const lines = await buildPartnerPublicationReport()
 
-    expect(lines).toContain(
-      "• ALERTE Kelio : 0 reçues, 0 validées (n/a hors business_error), 0 en business_error, 0 en erreur de validation, 0 actives — aucune offre reçue, 0 encore actives"
-    )
+    expect(lines).toContain("• ALERTE Kelio : aucune offre reçue, 0 encore actives")
+    expect(lines.find((line) => line.startsWith("! Kelio"))).toMatch(/^! Kelio +0 +0 +0 +n\/a +0 +0$/)
   })
 
   it("ne signale pas un partenaire flux dont l'import est désactivé", async () => {
     const lines = await buildPartnerPublicationReport()
 
     for (const label of [JOBPARTNERS_LABEL.JOOBLE, JOBPARTNERS_LABEL.ENGAGEMENT_JEUNES, JOBPARTNERS_LABEL.MONSTER]) {
-      expect.soft(lines.filter((line) => line.includes(` ${label} : `))).toEqual([])
+      expect.soft(lines.filter((line) => line.includes(label))).toEqual([])
     }
   })
 })
@@ -135,9 +145,27 @@ describe("IMPORTED_FLUX_PARTNER_LABELS", () => {
 })
 
 describe("formatPartnerPublicationReport", () => {
+  it("(faux positif) aucun suffixe quand un seul motif bloque, pluriel au-delà de deux", () => {
+    const lines = formatPartnerPublicationReport([
+      { partner_label: "EDF", received: 10, validated: 5, businessErrors: { FULL_TIME: 5 }, validationErrors: 0, active: 5 },
+      { partner_label: "Hellowork", received: 10, validated: 4, businessErrors: { CFA: 3, DUPLICATE: 2, EXPIRED: 1 }, validationErrors: 0, active: 4 },
+    ])
+
+    expect(lines.find((line) => line.startsWith("EDF"))).toMatch(/ FULL_TIME 5$/)
+    expect(lines.find((line) => line.startsWith("Hellowork"))).toMatch(/ CFA 3 \(\+2 motifs\)$/)
+    expect(lines.filter((line) => line.includes("sans verdict"))).toEqual([])
+  })
+
   it("n'affiche pas de taux quand toutes les offres sont en business_error, et signale l'absence de publication", () => {
     const lines = formatPartnerPublicationReport([{ partner_label: "Kelio", received: 3, validated: 0, businessErrors: { CFA: 3 }, validationErrors: 0, active: 0 }])
 
-    expect(lines[2]).toBe("• ALERTE Kelio : 3 reçues, 0 validées (n/a hors business_error), 3 en business_error (CFA 3), 0 en erreur de validation, 0 actives — 0 offre publiée")
+    expect(lines.slice(2)).toEqual([
+      "```",
+      "Partenaire Reçues B.err Valid. Taux E.val Actives Motif principal",
+      "! Kelio         3     3      0  n/a     0       0 CFA 3",
+      "```",
+      "B.err = business_error, E.val = erreur de validation, Taux = Valid. / (Reçues − B.err)",
+      "• ALERTE Kelio : 0 offre publiée",
+    ])
   })
 })

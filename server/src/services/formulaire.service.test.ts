@@ -948,7 +948,9 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       it.each([JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN, JOB_CLOSURE_ORIGIN.ESPACE_PRO_OPCO])("refuse la clôture par « %s »", async (origin) => {
         const id = await insertLbaOffer(JOB_STATUS_ENGLISH.EN_MODERATION, new ObjectId())
 
-        await expect(closeOffreWithMotif({ id, offer_status: JOB_STATUS_ENGLISH.ANNULEE, origin, job_status_comment: "Autre" })).rejects.toThrow(/en modération/)
+        await expect(closeOffreWithMotif({ id, offer_status: JOB_STATUS_ENGLISH.ANNULEE, origin, job_status_comment: "Autre" })).rejects.toThrow(
+          /attend une décision de modération/
+        )
 
         const job = await readOffer(id)
         expect.soft(job.offer_status).toEqual(JOB_STATUS_ENGLISH.EN_MODERATION)

@@ -56,6 +56,7 @@ import {
   type IModerationTexts,
   type ITimedClassification,
   isBlockingClassification,
+  PENDING_MODERATION_DECISION_FILTER,
   recordClassification,
 } from "./jobs-partners-moderation.service"
 import { alertOffreNonConforme } from "./jobs-partners-moderation-alerts"
@@ -904,10 +905,10 @@ export const closeOffreWithMotif = async ({
 }): Promise<{ alreadyClosed: boolean }> => {
   const now = new Date()
   const offerFilter = { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id }
-  // Le recruteur peut clore son offre en modération. Un administrateur ou un OPCO la refuse par la modération (#5499),
-  // qui trace la décision et prévient le recruteur.
+  // Le recruteur peut clore son offre en modération. Un administrateur ou un OPCO ne clôt pas une offre qui attend une
+  // décision : seuls Valider et Refuser la tranchent, en gardant la trace et en prévenant le recruteur (#5499).
   const isModerator = origin === JOB_CLOSURE_ORIGIN.ESPACE_PRO_ADMIN || origin === JOB_CLOSURE_ORIGIN.ESPACE_PRO_OPCO
-  const moderationFilter = isModerator ? { offer_status: { $ne: JOB_STATUS_ENGLISH.EN_MODERATION } } : {}
+  const moderatorFilter = isModerator ? { offer_status: { $ne: JOB_STATUS_ENGLISH.EN_MODERATION }, $nor: [PENDING_MODERATION_DECISION_FILTER] } : {}
 
   // Écriture si le statut change, ou si la dernière entrée de l'historique est une expiration ou le
   // seuil de candidatures : leur mail arrive sur une offre déjà Cancelled, et la réponse du recruteur
@@ -923,7 +924,7 @@ export const closeOffreWithMotif = async ({
   // offer_expiration garde sa date initiale, la date de clôture est dans offer_status_history.
   const lastEntryAwaitsMailAnswer = { $in: [{ $last: "$offer_status_history.granted_by" }, Object.values(JOB_AUTO_CLOSURE_ORIGIN)] }
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-    { ...offerFilter, ...moderationFilter, $or: [{ offer_status: { $ne: offer_status } }, { $expr: lastEntryAwaitsMailAnswer }] },
+    { ...offerFilter, ...moderatorFilter, $or: [{ offer_status: { $ne: offer_status } }, { $expr: lastEntryAwaitsMailAnswer }] },
     buildJobStatusChangeUpdate({
       status: offer_status,
       reason: JOB_CLOSURE_REASON_BY_ORIGIN[origin],
@@ -937,14 +938,17 @@ export const closeOffreWithMotif = async ({
   )
 
   if (!found) {
-    // Trois causes possibles : l'offre n'existe pas, elle est en modération et l'acteur est un modérateur,
-    // ou la clôture est déjà enregistrée (double-clic).
+    // Trois causes possibles : l'offre n'existe pas, elle attend une décision de modération et l'acteur
+    // est un modérateur, ou la clôture est déjà enregistrée (double-clic).
     const existing = await getDbCollection("jobs_partners").findOne(offerFilter, { projection: { _id: 1, offer_status: 1 } })
     if (!existing) {
       throw new Error(`could not find lba offer with id=${id}`)
     }
-    if (existing.offer_status === JOB_STATUS_ENGLISH.EN_MODERATION) {
-      throw badRequest("L'offre est en modération : elle se refuse depuis la page de modération de l'offre")
+    const awaitsDecision = async () =>
+      existing.offer_status === JOB_STATUS_ENGLISH.EN_MODERATION ||
+      (await getDbCollection("jobs_partners").countDocuments({ ...offerFilter, ...PENDING_MODERATION_DECISION_FILTER })) > 0
+    if (isModerator && (await awaitsDecision())) {
+      throw badRequest("L'offre attend une décision de modération : elle se valide ou se refuse depuis la page de modération de l'offre")
     }
     return { alreadyClosed: true }
   }

@@ -208,5 +208,81 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(sectionStart).toBe(1)
     expect(lines[sectionStart + 1]).toBe(`• Process computed and import to Jobs Partners : ${blockMessage}`)
     expect(lines.filter((line) => line.includes("connexion interrompue"))).toHaveLength(1)
+    // le blocage n'est pas répété en anomalie, et aucune stack trace n'est envoyée
+    expect(lines.filter((line) => line.includes(blockMessage))).toHaveLength(1)
+    expect(lines[sectionStart + 2]).toBe("Autres anomalies :")
+    expect(lines[sectionStart + 3]).toMatch(/^• Import EDF \(errored, 1s : Error: connexion interrompue\)$/)
+    expect(lines.filter((line) => line.trimStart().startsWith("at "))).toEqual([])
+  })
+
+  it("garde la cause d'une erreur enveloppée, sans les lignes de stack", async () => {
+    // format de job-processor (stringifyError) : 3 premières lignes de la stack, puis « Caused by: » pour chaque cause
+    const error = [
+      "Error: importFromStreamInJson: erreur lors de l'import Hellowork",
+      "    at importFromStreamInJson (file:///app/server/dist/main.js:1:1)",
+      "    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+      "Caused by: Error: read ECONNRESET",
+      "    at TLSWrap.onStreamRead (node:internal/stream_base_commons:216:20)",
+    ].join("\n")
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import Hellowork", status: "errored", error })])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message.split("\n")[1]).toBe(
+      "• Import Hellowork (errored, 1s : Error: importFromStreamInJson: erreur lors de l'import Hellowork Caused by: Error: read ECONNRESET)"
+    )
+  })
+
+  it("tronque une erreur trop longue", async () => {
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import Zod", status: "errored", error: `ZodError: ${"x".repeat(1_000)}` })])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message.split("\n")[1]).toMatch(/^• Import Zod \(errored, 1s : ZodError: x{290}x*…\)$/)
+    expect(payload.message.length).toBeLessThan(400)
+  })
+
+  it("(faux positif) sans garde-fou déclenché, les anomalies ne sont pas précédées d'un titre « Autres anomalies »", async () => {
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import EDF", status: "errored", error: "Error: connexion interrompue\n    at fetch (file:///app/x.js:1:1)" })])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message.split("\n")).toEqual(["0/1 jobs OK, 1 en erreur :", "• Import EDF (errored, 1s : Error: connexion interrompue)"])
+  })
+
+  it("(faux positif) une troncature hors tableau n'ajoute pas de délimiteur de bloc de code", async () => {
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import RHAlternance", status: "finished", result: {} })])
+    buildPartnerPublicationReportMock.mockResolvedValueOnce(["", "Détail :", ...Array.from({ length: 2_000 }, (_, i) => `• Partenaire ${i} : 12345 reçues, 678 actives`)])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message).not.toContain("```")
+    expect(payload.message).toMatch(/\n… \(message tronqué, voir les logs pour le détail complet\)$/)
+  })
+
+  it("referme le tableau coupé par la troncature du message", async () => {
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import RHAlternance", status: "finished", result: {} })])
+    buildPartnerPublicationReportMock.mockResolvedValueOnce([
+      "",
+      "Taux de publication :",
+      "```",
+      ...Array.from({ length: 2_000 }, (_, i) => `Partenaire ${i}     12345     678`),
+      "```",
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message.match(/```/g)?.length).toBe(2)
+    expect(payload.message).toMatch(/\n```\n… \(message tronqué, voir les logs pour le détail complet\)$/)
   })
 })
