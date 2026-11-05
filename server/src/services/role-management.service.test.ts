@@ -1,14 +1,15 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { roleManagementEventFactory, saveCfa, saveEntreprise } from "@tests/utils/user.test.utils"
-import { ObjectId } from "mongodb"
+import { Collection, ObjectId } from "mongodb"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { generateRoleManagementFixture } from "shared/fixtures/role-management.fixture"
 import type { IRoleManagement } from "shared/models/index"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { ROLE_OPCO_NOT_APPLICABLE } from "shared/models/role-management.model"
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { AUTO_VALIDATION_REFUSED_REASON } from "./auto-validation-reasons"
 import { isGrantedAndAutoValidatedRole, modifyPermissionToUser } from "./role-management.service"
 
 const roleWithEventsFactory = (events: IRoleManagement["status"]) => {
@@ -165,6 +166,82 @@ describe("role-management.service", () => {
       )
 
       expect.soft(await getDbCollection("referentiel_engagement_entreprise").countDocuments({})).toBe(0)
+    })
+
+    describe("rôle déjà inséré mais absent de la lecture (#5747)", () => {
+      afterEach(() => {
+        vi.restoreAllMocks()
+      })
+
+      // Reproduit un secondaire en retard de réplication : la première lecture de rolemanagements ne voit pas le rôle.
+      const hideRoleFromNextRead = () => {
+        const realFindOne = Collection.prototype.findOne
+        let hidden = false
+        return vi.spyOn(Collection.prototype, "findOne").mockImplementation(function (this: Collection, ...args: Parameters<Collection["findOne"]>) {
+          if (!hidden && this.collectionName === "rolemanagements") {
+            hidden = true
+            return Promise.resolve(null)
+          }
+          return realFindOne.apply(this, args)
+        } as Collection["findOne"])
+      }
+
+      const createAwaitingRole = async () => {
+        const entreprise = await saveEntreprise({ siret: "42476141900045", opco: OPCOS_LABEL.AKTO })
+        const roleProps = { user_id: new ObjectId(), authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }
+        await modifyPermissionToUser(
+          { ...roleProps, handiEngagement: "oui" },
+          { status: AccessStatus.AWAITING_VALIDATION, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "création de compte" }
+        )
+        await getDbCollection("entreprises").updateOne({ _id: entreprise._id }, { $set: { opco: OPCOS_LABEL.CONSTRUCTYS } })
+        return roleProps
+      }
+
+      it("ajoute l'événement GRANTED au rôle existant au lieu d'échouer sur la clé unique", async () => {
+        const roleProps = await createAwaitingRole()
+        hideRoleFromNextRead()
+
+        await modifyPermissionToUser(roleProps, { status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "auto-validation" })
+
+        const roles = await getDbCollection("rolemanagements").find({ user_id: roleProps.user_id }).toArray()
+        expect.soft(roles).toHaveLength(1)
+        expect.soft(roles[0]?.status.map(({ status }) => status)).toEqual([AccessStatus.AWAITING_VALIDATION, AccessStatus.GRANTED])
+        expect.soft(roles[0]?.opco_at_creation).toBe(OPCOS_LABEL.AKTO)
+        const referentiel = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: "42476141900045" })
+        expect.soft(referentiel?.sources).toEqual([EntrepriseEngagementSources.LBA])
+      })
+
+      it("n'ajoute pas d'événement quand le statut du rôle existant est identique", async () => {
+        const roleProps = await createAwaitingRole()
+        hideRoleFromNextRead()
+
+        await modifyPermissionToUser(roleProps, { status: AccessStatus.AWAITING_VALIDATION, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: AUTO_VALIDATION_REFUSED_REASON })
+
+        const role = await getDbCollection("rolemanagements").findOne({ user_id: roleProps.user_id })
+        expect(role?.status.map(({ reason }) => reason)).toEqual(["création de compte"])
+      })
+
+      it("lit le rôle sur le primaire", async () => {
+        const findOneSpy = vi.spyOn(Collection.prototype, "findOne")
+
+        await modifyPermissionToUser(
+          { user_id: new ObjectId(), authorized_id: new ObjectId().toString(), authorized_type: AccessEntityType.CFA },
+          { status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "création" }
+        )
+
+        expect(findOneSpy.mock.calls[0]?.[1]).toMatchObject({ readPreference: "primary" })
+      })
+
+      it("propage une erreur d'insertion qui n'est pas une clé en double", async () => {
+        vi.spyOn(Collection.prototype, "insertOne").mockRejectedValueOnce(new Error("mongod injoignable"))
+
+        await expect(
+          modifyPermissionToUser(
+            { user_id: new ObjectId(), authorized_id: new ObjectId().toString(), authorized_type: AccessEntityType.CFA },
+            { status: AccessStatus.GRANTED, validation_type: VALIDATION_UTILISATEUR.AUTO, reason: "création" }
+          )
+        ).rejects.toThrow("mongod injoignable")
+      })
     })
 
     it("n'écrit rien dans le référentiel pour un rôle CFA, même avec handiEngagement à oui", async () => {

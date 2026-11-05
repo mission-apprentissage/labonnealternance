@@ -191,7 +191,7 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
           ]}
         />
       </Section>
-      <Section title="Ce que notre système de modération pourra corriger ou bloquer">
+      <Section title="Ce que notre système de modération vérifie ou bloque">
         <Paragraph>
           Afin d'assurer la qualité des offres diffusées aux candidats, un mécanisme de modération est systématiquement appliqué à votre offre. Voici ce que ce dernier vérifiera :
         </Paragraph>
@@ -200,7 +200,7 @@ const RedigerSonOffreDAlternancePage = async ({ searchParams }: { searchParams: 
             "Votre texte est publié tel que vous l'avez rédigé : la modération ne corrige ni l'orthographe, ni la formulation.",
             'Le bouton "Améliorer" du formulaire vous propose, sur demande, une version corrigée et restructurée. Elle ne remplace votre texte que si vous l\'acceptez.',
             "Les informations factuelles sur le poste seront conservées et non modifiées : responsabilités liées au poste, avantages, compétences, salaires et informations légales de l'entreprise.",
-            "Toutes les mentions discriminantes, haineuses, offensantes, ou à caractère sexuel seront systématiquement supprimées ou corrigées.",
+            "Une offre qui contient un critère d'embauche discriminatoire, une rémunération ou des conditions de travail illégales, ou une mission incompatible avec la présence d'apprentis mineurs n'est pas publiée tant que notre équipe ne l'a pas vérifiée. En cas de doute, l'offre est publiée puis relue par notre équipe.",
             "Pour des raisons de sécurité, toute information personnelle (adresse e-mail, numéro de téléphone, etc.) ne sera pas affichée sur l'offre.",
           ]}
         />
