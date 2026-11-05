@@ -113,7 +113,7 @@ GET /api/v1/search?q=web&page=2&hitsPerPage=10
 - **Géo** : les paramètres `latitude`, `longitude` et `radius` sont indépendants du texte — entièrement combinables
 - **Lien de détail** : construire l'URL depuis `url_id` et `type` (ex: `/offre/{url_id}`)
 - **`smart_apply`** : afficher le badge "Postuler rapidement" lorsque `true`
-- **Tri** : configurable via `sort` (`proximity` / `date` / `applications` / `start_date`). Par défaut : pertinence, avec `smart_apply` (candidature simplifiée d'abord) puis `application_count` (moins candidatées d'abord) en tie-break. Le tri `smart_apply` a été retiré (« Candidature simplifiée » est un filtre). Détail des étapes dans [`current-behavior.md`](./current-behavior.md) §1.
+- **Tri** : configurable via `sort` (`proximity` / `date` / `applications` / `start_date`). Par défaut : pertinence, avec `smart_apply` (candidature simplifiée d'abord) puis `application_count` (moins candidatées d'abord) en tie-break. La valeur `sort=smart_apply` a été retirée (« Candidature simplifiée » est un filtre). Détail des étapes dans [`current-behavior.md`](./current-behavior.md) §1.
 
 ## Recherche textuelle « Métier » (`q`)
 

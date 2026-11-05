@@ -74,6 +74,7 @@ describe.runIf(RUN_RELEVANCE)("tri par défaut — départage à score égal", (
       expect(await ids("emplois", q, 1, 2)).toEqual(["emp-false-0", "emp-false-5"])
     })
 
+    // Cas théorique (toutes les formations sont à null en base), exigé par le critère d'acceptation de #5836.
     it("formations : null ne passe pas devant true", async () => {
       expect(await ids("formations", q)).toEqual(["form-true-5", "form-null-0"])
     })
