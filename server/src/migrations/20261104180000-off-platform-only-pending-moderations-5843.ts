@@ -8,6 +8,8 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 const TRACE_ONLY_CATEGORIES = ["candidature_hors_plateforme"]
 const SOCIAL_HANDLE = /(?:^|[\s:(])@[\w.]{2,}/
 
+const STATUSES = [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.ACTIVE] as const
+
 type IFinding = { category: string; verbatim: string | null }
 
 const isTraceOnly = ({ category, verbatim }: IFinding) => TRACE_ONLY_CATEGORIES.includes(category) && verbatim !== null && !SOCIAL_HANDLE.test(verbatim)
@@ -17,14 +19,15 @@ const isTraceOnly = ({ category, verbatim }: IFinding) => TRACE_ONLY_CATEGORIES.
  * elles passent `Active` sans nouvelle classification (cf. checkForJobActivations) et leur verdict « à vérifier » les
  * amènerait dans la file. `Active` est repris pour les offres publiées depuis le passage de la première migration ;
  * celles qu'elle a déjà sorties de la file n'ont plus le verdict `a_verifier`. `InReview` est exclu : passée `conforme`
- * sans être publiée (cf. releaseOfferInReview), une offre en modération sortirait de la file et resterait masquée.
+ * sans être publiée (cf. releaseOfferInReview), une offre en modération sortirait de la file et resterait masquée. Une
+ * offre close réactivée par un admin garde aussi son verdict : action manuelle, hors périmètre.
  *
  * `bypassDocumentValidation` : des offres anciennes ne respectent pas le schéma actuel.
  */
 export const up = async () => {
   const candidateFilter = {
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-    offer_status: { $in: [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.ACTIVE] },
+    offer_status: { $in: STATUSES },
     offer_moderation_verdict: "a_verifier",
     offer_moderation_status: "ok",
     offer_moderation_review: null,
@@ -50,12 +53,16 @@ export const up = async () => {
     .filter(({ latest: [moderation] }) => moderation?.status === "ok" && moderation.findings.length > 0 && moderation.findings.every(isTraceOnly))
     .map(({ _id }) => _id)
 
-  const { modifiedCount } = await getDbCollection("jobs_partners").updateMany(
-    { ...candidateFilter, _id: { $in: jobIds } },
-    { $set: { offer_moderation_verdict: "conforme" } },
-    { bypassDocumentValidation: true }
-  )
-  logger.info(`modération #5843 : ${modifiedCount} offres en attente ou publiées passées conformes (candidature hors plateforme seule) sur ${candidates.length} à vérifier`)
+  const modified: string[] = []
+  for (const offer_status of STATUSES) {
+    const { modifiedCount } = await getDbCollection("jobs_partners").updateMany(
+      { ...candidateFilter, offer_status, _id: { $in: jobIds } },
+      { $set: { offer_moderation_verdict: "conforme" } },
+      { bypassDocumentValidation: true }
+    )
+    modified.push(`${modifiedCount} ${offer_status}`)
+  }
+  logger.info(`modération #5843 : offres passées conformes (candidature hors plateforme seule) : ${modified.join(", ")}, sur ${candidates.length} à vérifier`)
 }
 
 export const requireShutdown: boolean = false

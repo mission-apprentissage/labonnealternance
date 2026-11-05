@@ -4,9 +4,13 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.f
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IJobsPartnersModeration, IJobsPartnersModerationFinding, IModerationCategory } from "shared/models/jobs-partners-moderation.model"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { up } from "@/migrations/20261104180000-off-platform-only-pending-moderations-5843"
+
+const loggerMock = vi.hoisted(() => ({ trace: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), fatal: vi.fn() }))
+
+vi.mock("@/common/logger", async (importOriginal) => ({ ...(await importOriginal<typeof import("@/common/logger")>()), logger: loggerMock }))
 
 const finding = (category: IModerationCategory, verbatim: string | null = "CV par e-mail à emxxx@xxx.fr"): IJobsPartnersModerationFinding => ({
   champ: "job_description",
@@ -18,6 +22,10 @@ const finding = (category: IModerationCategory, verbatim: string | null = "CV pa
 // Test hors du dossier migrations : cf. normalize-naf-jobs-partners.test.ts
 describe("migration off-platform-only-pending-moderations-5843", () => {
   useMongo()
+
+  beforeEach(() => {
+    loggerMock.info.mockClear()
+  })
 
   const saveOffer = async (partner_job_id: string, overrides: Parameters<typeof generateJobsPartnersOfferPrivate>[0] = {}) => {
     const offer = generateJobsPartnersOfferPrivate({
@@ -68,6 +76,7 @@ describe("migration off-platform-only-pending-moderations-5843", () => {
     expect(await verdictOf("en-attente")).toBe("conforme")
     expect(await getDbCollection("jobs_partners").findOne({ _id: jobId })).toMatchObject({ offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE })
     expect(await getDbCollection("jobs_partners_moderations").findOne({ job_id: jobId })).toMatchObject({ verdict: "a_verifier", findings: [{}, {}] })
+    expect(loggerMock.info).toHaveBeenCalledWith(expect.stringContaining(": 1 Pending, 0 Active, sur 1 à vérifier"))
   })
 
   it("reprend les offres publiées restées à vérifier", async () => {
@@ -76,6 +85,7 @@ describe("migration off-platform-only-pending-moderations-5843", () => {
     await up()
 
     expect(await verdictOf("publiee")).toBe("conforme")
+    expect(loggerMock.info).toHaveBeenCalledWith(expect.stringContaining(": 0 Pending, 1 Active, sur 1 à vérifier"))
   })
 
   it("garde à vérifier une offre en attente avec un autre finding, une dernière classification différente ou indisponible, sans finding, un pseudo ou un extrait purgé", async () => {
