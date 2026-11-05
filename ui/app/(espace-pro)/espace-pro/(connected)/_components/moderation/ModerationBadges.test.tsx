@@ -1,6 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import type { IAccountOfferConformity } from "shared/models/jobs-partners-moderation.model"
 import { describe, expect, it } from "vitest"
-import { ReviewStatusBadge } from "./ModerationBadges"
+import { AccountConformityBadge, ReviewStatusBadge, UserRecruteurStatusBadge } from "./ModerationBadges"
 
 // Le badge ne contient qu'un nœud texte : on le lit entre les balises plutôt que de retirer celles-ci.
 const label = (props: Parameters<typeof ReviewStatusBadge>[0]) => renderToStaticMarkup(<ReviewStatusBadge {...props} />).match(/>([^<>]+)</)?.[1]
@@ -26,5 +28,38 @@ describe("ReviewStatusBadge", () => {
 
   it("ne s'applique pas à une offre jamais classifiée", () => {
     expect(label({ review: null, isClassified: false, verdict: null, status: null })).toBe("Non applicable")
+  })
+})
+
+const text = (element: React.ReactElement) => renderToStaticMarkup(element).match(/>([^<>]+)</)?.[1]
+
+describe("AccountConformityBadge", () => {
+  it.each([
+    ["non_conforme", "Non conforme"],
+    ["indisponible", "Analyse indisponible"],
+    ["a_verifier", "À vérifier"],
+    ["conforme", "Conforme"],
+    ["non_applicable", "Non applicable"],
+  ] as [IAccountOfferConformity, string][])("affiche le badge d'offre de la conformité %s", (conformity, expected) => {
+    const html = renderToStaticMarkup(<AccountConformityBadge conformity={conformity} />)
+    expect(html).toContain("fr-badge")
+    expect(text(<AccountConformityBadge conformity={conformity} />)).toBe(expected)
+  })
+
+  it("affiche « Aucune offre » en texte simple, sans badge", () => {
+    const html = renderToStaticMarkup(<AccountConformityBadge conformity="aucune_offre" />)
+    expect(html).not.toContain("fr-badge")
+    expect(text(<AccountConformityBadge conformity="aucune_offre" />)).toBe("Aucune offre")
+  })
+})
+
+describe("UserRecruteurStatusBadge", () => {
+  it.each([
+    [ETAT_UTILISATEUR.ATTENTE, "À vérifier"],
+    [ETAT_UTILISATEUR.VALIDE, "Actif"],
+    [ETAT_UTILISATEUR.DESACTIVE, "Désactivé"],
+    [ETAT_UTILISATEUR.ERROR, "En erreur"],
+  ])("suit la légende de la maquette pour le statut %s", (status, expected) => {
+    expect(text(<UserRecruteurStatusBadge status={status} />)).toBe(expected)
   })
 })

@@ -38,6 +38,7 @@ export const UI_ROUTE_PATTERNS = [
   "/espace-pro/administration/processeur/cron/:name/:id",
   "/espace-pro/administration/processeur/job/:name",
   "/espace-pro/administration/processeur/job/:name/:id",
+  "/espace-pro/administration/rechercher-une-offre",
   "/espace-pro/administration/recruteurs",
   "/espace-pro/administration/rendez-vous-apprentissage",
   "/espace-pro/administration/rendez-vous-apprentissage/:siret",

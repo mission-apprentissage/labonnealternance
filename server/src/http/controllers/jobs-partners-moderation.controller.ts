@@ -3,6 +3,7 @@ import { zRoutes } from "shared"
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authentication.service"
 import {
+  countNonConformeOffersByPartner,
   getModerationHistory,
   getModerationJobDetail,
   getModerationScope,
@@ -11,6 +12,7 @@ import {
   reclassifyFailedModerations,
   reclassifyModeration,
   refuseModeration,
+  searchModerationOffers,
   validateModeration,
 } from "@/services/jobs-partners-moderation-review.service"
 
@@ -26,6 +28,30 @@ export default (server: Server) => {
       const { limit = 50, offset = 0, ...filters } = req.query
       const { jobs, total } = await listModerationQueue({ scope: getModerationScope(req.userAccess), limit, offset, ...filters })
       return res.status(200).send({ jobs, pagination: { total, limit, offset } })
+    }
+  )
+
+  server.get(
+    "/moderation/jobs/search",
+    {
+      schema: zRoutes.get["/moderation/jobs/search"],
+      onRequest: server.auth(zRoutes.get["/moderation/jobs/search"]),
+    },
+    async (req, res) => {
+      const { limit = 50, offset = 0, ...filters } = req.query
+      const { jobs, total } = await searchModerationOffers({ limit, offset, ...filters })
+      return res.status(200).send({ jobs, pagination: { total, limit, offset } })
+    }
+  )
+
+  server.get(
+    "/moderation/cfa/:cfaId/entreprises",
+    {
+      schema: zRoutes.get["/moderation/cfa/:cfaId/entreprises"],
+      onRequest: server.auth(zRoutes.get["/moderation/cfa/:cfaId/entreprises"]),
+    },
+    async (req, res) => {
+      return res.status(200).send({ entreprises: await countNonConformeOffersByPartner(req.params.cfaId) })
     }
   )
 

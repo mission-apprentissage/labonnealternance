@@ -6,7 +6,7 @@ import { ZJob } from "../models/job.model.js"
 import { HANDI_ENGAGEMENT_VALUES } from "../models/referentiel-engagement-entreprise.model.js"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/role-management.model.js"
 import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountFields } from "../models/user-with-account.model.js"
-import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/users-recruteur.model.js"
+import { ZAccountOfferConformity, ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/users-recruteur.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
@@ -26,6 +26,7 @@ const ZUserForOpco = ZUserRecruteur.pick({
   jobs_count: z.number(),
   origin: z.string(),
   organizationId: z.string(),
+  offer_conformity: ZAccountOfferConformity,
 })
 
 export type IUserForOpco = z.output<typeof ZUserForOpco>

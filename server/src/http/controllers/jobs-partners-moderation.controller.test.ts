@@ -12,7 +12,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IJobsPartnersModeration } from "shared/models/jobs-partners-moderation.model"
 import { MODERATION_CATEGORY_NOTES } from "shared/models/jobs-partners-moderation-notes"
-import { AccessStatus } from "shared/models/role-management.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -630,6 +630,213 @@ describe("modération des offres libres (#5499)", () => {
       expect(response.json().jobs).toEqual([
         { _id: offer._id.toString(), offer_moderation_verdict: "non_conforme", offer_moderation_status: "ok", offer_moderation_review: null, findings: [FINDING] },
       ])
+    })
+  })
+
+  describe("recherche d'une offre (#5757)", () => {
+    const search = async (headers: Record<string, string>, query: string) => inject({ method: "GET", path: `/moderation/jobs/search?${query}`, headers })
+    const ids = (response: { json: () => { jobs: { _id: string }[] } }) =>
+      response
+        .json()
+        .jobs.map(({ _id }) => _id)
+        .sort()
+    const idsOf = (...offers: { offer: IJobsPartnersOfferPrivate }[]) => offers.map(({ offer }) => offer._id.toString()).sort()
+
+    it("retrouve les offres LBA de tout statut, supprimées et jamais analysées comprises, et aucune offre partenaire", async () => {
+      const recruiter = await saveRecruiter({ raisonSociale: "Menuiserie Dupuis" })
+      const name = { workplace_legal_name: "Menuiserie Dupuis" }
+      const enAttente = await saveModeratedOffer(recruiter, { offer: { ...name, offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE } })
+      const enModeration = await saveModeratedOffer(recruiter, { offer: name })
+      const publiee = await saveModeratedOffer(recruiter, { offer: { ...name, offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_verdict: "conforme" } })
+      const pourvue = await saveModeratedOffer(recruiter, { offer: { ...name, offer_status: JOB_STATUS_ENGLISH.POURVUE } })
+      // Expirée, supprimée par un administrateur ou refusée : toutes annulées, aucune effacée.
+      const annulee = await saveModeratedOffer(recruiter, { offer: { ...name, offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_moderation_review: "refusee" } })
+      const jamaisAnalysee = generateJobsPartnersOfferPrivate({
+        ...name,
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        managed_by: recruiter.user._id,
+        workplace_siret: recruiter.entreprise.siret,
+        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      })
+      await getDbCollection("jobs_partners").insertOne(jamaisAnalysee)
+      // Même raison sociale, mais offre partenaire, ou offre LBA d'une autre entreprise.
+      await saveModeratedOffer(recruiter, { offer: { ...name, partner_label: "Hellowork" } })
+      await saveModeratedOffer(await saveRecruiter({ raisonSociale: "Boulangerie Martin" }), { offer: { workplace_legal_name: "Boulangerie Martin" } })
+      const { bearerToken } = await loginAdmin()
+
+      const response = await search(bearerToken, "search=menuiserie")
+
+      expect(response.statusCode).toBe(200)
+      expect(response.json().pagination.total).toBe(6)
+      expect(ids(response)).toEqual([...idsOf(enAttente, enModeration, publiee, pourvue, annulee), jamaisAnalysee._id.toString()].sort())
+      const neverClassified = response.json().jobs.find(({ _id }) => _id === jamaisAnalysee._id.toString())
+      expect(neverClassified).toMatchObject({ offer_status: JOB_STATUS_ENGLISH.ANNULEE, recruiter: { raison_sociale: "Menuiserie Dupuis" } })
+      expect(neverClassified.offer_moderation_verdict ?? null).toBeNull()
+    })
+
+    it("exige au moins deux caractères, sans fermer la session", async () => {
+      const { bearerToken } = await loginAdmin()
+
+      const missing = await search(bearerToken, "")
+      const tooShort = await search(bearerToken, "search=%20m%20")
+      const twoChars = await search(bearerToken, "search=me")
+
+      expect([missing.statusCode, tooShort.statusCode, twoChars.statusCode]).toEqual([400, 400, 200])
+    })
+
+    it("filtre sur la conformité, le statut de l'offre, le statut et le type du compte, désactivé compris", async () => {
+      const name = { workplace_legal_name: "Garage Lemoine" }
+      const active = await saveRecruiter({ raisonSociale: "Garage Lemoine" })
+      const disabled = await saveRecruiter({ roleStatus: AccessStatus.DENIED, raisonSociale: "Garage Lemoine" })
+      const conforme = await saveModeratedOffer(active, { offer: { ...name, offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_verdict: "conforme" } })
+      const indisponible = await saveModeratedOffer(active, { offer: { ...name, offer_moderation_verdict: "a_verifier", offer_moderation_status: "epuise" } })
+      const desactive = await saveModeratedOffer(disabled, { offer: { ...name, offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
+      const jamaisAnalysee = generateJobsPartnersOfferPrivate({
+        ...name,
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        managed_by: active.user._id,
+        workplace_siret: active.entreprise.siret,
+      })
+      await getDbCollection("jobs_partners").insertOne(jamaisAnalysee)
+      const { bearerToken } = await loginAdmin()
+
+      const nonApplicable = await search(bearerToken, "search=garage&conformity=non_applicable")
+      const conformes = await search(bearerToken, "search=garage&conformity=conforme&conformity=indisponible")
+      const expirees = await search(bearerToken, `search=garage&offer_status=${JOB_STATUS_ENGLISH.ANNULEE}`)
+      const desactives = await search(bearerToken, `search=garage&account_status=${AccessStatus.DENIED}`)
+      const cfas = await search(bearerToken, "search=garage&account_type=CFA")
+
+      expect(ids(nonApplicable)).toEqual([jamaisAnalysee._id.toString()])
+      expect(ids(conformes)).toEqual(idsOf(conforme, indisponible))
+      expect(ids(expirees)).toEqual(idsOf(desactive))
+      expect(ids(desactives)).toEqual(idsOf(desactive))
+      expect(desactives.json().jobs[0].recruiter.account_status).toBe(AccessStatus.DENIED)
+      expect(ids(cfas)).toEqual([])
+    })
+
+    it("trie la conformité dans l'ordre de la file, puis les offres conformes et celles jamais analysées", async () => {
+      const recruiter = await saveRecruiter({ raisonSociale: "Fleuriste Rose" })
+      const name = { workplace_legal_name: "Fleuriste Rose", offer_status: JOB_STATUS_ENGLISH.ACTIVE }
+      const conforme = await saveModeratedOffer(recruiter, { offer: { ...name, offer_moderation_verdict: "conforme" } })
+      const indisponible = await saveModeratedOffer(recruiter, { offer: { ...name, offer_moderation_verdict: "a_verifier", offer_moderation_status: "epuise" } })
+      const nonConforme = await saveModeratedOffer(recruiter, { offer: name })
+      const aVerifier = await saveModeratedOffer(recruiter, { offer: { ...name, offer_moderation_verdict: "a_verifier" } })
+      const jamaisAnalysee = generateJobsPartnersOfferPrivate({ ...name, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: recruiter.user._id })
+      await getDbCollection("jobs_partners").insertOne(jamaisAnalysee)
+      const { bearerToken } = await loginAdmin()
+
+      const asc = await search(bearerToken, "search=fleuriste&sort=conformity&order=asc")
+
+      expect(asc.json().jobs.map(({ _id }) => _id)).toEqual([
+        ...[nonConforme, aVerifier, indisponible, conforme].map(({ offer }) => offer._id.toString()),
+        jamaisAnalysee._id.toString(),
+      ])
+    })
+
+    it("ne renvoie ni le texte saisi par le recruteur ni la description de l'offre", async () => {
+      const recruiter = await saveRecruiter({ raisonSociale: "Pâtisserie Lenoir" })
+      await saveModeratedOffer(recruiter, { offer: { workplace_legal_name: "Pâtisserie Lenoir", workplace_description: "Présentation de l'entreprise" } })
+      const { bearerToken } = await loginAdmin()
+
+      const response = await search(bearerToken, "search=lenoir")
+
+      expect(response.json().pagination.total).toBe(1)
+      for (const text of [ORIGINAL_TEXT, "Description masquée de l'offre", "Présentation de l'entreprise", "original_text", "offer_description"]) {
+        expect(response.body, text).not.toContain(text)
+      }
+    })
+
+    it("est réservée aux administrateurs : un OPCO, un CFA et un recruteur sont refusés", async () => {
+      await saveModeratedOffer(await saveRecruiter({ email: "recruteur-recherche@mail.com", raisonSociale: "Menuiserie Dupuis" }), {
+        offer: { workplace_legal_name: "Menuiserie Dupuis" },
+      })
+      // Une réponse 403 ferme la session (cf. errorMiddleware) : chaque appel refusé part d'une connexion neuve.
+      const opco = await search((await loginOpcoAkto()).bearerToken, "search=menuiserie")
+      const cfa = await search((await createAndLogUser(httpClient, "cfa-recherche", { type: "CFA" })).bearerToken, "search=menuiserie")
+      const recruteur = await search((await logUser(httpClient, "recruteur-recherche")).bearerToken, "search=menuiserie")
+
+      expect([opco.statusCode, cfa.statusCode, recruteur.statusCode]).toEqual([403, 403, 403])
+      expect(opco.body).not.toContain("Menuiserie")
+    })
+  })
+
+  describe("offres non conformes des entreprises partenaires d'un CFA (#5757)", () => {
+    const saveCfaWithPartners = async () => {
+      const { user, cfa, entreprise } = await saveCfaUserTest({ status: validatedUserStatus, email: "cfa-partenaires@mail.com" }, { siret: nextSiret() }, { siret: nextSiret() })
+      const autre = await saveEntrepriseUserTest({}, {}, { siret: nextSiret() })
+      await getDbCollection("entreprise_managed_by_cfa").insertOne({
+        _id: new ObjectId(),
+        cfa_id: cfa._id,
+        entreprise_id: autre.entreprise._id,
+        first_name: "Prénom",
+        last_name: "Nom",
+        email: "contact-partenaire@mail.com",
+        phone: "0102030405",
+        origin: "test",
+        createdAt: T0,
+        updatedAt: T0,
+      })
+      const delegated = (offer: Partial<IJobsPartnersOfferPrivate>, siret = entreprise.siret) =>
+        saveModeratedOffer({ user, entreprise: { ...entreprise, siret } } as IRecruiter, {
+          offer: { is_delegated: true, cfa_siret: cfa.siret, workplace_opco: OPCOS_LABEL.AKTO, ...offer },
+        })
+      return { user, cfa, entreprise, autre: autre.entreprise, delegated }
+    }
+
+    it("compte, par entreprise, les offres non conformes de la file déposées par le CFA", async () => {
+      const { cfa, entreprise, autre, delegated } = await saveCfaWithPartners()
+      await delegated({})
+      await delegated({ offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+      // Hors du compte : tranchée, close, à vérifier, en attente du compte, sans analyse aboutie, offre partenaire.
+      await delegated({ offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_review: "validee" })
+      await delegated({ offer_status: JOB_STATUS_ENGLISH.ANNULEE })
+      await delegated({ offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_verdict: "a_verifier" })
+      await delegated({ offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE })
+      await delegated({ offer_moderation_status: "indisponible" })
+      await delegated({ partner_label: "Hellowork" })
+      // Entreprise partenaire sans offre non conforme, et même SIRET hors des entreprises du CFA.
+      await delegated({ offer_moderation_verdict: "a_verifier" }, autre.siret)
+      await saveModeratedOffer(await saveRecruiter(), { offer: { workplace_siret: entreprise.siret } })
+      const { bearerToken } = await loginAdmin()
+
+      const response = await inject({ method: "GET", path: `/moderation/cfa/${cfa._id}/entreprises`, headers: bearerToken })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toEqual({ entreprises: [{ siret: entreprise.siret, non_conformes: 2 }] })
+    })
+
+    it("ne compte rien pour un CFA sans compte validé, comme la liste des entreprises partenaires", async () => {
+      const { user, cfa, delegated } = await saveCfaWithPartners()
+      await delegated({})
+      await getDbCollection("rolemanagements").updateOne(
+        { user_id: user._id, authorized_type: AccessEntityType.CFA },
+        { $set: { status: [roleManagementEventFactory({ status: AccessStatus.AWAITING_VALIDATION })] } }
+      )
+      const { bearerToken } = await loginAdmin()
+
+      const response = await inject({ method: "GET", path: `/moderation/cfa/${cfa._id}/entreprises`, headers: bearerToken })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toEqual({ entreprises: [] })
+    })
+
+    it("refuse le compteur au CFA lui-même, à un recruteur et à un OPCO, et ne l'ajoute pas à la liste que lit le CFA", async () => {
+      const { cfa, delegated } = await saveCfaWithPartners()
+      await delegated({})
+      const recruiter = await saveRecruiter({ email: "recruteur-compteur@mail.com" })
+      await saveModeratedOffer(recruiter)
+      const path = `/moderation/cfa/${cfa._id}/entreprises`
+
+      // Une réponse 403 ferme la session (cf. errorMiddleware) : chaque appel refusé part d'une connexion neuve.
+      const asCfa = await inject({ method: "GET", path, headers: (await logUser(httpClient, "cfa-partenaires")).bearerToken })
+      const asRecruiter = await inject({ method: "GET", path, headers: (await logUser(httpClient, "recruteur-compteur")).bearerToken })
+      const asOpco = await inject({ method: "GET", path, headers: (await loginOpcoAkto()).bearerToken })
+      const ownList = await inject({ method: "GET", path: `/etablissement/cfa/${cfa._id}/entreprises`, headers: (await logUser(httpClient, "cfa-partenaires")).bearerToken })
+
+      expect([asCfa.statusCode, asRecruiter.statusCode, asOpco.statusCode]).toEqual([403, 403, 403])
+      expect(ownList.statusCode).toBe(200)
+      expect(ownList.json()).toHaveLength(2)
+      expect(ownList.body).not.toContain("non_conforme")
     })
   })
 
