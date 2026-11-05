@@ -63,8 +63,8 @@ const QUEUE_FILTER: Filter<IJobsPartnersOfferPrivate> = {
   ...PENDING_MODERATION_DECISION_FILTER,
 }
 
-// Le statut est testé avant le verdict : en échec, le verdict stocké vaut `a_verifier`. Une offre jamais analysée n'a ni
-// l'un ni l'autre (cf. ConformityBadge).
+// Le statut est testé avant le verdict : en échec, le verdict stocké vaut `a_verifier`. Offre jamais analysée : cf.
+// IS_NEVER_CLASSIFIED_EXPR.
 const CONFORMITY_FILTERS: Record<IModerationSearchConformity, Filter<IJobsPartnersOfferPrivate>> = {
   non_conforme: { offer_moderation_status: OFFER_MODERATION_STATUS.OK, offer_moderation_verdict: "non_conforme" },
   a_verifier: { offer_moderation_status: OFFER_MODERATION_STATUS.OK, offer_moderation_verdict: "a_verifier" },

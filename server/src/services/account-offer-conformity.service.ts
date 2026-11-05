@@ -15,7 +15,7 @@ const OPEN_STATUSES = [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODE
 
 const rank = (conformity: IAccountOfferConformity) => ACCOUNT_OFFER_CONFORMITIES.indexOf(conformity)
 
-/** Offre jamais analysée, en expression d'agrégation : ni verdict ni statut d'analyse (cf. ConformityBadge). */
+/** Offre jamais analysée, en expression d'agrégation : verdict ou statut d'analyse absent, les deux étant écrits ensemble (cf. ConformityBadge). */
 export const IS_NEVER_CLASSIFIED_EXPR = {
   $or: [{ $eq: [{ $ifNull: ["$offer_moderation_verdict", null] }, null] }, { $eq: [{ $ifNull: ["$offer_moderation_status", null] }, null] }],
 }
