@@ -92,6 +92,12 @@ export const zSearchRoutes = {
         // API). Présent dans les liens traininglinks émis avant le renommage (dernière campagne :
         // 2026-08-24). search_source prime si les deux sont fournis.
         source: z.enum(["suggestion", "free_text", "training_links", "external_sites", "partner_links"]).optional().describe("Déprécié : utiliser search_source"),
+        purpose: z
+          .enum(["mode_fallback_count"])
+          .optional()
+          .describe(
+            "Appel non initié par une recherche de l'usager, journalisé avec ce marqueur et exclu de l'analyse des recherches. mode_fallback_count : comptage en mode emplois proposé par l'état vide du mode emplois_formation"
+          ),
         internal: z
           .enum(["true", "false"])
           .transform((v) => v === "true")

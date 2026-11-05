@@ -71,3 +71,38 @@ describe("SearchResultsList, comptage des apparitions en recherche", () => {
     expect(vi.mocked(notifyJobSearchViewV3)).not.toHaveBeenCalled()
   })
 })
+
+describe("SearchResultsList, proposition du mode emplois à l'état vide", () => {
+  const renderEmpty = (emploisFallback?: Parameters<typeof SearchResultsList>[0]["emploisFallback"]) =>
+    renderToStaticMarkup(
+      <SearchResultsList
+        result={
+          { data: { pages: [page(0, 0, 0)], pageParams: [0] }, isLoading: false, isError: false, fetchNextPage: vi.fn(), hasNextPage: false, isFetchingNextPage: false } as never
+        }
+        params={{ mode: "emplois_formation", radius: 100 } as ISearchPageParams}
+        emploisFallback={emploisFallback}
+      />
+    )
+
+  it("propose le mode emplois avec le nombre de résultats", () => {
+    const html = renderEmpty({ count: { status: "done", count: 1234 }, onSwitch: vi.fn() })
+    expect(html).toContain("Aucun résultat trouvé")
+    expect(html).toContain("Votre recherche trouve 1234 résultats en mode « Emplois uniquement »")
+    expect(html).toContain("Voir ces résultats")
+  })
+
+  it("garde l'état vide seul quand le mode emplois ne trouve rien non plus", () => {
+    const html = renderEmpty({ count: { status: "done", count: 0 }, onSwitch: vi.fn() })
+    expect(html).toContain("Aucun résultat trouvé")
+    expect(html).not.toContain("Voir ces résultats")
+  })
+
+  it("attend la fin du comptage avant d'afficher l'état vide", () => {
+    expect(renderEmpty({ count: { status: "pending" }, onSwitch: vi.fn() })).not.toContain("Aucun résultat trouvé")
+  })
+
+  it("n'affiche aucune proposition hors comptage", () => {
+    expect(renderEmpty({ count: { status: "idle" }, onSwitch: vi.fn() })).not.toContain("Voir ces résultats")
+    expect(renderEmpty()).not.toContain("Voir ces résultats")
+  })
+})
