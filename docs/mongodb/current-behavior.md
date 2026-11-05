@@ -11,7 +11,7 @@ Le tri est **configurable** via le paramètre `sort` (`buildSortStage` / `buildC
 
 | `sort` | Étape de tri appliquée |
 |---|---|
-| _(absent, défaut)_ | `searchScore` desc, puis `smart_apply` asc (non-smart d'abord), puis `application_count` asc (moins candidatées d'abord) |
+| _(absent, défaut)_ | `searchScore` desc, puis `smart_apply` desc (candidature simplifiée d'abord), puis `application_count` asc (moins candidatées d'abord) |
 | `date` | `is_algo_company` asc (recruteurs algo relégués en fin), puis `publication_date` desc (plus récent d'abord) ; docs sans vraie date de publication écartés |
 | `applications` | `application_count` asc (moins candidatées d'abord), puis `searchScore` desc ; docs sans compteur écartés |
 | `start_date` | `start_date` asc (démarrages les plus proches d'abord), puis `searchScore` desc ; docs sans date de début écartés |
