@@ -33,13 +33,13 @@ export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; user
     enabled: Boolean(cfaId),
   })
 
-  const { data: nonConformes } = useQuery({
+  const { data: nonConformes, isSuccess: nonConformesLoaded } = useQuery({
     queryKey: ["entreprisesGereesParCfa", cfaId, "non-conformes"],
     queryFn: () => getCfaNonConformeCounts(cfaId),
     enabled: Boolean(cfaId) && isAdmin,
   })
   const nonConformesBySiret = useMemo(() => new Map((nonConformes?.entreprises ?? []).map(({ siret, non_conformes }) => [siret, non_conformes])), [nonConformes])
-  const countNonConformes = ({ establishment_siret }: IRecruiterJson) => nonConformesBySiret.get(establishment_siret) ?? 0
+  const countNonConformes = ({ establishment_siret }: IRecruiterJson) => (nonConformesLoaded ? (nonConformesBySiret.get(establishment_siret) ?? 0) : null)
 
   if (error) {
     throw error
@@ -121,15 +121,24 @@ export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; user
             id: "non_conformes",
             sortType: "basic",
             accessor: countNonConformes,
-            Cell: ({ value }: { value: number }) =>
-              value > 0 ? (
+            Cell: ({ value }: { value: number | null }) => {
+              if (value === null) {
+                return (
+                  <>
+                    <span aria-hidden="true">—</span>
+                    <span className="fr-sr-only">Nombre indisponible</span>
+                  </>
+                )
+              }
+              return value > 0 ? (
                 <Badge small severity="warning">
                   {value}
                   <span className="fr-sr-only"> {value > 1 ? "offres non conformes" : "offre non conforme"}</span>
                 </Badge>
               ) : (
                 "0"
-              ),
+              )
+            },
           },
         ]
       : []),
