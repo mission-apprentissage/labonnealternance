@@ -1,151 +1,42 @@
 import { internal } from "@hapi/boom"
 import type { ObjectId } from "mongodb"
-import anonymizedApplicantsModel from "shared/models/anonymized-applicant.model"
-import anonymizedApplicationsModel from "shared/models/anonymized-applications.model"
-import anonymizedUsersWithAccountsModel from "shared/models/anonymized-users-with-accounts.model"
-import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { deleteCvFilesForApplications } from "@/services/application-cv.service"
+import type { IRgpdErasureMode, IRgpdUserType } from "shared/models/rgpd-erasure.model"
+import { RGPD_ERASURE_MODE, RGPD_ERASURE_STATUS, RGPD_USER_TYPE } from "shared/models/rgpd-erasure.model"
+
+import { eraseRgpdUser, getAccountRgpdUserType } from "@/services/rgpd-erasure/rgpd-erasure.service"
+
 import { anonymizeAppointments } from "./anonymize-appointments"
 
-const anonimizeUserWithAccount = (_id: ObjectId) =>
-  getDbCollection("userswithaccounts")
-    .aggregate([
-      {
-        $match: { _id },
-      },
-      {
-        $project: {
-          last_action_date: 1,
-          origin: 1,
-          status: 1,
-        },
-      },
-      {
-        $merge: anonymizedUsersWithAccountsModel.collectionName,
-      },
-    ])
-    .toArray()
-
-const deleteUserWithAccount = (query) => getDbCollection("userswithaccounts").deleteMany(query)
-
-const anonymizeApplication = async (_id: ObjectId) => {
-  logger.info(`[START] Anonymize applicant & related applications`)
-
-  // Droit à l'effacement : purge S3 avant les documents (cf. getApplicationCvS3Key), en mode strict.
-  // Sur échec S3 rien n'est écrit ni supprimé, donc la clé reste calculable et l'opérateur rejoue.
-  // Périmètre d'un individu, déclenchement manuel : le délai RGPD d'un mois absorbe une reprise.
-  const cvReport = await deleteCvFilesForApplications({ applicant_id: _id }, { context: "anonymize-individual" })
-  if (cvReport.failedKeys.length) {
-    throw internal("anonymize-individual : échec de suppression des CV sur S3, effacement interrompu pour permettre une reprise", {
-      applicantId: _id.toString(),
-      failedKeys: cvReport.failedKeys,
-    })
+/**
+ * Effacement unitaire depuis la CLI, par identifiant : même service que le back-office
+ * (POST /admin/rgpd/erase), avec la même trace dans rgpd_erasures.
+ */
+export async function anonymizeIndividual({ collection, id, mode = RGPD_ERASURE_MODE.ANONYMIZE }: { collection: string; id: ObjectId; mode?: IRgpdErasureMode }): Promise<void> {
+  if (!Object.values<string>(RGPD_ERASURE_MODE).includes(mode)) {
+    throw new Error(`mode ${mode} inconnu, attendu : ${Object.values(RGPD_ERASURE_MODE).join(" ou ")}`)
   }
-
-  await getDbCollection("applicants")
-    .aggregate([
-      {
-        $match: { _id },
-      },
-      {
-        $project: {
-          _id: 0,
-          applicant_id: "$_id",
-          createdAt: 1,
-        },
-      },
-      {
-        $merge: anonymizedApplicantsModel.collectionName,
-      },
-    ])
-    .toArray()
-
-  await getDbCollection("applications")
-    .aggregate([
-      {
-        $match: { applicant_id: _id },
-      },
-      {
-        $project: {
-          company_recruitment_intention: 1,
-          company_feedback_date: 1,
-          company_siret: 1,
-          company_naf: 1,
-          job_origin: 1,
-          job_id: 1,
-          caller: 1,
-          created_at: 1,
-          applicant_id: 1,
-        },
-      },
-      {
-        $merge: anonymizedApplicationsModel.collectionName,
-      },
-    ])
-    .toArray()
-
-  await getDbCollection("applications").deleteMany({ applicant_id: _id })
-  await getDbCollection("applicants").deleteOne({ _id })
-  logger.info(`[END] Anonymize applicant & related applications`)
-}
-
-const anonymizeUser = async (_id: ObjectId) => {
-  logger.info(`[START] Anonymized user`)
-  await getDbCollection("users")
-    .aggregate([
-      {
-        $match: { _id },
-      },
-      {
-        $project: {
-          _id: 1,
-          type: 1,
-          role: 1,
-          last_action_date: 1,
-        },
-      },
-      {
-        $merge: "anonymizedusers",
-      },
-    ])
-    .toArray()
-
-  await getDbCollection("users").deleteOne({ _id })
-  logger.info(`[END] Anonymized user`)
-}
-
-const anonymizeUserWithAccountAndRecruiter = async (userId: ObjectId) => {
-  logger.info(`[START] Anonymized user with account & related recruiters`)
-  const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
-  if (!user) {
-    throw new Error("Anonymize user with account not found")
-  }
-  await anonimizeUserWithAccount(userId)
-  await deleteUserWithAccount({ _id: userId })
-  logger.info(`[END] Anonymized user with account & related recruiters`)
-}
-
-export async function anonymizeIndividual({ collection, id }: { collection: string; id: ObjectId }): Promise<void> {
+  let userType: IRgpdUserType
   switch (collection) {
-    case "applications": {
-      await anonymizeApplication(id)
+    case "applications":
+      userType = RGPD_USER_TYPE.CANDIDAT
       break
-    }
-    case "users": {
-      await anonymizeUser(id)
+    case "users":
+      userType = RGPD_USER_TYPE.CANDIDAT_RDVA
       break
-    }
-    case "userrecruteurs": {
-      await anonymizeUserWithAccountAndRecruiter(id)
+    case "userrecruteurs":
+      userType = await getAccountRgpdUserType(id)
       break
-    }
-    case "appointments": {
+    case "appointments":
       await anonymizeAppointments({ _id: id })
-      break
-    }
+      return
     default:
       throw new Error(`collection ${collection} unsupported`)
+  }
+
+  const report = await eraseRgpdUser({ userType, query: { id }, mode, requestRef: null, requestedBy: null })
+  // Code de sortie non nul : un effacement incomplet ne doit pas passer pour un succès en CLI.
+  if (report.status !== RGPD_ERASURE_STATUS.DONE) {
+    throw internal(`anonymize-individual : effacement ${report.status}, reprise possible après correction (audit ${report.audit_id})`, { failures: report.failures })
   }
 }
 export default anonymizeIndividual

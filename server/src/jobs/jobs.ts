@@ -515,8 +515,8 @@ export async function setupJobProcessor() {
       },
       "anonymize-individual": {
         handler: async (job) => {
-          const { collection, id } = job.payload as any
-          await anonymizeIndividual({ collection, id: new ObjectId(id) })
+          const { collection, id, mode } = job.payload as any
+          await anonymizeIndividual({ collection, id: new ObjectId(id), mode })
           return
         },
       },

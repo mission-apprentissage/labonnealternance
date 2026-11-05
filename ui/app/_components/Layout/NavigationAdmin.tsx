@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import type { ComponentProps } from "react"
 
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
+import { RGPD_PAGES } from "@/utils/rgpd-pages.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 type AdminNavLink = {
@@ -34,6 +35,7 @@ const ADMIN_NAV_ITEMS: AdminNavEntry[] = [
   { text: "Gestion des administrateurs", href: PAGES.static.backAdminGestionDesAdministrateurs.getPath() },
   { text: "Gestion des jobs", href: PAGES.static.adminProcessor.getPath() },
   { text: "Formulaires de feedback", href: PAGES.static.backAdminFeedbackForms.getPath() },
+  { text: "RGPD", href: RGPD_PAGES.admin.getPath() },
 ]
 
 function isLinkActive(pathname: string, href: string): boolean {

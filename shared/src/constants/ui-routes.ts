@@ -41,6 +41,7 @@ export const UI_ROUTE_PATTERNS = [
   "/espace-pro/administration/recruteurs",
   "/espace-pro/administration/rendez-vous-apprentissage",
   "/espace-pro/administration/rendez-vous-apprentissage/:siret",
+  "/espace-pro/administration/rgpd",
   "/espace-pro/administration/users",
   "/espace-pro/administration/users/:userId",
   "/espace-pro/administration/users/:userId/cfa/:establishment_id",
