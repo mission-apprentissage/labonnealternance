@@ -15,15 +15,16 @@ const isTraceOnly = ({ category, verbatim }: IFinding) => TRACE_ONLY_CATEGORIES.
 /**
  * Étend la migration 20261103120000 (#5843) aux offres `Pending` d'un compte en attente de validation : à la validation,
  * elles passent `Active` sans nouvelle classification (cf. checkForJobActivations) et leur verdict « à vérifier » les
- * amènerait dans la file. `Active` et `InReview` sont repris pour les offres publiées depuis le passage de la première
- * migration ; celles qu'elle a déjà sorties de la file n'ont plus le verdict `a_verifier`.
+ * amènerait dans la file. `Active` est repris pour les offres publiées depuis le passage de la première migration ;
+ * celles qu'elle a déjà sorties de la file n'ont plus le verdict `a_verifier`. `InReview` est exclu : passée `conforme`
+ * sans être publiée (cf. releaseOfferInReview), une offre en modération sortirait de la file et resterait masquée.
  *
  * `bypassDocumentValidation` : des offres anciennes ne respectent pas le schéma actuel.
  */
 export const up = async () => {
   const candidateFilter = {
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-    offer_status: { $in: [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MODERATION] },
+    offer_status: { $in: [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.ACTIVE] },
     offer_moderation_verdict: "a_verifier",
     offer_moderation_status: "ok",
     offer_moderation_review: null,

@@ -33,13 +33,18 @@ describe("migration off-platform-only-pending-moderations-5843", () => {
     return offer._id
   }
 
-  const saveModeration = async (job_id: ObjectId, findings: IJobsPartnersModerationFinding[], created_at = new Date("2026-11-01T10:00:00Z")) => {
+  const saveModeration = async (
+    job_id: ObjectId,
+    findings: IJobsPartnersModerationFinding[],
+    created_at = new Date("2026-11-01T10:00:00Z"),
+    status: IJobsPartnersModeration["status"] = "ok"
+  ) => {
     const moderation: IJobsPartnersModeration = {
       _id: new ObjectId(),
       job_id,
       trigger: "creation",
       verdict: "a_verifier",
-      status: "ok",
+      status,
       findings,
       original_text: null,
       masked_text: null,
@@ -65,21 +70,15 @@ describe("migration off-platform-only-pending-moderations-5843", () => {
     expect(await getDbCollection("jobs_partners_moderations").findOne({ job_id: jobId })).toMatchObject({ verdict: "a_verifier", findings: [{}, {}] })
   })
 
-  it("reprend les offres publiées ou en modération restées à vérifier", async () => {
-    for (const [id, offer_status] of [
-      ["publiee", JOB_STATUS_ENGLISH.ACTIVE],
-      ["en-moderation", JOB_STATUS_ENGLISH.EN_MODERATION],
-    ] as const) {
-      await saveModeration(await saveOffer(id, { offer_status }), [finding("candidature_hors_plateforme")])
-    }
+  it("reprend les offres publiées restées à vérifier", async () => {
+    await saveModeration(await saveOffer("publiee", { offer_status: JOB_STATUS_ENGLISH.ACTIVE }), [finding("candidature_hors_plateforme")])
 
     await up()
 
-    expect.soft(await verdictOf("publiee")).toBe("conforme")
-    expect.soft(await verdictOf("en-moderation")).toBe("conforme")
+    expect(await verdictOf("publiee")).toBe("conforme")
   })
 
-  it("garde à vérifier une offre en attente avec un autre finding, une dernière classification différente, sans finding, un pseudo ou un extrait purgé", async () => {
+  it("garde à vérifier une offre en attente avec un autre finding, une dernière classification différente ou indisponible, sans finding, un pseudo ou un extrait purgé", async () => {
     const withOther = await saveOffer("avec-autre")
     await saveModeration(withOther, [finding("candidature_hors_plateforme"), finding("mineurs")])
 
@@ -89,6 +88,10 @@ describe("migration off-platform-only-pending-moderations-5843", () => {
     const olderOnly = await saveOffer("ancienne-seulement")
     await saveModeration(olderOnly, [finding("candidature_hors_plateforme")], new Date("2026-10-01T10:00:00Z"))
     await saveModeration(olderOnly, [finding("teletravail_integral")], new Date("2026-10-15T10:00:00Z"))
+
+    // Une classification indisponible peut porter les findings du champ classé (cf. classifyOffreFreeTexts).
+    const unavailable = await saveOffer("classification-indisponible")
+    await saveModeration(unavailable, [finding("candidature_hors_plateforme")], undefined, "indisponible")
 
     const withoutFinding = await saveOffer("sans-finding")
     await saveModeration(withoutFinding, [])
@@ -103,15 +106,16 @@ describe("migration off-platform-only-pending-moderations-5843", () => {
 
     await up()
 
-    for (const id of ["avec-autre", "avec-charte", "ancienne-seulement", "sans-finding", "sans-classification", "pseudo", "purgee"]) {
+    for (const id of ["avec-autre", "avec-charte", "ancienne-seulement", "classification-indisponible", "sans-finding", "sans-classification", "pseudo", "purgee"]) {
       expect.soft(await verdictOf(id), id).toBe("a_verifier")
     }
   })
 
-  it("ne touche ni une offre close, ni une offre déjà tranchée, non conforme, indisponible ou d'un autre partenaire", async () => {
+  it("ne touche ni une offre close ou en modération, ni une offre déjà tranchée, non conforme, indisponible ou d'un autre partenaire", async () => {
     const offers = {
       expiree: await saveOffer("expiree", { offer_status: JOB_STATUS_ENGLISH.ANNULEE }),
       pourvue: await saveOffer("pourvue", { offer_status: JOB_STATUS_ENGLISH.POURVUE }),
+      "en-moderation": await saveOffer("en-moderation", { offer_status: JOB_STATUS_ENGLISH.EN_MODERATION }),
       tranchee: await saveOffer("tranchee", { offer_moderation_review: "validee" }),
       "non-conforme": await saveOffer("non-conforme", { offer_moderation_verdict: "non_conforme" }),
       indisponible: await saveOffer("indisponible", { offer_moderation_status: "indisponible" }),
@@ -123,7 +127,7 @@ describe("migration off-platform-only-pending-moderations-5843", () => {
 
     await up()
 
-    for (const id of ["expiree", "pourvue", "tranchee", "indisponible", "hellowork"]) {
+    for (const id of ["expiree", "pourvue", "en-moderation", "tranchee", "indisponible", "hellowork"]) {
       expect.soft(await verdictOf(id), id).toBe("a_verifier")
     }
     expect.soft(await verdictOf("non-conforme")).toBe("non_conforme")
