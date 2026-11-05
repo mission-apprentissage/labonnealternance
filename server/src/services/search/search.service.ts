@@ -517,9 +517,10 @@ function buildSortStage(filters: ISearchFilters): Record<string, unknown> {
     return { score: { $meta: "searchScore", order: -1 } }
   }
 
+  // smart_apply décroissant : true, false, puis null (noData "lowest" par défaut), cf. search-sort-tiebreak.test.ts.
   return {
     score: { $meta: "searchScore", order: -1 },
-    smart_apply: { order: 1 },
+    smart_apply: { order: -1 },
     application_count: { order: 1 },
   }
 }
