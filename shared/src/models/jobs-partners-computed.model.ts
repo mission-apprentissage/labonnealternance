@@ -2,7 +2,7 @@ import { z } from "zod"
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
-import { JOBPARTNERS_LABEL, ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, zOfferDescriptionWrite } from "./jobs-partners.model.js"
+import { JOBPARTNERS_LABEL, ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate } from "./jobs-partners.model.js"
 
 // Ces partenaires sont exclus des processus de classification et de blacklistage.
 export const PARTNER_WHITELIST: string[] = [
@@ -116,6 +116,8 @@ export const ZComputedJobsPartnersBase = extensions
     created_at: ZJobsPartnersOfferPrivate.shape.created_at,
   })
 
+// offer_description reste nullish : sa longueur est contrôlée offre par offre (cf. assertOfferDescriptionLength), un refus
+// de schéma rejetterait tout le lot de /v4/jobs/multi-partner/bulk.
 export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({
   _id: true,
   created_at: true,
@@ -132,7 +134,6 @@ export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({
   offer_creation: z.iso.datetime(),
   offer_expiration: z.iso.datetime(),
   offer_status: ZJobsPartnersOfferApi.shape.offer_status.nullish(),
-  offer_description: zOfferDescriptionWrite,
 })
 
 export type IComputedJobsPartnersWrite = z.output<typeof ZComputedJobsPartnersWrite>
