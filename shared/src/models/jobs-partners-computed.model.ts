@@ -2,7 +2,7 @@ import { z } from "zod"
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
-import { JOBPARTNERS_LABEL, ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate } from "./jobs-partners.model.js"
+import { JOBPARTNERS_LABEL, ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, zOfferDescriptionWrite } from "./jobs-partners.model.js"
 
 // Ces partenaires sont exclus des processus de classification et de blacklistage.
 export const PARTNER_WHITELIST: string[] = [
@@ -132,6 +132,7 @@ export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({
   offer_creation: z.iso.datetime(),
   offer_expiration: z.iso.datetime(),
   offer_status: ZJobsPartnersOfferApi.shape.offer_status.nullish(),
+  offer_description: zOfferDescriptionWrite,
 })
 
 export type IComputedJobsPartnersWrite = z.output<typeof ZComputedJobsPartnersWrite>

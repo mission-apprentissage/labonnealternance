@@ -4,7 +4,7 @@ import { OPCOS_LABEL, TRAINING_CONTRACT_TYPE } from "../../../constants/recruteu
 import { extensions } from "../../../helpers/zod-helpers/zod-primitives.js"
 import { JOB_START_TYPE, JOB_STATUS_ENGLISH, toPublicJobStatus } from "../../../models/job.model.js"
 import type { IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, JOBPARTNERS_LABEL } from "../../../models/jobs-partners.model.js"
-import { ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, ZJobsPartnersRecruiterApi, zDiplomaEuropeanLevel } from "../../../models/jobs-partners.model.js"
+import { ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, ZJobsPartnersRecruiterApi, zDiplomaEuropeanLevel, zOfferDescriptionWrite } from "../../../models/jobs-partners.model.js"
 
 const TIME_CLOCK_TOLERANCE = 300_000
 
@@ -180,7 +180,7 @@ export const zJobOfferApiWriteV3 = z.object({
   offer: z.object({
     title: ZJobsPartnersOfferPrivate.shape.offer_title,
     rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
-    description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
+    description: zOfferDescriptionWrite,
     target_diploma: z
       .object({
         european: zDiplomaEuropeanLevel.nullable().default(null),
