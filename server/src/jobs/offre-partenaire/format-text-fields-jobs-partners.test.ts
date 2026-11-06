@@ -1,5 +1,7 @@
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { formatTextFieldsJobsPartners } from "./format-text-fields-jobs-partners"
@@ -37,8 +39,7 @@ describe("format-text-fields-jobs-partners", () => {
   })
 
   it("laisse la chaîne vide d'un champ renseigné qui se vide à la sanitization", async () => {
-    // Garde-fou (cf. sanitizeNullableTextField) : null ferait échouer la validation zod de
-    // jobs_partners, offer_description y est non-nullable.
+    // cf. sanitizeNullableTextField
     await givenSomeComputedJobPartners([
       {
         offer_title: "Développeur web en alternance",
@@ -68,13 +69,17 @@ describe("format-text-fields-jobs-partners", () => {
     expect(job.workplace_name).toBe("")
   })
 
-  it("laisse une offre dont la description se vide franchir la validation", async () => {
-    // La conséquence réelle du garde-fou ci-dessus : avec null, la validation refuse l'offre
-    // (offer_description est non-nullable) et elle n'est plus importée dans jobs_partners.
+  it.each([
+    ["vidée par la sanitization", "<script>alert(1)</script>"],
+    ["faite de balises et de blancs", "<p>   </p><p>&nbsp;</p><br/><br/><br/><br/>"],
+    ["réduite à des coordonnées", "contact.rh@agence-exemple.fr 06 12 34 56 78"],
+    ["de moins de 30 caractères visibles", "<p><b>Poste de vendeur en boutique</b></p>"],
+    ["absente", null],
+  ])("bloque en WRONG_DATA une offer_description %s (#5855)", async (_, offer_description) => {
     await givenSomeComputedJobPartners([
       {
         offer_title: "Développeur web en alternance",
-        offer_description: "<script>alert(1)</script>",
+        offer_description,
         offer_rome_codes: ["M1805"],
       },
     ])
@@ -83,8 +88,40 @@ describe("format-text-fields-jobs-partners", () => {
     await validateComputedJobPartners({})
 
     const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
-    expect.soft(job.errors).toEqual([])
+    expect.soft(job.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
+    expect.soft(job.validated).toBe(false)
+  })
+
+  it("valide une offer_description d'au moins 30 caractères visibles", async () => {
+    await givenSomeComputedJobPartners([
+      {
+        offer_title: "Développeur web en alternance",
+        offer_description: "<p><b>Poste de vendeur en boutique de prêt-à-porter</b></p>",
+        offer_rome_codes: ["M1805"],
+      },
+    ])
+
+    await formatTextFieldsJobsPartners({})
+    await validateComputedJobPartners({})
+
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(job.business_error).toBe(null)
     expect.soft(job.validated).toBe(true)
+  })
+
+  it("ne bloque pas les recruteurs LBA, dont la description est une constante", async () => {
+    await givenSomeComputedJobPartners([
+      {
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        offer_title: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        offer_description: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      },
+    ])
+
+    await formatTextFieldsJobsPartners({})
+
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect(job.business_error).toBe(null)
   })
 
   it("sanitize les champs renseignés sans les vider", async () => {

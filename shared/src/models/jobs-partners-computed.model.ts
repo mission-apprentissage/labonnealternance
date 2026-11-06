@@ -116,6 +116,8 @@ export const ZComputedJobsPartnersBase = extensions
     created_at: ZJobsPartnersOfferPrivate.shape.created_at,
   })
 
+// offer_description reste nullish : sa longueur est contrôlée offre par offre (cf. assertOfferDescriptionLength), un refus
+// de schéma rejetterait tout le lot de /v4/jobs/multi-partner/bulk.
 export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({
   _id: true,
   created_at: true,
