@@ -8,6 +8,7 @@ export const zTriggerableJobs = z.enum([
   "processJobPartnersForApi",
   "importCatalogueFormationJob",
   "updateHandiEngagementForce",
+  "processSuggestionsNafLast24h",
 ])
 
 export const zProcessorAdminRoutes = {
