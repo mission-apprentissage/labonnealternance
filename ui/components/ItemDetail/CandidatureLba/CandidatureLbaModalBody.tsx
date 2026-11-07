@@ -8,7 +8,8 @@ import { useFormik } from "formik"
 import type { ChangeEvent } from "react"
 import { useRef, useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { getApplicantQuestions } from "shared/constants/applicant-questions"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
 import { APPLICANT_ANSWER_MAX_LENGTH } from "shared/models/applications.model"
 import { toFormikValidationSchema } from "zod-formik-adapter"
@@ -22,7 +23,7 @@ import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { sessionStorageGet, sessionStorageSet } from "@/utils/local-storage"
 import { CandidatureLbaFileDropzone } from "./CandidatureLbaFileDropzone"
 import type { IApplicationSchemaInitValues } from "./services/get-schema"
-import { ApplicationFormikSchema, formatCount, getInitialSchemaValues, QuestionAnswerSchema } from "./services/get-schema"
+import { ApplicationFormikSchema, formatCount, getInitialSchemaValues, OptionalQuestionAnswerSchema, QuestionAnswerSchema } from "./services/get-schema"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -45,14 +46,15 @@ export const CandidatureLbaModalBody = ({
   onSubmit: (values: IApplicationSchemaInitValues) => void
   onClose: () => void
 }) => {
-  const customQuestions = "job" in item ? (item.job?.to_applicant_questions ?? []) : []
+  const { questions, askedBy } = getApplicantQuestions(oldItemTypeToNewItemType(kind), "job" in item ? item.job?.to_applicant_questions : null)
+  const areAnswersRequired = askedBy === "recruiter"
 
   // formik interprète le nom d'un champ comme un chemin lodash : un intitulé de question contenant « . » ou « [ »
   // écrirait la saisie dans une propriété imbriquée, laissant le textarea bloqué sur sa valeur initiale.
   // on utilise donc un nom de champ indexé, et on rétablit l'intitulé de la question à la soumission.
-  const questionFields = customQuestions.map((question, index) => ({ question, name: `custom_question_${index}` }))
+  const questionFields = questions.map((question, index) => ({ question, name: `custom_question_${index}` }))
 
-  const questionZodExtension = Object.fromEntries(questionFields.map(({ name }) => [name, QuestionAnswerSchema]))
+  const questionZodExtension = Object.fromEntries(questionFields.map(({ name }) => [name, areAnswersRequired ? QuestionAnswerSchema : OptionalQuestionAnswerSchema]))
 
   const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
   const questionsInitValues = Object.fromEntries(questionFields.map(({ question, name }) => [name, applicantAnswersSession?.[question] ?? ""]))
@@ -68,6 +70,9 @@ export const CandidatureLbaModalBody = ({
       questionFields.forEach(({ question, name }) => {
         delete finalValues[name]
         const answer = values[name]
+        if (!answer?.trim()) {
+          return
+        }
         finalValues.applicant_answers_to_recruiter_questions.push({
           question,
           answer,
@@ -156,7 +161,7 @@ export const CandidatureLbaModalBody = ({
               <Box sx={{ mt: fr.spacing("4v") }}>
                 <CvFileInput formik={formik} />
               </Box>
-              {customQuestions.length > 0 && (
+              {questionFields.length > 0 && (
                 <>
                   <ModalTitle
                     component="h2"
@@ -165,14 +170,18 @@ export const CandidatureLbaModalBody = ({
                       color: "#000091",
                     }}
                   >
-                    Mes réponses aux questions de l’entreprise
+                    {areAnswersRequired ? "Mes réponses aux questions de l’entreprise" : "Mes motivations"}
                   </ModalTitle>
                   <Box sx={{ mb: fr.spacing("3v") }}>
-                    <InfoText>L’entreprise sera attentive aux réponses que vous lui apporterez. Prenez le temps de détailler vos réponses pour le recruteur.</InfoText>
+                    <InfoText>
+                      {areAnswersRequired
+                        ? "L’entreprise sera attentive aux réponses que vous lui apporterez. Prenez le temps de détailler vos réponses pour le recruteur."
+                        : "Ces questions sont facultatives. Vos réponses aident le recruteur à mieux comprendre votre candidature."}
+                    </InfoText>
                   </Box>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
                     {questionFields.map(({ question, name }) => (
-                      <TextareaInput key={name} formik={formik} name={name} label={question} maxLength={APPLICANT_ANSWER_MAX_LENGTH} required />
+                      <TextareaInput key={name} formik={formik} name={name} label={question} maxLength={APPLICANT_ANSWER_MAX_LENGTH} required={areAnswersRequired} />
                     ))}
                   </Box>
                 </>

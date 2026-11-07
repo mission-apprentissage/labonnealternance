@@ -6,6 +6,7 @@ import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import type { IApplicationApiPublic } from "shared"
 import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
+import { PARTNER_JOB_APPLICATION_QUESTIONS, SPONTANEOUS_APPLICATION_QUESTIONS } from "shared/constants/applicant-questions"
 import { ApplicationIntention } from "shared/constants/application"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -83,6 +84,22 @@ const jobPartnerWithQuestions = generateJobsPartnersOfferPrivate({
   to_applicant_questions: OFFER_QUESTIONS,
 })
 
+const jobLbaWithoutQuestions = generateJobsPartnersOfferPrivate({
+  _id: new ObjectId("64a43d28eeeb7c3b210faf61"),
+  partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+  workplace_siret: "11000001500039",
+  apply_email: "contact-sans-questions@mail.fr",
+  to_applicant_questions: null,
+})
+
+const jobPartnerSmartApply = generateJobsPartnersOfferPrivate({
+  _id: new ObjectId("64a43d28eeeb7c3b210faf62"),
+  partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+  workplace_siret: "11000001500047",
+  apply_email: "contact-partenaire@mail.fr",
+  to_applicant_questions: null,
+})
+
 const recruiterEmailFixture = "test-application@mail.fr"
 
 const user = generateUserWithAccountFixture({
@@ -112,7 +129,7 @@ const intentionToken = generateApplicationReplyToken(userToken, applicationFixtu
 
 const mockData = async () => {
   await getDbCollection("userswithaccounts").insertOne(user)
-  await getDbCollection("jobs_partners").insertMany([jobPartner, jobPartnerWithQuestions])
+  await getDbCollection("jobs_partners").insertMany([jobPartner, jobPartnerWithQuestions, jobLbaWithoutQuestions, jobPartnerSmartApply])
   await getDbCollection("referentielromes").insertOne(referentielRome)
   await getDbCollection("applicants").insertOne(applicantFixture)
   await getDbCollection("applications").insertOne(applicationFixture)
@@ -259,7 +276,7 @@ describe("POST /v2/application", () => {
 
     it("rejects answers sent on an offer without questions", async () => {
       const response = await post({
-        ...baseBody(jobPartner._id.toString()),
+        ...baseBody(jobLbaWithoutQuestions._id.toString()),
         applicant_answers_to_recruiter_questions: [{ question: OFFER_QUESTIONS[0], answer: "Parce que." }],
       })
 
@@ -322,9 +339,62 @@ describe("POST /v2/application", () => {
     })
 
     it("accepts an application without answers on an offer without questions", async () => {
-      const response = await post(baseBody(jobPartner._id.toString()))
+      const response = await post(baseBody(jobLbaWithoutQuestions._id.toString()))
 
       expect(response.statusCode).toBe(202)
+    })
+
+    it("drops blank answers instead of storing them", async () => {
+      const response = await post({
+        ...baseBody(jobPartnerWithQuestions._id.toString()),
+        applicant_answers_to_recruiter_questions: [
+          { question: OFFER_QUESTIONS[0], answer: "Pour apprendre le métier." },
+          { question: OFFER_QUESTIONS[1], answer: "  " },
+        ],
+      })
+
+      expect.soft(response.statusCode).toBe(202)
+      const application = await getDbCollection("applications").findOne({ job_id: jobPartnerWithQuestions._id })
+      expect(application?.applicant_answers_to_recruiter_questions).toEqual([{ question: OFFER_QUESTIONS[0], answer: "Pour apprendre le métier." }])
+    })
+
+    describe.each([
+      { flow: "candidature spontanée", job: jobPartner, questions: SPONTANEOUS_APPLICATION_QUESTIONS, otherFlowQuestion: PARTNER_JOB_APPLICATION_QUESTIONS[2] },
+      { flow: "offre partenaire en smart apply", job: jobPartnerSmartApply, questions: PARTNER_JOB_APPLICATION_QUESTIONS, otherFlowQuestion: SPONTANEOUS_APPLICATION_QUESTIONS[1] },
+    ])("questions fixes LBA sur une $flow", ({ job, questions, otherFlowQuestion }) => {
+      it.each([0, 1, 2, 3])("stores %i answer(s) with the question wording", async (answerCount) => {
+        const answers = questions.slice(0, answerCount).map((question, index) => ({ question, answer: `Réponse ${index + 1}` }))
+        const response = await post({ ...baseBody(job._id.toString()), applicant_answers_to_recruiter_questions: answers })
+
+        expect.soft(response.statusCode).toBe(202)
+        // job_id n'est pas renseigné sur une candidature spontanée
+        const application = await getDbCollection("applications").findOne({ company_siret: job.workplace_siret })
+        expect(application?.applicant_answers_to_recruiter_questions).toEqual(answers)
+      })
+
+      it("rejects a question of the other flow", async () => {
+        const response = await post({ ...baseBody(job._id.toString()), applicant_answers_to_recruiter_questions: [{ question: otherFlowQuestion, answer: "Une réponse." }] })
+
+        expect.soft(response.statusCode).toBe(400)
+        expect(response.json().message).toBe("Answers must match the questions of the job offer")
+      })
+    })
+
+    it("keeps the recruiter questions of a partner offer instead of the LBA ones", async () => {
+      const partnerJobWithQuestions = generateJobsPartnersOfferPrivate({
+        partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+        workplace_siret: "11000001500054",
+        apply_email: "contact-partenaire-questions@mail.fr",
+        to_applicant_questions: [OFFER_QUESTIONS[1]],
+      })
+      await getDbCollection("jobs_partners").insertOne(partnerJobWithQuestions)
+
+      const response = await post({
+        ...baseBody(partnerJobWithQuestions._id.toString()),
+        applicant_answers_to_recruiter_questions: [{ question: PARTNER_JOB_APPLICATION_QUESTIONS[1], answer: "Une réponse." }],
+      })
+
+      expect(response.statusCode).toBe(400)
     })
   })
 

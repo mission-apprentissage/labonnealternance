@@ -1,6 +1,6 @@
 import { APPLICANT_ANSWER_MAX_LENGTH } from "shared/models/applications.model"
 import { describe, expect, it } from "vitest"
-import { formatCount, QuestionAnswerSchema } from "./get-schema"
+import { formatCount, OptionalQuestionAnswerSchema, QuestionAnswerSchema } from "./get-schema"
 
 const errorsOf = (answer: unknown) => QuestionAnswerSchema.safeParse(answer).error?.issues.map(({ message }) => message)
 
@@ -19,6 +19,18 @@ describe("QuestionAnswerSchema", () => {
 
   it.each([undefined, "   "])("refuse une réponse vide (%j)", (answer) => {
     expect(errorsOf(answer)).toEqual(["Une réponse est obligatoire"])
+  })
+})
+
+describe("OptionalQuestionAnswerSchema", () => {
+  it.each([undefined, "   ", "a".repeat(APPLICANT_ANSWER_MAX_LENGTH)])("accepte une réponse absente, vide ou à la longueur maximale (%#)", (answer) => {
+    expect(OptionalQuestionAnswerSchema.safeParse(answer).success).toBe(true)
+  })
+
+  it("applique la même limite que les questions du recruteur", () => {
+    expect(OptionalQuestionAnswerSchema.safeParse("a".repeat(APPLICANT_ANSWER_MAX_LENGTH + 1)).error?.issues.map(({ message }) => message)).toEqual(
+      errorsOf("a".repeat(APPLICANT_ANSWER_MAX_LENGTH + 1))
+    )
   })
 })
 
