@@ -1,9 +1,10 @@
 import { PARTNER_JOB_APPLICATION_QUESTIONS, SPONTANEOUS_APPLICATION_QUESTIONS } from "shared/constants/applicant-questions"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { describe, expect, it } from "vitest"
 
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
-import { buildApplicantAnswersForEmail } from "./application.service"
+import { buildApplicantAnswersForEmail, buildTaleezCoverText } from "./application.service"
 import mailer from "./mailer.service"
 
 const RECRUITER_QUESTIONS = ["Avez-vous le permis B ?", "Quelles compétences souhaitez-vous développer ?", "Êtes-vous mobile le week-end ?"]
@@ -103,5 +104,40 @@ describe("bloc des réponses sur une offre LBA", () => {
     expect(html).toContain(title)
     expect(html).not.toContain("motivations")
     RECRUITER_QUESTIONS.forEach((question) => expect(html).toContain(question))
+  })
+})
+
+describe("buildTaleezCoverText", () => {
+  const coverText = (applicant_message_to_company: string | null, answers: { question: string; answer: string }[]) =>
+    buildTaleezCoverText(
+      generateApplicationFixture({ job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, applicant_message_to_company, applicant_answers_to_recruiter_questions: answers })
+    )
+
+  it.each([null, "Bonjour,<br />Je postule."])("transmet le message tel quel sans réponse (%j)", (message) => {
+    expect(coverText(message, [])).toBe(message)
+    expect(coverText(message, [{ question: PARTNER_JOB_APPLICATION_QUESTIONS[0], answer: "  " }])).toBe(message)
+  })
+
+  it("ajoute les questions répondues sous le titre « Vos motivations », séparées comme le message", () => {
+    expect(
+      coverText("Bonjour,<br />Je postule.", [
+        { question: PARTNER_JOB_APPLICATION_QUESTIONS[0], answer: "Pour votre équipe." },
+        { question: PARTNER_JOB_APPLICATION_QUESTIONS[1], answer: "  " },
+        { question: PARTNER_JOB_APPLICATION_QUESTIONS[2], answer: "Le métier.\nEt la gestion de projet." },
+      ])
+    ).toBe(
+      [
+        "Bonjour,<br />Je postule.",
+        "Vos motivations",
+        `${PARTNER_JOB_APPLICATION_QUESTIONS[0]}<br />Pour votre équipe.`,
+        `${PARTNER_JOB_APPLICATION_QUESTIONS[2]}<br />Le métier.<br />Et la gestion de projet.`,
+      ].join("<br /><br />")
+    )
+  })
+
+  it("commence par les motivations sans message", () => {
+    expect(coverText(null, [{ question: PARTNER_JOB_APPLICATION_QUESTIONS[0], answer: "Pour votre équipe." }])).toBe(
+      `Vos motivations<br /><br />${PARTNER_JOB_APPLICATION_QUESTIONS[0]}<br />Pour votre équipe.`
+    )
   })
 })

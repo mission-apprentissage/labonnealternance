@@ -1503,6 +1503,21 @@ const sendApplicationDataToPartner = async (partnerJob: IJobsPartnersOfferPrivat
   }
 }
 
+const TALEEZ_LINE_BREAK = "<br />"
+
+// Taleez ne reçoit pas le mail recruteur : les réponses aux questions suivent le message, au format de celui-ci
+// (retours à la ligne en <br />, cf. prepareMessageForMail).
+export const buildTaleezCoverText = ({ applicant_message_to_company, applicant_answers_to_recruiter_questions }: IApplication) => {
+  const answers = (applicant_answers_to_recruiter_questions ?? []).filter(({ answer }) => answer.trim())
+  if (!answers.length) {
+    return applicant_message_to_company
+  }
+  const motivations = ["Vos motivations", ...answers.map(({ question, answer }) => [question, prepareMessageForMail(answer.trim())].join(TALEEZ_LINE_BREAK))].join(
+    TALEEZ_LINE_BREAK + TALEEZ_LINE_BREAK
+  )
+  return [applicant_message_to_company, motivations].filter(Boolean).join(TALEEZ_LINE_BREAK + TALEEZ_LINE_BREAK)
+}
+
 const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate, application: IApplication, applicant: IApplicant, applicant_attachment_content: string) => {
   try {
     const payload = {
@@ -1513,7 +1528,7 @@ const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate
       cvData: removeDataUrlPrefix(applicant_attachment_content),
       cvName: application.applicant_attachment_name,
       phone: applicant.phone,
-      coverText: application.applicant_message_to_company,
+      coverText: buildTaleezCoverText(application),
     }
 
     await axios.post(config.taleez.url, payload, {
