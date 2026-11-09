@@ -221,7 +221,8 @@ const normalizeQuestionWhitespace = (question: string) => question.replace(/\s+/
 
 // Renvoie les réponses avec le libellé exact de la question posée : la comparaison tolère les écarts d'espaces
 // d'une plateforme qui recopie la question, le mail au recruteur reprend le texte qu'il a saisi.
-// Les réponses vides sont écartées : seules les questions répondues sont stockées et affichées dans les mails.
+// Les réponses sont stockées sans espaces de début et de fin, les vides écartées : seules les questions
+// répondues sont stockées et affichées dans les mails.
 const matchAnswersToAskedQuestions = (
   answers: IApplicationApiPublicOutput["applicant_answers_to_recruiter_questions"],
   questions: readonly string[]
@@ -236,7 +237,7 @@ const matchAnswersToAskedQuestions = (
     if (offerQuestion === undefined) {
       throw badRequest(BusinessErrorCodes.UNKNOWN_RECRUITER_QUESTION, { question })
     }
-    return { question: offerQuestion, answer }
+    return { question: offerQuestion, answer: answer.trim() }
   })
   // Le plafond du schéma porte sur le nombre d'entrées : sans ce contrôle, un appelant pourrait
   // répondre trois fois à la même question et faire gonfler le mail envoyé au recruteur.

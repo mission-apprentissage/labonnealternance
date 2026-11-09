@@ -358,6 +358,17 @@ describe("POST /v2/application", () => {
       expect(application?.applicant_answers_to_recruiter_questions).toEqual([{ question: OFFER_QUESTIONS[0], answer: "Pour apprendre le métier." }])
     })
 
+    it("stores answers without leading and trailing whitespace", async () => {
+      const response = await post({
+        ...baseBody(jobPartnerWithQuestions._id.toString()),
+        applicant_answers_to_recruiter_questions: [{ question: OFFER_QUESTIONS[0], answer: "\n  Pour apprendre\nle métier.  " }],
+      })
+
+      expect.soft(response.statusCode).toBe(202)
+      const application = await getDbCollection("applications").findOne({ job_id: jobPartnerWithQuestions._id })
+      expect(application?.applicant_answers_to_recruiter_questions).toEqual([{ question: OFFER_QUESTIONS[0], answer: "Pour apprendre\nle métier." }])
+    })
+
     describe.each([
       { flow: "candidature spontanée", job: jobPartner, questions: SPONTANEOUS_APPLICATION_QUESTIONS, otherFlowQuestion: PARTNER_JOB_APPLICATION_QUESTIONS[2] },
       { flow: "offre partenaire en smart apply", job: jobPartnerSmartApply, questions: PARTNER_JOB_APPLICATION_QUESTIONS, otherFlowQuestion: SPONTANEOUS_APPLICATION_QUESTIONS[1] },

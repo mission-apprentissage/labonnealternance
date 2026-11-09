@@ -1,6 +1,6 @@
 import { APPLICANT_ANSWER_MAX_LENGTH } from "shared/models/applications.model"
 import { describe, expect, it } from "vitest"
-import { formatCount, OptionalQuestionAnswerSchema, QuestionAnswerSchema } from "./get-schema"
+import { buildApplicantAnswers, formatCount, OptionalQuestionAnswerSchema, QuestionAnswerSchema } from "./get-schema"
 
 const errorsOf = (answer: unknown) => QuestionAnswerSchema.safeParse(answer).error?.issues.map(({ message }) => message)
 
@@ -31,6 +31,29 @@ describe("OptionalQuestionAnswerSchema", () => {
     expect(OptionalQuestionAnswerSchema.safeParse("a".repeat(APPLICANT_ANSWER_MAX_LENGTH + 1)).error?.issues.map(({ message }) => message)).toEqual(
       errorsOf("a".repeat(APPLICANT_ANSWER_MAX_LENGTH + 1))
     )
+  })
+})
+
+describe("buildApplicantAnswers", () => {
+  const questionFields = [
+    { question: "Question A ?", name: "custom_question_0" },
+    { question: "Question B ?", name: "custom_question_1" },
+    { question: "Question C ?", name: "custom_question_2" },
+  ]
+
+  it("garde l'ordre des questions et la réponse telle que saisie", () => {
+    expect(buildApplicantAnswers(questionFields, { custom_question_2: "Réponse C", custom_question_0: " Réponse A " })).toEqual([
+      { question: "Question A ?", answer: " Réponse A " },
+      { question: "Question C ?", answer: "Réponse C" },
+    ])
+  })
+
+  it.each([undefined, "", "  \n "])("n'envoie pas une réponse vide (%j)", (answer) => {
+    expect(buildApplicantAnswers(questionFields, { custom_question_0: answer, custom_question_1: "Réponse B" })).toEqual([{ question: "Question B ?", answer: "Réponse B" }])
+  })
+
+  it("renvoie une liste vide sans aucune réponse", () => {
+    expect(buildApplicantAnswers(questionFields, {})).toEqual([])
   })
 })
 

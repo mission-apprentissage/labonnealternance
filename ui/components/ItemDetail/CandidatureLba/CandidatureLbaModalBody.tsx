@@ -23,7 +23,7 @@ import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { sessionStorageGet, sessionStorageSet } from "@/utils/local-storage"
 import { CandidatureLbaFileDropzone } from "./CandidatureLbaFileDropzone"
 import type { IApplicationSchemaInitValues } from "./services/get-schema"
-import { ApplicationFormikSchema, formatCount, getInitialSchemaValues, OptionalQuestionAnswerSchema, QuestionAnswerSchema } from "./services/get-schema"
+import { ApplicationFormikSchema, buildApplicantAnswers, formatCount, getInitialSchemaValues, OptionalQuestionAnswerSchema, QuestionAnswerSchema } from "./services/get-schema"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -64,22 +64,11 @@ export const CandidatureLbaModalBody = ({
     validationSchema: toFormikValidationSchema(ApplicationFormikSchema.extend(questionZodExtension)),
     onSubmit: (values: any) => {
       const finalValues: IApplicationSchemaInitValues = { ...values }
-      finalValues.applicant_answers_to_recruiter_questions = []
-      const savedAnswers = {}
-
-      questionFields.forEach(({ question, name }) => {
+      questionFields.forEach(({ name }) => {
         delete finalValues[name]
-        const answer = values[name]
-        if (!answer?.trim()) {
-          return
-        }
-        finalValues.applicant_answers_to_recruiter_questions.push({
-          question,
-          answer,
-        })
-        savedAnswers[question] = answer
       })
-      sessionStorageSet("application-form-answers", savedAnswers)
+      finalValues.applicant_answers_to_recruiter_questions = buildApplicantAnswers(questionFields, values)
+      sessionStorageSet("application-form-answers", Object.fromEntries(finalValues.applicant_answers_to_recruiter_questions.map(({ question, answer }) => [question, answer])))
       onSubmit(finalValues)
     },
   })
