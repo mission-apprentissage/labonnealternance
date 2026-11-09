@@ -259,15 +259,6 @@ export const verifyRecruiterEmailInUse = async ({
   return null
 }
 
-const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string; idcc: null } | undefined> => {
-  const opcoOpt = await FCGetOpcoInfos(siret)
-  return opcoOpt ? { opco: opcoOpt, idcc: null } : undefined
-}
-
-const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
-  return getOpcoFromFranceCompetences(siret)
-}
-
 export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: number | null } | null> => {
   const siren = siret.substring(0, 9)
   const opcoFromDB = await getOpcoBySirenFromDB(siren)
@@ -282,7 +273,7 @@ export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: 
     }
   }
 
-  const result = await getOpcoDataRaw(siret)
+  const result = await FCGetOpcoInfos(siret)
   if (result) {
     const { opco, idcc } = result
     await saveOpco({ opco, idcc, siren })
@@ -316,20 +307,20 @@ const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OP
   })
 }
 
-const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: null; siret: string }[]> => {
+const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
   if (!sirets.length) {
     return []
   }
-  const results = [] as { opco: OPCOS_LABEL; idcc: null; siret: string }[]
-  const opcoDataToSave = [] as { opco: string; idcc: null; siren: string }[]
+  const results = [] as { opco: OPCOS_LABEL; idcc: number | null; siret: string }[]
+  const opcoDataToSave = [] as { opco: string; idcc: number | null; siren: string }[]
   await asyncForEach(sirets, async (siret) => {
     try {
-      const result = await getOpcoFromFranceCompetences(siret)
-      const opco = parseEnum(OPCOS_LABEL, result?.opco)
-      if (opco) {
-        results.push({ siret, opco, idcc: null })
+      const result = await FCGetOpcoInfos(siret)
+      if (result) {
+        const { opco, idcc } = result
+        results.push({ siret, opco, idcc })
         const siren = siret.substring(0, 9)
-        opcoDataToSave.push({ opco, idcc: null, siren })
+        opcoDataToSave.push({ opco, idcc, siren })
       }
     } catch (err) {
       captureException(err)

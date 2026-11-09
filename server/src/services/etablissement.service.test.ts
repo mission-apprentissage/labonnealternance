@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb"
 import nock from "nock"
 import { AccessEntityType, AccessStatus } from "shared"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
-import { ENTREPRISE, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { ENTREPRISE, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -13,9 +13,10 @@ import { generateUserWithAccountFixture } from "shared/fixtures/user-with-accoun
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "@/common/apis/france-competences/france-competences-client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
-import { autoValidateUserRoleOnCompany, verifyRecruiterEmailInUse } from "./etablissement.service"
+import { autoValidateUserRoleOnCompany, getOpcoData, verifyRecruiterEmailInUse } from "./etablissement.service"
 
 vi.mock("@/common/utils/sentry-utils")
 
@@ -287,5 +288,24 @@ describe("autoValidateUserRoleOnCompany : raison enregistrée sur le rôle", () 
     mockBal().reply(503)
 
     expect(await validate()).toMatchObject({ validated: false, status: AccessStatus.AWAITING_VALIDATION, reason: "validation automatique indéterminée : BAL indisponible" })
+  })
+})
+
+describe("getOpcoData", () => {
+  const siret = "42476141900045"
+
+  beforeEach(() => {
+    nock.disableNetConnect()
+    return () => {
+      nock.cleanAll()
+      nock.enableNetConnect()
+    }
+  })
+
+  it("enregistre l'IDCC renvoyé par France Compétences", async () => {
+    nockFranceCompetencesOpcoSearch(siret, generateFCOpcoResponseFixture({ siret, idcc: "1486", opcoRattachement: { code: "1", nom: "ATLAS" } }))
+
+    expect(await getOpcoData(siret)).toEqual({ opco: OPCOS_LABEL.ATLAS, idcc: 1486 })
+    expect(await getDbCollection("opcos").findOne({ siren: "424761419" })).toMatchObject({ opco: OPCOS_LABEL.ATLAS, idcc: 1486 })
   })
 })

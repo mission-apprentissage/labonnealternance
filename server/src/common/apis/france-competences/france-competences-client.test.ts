@@ -24,10 +24,11 @@ describe("france-competences-client", () => {
   })
 
   describe("FCGetOpcoInfos", () => {
-    it("should return OPCO info for a valid SIRET", async () => {
+    it("should return OPCO and IDCC for a valid SIRET", async () => {
       const validSiret = "42476141900045"
       const response = generateFCOpcoResponseFixture({
         siret: validSiret,
+        idcc: "1486",
         opcoRattachement: {
           code: "1",
           nom: "AKTO",
@@ -38,7 +39,31 @@ describe("france-competences-client", () => {
 
       const result = await FCGetOpcoInfos(validSiret)
 
-      expect(result).toBe(OPCOS_LABEL.AKTO)
+      expect(result).toEqual({ opco: OPCOS_LABEL.AKTO, idcc: 1486 })
+      expect(nock.isDone()).toBe(true)
+    })
+
+    it("should parse an IDCC with leading zeros", async () => {
+      const siret = "42476141900045"
+      nockFranceCompetencesOpcoSearch(siret, generateFCOpcoResponseFixture({ siret, idcc: "0016" }))
+
+      expect(await FCGetOpcoInfos(siret)).toEqual({ opco: OPCOS_LABEL.AKTO, idcc: 16 })
+    })
+
+    it("should return the OPCO with a null IDCC when idcc is absent", async () => {
+      const siret = "42476141900045"
+      const { idcc: _idcc, ...response } = generateFCOpcoResponseFixture({ siret })
+      nockFranceCompetencesOpcoSearch(siret, response)
+
+      expect(await FCGetOpcoInfos(siret)).toEqual({ opco: OPCOS_LABEL.AKTO, idcc: null })
+      expect(nock.isDone()).toBe(true)
+    })
+
+    it("should return the OPCO with a null IDCC when idcc is empty", async () => {
+      const siret = "42476141900045"
+      nockFranceCompetencesOpcoSearch(siret, generateFCOpcoResponseFixture({ siret, idcc: "" }))
+
+      expect(await FCGetOpcoInfos(siret)).toEqual({ opco: OPCOS_LABEL.AKTO, idcc: null })
       expect(nock.isDone()).toBe(true)
     })
 

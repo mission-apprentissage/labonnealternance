@@ -16,7 +16,7 @@ const ZOpcoResponse = z.union([
   z.object({
     code: z.enum(["01", "02", "03"]).describe("01: siret trouvé. 02, 03 : siret non trouvé mais préempté par un OPCO via l'application des déclarations"),
     siret: z.string(),
-    idcc: z.string(),
+    idcc: z.string().optional(),
     opcoRattachement: z.object({
       code: z.string(),
       nom: z.string(),
@@ -93,7 +93,9 @@ export const FCOpcoToOpcoEnum = (fcOpco: string): OPCOS_LABEL | null => {
   return finalOpco
 }
 
-export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS_LABEL | null> => {
+type FCOpcoInfos = { opco: OPCOS_LABEL; idcc: number | null }
+
+export const FCGetOpcoInfos = async (siret: string): Promise<FCOpcoInfos | null> => {
   try {
     const response = await axios.get(`${baseUrl}/siro/v1/public/${encodeURIComponent(siret)}`, {
       headers: {
@@ -107,9 +109,11 @@ export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS_LABEL | null>
         return null
       } else if (code === "01") {
         const {
+          idcc,
           opcoRattachement: { nom: opcoName },
         } = data
-        return FCOpcoToOpcoEnum(opcoName)
+        const opco = FCOpcoToOpcoEnum(opcoName)
+        return opco ? { opco, idcc: parseInt(idcc ?? "") || null } : null
       } else {
         assertUnreachable(code)
       }
