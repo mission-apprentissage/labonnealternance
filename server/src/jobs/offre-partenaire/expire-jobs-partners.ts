@@ -84,8 +84,11 @@ export const expireJobsPartners = async () => {
     offer_expiration: { $lt: now },
   }
 
-  // Lues avant le flip de statut, pour le mail de clôture automatique (cf. sendExpirationEmails).
-  const expiringJobs = await getDbCollection("jobs_partners").find(filter).toArray()
+  // Lues avant le flip de statut, pour le mail de clôture automatique (cf. sendExpirationEmails). Le mail annonce
+  // que l'offre n'est plus visible : une offre en modération ou en attente ne l'était pas.
+  const expiringActiveJobs = await getDbCollection("jobs_partners")
+    .find({ ...filter, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    .toArray()
 
   const result = await changeJobsPartnersStatus(filter, {
     status: JOB_STATUS_ENGLISH.ANNULEE,
@@ -95,6 +98,5 @@ export const expireJobsPartners = async () => {
   })
   logger.info(`expireJobsPartners: ${result.modifiedCount} offres expirées`)
 
-  // Le mail annonce que l'offre n'est plus visible : une offre en modération ou en attente ne l'était pas.
-  await sendExpirationEmails(expiringJobs.filter(({ offer_status }) => offer_status === JOB_STATUS_ENGLISH.ACTIVE))
+  await sendExpirationEmails(expiringActiveJobs)
 }
