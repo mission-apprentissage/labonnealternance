@@ -116,7 +116,7 @@ export const jobsApiV3Routes = (server: Server) => {
           })
         } catch (err) {
           results.push({
-            error: err + "",
+            error: isBoom(err) ? err.output.payload.message : "Internal Server Error",
             status: isBoom(err) ? err.output.statusCode : 500,
           })
         }
