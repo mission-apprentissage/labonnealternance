@@ -19,16 +19,17 @@ vi.mock("@sentry/node", async (importOriginal) => ({
 }))
 
 describe("manageApiError", () => {
-  const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined)
+  let consoleError: ReturnType<typeof vi.spyOn>
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined)
   })
 
   afterEach(() => {
     expect(consoleError).not.toHaveBeenCalled()
     expect(captureException).not.toHaveBeenCalled()
     expect(captureMessage).not.toHaveBeenCalled()
+    vi.restoreAllMocks()
   })
 
   it("journalise une erreur S3 via le logger, sans l'objet erreur brut", async () => {
