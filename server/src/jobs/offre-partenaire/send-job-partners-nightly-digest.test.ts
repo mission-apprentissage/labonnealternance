@@ -63,7 +63,7 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(notifySpy).toHaveBeenCalledTimes(1)
     const [payload] = notifySpy.mock.calls[0]
     expect(payload.error).toBe(false)
-    expect(payload.message).toContain("2/2 jobs offre-partenaire OK")
+    expect(payload.message).toContain("2 jobs offre-partenaire OK (2 exécutions), aucune anomalie.")
   })
 
   it("regroupe les jobs en erreur dans un unique message", async () => {
@@ -80,7 +80,7 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(notifySpy).toHaveBeenCalledTimes(1)
     const [payload] = notifySpy.mock.calls[0]
     expect(payload.error).toBe(true)
-    expect(payload.message).toContain("1/3 jobs OK, 2 en erreur")
+    expect(payload.message).toContain("2 jobs en erreur sur 3 (2 exécutions sur 3) :")
     expect(payload.message).toContain("Import Decathlon")
     expect(payload.message).toContain("Import EDF")
     expect(payload.message).toContain("boom")
@@ -197,7 +197,7 @@ describe("sendJobPartnersNightlyDigest", () => {
 
     const [payload] = notifySpy.mock.calls[0]
     expect(payload.message).toBe(
-      ["1/1 jobs offre-partenaire OK, aucune anomalie.", "", "Partenaires flux (1 à vérifier) :", "```", "Partenaire Reçues", "! PASS 392", "```"].join("\n")
+      ["1 job offre-partenaire OK (1 exécution), aucune anomalie.", "", "Partenaires flux (1 à vérifier) :", "```", "Partenaire Reçues", "! PASS 392", "```"].join("\n")
     )
   })
 
@@ -213,14 +213,14 @@ describe("sendJobPartnersNightlyDigest", () => {
 
     expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(
       new Map([
-        ["RH Alternance", ["GF absentes 29.9 %"]],
-        ["Hellowork", ["GF absentes 7.9 %", "GF import vide (1985 conservées)"]],
+        ["RH Alternance", ["GF absentes 49 (29.9 %)"]],
+        ["Hellowork", ["GF absentes 156 (7.9 %)", "GF import vide (1985 conservées)"]],
       ])
     )
     const [payload] = notifySpy.mock.calls[0]
     expect(payload.error).toBe(true)
     // aucune stack trace, aucun blocage répété hors du tableau
-    expect(payload.message.split("\n")).toEqual(["0/3 jobs OK, 3 en erreur :", "• Import EDF (errored, 1s : Error: connexion interrompue)"])
+    expect(payload.message.split("\n")).toEqual(["3 jobs en erreur sur 3 (3 exécutions sur 3) :", "• Import EDF (errored, 1s : Error: connexion interrompue)"])
   })
 
   it("rattache un import vide au partenaire nommé dans le message, quel que soit le job", async () => {
@@ -252,7 +252,7 @@ describe("sendJobPartnersNightlyDigest", () => {
 
     await sendJobPartnersNightlyDigest()
 
-    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(new Map([["Hellowork", ["GF absentes 8.1 %"]]]))
+    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(new Map([["Hellowork", ["GF absentes 161 (8.1 %)"]]]))
   })
 
   it("(faux positif) garde en ligne un blocage qui ne désigne aucun partenaire", async () => {
@@ -267,10 +267,10 @@ describe("sendJobPartnersNightlyDigest", () => {
 
     await sendJobPartnersNightlyDigest()
 
-    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(new Map([["Meteojob", ["GF absentes 26.7 %"]]]))
+    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(new Map([["Meteojob", ["GF absentes 133 (26.7 %)"]]]))
     const [payload] = notifySpy.mock.calls[0]
     expect(payload.message.split("\n")).toEqual([
-      "0/2 jobs OK, 2 en erreur :",
+      "2 jobs en erreur sur 2 (2 exécutions sur 2) :",
       "Garde-fous déclenchés, vérification requise :",
       "• Process computed and import to Jobs Partners : partenaires non traités, verrou détenu par un autre traitement : PASS",
       "Autres anomalies :",
@@ -316,7 +316,7 @@ describe("sendJobPartnersNightlyDigest", () => {
     await sendJobPartnersNightlyDigest()
 
     const [payload] = notifySpy.mock.calls[0]
-    expect(payload.message.split("\n")).toEqual(["0/1 jobs OK, 1 en erreur :", "• Import EDF (errored, 1s : Error: connexion interrompue)"])
+    expect(payload.message.split("\n")).toEqual(["1 job en erreur sur 1 (1 exécution sur 1) :", "• Import EDF (errored, 1s : Error: connexion interrompue)"])
   })
 
   it("découpe un bilan trop long en messages numérotés, chacun avec un tableau refermé", async () => {
@@ -408,8 +408,8 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(subject).toBe("Bilan nocturne offres partenaires")
     expect(message.length).toBeLessThanOrEqual(SLACK_MESSAGE_MAX_LENGTH)
     const lines = message.split("\n")
-    expect(lines[0]).toBe("43/141 jobs OK, 98 en erreur :")
-    expect(lines.find((line) => line.startsWith("! France Travail"))).toMatch(/ GF absentes 16.2 %$/)
+    expect(lines[0]).toBe("4 jobs en erreur sur 5 (98 exécutions sur 141) :")
+    expect(lines.find((line) => line.startsWith("! France Travail"))).toMatch(/ GF absentes 511 \(16.2 %\)$/)
     expect(lines.find((line) => line.startsWith("! annonces Atlas"))).toMatch(/ GF import vide \(4 conservées\)$/)
     expect(lines.find((line) => line.startsWith("! La Poste"))).toMatch(/ GF import vide \(257 conservées\)$/)
     expect(lines.find((line) => line.startsWith("! Vite un emploi"))).toMatch(/ 0 publiée$/)

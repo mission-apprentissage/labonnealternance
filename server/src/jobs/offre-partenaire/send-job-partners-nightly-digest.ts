@@ -113,6 +113,16 @@ const groupByName = (jobs: IJobsCronTask[]): [string, IJobsCronTask[]][] => {
   return [...groups.entries()]
 }
 
+const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? "s" : ""}`
+
+// Compte les jobs par nom : un cron toutes les 15 min qui échoue en boucle reste un seul problème, pas 95.
+const formatSummaryLine = (jobs: IJobsCronTask[], anomalousJobs: IJobsCronTask[]): string => {
+  const jobCount = new Set(jobs.map((job) => job.name)).size
+  if (anomalousJobs.length === 0) return `${plural(jobCount, "job")} offre-partenaire OK (${plural(jobs.length, "exécution")}), aucune anomalie.`
+  const anomalousJobCount = new Set(anomalousJobs.map((job) => job.name)).size
+  return `${plural(anomalousJobCount, "job")} en erreur sur ${jobCount} (${plural(anomalousJobs.length, "exécution")} sur ${jobs.length}) :`
+}
+
 // Préfixe le plus long d'abord : un label peut en préfixer un autre.
 const PARTNER_LABELS_LONGEST_FIRST = Object.values(JOBPARTNERS_LABEL).sort((a, b) => b.length - a.length)
 
@@ -130,11 +140,12 @@ export const mapGuardrailBlocksToPartners = (blocks: GuardrailBlock[]) => {
   for (const { jobName, detail } of [...blocks].sort((a, b) => a.at - b.at)) {
     for (const segment of detail.split(" ; ")) {
       const removedLabel = PARTNER_LABELS_LONGEST_FIRST.find((label) => segment.startsWith(`${label} : `))
-      const removedRate = segment.match(/\(([^)]+)\) absentes du flux/)?.[1]
+      // le nombre d'offres, pas le taux, dit combien d'offres périmées restent en ligne tant que le blocage dure
+      const [, removedCount, removedRate] = segment.match(/ : (\d+) offres actives sur \d+ \(([^)]+)\) absentes du flux/) ?? []
       // même format chez commitRawImport et l'import France Travail
       const emptyImportLabel = PARTNER_LABELS_LONGEST_FIRST.find((label) => segment.startsWith(`import ${label} : aucune offre importée`))
-      if (removedLabel && removedRate) {
-        set(removedLabel, REMOVAL_GUARDRAIL_ALERT_PREFIX, `${REMOVAL_GUARDRAIL_ALERT_PREFIX} ${removedRate}`)
+      if (removedLabel && removedCount && removedRate) {
+        set(removedLabel, REMOVAL_GUARDRAIL_ALERT_PREFIX, `${REMOVAL_GUARDRAIL_ALERT_PREFIX} ${removedCount} (${removedRate})`)
       } else if (emptyImportLabel) {
         const keptCount = segment.match(/les (\d+) offres de l'import précédent sont conservées/)?.[1]
         set(emptyImportLabel, EMPTY_IMPORT_ALERT, keptCount ? `${EMPTY_IMPORT_ALERT} (${keptCount} conservées)` : EMPTY_IMPORT_ALERT)
@@ -169,10 +180,7 @@ export const sendJobPartnersNightlyDigest = async () => {
   }
 
   const anomalousJobs = jobs.filter(isAnomalous)
-  const okCount = jobs.length - anomalousJobs.length
-
-  const summaryLine =
-    anomalousJobs.length === 0 ? `${okCount}/${jobs.length} jobs offre-partenaire OK, aucune anomalie.` : `${okCount}/${jobs.length} jobs OK, ${anomalousJobs.length} en erreur :`
+  const summaryLine = formatSummaryLine(jobs, anomalousJobs)
 
   const { byPartner: guardrailAlerts, unmapped: unmappedGuardrailLines } = mapGuardrailBlocksToPartners(getLatestGuardrailBlocks(jobs))
   // Un blocage par garde-fou figure déjà au tableau ou dans sa section : le répéter en anomalie doublerait le message.

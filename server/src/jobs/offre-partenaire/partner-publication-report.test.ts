@@ -126,9 +126,9 @@ describe("buildPartnerNightlyTable", () => {
       throw new Error("mongo indisponible")
     })
 
-    const lines = await buildPartnerNightlyTable({ since, guardrailAlerts: new Map([[JOBPARTNERS_LABEL.HELLOWORK, ["GF absentes 45 %"]]]) })
+    const lines = await buildPartnerNightlyTable({ since, guardrailAlerts: new Map([[JOBPARTNERS_LABEL.HELLOWORK, ["GF absentes 900 (45 %)"]]]) })
 
-    expect(lines).toEqual(["", "• ALERTE tableau par partenaire indisponible : mongo indisponible", "• Hellowork : GF absentes 45 %"])
+    expect(lines).toEqual(["", "• ALERTE tableau par partenaire indisponible : mongo indisponible", "• Hellowork : GF absentes 900 (45 %)"])
   })
 
   it("signale un partenaire à import actif qui n'a plus aucun document, ni reçu ni actif", async () => {
@@ -202,7 +202,7 @@ describe("formatPartnerNightlyTable", () => {
 
   it("réunit sur la ligne du partenaire la cadence du flux et les garde-fous, garde-fous en tête", () => {
     const lines = formatPartnerNightlyTable([stats("APEC"), stats("Hellowork"), stats("PASS", { active: 0 })], {
-      guardrailAlerts: new Map([["Hellowork", ["GF absentes 7.9 %"]]]),
+      guardrailAlerts: new Map([["Hellowork", ["GF absentes 156 (7.9 %)"]]]),
       cadence: new Map([
         ["Hellowork", { runs: 4, skipped: 2, changed: 1, changed_at: new Date("2026-11-08T23:00:00.000Z") }],
         ["APEC", { runs: 1, skipped: 1, changed: 0, changed_at: null }],
@@ -213,7 +213,7 @@ describe("formatPartnerNightlyTable", () => {
     const tableRows = lines.slice(lines.indexOf("```") + 2, lines.lastIndexOf("```"))
     expect(tableRows.map((row) => row.replace(/ +\d.*$/, ""))).toEqual(["! Hellowork", "! PASS", "APEC"])
     // 23 h UTC le 08/11 = 09/11 à Paris
-    expect(tableRows[0]).toMatch(/^! Hellowork +10 +0 +10 +100% +0 +10 +1\/4 +2 09\/11 +GF absentes 7.9 %$/)
+    expect(tableRows[0]).toMatch(/^! Hellowork +10 +0 +10 +100% +0 +10 +1\/4 +2 09\/11 +GF absentes 156 \(7.9 %\)$/)
     expect(tableRows[2]).toMatch(/^APEC +10 +0 +10 +100% +0 +10 +0\/1 +1 jamais$/)
     expect(lines.at(-1)).toBe('Après vérification d\'un « GF absentes » : yarn cli forceCancelRemovedJobsPartners --partnerLabel "<Partenaire>"')
   })
