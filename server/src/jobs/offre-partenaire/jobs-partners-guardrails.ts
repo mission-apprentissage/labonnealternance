@@ -53,11 +53,10 @@ export class JobPartnersGuardrailError extends Error {
 
 export const formatRate = (rate: number) => `${Math.round(rate * 1000) / 10} %`
 
-/**
- * Section du « Bilan nocturne offres partenaires » : un blocage par garde-fou est une décision qui attend une
- * vérification humaine, pas une panne parmi d'autres. Une ligne par job, la plus récente.
- */
-export const formatGuardrailDigestLines = (jobs: IJobsCronTask[]): string[] => {
+export type GuardrailBlock = { jobName: string; detail: string }
+
+/** Blocages par garde-fou de la période, le plus récent par job, repérés au marqueur de leur erreur. */
+export const getLatestGuardrailBlocks = (jobs: IJobsCronTask[]): GuardrailBlock[] => {
   const latestBlockByJob = new Map<string, { at: number; detail: string }>()
   for (const job of jobs) {
     const blockLine = job.output?.error?.split("\n").find((line) => line.includes(GUARDRAIL_ERROR_MARKER))
@@ -68,8 +67,7 @@ export const formatGuardrailDigestLines = (jobs: IJobsCronTask[]): string[] => {
       latestBlockByJob.set(job.name, { at, detail: blockLine.slice(blockLine.indexOf(GUARDRAIL_ERROR_MARKER) + GUARDRAIL_ERROR_MARKER.length).trim() })
     }
   }
-  if (!latestBlockByJob.size) return []
-  return [`Garde-fous déclenchés (${latestBlockByJob.size}), vérification requise :`, ...[...latestBlockByJob].map(([name, { detail }]) => `• ${name} : ${detail}`)]
+  return [...latestBlockByJob].map(([jobName, { detail }]) => ({ jobName, detail }))
 }
 
 /** Alerte immédiate (Slack + logs) ; Sentry reçoit l'erreur levée ensuite, via job-processor. */

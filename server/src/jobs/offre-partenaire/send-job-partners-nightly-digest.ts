@@ -1,14 +1,14 @@
 import type { IJobsCronTask } from "job-processor"
 import { findJobs } from "job-processor"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { logger } from "@/common/logger"
-import { notifyToSlack } from "@/common/utils/slack-utils"
-import { formatFluxCadenceSection } from "./flux-cadence-digest"
+import { notifyToSlack, SLACK_MESSAGE_MAX_LENGTH, splitSlackMessage } from "@/common/utils/slack-utils"
 import { importers } from "./jobs-partners.importer"
-import { formatGuardrailDigestLines, GUARDRAIL_ERROR_MARKER } from "./jobs-partners-guardrails"
-import { buildPartnerPublicationReport } from "./partner-publication-report"
+import type { GuardrailBlock } from "./jobs-partners-guardrails"
+import { GUARDRAIL_ERROR_MARKER, getLatestGuardrailBlocks } from "./jobs-partners-guardrails"
+import { buildPartnerNightlyTable, IMPORTED_FLUX_PARTNER_LABELS, REMOVAL_GUARDRAIL_ALERT_PREFIX } from "./partner-publication-report"
 
 const DIGEST_WINDOW_HOURS = 24
-const MAX_MESSAGE_LENGTH = 35_000 // marge sous la limite Slack (~40k caractères) pour le champ `text`
 
 export const JOB_PARTNERS_DIGEST_JOB_NAME = "Bilan nocturne offres partenaires"
 
@@ -113,6 +113,34 @@ const groupByName = (jobs: IJobsCronTask[]): [string, IJobsCronTask[]][] => {
   return [...groups.entries()]
 }
 
+// Préfixe le plus long d'abord : un label peut en préfixer un autre.
+const PARTNER_LABELS_LONGEST_FIRST = Object.values(JOBPARTNERS_LABEL).sort((a, b) => b.length - a.length)
+
+/**
+ * Rattache chaque blocage à son partenaire pour la colonne Alerte du tableau. Un job peut bloquer plusieurs partenaires
+ * (segments joints par « ; », cf. formatRemovalGuardBlock) ; ce qui ne se rattache pas reste en ligne au-dessus du tableau.
+ */
+export const mapGuardrailBlocksToPartners = (blocks: GuardrailBlock[]) => {
+  const byPartner = new Map<string, string[]>()
+  const unmapped: string[] = []
+  const add = (partner_label: string, alert: string) => byPartner.set(partner_label, [...(byPartner.get(partner_label) ?? []), alert])
+  for (const { jobName, detail } of blocks) {
+    for (const segment of detail.split(" ; ")) {
+      const partner_label = PARTNER_LABELS_LONGEST_FIRST.find((label) => segment.startsWith(`${label} : `))
+      const removedRate = segment.match(/\(([^)]+)\) absentes du flux/)?.[1]
+      const importedLabels = IMPORTED_FLUX_PARTNER_LABELS[jobName]
+      if (partner_label && removedRate) {
+        add(partner_label, `${REMOVAL_GUARDRAIL_ALERT_PREFIX} ${removedRate}`)
+      } else if (importedLabels && segment.includes("aucune offre importée")) {
+        for (const label of importedLabels) add(label, "GF import vide")
+      } else {
+        unmapped.push(`• ${jobName} : ${segment}`)
+      }
+    }
+  }
+  return { byPartner, unmapped }
+}
+
 /**
  * Bilan unique des jobs offre-partenaire de la nuit, construit à partir de job_processor.jobs
  * (déjà persisté par job-processor : status, durée, output.result de chaque cron_task).
@@ -140,30 +168,25 @@ export const sendJobPartnersNightlyDigest = async () => {
   const summaryLine =
     anomalousJobs.length === 0 ? `${okCount}/${jobs.length} jobs offre-partenaire OK, aucune anomalie.` : `${okCount}/${jobs.length} jobs OK, ${anomalousJobs.length} en erreur :`
 
-  const guardrailLines = formatGuardrailDigestLines(jobs)
-  // Un blocage par garde-fou est déjà détaillé dans sa section : le répéter en anomalie doublerait le message.
+  const { byPartner: guardrailAlerts, unmapped: unmappedGuardrailLines } = mapGuardrailBlocksToPartners(getLatestGuardrailBlocks(jobs))
+  // Un blocage par garde-fou figure déjà au tableau ou dans sa section : le répéter en anomalie doublerait le message.
   const otherAnomalies = anomalousJobs.filter((job) => !job.output?.error?.includes(GUARDRAIL_ERROR_MARKER))
   const anomalyLines = groupByName(otherAnomalies).map(([name, jobsForName]) => formatAnomalyGroup(name, jobsForName))
-  let message = [
+  const lines = [
     summaryLine,
-    ...guardrailLines,
-    ...(guardrailLines.length && anomalyLines.length ? ["Autres anomalies :"] : []),
+    ...(unmappedGuardrailLines.length ? ["Garde-fous déclenchés, vérification requise :", ...unmappedGuardrailLines] : []),
+    ...(unmappedGuardrailLines.length && anomalyLines.length ? ["Autres anomalies :"] : []),
     ...anomalyLines,
-    ...(await buildPartnerPublicationReport()),
-    ...(await formatFluxCadenceSection(since)),
-  ].join("\n")
-  if (message.length > MAX_MESSAGE_LENGTH) {
-    message = message.slice(0, MAX_MESSAGE_LENGTH)
-    // une coupure au milieu d'un tableau laisserait un bloc de code ouvert sur le reste du message
-    if ((message.match(/```/g)?.length ?? 0) % 2 === 1) message += "\n```"
-    message += "\n… (message tronqué, voir les logs pour le détail complet)"
+    ...(await buildPartnerNightlyTable({ since, guardrailAlerts })),
+  ]
+  const messages = splitSlackMessage(lines, SLACK_MESSAGE_MAX_LENGTH)
+  for (const [index, message] of messages.entries()) {
+    await notifyToSlack({
+      subject: messages.length > 1 ? `${JOB_PARTNERS_DIGEST_JOB_NAME} (${index + 1}/${messages.length})` : JOB_PARTNERS_DIGEST_JOB_NAME,
+      message,
+      error: anomalousJobs.length > 0,
+    })
   }
-
-  await notifyToSlack({
-    subject: JOB_PARTNERS_DIGEST_JOB_NAME,
-    message,
-    error: anomalousJobs.length > 0,
-  })
 
   logger.info({ total: jobs.length, anomalies: anomalousJobs.length }, "sendJobPartnersNightlyDigest: digest envoyé")
 

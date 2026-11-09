@@ -4,16 +4,16 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { formatFluxCadenceSection } from "./flux-cadence-digest"
+import { getFluxCadenceByPartner } from "./flux-cadence-digest"
 
-describe("formatFluxCadenceSection", () => {
+describe("getFluxCadenceByPartner", () => {
   useMongo()
 
   const since = new Date("2026-11-01T05:30:00.000Z")
   const check = (iso: string, changed: boolean, skipped: boolean) => ({ checked_at: new Date(iso), changed, skipped })
 
-  it("n'ajoute rien tant qu'aucun flux n'a de signal", async () => {
-    await expect(formatFluxCadenceSection(since)).resolves.toEqual([])
+  it("ne renvoie rien tant qu'aucun flux n'a de signal", async () => {
+    await expect(getFluxCadenceByPartner(since)).resolves.toEqual(new Map())
   })
 
   it("compte par partenaire les runs, runs sautés et changements de la fenêtre", async () => {
@@ -32,14 +32,11 @@ describe("formatFluxCadenceSection", () => {
       { _id: new ObjectId(), partner_label: JOBPARTNERS_LABEL.APEC, changed_at: null, checks: [check("2026-11-01T06:00:00.000Z", false, true)] },
     ])
 
-    await expect(formatFluxCadenceSection(since)).resolves.toEqual([
-      "",
-      "Cadence de changement des flux :",
-      "```",
-      "Partenaire Runs Sautés Chgts Dernier chgt",
-      "APEC          1      1     0 jamais",
-      "PASS          2      1     1 01/11 14:05",
-      "```",
-    ])
+    await expect(getFluxCadenceByPartner(since)).resolves.toEqual(
+      new Map([
+        [JOBPARTNERS_LABEL.PASS, { runs: 2, skipped: 1, changed: 1, changed_at: new Date("2026-11-01T13:05:00.000Z") }],
+        [JOBPARTNERS_LABEL.APEC, { runs: 1, skipped: 1, changed: 0, changed_at: null }],
+      ])
+    )
   })
 })
