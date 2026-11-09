@@ -16,7 +16,7 @@ export function webVitalsRouteController(server: Server) {
     },
     async (req, res) => {
       if (!isBotUserAgent(req.headers["user-agent"])) {
-        // lu dans Loki (champ log_web_vital), aucun stockage en base
+        // lu dans Loki sous log_web_vital (le collecteur préfixe chaque champ pino par log_), aucun stockage en base
         logger.info({ web_vital: req.body }, "web-vital")
       }
       return res.status(200).send({})
