@@ -24,6 +24,7 @@ import { zLoginRoutes } from "./login.routes.js"
 import { zPartnersRoutes } from "./partners.routes.js"
 import { zRecruiterRoutes } from "./recruiters.routes.js"
 import { zReportedCompanyRoutes } from "./reported-company.routes.js"
+import { zRgpdErasureRoutes } from "./rgpd-erasure.routes.js"
 import { zRomeRoutes } from "./rome.routes.js"
 import { zSearchRoutes } from "./search.routes.js"
 import { zSitemapRoutes } from "./sitemap.routes.js"
@@ -110,6 +111,7 @@ const zRoutesPost3 = {
   ...zJobsPartnersAdminRoutes.post,
   ...zJobsPartnersModerationRoutes.post,
   ...zFeedbackFormsRoutes.post,
+  ...zRgpdErasureRoutes.post,
 }
 
 const zRoutesPost = {
