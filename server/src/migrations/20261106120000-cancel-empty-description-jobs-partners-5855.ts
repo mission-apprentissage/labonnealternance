@@ -9,14 +9,8 @@ const GRANTED_BY = "20261106120000-cancel-empty-description-jobs-partners-5855"
 
 /**
  * Annule sans notification les offres partenaires actives publiées avec une offer_description vide (#5855).
- *
  * Le pipeline les bloque désormais en WRONG_DATA à la sanitization, mais rien n'annule les offres déjà publiées :
- * cancelRemovedJobsPartners ne cible que les offres sans computed, et les offres API n'y passent pas.
- *
- * `reason` reprend le business_error posé par le pipeline. job_status_comment n'est pas renseigné : il porte le motif
- * choisi par un humain dans la modale de clôture (cf. JOB_CLOSURE_REASON). OFFRES_EMPLOI_LBA et RECRUTEURS_LBA sont
- * exclus : ils ne passent pas par le pipeline computed.
- * L'index de recherche est mis à jour par le cron delta via updated_at.
+ * `reason` reprend le business_error posé par le pipeline.
  */
 export const up = async () => {
   const { modifiedCount } = await getDbCollection("jobs_partners").updateMany(
