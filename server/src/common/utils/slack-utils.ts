@@ -78,3 +78,53 @@ export const notifyToSlack = async ({
     console.info(text)
   }
 }
+
+const CODE_FENCE = "```"
+
+/**
+ * Au-delà de ~4 000 caractères, Slack découpe un `text` en plusieurs messages, au besoin dans un bloc de code
+ * (doc chat.postMessage, « Truncating content »). Marge pour l'en-tête ajouté par notifyToSlack ; découper avec splitSlackMessage.
+ */
+export const SLACK_MESSAGE_MAX_LENGTH = 3_500
+
+// une ligne seule doit laisser la place de refermer le tableau qui la contient
+const LINE_MARGIN = 10
+
+/**
+ * Découpe un message en morceaux d'au plus `maxLength` caractères, entre deux lignes. Un tableau coupé
+ * (cf. formatSlackTable) est refermé, puis rouvert avec son en-tête dans le morceau suivant.
+ */
+
+export const splitSlackMessage = (lines: string[], maxLength: number): string[] => {
+  const chunks: string[][] = []
+  let current: string[] = []
+  let inCode = false
+  let tableHeader: string | null = null
+  const lengthOf = (chunk: string[]) => chunk.join("\n").length
+  const flush = () => {
+    if (inCode) current.push(CODE_FENCE)
+    chunks.push(current)
+    current = inCode && tableHeader !== null ? [CODE_FENCE, tableHeader] : []
+  }
+  // place réservée pour refermer un tableau ouvert
+  const closingReserve = () => (inCode ? CODE_FENCE.length + 1 : 0)
+
+  for (const [index, rawLine] of lines.entries()) {
+    const line = rawLine.length > maxLength - LINE_MARGIN ? `${rawLine.slice(0, maxLength - LINE_MARGIN)}…` : rawLine
+    const isFence = line === CODE_FENCE
+    // un tableau ne commence pas en fin de morceau : son ouverture, son en-tête et une ligne au moins partent ensemble
+    const block = isFence && !inCode ? [line, ...lines.slice(index + 1, index + 3), CODE_FENCE] : [line]
+    const needed = lengthOf([...current, ...block]) + (isFence ? 0 : closingReserve())
+    const onlyReopenedTable = inCode && current.length === 2
+    if (current.length && !onlyReopenedTable && needed > maxLength && !(isFence && inCode)) flush()
+
+    if (!current.length && line === "") continue
+    current.push(line)
+    if (isFence) {
+      inCode = !inCode
+      tableHeader = inCode ? (lines[index + 1] ?? null) : null
+    }
+  }
+  if (current.length) chunks.push(current)
+  return chunks.map((chunk) => chunk.join("\n").trimEnd())
+}

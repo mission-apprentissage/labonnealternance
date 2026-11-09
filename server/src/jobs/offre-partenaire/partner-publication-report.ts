@@ -6,6 +6,8 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { formatSlackTable } from "@/common/utils/slack-utils"
+import type { FluxCadence } from "./flux-cadence-digest"
+import { getFluxCadenceByPartner } from "./flux-cadence-digest"
 import { jobPartnersByFlux } from "./process-job-partners"
 
 /** Seuil d'alerte à confirmer (#5671). */
@@ -109,18 +111,29 @@ export const getPartnerPublicationStats = async (expectedPartnerLabels: string[]
   return [...stats.values()]
 }
 
-const getAlert = ({ received, validated, businessErrors, active }: PartnerPublicationStats): string | null => {
+const getPublicationAlert = ({ received, validated, businessErrors, active }: PartnerPublicationStats): string | null => {
   const eligible = received - Object.values(businessErrors).reduce((sum, count) => sum + count, 0)
-  if (received === 0) return `aucune offre reçue, ${active} encore actives`
-  if (active === 0) return "0 offre publiée"
-  if (eligible > 0 && validated / eligible < MIN_PUBLICATION_RATE) return `taux de publication sous ${Math.round(MIN_PUBLICATION_RATE * 100)} %`
+  if (received === 0) return `aucune reçue, ${active} actives`
+  if (active === 0) return "0 publiée"
+  if (eligible > 0 && validated / eligible < MIN_PUBLICATION_RATE) return `taux < ${Math.round(MIN_PUBLICATION_RATE * 100)} %`
   return null
 }
 
-const PUBLICATION_TABLE_HEADER = ["Partenaire", "Reçues", "B.err", "Valid.", "Taux", "E.val", "Actives", "Motif principal"]
-const PUBLICATION_TABLE_ALIGN_RIGHT = [false, true, true, true, true, true, true, false]
+export type PartnerNightlyContext = {
+  /** Alertes des garde-fous déclenchés, par partner_label. */
+  guardrailAlerts?: Map<string, string[]>
+  cadence?: Map<string, FluxCadence>
+}
 
-const PUBLICATION_TABLE_LEGEND = "B.err = business_error, E.val = erreur de validation, Taux = Valid. / (Reçues − B.err)"
+const NIGHTLY_TABLE_HEADER = ["Partenaire", "Reçues", "B.err", "Valid.", "Taux", "E.val", "Actives", "Chgts", "Sautés", "Dernier", "Motif principal", "Alerte"]
+const NIGHTLY_TABLE_ALIGN_RIGHT = [false, true, true, true, true, true, true, true, true, false, false, false]
+
+const NIGHTLY_TABLE_LEGEND =
+  "B.err = business_error · E.val = erreur de validation · Taux = Valid. / (Reçues − B.err) · Chgts = runs où le flux a changé / runs sur 24 h · GF = garde-fou déclenché · « sans verdict » = ni validée, ni bloquée, ni en erreur (information)"
+
+export const REMOVAL_GUARDRAIL_ALERT_PREFIX = "GF absentes"
+
+const formatParisDay = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit" })
 
 const getBlockedBreakdown = (businessErrors: PartnerPublicationStats["businessErrors"]) => {
   const blocked = Object.entries(businessErrors).sort(([reasonA, a], [reasonB, b]) => b - a || reasonA.localeCompare(reasonB))
@@ -131,53 +144,82 @@ const getBlockedBreakdown = (businessErrors: PartnerPublicationStats["businessEr
 const getPendingCount = ({ received, validated, businessErrors, validationErrors }: PartnerPublicationStats) =>
   received - getBlockedBreakdown(businessErrors).blockedCount - validated - validationErrors
 
-const toPublicationRow = ({ partner_label, received, validated, businessErrors, validationErrors, active }: PartnerPublicationStats, alert: string | null): string[] => {
+type NightlyRow = { stats: PartnerPublicationStats; guardrailAlerts: string[]; publicationAlert: string | null; cadence?: FluxCadence }
+
+const toNightlyRow = ({ stats, guardrailAlerts, publicationAlert, cadence }: NightlyRow): string[] => {
+  const { partner_label, received, validated, businessErrors, validationErrors, active } = stats
   const { blocked, blockedCount } = getBlockedBreakdown(businessErrors)
   const eligible = received - blockedCount
   const rate = eligible > 0 ? `${Math.round((validated / eligible) * 100)}%` : "n/a"
   const [mainReason, ...otherReasons] = blocked
-  const otherReasonsSuffix = otherReasons.length ? ` (+${otherReasons.length} motif${otherReasons.length > 1 ? "s" : ""})` : ""
+  const pending = getPendingCount(stats)
+  const alerts = [...guardrailAlerts, ...(publicationAlert ? [publicationAlert] : []), ...(pending > 0 ? [`${pending} sans verdict`] : [])]
   return [
-    `${alert ? "! " : ""}${partner_label}`,
+    `${guardrailAlerts.length || publicationAlert ? "! " : ""}${partner_label}`,
     String(received),
     String(blockedCount),
     String(validated),
     rate,
     String(validationErrors),
     String(active),
-    mainReason ? `${mainReason[0]} ${mainReason[1]}${otherReasonsSuffix}` : "",
+    cadence ? `${cadence.changed}/${cadence.runs}` : "",
+    cadence ? String(cadence.skipped) : "",
+    cadence ? (cadence.changed_at ? formatParisDay.format(cadence.changed_at) : "jamais") : "",
+    mainReason ? `${mainReason[0]} ${mainReason[1]}${otherReasons.length ? ` (+${otherReasons.length})` : ""}` : "",
+    alerts.join(", "),
   ]
 }
 
-export const formatPartnerPublicationReport = (stats: PartnerPublicationStats[]): string[] => {
-  const rows = stats.map((partnerStats) => ({ partnerStats, alert: getAlert(partnerStats) }))
-  rows.sort((a, b) => Number(Boolean(b.alert)) - Number(Boolean(a.alert)) || a.partnerStats.partner_label.localeCompare(b.partnerStats.partner_label))
-  const alerts = rows.filter(({ alert }) => alert)
-  const pendingLines = rows.flatMap(({ partnerStats }) => {
-    const pending = getPendingCount(partnerStats)
-    return pending > 0 ? [`• ${partnerStats.partner_label} : ${pending} sans verdict de validation`] : []
-  })
+const severity = ({ guardrailAlerts, publicationAlert }: NightlyRow) => (guardrailAlerts.length ? 0 : publicationAlert ? 1 : 2)
+
+/**
+ * Tableau unique du bilan nocturne : une ligne par partenaire flux, qui réunit publication, cadence du flux et
+ * garde-fous. Les partenaires à vérifier (préfixe « ! ») viennent en tête, garde-fous d'abord.
+ */
+export const formatPartnerNightlyTable = (stats: PartnerPublicationStats[], { guardrailAlerts = new Map(), cadence = new Map() }: PartnerNightlyContext = {}): string[] => {
+  const statsByPartner = new Map(stats.map((partnerStats) => [partnerStats.partner_label, partnerStats]))
+  // Un garde-fou déclenché doit apparaître même hors de la liste attendue ; un signal de cadence seul (import désactivé) non.
+  for (const partner_label of guardrailAlerts.keys()) {
+    if (!statsByPartner.has(partner_label)) {
+      statsByPartner.set(partner_label, { partner_label, received: 0, validated: 0, businessErrors: {}, validationErrors: 0, active: 0 })
+    }
+  }
+  const rows: NightlyRow[] = [...statsByPartner.values()].map((partnerStats) => ({
+    stats: partnerStats,
+    guardrailAlerts: guardrailAlerts.get(partnerStats.partner_label) ?? [],
+    publicationAlert: getPublicationAlert(partnerStats),
+    cadence: cadence.get(partnerStats.partner_label),
+  }))
+  rows.sort((a, b) => severity(a) - severity(b) || a.stats.partner_label.localeCompare(b.stats.partner_label))
+  const toCheck = rows.filter((row) => severity(row) < 2).length
+  const hasRemovalGuardrail = rows.some(({ guardrailAlerts: alerts }) => alerts.some((alert) => alert.startsWith(REMOVAL_GUARDRAIL_ALERT_PREFIX)))
   return [
     "",
-    `Taux de publication par partenaire flux${alerts.length ? ` (${alerts.length} à surveiller)` : ""} :`,
-    ...formatSlackTable(
-      PUBLICATION_TABLE_HEADER,
-      rows.map(({ partnerStats, alert }) => toPublicationRow(partnerStats, alert)),
-      { alignRight: PUBLICATION_TABLE_ALIGN_RIGHT }
-    ),
-    PUBLICATION_TABLE_LEGEND,
-    ...alerts.map(({ partnerStats, alert }) => `• ALERTE ${partnerStats.partner_label} : ${alert}`),
-    ...pendingLines,
+    `Partenaires flux${toCheck ? ` (${toCheck} à vérifier)` : ""} :`,
+    ...formatSlackTable(NIGHTLY_TABLE_HEADER, rows.map(toNightlyRow), { alignRight: NIGHTLY_TABLE_ALIGN_RIGHT }),
+    NIGHTLY_TABLE_LEGEND,
+    ...(hasRemovalGuardrail ? [`Après vérification d'un « ${REMOVAL_GUARDRAIL_ALERT_PREFIX} » : yarn cli forceCancelRemovedJobsPartners --partnerLabel "<Partenaire>"`] : []),
   ]
 }
 
-/** Section du bilan quotidien. Une panne de la mesure ne doit pas empêcher l'envoi du bilan : elle y est signalée. */
-export const buildPartnerPublicationReport = async (expectedPartnerLabels?: string[]): Promise<string[]> => {
+/**
+ * Section du bilan quotidien. Une panne de la mesure ne doit pas empêcher l'envoi du bilan : elle y est signalée,
+ * et les garde-fous déclenchés restent listés.
+ */
+export const buildPartnerNightlyTable = async (
+  { since, guardrailAlerts = new Map() }: { since: Date; guardrailAlerts?: Map<string, string[]> },
+  expectedPartnerLabels?: string[]
+): Promise<string[]> => {
   try {
-    return formatPartnerPublicationReport(await getPartnerPublicationStats(expectedPartnerLabels))
+    const [stats, cadence] = await Promise.all([getPartnerPublicationStats(expectedPartnerLabels), getFluxCadenceByPartner(since)])
+    return formatPartnerNightlyTable(stats, { guardrailAlerts, cadence })
   } catch (err) {
-    logger.error({ err }, "buildPartnerPublicationReport: mesure du taux de publication en échec")
+    logger.error({ err }, "buildPartnerNightlyTable: mesure par partenaire en échec")
     sentryCaptureException(err)
-    return ["", `• ALERTE taux de publication par partenaire indisponible : ${err instanceof Error ? err.message : String(err)}`]
+    return [
+      "",
+      `• ALERTE tableau par partenaire indisponible : ${err instanceof Error ? err.message : String(err)}`,
+      ...[...guardrailAlerts].flatMap(([partner_label, alerts]) => alerts.map((alert) => `• ${partner_label} : ${alert}`)),
+    ]
   }
 }
