@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import type { ReactNode } from "react"
 
-export function ChartFrame({ title, caption, source = "La bonne alternance", children }: { title: ReactNode; caption?: string; source?: string; children: ReactNode }) {
+export function ChartFrame({ title, caption, source, children }: { title: ReactNode; caption?: string; source?: string; children: ReactNode }) {
   return (
     <Box
       component="figure"
@@ -27,9 +27,11 @@ export function ChartFrame({ title, caption, source = "La bonne alternance", chi
 
       {children}
 
-      <Typography component="p" sx={{ mt: "auto", pt: fr.spacing("4v"), mb: 0, fontSize: "12px", color: fr.colors.decisions.text.mention.grey.default }}>
-        Source&nbsp;: {source}
-      </Typography>
+      {source ? (
+        <Typography component="p" sx={{ mt: "auto", pt: fr.spacing("4v"), mb: 0, fontSize: "12px", color: fr.colors.decisions.text.mention.grey.default }}>
+          Source&nbsp;: {source}
+        </Typography>
+      ) : null}
     </Box>
   )
 }

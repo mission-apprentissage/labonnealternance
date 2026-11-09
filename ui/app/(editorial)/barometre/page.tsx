@@ -1,6 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup"
 import { Box, Grid, Typography } from "@mui/material"
 import type { Metadata } from "next"
+import NextLink from "next/link"
 import type { ReactNode } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -75,7 +77,10 @@ const Note = ({ children }: { children: ReactNode }) => (
   </Typography>
 )
 
-const WHITE_LINK = { color: "#fff" } as const
+const LBA_URL = `${PAGES.static.home.getPath()}?utm_source=lba&utm_medium=web&utm_campaign=lba_barometre_t2-t3-2026`
+const PARTNERS_URL = "https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
+
+const Lba = () => <NextLink href={LBA_URL}>La bonne alternance</NextLink>
 
 export default function BarometrePage() {
   return (
@@ -106,14 +111,15 @@ export default function BarometrePage() {
         chartTitle="Usage du service, d’avril à septembre"
       >
         <Typography component="p">
-          Chaque mois, 500&nbsp;000 usagers candidats, recruteurs et organismes de formations utilisent le service gouvernemental La bonne alternance pour concrétiser leur projet
-          d’alternance.
+          Chaque mois, 500&nbsp;000 usagers candidats, recruteurs et organismes de formations utilisent le service gouvernemental <Lba /> pour concrétiser leur projet d’alternance.
         </Typography>
         <Typography component="p">
           Ce volume d’utilisation permet d’observer de près ce que cherchent les candidats et ce dont les entreprises ont besoin. Ce baromètre partage ces observations avec
           l’ensemble de l’écosystème avec un objectif&nbsp;: identifier des leviers concrets qui faciliteront les entrées en alternance futures.
         </Typography>
-        <Typography component="p">La bonne alternance s’empare également de ces observations pour orienter ses prochaines évolutions, présentées en fin de baromètre.</Typography>
+        <Typography component="p">
+          <Lba /> s’empare également de ces observations pour orienter ses prochaines évolutions, présentées en fin de baromètre.
+        </Typography>
       </BarometreHero>
 
       <DefaultContainer>
@@ -126,21 +132,25 @@ export default function BarometrePage() {
               </Typography>
 
               <P>
-                Depuis janvier 2026, près de 5 millions de personnes ont utilisé le service La bonne alternance. Sur les deuxième et troisième trimestres de l’année, période
-                couverte par ce baromètre, la fréquentation a fortement augmenté par rapport à 2025&nbsp;: +66&nbsp;% de visiteurs, +56&nbsp;% de candidats et +156&nbsp;% de
-                candidatures envoyées.
+                Depuis janvier 2026, près de 5 millions de personnes ont utilisé le service <Lba />. Sur les deuxième et troisième trimestres de l’année, période couverte par ce
+                baromètre, la fréquentation a fortement augmenté par rapport à 2025&nbsp;: +66&nbsp;% de visiteurs, +56&nbsp;% de candidats et +156&nbsp;% de candidatures envoyées.
               </P>
               <P>
-                Si les candidats sont toujours plus nombreux, c’est notamment parce que La bonne alternance rassemble en un seul endroit l’ensemble des emplois en alternance, avec
-                près de 500&nbsp;000 opportunités d’emploi en alternance exposées sur des deuxième et troisième trimestres 2026.
+                Si les candidats sont toujours plus nombreux, c’est notamment parce que <Lba /> rassemble en un seul endroit l’ensemble des emplois en alternance, avec près de
+                500&nbsp;000 opportunités d’emploi en alternance exposées sur des deuxième et troisième trimestres 2026.
               </P>
               <P>
-                Le service La bonne alternance centralise en effet des offres d’emploi collectées directement auprès des recruteurs, des offres agrégées d’autres plateformes
-                (Hellowork, Meteojob, LinkedIn, Leboncoin, France Travail et bien d’autres) ainsi que des entreprises auprès desquelles adresser des candidatures spontanées.
+                Le service <Lba /> centralise en effet des offres d’emploi collectées directement auprès des recruteurs, des offres agrégées d’autres plateformes (Hellowork,
+                Meteojob, LinkedIn, Leboncoin, France Travail et <DsfrLink href={PARTNERS_URL}>bien d’autres</DsfrLink>) ainsi que des entreprises auprès desquelles adresser des
+                candidatures spontanées.
               </P>
               <P>Les candidats, guidés tout au long de leur parcours, s’approprient cette diversité comme en témoigne le graphique ci-dessous.</P>
 
-              <ShareBar title="Clics « Postuler » par type d’opportunité" caption="D’avril à septembre 2026, 2 532 230 clics sur 468 911 offres publiées" items={clicsParType} />
+              <ShareBar
+                title="Intentions de candidature par type d’opportunité"
+                caption="D’avril à septembre 2026, 2 532 230 intentions de candidature sur 468 911 offres publiées"
+                items={clicsParType}
+              />
 
               <P>
                 L’usage croissant du service reflète notamment un attrait persistant des jeunes pour la voie de l’alternance, qui agit comme un tremplin vers l’emploi. Pourtant, le
@@ -159,9 +169,9 @@ export default function BarometrePage() {
               </P>
               <P>Les petites et moyennes entreprises recrutent, mais publient rarement des offres. Leurs besoins en recrutement sont ainsi peu visibles, peu accessibles.</P>
               <P>
-                Dans le cadre de sa mission de service public, La bonne alternance identifie les entreprises qui ont un fort potentiel d’embauche et les rend visibles auprès des
-                candidats, qui peuvent leur adresser une candidature spontanée. Il s’agit presque toujours de petites et moyennes entreprises, qui accèdent ainsi à des candidats
-                qu’elles n’auraient pas touchés autrement.
+                Dans le cadre de sa mission de service public, <Lba /> identifie les entreprises qui ont un fort potentiel d’embauche et les rend visibles auprès des candidats, qui
+                peuvent leur adresser une candidature spontanée. Il s’agit presque toujours de petites et moyennes entreprises, qui accèdent ainsi à des candidats qu’elles
+                n’auraient pas touchés autrement.
               </P>
               <P>
                 Le service collecte également des offres directement auprès des recruteurs, qui les publient gratuitement. Là encore, les petites structures sont les premières à
@@ -174,7 +184,7 @@ export default function BarometrePage() {
 
               <CompositionBars
                 title="Opportunités par type et par taille d’entreprise"
-                caption="D’avril à septembre 2026, 492 275 opportunités créées"
+                caption="D’avril à septembre 2026, 321 886 opportunités dont la taille d’entreprise est connue"
                 series={opportunitesSeries}
                 rows={opportunitesParTaille}
                 note="TPE = Très petites entreprises (1 à 9 salariés), PME = Petites et moyennes entreprises (10 à 249 salariés), ETI et GE = Entreprises de taille intermédiaire et Grandes entreprises (+250 salariés)"
@@ -186,8 +196,8 @@ export default function BarometrePage() {
               </P>
 
               <CompositionBars
-                title="Clics « Postuler » par taille d’entreprise"
-                caption="D’avril à septembre 2026, 2 532 230 clics « Postuler »"
+                title="Intentions de candidature par taille d’entreprise"
+                caption="D’avril à septembre 2026, 1 703 874 intentions de candidature vers des entreprises dont la taille est connue"
                 series={clicsSeries}
                 rows={clicsParTaille}
               />
@@ -201,7 +211,9 @@ export default function BarometrePage() {
                 <DsfrLink href="https://www.insee.fr/fr/statistiques/8305552?sommaire=8306008">Insee, 2025</DsfrLink>
                 ).
               </P>
-              <P>La bonne alternance leur ouvre largement ses portes&nbsp;: près d’une offre sur deux dont le niveau de diplôme est connu est accessible avec un CAP ou un bac.</P>
+              <P>
+                <Lba /> leur ouvre largement ses portes&nbsp;: près d’une offre sur deux dont le niveau de diplôme est connu est accessible avec un CAP ou un bac.
+              </P>
 
               <CompositionBars
                 title="Offres par type et par niveau de diplôme demandé"
@@ -220,8 +232,8 @@ export default function BarometrePage() {
               </P>
 
               <CompositionBars
-                title="Clics « Postuler » par niveau de diplôme demandé"
-                caption="D’avril à septembre 2026, 644 014 clics sur des offres dont le niveau de diplôme est connu"
+                title="Intentions de candidature par niveau de diplôme demandé"
+                caption="D’avril à septembre 2026, 644 014 intentions de candidature sur des offres dont le niveau de diplôme est connu"
                 series={clicsSeries.slice(1)}
                 rows={clicsParNiveau}
               />
@@ -232,26 +244,26 @@ export default function BarometrePage() {
 
               <P>Au-delà de la taille des entreprises et du niveau de diplôme préparé, les écarts entre candidats et recruteurs se lisent aussi par métier et territoire.</P>
               <P>
-                Sur La bonne alternance, une offre suscite en moyenne six intentions de candidature. Derrière cette moyenne, les situations sont très contrastées. Certains métiers,
-                dans le numérique notamment, attirent plus de vingt candidats par offre&nbsp;: la concurrence y est vive. À l’inverse, des métiers de l’aide à la personne, du
-                bâtiment ou de l’industrie peinent à dépasser une candidature par offre, alors même que de nombreuses entreprises y recrutent.
+                Sur <Lba />, une offre suscite en moyenne six intentions de candidature. Derrière cette moyenne, les situations sont très contrastées. Certains métiers, dans le
+                numérique notamment, attirent plus de vingt candidats par offre&nbsp;: la concurrence y est vive. À l’inverse, des métiers de l’aide à la personne, du bâtiment ou
+                de l’industrie peinent à dépasser une candidature par offre, alors même que de nombreuses entreprises y recrutent.
               </P>
               <P>
-                Pour illustrer ces propos, le graphique suivant s’attache à détailler les plus forts déséquilibres observés entre candidatures reçues et offres disponibles sur La
-                bonne alternance.
+                Pour illustrer ces propos, le graphique suivant s’attache à détailler les plus forts déséquilibres observés entre candidatures reçues et offres disponibles sur{" "}
+                <Lba />.
               </P>
 
               <Box sx={twoChartsSx}>
                 <BarChartHorizontal
                   title="Les 10 métiers les plus sollicités"
-                  caption="Clics « Postuler » par offre"
+                  caption="Intentions de candidature par offre"
                   items={metiersLesPlusSollicites}
                   tone="contrast"
                   maxValue={43}
                 />
                 <BarChartHorizontal
                   title="Les 10 métiers les moins sollicités"
-                  caption="Clics « Postuler » par offre, même échelle"
+                  caption="Intentions de candidature par offre, même échelle"
                   items={metiersLesMoinsSollicites}
                   tone="info"
                   maxValue={43}
@@ -271,21 +283,21 @@ export default function BarometrePage() {
               </P>
 
               <RegionsMap
-                title="Clics « Postuler » par offre, par région"
+                title="Intentions de candidature par offre, par région"
                 caption="D’avril à septembre 2026, moyenne nationale : 5,4"
-                mapLabel="Carte de France des régions : l’Île-de-France compte 8,5 clics « Postuler » par offre, la Corse 0,9. Le détail figure dans les listes voisines."
+                mapLabel="Carte de France des régions : l’Île-de-France compte 8,5 intentions de candidature par offre, la Corse 0,9. Le détail figure dans les listes voisines."
                 regions={ratioParRegion}
                 classes={ratioClasses}
                 topTitle="Les 5 régions où les offres sont les plus sollicitées"
                 flopTitle="Les 5 régions où les offres sont les moins sollicitées"
-                note="Collectivités d’outre-mer : 3,2 clics par offre (13 clics pour 4 offres), non représentées sur la carte."
+                note="Collectivités d’outre-mer : 3,2 intentions de candidature par offre (13 intentions pour 4 offres), non représentées sur la carte."
               />
 
               <P>Ces écarts traduisent un décalage net entre les souhaits d’orientation des candidats à l’alternance et les besoins en recrutement des entreprises.</P>
               <P>Les observer permet de les comprendre. Les comprendre permet d’agir.</P>
               <P>
-                Mieux informer les candidats, ouvrir leurs recherches à des métiers qui recrutent, valoriser les entreprises qui peinent à recruter&nbsp;: c’est sur ces leviers que
-                La bonne alternance concentre son action.
+                Mieux informer les candidats, ouvrir leurs recherches à des métiers qui recrutent, valoriser les entreprises qui peinent à recruter&nbsp;: c’est sur ces leviers que{" "}
+                <Lba /> concentre son action.
               </P>
 
               <Typography component="h2" sx={sectionTitleSx}>
@@ -293,16 +305,16 @@ export default function BarometrePage() {
               </Typography>
 
               <P>
-                En tant que service public, La bonne alternance soutient le recours à l’alternance comme tremplin vers un emploi durable. Différents leviers, en place ou à venir,
-                servent cet objectif.
+                En tant que service public, <Lba /> soutient le recours à l’alternance comme tremplin vers un emploi durable. Différents leviers, en place ou à venir, servent cet
+                objectif.
               </P>
 
               <Typography component="h3" sx={leverTitleSx}>
                 Ouvrir les recherches au-delà des offres publiées
               </Typography>
               <P>
-                Plus de la moitié des recrutements, en alternance comme ailleurs, se fait sans qu’aucune offre d’emploi n’ait été diffusée. La bonne alternance identifie les
-                entreprises qui recrutent sans publier d’offre, les rend visibles et permet aux candidats de leur adresser une candidature spontanée.
+                Plus de la moitié des recrutements, en alternance comme ailleurs, se fait sans qu’aucune offre d’emploi n’ait été diffusée. <Lba /> identifie les entreprises qui
+                recrutent sans publier d’offre, les rend visibles et permet aux candidats de leur adresser une candidature spontanée.
               </P>
               <P>Ce levier est aujourd’hui largement adopté&nbsp;: 3 candidatures sur 4 envoyées via le service sont spontanées.</P>
 
@@ -319,65 +331,61 @@ export default function BarometrePage() {
                 Mieux informer les candidats sur les métiers qui recrutent
               </Typography>
               <P>
-                Une expérimentation visant à valoriser des filières d’avenir, qui recrutent dès maintenant, est en cours de mise en place sur le service La bonne alternance. Les
-                candidats pourront découvrir ces métiers et les opportunités disponibles afin, s’ils le souhaitent, d’y postuler.
+                Une expérimentation visant à valoriser des filières d’avenir, qui recrutent dès maintenant, est en cours de mise en place sur le service <Lba />. Les candidats
+                pourront découvrir ces métiers et les opportunités disponibles afin, s’ils le souhaitent, d’y postuler.
               </P>
               <P>
                 Si l’expérimentation se montre concluante, elle sera étendue à un plus grand nombre de filières. La valorisation de ces filières pourra en outre être renforcée,
                 notamment auprès des candidats qui se tournent vers des métiers très demandés.
               </P>
+
+              <Box
+                component="section"
+                aria-labelledby="barometre-agir-ensemble"
+                sx={{
+                  mt: { xs: fr.spacing("12v"), md: fr.spacing("16v") },
+                  p: { xs: fr.spacing("6v"), md: fr.spacing("10v") },
+                  backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+                  borderTop: `4px solid ${fr.colors.decisions.border.plain.blueFrance.default}`,
+                }}
+              >
+                <Typography id="barometre-agir-ensemble" component="h2" sx={{ ...sectionTitleSx, mt: 0, color: fr.colors.decisions.text.title.blueFrance.default }}>
+                  Agir ensemble pour faciliter les entrées en alternance
+                </Typography>
+                <P>
+                  Dans un contexte de recul des contrats signés, chaque mise en relation compte. En particulier pour les candidats et entreprises ayant le plus de difficultés à se
+                  trouver. Ce baromètre met en lumière des principaux décalages entre candidats et recruteurs observés sur <Lba /> qui caractérisent l’état actuel du marché.
+                </P>
+
+                <Typography component="h3" sx={leverTitleSx}>
+                  Entreprises
+                </Typography>
+                <P>Vous souhaitez recruter un alternant mais peinez à trouver des candidats&nbsp;? Publiez gratuitement votre offre ou contactez notre équipe.</P>
+                <ButtonsGroup
+                  inlineLayoutWhen="md and up"
+                  buttons={[
+                    { children: "Publier gratuitement une offre", linkProps: { href: PAGES.static.accesRecruteur.getPath() } },
+                    { children: "Contacter l’équipe", priority: "secondary", linkProps: { href: PAGES.static.contact.getPath() } },
+                  ]}
+                />
+
+                <Typography component="h3" sx={leverTitleSx}>
+                  CFA, prescripteurs, partenaires et plateformes
+                </Typography>
+                <P>
+                  Les données de <Lba /> sont ouvertes et accessibles sur <DsfrLink href="https://api.apprentissage.beta.gouv.fr/">api.apprentissage.beta.gouv.fr</DsfrLink>.
+                  Rejoignez les plus de 300 organisations qui les utilisent déjà pour accompagner les candidats à l’alternance.
+                </P>
+
+                <P>Rendez-vous dans une prochaine édition pour mesurer les premiers effets de ces actions.</P>
+                <DsfrLink href={PAGES.static.barometreT1.getPath()} arrow="right">
+                  Consulter le baromètre du premier trimestre 2026
+                </DsfrLink>
+              </Box>
             </Box>
           </Grid>
         </Grid>
       </DefaultContainer>
-
-      <Box sx={{ backgroundColor: "#000091", color: "#fff" }}>
-        <DefaultContainer>
-          <Box
-            sx={{
-              py: { xs: fr.spacing("10v"), md: fr.spacing("16v") },
-              display: "grid",
-              gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 5fr) minmax(0, 7fr)" },
-              columnGap: fr.spacing("12v"),
-              rowGap: fr.spacing("4v"),
-              "& p": { color: "#fff", fontSize: "17px", lineHeight: "28px", mb: fr.spacing("4v") },
-            }}
-          >
-            <Typography component="h3" sx={{ color: "#fff", fontWeight: 700, fontSize: { xs: "28px", md: "32px" }, lineHeight: { xs: "36px", md: "40px" }, m: 0 }}>
-              Agir ensemble pour faciliter les entrées en alternance
-            </Typography>
-            <Box>
-              <Typography component="p">
-                Dans un contexte de recul des contrats signés, chaque mise en relation compte. En particulier pour les candidats et entreprises ayant le plus de difficultés à se
-                trouver. Ce baromètre met en lumière des principaux décalages entre candidats et recruteurs observés sur La bonne alternance qui caractérisent l’état actuel du
-                marché.
-              </Typography>
-              <Typography component="p">
-                Entreprises, vous souhaitez recruter un alternant mais peinez à trouver des candidats&nbsp;?{" "}
-                <a href={PAGES.static.accesRecruteur.getPath()} style={WHITE_LINK}>
-                  Publiez gratuitement votre offre sur La bonne alternance
-                </a>{" "}
-                ou{" "}
-                <a href={PAGES.static.contact.getPath()} style={WHITE_LINK}>
-                  contactez notre équipe
-                </a>
-                .
-              </Typography>
-              <Typography component="p">
-                CFA, prescripteurs, partenaires et plateformes, les données de La bonne alternance sont ouvertes et accessibles sur{" "}
-                <a href="https://api.apprentissage.beta.gouv.fr/" style={WHITE_LINK}>
-                  https://api.apprentissage.beta.gouv.fr/
-                </a>
-                . Rejoignez les plus de 300 organisations qui les utilisent déjà pour accompagner les candidats à l’alternance.
-              </Typography>
-              <Typography component="p">Rendez-vous dans une prochaine édition pour mesurer les premiers effets de ces actions.</Typography>
-              <a href={PAGES.static.barometreT1.getPath()} style={WHITE_LINK}>
-                Consulter le baromètre du premier trimestre 2026
-              </a>
-            </Box>
-          </Box>
-        </DefaultContainer>
-      </Box>
     </Box>
   )
 }

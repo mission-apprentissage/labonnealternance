@@ -50,13 +50,13 @@ export const usageMetrics: HeroMetric[] = [
 ]
 
 export const clicsParType = [
-  { label: "Candidatures spontanées", detail: "1 067 888 clics", value: 1067888, share: "42,2 %", color: COLOR_SPONTANEES, textColor: "#fff" },
-  { label: "Offres partenaires", detail: "1 035 922 clics", value: 1035922, share: "40,9 %", color: COLOR_PARTENAIRES, textColor: "#161616" },
-  { label: "Offres La bonne alternance", detail: "428 420 clics", value: 428420, share: "16,9 %", color: COLOR_OFFRES_LBA, textColor: "#fff" },
+  { label: "Candidatures spontanées", detail: "1 067 888 intentions de candidature", value: 1067888, share: "42,2 %", color: COLOR_SPONTANEES, textColor: "#fff" },
+  { label: "Offres partenaires", detail: "1 035 922 intentions de candidature", value: 1035922, share: "40,9 %", color: COLOR_PARTENAIRES, textColor: "#161616" },
+  { label: "Offres La bonne alternance", detail: "428 420 intentions de candidature", value: 428420, share: "16,9 %", color: COLOR_OFFRES_LBA, textColor: "#fff" },
 ]
 
 const SERIES = {
-  spontanees: { key: "spontanees", label: "Candidatures spontanées (algorithme La bonne alternance)", color: COLOR_SPONTANEES, textColor: "#fff" },
+  spontanees: { key: "spontanees", label: "Candidatures spontanées", color: COLOR_SPONTANEES, textColor: "#fff" },
   offresLba: { key: "offresLba", label: "Offres La bonne alternance", color: COLOR_OFFRES_LBA, textColor: "#fff" },
   partenaires: { key: "partenaires", label: "Offres partenaires", color: COLOR_PARTENAIRES, textColor: "#161616" },
 } satisfies Record<string, CompositionSeries>
@@ -65,17 +65,15 @@ export const opportunitesSeries: CompositionSeries[] = [SERIES.offresLba, SERIES
 export const clicsSeries: CompositionSeries[] = [SERIES.spontanees, SERIES.offresLba, SERIES.partenaires]
 
 export const opportunitesParTaille: CompositionRow[] = [
-  { label: "TPE (0-19 salariés)", total: "189 355 opportunités (38,5 %)", segments: { offresLba: 4, partenaires: 7, spontanees: 89 } },
-  { label: "PME (20-249 salariés)", total: "87 499 opportunités (17,8 %)", segments: { offresLba: 4, partenaires: 27, spontanees: 69 } },
-  { label: "ETI et GE (250 salariés et plus)", total: "45 032 opportunités (9,1 %)", segments: { offresLba: 3, partenaires: 88, spontanees: 9 } },
-  { label: "Taille non renseignée", total: "170 389 opportunités (34,6 %)", segments: { offresLba: 3, partenaires: 97, spontanees: 0 } },
+  { label: "TPE (0-19 salariés)", total: "189 355 opportunités (58,8 %)", segments: { offresLba: 4, partenaires: 7, spontanees: 89 } },
+  { label: "PME (20-249 salariés)", total: "87 499 opportunités (27,2 %)", segments: { offresLba: 4, partenaires: 27, spontanees: 69 } },
+  { label: "ETI et GE (250 salariés et plus)", total: "45 032 opportunités (14,0 %)", segments: { offresLba: 3, partenaires: 88, spontanees: 9 } },
 ]
 
 export const clicsParTaille: CompositionRow[] = [
-  { label: "TPE (0-19 salariés)", total: "794 222 clics (31,4 %)", segments: { spontanees: 73, offresLba: 19, partenaires: 9 } },
-  { label: "PME (20-249 salariés)", total: "572 146 clics (22,6 %)", segments: { spontanees: 65, offresLba: 17, partenaires: 18 } },
-  { label: "ETI et GE (250 salariés et plus)", total: "337 506 clics (13,3 %)", segments: { spontanees: 18, offresLba: 12, partenaires: 70 } },
-  { label: "Taille non renseignée", total: "828 356 clics (32,7 %)", segments: { spontanees: 7, offresLba: 17, partenaires: 76 } },
+  { label: "TPE (0-19 salariés)", total: "794 222 intentions (46,6 %)", segments: { spontanees: 73, offresLba: 19, partenaires: 9 } },
+  { label: "PME (20-249 salariés)", total: "572 146 intentions (33,6 %)", segments: { spontanees: 65, offresLba: 17, partenaires: 18 } },
+  { label: "ETI et GE (250 salariés et plus)", total: "337 506 intentions (19,8 %)", segments: { spontanees: 18, offresLba: 12, partenaires: 70 } },
 ]
 
 export const opportunitesParNiveau: CompositionRow[] = [
@@ -87,58 +85,58 @@ export const opportunitesParNiveau: CompositionRow[] = [
 ]
 
 export const clicsParNiveau: CompositionRow[] = [
-  { label: "CAP, BEP", total: "77 928 clics (12,1 %)", segments: { offresLba: 55, partenaires: 45 } },
-  { label: "Bac, Bac Pro, BP", total: "74 865 clics (11,6 %)", segments: { offresLba: 67, partenaires: 33 } },
-  { label: "BTS, DEUST (Bac+2)", total: "201 242 clics (31,2 %)", segments: { offresLba: 72, partenaires: 28 } },
-  { label: "Licence, BUT (Bac+3)", total: "149 124 clics (23,2 %)", segments: { offresLba: 55, partenaires: 45 } },
-  { label: "Master, ingénieur (Bac+5)", total: "140 855 clics (21,9 %)", segments: { offresLba: 56, partenaires: 44 } },
+  { label: "CAP, BEP", total: "77 928 intentions (12,1 %)", segments: { offresLba: 55, partenaires: 45 } },
+  { label: "Bac, Bac Pro, BP", total: "74 865 intentions (11,6 %)", segments: { offresLba: 67, partenaires: 33 } },
+  { label: "BTS, DEUST (Bac+2)", total: "201 242 intentions (31,2 %)", segments: { offresLba: 72, partenaires: 28 } },
+  { label: "Licence, BUT (Bac+3)", total: "149 124 intentions (23,2 %)", segments: { offresLba: 55, partenaires: 45 } },
+  { label: "Master, ingénieur (Bac+5)", total: "140 855 intentions (21,9 %)", segments: { offresLba: 56, partenaires: 44 } },
 ]
 
 export const metiersLesPlusSollicites = [
-  { label: "Monteur / Monteuse vidéo", detail: "4,5 k clics / 106 offres", value: 42.7, displayValue: "42,7" },
-  { label: "Préparateur / Préparatrice en pharmacie", detail: "8,0 k clics / 230 offres", value: 35, displayValue: "35,0" },
-  { label: "Administrateur / Administratrice de systèmes d’information (SI)", detail: "9,0 k clics / 263 offres", value: 34.3, displayValue: "34,3" },
-  { label: "Administrateur / Administratrice réseaux - télécoms", detail: "5,0 k clics / 156 offres", value: 32.2, displayValue: "32,2" },
-  { label: "Développeur / Développeuse logiciel ou d’application", detail: "2,8 k clics / 102 offres", value: 27.9, displayValue: "27,9" },
-  { label: "Expert / Experte systèmes et réseaux informatiques", detail: "6,2 k clics / 228 offres", value: 27, displayValue: "27,0" },
-  { label: "Éducateur spécialisé / Éducatrice spécialisée", detail: "2,7 k clics / 103 offres", value: 26, displayValue: "26,0" },
-  { label: "Ingénieur / Ingénieure sécurité informatique", detail: "4,2 k clics / 166 offres", value: 25.2, displayValue: "25,2" },
-  { label: "Technicien / Technicienne d’exploitation informatique", detail: "10 k clics / 426 offres", value: 24.5, displayValue: "24,5" },
-  { label: "Responsable paie et administration du personnel", detail: "3,2 k clics / 138 offres", value: 23.3, displayValue: "23,3" },
+  { label: "Monteur / Monteuse vidéo", detail: "4,5 k intentions / 106 offres", value: 42.7, displayValue: "42,7" },
+  { label: "Préparateur / Préparatrice en pharmacie", detail: "8,0 k intentions / 230 offres", value: 35, displayValue: "35,0" },
+  { label: "Administrateur / Administratrice de systèmes d’information (SI)", detail: "9,0 k intentions / 263 offres", value: 34.3, displayValue: "34,3" },
+  { label: "Administrateur / Administratrice réseaux - télécoms", detail: "5,0 k intentions / 156 offres", value: 32.2, displayValue: "32,2" },
+  { label: "Développeur / Développeuse logiciel ou d’application", detail: "2,8 k intentions / 102 offres", value: 27.9, displayValue: "27,9" },
+  { label: "Expert / Experte systèmes et réseaux informatiques", detail: "6,2 k intentions / 228 offres", value: 27, displayValue: "27,0" },
+  { label: "Éducateur spécialisé / Éducatrice spécialisée", detail: "2,7 k intentions / 103 offres", value: 26, displayValue: "26,0" },
+  { label: "Ingénieur / Ingénieure sécurité informatique", detail: "4,2 k intentions / 166 offres", value: 25.2, displayValue: "25,2" },
+  { label: "Technicien / Technicienne d’exploitation informatique", detail: "10 k intentions / 426 offres", value: 24.5, displayValue: "24,5" },
+  { label: "Responsable paie et administration du personnel", detail: "3,2 k intentions / 138 offres", value: 23.3, displayValue: "23,3" },
 ]
 
 export const metiersLesMoinsSollicites = [
-  { label: "Boucher / Bouchère", detail: "672 clics / 1,9 k offres", value: 0.3, displayValue: "0,3" },
-  { label: "Assistant / Assistante de vie aux familles", detail: "1,0 k clics / 3,0 k offres", value: 0.4, displayValue: "0,4" },
-  { label: "Agent / Agente de propreté de locaux", detail: "645 clics / 611 offres", value: 1.1, displayValue: "1,1" },
-  { label: "Conducteur / Conductrice d’engins de chantier", detail: "519 clics / 484 offres", value: 1.1, displayValue: "1,1" },
-  { label: "Tourneur-fraiseur / Tourneuse-fraiseuse", detail: "770 clics / 678 offres", value: 1.1, displayValue: "1,1" },
-  { label: "Accompagnant éducatif et social (AES) / Accompagnante éducative et sociale (AES)", detail: "937 clics / 768 offres", value: 1.2, displayValue: "1,2" },
-  { label: "Chargé / Chargée de produit en assurances", detail: "944 clics / 749 offres", value: 1.3, displayValue: "1,3" },
-  { label: "Agent / Agente d’exploitation des réseaux d’assainissement", detail: "638 clics / 504 offres", value: 1.3, displayValue: "1,3" },
-  { label: "Mécanicien / Mécanicienne des véhicules des transports routiers", detail: "761 clics / 599 offres", value: 1.3, displayValue: "1,3" },
-  { label: "Chargé / Chargée d’affaires bancaires entreprise", detail: "1,5 k clics / 1,1 k offres", value: 1.3, displayValue: "1,3" },
+  { label: "Boucher / Bouchère", detail: "672 intentions / 1,9 k offres", value: 0.3, displayValue: "0,3" },
+  { label: "Assistant / Assistante de vie aux familles", detail: "1,0 k intentions / 3,0 k offres", value: 0.4, displayValue: "0,4" },
+  { label: "Agent / Agente de propreté de locaux", detail: "645 intentions / 611 offres", value: 1.1, displayValue: "1,1" },
+  { label: "Conducteur / Conductrice d’engins de chantier", detail: "519 intentions / 484 offres", value: 1.1, displayValue: "1,1" },
+  { label: "Tourneur-fraiseur / Tourneuse-fraiseuse", detail: "770 intentions / 678 offres", value: 1.1, displayValue: "1,1" },
+  { label: "Accompagnant éducatif et social (AES) / Accompagnante éducative et sociale (AES)", detail: "937 intentions / 768 offres", value: 1.2, displayValue: "1,2" },
+  { label: "Chargé / Chargée de produit en assurances", detail: "944 intentions / 749 offres", value: 1.3, displayValue: "1,3" },
+  { label: "Agent / Agente d’exploitation des réseaux d’assainissement", detail: "638 intentions / 504 offres", value: 1.3, displayValue: "1,3" },
+  { label: "Mécanicien / Mécanicienne des véhicules des transports routiers", detail: "761 intentions / 599 offres", value: 1.3, displayValue: "1,3" },
+  { label: "Chargé / Chargée d’affaires bancaires entreprise", detail: "1,5 k intentions / 1,1 k offres", value: 1.3, displayValue: "1,3" },
 ]
 
 export const ratioParRegion: RegionValue[] = [
-  { name: "Île-de-France", value: 8.5, displayValue: "8,5", detail: "1,0 M clics / 117 k offres" },
-  { name: "Mayotte", value: 6.9, displayValue: "6,9", detail: "3,3 k clics / 474 offres" },
-  { name: "Hauts-de-France", value: 5.7, displayValue: "5,7", detail: "184 k clics / 32 k offres" },
-  { name: "Occitanie", value: 5.3, displayValue: "5,3", detail: "208 k clics / 39 k offres" },
-  { name: "Grand Est", value: 4.9, displayValue: "4,9", detail: "152 k clics / 31 k offres" },
-  { name: "Provence-Alpes-Côte d’Azur", value: 4.8, displayValue: "4,8", detail: "169 k clics / 35 k offres" },
-  { name: "Centre-Val de Loire", value: 4.7, displayValue: "4,7", detail: "70 k clics / 15 k offres" },
-  { name: "Auvergne-Rhône-Alpes", value: 4.7, displayValue: "4,7", detail: "272 k clics / 58 k offres" },
-  { name: "Pays de la Loire", value: 3.7, displayValue: "3,7", detail: "93 k clics / 25 k offres" },
-  { name: "Nouvelle-Aquitaine", value: 3.6, displayValue: "3,6", detail: "148 k clics / 41 k offres" },
-  { name: "Normandie", value: 3.6, displayValue: "3,6", detail: "70 k clics / 19 k offres" },
-  { name: "La Réunion", value: 3.5, displayValue: "3,5", detail: "29 k clics / 8,0 k offres" },
-  { name: "Bourgogne-Franche-Comté", value: 3.1, displayValue: "3,1", detail: "50 k clics / 16 k offres" },
-  { name: "Guadeloupe", value: 2.9, displayValue: "2,9", detail: "8,7 k clics / 3,0 k offres" },
-  { name: "Bretagne", value: 2.7, displayValue: "2,7", detail: "60 k clics / 22 k offres" },
-  { name: "Martinique", value: 2.7, displayValue: "2,7", detail: "5,3 k clics / 2,0 k offres" },
-  { name: "Guyane", value: 2.1, displayValue: "2,1", detail: "2,0 k clics / 946 offres" },
-  { name: "Corse", value: 0.9, displayValue: "0,9", detail: "1,9 k clics / 2,1 k offres" },
+  { name: "Île-de-France", value: 8.5, displayValue: "8,5", detail: "1,0 M intentions / 117 k offres" },
+  { name: "Mayotte", value: 6.9, displayValue: "6,9", detail: "3,3 k intentions / 474 offres" },
+  { name: "Hauts-de-France", value: 5.7, displayValue: "5,7", detail: "184 k intentions / 32 k offres" },
+  { name: "Occitanie", value: 5.3, displayValue: "5,3", detail: "208 k intentions / 39 k offres" },
+  { name: "Grand Est", value: 4.9, displayValue: "4,9", detail: "152 k intentions / 31 k offres" },
+  { name: "Provence-Alpes-Côte d’Azur", value: 4.8, displayValue: "4,8", detail: "169 k intentions / 35 k offres" },
+  { name: "Centre-Val de Loire", value: 4.7, displayValue: "4,7", detail: "70 k intentions / 15 k offres" },
+  { name: "Auvergne-Rhône-Alpes", value: 4.7, displayValue: "4,7", detail: "272 k intentions / 58 k offres" },
+  { name: "Pays de la Loire", value: 3.7, displayValue: "3,7", detail: "93 k intentions / 25 k offres" },
+  { name: "Nouvelle-Aquitaine", value: 3.6, displayValue: "3,6", detail: "148 k intentions / 41 k offres" },
+  { name: "Normandie", value: 3.6, displayValue: "3,6", detail: "70 k intentions / 19 k offres" },
+  { name: "La Réunion", value: 3.5, displayValue: "3,5", detail: "29 k intentions / 8,0 k offres" },
+  { name: "Bourgogne-Franche-Comté", value: 3.1, displayValue: "3,1", detail: "50 k intentions / 16 k offres" },
+  { name: "Guadeloupe", value: 2.9, displayValue: "2,9", detail: "8,7 k intentions / 3,0 k offres" },
+  { name: "Bretagne", value: 2.7, displayValue: "2,7", detail: "60 k intentions / 22 k offres" },
+  { name: "Martinique", value: 2.7, displayValue: "2,7", detail: "5,3 k intentions / 2,0 k offres" },
+  { name: "Guyane", value: 2.1, displayValue: "2,1", detail: "2,0 k intentions / 946 offres" },
+  { name: "Corse", value: 0.9, displayValue: "0,9", detail: "1,9 k intentions / 2,1 k offres" },
 ]
 
 export const ratioClasses = [

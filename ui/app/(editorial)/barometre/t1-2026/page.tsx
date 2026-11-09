@@ -205,13 +205,18 @@ export default function BarometreT1Page() {
                 Top 10 des métiers recherchés par les recruteurs sur La bonne alternance
               </Typography>
 
-              <BarChartHorizontal title="Métiers les plus recherchés par les recruteurs — premier trimestre 2026" items={topMetiersRecruteurs} tone="info" />
+              <BarChartHorizontal
+                source="La bonne alternance"
+                title="Métiers les plus recherchés par les recruteurs — premier trimestre 2026"
+                items={topMetiersRecruteurs}
+                tone="info"
+              />
 
               <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
                 Top 10 des secteurs qui recrutent le plus sur La bonne alternance
               </Typography>
 
-              <BarChartHorizontal title="Secteurs qui publient le plus d’offres — premier trimestre 2026" items={topSecteursRecruteurs} tone="info" />
+              <BarChartHorizontal source="La bonne alternance" title="Secteurs qui publient le plus d’offres — premier trimestre 2026" items={topSecteursRecruteurs} tone="info" />
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
@@ -261,7 +266,12 @@ export default function BarometreT1Page() {
                 Où se situent les recruteurs qui déposent les offres sur La bonne alternance ?
               </Typography>
 
-              <BarChartHorizontal title="Part des offres concentrée dans chaque région — premier trimestre 2026" items={offresParRegion} tone="success" />
+              <BarChartHorizontal
+                source="La bonne alternance"
+                title="Part des offres concentrée dans chaque région — premier trimestre 2026"
+                items={offresParRegion}
+                tone="success"
+              />
 
               <Callout variant="highlight">
                 <Typography component="p" sx={{ m: 0 }}>
@@ -310,8 +320,8 @@ export default function BarometreT1Page() {
               </Callout>
 
               <Box sx={{ display: "grid", gap: fr.spacing("4v"), gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" } }}>
-                <BarChartHorizontal title="Top 10 métiers les plus demandés par les candidats" items={topMetiersCandidats} tone="success" />
-                <BarChartHorizontal title="Flop 10 métiers — les moins de candidatures" items={flopMetiersCandidats} tone="contrast" />
+                <BarChartHorizontal source="La bonne alternance" title="Top 10 métiers les plus demandés par les candidats" items={topMetiersCandidats} tone="success" />
+                <BarChartHorizontal source="La bonne alternance" title="Flop 10 métiers — les moins de candidatures" items={flopMetiersCandidats} tone="contrast" />
               </Box>
 
               <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
@@ -361,6 +371,7 @@ export default function BarometreT1Page() {
 
               <Box sx={{ display: "grid", gap: fr.spacing("4v"), gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" } }}>
                 <BarChartHorizontal
+                  source="La bonne alternance"
                   title="Métiers les plus sous tension (plus de candidats que d’offres)"
                   caption="Ratio offres / candidatures (le plus faible)"
                   items={metiersSousTension.map((item) =>
@@ -378,7 +389,12 @@ export default function BarometreT1Page() {
                   )}
                   tone="contrast"
                 />
-                <BarChartHorizontal title="Métiers les moins sous tension (ratio offres/cand. le plus élevé)" items={metiersMoinsSousTension} tone="success" />
+                <BarChartHorizontal
+                  source="La bonne alternance"
+                  title="Métiers les moins sous tension (ratio offres/cand. le plus élevé)"
+                  items={metiersMoinsSousTension}
+                  tone="success"
+                />
               </Box>
 
               <Callout variant="highlight">
@@ -409,7 +425,7 @@ export default function BarometreT1Page() {
                 ).
               </Typography>
 
-              <BarChartHorizontal title="Quel est le niveau de diplôme le plus recherché par les recruteurs ?" items={niveauDiplome} tone="info" />
+              <BarChartHorizontal source="La bonne alternance" title="Quel est le niveau de diplôme le plus recherché par les recruteurs ?" items={niveauDiplome} tone="info" />
 
               <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
                 Une plateforme où les candidatures spontanées sont un levier pour accéder au marché caché
@@ -451,7 +467,12 @@ export default function BarometreT1Page() {
                 spontanée, faute d’offres suffisantes. La candidature spontanée devient une réponse rationnelle à un marché visible insuffisant.
               </Typography>
 
-              <BarChartHorizontal title="Top 10 secteurs les plus sollicités en candidature spontanée — premier trimestre 2026" items={topSecteursSpontanees} tone="success" />
+              <BarChartHorizontal
+                source="La bonne alternance"
+                title="Top 10 secteurs les plus sollicités en candidature spontanée — premier trimestre 2026"
+                items={topSecteursSpontanees}
+                tone="success"
+              />
 
               <Typography component="h3" variant="h3" sx={subSectionTitleSx}>
                 Qualité, maillage et accompagnement&nbsp;: les engagements de la plateforme

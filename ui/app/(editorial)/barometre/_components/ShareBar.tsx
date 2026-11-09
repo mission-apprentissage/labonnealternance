@@ -42,7 +42,7 @@ export function ShareBar({ title, caption, items }: { title: string; caption?: s
                 {item.label}
               </Typography>
               <Typography component="dd" sx={{ m: 0, p: 0, fontSize: "13px", lineHeight: "18px", color: fr.colors.decisions.text.mention.grey.default }}>
-                {item.share} · {item.detail}
+                {item.detail}
               </Typography>
             </Box>
           </Box>

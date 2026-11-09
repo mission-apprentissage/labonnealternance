@@ -101,20 +101,23 @@ export function BarometreHero({
                       />
                     ))}
                   </Box>
-                  <Typography component="span" sx={{ display: "block", mt: 1, fontSize: { xs: "11px", md: "13px" }, lineHeight: 1.4, color: WHITE }}>
-                    {metric.beforeDisplay}
-                    <br />
-                    <strong>{metric.afterDisplay}</strong>
-                  </Typography>
+                  <Box
+                    sx={{ display: "flex", gap: "6px", mt: 1, fontSize: { xs: "10px", md: "13px" }, lineHeight: 1.4, color: WHITE, textAlign: "center", whiteSpace: "nowrap" }}
+                    aria-hidden="true"
+                  >
+                    <Box component="span" sx={{ flex: 1 }}>
+                      {metric.beforeDisplay}
+                    </Box>
+                    <Box component="span" sx={{ flex: 1, fontWeight: 700 }}>
+                      {metric.afterDisplay}
+                    </Box>
+                  </Box>
                   <Box component="span" sx={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)" }}>
                     {`${metric.label} : ${metric.beforeDisplay} en ${periodLabels[0]}, ${metric.afterDisplay} en ${periodLabels[1]}, soit ${metric.change}.`}
                   </Box>
                 </Box>
               ))}
             </Box>
-            <Typography component="p" sx={{ mt: 2, mb: 0, fontSize: "12px" }}>
-              Source : Plausible (visites), La bonne alternance (candidats, candidatures)
-            </Typography>
           </Box>
         </Box>
       </DefaultContainer>
