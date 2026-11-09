@@ -4,10 +4,10 @@ import { afterAll, beforeAll, beforeEach } from "vitest"
 import { clearAllCollections, closeMongodbConnection, configureDbSchemaValidation, connectToMongodb, createIndexes } from "@/common/utils/mongodb-utils"
 import config from "@/config"
 
+// Une base par pool (1..maxWorkers), réutilisée d'un fichier à l'autre : une base neuve par fichier
+// coûte ~400 créations de tables WiredTiger, dont les pics dépassent hookTimeout en CI.
 export const startAndConnectMongodb = async () => {
-  const workerId = `${process.env.VITEST_POOL_ID}-${process.env.VITEST_WORKER_ID}`
-
-  await connectToMongodb(config.mongodb.uri.replace("VITEST_POOL_ID", workerId))
+  await connectToMongodb(config.mongodb.uri.replace("VITEST_POOL_ID", `${process.env.VITEST_POOL_ID}`))
   await Promise.all([createIndexes(), configureDbSchemaValidation(modelDescriptors)])
 }
 
