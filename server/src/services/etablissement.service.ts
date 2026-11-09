@@ -259,15 +259,6 @@ export const verifyRecruiterEmailInUse = async ({
   return null
 }
 
-const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string; idcc: null } | undefined> => {
-  const opcoOpt = await FCGetOpcoInfos(siret)
-  return opcoOpt ? { opco: opcoOpt, idcc: null } : undefined
-}
-
-const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
-  return getOpcoFromFranceCompetences(siret)
-}
-
 export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: number | null } | null> => {
   const siren = siret.substring(0, 9)
   const opcoFromDB = await getOpcoBySirenFromDB(siren)
@@ -282,7 +273,7 @@ export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: 
     }
   }
 
-  const result = await getOpcoDataRaw(siret)
+  const result = await FCGetOpcoInfos(siret)
   if (result) {
     const { opco, idcc } = result
     await saveOpco({ opco, idcc, siren })
@@ -316,20 +307,20 @@ const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OP
   })
 }
 
-const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: null; siret: string }[]> => {
+const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
   if (!sirets.length) {
     return []
   }
-  const results = [] as { opco: OPCOS_LABEL; idcc: null; siret: string }[]
-  const opcoDataToSave = [] as { opco: string; idcc: null; siren: string }[]
+  const results = [] as { opco: OPCOS_LABEL; idcc: number | null; siret: string }[]
+  const opcoDataToSave = [] as { opco: string; idcc: number | null; siren: string }[]
   await asyncForEach(sirets, async (siret) => {
     try {
-      const result = await getOpcoFromFranceCompetences(siret)
-      const opco = parseEnum(OPCOS_LABEL, result?.opco)
-      if (opco) {
-        results.push({ siret, opco, idcc: null })
+      const result = await FCGetOpcoInfos(siret)
+      if (result) {
+        const { opco, idcc } = result
+        results.push({ siret, opco, idcc })
         const siren = siret.substring(0, 9)
-        opcoDataToSave.push({ opco, idcc: null, siren })
+        opcoDataToSave.push({ opco, idcc, siren })
       }
     } catch (err) {
       captureException(err)
@@ -448,6 +439,12 @@ export const validateEligibiliteCfa = async (siret: string) => {
   return { referentiel: formattedReferentiel, cfa }
 }
 
+// Le formulaire de création ne transmet pas l'IDCC : on reprend celui de `opcos` (cf. getOpcoData) s'il porte le même OPCO.
+const getKnownIdcc = async (siret: string, opco: OPCOS_LABEL): Promise<number | null> => {
+  const known = await getOpcoBySirenFromDB(siret.substring(0, 9))
+  return known?.opco === opco ? known.idcc : null
+}
+
 export const entrepriseOnboardingWorkflow = {
   create: async (
     {
@@ -492,7 +489,7 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
-    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
+    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || (await getKnownIdcc(siret, opco)) })
     await getDbCollection("jobs_partners").updateMany(
       { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret },
       { $set: { workplace_opco: opcoResult.opco, workplace_idcc: opcoResult.idcc } }

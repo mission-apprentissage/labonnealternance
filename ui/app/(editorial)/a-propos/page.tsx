@@ -6,7 +6,6 @@ import Image from "next/image"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import j1s from "@/public/images/logosPartenaires/partenaire-1j1s.webp"
 import affelnet from "@/public/images/logosPartenaires/partenaire-affelnet.webp"
 import apec from "@/public/images/logosPartenaires/partenaire-apec.webp"
 import apecita from "@/public/images/logosPartenaires/partenaire-apecita.webp"
@@ -23,6 +22,7 @@ import hellowork from "@/public/images/logosPartenaires/partenaire-hellowork.web
 import institutPasteur from "@/public/images/logosPartenaires/partenaire-institut-pasteur.webp"
 import laposte from "@/public/images/logosPartenaires/partenaire-laposte.webp"
 import leboncoin from "@/public/images/logosPartenaires/partenaire-leboncoin.webp"
+import linkedin from "@/public/images/logosPartenaires/partenaire-linkedin.webp"
 import loreal from "@/public/images/logosPartenaires/partenaire-loreal.webp"
 import meteojob from "@/public/images/logosPartenaires/partenaire-meteojob.webp"
 import onisep from "@/public/images/logosPartenaires/partenaire-onisep.webp"
@@ -271,7 +271,7 @@ export default function APropos() {
                   }}
                 >
                   <Image src={franceTravail} alt="France Travail" style={{ width: "100%", height: "auto" }} />
-                  <Image src={j1s} alt="#1jeune1solution" style={{ width: "100%", height: "auto" }} />
+                  <Image src={linkedin} alt="LinkedIn" style={{ width: "100%", height: "auto" }} />
                   <Image src={pass} alt="PASS" style={{ width: "100%", height: "auto" }} />
                   <Image src={ep} alt="OPCO EP" style={{ width: "100%", height: "auto" }} />
                   <Image src={rhalternance} alt="RH Alternance" style={{ width: "100%", height: "auto" }} />

@@ -81,4 +81,31 @@ describe("helloWorkJobToJobsPartners", () => {
       )
     ).toMatchSnapshot()
   })
+
+  it.each([
+    ["Enseignement/Formation", "IS_CFA"],
+    ["Centre de formation", "IS_CFA"],
+    ["CENTRE DE FORMATION", "IS_CFA"],
+    ["Services aux Entreprises", null],
+    ["Formation", null],
+    ["Centre de formation continue", null],
+    [null, null],
+  ])("company_sector %s => business_error %s", (company_sector, expected) => {
+    const job = helloWorkBuddiJobToJobsPartners({ reference: "ref", company_sector })
+    expect(job.business_error).toBe(expected)
+  })
+
+  it.each([
+    ["8559A", "IS_CFA"],
+    ["8532Z", "IS_CFA"],
+    ["85.59A", "IS_CFA"],
+    ["8610Z", null],
+    ["5850Z", null],
+    ["0850Z", null],
+    ["85", null],
+    [null, null],
+  ])("naf_code %s => business_error %s", (naf_code, expected) => {
+    const job = helloWorkBuddiJobToJobsPartners({ reference: "ref", company_sector: "Restauration", naf_code })
+    expect(job.business_error).toBe(expected)
+  })
 })
