@@ -81,4 +81,17 @@ describe("helloWorkJobToJobsPartners", () => {
       )
     ).toMatchSnapshot()
   })
+
+  it.each([
+    ["Enseignement/Formation", "IS_CFA"],
+    ["Centre de formation", "IS_CFA"],
+    ["CENTRE DE FORMATION", "IS_CFA"],
+    ["Services aux Entreprises", null],
+    ["Formation", null],
+    ["Centre de formation continue", null],
+    [null, null],
+  ])("company_sector %s => business_error %s", (company_sector, expected) => {
+    const job = helloWorkBuddiJobToJobsPartners({ reference: "ref", company_sector })
+    expect(job.business_error).toBe(expected)
+  })
 })

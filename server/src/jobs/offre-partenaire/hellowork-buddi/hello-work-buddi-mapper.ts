@@ -98,10 +98,12 @@ export const helloWorkBuddiJobToJobsPartners = (job: IHelloWorkBuddiJob): ICompu
 
     offer_access_conditions: [],
     offer_to_be_acquired_skills: [],
-    business_error: company_sector?.toLowerCase() === "enseignement/formation" ? BusinessErrorCodes.IS_CFA : null,
+    business_error: company_sector && CFA_COMPANY_SECTORS.has(company_sector.toLowerCase()) ? BusinessErrorCodes.IS_CFA : null,
   }
   return partnerJob
 }
+
+const CFA_COMPANY_SECTORS = new Set(["enseignement/formation", "centre de formation"])
 
 const acceptedGeoLocRegex = /-?[0-9]{1,2}[.,][0-9]+,-?[0-9]{1,3}[.,][0-9]+/
 
