@@ -128,6 +128,34 @@ describe("POST /etablissement/creation", () => {
       expect.soft(formulaire2?.opco).toBe(OPCOS_LABEL.AKTO)
     })
 
+    describe("IDCC de l'entreprise", () => {
+      const siret = defaultCreationEntreprisePayload.establishment_siret
+      const { idcc: _idcc, ...payloadSansIdcc } = defaultCreationEntreprisePayload
+      const givenKnownOpco = (opco: OPCOS_LABEL, idcc: number) => getDbCollection("opcos").insertOne({ _id: new ObjectId(), siren: siret.substring(0, 9), opco, idcc })
+      const getEntrepriseIdcc = async () => (await getDbCollection("entreprises").findOne({ siret }))?.idcc
+
+      it("reprend l'IDCC connu dans opcos quand le formulaire n'en transmet pas", async () => {
+        await givenKnownOpco(OPCOS_LABEL.AKTO, 1486)
+        const response = await callCreation(payloadSansIdcc)
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(await getEntrepriseIdcc()).toBe(1486)
+      })
+
+      it("ignore l'IDCC connu dans opcos quand il est rattaché à un autre OPCO", async () => {
+        await givenKnownOpco(OPCOS_LABEL.CONSTRUCTYS, 1486)
+        const response = await callCreation(payloadSansIdcc)
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(await getEntrepriseIdcc()).toBeNull()
+      })
+
+      it("garde l'IDCC transmis par le formulaire", async () => {
+        await givenKnownOpco(OPCOS_LABEL.AKTO, 1486)
+        const response = await callCreation(defaultCreationEntreprisePayload)
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(await getEntrepriseIdcc()).toBe(3248)
+      })
+    })
+
     it("fige sur le rôle l'OPCO de l'entreprise, y compris celui posé par l'inscription", async () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
       const response2 = await callCreation({ ...defaultCreationEntreprisePayload, email: "email2@email.com", opco: OPCOS_LABEL.CONSTRUCTYS })

@@ -439,6 +439,12 @@ export const validateEligibiliteCfa = async (siret: string) => {
   return { referentiel: formattedReferentiel, cfa }
 }
 
+// Le formulaire de création ne transmet pas l'IDCC : on reprend celui de `opcos` (cf. getOpcoData) s'il porte le même OPCO.
+const getKnownIdcc = async (siret: string, opco: OPCOS_LABEL): Promise<number | null> => {
+  const known = await getOpcoBySirenFromDB(siret.substring(0, 9))
+  return known?.opco === opco ? known.idcc : null
+}
+
 export const entrepriseOnboardingWorkflow = {
   create: async (
     {
@@ -483,7 +489,7 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
-    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
+    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || (await getKnownIdcc(siret, opco)) })
     await getDbCollection("jobs_partners").updateMany(
       { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret },
       { $set: { workplace_opco: opcoResult.opco, workplace_idcc: opcoResult.idcc } }

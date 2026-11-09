@@ -48,6 +48,7 @@ describe("france-competences-client", () => {
       nockFranceCompetencesOpcoSearch(siret, generateFCOpcoResponseFixture({ siret, idcc: "0016" }))
 
       expect(await FCGetOpcoInfos(siret)).toEqual({ opco: OPCOS_LABEL.AKTO, idcc: 16 })
+      expect(nock.isDone()).toBe(true)
     })
 
     it("should return the OPCO with a null IDCC when idcc is absent", async () => {
