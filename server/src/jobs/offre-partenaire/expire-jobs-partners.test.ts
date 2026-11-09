@@ -19,7 +19,7 @@ describe("expireJobsPartners", () => {
     vi.mocked(mailer.sendEmail).mockClear()
   })
 
-  it("expire une offre en modération sans décision comme une offre publiée, sans lui annoncer qu'elle n'est plus visible", async () => {
+  it("expire une offre en modération ou en attente comme une offre publiée, sans leur annoncer qu'elles ne sont plus visibles", async () => {
     const user = await saveUserWithAccount({})
     const expired = dayjs().subtract(1, "day").toDate()
     const offers = [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MODERATION, JOB_STATUS_ENGLISH.EN_ATTENTE].map((offer_status) =>
@@ -41,10 +41,43 @@ describe("expireJobsPartners", () => {
     expect(Object.fromEntries(statuses.map(({ offer_title, offer_status }) => [offer_title, offer_status]))).toEqual({
       [JOB_STATUS_ENGLISH.ACTIVE]: JOB_STATUS_ENGLISH.ANNULEE,
       [JOB_STATUS_ENGLISH.EN_MODERATION]: JOB_STATUS_ENGLISH.ANNULEE,
-      [JOB_STATUS_ENGLISH.EN_ATTENTE]: JOB_STATUS_ENGLISH.EN_ATTENTE,
+      [JOB_STATUS_ENGLISH.EN_ATTENTE]: JOB_STATUS_ENGLISH.ANNULEE,
     })
     expect(vi.mocked(mailer.sendEmail).mock.calls.map(([{ data }]) => (data as { offres: { job_title: string }[] }).offres.map(({ job_title }) => job_title))).toEqual([
       [JOB_STATUS_ENGLISH.ACTIVE],
     ])
+  })
+
+  it("ne touche ni une offre dont la date n'est pas dépassée, ni une offre déjà close", async () => {
+    const user = await saveUserWithAccount({})
+    const notExpired = dayjs().add(1, "day").toDate()
+    const expired = dayjs().subtract(1, "day").toDate()
+    const offers = [
+      ...[JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MODERATION, JOB_STATUS_ENGLISH.EN_ATTENTE].map((offer_status) => ({
+        offer_status,
+        offer_expiration: notExpired,
+      })),
+      ...[JOB_STATUS_ENGLISH.POURVUE, JOB_STATUS_ENGLISH.ANNULEE].map((offer_status) => ({ offer_status, offer_expiration: expired })),
+    ].map(({ offer_status, offer_expiration }) =>
+      generateJobsPartnersOfferPrivate({
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        managed_by: user._id,
+        offer_status,
+        offer_expiration,
+        offer_title: offer_status,
+      })
+    )
+    await getDbCollection("jobs_partners").insertMany(offers)
+
+    await expireJobsPartners()
+
+    const after = await getDbCollection("jobs_partners")
+      .find({}, { projection: { offer_title: 1, offer_status: 1, offer_status_history: 1 } })
+      .sort({ _id: 1 })
+      .toArray()
+    expect(after.map(({ offer_title, offer_status, offer_status_history }) => ({ offer_title, offer_status, history: offer_status_history.length }))).toEqual(
+      offers.map(({ offer_title, offer_status, offer_status_history }) => ({ offer_title, offer_status, history: offer_status_history.length }))
+    )
+    expect(mailer.sendEmail).not.toHaveBeenCalled()
   })
 })
