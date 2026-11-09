@@ -67,7 +67,7 @@ export default function DropdownCombobox(props) {
     onSelectedItemChange,
     stateReducer,
     items: inputItems,
-    initialInputValue: value ?? [],
+    initialInputValue: value ?? "",
   })
 
   const inputProps = getInputProps({
