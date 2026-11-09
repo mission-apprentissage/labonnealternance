@@ -129,7 +129,7 @@ const NIGHTLY_TABLE_HEADER = ["Partenaire", "Reçues", "B.err", "Valid.", "Taux"
 const NIGHTLY_TABLE_ALIGN_RIGHT = [false, true, true, true, true, true, true, true, true, false, false, false]
 
 const NIGHTLY_TABLE_LEGEND =
-  "B.err = business_error · E.val = erreur de validation · Taux = Valid. / (Reçues − B.err) · Chgts = runs où le flux a changé / runs sur 24 h · GF = garde-fou déclenché"
+  "B.err = business_error · E.val = erreur de validation · Taux = Valid. / (Reçues − B.err) · Chgts = runs où le flux a changé / runs sur 24 h · GF = garde-fou déclenché · « sans verdict » = ni validée, ni bloquée, ni en erreur (information)"
 
 export const REMOVAL_GUARDRAIL_ALERT_PREFIX = "GF absentes"
 

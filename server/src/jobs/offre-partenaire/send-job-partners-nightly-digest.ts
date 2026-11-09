@@ -6,7 +6,7 @@ import { notifyToSlack, SLACK_MESSAGE_MAX_LENGTH, splitSlackMessage } from "@/co
 import { importers } from "./jobs-partners.importer"
 import type { GuardrailBlock } from "./jobs-partners-guardrails"
 import { GUARDRAIL_ERROR_MARKER, getLatestGuardrailBlocks } from "./jobs-partners-guardrails"
-import { buildPartnerNightlyTable, IMPORTED_FLUX_PARTNER_LABELS, REMOVAL_GUARDRAIL_ALERT_PREFIX } from "./partner-publication-report"
+import { buildPartnerNightlyTable, REMOVAL_GUARDRAIL_ALERT_PREFIX } from "./partner-publication-report"
 
 const DIGEST_WINDOW_HOURS = 24
 
@@ -116,28 +116,34 @@ const groupByName = (jobs: IJobsCronTask[]): [string, IJobsCronTask[]][] => {
 // Préfixe le plus long d'abord : un label peut en préfixer un autre.
 const PARTNER_LABELS_LONGEST_FIRST = Object.values(JOBPARTNERS_LABEL).sort((a, b) => b.length - a.length)
 
+const EMPTY_IMPORT_ALERT = "GF import vide"
+
 /**
- * Rattache chaque blocage à son partenaire pour la colonne Alerte du tableau. Un job peut bloquer plusieurs partenaires
- * (segments joints par « ; », cf. formatRemovalGuardBlock) ; ce qui ne se rattache pas reste en ligne au-dessus du tableau.
+ * Rattache chaque blocage au partenaire nommé dans son message, pour la colonne Alerte du tableau. Un job peut bloquer
+ * plusieurs partenaires (segments joints par « ; », cf. formatRemovalGuardBlock) ; ce qui ne nomme aucun partenaire reste
+ * en ligne au-dessus du tableau. Par partenaire, une alerte par type : la plus récente (job de nuit et cycle de journée).
  */
 export const mapGuardrailBlocksToPartners = (blocks: GuardrailBlock[]) => {
-  const byPartner = new Map<string, string[]>()
+  const alertsByPartner = new Map<string, Map<string, string>>()
   const unmapped: string[] = []
-  const add = (partner_label: string, alert: string) => byPartner.set(partner_label, [...(byPartner.get(partner_label) ?? []), alert])
-  for (const { jobName, detail } of blocks) {
+  const set = (partner_label: string, type: string, alert: string) => alertsByPartner.set(partner_label, (alertsByPartner.get(partner_label) ?? new Map()).set(type, alert))
+  for (const { jobName, detail } of [...blocks].sort((a, b) => a.at - b.at)) {
     for (const segment of detail.split(" ; ")) {
-      const partner_label = PARTNER_LABELS_LONGEST_FIRST.find((label) => segment.startsWith(`${label} : `))
+      const removedLabel = PARTNER_LABELS_LONGEST_FIRST.find((label) => segment.startsWith(`${label} : `))
       const removedRate = segment.match(/\(([^)]+)\) absentes du flux/)?.[1]
-      const importedLabels = IMPORTED_FLUX_PARTNER_LABELS[jobName]
-      if (partner_label && removedRate) {
-        add(partner_label, `${REMOVAL_GUARDRAIL_ALERT_PREFIX} ${removedRate}`)
-      } else if (importedLabels && segment.includes("aucune offre importée")) {
-        for (const label of importedLabels) add(label, "GF import vide")
+      // même format chez commitRawImport et l'import France Travail
+      const emptyImportLabel = PARTNER_LABELS_LONGEST_FIRST.find((label) => segment.startsWith(`import ${label} : aucune offre importée`))
+      if (removedLabel && removedRate) {
+        set(removedLabel, REMOVAL_GUARDRAIL_ALERT_PREFIX, `${REMOVAL_GUARDRAIL_ALERT_PREFIX} ${removedRate}`)
+      } else if (emptyImportLabel) {
+        const keptCount = segment.match(/les (\d+) offres de l'import précédent sont conservées/)?.[1]
+        set(emptyImportLabel, EMPTY_IMPORT_ALERT, keptCount ? `${EMPTY_IMPORT_ALERT} (${keptCount} conservées)` : EMPTY_IMPORT_ALERT)
       } else {
         unmapped.push(`• ${jobName} : ${segment}`)
       }
     }
   }
+  const byPartner = new Map([...alertsByPartner].map(([partner_label, alerts]) => [partner_label, [...alerts.values()]]))
   return { byPartner, unmapped }
 }
 

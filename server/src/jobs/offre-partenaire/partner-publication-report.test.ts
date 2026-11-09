@@ -11,7 +11,7 @@ import type { PartnerPublicationStats } from "./partner-publication-report"
 import { buildPartnerNightlyTable, formatPartnerNightlyTable, IMPORTED_FLUX_PARTNER_LABELS } from "./partner-publication-report"
 
 const LEGEND =
-  "B.err = business_error · E.val = erreur de validation · Taux = Valid. / (Reçues − B.err) · Chgts = runs où le flux a changé / runs sur 24 h · GF = garde-fou déclenché"
+  "B.err = business_error · E.val = erreur de validation · Taux = Valid. / (Reçues − B.err) · Chgts = runs où le flux a changé / runs sur 24 h · GF = garde-fou déclenché · « sans verdict » = ni validée, ni bloquée, ni en erreur (information)"
 
 const erreurValidation = [{ source: COMPUTED_ERROR_SOURCE.VALIDATION, error: "champ manquant" }]
 

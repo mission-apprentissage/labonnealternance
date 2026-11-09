@@ -30,8 +30,8 @@ const cronTask = (params: { name: string; status: string; result?: unknown; erro
 // même troncature que job-processor (stringifyError) : 3 premières lignes de la stack
 const asJobProcessorError = (err: Error) => err.stack?.split("\n").slice(0, 3).join("\n") ?? err.message
 
-const guardrailTask = (name: string, message: string) =>
-  cronTask({ name, status: "errored", error: asJobProcessorError(new JobPartnersGuardrailError(message)), ended_at: new Date("2026-11-09T03:00:00Z") })
+const guardrailTask = (name: string, message: string, ended_at = new Date("2026-11-09T03:00:00Z")) =>
+  cronTask({ name, status: "errored", error: asJobProcessorError(new JobPartnersGuardrailError(message)), ended_at })
 
 const removalBlock = (partner_label: string, removed: number, active: number) => formatRemovalGuardBlock({ partner_label, removed, active, rate: removed / active, maxRate: 0.05 })
 
@@ -214,14 +214,45 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(
       new Map([
         ["RH Alternance", ["GF absentes 29.9 %"]],
-        ["Hellowork", ["GF absentes 7.9 %", "GF import vide"]],
-        ["ATS_Hellowork", ["GF import vide"]],
+        ["Hellowork", ["GF absentes 7.9 %", "GF import vide (1985 conservées)"]],
       ])
     )
     const [payload] = notifySpy.mock.calls[0]
     expect(payload.error).toBe(true)
     // aucune stack trace, aucun blocage répété hors du tableau
     expect(payload.message.split("\n")).toEqual(["0/3 jobs OK, 3 en erreur :", "• Import EDF (errored, 1s : Error: connexion interrompue)"])
+  })
+
+  it("rattache un import vide au partenaire nommé dans le message, quel que soit le job", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      // near-miss : le job Import Hellowork importe aussi ATS_Hellowork, seul le flux nommé est vide
+      guardrailTask("Import Hellowork", importBlock("ATS_Hellowork", 76, "raw_hellowork_buddi")),
+      guardrailTask("Cycle de journée Jobteaser", importBlock("Jobteaser", 332, "raw_jobteaser")),
+      guardrailTask("Import France Travail", "import France Travail : aucune offre importée, aucune offre n'est marquée dépubliée"),
+    ])
+    vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(
+      new Map([
+        ["ATS_Hellowork", ["GF import vide (76 conservées)"]],
+        ["Jobteaser", ["GF import vide (332 conservées)"]],
+        ["France Travail", ["GF import vide"]],
+      ])
+    )
+  })
+
+  it("garde par partenaire une seule alerte par type, la plus récente", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      guardrailTask("Cycle de journée Hellowork", removalBlock("Hellowork", 161, 1985), new Date("2026-11-09T14:00:00Z")),
+      guardrailTask("Process computed and import to Jobs Partners", removalBlock("Hellowork", 156, 1985), new Date("2026-11-09T03:00:00Z")),
+    ])
+    vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(new Map([["Hellowork", ["GF absentes 8.1 %"]]]))
   })
 
   it("(faux positif) garde en ligne un blocage qui ne désigne aucun partenaire", async () => {
@@ -379,8 +410,8 @@ describe("sendJobPartnersNightlyDigest", () => {
     const lines = message.split("\n")
     expect(lines[0]).toBe("43/141 jobs OK, 98 en erreur :")
     expect(lines.find((line) => line.startsWith("! France Travail"))).toMatch(/ GF absentes 16.2 %$/)
-    expect(lines.find((line) => line.startsWith("! annonces Atlas"))).toMatch(/ GF import vide$/)
-    expect(lines.find((line) => line.startsWith("! La Poste"))).toMatch(/ GF import vide$/)
+    expect(lines.find((line) => line.startsWith("! annonces Atlas"))).toMatch(/ GF import vide \(4 conservées\)$/)
+    expect(lines.find((line) => line.startsWith("! La Poste"))).toMatch(/ GF import vide \(257 conservées\)$/)
     expect(lines.find((line) => line.startsWith("! Vite un emploi"))).toMatch(/ 0 publiée$/)
     expect(lines.filter((line) => line.includes("forceCancelRemovedJobsPartners"))).toHaveLength(1)
   })

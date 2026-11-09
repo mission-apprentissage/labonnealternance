@@ -82,17 +82,18 @@ export const notifyToSlack = async ({
 const CODE_FENCE = "```"
 
 /**
- * Slack coupe l'affichage d'un `text` long vers 4 000 caractères, au besoin dans un bloc de code. Marge pour l'en-tête
- * ajouté par notifyToSlack ; découper avec splitSlackMessage.
+ * Au-delà de ~4 000 caractères, Slack découpe un `text` en plusieurs messages, au besoin dans un bloc de code
+ * (doc chat.postMessage, « Truncating content »). Marge pour l'en-tête ajouté par notifyToSlack ; découper avec splitSlackMessage.
  */
 export const SLACK_MESSAGE_MAX_LENGTH = 3_500
+
+// une ligne seule doit laisser la place de refermer le tableau qui la contient
+const LINE_MARGIN = 10
 
 /**
  * Découpe un message en morceaux d'au plus `maxLength` caractères, entre deux lignes. Un tableau coupé
  * (cf. formatSlackTable) est refermé, puis rouvert avec son en-tête dans le morceau suivant.
  */
-// une ligne seule doit laisser la place de refermer le tableau qui la contient
-const LINE_MARGIN = 10
 
 export const splitSlackMessage = (lines: string[], maxLength: number): string[] => {
   const chunks: string[][] = []

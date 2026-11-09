@@ -53,7 +53,7 @@ export class JobPartnersGuardrailError extends Error {
 
 export const formatRate = (rate: number) => `${Math.round(rate * 1000) / 10} %`
 
-export type GuardrailBlock = { jobName: string; detail: string }
+export type GuardrailBlock = { jobName: string; detail: string; at: number }
 
 /** Blocages par garde-fou de la période, le plus récent par job, repérés au marqueur de leur erreur. */
 export const getLatestGuardrailBlocks = (jobs: IJobsCronTask[]): GuardrailBlock[] => {
@@ -67,7 +67,7 @@ export const getLatestGuardrailBlocks = (jobs: IJobsCronTask[]): GuardrailBlock[
       latestBlockByJob.set(job.name, { at, detail: blockLine.slice(blockLine.indexOf(GUARDRAIL_ERROR_MARKER) + GUARDRAIL_ERROR_MARKER.length).trim() })
     }
   }
-  return [...latestBlockByJob].map(([jobName, { detail }]) => ({ jobName, detail }))
+  return [...latestBlockByJob].map(([jobName, { at, detail }]) => ({ jobName, detail, at }))
 }
 
 /** Alerte immédiate (Slack + logs) ; Sentry reçoit l'erreur levée ensuite, via job-processor. */
