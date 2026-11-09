@@ -5,7 +5,7 @@ import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
 import type { ExtendedRecordMap } from "notion-types"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -26,8 +26,31 @@ import { NotionExternalLink } from "../_components/NotionExternalLink"
 
 const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
+const OLD_CV_RETENTION_SENTENCE = "Les curriculum vitae sont toutefois supprimés immédiatement après la transmission de la candidature au recruteur."
+const NEW_CV_RETENTION_SENTENCE = "Les curriculum vitae (CV) sont supprimés 12 mois après la transmission de la candidature au recruteur."
+
+const replaceCvRetentionSentence = (value: unknown): unknown => {
+  if (typeof value === "string") {
+    return value.replaceAll(OLD_CV_RETENTION_SENTENCE, NEW_CV_RETENTION_SENTENCE)
+  }
+  if (Array.isArray(value)) {
+    return value.map((child) => replaceCvRetentionSentence(child))
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, child]) => [key, replaceCvRetentionSentence(child)]))
+  }
+  return value
+}
+
+export const patchPrivacyPolicyRecordMap = (recordMap: ExtendedRecordMap): ExtendedRecordMap => ({
+  ...recordMap,
+  block: Object.fromEntries(Object.entries(recordMap.block ?? {}).map(([blockId, block]) => [blockId, replaceCvRetentionSentence(block)])),
+})
+
 export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeConfidentialite }: { politiqueDeConfidentialite: ExtendedRecordMap }) {
   const [hasConsent, setHasConsent] = useState(true)
+
+  const patchedRecordMap = useMemo(() => patchPrivacyPolicyRecordMap(politiqueDeConfidentialite), [politiqueDeConfidentialite])
 
   useEffect(() => {
     const removedCookie = getCookie(CONSENT_REMOVED_COOKIE_NAME)
@@ -79,7 +102,7 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
             <Grid size={{ xs: 12, md: 7 }}>
               <Box>
                 <NotionRenderer
-                  recordMap={politiqueDeConfidentialite}
+                  recordMap={patchedRecordMap}
                   fullPage={false}
                   darkMode={false}
                   disableHeader={true}
