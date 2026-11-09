@@ -48,7 +48,7 @@ const JOB_PROJECTION = {
 
 /**
  * Meilleure offre de chaque secteur dans un rayon de 100 km autour de la candidature source : offres LBA, puis
- * partenaires, puis recruteurs LBA, toutes avec un email de candidature, départagées par la distance.
+ * partenaires, puis recruteurs LBA, toutes avec un email de candidature et hors offres déléguées à un CFA, départagées par la distance.
  * Une offre active a une date d'expiration future, sauf les recruteurs LBA qui n'en ont pas (cf. getJobsPartnersFromDBForUI).
  */
 const findBestJobBySector = async (target: SuggestionsNafTarget, excludedJobIds: ObjectId[]) => {
@@ -66,6 +66,7 @@ const findBestJobBySector = async (target: SuggestionsNafTarget, excludedJobIds:
             offer_rome_codes: target.rome,
             workplace_naf_code: { $in: target.sectors.map(({ naf }) => naf) },
             apply_email: { $ne: null },
+            is_delegated: { $ne: true },
             _id: { $nin: excludedJobIds },
             $or: [{ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { offer_expiration: { $gt: new Date() } }],
           },

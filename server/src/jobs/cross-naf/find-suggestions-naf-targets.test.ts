@@ -47,8 +47,8 @@ const SOURCE_JOB = {
   workplace_address_city: "Chartres",
 }
 
-const createJob = async (rome_codes: string[], naf: string | null, geopoint = PARIS) => {
-  const job = generateJobsPartnersOfferPrivate({ ...SOURCE_JOB, offer_rome_codes: rome_codes, workplace_naf_code: naf, workplace_geopoint: geopoint })
+const createJob = async (rome_codes: string[], naf: string | null, geopoint = PARIS, is_delegated = false) => {
+  const job = generateJobsPartnersOfferPrivate({ ...SOURCE_JOB, offer_rome_codes: rome_codes, workplace_naf_code: naf, workplace_geopoint: geopoint, is_delegated })
   await getDbCollection("jobs_partners").insertOne(job)
   return job._id
 }
@@ -128,6 +128,25 @@ describe("findSuggestionsNafTargets", () => {
     ])
 
     expect(await summarize(applicant)).toEqual([])
+  })
+
+  it("ne déclenche rien sur une offre déléguée à un CFA", async () => {
+    const applicant = buildApplicant([{ job_id: await createJob(["A1101"], "01.11Z", PARIS, true), job_origin: OFFRES_EMPLOI_LBA }])
+
+    expect(await summarize(applicant)).toEqual([])
+  })
+
+  it("prend pour source la 1re offre non déléguée du ROME, en excluant aussi le NAF de l'offre déléguée", async () => {
+    const applicant = buildApplicant([
+      { job_id: await createJob(["A1101"], "01.61Z", LYON, true), job_origin: OFFRES_EMPLOI_LBA },
+      { job_id: await createJob(["A1101"], "01.11Z", PARIS), job_origin: OFFRES_EMPLOI_LBA },
+    ])
+
+    const [{ targets }] = await findSuggestionsNafTargets([applicant])
+
+    expect(targets).toHaveLength(1)
+    expect(targets[0]).toMatchObject({ source_application_id: applicant.applications[1]._id, source_geopoint: PARIS })
+    expect(targets[0].sectors.map(({ naf }) => naf)).toEqual(["01.21Z", "01.50Z", "78.30Z", "01.13Z", "77.31Z"])
   })
 
   it("n'envoie rien sur un ROME dont tous les NAF ont été candidatés", async () => {

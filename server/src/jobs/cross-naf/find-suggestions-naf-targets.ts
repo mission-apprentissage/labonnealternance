@@ -28,7 +28,7 @@ export type SuggestionsNafTarget = {
 
 export type SuggestionsNafApplicantWithTargets = SuggestionsNafApplicant & { targets: SuggestionsNafTarget[] }
 
-type AppliedJob = Pick<IJobsPartnersOfferPrivate, "_id" | "offer_rome_codes" | "workplace_naf_code" | "workplace_geopoint"> & SuggestionsNafSourceJob
+type AppliedJob = Pick<IJobsPartnersOfferPrivate, "_id" | "offer_rome_codes" | "workplace_naf_code" | "workplace_geopoint" | "is_delegated"> & SuggestionsNafSourceJob
 
 type RomeSectors = { _id: string; rome_libelle: string; sectors: SuggestionsNafSector[] }
 
@@ -51,6 +51,7 @@ const findAppliedJobs = async (applicants: SuggestionsNafApplicant[]) => {
           workplace_legal_name: 1,
           workplace_naf_label: 1,
           workplace_address_city: 1,
+          is_delegated: 1,
         },
       }
     )
@@ -84,25 +85,30 @@ const findSectorsByRome = async (romes: string[]) => {
 type TargetDraft = Omit<SuggestionsNafTarget, "rome_libelle" | "sectors"> & { excluded_nafs: Set<string> }
 
 // Une candidature ne porte qu'un ROME, le premier de l'offre. Les candidatures sur un même ROME partagent un email
-// et en excluent tous leurs NAF.
+// et en excluent tous leurs NAF. Une offre déléguée à un CFA ne déclenche pas d'email ni n'en est la source, mais son
+// NAF reste exclu : le candidat a déjà postulé dans ce secteur.
 const buildTargetDrafts = (applicant: SuggestionsNafApplicant, appliedJobs: Map<string, AppliedJob>) => {
   const drafts = new Map<string, TargetDraft>()
+  const appliedNafsByRome = new Map<string, Set<string>>()
   for (const application of applicant.applications) {
     if (!application.job_id || !SUGGESTION_SOURCE_JOB_ORIGINS.includes(application.job_origin)) continue
     const job = appliedJobs.get(application.job_id.toString())
     const rome = job?.offer_rome_codes[0]
     if (!job || !rome) continue
 
+    const appliedNafs = appliedNafsByRome.get(rome) ?? new Set<string>()
+    appliedNafsByRome.set(rome, appliedNafs)
+    if (job.workplace_naf_code) appliedNafs.add(job.workplace_naf_code)
+    if (job.is_delegated || drafts.has(rome)) continue
+
     const { offer_title, workplace_name, workplace_brand, workplace_legal_name, workplace_naf_label, workplace_address_city } = job
-    const draft = drafts.get(rome) ?? {
+    drafts.set(rome, {
       rome,
       source_application_id: application._id,
       source_geopoint: job.workplace_geopoint,
       source_job: { offer_title, workplace_name, workplace_brand, workplace_legal_name, workplace_naf_label, workplace_address_city },
-      excluded_nafs: new Set<string>(),
-    }
-    if (job.workplace_naf_code) draft.excluded_nafs.add(job.workplace_naf_code)
-    drafts.set(rome, draft)
+      excluded_nafs: appliedNafs,
+    })
   }
   return [...drafts.values()]
 }

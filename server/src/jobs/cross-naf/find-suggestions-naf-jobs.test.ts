@@ -92,8 +92,9 @@ describe("findSuggestionsNafJobs", () => {
     expect(await findSuggestedJobIds(buildApplicant([buildTarget("A1101", ["01.11Z"])]))).toEqual([[{ naf: "01.11Z", job_id: recruteur }]])
   })
 
-  it("écarte les offres sans email, déjà candidatées, expirées, inactives, à plus de 100 km ou sur un autre ROME", async () => {
+  it("écarte les offres sans email, déléguées à un CFA, déjà candidatées, expirées, inactives, à plus de 100 km ou sur un autre ROME", async () => {
     await createJob({ apply_email: null })
+    await createJob({ is_delegated: true })
     const applied = await createJob({})
     await createJob({ offer_expiration: new Date("2020-01-01") })
     await createJob({ offer_status: JOB_STATUS_ENGLISH.ANNULEE })
