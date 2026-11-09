@@ -111,7 +111,7 @@ export default function BarometrePage() {
         chartTitle="Usage du service, d’avril à septembre"
       >
         <Typography component="p">
-          Chaque mois, 500&nbsp;000 usagers candidats, recruteurs et organismes de formations utilisent le service gouvernemental <Lba /> pour concrétiser leur projet d’alternance.
+          Chaque mois, 500&nbsp;000 usagers candidats, recruteurs et organismes de formation utilisent le service gouvernemental <Lba /> pour concrétiser leur projet d’alternance.
         </Typography>
         <Typography component="p">
           Ce volume d’utilisation permet d’observer de près ce que cherchent les candidats et ce dont les entreprises ont besoin. Ce baromètre partage ces observations avec
@@ -137,7 +137,7 @@ export default function BarometrePage() {
               </P>
               <P>
                 Si les candidats sont toujours plus nombreux, c’est notamment parce que <Lba /> rassemble en un seul endroit l’ensemble des emplois en alternance, avec près de
-                500&nbsp;000 opportunités d’emploi en alternance exposées sur des deuxième et troisième trimestres 2026.
+                500&nbsp;000 opportunités d’emploi en alternance exposées sur les deuxième et troisième trimestres 2026.
               </P>
               <P>
                 Le service <Lba /> centralise en effet des offres d’emploi collectées directement auprès des recruteurs, des offres agrégées d’autres plateformes (Hellowork,
@@ -187,7 +187,7 @@ export default function BarometrePage() {
                 caption="D’avril à septembre 2026, 321 886 opportunités dont la taille d’entreprise est connue"
                 series={opportunitesSeries}
                 rows={opportunitesParTaille}
-                note="TPE = Très petites entreprises (1 à 9 salariés), PME = Petites et moyennes entreprises (10 à 249 salariés), ETI et GE = Entreprises de taille intermédiaire et Grandes entreprises (+250 salariés)"
+                note="TPE = Très petites entreprises (0 à 19 salariés), PME = Petites et moyennes entreprises (20 à 249 salariés), ETI et GE = Entreprises de taille intermédiaire et Grandes entreprises (250 salariés et plus)"
               />
 
               <P>
@@ -227,8 +227,8 @@ export default function BarometrePage() {
               </Note>
 
               <P>
-                Ces opportunités restent pourtant moins sollicitées. Ainsi, une offre de niveau CAP attire en moyenne trois fois moins de candidats qu’une offre de niveau bac+2.
-                Mieux les faire connaître est un enjeu fort pour le service.
+                Ces opportunités restent pourtant moins sollicitées. Ainsi, une offre de niveau CAP suscite en moyenne trois fois moins d’intentions de candidature qu’une offre de
+                niveau bac+2. Mieux les faire connaître est un enjeu fort pour le service.
               </P>
 
               <CompositionBars
@@ -245,8 +245,8 @@ export default function BarometrePage() {
               <P>Au-delà de la taille des entreprises et du niveau de diplôme préparé, les écarts entre candidats et recruteurs se lisent aussi par métier et territoire.</P>
               <P>
                 Sur <Lba />, une offre suscite en moyenne six intentions de candidature. Derrière cette moyenne, les situations sont très contrastées. Certains métiers, dans le
-                numérique notamment, attirent plus de vingt candidats par offre&nbsp;: la concurrence y est vive. À l’inverse, des métiers de l’aide à la personne, du bâtiment ou
-                de l’industrie peinent à dépasser une candidature par offre, alors même que de nombreuses entreprises y recrutent.
+                numérique notamment, attirent plus de vingt intentions de candidature par offre&nbsp;: la concurrence y est vive. À l’inverse, des métiers de l’aide à la personne,
+                du bâtiment ou de l’industrie peinent à dépasser une intention de candidature par offre, alors même que de nombreuses entreprises y recrutent.
               </P>
               <P>
                 Pour illustrer ces propos, le graphique suivant s’attache à détailler les plus forts déséquilibres observés entre candidatures reçues et offres disponibles sur{" "}
@@ -278,8 +278,8 @@ export default function BarometrePage() {
               <P>La plupart de ces métiers peu sollicités sont accessibles dès le CAP. Ils offrent de réelles perspectives aux candidats qui cherchent un premier contrat.</P>
               <P>
                 Les déséquilibres observés varient également selon les régions. Sans surprise, l’Île-de-France se distingue nettement. Chaque offre y attire en moyenne plus de huit
-                candidats. À l’inverse, en Bretagne, en Corse et dans plusieurs territoires d’outre-mer (Guyane, Martinique, Guadeloupe), les offres sont deux à six fois moins
-                sollicitées. Dans ces territoires, les entreprises ont plus de mal à trouver des candidats.
+                intentions de candidature. À l’inverse, en Bretagne, en Corse et dans plusieurs territoires d’outre-mer (Guyane, Martinique, Guadeloupe), les offres sont deux à six
+                fois moins sollicitées. Dans ces territoires, les entreprises ont plus de mal à trouver des candidats.
               </P>
 
               <RegionsMap

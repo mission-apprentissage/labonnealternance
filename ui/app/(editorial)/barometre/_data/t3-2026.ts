@@ -14,7 +14,7 @@ export const BAROMETRE_FAQ = [
   {
     question: "Combien de personnes utilisent La bonne alternance ?",
     answer:
-      "Chaque mois, 500 000 usagers candidats, recruteurs et organismes de formations utilisent La bonne alternance. Depuis janvier 2026, près de 5 millions de personnes ont utilisé le service.",
+      "Chaque mois, 500 000 usagers candidats, recruteurs et organismes de formation utilisent La bonne alternance. Depuis janvier 2026, près de 5 millions de personnes ont utilisé le service.",
   },
   {
     question: "Comment a évolué la fréquentation de La bonne alternance aux deuxième et troisième trimestres 2026 ?",
@@ -25,9 +25,9 @@ export const BAROMETRE_FAQ = [
     answer: "70 % des contrats en alternance démarrés au cours des douze derniers mois l’ont été dans des petites et moyennes entreprises (source : base DECA).",
   },
   {
-    question: "Combien de candidats attire une offre en alternance sur La bonne alternance ?",
+    question: "Combien d’intentions de candidature suscite une offre en alternance sur La bonne alternance ?",
     answer:
-      "Une offre suscite en moyenne six intentions de candidature. Certains métiers du numérique attirent plus de vingt candidats par offre, tandis que des métiers de l’aide à la personne, du bâtiment ou de l’industrie peinent à dépasser une candidature par offre.",
+      "Une offre suscite en moyenne six intentions de candidature. Certains métiers du numérique attirent plus de vingt intentions de candidature par offre, tandis que des métiers de l’aide à la personne, du bâtiment ou de l’industrie peinent à dépasser une intention de candidature par offre.",
   },
 ]
 
