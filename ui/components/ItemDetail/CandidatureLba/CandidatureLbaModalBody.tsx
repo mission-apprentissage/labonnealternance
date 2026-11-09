@@ -56,7 +56,8 @@ export const CandidatureLbaModalBody = ({
 
   const questionZodExtension = Object.fromEntries(questionFields.map(({ name }) => [name, areAnswersRequired ? QuestionAnswerSchema : OptionalQuestionAnswerSchema]))
 
-  const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
+  // Les questions fixes de LBA ne sont ni pré-remplies ni mémorisées : une motivation écrite pour une entreprise ne vaut pas pour une autre.
+  const applicantAnswersSession = areAnswersRequired ? JSON.parse(sessionStorageGet("application-form-answers")) : null
   const questionsInitValues = Object.fromEntries(questionFields.map(({ question, name }) => [name, applicantAnswersSession?.[question] ?? ""]))
 
   const formik = useFormik({
@@ -68,7 +69,9 @@ export const CandidatureLbaModalBody = ({
         delete finalValues[name]
       })
       finalValues.applicant_answers_to_recruiter_questions = buildApplicantAnswers(questionFields, values)
-      sessionStorageSet("application-form-answers", Object.fromEntries(finalValues.applicant_answers_to_recruiter_questions.map(({ question, answer }) => [question, answer])))
+      if (areAnswersRequired) {
+        sessionStorageSet("application-form-answers", Object.fromEntries(finalValues.applicant_answers_to_recruiter_questions.map(({ question, answer }) => [question, answer])))
+      }
       onSubmit(finalValues)
     },
   })
