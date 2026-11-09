@@ -104,4 +104,23 @@ describe("POST /_private/web-vitals", () => {
 
     expect(response.statusCode).toBe(400)
   })
+
+  it.each([
+    ["chemin brut d'une fiche (ObjectId)", "/emploi/offres_emploi_lba/6a30155208d7f8e3d76cf05c/chauffeur"],
+    ["SIRET en deuxième segment", "/espace-pro/12345678900012"],
+    ["query string", "/recherche?lat=48.85&lon=2.35"],
+    ["chemin trop profond", "/emploi/offres_emploi_lba/[id]/[slug]"],
+  ])("refuse une route qui n'est pas un gabarit : %s", async (_case, route) => {
+    const asRoute = await post({ ...inp, route })
+    const asLandingRoute = await post({ ...inp, landing_route: route })
+
+    expect([asRoute.statusCode, asLandingRoute.statusCode]).toEqual([400, 400])
+    expect(webVitalCalls()).toHaveLength(0)
+  })
+
+  it.each(["/", "/*", "/recherche", "/premium/*", "/espace-pro/administration/*", "/emploi/[type]/[id]"])("accepte le gabarit %s", async (route) => {
+    const response = await post({ ...inp, route, landing_route: route })
+
+    expect(response.statusCode).toBe(200)
+  })
 })

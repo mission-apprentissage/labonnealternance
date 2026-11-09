@@ -45,6 +45,10 @@ const optionalMs = (value: number | undefined): number | null => (value === unde
 // la query d'un script tiers peut porter un identifiant de visite
 const scriptUrl = (url: string | undefined): string | null => (url ? label(url.split(/[?#]/)[0]) : null)
 
+// invoker vaut l'URL du script (classic/module-script) ou porte un [src="…"] (event-listener) : on n'en retire que la
+// query des URL, le `#` d'un `BUTTON#id.onclick` désigne l'élément
+const scriptInvoker = (invoker: string | undefined): string | null => label(invoker?.replace(/(https?:\/\/[^?#"\s\]]*)[?#][^"\s\]]*/g, "$1"))
+
 const commonFields = (context: IWebVitalContext) => ({
   landing_route: context.landingRoute,
   route: context.route,
@@ -72,7 +76,7 @@ export const buildInpReport = ({ value, rating, navigationType, attribution }: I
     total_script_duration: optionalMs(attribution.totalScriptDuration),
     total_style_and_layout_duration: optionalMs(attribution.totalStyleAndLayoutDuration),
     longest_script_url: scriptUrl(longestScript?.entry.sourceURL),
-    longest_script_invoker: label(longestScript?.entry.invoker),
+    longest_script_invoker: scriptInvoker(longestScript?.entry.invoker),
     longest_script_subpart: longestScript?.subpart ?? null,
     longest_script_duration: optionalMs(longestScript?.intersectingDuration),
   }

@@ -4,15 +4,20 @@ import type { IRoutesDef } from "../common.routes.js"
 const zRating = z.enum(["good", "needs-improvement", "poor"])
 const zLoadState = z.enum(["loading", "dom-interactive", "dom-content-loaded", "complete"])
 const zMs = z.number().nonnegative().max(600_000)
-const zRoute = z.string().max(200)
+// Gabarit produit par toRouteTemplate (UI) : au-delà du premier segment, que des mots sans chiffre ou des
+// jokers, pour qu'aucun identifiant (ObjectId, SIRET) n'entre dans les logs même si le client se trompe.
+export const zWebVitalRoute = z
+  .string()
+  .max(200)
+  .regex(/^\/(\*|[a-z0-9_-]{1,60}(\/([a-z_-]{1,40}|\[(id|slug|type)\]|\*)){0,2})?$/)
 const zLabel = z.string().max(300)
 
 // Champs communs aux métriques : de quoi segmenter (page, version, appareil) sans identifier le visiteur.
 const zWebVitalContext = {
   rating: zRating,
   // route au chargement de la page (celle de CrUX / Search Console) et route au moment de l'événement mesuré
-  landing_route: zRoute,
-  route: zRoute,
+  landing_route: zWebVitalRoute,
+  route: zWebVitalRoute,
   version: z.string().max(50),
   navigation_type: z.string().max(30),
   load_state: zLoadState.nullish(),

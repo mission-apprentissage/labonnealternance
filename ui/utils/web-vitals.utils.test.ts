@@ -1,4 +1,4 @@
-import { ZWebVitalReport } from "shared/routes/_private/web-vitals.routes"
+import { ZWebVitalReport, zWebVitalRoute } from "shared/routes/_private/web-vitals.routes"
 import { describe, expect, it } from "vitest"
 import type { CLSMetricWithAttribution, INPMetricWithAttribution } from "web-vitals/attribution"
 
@@ -20,6 +20,8 @@ describe("toRouteTemplate", () => {
     ["/espace-pro/authentification", "/espace-pro/authentification"],
   ])("%s → %s", (pathname, expected) => {
     expect(toRouteTemplate(pathname)).toBe(expected)
+    // l'API n'accepte que des gabarits : chaque sortie doit passer sa validation
+    expect(zWebVitalRoute.safeParse(expected).success).toBe(true)
   })
 
   // cas qui laisseraient passer un identifiant ou un texte libre si la règle était trop permissive
@@ -33,6 +35,8 @@ describe("toRouteTemplate", () => {
     ["premier segment trop long", `/${"a".repeat(61)}`, "/*"],
   ])("%s", (_case, pathname, expected) => {
     expect(toRouteTemplate(pathname)).toBe(expected)
+    // l'API n'accepte que des gabarits : chaque sortie doit passer sa validation
+    expect(zWebVitalRoute.safeParse(expected).success).toBe(true)
   })
 })
 
@@ -121,6 +125,20 @@ describe("buildInpReport", () => {
 
     expect(report).toMatchObject({ target: null, interaction_type: null, longest_script_url: null, total_script_duration: null, cpu_cores: null, device_memory: null })
     expect(() => ZWebVitalReport.parse(report)).not.toThrow()
+  })
+
+  it.each([
+    ["URL du script (classic-script)", "https://stats.beta.gouv.fr/matomo.js?visitorId=abc#x", "https://stats.beta.gouv.fr/matomo.js"],
+    ["src d'un élément sans id (event-listener)", 'IMG[src="https://x.fr/p.gif?uid=42"].onload', 'IMG[src="https://x.fr/p.gif"].onload'],
+    ["élément avec id, gardé intact", "BUTTON#postuler.onclick", "BUTTON#postuler.onclick"],
+    ["callback sans URL", "TimerHandler:setTimeout", "TimerHandler:setTimeout"],
+  ])("retire la query des URL de l'invoker : %s", (_case, invoker, expected) => {
+    const report = buildInpReport(
+      inpMetric({ longestScript: { entry: { sourceURL: "", invoker } as PerformanceScriptTiming, subpart: "processing-duration", intersectingDuration: 80 } }),
+      context
+    )
+
+    expect(report).toMatchObject({ longest_script_invoker: expected })
   })
 
   it("tronque une cible trop longue pour que l'API ne rejette pas le rapport", () => {
