@@ -183,7 +183,8 @@ export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJob
               {
                 date: new Date(),
                 status: JOB_STATUS_ENGLISH.ANNULEE,
-                reason: `offre expirée`,
+                // Le business_error du computed apparié : `matched` n'est retiré qu'au $unset suivant.
+                reason: { $arrayElemAt: ["$matched.business_error", 0] },
                 granted_by: "cancel-removed-jobs-partners",
               },
             ],

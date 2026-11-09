@@ -457,10 +457,12 @@ const getTrustedCompanyBusinessError = (partner_label: string, ...workplaceNames
 
 type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
 
+const OFFER_DESCRIPTION_TOO_SHORT_MESSAGE = `Job description should be at least ${OFFER_DESCRIPTION_MIN_LENGTH} characters, excluding HTML tags and contact details`
+
 // Le schéma de route compte les caractères bruts : une description faite de balises ou de coordonnées passerait.
 const assertOfferDescriptionLength = (description: string | null | undefined) => {
   if (isOfferDescriptionTooShort(description)) {
-    throw badRequest(`Job description should be at least ${OFFER_DESCRIPTION_MIN_LENGTH} characters, excluding HTML tags and contact details`)
+    throw badRequest(OFFER_DESCRIPTION_TOO_SHORT_MESSAGE)
   }
 }
 
@@ -747,6 +749,7 @@ const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> 
   [JOB_PARTNER_BUSINESS_ERROR.FULL_TIME]: "The offer is considered a full-time position",
   [JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA]: "The offer contains bad data",
   [JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND]: "We were unable to geolocate the offer's address",
+  [JOB_PARTNER_BUSINESS_ERROR.DESCRIPTION_TOO_SHORT]: OFFER_DESCRIPTION_TOO_SHORT_MESSAGE,
 }
 
 const computedJobsPartnersToPublishing = (job: IComputedJobsPartners): IJobOfferPublishingV3 => {

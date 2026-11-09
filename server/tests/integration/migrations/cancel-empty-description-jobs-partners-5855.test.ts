@@ -32,7 +32,7 @@ describe("migration cancel-empty-description-jobs-partners-5855", () => {
     expect.soft(offer?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
     expect
       .soft(offer?.offer_status_history.filter((entry) => entry.granted_by === GRANTED_BY))
-      .toEqual([{ date: expect.any(Date), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "WRONG_DATA", granted_by: GRANTED_BY }])
+      .toEqual([{ date: expect.any(Date), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "DESCRIPTION_TOO_SHORT", granted_by: GRANTED_BY }])
     // Réservé au motif choisi dans la modale de clôture (#5722).
     expect.soft(offer?.job_status_comment).toBeNull()
   })
@@ -49,5 +49,33 @@ describe("migration cancel-empty-description-jobs-partners-5855", () => {
     await up()
 
     expect.soft(await readAll()).toEqual(before)
+  })
+
+  describe("volet 2 : libellés d'expiration", () => {
+    const entry = (reason: string, granted_by: string) => ({ date: new Date("2026-10-01T02:00:00.000Z"), status: JOB_STATUS_ENGLISH.ANNULEE, reason, granted_by })
+
+    it("remplace les deux libellés d'expiration par le code EXPIRED, sans toucher aux autres entrées ni à updated_at", async () => {
+      const updated_at = new Date("2026-10-01T02:00:00.000Z")
+      await insert([
+        generateJobsPartnersOfferPrivate({
+          partner_job_id: "historique",
+          offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+          updated_at,
+          offer_status_history: [
+            entry("offre expirée", "cancel-removed-jobs-partners"),
+            entry("supprimée du flux source", "cancel-removed-jobs-partners"),
+            entry("offre expirée (date dépassée)", "expire-jobs-partners"),
+            entry("offre expirée", "cancel-removed-jobs-partners"),
+          ],
+        }),
+      ])
+
+      await up()
+      await up()
+
+      const offer = (await readAll()).get("historique")
+      expect.soft(offer?.offer_status_history.map(({ reason }) => reason)).toEqual(["EXPIRED", "supprimée du flux source", "EXPIRED (date dépassée)", "EXPIRED"])
+      expect.soft(offer?.updated_at).toEqual(updated_at)
+    })
   })
 })

@@ -71,7 +71,7 @@ export const formatTextFieldsJobsPartners = async ({ addedMatchFilter }: FillCom
         const isDescriptionTooShort = partner_label !== JOBPARTNERS_LABEL.RECRUTEURS_LBA && isOfferDescriptionTooShort(offer_description)
         const result: Pick<IComputedJobsPartners, (typeof fields)[number] | "_id" | "business_error"> = {
           _id,
-          business_error: isDescriptionTooShort ? JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA : null,
+          business_error: isDescriptionTooShort ? JOB_PARTNER_BUSINESS_ERROR.DESCRIPTION_TOO_SHORT : null,
           workplace_description: sanitizeNullableDescription(workplace_description),
           workplace_name: sanitizeNullableTextField(workplace_name),
           offer_description: sanitizeNullableDescription(offer_description),

@@ -75,7 +75,7 @@ describe("format-text-fields-jobs-partners", () => {
     ["réduite à des coordonnées", "contact.rh@agence-exemple.fr 06 12 34 56 78"],
     ["de moins de 30 caractères visibles", "<p><b>Poste de vendeur en boutique</b></p>"],
     ["absente", null],
-  ])("bloque en WRONG_DATA une offer_description %s (#5855)", async (_, offer_description) => {
+  ])("bloque en DESCRIPTION_TOO_SHORT une offer_description %s (#5855)", async (_, offer_description) => {
     await givenSomeComputedJobPartners([
       {
         offer_title: "Développeur web en alternance",
@@ -88,7 +88,7 @@ describe("format-text-fields-jobs-partners", () => {
     await validateComputedJobPartners({})
 
     const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
-    expect.soft(job.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
+    expect.soft(job.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.DESCRIPTION_TOO_SHORT)
     expect.soft(job.validated).toBe(false)
   })
 
