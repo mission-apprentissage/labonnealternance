@@ -23,6 +23,20 @@ location ~* ^/api/rome {
     include includes/proxy.conf;
 }
 
+# Mesures web-vitals envoyées par les navigateurs : hors de lba_search, dont les dépassements alimentent fail2ban
+# et dont le quota est partagé par tous les visiteurs d'une même IP (réseau d'établissement). Débit borné par
+# Fastify (cf. webVitalsRouteController). Correspondance exacte, prioritaire sur les regex ; une variante de
+# casse retombe dans `^/api/_private/`, donc limitée.
+location = /api/_private/web-vitals {
+    if ($lba_denied) {
+        return 403;
+    }
+
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}
+
 location ~* ^/api/_private/ {
     if ($lba_denied) {
         return 403;
