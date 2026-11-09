@@ -19,6 +19,7 @@ import { processorAdminRoutes } from "./controllers/_private/admin/processor.adm
 import { geoRouteController } from "./controllers/_private/geo.private.controller"
 import { metiersRouteController } from "./controllers/_private/metiers.private.controller"
 import { seoRouteController } from "./controllers/_private/seo.private.controller"
+import { webVitalsRouteController } from "./controllers/_private/web-vitals.private.controller"
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligible-trainings-for-appointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
 import adminFeedbackFormsRoute from "./controllers/admin/feedback-forms.controller"
@@ -119,6 +120,7 @@ export async function bind(app: Server) {
       geoRouteController(typedSubApp)
       metiersRouteController(typedSubApp)
       seoRouteController(typedSubApp)
+      webVitalsRouteController(typedSubApp)
       inserjeunesRoute(typedSubApp)
 
       /**
