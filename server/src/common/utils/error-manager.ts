@@ -2,6 +2,7 @@ import { captureException } from "@sentry/node"
 import type { ZApiError } from "shared/models/index"
 import type { z } from "zod"
 
+import { logger } from "@/common/logger"
 import { trackApiCall } from "./send-tracking-event"
 
 export type IApiError = z.input<typeof ZApiError>
@@ -35,7 +36,8 @@ export const manageApiError = async ({
     errorObj.status = status
   }
 
-  console.error(`error ${errorTitle}`, errorObj)
+  // logger plutôt que console.error, dont captureConsoleIntegration ferait un message Sentry doublon de l'exception de l'appelant.
+  logger.error({ errorTitle, api_path, caller: caller ?? undefined, status: errorObj.status, message: errorObj.message }, errorTitle)
 
   return errorObj
 }

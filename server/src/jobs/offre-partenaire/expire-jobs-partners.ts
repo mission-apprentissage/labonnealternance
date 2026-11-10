@@ -2,6 +2,7 @@ import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
@@ -86,7 +87,7 @@ export const expireJobsPartners = async () => {
 
   const result = await changeJobsPartnersStatus(filter, {
     status: JOB_STATUS_ENGLISH.ANNULEE,
-    reason: "offre expirée (date dépassée)",
+    reason: `${JOB_PARTNER_BUSINESS_ERROR.EXPIRED} (date dépassée)`,
     grantedBy: JOB_AUTO_CLOSURE_ORIGIN.EXPIRATION,
     date: now,
   })

@@ -55,6 +55,7 @@
     "react-table": "^7.8.0",
     "server-only": "^0.0.1",
     "shared": "workspace:*",
+    "web-vitals": "^6.2.3",
     "yup": "^1.7.1",
     "zod": "^4.4.3",
     "zod-formik-adapter": "^2.0.0"

@@ -106,6 +106,7 @@ describe("fill-opco-infos-for-partners", () => {
     ])
     const fcResponse = generateFCOpcoResponseFixture({
       siret: testSiret,
+      idcc: "1597",
       opcoRattachement: {
         code: "1",
         nom: "CONSTRUCTYS",
@@ -120,7 +121,9 @@ describe("fill-opco-infos-for-partners", () => {
     const [job] = jobs
     const { workplace_opco, workplace_idcc } = job
     expect.soft(job.errors).toEqual([])
-    expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.CONSTRUCTYS, workplace_idcc: null })
+    expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.CONSTRUCTYS, workplace_idcc: 1597 })
+    const savedOpco = await getDbCollection("opcos").findOne({ siren: testSiret.substring(0, 9) })
+    expect.soft(savedOpco).toMatchObject({ opco: OPCOS_LABEL.CONSTRUCTYS, idcc: 1597 })
   }, 20_000)
   it("should set opco to unknown when data is not found", async () => {
     // given

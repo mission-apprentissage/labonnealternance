@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
@@ -13,6 +13,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 export default function User() {
   const { userId } = useParams() as { userId: string }
+  const organizationId = useSearchParams().get("organizationId") || "unused"
   const { user } = useConnectedSessionClient()
   const connectedOpco = user.scope
   const router = useRouter()
@@ -22,8 +23,8 @@ export default function User() {
     isLoading,
     refetch: refetchUserRecruteur,
   } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getUser(userId),
+    queryKey: ["user", userId, organizationId],
+    queryFn: () => getUser(userId, organizationId),
     enabled: !!userId,
   })
   const {

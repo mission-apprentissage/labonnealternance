@@ -14,6 +14,7 @@ import { getModerationJob } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { AccountStatusBadge, AccountTypeBadge } from "./ModerationBadges"
+import { ModerationJobNavigation } from "./ModerationJobNavigation"
 import { ModerationPanel } from "./ModerationPanel"
 import type { IModerationJobDetailJson, IModerationUserType } from "./moderation.types"
 import { getRecruiterAccountPath } from "./moderation-links"
@@ -147,11 +148,16 @@ export function ModerationJobDetail({ jobId, userType }: { jobId: string; userTy
   return (
     <Box sx={{ maxWidth: 1200, marginX: "auto", mt: fr.spacing("4v"), px: { xs: fr.spacing("4v"), md: 0 } }}>
       <Breadcrumb pages={[queuePage, MODERATION_PAGES.offre({ job_id: jobId, userType, offer_title: data.offer.offer_title })]} />
-      {recruiterPath && (
-        <Button priority="secondary" size="small" iconId="fr-icon-arrow-left-line" linkProps={{ href: recruiterPath }} style={{ marginBottom: fr.spacing("4v") }}>
-          Voir le compte recruteur
-        </Button>
-      )}
+      <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: fr.spacing("3v"), mb: fr.spacing("4v") }}>
+        {recruiterPath ? (
+          <Button priority="secondary" size="small" iconId="fr-icon-arrow-left-line" linkProps={{ href: recruiterPath }}>
+            Voir le compte recruteur
+          </Button>
+        ) : (
+          <span />
+        )}
+        <ModerationJobNavigation jobId={jobId} userType={userType} />
+      </Box>
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), alignItems: "flex-start" }}>
         <Box sx={{ width: { xs: "100%", md: "33%" }, flexShrink: 0 }}>
           <RecruiterCards detail={data} />
@@ -165,8 +171,11 @@ export function ModerationJobDetail({ jobId, userType }: { jobId: string; userTy
   )
 }
 
-/** Les pages admin et OPCO lisent l'identifiant de l'offre dans l'URL. */
+/**
+ * Les pages admin et OPCO lisent l'identifiant de l'offre dans l'URL. `key` : passer d'une offre à sa voisine garde la
+ * page montée, l'état du panneau (modale, action en cours) ne doit pas suivre.
+ */
 export function ModerationJobDetailPage({ userType }: { userType: IModerationUserType }) {
   const { jobId } = useParams() as { jobId: string }
-  return <ModerationJobDetail jobId={jobId} userType={userType} />
+  return <ModerationJobDetail key={jobId} jobId={jobId} userType={userType} />
 }

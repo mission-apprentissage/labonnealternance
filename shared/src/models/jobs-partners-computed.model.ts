@@ -87,6 +87,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   WRONG_DATA = "WRONG_DATA",
   GEOLOCATION_NOT_FOUND = "GEOLOCATION_NOT_FOUND",
   TRUSTED_COMPANY_JOB_DUPLICATE = "TRUSTED_COMPANY_JOB_DUPLICATE",
+  DESCRIPTION_TOO_SHORT = "DESCRIPTION_TOO_SHORT",
 }
 
 export enum JOBS_PARTNERS_OFFER_ORIGIN {
@@ -116,6 +117,8 @@ export const ZComputedJobsPartnersBase = extensions
     created_at: ZJobsPartnersOfferPrivate.shape.created_at,
   })
 
+// offer_description reste nullish : sa longueur est contrôlée offre par offre (cf. assertOfferDescriptionLength), un refus
+// de schéma rejetterait tout le lot de /v4/jobs/multi-partner/bulk.
 export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({
   _id: true,
   created_at: true,

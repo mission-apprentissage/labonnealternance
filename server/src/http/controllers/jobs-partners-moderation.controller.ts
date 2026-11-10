@@ -5,6 +5,7 @@ import { getUserFromRequest } from "@/security/authentication.service"
 import {
   getModerationHistory,
   getModerationJobDetail,
+  getModerationQueueNeighbors,
   getModerationScope,
   getModerationSummaries,
   listModerationQueue,
@@ -49,6 +50,17 @@ export default (server: Server) => {
     },
     async (req, res) => {
       return res.status(200).send(await getModerationJobDetail({ scope: getModerationScope(req.userAccess), id: req.params.id }))
+    }
+  )
+
+  server.get(
+    "/moderation/jobs/:id/neighbors",
+    {
+      schema: zRoutes.get["/moderation/jobs/:id/neighbors"],
+      onRequest: server.auth(zRoutes.get["/moderation/jobs/:id/neighbors"]),
+    },
+    async (req, res) => {
+      return res.status(200).send(await getModerationQueueNeighbors({ scope: getModerationScope(req.userAccess), id: req.params.id, ...req.query }))
     }
   )
 

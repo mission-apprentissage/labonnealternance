@@ -16,7 +16,7 @@ import type { HandiEngagement } from "shared/models/referentiel-engagement-entre
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last-status-event"
-import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
+import { isTrainingOrganizationNafCode, normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import { getEtablissementFromGouvSafe } from "@/common/apis/api-entreprise/api-entreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/france-competences/france-competences-client"
 import { logger } from "@/common/logger"
@@ -259,15 +259,6 @@ export const verifyRecruiterEmailInUse = async ({
   return null
 }
 
-const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string; idcc: null } | undefined> => {
-  const opcoOpt = await FCGetOpcoInfos(siret)
-  return opcoOpt ? { opco: opcoOpt, idcc: null } : undefined
-}
-
-const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
-  return getOpcoFromFranceCompetences(siret)
-}
-
 export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: number | null } | null> => {
   const siren = siret.substring(0, 9)
   const opcoFromDB = await getOpcoBySirenFromDB(siren)
@@ -282,7 +273,7 @@ export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: 
     }
   }
 
-  const result = await getOpcoDataRaw(siret)
+  const result = await FCGetOpcoInfos(siret)
   if (result) {
     const { opco, idcc } = result
     await saveOpco({ opco, idcc, siren })
@@ -316,20 +307,20 @@ const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OP
   })
 }
 
-const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: null; siret: string }[]> => {
+const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
   if (!sirets.length) {
     return []
   }
-  const results = [] as { opco: OPCOS_LABEL; idcc: null; siret: string }[]
-  const opcoDataToSave = [] as { opco: string; idcc: null; siren: string }[]
+  const results = [] as { opco: OPCOS_LABEL; idcc: number | null; siret: string }[]
+  const opcoDataToSave = [] as { opco: string; idcc: number | null; siren: string }[]
   await asyncForEach(sirets, async (siret) => {
     try {
-      const result = await getOpcoFromFranceCompetences(siret)
-      const opco = parseEnum(OPCOS_LABEL, result?.opco)
-      if (opco) {
-        results.push({ siret, opco, idcc: null })
+      const result = await FCGetOpcoInfos(siret)
+      if (result) {
+        const { opco, idcc } = result
+        results.push({ siret, opco, idcc })
         const siren = siret.substring(0, 9)
-        opcoDataToSave.push({ opco, idcc: null, siren })
+        opcoDataToSave.push({ opco, idcc, siren })
       }
     } catch (err) {
       captureException(err)
@@ -345,7 +336,7 @@ export type EntrepriseData = IFormatAPIEntreprise & { geo_coordinates: string; g
 
 export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret, nafCode }: { siret: string; cfa_delegated_siret?: string; nafCode?: string }) => {
   if (!cfa_delegated_siret) return
-  if (nafCode?.startsWith("85")) {
+  if (isTrainingOrganizationNafCode(nafCode)) {
     return errorFactory("L'entreprise partenaire ne doit pas relever du secteur de l'enseignement.", BusinessErrorCodes.IS_CFA)
   }
   const isManagedByCfa = await isEntrepriseManagedByCfa(siret, cfa_delegated_siret)
@@ -387,9 +378,8 @@ export const getEntrepriseDataFromSiret = async ({
       return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
     }
   }
-  // NAF 85 (enseignement) : organisme de formation, refusé pour un compte entreprise
   if (type === ENTREPRISE) {
-    if (activite_principale?.code?.startsWith("85")) {
+    if (isTrainingOrganizationNafCode(activite_principale?.code)) {
       if (isApiApprentissage) {
         return errorFactory("The SIRET number is not referenced as a company.", BusinessErrorCodes.IS_CFA)
       } else {
@@ -448,6 +438,12 @@ export const validateEligibiliteCfa = async (siret: string) => {
   return { referentiel: formattedReferentiel, cfa }
 }
 
+// Le formulaire de création ne transmet pas l'IDCC : on reprend celui de `opcos` (cf. getOpcoData) s'il porte le même OPCO.
+const getKnownIdcc = async (siret: string, opco: OPCOS_LABEL): Promise<number | null> => {
+  const known = await getOpcoBySirenFromDB(siret.substring(0, 9))
+  return known?.opco === opco ? known.idcc : null
+}
+
 export const entrepriseOnboardingWorkflow = {
   create: async (
     {
@@ -492,7 +488,7 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
-    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
+    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || (await getKnownIdcc(siret, opco)) })
     await getDbCollection("jobs_partners").updateMany(
       { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret },
       { $set: { workplace_opco: opcoResult.opco, workplace_idcc: opcoResult.idcc } }

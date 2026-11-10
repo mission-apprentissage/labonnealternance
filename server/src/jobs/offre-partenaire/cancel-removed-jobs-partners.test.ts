@@ -114,6 +114,19 @@ describe("Une offre dont le computed est en attente de classification n'est pas 
   })
 })
 
+describe("Le motif d'une annulation sur business_error est celui du computed apparié", () => {
+  it.each([JOB_PARTNER_BUSINESS_ERROR.DESCRIPTION_TOO_SHORT, JOB_PARTNER_BUSINESS_ERROR.CFA_BLACKLISTED, JOB_PARTNER_BUSINESS_ERROR.EXPIRED])("%s", async (businessError) => {
+    await createJobPartner({ partner_job_id: "bloquee", partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createComputedJobPartner({ partner_job_id: "bloquee", partner_label: JOBPARTNERS_LABEL.HELLOWORK, business_error: businessError, validated: false })
+
+    await cancelRemovedJobsPartners({ partner_label: JOBPARTNERS_LABEL.HELLOWORK }, { removalGuard: false })
+
+    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "bloquee" })
+    expect.soft(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(job?.offer_status_history.at(-1)).toMatchObject({ status: JOB_STATUS_ENGLISH.ANNULEE, reason: businessError, granted_by: "cancel-removed-jobs-partners" })
+  })
+})
+
 describe("Garde-fou d'annulation par partenaire", () => {
   const givenCatalog = async (partner_label: JOBPARTNERS_LABEL, { active, inFlux }: { active: number; inFlux: number }) => {
     const ids = Array.from({ length: active }, (_, i) => `${partner_label}_${i}`)
