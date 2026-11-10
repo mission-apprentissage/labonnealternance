@@ -422,12 +422,23 @@ describe("GET /user/:userId/organization/:organizationId/same-siret-accounts", (
   const setup = async () => {
     const entreprise = await saveEntreprise({ siret: SIRET, opco: OPCOS_LABEL.AKTO, status: [entrepriseStatusEventFactory()] })
     const autreEntreprise = await saveEntreprise({ siret: AUTRE_SIRET, opco: OPCOS_LABEL.AKTO, status: [entrepriseStatusEventFactory()] })
-    const saveAccount = async (organizationId: string, status: AccessStatus, createdAt: Date, authorized_type = AccessEntityType.ENTREPRISE, reason = "reason") => {
-      const user = await saveUserWithAccount({ status: validatedUserStatus })
+    const saveAccount = async (
+      organizationId: string,
+      status: AccessStatus,
+      createdAt: Date,
+      authorized_type = AccessEntityType.ENTREPRISE,
+      reason = "reason",
+      contact: { first_name?: string; last_name?: string; phone?: string } = {}
+    ) => {
+      const user = await saveUserWithAccount({ status: validatedUserStatus, first_name: "Hugo", last_name: "Martin", phone: "0699999999", ...contact })
       await saveRoleManagement({ user_id: user._id, authorized_id: organizationId, authorized_type, createdAt, status: [roleManagementEventFactory({ status, reason })] })
       return user
     }
-    const cible = await saveAccount(entreprise._id.toString(), AccessStatus.AWAITING_VALIDATION, new Date("2026-11-01"))
+    const cible = await saveAccount(entreprise._id.toString(), AccessStatus.AWAITING_VALIDATION, new Date("2026-11-01"), AccessEntityType.ENTREPRISE, "reason", {
+      first_name: "Léa",
+      last_name: "Durand",
+      phone: "0601020304",
+    })
     await saveRoleManagement({
       user_id: cible._id,
       authorized_id: autreEntreprise._id.toString(),
@@ -435,7 +446,11 @@ describe("GET /user/:userId/organization/:organizationId/same-siret-accounts", (
       status: [roleManagementEventFactory()],
     })
     const ancien = await saveAccount(entreprise._id.toString(), AccessStatus.GRANTED, new Date("2025-03-01"))
-    const desactive = await saveAccount(entreprise._id.toString(), AccessStatus.DENIED, new Date("2026-06-01"), AccessEntityType.ENTREPRISE, "doublon")
+    const desactive = await saveAccount(entreprise._id.toString(), AccessStatus.DENIED, new Date("2026-06-01"), AccessEntityType.ENTREPRISE, "doublon", {
+      first_name: "Lea",
+      last_name: "DURAND",
+      phone: "+33 6 01 02 03 04",
+    })
     await saveAccount(autreEntreprise._id.toString(), AccessStatus.GRANTED, new Date("2026-01-01"))
     const cfa = await saveCfa({ siret: SIRET })
     await saveAccount(cfa._id.toString(), AccessStatus.GRANTED, new Date("2026-01-01"), AccessEntityType.CFA)
@@ -461,8 +476,8 @@ describe("GET /user/:userId/organization/:organizationId/same-siret-accounts", (
 
     expect(response.statusCode).toBe(200)
     expect(response.json()).toEqual([
-      expect.objectContaining({ _id: desactive._id.toString(), status: ETAT_UTILISATEUR.DESACTIVE, status_reason: "doublon", jobs_count: 0 }),
-      expect.objectContaining({ _id: ancien._id.toString(), status: ETAT_UTILISATEUR.VALIDE, createdAt: new Date("2025-03-01").toISOString(), jobs_count: 3 }),
+      expect.objectContaining({ _id: desactive._id.toString(), status: ETAT_UTILISATEUR.DESACTIVE, status_reason: "doublon", jobs_count: 0, matches: ["phone", "name"] }),
+      expect.objectContaining({ _id: ancien._id.toString(), status: ETAT_UTILISATEUR.VALIDE, createdAt: new Date("2025-03-01").toISOString(), jobs_count: 3, matches: [] }),
     ])
   })
 

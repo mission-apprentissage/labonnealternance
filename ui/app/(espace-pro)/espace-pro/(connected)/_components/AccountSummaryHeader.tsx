@@ -20,7 +20,19 @@ type AccountSummary = {
   createdAt?: string | null
 }
 
-export const AccountSummaryHeader = ({ account, title, statusBadge, actions }: { account: AccountSummary; title: string; statusBadge: ReactNode; actions: ReactNode }) => {
+export const AccountSummaryHeader = ({
+  account,
+  title,
+  overline = "Compte recruteur",
+  statusBadge,
+  actions,
+}: {
+  account: AccountSummary
+  title: string
+  overline?: string
+  statusBadge: ReactNode
+  actions?: ReactNode
+}) => {
   const { establishment_siret, email, address, origin, createdAt } = account
   const mapsLabel = account.establishment_enseigne ?? account.establishment_raison_sociale
 
@@ -53,13 +65,13 @@ export const AccountSummaryHeader = ({ account, title, statusBadge, actions }: {
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: fr.spacing("6v"), flexWrap: "wrap" }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v"), minWidth: 0 }}>
           <Typography component="p" sx={{ m: 0, fontSize: "14px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em", color: "var(--text-mention-grey)" }}>
-            Compte recruteur
+            {overline}
           </Typography>
           <Typography component="h1" sx={{ m: 0, fontSize: "32px", lineHeight: "40px", fontWeight: 700, wordBreak: "break-word" }}>
             {title}
           </Typography>
         </Box>
-        <Box>{actions}</Box>
+        {actions && <Box>{actions}</Box>}
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v"), flexWrap: "wrap" }}>
         <Badge severity="info" small noIcon as="span">

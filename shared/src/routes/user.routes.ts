@@ -43,8 +43,10 @@ const ZSameSiretAccount = z.strictObject({
   status_reason: z.string().nullable(),
   last_action_date: z.date().nullable(),
   jobs_count: z.number(),
+  matches: z.array(z.enum(["phone", "name"])).describe("Points communs avec le compte consulté"),
 })
 
+export type SameSiretAccountMatch = z.output<typeof ZSameSiretAccount>["matches"][number]
 export type ISameSiretAccount = z.output<typeof ZSameSiretAccount>
 export type ISameSiretAccountJson = Jsonify<ISameSiretAccount>
 

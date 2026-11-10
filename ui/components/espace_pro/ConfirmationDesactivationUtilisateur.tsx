@@ -12,6 +12,8 @@ import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-acti
 import { AUTHTYPE } from "@/common/contants"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
+export const NOT_MY_OPCO_REASON = "Ne relève pas des champs de compétences de mon OPCO"
+
 const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
   onClose,
@@ -50,7 +52,7 @@ const ConfirmationDesactivationUtilisateur = ({
     }
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
-        if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
+        if (reason === NOT_MY_OPCO_REASON) {
           await reassignUserToAdmin(reason)
         } else {
           await disableUser(reason)
@@ -95,7 +97,7 @@ const ConfirmationDesactivationUtilisateur = ({
             <option value="Compte en doublon">Compte en doublon</option>
             <option value="Offre non conforme">Offre non conforme</option>
             {type === "CFA" && <option value="Non référencé dans le catalogue du Réseau des Carif-Oref">Non référencé dans le catalogue du Réseau des Carif-Oref</option>}
-            <option value="Ne relève pas des champs de compétences de mon OPCO">Ne relève pas des champs de compétences de mon OPCO</option>
+            <option value={NOT_MY_OPCO_REASON}>{NOT_MY_OPCO_REASON}</option>
             <option value="Besoin de recrutement pourvu">Besoin de recrutement pourvu</option>
             <option value="Injoignable">Injoignable</option>
             <option value="Autre">Autre</option>
