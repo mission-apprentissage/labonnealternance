@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box, GlobalStyles, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Image from "next/image"
@@ -46,8 +46,21 @@ export default function PrintableJobPage() {
   const isUrgentRecruitment = offre.job.startType === JOB_START_TYPE.DES_QUE_POSSIBLE
 
   return (
-    <>
-      <Box component="main" role="main" sx={{ maxWidth: "21cm", textAlign: "center", py: fr.spacing("6v"), px: fr.spacing("6v") }}>
+    <Box
+      sx={{
+        boxSizing: "border-box",
+        width: "210mm",
+        minHeight: "297mm",
+        display: "flex",
+        flexDirection: "column",
+        pt: fr.spacing("10v"),
+        pb: fr.spacing("6v"),
+        px: fr.spacing("7v"),
+      }}
+    >
+      {/* Marges du navigateur à zéro : l'affiche occupe toute la feuille et porte ses propres paddings. */}
+      <GlobalStyles styles={{ "@page": { size: "A4", margin: 0 } }} />
+      <Box component="main" role="main" sx={{ textAlign: "center", mb: fr.spacing("11v") }}>
         <Image style={{ margin: "auto" }} src="/images/espace_pro/images/illustration-impression.svg" width="209" height="95" alt="" aria-hidden={true} />
         <Typography sx={{ mx: "auto", fontSize: "24px", mt: fr.spacing("8v") }}>{offre.company.name}</Typography>
         <Typography
@@ -157,7 +170,7 @@ export default function PrintableJobPage() {
           </Typography>
         </Typography>
       </Box>
-      <Box component="footer" sx={{ maxWidth: "21cm", height: "61px", px: fr.spacing("9v"), display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <Box component="footer" sx={{ mt: "auto", height: "61px", px: fr.spacing("9v"), display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {/* Le bloc marque DSFR mesure 91,3125 px et ses cotes sont en rem : zoom le ramène aux 61 px de la maquette sans le déformer. */}
           <p className="fr-logo" style={{ zoom: 61 / 91.3125 }}>
@@ -169,6 +182,6 @@ export default function PrintableJobPage() {
         </Box>
         <Image src="/images/logo_numerique_gouv.svg" width="195" height="55" alt="Un service proposé par numerique.gouv" />
       </Box>
-    </>
+    </Box>
   )
 }
