@@ -16,7 +16,6 @@ import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
 import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
-import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
@@ -30,9 +29,12 @@ import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { EMAIL_ALREADY_USED_ERROR } from "@/utils/validation-messages"
+import { AccountStatusBadge } from "./AccountStatusBadge"
+import { AccountSummaryHeader } from "./AccountSummaryHeader"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
+import { SameSiretAccounts } from "./SameSiretAccounts"
 
 type Variables = { userId: string; values: INewSuperUser; siret: string; setFieldError: (field: string, message: string) => void }
 
@@ -93,8 +95,8 @@ export default function DetailEntreprise({
       case ETAT_UTILISATEUR.ATTENTE:
         return (
           <Box sx={{ display: "flex", gap: fr.spacing("2v") }}>
-            <ActivateUserButton userId={userId} organizationId={organizationId} />
             <DisableUserButton />
+            <ActivateUserButton userId={userId} organizationId={organizationId} />
           </Box>
         )
       case ETAT_UTILISATEUR.VALIDE:
@@ -104,20 +106,6 @@ export default function DetailEntreprise({
 
       default:
         return <></>
-    }
-  }
-
-  const getUserBadge = (userHistory: IUserStatusValidationJson) => {
-    switch (userHistory.status) {
-      case ETAT_UTILISATEUR.ATTENTE:
-        return <Badge variant="awaiting">À VERIFIER</Badge>
-      case ETAT_UTILISATEUR.VALIDE:
-        return <Badge variant="active">ACTIF</Badge>
-      case ETAT_UTILISATEUR.DESACTIVE:
-        return <Badge variant="inactive">INACTIF</Badge>
-
-      default:
-        return <Badge>{userHistory.status}</Badge>
     }
   }
 
@@ -165,20 +153,12 @@ export default function DetailEntreprise({
         }}
       >
         {showAccountLifecycle && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: fr.spacing("4v"),
-            }}
-          >
-            <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, wordBreak: "break-word" }}>
-              {establishmentLabel}
-            </Typography>
-
-            <Box>{getActionButtons(lastUserState, userRecruteur._id, userRecruteur.organizationId)}</Box>
-          </Box>
+          <AccountSummaryHeader
+            account={userRecruteur}
+            title={establishmentLabel}
+            statusBadge={<AccountStatusBadge status={lastUserState.status} />}
+            actions={getActionButtons(lastUserState, userRecruteur._id, userRecruteur.organizationId)}
+          />
         )}
         {!showAccountLifecycle && (
           <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
@@ -204,16 +184,18 @@ export default function DetailEntreprise({
         )}
       </Box>
       <Box sx={{ px: fr.spacing("4v") }}>
-        <Box sx={{ display: user.type !== "CFA" ? "flex" : "none", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
-          {showAccountLifecycle && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
-              <Typography component="p" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
-                Statut :
-              </Typography>
-              {getUserBadge(lastUserState)}
-            </Box>
-          )}
-          {user.type !== "CFA" && (
+        {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && showAccountLifecycle && (
+          <Box sx={{ mb: fr.spacing("10v") }}>
+            <SameSiretAccounts
+              userId={userRecruteur._id}
+              organizationId={userRecruteur.organizationId}
+              viewer={user.type}
+              isAwaitingValidation={lastUserState.status === ETAT_UTILISATEUR.ATTENTE}
+            />
+          </Box>
+        )}
+        <Box sx={{ display: user.type !== "CFA" && !showAccountLifecycle ? "flex" : "none", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
+          {user.type !== "CFA" && !showAccountLifecycle && (
             <Box sx={{ display: "flex", gap: fr.spacing("3v"), flexWrap: "wrap" }}>
               {userRecruteur.establishment_siret && (
                 <DsfrLink
@@ -341,7 +323,7 @@ export default function DetailEntreprise({
                     right={
                       <>
                         <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
-                        {user.type !== "CFA" && (
+                        {user.type !== "CFA" && !showAccountLifecycle && (
                           <Box
                             sx={{
                               my: fr.spacing("8v"),

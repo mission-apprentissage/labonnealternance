@@ -11,6 +11,7 @@ import type { IEntreprise } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { HANDI_ENGAGEMENT_OUI } from "shared/models/referentiel-engagement-entreprise.model"
+import type { IRoleManagement } from "shared/models/role-management.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -20,6 +21,7 @@ import { buildEstablishmentId } from "@/services/etablissement.service"
 import { getFormulaireWithRomeDetail } from "@/services/formulaire.service"
 import { updateEntrepriseHandiEngagement } from "@/services/organization.service"
 import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, getGrantedRoles, getOrganizationFromRole, roleToUserType } from "@/services/role-management.service"
+import { getSameSiretAccounts } from "@/services/same-siret-accounts.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -30,6 +32,19 @@ import {
   userAndRoleAndOrganizationToUserRecruteur,
 } from "@/services/user-recruteur.service"
 import { createSuperUser } from "@/services/user-with-account.service"
+
+// Prefer exact organizationId match > GRANTED > AWAITING_VALIDATION > any (fallback for deactivated users with a single DENIED role)
+const findTargetRole = async (userId: string, organizationId: string): Promise<IRoleManagement | undefined> => {
+  const allRoles = await getDbCollection("rolemanagements")
+    .find({ user_id: new ObjectId(userId) })
+    .toArray()
+  return (
+    allRoles.find((r) => r.authorized_id === organizationId) ??
+    allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.GRANTED) ??
+    allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.AWAITING_VALIDATION) ??
+    allRoles[0]
+  )
+}
 
 export default (server: Server) => {
   server.get(
@@ -175,6 +190,28 @@ export default (server: Server) => {
   )
 
   server.get(
+    "/user/:userId/organization/:organizationId/same-siret-accounts",
+    {
+      schema: zRoutes.get["/user/:userId/organization/:organizationId/same-siret-accounts"],
+      onRequest: [server.auth(zRoutes.get["/user/:userId/organization/:organizationId/same-siret-accounts"])],
+    },
+    async (req, res) => {
+      const { userAccess } = req
+      // user:manage est aussi accordé à un recruteur sur son propre compte : la liste est réservée aux validateurs.
+      if (!(userAccess?.admin || userAccess?.opcos.length)) {
+        throw forbidden()
+      }
+      const { userId, organizationId } = req.params
+      const role = await findTargetRole(userId.toString(), organizationId)
+      if (!role) {
+        throw badRequest("role not found")
+      }
+      const accounts = await getSameSiretAccounts({ role, opcos: userAccess.admin ? null : userAccess.opcos })
+      return res.status(200).send(accounts)
+    }
+  )
+
+  server.get(
     "/user/:userId/organization/:organizationId",
     {
       schema: zRoutes.get["/user/:userId/organization/:organizationId"],
@@ -185,15 +222,7 @@ export default (server: Server) => {
       if (!requestUser) throw badRequest()
 
       const { userId, organizationId } = req.params
-      // Prefer exact organizationId match > GRANTED > AWAITING_VALIDATION > any (fallback for deactivated users with a single DENIED role)
-      const allRoles = await getDbCollection("rolemanagements")
-        .find({ user_id: new ObjectId(userId) })
-        .toArray()
-      const role =
-        allRoles.find((r) => r.authorized_id === organizationId) ??
-        allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.GRANTED) ??
-        allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.AWAITING_VALIDATION) ??
-        allRoles[0]
+      const role = await findTargetRole(userId, organizationId)
       if (!role) {
         throw badRequest("role not found")
       }

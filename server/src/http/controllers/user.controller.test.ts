@@ -2,11 +2,24 @@ import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { entrepriseStatusEventFactory, saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
+import {
+  entrepriseStatusEventFactory,
+  roleManagementEventFactory,
+  saveAdminUserTest,
+  saveCfa,
+  saveEntreprise,
+  saveEntrepriseUserTest,
+  saveOpcoUserTest,
+  saveRoleManagement,
+  saveUserWithAccount,
+  validatedUserStatus,
+} from "@tests/utils/user.test.utils"
 import { OPCOS_LABEL } from "shared/constants/index"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
@@ -396,5 +409,91 @@ describe("GET /admin/users-recruteurs", () => {
     expect(response.statusCode).toBe(200)
     const hasJobsBySociete = Object.fromEntries(response.json().map(({ establishment_raison_sociale, hasJobs }) => [establishment_raison_sociale, hasJobs]))
     expect(hasJobsBySociete).toEqual({ "Boulangerie recette sans publication": false, "Boulangerie recette avec publication": true })
+  })
+})
+
+describe("GET /user/:userId/organization/:organizationId/same-siret-accounts", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const SIRET = "90000000000027"
+  const AUTRE_SIRET = "90000000000035"
+
+  const setup = async () => {
+    const entreprise = await saveEntreprise({ siret: SIRET, opco: OPCOS_LABEL.AKTO, status: [entrepriseStatusEventFactory()] })
+    const autreEntreprise = await saveEntreprise({ siret: AUTRE_SIRET, opco: OPCOS_LABEL.AKTO, status: [entrepriseStatusEventFactory()] })
+    const saveAccount = async (organizationId: string, status: AccessStatus, createdAt: Date, authorized_type = AccessEntityType.ENTREPRISE, reason = "reason") => {
+      const user = await saveUserWithAccount({ status: validatedUserStatus })
+      await saveRoleManagement({ user_id: user._id, authorized_id: organizationId, authorized_type, createdAt, status: [roleManagementEventFactory({ status, reason })] })
+      return user
+    }
+    const cible = await saveAccount(entreprise._id.toString(), AccessStatus.AWAITING_VALIDATION, new Date("2026-11-01"))
+    await saveRoleManagement({
+      user_id: cible._id,
+      authorized_id: autreEntreprise._id.toString(),
+      authorized_type: AccessEntityType.ENTREPRISE,
+      status: [roleManagementEventFactory()],
+    })
+    const ancien = await saveAccount(entreprise._id.toString(), AccessStatus.GRANTED, new Date("2025-03-01"))
+    const desactive = await saveAccount(entreprise._id.toString(), AccessStatus.DENIED, new Date("2026-06-01"), AccessEntityType.ENTREPRISE, "doublon")
+    await saveAccount(autreEntreprise._id.toString(), AccessStatus.GRANTED, new Date("2026-01-01"))
+    const cfa = await saveCfa({ siret: SIRET })
+    await saveAccount(cfa._id.toString(), AccessStatus.GRANTED, new Date("2026-01-01"), AccessEntityType.CFA)
+
+    const offre = { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: ancien._id }
+    await createJobPartner({ ...offre, workplace_siret: SIRET, workplace_opco: OPCOS_LABEL.AKTO })
+    await createJobPartner({ ...offre, workplace_siret: SIRET, workplace_opco: OPCOS_LABEL.AKTO })
+    await createJobPartner({ ...offre, workplace_siret: SIRET, workplace_opco: OPCOS_LABEL.ATLAS })
+    await createJobPartner({ ...offre, workplace_siret: AUTRE_SIRET, workplace_opco: OPCOS_LABEL.AKTO })
+    await createJobPartner({ ...offre, partner_label: JOBPARTNERS_LABEL.HELLOWORK, workplace_siret: SIRET, workplace_opco: OPCOS_LABEL.AKTO })
+
+    return { entreprise, cible, ancien, desactive }
+  }
+
+  const callRoute = (userId: string, organizationId: string, headers: Record<string, string>) =>
+    httpClient().inject({ method: "GET", path: `/api/user/${userId}/organization/${organizationId}/same-siret-accounts`, headers })
+
+  it("liste les autres comptes du même SIRET, sans le compte consulté, ses autres SIRET ni un CFA de même SIRET", async () => {
+    const { entreprise, cible, ancien, desactive } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "admin-same-siret", { type: "ADMIN" })
+
+    const response = await callRoute(cible._id.toString(), entreprise._id.toString(), bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toEqual([
+      expect.objectContaining({ _id: desactive._id.toString(), status: ETAT_UTILISATEUR.DESACTIVE, status_reason: "doublon", jobs_count: 0 }),
+      expect.objectContaining({ _id: ancien._id.toString(), status: ETAT_UTILISATEUR.VALIDE, createdAt: new Date("2025-03-01").toISOString(), jobs_count: 3 }),
+    ])
+  })
+
+  it("ne compte pour un OPCO que les offres de son OPCO", async () => {
+    const { entreprise, cible, ancien } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "opco-same-siret", { type: "OPCO" })
+
+    const response = await callRoute(cible._id.toString(), entreprise._id.toString(), bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().find(({ _id }) => _id === ancien._id.toString())?.jobs_count).toBe(2)
+  })
+
+  it("renvoie une liste vide quand aucun autre compte n'a ce SIRET", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({}, {}, { siret: SIRET, status: [entrepriseStatusEventFactory()] })
+    const { bearerToken } = await createAndLogUser(httpClient, "admin-same-siret-vide", { type: "ADMIN" })
+
+    const response = await callRoute(user._id.toString(), entreprise._id.toString(), bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toEqual([])
+  })
+
+  it("refuse un recruteur qui consulte son propre compte", async () => {
+    const { bearerToken, user } = await createAndLogUser(httpClient, "cfa-same-siret", { type: "CFA" })
+    const role = await getDbCollection("rolemanagements").findOne({ user_id: user._id })
+    const autreCompte = await saveUserWithAccount({ status: validatedUserStatus })
+    await saveRoleManagement({ user_id: autreCompte._id, authorized_id: role!.authorized_id, authorized_type: AccessEntityType.CFA, status: [roleManagementEventFactory()] })
+
+    const response = await callRoute(user._id.toString(), role!.authorized_id, bearerToken)
+
+    expect(response.statusCode).toBe(403)
   })
 })
