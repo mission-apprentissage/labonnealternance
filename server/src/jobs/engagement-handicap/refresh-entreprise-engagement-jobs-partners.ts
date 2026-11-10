@@ -12,7 +12,7 @@ import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 
-const HANDIMATCH_FT_CSV_PATH = "referentiel/engagement-handicap/siret_handimatch_ft.csv"
+export const HANDIMATCH_FT_CSV_PATH = "referentiel/engagement-handicap/siret_handimatch_ft.csv"
 
 export const refreshReferentielEngagementFranceTravail = async () => {
   const filepath = getStaticFilePath(HANDIMATCH_FT_CSV_PATH)
