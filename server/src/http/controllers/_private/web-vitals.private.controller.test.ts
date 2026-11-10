@@ -2,12 +2,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { describe, expect, it, vi } from "vitest"
 
-// child() rend le mock lui-même : des modules en dérivent leur logger au chargement (cf. access-log.service)
-const loggerMock = vi.hoisted(() => {
-  const mock = { trace: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), fatal: vi.fn(), child: vi.fn() }
-  mock.child.mockImplementation(() => mock)
-  return mock
-})
+const loggerMock = vi.hoisted(() => ({ trace: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), fatal: vi.fn() }))
 
 vi.mock("@/common/logger", async (importOriginal) => ({ ...(await importOriginal<typeof import("@/common/logger")>()), logger: loggerMock }))
 
