@@ -7,7 +7,7 @@ import { Box, CircularProgress, Link, Stack, Typography } from "@mui/material"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import type { SortingState } from "@tanstack/react-table"
 import dayjs from "dayjs"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/role-management.model"
 import type { IModerationAccountType, IModerationQueueConformity, IModerationQueueSort } from "shared/routes/jobs-partners-moderation.routes"
@@ -22,12 +22,15 @@ import { MultiSelect } from "@/app/(espace-pro)/espace-pro/(connected)/administr
 import { PaginationButton } from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/PaginationButton"
 import { useToast } from "@/app/hooks/useToast"
 import { DsfrIcon } from "@/components/DsfrIcon"
-import { getModerationQueue, reclassifyFailedModerationJobs } from "@/utils/api"
+import { getModerationQueue, getModerationSummaries, reclassifyFailedModerationJobs } from "@/utils/api"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { pluralize } from "@/utils/strutils"
+import { ConformityWithAgentNote } from "./AgentNote"
 import { AccountStatusBadge, AccountTypeBadge, ConformityBadge, OfferStatusBadge } from "./ModerationBadges"
-import type { IModerationQueueItemJson, IModerationUserType } from "./moderation.types"
+import type { IModerationQueueItemJson, IModerationSummaryJson, IModerationUserType } from "./moderation.types"
 import { getOfferEditionPath } from "./moderation-links"
+import type { IModerationQueueState } from "./moderation-queue-state"
+import { getEmptyPageFallbackOffset, readModerationQueueState, toModerationQueueQuery, writeModerationQueueState } from "./moderation-queue-state"
 
 const PAGE_SIZE = 50
 const DEFAULT_SORTING: SortingState = [{ id: "created_at", desc: true }]
@@ -66,7 +69,7 @@ const ModerationQueueMenu = ({ row, userType }: { row: IModerationQueueItemJson;
 }
 
 // Tri côté serveur : accessorFn ne sert qu'à rendre la colonne triable (cf. VirtualTable, onSortingChange).
-const getColumns = (userType: IModerationUserType): ColumnDef<IModerationQueueItemJson>[] => [
+const getColumns = (userType: IModerationUserType, summariesById: Map<string, IModerationSummaryJson>): ColumnDef<IModerationQueueItemJson>[] => [
   {
     id: "action",
     header: "",
@@ -104,7 +107,12 @@ const getColumns = (userType: IModerationUserType): ColumnDef<IModerationQueueIt
     header: "Conformité",
     accessorFn: (row) => row.offer_moderation_status,
     size: 170,
-    cell: (info) => <ConformityBadge verdict={info.row.original.offer_moderation_verdict} status={info.row.original.offer_moderation_status} />,
+    cell: (info) => {
+      const { _id, offer_moderation_verdict, offer_moderation_status } = info.row.original
+      const summary = summariesById.get(_id)
+      // Badge seul tant que les constats ne sont pas chargés : une note vide se lirait « Conforme ».
+      return summary ? <ConformityWithAgentNote summary={summary} /> : <ConformityBadge verdict={offer_moderation_verdict} status={offer_moderation_status} />
+    },
   },
   {
     id: "created_at",
@@ -134,33 +142,50 @@ const getColumns = (userType: IModerationUserType): ColumnDef<IModerationQueueIt
   },
 ]
 
-/** File « Offres à modérer » (#5499). Un OPCO la consulte en lecture seule, limitée par le serveur aux entreprises de son OPCO. */
+/**
+ * File « Offres à modérer » (#5499). Un OPCO la consulte en lecture seule, limitée par le serveur aux entreprises de son OPCO.
+ * Filtres, tri et page sont relus après le montage (cf. readModerationQueueState) : le rendu serveur n'y a pas accès.
+ */
 export function ModerationQueue({ userType }: { userType: IModerationUserType }) {
+  const [initialState, setInitialState] = useState<IModerationQueueState | null | undefined>(undefined)
+  useEffect(() => {
+    setInitialState(readModerationQueueState(userType))
+  }, [userType])
+
+  if (initialState === undefined) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
+  return <ModerationQueueContent userType={userType} initialState={initialState} />
+}
+
+export function ModerationQueueContent({ userType, initialState }: { userType: IModerationUserType; initialState: IModerationQueueState | null }) {
   const toast = useToast()
-  const [conformity, setConformity] = useState<IModerationQueueConformity[]>([])
-  const [accountStatus, setAccountStatus] = useState<(AccessStatus.AWAITING_VALIDATION | AccessStatus.GRANTED)[]>([])
-  const [accountType, setAccountType] = useState<IModerationAccountType[]>([])
-  const [opco, setOpco] = useState<OPCOS_LABEL[]>([])
-  const [search, setSearch] = useState("")
-  const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING)
-  const [offset, setOffset] = useState(0)
+  const [conformity, setConformity] = useState<IModerationQueueConformity[]>(initialState?.conformity ?? [])
+  const [accountStatus, setAccountStatus] = useState<(AccessStatus.AWAITING_VALIDATION | AccessStatus.GRANTED)[]>(initialState?.account_status ?? [])
+  const [accountType, setAccountType] = useState<IModerationAccountType[]>(initialState?.account_type ?? [])
+  const [opco, setOpco] = useState<OPCOS_LABEL[]>(initialState?.opco ?? [])
+  const [search, setSearch] = useState(initialState?.search ?? "")
+  const [sorting, setSorting] = useState<SortingState>(initialState?.sort ? [{ id: initialState.sort, desc: initialState.order !== "asc" }] : DEFAULT_SORTING)
+  const [offset, setOffset] = useState(initialState?.offset ?? 0)
   const [isReclassifying, setIsReclassifying] = useState(false)
 
   const [currentSort] = sorting
   const sort = isQueueSort(currentSort?.id) ? currentSort.id : "created_at"
   const order = currentSort?.desc === false ? "asc" : "desc"
 
+  useEffect(() => {
+    writeModerationQueueState(userType, { conformity, account_status: accountStatus, account_type: accountType, opco, search, sort, order, offset })
+  }, [userType, conformity, accountStatus, accountType, opco, search, sort, order, offset])
+
   const { data, isLoading, isError, isPlaceholderData, isFetching } = useQuery({
     queryKey: ["moderation-queue", conformity, accountStatus, accountType, opco, search, sort, order, offset],
     queryFn: () =>
       getModerationQueue({
-        conformity: conformity.length ? conformity : undefined,
-        account_status: accountStatus.length ? accountStatus : undefined,
-        account_type: accountType.length ? accountType : undefined,
-        opco: opco.length ? opco : undefined,
-        search: search || undefined,
-        sort,
-        order,
+        ...toModerationQueueQuery({ conformity, account_status: accountStatus, account_type: accountType, opco, search, sort, order }),
         limit: PAGE_SIZE,
         offset,
       }),
@@ -168,12 +193,24 @@ export function ModerationQueue({ userType }: { userType: IModerationUserType })
     retry: false,
   })
 
+  useEffect(() => {
+    if (!data || isPlaceholderData) return
+    const fallbackOffset = getEmptyPageFallbackOffset({ jobsCount: data.jobs.length, total: data.pagination.total, offset, pageSize: PAGE_SIZE })
+    if (fallbackOffset !== null) setOffset(fallbackOffset)
+  }, [data, isPlaceholderData, offset])
+
   const jobs = data?.jobs ?? []
+  const jobIds = jobs.map(({ _id }) => _id)
+  const { data: summaries } = useQuery({
+    queryKey: ["moderation-summaries", jobIds],
+    queryFn: () => getModerationSummaries(jobIds),
+    enabled: jobIds.length > 0,
+  })
   const total = data?.pagination.total ?? 0
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const currentPage = Math.floor(offset / PAGE_SIZE) + 1
   const isPageLoading = isFetching && isPlaceholderData
-  const columns = useMemo(() => getColumns(userType), [userType])
+  const columns = useMemo(() => getColumns(userType, new Map((summaries?.jobs ?? []).map((summary) => [summary._id, summary]))), [userType, summaries])
   const queueTitle = (userType === "OPCO" ? MODERATION_PAGES.opcoQueue : MODERATION_PAGES.adminQueue).title
 
   const withFirstPage =
@@ -211,6 +248,7 @@ export function ModerationQueue({ userType }: { userType: IModerationUserType })
           onSearch={withFirstPage(setSearch)}
           onReset={() => withFirstPage(setSearch)("")}
           inputWidth="420px"
+          initialValue={search}
         />
         {userType === "ADMIN" && (
           <Button priority="secondary" iconId="fr-icon-refresh-line" onClick={reclassifyFailed} disabled={isReclassifying}>
