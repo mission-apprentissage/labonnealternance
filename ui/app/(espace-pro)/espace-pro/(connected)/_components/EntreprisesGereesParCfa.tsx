@@ -1,14 +1,17 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Badge from "@codegouvfr/react-dsfr/Badge"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import type { IRecruiterJson } from "shared"
+import { AUTHTYPE } from "shared/constants/index"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
-import { getEntreprisesManagedByCfa } from "@/utils/api"
+import { useAuth } from "@/context/UserContext"
+import { getCfaNonConformeCounts, getEntreprisesManagedByCfa } from "@/utils/api"
 import { sortReactTableDate, sortReactTableString } from "@/utils/date-utils"
 import { ConfirmationSuppressionEntreprise } from "./ConfirmationSuppressionEntreprise"
 import { EntreprisesGereesParCfaMenu } from "./EntreprisesGereesParCfaMenu"
@@ -16,6 +19,9 @@ import { EntreprisesGereesParCfaMenu } from "./EntreprisesGereesParCfaMenu"
 export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; userId: string }) {
   const [currentEntreprise, setCurrentEntreprise] = useState<IRecruiterJson | null>(null)
   const confirmationSuppression = useDisclosure()
+  const { user } = useAuth()
+  // Compteur réservé aux administrateurs : la route renverrait 403 à un autre profil, ce qui fermerait sa session.
+  const isAdmin = user?.type === AUTHTYPE.ADMIN
 
   const {
     data: entreprises,
@@ -26,6 +32,14 @@ export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; user
     queryFn: () => getEntreprisesManagedByCfa(cfaId),
     enabled: Boolean(cfaId),
   })
+
+  const { data: nonConformes, isSuccess: nonConformesLoaded } = useQuery({
+    queryKey: ["entreprisesGereesParCfa", cfaId, "non-conformes"],
+    queryFn: () => getCfaNonConformeCounts(cfaId),
+    enabled: Boolean(cfaId) && isAdmin,
+  })
+  const nonConformesBySiret = useMemo(() => new Map((nonConformes?.entreprises ?? []).map(({ siret, non_conformes }) => [siret, non_conformes])), [nonConformes])
+  const countNonConformes = ({ establishment_siret }: IRecruiterJson) => (nonConformesLoaded ? (nonConformesBySiret.get(establishment_siret) ?? 0) : null)
 
   if (error) {
     throw error
@@ -100,6 +114,34 @@ export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; user
       sortType: "basic",
       accessor: ({ jobs }: IRecruiterJson) => jobs.length,
     },
+    ...(isAdmin
+      ? [
+          {
+            Header: "Non conformes",
+            id: "non_conformes",
+            sortType: "basic",
+            accessor: countNonConformes,
+            Cell: ({ value }: { value: number | null }) => {
+              if (value === null) {
+                return (
+                  <>
+                    <span aria-hidden="true">—</span>
+                    <span className="fr-sr-only">Nombre indisponible</span>
+                  </>
+                )
+              }
+              return value > 0 ? (
+                <Badge small severity="warning">
+                  {value}
+                  <span className="fr-sr-only"> {value > 1 ? "offres non conformes" : "offre non conforme"}</span>
+                </Badge>
+              ) : (
+                "0"
+              )
+            },
+          },
+        ]
+      : []),
     {
       Header: "Ajoutée le",
       accessor: ({ createdAt }) => dayjs(createdAt).format("DD/MM/YYYY"),

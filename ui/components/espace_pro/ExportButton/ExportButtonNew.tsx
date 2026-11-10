@@ -45,6 +45,7 @@ export default function ExportButtonNew({ data, datasetName = "export" }) {
         "address_detail",
         "delegations",
         "rome_detail",
+        "offer_conformity",
       ])
 
       return {

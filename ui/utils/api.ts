@@ -141,6 +141,11 @@ export const getModerationQueue = async (querystring: IQuery<IRoutes["get"]["/mo
 
 export const getModerationSummaries = async (ids: string[]) => apiGet("/moderation/jobs/summary", { querystring: { ids } })
 
+export const searchModerationOffers = async (querystring: IQuery<IRoutes["get"]["/moderation/jobs/search"]>) =>
+  apiGet("/moderation/jobs/search", { querystring: removeUndefinedFields(querystring) })
+
+export const getCfaNonConformeCounts = async (cfaId: string) => apiGet("/moderation/cfa/:cfaId/entreprises", { params: { cfaId } })
+
 export const getModerationJob = async (id: string) => apiGet("/moderation/jobs/:id", { params: { id } })
 
 export const validateModerationJob = async (id: string, moderationId: string) => apiPost("/moderation/jobs/:id/validate", { params: { id }, body: { moderation_id: moderationId } })

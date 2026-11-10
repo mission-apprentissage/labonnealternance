@@ -27,6 +27,7 @@ const ADMIN_NAV_ITEMS: AdminNavEntry[] = [
     text: "Offres",
     children: [
       { text: "Offres à modérer", href: MODERATION_PAGES.adminQueue.getPath() },
+      { text: "Rechercher une offre", href: MODERATION_PAGES.adminSearch.getPath() },
       { text: "Offres partenaires", href: PAGES.static.backAdminGestionDesOffresPartenaires.getPath() },
     ],
   },

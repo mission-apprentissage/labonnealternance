@@ -3,11 +3,12 @@ import { randomUUID } from "crypto"
 import { ObjectId } from "mongodb"
 import type { IUser } from "shared"
 import type { OPCOS_LABEL } from "shared/constants/recruteur"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { getAccountOfferConformities } from "./account-offer-conformity.service"
 import { buildEstablishmentId } from "./etablissement.service"
 import { getUserRecruteursForManagement } from "./user-recruteur.service"
 
@@ -73,6 +74,12 @@ export const getUserAndRecruitersDataForOpcoUser = async (
     )
     .toArray()) as ProjectedJobPartner[]
 
+  // Périmètre de modération d'un OPCO : les offres de son OPCO, sans celles déposées par un CFA (cf. scopeFilter).
+  const conformities = await getAccountOfferConformities(
+    filteredUserRecruteurs.map(({ _id, establishment_siret }) => ({ userId: _id, type: ENTREPRISE, siret: establishment_siret })),
+    { workplace_opco: opco, is_delegated: { $ne: true } }
+  )
+
   const jobsByUser = new Map<string, ProjectedJobPartner[]>()
   jobPartners.forEach((job) => {
     const { managed_by } = job
@@ -88,7 +95,7 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   })
 
   const results = filteredUserRecruteurs.reduce(
-    (acc, userRecruteur) => {
+    (acc, userRecruteur, index) => {
       const status = getLastStatusEvent(userRecruteur.status)?.status
       if (!status) return acc
       const { _id, first_name, last_name, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type, organizationId } = userRecruteur
@@ -109,6 +116,7 @@ export const getUserAndRecruitersDataForOpcoUser = async (
         jobs_count: jobs?.length ?? 0,
         origin: firstJob?.offer_origin ?? "",
         organizationId,
+        offer_conformity: conformities[index],
       }
       if (status === ETAT_UTILISATEUR.ATTENTE) {
         acc.awaiting.push(userForOpco)
