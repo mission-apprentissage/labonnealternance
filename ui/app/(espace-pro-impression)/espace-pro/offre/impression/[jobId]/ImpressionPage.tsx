@@ -145,7 +145,7 @@ export default function PrintableJobPage() {
             })
             .getPath()}&utm_source=lba-phygital&utm_medium=phygital&utm_campaign=${utmCampaign}`}
           size={128}
-          style={{ margin: "auto", height: "auto", maxWidth: "128x", width: "128px" }}
+          style={{ margin: "auto", height: "auto", maxWidth: "128px", width: "128px" }}
           viewBox={`0 0 128 128`}
         />
         <Typography
