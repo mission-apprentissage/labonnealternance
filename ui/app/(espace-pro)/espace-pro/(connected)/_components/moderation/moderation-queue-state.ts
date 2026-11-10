@@ -43,3 +43,9 @@ export const toModerationQueueQuery = ({ conformity, account_status, account_typ
   sort,
   order,
 })
+
+/** Page relue au retour sur la file, vidée depuis par des décisions : dernière page non vide, ou null si rien à corriger. */
+export const getEmptyPageFallbackOffset = ({ jobsCount, total, offset, pageSize }: { jobsCount: number; total: number; offset: number; pageSize: number }): number | null => {
+  if (jobsCount > 0 || offset === 0) return null
+  return Math.max(0, Math.ceil(total / pageSize) - 1) * pageSize
+}

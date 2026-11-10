@@ -30,7 +30,7 @@ import { AccountStatusBadge, AccountTypeBadge, ConformityBadge, OfferStatusBadge
 import type { IModerationQueueItemJson, IModerationSummaryJson, IModerationUserType } from "./moderation.types"
 import { getOfferEditionPath } from "./moderation-links"
 import type { IModerationQueueState } from "./moderation-queue-state"
-import { readModerationQueueState, toModerationQueueQuery, writeModerationQueueState } from "./moderation-queue-state"
+import { getEmptyPageFallbackOffset, readModerationQueueState, toModerationQueueQuery, writeModerationQueueState } from "./moderation-queue-state"
 
 const PAGE_SIZE = 50
 const DEFAULT_SORTING: SortingState = [{ id: "created_at", desc: true }]
@@ -162,7 +162,7 @@ export function ModerationQueue({ userType }: { userType: IModerationUserType })
   return <ModerationQueueContent userType={userType} initialState={initialState} />
 }
 
-function ModerationQueueContent({ userType, initialState }: { userType: IModerationUserType; initialState: IModerationQueueState | null }) {
+export function ModerationQueueContent({ userType, initialState }: { userType: IModerationUserType; initialState: IModerationQueueState | null }) {
   const toast = useToast()
   const [conformity, setConformity] = useState<IModerationQueueConformity[]>(initialState?.conformity ?? [])
   const [accountStatus, setAccountStatus] = useState<(AccessStatus.AWAITING_VALIDATION | AccessStatus.GRANTED)[]>(initialState?.account_status ?? [])
@@ -193,10 +193,10 @@ function ModerationQueueContent({ userType, initialState }: { userType: IModerat
     retry: false,
   })
 
-  // Page relue au retour sur la file : les décisions prises depuis ont pu la vider.
   useEffect(() => {
-    if (!data || isPlaceholderData || data.jobs.length || offset === 0) return
-    setOffset(Math.max(0, Math.ceil(data.pagination.total / PAGE_SIZE) - 1) * PAGE_SIZE)
+    if (!data || isPlaceholderData) return
+    const fallbackOffset = getEmptyPageFallbackOffset({ jobsCount: data.jobs.length, total: data.pagination.total, offset, pageSize: PAGE_SIZE })
+    if (fallbackOffset !== null) setOffset(fallbackOffset)
   }, [data, isPlaceholderData, offset])
 
   const jobs = data?.jobs ?? []

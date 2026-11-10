@@ -4,11 +4,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { getModerationQueueNeighbors } from "@/utils/api"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import type { IModerationUserType } from "./moderation.types"
-import type { IModerationQueueState } from "./moderation-queue-state"
 import { readModerationQueueState, toModerationQueueQuery } from "./moderation-queue-state"
 
 const ICONS = {
@@ -37,20 +36,25 @@ export const ModerationJobNavigationLinks = ({ previous, next, userType }: { pre
   </Box>
 )
 
-/** Offres voisines dans la file, avec les filtres et le tri laissés sur la liste (#5868). */
+/**
+ * Offres voisines dans la file, avec les filtres et le tri laissés sur la liste (#5868). L'état de la file est lu au
+ * premier rendu client : le rendu serveur n'affiche rien, l'hydratation non plus tant que la réponse n'est pas là.
+ * Sans réponse (chargement, erreur), rien n'est affiché : un bouton désactivé signifierait « bout de la file ».
+ */
 export function ModerationJobNavigation({ jobId, userType }: { jobId: string; userType: IModerationUserType }) {
-  const [queueState, setQueueState] = useState<IModerationQueueState | null | undefined>(undefined)
-  useEffect(() => {
-    setQueueState(readModerationQueueState(userType))
-  }, [userType])
+  const [filters] = useState(() => {
+    if (typeof window === "undefined") return undefined
+    const queueState = readModerationQueueState(userType)
+    return queueState ? toModerationQueueQuery(queueState) : {}
+  })
 
-  const filters = queueState ? toModerationQueueQuery(queueState) : {}
   const { data } = useQuery({
     queryKey: ["moderation-neighbors", jobId, filters],
-    queryFn: () => getModerationQueueNeighbors(jobId, filters),
-    enabled: queueState !== undefined,
+    queryFn: () => getModerationQueueNeighbors(jobId, filters ?? {}),
+    enabled: filters !== undefined,
     retry: false,
   })
 
-  return <ModerationJobNavigationLinks previous={data?.previous ?? null} next={data?.next ?? null} userType={userType} />
+  if (!data) return null
+  return <ModerationJobNavigationLinks previous={data.previous} next={data.next} userType={userType} />
 }

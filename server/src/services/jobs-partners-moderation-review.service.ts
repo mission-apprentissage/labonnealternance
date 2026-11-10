@@ -201,8 +201,11 @@ const buildQueueStages = async ({ scope, conformity, account_status, account_typ
   return { stages, lookupBeforePaging }
 }
 
-// `_id` départage les ex aequo, toujours décroissant : cf. getModerationQueueNeighbors.
-const buildQueueSort = (order: "asc" | "desc") => ({ _sort: order === "asc" ? 1 : -1, _id: -1 }) as const
+/** Ordre de la file : `_id` départage les ex aequo, toujours décroissant. `backward` le parcourt à rebours (offre précédente). */
+const buildQueueSort = (order: "asc" | "desc", direction: "forward" | "backward" = "forward") => {
+  const sign = direction === "forward" ? 1 : -1
+  return { _sort: (order === "asc" ? 1 : -1) * sign, _id: -1 * sign }
+}
 
 export const listModerationQueue = async ({
   limit = 50,
@@ -267,7 +270,7 @@ export const getModerationQueueNeighbors = async ({ id, ...query }: IModerationQ
             },
           },
         },
-        { $sort: forward ? buildQueueSort(order) : { _sort: order === "asc" ? -1 : 1, _id: 1 } },
+        { $sort: buildQueueSort(order, direction === "next" ? "forward" : "backward") },
         { $limit: 1 },
         { $project: { _id: 1 } },
       ])

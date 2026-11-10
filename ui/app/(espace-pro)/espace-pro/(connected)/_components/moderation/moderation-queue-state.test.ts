@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { readModerationQueueState, toModerationQueueQuery, writeModerationQueueState } from "./moderation-queue-state"
+import { getEmptyPageFallbackOffset, readModerationQueueState, toModerationQueueQuery, writeModerationQueueState } from "./moderation-queue-state"
 
 const stubSessionStorage = (initial: Record<string, string> = {}) => {
   const store = new Map(Object.entries(initial))
@@ -71,5 +71,19 @@ describe("état de la file de modération", () => {
       sort: "recruiter",
       order: "asc",
     })
+  })
+})
+
+describe("getEmptyPageFallbackOffset", () => {
+  const PAGE_SIZE = 50
+
+  it.each([
+    ["page non vide", { jobsCount: 3, total: 53, offset: 50 }, null],
+    ["première page vide : file vide, rien à corriger", { jobsCount: 0, total: 0, offset: 0 }, null],
+    ["page vidée par des décisions", { jobsCount: 0, total: 80, offset: 100 }, 50],
+    ["file vidée entièrement", { jobsCount: 0, total: 0, offset: 100 }, 0],
+    ["total multiple de la taille de page", { jobsCount: 0, total: 100, offset: 100 }, 50],
+  ])("%s", (_, page, expected) => {
+    expect(getEmptyPageFallbackOffset({ ...page, pageSize: PAGE_SIZE })).toBe(expected)
   })
 })
