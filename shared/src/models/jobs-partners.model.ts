@@ -267,6 +267,14 @@ export type IJobsPartnersOfferPrivate = z.output<typeof ZJobsPartnersOfferPrivat
 export type IJobsPartnersOfferPrivateWithDistance = z.output<typeof ZJobsPartnersOfferPrivateWithDistance>
 export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPrivate>
 
+export const OFFER_DESCRIPTION_MIN_LENGTH = 30
+
+/** Contrôle de saisie des routes d'écriture. Le texte visible après sanitization est revérifié côté serveur (#5855). */
+export const zOfferDescriptionWrite = ZJobsPartnersOfferPrivate.shape.offer_description.min(
+  OFFER_DESCRIPTION_MIN_LENGTH,
+  `Job description should be at least ${OFFER_DESCRIPTION_MIN_LENGTH} characters`
+)
+
 const TIME_CLOCK_TOLERANCE = 300_000
 
 export const ZJobsPartnersPostApiBodyBase = z.object({
@@ -282,7 +290,7 @@ export const ZJobsPartnersPostApiBodyBase = z.object({
 
   offer_title: ZJobsPartnersOfferPrivate.shape.offer_title,
   offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
-  offer_description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
+  offer_description: zOfferDescriptionWrite,
   offer_target_diploma_european: zDiplomaEuropeanLevel.nullable().default(null),
   offer_desired_skills: ZJobsPartnersOfferPrivate.shape.offer_desired_skills.default([]),
   offer_to_be_acquired_skills: ZJobsPartnersOfferPrivate.shape.offer_to_be_acquired_skills.default([]),

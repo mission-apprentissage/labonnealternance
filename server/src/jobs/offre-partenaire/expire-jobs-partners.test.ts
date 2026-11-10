@@ -47,4 +47,20 @@ describe("expireJobsPartners", () => {
       [JOB_STATUS_ENGLISH.ACTIVE],
     ])
   })
+
+  it("trace l'expiration sous le code EXPIRED", async () => {
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({ offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_expiration: dayjs().subtract(1, "day").toDate() })
+    )
+
+    await expireJobsPartners()
+
+    const offer = await getDbCollection("jobs_partners").findOne({})
+    expect(offer?.offer_status_history.at(-1)).toEqual({
+      date: expect.any(Date),
+      status: JOB_STATUS_ENGLISH.ANNULEE,
+      reason: "EXPIRED (date dépassée)",
+      granted_by: "expire-jobs-partners",
+    })
+  })
 })

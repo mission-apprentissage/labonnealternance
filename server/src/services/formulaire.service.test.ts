@@ -868,7 +868,7 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
         closeOffreWithMotif({ id, offer_status, origin: JOB_CLOSURE_ORIGIN.MAIL_RECRUTEUR, job_status_comment })
 
       it.each([
-        ["expire-jobs-partners", "offre expirée (date dépassée)"],
+        ["expire-jobs-partners", "EXPIRED (date dépassée)"],
         ["close-jobs-partners-on-application-threshold", "seuil de 80 candidatures atteint"],
       ])("ajoute la réponse après la clôture de « %s », même sans changement de statut", async (granted_by, reason) => {
         const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), { offer_expiration, offer_status_history: [autoClosure(granted_by, reason)] })
@@ -892,7 +892,7 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
       it("passe l'offre en Filled pour un motif « pourvue »", async () => {
         const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), {
           offer_expiration,
-          offer_status_history: [autoClosure("expire-jobs-partners", "offre expirée (date dépassée)")],
+          offer_status_history: [autoClosure("expire-jobs-partners", "EXPIRED (date dépassée)")],
         })
 
         await answerByMail(id, "J'ai pourvu l'offre avec La bonne alternance", JOB_STATUS_ENGLISH.POURVUE)
@@ -905,7 +905,7 @@ describe("traçabilité des clôtures d'offres (issue #5429)", () => {
 
       it("n'enregistre qu'une réponse quand le lien est utilisé deux fois", async () => {
         const id = await insertLbaOffer(JOB_STATUS_ENGLISH.ANNULEE, new ObjectId(), {
-          offer_status_history: [autoClosure("expire-jobs-partners", "offre expirée (date dépassée)")],
+          offer_status_history: [autoClosure("expire-jobs-partners", "EXPIRED (date dépassée)")],
         })
 
         await answerByMail(id, "Je ne suis plus en recherche")
