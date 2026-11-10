@@ -602,8 +602,9 @@ export const PAGES = {
       getPath: () => `/espace-pro/entreprise/offre/${job_id}/mise-en-relation` as string,
       title: "Mise en relation avec des organismes de formation",
     }),
-    backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
-      getPath: () => `/espace-pro/opco/users/${user_id}` as string,
+    backOpcoInformationEntreprise: ({ user_id, user_label, organization_id }: { user_id: string; user_label?: string; organization_id?: string }): IPage => ({
+      // Sans organization_id, la fiche retombe sur un rôle de l'utilisateur dans le périmètre de l'OPCO (cf. getReadableRoles).
+      getPath: () => (organization_id ? `/espace-pro/opco/users/${user_id}?organizationId=${organization_id}` : `/espace-pro/opco/users/${user_id}`) as string,
       title: user_label ?? "Entreprise",
     }),
     backEditAdministrator: ({ userId }: { userId: string }): IPage => ({

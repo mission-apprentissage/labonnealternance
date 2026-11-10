@@ -106,6 +106,8 @@ export const createEtablissementDelegationByToken = async ({ data, jobId, token 
  * User API
  */
 export const getUser = async (userId: string, organizationId: string = "unused") => apiGet("/user/:userId/organization/:organizationId", { params: { userId, organizationId } })
+export const getSameSiretAccounts = async (userId: string, organizationId: string) =>
+  apiGet("/user/:userId/organization/:organizationId/same-siret-accounts", { params: { userId, organizationId } })
 export const getUserStatus = async (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
 export const getUserStatusByToken = async (userId: string, token: string) =>
   apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
