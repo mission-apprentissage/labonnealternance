@@ -102,6 +102,7 @@ describe("helloWorkJobToJobsPartners", () => {
     ["85.59G", "IS_CFA"],
     ["85.10Y", null],
     ["8510Y", null],
+    ["85.10y", null],
     ["8610Z", null],
     ["5850Z", null],
     ["0850Z", null],

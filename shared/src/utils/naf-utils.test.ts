@@ -61,6 +61,9 @@ describe("isTrainingOrganizationNafCode", () => {
   it.each([
     "85.10Y", // enseignement pré-primaire NAF 2025, qui absorbe une partie des crèches (88.91A)
     "8510Y",
+    "85.10y", // formes non canoniques reçues brutes (flux Buddi, recherche-entreprises côté UI)
+    "85 10Y",
+    " 85-10-Y ",
     "88.91A", // crèches restées hors division 85
     "88.91G",
     "58.50Z", // contient « 85 » sans être en tête

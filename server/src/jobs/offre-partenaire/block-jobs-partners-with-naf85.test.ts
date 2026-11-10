@@ -1,18 +1,12 @@
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
-import { beforeEach, describe, expect, it } from "vitest"
+import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { blockJobsPartnersWithNaf85 } from "./block-jobs-partners-with-naf85"
 
 describe("blockJobsPartnersWithNaf85", () => {
   useMongo()
-
-  beforeEach(() => {
-    return async () => {
-      await getDbCollection("computed_jobs_partners").deleteMany({})
-    }
-  })
 
   const blockedCodes = async (codes: string[]) => {
     await givenSomeComputedJobPartners(codes.map((workplace_naf_code) => ({ workplace_naf_code, partner_job_id: workplace_naf_code, business_error: null })))

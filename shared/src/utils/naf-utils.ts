@@ -30,11 +30,12 @@ export const normalizeNafCode = (nafCode: string | null | undefined): string | n
 /**
  * Division 85 (enseignement) = organisme de formation, sauf 85.10Y : en NAF 2025, cette sous-classe
  * absorbe une partie des crèches (88.91A en NAF rév. 2), qui recrutent des apprentis (#5869).
- * Sans flag `i` pour rester utilisable en `$regex` sur l'index `workplace_naf_code`.
+ * Sans flag `i` pour rester utilisable en `$regex` sur l'index `workplace_naf_code`, dont les codes sont
+ * déjà normalisés en amont (formatTextFieldsJobsPartners). Une forme non canonique est sur-bloquée.
  */
 export const TRAINING_ORGANIZATION_NAF_REGEX = /^85(?!\.?10Y)/
 
-export const isTrainingOrganizationNafCode = (nafCode: string | null | undefined): boolean => TRAINING_ORGANIZATION_NAF_REGEX.test(nafCode ?? "")
+export const isTrainingOrganizationNafCode = (nafCode: string | null | undefined): boolean => TRAINING_ORGANIZATION_NAF_REGEX.test(normalizeNafCode(nafCode) ?? "")
 
 // U+2018/U+2019/U+201B et la lettre modificative U+02BC, toutes rendues comme une apostrophe
 const APOSTROPHES_REGEX = /[‘’‛ʼ]/g
