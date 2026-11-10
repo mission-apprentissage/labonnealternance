@@ -7,30 +7,28 @@ import { useMutation } from "@tanstack/react-query"
 import { Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useRef } from "react"
-import type { INewSuperUser, IUserStatusValidationJson } from "shared"
+import type { INewSuperUser } from "shared"
 import { BusinessErrorCodes, EntrepriseErrorCodes } from "shared/constants/error-codes"
 import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
-import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { AUTHTYPE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
 import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
-import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
-import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { useToast } from "@/app/hooks/useToast"
 import { emailValidation, frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
+import { AnimationContainer, ConfirmationModificationOpco } from "@/components/espace_pro"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { EMAIL_ALREADY_USED_ERROR } from "@/utils/validation-messages"
-import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
+import { AccountReview } from "./account-review/AccountReview"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
 
@@ -52,7 +50,6 @@ export default function DetailEntreprise({
   onDeleteEntreprisePartenaire?: () => void
 }) {
   const router = useRouter()
-  const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
   const formRef = useRef<HTMLFormElement>(null)
   const serverFieldErrors = useServerFieldErrors()
@@ -64,62 +61,6 @@ export default function DetailEntreprise({
   // Une entreprise gérée par un CFA n'a pas de compte utilisateur propre : ses informations de contact,
   // son statut et son historique proviennent en réalité du CFA gestionnaire, pas de l'entreprise elle-même.
   const showAccountLifecycle = user.type !== AUTHTYPE.CFA && !isCfaManagedEntreprise
-
-  const ActivateUserButton = ({ userId, organizationId }: { userId: string; organizationId: string }) => {
-    const { activate } = useUserPermissionsActions(userId, organizationId)
-
-    return (
-      <Button
-        onClick={async () => {
-          await activate()
-          onChange?.({})
-        }}
-      >
-        Activer le compte
-      </Button>
-    )
-  }
-
-  const DisableUserButton = () => {
-    return (
-      <Button className="fr-btn--secondary" onClick={() => confirmationDesactivationUtilisateur.onOpen()}>
-        Désactiver le compte
-      </Button>
-    )
-  }
-
-  const getActionButtons = (userHistory: IUserStatusValidationJson, userId: string, organizationId: string) => {
-    switch (userHistory.status) {
-      case ETAT_UTILISATEUR.ATTENTE:
-        return (
-          <Box sx={{ display: "flex", gap: fr.spacing("2v") }}>
-            <ActivateUserButton userId={userId} organizationId={organizationId} />
-            <DisableUserButton />
-          </Box>
-        )
-      case ETAT_UTILISATEUR.VALIDE:
-        return <DisableUserButton />
-      case ETAT_UTILISATEUR.DESACTIVE:
-        return <ActivateUserButton userId={userId} organizationId={organizationId} />
-
-      default:
-        return <></>
-    }
-  }
-
-  const getUserBadge = (userHistory: IUserStatusValidationJson) => {
-    switch (userHistory.status) {
-      case ETAT_UTILISATEUR.ATTENTE:
-        return <Badge variant="awaiting">À VERIFIER</Badge>
-      case ETAT_UTILISATEUR.VALIDE:
-        return <Badge variant="active">ACTIF</Badge>
-      case ETAT_UTILISATEUR.DESACTIVE:
-        return <Badge variant="inactive">INACTIF</Badge>
-
-      default:
-        return <Badge>{userHistory.status}</Badge>
-    }
-  }
 
   const userMutation = useMutation({
     mutationFn: async (props: Variables) => {
@@ -151,12 +92,18 @@ export default function DetailEntreprise({
     },
   })
 
-  const lastUserState: IUserStatusValidationJson = userRecruteur.status.at(-1)
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
+
+  if (showAccountLifecycle && (user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO)) {
+    return (
+      <AnimationContainer>
+        <AccountReview userRecruteur={userRecruteur} recruiter={recruiter} onChange={onChange} />
+      </AnimationContainer>
+    )
+  }
 
   return (
     <AnimationContainer>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
       <Box
         sx={{
           borderBottom: "1px solid #E3E3FD",
@@ -164,55 +111,29 @@ export default function DetailEntreprise({
           px: fr.spacing("4v"),
         }}
       >
-        {showAccountLifecycle && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: fr.spacing("4v"),
-            }}
-          >
-            <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, wordBreak: "break-word" }}>
-              {establishmentLabel}
-            </Typography>
+        <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
+          <Typography sx={{ fontSize: "32px", fontWeight: 700, ml: 0, mr: fr.spacing("8v"), wordBreak: "break-word" }} component="h2">
+            {establishmentLabel}
+          </Typography>
 
-            <Box>{getActionButtons(lastUserState, userRecruteur._id, userRecruteur.organizationId)}</Box>
-          </Box>
-        )}
-        {!showAccountLifecycle && (
-          <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
-            <Typography sx={{ fontSize: "32px", fontWeight: 700, ml: 0, mr: fr.spacing("8v"), wordBreak: "break-word" }} component="h2">
-              {establishmentLabel}
-            </Typography>
-
-            {isCfaManagedEntreprise ? (
-              <Button priority="secondary" iconId="fr-icon-delete-line" type="button" onClick={() => onDeleteEntreprisePartenaire?.()}>
-                Supprimer l'entreprise partenaire
-              </Button>
-            ) : (
-              <Button
-                priority="secondary"
-                iconId="fr-icon-close-line"
-                type="button"
-                onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}
-              >
-                Fermer
-              </Button>
-            )}
-          </Box>
-        )}
+          {isCfaManagedEntreprise ? (
+            <Button priority="secondary" iconId="fr-icon-delete-line" type="button" onClick={() => onDeleteEntreprisePartenaire?.()}>
+              Supprimer l'entreprise partenaire
+            </Button>
+          ) : (
+            <Button
+              priority="secondary"
+              iconId="fr-icon-close-line"
+              type="button"
+              onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}
+            >
+              Fermer
+            </Button>
+          )}
+        </Box>
       </Box>
       <Box sx={{ px: fr.spacing("4v") }}>
         <Box sx={{ display: user.type !== "CFA" ? "flex" : "none", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
-          {showAccountLifecycle && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
-              <Typography component="p" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
-                Statut :
-              </Typography>
-              {getUserBadge(lastUserState)}
-            </Box>
-          )}
           {user.type !== "CFA" && (
             <Box sx={{ display: "flex", gap: fr.spacing("3v"), flexWrap: "wrap" }}>
               {userRecruteur.establishment_siret && (
@@ -360,44 +281,20 @@ export default function DetailEntreprise({
                     }
                   />
                 </form>
+                {/* Ici, un admin ou un OPCO consulte toujours une entreprise gérée par un CFA : cf. le retour anticipé sur AccountReview. */}
                 {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
-                  <>
-                    <Box
-                      sx={{
-                        my: fr.spacing("12v"),
-                      }}
-                    >
-                      {user.type === AUTHTYPE.ADMIN && userRecruteur.type === AUTHTYPE.CFA ? (
-                        <EntreprisesGereesParCfa cfaId={userRecruteur.organizationId} userId={userRecruteur._id} />
-                      ) : (
-                        <OffresTabs
-                          caption="Offres de recrutement en alternance"
-                          recruiter={recruiter}
-                          hideCfaShareAction={isCfaManagedEntreprise}
-                          buildOfferEditionUrl={(offerId) => {
-                            return PAGES.dynamic
-                              .offreUpsert({
-                                offerId,
-                                establishment_id: userRecruteur.establishment_id,
-                                userType: user.type,
-                                userId: isCfaManagedEntreprise ? cfaUserId : userRecruteur._id,
-                                raison_sociale: establishmentLabel,
-                              })
-                              .getPath()
-                          }}
-                        />
-                      )}
-                    </Box>
-                    {!isCfaManagedEntreprise && (
-                      <Box
-                        sx={{
-                          mb: fr.spacing("24v"),
-                        }}
-                      >
-                        <UserValidationHistory histories={userRecruteur.status} />
-                      </Box>
-                    )}
-                  </>
+                  <Box sx={{ my: fr.spacing("12v") }}>
+                    <OffresTabs
+                      caption="Offres de recrutement en alternance"
+                      recruiter={recruiter}
+                      hideCfaShareAction
+                      buildOfferEditionUrl={(offerId) =>
+                        PAGES.dynamic
+                          .offreUpsert({ offerId, establishment_id: userRecruteur.establishment_id, userType: user.type, userId: cfaUserId, raison_sociale: establishmentLabel })
+                          .getPath()
+                      }
+                    />
+                  </Box>
                 )}
               </>
             )

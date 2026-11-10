@@ -16,7 +16,7 @@ import type { HandiEngagement } from "shared/models/referentiel-engagement-entre
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last-status-event"
-import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
+import { isTrainingOrganizationNafCode, normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import { getEtablissementFromGouvSafe } from "@/common/apis/api-entreprise/api-entreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/france-competences/france-competences-client"
 import { logger } from "@/common/logger"
@@ -336,7 +336,7 @@ export type EntrepriseData = IFormatAPIEntreprise & { geo_coordinates: string; g
 
 export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret, nafCode }: { siret: string; cfa_delegated_siret?: string; nafCode?: string }) => {
   if (!cfa_delegated_siret) return
-  if (nafCode?.startsWith("85")) {
+  if (isTrainingOrganizationNafCode(nafCode)) {
     return errorFactory("L'entreprise partenaire ne doit pas relever du secteur de l'enseignement.", BusinessErrorCodes.IS_CFA)
   }
   const isManagedByCfa = await isEntrepriseManagedByCfa(siret, cfa_delegated_siret)
@@ -378,9 +378,8 @@ export const getEntrepriseDataFromSiret = async ({
       return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
     }
   }
-  // NAF 85 (enseignement) : organisme de formation, refusé pour un compte entreprise
   if (type === ENTREPRISE) {
-    if (activite_principale?.code?.startsWith("85")) {
+    if (isTrainingOrganizationNafCode(activite_principale?.code)) {
       if (isApiApprentissage) {
         return errorFactory("The SIRET number is not referenced as a company.", BusinessErrorCodes.IS_CFA)
       } else {

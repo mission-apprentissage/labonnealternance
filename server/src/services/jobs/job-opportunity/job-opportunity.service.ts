@@ -11,7 +11,7 @@ import dayjs from "shared/helpers/dayjs"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { JOB_START_TYPE, ZToApplicantQuestions } from "shared/models/job.model"
 import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobs-partners.model"
-import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { JOBPARTNERS_LABEL, OFFER_DESCRIPTION_MIN_LENGTH } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobs-partners-computed.model"
 import { JOB_PARTNER_BUSINESS_ERROR, JOBS_PARTNERS_OFFER_ORIGIN, PARTNER_WHITELIST, TRUSTED_COMPANY_JOB_PARTNERS } from "shared/models/jobs-partners-computed.model"
 import type {
@@ -31,6 +31,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { isNormalizedStringInSetOrArray, sanitizeToPlainText } from "@/common/utils/string-utils"
 import config from "@/config"
+import { isOfferDescriptionTooShort } from "@/jobs/offre-partenaire/format-text-fields-jobs-partners"
 import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
 import type { FTJob } from "@/services/ftjob.service.types"
 import { getRecruteursLbaFromDB } from "@/services/recruteur-lba.service"
@@ -456,6 +457,15 @@ const getTrustedCompanyBusinessError = (partner_label: string, ...workplaceNames
 
 type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
 
+const OFFER_DESCRIPTION_TOO_SHORT_MESSAGE = `Job description should be at least ${OFFER_DESCRIPTION_MIN_LENGTH} characters, excluding HTML tags and contact details`
+
+// Le schéma de route compte les caractères bruts : une description faite de balises ou de coordonnées passerait.
+const assertOfferDescriptionLength = (description: string | null | undefined) => {
+  if (isOfferDescriptionTooShort(description)) {
+    throw badRequest(OFFER_DESCRIPTION_TOO_SHORT_MESSAGE)
+  }
+}
+
 async function upsertJobOfferPrivate({
   data,
   partner_label,
@@ -469,6 +479,7 @@ async function upsertJobOfferPrivate({
   requestedByEmail: string
   current: IJobsPartnersOfferPrivate | null
 }): Promise<ObjectId> {
+  assertOfferDescriptionLength(data.offer.description)
   const now = new Date()
   const _id = current?._id ?? new ObjectId()
   let contract_is_disabled_elligible = false
@@ -738,6 +749,7 @@ const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> 
   [JOB_PARTNER_BUSINESS_ERROR.FULL_TIME]: "The offer is considered a full-time position",
   [JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA]: "The offer contains bad data",
   [JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND]: "We were unable to geolocate the offer's address",
+  [JOB_PARTNER_BUSINESS_ERROR.DESCRIPTION_TOO_SHORT]: OFFER_DESCRIPTION_TOO_SHORT_MESSAGE,
 }
 
 const computedJobsPartnersToPublishing = (job: IComputedJobsPartners): IJobOfferPublishingV3 => {
@@ -835,6 +847,7 @@ export async function upsertJobsPartnersMulti({
   data: IComputedJobsPartnersWrite
   requestedByEmail: string
 }): Promise<{ id: ObjectId; modified: boolean }> {
+  assertOfferDescriptionLength(data.offer_description)
   const now = new Date()
   const { partner_label, partner_job_id } = data
 

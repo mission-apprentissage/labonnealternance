@@ -472,6 +472,104 @@ describe("POST /jobs", async () => {
     })
     expect(await getDbCollection("jobs_partners").countDocuments({})).toBe(0)
   })
+
+  it("refuse une description dont le texte visible fait moins de 30 caractères (#5855)", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: `/api/v3/jobs`,
+      body: { ...jobOfferApiWriteInput, offer: { ...jobOfferApiWriteInput.offer, description: "<p>   </p><p>&nbsp;</p><br/><br/><br/><br/>" } },
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect.soft(response.statusCode).toBe(400)
+    expect.soft(response.json().message).toBe("Job description should be at least 30 characters, excluding HTML tags and contact details")
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({})).toBe(0)
+  })
+})
+
+describe("POST /v4/jobs/multi-partner", () => {
+  const validDescription = "Envie de devenir développeur web ? Rejoignez-nous !"
+  const buildBody = (partner_job_id: string, offer_description: string | null) => ({
+    partner_label: "Un agrégateur",
+    partner_job_id,
+    offer_title: "Apprentis en développement web",
+    offer_description,
+    offer_creation: new Date("2024-06-18T00:00:00.000Z").toJSON(),
+    offer_expiration: new Date("2024-08-18T00:00:00.000Z").toJSON(),
+  })
+
+  const apiKey = new ObjectId().toString()
+
+  beforeEach(async () => {
+    const now = new Date()
+    await getDbCollection("credentials").insertOne({
+      _id: new ObjectId(),
+      nom: "Agrégateur",
+      prenom: "Test",
+      organisation: "Un agrégateur",
+      scope: "multi-partner",
+      email: "agregateur@test.fr",
+      api_key: apiKey,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    })
+  })
+
+  it("refuse une offre sans description", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v4/jobs/multi-partner",
+      body: buildBody("sans-description", null),
+      headers: { authorization: apiKey },
+    })
+
+    expect.soft(response.statusCode).toBe(400)
+    expect.soft(response.json().message).toBe("Job description should be at least 30 characters, excluding HTML tags and contact details")
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({})).toBe(0)
+  })
+
+  it("refuse une description de moins de 30 caractères visibles", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v4/jobs/multi-partner",
+      body: buildBody("balises", "<p><b>Poste de vendeur en boutique</b></p>"),
+      headers: { authorization: apiKey },
+    })
+
+    expect.soft(response.statusCode).toBe(400)
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({})).toBe(0)
+  })
+
+  it("accepte une description valide", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v4/jobs/multi-partner",
+      body: buildBody("valide", validDescription),
+      headers: { authorization: apiKey },
+    })
+
+    expect.soft(response.statusCode).toBe(200)
+    expect(await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: "valide" })).toMatchObject({ offer_description: validDescription })
+  })
+
+  it("en bulk, refuse en 400 les seules offres sans description ou à description trop courte", async () => {
+    // Le refus se fait offre par offre : un schéma de route qui exigerait la description rejetterait tout le lot.
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v4/jobs/multi-partner/bulk",
+      body: [buildBody("bulk-valide", validDescription), buildBody("bulk-coordonnees", "contact.rh@agence-exemple.fr 06 12 34 56 78"), buildBody("bulk-sans", null)],
+      headers: { authorization: apiKey },
+    })
+
+    expect.soft(response.statusCode).toBe(200)
+    expect.soft(response.json()).toEqual([
+      { id: expect.any(String), status: 200 },
+      { error: expect.stringContaining("Job description should be at least 30 characters"), status: 400 },
+      { error: expect.stringContaining("Job description should be at least 30 characters"), status: 400 },
+    ])
+    expect(await getDbCollection("computed_jobs_partners").distinct("partner_job_id")).toEqual(["bulk-valide"])
+  })
 })
 
 describe("PUT /jobs/:id", async () => {
