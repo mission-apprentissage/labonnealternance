@@ -143,6 +143,9 @@ export const getModerationSummaries = async (ids: string[]) => apiGet("/moderati
 
 export const getModerationJob = async (id: string) => apiGet("/moderation/jobs/:id", { params: { id } })
 
+export const getModerationQueueNeighbors = async (id: string, querystring: IQuery<IRoutes["get"]["/moderation/jobs/:id/neighbors"]>) =>
+  apiGet("/moderation/jobs/:id/neighbors", { params: { id }, querystring: removeUndefinedFields(querystring) })
+
 export const validateModerationJob = async (id: string, moderationId: string) => apiPost("/moderation/jobs/:id/validate", { params: { id }, body: { moderation_id: moderationId } })
 
 export const refuseModerationJob = async (id: string, body: IBody<IRoutes["post"]["/moderation/jobs/:id/refuse"]>) =>
