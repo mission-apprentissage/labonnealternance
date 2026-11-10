@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
-import { useState } from "react"
+import { useId, useState } from "react"
 import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
@@ -29,10 +29,11 @@ export const DemandeDeContactModal = ({
   modalControls: ReturnType<typeof useDisclosure>
 }) => {
   const { isOpen, onClose } = modalControls
+  const titleId = useId()
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
-      <DemandeDeContactBody key={cle_ministere_educatif} context={context} referrer={referrer} onRdvSuccess={onRdvSuccess} />
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={titleId}>
+      <DemandeDeContactBody key={cle_ministere_educatif} titleId={titleId} context={context} referrer={referrer} onRdvSuccess={onRdvSuccess} />
     </ModalReadOnly>
   )
 }
@@ -42,10 +43,12 @@ const DemandeDeContactBody = ({
   context: { etablissement_formateur_entreprise_raison_sociale, intitule, adresse, codePostal, ville },
   referrer,
   onRdvSuccess,
+  titleId,
 }: {
   context: DemandeDeContactContext
   referrer: string
   onRdvSuccess: () => void
+  titleId: string
 }) => {
   const [confirmation, setConfirmation] = useState<{ appointmentId: string; token: string } | null>(null)
 
@@ -57,10 +60,11 @@ const DemandeDeContactBody = ({
   return (
     <Box sx={{ py: fr.spacing("4v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
       {confirmation ? (
-        <DemandeDeContactConfirmation {...confirmation} />
+        <DemandeDeContactConfirmation {...confirmation} titleId={titleId} />
       ) : (
         <>
           <ContactCfaSummary
+            titleId={titleId}
             entrepriseRaisonSociale={etablissement_formateur_entreprise_raison_sociale}
             intitule={intitule}
             adresse={adresse}

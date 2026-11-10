@@ -12,7 +12,7 @@ import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { buildRecruteursLbaSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search-legacy-utils"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 
-const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson }) => {
+const CandidatureLbaWorked = ({ titleId, email, item }: { titleId?: string; email: string; item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson }) => {
   const router = useRouter()
 
   // Recherche d'origine à rejouer avec le filtre « entreprises à contacter » : ?from= du
@@ -27,7 +27,9 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: fr.spacing("8v") }}>
         <Image src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" width={23} height={23} />
         <Box sx={{ ml: fr.spacing("4v") }}>
-          <ModalTitle focusOnMount>Votre candidature a bien été envoyée à {company}</ModalTitle>
+          <ModalTitle id={titleId} focusOnMount>
+            Votre candidature a bien été envoyée à {company}
+          </ModalTitle>
         </Box>
       </Box>
       <Typography sx={{ fontSize: "18px" }}>

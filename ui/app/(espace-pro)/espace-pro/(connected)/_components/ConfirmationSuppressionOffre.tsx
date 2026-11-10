@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useQueryClient } from "@tanstack/react-query"
+import { useId } from "react"
 
 import ClotureRecrutementForm, { type IClotureRecrutementPayload } from "@/app/(espace-pro)/_components/ClotureRecrutementForm"
 import { useToast } from "@/app/hooks/useToast"
@@ -18,6 +19,7 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
   const toast = useToast()
   const client = useQueryClient()
   const { isOpen, onClose, offre } = props
+  const titleId = useId()
 
   const submit = async (offreId: string, payload: IClotureRecrutementPayload) => {
     await cancelOffreFromAdmin(offreId, payload)
@@ -32,9 +34,9 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
   }
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <ClotureRecrutementForm offreId={offre._id} onSuccess={onClose} onCancel={onClose} submit={submit} />
+        <ClotureRecrutementForm titleId={titleId} offreId={offre._id} onSuccess={onClose} onCancel={onClose} submit={submit} />
       </Box>
     </ModalReadOnly>
   )

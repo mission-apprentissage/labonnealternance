@@ -6,6 +6,7 @@ import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
+import { useId } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
@@ -19,6 +20,7 @@ import { AdminUserForm } from "./_components/AdminUserForm"
 
 export default function GestionDesAdministrateurs() {
   const newUser = useDisclosure()
+  const newUserTitleId = useId()
   const router = useRouter()
   const {
     data: users,
@@ -40,9 +42,9 @@ export default function GestionDesAdministrateurs() {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs]} />
-      <ModalReadOnly isOpen={newUser.isOpen} onClose={newUser.onClose}>
+      <ModalReadOnly isOpen={newUser.isOpen} onClose={newUser.onClose} ariaLabelledBy={newUserTitleId}>
         <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-          <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
+          <Typography id={newUserTitleId} className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
             Ajouter un nouvel utilisateur
           </Typography>
 

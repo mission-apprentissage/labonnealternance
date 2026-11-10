@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useId, useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
@@ -21,6 +21,7 @@ export const CandidatureLbaModal = ({
   fromWidget?: boolean
 }) => {
   const [applicantEmail, setApplicantEmail] = useState<string>("")
+  const titleId = useId()
   const { isOpen, onClose: onModalClose } = modalControls
   const { handleSubmitCandidature, isDone, isSuccess, isError, error, isLoading } = submitControls
   const kind = item.ideaType
@@ -42,17 +43,26 @@ export const CandidatureLbaModal = ({
   const content = (
     <>
       {!isDone && (
-        <CandidatureLbaModalBody fromWidget={fromWidget} isLoading={isLoading} company={item.company?.name} item={item} kind={kind} onSubmit={onSubmit} onClose={onModalClose} />
+        <CandidatureLbaModalBody
+          titleId={titleId}
+          fromWidget={fromWidget}
+          isLoading={isLoading}
+          company={item.company?.name}
+          item={item}
+          kind={kind}
+          onSubmit={onSubmit}
+          onClose={onModalClose}
+        />
       )}
-      {isSuccess && <CandidatureLbaWorked email={applicantEmail} item={item} />}
-      {isError && <CandidatureLbaFailed error={error + ""} />}
+      {isSuccess && <CandidatureLbaWorked titleId={titleId} email={applicantEmail} item={item} />}
+      {isError && <CandidatureLbaFailed titleId={titleId} error={error + ""} />}
     </>
   )
 
   return fromWidget ? (
     content
   ) : (
-    <ModalReadOnly size="xl" isOpen={isOpen} onClose={onModalClose} hideCloseButton={isSuccess || isError ? false : true}>
+    <ModalReadOnly size="xl" isOpen={isOpen} ariaLabelledBy={titleId} onClose={onModalClose} hideCloseButton={isSuccess || isError ? false : true}>
       {content}
     </ModalReadOnly>
   )

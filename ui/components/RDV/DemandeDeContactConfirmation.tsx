@@ -6,7 +6,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { BarberGuy } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
-export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appointmentId: string; token: string }) => {
+export const DemandeDeContactConfirmation = ({ appointmentId, token, titleId }: { appointmentId: string; token: string; titleId?: string }) => {
   const { isPending, data } = useQuery({
     queryKey: ["/appointment-request/context/short-recap", appointmentId],
     queryFn: () =>
@@ -23,7 +23,7 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
     <div>
       <Box sx={{ mb: fr.spacing("4v"), display: "flex", alignItems: "center" }}>
         <Box component="img" src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
-        <ModalTitle focusOnMount>
+        <ModalTitle id={titleId} focusOnMount>
           Voilà une bonne chose de faite {data.user.firstname} {data.user.lastname} !
         </ModalTitle>
       </Box>

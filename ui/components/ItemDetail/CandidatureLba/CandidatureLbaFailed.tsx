@@ -69,14 +69,14 @@ const sendingStateValues = {
   },
 } satisfies Record<string, DataDisplayForError>
 
-const CandidatureLbaFailed = ({ error }: { error: string }) => {
+const CandidatureLbaFailed = ({ titleId, error }: { titleId?: string; error: string }) => {
   const errorData: DataDisplayForError = sendingStateValues[error] ?? defaultErrorData
   const { dataTestId, title, text } = errorData
 
   return (
     // Remplace le formulaire de candidature : l'échec est annoncé à son affichage (RGAA 7.5).
     <Box role="alert" sx={{ px: fr.spacing("8v") }}>
-      <Typography component="p" variant="h1" sx={{ mb: 5, fontSize: "1.5rem", fontWeight: 700 }}>
+      <Typography id={titleId} component="p" variant="h1" sx={{ mb: 5, fontSize: "1.5rem", fontWeight: 700 }}>
         Erreur
       </Typography>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>

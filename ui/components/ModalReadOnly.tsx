@@ -19,7 +19,8 @@ export const ModalReadOnly = ({
   onClose: () => void
   size?: "xs" | "sm" | "md" | "lg" | "xl"
   hideCloseButton?: boolean
-  ariaLabelledBy?: string
+  /** id du titre visible de la modale : sans lui, MUI référence un id absent du DOM. */
+  ariaLabelledBy: string
 }) => {
   const isMobile = useIsMobileDevice()
 
