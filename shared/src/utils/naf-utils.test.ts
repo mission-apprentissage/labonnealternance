@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { normalizeNafCode, normalizeNafLabel } from "./naf-utils.js"
+import { isTrainingOrganizationNafCode, normalizeNafCode, normalizeNafLabel } from "./naf-utils.js"
 import { toKebabCase } from "./string-utils.js"
 
 describe("normalizeNafCode", () => {
@@ -37,9 +37,40 @@ describe("normalizeNafCode", () => {
   })
 
   it("laisse intact le préfixe de division utilisé par les filtres CFA", () => {
-    // blockJobsPartnersWithNaf85 filtre sur `^85`, validateCreationEntrepriseFromCfa sur startsWith("85")
-    expect(normalizeNafCode("85.42Z")?.startsWith("85")).toBe(true)
-    expect(normalizeNafCode("8542Z")?.startsWith("85")).toBe(true)
+    expect(isTrainingOrganizationNafCode(normalizeNafCode("85.42Z"))).toBe(true)
+    expect(isTrainingOrganizationNafCode(normalizeNafCode("8542Z"))).toBe(true)
+  })
+})
+
+describe("isTrainingOrganizationNafCode", () => {
+  it.each([
+    "85.59A", // formation continue d'adultes, NAF rév. 2
+    "8559A",
+    "85.59G", // formation continue d'adultes, NAF 2025
+    "8559G",
+    "85.40Y", // enseignement supérieur, NAF 2025
+    "85.61Y", // intermédiation appui scolaire, ex-82.99Z
+    "85.10Z", // enseignement pré-primaire, NAF rév. 2 : inchangé avant la bascule
+    "85.11Y", // le `10Y` doit suivre la division, pas un autre préfixe
+    "85.01Y",
+    "85",
+  ])("%s est un organisme de formation", (code) => {
+    expect(isTrainingOrganizationNafCode(code)).toBe(true)
+  })
+
+  it.each([
+    "85.10Y", // enseignement pré-primaire NAF 2025, qui absorbe une partie des crèches (88.91A)
+    "8510Y",
+    "88.91A", // crèches restées hors division 85
+    "88.91G",
+    "58.50Z", // contient « 85 » sans être en tête
+    "0850Z",
+    "93.13Y", // studios de yoga, ex-85.51Z
+    "",
+    null,
+    undefined,
+  ])("%s n'est pas un organisme de formation", (code) => {
+    expect(isTrainingOrganizationNafCode(code)).toBe(false)
   })
 })
 
