@@ -44,6 +44,7 @@ export const MATOMO_EVENTS = {
   CFA_DESELECTED: "cfa_deselected",
   CFA_DETAILS_CLICKED: "cfa_details_clicked",
   CFA_SHARE_CONFIRMED: "cfa_share_confirmed",
+  CONSEILLERS_ENTREPRISES_CLICKED: "conseillers_entreprises_clicked",
 }
 
 // Identifiants de moteur de recherche pour la télémétrie de bascule (dimension
