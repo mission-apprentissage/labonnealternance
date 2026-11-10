@@ -20,7 +20,6 @@ import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
-import { sessionStorageGet, sessionStorageSet } from "@/utils/local-storage"
 import { CandidatureLbaFileDropzone } from "./CandidatureLbaFileDropzone"
 import type { IApplicationSchemaInitValues } from "./services/get-schema"
 import { ApplicationFormikSchema, buildApplicantAnswers, formatCount, getInitialSchemaValues, OptionalQuestionAnswerSchema, QuestionAnswerSchema } from "./services/get-schema"
@@ -56,9 +55,8 @@ export const CandidatureLbaModalBody = ({
 
   const questionZodExtension = Object.fromEntries(questionFields.map(({ name }) => [name, areAnswersRequired ? QuestionAnswerSchema : OptionalQuestionAnswerSchema]))
 
-  // Les questions fixes de LBA ne sont ni pré-remplies ni mémorisées : une motivation écrite pour une entreprise ne vaut pas pour une autre.
-  const applicantAnswersSession = areAnswersRequired ? JSON.parse(sessionStorageGet("application-form-answers")) : null
-  const questionsInitValues = Object.fromEntries(questionFields.map(({ question, name }) => [name, applicantAnswersSession?.[question] ?? ""]))
+  // Les réponses ne sont ni pré-remplies ni mémorisées : une réponse écrite pour une entreprise ne vaut pas pour une autre.
+  const questionsInitValues = Object.fromEntries(questionFields.map(({ name }) => [name, ""]))
 
   const formik = useFormik({
     initialValues: { ...getInitialSchemaValues(), ...questionsInitValues },
@@ -69,9 +67,6 @@ export const CandidatureLbaModalBody = ({
         delete finalValues[name]
       })
       finalValues.applicant_answers_to_recruiter_questions = buildApplicantAnswers(questionFields, values)
-      if (areAnswersRequired) {
-        sessionStorageSet("application-form-answers", Object.fromEntries(finalValues.applicant_answers_to_recruiter_questions.map(({ question, answer }) => [question, answer])))
-      }
       onSubmit(finalValues)
     },
   })
