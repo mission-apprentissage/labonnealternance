@@ -41,6 +41,8 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
   const lastUserState: IUserStatusValidationJson | undefined = userRecruteur.status.at(-1)
   const establishmentLabel: string = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
   const isCfa = userRecruteur.type === AUTHTYPE.CFA
+  // Seul un admin lit les entreprises partenaires d'un CFA : la route répond en erreur pour un OPCO.
+  const showsCfaPartners = isCfa && viewer === "ADMIN"
   const userId: string = userRecruteur._id
   const organizationId: string = userRecruteur.organizationId
 
@@ -56,7 +58,7 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
   const partners = useQuery({
     queryKey: ["entreprisesGereesParCfa", organizationId],
     queryFn: () => getEntreprisesManagedByCfa(organizationId),
-    enabled: isCfa && viewer === "ADMIN",
+    enabled: showsCfaPartners,
   })
   const next = useNextAccountToReview({ viewer, current: { _id: userId, organizationId } })
   const { activate, waitsForValidation } = useUserPermissionsActions(userId, organizationId)
@@ -120,7 +122,9 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
   const signals = [
     buildOtherAccountsSignal({ isLoading: sameSiretAccounts.isLoading, isError: sameSiretAccounts.isError, accounts: sameSiretAccounts.data }),
     buildValidationSignal(lastUserState),
-    isCfa ? buildPartnersSignal({ isLoading: partners.isLoading, count: partners.data?.length }) : buildOffersSignal({ jobs, moderationSummaries: moderationSummaries.data?.jobs }),
+    showsCfaPartners
+      ? buildPartnersSignal({ isLoading: partners.isLoading, count: partners.data?.length })
+      : buildOffersSignal({ jobs, moderationSummaries: moderationSummaries.data?.jobs }),
   ]
 
   const returnToContact = () => {
@@ -165,7 +169,8 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
               {
                 children: "Confirmer",
                 onClick: async () => {
-                  await waitsForValidation(NOT_MY_OPCO_REASON)
+                  // En cas d'échec, le toast d'erreur s'affiche et l'OPCO reste sur la fiche.
+                  if (!(await waitsForValidation(NOT_MY_OPCO_REASON))) return
                   notMyOpco.onClose()
                   router.push(next?.href ?? PAGES.static.backOpcoHome.getPath())
                 },
@@ -214,7 +219,7 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
             <SameSiretAccounts query={sameSiretAccounts} viewer={viewer} />
 
             <Box component="section" id={OFFERS_ANCHOR} sx={{ scrollMarginTop: fr.spacing("4v") }}>
-              {isCfa ? (
+              {showsCfaPartners ? (
                 <EntreprisesGereesParCfa cfaId={organizationId} userId={userId} />
               ) : (
                 <OffresTabs
@@ -235,7 +240,11 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
                   key={contactCardKey}
                   account={userRecruteur}
                   establishmentLabel={establishmentLabel}
-                  onSaved={(props) => onChange?.(props)}
+                  onSaved={(props) => {
+                    onChange?.(props)
+                    // Un nouveau téléphone ou un nouveau nom change les points communs, donc le signal « Doublon probable ».
+                    queryClient.invalidateQueries({ queryKey: ["same-siret-accounts"] })
+                  }}
                   onDirtyChange={setIsContactDirty}
                 />
               </Box>

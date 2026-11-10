@@ -44,5 +44,5 @@ export const useNextAccountToReview = ({ viewer, current }: { viewer: "ADMIN" | 
   const hint = `${remaining} ${remaining > 1 ? "autres" : "autre"} en attente de vérification`
   return viewer === "ADMIN"
     ? { href: `${PAGES.dynamic.backAdminRecruteurOffres({ user_id: next._id }).getPath()}?organizationId=${next.organizationId}`, label: "Compte suivant à vérifier", hint }
-    : { href: PAGES.dynamic.backOpcoInformationEntreprise({ user_id: next._id }).getPath(), label: "Entreprise suivante à vérifier", hint }
+    : { href: PAGES.dynamic.backOpcoInformationEntreprise({ user_id: next._id, organization_id: next.organizationId }).getPath(), label: "Entreprise suivante à vérifier", hint }
 }

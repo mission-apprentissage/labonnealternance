@@ -29,7 +29,7 @@ export const useSameSiretAccounts = (userId: string, organizationId: string) =>
 const accountPath = (account: ISameSiretAccountJson, viewer: Viewer) =>
   viewer === "ADMIN"
     ? `${PAGES.dynamic.backAdminRecruteurOffres({ user_id: account._id }).getPath()}?organizationId=${account.organizationId}`
-    : PAGES.dynamic.backOpcoInformationEntreprise({ user_id: account._id }).getPath()
+    : PAGES.dynamic.backOpcoInformationEntreprise({ user_id: account._id, organization_id: account.organizationId }).getPath()
 
 export const SameSiretAccountsTable = ({ accounts, viewer }: { accounts: ISameSiretAccountJson[]; viewer: Viewer }) => {
   if (accounts.length === 0) {

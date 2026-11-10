@@ -512,3 +512,66 @@ describe("GET /user/:userId/organization/:organizationId/same-siret-accounts", (
     expect(response.statusCode).toBe(403)
   })
 })
+
+describe("Périmètre d'un OPCO sur les fiches d'un utilisateur multi-compte", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const setup = async () => {
+    const entrepriseAkto = await saveEntreprise({ siret: "90000000000043", opco: OPCOS_LABEL.AKTO, status: [entrepriseStatusEventFactory()] })
+    const entrepriseAtlas = await saveEntreprise({ siret: "90000000000050", opco: OPCOS_LABEL.ATLAS, status: [entrepriseStatusEventFactory()] })
+    const cfa = await saveCfa({ siret: "90000000000068" })
+    const cible = await saveUserWithAccount({ status: validatedUserStatus })
+    const saveRole = (authorized_id: string, authorized_type: AccessEntityType, status: AccessStatus) =>
+      saveRoleManagement({ user_id: cible._id, authorized_id, authorized_type, status: [roleManagementEventFactory({ status })] })
+    await saveRole(entrepriseAkto._id.toString(), AccessEntityType.ENTREPRISE, AccessStatus.AWAITING_VALIDATION)
+    await saveRole(entrepriseAtlas._id.toString(), AccessEntityType.ENTREPRISE, AccessStatus.GRANTED)
+    await saveRole(cfa._id.toString(), AccessEntityType.CFA, AccessStatus.GRANTED)
+    return { cible, entrepriseAkto, entrepriseAtlas, cfa }
+  }
+
+  const get = (path: string, headers: Record<string, string>) => httpClient().inject({ method: "GET", path: `/api${path}`, headers })
+
+  it("ne laisse pas un OPCO atteindre, par repli, l'entreprise d'un autre OPCO", async () => {
+    const { cible, entrepriseAkto } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "opco-perimetre", { type: "OPCO" })
+
+    const response = await get(`/user/${cible._id}/organization/unused`, bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().organizationId).toBe(entrepriseAkto._id.toString())
+  })
+
+  it.each([
+    ["l'entreprise d'un autre OPCO", "entrepriseAtlas"],
+    ["un CFA", "cfa"],
+  ] as const)("refuse à un OPCO la fiche et les autres comptes de %s", async (_label, organization) => {
+    const fixtures = await setup()
+    const username = `opco-perimetre-${organization}`
+    const { bearerToken } = await createAndLogUser(httpClient, username, { type: "OPCO" })
+    const organizationId = fixtures[organization]._id.toString()
+
+    expect((await get(`/user/${fixtures.cible._id}/organization/${organizationId}`, bearerToken)).statusCode).toBe(403)
+    // errorMiddleware ferme la session à chaque 403 : nouvelle connexion avant la seconde route.
+    const { bearerToken: newToken } = await logUser(httpClient, username)
+    expect((await get(`/user/${fixtures.cible._id}/organization/${organizationId}/same-siret-accounts`, newToken)).statusCode).toBe(403)
+  })
+
+  it("exige l'organisation exacte pour lister les autres comptes", async () => {
+    const { cible, entrepriseAkto } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "opco-perimetre-exact", { type: "OPCO" })
+
+    expect((await get(`/user/${cible._id}/organization/unused/same-siret-accounts`, bearerToken)).statusCode).toBe(400)
+    expect((await get(`/user/${cible._id}/organization/${entrepriseAkto._id}/same-siret-accounts`, bearerToken)).statusCode).toBe(200)
+  })
+
+  it("laisse un admin retomber sur le rôle validé, comme avant", async () => {
+    const { cible, entrepriseAtlas } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "admin-perimetre", { type: "ADMIN" })
+
+    const response = await get(`/user/${cible._id}/organization/unused`, bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().organizationId).toBe(entrepriseAtlas._id.toString())
+  })
+})

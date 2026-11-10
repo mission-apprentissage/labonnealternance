@@ -61,7 +61,7 @@ describe("SameSiretAccountsTable", () => {
   it("renvoie l'OPCO vers la fiche OPCO du compte", () => {
     const html = renderToStaticMarkup(<SameSiretAccountsTable accounts={[account]} viewer="OPCO" />)
 
-    expect(html).toContain(`href="/espace-pro/opco/users/${account._id}"`)
+    expect(html).toContain(`href="/espace-pro/opco/users/${account._id}?organizationId=${account.organizationId}"`)
     expect(html).not.toContain("/administration/")
   })
 })
