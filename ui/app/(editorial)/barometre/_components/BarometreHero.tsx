@@ -55,7 +55,7 @@ export function BarometreHero({
             </Typography>
             <Box sx={{ display: "flex", gap: 2, mb: 3, fontSize: "13px" }} aria-hidden="true">
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Box sx={{ width: 12, height: 12, borderRadius: "2px", backgroundColor: "rgba(255, 255, 255, 0.35)" }} />
+                <Box sx={{ width: 12, height: 12, borderRadius: "2px", backgroundColor: "#8080c8" }} />
                 {periodLabels[0]}
               </Box>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -84,7 +84,7 @@ export function BarometreHero({
                     aria-hidden="true"
                   >
                     {[
-                      { value: metric.before, fill: "rgba(255, 255, 255, 0.35)" },
+                      { value: metric.before, fill: "#8080c8" },
                       { value: metric.after, fill: WHITE },
                     ].map((bar, index) => (
                       <Box

@@ -8,7 +8,7 @@ export const PUBLISHED_LABEL = "Publié le 3 novembre 2026"
 // Couleurs fixes, identiques en thème clair et sombre, alignées sur les graphiques sources du baromètre.
 const COLOR_SPONTANEES = "#6a6af4"
 const COLOR_OFFRES_LBA = "#000091"
-const COLOR_PARTENAIRES = "#e4794a"
+const COLOR_PARTENAIRES = "#cacafb"
 
 export const BAROMETRE_FAQ = [
   {
