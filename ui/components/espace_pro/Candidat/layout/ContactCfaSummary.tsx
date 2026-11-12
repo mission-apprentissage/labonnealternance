@@ -3,6 +3,7 @@ import { Box, Typography } from "@mui/material"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 
 type Props = {
+  titleId?: string
   entrepriseRaisonSociale: string
   intitule: string
   adresse: string
@@ -11,11 +12,11 @@ type Props = {
 }
 
 export const ContactCfaSummary = (props: Props) => {
-  const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule } = props
+  const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule, titleId } = props
 
   return (
     <Box sx={{ mb: fr.spacing("6v") }}>
-      <ModalTitle sx={{ mb: fr.spacing("6v") }}>{`Contacter l’établissement ${entrepriseRaisonSociale}`}</ModalTitle>
+      <ModalTitle id={titleId} sx={{ mb: fr.spacing("6v") }}>{`Contacter l’établissement ${entrepriseRaisonSociale}`}</ModalTitle>
       <Typography sx={{ mb: fr.spacing("2v") }}>
         à propos de la formation :{" "}
         <Box component="span" sx={{ fontWeight: 700 }}>

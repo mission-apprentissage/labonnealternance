@@ -7,7 +7,7 @@ import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup"
 import { Box, Typography } from "@mui/material"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useId, useRef, useState } from "react"
 import type { IUserStatusValidationJson } from "shared"
 import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -66,6 +66,8 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
   const deactivation = useDisclosure()
   const notMyOpco = useDisclosure()
   const unsavedGuard = useDisclosure()
+  const notMyOpcoTitleId = useId()
+  const unsavedGuardTitleId = useId()
   const [isContactDirty, setIsContactDirty] = useState(false)
   const [contactCardKey, setContactCardKey] = useState(0)
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
@@ -153,9 +155,9 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
     <>
       <ConfirmationDesactivationUtilisateur {...deactivation} userRecruteur={userRecruteur} onUpdate={refresh} />
 
-      <ModalReadOnly isOpen={notMyOpco.isOpen} onClose={notMyOpco.onClose} ariaLabelledBy="pas-mon-opco-titre" size="sm">
+      <ModalReadOnly isOpen={notMyOpco.isOpen} onClose={notMyOpco.onClose} ariaLabelledBy={notMyOpcoTitleId} size="sm">
         <Box sx={{ px: fr.spacing("4v"), pb: fr.spacing("4v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-          <Typography id="pas-mon-opco-titre" component="h2" className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ m: 0 }}>
+          <Typography id={notMyOpcoTitleId} component="h2" className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ m: 0 }}>
             Cette entreprise ne relève pas de votre OPCO ?
           </Typography>
           <Typography sx={{ m: 0 }}>
@@ -180,16 +182,9 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
         </Box>
       </ModalReadOnly>
 
-      <ModalReadOnly
-        isOpen={unsavedGuard.isOpen}
-        onClose={returnToContact}
-        ariaLabelledBy="contact-non-enregistre-titre"
-        size="sm"
-        disableRestoreFocus
-        onExited={focusContactAfterGuard}
-      >
+      <ModalReadOnly isOpen={unsavedGuard.isOpen} onClose={returnToContact} ariaLabelledBy={unsavedGuardTitleId} size="sm" disableRestoreFocus onExited={focusContactAfterGuard}>
         <Box sx={{ px: fr.spacing("4v"), pb: fr.spacing("4v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-          <Typography id="contact-non-enregistre-titre" component="h2" className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ m: 0 }}>
+          <Typography id={unsavedGuardTitleId} component="h2" className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ m: 0 }}>
             Des modifications du contact ne sont pas enregistrées
           </Typography>
           <Typography sx={{ m: 0 }}>Enregistrez-les avant de {pendingAction?.label ?? "poursuivre"} le compte, sinon elles seront perdues.</Typography>

@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Dialog, Typography } from "@mui/material"
+import { useId } from "react"
 import type { ILbaItemPartnerJobJson } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
@@ -41,6 +42,7 @@ const shouldShowPartnerLabelInCta = (partnerLabel: string) => partnerLabelsShown
 
 export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJobJson }) {
   const { isOpen, onClose, onOpen } = useDisclosure()
+  const titleId = useId()
 
   const matomoPayload = {
     job_offer_id: job.id,
@@ -94,6 +96,7 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
       </Box>
       <Dialog
         open={isOpen}
+        aria-labelledby={titleId}
         onClose={() => {
           closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_DISMISSED)
         }}
@@ -125,7 +128,9 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
           <ModalCloseButton onClose={() => closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_DISMISSED)} />
         </Box>
         <Box sx={{ p: { xs: fr.spacing("4v"), md: fr.spacing("6v") }, pt: 0 }}>
-          <ModalTitle sx={{ mb: fr.spacing("4v") }}>Avez-vous postulé à l’offre de {job.title} ?</ModalTitle>
+          <ModalTitle id={titleId} sx={{ mb: fr.spacing("4v") }}>
+            Avez-vous postulé à l’offre de {job.title} ?
+          </ModalTitle>
           <Typography>Nous veillons à ce que les offres proposées par nos partenaires vous aident dans vos recherches d’une alternance. </Typography>
         </Box>
         <Box

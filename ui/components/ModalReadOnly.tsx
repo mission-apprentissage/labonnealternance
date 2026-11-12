@@ -21,7 +21,8 @@ export const ModalReadOnly = ({
   onClose: () => void
   size?: "xs" | "sm" | "md" | "lg" | "xl"
   hideCloseButton?: boolean
-  ariaLabelledBy?: string
+  /** id du titre visible de la modale : sans lui, MUI référence un id absent du DOM. */
+  ariaLabelledBy: string
   /** Avec `onExited`, quand l'appelant place lui-même le focus : le piège à focus reste actif jusqu'à la fin de la transition de fermeture. */
   disableRestoreFocus?: boolean
   onExited?: () => void

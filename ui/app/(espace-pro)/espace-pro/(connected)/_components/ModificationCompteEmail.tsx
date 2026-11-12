@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
+import { useId } from "react"
 
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { apiGet } from "@/utils/api.utils"
@@ -9,6 +10,7 @@ import { apiGet } from "@/utils/api.utils"
 export default function ModificationCompteEmail(props) {
   const { isOpen, onClose } = props
   const router = useRouter()
+  const titleId = useId()
 
   const handleLogout = async () => {
     await apiGet("/auth/logout", {})
@@ -16,9 +18,9 @@ export default function ModificationCompteEmail(props) {
   }
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("4v") }} component="h2">
+        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("4v") }} component="h2">
           Changement d'email détecté
         </Typography>
         <Box

@@ -29,6 +29,7 @@ const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 type FormikType = ReturnType<typeof useFormik>
 
 export const CandidatureLbaModalBody = ({
+  titleId,
   isLoading,
   company,
   item,
@@ -37,6 +38,7 @@ export const CandidatureLbaModalBody = ({
   onSubmit,
   onClose,
 }: {
+  titleId?: string
   isLoading: boolean
   company: string
   item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
@@ -109,7 +111,7 @@ export const CandidatureLbaModalBody = ({
               </Box>
             </>
           )}
-          <ModalTitle sx={{ mb: fr.spacing("4v") }}>
+          <ModalTitle id={titleId} sx={{ mb: fr.spacing("4v") }}>
             {isOffre ? (
               <>
                 Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}

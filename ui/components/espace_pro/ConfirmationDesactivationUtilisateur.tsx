@@ -5,7 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, Typography } from "@mui/material"
-import { useRef, useState } from "react"
+import { useId, useRef, useState } from "react"
 import type { IUserRecruteurJson } from "shared"
 import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
@@ -27,6 +27,7 @@ const ConfirmationDesactivationUtilisateur = ({
   const [showErrors, setShowErrors] = useState(false)
   const motifRef = useRef<HTMLSelectElement>(null)
   const autreRef = useRef<HTMLInputElement>(null)
+  const titleId = useId()
   const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id, organizationId)
 
   if (!userRecruteur) return null
@@ -71,9 +72,9 @@ const ConfirmationDesactivationUtilisateur = ({
   }
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={close}>
+    <ModalReadOnly isOpen={isOpen} onClose={close} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
+        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Désactivation du compte
         </Typography>
 
