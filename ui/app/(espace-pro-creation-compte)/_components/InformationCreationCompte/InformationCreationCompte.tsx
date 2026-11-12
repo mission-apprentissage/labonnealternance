@@ -17,20 +17,18 @@ import type { HandiEngagement } from "shared/models/referentiel-engagement-entre
 import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
+import { AccountFormHeading, FormSection } from "@/app/_components/FormSection"
 import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
-import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
-import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/InformationOpco"
-import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
+import { OpcoSection } from "@/app/(espace-pro-creation-compte)/_components/OpcoSection"
+import { HandiEngagementSection } from "@/app/(espace-pro)/_components/HandiEngagementSection"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useHandiEngagementState } from "@/app/hooks/use-handi-engagement-state"
 import { AUTHTYPE } from "@/common/contants"
 import { emailValidation, frenchPhoneValidation, personNameValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { AnimationContainer } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
-import { infosOpcos } from "@/theme/components/logos/infos-opcos"
 import { getEntrepriseOpco } from "@/utils/api"
 import { ApiError, apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -63,7 +61,6 @@ const Formulaire = ({
   type,
   origin,
   email,
-  viewerType,
 }: {
   onSubmit: (values: any, { setSubmitting, setFieldError }: any) => void
   validate: ReturnType<typeof useServerFieldErrors>["validate"]
@@ -73,7 +70,6 @@ const Formulaire = ({
   type: "CFA" | "ENTREPRISE"
   origin: string
   email?: string
-  viewerType: AUTHTYPE
 }) => {
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
@@ -107,116 +103,105 @@ const Formulaire = ({
   }
 
   return (
-    <Formik
-      validateOnMount={true}
-      initialValues={{
-        opco: opco ?? "",
-        ...(type === AUTHTYPE.ENTREPRISE ? { handiEngagement: "" } : {}),
-        last_name: "",
-        first_name: "",
-        phone: "",
-        email,
-        origin: origin ?? "Labonnealternance",
-      }}
-      validationSchema={Yup.object().shape({
-        last_name: personNameValidation().required("champ obligatoire"),
-        first_name: personNameValidation().required("champ obligatoire"),
-        phone: frenchPhoneValidation().required("champ obligatoire"),
-        email: emailValidation().lowercase().required("champ obligatoire"),
-        opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
-        handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire") : Yup.string(),
-      })}
-      validate={validate}
-      onSubmit={onSubmit}
-    >
-      {({ values, isSubmitting, setFieldValue, errors, touched, validateForm, setTouched, submitForm }) => {
-        const infosOpco = infosOpcos.find((x) => x.nom === values.opco)
+    <>
+      <AccountFormHeading title={type === AUTHTYPE.ENTREPRISE ? "Créez votre compte recruteur" : "Créez votre compte CFA"} />
+      <Formik
+        validateOnMount={true}
+        initialValues={{
+          opco: opco ?? "",
+          ...(type === AUTHTYPE.ENTREPRISE ? { handiEngagement: "" } : {}),
+          last_name: "",
+          first_name: "",
+          phone: "",
+          email,
+          origin: origin ?? "Labonnealternance",
+        }}
+        validationSchema={Yup.object().shape({
+          last_name: personNameValidation().required("champ obligatoire"),
+          first_name: personNameValidation().required("champ obligatoire"),
+          phone: frenchPhoneValidation().required("champ obligatoire"),
+          email: emailValidation().lowercase().required("champ obligatoire"),
+          opco: shouldSelectOpco ? Yup.string().required("Sélectionnez l'OPCO de votre entreprise, ou « Je ne sais pas ».") : Yup.string(),
+          handiEngagement: type === AUTHTYPE.ENTREPRISE ? Yup.string().oneOf(HANDI_ENGAGEMENT_VALUES, "champ obligatoire").required("champ obligatoire") : Yup.string(),
+        })}
+        validate={validate}
+        onSubmit={onSubmit}
+      >
+        {({ values, isSubmitting, setFieldValue, errors, touched, validateForm, setTouched, submitForm }) => {
+          // Le bouton "Continuer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
+          const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
 
-        // Le bouton "Continuer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
-        const handleSubmit = createSubmitWithFocusOnError(formRef, { validateForm, setTouched, submitForm })
-
-        return (
-          <form ref={formRef} onSubmit={handleSubmit} noValidate>
-            {type === AUTHTYPE.ENTREPRISE && <HandiEngagementValueSync hide={hideHandiEngagement} locked={isHandiEngagementLocked} />}
-            <TwoColumnFormLayout
-              left={
-                <>
-                  <Typography
-                    component="h2"
-                    sx={{ fontWeight: 700, fontSize: { xs: "24px !important", md: "32px !important" }, lineHeight: { xs: "32px !important", md: "40px !important" } }}
-                  >
-                    {type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}
-                  </Typography>
-                  <Typography sx={{ fontSize: "20px", pt: fr.spacing("2v"), pb: fr.spacing("4v") }}>
-                    {type === AUTHTYPE.ENTREPRISE
-                      ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
-                      : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
-                  </Typography>
-                  <ContactInfoFields
-                    emailDisabled={Boolean(email)}
-                    emailInfo={
-                      email
-                        ? "L’email que nous utilisons est fourni par votre Carif Oref, et permet de vous connecter. Vous pourrez le modifier dans votre espace personnel."
-                        : "Format attendu : nom@domaine.fr. Privilégiez votre adresse professionnelle."
-                    }
-                  />
-                  <Box
-                    className={fr.cx("fr-messages-group")}
-                    sx={{
-                      my: fr.spacing("4v"),
-                    }}
-                  >
-                    <Box component="p" sx={{ fontSize: "0.75rem", lineHeight: "1.25rem", mt: "0 !important", display: "block !important" }} className="fr-info-text">
-                      Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
-                      email comportant <span style={{ fontWeight: "bold" }}>le nom de domaine de votre établissement.</span>
-                    </Box>
-                  </Box>
-                  {shouldSelectOpco && (
-                    <OpcoSelect name="opco" onChange={async (newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
-                  )}
-                  {type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
-                    <HandiEngagementSelect
-                      name="handiEngagement"
-                      onChange={async (newValue) => setFieldValue("handiEngagement", newValue)}
-                      value={values.handiEngagement as HandiEngagement | ""}
-                      disabled={isHandiEngagementLocked}
-                    />
-                  )}
-                  {submitError && (
-                    <Box ref={submitErrorRef} tabIndex={-1} sx={{ mt: fr.spacing("4v") }}>
-                      {/* parse : le message « non diffusible » du serveur contient un lien vers le support */}
-                      <Alert severity="error" small description={parse(submitError)} />
-                    </Box>
-                  )}
-                </>
-              }
-              right={
-                <>
-                  <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} viewerType={viewerType} />
-                  {infosOpco && <InformationOpco isUpdatable={shouldSelectOpco} infosOpco={infosOpco} resetOpcoChoice={async () => setFieldValue("opco", "")} />}
-                  {!hideHandiEngagement && <InformationHandiEngagement />}
-                </>
-              }
-              buttons={
-                <>
-                  {!widget?.isWidget && (
-                    <Box sx={{ mr: fr.spacing("5v") }}>
+          return (
+            <form ref={formRef} onSubmit={handleSubmit} noValidate>
+              {type === AUTHTYPE.ENTREPRISE && <HandiEngagementValueSync hide={hideHandiEngagement} locked={isHandiEngagementLocked} />}
+              <TwoColumnFormLayout
+                aside={<InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} hideUnknownOpco />}
+                content={
+                  <>
+                    <FormSection title="1. Vos informations de contact">
+                      <Typography sx={{ mb: fr.spacing("6v") }}>
+                        {type === AUTHTYPE.ENTREPRISE
+                          ? "Vous recevrez les candidatures sur l'e-mail renseigné. Ces informations de contact servent également à vérifier votre identité avant publication de votre offre. La transmission de données inexactes ou fausses pourra donner lieu au refus de votre compte."
+                          : "Vous recevrez les candidatures sur l'e-mail renseigné. Ces informations de contact servent à vérifier votre identité avant la validation de votre compte. La transmission de données inexactes ou fausses pourra donner lieu au refus de votre compte."}
+                      </Typography>
+                      <ContactInfoFields
+                        variant={type === AUTHTYPE.ENTREPRISE ? "recruteur" : "cfa"}
+                        showRequiredMention={false}
+                        emailDisabled={Boolean(email)}
+                        emailHint={
+                          email
+                            ? "L’e-mail que nous utilisons est fourni par votre Carif-Oref et permet de vous connecter. Vous pourrez le modifier dans votre espace personnel."
+                            : undefined
+                        }
+                      />
+                    </FormSection>
+                    {type === AUTHTYPE.ENTREPRISE && (
+                      <OpcoSection
+                        title="2. L'OPCO de votre entreprise"
+                        detectedOpco={opco}
+                        name="opco"
+                        value={values.opco as OPCOS_LABEL | ""}
+                        onChange={(newValue) => setFieldValue("opco", newValue)}
+                        errors={errors}
+                        touched={touched}
+                      />
+                    )}
+                    {type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
+                      <HandiEngagementSection
+                        title="3. Engagez-vous en faveur de l'emploi des personnes en situation de handicap"
+                        name="handiEngagement"
+                        onChange={(newValue) => setFieldValue("handiEngagement", newValue)}
+                        value={values.handiEngagement as HandiEngagement | ""}
+                        disabled={isHandiEngagementLocked}
+                      />
+                    )}
+                    {submitError && (
+                      <Box ref={submitErrorRef} tabIndex={-1} sx={{ mt: fr.spacing("6v") }}>
+                        {/* parse : le message « non diffusible » du serveur contient un lien vers le support */}
+                        <Alert severity="error" small description={parse(submitError)} />
+                      </Box>
+                    )}
+                  </>
+                }
+                buttons={
+                  <>
+                    {!widget?.isWidget && (
                       <Button type="button" priority="secondary" onClick={() => router.back()}>
                         Annuler
                       </Button>
-                    </Box>
-                  )}
-                  <Button aria-label="Continuer la création du compte" type="submit" disabled={isSubmitting}>
-                    {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
-                    Continuer
-                  </Button>
-                </>
-              }
-            />
-          </form>
-        )
-      }}
-    </Formik>
+                    )}
+                    <Button aria-label="Continuer la création du compte" type="submit" disabled={isSubmitting}>
+                      {isSubmitting && <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                      Continuer
+                    </Button>
+                  </>
+                }
+              />
+            </form>
+          )
+        }}
+      </Formik>
+    </>
   )
 }
 
@@ -301,16 +286,7 @@ export const InformationCreationCompte = ({
 
   return (
     <AnimationContainer>
-      <Formulaire
-        onSubmit={submitForm}
-        validate={serverFieldErrors.validate}
-        submitError={submitError}
-        siret={establishment_siret}
-        type={type}
-        origin={origin}
-        email={email}
-        viewerType={type}
-      />
+      <Formulaire onSubmit={submitForm} validate={serverFieldErrors.validate} submitError={submitError} siret={establishment_siret} type={type} origin={origin} email={email} />
     </AnimationContainer>
   )
 }

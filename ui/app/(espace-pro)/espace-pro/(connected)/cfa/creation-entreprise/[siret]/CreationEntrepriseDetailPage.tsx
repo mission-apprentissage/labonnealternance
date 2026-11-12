@@ -6,11 +6,12 @@ import { Box, CircularProgress, Typography } from "@mui/material"
 import { Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
 import { useRef } from "react"
-import { CFA, ENTREPRISE } from "shared/constants/recruteur"
+import { ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
+import { AccountFormHeading, FormSection } from "@/app/_components/FormSection"
 import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
@@ -75,35 +76,21 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         return (
           <form ref={formRef} onSubmit={handleSubmit} noValidate>
             <TwoColumnFormLayout
-              left={
-                <>
-                  <Typography
-                    component="h2"
-                    sx={{ fontWeight: 700, fontSize: { xs: "24px !important", md: "32px !important" }, lineHeight: { xs: "32px !important", md: "40px !important" } }}
-                  >
-                    Informations de contact
-                  </Typography>
-                  <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>
+              aside={<InformationLegaleEntreprise siret={establishment_siret} type={ENTREPRISE} />}
+              content={
+                <FormSection title="1. Informations de contact de l'entreprise partenaire">
+                  <Typography sx={{ mb: fr.spacing("6v") }}>
                     Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
                   </Typography>
-                  <ContactInfoFields thirdParty />
-                  <Typography sx={{ color: "#0063CB" }}>
-                    <Box component="span" sx={{ fontWeight: 700 }}>
-                      Important :
-                    </Box>{" "}
-                    Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des fins de contrôles.
-                  </Typography>
+                  <ContactInfoFields thirdParty variant="partenaire" showRequiredMention={false} />
                   <DeclarationExactCheckbox />
-                </>
+                </FormSection>
               }
-              right={<InformationLegaleEntreprise siret={establishment_siret} type={ENTREPRISE} viewerType={CFA} />}
               buttons={
                 <>
-                  <Box sx={{ mr: fr.spacing("5v") }}>
-                    <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-                      Annuler
-                    </Button>
-                  </Box>
+                  <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+                    Annuler
+                  </Button>
                   {/* aria-disabled plutôt que disabled : cf. le bouton « Enregistrer » de CompteRenderer */}
                   <Button
                     type="submit"
@@ -132,6 +119,7 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
+      <AccountFormHeading title="Informations de contact de l'entreprise partenaire" />
       <Formulaire siret={siret} />
     </>
   )

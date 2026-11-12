@@ -248,7 +248,7 @@ export const AccountReview = ({ userRecruteur, recruiter, onChange }: { userRecr
                   onDirtyChange={setIsContactDirty}
                 />
               </Box>
-              <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
+              <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
             </Box>
 
             <Accordion label={`Historique du compte (${userRecruteur.status.length} ${userRecruteur.status.length > 1 ? "événements" : "événement"})`} titleAs="h2">

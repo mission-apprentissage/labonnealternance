@@ -1,18 +1,28 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
+import type { ReactNode } from "react"
 import { parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 
-import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
-import { InfoTooltip } from "@/app/(espace-pro)/_components/InfoToolTip"
-import type { AUTHTYPE } from "@/common/contants"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 
-const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; viewerType: AUTHTYPE }) => {
+const SIRENE_URL = "https://www.insee.fr/fr/information/6675111"
+
+const InformationLegaleEntreprise = ({
+  siret,
+  type,
+  opco,
+  hideUnknownOpco = false,
+}: {
+  siret: string
+  type: typeof CFA | typeof ENTREPRISE
+  opco?: OPCOS_LABEL
+  /** À la création, l'OPCO inconnu est demandé dans le formulaire : inutile de l'annoncer ici. */
+  hideUnknownOpco?: boolean
+}) => {
   const entrepriseQuery = useQuery({
     queryKey: ["get-entreprise", siret],
     queryFn: () => getEntrepriseInformation(siret, { skipUpdate: true }),
@@ -28,170 +38,68 @@ const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret:
   if (isLoading) return null
 
   const entreprise = type === ENTREPRISE && entrepriseQuery.data && "data" in entrepriseQuery.data && "siret" in entrepriseQuery.data.data && entrepriseQuery.data.data
-  const finalOpco = opco ?? parseEnum(OPCOS_LABEL, entreprise?.opco)
-  const cfa = type === CFA && "data" in cfaQuery.data && "siret" in cfaQuery.data.data && cfaQuery.data.data
+  const parsedOpco = opco ?? parseEnum(OPCOS_LABEL, entreprise?.opco)
+  const knownOpco = parsedOpco && parsedOpco !== OPCOS_LABEL.UNKNOWN_OPCO ? parsedOpco : undefined
+  const cfa = type === CFA && cfaQuery.data && "data" in cfaQuery.data && "siret" in cfaQuery.data.data && cfaQuery.data.data
   const raisonSociale = entreprise?.raison_sociale ?? cfa?.raison_sociale
+  const enseigne = entreprise?.enseigne ?? cfa?.enseigne
+  const address = entreprise?.address ?? cfa?.address
+  const naf = entreprise ? [entreprise.naf_code, entreprise.naf_label].filter(Boolean).join(", ") : ""
 
   return (
-    <BorderedBox>
-      <Typography
-        fontWeight={700}
-        component="h2"
-        mb={2}
-        sx={{ fontSize: { xs: "20px !important", md: "24px !important" }, lineHeight: { xs: "28px !important", md: "32px !important" } }}
-      >
-        {type === ENTREPRISE ? "Informations de l'entreprise" : "Informations légales"}
+    <Box sx={{ backgroundColor: fr.colors.decisions.background.alt.grey.default, p: { xs: fr.spacing("4v"), md: fr.spacing("6v") }, fontSize: "14px", lineHeight: "24px" }}>
+      <Typography fontWeight={700} component="h2" sx={{ mb: fr.spacing("3v"), fontSize: { xs: "20px !important", md: "22px !important" }, lineHeight: "28px !important" }}>
+        {type === ENTREPRISE ? "Informations de l'entreprise" : "Informations de l'établissement"}
       </Typography>
-      {!raisonSociale && (
-        <Box sx={{ display: "flex", alignItems: "flex-start", mb: fr.spacing("8v") }}>
-          <Typography component="span" aria-hidden="true" color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
-          <Box sx={{ ml: fr.spacing("2v") }}>
-            <Typography mb={4}>Suite à un problème technique, nous ne sommes pas en mesure d’afficher votre raison sociale et l'adresse de votre établissement.</Typography>
-            <Typography>Nous vous invitons à poursuivre votre parcours. Les informations de votre entreprise seront remplies automatiquement ultérieurement.</Typography>
+      {raisonSociale ? (
+        <InfoLine>
+          Informations issues du répertoire{" "}
+          <DsfrLink href={SIRENE_URL} external>
+            Sirene
+          </DsfrLink>{" "}
+          (Insee), non modifiables ici.
+        </InfoLine>
+      ) : (
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: fr.spacing("2v"), mb: fr.spacing("3v") }}>
+          <Box component="span" aria-hidden="true" className={fr.cx("fr-icon-information-line", "fr-icon--sm")} sx={{ mt: "2px" }} />
+          <Box>
+            <InfoLine>Suite à un problème technique, nous ne sommes pas en mesure d’afficher la raison sociale et l'adresse de l'établissement.</InfoLine>
+            <InfoLine>Vous pouvez poursuivre : ces informations seront remplies automatiquement ultérieurement.</InfoLine>
           </Box>
         </Box>
       )}
-      <OrganizationInfoFields
-        {...(type === CFA
-          ? {
-              siret: cfa.siret,
-              establishment_enseigne: cfa.enseigne,
-              establishment_raison_sociale: cfa.raison_sociale,
-              address: cfa.address,
-              type: CFA,
-              is_qualiopi: true,
-            }
-          : {
-              establishment_enseigne: entreprise?.enseigne,
-              establishment_raison_sociale: entreprise?.raison_sociale,
-              address: entreprise?.address,
-              opco: finalOpco,
-              engagementHandicapOrigin: entreprise?.engagementHandicapOrigin,
-            })}
-        type={type}
-        siret={siret}
-        viewerType={viewerType}
-      />
-    </BorderedBox>
-  )
-}
-
-const OrganizationInfoFields = ({
-  siret,
-  establishment_enseigne,
-  establishment_raison_sociale,
-  address,
-  type,
-  is_qualiopi,
-  opco,
-  engagementHandicapOrigin,
-  viewerType,
-}: {
-  siret: string
-  establishment_enseigne?: string
-  establishment_raison_sociale?: string
-  address?: string
-  type: typeof CFA | typeof ENTREPRISE
-  opco?: OPCOS_LABEL
-  is_qualiopi?: boolean
-  engagementHandicapOrigin?: EntrepriseEngagementSources
-  viewerType: AUTHTYPE
-}) => {
-  const RAISON_SOCIALE =
-    establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : (establishment_raison_sociale ?? "")
-  const firstLineAddress = address
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-      <FieldWithValue
-        title="SIRET"
-        value={siret}
-        tooltip={
-          type === ENTREPRISE ? (
-            <InfoTooltip label="Informations sur le SIRET Organisme">
-              La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en vous rendant sur
-              https://www.insee.fr/fr/information/2015441
-            </InfoTooltip>
-          ) : (
-            <InfoTooltip label="Informations sur le SIRET Organisme">
-              La donnée “SIRET Organisme” provient des bases “Carif-Oref”. Si cette information est erronée, merci de le signaler au Carif-Oref de votre région.
-            </InfoTooltip>
-          )
-        }
-      />
-      <FieldWithValue
-        hideIfEmpty={true}
-        title="Enseigne"
-        value={establishment_enseigne}
-        tooltip="La donnée “Enseigne” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler."
-      />
-      <FieldWithValue
-        hideIfEmpty={true}
-        title="Raison sociale"
-        value={RAISON_SOCIALE}
-        tooltip="La donnée “Raison sociale” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler."
-      />
-      <FieldWithValue
-        hideIfEmpty={true}
-        title="Adresse"
-        value={firstLineAddress}
-        tooltip="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
-      />
+      <InfoLine label="SIRET">{siret || "non identifié"}</InfoLine>
+      {enseigne && <InfoLine label="Enseigne">{enseigne}</InfoLine>}
+      {raisonSociale && <InfoLine label="Raison sociale">{raisonSociale}</InfoLine>}
+      {address && <InfoLine label="Adresse">{address}</InfoLine>}
+      {type === ENTREPRISE && naf && <InfoLine label="Activité (NAF)">{naf}</InfoLine>}
+      {type === ENTREPRISE && (knownOpco || !hideUnknownOpco) && <InfoLine label="OPCO de référence">{knownOpco ?? "non renseigné"}</InfoLine>}
+      {type === CFA && <InfoLine label="Qualiopi">Oui</InfoLine>}
       {type === ENTREPRISE && (
-        <FieldWithValue title="OPCO de référence" value={opco} tooltip='La donnée "OPCO" est déduite du SIRET. Si cette information est erronée, merci de nous contacter.' />
-      )}
-      {type === CFA && (
-        <FieldWithValue
-          title="Qualiopi"
-          value={is_qualiopi ? "OUI" : "NON"}
-          tooltip="La donnée 'Qualiopi' provient du Référentiel de l'ONISEP puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
-        />
-      )}
-      {type === ENTREPRISE && (
-        <FieldWithValue
-          title="Engagement Handicap recensé par"
-          value={engagementHandicapLabels[engagementHandicapOrigin]?.label ?? "inconnu"}
-          tooltip={
-            <InfoTooltip label="Informations sur l'Engagement Handicap">
-              {(viewerType === ENTREPRISE && engagementHandicapLabels[engagementHandicapOrigin]?.tooltip) || (
-                <>
-                  La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par France
-                  Travail, Cap emploi et leurs partenaires. En savoir plus dans la FAQ.
-                </>
-              )}
-            </InfoTooltip>
-          }
-        />
+        <InfoLine label="Engagement Handicap recensé par">
+          {(entreprise?.engagementHandicapOrigin && engagementHandicapLabels[entreprise.engagementHandicapOrigin]) || "inconnu"}
+        </InfoLine>
       )}
     </Box>
   )
 }
 
-const engagementHandicapLabels: Record<
-  EntrepriseEngagementSources,
-  {
-    label: string
-    tooltip?: React.ReactNode
-  }
-> = {
-  [EntrepriseEngagementSources.FRANCE_TRAVAIL]: {
-    label: "France Travail",
-  },
-  [EntrepriseEngagementSources.LBA]: {
-    label: "La bonne alternance",
-    tooltip: (
+const InfoLine = ({ label, children }: { label?: string; children: ReactNode }) => (
+  <Typography sx={{ fontSize: "inherit", lineHeight: "inherit", mb: `${fr.spacing("3v")} !important`, "&:last-child": { mb: "0 !important" }, overflowWrap: "anywhere" }}>
+    {label ? (
       <>
-        La bonne alternance mène des travaux visant à valoriser les entreprises engagées en faveur de l’emploi des personnes en situation de handicap. Votre entreprise a déjà par
-        le passé publié des offres mentionnant votre engagement.{" "}
-        <DsfrLink href="/faq?engagement-handicap=1" external>
-          En savoir plus
-          <span className="fr-sr-only">{" - Employeur handi-engagé avec France Travail"}</span>
-        </DsfrLink>
+        {label}&nbsp;: <b>{children}</b>
       </>
-    ),
-  },
-  [EntrepriseEngagementSources.LES_ENTREPRISE_S_ENGAGENT]: {
-    label: "Les entreprises s'engagent",
-  },
+    ) : (
+      children
+    )}
+  </Typography>
+)
+
+const engagementHandicapLabels: Record<EntrepriseEngagementSources, string> = {
+  [EntrepriseEngagementSources.FRANCE_TRAVAIL]: "France Travail",
+  [EntrepriseEngagementSources.LBA]: "La bonne alternance",
+  [EntrepriseEngagementSources.LES_ENTREPRISE_S_ENGAGENT]: "Les entreprises s'engagent",
 }
 
 export default InformationLegaleEntreprise
