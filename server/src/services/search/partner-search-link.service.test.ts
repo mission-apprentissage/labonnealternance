@@ -208,9 +208,9 @@ describe("resolvePartnerSearchLink", () => {
       expect(lieu_label).toBe(parisFixture.nom)
     })
 
-    it("ne nomme pas une commune à plus de 20 km du point", async () => {
-      // ~1° de latitude ≈ 111 km au nord de Paris.
-      const { lieu_label } = await resolvePartnerSearchLink({ partner: "monmaster", code: "RNCP37873", latitude: parisLatitude + 1, longitude: parisLongitude })
+    it("ne nomme pas une commune à plus de 20 km du point quand il n'est dans aucune bbox", async () => {
+      // ~33 km au nord du centre de Paris : parmi les candidats (50 km), hors de la bbox et au-delà du repli de 20 km.
+      const { lieu_label } = await resolvePartnerSearchLink({ partner: "monmaster", code: "RNCP37873", latitude: parisLatitude + 0.3, longitude: parisLongitude })
       expect(lieu_label).toBeNull()
     })
   })

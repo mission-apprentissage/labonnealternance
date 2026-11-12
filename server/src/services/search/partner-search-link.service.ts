@@ -31,10 +31,13 @@ const MAX_FORMATIONS_SAMPLE = 1000
 const LIEU_LABEL_MAX_DISTANCE_METERS = 20_000
 
 // Candidats à la bbox contenant le point, par centre le plus proche (index 2dsphere sur `centre`,
-// aucun sur `bbox`). En métropole, aucun coin de bbox n'est à plus de 30 km de son centre (Arles) ;
-// seules 11 communes de Guyane dépassent 50 km et retombent sur le centre le plus proche.
+// aucun sur `bbox`). Référentiel du 12/11/2026 : en métropole, aucun coin de bbox n'est à plus de
+// 30 km de son centre (Arles) ; 11 communes de Guyane dépassent 50 km, et au-delà le point est
+// rattaché à une bbox voisine ou au repli de 20 km. En zone dense, la 100e commune la plus proche
+// peut être à 15 km : aux coins de leur bbox, Haguenau, Bagnères-de-Bigorre et Arles sortent
+// jusqu'au rang 121.
 const LIEU_CANDIDATES_MAX_DISTANCE_METERS = 50_000
-const LIEU_MAX_CANDIDATES = 100
+const LIEU_MAX_CANDIDATES = 200
 
 // Borne de `q` sur /v1/search : au-delà, la recherche de destination répondrait 400.
 const MAX_Q_LENGTH = 200
@@ -139,13 +142,12 @@ async function resolveRncp(rncp: string): Promise<IRncpResolution> {
   return { q: null, outcome: "sans_libelle" }
 }
 
-/** Distance du point au centre, en demi-axes de la bbox : 1 = bord de la bbox, quelle que soit la taille de la commune. */
-const distanceInBboxAxes = ([minLon, minLat, maxLon, maxLat]: Bbox, centre: [number, number], [lon, lat]: [number, number]): number => {
-  const lonScale = Math.cos((lat * Math.PI) / 180)
-  const halfWidth = ((maxLon - minLon) * lonScale) / 2
+/** Distance du point au centre, en demi-axes de la bbox : ≈ 1 au bord de la bbox, quelle que soit la taille de la commune. */
+const distanceInBboxAxes = ([minLon, minLat, maxLon, maxLat]: Bbox, [centreLon, centreLat]: [number, number], [lon, lat]: [number, number]): number => {
+  const halfWidth = (maxLon - minLon) / 2
   const halfHeight = (maxLat - minLat) / 2
   if (halfWidth <= 0 || halfHeight <= 0) return Number.POSITIVE_INFINITY
-  return Math.hypot(((lon - centre[0]) * lonScale) / halfWidth, (lat - centre[1]) / halfHeight)
+  return Math.hypot((lon - centreLon) / halfWidth, (lat - centreLat) / halfHeight)
 }
 
 /**
