@@ -21,6 +21,19 @@ location / {
         include includes/proxy.conf;
     }
 
+    # Liens partenaires (/monmaster/<RNCP>) : chaque clic déclenche une résolution côté API, débit borné
+    # par IP contre l'énumération des codes (zone dans extra-conf.d/rate-limit.conf.template).
+    location /monmaster/ {
+        if ($lba_denied) {
+            return 403;
+        }
+
+        limit_req zone=lba_partner_links burst=10 nodelay;
+
+        set $upstream http://ui:3000;
+        include includes/proxy.conf;
+    }
+
     location /recherche {
         set $upstream http://ui:3000;
         include extra-includes/proxy-iframe.conf;

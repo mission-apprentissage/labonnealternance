@@ -18,6 +18,7 @@ import { initBrevoWebhooks } from "@/services/brevo.service"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "./controllers/_private/geo.private.controller"
 import { metiersRouteController } from "./controllers/_private/metiers.private.controller"
+import { partnerSearchRouteController } from "./controllers/_private/partner-search.private.controller"
 import { seoRouteController } from "./controllers/_private/seo.private.controller"
 import { webVitalsRouteController } from "./controllers/_private/web-vitals.private.controller"
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligible-trainings-for-appointment.controller"
@@ -119,6 +120,7 @@ export async function bind(app: Server) {
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
       metiersRouteController(typedSubApp)
+      partnerSearchRouteController(typedSubApp)
       seoRouteController(typedSubApp)
       webVitalsRouteController(typedSubApp)
       inserjeunesRoute(typedSubApp)
