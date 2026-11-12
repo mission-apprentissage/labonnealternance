@@ -19,11 +19,20 @@ https://labonnealternance.apprentissage.beta.gouv.fr/monmaster/<RNCP>?latitude=<
 
 `latitude` et `longitude` vont ensemble : une seule des deux, une valeur non numérique ou à virgule décimale (`48,85`) est ignorée. Tout autre paramètre est ignoré.
 
+**Précision des coordonnées** : au moins 2 décimales, 4 recommandées (format usuel des géocodeurs). Un entier est accepté mais situe le point à plusieurs dizaines de kilomètres près, ce qui fausse la commune affichée et la zone de recherche (rayon de 20 km).
+
+| Décimales | Exemple | Précision (France métropolitaine) |
+| --- | --- | --- |
+| 0 | `48` | ≈ 75 à 111 km |
+| 1 | `48.8` | ≈ 7,5 à 11 km |
+| 2 | `48.85` | ≈ 0,75 à 1,1 km |
+| 4 | `48.8566` | ≈ 10 m |
+
 ### Exemples
 
 ```
 /monmaster/RNCP37873?latitude=48.8566&longitude=2.3522
-/monmaster/RNCP37873?latitude=45.764&longitude=4.8357&utm_medium=fiche-formation&utm_campaign=rentree-2027
+/monmaster/RNCP37873?latitude=45.7640&longitude=4.8357&utm_source=monmaster&utm_medium=website&utm_campaign=mon-master_promo_emploi_sur_fiche_formation
 /monmaster/RNCP37873
 ```
 
