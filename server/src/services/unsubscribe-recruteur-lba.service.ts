@@ -90,7 +90,7 @@ async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], { re
       created_at,
       last_update_at: updated_at,
       unsubscribe_reason: reason,
-      unsubscribe_reason_detail: reasonDetail || null,
+      unsubscribe_reason_detail: reason === "Autre" ? reasonDetail || null : null,
       unsubscribe_date: now,
     }
     return unsubscribedLbaCompany
