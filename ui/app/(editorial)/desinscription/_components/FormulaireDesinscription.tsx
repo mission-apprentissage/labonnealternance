@@ -1,12 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
+import Input from "@codegouvfr/react-dsfr/Input"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { captureException } from "@sentry/browser"
 import { useMutation } from "@tanstack/react-query"
 import { FormikContext, useFormik } from "formik"
 import { useId, useRef, useState } from "react"
+import { UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH } from "shared/models/unsubscribed-recruteur-lba.model"
 import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
@@ -20,6 +22,8 @@ import { Warning } from "@/theme/components/icons"
 import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 
+const REASON_AUTRE = "Autre"
+
 const unsubscribeReasons = [
   "Nous avons déjà trouvé nos alternants pour l’année en cours",
   "Les candidatures ne correspondent pas aux activités de mon entreprise",
@@ -28,8 +32,17 @@ const unsubscribeReasons = [
   "Mon entreprise ne recrute pas en alternance",
   "Je m'oppose au traitement des mes données par La bonne alternance",
   "L’entreprise est fermée",
-  "Autre",
+  REASON_AUTRE,
 ]
+
+type IUnsubscribeFormValues = { email: string; reason: string; reason_detail: string }
+
+// Le champ de précision n'est affiché qu'avec « Autre » : une saisie faite avant de changer de motif n'est pas envoyée.
+const toUnsubscribeBody = ({ email, reason, reason_detail }: IUnsubscribeFormValues) => ({
+  email,
+  reason,
+  reason_detail: reason === REASON_AUTRE ? reason_detail : undefined,
+})
 
 // Reprend la taille des h2 de DepotSimplifieStyling, qui ne s'applique pas à un <p>
 const sousTitreSx = { fontSize: { xs: "16px", lg: "24px" }, lineHeight: { xs: "24px", lg: "32px" } }
@@ -161,6 +174,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
   const [errorKey, setErrorKey] = useState<IErrorKey | null>(null)
   const [possibleCompanies, setPossibleCompanies] = useState<IUnsubscribePossibleCompany[] | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const reasonDetailCounterId = useId()
 
   const handleError = (error: any) => {
     if (error && error instanceof ApiError && error.isNotFoundError()) {
@@ -172,10 +186,10 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
     }
   }
 
-  const onUnsubscribeSubmit = async (values: { reason: string; email: string }) => {
+  const onUnsubscribeSubmit = async (values: IUnsubscribeFormValues) => {
     setErrorKey(null)
     try {
-      const response = await unsubscribeCompany(values)
+      const response = await unsubscribeCompany(toUnsubscribeBody(values))
       if ("possibleCompanies" in response && response.possibleCompanies?.length) {
         setPossibleCompanies(response.possibleCompanies as IUnsubscribePossibleCompany[])
       } else {
@@ -191,7 +205,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
       reason: Yup.string().required("Sélectionnez un motif"),
       email: emailValidation().required("Saisissez l’e-mail de l’établissement"),
     }),
-    initialValues: { email: companyEmail ?? "", reason: "" },
+    initialValues: { email: companyEmail ?? "", reason: "", reason_detail: "" },
     onSubmit: onUnsubscribeSubmit,
     enableReinitialize: true,
   })
@@ -199,14 +213,14 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
   const onUnsubscribeSiretsSubmit = async (sirets: string[]) => {
     setErrorKey(null)
     try {
-      await unsubscribeCompanySirets({ sirets, ...formik.values })
+      await unsubscribeCompanySirets({ sirets, ...toUnsubscribeBody(formik.values) })
       handleUnsubscribeSuccess()
     } catch (error) {
       handleError(error)
     }
   }
 
-  const { isSubmitting, setFieldValue, values, touched, errors, handleBlur } = formik
+  const { isSubmitting, setFieldValue, values, touched, errors, handleBlur, handleChange } = formik
   const reasonError = touched.reason && errors.reason
   // Le bouton "Confirmer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
   const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
@@ -230,7 +244,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
           <FormikContext value={formik}>
             <form ref={formRef} onSubmit={handleSubmit} noValidate>
               <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("4v") }}>
-                Tous les champs sont obligatoires.
+                Sauf mention contraire, tous les champs sont obligatoires.
               </Typography>
               <CustomDSFRInput
                 label="E-mail de l'établissement"
@@ -272,6 +286,29 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                   ))}
                 </Select>
               </Box>
+
+              {values.reason === REASON_AUTRE && (
+                <Box sx={{ mt: fr.spacing("6v") }}>
+                  <Input
+                    label="Précisez votre motif (facultatif)"
+                    hintText={`Votre réponse nous aide à améliorer le service. ${UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH} caractères maximum.`}
+                    textArea
+                    nativeTextAreaProps={{
+                      name: "reason_detail",
+                      value: values.reason_detail,
+                      onChange: handleChange,
+                      onBlur: handleBlur,
+                      maxLength: UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH,
+                      rows: 3,
+                      "aria-describedby": reasonDetailCounterId,
+                    }}
+                    style={{ marginBottom: 0 }}
+                  />
+                  <Typography id={reasonDetailCounterId} className={fr.cx("fr-hint-text")} sx={{ mt: fr.spacing("1v"), mb: 0, textAlign: "right" }}>
+                    {values.reason_detail.length} / {UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH} caractères
+                  </Typography>
+                </Box>
+              )}
 
               {/* L'erreur NON_RECONNU s'affiche sous le champ, qui n'a pas le focus après l'appel API. */}
               <LiveStatus
