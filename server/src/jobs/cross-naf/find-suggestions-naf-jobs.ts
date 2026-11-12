@@ -32,6 +32,12 @@ export type SuggestionsNafTargetWithSuggestions = SuggestionsNafTarget & { sugge
 
 export type SuggestionsNafApplicantWithSuggestions = Omit<SuggestionsNafApplicantWithTargets, "targets"> & { targets: SuggestionsNafTargetWithSuggestions[] }
 
+// offres LBA, puis partenaires, puis recruteurs LBA. Sert au choix de l'offre de chaque secteur et à l'ordre
+// des offres dans l'email, où la distance ne fait que départager
+const PARTNER_JOB_PRIORITY = 1
+const JOB_PRIORITY: Partial<Record<string, number>> = { [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]: 0, [JOBPARTNERS_LABEL.RECRUTEURS_LBA]: 2 }
+const getJobPriority = (partnerLabel: string) => JOB_PRIORITY[partnerLabel] ?? PARTNER_JOB_PRIORITY
+
 const JOB_PROJECTION = {
   _id: "$_id",
   partner_label: "$partner_label",
@@ -47,8 +53,8 @@ const JOB_PROJECTION = {
 }
 
 /**
- * Meilleure offre de chaque secteur dans un rayon de 100 km autour de la candidature source : offres LBA, puis
- * partenaires, puis recruteurs LBA, toutes avec un email de candidature et hors offres déléguées à un CFA, départagées par la distance.
+ * Meilleure offre de chaque secteur dans un rayon de 100 km autour de la candidature source, par priorité (cf. JOB_PRIORITY)
+ * puis distance, parmi les offres avec un email de candidature et hors offres déléguées à un CFA.
  * Une offre active a une date d'expiration future, sauf les recruteurs LBA qui n'en ont pas (cf. getJobsPartnersFromDBForUI).
  */
 const findBestJobBySector = async (target: SuggestionsNafTarget, excludedJobIds: ObjectId[]) => {
@@ -76,11 +82,8 @@ const findBestJobBySector = async (target: SuggestionsNafTarget, excludedJobIds:
         $addFields: {
           priority: {
             $switch: {
-              branches: [
-                { case: { $eq: ["$partner_label", JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA] }, then: 0 },
-                { case: { $eq: ["$partner_label", JOBPARTNERS_LABEL.RECRUTEURS_LBA] }, then: 2 },
-              ],
-              default: 1,
+              branches: Object.entries(JOB_PRIORITY).map(([label, priority]) => ({ case: { $eq: ["$partner_label", label] }, then: priority })),
+              default: PARTNER_JOB_PRIORITY,
             },
           },
         },
@@ -97,10 +100,13 @@ const findTargetsSuggestions = async ({ targets, applications }: SuggestionsNafA
   const targetsWithSuggestions: SuggestionsNafTargetWithSuggestions[] = []
   for (const target of targets) {
     const jobsBySector = await findBestJobBySector(target, excludedJobIds)
-    const suggestions = target.sectors.flatMap((sector) => {
-      const job = jobsBySector.get(sector.naf)
-      return job ? [{ sector, job }] : []
-    })
+    // Tri stable : à priorité égale, l'ordre des secteurs (rang) est conservé.
+    const suggestions = target.sectors
+      .flatMap((sector) => {
+        const job = jobsBySector.get(sector.naf)
+        return job ? [{ sector, job }] : []
+      })
+      .sort((a, b) => getJobPriority(a.job.partner_label) - getJobPriority(b.job.partner_label))
     excludedJobIds.push(...suggestions.map(({ job }) => job._id))
     targetsWithSuggestions.push({ ...target, suggestions })
   }

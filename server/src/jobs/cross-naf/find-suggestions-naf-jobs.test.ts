@@ -116,6 +116,22 @@ describe("findSuggestionsNafJobs", () => {
     ])
   })
 
+  it("affiche les offres LBA, puis partenaires, puis recruteurs LBA, chaque groupe dans l'ordre des rangs", async () => {
+    const recruteur = await createJob({ workplace_naf_code: "01.61Z", partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, offer_expiration: null })
+    const partenaireRang3 = await createJob({ workplace_naf_code: "01.11Z", partner_label: JOBPARTNERS_LABEL.HELLOWORK })
+    const lba = await createJob({ workplace_naf_code: "01.21Z", partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
+    const partenaireRang5 = await createJob({ workplace_naf_code: "01.50Z", partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL })
+
+    expect(await findSuggestedJobIds(buildApplicant([buildTarget("A1101", ["01.61Z", "01.11Z", "01.21Z", "01.50Z"])]))).toEqual([
+      [
+        { naf: "01.21Z", job_id: lba },
+        { naf: "01.11Z", job_id: partenaireRang3 },
+        { naf: "01.50Z", job_id: partenaireRang5 },
+        { naf: "01.61Z", job_id: recruteur },
+      ],
+    ])
+  })
+
   it("ne suggère pas deux fois la même offre à un candidat", async () => {
     const multiRome = await createJob({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, offer_expiration: null, offer_rome_codes: ["A1101", "A1416"] })
 
