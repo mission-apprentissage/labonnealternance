@@ -1,9 +1,11 @@
+import type { IPointGeometry, IReferentielCommune } from "shared/models/index"
 import type { IPartnerSearchLinkPartner } from "shared/routes/_private/partner-search.routes"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-
 import { loadRomeLabelByCode } from "./search-items.service"
+import type { Bbox } from "./search-items-admin-codes"
+import { contains, toBbox } from "./search-items-admin-codes"
 
 /**
  * Résolution d'un lien partenaire (`/monmaster/<RNCP>`) en recherche `/recherche`.
@@ -24,9 +26,15 @@ const RNCP_CODE_PATTERN = /^(?:RNCP)?(\d{2,5})$/i
 // borne le coût d'un clic. Au-delà, le libellé retenu est celui des 1 000 premières par clé.
 const MAX_FORMATIONS_SAMPLE = 1000
 
-// Rayon de rattachement du point à une commune pour le libellé du lieu : au-delà (point en mer,
-// hors de France), on ne nomme pas une commune lointaine.
+// Rayon de rattachement du point à une commune hors de toute bbox (point en mer, hors de France) :
+// au-delà, on ne nomme pas une commune lointaine.
 const LIEU_LABEL_MAX_DISTANCE_METERS = 20_000
+
+// Candidats à la bbox contenant le point, par centre le plus proche (index 2dsphere sur `centre`,
+// aucun sur `bbox`). En métropole, aucun coin de bbox n'est à plus de 30 km de son centre (Arles) ;
+// seules 11 communes de Guyane dépassent 50 km et retombent sur le centre le plus proche.
+const LIEU_CANDIDATES_MAX_DISTANCE_METERS = 50_000
+const LIEU_MAX_CANDIDATES = 100
 
 // Borne de `q` sur /v1/search : au-delà, la recherche de destination répondrait 400.
 const MAX_Q_LENGTH = 200
@@ -131,12 +139,41 @@ async function resolveRncp(rncp: string): Promise<IRncpResolution> {
   return { q: null, outcome: "sans_libelle" }
 }
 
+/** Distance du point au centre, en demi-axes de la bbox : 1 = bord de la bbox, quelle que soit la taille de la commune. */
+const distanceInBboxAxes = ([minLon, minLat, maxLon, maxLat]: Bbox, centre: [number, number], [lon, lat]: [number, number]): number => {
+  const lonScale = Math.cos((lat * Math.PI) / 180)
+  const halfWidth = ((maxLon - minLon) * lonScale) / 2
+  const halfHeight = (maxLat - minLat) / 2
+  if (halfWidth <= 0 || halfHeight <= 0) return Number.POSITIVE_INFINITY
+  return Math.hypot(((lon - centre[0]) * lonScale) / halfWidth, (lat - centre[1]) / halfHeight)
+}
+
+/**
+ * Commune dont la bbox contient le point, la plus centrale rapportée à sa taille quand les bbox se
+ * recouvrent ; à défaut, centre le plus proche. Le centre le plus proche seul nomme souvent une
+ * petite voisine d'une grande commune (Le Tholonet pour Aix-en-Provence).
+ */
 async function resolveLieuLabel(latitude: number, longitude: number): Promise<string | null> {
-  const commune = await getDbCollection("referentiel.communes").findOne(
-    { centre: { $nearSphere: { $geometry: { type: "Point", coordinates: [longitude, latitude] }, $maxDistance: LIEU_LABEL_MAX_DISTANCE_METERS } } },
-    { projection: { _id: 0, nom: 1 } }
-  )
-  return commune?.nom ?? null
+  const point: [number, number] = [longitude, latitude]
+  const candidates = await getDbCollection("referentiel.communes")
+    .aggregate<{ nom: string; centre: IPointGeometry; bbox: IReferentielCommune["bbox"]; distance: number }>([
+      { $geoNear: { near: { type: "Point", coordinates: point }, key: "centre", distanceField: "distance", maxDistance: LIEU_CANDIDATES_MAX_DISTANCE_METERS } },
+      { $limit: LIEU_MAX_CANDIDATES },
+      { $project: { _id: 0, nom: 1, centre: 1, bbox: 1, distance: 1 } },
+    ])
+    .toArray()
+
+  let best: { nom: string; score: number } | null = null
+  for (const candidate of candidates) {
+    const bbox = toBbox(candidate.bbox)
+    if (!bbox || !contains(bbox, point)) continue
+    const score = distanceInBboxAxes(bbox, candidate.centre.coordinates as [number, number], point)
+    if (!best || score < best.score) best = { nom: candidate.nom, score }
+  }
+  if (best) return best.nom
+
+  const [nearest] = candidates
+  return nearest && nearest.distance <= LIEU_LABEL_MAX_DISTANCE_METERS ? nearest.nom : null
 }
 
 export async function resolvePartnerSearchLink({

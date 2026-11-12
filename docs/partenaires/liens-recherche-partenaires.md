@@ -41,7 +41,7 @@ https://labonnealternance.apprentissage.beta.gouv.fr/monmaster/<RNCP>?latitude=<
 Une recherche d'offres d'emploi en alternance :
 
 - **métier** : intitulé du métier (code ROME) le plus associé au RNCP dans le catalogue des formations en apprentissage, ou à défaut l'intitulé de la formation ;
-- **lieu** : commune la plus proche du point (dans un rayon de 20 km), recherche dans un rayon de 20 km, élargie automatiquement de 20 km en 20 km jusqu'à 100 km si aucune offre n'est trouvée ;
+- **lieu** : commune qui contient le point, estimée par son emprise rectangulaire (à défaut, commune la plus proche dans un rayon de 20 km) ; recherche dans un rayon de 20 km, élargie automatiquement de 20 km en 20 km jusqu'à 100 km si aucune offre n'est trouvée ;
 - sans coordonnées : France entière.
 
 ### Cas limites
