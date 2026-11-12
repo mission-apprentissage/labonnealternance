@@ -3,19 +3,7 @@ import type { FormikErrors, FormikTouched } from "formik"
 import type { ReactNode } from "react"
 import { OPCOS_LABEL } from "shared/constants/index"
 
-export const OPCO_SHORT_LABELS: Partial<Record<OPCOS_LABEL, string>> = {
-  [OPCOS_LABEL.AFDAS]: "AFDAS",
-  [OPCOS_LABEL.AKTO]: "AKTO",
-  [OPCOS_LABEL.ATLAS]: "ATLAS",
-  [OPCOS_LABEL.CONSTRUCTYS]: "Constructys",
-  [OPCOS_LABEL.OPCOMMERCE]: "L'Opcommerce",
-  [OPCOS_LABEL.OCAPIAT]: "OCAPIAT",
-  [OPCOS_LABEL.OPCO2I]: "Opco 2i",
-  [OPCOS_LABEL.EP]: "Opco EP",
-  [OPCOS_LABEL.MOBILITE]: "Opco Mobilités",
-  [OPCOS_LABEL.SANTE]: "Opco Santé",
-  [OPCOS_LABEL.UNIFORMATION]: "Uniformation",
-}
+import { OPCO_SHORT_LABELS } from "@/utils/opco-labels"
 
 interface Props {
   name: string

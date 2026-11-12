@@ -5,10 +5,11 @@ import Image from "next/image"
 import type { OPCOS_LABEL } from "shared/constants/recruteur"
 
 import { FormSection } from "@/app/_components/FormSection"
-import { OPCO_SHORT_LABELS, OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
+import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { infosOpcos } from "@/theme/components/logos/infos-opcos"
+import { isIdentifiedOpco, OPCO_SHORT_LABELS } from "@/utils/opco-labels"
 
 /**
  * Section OPCO de la création de compte entreprise. Isolée pour accueillir la suggestion d'OPCO (#5455)
@@ -94,7 +95,7 @@ const OpcoCard = ({ opco }: { opco: OPCOS_LABEL }) => {
     >
       <Box sx={{ flex: "1 1 280px", minWidth: 0 }}>
         <Typography component="h3" sx={{ fontWeight: 700, fontSize: "20px !important", lineHeight: "28px !important", mb: `${fr.spacing("2v")} !important` }}>
-          Votre OPCO : {OPCO_SHORT_LABELS[opco] ?? opco}
+          Votre OPCO : {isIdentifiedOpco(opco) ? OPCO_SHORT_LABELS[opco] : opco}
         </Typography>
         <Typography sx={{ fontSize: "14px", lineHeight: "24px" }}>{infos.description}</Typography>
       </Box>

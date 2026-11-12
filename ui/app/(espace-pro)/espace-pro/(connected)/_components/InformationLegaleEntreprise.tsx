@@ -8,6 +8,7 @@ import { EntrepriseEngagementSources } from "shared/models/referentiel-engagemen
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
+import { isIdentifiedOpco, OPCO_SHORT_LABELS } from "@/utils/opco-labels"
 
 const SIRENE_URL = "https://www.insee.fr/fr/information/6675111"
 
@@ -39,7 +40,7 @@ const InformationLegaleEntreprise = ({
 
   const entreprise = type === ENTREPRISE && entrepriseQuery.data && "data" in entrepriseQuery.data && "siret" in entrepriseQuery.data.data && entrepriseQuery.data.data
   const parsedOpco = opco ?? parseEnum(OPCOS_LABEL, entreprise?.opco)
-  const knownOpco = parsedOpco && parsedOpco !== OPCOS_LABEL.UNKNOWN_OPCO ? parsedOpco : undefined
+  const knownOpco = isIdentifiedOpco(parsedOpco) ? OPCO_SHORT_LABELS[parsedOpco] : undefined
   const cfa = type === CFA && cfaQuery.data && "data" in cfaQuery.data && "siret" in cfaQuery.data.data && cfaQuery.data.data
   const raisonSociale = entreprise?.raison_sociale ?? cfa?.raison_sociale
   const enseigne = entreprise?.enseigne ?? cfa?.enseigne

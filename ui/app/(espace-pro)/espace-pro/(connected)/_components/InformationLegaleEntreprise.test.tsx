@@ -52,6 +52,11 @@ describe("InformationLegaleEntreprise", () => {
     expect(render({ type: ENTREPRISE, data: entreprise, hideUnknownOpco: true })).toContain("OPCO de référence")
   })
 
+  it("OPCO : libellé court, et « OPCO multiple » traité comme non renseigné", () => {
+    expect(render({ type: ENTREPRISE, data: { ...entreprise, opco: OPCOS_LABEL.AKTO } })).toContain("OPCO de référence\u00a0: <b>AKTO</b>")
+    expect(render({ type: ENTREPRISE, data: { ...entreprise, opco: OPCOS_LABEL.MULTIPLE_OPCO } })).toContain("OPCO de référence\u00a0: <b>non renseigné</b>")
+  })
+
   it("CFA : établissement, Qualiopi, ni NAF ni OPCO ni engagement handicap", () => {
     const html = render({ type: CFA, data: { ...entreprise, naf_code: "85.59A", naf_label: "Formation continue d'adultes" } })
 

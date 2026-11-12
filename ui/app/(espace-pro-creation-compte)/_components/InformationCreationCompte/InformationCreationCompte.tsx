@@ -31,6 +31,7 @@ import { AnimationContainer } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { getEntrepriseOpco } from "@/utils/api"
 import { ApiError, apiPost } from "@/utils/api.utils"
+import { isIdentifiedOpco } from "@/utils/opco-labels"
 import { PAGES } from "@/utils/routes.utils"
 
 /**
@@ -88,7 +89,8 @@ const Formulaire = ({
   })
 
   const parsedOpco = parseEnum(OPCOS_LABEL, opcoData?.opco)
-  const opco = parsedOpco === OPCOS_LABEL.UNKNOWN_OPCO ? undefined : parsedOpco
+  // « OPCO multiple » n'identifie aucun OPCO : le select reste proposé (cf. isKnownOpco côté serveur)
+  const opco = isIdentifiedOpco(parsedOpco) ? parsedOpco : undefined
 
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
