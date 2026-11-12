@@ -304,9 +304,23 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                     }}
                     style={{ marginBottom: 0 }}
                   />
+                  {/* « N / 500 » se lit « barre oblique » : les lecteurs d'écran reçoivent « N caractères sur 500 ». */}
                   <Typography id={reasonDetailCounterId} className={fr.cx("fr-hint-text")} sx={{ mt: fr.spacing("1v"), mb: 0, textAlign: "right" }}>
-                    {values.reason_detail.length} / {UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH} caractères
+                    <span aria-hidden="true">
+                      {values.reason_detail.length} / {UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH} caractères
+                    </span>
+                    <span className={fr.cx("fr-sr-only")}>
+                      {values.reason_detail.length} {values.reason_detail.length > 1 ? "caractères" : "caractère"} sur {UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH}
+                    </span>
                   </Typography>
+                  {/* maxLength bloque la frappe sans retour : la limite atteinte est annoncée. */}
+                  <LiveStatus
+                    message={
+                      values.reason_detail.length >= UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH
+                        ? `Vous avez atteint la limite de ${UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH} caractères.`
+                        : ""
+                    }
+                  />
                 </Box>
               )}
 
