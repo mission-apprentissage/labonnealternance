@@ -248,6 +248,11 @@ export const PAGES = {
       title: "Baromètre de l’alternance",
       index: true,
     },
+    barometreT1: {
+      getPath: () => `/barometre/t1-2026` as string,
+      title: "Premier trimestre 2026",
+      index: false,
+    },
     accesRecruteur: {
       getPath: () => `/acces-recruteur` as string,
       title: "Recruteur",
