@@ -2,6 +2,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveDbEntity } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
+import type { IReferentielCommune } from "shared/models/index"
 import { ZReferentielRome, zFormationCatalogueSchema } from "shared/models/index"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { z } from "zod"
@@ -152,9 +153,64 @@ describe("resolvePartnerSearchLink", () => {
       expect((await resolvePartnerSearchLink({ partner: "monmaster", code: "RNCP37873", latitude: parisLatitude })).lieu_label).toBeNull()
     })
 
-    it("ne nomme pas une commune à plus de 20 km du point", async () => {
-      // ~1° de latitude ≈ 111 km au nord de Paris.
-      const { lieu_label } = await resolvePartnerSearchLink({ partner: "monmaster", code: "RNCP37873", latitude: parisLatitude + 1, longitude: parisLongitude })
+    describe("communes voisines de tailles différentes", () => {
+      // Référentiel du 12/11/2026 : la bbox d'Aix (186 km²) contient le centre du Tholonet.
+      const commune = (nom: string, code: string, centre: [number, number], [minLon, minLat, maxLon, maxLat]: [number, number, number, number]): IReferentielCommune => ({
+        _id: new ObjectId(),
+        nom,
+        code,
+        codesPostaux: ["13100"],
+        codeDepartement: "13",
+        codeRegion: "93",
+        centre: { type: "Point", coordinates: centre },
+        bbox: {
+          type: "Polygon",
+          coordinates: [
+            [
+              [minLon, minLat],
+              [maxLon, minLat],
+              [maxLon, maxLat],
+              [minLon, maxLat],
+              [minLon, minLat],
+            ],
+          ],
+        },
+      })
+
+      beforeEach(async () => {
+        await getDbCollection("referentiel.communes").insertMany([
+          commune("Aix-en-Provence", "13001", [5.3879, 43.536], [5.269537, 43.446031, 5.506288, 43.62598]),
+          commune("Le Tholonet", "13109", [5.5053, 43.5218], [5.476328, 43.504783, 5.5343, 43.538841]),
+        ])
+      })
+
+      it("nomme la grande commune qui contient le point, pas la petite voisine au centre plus proche", async () => {
+        // Centre-ville d'Aix, coordonnées envoyées par Mon Master : à 4,75 km du centre du Tholonet, 4,85 km de celui d'Aix.
+        const { lieu_label } = await resolvePartnerSearchLink({ partner: "monmaster", code: "RNCP38197", latitude: 43.52974319458008, longitude: 5.447426795959473 })
+        expect(lieu_label).toBe("Aix-en-Provence")
+      })
+
+      it("départage deux bbox qui contiennent le point par la position relative à la taille de chaque commune", async () => {
+        // Dans Aix (geo.api.gouv.fr), mais plus près du centre du Tholonet que de celui d'Aix.
+        const { lieu_label } = await resolvePartnerSearchLink({ partner: "monmaster", code: "RNCP38197", latitude: 43.531, longitude: 5.478 })
+        expect(lieu_label).toBe("Aix-en-Provence")
+      })
+
+      it("nomme la petite commune quand le point est en son centre, bien qu'il soit aussi dans la bbox de la grande", async () => {
+        const { lieu_label } = await resolvePartnerSearchLink({ partner: "monmaster", code: "RNCP38197", latitude: 43.5218, longitude: 5.5053 })
+        expect(lieu_label).toBe("Le Tholonet")
+      })
+    })
+
+    it("retombe sur le centre le plus proche quand le point n'est dans aucune bbox", async () => {
+      // ~11 km au nord du centre de Paris, au-delà de sa bbox (48,902 °N).
+      const { lieu_label } = await resolvePartnerSearchLink({ partner: "monmaster", code: "RNCP37873", latitude: parisLatitude + 0.1, longitude: parisLongitude })
+      expect(lieu_label).toBe(parisFixture.nom)
+    })
+
+    it("ne nomme pas une commune à plus de 20 km du point quand il n'est dans aucune bbox", async () => {
+      // ~33 km au nord du centre de Paris : parmi les candidats (50 km), hors de la bbox et au-delà du repli de 20 km.
+      const { lieu_label } = await resolvePartnerSearchLink({ partner: "monmaster", code: "RNCP37873", latitude: parisLatitude + 0.3, longitude: parisLongitude })
       expect(lieu_label).toBeNull()
     })
   })
