@@ -220,7 +220,7 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     flux_absent_since: z
       .date()
       .nullish()
-      .describe("Offre de flux encore active alors qu'elle est sortie du flux pendant un blocage du garde-fou d'annulation : date de sa première absence"),
+      .describe("Offre de flux sortie du flux pendant un blocage du garde-fou d'annulation et laissée en ligne : date de sa première absence. Null une fois revenue ou annulée"),
     lba_url: z.string().nullable().default(null).optional(),
   })
 

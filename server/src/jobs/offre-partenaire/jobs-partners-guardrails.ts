@@ -14,7 +14,7 @@ export type GuardrailThresholds = {
   minTransformationErrorCountToBlock: number
   /** Part maximale des offres actives d'un partenaire sorties du flux depuis le run précédent. */
   maxRemovedCancellationRate: number
-  /** Nombre d'annulations en dessous duquel le garde-fou d'annulation ne bloque pas : sur un petit catalogue, un pourcentage ne dit rien. */
+  /** Nombre de sorties du flux en dessous duquel le garde-fou d'annulation ne bloque pas : sur un petit catalogue, un pourcentage ne dit rien. */
   minRemovedCountToBlock: number
 }
 
@@ -74,13 +74,16 @@ export const getLatestGuardrailBlocks = (jobs: IJobsCronTask[]): GuardrailBlock[
   return [...latestBlockByJob].map(([jobName, { at, detail }]) => ({ jobName, detail, at }))
 }
 
-/** Alerte immédiate (Slack + logs) ; Sentry reçoit l'erreur levée ensuite, via job-processor. */
-export const alertGuardrailBlock = async (subject: string, message: string) => {
-  logger.error({ subject }, `${GUARDRAIL_ERROR_MARKER} ${message}`)
+/** Alerte immédiate (Slack + logs) d'un garde-fou ; une alerte Slack en échec ne doit pas interrompre le traitement. */
+export const notifyGuardrail = async (subject: string, message: string) => {
+  logger.error({ subject }, message)
   try {
-    await notifyToSlack({ subject, message: `${GUARDRAIL_ERROR_MARKER} ${message}`, error: true })
+    await notifyToSlack({ subject, message, error: true })
   } catch (err) {
     logger.error(err, "échec de l'alerte Slack du garde-fou offres partenaires")
     sentryCaptureException(err)
   }
 }
+
+/** Blocage : Sentry reçoit ensuite l'erreur levée par l'appelant, via job-processor. */
+export const alertGuardrailBlock = (subject: string, message: string) => notifyGuardrail(subject, `${GUARDRAIL_ERROR_MARKER} ${message}`)

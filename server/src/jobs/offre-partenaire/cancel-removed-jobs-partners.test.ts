@@ -273,12 +273,38 @@ describe("Garde-fou d'annulation par partenaire", () => {
     await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 168 })
     await runFluxGuard()
     await ageAbsences(JOBPARTNERS_LABEL.HELLOWORK, 3 * 24 - 1)
+    vi.mocked(slackUtils.notifyToSlack).mockClear()
 
-    await runFluxGuard()
+    const { blocked, graceExpiries } = await runFluxGuard()
 
+    expect.soft(blocked).toEqual([])
+    expect.soft(graceExpiries).toEqual([{ partner_label: JOBPARTNERS_LABEL.HELLOWORK, count: 32 }])
     expect.soft(await countByStatus(JOBPARTNERS_LABEL.HELLOWORK, JOB_STATUS_ENGLISH.ANNULEE)).toBe(32)
     const cancelled = await getDbCollection("jobs_partners").findOne({ partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ANNULEE })
     expect.soft(cancelled?.offer_status_history.at(-1)).toMatchObject({ reason: "supprimée du flux source", granted_by: "cancel-removed-jobs-partners" })
+    expect.soft(await absentSinceIds(JOBPARTNERS_LABEL.HELLOWORK)).toEqual([])
+    // annulation sans blocage du jour : l'alerte Slack est le seul signal
+    expect.soft(slackUtils.notifyToSlack).toHaveBeenCalledTimes(1)
+    expect
+      .soft(vi.mocked(slackUtils.notifyToSlack).mock.calls[0]?.[0])
+      .toMatchObject({ error: true, message: expect.stringContaining("Hellowork : 32 offres sorties du flux pendant un blocage et toujours absentes après 3 jours") })
+  })
+
+  it("un partenaire bloqué ce soir voit quand même annulées les offres datées arrivées à échéance, pas les nouvelles", async () => {
+    const ids = await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 168 })
+    await runFluxGuard()
+    await ageAbsences(JOBPARTNERS_LABEL.HELLOWORK, 3 * 24)
+    await getDbCollection("computed_jobs_partners").deleteMany({ partner_job_id: { $in: ids.slice(128, 168) } })
+
+    const { blocked, graceExpiries } = await runFluxGuard()
+
+    expect.soft(blocked).toMatchObject([{ partner_label: JOBPARTNERS_LABEL.HELLOWORK, active: 200, removed: 40 }])
+    expect.soft(graceExpiries).toEqual([{ partner_label: JOBPARTNERS_LABEL.HELLOWORK, count: 32 }])
+    const cancelled = await getDbCollection("jobs_partners")
+      .find({ partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ANNULEE }, { projection: { partner_job_id: 1 } })
+      .toArray()
+    expect.soft(cancelled.map(({ partner_job_id }) => partner_job_id).sort()).toEqual(ids.slice(168).sort())
+    expect.soft(await absentSinceIds(JOBPARTNERS_LABEL.HELLOWORK)).toEqual(ids.slice(128, 168).sort())
   })
 
   it("(faux positif) une offre absente depuis deux jours n'est pas encore annulée", async () => {
@@ -316,6 +342,7 @@ describe("Garde-fou d'annulation par partenaire", () => {
     await runFluxGuard()
 
     await expect(forceCancelRemovedJobsPartners({ partnerLabel: JOBPARTNERS_LABEL.HELLOWORK })).resolves.toMatchObject({ cancelled: 32 })
+    expect.soft(await absentSinceIds(JOBPARTNERS_LABEL.HELLOWORK)).toEqual([])
   })
 
   it("le sous-job des flux sort en erreur sur un blocage, après avoir traité les autres partenaires", async () => {
