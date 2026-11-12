@@ -16,15 +16,19 @@ import type { SuggestionsNafApplicantWithSuggestions, SuggestionsNafSuggestion, 
 import { MAX_DISTANCE_KM, MIN_SUGGESTIONS } from "./find-suggestions-naf-jobs"
 import type { SuggestionsNafSourceJob } from "./find-suggestions-naf-targets"
 
-// RG 8 de #5440. utm_content distingue les liens d'offres du lien vers la recherche.
-const UTM_PARAMS = { utm_source: "lba-transactionnel", utm_medium: "email", utm_campaign: "2610_lba_candidats_suggestions-naf-recherche-emplois" }
+// utm_campaign distingue les liens d'offres du lien vers la recherche.
+const UTM_CAMPAIGNS = {
+  offre: "2610_lba_candidats_suggestions-emploi-autres-naf-offre",
+  recherche: "2610_lba_candidats_suggestions-emploi-autres-naf-recherche",
+} as const
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
-const withUtm = (url: string, utmContent: string) => {
+const withUtm = (url: string, link: keyof typeof UTM_CAMPAIGNS) => {
   const taggedUrl = new URL(url)
-  for (const [key, value] of Object.entries(UTM_PARAMS)) taggedUrl.searchParams.set(key, value)
-  taggedUrl.searchParams.set("utm_content", utmContent)
+  taggedUrl.searchParams.set("utm_source", "lba-transactionnel")
+  taggedUrl.searchParams.set("utm_medium", "email")
+  taggedUrl.searchParams.set("utm_campaign", UTM_CAMPAIGNS[link])
   return taggedUrl.toString()
 }
 

@@ -123,8 +123,8 @@ describe("buildSuggestionsNafEmail", () => {
 
     const { data } = await render(target)
 
-    const utm = "utm_source=lba-transactionnel&utm_medium=email&utm_campaign=2610_lba_candidats_suggestions-naf-recherche-emplois"
-    expect(data.suggestions[0].url).toMatch(new RegExp(`/emploi/offres_emploi_lba/[a-f0-9]{24}/[a-z0-9-]+\\?${utm}&utm_content=offre$`))
+    const utm = "utm_source=lba-transactionnel&utm_medium=email&utm_campaign=2610_lba_candidats_suggestions-emploi-autres-naf-offre"
+    expect(data.suggestions[0].url).toMatch(new RegExp(`/emploi/offres_emploi_lba/[a-f0-9]{24}/[a-z0-9-]+\\?${utm}$`))
     expect(data.suggestions[3].url).toContain("/emploi/recruteurs_lba/42476141900045/")
     const searchUrl = new URL(data.searchUrl)
     expect(searchUrl.pathname).toBe("/recherche")
@@ -136,8 +136,7 @@ describe("buildSuggestionsNafEmail", () => {
       radius: "100",
       utm_source: "lba-transactionnel",
       utm_medium: "email",
-      utm_campaign: "2610_lba_candidats_suggestions-naf-recherche-emplois",
-      utm_content: "recherche",
+      utm_campaign: "2610_lba_candidats_suggestions-emploi-autres-naf-recherche",
     })
   })
 })

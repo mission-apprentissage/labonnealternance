@@ -803,11 +803,19 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
   })
 })
 
-describe("mail recruteur — lien de clôture de l'offre", () => {
+describe("mail recruteur — liens", () => {
   const mailerSendEmailSpy = vi.mocked(mailer.sendEmail)
   const companyEmail = "company@test.fr"
 
-  const sendRecruiterEmailFor = async ({ job_origin, workplace_siret }: { job_origin: LBA_ITEM_TYPE; workplace_siret: string | null }) => {
+  const sendRecruiterEmailFor = async ({
+    job_origin,
+    workplace_siret,
+    job_title = null,
+  }: {
+    job_origin: LBA_ITEM_TYPE
+    workplace_siret: string | null
+    job_title?: string | null
+  }) => {
     const user = await saveUserWithAccount()
     const jobId = new ObjectId()
     const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
@@ -825,6 +833,7 @@ describe("mail recruteur — lien de clôture de l'offre", () => {
       applicant_id: applicant._id,
       job_origin,
       job_id: jobId,
+      job_title,
       company_email: companyEmail,
       to_company_message_id: null,
       to_applicant_message_id: null,
@@ -836,7 +845,8 @@ describe("mail recruteur — lien de clôture de l'offre", () => {
 
     const call = mailerSendEmailSpy.mock.calls.find(([args]) => args.to === companyEmail)
     if (!call) throw new Error("mail recruteur non envoyé")
-    return { jobId, cancelJobUrl: (call[0].data as Record<string, string>).cancelJobUrl }
+    const data = call[0].data as Record<string, string>
+    return { jobId, data, cancelJobUrl: data.cancelJobUrl }
   }
 
   beforeEach(async () => {
@@ -856,6 +866,7 @@ describe("mail recruteur — lien de clôture de l'offre", () => {
 
     const url = new URL(cancelJobUrl)
     expect.soft(url.pathname).toBe(`/espace-pro/offre/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${jobId}/cancel`)
+    expect.soft(url.searchParams.get("utm_campaign")).toBe("je-candidate-recruteur")
     const { scopes } = verifyJwtToken(url.searchParams.get("token")!)
     expect
       .soft(scopes.map(({ method, path, options }) => ({ method, path, options })))
@@ -866,6 +877,33 @@ describe("mail recruteur — lien de clôture de l'offre", () => {
     const { cancelJobUrl } = await sendRecruiterEmailFor({ job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, workplace_siret: "12345678901234" })
 
     expect.soft(cancelJobUrl).toBe("")
+  })
+
+  it("lien vers l'offre : UTM en query string et slug tiré de l'intitulé", async () => {
+    const { jobId, data } = await sendRecruiterEmailFor({
+      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+      workplace_siret: "12345678901234",
+      job_title: "Chargé de support audit",
+    })
+
+    const url = new URL(data.jobUrl)
+    expect.soft(decodeURIComponent(url.pathname)).toBe(`/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}/${jobId}/chargé-de-support-audit`)
+    expect.soft(Object.fromEntries(url.searchParams)).toEqual({ utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate-recruteur" })
+  })
+
+  it("conserve la campagne propre à chaque lien de pied de mail", async () => {
+    const { data } = await sendRecruiterEmailFor({ job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, workplace_siret: "12345678901234" })
+
+    const campaigns = Object.fromEntries(
+      (["lbaRecruiterUrl", "unsubscribeUrl", "lbaUrl", "faqUrl"] as const).map((key) => [key, new URL(data[key]).searchParams.get("utm_campaign")])
+    )
+    expect.soft(campaigns).toEqual({
+      lbaRecruiterUrl: "je-candidate-recruteur-acces-recruteur",
+      unsubscribeUrl: "je-candidate-recruteur-desinscription",
+      lbaUrl: "je-candidate-recruteur-home",
+      faqUrl: "je-candidate-recruteur-faq",
+    })
+    expect.soft(new URL(data.unsubscribeUrl).searchParams.get("application_id")).toBeTruthy()
   })
 })
 
