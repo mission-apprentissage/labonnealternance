@@ -141,6 +141,15 @@ describe("Garde-fou d'annulation par partenaire", () => {
     return ids
   }
   const countByStatus = (partner_label: JOBPARTNERS_LABEL, offer_status: JOB_STATUS_ENGLISH) => getDbCollection("jobs_partners").countDocuments({ partner_label, offer_status })
+  const absentSinceIds = async (partner_label: JOBPARTNERS_LABEL) => {
+    const docs = await getDbCollection("jobs_partners")
+      .find({ partner_label, flux_absent_since: { $ne: null } }, { projection: { partner_job_id: 1 } })
+      .toArray()
+    return docs.map(({ partner_job_id }) => partner_job_id).sort()
+  }
+  const ageAbsences = (partner_label: JOBPARTNERS_LABEL, hours: number) =>
+    getDbCollection("jobs_partners").updateMany({ partner_label, flux_absent_since: { $ne: null } }, { $set: { flux_absent_since: new Date(Date.now() - hours * 60 * 60 * 1000) } })
+  const runFluxGuard = () => cancelRemovedJobsPartners({ partner_label: { $in: jobPartnersByFlux } }, { removalGuard: true })
 
   beforeEach(() => {
     const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
@@ -165,22 +174,33 @@ describe("Garde-fou d'annulation par partenaire", () => {
     expect.soft(cancelled.map(({ partner_job_id }) => partner_job_id).sort()).toEqual(ids.slice(180).sort())
   })
 
-  it("un gros catalogue stable est bloqué dès 6 % d'annulations (seuil 5 %)", async () => {
-    await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 188 })
-
-    const { blocked } = await cancelRemovedJobsPartners({ partner_label: { $in: jobPartnersByFlux } }, { removalGuard: true })
-
-    expect.soft(blocked).toEqual([{ partner_label: JOBPARTNERS_LABEL.HELLOWORK, active: 200, removed: 12, rate: 12 / 200, maxRate: 0.05 }])
-    expect.soft(await countByStatus(JOBPARTNERS_LABEL.HELLOWORK, JOB_STATUS_ENGLISH.ACTIVE)).toBe(200)
-  })
-
-  it("(faux positif) les mêmes 6 % d'annulations passent sur un partenaire au seuil par défaut", async () => {
-    await givenCatalog(JOBPARTNERS_LABEL.JOBTEASER, { active: 200, inFlux: 188 })
+  it("(faux positif) un renouvellement nocturne de 6 % passe sur un gros catalogue", async () => {
+    await givenCatalog(JOBPARTNERS_LABEL.FRANCE_TRAVAIL, { active: 200, inFlux: 188 })
 
     const { blocked } = await cancelRemovedJobsPartners({ partner_label: { $in: jobPartnersByFlux } }, { removalGuard: true })
 
     expect.soft(blocked).toEqual([])
-    expect.soft(await countByStatus(JOBPARTNERS_LABEL.JOBTEASER, JOB_STATUS_ENGLISH.ANNULEE)).toBe(12)
+    expect.soft(await countByStatus(JOBPARTNERS_LABEL.FRANCE_TRAVAIL, JOB_STATUS_ENGLISH.ANNULEE)).toBe(12)
+  })
+
+  it("un gros catalogue est bloqué au-delà de 15 % de sorties du flux, et ses offres absentes restent en ligne, datées", async () => {
+    const ids = await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 168 })
+
+    const { blocked } = await cancelRemovedJobsPartners({ partner_label: { $in: jobPartnersByFlux } }, { removalGuard: true })
+
+    expect.soft(blocked).toEqual([{ partner_label: JOBPARTNERS_LABEL.HELLOWORK, active: 200, removed: 32, rate: 32 / 200, maxRate: 0.15 }])
+    expect.soft(await countByStatus(JOBPARTNERS_LABEL.HELLOWORK, JOB_STATUS_ENGLISH.ACTIVE)).toBe(200)
+    expect.soft(await absentSinceIds(JOBPARTNERS_LABEL.HELLOWORK)).toEqual(ids.slice(168).sort())
+  })
+
+  it("(faux positif) les mêmes 16 % passent sur un partenaire au seuil par défaut, sans dater les offres", async () => {
+    await givenCatalog(JOBPARTNERS_LABEL.JOBTEASER, { active: 200, inFlux: 168 })
+
+    const { blocked } = await cancelRemovedJobsPartners({ partner_label: { $in: jobPartnersByFlux } }, { removalGuard: true })
+
+    expect.soft(blocked).toEqual([])
+    expect.soft(await countByStatus(JOBPARTNERS_LABEL.JOBTEASER, JOB_STATUS_ENGLISH.ANNULEE)).toBe(32)
+    expect.soft(await absentSinceIds(JOBPARTNERS_LABEL.JOBTEASER)).toEqual([])
   })
 
   it("(faux positif) une offre présente dans le flux mais mal enrichie (validated: false, sans business_error) n'est pas annulée", async () => {
@@ -211,7 +231,7 @@ describe("Garde-fou d'annulation par partenaire", () => {
 
     const { blocked } = await cancelRemovedJobsPartners({ partner_label: { $in: jobPartnersByFlux } }, { removalGuard: true })
 
-    expect.soft(blocked).toEqual([{ partner_label: JOBPARTNERS_LABEL.HELLOWORK, active: 41, removed: 20, rate: 20 / 41, maxRate: 0.05 }])
+    expect.soft(blocked).toEqual([{ partner_label: JOBPARTNERS_LABEL.HELLOWORK, active: 41, removed: 20, rate: 20 / 41, maxRate: 0.15 }])
     expect.soft(await countByStatus(JOBPARTNERS_LABEL.HELLOWORK, JOB_STATUS_ENGLISH.ACTIVE)).toBe(40)
     // le verdict métier d'une offre encore présente dans le flux n'est pas concerné par le garde-fou
     expect.soft((await getDbCollection("jobs_partners").findOne({ partner_job_id: "expiree" }))?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
@@ -220,6 +240,82 @@ describe("Garde-fou d'annulation par partenaire", () => {
     expect
       .soft(vi.mocked(slackUtils.notifyToSlack).mock.calls[0]?.[0])
       .toMatchObject({ error: true, message: expect.stringContaining("[garde-fou] Hellowork : 20 offres actives sur 41") })
+  })
+
+  it("(cumul) le lendemain d'un blocage, les offres déjà datées ne comptent plus : pas de nouveau blocage ni d'annulation", async () => {
+    await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 168 })
+    await runFluxGuard()
+    await ageAbsences(JOBPARTNERS_LABEL.HELLOWORK, 24)
+
+    const { blocked } = await runFluxGuard()
+
+    expect.soft(blocked).toEqual([])
+    expect.soft(await countByStatus(JOBPARTNERS_LABEL.HELLOWORK, JOB_STATUS_ENGLISH.ACTIVE)).toBe(200)
+  })
+
+  it("les nouvelles sorties du flux sous le seuil sont annulées tout de suite, les offres datées attendent la fin du délai", async () => {
+    const ids = await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 168 })
+    await runFluxGuard()
+    await ageAbsences(JOBPARTNERS_LABEL.HELLOWORK, 24)
+    await getDbCollection("computed_jobs_partners").deleteMany({ partner_job_id: { $in: ids.slice(158, 168) } })
+
+    const { blocked } = await runFluxGuard()
+
+    expect.soft(blocked).toEqual([])
+    const cancelled = await getDbCollection("jobs_partners")
+      .find({ partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ANNULEE }, { projection: { partner_job_id: 1 } })
+      .toArray()
+    expect.soft(cancelled.map(({ partner_job_id }) => partner_job_id).sort()).toEqual(ids.slice(158, 168).sort())
+    expect.soft(await absentSinceIds(JOBPARTNERS_LABEL.HELLOWORK)).toEqual(ids.slice(168).sort())
+  })
+
+  it("une offre restée hors du flux au terme du délai est annulée, même quand le run de nuit part quelques heures plus tôt", async () => {
+    await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 168 })
+    await runFluxGuard()
+    await ageAbsences(JOBPARTNERS_LABEL.HELLOWORK, 3 * 24 - 1)
+
+    await runFluxGuard()
+
+    expect.soft(await countByStatus(JOBPARTNERS_LABEL.HELLOWORK, JOB_STATUS_ENGLISH.ANNULEE)).toBe(32)
+    const cancelled = await getDbCollection("jobs_partners").findOne({ partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ANNULEE })
+    expect.soft(cancelled?.offer_status_history.at(-1)).toMatchObject({ reason: "supprimée du flux source", granted_by: "cancel-removed-jobs-partners" })
+  })
+
+  it("(faux positif) une offre absente depuis deux jours n'est pas encore annulée", async () => {
+    await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 168 })
+    await runFluxGuard()
+    await ageAbsences(JOBPARTNERS_LABEL.HELLOWORK, 2 * 24)
+
+    await runFluxGuard()
+
+    expect.soft(await countByStatus(JOBPARTNERS_LABEL.HELLOWORK, JOB_STATUS_ENGLISH.ACTIVE)).toBe(200)
+  })
+
+  it("une offre datée qui revient dans le flux perd sa date, et compte de nouveau comme sortie si elle disparaît encore", async () => {
+    const ids = await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 168 })
+    await runFluxGuard()
+    await ageAbsences(JOBPARTNERS_LABEL.HELLOWORK, 3 * 24)
+    await getDbCollection("computed_jobs_partners").insertMany(
+      ids.slice(168).map((partner_job_id) => generateComputedJobsPartnersFixture({ partner_job_id, partner_label: JOBPARTNERS_LABEL.HELLOWORK, validated: true }))
+    )
+
+    await runFluxGuard()
+
+    expect.soft(await countByStatus(JOBPARTNERS_LABEL.HELLOWORK, JOB_STATUS_ENGLISH.ACTIVE)).toBe(200)
+    expect.soft(await absentSinceIds(JOBPARTNERS_LABEL.HELLOWORK)).toEqual([])
+
+    await getDbCollection("computed_jobs_partners").deleteMany({ partner_job_id: { $in: ids.slice(168) } })
+    const { blocked } = await runFluxGuard()
+
+    expect.soft(blocked).toMatchObject([{ partner_label: JOBPARTNERS_LABEL.HELLOWORK, removed: 32 }])
+    expect.soft(await countByStatus(JOBPARTNERS_LABEL.HELLOWORK, JOB_STATUS_ENGLISH.ACTIVE)).toBe(200)
+  })
+
+  it("forceCancelRemovedJobsPartners annule aussi les offres datées par un blocage, sans attendre le délai", async () => {
+    await givenCatalog(JOBPARTNERS_LABEL.HELLOWORK, { active: 200, inFlux: 168 })
+    await runFluxGuard()
+
+    await expect(forceCancelRemovedJobsPartners({ partnerLabel: JOBPARTNERS_LABEL.HELLOWORK })).resolves.toMatchObject({ cancelled: 32 })
   })
 
   it("le sous-job des flux sort en erreur sur un blocage, après avoir traité les autres partenaires", async () => {
