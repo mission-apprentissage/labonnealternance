@@ -1,13 +1,19 @@
-import type { Filter } from "mongodb"
+import type { Filter, ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { alertGuardrailBlock, formatRate, getGuardrailThresholds } from "./jobs-partners-guardrails"
+import { alertGuardrailBlock, formatRate, getGuardrailThresholds, notifyGuardrail, REMOVAL_GRACE_DAYS } from "./jobs-partners-guardrails"
 
+/** `removed` : offres sorties du flux depuis le run précédent, seules comptées par le garde-fou. */
 export type RemovalGuardBlock = { partner_label: string; active: number; removed: number; rate: number; maxRate: number }
+
+const DAY_MS = 24 * 60 * 60 * 1000
+// Le run de nuit ne démarre pas à la minute près : sans marge, l'annulation au terme du délai glisserait d'une nuit.
+// Délai effectif : au moins REMOVAL_GRACE_DAYS jours moins 6 h, atteint plus tôt pour un partenaire du cycle de journée (runs toutes les 4 h).
+const RUN_START_JITTER_MS = 6 * 60 * 60 * 1000
 
 const matchComputedByKey = {
   $match: {
@@ -17,19 +23,30 @@ const matchComputedByKey = {
   },
 }
 
-const findRemovalGuardBlocks = async (activeMatchStage: object): Promise<RemovalGuardBlock[]> => {
+const lookupInFlux = {
+  $lookup: {
+    from: "computed_jobs_partners",
+    let: { partnerLabel: "$partner_label", partnerJobId: "$partner_job_id" },
+    pipeline: [matchComputedByKey, { $limit: 1 }, { $project: { _id: 1 } }],
+    as: "matched",
+  },
+}
+
+const findIds = async (match: object, { inFlux }: { inFlux: boolean }) => {
+  const docs = await getDbCollection("jobs_partners")
+    .aggregate<{ _id: ObjectId }>([{ $match: match }, lookupInFlux, { $match: { matched: inFlux ? { $ne: [] } : { $size: 0 } } }, { $project: { _id: 1 } }])
+    .toArray()
+  return docs.map(({ _id }) => _id)
+}
+
+const isNewAbsence = { $and: [{ $eq: [{ $size: "$matched" }, 0] }, { $eq: [{ $ifNull: ["$flux_absent_since", null] }, null] }] }
+
+const findRemovalGuardBlocks = async (activeMatch: object): Promise<RemovalGuardBlock[]> => {
   const stats = await getDbCollection("jobs_partners")
     .aggregate<{ _id: string; active: number; removed: number }>([
-      activeMatchStage,
-      {
-        $lookup: {
-          from: "computed_jobs_partners",
-          let: { partnerLabel: "$partner_label", partnerJobId: "$partner_job_id" },
-          pipeline: [matchComputedByKey, { $limit: 1 }, { $project: { _id: 1 } }],
-          as: "matched",
-        },
-      },
-      { $group: { _id: "$partner_label", active: { $sum: 1 }, removed: { $sum: { $cond: [{ $eq: [{ $size: "$matched" }, 0] }, 1, 0] } } } },
+      { $match: activeMatch },
+      lookupInFlux,
+      { $group: { _id: "$partner_label", active: { $sum: 1 }, removed: { $sum: { $cond: [isNewAbsence, 1, 0] } } } },
     ])
     .toArray()
 
@@ -40,8 +57,43 @@ const findRemovalGuardBlocks = async (activeMatchStage: object): Promise<Removal
   })
 }
 
+/**
+ * Délai de grâce après un blocage : les offres sorties du flux sont datées et restent en ligne. Revenues dans le flux,
+ * elles perdent leur date ; absentes au terme de REMOVAL_GRACE_DAYS, elles sont annulées par le run suivant.
+ */
+const holdNewAbsences = async (activeMatch: object, blocked: RemovalGuardBlock[], now: Date) => {
+  const returned = await findIds({ $and: [activeMatch, { flux_absent_since: { $ne: null } }] }, { inFlux: true })
+  if (returned.length) {
+    await getDbCollection("jobs_partners").updateMany({ _id: { $in: returned } }, { $unset: { flux_absent_since: "" } })
+  }
+  if (!blocked.length) return
+  const absent = await findIds(
+    { $and: [activeMatch, { partner_label: { $in: blocked.map(({ partner_label }) => partner_label) } }, { flux_absent_since: null }] },
+    { inFlux: false }
+  )
+  if (absent.length) {
+    await getDbCollection("jobs_partners").updateMany({ _id: { $in: absent } }, { $set: { flux_absent_since: now } })
+  }
+}
+
+export type GraceExpiry = { partner_label: string; count: number }
+
+const findGraceExpiries = (activeMatch: { $and: object[] }, graceCutoff: Date) =>
+  getDbCollection("jobs_partners")
+    .aggregate<GraceExpiry>([
+      { $match: { $and: [...activeMatch.$and, { flux_absent_since: { $lte: graceCutoff } }] } },
+      lookupInFlux,
+      { $match: { matched: { $size: 0 } } },
+      { $group: { _id: "$partner_label", count: { $sum: 1 } } },
+      { $project: { _id: 0, partner_label: "$_id", count: 1 } },
+    ])
+    .toArray()
+
+export const formatGraceExpiry = ({ partner_label, count }: GraceExpiry) =>
+  `${partner_label} : ${count} offres sorties du flux pendant un blocage et toujours absentes après ${REMOVAL_GRACE_DAYS} jours sont annulées. Elles seront réactivées si elles reviennent dans le flux.`
+
 export const formatRemovalGuardBlock = ({ partner_label, active, removed, rate, maxRate }: RemovalGuardBlock) =>
-  `${partner_label} : ${removed} offres actives sur ${active} (${formatRate(rate)}) absentes du flux, seuil ${formatRate(maxRate)}. Aucune annulation « supprimée du flux » pour ce partenaire. Après vérification : yarn cli forceCancelRemovedJobsPartners --partnerLabel "${partner_label}"`
+  `${partner_label} : ${removed} offres actives sur ${active} (${formatRate(rate)}) absentes du flux depuis le run précédent, seuil ${formatRate(maxRate)}. Elles restent en ligne et seront annulées dans ${REMOVAL_GRACE_DAYS} jours si elles ne reviennent pas dans le flux. Pour les annuler dès maintenant, après vérification : yarn cli forceCancelRemovedJobsPartners --partnerLabel "${partner_label}"`
 
 /**
  * Annule les offres jobs_partners absentes (ou expirées) du flux source correspondant.
@@ -51,9 +103,9 @@ export const formatRemovalGuardBlock = ({ partner_label, active, removed, rate, 
  * pas exposée en CLI : passer par les sous-jobs dédiés (cancelRemovedJobsPartnersFlux,
  * cancelRemovedJobsPartnersRecruteursLba, forceCancelRemovedJobsPartners) qui encapsulent leur filtre respectif.
  *
- * `removalGuard` : un partenaire dont les annulations « supprimée du flux » dépassent le seuil
- * (cf. getGuardrailThresholds) n'en subit aucune et est renvoyé dans `blocked`. L'appelant fait échouer le job
- * une fois le reste du traitement terminé.
+ * `removalGuard` : un partenaire dont les sorties du flux depuis le run précédent dépassent le seuil
+ * (cf. getGuardrailThresholds) est renvoyé dans `blocked` et ces offres suivent le délai de grâce (cf. holdNewAbsences).
+ * L'appelant fait échouer le job une fois le reste du traitement terminé. Sans `removalGuard`, toute offre absente est annulée.
  */
 export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJobsPartners>, { removalGuard }: { removalGuard: boolean }) => {
   logger.info("début de cancelRemovedJobsPartners")
@@ -62,23 +114,41 @@ export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJob
     throw new Error("cancelRemovedJobsPartners: matchFilter is required and must not be empty")
   }
 
-  const matchStage = {
-    $match: {
-      $and: [matchFilter, { offer_status: JOB_STATUS_ENGLISH.ACTIVE }],
-    },
-  }
+  const activeMatch = { $and: [matchFilter, { offer_status: JOB_STATUS_ENGLISH.ACTIVE }] }
+  const matchStage = { $match: activeMatch }
 
-  const blocked = removalGuard ? await findRemovalGuardBlocks(matchStage) : []
+  const now = new Date()
+  const blocked = removalGuard ? await findRemovalGuardBlocks(activeMatch) : []
   for (const block of blocked) {
     await alertGuardrailBlock(`Annulation des offres ${block.partner_label}`, formatRemovalGuardBlock(block))
   }
-  const removalMatchStage = blocked.length
-    ? { $match: { $and: [...matchStage.$match.$and, { partner_label: { $nin: blocked.map(({ partner_label }) => partner_label) } }] } }
+  if (removalGuard) {
+    await holdNewAbsences(activeMatch, blocked, now)
+  }
+  const graceCutoff = new Date(now.getTime() - REMOVAL_GRACE_DAYS * DAY_MS + RUN_START_JITTER_MS)
+  const removalMatchStage = removalGuard
+    ? {
+        $match: {
+          $and: [
+            ...activeMatch.$and,
+            {
+              $or: [{ flux_absent_since: { $lte: graceCutoff } }, { flux_absent_since: null, partner_label: { $nin: blocked.map(({ partner_label }) => partner_label) } }],
+            },
+          ],
+        },
+      }
     : matchStage
+
+  const graceExpiries = removalGuard ? await findGraceExpiries(activeMatch, graceCutoff) : []
+  for (const expiry of graceExpiries) {
+    await notifyGuardrail(`Annulation des offres ${expiry.partner_label}`, formatGraceExpiry(expiry))
+  }
 
   const setStages = {
     $set: {
       offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      // null et non $unset : $merge en whenMatched « merge » garde un champ absent de la sortie.
+      flux_absent_since: null,
       // updated_at : requis par le cron delta de l'index de recherche (syncSearchItemsDelta).
       updated_at: new Date(),
     },
@@ -97,14 +167,7 @@ export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJob
 
   const pipeline = [
     removalMatchStage,
-    {
-      $lookup: {
-        from: "computed_jobs_partners",
-        let: { partnerLabel: "$partner_label", partnerJobId: "$partner_job_id" },
-        pipeline: [matchComputedByKey],
-        as: "matched",
-      },
-    },
+    lookupInFlux,
     {
       $match: {
         matched: { $size: 0 },
@@ -200,5 +263,5 @@ export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJob
   await getDbCollection("jobs_partners").aggregate(pipeline_expired).toArray()
 
   logger.info("fin de cancelRemovedJobsPartners")
-  return { blocked }
+  return { blocked, graceExpiries }
 }

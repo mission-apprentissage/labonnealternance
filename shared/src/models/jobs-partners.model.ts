@@ -217,6 +217,10 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
       .describe("Pour les offres LBA uniquement, décision humaine sur la dernière classification : null tant qu'elle est à traiter"),
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
+    flux_absent_since: z
+      .date()
+      .nullish()
+      .describe("Offre de flux sortie du flux pendant un blocage du garde-fou d'annulation et laissée en ligne : date de sa première absence. Null une fois revenue ou annulée"),
     lba_url: z.string().nullable().default(null).optional(),
   })
 

@@ -12,9 +12,9 @@ export type GuardrailThresholds = {
   maxTransformationErrorRate: number
   /** Nombre d'erreurs de transformation en dessous duquel le seuil ne bloque pas : sur un petit flux, une erreur suffit à dépasser le taux. */
   minTransformationErrorCountToBlock: number
-  /** Part maximale des offres actives d'un partenaire annulées en un run pour « supprimée du flux source ». */
+  /** Part maximale des offres actives d'un partenaire sorties du flux depuis le run précédent. */
   maxRemovedCancellationRate: number
-  /** Nombre d'annulations en dessous duquel le garde-fou d'annulation ne bloque pas : sur un petit catalogue, un pourcentage ne dit rien. */
+  /** Nombre de sorties du flux en dessous duquel le garde-fou d'annulation ne bloque pas : sur un petit catalogue, un pourcentage ne dit rien. */
   minRemovedCountToBlock: number
 }
 
@@ -26,8 +26,12 @@ export const DEFAULT_GUARDRAIL_THRESHOLDS: GuardrailThresholds = {
   minRemovedCountToBlock: 10,
 }
 
-// Gros catalogues stables : au plus 0,42 % d'annulations par run sur 30 jours (#5668). À 30 %, la perte de milliers d'offres passerait.
-const STABLE_LARGE_FLUX_THRESHOLDS: Partial<GuardrailThresholds> = { maxRemovedCancellationRate: 0.05 }
+// Gros catalogues : 4 à 8 % des offres actives sortent du flux d'une nuit à l'autre (prod, novembre 2026), un seuil à 5 %
+// bloque sur ce renouvellement normal. À 30 %, la perte de 900 offres France Travail passerait.
+const STABLE_LARGE_FLUX_THRESHOLDS: Partial<GuardrailThresholds> = { maxRemovedCancellationRate: 0.15 }
+
+/** Délai au terme duquel une offre restée hors du flux après un blocage est annulée sans intervention (cf. cancelRemovedJobsPartners). */
+export const REMOVAL_GRACE_DAYS = 3
 
 export const GUARDRAIL_THRESHOLDS_BY_PARTNER: Partial<Record<string, Partial<GuardrailThresholds>>> = {
   [JOBPARTNERS_LABEL.FRANCE_TRAVAIL]: STABLE_LARGE_FLUX_THRESHOLDS,
@@ -70,13 +74,16 @@ export const getLatestGuardrailBlocks = (jobs: IJobsCronTask[]): GuardrailBlock[
   return [...latestBlockByJob].map(([jobName, { at, detail }]) => ({ jobName, detail, at }))
 }
 
-/** Alerte immédiate (Slack + logs) ; Sentry reçoit l'erreur levée ensuite, via job-processor. */
-export const alertGuardrailBlock = async (subject: string, message: string) => {
-  logger.error({ subject }, `${GUARDRAIL_ERROR_MARKER} ${message}`)
+/** Alerte immédiate (Slack + logs) d'un garde-fou ; une alerte Slack en échec ne doit pas interrompre le traitement. */
+export const notifyGuardrail = async (subject: string, message: string) => {
+  logger.error({ subject }, message)
   try {
-    await notifyToSlack({ subject, message: `${GUARDRAIL_ERROR_MARKER} ${message}`, error: true })
+    await notifyToSlack({ subject, message, error: true })
   } catch (err) {
     logger.error(err, "échec de l'alerte Slack du garde-fou offres partenaires")
     sentryCaptureException(err)
   }
 }
+
+/** Blocage : Sentry reçoit ensuite l'erreur levée par l'appelant, via job-processor. */
+export const alertGuardrailBlock = (subject: string, message: string) => notifyGuardrail(subject, `${GUARDRAIL_ERROR_MARKER} ${message}`)
