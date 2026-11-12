@@ -15,6 +15,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { ConseillersEntreprises } from "./_components/ConseillersEntreprises"
 import { ARTICLES } from "./const"
 export const metadata: Metadata = METADATA.static.guideRecruteur()
 
@@ -141,6 +142,9 @@ const GuideRecruteurPage = () => {
                 aria-hidden="true"
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
+            </Grid>
+            <Grid size={12}>
+              <ConseillersEntreprises />
             </Grid>
             <Grid size={12} mx={{ md: fr.spacing("8v"), xs: fr.spacing("2v") }}>
               <List sx={{ listStyleType: "disc", ml: fr.spacing("4v"), pl: fr.spacing("4v"), mb: fr.spacing("4v") }} disablePadding dense>

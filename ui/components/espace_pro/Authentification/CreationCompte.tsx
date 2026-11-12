@@ -6,6 +6,7 @@ import { Box, Link, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
+import { isTrainingOrganizationNafCode } from "shared/utils/naf-utils"
 import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau"
 import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { AUTHTYPE } from "@/common/contants"
@@ -174,7 +175,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "Labon
   }, [])
 
   const onSelectOrganisation = (organisation: Organisation | null) => {
-    if (organisation?.activite_principale?.startsWith("85")) {
+    if (isTrainingOrganizationNafCode(organisation?.activite_principale)) {
       setOrganisationType(AUTHTYPE.CFA)
       setSelectedTab(AUTHTYPE.CFA)
     } else {
