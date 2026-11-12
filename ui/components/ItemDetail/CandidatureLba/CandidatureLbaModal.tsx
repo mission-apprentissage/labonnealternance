@@ -22,6 +22,7 @@ export const CandidatureLbaModal = ({
 }) => {
   const [applicantEmail, setApplicantEmail] = useState<string>("")
   const titleId = useId()
+  const errorDetailId = useId()
   const { isOpen, onClose: onModalClose } = modalControls
   const { handleSubmitCandidature, isDone, isSuccess, isError, error, isLoading } = submitControls
   const kind = item.ideaType
@@ -55,14 +56,20 @@ export const CandidatureLbaModal = ({
         />
       )}
       {isSuccess && <CandidatureLbaWorked titleId={titleId} email={applicantEmail} item={item} />}
-      {isError && <CandidatureLbaFailed titleId={titleId} error={error + ""} />}
+      {isError && <CandidatureLbaFailed titleId={titleId} detailId={errorDetailId} error={error + ""} />}
     </>
   )
 
   return fromWidget ? (
     content
   ) : (
-    <ModalReadOnly size="xl" isOpen={isOpen} ariaLabelledBy={titleId} onClose={onModalClose} hideCloseButton={isSuccess || isError ? false : true}>
+    <ModalReadOnly
+      size="xl"
+      isOpen={isOpen}
+      ariaLabelledBy={isError ? `${titleId} ${errorDetailId}` : titleId}
+      onClose={onModalClose}
+      hideCloseButton={isSuccess || isError ? false : true}
+    >
       {content}
     </ModalReadOnly>
   )

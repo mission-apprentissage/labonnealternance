@@ -69,7 +69,7 @@ const sendingStateValues = {
   },
 } satisfies Record<string, DataDisplayForError>
 
-const CandidatureLbaFailed = ({ titleId, error }: { titleId?: string; error: string }) => {
+const CandidatureLbaFailed = ({ titleId, detailId, error }: { titleId?: string; detailId?: string; error: string }) => {
   const errorData: DataDisplayForError = sendingStateValues[error] ?? defaultErrorData
   const { dataTestId, title, text } = errorData
 
@@ -81,7 +81,7 @@ const CandidatureLbaFailed = ({ titleId, error }: { titleId?: string; error: str
       </Typography>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
         <Image src="/images/icons/input_value_error.svg" width={24} height={24} style={{ marginRight: "16px" }} alt="" />
-        <Typography variant="h3" data-testid={dataTestId}>
+        <Typography id={detailId} variant="h3" data-testid={dataTestId}>
           {title}
         </Typography>
       </Box>
