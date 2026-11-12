@@ -11,11 +11,9 @@ export function paramsToQuerystring(params: ISearchPageParams) {
     hitsPerPage: params.hitsPerPage,
   }
   if (params.q) qs.q = params.q
-  // Origine de q (télémétrie), envoyée sous l'alias `source` pour UNE release : un serveur
-  // pré-renommage rejetterait `search_source` (clé inconnue du strictObject → 400) si l'UI est
-  // déployée avant lui. À basculer vers `search_source` à la release suivante. Plausible ne lit
-  // pas les appels API, seule l'URL de page (search.params.utils.ts) doit se passer de `source`.
-  if (params.q && params.q_source) qs.source = params.q_source
+  // Origine de q (télémétrie) : absente quand l'URL n'en porte pas (rechargement, lien externe),
+  // le serveur enregistre alors une origine inconnue (cf. search_queries.search_source).
+  if (params.q && params.q_source) qs.search_source = params.q_source
   // Toujours envoyé : le mode par défaut « emplois » exclut les formations et les offres CFA/GEIQ côté API
   qs.mode = params.mode
   if (params.type_filter_label?.length) qs.type_filter_label = params.type_filter_label

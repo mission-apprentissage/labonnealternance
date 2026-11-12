@@ -6,6 +6,7 @@ import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zod-helpers/zod-primitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
+import { isTrainingOrganizationNafCode } from "shared/utils/naf-utils"
 import { z } from "zod"
 import { blankComputedJobPartner } from "@/jobs/offre-partenaire/fill-computed-jobs-partners"
 
@@ -26,6 +27,7 @@ export const ZHelloWorkBuddiJob = z.looseObject({
   postal_code: z.string().nullish(),
   geoloc: z.string().nullish(),
   company_sector: z.string().nullish(),
+  naf_code: z.string().nullish(),
 })
 
 export type IHelloWorkBuddiJob = z.output<typeof ZHelloWorkBuddiJob>
@@ -48,6 +50,7 @@ export const helloWorkBuddiJobToJobsPartners = (job: IHelloWorkBuddiJob): ICompu
     postal_code: postalCodeRaw,
     geoloc,
     company_sector,
+    naf_code,
   } = job
   const { latitude, longitude } = geolocToLatLon(geoloc)
   const siretParsing = extensions.siret.safeParse(siret)
@@ -98,10 +101,17 @@ export const helloWorkBuddiJobToJobsPartners = (job: IHelloWorkBuddiJob): ICompu
 
     offer_access_conditions: [],
     offer_to_be_acquired_skills: [],
-    business_error: company_sector?.toLowerCase() === "enseignement/formation" ? BusinessErrorCodes.IS_CFA : null,
+    business_error: isCfa({ company_sector, naf_code }) ? BusinessErrorCodes.IS_CFA : null,
   }
   return partnerJob
 }
+
+const CFA_COMPANY_SECTORS = new Set(["enseignement/formation", "centre de formation"])
+
+// Sur ce flux, ce sont des organismes de formation qui publient pour le compte d'entreprises. Le `\d` écarte
+// un code division seul (« 85 »), qui n'identifie pas l'établissement.
+const isCfa = ({ company_sector, naf_code }: Pick<IHelloWorkBuddiJob, "company_sector" | "naf_code">): boolean =>
+  Boolean(company_sector && CFA_COMPANY_SECTORS.has(company_sector.toLowerCase())) || (/^85\.?\d/.test(naf_code ?? "") && isTrainingOrganizationNafCode(naf_code))
 
 const acceptedGeoLocRegex = /-?[0-9]{1,2}[.,][0-9]+,-?[0-9]{1,3}[.,][0-9]+/
 

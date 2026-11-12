@@ -30,8 +30,8 @@ const analysis = (overrides: Record<string, unknown>) => ({
   ...overrides,
 })
 
-/** `total` recherches réparties sur 6 jours, toutes en texte libre. */
-const queryLogs = (q: string, { total, nbHits }: { total: number; nbHits: number }): ISearchQuery[] =>
+/** `total` recherches réparties sur 6 jours, en texte libre sauf `overrides`. */
+const queryLogs = (q: string, { total, nbHits }: { total: number; nbHits: number }, overrides: Partial<ISearchQuery> = {}): ISearchQuery[] =>
   Array.from({ length: total }, (_, i) => ({
     _id: new ObjectId(),
     q,
@@ -45,6 +45,7 @@ const queryLogs = (q: string, { total, nbHits }: { total: number; nbHits: number
     radius: null,
     admin_area: null,
     created_at: new Date(Date.now() - (i % 6) * 24 * 3600 * 1000 - 3600 * 1000),
+    ...overrides,
   }))
 
 /** Réponse Mistral simulée, retrouvée par la requête brute citée dans le prompt. */
@@ -151,6 +152,67 @@ describe("analyzeSearchQueries", () => {
     expect(await getDbCollection("search_synonyms").countDocuments({})).toBe(0)
     expect(slackMessage()).toContain("Synonymes insérés (0)")
     expect(slackMessage()).toContain("duplicate_in_run: 1")
+  })
+
+  it("ignore les recherches du canal api", async () => {
+    await getDbCollection("search_queries").insertMany(queryLogs("data engineer", { total: 40, nbHits: 50 }, { channel: "api" }))
+
+    await analyzeSearchQueries()
+
+    expect(sendMistralBatch).not.toHaveBeenCalled()
+    expect(await getDbCollection("search_suggestions").countDocuments({})).toBe(0)
+  })
+
+  it("compte les recherches du canal site et celles sans canal", async () => {
+    await getDbCollection("search_queries").insertMany([
+      ...queryLogs("data engineer", { total: 20, nbHits: 50 }, { channel: "site" }),
+      ...queryLogs("data engineer", { total: 20, nbHits: 50 }),
+    ])
+    mockMistral({ "data engineer": analysis({ canonical: "Data engineer" }) })
+
+    await analyzeSearchQueries()
+
+    expect(await getDbCollection("search_suggestions").findOne({ status: "active" })).toMatchObject({ term: "Data engineer", counters: { total_30d: 40 } })
+  })
+
+  it("ignore les paliers d'élargissement du rayon dans le taux de zéro résultat", async () => {
+    // Avec les paliers : 50 % de zéro résultat, au-delà de S4 → route synonyme.
+    await getDbCollection("search_queries").insertMany([
+      ...queryLogs("diag immobilier", { total: 40, nbHits: 0 }, { auto_radius_intermediate: true }),
+      ...queryLogs("diag immobilier", { total: 40, nbHits: 50 }),
+    ])
+    mockMistral({ "diag immobilier": analysis({ canonical: "Diagnostic immobilier" }) })
+
+    await analyzeSearchQueries()
+
+    expect(await getDbCollection("search_suggestions").findOne({ status: "active" })).toMatchObject({
+      term: "Diagnostic immobilier",
+      counters: { total_30d: 40, zero_hits_30d: 0 },
+    })
+  })
+
+  it("calcule le taux de texte libre sur les seules recherches d'origine connue", async () => {
+    // 10 free_text sur 40 : 25 % du total, mais 100 % des recherches d'origine connue.
+    await getDbCollection("search_queries").insertMany([
+      ...queryLogs("diag immobilier", { total: 10, nbHits: 50 }),
+      ...queryLogs("diag immobilier", { total: 30, nbHits: 50 }, { search_source: null }),
+    ])
+    mockMistral({ "diag immobilier": analysis({ canonical: "Diagnostic immobilier" }) })
+
+    await analyzeSearchQueries()
+
+    expect(await getDbCollection("search_suggestions").findOne({ status: "active" })).toMatchObject({
+      counters: { total_30d: 40, free_text_30d: 10, known_source_30d: 10 },
+    })
+  })
+
+  it("n'insère pas de suggestion quand aucune recherche n'a d'origine connue", async () => {
+    await getDbCollection("search_queries").insertMany(queryLogs("diag immobilier", { total: 40, nbHits: 50 }, { search_source: null }))
+    mockMistral({ "diag immobilier": analysis({ canonical: "Diagnostic immobilier" }) })
+
+    await analyzeSearchQueries()
+
+    expect(await getDbCollection("search_suggestions").countDocuments({ status: "active" })).toBe(0)
   })
 
   it("rapporte le motif de la route synonyme pour un candidat éligible à cette seule route", async () => {

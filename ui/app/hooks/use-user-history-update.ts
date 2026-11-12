@@ -10,7 +10,7 @@ export default function useUserHistoryUpdate() {
   const toast = useToast()
 
   return useCallback(
-    async (status: AccessStatus, apiCall: () => Promise<unknown>) => {
+    async (status: AccessStatus, apiCall: () => Promise<unknown>): Promise<boolean> => {
       try {
         await apiCall()
         await Promise.all(["user-list-opco", "user-list"].map((x) => client.invalidateQueries({ queryKey: [x] })))
@@ -18,12 +18,14 @@ export default function useUserHistoryUpdate() {
           description: `Utilisateur ${getDescription(status)}`,
           autoHideDuration: 4000,
         })
+        return true
       } catch (error) {
         toast({
           variant: "error",
           description: error instanceof Error ? error.message : "Une erreur est survenue",
           autoHideDuration: 5000,
         })
+        return false
       }
     },
     [client, toast]

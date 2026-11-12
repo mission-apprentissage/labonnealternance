@@ -8,6 +8,7 @@ import { Suspense, useEffect } from "react"
 
 import { ToastAnnouncer } from "@/app/_components/ToastAnnouncer"
 import { ToastContent } from "@/app/_components/ToastContent"
+import { WebVitalsReporter } from "@/app/_components/WebVitalsReporter"
 import Providers from "@/context/Providers"
 import { setIsTrackingEnabled, setTrackingCookies } from "@/tracking/tracking-cookie-utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
@@ -38,6 +39,7 @@ export default function RootTemplate({ children }: PropsWithChildren) {
         <Providers>{children}</Providers>
         <ToastAnnouncer />
         <FeedbackLauncher />
+        <WebVitalsReporter />
       </SnackbarProvider>
     </MuiDsfrThemeProvider>
   )

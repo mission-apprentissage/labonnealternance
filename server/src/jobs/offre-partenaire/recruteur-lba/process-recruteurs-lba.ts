@@ -47,7 +47,8 @@ const recruteursLbaFilter: Filter<IComputedJobsPartners> = {
  * Sous-job CLI-safe : le filtre est encapsulé ici, jamais vide.
  */
 export const cancelRemovedJobsPartnersRecruteursLba = async () => {
-  await cancelRemovedJobsPartners(recruteursLbaFilter)
+  // garde-fou réservé aux flux partenaires (#5668) : la rotation hebdomadaire des recruteurs LBA n'est pas mesurée
+  await cancelRemovedJobsPartners(recruteursLbaFilter, { removalGuard: false })
 }
 
 export const processRecruteursLbaRawToEnd = () => withoutChildSpans(runProcessRecruteursLbaRawToEnd)

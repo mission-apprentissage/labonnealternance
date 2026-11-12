@@ -21,6 +21,8 @@ const config = {
   },
   slackWebhookUrl: env.get("LBA_SLACK_WEBHOOK_URL").asString(),
   jobSlackWebhook: env.get("LBA_JOB_SLACK_WEBHOOK").asString(),
+  // Canal des alertes de détection (#5421) ; à défaut, celui des jobs.
+  detectionSlackWebhook: env.get("LBA_DETECTION_SLACK_WEBHOOK").asString(),
   // map pseudo -> member ID Slack (ex: {"kevin":"U04XXXXXXXX"}), utilisée par slackMention
   slackTeamMemberIds: env.get("LBA_SLACK_TEAM_MEMBER_IDS").default("{}").asJsonObject() as Record<string, string>,
   mongodb: {
@@ -81,14 +83,6 @@ const config = {
     baseUrl: "https://api.francetravail.io/partenaire",
     authUrl: "https://entreprise.francetravail.fr/connexion/oauth2/access_token",
     depotUrl: "https://portail-partenaire.francetravail.fr/partenaire/depotcurl ",
-  },
-  autoValidationAlert: {
-    recentDays: env.get("LBA_AUTO_VALIDATION_ALERT_RECENT_DAYS").default(7).asIntPositive(),
-    baselineDays: env.get("LBA_AUTO_VALIDATION_ALERT_BASELINE_DAYS").default(28).asIntPositive(),
-    // Volume minimum de rôles tranchés (auto ou refus) dans chaque fenêtre : en dessous, l'écart n'est pas significatif.
-    minVolume: env.get("LBA_AUTO_VALIDATION_ALERT_MIN_VOLUME").default(30).asIntPositive(),
-    dropThresholdPoints: env.get("LBA_AUTO_VALIDATION_ALERT_DROP_POINTS").default(10).asIntPositive(),
-    indeterminateThresholdPercent: env.get("LBA_AUTO_VALIDATION_ALERT_INDETERMINATE_PERCENT").default(5).asIntPositive(),
   },
   bal: {
     baseUrl: env.get("LBA_BAL_ENV_URL").required().asString(),
@@ -203,6 +197,8 @@ const config = {
     // Au-delà, la classification est indisponible : l'offre passe InReview et sera réessayée.
     classificationTimeoutMs: env.get("LBA_MODERATION_CLASSIFICATION_TIMEOUT_MS").default(10_000).asIntPositive(),
   },
+  // Libellés de partenaires flux séparés par des virgules, cf. getDaytimeRefreshPartners.
+  daytimeRefreshPartners: env.get("LBA_DAYTIME_REFRESH_PARTNERS").default("").asArray(),
   inserjeunes: {
     apiKey: env.get("IJ_MEN_API_KEY").required().asString(),
     clientId: env.get("IJ_MEN_CLIENT_ID").required().asString(),

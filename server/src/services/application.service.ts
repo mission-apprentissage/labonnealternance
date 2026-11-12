@@ -6,6 +6,7 @@ import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
 import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IHelloworkApplication } from "shared"
 import { ApplicationScanStatus, assertUnreachable, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS_ENGLISH, parseEnum } from "shared"
+import { getApplicantQuestions, getLbaApplicantQuestions } from "shared/constants/applicant-questions"
 import type { RefusalReasons } from "shared/constants/application"
 import { ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
@@ -36,8 +37,8 @@ import config from "@/config"
 import { resetReplayedSearchParams } from "@/jobs/applications/relance-search-url"
 import type { UserForAccessToken } from "@/security/access-token.service"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
-import { createCancelJobLink, createCloturerOffreMagicLink, createProvidedJobLink, generateApplicationReplyToken } from "./app-links.service"
+import { APPLICATION_COUNT_THRESHOLD, closeJobsOnApplicationThreshold } from "@/services/application-threshold.service"
+import { createCancelJobLink, createCloturerOffreMagicLink, generateApplicationReplyToken } from "./app-links.service"
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { getApplicationCvS3Key } from "./application-cv.service"
 import type { BrevoEventStatus } from "./brevo.service"
@@ -45,14 +46,12 @@ import { isInfected } from "./clamav.service"
 import { buildEstablishmentId } from "./etablissement.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
-import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
 import { saveApplicationTrafficSourceIfAny } from "./traffic-source.service"
 import { validateUserWithAccountEmail } from "./user-with-account.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
 const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
-const MAX_APPLICATIONS_PER_OFFER = 80
 
 const publicUrl = config.publicUrl
 
@@ -220,22 +219,25 @@ async function validateApplicationFileType(filename: string, base64String: strin
 
 const normalizeQuestionWhitespace = (question: string) => question.replace(/\s+/g, " ").trim()
 
-// Renvoie les réponses avec le libellé exact de l'offre : la comparaison tolère les écarts d'espaces
+// Renvoie les réponses avec le libellé exact de la question posée : la comparaison tolère les écarts d'espaces
 // d'une plateforme qui recopie la question, le mail au recruteur reprend le texte qu'il a saisi.
-const matchAnswersToOfferQuestions = (
+// Les réponses sont stockées sans espaces de début et de fin, les vides écartées : seules les questions
+// répondues sont stockées et affichées dans les mails.
+const matchAnswersToAskedQuestions = (
   answers: IApplicationApiPublicOutput["applicant_answers_to_recruiter_questions"],
-  offerQuestions: IJobsPartnersOfferPrivate["to_applicant_questions"]
+  questions: readonly string[]
 ): IApplicationApiPublicOutput["applicant_answers_to_recruiter_questions"] => {
-  if (!answers?.length) {
-    return answers
+  const filledAnswers = answers?.filter(({ answer }) => answer.trim())
+  if (!filledAnswers?.length) {
+    return filledAnswers
   }
-  const askedQuestions = new Map((offerQuestions ?? []).map((question) => [normalizeQuestionWhitespace(question), question]))
-  const matchedAnswers = answers.map(({ question, answer }) => {
+  const askedQuestions = new Map(questions.map((question) => [normalizeQuestionWhitespace(question), question]))
+  const matchedAnswers = filledAnswers.map(({ question, answer }) => {
     const offerQuestion = askedQuestions.get(normalizeQuestionWhitespace(question))
     if (offerQuestion === undefined) {
       throw badRequest(BusinessErrorCodes.UNKNOWN_RECRUITER_QUESTION, { question })
     }
-    return { question: offerQuestion, answer }
+    return { question: offerQuestion, answer: answer.trim() }
   })
   // Le plafond du schéma porte sur le nombre d'entrées : sans ce contrôle, un appelant pourrait
   // répondre trois fois à la même question et faire gonfler le mail envoyé au recruteur.
@@ -286,11 +288,6 @@ export const sendApplicationV2 = async ({
     throw badRequest(BusinessErrorCodes.EXPIRED)
   }
 
-  // Les réponses restent facultatives, y compris sur une offre qui pose des questions : une plateforme partenaire
-  // n'affiche pas nos questions dans son propre formulaire de candidature. En revanche, si des réponses sont
-  // transmises, elles doivent porter sur les questions réellement posées par l'offre.
-  const applicant_answers_to_recruiter_questions = matchAnswersToOfferQuestions(newApplication.applicant_answers_to_recruiter_questions, job.to_applicant_questions)
-
   const lbaJob: IJobOrCompanyV2 = {
     job,
     type:
@@ -300,8 +297,13 @@ export const sendApplicationV2 = async ({
           ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
           : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
   }
+
+  // Les réponses restent facultatives, y compris sur une offre qui pose des questions : une plateforme partenaire
+  // n'affiche pas nos questions dans son propre formulaire de candidature. En revanche, si des réponses sont
+  // transmises, elles doivent porter sur les questions réellement posées (cf. getApplicantQuestions).
+  const { questions } = getApplicantQuestions(lbaJob.type, job.to_applicant_questions)
+  const applicant_answers_to_recruiter_questions = matchAnswersToAskedQuestions(newApplication.applicant_answers_to_recruiter_questions, questions)
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
-  await checkMaxApplicationCount(lbaJob)
 
   if (!PARTNERS_WITH_APPLICATION_API.includes(job.partner_label)) {
     const recruteurEmail = job.apply_email?.toLowerCase()
@@ -340,6 +342,15 @@ export const sendApplicationV2 = async ({
   } catch (err) {
     logger.error(err)
     sentryCaptureException(err, { extra: { application_id: application._id.toString() } })
+  }
+
+  // Même raison : le cron closeJobsPartnersOnApplicationThreshold rattrape une offre LBA restée
+  // ouverte. Une offre partenaire reste ouverte jusqu'à la candidature suivante.
+  try {
+    await closeOfferIfApplicationThresholdReached(lbaJob)
+  } catch (err) {
+    logger.error(err)
+    sentryCaptureException(err, { extra: { job_id: job._id.toString() } })
   }
 
   return { _id: application._id }
@@ -451,24 +462,25 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
     unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}-desinscription`,
     lbaUrl: `${config.publicUrl}?${utmRecruiterData}-home`,
     faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}-faq`,
-    jobProvidedUrl: "",
     cancelJobUrl: "",
     jobPartnerLabel,
   }
 
   if (application.job_id) {
     urls.jobUrl = `${config.publicUrl}${buildJobUrlPath(application.job_origin, application.job_id.toString())}${utmRecruiterData}`
-    urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
-    // Offre LBA gérée par un recruteur identifié : lien qui le connecte et ouvre la modale « Clôturer
-    // votre recrutement » (motif obligatoire). Sinon, lien par jeton qui exécute l'action sur une page autonome.
+  }
+
+  // Offre LBA gérée par un recruteur identifié : lien qui le connecte et ouvre la modale « Clôturer votre
+  // recrutement ». Sinon, lien par jeton vers la page autonome qui affiche le même formulaire (motif obligatoire).
+  if (application.job_id && lbaJob) {
     urls.cancelJobUrl =
-      user && lbaJob?.workplace_siret
+      user && lbaJob.workplace_siret
         ? createCloturerOffreMagicLink(userWithAccountToUserForToken(user), {
             jobId: application.job_id.toString(),
             establishment_id: buildEstablishmentId(user._id, lbaJob.workplace_siret),
             userType: lbaJob.is_delegated ? CFA : ENTREPRISE,
           })
-        : createCancelJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
+        : createCancelJobLink(userForToken, application.job_id.toString(), utmRecruiterData)
   }
 
   return urls
@@ -649,28 +661,19 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
   }
 }
 
-const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
-  const { job, type } = lbaJob
-
-  // règle qui ne concerne que les offres LBA et partenaires
+/**
+ * Ferme l'offre dès que la candidature qui vient d'être enregistrée atteint le seuil : la suivante
+ * est refusée par le contrôle de statut de sendApplicationV2. Les offres partenaires sont concernées
+ * aussi, sur les seules candidatures reçues via LBA (cf. closeJobsOnApplicationThreshold).
+ */
+const closeOfferIfApplicationThresholdReached = async ({ job, type }: IJobOrCompanyV2) => {
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return
   }
 
-  const applicationCount = await getDbCollection("applications").countDocuments({
-    job_id: job._id,
-  })
-
-  if (applicationCount + 1 > MAX_APPLICATIONS_PER_OFFER) {
-    await getDbCollection("jobs_partners").updateOne(
-      { _id: job._id, partner_label: job.partner_label },
-      buildJobStatusChangeUpdate({
-        status: JOB_STATUS_ENGLISH.ANNULEE,
-        reason: `nombre maximum de candidatures atteint (${MAX_APPLICATIONS_PER_OFFER})`,
-        grantedBy: "application.service",
-      })
-    )
-    syncJobPartnersToSearchItemsInBackground([job._id])
+  const applicationCount = await getDbCollection("applications").countDocuments({ job_id: job._id })
+  if (applicationCount >= APPLICATION_COUNT_THRESHOLD) {
+    await closeJobsOnApplicationThreshold([job._id])
   }
 }
 
@@ -915,10 +918,23 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     caller: sanitizeTextField(caller),
     created_at: created_at,
     last_update_at: last_update_at,
-    applicant_answers_to_recruiter_questions: (applicant_answers_to_recruiter_questions ?? []).map(({ question, answer }) => ({
+    ...buildApplicantAnswersForEmail({ job_origin, applicant_answers_to_recruiter_questions }),
+  }
+}
+
+export const buildApplicantAnswersForEmail = ({
+  job_origin,
+  applicant_answers_to_recruiter_questions,
+}: Pick<IApplication, "job_origin" | "applicant_answers_to_recruiter_questions">) => {
+  const answers = (applicant_answers_to_recruiter_questions ?? []).filter(({ answer }) => answer.trim())
+  const lbaQuestions = getLbaApplicantQuestions(job_origin)
+  return {
+    applicant_answers_to_recruiter_questions: answers.map(({ question, answer }) => ({
       question,
       answer: prepareMessageForMail(sanitizeTextField(answer)),
     })),
+    // Choisit le titre du bloc : « motivations » pour les questions fixes de LBA, « vos questions » pour celles du recruteur.
+    applicant_answers_to_lba_questions: answers.length > 0 && answers.every(({ question }) => lbaQuestions.includes(question)),
   }
 }
 
@@ -1488,6 +1504,21 @@ const sendApplicationDataToPartner = async (partnerJob: IJobsPartnersOfferPrivat
   }
 }
 
+const TALEEZ_LINE_BREAK = "<br />"
+
+// Taleez ne reçoit pas le mail recruteur : les réponses aux questions suivent le message, au format de celui-ci
+// (retours à la ligne en <br />, cf. prepareMessageForMail).
+export const buildTaleezCoverText = ({ applicant_message_to_company, applicant_answers_to_recruiter_questions }: IApplication) => {
+  const answers = (applicant_answers_to_recruiter_questions ?? []).filter(({ answer }) => answer.trim())
+  if (!answers.length) {
+    return applicant_message_to_company
+  }
+  const motivations = ["Vos motivations", ...answers.map(({ question, answer }) => [question, prepareMessageForMail(answer.trim())].join(TALEEZ_LINE_BREAK))].join(
+    TALEEZ_LINE_BREAK + TALEEZ_LINE_BREAK
+  )
+  return [applicant_message_to_company, motivations].filter(Boolean).join(TALEEZ_LINE_BREAK + TALEEZ_LINE_BREAK)
+}
+
 const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate, application: IApplication, applicant: IApplicant, applicant_attachment_content: string) => {
   try {
     const payload = {
@@ -1498,7 +1529,7 @@ const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate
       cvData: removeDataUrlPrefix(applicant_attachment_content),
       cvName: application.applicant_attachment_name,
       phone: applicant.phone,
-      coverText: application.applicant_message_to_company,
+      coverText: buildTaleezCoverText(application),
     }
 
     await axios.post(config.taleez.url, payload, {

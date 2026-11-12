@@ -1,7 +1,6 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import Tooltip from "@codegouvfr/react-dsfr/Tooltip"
 import { Box, Typography } from "@mui/material"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
@@ -19,8 +18,8 @@ import { useAuth } from "@/context/UserContext"
 import { extendOffre, getModerationSummaries } from "@/utils/api"
 import { sortReactTableDate } from "@/utils/date-utils"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
-import { getAgentNoteLines } from "./moderation/AgentNote"
-import { ConformityBadge } from "./moderation/ModerationBadges"
+import { ConformityWithAgentNote } from "./moderation/AgentNote"
+import { awaitsModerationDecision } from "./moderation/moderation.types"
 import { OffresTabsMenu } from "./OffresTabsMenu"
 
 const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
@@ -219,7 +218,7 @@ export const OffresTabs = ({
           id: "conformity",
           width: "190",
           disableSortBy: true,
-          accessor: ({ _id }) => <ConformityCell summary={summariesById.get(_id)} />,
+          accessor: ({ _id }) => <ConformityWithAgentNote summary={summariesById.get(_id)} />,
         },
       ]
     : []
@@ -267,6 +266,7 @@ export const OffresTabs = ({
             row={row}
             hideCfaShareAction={hideCfaShareAction}
             isModerable={summariesById.has(row._id)}
+            awaitsModerationDecision={awaitsModerationDecision(row.job_status, summariesById.get(row._id))}
             onOffreProlongationClick={() => {
               setCurrentOfferId(row._id)
               offreProlongationModalControls.onOpen()
@@ -287,33 +287,6 @@ export const OffresTabs = ({
       {currentOffre && <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />}
       <Table caption={caption} columns={columns} data={jobsWithGeoCoords} />
     </>
-  )
-}
-
-type IModerationSummaryJson = NonNullable<Awaited<ReturnType<typeof getModerationSummaries>>>["jobs"][number]
-
-/**
- * Conformité de l'offre et la note de l'agent derrière un bouton d'information (#5499) : une infobulle au survol
- * se poserait sur un élément non focalisable, inaccessible au clavier.
- */
-const ConformityCell = ({ summary }: { summary: IModerationSummaryJson | undefined }) => {
-  const badge = <ConformityBadge verdict={summary?.offer_moderation_verdict} status={summary?.offer_moderation_status} />
-  if (!summary?.offer_moderation_verdict || summary.offer_moderation_status !== "ok") return badge
-  const title = (
-    <>
-      <strong>Note de l’agent :</strong>
-      {getAgentNoteLines(summary.findings).map((line) => (
-        <span key={line} style={{ display: "block" }}>
-          {line}
-        </span>
-      ))}
-    </>
-  )
-  return (
-    <Box sx={{ display: "inline-flex", alignItems: "center", gap: fr.spacing("1v") }}>
-      {badge}
-      <Tooltip kind="click" title={title} />
-    </Box>
   )
 }
 

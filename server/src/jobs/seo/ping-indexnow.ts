@@ -71,9 +71,9 @@ export const buildIndexNowPayloads = (urls: string[], publicUrl: string): IndexN
  * de candidature disparaît, cf. PartnerJobPostuler — ce qui justifie la re-notification ; les
  * jobs d'expiration/annulation bumpent `updated_at` en changeant `offer_status`).
  *
- * On ne filtre PAS sur `updated_at` seul : les imports de masse le bumpent sur des documents
- * inchangés (cf. import-from-computed-to-jobs-partners), ce qui re-soumettrait tout le corpus
- * après chaque import — le protocole IndexNow pénalise la soumission répétée d'URLs
+ * On ne filtre PAS sur `updated_at` seul : il avance aussi sur tout changement de contenu et sur
+ * les écritures de masse (migrations, enrichissements), ce qui re-soumettrait une large part du
+ * corpus — le protocole IndexNow pénalise la soumission répétée d'URLs
  * inchangées (clé throttlée ou ignorée). Les suppressions physiques, invisibles ici, restent
  * couvertes par le crawl classique.
  */

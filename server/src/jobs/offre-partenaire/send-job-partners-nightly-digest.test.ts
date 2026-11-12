@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 import * as slackUtils from "@/common/utils/slack-utils"
+import { SLACK_MESSAGE_MAX_LENGTH } from "@/common/utils/slack-utils"
 
 const findJobsMock = vi.fn()
 
@@ -8,12 +9,35 @@ vi.mock("job-processor", async (importOriginal) => {
   return { ...mod, findJobs: findJobsMock }
 })
 
+// tableau couvert par partner-publication-report.test.ts, qui a besoin de MongoDB
+const buildPartnerNightlyTableMock = vi.fn(async (_context: { since: Date; guardrailAlerts?: Map<string, string[]> }) => [] as string[])
+
+vi.mock("./partner-publication-report", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("./partner-publication-report")>()
+  return { ...mod, buildPartnerNightlyTable: buildPartnerNightlyTableMock }
+})
+
 const { sendJobPartnersNightlyDigest } = await import("./send-job-partners-nightly-digest")
+const { JobPartnersGuardrailError } = await import("./jobs-partners-guardrails")
+const { formatRemovalGuardBlock } = await import("./cancel-removed-jobs-partners")
+const { formatPartnerNightlyTable } = await import("./partner-publication-report")
 
 const cronTask = (params: { name: string; status: string; result?: unknown; error?: string | null; started_at?: Date; ended_at?: Date }) => {
   const { name, status, result = null, error = null, started_at, ended_at } = params
   return { name, type: "cron_task", status, started_at, ended_at, output: { duration: "1s", result, error } }
 }
+
+// même troncature que job-processor (stringifyError) : 3 premières lignes de la stack
+const asJobProcessorError = (err: Error) => err.stack?.split("\n").slice(0, 3).join("\n") ?? err.message
+
+const guardrailTask = (name: string, message: string, ended_at = new Date("2026-11-09T03:00:00Z")) =>
+  cronTask({ name, status: "errored", error: asJobProcessorError(new JobPartnersGuardrailError(message)), ended_at })
+
+const removalBlock = (partner_label: string, removed: number, active: number) => formatRemovalGuardBlock({ partner_label, removed, active, rate: removed / active, maxRate: 0.05 })
+
+// même format que commitRawImport
+const importBlock = (importName: string, previousCount: number, collection: string) =>
+  `import ${importName} : aucune offre importée, les ${previousCount} offres de l'import précédent sont conservées (${collection})`
 
 describe("sendJobPartnersNightlyDigest", () => {
   it("n'envoie rien si aucun job n'a tourné dans la fenêtre", async () => {
@@ -39,7 +63,7 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(notifySpy).toHaveBeenCalledTimes(1)
     const [payload] = notifySpy.mock.calls[0]
     expect(payload.error).toBe(false)
-    expect(payload.message).toContain("2/2 jobs offre-partenaire OK")
+    expect(payload.message).toContain("2 jobs offre-partenaire OK (2 exécutions), aucune anomalie.")
   })
 
   it("regroupe les jobs en erreur dans un unique message", async () => {
@@ -56,7 +80,7 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(notifySpy).toHaveBeenCalledTimes(1)
     const [payload] = notifySpy.mock.calls[0]
     expect(payload.error).toBe(true)
-    expect(payload.message).toContain("1/3 jobs OK, 2 en erreur")
+    expect(payload.message).toContain("2 jobs en erreur sur 3 (2 exécutions sur 3) :")
     expect(payload.message).toContain("Import Decathlon")
     expect(payload.message).toContain("Import EDF")
     expect(payload.message).toContain("boom")
@@ -162,5 +186,233 @@ describe("sendJobPartnersNightlyDigest", () => {
     expect(payload.message).toContain("filled.fillSiretInfosForPartners.error : 35/15334")
     expect(payload.message).toContain("filled.fillRomeForPartners.error : 2929/7223")
     expect(payload.message).toContain("filled.validateComputedJobPartners.error : 2795/22524")
+  })
+
+  it("ajoute au bilan le tableau par partenaire", async () => {
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import RHAlternance", status: "finished", result: { offerInsertCount: 42 } })])
+    buildPartnerNightlyTableMock.mockResolvedValueOnce(["", "Partenaires flux (1 à vérifier) :", "```", "Partenaire Reçues", "! PASS 392", "```"])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message).toBe(
+      ["1 job offre-partenaire OK (1 exécution), aucune anomalie.", "", "Partenaires flux (1 à vérifier) :", "```", "Partenaire Reçues", "! PASS 392", "```"].join("\n")
+    )
+  })
+
+  it("rattache les blocages par garde-fou à leur partenaire dans le tableau, sans les répéter en anomalie", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      guardrailTask("Process computed and import to Jobs Partners", [removalBlock("RH Alternance", 49, 164), removalBlock("Hellowork", 156, 1985)].join(" ; ")),
+      guardrailTask("Import Hellowork", importBlock("Hellowork", 1985, "raw_hellowork")),
+      cronTask({ name: "Import EDF", status: "errored", error: asJobProcessorError(new Error("connexion interrompue")) }),
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(
+      new Map([
+        ["RH Alternance", ["GF absentes 49 (29.9 %)"]],
+        ["Hellowork", ["GF absentes 156 (7.9 %)", "GF import vide (1985 conservées)"]],
+      ])
+    )
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.error).toBe(true)
+    // aucune stack trace, aucun blocage répété hors du tableau
+    expect(payload.message.split("\n")).toEqual(["3 jobs en erreur sur 3 (3 exécutions sur 3) :", "• Import EDF (errored, 1s : Error: connexion interrompue)"])
+  })
+
+  it("rattache un import vide au partenaire nommé dans le message, quel que soit le job", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      // near-miss : le job Import Hellowork importe aussi ATS_Hellowork, seul le flux nommé est vide
+      guardrailTask("Import Hellowork", importBlock("ATS_Hellowork", 76, "raw_hellowork_buddi")),
+      guardrailTask("Cycle de journée Jobteaser", importBlock("Jobteaser", 332, "raw_jobteaser")),
+      guardrailTask("Import France Travail", "import France Travail : aucune offre importée, aucune offre n'est marquée dépubliée"),
+    ])
+    vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(
+      new Map([
+        ["ATS_Hellowork", ["GF import vide (76 conservées)"]],
+        ["Jobteaser", ["GF import vide (332 conservées)"]],
+        ["France Travail", ["GF import vide"]],
+      ])
+    )
+  })
+
+  it("garde par partenaire une seule alerte par type, la plus récente", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      guardrailTask("Cycle de journée Hellowork", removalBlock("Hellowork", 161, 1985), new Date("2026-11-09T14:00:00Z")),
+      guardrailTask("Process computed and import to Jobs Partners", removalBlock("Hellowork", 156, 1985), new Date("2026-11-09T03:00:00Z")),
+    ])
+    vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(new Map([["Hellowork", ["GF absentes 161 (8.1 %)"]]]))
+  })
+
+  it("(faux positif) garde en ligne un blocage qui ne désigne aucun partenaire", async () => {
+    findJobsMock.mockResolvedValueOnce([
+      guardrailTask(
+        "Process computed and import to Jobs Partners",
+        `${removalBlock("Meteojob", 133, 499)} ; partenaires non traités, verrou détenu par un autre traitement : PASS`
+      ),
+      cronTask({ name: "Import EDF", status: "errored", error: "Error: connexion interrompue" }),
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    expect(buildPartnerNightlyTableMock.mock.calls.at(-1)?.[0].guardrailAlerts).toEqual(new Map([["Meteojob", ["GF absentes 133 (26.7 %)"]]]))
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message.split("\n")).toEqual([
+      "2 jobs en erreur sur 2 (2 exécutions sur 2) :",
+      "Garde-fous déclenchés, vérification requise :",
+      "• Process computed and import to Jobs Partners : partenaires non traités, verrou détenu par un autre traitement : PASS",
+      "Autres anomalies :",
+      "• Import EDF (errored, 1s : Error: connexion interrompue)",
+    ])
+  })
+
+  it("garde la cause d'une erreur enveloppée, sans les lignes de stack", async () => {
+    // format de job-processor (stringifyError) : 3 premières lignes de la stack, puis « Caused by: » pour chaque cause
+    const error = [
+      "Error: importFromStreamInJson: erreur lors de l'import Hellowork",
+      "    at importFromStreamInJson (file:///app/server/dist/main.js:1:1)",
+      "    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+      "Caused by: Error: read ECONNRESET",
+      "    at TLSWrap.onStreamRead (node:internal/stream_base_commons:216:20)",
+    ].join("\n")
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import Hellowork", status: "errored", error })])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message.split("\n")[1]).toBe(
+      "• Import Hellowork (errored, 1s : Error: importFromStreamInJson: erreur lors de l'import Hellowork Caused by: Error: read ECONNRESET)"
+    )
+  })
+
+  it("tronque une erreur trop longue", async () => {
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import Zod", status: "errored", error: `ZodError: ${"x".repeat(1_000)}` })])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message.split("\n")[1]).toMatch(/^• Import Zod \(errored, 1s : ZodError: x{290}x*…\)$/)
+    expect(payload.message.length).toBeLessThan(400)
+  })
+
+  it("(faux positif) sans garde-fou déclenché, les anomalies ne sont pas précédées d'un titre « Autres anomalies »", async () => {
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import EDF", status: "errored", error: "Error: connexion interrompue\n    at fetch (file:///app/x.js:1:1)" })])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const [payload] = notifySpy.mock.calls[0]
+    expect(payload.message.split("\n")).toEqual(["1 job en erreur sur 1 (1 exécution sur 1) :", "• Import EDF (errored, 1s : Error: connexion interrompue)"])
+  })
+
+  it("découpe un bilan trop long en messages numérotés, chacun avec un tableau refermé", async () => {
+    findJobsMock.mockResolvedValueOnce([cronTask({ name: "Import RHAlternance", status: "finished", result: {} })])
+    buildPartnerNightlyTableMock.mockResolvedValueOnce([
+      "",
+      "Partenaires flux :",
+      "```",
+      "Partenaire       Reçues",
+      ...Array.from({ length: 300 }, (_, i) => `Partenaire ${String(i).padStart(3)}     12345`),
+      "```",
+      "légende",
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    const payloads = notifySpy.mock.calls.map(([payload]) => payload)
+    expect(payloads.length).toBeGreaterThan(1)
+    expect(payloads.map(({ subject }) => subject)).toEqual(payloads.map((_, i) => `Bilan nocturne offres partenaires (${i + 1}/${payloads.length})`))
+    for (const { message } of payloads) {
+      expect.soft(message.length).toBeLessThanOrEqual(SLACK_MESSAGE_MAX_LENGTH)
+      expect.soft((message.match(/```/g)?.length ?? 0) % 2).toBe(0)
+    }
+    const rows = payloads.flatMap(({ message }) => message.split("\n")).filter((line) => /^Partenaire +\d/.test(line))
+    expect(rows).toHaveLength(300)
+    expect(payloads.at(-1)?.message.endsWith("légende")).toBe(true)
+  })
+
+  it("tient en un seul message sur le bilan de production du 09/11", async () => {
+    // Bilan posté le 09/11, coupé par Slack au milieu du tableau de cadence.
+    // [partenaire, reçues, B.err, valid., E.val, actives, motif principal, nombre, autres motifs]
+    const prodStats: [string, number, number, number, number, number, string?, number?, number?][] = [
+      ["Vite un emploi", 2, 2, 0, 0, 0, "CFA", 2, 0],
+      ["annonces Atlas", 4, 0, 4, 0, 4],
+      ["APEC", 185, 123, 62, 0, 62, "CFA", 72, 6],
+      ["ATS_Hellowork", 6629, 6475, 144, 10, 76, "IS_CFA", 5674, 7],
+      ["Décathlon", 6, 3, 2, 1, 3, "EXPIRED", 3, 0],
+      ["EDF", 1899, 1865, 34, 0, 32, "FULL_TIME", 1439, 4],
+      ["Enedis", 129, 118, 11, 0, 11, "FULL_TIME", 91, 1],
+      ["France Travail", 14318, 11660, 2657, 1, 3154, "CFA_BLACKLISTED", 6690, 7],
+      ["FranceTravail CEGID", 6, 0, 4, 2, 6],
+      ["Hellowork", 4580, 2330, 2241, 9, 1985, "CLOSED_COMPANY", 1499, 5],
+      ["Jobteaser", 440, 64, 316, 60, 332, "DUPLICATE", 36, 3],
+      ["Kelio", 165, 128, 37, 0, 36, "EXPIRED", 128, 0],
+      ["L'Etudiant", 180, 149, 31, 0, 27, "EXPIRED", 148, 1],
+      ["La Poste", 63, 0, 63, 0, 43],
+      ["Le bon coin emploi", 65, 2, 63, 0, 60, "CFA_BLACKLISTED", 1, 1],
+      ["Les emplois de l'inclusion", 410, 345, 61, 4, 58, "EXPIRED", 317, 2],
+      ["LinkedIn", 9642, 9579, 56, 7, 55, "FULL_TIME", 9399, 4],
+      ["Meteojob", 4970, 4584, 356, 30, 499, "CFA_BLACKLISTED", 4406, 4],
+      ["Nos Talents Nos Emplois", 894, 811, 83, 0, 82, "EXPIRED", 767, 4],
+      ["PASS", 32, 1, 31, 0, 28, "GEOLOCATION_NOT_FOUND", 1, 0],
+      ["RH Alternance", 131, 12, 117, 2, 164, "DUPLICATE", 6, 4],
+      ["Toulouse metropole", 28, 19, 9, 0, 9, "CFA_BLACKLISTED", 9, 2],
+    ]
+    const stats = prodStats.map(([partner_label, received, blocked, validated, validationErrors, active, mainReason, mainCount = 0, otherReasons = 0]) => {
+      const businessErrors: Record<string, number> = mainReason ? { [mainReason]: mainCount } : {}
+      for (let i = 0; i < otherReasons; i++) businessErrors[`AUTRE_${i}`] = 1
+      businessErrors.AUTRE_0 = otherReasons ? blocked - mainCount - (otherReasons - 1) : 0
+      if (!otherReasons) delete businessErrors.AUTRE_0
+      return { partner_label, received, validated, businessErrors, validationErrors, active }
+    })
+    const cadence = new Map(prodStats.map(([label]) => [label, { runs: 1, skipped: 0, changed: 1, changed_at: new Date("2026-11-08T23:00:00Z") }]))
+    buildPartnerNightlyTableMock.mockImplementationOnce(async ({ guardrailAlerts }) => formatPartnerNightlyTable(stats, { guardrailAlerts, cadence }))
+    findJobsMock.mockResolvedValueOnce([
+      guardrailTask("Import Atlas", importBlock("annonces Atlas", 4, "raw_atlas")),
+      guardrailTask("Import La Poste", importBlock("La Poste", 257, "raw_laposte")),
+      guardrailTask(
+        "Process computed and import to Jobs Partners",
+        [removalBlock("RH Alternance", 49, 164), removalBlock("Hellowork", 156, 1985), removalBlock("France Travail", 511, 3155), removalBlock("Meteojob", 133, 499)].join(" ; ")
+      ),
+      ...Array.from({ length: 95 }, (_, i) =>
+        cronTask({
+          name: "Process missing Rome and import to Jobs Partners",
+          status: "finished",
+          result: { filled: { total: 114, error: 114 }, validated: { total: 114, error: 114 } },
+          ended_at: new Date(Date.UTC(2026, 10, 9, 0, i * 15)),
+        })
+      ),
+      ...Array.from({ length: 43 }, () => cronTask({ name: "Import EDF", status: "finished", result: {} })),
+    ])
+    const notifySpy = vi.spyOn(slackUtils, "notifyToSlack").mockResolvedValue(undefined)
+
+    await sendJobPartnersNightlyDigest()
+
+    expect(notifySpy).toHaveBeenCalledTimes(1)
+    const [{ message, subject }] = notifySpy.mock.calls[0]
+    expect(subject).toBe("Bilan nocturne offres partenaires")
+    expect(message.length).toBeLessThanOrEqual(SLACK_MESSAGE_MAX_LENGTH)
+    const lines = message.split("\n")
+    expect(lines[0]).toBe("4 jobs en erreur sur 5 (98 exécutions sur 141) :")
+    expect(lines.find((line) => line.startsWith("! France Travail"))).toMatch(/ GF absentes 511 \(16.2 %\)$/)
+    expect(lines.find((line) => line.startsWith("! annonces Atlas"))).toMatch(/ GF import vide \(4 conservées\)$/)
+    expect(lines.find((line) => line.startsWith("! La Poste"))).toMatch(/ GF import vide \(257 conservées\)$/)
+    expect(lines.find((line) => line.startsWith("! Vite un emploi"))).toMatch(/ 0 publiée$/)
+    expect(lines.filter((line) => line.includes("forceCancelRemovedJobsPartners"))).toHaveLength(1)
   })
 })

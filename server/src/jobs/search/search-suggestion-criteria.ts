@@ -18,8 +18,12 @@ export const CRITERIA = {
   SUGGESTION_MIN_MEDIAN_HITS: 5,
   /** S4 — au-delà : gap de contenu → route synonyme, jamais suggestion. */
   SUGGESTION_MAX_ZERO_HITS_RATE: 0.3,
-  /** S5 — le candidat idéal est une requête que l'autocomplete ne proposait PAS. */
+  /** S5 — le candidat idéal est une requête que l'autocomplete ne proposait PAS. Taux calculé sur
+   * les seules recherches d'origine connue : une recherche sans origine (rechargement, arrivée
+   * depuis Google) ne dit pas si l'autocomplete a servi. */
   SUGGESTION_MIN_FREE_TEXT_RATE: 0.6,
+  /** S5 — effectif minimal de recherches d'origine connue pour que le taux ait un sens. */
+  SUGGESTION_MIN_KNOWN_SOURCE: 10,
   /** S6 — forme : longueur et nombre de tokens. Max 80 : couvre le p95 des intitulés ROME
    * réels (71 car., max 103) qu'un utilisateur peut retaper à la main, tout en coupant les
    * collages de titres d'offres complets (typiquement 90-150 car. avec H/F, ville…). */
@@ -70,6 +74,8 @@ export type IQueryStats = {
   days_seen: number
   zero_hits_count: number
   free_text_count: number
+  /** Recherches d'origine connue (free_text ou suggestion), dénominateur de S5. */
+  known_source_count: number
   median_nb_hits: number
 }
 
@@ -116,7 +122,8 @@ export function isSuggestionCandidate(stats: IQueryStats): boolean {
     stats.total >= CRITERIA.SUGGESTION_MIN_TOTAL &&
     stats.median_nb_hits >= CRITERIA.SUGGESTION_MIN_MEDIAN_HITS &&
     stats.zero_hits_count / stats.total <= CRITERIA.SUGGESTION_MAX_ZERO_HITS_RATE &&
-    stats.free_text_count / stats.total >= CRITERIA.SUGGESTION_MIN_FREE_TEXT_RATE
+    stats.known_source_count >= CRITERIA.SUGGESTION_MIN_KNOWN_SOURCE &&
+    stats.free_text_count / stats.known_source_count >= CRITERIA.SUGGESTION_MIN_FREE_TEXT_RATE
   )
 }
 

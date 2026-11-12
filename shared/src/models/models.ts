@@ -18,6 +18,8 @@ import type { IModelDescriptor } from "./common.js"
 import credentialsModel from "./credentials.model.js"
 import customEmailETFAModel from "./custom-email-etfa.model.js"
 import decaContratsModel from "./deca-contrats.model.js"
+import detectionAlertsModel from "./detection-alerts.model.js"
+import detectionRulesModel from "./detection-rules.model.js"
 import diplomesMetiersModel from "./diplomes-metiers.model.js"
 import domainesMetiersModel from "./domaines-metiers.model.js"
 import elligibleTrainingModel from "./elligible-training.model.js"
@@ -34,7 +36,9 @@ import franceTravailAccessModel from "./france-travail-access.model.js"
 import jobsModel from "./jobs.model.js"
 import jobsPartnersModel from "./jobs-partners.model.js"
 import jobsPartnersComputedModel from "./jobs-partners-computed.model.js"
+import jobsPartnersFluxSignalModel from "./jobs-partners-flux-signal.model.js"
 import jobsPartnersModerationModel from "./jobs-partners-moderation.model.js"
+import jobsPartnersProcessingLockModel from "./jobs-partners-processing-lock.model.js"
 import mistralBatchJobsModel from "./mistral-batch-jobs.model.js"
 import opcoModel from "./opco.model.js"
 import rawApecModel from "./raw-apec.model.js"
@@ -109,6 +113,8 @@ const modelDescriptorMap = {
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
   [decaContratsModel.collectionName]: decaContratsModel,
+  [detectionAlertsModel.collectionName]: detectionAlertsModel,
+  [detectionRulesModel.collectionName]: detectionRulesModel,
   [diplomesMetiersModel.collectionName]: diplomesMetiersModel,
   [domainesMetiersModel.collectionName]: domainesMetiersModel,
   [elligibleTrainingModel.collectionName]: elligibleTrainingModel,
@@ -124,7 +130,9 @@ const modelDescriptorMap = {
   [jobsModel.collectionName]: jobsModel,
   [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
+  [jobsPartnersFluxSignalModel.collectionName]: jobsPartnersFluxSignalModel,
   [jobsPartnersModerationModel.collectionName]: jobsPartnersModerationModel,
+  [jobsPartnersProcessingLockModel.collectionName]: jobsPartnersProcessingLockModel,
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawEdfModel.collectionName]: rawEdfModel,

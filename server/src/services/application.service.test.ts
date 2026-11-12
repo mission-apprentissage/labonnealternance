@@ -1,19 +1,24 @@
 import { badRequest } from "@hapi/boom"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import { omit } from "lodash-es"
+import { PARTNER_JOB_APPLICATION_QUESTIONS } from "shared/constants/applicant-questions"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { applicationTestFile, generateApplicantFixture, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
+import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { ApplicationScanStatus, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { verifyJwtToken } from "@/security/access-token.service"
+import { closeJobsOnApplicationThreshold } from "@/services/application-threshold.service"
 import mailer from "@/services/mailer.service"
 import { saveApplicationTrafficSourceIfAny } from "@/services/traffic-source.service"
 import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, removeEmailFromLbaCompanies, sendApplicationV2 } from "./application.service"
@@ -29,6 +34,11 @@ vi.mock("@/common/utils/aws-utils", () => {
 vi.mock("@/services/traffic-source.service", async (importOriginal) => {
   const mod = await importOriginal<typeof import("@/services/traffic-source.service")>()
   return { ...mod, saveApplicationTrafficSourceIfAny: vi.fn(mod.saveApplicationTrafficSourceIfAny) }
+})
+
+vi.mock("@/services/application-threshold.service", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@/services/application-threshold.service")>()
+  return { ...mod, closeJobsOnApplicationThreshold: vi.fn(mod.closeJobsOnApplicationThreshold) }
 })
 
 vi.mock("@/services/clamav.service", () => {
@@ -554,120 +564,113 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
   })
 })
 
-describe("checkMaxApplicationCount", () => {
+describe("clôture au seuil de candidatures au dépôt", () => {
+  const mailerSendEmailSpy = vi.mocked(mailer.sendEmail)
+  const thresholdMailSent = () => mailerSendEmailSpy.mock.calls.some(([args]) => args.template.includes("mail-offre-seuil-candidatures"))
+
+  beforeEach(async () => {
+    mailerSendEmailSpy.mockClear()
+    await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
+  })
+
   afterEach(async () => {
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("applications").deleteMany({})
     await getDbCollection("applicants").deleteMany({})
     await getDbCollection("referentielromes").deleteMany({})
+    await getDbCollection("userswithaccounts").deleteMany({})
   })
 
-  it("Should not update offer status when application count is at the limit (RECRUTEURS_LBA)", async () => {
-    const partnerJob = generateJobsPartnersOfferPrivate({
-      _id: new ObjectId("6081289803569600282e0030"),
-      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      apply_email: "employer@test.fr",
-      workplace_siret: "12345678901234",
-    })
-    await getDbCollection("jobs_partners").insertOne(partnerJob)
-
-    // 79 existing + current submission = 80 total, condition (79+1) > 80 is false
-    const applications = Array.from({ length: 79 }, () => generateApplicationFixture({ company_siret: "12345678901234" }))
-    await getDbCollection("applications").insertMany(applications)
-
-    await sendApplicationV2({
-      newApplication: {
-        ...fakeApplication,
-        recipient_id: { collectionName: "partners", jobId: "6081289803569600282e0030" },
-      },
-    })
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId("6081289803569600282e0030") })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
-  })
-
-  it("Should NOT update offer status to ANNULEE when application count exceeds limit (RECRUTEURS_LBA)", async () => {
-    const partnerJob = generateJobsPartnersOfferPrivate({
-      _id: new ObjectId("6081289803569600282e0031"),
-      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      apply_email: "employer@test.fr",
-      workplace_siret: "98765432109876",
-    })
-    await getDbCollection("jobs_partners").insertOne(partnerJob)
-
-    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
-    const applications = Array.from({ length: 80 }, () =>
-      generateApplicationFixture({ job_id: new ObjectId("6081289803569600282e0031"), company_siret: "98765432109876", created_at: new Date() })
+  const insertOfferWithApplications = async (partner_label: string, existingApplications: number, overrides = {}) => {
+    const jobId = new ObjectId()
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({ _id: jobId, partner_label, offer_status: JOB_STATUS_ENGLISH.ACTIVE, apply_email: "employer@test.fr", ...overrides })
     )
-    await getDbCollection("applications").insertMany(applications)
+    if (existingApplications) {
+      await getDbCollection("applications").insertMany(Array.from({ length: existingApplications }, () => generateApplicationFixture({ job_id: jobId, created_at: new Date() })))
+    }
+    return jobId
+  }
 
-    await sendApplicationV2({
-      newApplication: {
-        ...fakeApplication,
-        recipient_id: { collectionName: "partners", jobId: "6081289803569600282e0031" },
-      },
+  const apply = (jobId: ObjectId) => sendApplicationV2({ newApplication: { ...fakeApplication, recipient_id: { collectionName: "recruiters", jobId: jobId.toString() } } })
+
+  it("ferme l'offre LBA à la candidature qui atteint le seuil et prévient le recruteur", async () => {
+    const recruiter = generateUserWithAccountFixture({ email: "recruteur@test.fr" })
+    await getDbCollection("userswithaccounts").insertOne(recruiter)
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, 79, { managed_by: recruiter._id })
+
+    await apply(jobId)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect.soft(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(job?.offer_status_history.at(-1)).toMatchObject({
+      status: JOB_STATUS_ENGLISH.ANNULEE,
+      reason: "seuil de 80 candidatures atteint",
+      granted_by: "close-jobs-partners-on-application-threshold",
     })
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId("6081289803569600282e0031") })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(await getDbCollection("applications").countDocuments({ job_id: jobId })).toBe(80)
+    expect.soft(mailerSendEmailSpy.mock.calls.find(([args]) => args.template.includes("mail-offre-seuil-candidatures"))?.[0].to).toBe("recruteur@test.fr")
   })
 
-  it("Should update offer status to ANNULEE when application count exceeds limit (OFFRES_EMPLOI_LBA)", async () => {
-    const jobId = new ObjectId("6081289803569600282e0033")
+  it("enregistre la candidature même si la clôture échoue", async () => {
+    vi.mocked(closeJobsOnApplicationThreshold).mockRejectedValueOnce(new Error("jobs_partners unavailable"))
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, 79)
 
-    await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
+    await expect(apply(jobId)).resolves.toHaveProperty("_id")
+
+    expect.soft(closeJobsOnApplicationThreshold).toHaveBeenCalledWith([jobId])
+    expect.soft(await getDbCollection("applications").countDocuments({ job_id: jobId })).toBe(80)
+    expect.soft((await getDbCollection("jobs_partners").findOne({ _id: jobId }))?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+  })
+
+  it("refuse la candidature suivante", async () => {
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, 79)
+
+    await apply(jobId)
+
+    await expect(apply(jobId)).rejects.toThrow(BusinessErrorCodes.EXPIRED)
+    expect.soft(await getDbCollection("applications").countDocuments({ job_id: jobId })).toBe(80)
+  })
+
+  it("laisse l'offre ouverte sous le seuil", async () => {
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, 78)
+
+    await apply(jobId)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect.soft(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(thresholdMailSent()).toBe(false)
+  })
+
+  it("ferme aussi une offre partenaire, sans mail", async () => {
+    const jobId = await insertOfferWithApplications(JOBPARTNERS_LABEL.FRANCE_TRAVAIL, 79, { managed_by: new ObjectId() })
+
+    await sendApplicationV2({ newApplication: { ...fakeApplication, recipient_id: { collectionName: "partners", jobId: jobId.toString() } } })
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect.soft(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(thresholdMailSent()).toBe(false)
+  })
+
+  it("ne ferme pas une entreprise RECRUTEURS_LBA", async () => {
+    const jobId = new ObjectId()
     await getDbCollection("jobs_partners").insertOne(
       generateJobsPartnersOfferPrivate({
         _id: jobId,
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
         offer_status: JOB_STATUS_ENGLISH.ACTIVE,
         apply_email: "employer@test.fr",
-        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        workplace_siret: "98765432109876",
       })
     )
-
-    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
-    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: jobId, created_at: new Date() }))
-    await getDbCollection("applications").insertMany(applications)
-
-    await sendApplicationV2({
-      newApplication: {
-        ...fakeApplication,
-        recipient_id: { collectionName: "recruiters", jobId: jobId.toString() },
-      },
-    })
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
-  })
-
-  it("Should update offer status to ANNULEE when application count exceeds limit (OFFRES_EMPLOI_PARTENAIRES)", async () => {
-    const jobId = new ObjectId("6081289803569600282e0034")
-
-    await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
-    await getDbCollection("jobs_partners").insertOne(
-      generateJobsPartnersOfferPrivate({
-        _id: jobId,
-        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-        apply_email: "employer@test.fr",
-        partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
-      })
+    await getDbCollection("applications").insertMany(
+      Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: jobId, company_siret: "98765432109876", created_at: new Date() }))
     )
 
-    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
-    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: jobId, created_at: new Date() }))
-    await getDbCollection("applications").insertMany(applications)
+    await sendApplicationV2({ newApplication: { ...fakeApplication, recipient_id: { collectionName: "partners", jobId: jobId.toString() } } })
 
-    await sendApplicationV2({
-      newApplication: {
-        ...fakeApplication,
-        recipient_id: { collectionName: "partners", jobId: jobId.toString() },
-      },
-    })
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
   })
 })
 
@@ -738,6 +741,8 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
       to_company_message_id: null,
       to_applicant_message_id: null,
       scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
+      applicant_message_to_company: "Bonjour,<br />Je postule.",
+      applicant_answers_to_recruiter_questions: [{ question: PARTNER_JOB_APPLICATION_QUESTIONS[0], answer: "Pour votre équipe." }],
     })
     await getDbCollection("applications").insertOne(application)
 
@@ -748,6 +753,9 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
 
     // Should call Taleez API (not send company email)
     expect(vi.mocked(axios.default.post)).toHaveBeenCalledOnce()
+    expect(vi.mocked(axios.default.post).mock.calls[0][1]).toMatchObject({
+      coverText: `Bonjour,<br />Je postule.<br /><br />Vos motivations<br /><br />${PARTNER_JOB_APPLICATION_QUESTIONS[0]}<br />Pour votre équipe.`,
+    })
 
     // Should send only applicant email (not company email)
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(1)
@@ -792,6 +800,72 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
     expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
+  })
+})
+
+describe("mail recruteur — lien de clôture de l'offre", () => {
+  const mailerSendEmailSpy = vi.mocked(mailer.sendEmail)
+  const companyEmail = "company@test.fr"
+
+  const sendRecruiterEmailFor = async ({ job_origin, workplace_siret }: { job_origin: LBA_ITEM_TYPE; workplace_siret: string | null }) => {
+    const user = await saveUserWithAccount()
+    const jobId = new ObjectId()
+    const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
+    await getDbCollection("applicants").insertOne(applicant)
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: jobId,
+        partner_label: job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA : JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+        managed_by: job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? user._id : null,
+        apply_email: companyEmail,
+        workplace_siret,
+      })
+    )
+    const application = generateApplicationFixture({
+      applicant_id: applicant._id,
+      job_origin,
+      job_id: jobId,
+      company_email: companyEmail,
+      to_company_message_id: null,
+      to_applicant_message_id: null,
+      scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
+    })
+    await getDbCollection("applications").insertOne(application)
+
+    await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
+
+    const call = mailerSendEmailSpy.mock.calls.find(([args]) => args.to === companyEmail)
+    if (!call) throw new Error("mail recruteur non envoyé")
+    return { jobId, cancelJobUrl: (call[0].data as Record<string, string>).cancelJobUrl }
+  }
+
+  beforeEach(async () => {
+    mailerSendEmailSpy.mockClear()
+  })
+
+  it("connecte le recruteur d'une offre LBA et ouvre la modale de clôture", async () => {
+    const { jobId, cancelJobUrl } = await sendRecruiterEmailFor({ job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, workplace_siret: "12345678901234" })
+
+    const url = new URL(cancelJobUrl)
+    expect.soft(url.pathname).toBe("/espace-pro/authentification")
+    expect.soft(url.searchParams.get("redirect")).toContain(`action=cloturer&jobId=${jobId}`)
+  })
+
+  it("renvoie vers la page autonome de clôture une offre LBA sans siret, avec un jeton limité à la route de clôture", async () => {
+    const { jobId, cancelJobUrl } = await sendRecruiterEmailFor({ job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, workplace_siret: null })
+
+    const url = new URL(cancelJobUrl)
+    expect.soft(url.pathname).toBe(`/espace-pro/offre/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${jobId}/cancel`)
+    const { scopes } = verifyJwtToken(url.searchParams.get("token")!)
+    expect
+      .soft(scopes.map(({ method, path, options }) => ({ method, path, options })))
+      .toEqual([{ method: "put", path: "/formulaire/offre/:jobId/cancel", options: { params: { jobId: jobId.toString() } } }])
+  })
+
+  it("ne propose aucun lien de clôture pour une offre partenaire", async () => {
+    const { cancelJobUrl } = await sendRecruiterEmailFor({ job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, workplace_siret: "12345678901234" })
+
+    expect.soft(cancelJobUrl).toBe("")
   })
 })
 

@@ -16,6 +16,7 @@ import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import type {
   IModerationJobDetail,
   IModerationQueueConformity,
+  IModerationQueueFilters,
   IModerationQueueItem,
   IModerationQueueSort,
   IModerationRecruiter,
@@ -29,7 +30,7 @@ import { REPRISE_CLASSIFICATION_FILTER } from "@/jobs/moderation/retry-classific
 import { applyStoredOfferClassification, getStoredModerationTexts, releaseOfferInReview } from "./formulaire.service"
 import { sendMailOffreRefusee } from "./formulaire-notifications.service"
 import { buildJobStatusChangeUpdate } from "./job-partner-status.service"
-import { classifyOffreTexts, getLatestModeration } from "./jobs-partners-moderation.service"
+import { classifyOffreTexts, getLatestModeration, PENDING_MODERATION_DECISION_FILTER } from "./jobs-partners-moderation.service"
 import { MODERATION_REFUSED_REASON, MODERATION_VALIDATED_REASON } from "./jobs-partners-moderation-reasons"
 import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
 
@@ -56,9 +57,7 @@ const MODERATED_STATUSES = [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MOD
 /** File « à traiter » : offres classifiées non conformes ou à vérifier (une classification en échec rend `a_verifier`), sans décision, ni closes. */
 const QUEUE_FILTER: Filter<IJobsPartnersOfferPrivate> = {
   partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-  offer_status: { $in: MODERATED_STATUSES },
-  offer_moderation_verdict: { $in: ["a_verifier", "non_conforme"] },
-  offer_moderation_review: null,
+  ...PENDING_MODERATION_DECISION_FILTER,
 }
 
 // Le statut est testé avant le verdict : en échec, le verdict stocké vaut `a_verifier`.
@@ -179,29 +178,13 @@ const buildSearchFilter = async (search: string): Promise<Filter<IJobsPartnersOf
   return { $or: [{ workplace_legal_name: pattern }, { workplace_name: pattern }, { workplace_brand: pattern }, { cfa_legal_name: pattern }] }
 }
 
-export const listModerationQueue = async ({
-  scope,
-  conformity,
-  account_status,
-  account_type,
-  opco,
-  search,
-  sort = "created_at",
-  order = "desc",
-  limit = 50,
-  offset = 0,
-}: {
-  scope: IModerationScope
-  conformity?: IModerationQueueConformity[]
-  account_status?: (AccessStatus.GRANTED | AccessStatus.AWAITING_VALIDATION)[]
-  account_type?: ("ENTREPRISE" | "CFA")[]
-  opco?: OPCOS_LABEL[]
-  search?: string
-  sort?: IModerationQueueSort
-  order?: "asc" | "desc"
-  limit?: number
-  offset?: number
-}): Promise<{ jobs: IModerationQueueItem[]; total: number }> => {
+type IModerationQueueQuery = IModerationQueueFilters & { scope: IModerationScope }
+
+/**
+ * Étapes communes à la file et à la navigation entre offres : filtres, puis jointures quand le filtre sur le compte ou le
+ * tri par recruteur les lisent. Sinon les jointures ne portent que sur la page affichée.
+ */
+const buildQueueStages = async ({ scope, conformity, account_status, account_type, opco, search, sort = "created_at" }: IModerationQueueQuery) => {
   const filters: Filter<IJobsPartnersOfferPrivate>[] = [QUEUE_FILTER, scopeFilter(scope)]
   if (conformity?.length) filters.push({ $or: conformity.map((value) => CONFORMITY_FILTERS[value]) })
   if (account_type?.length === 1) filters.push(account_type[0] === AccessEntityType.CFA ? { is_delegated: true } : { is_delegated: { $ne: true } })
@@ -209,18 +192,36 @@ export const listModerationQueue = async ({
   if (scope.admin && opco?.length) filters.push({ workplace_opco: { $in: opco } })
   if (search) filters.push(await buildSearchFilter(search))
 
-  // Les jointures ne portent que sur la page affichée, sauf quand le filtre sur le compte ou le tri par recruteur les lit.
   const lookupBeforePaging = Boolean(account_status?.length) || sort === "recruiter"
+  const stages: Document[] = [
+    { $match: { $and: filters } },
+    ...(lookupBeforePaging ? RECRUITER_LOOKUP_STAGES : []),
+    ...(account_status?.length ? [{ $match: { "recruiter.account_status": { $in: account_status } } }] : []),
+  ]
+  return { stages, lookupBeforePaging }
+}
+
+/** Ordre de la file : `_id` départage les ex aequo, toujours décroissant. `backward` le parcourt à rebours (offre précédente). */
+const buildQueueSort = (order: "asc" | "desc", direction: "forward" | "backward" = "forward") => {
+  const sign = direction === "forward" ? 1 : -1
+  return { _sort: (order === "asc" ? 1 : -1) * sign, _id: -1 * sign }
+}
+
+export const listModerationQueue = async ({
+  limit = 50,
+  offset = 0,
+  ...query
+}: IModerationQueueQuery & { limit?: number; offset?: number }): Promise<{ jobs: IModerationQueueItem[]; total: number }> => {
+  const { sort = "created_at", order = "desc" } = query
+  const { stages, lookupBeforePaging } = await buildQueueStages(query)
   const [{ data, totalCount }] = await getDbCollection("jobs_partners")
     .aggregate<{ data: IModerationQueueItem[]; totalCount: [{ count: number }] | [] }>([
-      { $match: { $and: filters } },
-      ...(lookupBeforePaging ? RECRUITER_LOOKUP_STAGES : []),
-      ...(account_status?.length ? [{ $match: { "recruiter.account_status": { $in: account_status } } }] : []),
+      ...stages,
       {
         $facet: {
           data: [
             { $set: { _sort: SORT_KEYS[sort] } },
-            { $sort: { _sort: order === "asc" ? 1 : -1, _id: -1 } },
+            { $sort: buildQueueSort(order) },
             { $skip: offset },
             { $limit: limit },
             ...(lookupBeforePaging ? [] : RECRUITER_LOOKUP_STAGES),
@@ -232,6 +233,52 @@ export const listModerationQueue = async ({
     ])
     .toArray()
   return { jobs: data, total: totalCount[0]?.count ?? 0 }
+}
+
+/**
+ * Offres qui précèdent et suivent `id` dans la file, mêmes filtres et même tri. La position se lit sur la clé de tri de
+ * l'offre et non sur sa présence dans la file : une offre qui vient d'être décidée en sort, sa suivante reste trouvable.
+ */
+export const getModerationQueueNeighbors = async ({ id, ...query }: IModerationQueueQuery & { id: ObjectId }): Promise<{ previous: ObjectId | null; next: ObjectId | null }> => {
+  const { scope, sort = "created_at", order = "desc" } = query
+  const [current] = await getDbCollection("jobs_partners")
+    .aggregate<{ _sort: unknown }>([
+      { $match: { _id: id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, ...scopeFilter(scope) } },
+      ...(sort === "recruiter" ? RECRUITER_LOOKUP_STAGES : []),
+      { $project: { _sort: SORT_KEYS[sort] } },
+    ])
+    .toArray()
+  if (!current) throw notFound("Offre introuvable")
+
+  const { stages } = await buildQueueStages(query)
+  // `$literal` : un intitulé qui commence par `$` serait lu comme un chemin de champ.
+  const currentSort = { $literal: current._sort }
+  const findAdjacent = async (direction: "next" | "previous") => {
+    const forward = direction === "next"
+    const sortGoesDown = order === "desc"
+    const [adjacent] = await getDbCollection("jobs_partners")
+      .aggregate<{ _id: ObjectId }>([
+        ...stages,
+        { $set: { _sort: SORT_KEYS[sort] } },
+        {
+          $match: {
+            $expr: {
+              $or: [
+                { [forward === sortGoesDown ? "$lt" : "$gt"]: ["$_sort", currentSort] },
+                { $and: [{ $eq: ["$_sort", currentSort] }, { [forward ? "$lt" : "$gt"]: ["$_id", id] }] },
+              ],
+            },
+          },
+        },
+        { $sort: buildQueueSort(order, direction === "next" ? "forward" : "backward") },
+        { $limit: 1 },
+        { $project: { _id: 1 } },
+      ])
+      .toArray()
+    return adjacent?._id ?? null
+  }
+  const [previous, next] = await Promise.all([findAdjacent("previous"), findAdjacent("next")])
+  return { previous, next }
 }
 
 /** Constats de la dernière classification des offres d'une fiche entreprise, pour la colonne Conformité. */

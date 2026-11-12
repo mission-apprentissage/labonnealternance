@@ -41,6 +41,31 @@ describe("ModerationPanel", () => {
     expect(html).not.toContain("Consultation seule")
   })
 
+  it("affiche la note de l'agent en un bloc par champ, un critère par puce", () => {
+    const detail = buildDetail()
+    detail.moderation.findings = [
+      { champ: "job_description", category: "poste_salarie", verbatim: "Tu es son bras droit" },
+      { champ: "job_description", category: "experience_exigee", verbatim: "Une première alternance réussie" },
+    ] as IModerationJobDetailJson["moderation"]["findings"]
+
+    const html = render(detail)
+
+    expect(html).toMatch(/La description de l’entreprise :<\/span> Conforme/)
+    expect(html).toMatch(
+      /La description de l’offre :<\/p>(<style[^>]*>[^<]*<\/style>)?<ul[^>]*><li>Responsabilités de salarié confirmé \(“Tu es son bras droit”\)<\/li><li>Expérience exigée \(“Une première alternance réussie”\)<\/li><\/ul>/
+    )
+    expect(html.indexOf("La description de l’entreprise")).toBeLessThan(html.indexOf("La description de l’offre"))
+    expect(html).not.toContain(" ; ")
+  })
+
+  it("garde un bloc par champ et n'affiche aucune puce sans constat", () => {
+    const html = render(buildDetail())
+
+    expect(html).toMatch(/La description de l’entreprise :<\/span> Conforme/)
+    expect(html).toMatch(/La description de l’offre :<\/span> Conforme/)
+    expect(html).not.toContain("<li>")
+  })
+
   it("n'invite pas à relancer ni à décider une analyse en échec en lecture seule", () => {
     const html = render(buildDetail({ offer_moderation_verdict: "a_verifier", offer_moderation_status: "indisponible" }), true)
 

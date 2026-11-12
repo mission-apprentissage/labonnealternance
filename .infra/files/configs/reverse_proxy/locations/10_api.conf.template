@@ -23,6 +23,33 @@ location ~* ^/api/rome {
     include includes/proxy.conf;
 }
 
+# Mesures web-vitals envoyées par les navigateurs : hors de lba_search, dont les dépassements alimentent fail2ban
+# et dont le quota est partagé par tous les visiteurs d'une même IP (réseau d'établissement). Débit borné par
+# Fastify (cf. webVitalsRouteController). Correspondance exacte, prioritaire sur les regex ; une variante de
+# casse retombe dans `^/api/_private/`, donc limitée.
+location = /api/_private/web-vitals {
+    if ($lba_denied) {
+        return 403;
+    }
+
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}
+
+# Résolution des liens partenaires (/monmaster/<RNCP>) : appelée par le seul rendu serveur de l'UI,
+# depuis le réseau docker. 404 pour toute autre IP, doublé par partnerSearchRouteController. Regex et non
+# correspondance exacte : le routeur Fastify ignore la casse. Placée avant `^/api/_private/` (1re regex gagnante).
+location ~* ^/api/_private/search/partner-link {
+    if ($lba_limited) {
+        return 404;
+    }
+
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}
+
 location ~* ^/api/_private/ {
     if ($lba_denied) {
         return 403;

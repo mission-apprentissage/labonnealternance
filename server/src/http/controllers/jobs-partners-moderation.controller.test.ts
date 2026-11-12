@@ -633,6 +633,79 @@ describe("modération des offres libres (#5499)", () => {
     })
   })
 
+  describe("navigation entre offres de la file (#5868)", () => {
+    const getNeighbors = async (id: ObjectId | string, query: string, headers: Record<string, string>) => {
+      const response = await inject({ method: "GET", path: `/moderation/jobs/${id}/neighbors${query ? `?${query}` : ""}`, headers })
+      expect(response.statusCode, response.body).toBe(200)
+      return response.json() as { previous: string | null; next: string | null }
+    }
+
+    it("suit l'ordre de la file pour chaque tri, ex aequo et intitulé en `$` compris", async () => {
+      const at = (hours: number) => dayjs(T0).add(hours, "hour").toDate()
+      await saveModeratedOffer(await saveRecruiter({ raisonSociale: "Zénith" }), { offer: { offer_title: "Boulanger", created_at: at(1) } })
+      await saveModeratedOffer(await saveRecruiter({ raisonSociale: "atelier" }), {
+        offer: { offer_title: "$Cuisinier", offer_moderation_verdict: "a_verifier", offer_moderation_status: "epuise", created_at: at(1) },
+      })
+      await saveModeratedOffer(await saveRecruiter({ raisonSociale: "Bistrot" }), {
+        offer: { offer_title: "boulanger", offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_verdict: "a_verifier", created_at: at(2) },
+      })
+      await saveModeratedOffer(await saveRecruiter({ raisonSociale: "atelier" }), { offer: { offer_title: "Agent", created_at: at(3) } })
+      const { bearerToken } = await loginAdmin()
+
+      for (const sort of ["created_at", "offer_title", "offer_status", "conformity", "recruiter"]) {
+        for (const order of ["asc", "desc"]) {
+          const query = `sort=${sort}&order=${order}`
+          const queue: string[] = (await inject({ method: "GET", path: `/moderation/jobs?${query}`, headers: bearerToken })).json().jobs.map(({ _id }) => _id)
+          expect(queue).toHaveLength(4)
+          for (const [index, id] of queue.entries()) {
+            expect(await getNeighbors(id, query, bearerToken), `${query}, position ${index}`).toEqual({ previous: queue[index - 1] ?? null, next: queue[index + 1] ?? null })
+          }
+        }
+      }
+    })
+
+    it("donne la suivante d'une offre qui vient de sortir de la file après décision", async () => {
+      const recruiter = await saveRecruiter()
+      const at = (hours: number) => dayjs(T0).add(hours, "hour").toDate()
+      const first = await saveModeratedOffer(recruiter, { offer: { created_at: at(3) } })
+      const decided = await saveModeratedOffer(recruiter, { offer: { created_at: at(2) } })
+      const last = await saveModeratedOffer(recruiter, { offer: { created_at: at(1) } })
+      const { bearerToken } = await loginAdmin()
+
+      const validate = await inject({
+        method: "POST",
+        path: `/moderation/jobs/${decided.offer._id}/validate`,
+        headers: bearerToken,
+        body: { moderation_id: decided.moderation._id.toString() },
+      })
+      expect(validate.statusCode, validate.body).toBe(200)
+      const queue = await inject({ method: "GET", path: "/moderation/jobs", headers: bearerToken })
+
+      expect(queue.json().jobs.map(({ _id }) => _id)).toEqual([first, last].map(({ offer }) => offer._id.toString()))
+      expect(await getNeighbors(decided.offer._id, "", bearerToken)).toEqual({ previous: first.offer._id.toString(), next: last.offer._id.toString() })
+    })
+
+    it("applique les filtres de la file", async () => {
+      const recruiter = await saveRecruiter()
+      const at = (hours: number) => dayjs(T0).add(hours, "hour").toDate()
+      const first = await saveModeratedOffer(recruiter, { offer: { created_at: at(3) } })
+      await saveModeratedOffer(recruiter, { offer: { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_verdict: "a_verifier", created_at: at(2) } })
+      const last = await saveModeratedOffer(recruiter, { offer: { created_at: at(1) } })
+      const { bearerToken } = await loginAdmin()
+
+      expect(await getNeighbors(first.offer._id, "conformity=non_conforme", bearerToken)).toEqual({ previous: null, next: last.offer._id.toString() })
+    })
+
+    it("répond 404 à un OPCO pour une offre hors de son périmètre", async () => {
+      const { offer } = await saveModeratedOffer(await saveRecruiter(), { offer: { workplace_opco: OPCOS_LABEL.ATLAS } })
+      const { bearerToken } = await loginOpcoAkto()
+
+      const response = await inject({ method: "GET", path: `/moderation/jobs/${offer._id}/neighbors`, headers: bearerToken })
+
+      expect(response.statusCode).toBe(404)
+    })
+  })
+
   describe("chemins qui sortaient une offre de modération sans décision", () => {
     it("refuse la réactivation d'une offre en modération par la route d'administration des offres", async () => {
       const recruiter = await saveRecruiter()
@@ -659,6 +732,31 @@ describe("modération des offres libres (#5499)", () => {
       const byRecruiter = await httpClient().inject({ method: "PUT", path: `/api/formulaire/offre/f/${offer._id}/cancel`, headers: recruiterToken, body })
       expect(byRecruiter.statusCode).toBe(200)
       expect((await getOffer(offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    })
+
+    it("refuse la clôture par un administrateur d'une offre en ligne qui attend une décision, pas celle d'une offre conforme, tranchée ou en attente du compte", async () => {
+      const recruiter = await saveRecruiter({ email: "recruteur-cloture-en-ligne@mail.com" })
+      const online = { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_status_history: [] }
+      const awaitingDecision = await saveModeratedOffer(recruiter, { offer: { ...online, offer_moderation_verdict: "a_verifier" } })
+      const conforme = await saveModeratedOffer(recruiter, { offer: { ...online, offer_moderation_verdict: "conforme" } })
+      const decided = await saveModeratedOffer(recruiter, { offer: { ...online, offer_moderation_review: "validee" } })
+      // Hors de la file : elle attend la validation du compte, pas une décision de modération.
+      const awaitingAccount = await saveModeratedOffer(recruiter, {
+        offer: { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE, offer_status_history: [], offer_moderation_verdict: "a_verifier" },
+      })
+      const body = { job_status: JOB_STATUS.ANNULEE, job_status_comment: "Autre" }
+      const { bearerToken: adminToken } = await loginAdmin()
+      const closeByAdmin = async (id: ObjectId) =>
+        (await httpClient().inject({ method: "PUT", path: `/api/formulaire/offre/f/${id}/cancel`, headers: adminToken, body })).statusCode
+
+      expect(await closeByAdmin(awaitingDecision.offer._id)).toBe(400)
+      expect([await closeByAdmin(conforme.offer._id), await closeByAdmin(decided.offer._id), await closeByAdmin(awaitingAccount.offer._id)]).toEqual([200, 200, 200])
+      expect((await getOffer(awaitingDecision.offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+
+      const { bearerToken: recruiterToken } = await logUser(httpClient, "recruteur-cloture-en-ligne")
+      const byRecruiter = await httpClient().inject({ method: "PUT", path: `/api/formulaire/offre/f/${awaitingDecision.offer._id}/cancel`, headers: recruiterToken, body })
+      expect(byRecruiter.statusCode).toBe(200)
+      expect((await getOffer(awaitingDecision.offer._id))?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
     })
   })
 })

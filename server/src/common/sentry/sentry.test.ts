@@ -6,6 +6,7 @@ import nock from "nock"
 import { zRoutes } from "shared"
 import { afterEach, describe, expect, it } from "vitest"
 
+import { notifyToSlack } from "@/common/utils/slack-utils"
 import { scrubSensitiveEventData } from "./sentry"
 import { getDiagnosticQuery } from "./sentry.fastify"
 
@@ -144,6 +145,19 @@ describe("scrubSensitiveEventData — régression sur de vraies AxiosError (axio
     expect(JSON.stringify(scrubSensitiveEventData(event))).not.toContain("super-secret-cs")
   })
 
+  it.each([
+    ["un refus HTTP", (scope: nock.Interceptor) => scope.reply(404, "no_service"), "HTTP 404"],
+    ["une erreur réseau", (scope: nock.Interceptor) => scope.replyWithError(Object.assign(new Error("socket hang up"), { code: "ECONNRESET" })), "ECONNRESET"],
+  ])("ne laisse pas fuiter l'URL du webhook quand Slack refuse l'envoi sur %s, et garde la raison", async (_, reply, reason) => {
+    reply(nock("https://hooks.slack.com").post("/services/T000/B000/WEBHOOK_SECRET"))
+
+    const event = await captureRealAxiosError(() => notifyToSlack({ subject: "TEST", message: "test", webhook: "https://hooks.slack.com/services/T000/B000/WEBHOOK_SECRET" }))
+
+    const json = JSON.stringify(scrubSensitiveEventData(event))
+    expect(json).not.toContain("WEBHOOK_SECRET")
+    expect(event.exception?.values?.[0]?.value).toContain(reason)
+  })
+
   it("préserve le corps de réponse (non sensible) utile au diagnostic", async () => {
     nock("http://fake-diag.test").get("/z").reply(422, { message: "siret invalide" })
 
@@ -179,6 +193,7 @@ const QUERY_PARAMS_KEPT = [
   "appointmentId",
   "cfa_delegated_siret",
   "cleMinistereEducatif",
+  "code",
   "conformity",
   "contract_type",
   "cursor",
@@ -205,6 +220,7 @@ const QUERY_PARAMS_KEPT = [
   "order",
   "organization_name",
   "page",
+  "partner",
   "partner_label",
   "partners_to_exclude",
   "q",

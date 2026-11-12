@@ -12,6 +12,7 @@ import { SearchClearButton, searchClearButtonSx } from "./SearchClearButton"
  * Par défaut, toute recherche de moins de MIN_SEARCH_LENGTH caractères, vide comprise, est en erreur ;
  * `validate` et `hintText` remplacent cette règle et son aide pour un format précis.
  * `onReset` : ajoute dans le champ une croix qui le vide et laisse le parent rétablir l'affichage d'origine.
+ * `initialValue` : recherche déjà lancée, lue au montage seulement.
  */
 export function AdminSearchInput({
   label,
@@ -21,6 +22,7 @@ export function AdminSearchInput({
   validate = validateMinLength,
   hintText = `Au moins ${MIN_SEARCH_LENGTH} caractères`,
   inputWidth = "360px",
+  initialValue = "",
 }: {
   label: string
   placeholder: string
@@ -29,12 +31,13 @@ export function AdminSearchInput({
   validate?: (search: string) => string | null
   hintText?: string
   inputWidth?: string
+  initialValue?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [value, setValue] = useState("")
+  const [value, setValue] = useState(initialValue)
   const [error, setError] = useState<string | null>(null)
   // La croix reste affichée après une recherche lancée, même champ vidé à la main, tant que la réinitialisation n'a pas eu lieu
-  const [hasSearched, setHasSearched] = useState(false)
+  const [hasSearched, setHasSearched] = useState(Boolean(initialValue))
 
   const submit = () => {
     const search = value.trim()

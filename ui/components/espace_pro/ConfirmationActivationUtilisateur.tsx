@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
+import { useId } from "react"
 
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
@@ -15,6 +16,7 @@ const ConfirmationActivationUtilisateur = (props: {
 }) => {
   const { isOpen, onClose, establishment_raison_sociale, _id, organizationId } = props
   const { activate } = useUserPermissionsActions(_id, organizationId)
+  const titleId = useId()
 
   const activateUser = async () => {
     await activate()
@@ -23,9 +25,9 @@ const ConfirmationActivationUtilisateur = (props: {
   }
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
+        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Activation du compte
         </Typography>
 

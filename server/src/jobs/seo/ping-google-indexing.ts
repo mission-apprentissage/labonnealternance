@@ -27,8 +27,8 @@ const DELTA_DEFAULT_WINDOW_MS = 60 * 60 * 1000
  * en 200 avec un contenu modifié (le bouton de candidature disparaît) — URL_DELETED est
  * réservé par Google aux pages réellement supprimées (404/410) et serait contredit au re-crawl.
  *
- * Pas de filtre sur `updated_at` seul (les imports de masse le bumpent sur des documents
- * inchangés — cf. pingIndexNow pour le détail). Tri par `updated_at` décroissant : si le
+ * Pas de filtre sur `updated_at` seul (il avance aussi sur les changements de contenu et les
+ * écritures de masse — cf. pingIndexNow pour le détail). Tri par `updated_at` décroissant : si le
  * quota s'épuise en cours de run, ce sont les changements les plus récents qui passent.
  * Au premier 429, le run s'arrête : le reliquat est couvert par le sitemap nocturne et,
  * pour les retraits, par le prochain bump d'`updated_at`.

@@ -21,6 +21,9 @@ import { importReferentielRomeNaf } from "./cross-naf/import-referentiel-rome-na
 import { processSuggestionsNaf, processSuggestionsNafLast24h } from "./cross-naf/process-suggestions-naf"
 import { obfuscateCollections } from "./database/obfuscate-collections"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
+import { configureDetectionRule, listDetectionRules, qualifyDetectionAlert, replayDetectionRules } from "./detection/detection-cli"
+import { runDetectionRules } from "./detection/detection-engine"
+import { sendDetectionTestAlert } from "./detection/detection-notification"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
 import { buildMappingRomeRNCP } from "./domaines-metiers/build-mapping-rome-rncp"
 import {
@@ -49,6 +52,7 @@ import { repriseExhaustedClassifications, retryUnavailableClassifications } from
 import { processApec } from "./offre-partenaire/apec/process-apec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offre-partenaire/clever-connect/process-clever-connect"
 import { closeJobsPartnersOnApplicationThreshold } from "./offre-partenaire/close-jobs-partners-on-application-threshold"
+import { runDaytimeRefreshUnit } from "./offre-partenaire/daytime-refresh-cycle"
 import { processDecathlon } from "./offre-partenaire/decathlon/import-decathlon"
 import { detectClassificationJobsPartners } from "./offre-partenaire/detect-classification-jobs-partners"
 import { processEmploiInclusion } from "./offre-partenaire/emploi-inclusion/import-emploi-inclusion"
@@ -74,6 +78,7 @@ import {
   cancelRemovedJobsPartnersFlux,
   detectDuplicateJobPartnersFlux,
   fillComputedJobsPartnersFlux,
+  forceCancelRemovedJobsPartners,
   processComputedAndImportToJobPartners,
   validateComputedJobPartnersFlux,
 } from "./offre-partenaire/process-job-partners"
@@ -102,7 +107,6 @@ import { repriseEnvoiEmailsPRDV } from "./rdv/reprise-envoi-prdv"
 import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
-import { autoValidationRateAlert, replayAutoValidationRateAlert } from "./recruiters/auto-validation-rate-alert"
 import { opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { updateSiretInfosInError } from "./recruiters/update-siret-infos-in-error-job"
 import { importReferentielRome } from "./referentiel-rome/referentiel-rome"
@@ -151,16 +155,48 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Crée une collection jointure entre userWithAccounts, roleManagements, cfas et entreprises pour metabase",
   },
   {
-    fct: autoValidationRateAlert,
-    description: "Compare le taux d'auto-validation des comptes récent à la période précédente et alerte sur Slack en cas de chute",
+    fct: runDetectionRules,
+    description: "Évalue les règles de détection dont le créneau est échu et notifie les entrées, rappels et sorties d'alerte",
+    cliOptions: [
+      { flags: "--rule <id>", description: "Une seule règle" },
+      { flags: "--dry-run", description: "Évalue sans réserver le créneau, sans écrire ni notifier" },
+    ],
   },
   {
-    fct: replayAutoValidationRateAlert,
-    description: "Rejoue jour par jour l'alerte sur le taux d'auto-validation des comptes, sans notifier",
+    fct: listDetectionRules,
+    description: "Liste les règles de détection : réglages effectifs, surcharges, épisodes en cours",
+  },
+  {
+    fct: configureDetectionRule,
+    description: "Règle l'activation et les seuils d'une règle de détection, sans redéploiement",
     cliOptions: [
-      { flags: "--from <date>", description: "Premier jour évalué (date ISO)" },
-      { flags: "--to <date>", description: "Dernier jour évalué (date ISO)" },
+      { flags: "--rule <id>", description: "Identifiant de la règle" },
+      { flags: "--enabled <bool>", description: "true ou false" },
+      { flags: "--thresholds <json>", description: `Seuils à surcharger, ex. '{"minVolume":50}'` },
+      { flags: "--reset", description: "Revient à l'activation et aux seuils du code" },
     ],
+  },
+  {
+    fct: qualifyDetectionAlert,
+    description: "Qualifie une alerte de détection en vrai ou faux positif",
+    cliOptions: [
+      { flags: "--id <id>", description: "Identifiant de l'alerte (donné dans le message Slack)" },
+      { flags: "--verdict <verdict>", description: "vrai_positif ou faux_positif" },
+    ],
+  },
+  {
+    fct: replayDetectionRules,
+    description: "Rejoue les règles de détection sur une période passée, avec la déduplication du cron, sans écrire ni notifier",
+    cliOptions: [
+      { flags: "--from <date>", description: "Premier jour rejoué (date ISO)" },
+      { flags: "--to <date>", description: "Dernier jour rejoué, inclus (date ISO)" },
+      { flags: "--rule <id>", description: "Une seule règle" },
+      { flags: "--thresholds <json>", description: `Seuils à simuler par règle, ex. '{"auto_validation_part_bal":{"dropRatio":0.4}}'` },
+    ],
+  },
+  {
+    fct: sendDetectionTestAlert,
+    description: "Envoie une alerte de test sur le canal des alertes de détection",
   },
   {
     fct: retryUnavailableClassifications,
@@ -542,6 +578,16 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: cancelRemovedJobsPartnersFlux,
     description: "Annule les offres des partenaires traités par flux absentes du flux source",
+  },
+  {
+    fct: forceCancelRemovedJobsPartners,
+    description: "Levier d'incident : annule sans garde-fou les offres d'un partenaire absentes de son flux, après vérification d'un blocage signalé par le garde-fou d'annulation",
+    cliOptions: [{ flags: "--partnerLabel <label>", description: "Partenaire du flux concerné (ex. Hellowork)" }],
+  },
+  {
+    fct: runDaytimeRefreshUnit,
+    description: "Lance le cycle de journée d'une unité d'import (recette, incident), que LBA_DAYTIME_REFRESH_PARTNERS l'active ou non",
+    cliOptions: [{ flags: "--unit <name>", description: "Unité d'import (ex. Jobteaser, Hellowork)" }],
   },
   {
     fct: detectDuplicateJobPartnersFlux,

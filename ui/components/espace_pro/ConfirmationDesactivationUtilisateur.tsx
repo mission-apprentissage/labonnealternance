@@ -5,12 +5,14 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, Typography } from "@mui/material"
-import { useRef, useState } from "react"
+import { useId, useRef, useState } from "react"
 import type { IUserRecruteurJson } from "shared"
 import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { AUTHTYPE } from "@/common/contants"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
+
+export const NOT_MY_OPCO_REASON = "Ne relève pas des champs de compétences de mon OPCO"
 
 const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
@@ -25,6 +27,7 @@ const ConfirmationDesactivationUtilisateur = ({
   const [showErrors, setShowErrors] = useState(false)
   const motifRef = useRef<HTMLSelectElement>(null)
   const autreRef = useRef<HTMLInputElement>(null)
+  const titleId = useId()
   const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id, organizationId)
 
   if (!userRecruteur) return null
@@ -50,7 +53,7 @@ const ConfirmationDesactivationUtilisateur = ({
     }
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
-        if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
+        if (reason === NOT_MY_OPCO_REASON) {
           await reassignUserToAdmin(reason)
         } else {
           await disableUser(reason)
@@ -69,9 +72,9 @@ const ConfirmationDesactivationUtilisateur = ({
   }
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={close}>
+    <ModalReadOnly isOpen={isOpen} onClose={close} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
+        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Désactivation du compte
         </Typography>
 
@@ -95,7 +98,7 @@ const ConfirmationDesactivationUtilisateur = ({
             <option value="Compte en doublon">Compte en doublon</option>
             <option value="Offre non conforme">Offre non conforme</option>
             {type === "CFA" && <option value="Non référencé dans le catalogue du Réseau des Carif-Oref">Non référencé dans le catalogue du Réseau des Carif-Oref</option>}
-            <option value="Ne relève pas des champs de compétences de mon OPCO">Ne relève pas des champs de compétences de mon OPCO</option>
+            <option value={NOT_MY_OPCO_REASON}>{NOT_MY_OPCO_REASON}</option>
             <option value="Besoin de recrutement pourvu">Besoin de recrutement pourvu</option>
             <option value="Injoignable">Injoignable</option>
             <option value="Autre">Autre</option>

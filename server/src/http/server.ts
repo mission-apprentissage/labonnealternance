@@ -18,7 +18,9 @@ import { initBrevoWebhooks } from "@/services/brevo.service"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "./controllers/_private/geo.private.controller"
 import { metiersRouteController } from "./controllers/_private/metiers.private.controller"
+import { partnerSearchRouteController } from "./controllers/_private/partner-search.private.controller"
 import { seoRouteController } from "./controllers/_private/seo.private.controller"
+import { webVitalsRouteController } from "./controllers/_private/web-vitals.private.controller"
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligible-trainings-for-appointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
 import adminFeedbackFormsRoute from "./controllers/admin/feedback-forms.controller"
@@ -48,7 +50,6 @@ import updateLbaCompany from "./controllers/update-recruteur-lba.controller"
 import userRoute from "./controllers/user.controller"
 import applicationRouteV2 from "./controllers/v2/application.controller.v2"
 import appointmentRequestRouteV2 from "./controllers/v2/appointment.controller.v2"
-import jobsRouteV2 from "./controllers/v2/jobs.controller.v2"
 import { jobsApiV3Routes } from "./controllers/v3/jobs/jobs.controller.v3"
 import version from "./controllers/version.controller"
 import { auth } from "./middlewares/auth-middleware"
@@ -119,7 +120,9 @@ export async function bind(app: Server) {
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
       metiersRouteController(typedSubApp)
+      partnerSearchRouteController(typedSubApp)
       seoRouteController(typedSubApp)
+      webVitalsRouteController(typedSubApp)
       inserjeunesRoute(typedSubApp)
 
       /**
@@ -144,7 +147,6 @@ export async function bind(app: Server) {
       userRoute(typedSubApp)
       formulaireRoute(typedSubApp)
       etablissementsRecruteurRoute(typedSubApp)
-      jobsRouteV2(typedSubApp)
       jobsPartnersAdminRoute(typedSubApp)
       jobsPartnersModerationRoute(typedSubApp)
       adminFeedbackFormsRoute(typedSubApp)

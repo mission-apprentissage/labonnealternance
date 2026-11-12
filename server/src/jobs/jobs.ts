@@ -32,6 +32,7 @@ import { processSuggestionsNaf } from "./cross-naf/process-suggestions-naf"
 import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
+import { DETECTION_TICK_MINUTES, runDetectionRules } from "./detection/detection-engine"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
 import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
@@ -66,7 +67,6 @@ import { removeEligibleTrainingsForAppointmentsNotInCatalogue } from "./rdv/remo
 import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
-import { autoValidationRateAlert } from "./recruiters/auto-validation-rate-alert"
 import { createApiUser } from "./recruiters/create-api-user"
 import { disableApiUser } from "./recruiters/disable-api-user"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
@@ -123,9 +123,10 @@ export async function setupJobProcessor() {
             handler: async () => closeJobsPartnersOnApplicationThreshold(),
             tag: "main",
           },
-          "Alerte sur le taux d'auto-validation des comptes": {
-            cron_string: "0 7 * * *",
-            handler: async () => autoValidationRateAlert(),
+          // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners) : une seule exécution évalue une règle à la fois (cf. acquireRuleLease).
+          "Évaluation des règles de détection": {
+            cron_string: `*/${DETECTION_TICK_MINUTES} * * * *`,
+            handler: async () => runDetectionRules(),
             tag: "main",
           },
           // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners) : deux exécutions concurrentes classifient au

@@ -204,6 +204,7 @@ const excludedStartPaths = [
   "/espace-pro/widget/",
   "/espace-pro/creation/",
   "/espace-pro/offre/impression/",
+  "/espace-pro/offre/offres_emploi_lba/",
   "/espace-pro/proposition/formulaire/",
   "/espace-pro/mise-en-relation/",
 ]

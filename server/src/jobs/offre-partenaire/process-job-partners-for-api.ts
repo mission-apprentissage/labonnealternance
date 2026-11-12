@@ -1,3 +1,4 @@
+import { addJob } from "job-processor"
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
@@ -9,6 +10,7 @@ import { syncJobPartnersToSearchItemsInChunks } from "@/services/search/search-i
 import { fillComputedJobsPartners } from "./fill-computed-jobs-partners"
 import { fillLbaUrl } from "./fill-lba-url"
 import { importFromComputedToJobsPartners } from "./import-from-computed-to-jobs-partners"
+import { withPartnerLocks } from "./partner-processing-lock"
 
 const excludedJobPartnersFromApi = Object.values(JOBPARTNERS_LABEL)
 
@@ -50,6 +52,16 @@ const syncImportedJobsToSearchItems = async (jobPartnerIds: ObjectId[]) => {
  */
 const STALE_PROCESS_ID_AFTER_MS = 60 * 60 * 1000
 
+/**
+ * Documents libres ou revendiqués par un run périmé (cf. STALE_PROCESS_ID_AFTER_MS). Les 4 premiers
+ * octets d'un ObjectId encodent sa date de création et l'hexadécimal se compare dans le même ordre :
+ * un `$lt` sur la chaîne suffit à détecter un processId périmé.
+ */
+export const buildUnlockedComputedJobPartnersFilter = (): Filter<IComputedJobsPartners> => {
+  const staleProcessIdBefore = ObjectId.createFromTime(Math.floor((Date.now() - STALE_PROCESS_ID_AFTER_MS) / 1000)).toString()
+  return { $or: [{ currently_processed_id: null }, { currently_processed_id: { $lt: staleProcessIdBefore } }] }
+}
+
 export const processJobPartnersForApi = async () => {
   logger.info("début de processJobPartnersForApi")
   const processId: string = new ObjectId().toString()
@@ -58,14 +70,11 @@ export const processJobPartnersForApi = async () => {
   // Ne revendiquer que les documents libres, comme processMissingRomeAndImportToJobPartners : ce
   // job n'est pas réentrant, et sans ce filtre un run concurrent réattribue les documents du run en
   // cours, dont l'import ne matche alors plus rien et se perd sans erreur.
-  // Les 4 premiers octets d'un ObjectId encodent sa date de création et l'hexadécimal se compare
-  // dans le même ordre : un `$lt` sur la chaîne suffit à détecter un processId périmé.
-  const staleProcessIdBefore = ObjectId.createFromTime(Math.floor((Date.now() - STALE_PROCESS_ID_AFTER_MS) / 1000)).toString()
   await getDbCollection("computed_jobs_partners").updateMany(
     {
       partner_label: { $nin: excludedJobPartnersFromApi },
       updated_at: { $gte: last2Days },
-      $or: [{ currently_processed_id: null }, { currently_processed_id: { $lt: staleProcessIdBefore } }],
+      ...buildUnlockedComputedJobPartnersFilter(),
     },
     { $set: { currently_processed_id: processId, errors: [] } }
   )
@@ -112,15 +121,48 @@ export const reprocessJobPartners = async (payload?: { filter?: string }) => {
   return processJobPartnersWithFilter(filter)
 }
 
+export const PROCESS_WITH_FILTER_RETRY_DELAY_MS = 15 * 60 * 1000
+
+/**
+ * Supprime les computed validés après import : sans verrou, un passage entre l'import et l'annulation d'un cycle
+ * de journée ferait annuler ces offres. Un partenaire verrouillé n'est pas attendu (job sans tag, il bloquerait
+ * le worker `main`) : sa part du filtre est replanifiée, reprise au plus tard à l'expiration du verrou (PARTNER_LOCK_TTL_MS).
+ */
 export const processJobPartnersWithFilter = async (filter: Filter<IComputedJobsPartners>) => {
-  logger.info({ filter }, "début de processJobPartnersWithFilter")
-  let importedIds: ObjectId[] = []
-  await fillComputedJobsPartners({ addedMatchFilter: filter })
-  await importFromComputedToJobsPartners(filter, (ids) => {
-    importedIds = ids
-  })
-  await fillLbaUrl()
-  await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
+  const partnerLabels: string[] = await getDbCollection("computed_jobs_partners").distinct("partner_label", filter)
+  if (!partnerLabels.length) {
+    logger.info({ filter }, "processJobPartnersWithFilter : aucune offre")
+    return
+  }
+  const importedIds = await withPartnerLocks(
+    partnerLabels,
+    async (lockedPartnerLabels) => {
+      const deferredPartnerLabels = partnerLabels.filter((partnerLabel) => !lockedPartnerLabels.includes(partnerLabel))
+      if (deferredPartnerLabels.length) {
+        const scheduledFor = new Date(Date.now() + PROCESS_WITH_FILTER_RETRY_DELAY_MS)
+        await addJob({
+          name: "processJobPartnersWithFilter",
+          payload: { $and: [filter, { partner_label: { $in: deferredPartnerLabels } }] },
+          queued: true,
+          scheduled_for: scheduledFor,
+        })
+        logger.info({ deferredPartnerLabels, scheduledFor }, "processJobPartnersWithFilter : partenaires verrouillés, reprise replanifiée")
+      }
+      if (!lockedPartnerLabels.length) return []
+
+      const lockedFilter = { $and: [filter, { partner_label: { $in: lockedPartnerLabels } }] }
+      logger.info({ filter: lockedFilter }, "début de processJobPartnersWithFilter")
+      let ids: ObjectId[] = []
+      await fillComputedJobsPartners({ addedMatchFilter: lockedFilter })
+      await importFromComputedToJobsPartners(lockedFilter, (imported) => {
+        ids = imported
+      })
+      await fillLbaUrl({ addedMatchFilter: { partner_label: { $in: lockedPartnerLabels } } })
+      await getDbCollection("computed_jobs_partners").deleteMany({ $and: [lockedFilter, { validated: true }] })
+      logger.info({ filter: lockedFilter }, "fin de processJobPartnersWithFilter")
+      return ids
+    },
+    { requireAll: false }
+  )
   await syncImportedJobsToSearchItems(importedIds)
-  logger.info({ filter }, "fin de processJobPartnersWithFilter")
 }

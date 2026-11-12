@@ -5,7 +5,9 @@ import type { core } from "zod"
 import { zProcessorAdminRoutes } from "./_private/admin/processor.admin.routes.js"
 import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
 import { zPrivateMetiersRoutes } from "./_private/metiers.routes.js"
+import { zPrivatePartnerSearchRoutes } from "./_private/partner-search.routes.js"
 import { zPrivateSeoRoutes } from "./_private/seo.routes.js"
+import { zPrivateWebVitalsRoutes } from "./_private/web-vitals.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
 import type { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
@@ -33,7 +35,6 @@ import { zUpdateLbaCompanyRoutes } from "./update-lba-company.routes.js"
 import { zUserRecruteurRoutes } from "./user.routes.js"
 import { zApplicationRoutesV2 } from "./v2/application.routes.v2.js"
 import { zAppointmentsRouteV2 } from "./v2/appointments.routes.v2.js"
-import { zJobsRoutesV2 } from "./v2/jobs.routes.v2.js"
 import { zJobsRoutesV3 } from "./v3/jobs/jobs.routes.v3.js"
 
 const zRoutesGetP1 = {
@@ -41,6 +42,7 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zPrivateGeoRoutes.get,
   ...zPrivateMetiersRoutes.get,
+  ...zPrivatePartnerSearchRoutes.get,
   ...zPrivateSeoRoutes.get,
   ...zProcessorAdminRoutes.get,
 } as const
@@ -105,13 +107,13 @@ const zRoutesPost3 = {
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
-  ...zJobsRoutesV2.post,
   ...zReportedCompanyRoutes.post,
   ...zJobsRoutesV3.post,
   ...zProcessorAdminRoutes.post,
   ...zJobsPartnersAdminRoutes.post,
   ...zJobsPartnersModerationRoutes.post,
   ...zFeedbackFormsRoutes.post,
+  ...zPrivateWebVitalsRoutes.post,
 }
 
 const zRoutesPost = {
@@ -198,6 +200,7 @@ export type IRequestFetchOptions = {
   headers?: Record<string, string>
   signal?: AbortSignal | null
   priority?: "low" | "auto" | "high"
+  keepalive?: boolean
 }
 
 export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never>

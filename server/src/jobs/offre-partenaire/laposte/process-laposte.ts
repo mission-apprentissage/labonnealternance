@@ -1,7 +1,13 @@
-import { importLaposteRaw, importLaposteToComputed } from "./import-laposte"
+import { type FluxImportOptions, importFluxIfChanged } from "@/jobs/offre-partenaire/import-flux-if-changed"
+import { importLaposteRaw, importLaposteToComputed, laposteFlux } from "./import-laposte"
 
-export const processLaposte = async () => {
-  const raw = await importLaposteRaw()
-  const computed = await importLaposteToComputed()
-  return { raw, computed }
-}
+export const processLaposte = async ({ skipIfUnchanged = false }: FluxImportOptions = {}) =>
+  importFluxIfChanged({
+    fluxes: [laposteFlux],
+    skipIfUnchanged,
+    process: async ([stream]) => {
+      const raw = await importLaposteRaw(stream)
+      const computed = await importLaposteToComputed()
+      return { raw, computed }
+    },
+  })

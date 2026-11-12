@@ -10,7 +10,7 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useToast } from "@/app/hooks/useToast"
 import { reclassifyModerationJob, refuseModerationJob, validateModerationJob } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
-import { AgentNoteBox, AgentNoteLines } from "./AgentNote"
+import { AgentNoteBox, AgentNoteSections } from "./AgentNote"
 import { ConformityBadge, OfferStatusBadge, ReviewStatusBadge } from "./ModerationBadges"
 import type { IModerationJobDetailJson } from "./moderation.types"
 import { RefusOffreModal } from "./RefusOffreModal"
@@ -116,7 +116,7 @@ export function ModerationPanel({ detail, onChange, readOnly = false }: { detail
             {readOnly ? "L’analyse automatique n’a pas abouti." : "L’analyse automatique n’a pas abouti : relancez-la, ou décidez sans verdict."}
           </Typography>
         ) : (
-          <AgentNoteLines findings={moderation.findings} />
+          <AgentNoteSections findings={moderation.findings} />
         )}
       </AgentNoteBox>
       {moderation?.review?.without_verdict && <Typography sx={{ fontSize: "0.875rem", mt: fr.spacing("2v") }}>Décision prise sans verdict IA.</Typography>}

@@ -24,7 +24,7 @@ describe("import-clever-connect", () => {
 
   it("should test the import of clever connect data into computed_job_partners", async () => {
     const fileStream = fs.createReadStream("server/src/jobs/offre-partenaire/clever-connect/import-clever-connect.test.input.xml")
-    await importCleverConnectRaw(rawMeteojobModel.collectionName, JOBPARTNERS_LABEL.METEOJOB, undefined, fileStream)
+    await importCleverConnectRaw(rawMeteojobModel.collectionName, JOBPARTNERS_LABEL.METEOJOB, fileStream)
     expect.soft(await getDbCollection("raw_meteojob").countDocuments({})).toBe(3)
 
     await importCleverConnectToComputed(rawMeteojobModel.collectionName, JOBPARTNERS_LABEL.METEOJOB)

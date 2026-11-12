@@ -472,6 +472,104 @@ describe("POST /jobs", async () => {
     })
     expect(await getDbCollection("jobs_partners").countDocuments({})).toBe(0)
   })
+
+  it("refuse une description dont le texte visible fait moins de 30 caractères (#5855)", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: `/api/v3/jobs`,
+      body: { ...jobOfferApiWriteInput, offer: { ...jobOfferApiWriteInput.offer, description: "<p>   </p><p>&nbsp;</p><br/><br/><br/><br/>" } },
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect.soft(response.statusCode).toBe(400)
+    expect.soft(response.json().message).toBe("Job description should be at least 30 characters, excluding HTML tags and contact details")
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({})).toBe(0)
+  })
+})
+
+describe("POST /v4/jobs/multi-partner", () => {
+  const validDescription = "Envie de devenir développeur web ? Rejoignez-nous !"
+  const buildBody = (partner_job_id: string, offer_description: string | null) => ({
+    partner_label: "Un agrégateur",
+    partner_job_id,
+    offer_title: "Apprentis en développement web",
+    offer_description,
+    offer_creation: new Date("2024-06-18T00:00:00.000Z").toJSON(),
+    offer_expiration: new Date("2024-08-18T00:00:00.000Z").toJSON(),
+  })
+
+  const apiKey = new ObjectId().toString()
+
+  beforeEach(async () => {
+    const now = new Date()
+    await getDbCollection("credentials").insertOne({
+      _id: new ObjectId(),
+      nom: "Agrégateur",
+      prenom: "Test",
+      organisation: "Un agrégateur",
+      scope: "multi-partner",
+      email: "agregateur@test.fr",
+      api_key: apiKey,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    })
+  })
+
+  it("refuse une offre sans description", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v4/jobs/multi-partner",
+      body: buildBody("sans-description", null),
+      headers: { authorization: apiKey },
+    })
+
+    expect.soft(response.statusCode).toBe(400)
+    expect.soft(response.json().message).toBe("Job description should be at least 30 characters, excluding HTML tags and contact details")
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({})).toBe(0)
+  })
+
+  it("refuse une description de moins de 30 caractères visibles", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v4/jobs/multi-partner",
+      body: buildBody("balises", "<p><b>Poste de vendeur en boutique</b></p>"),
+      headers: { authorization: apiKey },
+    })
+
+    expect.soft(response.statusCode).toBe(400)
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({})).toBe(0)
+  })
+
+  it("accepte une description valide", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v4/jobs/multi-partner",
+      body: buildBody("valide", validDescription),
+      headers: { authorization: apiKey },
+    })
+
+    expect.soft(response.statusCode).toBe(200)
+    expect(await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: "valide" })).toMatchObject({ offer_description: validDescription })
+  })
+
+  it("en bulk, refuse en 400 les seules offres sans description ou à description trop courte", async () => {
+    // Le refus se fait offre par offre : un schéma de route qui exigerait la description rejetterait tout le lot.
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v4/jobs/multi-partner/bulk",
+      body: [buildBody("bulk-valide", validDescription), buildBody("bulk-coordonnees", "contact.rh@agence-exemple.fr 06 12 34 56 78"), buildBody("bulk-sans", null)],
+      headers: { authorization: apiKey },
+    })
+
+    expect.soft(response.statusCode).toBe(200)
+    expect.soft(response.json()).toEqual([
+      { id: expect.any(String), status: 200 },
+      { error: expect.stringContaining("Job description should be at least 30 characters"), status: 400 },
+      { error: expect.stringContaining("Job description should be at least 30 characters"), status: 400 },
+    ])
+    expect(await getDbCollection("computed_jobs_partners").distinct("partner_job_id")).toEqual(["bulk-valide"])
+  })
 })
 
 describe("PUT /jobs/:id", async () => {
@@ -824,5 +922,58 @@ describe("POST /v3/jobs/:id/stats/detail_view", () => {
 
     expect(response.statusCode).toBe(200)
     expect((await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.stats_postuler).toBe(1)
+  })
+})
+
+describe("POST /v3/jobs/stats/search_view", () => {
+  const googlebotSmartphone =
+    "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.7390.122 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+  const chrome = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+
+  const lbaJob = generateJobsPartnersOfferPrivate({ _id: new ObjectId(), partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA })
+  const partnerJob = generateJobsPartnersOfferPrivate({ _id: new ObjectId(), partner_label: "Hellowork" })
+  const notDisplayedJob = generateJobsPartnersOfferPrivate({ _id: new ObjectId(), partner_label: "Hellowork" })
+
+  beforeEach(async () => {
+    await getDbCollection("jobs_partners").insertMany([lbaJob, partnerJob, notDisplayedJob])
+  })
+
+  const postSearchView = (userAgent: string | undefined) =>
+    httpClient().inject({
+      method: "POST",
+      path: "/api/v3/jobs/stats/search_view",
+      headers: { "user-agent": userAgent },
+      body: [lbaJob._id.toString(), partnerJob._id.toString()],
+    })
+  const getSearchViewCounts = async () => {
+    const jobs = await getDbCollection("jobs_partners")
+      .find({}, { projection: { stats_search_view: 1 } })
+      .toArray()
+    return Object.fromEntries(jobs.map((job) => [job._id.toString(), job.stats_search_view]))
+  }
+
+  it("incrémente les offres LBA et partenaires envoyées, et elles seules, pour un navigateur", async () => {
+    const response = await postSearchView(chrome)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getSearchViewCounts()).toEqual({
+      [lbaJob._id.toString()]: 1,
+      [partnerJob._id.toString()]: 1,
+      [notDisplayedJob._id.toString()]: 0,
+    })
+  })
+
+  it("répond 200 sans incrémenter les compteurs pour un robot", async () => {
+    const response = await postSearchView(googlebotSmartphone)
+
+    expect(response.statusCode).toBe(200)
+    expect(Object.values(await getSearchViewCounts())).toEqual([0, 0, 0])
+  })
+
+  it("répond 200 sans incrémenter les compteurs sans user-agent", async () => {
+    const response = await postSearchView(undefined)
+
+    expect(response.statusCode).toBe(200)
+    expect(Object.values(await getSearchViewCounts())).toEqual([0, 0, 0])
   })
 })

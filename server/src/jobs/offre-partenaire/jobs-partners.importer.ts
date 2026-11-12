@@ -1,7 +1,9 @@
 import type { CronDef } from "job-processor"
 import { processEtudiant } from "@/jobs/offre-partenaire/etudiant/process-etudiant"
+import type { FluxImportOptions } from "@/jobs/offre-partenaire/import-flux-if-changed"
 import { processApec } from "./apec/process-apec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./clever-connect/process-clever-connect"
+import { buildDaytimeRefreshCrons } from "./daytime-refresh-cycle"
 // import { processEngagementJeunes } from "./engagement-jeunes/import-engagement-jeunes"
 import { processDecathlon } from "./decathlon/import-decathlon"
 import { processEdf } from "./edf/process-edf"
@@ -19,8 +21,13 @@ import { processLinkedin } from "./linkedin/process-linkedin"
 import { processPass } from "./pass/process-pass"
 import { processComputedAndImportToJobPartners } from "./process-job-partners"
 import { processMissingRomeAndImportToJobPartners } from "./process-missing-rome-and-import-to-job-partners"
+import { processNeverValidatedJobPartners } from "./process-never-validated-jobs-partners"
 import { processRhAlternance } from "./rh-alternance/process-rh-alternance"
 import { JOB_PARTNERS_DIGEST_JOB_NAME, sendJobPartnersNightlyDigest } from "./send-job-partners-nightly-digest"
+
+// Le run de nuit reconstruit toujours, même un flux inchangé (cf. FluxImportOptions). L'appel explicite
+// évite aussi de recevoir l'AbortSignal que job-processor passe en premier argument du handler.
+const nightly = (process: (options: FluxImportOptions) => Promise<unknown>) => () => process({ skipIfUnchanged: false })
 
 const timings = {
   import_source: "0 0 * * *",
@@ -28,8 +35,11 @@ const timings = {
   // 24 h/24 : les offres dont le romage échoue au nightly (00h35) sont reprises sans attendre le
   // matin (848 offres le 02/09/2026, 1 907 le 29/08, servies depuis cache_diagoriente en 2 à 3 s).
   // Le job pose son verrou (currently_processed_id) et n'importe que son périmètre, comme le cron
-  // API `*/5`.
+  // API `*/5`. Seules les offres sorties d'une chaîne complète sont reprises, cf. buildMissingRomeSelectionFilter.
   process_missing_rome: "*/15 * * * *",
+  // Hors 00h00–02h00 (run de nuit, fenêtre de MEP). Les offres de moins de 2 h sont ignorées, cf.
+  // NEVER_VALIDATED_MIN_AGE_MS.
+  process_never_validated: "30 2-23 * * *",
 }
 
 export const importers: Record<string, CronDef> = {
@@ -42,7 +52,7 @@ export const importers: Record<string, CronDef> = {
   },
   "Import Hellowork": {
     cron_string: timings.import_source,
-    handler: processHellowork,
+    handler: nightly(processHellowork),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
@@ -63,35 +73,35 @@ export const importers: Record<string, CronDef> = {
   },
   "Import Meteojob": {
     cron_string: timings.import_source,
-    handler: processMeteojob,
+    handler: nightly(processMeteojob),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
   "Import Kelio": {
     cron_string: timings.import_source,
-    handler: processKelio,
+    handler: nightly(processKelio),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
   "Import La Poste": {
     cron_string: timings.import_source,
-    handler: processLaposte,
+    handler: nightly(processLaposte),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
   "Import Le bon coin emploi": {
     cron_string: timings.import_source,
-    handler: processLeboncoin,
+    handler: nightly(processLeboncoin),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
   "Import Jobteaser": {
     cron_string: timings.import_source,
-    handler: processJobteaser,
+    handler: nightly(processJobteaser),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
@@ -105,31 +115,31 @@ export const importers: Record<string, CronDef> = {
   // },
   "Import PASS": {
     cron_string: timings.import_source,
-    handler: processPass,
+    handler: nightly(processPass),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Atlas": {
     cron_string: timings.import_source,
-    handler: processAtlas,
+    handler: nightly(processAtlas),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Vite un emploi": {
     cron_string: timings.import_source,
-    handler: processViteUnEmploi,
+    handler: nightly(processViteUnEmploi),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Nos Talents Nos Emplois": {
     cron_string: timings.import_source,
-    handler: processNosTalentsNosEmplois,
+    handler: nightly(processNosTalentsNosEmplois),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Toulouse Metropole": {
     cron_string: timings.import_source,
-    handler: processToulouseMetropole,
+    handler: nightly(processToulouseMetropole),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
@@ -141,31 +151,31 @@ export const importers: Record<string, CronDef> = {
   // },
   "Import Decathlon": {
     cron_string: timings.import_source,
-    handler: processDecathlon,
+    handler: nightly(processDecathlon),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import EDF": {
     cron_string: timings.import_source,
-    handler: processEdf,
+    handler: nightly(processEdf),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import Enedis": {
     cron_string: timings.import_source,
-    handler: processEnedis,
+    handler: nightly(processEnedis),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import APEC": {
     cron_string: timings.import_source,
-    handler: processApec,
+    handler: nightly(processApec),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
   "Import LinkedIn": {
     cron_string: timings.import_source,
-    handler: processLinkedin,
+    handler: nightly(processLinkedin),
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
@@ -190,17 +200,31 @@ export const importers: Record<string, CronDef> = {
     resumable: true,
   },
 
+  "Rattrapage des offres flux jamais validées": {
+    cron_string: timings.process_never_validated,
+    handler: processNeverValidatedJobPartners,
+    checkinMargin: 30,
+    maxRuntimeInMinutes: 60,
+    tag: "slave",
+    resumable: true,
+  },
+
+  // Déclarés ici pour que le bilan quotidien les couvre (cf. getJobPartnersNightlyJobNames).
+  ...buildDaytimeRefreshCrons(),
+
   // Keep at the end
   "Process computed and import to Jobs Partners": {
     cron_string: timings.process_computed,
     handler: processComputedAndImportToJobPartners,
     checkinMargin: 350,
-    maxRuntimeInMinutes: 300,
+    // Seuil de timeout du moniteur Sentry, pas une limite d'exécution. Mesuré sur 91 nuits : 26 min en moyenne, 40 au pire ;
+    // plus du double du pire cas pour ne pas alerter sur une nuit chargée, et signaler un run bloqué bien avant le bilan de 05h30.
+    maxRuntimeInMinutes: 90,
     tag: "slave",
     resumable: true,
   },
 
-  // Bilan unique des jobs ci-dessus, envoyé une fois le pire cas (5h de "Process computed...") passé
+  // Bilan unique des jobs ci-dessus, envoyé bien après la fin attendue de "Process computed..." (cf. son maxRuntimeInMinutes)
   [JOB_PARTNERS_DIGEST_JOB_NAME]: {
     cron_string: "30 5 * * *",
     handler: sendJobPartnersNightlyDigest,

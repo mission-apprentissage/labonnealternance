@@ -1,8 +1,8 @@
 import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
@@ -13,7 +13,7 @@ import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink } from "@/services/app-links.service"
-import { changeJobsPartnersStatus } from "@/services/job-partner-status.service"
+import { changeJobsPartnersStatus, JOB_AUTO_CLOSURE_ORIGIN } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 
 const getReminderCompanyName = ({
@@ -64,7 +64,7 @@ const sendExpirationEmails = async (expiredJobs: IJobsPartnersOfferPrivate[]) =>
           establishment_raison_sociale: getReminderCompanyName(firstJob),
           offres: jobsGroup.map((job) => ({
             job_title: job.offer_title,
-            cloturer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+            cloturer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
           })),
           publicEmail: config.publicEmail,
         },
@@ -87,8 +87,8 @@ export const expireJobsPartners = async () => {
 
   const result = await changeJobsPartnersStatus(filter, {
     status: JOB_STATUS_ENGLISH.ANNULEE,
-    reason: "offre expirée (date dépassée)",
-    grantedBy: "expire-jobs-partners",
+    reason: `${JOB_PARTNER_BUSINESS_ERROR.EXPIRED} (date dépassée)`,
+    grantedBy: JOB_AUTO_CLOSURE_ORIGIN.EXPIRATION,
     date: now,
   })
   logger.info(`expireJobsPartners: ${result.modifiedCount} offres expirées`)
