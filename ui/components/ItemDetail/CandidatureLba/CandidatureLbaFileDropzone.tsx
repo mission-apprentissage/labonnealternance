@@ -11,6 +11,9 @@ import { LiveStatus } from "@/app/_components/LiveStatus"
 const CONFIRMATION_READ_DELAY_IN_MS = 2500
 // En deçà, le message de chargement serait aussitôt remplacé par la confirmation sans avoir été lu.
 const LOADING_ANNOUNCE_DELAY_IN_MS = 300
+// Une alerte réaffectée au même texte ne modifie pas le DOM et n'est pas relue : elle est vidée puis remplie
+// après ce délai, laissé assez long pour que le navigateur publie l'état vide.
+const ALERT_RESET_DELAY_IN_MS = 100
 
 export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState<{ applicant_attachment_name: string; applicant_attachment_content: string | ArrayBuffer } | null>(
@@ -43,6 +46,11 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     setConfirmedFileName(null)
     setFileValue(null)
     setFileData(null)
+  }
+
+  const showUnacceptedFileMessage = () => {
+    setShowUnacceptedFileMessages(false)
+    setTimeout(() => setShowUnacceptedFileMessages(true), ALERT_RESET_DELAY_IN_MS)
   }
 
   const hasSelectedFile = () => {
@@ -85,7 +93,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
       applicant_attachment_name = files[0].name
       reader.readAsDataURL(files[0])
     } else {
-      setShowUnacceptedFileMessages(true)
+      showUnacceptedFileMessage()
       setFileData(null)
     }
   }
@@ -105,7 +113,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     maxFiles: 1,
     onDropRejected(fileRejections) {
       const [fileRejection] = fileRejections
-      setShowUnacceptedFileMessages(true)
+      showUnacceptedFileMessage()
       const { errors, file } = fileRejection ?? {}
       const [error] = errors
       const { message } = error ?? {}
@@ -138,7 +146,8 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   useEffect(() => {
     if (pendingFocusRef.current === "remove" && shownFileName) {
       pendingFocusRef.current = null
-      removeButtonRef.current?.focus()
+      // Pendant le délai de lecture, l'utilisateur a pu passer à un autre champ : ne pas l'en déloger (RGAA 12.8)
+      if (!document.activeElement?.matches("input, textarea, select, button, a[href]")) removeButtonRef.current?.focus()
     } else if (pendingFocusRef.current === "input" && !shownFileName) {
       pendingFocusRef.current = null
       inputRef.current?.focus()
