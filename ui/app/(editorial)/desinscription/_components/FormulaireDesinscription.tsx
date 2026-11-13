@@ -21,8 +21,7 @@ import { publicConfig } from "@/config.public"
 import { Warning } from "@/theme/components/icons"
 import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
-
-const REASON_AUTRE = "Autre"
+import { type IUnsubscribeFormValues, REASON_AUTRE, toUnsubscribeBody } from "./unsubscribe-body"
 
 const unsubscribeReasons = [
   "Nous avons déjà trouvé nos alternants pour l’année en cours",
@@ -34,15 +33,6 @@ const unsubscribeReasons = [
   "L’entreprise est fermée",
   REASON_AUTRE,
 ]
-
-type IUnsubscribeFormValues = { email: string; reason: string; reason_detail: string }
-
-// Le champ de précision n'est affiché qu'avec « Autre » : une saisie faite avant de changer de motif n'est pas envoyée.
-const toUnsubscribeBody = ({ email, reason, reason_detail }: IUnsubscribeFormValues) => ({
-  email,
-  reason,
-  reason_detail: reason === REASON_AUTRE ? reason_detail : undefined,
-})
 
 // Reprend la taille des h2 de DepotSimplifieStyling, qui ne s'applique pas à un <p>
 const sousTitreSx = { fontSize: { xs: "16px", lg: "24px" }, lineHeight: { xs: "24px", lg: "32px" } }
@@ -122,6 +112,7 @@ const ConfirmationDesinscription = ({
   }
 
   const handleSubmit = () => {
+    if (isSubmitting) return
     setHasSubmitAttempt(true)
     if (!selectedSirets.length) {
       fieldsetRef.current?.querySelector<HTMLInputElement>("input")?.focus()
@@ -133,7 +124,7 @@ const ConfirmationDesinscription = ({
   return (
     <ModalReadOnly isOpen={isOpen} onClose={handleClose} ariaLabelledBy={titleId}>
       <Box sx={{ p: fr.spacing("6v") }}>
-        <Typography id={titleId} variant="h3" sx={{ mb: fr.spacing("6v") }}>
+        <Typography id={titleId} variant="h3" component="h2" sx={{ mb: fr.spacing("6v") }}>
           Plusieurs établissements correspondent à cet e-mail
         </Typography>
         <Box>
@@ -162,8 +153,13 @@ const ConfirmationDesinscription = ({
 
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Checkbox options={[{ label: "Tout sélectionner", nativeInputProps: { checked: areAllSelected, onChange: toggleSelectAll } }]} />
-            {!isSubmitting ? <Button onClick={handleSubmit}>Déréférencer</Button> : <CircularProgress />}
+            {/* aria-disabled plutôt que disabled : un bouton désactivé perd le focus (RGAA 12.8). */}
+            <Button onClick={handleSubmit} nativeButtonProps={{ "aria-disabled": isSubmitting }}>
+              {isSubmitting && <CircularProgress aria-hidden="true" sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+              Déréférencer
+            </Button>
           </Box>
+          <LiveStatus message={isSubmitting ? "Envoi en cours" : ""} />
         </Box>
       </Box>
     </ModalReadOnly>
@@ -343,8 +339,21 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
               )}
 
               <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("6v") }}>
-                {!isSubmitting ? <Button type="submit">Confirmer</Button> : <CircularProgress />}
+                {/* cf. le bouton « Déréférencer » de ConfirmationDesinscription */}
+                <Button
+                  type="submit"
+                  nativeButtonProps={{
+                    "aria-disabled": isSubmitting,
+                    onClick: (event) => {
+                      if (isSubmitting) event.preventDefault()
+                    },
+                  }}
+                >
+                  {isSubmitting && <CircularProgress aria-hidden="true" sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />}
+                  Confirmer
+                </Button>
               </Box>
+              <LiveStatus message={isSubmitting ? "Envoi en cours" : ""} />
             </form>
           </FormikContext>
         </Box>
