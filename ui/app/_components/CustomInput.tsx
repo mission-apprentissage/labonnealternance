@@ -11,7 +11,7 @@ import { Warning } from "@/theme/components/icons"
 
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
-  const { hideAsterisk: _hideAsterisk, requiredMention: _requiredMention, ...inputProps } = props
+  const { hideAsterisk: _hideAsterisk, requiredMention: _requiredMention, mention, ...inputProps } = props
   const hasError = Boolean(meta.error && meta.touched && (props.required !== false || field.value))
   const required = props.required ?? true
   // Association explicite label ↔ input et input ↔ message d'erreur (RGAA) : FormLabel/Input sont ici
@@ -21,8 +21,9 @@ const CustomInput = (props) => {
   const inputId = props.id ?? generatedId
   const errorId = `${inputId}-error`
   const hintId = `${inputId}-hint`
-  // L'indication (format attendu…) et le message d'erreur sont tous deux lus avec le champ (RGAA 11.10)
-  const describedBy = [props.info ? hintId : null, hasError ? errorId : null, props["aria-describedby"]].filter(Boolean).join(" ") || undefined
+  const mentionId = `${inputId}-mention`
+  // L'indication (format attendu…), le message d'erreur et la mention sont lus avec le champ (RGAA 11.10)
+  const describedBy = [props.info ? hintId : null, hasError ? errorId : null, mention ? mentionId : null, props["aria-describedby"]].filter(Boolean).join(" ") || undefined
   return (
     <Box
       sx={[
@@ -88,6 +89,13 @@ const CustomInput = (props) => {
               {meta.error?.includes("déjà associé") && <DsfrLink href="/espace-pro/authentification">Connexion</DsfrLink>}
             </Box>
           ))}
+        {mention && (
+          <Box className={fr.cx("fr-messages-group")} sx={{ mt: fr.spacing("3v") }}>
+            <Box component="p" id={mentionId} className={fr.cx("fr-message", "fr-message--info")} sx={{ m: 0 }}>
+              <span>{mention}</span>
+            </Box>
+          </Box>
+        )}
       </FormControl>
     </Box>
   )

@@ -1,8 +1,9 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Alert, Box, CircularProgress, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Formik } from "formik"
 import { useRef } from "react"
@@ -13,10 +14,10 @@ import type { HandiEngagement } from "shared/models/referentiel-engagement-entre
 import { HANDI_ENGAGEMENT_VALUES } from "shared/models/referentiel-engagement-entreprise.model"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
+import { AccountFormHeading, FormSection } from "@/app/_components/FormSection"
 import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
-import { InformationHandiEngagement } from "@/app/(espace-pro-creation-compte)/_components/InformationHandiEngagement"
-import { HandiEngagementSelect } from "@/app/(espace-pro)/_components/HandiEngagementSelect"
+import { HandiEngagementSection } from "@/app/(espace-pro)/_components/HandiEngagementSection"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
@@ -91,6 +92,9 @@ export default function CompteRenderer() {
     return <LoadingEmptySpace label="Chargement en cours" />
   }
 
+  const isAccountWithEstablishment = data.type === AUTHTYPE.ENTREPRISE || data.type === AUTHTYPE.CFA
+  const contactVariant = data.type === AUTHTYPE.ENTREPRISE ? "recruteur" : data.type === AUTHTYPE.CFA ? "cfa" : "default"
+
   return (
     <>
       <Formik
@@ -153,51 +157,34 @@ export default function CompteRenderer() {
           return (
             <>
               <ModificationCompteEmail {...ModificationEmailPopup} />
+              <AccountFormHeading title="Vos informations de contact" />
               <form ref={formRef} onSubmit={handleSubmit} noValidate>
                 <TwoColumnFormLayout
-                  left={
+                  aside={isAccountWithEstablishment && <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} />}
+                  content={
                     <>
-                      <Typography
-                        component="h2"
-                        sx={{ fontWeight: 700, fontSize: { xs: "24px !important", md: "32px !important" }, lineHeight: { xs: "32px !important", md: "40px !important" } }}
-                      >
-                        Vos informations de contact
-                      </Typography>
-                      <Typography
-                        sx={{
-                          mt: fr.spacing("2v"),
-                          fontSize: "20px",
-                        }}
-                      >
-                        {user.type === AUTHTYPE.ENTREPRISE
-                          ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
-                          : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
-                      </Typography>
-                      {user.type === AUTHTYPE.CFA && (
-                        <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>
+                      <FormSection title="1. Vos informations de contact">
+                        <Typography sx={{ mb: fr.spacing("6v") }}>
+                          {user.type === AUTHTYPE.CFA
+                            ? "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires. Vous recevrez les candidatures sur l'e-mail enregistré."
+                            : "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l'e-mail enregistré."}
+                        </Typography>
+                        <ContactInfoFields variant={contactVariant} showRequiredMention={false} />
+                      </FormSection>
+                      {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
+                        <HandiEngagementSection
+                          title="2. Engagez-vous en faveur de l'emploi des personnes en situation de handicap"
+                          name="handiEngagement"
+                          onChange={(newValue) => setFieldValue("handiEngagement", newValue)}
+                          value={values.handiEngagement as HandiEngagement | ""}
+                          disabled={isHandiEngagementLocked}
+                        />
                       )}
-                      <Box sx={{ mt: fr.spacing("6v") }}>
-                        <ContactInfoFields />
-                        {userMutation.isError && (
-                          <Alert sx={{ mb: fr.spacing("4v") }} severity="error">
-                            La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement.
-                          </Alert>
-                        )}
-                        {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
-                          <HandiEngagementSelect
-                            name="handiEngagement"
-                            onChange={(newValue) => setFieldValue("handiEngagement", newValue)}
-                            value={values.handiEngagement as HandiEngagement | ""}
-                            disabled={isHandiEngagementLocked}
-                          />
-                        )}
-                      </Box>
-                    </>
-                  }
-                  right={
-                    <>
-                      <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
-                      {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && !isHandiEngagementLocked && <InformationHandiEngagement />}
+                      {userMutation.isError && (
+                        <Box sx={{ mt: fr.spacing("6v") }}>
+                          <Alert severity="error" small description="La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement." />
+                        </Box>
+                      )}
                     </>
                   }
                   buttons={

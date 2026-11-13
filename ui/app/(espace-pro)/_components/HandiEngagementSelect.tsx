@@ -18,7 +18,7 @@ export const HandiEngagementSelect = ({ name, onChange, value, disabled = false 
 
   return (
     <Select
-      label="Valoriser mon engagement pour l’emploi des personnes en situation de handicap"
+      label="Souhaitez-vous valoriser l'engagement de votre entreprise pour l'emploi des personnes en situation de handicap ?"
       hint="Nous transmettons vos coordonnées à France Travail pour qu'un conseiller puisse vous recontacter."
       disabled={disabled}
       // Pas de `required` natif : on ne veut pas de la bulle de validation HTML5 flottante du navigateur au
@@ -32,8 +32,8 @@ export const HandiEngagementSelect = ({ name, onChange, value, disabled = false 
       <option value="" hidden>
         Sélectionnez une option
       </option>
-      <option value="oui">Oui, je souhaite valoriser l’engagement de mon entreprise</option>
-      <option value="non">Non, je ne souhaite pas m’engager</option>
+      <option value="oui">Oui, je souhaite m'engager</option>
+      <option value="non">Non, je ne souhaite pas m'engager</option>
     </Select>
   )
 }
