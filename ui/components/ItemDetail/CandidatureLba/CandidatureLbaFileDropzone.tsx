@@ -9,6 +9,11 @@ import { LiveStatus } from "@/app/_components/LiveStatus"
 // Le passage du focus sur « supprimer » coupe la lecture en cours : il attend que la confirmation
 // d'ajout, émise pendant que le focus est encore sur le champ, ait pu être lue.
 const CONFIRMATION_READ_DELAY_IN_MS = 2500
+// En deçà, le message de chargement serait aussitôt remplacé par la confirmation sans avoir été lu.
+const LOADING_ANNOUNCE_DELAY_IN_MS = 300
+// Une alerte réaffectée au même texte ne modifie pas le DOM et n'est pas relue : elle est vidée puis remplie
+// après ce délai, laissé assez long pour que le navigateur publie l'état vide.
+const ALERT_RESET_DELAY_IN_MS = 100
 
 export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState<{ applicant_attachment_name: string; applicant_attachment_content: string | ArrayBuffer } | null>(
@@ -23,12 +28,25 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   // le renvoie sur « Fermer » (RGAA 12.8).
   const pendingFocusRef = useRef<"remove" | "input" | null>(null)
   const [confirmedFileName, setConfirmedFileName] = useState<string | null>(null)
+  const [removedFileName, setRemovedFileName] = useState<string | null>(null)
+  // Annoncé après le retour du focus sur le champ : émise avant, l'alerte serait coupée par la lecture du champ.
+  const pendingRemovedFileNameRef = useRef<string | null>(null)
+  const [isLoadingAnnounced, setIsLoadingAnnounced] = useState(false)
+  const loadingAnnounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => clearTimeout(loadingAnnounceTimeoutRef.current), [])
 
   const onRemoveFile = () => {
     pendingFocusRef.current = "input"
+    pendingRemovedFileNameRef.current = fileData?.applicant_attachment_name ?? null
     setConfirmedFileName(null)
     setFileValue(null)
     setFileData(null)
+  }
+
+  const showUnacceptedFileMessage = () => {
+    setShowUnacceptedFileMessages(false)
+    setTimeout(() => setShowUnacceptedFileMessages(true), ALERT_RESET_DELAY_IN_MS)
   }
 
   const hasSelectedFile = () => {
@@ -39,6 +57,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     const reader = new FileReader()
     let applicant_attachment_name: string | null = null
     let isLoaded = false
+    setRemovedFileName(null)
 
     reader.onload = (e) => {
       isLoaded = true
@@ -51,9 +70,12 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     reader.onloadstart = () => {
       setFileLoading(true)
       setShowUnacceptedFileMessages(false)
+      loadingAnnounceTimeoutRef.current = setTimeout(() => setIsLoadingAnnounced(true), LOADING_ANNOUNCE_DELAY_IN_MS)
     }
 
     reader.onloadend = () => {
+      clearTimeout(loadingAnnounceTimeoutRef.current)
+      setIsLoadingAnnounced(false)
       setTimeout(
         () => {
           setFileLoading(false)
@@ -67,7 +89,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
       applicant_attachment_name = files[0].name
       reader.readAsDataURL(files[0])
     } else {
-      setShowUnacceptedFileMessages(true)
+      showUnacceptedFileMessage()
       setFileData(null)
     }
   }
@@ -75,6 +97,8 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   // noKeyboard : c'est l'input natif, étiqueté, qui reçoit le focus, et non la racine du dropzone (role="presentation")
   const { getRootProps, getInputProps, isDragActive, inputRef } = useDropzone({
     noKeyboard: true,
+    // multiple vaut true par défaut, maxFiles ne le retire pas : le champ serait annoncé « Sélectionner des fichiers »
+    multiple: false,
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
@@ -85,7 +109,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     maxFiles: 1,
     onDropRejected(fileRejections) {
       const [fileRejection] = fileRejections
-      setShowUnacceptedFileMessages(true)
+      showUnacceptedFileMessage()
       const { errors, file } = fileRejection ?? {}
       const [error] = errors
       const { message } = error ?? {}
@@ -118,10 +142,13 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   useEffect(() => {
     if (pendingFocusRef.current === "remove" && shownFileName) {
       pendingFocusRef.current = null
-      removeButtonRef.current?.focus()
+      // Pendant le délai de lecture, l'utilisateur a pu passer à un autre champ : ne pas l'en déloger (RGAA 12.8)
+      if (!document.activeElement?.matches("input, textarea, select, button, a[href]")) removeButtonRef.current?.focus()
     } else if (pendingFocusRef.current === "input" && !shownFileName) {
       pendingFocusRef.current = null
       inputRef.current?.focus()
+      setRemovedFileName(pendingRemovedFileNameRef.current)
+      pendingRemovedFileNameRef.current = null
     }
   }, [shownFileName, inputRef])
 
@@ -133,11 +160,11 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const errorId = `${inputId}-error`
   const describedBy = [hintId, showUnacceptedFileMessages && formatErrorId, mandatoryFileError && errorId].filter(Boolean).join(" ")
 
-  const fileStatus = fileLoading && !confirmedFileName ? "Chargement du fichier en cours" : ""
+  const fileStatus = confirmedFileName ? `Pièce jointe ${confirmedFileName} ajoutée` : isLoadingAnnounced ? "Chargement du fichier en cours" : ""
   const fileAlert = showUnacceptedFileMessages
     ? "Le fichier n'est pas au bon format (autorisé : .docx ou .pdf, moins de 3 Mo, 1 fichier maximum)"
-    : confirmedFileName
-      ? `Pièce jointe ${confirmedFileName} ajoutée`
+    : removedFileName
+      ? `Pièce jointe ${removedFileName} supprimée`
       : ""
 
   return (
@@ -175,7 +202,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
                   },
                 }}
               >
-                supprimer<span className={fr.cx("fr-sr-only")}> la pièce jointe {fileData.applicant_attachment_name}</span>
+                supprimer<span className={fr.cx("fr-sr-only")}> la pièce jointe</span>
               </Button>
             }
           </Box>
@@ -188,12 +215,16 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
               onClick={(e) => e.stopPropagation()}
               sx={{ display: "block", cursor: "pointer", fontSize: "16px", lineHeight: "24px", fontWeight: 700, color: hasError ? "error.main" : "grey.700", mb: fr.spacing("3v") }}
             >
-              Chargez votre CV ou déposez-le ici <span style={{ color: "#ce0500" }}>*</span>
+              {/* l'obligation est portée par required */}
+              Chargez votre CV ou déposez-le ici{" "}
+              <span aria-hidden="true" style={{ color: "#ce0500" }}>
+                *
+              </span>
             </Typography>
             <Typography id={hintId} sx={{ fontSize: "12px", lineHeight: "20px", color: "grey.700", mb: fr.spacing("4v") }}>
               Le CV doit être au format PDF ou Docx et ne doit pas dépasser 3 Mo
             </Typography>
-            <input {...getInputProps({ id: inputId, tabIndex: 0, "aria-describedby": describedBy, "aria-invalid": hasError })} style={{ display: "block" }} />
+            <input {...getInputProps({ id: inputId, tabIndex: 0, required: true, "aria-describedby": describedBy, "aria-invalid": hasError })} style={{ display: "block" }} />
             {fileLoading && (
               <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row", mt: fr.spacing("2v") }}>
                 {!confirmedFileName && <CircularProgress size={14} />}
