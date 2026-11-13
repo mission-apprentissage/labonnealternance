@@ -31,7 +31,11 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [isLoadingAnnounced, setIsLoadingAnnounced] = useState(false)
   const loadingAnnounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useEffect(() => () => clearTimeout(loadingAnnounceTimeoutRef.current), [])
+  useEffect(() => {
+    return () => {
+      if (loadingAnnounceTimeoutRef.current) clearTimeout(loadingAnnounceTimeoutRef.current)
+    }
+  }, [])
 
   const onRemoveFile = () => {
     pendingFocusRef.current = "input"
