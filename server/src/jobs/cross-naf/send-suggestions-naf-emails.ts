@@ -1,5 +1,4 @@
 import { ObjectId } from "mongodb"
-import dayjs from "shared/helpers/dayjs"
 import { EMAIL_LOG_TYPE } from "shared/models/applicant-email-log.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { SEARCH_PAGE_PATH } from "shared/utils/search-url-compat"
@@ -15,6 +14,7 @@ import mailer from "@/services/mailer.service"
 import type { SuggestionsNafApplicantWithSuggestions, SuggestionsNafSuggestion, SuggestionsNafTargetWithSuggestions } from "./find-suggestions-naf-jobs"
 import { MAX_DISTANCE_KM, MIN_SUGGESTIONS } from "./find-suggestions-naf-jobs"
 import type { SuggestionsNafSourceJob } from "./find-suggestions-naf-targets"
+import { getContractsYear } from "./find-suggestions-naf-targets"
 
 // utm_campaign distingue les liens d'offres du lien vers la recherche.
 const UTM_CAMPAIGNS = {
@@ -60,8 +60,7 @@ const toEmailSuggestion = ({ sector, job }: SuggestionsNafSuggestion, contractsY
 })
 
 export const buildSuggestionsNafEmail = (applicant: Pick<SuggestionsNafApplicantWithSuggestions, "firstname">, target: SuggestionsNafTargetWithSuggestions, now = new Date()) => {
-  // Seule l'année civile précédente est affichée : l'année en cours est incomplète dans le référentiel.
-  const contractsYear = dayjs(now).tz("Europe/Paris").year() - 1
+  const contractsYear = getContractsYear(now)
   return {
     subject: `Votre métier ${target.rome_libelle} est recherché dans d'autres secteurs, tentez votre chance !`,
     data: {

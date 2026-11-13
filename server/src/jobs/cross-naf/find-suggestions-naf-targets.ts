@@ -1,4 +1,5 @@
 import type { ObjectId } from "mongodb"
+import dayjs from "shared/helpers/dayjs"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { IReferentielRomeNaf } from "shared/models/referentiel-rome-naf.model"
 
@@ -8,6 +9,9 @@ import type { SuggestionsNafApplicant } from "./find-suggestions-naf-applicants"
 import { MAX_APPLICATIONS, SUGGESTION_SOURCE_JOB_ORIGINS } from "./find-suggestions-naf-applicants"
 
 export const NAF_SUGGESTIONS_PER_ROME = 5
+
+// Année civile précédente : l'année en cours est incomplète dans le référentiel.
+export const getContractsYear = (now: Date) => dayjs(now).tz("Europe/Paris").year() - 1
 
 export type SuggestionsNafSector = Pick<IReferentielRomeNaf, "naf" | "naf_libelle" | "rang" | "contrats_par_annee">
 
@@ -59,11 +63,12 @@ const findAppliedJobs = async (applicants: SuggestionsNafApplicant[]) => {
   return new Map(jobs.map((job) => [job._id.toString(), job]))
 }
 
-// Chaque ROME perd au plus un NAF par candidature exclue : on lit assez de rangs pour en garder 5 ensuite.
-const findSectorsByRome = async (romes: string[]) => {
+// Seuls les secteurs avec des contrats l'année affichée dans l'email sont proposés, le nombre de contrats y servant de repère
+// de pertinence. Chaque ROME perd ensuite au plus un NAF par candidature exclue : on lit assez de rangs pour en garder 5.
+const findSectorsByRome = async (romes: string[], contractsYear: number) => {
   const rows = await getDbCollection("referentiel_rome_naf")
     .aggregate<RomeSectors>([
-      { $match: { rome: { $in: romes } } },
+      { $match: { rome: { $in: romes }, contrats_par_annee: { $elemMatch: { annee: contractsYear, n_contrats: { $gt: 0 } } } } },
       {
         $group: {
           _id: "$rome",
@@ -113,10 +118,11 @@ const buildTargetDrafts = (applicant: SuggestionsNafApplicant, appliedJobs: Map<
   return [...drafts.values()]
 }
 
-export const findSuggestionsNafTargets = async (applicants: SuggestionsNafApplicant[]): Promise<SuggestionsNafApplicantWithTargets[]> => {
+export const findSuggestionsNafTargets = async (applicants: SuggestionsNafApplicant[], now = new Date()): Promise<SuggestionsNafApplicantWithTargets[]> => {
   const appliedJobs = await findAppliedJobs(applicants)
   const draftsByApplicant = applicants.map((applicant) => buildTargetDrafts(applicant, appliedJobs))
-  const sectorsByRome = await findSectorsByRome([...new Set(draftsByApplicant.flatMap((drafts) => drafts.map(({ rome }) => rome)))])
+  const romes = [...new Set(draftsByApplicant.flatMap((drafts) => drafts.map(({ rome }) => rome)))]
+  const sectorsByRome = await findSectorsByRome(romes, getContractsYear(now))
 
   return applicants.map((applicant, index) => ({
     ...applicant,

@@ -7,12 +7,14 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
 import type { SuggestionsNafApplicant } from "./find-suggestions-naf-applicants"
-import { findSuggestionsNafTargets } from "./find-suggestions-naf-targets"
+import { findSuggestionsNafTargets, getContractsYear } from "./find-suggestions-naf-targets"
 
 const { OFFRES_EMPLOI_LBA, OFFRES_EMPLOI_PARTENAIRES, RECRUTEURS_LBA } = LBA_ITEM_TYPE
 
 const PARIS = { type: "Point" as const, coordinates: [2.347, 48.859] as [number, number] }
 const LYON = { type: "Point" as const, coordinates: [4.835, 45.764] as [number, number] }
+
+const CONTRACTS_YEAR = getContractsYear(new Date())
 
 const ROME_NAFS = {
   A1101: ["01.61Z", "01.11Z", "01.21Z", "01.50Z", "78.30Z", "01.13Z", "77.31Z", "01.24Z", "01.19Z"],
@@ -30,7 +32,7 @@ const seedReferentiel = async () => {
         naf,
         naf_libelle: `libellé ${naf}`,
         rang: index + 1,
-        contrats_par_annee: [{ annee: 2025, n_contrats: 10 }],
+        contrats_par_annee: [{ annee: CONTRACTS_YEAR, n_contrats: 10 }],
         created_at: now,
         updated_at: now,
       }))
@@ -88,7 +90,7 @@ describe("findSuggestionsNafTargets", () => {
           naf,
           naf_libelle: `libellé ${naf}`,
           rang: ROME_NAFS.A1101.indexOf(naf) + 1,
-          contrats_par_annee: [{ annee: 2025, n_contrats: 10 }],
+          contrats_par_annee: [{ annee: CONTRACTS_YEAR, n_contrats: 10 }],
         })),
       },
     ])
@@ -147,6 +149,16 @@ describe("findSuggestionsNafTargets", () => {
     expect(targets).toHaveLength(1)
     expect(targets[0]).toMatchObject({ source_application_id: applicant.applications[1]._id, source_geopoint: PARIS })
     expect(targets[0].sectors.map(({ naf }) => naf)).toEqual(["01.21Z", "01.50Z", "78.30Z", "01.13Z", "77.31Z"])
+  })
+
+  it("écarte les secteurs sans contrat l'année affichée dans l'email", async () => {
+    const referentiel = getDbCollection("referentiel_rome_naf")
+    await referentiel.updateOne({ rome: "A1101", naf: "01.61Z" }, { $set: { contrats_par_annee: [{ annee: CONTRACTS_YEAR, n_contrats: 0 }] } })
+    await referentiel.updateOne({ rome: "A1101", naf: "01.21Z" }, { $set: { contrats_par_annee: [{ annee: CONTRACTS_YEAR - 1, n_contrats: 10 }] } })
+    await referentiel.updateOne({ rome: "A1101", naf: "01.50Z" }, { $set: { contrats_par_annee: [] } })
+    const applicant = buildApplicant([{ job_id: await createJob(["A1101"], "01.11Z"), job_origin: OFFRES_EMPLOI_LBA }])
+
+    expect(await summarize(applicant)).toEqual([{ rome: "A1101", nafs: ["78.30Z", "01.13Z", "77.31Z", "01.24Z", "01.19Z"] }])
   })
 
   it("n'envoie rien sur un ROME dont tous les NAF ont été candidatés", async () => {
