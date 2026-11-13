@@ -431,9 +431,17 @@ export const getUserManagingOffer = async (offer: { managed_by?: ObjectId | null
   return user
 }
 
-const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) => {
-  const utmRecruiterData = "&utm_source=lba&utm_medium=email&utm_campaign=je-candidate-recruteur"
+const RECRUITER_EMAIL_UTM = { utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate-recruteur" }
 
+// Le suffixe de campagne distingue les liens du mail recruteur entre eux (ex. je-candidate-recruteur-faq).
+const withRecruiterEmailUtm = (url: string, campaignSuffix?: string) => {
+  const taggedUrl = new URL(url)
+  for (const [key, value] of Object.entries(RECRUITER_EMAIL_UTM)) taggedUrl.searchParams.set(key, value)
+  if (campaignSuffix) taggedUrl.searchParams.set("utm_campaign", `${RECRUITER_EMAIL_UTM.utm_campaign}-${campaignSuffix}`)
+  return taggedUrl.toString()
+}
+
+const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) => {
   let user: IUserWithAccount | undefined
   let jobPartnerLabel = ""
   let lbaJob: IJobsPartnersOfferPrivate | undefined
@@ -458,16 +466,19 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
     jobUrl: "",
     meetCandidateUrl: buildReplyLink(application, ApplicationIntention.ENTRETIEN, userForToken),
     refuseCandidateUrl: buildReplyLink(application, ApplicationIntention.REFUS, userForToken),
-    lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}-acces-recruteur`,
-    unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}-desinscription`,
-    lbaUrl: `${config.publicUrl}?${utmRecruiterData}-home`,
-    faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}-faq`,
+    lbaRecruiterUrl: withRecruiterEmailUtm(`${config.publicUrl}/acces-recruteur`, "acces-recruteur"),
+    unsubscribeUrl: withRecruiterEmailUtm(
+      `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}`,
+      "desinscription"
+    ),
+    lbaUrl: withRecruiterEmailUtm(config.publicUrl, "home"),
+    faqUrl: withRecruiterEmailUtm(`${config.publicUrl}/faq`, "faq"),
     cancelJobUrl: "",
     jobPartnerLabel,
   }
 
   if (application.job_id) {
-    urls.jobUrl = `${config.publicUrl}${buildJobUrlPath(application.job_origin, application.job_id.toString())}${utmRecruiterData}`
+    urls.jobUrl = withRecruiterEmailUtm(`${config.publicUrl}${buildJobUrlPath(application.job_origin, application.job_id.toString(), application.job_title ?? undefined)}`)
   }
 
   // Offre LBA gérée par un recruteur identifié : lien qui le connecte et ouvre la modale « Clôturer votre
@@ -480,7 +491,7 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
             establishment_id: buildEstablishmentId(user._id, lbaJob.workplace_siret),
             userType: lbaJob.is_delegated ? CFA : ENTREPRISE,
           })
-        : createCancelJobLink(userForToken, application.job_id.toString(), utmRecruiterData)
+        : createCancelJobLink(userForToken, application.job_id.toString(), RECRUITER_EMAIL_UTM)
   }
 
   return urls

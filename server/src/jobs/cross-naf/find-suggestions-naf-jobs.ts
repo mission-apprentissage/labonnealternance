@@ -1,0 +1,128 @@
+import type { ObjectId } from "mongodb"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+
+import type { SuggestionsNafApplicantWithTargets, SuggestionsNafSector, SuggestionsNafTarget } from "./find-suggestions-naf-targets"
+
+export const MAX_DISTANCE_KM = 100
+export const MIN_SUGGESTIONS = 2
+
+export type SuggestionsNafJob = Pick<
+  IJobsPartnersOfferPrivate,
+  | "_id"
+  | "partner_label"
+  | "offer_title"
+  | "workplace_name"
+  | "workplace_legal_name"
+  | "workplace_brand"
+  | "workplace_address_city"
+  | "workplace_address_label"
+  | "workplace_siret"
+  | "workplace_naf_label"
+> & { distance_km: number }
+
+export type SuggestionsNafSuggestion = { sector: SuggestionsNafSector; job: SuggestionsNafJob }
+
+export type SuggestionsNafTargetWithSuggestions = SuggestionsNafTarget & { suggestions: SuggestionsNafSuggestion[] }
+
+export type SuggestionsNafApplicantWithSuggestions = Omit<SuggestionsNafApplicantWithTargets, "targets"> & { targets: SuggestionsNafTargetWithSuggestions[] }
+
+// offres LBA, puis partenaires, puis recruteurs LBA. Sert au choix de l'offre de chaque secteur et à l'ordre
+// des offres dans l'email, où la distance ne fait que départager
+const PARTNER_JOB_PRIORITY = 1
+const JOB_PRIORITY: Partial<Record<string, number>> = { [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]: 0, [JOBPARTNERS_LABEL.RECRUTEURS_LBA]: 2 }
+const getJobPriority = (partnerLabel: string) => JOB_PRIORITY[partnerLabel] ?? PARTNER_JOB_PRIORITY
+
+const JOB_PROJECTION = {
+  _id: "$_id",
+  partner_label: "$partner_label",
+  offer_title: "$offer_title",
+  workplace_name: "$workplace_name",
+  workplace_legal_name: "$workplace_legal_name",
+  workplace_brand: "$workplace_brand",
+  workplace_address_city: "$workplace_address_city",
+  workplace_address_label: "$workplace_address_label",
+  workplace_siret: "$workplace_siret",
+  workplace_naf_label: "$workplace_naf_label",
+  distance_km: "$distance_km",
+}
+
+/**
+ * Meilleure offre de chaque secteur dans un rayon de 100 km autour de la candidature source, par priorité (cf. JOB_PRIORITY)
+ * puis distance, parmi les offres avec un email de candidature et hors offres déléguées à un CFA.
+ * Une offre active a une date d'expiration future, sauf les recruteurs LBA qui n'en ont pas (cf. getJobsPartnersFromDBForUI).
+ */
+const findBestJobBySector = async (target: SuggestionsNafTarget, excludedJobIds: ObjectId[]) => {
+  const rows = await getDbCollection("jobs_partners")
+    .aggregate<{ _id: string; job: SuggestionsNafJob }>([
+      {
+        $geoNear: {
+          near: target.source_geopoint,
+          key: "workplace_geopoint",
+          distanceField: "distance_km",
+          distanceMultiplier: 0.001,
+          maxDistance: MAX_DISTANCE_KM * 1000,
+          query: {
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            offer_rome_codes: target.rome,
+            workplace_naf_code: { $in: target.sectors.map(({ naf }) => naf) },
+            apply_email: { $ne: null },
+            is_delegated: { $ne: true },
+            _id: { $nin: excludedJobIds },
+            $or: [{ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { offer_expiration: { $gt: new Date() } }],
+          },
+        },
+      },
+      {
+        $addFields: {
+          priority: {
+            $switch: {
+              branches: Object.entries(JOB_PRIORITY).map(([label, priority]) => ({ case: { $eq: ["$partner_label", label] }, then: priority })),
+              default: PARTNER_JOB_PRIORITY,
+            },
+          },
+        },
+      },
+      { $group: { _id: "$workplace_naf_code", job: { $top: { sortBy: { priority: 1, distance_km: 1 }, output: JOB_PROJECTION } } } },
+    ])
+    .toArray()
+  return new Map(rows.map(({ _id, job }) => [_id, job]))
+}
+
+// Une offre n'est suggérée qu'une fois par candidat : un recruteur LBA multi-ROME pourrait sinon apparaître dans deux emails.
+const findTargetsSuggestions = async ({ targets, applications }: SuggestionsNafApplicantWithTargets) => {
+  const excludedJobIds = applications.flatMap(({ job_id }) => (job_id ? [job_id] : []))
+  const targetsWithSuggestions: SuggestionsNafTargetWithSuggestions[] = []
+  for (const target of targets) {
+    const jobsBySector = await findBestJobBySector(target, excludedJobIds)
+    // Tri stable : à priorité égale, l'ordre des secteurs (rang) est conservé.
+    const suggestions = target.sectors
+      .flatMap((sector) => {
+        const job = jobsBySector.get(sector.naf)
+        return job ? [{ sector, job }] : []
+      })
+      .sort((a, b) => getJobPriority(a.job.partner_label) - getJobPriority(b.job.partner_label))
+    excludedJobIds.push(...suggestions.map(({ job }) => job._id))
+    targetsWithSuggestions.push({ ...target, suggestions })
+  }
+  return targetsWithSuggestions
+}
+
+// Un candidat en erreur est écarté du run sans bloquer les autres. Sans log d'envoi, il reste repris par un rejeu de processSuggestionsNaf le jour même.
+export const findSuggestionsNafJobs = async (applicants: SuggestionsNafApplicantWithTargets[]): Promise<SuggestionsNafApplicantWithSuggestions[]> => {
+  const result: SuggestionsNafApplicantWithSuggestions[] = []
+  for (const applicant of applicants) {
+    try {
+      result.push({ ...applicant, targets: await findTargetsSuggestions(applicant) })
+    } catch (err) {
+      logger.error({ err, applicant_id: applicant._id.toString() }, "findSuggestionsNafJobs: échec de la recherche d'offres")
+      sentryCaptureException(err)
+    }
+  }
+  return result
+}
