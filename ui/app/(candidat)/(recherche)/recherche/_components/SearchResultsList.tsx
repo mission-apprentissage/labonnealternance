@@ -7,9 +7,11 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { isAutoRadiusWidening } from "shared/utils/auto-radius"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { pluralize } from "@/utils/strutils"
+import type { EmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
 import type { useSearchResults } from "../_hooks/use-search-results"
 import { useSearchViewNotifier } from "../_hooks/use-search-view-notifier"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
+import { EmploisModeFallback } from "./EmploisModeFallback"
 import { SearchHitCard } from "./SearchHitCard"
 
 type InfiniteResult = ReturnType<typeof useSearchResults>
@@ -23,6 +25,8 @@ interface SearchResultsListProps {
    * en usage normal.
    */
   scrollToHitId?: string | null
+  /** Proposition de bascule en mode emplois à l'état vide (cf. useEmploisFallbackCount). */
+  emploisFallback?: { count: EmploisFallbackCount; onSwitch: () => void }
 }
 
 function LoadingSkeletons() {
@@ -35,7 +39,7 @@ function LoadingSkeletons() {
   )
 }
 
-export function SearchResultsList({ result, params, scrollToHitId }: SearchResultsListProps) {
+export function SearchResultsList({ result, params, scrollToHitId, emploisFallback }: SearchResultsListProps) {
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = result
 
   const cardRefs = useRef(new Map<string, HTMLElement>())
@@ -120,6 +124,9 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
     // L'élargissement automatique du rayon (useAutoRadius) est encore en cours : l'état vide
     // ne s'affiche qu'une fois tous les paliers épuisés (100 km).
     if (isAutoRadiusWidening(params, 0)) return <LoadingSkeletons />
+    // Comptage en mode emplois en cours : l'état vide attend pour s'afficher en une fois.
+    if (emploisFallback?.count.status === "pending") return <LoadingSkeletons />
+    const fallbackCount = emploisFallback?.count.status === "done" ? emploisFallback.count.count : 0
 
     return (
       <Box sx={{ mt: fr.spacing("8v"), textAlign: "center" }}>
@@ -129,6 +136,7 @@ export function SearchResultsList({ result, params, scrollToHitId }: SearchResul
         <Typography sx={{ mt: fr.spacing("2v"), color: fr.colors.decisions.text.mention.grey.default }}>
           Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
         </Typography>
+        {emploisFallback && fallbackCount > 0 && <EmploisModeFallback count={fallbackCount} onSwitch={emploisFallback.onSwitch} />}
       </Box>
     )
   }
