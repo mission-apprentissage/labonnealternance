@@ -92,10 +92,10 @@ After any dependency bump: `yarn install` then `yarn dedupe --strategy highest` 
 
 ## CI/CD (`.github/workflows/`)
 
-- `ci.yml` is a reusable workflow (`workflow_call`), run by `preview.yml` on open PRs, `merge_queue.yml` on the merge queue and `release.yml` on push. Steps: `npm-packages-check` (`mna-npm-check`), then `yarn install --immutable`, `yarn dedupe --check`, `yarn typecheck`, `yarn check:ci`, MongoDB + mongot, `yarn test:ci`. Timeout 10 min. CI does **not** run `yarn build`.
+- `ci.yml` is a reusable workflow (`workflow_call`), run by `preview.yml` on open PRs, `merge_queue.yml` on the merge queue and `release.yml` on push. Steps: `npm-packages-check` (`mna-npm-check`), then dependencies through `.github/actions/install-dependencies` (`node_modules` restored from cache, `yarn install --immutable` only on a cache miss; the cache is saved from `main` only), `yarn dedupe --check`, `yarn typecheck`, `yarn check:ci`, MongoDB + mongot, `yarn test:ci`. Timeout 10 min. CI does **not** run `yarn build`.
 - `pr-title-check.yml`: PR title format. `perf_budget.yml`: UI bundle size budget.
 - `preview.yml` / `deploy_preview.yml` / `preview_cleanup.yml`: preview environments — a PR comment containing 🚀 deploys `https://<PR>.labonnealternance-preview.apprentissage.beta.gouv.fr/`.
-- `release.yml`: semantic-release (`yarn release`), then deployment through the reusable `_deploy.yml`. `codeql.yml`: security scanning.
+- `release.yml`: semantic-release (`yarn release`), whose `app:release` builds the server and both UI images (production and recette) in a single bake (`release` group of `docker-bake.json`), then deployment to recette through the reusable `_deploy.yml` (`skip_npm_check`, already run by the release). `_deploy.yml` installs only the `sentry-cli` binary, not the monorepo dependencies. `codeql.yml`: security scanning.
 - Pre-commit (`.husky/pre-commit`): `yarn lint-staged` (Biome on staged sources, `yarn dedupe` on `yarn.lock`), `preventSensibleFilesCommit.sh`, `yarn gitleaks:check`.
 
 ## Project Structure
