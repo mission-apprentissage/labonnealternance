@@ -130,13 +130,14 @@ jobs:
         with:
           node-version-file: .node-version
 
-      # Seule dépendance npm du job (cf. sentry-deploy-*.sh) : installée seule plutôt que tout le monorepo.
+      # Seule dépendance npm du job (cf. sentry-deploy-*.sh). Le paquet binaire de la plateforme n'a ni
+      # dépendance ni script : rien de non figé par yarn.lock ne s'exécute à côté de la clé GPG importée.
       - name: Install sentry-cli
         run: |
           version=$(awk '/^"@sentry\/cli@npm:/ { found = 1 } found && /^  version:/ { print $2; exit }' yarn.lock)
           [ -n "$version" ] || { echo "::error::Version de @sentry/cli introuvable dans yarn.lock"; exit 1; }
-          npm install --prefix "${RUNNER_TEMP}/sentry-cli" --no-save --no-audit --no-fund "@sentry/cli@${version}"
-          echo "SENTRY_CLI=${RUNNER_TEMP}/sentry-cli/node_modules/.bin/sentry-cli" >> "${GITHUB_ENV}"
+          npm install --prefix "${RUNNER_TEMP}/sentry-cli" --no-save --no-audit --no-fund --ignore-scripts "@sentry/cli-linux-x64@${version}"
+          echo "SENTRY_CLI=${RUNNER_TEMP}/sentry-cli/node_modules/@sentry/cli-linux-x64/bin/sentry-cli" >> "${GITHUB_ENV}"
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
