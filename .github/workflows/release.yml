@@ -160,7 +160,8 @@ jobs:
       - name: Server Docker Scout summary
         uses: docker/scout-action@e7e2a72bf1485d10a58f30696b6c513b261ce4fa # v1.29.0
         with:
-          command: quickview,recommendations,compare
+          # `recommendations` panique en v1.29.0 (nil pointer dans recommendations.genMk).
+          command: quickview,compare
           image: ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}
           to: ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.PREV_VERSION }}
           only-vex-affected: true
@@ -168,6 +169,7 @@ jobs:
           ignore-unchanged: true
 
       - name: Server Docker Upload SARIF result
+        if: ${{ !cancelled() && hashFiles('sarif-server.output.json') != '' }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: sarif-server.output.json
@@ -198,7 +200,7 @@ jobs:
       - name: UI Docker Scout summary
         uses: docker/scout-action@e7e2a72bf1485d10a58f30696b6c513b261ce4fa # v1.29.0
         with:
-          command: quickview,recommendations,compare
+          command: quickview,compare # cf. Server Docker Scout summary
           image: ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production
           to: ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.PREV_VERSION }}-production
           only-vex-affected: true
@@ -206,6 +208,7 @@ jobs:
           ignore-unchanged: true
 
       - name: UI Docker Upload SARIF result
+        if: ${{ !cancelled() && hashFiles('sarif-ui.output.json') != '' }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: sarif-ui.output.json
