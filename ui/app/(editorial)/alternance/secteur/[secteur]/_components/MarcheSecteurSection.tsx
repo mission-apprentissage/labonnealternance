@@ -2,17 +2,23 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { seoH2Sx, seoHrSx, seoSectionSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import type { ISeoSecteurJson } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/secteur.types"
-import { BarChartHorizontal } from "@/app/(editorial)/barometre/_components/BarChartHorizontal"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type Props = Pick<ISeoSecteurJson, "secteur" | "marche" | "job_count" | "total_job_count" | "company_count">
 
 const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value)
+const strongSx = { fontWeight: 700, color: fr.colors.decisions.text.default.info.default }
 
 export function MarcheSecteurSection({ secteur, marche, job_count, total_job_count, company_count }: Props) {
   if (!marche && !job_count) return null
 
   const part = job_count && total_job_count ? Math.round((job_count / total_job_count) * 100) : null
+  // La dernière barre de la comparaison est la référence (cf. modèle seo_secteurs).
+  const barres = marche?.comparaison?.barres ?? []
+  const reference = barres.at(-1)
+  const sources = [...(marche?.comparaison ? [marche.comparaison] : []), ...(marche?.faits ?? [])].filter(
+    (source, idx, all) => all.findIndex((s) => s.source_url === source.source_url) === idx
+  )
 
   return (
     <Box sx={seoSectionSx}>
@@ -20,43 +26,50 @@ export function MarcheSecteurSection({ secteur, marche, job_count, total_job_cou
         Alternance en <span style={{ color: fr.colors.decisions.text.default.info.default }}>{secteur}</span> : un secteur qui recrute ?
       </Typography>
       <Box aria-hidden="true" component="hr" sx={seoHrSx} />
+
       {job_count ? (
-        <Typography sx={{ fontSize: "1.125rem" }}>
-          Aujourd'hui sur La bonne alternance :{" "}
-          <Typography component="span" sx={{ fontWeight: 700, fontSize: "1.125rem" }}>
-            {formatNumber(job_count)} offres en alternance
-          </Typography>{" "}
-          publiées par {formatNumber(company_count ?? 0)} entreprises
-          {part ? `, soit ${part} % de l'ensemble des offres d'alternance du site` : ""}.
+        <Typography sx={{ mb: fr.spacing("3v") }}>
+          Aujourd'hui sur La bonne alternance, <strong style={strongSx}>{formatNumber(job_count)} offres en alternance</strong> sont publiées par {formatNumber(company_count ?? 0)}{" "}
+          entreprises{part ? `, soit ${part} % de l'ensemble des offres d'alternance du site` : ""}.
         </Typography>
       ) : null}
 
       {marche && (
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "minmax(0, 3fr) minmax(0, 2fr)" }, gap: { xs: 0, md: fr.spacing("10v") }, alignItems: "start" }}>
-          {marche.comparaison ? (
-            <BarChartHorizontal
-              title={marche.comparaison.titre}
-              items={marche.comparaison.barres.map((barre) => ({ label: barre.libelle, value: barre.valeur, displayValue: barre.affichage }))}
-              source={`${marche.comparaison.source_libelle} (${marche.comparaison.annee})`}
-            />
-          ) : (
-            <Box />
-          )}
-          <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v"), my: { xs: 0, md: fr.spacing("10v") } }}>
+        <>
+          <Box component="ul" sx={{ mb: fr.spacing("3v") }}>
+            {reference &&
+              barres.slice(0, -1).map((barre) => (
+                <li key={barre.libelle}>
+                  <Typography component="span">
+                    {barre.libelle} : <strong style={strongSx}>{barre.affichage}</strong> des recrutements jugés difficiles par les employeurs, contre {reference.affichage} pour l'
+                    {reference.libelle.toLowerCase()} ({marche.comparaison?.annee}).
+                  </Typography>
+                </li>
+              ))}
             {marche.faits.map((fait) => (
-              <Box key={fait.texte} sx={{ backgroundColor: fr.colors.decisions.background.alt.purpleGlycine.default, borderRadius: "4px", p: fr.spacing("5v") }}>
-                <Typography sx={{ fontSize: "2rem", fontWeight: 700, lineHeight: 1.1, color: fr.colors.decisions.text.title.grey.default }}>{fait.valeur}</Typography>
-                <Typography sx={{ mt: fr.spacing("1v") }}>{fait.texte}</Typography>
-                <Typography sx={{ mt: fr.spacing("2v"), fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>
-                  {fait.source_url ? <DsfrLink href={fait.source_url}>{fait.source_libelle}</DsfrLink> : fait.source_libelle}, {fait.annee}
+              <li key={fait.texte}>
+                <Typography component="span">
+                  <strong style={strongSx}>{fait.valeur}</strong> {fait.texte} ({fait.annee}).
                 </Typography>
-              </Box>
+              </li>
             ))}
           </Box>
-        </Box>
+          <Typography sx={{ mb: fr.spacing("3v") }}>{marche.interpretation}</Typography>
+          {sources.length > 0 && (
+            <Typography sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>
+              Sources :{" "}
+              {sources.map((source, idx) => (
+                <span key={source.source_url}>
+                  {idx > 0 && " · "}
+                  <DsfrLink href={source.source_url} size="sm">
+                    {source.source_libelle}
+                  </DsfrLink>
+                </span>
+              ))}
+            </Typography>
+          )}
+        </>
       )}
-
-      {marche?.interpretation && <Typography sx={{ mt: fr.spacing("2v") }}>{marche.interpretation}</Typography>}
     </Box>
   )
 }

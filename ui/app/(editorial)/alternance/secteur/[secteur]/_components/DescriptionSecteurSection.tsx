@@ -7,7 +7,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type Props = Pick<ISeoSecteurJson, "secteur_complement" | "description" | "chiffres_cles">
 
-const h3Sx = { mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }
+const h3Sx = { mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem", fontWeight: 700 }
 
 // Même gabarit que le bloc « La vie d'alternant » de la page ville : texte à gauche, chiffres clés à droite.
 export function DescriptionSecteurSection({ secteur_complement, description, chiffres_cles }: Props) {
@@ -53,30 +53,36 @@ export function DescriptionSecteurSection({ secteur_complement, description, chi
             <Typography component="h3" sx={h3Sx}>
               En chiffres :
             </Typography>
-            <Box component="ul" sx={{ listStyle: "none", pl: 0, m: 0, display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
+            <Box
+              component="ul"
+              sx={{ listStyle: "none", pl: 0, m: 0, display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" }, gap: fr.spacing("3v") }}
+            >
               {chiffres_cles.map((chiffre) => (
                 <Box
                   component="li"
                   key={chiffre.libelle}
                   sx={{
                     display: "flex",
-                    alignItems: "baseline",
-                    gap: fr.spacing("4v"),
+                    flexDirection: "column",
                     backgroundColor: "white",
                     p: fr.spacing("4v"),
                     borderRadius: "5px",
                     boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                   }}
                 >
-                  <Typography sx={{ fontSize: "1.75rem", fontWeight: 700, lineHeight: 1.1, color: fr.colors.decisions.text.default.info.default, whiteSpace: "nowrap" }}>
-                    {chiffre.valeur}
+                  <Typography sx={{ fontSize: "2rem", fontWeight: 700, lineHeight: 1.1, color: fr.colors.decisions.text.default.info.default }}>{chiffre.valeur}</Typography>
+                  <Typography sx={{ mt: fr.spacing("2v"), fontSize: "0.875rem", fontWeight: 700, lineHeight: 1.35, flex: 1 }}>{chiffre.libelle}</Typography>
+                  <Typography sx={{ mt: fr.spacing("3v"), fontSize: "0.75rem", lineHeight: 1.3, color: fr.colors.decisions.text.mention.grey.default }}>
+                    Source :{" "}
+                    {chiffre.source_url ? (
+                      <DsfrLink href={chiffre.source_url} size="sm">
+                        {chiffre.source_libelle}
+                      </DsfrLink>
+                    ) : (
+                      chiffre.source_libelle
+                    )}
+                    , {chiffre.annee}
                   </Typography>
-                  <Box>
-                    <Typography sx={{ fontWeight: 700 }}>{chiffre.libelle}</Typography>
-                    <Typography sx={{ mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>
-                      {chiffre.source_url ? <DsfrLink href={chiffre.source_url}>{chiffre.source_libelle}</DsfrLink> : chiffre.source_libelle}, {chiffre.annee}
-                    </Typography>
-                  </Box>
                 </Box>
               ))}
             </Box>
