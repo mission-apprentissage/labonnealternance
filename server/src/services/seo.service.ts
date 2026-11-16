@@ -561,6 +561,11 @@ const SECTEUR_CARDS_LIMIT = 6
 export const updateSeoSecteurs = async () => {
   logger.info("starting job updateSeoSecteurs")
   const secteurs = await getDbCollection(seoSecteurModel.collectionName).find({}).toArray()
+  // Référence commune à tous les secteurs : part du secteur dans l'ensemble des offres actives.
+  const totalJobCount = await getDbCollection("jobs_partners").countDocuments({
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+  })
 
   await asyncForEach(secteurs, async (secteur) => {
     try {
@@ -582,6 +587,7 @@ export const updateSeoSecteurs = async () => {
         {
           $set: {
             job_count: jobCount,
+            total_job_count: totalJobCount,
             company_count: companyCount,
             algo_company_count: algoCompanyCount,
             applicant_count: applicantCount,

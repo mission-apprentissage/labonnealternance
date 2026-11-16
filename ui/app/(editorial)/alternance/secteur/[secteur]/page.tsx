@@ -10,19 +10,19 @@ import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
-import { cardLinkStyle, seoCardSx, seoH2Sx, seoHrSx, seoSectionSx, seoStatBoxSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
-import { findVilleLandingSlug } from "@/app/(editorial)/alternance/_components/landing_links"
+import { seoCardSx, seoH2Sx, seoHrSx, seoSectionSx, seoStatBoxSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { secteurData } from "@/app/(editorial)/alternance/_components/secteur_data"
 import { SalaireSection } from "@/app/(editorial)/alternance/diplome/[slug]/_components/SalaireSection"
+import { DescriptionSecteurSection } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/DescriptionSecteurSection"
 import { FormationsSecteurSection } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/FormationsSecteurSection"
 import { MarcheSecteurSection } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/MarcheSecteurSection"
 import { MetiersSecteurSection } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/MetiersSecteurSection"
 import { OffresEtCandidaturesSection } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/OffresEtCandidaturesSection"
+import { VillesSecteurSection } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/VillesSecteurSection"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { SchemaOrg } from "@/components/SchemaOrg"
-import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -162,22 +162,11 @@ async function SecteurContent({ params }: { params: Promise<{ secteur: string }>
           </Box>
         </Box>
 
-        {/* DESCRIPTION DU SECTEUR */}
-        <Box sx={seoSectionSx}>
-          <Typography component="h2" variant="h2" sx={seoH2Sx}>
-            Le secteur de l'alternance en <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.secteur}</span>
-          </Typography>
-          <Box aria-hidden="true" component="hr" sx={seoHrSx} />
-          {data.description.map((paragraphe) => (
-            <Typography key={paragraphe.slice(0, 40)} sx={{ mb: fr.spacing("3v") }}>
-              {paragraphe}
-            </Typography>
-          ))}
-        </Box>
+        <DescriptionSecteurSection secteur_complement={data.secteur_complement} description={data.description} chiffres_cles={data.chiffres_cles} />
 
         <MetiersSecteurSection secteur={data.secteur} metiers={data.metiers} metiers_counts={data.metiers_counts} utmParams={UTM_PARAMS} />
 
-        <MarcheSecteurSection secteur={data.secteur} marche={data.marche} job_count={data.job_count} company_count={data.company_count} />
+        <MarcheSecteurSection secteur={data.secteur} marche={data.marche} job_count={data.job_count} total_job_count={data.total_job_count} company_count={data.company_count} />
 
         <OffresEtCandidaturesSection
           secteur={data.secteur}
@@ -218,37 +207,7 @@ async function SecteurContent({ params }: { params: Promise<{ secteur: string }>
           }
         />
 
-        {/* VILLES */}
-        {villes.length > 0 && (
-          <Box sx={seoSectionSx}>
-            <Typography component="h2" variant="h2" sx={seoH2Sx}>
-              Où trouver une alternance en <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.secteur}</span> ?
-            </Typography>
-            <Box aria-hidden="true" component="hr" sx={seoHrSx} />
-            <Box sx={seoThreeColGridSx}>
-              {villes.map((ville) => {
-                const villeSlug = findVilleLandingSlug(ville.nom)
-                const href = villeSlug
-                  ? `/alternance/ville/${villeSlug}?${UTM_PARAMS}`
-                  : `${buildSearchUrl({ ...searchBase, mode: "emplois", latitude: ville.geopoint.lat, longitude: ville.geopoint.long, lieu_label: ville.nom })}&${UTM_PARAMS}`
-                return (
-                  <Link key={ville.nom} href={href} style={cardLinkStyle} aria-label={`${ville.nom} - ${ville.job_count} offres en alternance en ${data.secteur}`}>
-                    <Box sx={{ ...seoStatBoxSx, width: "100%", py: fr.spacing("6v"), ":hover": { backgroundColor: fr.colors.decisions.background.alt.blueFrance.default } }}>
-                      <Image alt="" aria-hidden="true" src="/images/seo/metier/france.svg" width={60} height={60} />
-                      <Typography sx={{ mt: fr.spacing("1v"), fontSize: "2rem", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>
-                        {ville.nom}
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Typography sx={{ fontSize: "1.375rem", fontWeight: "bold", color: "#161616" }}>{ville.job_count} offres</Typography>
-                        <ArrowRightLine sx={{ color: fr.colors.decisions.background.actionHigh.blueFrance.default, ml: fr.spacing("3v"), width: 16, height: 16 }} />
-                      </Box>
-                    </Box>
-                  </Link>
-                )
-              })}
-            </Box>
-          </Box>
-        )}
+        <VillesSecteurSection secteur={data.secteur} villes={villes} q_recherche={data.q_recherche} utmParams={UTM_PARAMS} />
 
         {/* FAQ */}
         {faqItems.length > 0 && (

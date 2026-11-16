@@ -37,6 +37,7 @@ export const secteursData: ISecteurData[] = [
   {
     slug: "informatique",
     secteur: "informatique",
+    secteur_complement: "de l'informatique",
     titre: "Alternance informatique",
     accroche: "Développement, support, réseaux, cybersécurité, data : trouvez votre contrat d'apprentissage ou de professionnalisation dans l'informatique.",
     meta_description:
@@ -46,6 +47,7 @@ export const secteursData: ISecteurData[] = [
       "L'informatique regroupe les métiers qui conçoivent, font fonctionner et protègent les outils numériques des entreprises : sites et applications, réseaux, serveurs, postes de travail et données. On y trouve des postes dans les entreprises de services numériques (ESN), les éditeurs de logiciels et les start-up, mais aussi dans les services informatiques de toutes les grandes organisations : banques, industrie, commerce, administrations, hôpitaux.",
       "En alternance, vous travaillez sur des projets réels dès le premier mois : répondre aux demandes des utilisateurs, déployer un poste, développer une fonctionnalité, surveiller un réseau. L'informatique accueille des apprentis à tous les niveaux, du bac pro au diplôme d'ingénieur. Le niveau bac+2 (BTS SIO) et le niveau bac+3 (BUT informatique, bachelors) sont les portes d'entrée les plus courantes.",
     ],
+    chiffres_cles: [],
     metiers: [
       {
         libelle: "Développeur web",

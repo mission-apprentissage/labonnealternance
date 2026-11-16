@@ -14,13 +14,31 @@ const ZSeoSecteurMetier = z.object({
   metier_slug: z.string().nullable(),
 })
 
-const ZSeoSecteurMarche = z.object({
-  projets_recrutement: z.number(),
-  part_difficiles: z.number(),
-  annee: z.number(),
+const ZSeoSecteurSource = {
   source_libelle: z.string(),
   source_url: z.string(),
+  annee: z.number(),
+}
+
+// Indicateur du secteur comparé à une référence de même source et de même année (ex. moyenne tous métiers).
+const ZSeoSecteurIndicateur = z.object({
+  libelle: z.string(),
+  valeur_secteur: z.number(),
+  valeur_reference: z.number(),
+  libelle_reference: z.string(),
+  unite: z.string(),
+  ...ZSeoSecteurSource,
+})
+
+const ZSeoSecteurMarche = z.object({
+  indicateurs: z.array(ZSeoSecteurIndicateur),
   interpretation: z.string(),
+})
+
+const ZSeoSecteurChiffreCle = z.object({
+  valeur: z.string(),
+  libelle: z.string(),
+  ...ZSeoSecteurSource,
 })
 
 const ZSeoSecteurFormationNiveau = z.object({
@@ -44,17 +62,21 @@ export const ZSeoSecteur = z.strictObject({
   _id: zObjectId,
   slug: z.string(),
   secteur: z.string(),
+  // Libellé précédé de son article, pour les titres : « de l'informatique », « du commerce », « de la santé ».
+  secteur_complement: z.string(),
   titre: z.string(),
   accroche: z.string(),
   meta_description: z.string(),
   q_recherche: z.string(),
   description: z.array(z.string()),
+  chiffres_cles: z.array(ZSeoSecteurChiffreCle),
   metiers: z.array(ZSeoSecteurMetier),
   marche: ZSeoSecteurMarche.nullable(),
   formations_niveaux: z.array(ZSeoSecteurFormationNiveau),
   faq: z.array(ZSeoSecteurFaq),
   romes: z.array(z.string()),
   job_count: z.number().optional(),
+  total_job_count: z.number().optional(),
   company_count: z.number().optional(),
   algo_company_count: z.number().optional(),
   applicant_count: z.number().optional(),

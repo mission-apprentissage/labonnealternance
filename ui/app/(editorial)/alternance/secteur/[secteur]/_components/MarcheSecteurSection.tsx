@@ -1,15 +1,17 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { seoH2Sx, seoHrSx, seoSectionSx } from "@/app/(editorial)/alternance/_components/hub-styles"
+import { ComparaisonIndicateurs } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/ComparaisonIndicateurs"
 import type { ISeoSecteurJson } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/secteur.types"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-type Props = Pick<ISeoSecteurJson, "secteur" | "marche" | "job_count" | "company_count">
+type Props = Pick<ISeoSecteurJson, "secteur" | "marche" | "job_count" | "total_job_count" | "company_count">
 
 const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value)
 
-export function MarcheSecteurSection({ secteur, marche, job_count, company_count }: Props) {
+export function MarcheSecteurSection({ secteur, marche, job_count, total_job_count, company_count }: Props) {
   if (!marche && !job_count) return null
+
+  const part = job_count && total_job_count ? Math.round((job_count / total_job_count) * 100) : null
 
   return (
     <Box sx={seoSectionSx}>
@@ -17,31 +19,20 @@ export function MarcheSecteurSection({ secteur, marche, job_count, company_count
         Alternance en <span style={{ color: fr.colors.decisions.text.default.info.default }}>{secteur}</span> : un secteur qui recrute ?
       </Typography>
       <Box aria-hidden="true" component="hr" sx={seoHrSx} />
-      {marche && (
-        <Box component="ul" sx={{ mb: fr.spacing("4v") }}>
-          <li>
-            <Typography component="span" sx={{ fontWeight: 700 }}>
-              {formatNumber(marche.projets_recrutement)} projets de recrutement
-            </Typography>{" "}
-            en {marche.annee}, dont {marche.part_difficiles} % jugés difficiles par les employeurs.
-          </li>
-        </Box>
-      )}
       {job_count ? (
         <Typography sx={{ fontSize: "1.125rem" }}>
           Aujourd'hui sur La bonne alternance :{" "}
           <Typography component="span" sx={{ fontWeight: 700, fontSize: "1.125rem" }}>
             {formatNumber(job_count)} offres en alternance
           </Typography>{" "}
-          publiées par {formatNumber(company_count ?? 0)} entreprises.
+          publiées par {formatNumber(company_count ?? 0)} entreprises
+          {part ? `, soit ${part} % de l'ensemble des offres d'alternance du site` : ""}.
         </Typography>
       ) : null}
       {marche && (
         <>
-          <Typography sx={{ mt: fr.spacing("3v") }}>{marche.interpretation}</Typography>
-          <Typography sx={{ mt: fr.spacing("2v"), fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>
-            Source : <DsfrLink href={marche.source_url}>{marche.source_libelle}</DsfrLink> ({marche.annee})
-          </Typography>
+          {marche.indicateurs.length > 0 && <ComparaisonIndicateurs secteur={secteur} indicateurs={marche.indicateurs} />}
+          <Typography sx={{ mt: fr.spacing("4v") }}>{marche.interpretation}</Typography>
         </>
       )}
     </Box>

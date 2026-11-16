@@ -12,11 +12,13 @@ const secteur = (overrides = {}) => ({
   _id: new ObjectId(),
   slug: "informatique",
   secteur: "informatique",
+  secteur_complement: "de l'informatique",
   titre: "Alternance informatique",
   accroche: "accroche",
   meta_description: "meta",
   q_recherche: "informatique",
   description: ["description"],
+  chiffres_cles: [],
   metiers: [
     { libelle: "Développeur web", romes: ["M1805"], description: "code", niveau_acces: "Bac+2", metier_slug: "developpeur-web" },
     { libelle: "Technicien support informatique", romes: ["I1401"], description: "dépanne", niveau_acces: "Bac", metier_slug: null },
@@ -75,6 +77,14 @@ describe("updateSeoSecteurs", () => {
       { libelle: "Développeur web", job_count: 2 },
       { libelle: "Technicien support informatique", job_count: 0 },
     ])
+  })
+
+  it("compte le total des offres actives tous secteurs, sans les entreprises à contacter", async () => {
+    await seedOffresEtEntreprisesAlgo()
+    await offre(JOBPARTNERS_LABEL.HELLOWORK, { offer_rome_codes: ["D1214"] })
+    const result = await runAndRead()
+    expect(result.job_count).toBe(2)
+    expect(result.total_job_count).toBe(3)
   })
 
   it("ignore les offres inactives", async () => {
