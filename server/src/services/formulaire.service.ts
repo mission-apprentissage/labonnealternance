@@ -459,12 +459,14 @@ const romeDetailJoin = [
   { $unwind: { path: "$rome_detail", preserveNullAndEmptyArrays: true } },
 ]
 
+// Une candidature est en attente tant que le recruteur n'a exprimé aucune intention (#5769).
 const applicationCountJoin = [
   {
     $lookup: {
       from: "applications",
       localField: "_id",
       foreignField: "job_id",
+      pipeline: [{ $project: { _id: 0, company_recruitment_intention: 1 } }],
       as: "applications",
     },
   },
@@ -472,6 +474,11 @@ const applicationCountJoin = [
     $addFields: {
       application_count: {
         $size: "$applications",
+      },
+      pending_application_count: {
+        $size: {
+          $filter: { input: "$applications", cond: { $eq: [{ $ifNull: ["$$this.company_recruitment_intention", null] }, null] } },
+        },
       },
     },
   },
@@ -615,6 +622,8 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
     recruiter.jobs.forEach((job) => {
       // @ts-expect-error
       delete job.candidatures
+      // @ts-expect-error
+      delete job.candidatures_en_attente
     })
     const { email, first_name, last_name, phone } = entrepriseManagedByCfa
     recruiters.push({ ...recruiter, email, first_name, last_name, phone })
@@ -676,7 +685,7 @@ const getRecruiterFromJobsPartnerFilter = async ({
       ...romeDetailJoin,
       ...(addApplicationCounts ? applicationCountJoin : []),
     ])
-    .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number })[]
+    .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number; pending_application_count?: number })[]
 
   const [roles, entreprise, user] = await Promise.all([
     getDbCollection("rolemanagements")
@@ -708,6 +717,8 @@ const getRecruiterFromJobsPartnerFilter = async ({
     recruiter.jobs.forEach((job) => {
       // @ts-expect-error
       delete job.candidatures
+      // @ts-expect-error
+      delete job.candidatures_en_attente
     })
   }
   return recruiter
@@ -1631,7 +1642,7 @@ const jobPartnerStatusToIJobStatus: Record<JOB_STATUS_ENGLISH, JOB_STATUS> = {
 }
 
 export function jobPartnersToRecruiter(
-  jobPartners: (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome | null; application_count?: number })[],
+  jobPartners: (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome | null; application_count?: number; pending_application_count?: number })[],
   role: IRoleManagement,
   user: IUserWithAccount,
   entreprise: IEntreprise,
@@ -1686,6 +1697,7 @@ export function jobPartnersToRecruiter(
       mer_sent: jobPartner.mer_sent,
       offer_title_custom: customTitle,
       candidatures: jobPartner.application_count ?? 0,
+      candidatures_en_attente: jobPartner.pending_application_count ?? 0,
       to_applicant_questions: jobPartner.to_applicant_questions,
       ft_support: jobPartner.ft_support ?? false,
     }

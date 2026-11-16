@@ -5,7 +5,9 @@ import { roleManagementEventFactory, saveDbEntity, saveEntreprise, saveEntrepris
 import { omit } from "lodash-es"
 import { Collection, ObjectId } from "mongodb"
 import { AccessEntityType, AccessStatus, JOB_CLOSURE_ORIGIN, JOB_CLOSURE_REASON, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { ApplicationIntention } from "shared/constants/application"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -37,6 +39,7 @@ import {
   getCompetencesRomeFromPartnerJob,
   getFormulairesForCfaManagedEnterprises,
   getFormulaireWithRomeDetail,
+  getFormulaireWithRomeDetailAndApplicationCount,
   jobPartnersToRecruiter,
   normalizeOfferOrigin,
 } from "./formulaire.service"
@@ -1125,5 +1128,25 @@ describe("getFormulaireWithRomeDetail — utilisateur rattaché à plusieurs ent
     const recruiter = await getFormulaireWithRomeDetail({ establishment_id: buildEstablishmentId(user._id, entrepriseValidee.siret) })
 
     expect(recruiter?.status).toBe(RECRUITER_STATUS.ACTIF)
+  })
+})
+
+describe("getFormulaireWithRomeDetailAndApplicationCount", () => {
+  it("compte à part les candidatures sans intention du recruteur", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({}, {}, { siret: "11111111100011" })
+    const job = generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: entreprise.siret, managed_by: user._id })
+    const autreOffre = generateJobsPartnersOfferPrivate({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: entreprise.siret, managed_by: user._id })
+    await getDbCollection("jobs_partners").insertMany([job, autreOffre])
+    await getDbCollection("applications").insertMany([
+      generateApplicationFixture({ job_id: job._id, company_recruitment_intention: null }),
+      generateApplicationFixture({ job_id: job._id, company_recruitment_intention: undefined }),
+      generateApplicationFixture({ job_id: job._id, company_recruitment_intention: ApplicationIntention.ENTRETIEN }),
+      generateApplicationFixture({ job_id: job._id, company_recruitment_intention: ApplicationIntention.REFUS }),
+    ])
+
+    const recruiter = await getFormulaireWithRomeDetailAndApplicationCount({ establishment_id: buildEstablishmentId(user._id, entreprise.siret) })
+
+    const counts = Object.fromEntries((recruiter?.jobs ?? []).map((j) => [j._id.toString(), [j.candidatures, j.candidatures_en_attente]]))
+    expect(counts).toEqual({ [job._id.toString()]: [4, 2], [autreOffre._id.toString()]: [0, 0] })
   })
 })

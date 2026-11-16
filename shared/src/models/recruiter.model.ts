@@ -68,6 +68,7 @@ export const ZRecruiterWithRomeDetailAndApplicationCount = ZRecruiter.omit({ job
   jobs: z.array(
     ZJob.extend({
       candidatures: z.number(),
+      candidatures_en_attente: z.number().describe("Candidatures sans intention exprimée par le recruteur"),
       rome_detail: ZReferentielRome.nullish(),
     })
   ),

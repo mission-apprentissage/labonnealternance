@@ -9,6 +9,7 @@ import { useEffect, useState } from "react"
 import type { IJobJson, IRecruiterJson, JOB_START_TYPE } from "shared"
 import { JOB_STATUS } from "shared"
 import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants/index"
+import { getApplicationsConsultation } from "shared/utils/applications-consultation"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import Table from "@/app/(espace-pro)/_components/Table"
 import { OffreProlongationModal } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffreProlongationModal"
@@ -71,7 +72,41 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
   }
 }
 
-type LocalJob = Omit<IJobJson, "_id"> & { candidatures: number; geo_coordinates: string; _id: string }
+type LocalJob = Omit<IJobJson, "_id"> & { candidatures: number; candidatures_en_attente: number; geo_coordinates: string; _id: string }
+
+const CandidaturesCell = ({ job }: { job: LocalJob }) => {
+  const total = Math.max(job.candidatures ?? 0, 0)
+  if (total === 0) {
+    return total
+  }
+  const consultation = getApplicationsConsultation(job.job_expiration_date)
+  if (consultation.status === "offer_open") {
+    const pending = Math.max(job.candidatures_en_attente ?? 0, 0)
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
+        {total}
+        {pending > 0 && (
+          <Badge variant="awaiting" fontSize="12px">
+            {pending}
+          </Badge>
+        )}
+      </Box>
+    )
+  }
+  const [detail, color] =
+    consultation.status === "unavailable"
+      ? ["plus disponible", fr.colors.decisions.text.default.error.default]
+      : [`consultables jusqu’au ${dayjs(consultation.until).format("DD/MM/YYYY")}`, fr.colors.decisions.text.mention.grey.default]
+
+  return (
+    <>
+      {total}
+      <Box component="span" sx={{ display: "block", color }}>
+        {detail}
+      </Box>
+    </>
+  )
+}
 
 export const OffresTabs = ({
   caption,
@@ -250,6 +285,7 @@ export const OffresTabs = ({
           width: "150",
           disableSortBy: true,
           accessor: ({ candidatures = 0 }) => Math.max(candidatures, 0),
+          Cell: ({ row: { original } }: { row: { original: LocalJob } }) => <CandidaturesCell job={original} />,
         },
       ]
     : []
