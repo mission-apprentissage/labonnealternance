@@ -42,7 +42,7 @@ export const ZModerationQueueFilters = z.object({
   account_status: zQueryArray(z.enum([AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION])),
   account_type: zQueryArray(z.enum(MODERATION_ACCOUNT_TYPES)),
   opco: zQueryArray(extensions.buildEnum(OPCOS_LABEL)).describe("Ignoré pour un OPCO, limité à son OPCO"),
-  // `search` et non `q` : la valeur peut être un e-mail, masqué dans Sentry sous ce nom (cf. PERSONAL_QUERY_PARAMS).
+  // `search` et non `q` : la valeur peut être un e-mail, masqué dans les logs et dans Sentry sous ce nom (cf. PERSONAL_QUERY_PARAMS).
   search: z.string().trim().max(200).optional().describe(SEARCH_DESCRIPTION),
   sort: z.enum(MODERATION_QUEUE_SORTS).optional().describe("Par défaut : date de dépôt, la plus récente d'abord"),
   order: z.enum(["asc", "desc"]).optional(),
