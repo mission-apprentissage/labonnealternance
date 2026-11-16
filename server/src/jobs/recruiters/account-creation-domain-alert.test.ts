@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { generateRoleManagementFixture, generateRoleManagementStatusEventFixture } from "shared/fixtures/role-management.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
+import type { IRoleManagement } from "shared/models/role-management.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -223,32 +224,39 @@ describe("règle creations_comptes_domaine dans le socle de détection", () => {
       status: [creationEvent, generateRoleManagementStatusEventFixture({ status })],
     })
 
-  /** Un compte par date, chacun avec son adresse sur `domain` et un rôle créé à cette date. */
-  const createAccounts = async (
-    domain: string,
-    dates: Date[],
-    { type, status, localPart = () => `recrutement.${sequence}` }: { type?: AccessEntityType; status?: AccessStatus; localPart?: () => string } = {}
-  ) => {
-    if (!dates.length) return []
-    const users: IUserWithAccount[] = dates.map(() => {
-      sequence++
-      return generateUserWithAccountFixture({ email: `${localPart()}@${domain}` })
-    })
-    await getDbCollection("userswithaccounts").insertMany(users)
-    await getDbCollection("rolemanagements").insertMany(users.map((user, index) => role(user._id, dates[index], { type, status })))
-    return users
+  type IAccountOptions = { type?: AccessEntityType; status?: AccessStatus; localPart?: () => string }
+
+  /** Un compte avec son adresse sur `domain` et un rôle créé à `createdAt`. */
+  const buildAccount = (domain: string, createdAt: Date, { type, status, localPart = () => `recrutement.${sequence}` }: IAccountOptions = {}) => {
+    sequence++
+    const user = generateUserWithAccountFixture({ email: `${localPart()}@${domain}` })
+    return { user, role: role(user._id, createdAt, { type, status }) }
   }
+
+  const insertAccounts = async (built: Array<{ user: IUserWithAccount; role: IRoleManagement }>) => {
+    if (!built.length) return []
+    await getDbCollection("userswithaccounts").insertMany(built.map(({ user }) => user))
+    await getDbCollection("rolemanagements").insertMany(built.map(({ role }) => role))
+    return built.map(({ user }) => user)
+  }
+
+  /** Un compte par date. */
+  const createAccounts = (domain: string, dates: Date[], options: IAccountOptions = {}) => insertAccounts(dates.map((date) => buildAccount(domain, date, options)))
 
   const every = (start: Date, count: number, stepMs: number) => Array.from({ length: count }, (_, index) => new Date(start.getTime() + index * stepMs))
 
   /** Activité habituelle chaque jour à midi UTC : 10 entreprises sur des domaines distincts et 4 comptes sur un webmail courant. */
   const seedBackground = async (from: string, to: string) => {
+    const built: ReturnType<typeof buildAccount>[] = []
     for (let date = new Date(`${from}T12:00:00Z`); date <= new Date(`${to}T12:00:00Z`); date = new Date(date.getTime() + DAY_MS)) {
       for (let index = 0; index < 10; index++) {
-        await createAccounts(`societe-${sequence + 1}.exemple.fr`, [date])
+        built.push(buildAccount(`societe-${sequence + 1}.exemple.fr`, date))
       }
-      await createAccounts(WEBMAIL_COURANT, [date, date, date, date])
+      for (let index = 0; index < 4; index++) {
+        built.push(buildAccount(WEBMAIL_COURANT, date))
+      }
     }
+    await insertAccounts(built)
   }
 
   const evaluate = (now: Date, thresholds = defaults) => rule.evaluate({ now, thresholds, activeAlerts: [] })
@@ -387,6 +395,7 @@ describe("règle creations_comptes_domaine dans le socle de détection", () => {
     expect(alert).toMatchObject({ key: WEBMAIL_RARE, status: "ouverte", opening_metrics: { domaine: WEBMAIL_RARE, type_domaine: "webmail", comptes: 25 } })
   })
 
+  // 120 évaluations horaires : plus de 5 s sur les runners de la CI, d'où le délai explicite.
   it("rejoue un pic de 25 comptes en 3 jours : une entrée au 10e compte, un rappel par jour, une sortie quand la fenêtre redescend sous le seuil", async () => {
     await seedBackground("2026-09-01", "2026-10-10")
     // Un compte toutes les 3 h à partir du 05/10 00:30 UTC : le 10e le 06/10 à 03:30, le 16e le 06/10 à 21:30.
@@ -404,7 +413,7 @@ describe("règle creations_comptes_domaine dans le socle de détection", () => {
     ])
     expect(lines.find(({ slot }) => slot === "2026-10-06T03:00:00.000Z")?.observations).toMatchObject({ domaines_en_alerte: 0, max_comptes_domaine_webmail: 12 })
     expect(notifyToSlack).not.toHaveBeenCalled()
-  })
+  }, 20_000)
 
   it("lit la fenêtre par l'index { authorized_type, createdAt } et joint les comptes par leur _id", async () => {
     await seedBackground("2026-10-01", "2026-10-14")
