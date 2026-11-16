@@ -9,7 +9,7 @@ import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { notifyToSlack } from "@/common/utils/slack-utils"
+import { notifyToSlack, SLACK_MESSAGE_MAX_LENGTH } from "@/common/utils/slack-utils"
 import config from "@/config"
 import { assertValidEvaluation, nextAlertState, runDetectionRules } from "@/jobs/detection/detection-engine"
 import { formatDetectionNotification } from "@/jobs/detection/detection-notification"
@@ -105,6 +105,27 @@ describe("evaluateDomainSpike", () => {
     })
   })
 
+  it("garde ouverte une alerte tant que le domaine atteint la moitié du seuil de comptes, frontière comprise", () => {
+    const domain = (count: number) => ({ domain: WEBMAIL_RARE, accountIds: accounts(count), baselineAccounts: 0 })
+    expect(evaluateDomainSpike(domain(5), totals, defaults, true)).toMatchObject({ alert: true, held: true })
+    expect(evaluateDomainSpike(domain(4), totals, defaults, true)).toMatchObject({ alert: false, held: false })
+    expect(evaluateDomainSpike(domain(5), totals, defaults)).toMatchObject({ alert: false, held: false })
+    expect(evaluateDomainSpike(domain(10), totals, defaults, true)).toMatchObject({ alert: true, held: false })
+  })
+
+  it("garde ouverte une alerte tant que le domaine atteint la moitié du multiple, frontière comprise", () => {
+    // 20 comptes sur 1 000 en référence, 300 dans la fenêtre : 6 attendus, l'alerte ouverte tient jusqu'à 9 comptes.
+    const busyWindow = { windowAccounts: 300, baselineAccounts: 1000 }
+    const domain = (count: number) => ({ domain: DOMAINE_ENTREPRISE, accountIds: accounts(count), baselineAccounts: 20 })
+    expect(evaluateDomainSpike(domain(9), busyWindow, defaults, true)).toMatchObject({ expected: 6, alert: true, held: true })
+    expect(evaluateDomainSpike(domain(8), busyWindow, defaults, true)).toMatchObject({ expected: 6, alert: false })
+  })
+
+  it("ferme une alerte ouverte au seuil d'entrée quand exitRatio vaut 1", () => {
+    const thresholds = rule.thresholds.parse({ exitRatio: 1 })
+    expect(evaluateDomainSpike({ domain: WEBMAIL_RARE, accountIds: accounts(9), baselineAccounts: 0 }, totals, thresholds, true).alert).toBe(false)
+  })
+
   it("alerte sur 25 comptes en 3 jours sur un webmail peu utilisé", () => {
     expect(evaluateDomainSpike({ domain: WEBMAIL_RARE, accountIds: accounts(25), baselineAccounts: 1 }, totals, defaults)).toMatchObject({
       kind: "webmail",
@@ -119,6 +140,7 @@ describe("constat d'un pic de créations", () => {
   const creations = (domain: string): IDomainCreations => ({
     domain,
     accountIds: accounts(12),
+    newAccounts: 12,
     baselineAccounts: 0,
     entrepriseRoles: 12,
     cfaRoles: 0,
@@ -164,8 +186,18 @@ describe("constat d'un pic de créations", () => {
     expect(finding.metrics.comptes_attendus).toBe(0.1)
   })
 
-  // Slack coupe l'affichage vers 4 000 caractères ; notifyToSlack préfixe le message d'une cinquantaine de caractères.
-  it("tient sous la coupure Slack au pire cas : rappel, domaine de 253 caractères, 500 comptes, URL de production", () => {
+  it("explique dans le message pourquoi une alerte reste ouverte sous le seuil d'entrée", () => {
+    const evaluated = { ...creations(WEBMAIL_RARE), accountIds: accounts(6) }
+    const held = buildDomainFinding(evaluated, evaluateDomainSpike(evaluated, { windowAccounts: 100, baselineAccounts: 1000 }, defaults, true), defaults)
+    const opened = findingFor(WEBMAIL_RARE)
+
+    expect(held.summary).toContain("Sous le seuil d'entrée, l'alerte reste ouverte tant que le domaine garde au moins 5 comptes en 72 h et 1,5 fois son volume attendu.")
+    expect(held.metrics.maintenue_sous_le_seuil).toBe(true)
+    expect(opened.summary).not.toContain("reste ouverte")
+    expect(opened.metrics.maintenue_sous_le_seuil).toBe(false)
+  })
+
+  it("tient sous la longueur d'un message Slack au pire cas : rappel, alerte maintenue, domaine de 253 caractères, 500 comptes, URL de production", () => {
     const publicUrl = config.publicUrl
     config.publicUrl = "https://labonnealternance.apprentissage.beta.gouv.fr"
     try {
@@ -173,6 +205,7 @@ describe("constat d'un pic de créations", () => {
       const worst: IDomainCreations = {
         ...creations(domain),
         accountIds: accounts(500),
+        newAccounts: 500,
         baselineAccounts: 12_345,
         entrepriseRoles: 400,
         cfaRoles: 100,
@@ -181,7 +214,7 @@ describe("constat d'un pic de créations", () => {
         deniedRoles: 50,
         autoValidatedRoles: 250,
       }
-      const finding = buildDomainFinding(worst, evaluateDomainSpike(worst, { windowAccounts: 9_999, baselineAccounts: 99_999 }, defaults), defaults)
+      const finding = buildDomainFinding(worst, { kind: "entreprise", accounts: 500, expected: 123_456.7, alert: true, held: true }, defaults)
       const openedAt = new Date("2026-10-05T08:00:00Z")
       const alert = nextAlertState(rule, { type: "entree", finding, hits: 1, alert: null }, openedAt)
       if (!alert) throw new Error("épisode attendu")
@@ -190,7 +223,8 @@ describe("constat d'un pic de créations", () => {
 
       expect(domain).toHaveLength(253)
       expect(message).toContain(`${config.publicUrl}/espace-pro/administration/users/`)
-      expect(message.length).toBeLessThanOrEqual(3_900)
+      expect(message).toContain("l'alerte reste ouverte")
+      expect(message.length).toBeLessThanOrEqual(SLACK_MESSAGE_MAX_LENGTH)
     } finally {
       config.publicUrl = publicUrl
     }
@@ -224,12 +258,12 @@ describe("règle creations_comptes_domaine dans le socle de détection", () => {
       status: [creationEvent, generateRoleManagementStatusEventFixture({ status })],
     })
 
-  type IAccountOptions = { type?: AccessEntityType; status?: AccessStatus; localPart?: () => string }
+  type IAccountOptions = { type?: AccessEntityType; status?: AccessStatus; localPart?: () => string; userCreatedAt?: Date }
 
-  /** Un compte avec son adresse sur `domain` et un rôle créé à `createdAt`. */
-  const buildAccount = (domain: string, createdAt: Date, { type, status, localPart = () => `recrutement.${sequence}` }: IAccountOptions = {}) => {
+  /** Un compte avec son adresse sur `domain` et un rôle créé à `createdAt`, l'utilisateur créé au même instant par défaut. */
+  const buildAccount = (domain: string, createdAt: Date, { type, status, localPart = () => `recrutement.${sequence}`, userCreatedAt = createdAt }: IAccountOptions = {}) => {
     sequence++
-    const user = generateUserWithAccountFixture({ email: `${localPart()}@${domain}` })
+    const user = generateUserWithAccountFixture({ email: `${localPart()}@${domain}`, createdAt: userCreatedAt, updatedAt: userCreatedAt })
     return { user, role: role(user._id, createdAt, { type, status }) }
   }
 
@@ -329,6 +363,19 @@ describe("règle creations_comptes_domaine dans le socle de détection", () => {
     expect((await evaluate(NOW)).findings).toEqual([])
   })
 
+  it("distingue les comptes créés dans la fenêtre des comptes plus anciens qui y reçoivent un rôle, frontière comprise", async () => {
+    const { windowStart } = getCreationWindows(NOW, defaults)
+    const dates = every(new Date(NOW.getTime() - 10 * HOUR_MS), 9, HOUR_MS)
+    await createAccounts(DOMAINE_ENTREPRISE, dates.slice(0, 4))
+    await createAccounts(DOMAINE_ENTREPRISE, [new Date(windowStart.getTime() + 1)], { userCreatedAt: windowStart })
+    await createAccounts(DOMAINE_ENTREPRISE, dates.slice(4), { userCreatedAt: new Date(windowStart.getTime() - 1) })
+
+    const [finding] = (await evaluate(NOW)).findings
+
+    expect(finding.metrics).toMatchObject({ comptes: 10, comptes_nouveaux: 5 })
+    expect(finding.summary).toContain("5 de ces comptes ont été créés dans ces 72 h.")
+  })
+
   it("regroupe les adresses d'un domaine quelle que soit leur casse", async () => {
     const dates = every(new Date(NOW.getTime() - 10 * HOUR_MS), 5, HOUR_MS)
     await createAccounts("Entreprise.Exemple.FR", dates)
@@ -382,7 +429,7 @@ describe("règle creations_comptes_domaine dans le socle de détection", () => {
     const [message] = messages()
     expect(message).toContain("Entrée en alerte · Pic de créations de comptes sur un domaine email (gravité haute)")
     expect(message).toContain(
-      `25 comptes recruteur créés en 72 h sur le domaine ${WEBMAIL_RARE} (webmail grand public ou jetable), pour 0 attendus d'après les 28 jours précédents. Premier le 13/10/2026 00:00, dernier le 15/10/2026 00:00.`
+      `25 comptes du domaine ${WEBMAIL_RARE} (webmail grand public ou jetable) ont reçu un rôle entreprise ou CFA en 72 h, pour 0 attendus d'après les 28 jours précédents. 25 de ces comptes ont été créés dans ces 72 h. Premier rôle le 13/10/2026 00:00, dernier le 15/10/2026 00:00.`
     )
     expect(message).toContain("Rôles créés : 20 entreprise, 5 CFA, dont 20 validés automatiquement ; aujourd'hui 20 accès accordés, 5 en attente, 0 refusés.")
     expect(message).toContain(`Comptes : ${created.map(({ _id }) => _id.toHexString()).join(", ")}`)
@@ -392,26 +439,51 @@ describe("règle creations_comptes_domaine dans le socle de détection", () => {
     expect(message).not.toContain("rh.societe-usurpee")
 
     const [alert] = await getDbCollection("detection_alerts").find({ rule_id: rule.id }).toArray()
-    expect(alert).toMatchObject({ key: WEBMAIL_RARE, status: "ouverte", opening_metrics: { domaine: WEBMAIL_RARE, type_domaine: "webmail", comptes: 25 } })
+    expect(alert).toMatchObject({
+      key: WEBMAIL_RARE,
+      status: "ouverte",
+      opening_metrics: { domaine: WEBMAIL_RARE, type_domaine: "webmail", comptes: 25, comptes_nouveaux: 25, maintenue_sous_le_seuil: false },
+    })
   })
 
-  // 120 évaluations horaires : plus de 5 s sur les runners de la CI, d'où le délai explicite.
-  it("rejoue un pic de 25 comptes en 3 jours : une entrée au 10e compte, un rappel par jour, une sortie quand la fenêtre redescend sous le seuil", async () => {
-    await seedBackground("2026-09-01", "2026-10-10")
-    // Un compte toutes les 3 h à partir du 05/10 00:30 UTC : le 10e le 06/10 à 03:30, le 16e le 06/10 à 21:30.
-    await createAccounts(WEBMAIL_RARE, every(new Date("2026-10-05T00:30:00Z"), 25, 3 * HOUR_MS))
+  const notifiedSlots = (lines: Awaited<ReturnType<typeof replayDetectionRule>>["lines"]) =>
+    lines.filter(({ notifications }) => notifications.length).map(({ slot, notifications }) => `${slot} ${notifications.join(",")}`)
 
-    const { lines, episodes } = await replayDetectionRule({ rule, from: new Date("2026-10-05T00:00:00Z"), to: new Date("2026-10-10T00:00:00Z"), thresholds: defaults })
+  // Les rejeux enchaînent une centaine d'évaluations horaires : plus de 5 s sur les runners de la CI, d'où le délai explicite.
+  it("(faux positif) n'ouvre qu'un épisode quand le rythme des créations oscille autour du seuil", async () => {
+    await seedBackground("2026-09-08", "2026-10-12")
+    // Un compte toutes les 7 h 30 : la fenêtre de 72 h en compte tour à tour 9 et 10, jusqu'au 18e le 10/10 à 08:00 UTC.
+    await createAccounts(WEBMAIL_RARE, every(new Date("2026-10-05T00:30:00Z"), 18, 7.5 * HOUR_MS))
 
-    expect(episodes).toEqual([{ key: WEBMAIL_RARE, opened_at: new Date("2026-10-06T04:00:00Z"), closed_at: new Date("2026-10-09T22:00:00Z"), notifications: 5 }])
-    expect(lines.filter(({ notifications }) => notifications.length).map(({ slot, notifications }) => `${slot} ${notifications.join(",")}`)).toEqual([
-      "2026-10-06T04:00:00.000Z entree",
-      "2026-10-07T04:00:00.000Z rappel",
-      "2026-10-08T04:00:00.000Z rappel",
-      "2026-10-09T04:00:00.000Z rappel",
-      "2026-10-09T22:00:00.000Z sortie",
+    const { lines, episodes } = await replayDetectionRule({ rule, from: new Date("2026-10-07T00:00:00Z"), to: new Date("2026-10-12T06:00:00Z"), thresholds: defaults })
+
+    expect(episodes).toEqual([{ key: WEBMAIL_RARE, opened_at: new Date("2026-10-07T21:00:00Z"), closed_at: new Date("2026-10-12T03:00:00Z"), notifications: 6 }])
+    expect(notifiedSlots(lines)).toEqual([
+      "2026-10-07T21:00:00.000Z entree",
+      "2026-10-08T21:00:00.000Z rappel",
+      "2026-10-09T21:00:00.000Z rappel",
+      "2026-10-10T21:00:00.000Z rappel",
+      "2026-10-11T21:00:00.000Z rappel",
+      "2026-10-12T03:00:00.000Z sortie",
     ])
-    expect(lines.find(({ slot }) => slot === "2026-10-06T03:00:00.000Z")?.observations).toMatchObject({ domaines_en_alerte: 0, max_comptes_domaine_webmail: 12 })
+  }, 20_000)
+
+  // Forme mesurée par le rejeu de la production sur l'incident de juin 2026 : 9 comptes le 29/06, 7 le 30/06, 5 le 04/07.
+  it("rejoue l'incident de juin 2026 : entrée au 10e compte, un rappel par jour, sortie quand la fenêtre passe sous 5 comptes", async () => {
+    await seedBackground("2026-05-30", "2026-07-04")
+    const hourly = (day: string, count: number) => every(new Date(`${day}T09:00:00Z`), count, HOUR_MS)
+    await createAccounts(WEBMAIL_RARE, [...hourly("2026-06-29", 9), ...hourly("2026-06-30", 7), ...hourly("2026-07-04", 5)])
+
+    const { lines, episodes } = await replayDetectionRule({ rule, from: new Date("2026-06-30T00:00:00Z"), to: new Date("2026-07-05T00:00:00Z"), thresholds: defaults })
+
+    expect(episodes).toEqual([{ key: WEBMAIL_RARE, opened_at: new Date("2026-06-30T10:00:00Z"), closed_at: new Date("2026-07-03T12:00:00Z"), notifications: 5 }])
+    expect(notifiedSlots(lines)).toEqual([
+      "2026-06-30T10:00:00.000Z entree",
+      "2026-07-01T10:00:00.000Z rappel",
+      "2026-07-02T10:00:00.000Z rappel",
+      "2026-07-03T10:00:00.000Z rappel",
+      "2026-07-03T12:00:00.000Z sortie",
+    ])
     expect(notifyToSlack).not.toHaveBeenCalled()
   }, 20_000)
 

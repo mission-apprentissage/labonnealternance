@@ -1,6 +1,7 @@
 import type { ObjectId } from "mongodb"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IDetectionMetrics } from "shared/models/detection-alerts.model"
+import { DETECTION_ALERT_STATUS } from "shared/models/detection-alerts.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { z } from "zod"
 
@@ -14,7 +15,7 @@ import { getRolesWindowFilter } from "./auto-validation-rate-alert"
 const HOUR_MS = 60 * 60 * 1000
 const DAY_MS = 24 * HOUR_MS
 
-// Le texte d'un webhook Slack est coupé vers 4 000 caractères : la liste complète reste dans les métriques de l'alerte.
+// Le message doit tenir dans SLACK_MESSAGE_MAX_LENGTH : la liste complète reste dans les métriques de l'alerte.
 const LISTED_ACCOUNTS = 30
 const LINKED_ACCOUNTS = 10
 
@@ -24,6 +25,8 @@ export type IDomainKind = "webmail" | "entreprise"
 export type IDomainCreations = {
   domain: string
   accountIds: ObjectId[]
+  /** Comptes dont l'utilisateur lui-même a été créé sur la période, et non avant. */
+  newAccounts: number
   baselineAccounts: number
   entrepriseRoles: number
   cfaRoles: number
@@ -44,11 +47,17 @@ const thresholdsSchema = z.strictObject({
   companySpikeRatio: z.number().gte(1).default(3).describe("Multiple du volume attendu du domaine, domaine d'entreprise"),
   webmailMinAccounts: z.number().int().positive().default(10).describe("Comptes créés sur la fenêtre, webmail grand public ou jetable"),
   webmailSpikeRatio: z.number().gte(1).default(3).describe("Multiple du volume attendu du domaine, webmail grand public ou jetable"),
+  exitRatio: z.number().gt(0).lte(1).default(0.5).describe("Une alerte ouverte se ferme sous cette fraction du seuil de comptes ou du multiple"),
 })
 
 export type IDomainSpikeThresholds = z.output<typeof thresholdsSchema>
 
 export const domainKind = (domain: string): IDomainKind => (isFreeEmailProviderDomain(domain) ? "webmail" : "entreprise")
+
+const kindThresholds = (kind: IDomainKind, thresholds: IDomainSpikeThresholds) =>
+  kind === "webmail"
+    ? { minAccounts: thresholds.webmailMinAccounts, spikeRatio: thresholds.webmailSpikeRatio }
+    : { minAccounts: thresholds.companyMinAccounts, spikeRatio: thresholds.companySpikeRatio }
 
 /**
  * Volume attendu du domaine sur la fenêtre : sa part des comptes de la référence, appliquée au total de la fenêtre.
@@ -57,19 +66,26 @@ export const domainKind = (domain: string): IDomainKind => (isFreeEmailProviderD
 export const expectedAccounts = (domainBaselineAccounts: number, { windowAccounts, baselineAccounts }: ICreationTotals) =>
   baselineAccounts ? (domainBaselineAccounts * windowAccounts) / baselineAccounts : 0
 
-/** Un domaine sans historique n'a que le seuil absolu à franchir ; un domaine habituel doit aussi s'écarter de son volume. */
+/**
+ * Un domaine sans historique n'a que le seuil absolu à franchir ; un domaine habituel doit aussi s'écarter de son volume.
+ * Une alerte ouverte ne se ferme que sous `exitRatio` de l'un des deux seuils : sinon, un rythme de créations proche du
+ * seuil ouvre et ferme l'alerte à chaque compte, et chaque entrée repart sur Slack.
+ */
 export const evaluateDomainSpike = (
   creations: Pick<IDomainCreations, "domain" | "accountIds" | "baselineAccounts">,
   totals: ICreationTotals,
-  thresholds: IDomainSpikeThresholds
+  thresholds: IDomainSpikeThresholds,
+  open = false
 ) => {
   const kind = domainKind(creations.domain)
-  const [minAccounts, spikeRatio] =
-    kind === "webmail" ? [thresholds.webmailMinAccounts, thresholds.webmailSpikeRatio] : [thresholds.companyMinAccounts, thresholds.companySpikeRatio]
+  const { minAccounts, spikeRatio } = kindThresholds(kind, thresholds)
   const accounts = creations.accountIds.length
   const expected = expectedAccounts(creations.baselineAccounts, totals)
   // Tolérance de virgule flottante, cf. isBelow (auto-validation-rate-alert).
-  return { kind, accounts, expected, alert: accounts >= minAccounts && accounts >= spikeRatio * expected - 1e-9 }
+  const reaches = (fraction: number) => accounts >= fraction * minAccounts - 1e-9 && accounts >= fraction * spikeRatio * expected - 1e-9
+  const opens = reaches(1)
+  const alert = opens || (open && reaches(thresholds.exitRatio))
+  return { kind, accounts, expected, alert, held: alert && !opens }
 }
 
 const countInWindow = (condition: unknown) => ({ $sum: { $cond: [{ $and: ["$in_window", condition] }, 1, 0] } })
@@ -116,16 +132,25 @@ export const creationsByDomainPipeline = (baselineStart: Date, windowStart: Date
       from: "userswithaccounts",
       localField: "user_id",
       foreignField: "_id",
-      pipeline: [{ $project: { _id: 0, domain: { $toLower: { $arrayElemAt: [{ $split: ["$email", "@"] }, -1] } } } }],
+      pipeline: [
+        {
+          $project: {
+            _id: 0,
+            domain: { $toLower: { $arrayElemAt: [{ $split: ["$email", "@"] }, -1] } },
+            created_in_window: { $gte: ["$createdAt", windowStart] },
+          },
+        },
+      ],
       as: "user",
     },
   },
-  { $set: { domain: { $first: "$user.domain" } } },
+  { $set: { domain: { $first: "$user.domain" }, user_created_in_window: { $first: "$user.created_in_window" } } },
   { $match: { domain: { $type: "string", $ne: "" } } },
   {
     $group: {
       _id: "$domain",
       window_users: { $addToSet: { $cond: ["$in_window", "$user_id", "$$REMOVE"] } },
+      new_users: { $addToSet: { $cond: [{ $and: ["$in_window", "$user_created_in_window"] }, "$user_id", "$$REMOVE"] } },
       baseline_users: { $addToSet: { $cond: ["$in_window", "$$REMOVE", "$user_id"] } },
       entreprise_roles: countInWindow({ $eq: ["$authorized_type", AccessEntityType.ENTREPRISE] }),
       cfa_roles: countInWindow({ $eq: ["$authorized_type", AccessEntityType.CFA] }),
@@ -137,10 +162,10 @@ export const creationsByDomainPipeline = (baselineStart: Date, windowStart: Date
       last_created_at: { $max: { $cond: ["$in_window", "$createdAt", "$$REMOVE"] } },
     },
   },
-  { $set: { window_accounts: { $size: "$window_users" }, baseline_accounts: { $size: "$baseline_users" } } },
+  { $set: { window_accounts: { $size: "$window_users" }, new_accounts: { $size: "$new_users" }, baseline_accounts: { $size: "$baseline_users" } } },
   {
     $facet: {
-      domains: [{ $match: { window_accounts: { $gt: 0 } } }, { $project: { baseline_users: 0 } }],
+      domains: [{ $match: { window_accounts: { $gt: 0 } } }, { $project: { baseline_users: 0, new_users: 0 } }],
       totals: [{ $group: { _id: null, window_accounts: { $sum: "$window_accounts" }, baseline_accounts: { $sum: "$baseline_accounts" } } }],
     },
   },
@@ -149,6 +174,7 @@ export const creationsByDomainPipeline = (baselineStart: Date, windowStart: Date
 type IPipelineDomain = {
   _id: string
   window_users: ObjectId[]
+  new_accounts: number
   baseline_accounts: number
   entreprise_roles: number
   cfa_roles: number
@@ -177,6 +203,7 @@ export const loadCreationsByDomain = async (now: Date, thresholds: Pick<IDomainS
     domain: domain._id,
     // Ordre de création des utilisateurs : l'ObjectId commence par sa date.
     accountIds: domain.window_users.sort((a, b) => a.toHexString().localeCompare(b.toHexString())),
+    newAccounts: domain.new_accounts,
     baselineAccounts: domain.baseline_accounts,
     entrepriseRoles: domain.entreprise_roles,
     cfaRoles: domain.cfa_roles,
@@ -204,7 +231,7 @@ const formatAccountList = (ids: ObjectId[]) => {
 // Le domaine, des comptes et des identifiants techniques : jamais d'adresse (cf. assertNoEmailInFinding).
 export const buildDomainFinding = (
   creations: IDomainCreations,
-  { kind, accounts, expected }: ReturnType<typeof evaluateDomainSpike>,
+  { kind, accounts, expected, held }: ReturnType<typeof evaluateDomainSpike>,
   thresholds: IDomainSpikeThresholds
 ): IDetectionFinding => {
   const roundedExpected = Math.round(expected * 10) / 10
@@ -212,6 +239,7 @@ export const buildDomainFinding = (
     domaine: creations.domain,
     type_domaine: kind,
     comptes: accounts,
+    comptes_nouveaux: creations.newAccounts,
     comptes_attendus: roundedExpected,
     comptes_reference: creations.baselineAccounts,
     roles_entreprise: creations.entrepriseRoles,
@@ -223,9 +251,15 @@ export const buildDomainFinding = (
     premiere_creation: creations.firstCreatedAt?.toISOString() ?? null,
     derniere_creation: creations.lastCreatedAt?.toISOString() ?? null,
     comptes_ids: creations.accountIds.map((id) => id.toHexString()).join(","),
+    maintenue_sous_le_seuil: held,
   }
+  const { minAccounts, spikeRatio } = kindThresholds(kind, thresholds)
+  // Sans cette phrase, un rappel afficherait moins de comptes que le seuil sans dire pourquoi l'alerte reste ouverte.
+  const heldText = held
+    ? ` Sous le seuil d'entrée, l'alerte reste ouverte tant que le domaine garde au moins ${Math.ceil(thresholds.exitRatio * minAccounts - 1e-9)} comptes en ${thresholds.windowHours} h et ${(thresholds.exitRatio * spikeRatio).toLocaleString("fr-FR")} fois son volume attendu.`
+    : ""
   const summary = [
-    `${accounts} comptes recruteur créés en ${thresholds.windowHours} h sur le domaine ${creations.domain} (${KIND_LABELS[kind]}), pour ${roundedExpected.toLocaleString("fr-FR")} attendus d'après les ${thresholds.baselineDays} jours précédents. Premier le ${formatParisDate(creations.firstCreatedAt)}, dernier le ${formatParisDate(creations.lastCreatedAt)}.`,
+    `${accounts} comptes du domaine ${creations.domain} (${KIND_LABELS[kind]}) ont reçu un rôle entreprise ou CFA en ${thresholds.windowHours} h, pour ${roundedExpected.toLocaleString("fr-FR")} attendus d'après les ${thresholds.baselineDays} jours précédents. ${creations.newAccounts} de ces comptes ont été créés dans ces ${thresholds.windowHours} h. Premier rôle le ${formatParisDate(creations.firstCreatedAt)}, dernier le ${formatParisDate(creations.lastCreatedAt)}.${heldText}`,
     `Rôles créés : ${creations.entrepriseRoles} entreprise, ${creations.cfaRoles} CFA, dont ${creations.autoValidatedRoles} validés automatiquement ; aujourd'hui ${creations.grantedRoles} accès accordés, ${creations.awaitingRoles} en attente, ${creations.deniedRoles} refusés.`,
     `Comptes : ${formatAccountList(creations.accountIds)}`,
   ].join("\n")
@@ -241,9 +275,9 @@ const maxAccounts = (evaluations: ReturnType<typeof evaluateDomainSpike>[], kind
   Math.max(0, ...evaluations.filter((evaluation) => evaluation.kind === kind).map(({ accounts }) => accounts))
 
 /**
- * Pic de créations de comptes recruteur sur un même domaine email : l'usurpation de juin 2026 tenait en 25 comptes en
- * 3 jours (#5422) sur un webmail grand public (#5425). Les webmails ont leurs propres seuils ; un webmail à fort volume
- * ne se distingue que par un écart à son volume habituel.
+ * Pic de créations de comptes recruteur sur un même domaine email (#5422). L'usurpation de juin 2026 portait sur un
+ * webmail grand public (#5425) : les webmails ont leurs propres seuils, et un webmail à fort volume ne se distingue que
+ * par un écart à son volume habituel. Chiffres mesurés de l'incident et limite de détection : docs/detection.md.
  */
 export const accountCreationDomainSpikeRule: IDetectionRule<IDomainSpikeThresholds> = {
   id: "creations_comptes_domaine",
@@ -254,9 +288,10 @@ export const accountCreationDomainSpikeRule: IDetectionRule<IDomainSpikeThreshol
   thresholds: thresholdsSchema,
   confirmations: 1,
   reminderEveryHours: 24,
-  evaluate: async ({ now, thresholds }) => {
+  evaluate: async ({ now, thresholds, activeAlerts }) => {
     const { windowStart, domains, totals } = await loadCreationsByDomain(now, thresholds)
-    const evaluations = domains.map((creations) => ({ creations, evaluation: evaluateDomainSpike(creations, totals, thresholds) }))
+    const openDomains = new Set(activeAlerts.filter(({ status }) => status === DETECTION_ALERT_STATUS.OUVERTE).map(({ key }) => key))
+    const evaluations = domains.map((creations) => ({ creations, evaluation: evaluateDomainSpike(creations, totals, thresholds, openDomains.has(creations.domain)) }))
     const findings = evaluations.filter(({ evaluation }) => evaluation.alert).map(({ creations, evaluation }) => buildDomainFinding(creations, evaluation, thresholds))
     const all = evaluations.map(({ evaluation }) => evaluation)
     return {
