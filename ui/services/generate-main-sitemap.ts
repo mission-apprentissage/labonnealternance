@@ -5,6 +5,7 @@ import { generateSitemapFromUrlEntries } from "shared/utils/sitemap-utils"
 
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
+import { secteurData } from "@/app/(editorial)/alternance/_components/secteur_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { getStaticMetiers } from "@/utils/get-static-data"
 import { getHostFromHeader } from "@/utils/request-utils"
@@ -177,6 +178,11 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
           description: "Trouver une alternance dans les grandes villes françaises : offres, logement, transports et vie d'alternant.",
         },
         {
+          path: "/alternance/secteurs",
+          label: "Secteurs en alternance",
+          description: "L'alternance par secteur : métiers, offres, entreprises qui recrutent, salaires et formations.",
+        },
+        {
           path: "/alternance/diplomes",
           label: "Diplômes en alternance",
           description: "Tous les diplômes accessibles en alternance (CAP, bac pro, BTS, titres pro, licence pro) : programme, durée et débouchés.",
@@ -199,6 +205,15 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
         path: `/alternance/metier/${metier.slug}`,
         label: `${metier.metier} en alternance`,
         description: `${metier.metier} : offres d'emploi et formations en alternance pour ce métier.`,
+      })),
+    },
+    {
+      title: "L'alternance par secteur",
+      priority: 0.95,
+      pages: secteurData.map((secteur) => ({
+        path: `/alternance/secteur/${secteur.slug}`,
+        label: `Alternance ${secteur.secteur.toLowerCase()}`,
+        description: `Alternance en ${secteur.secteur.toLowerCase()} : métiers, offres, entreprises qui recrutent et formations.`,
       })),
     },
     {
