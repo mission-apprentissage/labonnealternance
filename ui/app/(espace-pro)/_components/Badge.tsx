@@ -18,16 +18,6 @@ const variants = {
     backgroundColor: "#E8EDFF",
     color: "#0063CB",
   },
-  stat_number: {
-    color: "#2a4365",
-    borderRadius: "2px",
-    backgroundColor: "#bee3f8",
-    fontSize: "12px",
-    fontWeight: 700,
-    lineHeight: "20px",
-    padding: `2px ${fr.spacing("2v")}`,
-    marginLeft: fr.spacing("4v"),
-  },
 }
 
 export default function LbaBadge({ variant = "neutral", children, ...props }) {

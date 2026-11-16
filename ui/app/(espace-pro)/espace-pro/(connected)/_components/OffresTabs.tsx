@@ -185,27 +185,26 @@ export const OffresTabs = ({
         const { rome_label, rome_appellation_label, offer_title_custom } = data[id]
         return offer_title_custom ?? rome_appellation_label ?? rome_label
       },
-      width: "300",
-      maxWidth: "300",
+      width: "340",
     },
     {
       Header: "Statut",
       id: "job_status",
       sortType: (a, b) => sortReactTableDate(a.original.job_status, b.original.job_status),
       accessor: ({ job_status }) => displayJobStatus(job_status, recruiter),
-      width: "150",
-      maxWidth: "150",
+      width: "110",
     },
     {
       Header: "Postée le",
       id: "job_creation_date",
+      width: "128",
       sortType: (a, b) => sortReactTableDate(a.original.job_creation_date, b.original.job_creation_date),
       accessor: ({ job_creation_date }) => dayjs(job_creation_date).format("DD/MM/YYYY"),
     },
     {
       Header: "Expire le",
       id: "job_expiration_date",
-      width: "175",
+      width: "126",
       sortType: (a, b) => sortReactTableDate(a.original.job_expiration_date, b.original.job_expiration_date),
       accessor: ({ job_expiration_date }) => dayjs(job_expiration_date).format("DD/MM/YYYY"),
     },
@@ -227,24 +226,30 @@ export const OffresTabs = ({
         {
           Header: "Recherches",
           id: "searches",
-          width: "170",
-          accessor: ({ stats_search_view = 0 }) => {
-            return <NumberCell>{stats_search_view}</NumberCell>
-          },
+          width: "130",
+          disableSortBy: true,
+          accessor: ({ stats_search_view = 0 }) => stats_search_view,
         },
         {
           Header: "Vues",
           id: "views",
-          width: "120",
-          accessor: ({ stats_detail_view = 0 }) => {
-            return <NumberCell>{stats_detail_view}</NumberCell>
-          },
+          width: "100",
+          disableSortBy: true,
+          accessor: ({ stats_detail_view = 0 }) => stats_detail_view,
         },
         {
-          Header: "Candidats",
+          Header: (
+            <>
+              Candidatures
+              <Box component="span" sx={{ display: "block", fontWeight: 400, color: fr.colors.decisions.text.mention.grey.default }}>
+                dont en attente
+              </Box>
+            </>
+          ),
           id: "candidat",
-          width: "170",
-          accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
+          width: "150",
+          disableSortBy: true,
+          accessor: ({ candidatures = 0 }) => Math.max(candidatures, 0),
         },
       ]
     : []
@@ -287,13 +292,5 @@ export const OffresTabs = ({
       {currentOffre && <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />}
       <Table caption={caption} columns={columns} data={jobsWithGeoCoords} />
     </>
-  )
-}
-
-const NumberCell = ({ children }) => {
-  return (
-    <Typography component="span" sx={{ textAlign: "right", width: "100%", pr: fr.spacing("4v") }}>
-      <Badge variant="stat_number">{children}</Badge>
-    </Typography>
   )
 }

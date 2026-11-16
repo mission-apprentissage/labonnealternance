@@ -40,67 +40,87 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                 {caption}
               </Box>
               <Box component="thead">
-                {headerGroups.map((headerGroup, g) => (
-                  <Box key={g} as="tr" {...headerGroup.getHeaderGroupProps({})}>
-                    {headerGroup.headers.map((column, i) => {
-                      const sortProps = column.getSortByToggleProps()
-                      const { onClick: sortOnClick, ...headerSortProps } = sortProps
+                {headerGroups.map((headerGroup) => {
+                  const { key: headerGroupKey, ...headerGroupProps } = headerGroup.getHeaderGroupProps()
+                  return (
+                    <Box key={headerGroupKey} as="tr" {...headerGroupProps}>
+                      {headerGroup.headers.map((column) => {
+                        const sortProps = column.getSortByToggleProps()
+                        const { onClick: sortOnClick, ...headerSortProps } = sortProps
+                        const { key: headerKey, ...headerProps } = column.getHeaderProps(headerSortProps)
 
-                      return (
-                        <Box key={i} as="th" {...column.getHeaderProps(headerSortProps)} title={null} scope="col" id={column.id}>
-                          {column.canSort ? (
-                            <Box
-                              component="button"
-                              type="button"
-                              onClick={sortOnClick}
-                              aria-label={`Trier par ${column.srOnly || column.Header}${column.isSorted ? (column.isSortedDesc ? ", trié par ordre décroissant" : ", trié par ordre croissant") : ""}`}
-                              sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "flex-start",
-                                width: "100%",
-                                background: "none",
-                                border: "none",
-                                padding: 0,
-                                cursor: "pointer",
-                                font: "inherit",
-                                color: "inherit",
-                                "&:focus-visible": {
-                                  outline: "2px solid #0a76f6",
-                                  outlineOffset: "2px",
-                                },
-                              }}
-                            >
-                              <Typography component="span" className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
-                                {column.srOnly ? column.srOnly : column.render("Header")}
-                              </Typography>
-                              <Box component="span" sx={{ pl: fr.spacing("2v") }}>
-                                {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : <ArrowUpDownLine />}
+                        return (
+                          <Box key={headerKey} as="th" {...headerProps} title={null} scope="col" id={column.id} sx={{ display: "flex !important", alignItems: "center" }}>
+                            {column.canSort ? (
+                              <Box
+                                component="button"
+                                type="button"
+                                onClick={sortOnClick}
+                                aria-label={`Trier par ${column.srOnly || column.Header}${column.isSorted ? (column.isSortedDesc ? ", trié par ordre décroissant" : ", trié par ordre croissant") : ""}`}
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  width: "100%",
+                                  background: "none",
+                                  border: "none",
+                                  padding: 0,
+                                  cursor: "pointer",
+                                  font: "inherit",
+                                  color: "inherit",
+                                  "&:focus-visible": {
+                                    outline: "2px solid #0a76f6",
+                                    outlineOffset: "2px",
+                                  },
+                                }}
+                              >
+                                <Typography component="span" className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
+                                  {column.srOnly ? column.srOnly : column.render("Header")}
+                                </Typography>
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    display: "flex",
+                                    flexShrink: 0,
+                                    ml: fr.spacing("2v"),
+                                    p: "3px",
+                                    border: "1px solid var(--border-default-grey)",
+                                    borderRadius: "4px",
+                                    "& .MuiIcon-root": { width: "1rem", height: "1rem", fontSize: "1rem", display: "flex" },
+                                    "& .MuiIcon-root::before": { "--icon-size": "1rem" },
+                                  }}
+                                >
+                                  {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : <ArrowUpDownLine />}
+                                </Box>
                               </Box>
-                            </Box>
-                          ) : (
-                            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start", width: "100%" }}>
-                              <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
-                            </Box>
-                          )}
-                        </Box>
-                      )
-                    })}
-                  </Box>
-                ))}
+                            ) : (
+                              <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", width: "100%" }}>
+                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
+                                  {column.srOnly ? column.srOnly : column.render("Header")}
+                                </Typography>
+                              </Box>
+                            )}
+                          </Box>
+                        )
+                      })}
+                    </Box>
+                  )
+                })}
               </Box>
               <Box as="tbody" {...getTableBodyProps()}>
-                {rows.map((row, i) => {
+                {rows.map((row) => {
                   prepareRow(row)
+                  const { key: rowKey, ...rowProps } = row.getRowProps()
                   return (
-                    <Box key={i} as="tr" {...row.getRowProps()}>
-                      {row.cells.map((cell, j) => {
+                    <Box key={rowKey} as="tr" {...rowProps}>
+                      {row.cells.map((cell) => {
+                        const { key: cellKey, ...cellProps } = cell.getCellProps()
                         return (
                           <Box
-                            key={j}
+                            key={cellKey}
                             headers={cell.column.id}
                             as="td"
-                            {...cell.getCellProps()}
+                            {...cellProps}
                             {...(cell.column.id === "action" ? { sx: { padding: `${fr.spacing("1v")} !important` } } : {})}
                             alignContent={"center"}
                           >
