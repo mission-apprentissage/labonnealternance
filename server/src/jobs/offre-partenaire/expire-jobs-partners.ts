@@ -13,7 +13,7 @@ import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { createCancelJobLink } from "@/services/app-links.service"
-import { changeJobsPartnersStatus, JOB_AUTO_CLOSURE_ORIGIN } from "@/services/job-partner-status.service"
+import { changeJobsPartnersStatus, JOB_AUTO_CLOSURE_ORIGIN, JOB_PENDING_EXPIRATION_ORIGIN } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 
 const getReminderCompanyName = ({
@@ -79,20 +79,25 @@ const sendExpirationEmails = async (expiredJobs: IJobsPartnersOfferPrivate[]) =>
 
 export const expireJobsPartners = async () => {
   const now = new Date()
+  const expired = { offer_expiration: { $lt: now } }
+  const reason = `${JOB_PARTNER_BUSINESS_ERROR.EXPIRED} (date dépassée)`
+
+  // Lues avant le flip de statut, pour le mail de clôture automatique (cf. sendExpirationEmails). Le mail annonce
+  // que l'offre n'est plus visible : une offre en modération ou en attente ne l'était pas.
+  const expiringActiveJobs = await getDbCollection("jobs_partners")
+    .find({ ...expired, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    .toArray()
+
   // Une offre en modération sans décision expire à sa date, comme une offre publiée (#5499).
-  const filter = { offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MODERATION] }, offer_expiration: { $lt: now } }
+  const published = await changeJobsPartnersStatus(
+    { ...expired, offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MODERATION] } },
+    { status: JOB_STATUS_ENGLISH.ANNULEE, reason, grantedBy: JOB_AUTO_CLOSURE_ORIGIN.EXPIRATION, date: now }
+  )
+  const pending = await changeJobsPartnersStatus(
+    { ...expired, offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE },
+    { status: JOB_STATUS_ENGLISH.ANNULEE, reason, grantedBy: JOB_PENDING_EXPIRATION_ORIGIN, date: now }
+  )
+  logger.info(`expireJobsPartners: ${published.modifiedCount} offres expirées, ${pending.modifiedCount} offres en attente expirées`)
 
-  // Lues avant le flip de statut, pour le mail de clôture automatique (cf. sendExpirationEmails).
-  const expiringJobs = await getDbCollection("jobs_partners").find(filter).toArray()
-
-  const result = await changeJobsPartnersStatus(filter, {
-    status: JOB_STATUS_ENGLISH.ANNULEE,
-    reason: `${JOB_PARTNER_BUSINESS_ERROR.EXPIRED} (date dépassée)`,
-    grantedBy: JOB_AUTO_CLOSURE_ORIGIN.EXPIRATION,
-    date: now,
-  })
-  logger.info(`expireJobsPartners: ${result.modifiedCount} offres expirées`)
-
-  // Le mail annonce que l'offre n'est plus visible : une offre en modération ne l'était pas.
-  await sendExpirationEmails(expiringJobs.filter(({ offer_status }) => offer_status === JOB_STATUS_ENGLISH.ACTIVE))
+  await sendExpirationEmails(expiringActiveJobs)
 }

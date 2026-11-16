@@ -39,7 +39,7 @@ import { asyncForEach } from "@/common/utils/async-utils"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mail-utils"
 import { maskPersonalData } from "@/common/utils/mask-personal-data"
-import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { getDbCollection, READ_OWN_WRITES } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/string-utils"
 import config from "@/config"
@@ -47,7 +47,7 @@ import { getUserManagingOffer } from "./application.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDataFromSiret } from "./etablissement.service"
 import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-notifications.service"
-import { buildJobStatusChangeUpdate, changeJobsPartnersStatus, JOB_AUTO_CLOSURE_ORIGIN } from "./job-partner-status.service"
+import { buildJobStatusChangeUpdate, changeJobsPartnersStatus, JOB_AUTO_CLOSURE_ORIGIN, JOB_PENDING_EXPIRATION_ORIGIN } from "./job-partner-status.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import {
   buildOfferModerationFields,
@@ -1137,24 +1137,33 @@ export const releaseOfferInReview = async ({
 }
 
 /**
- * Publie les offres EN_ATTENTE d'un recruteur dont le compte peut désormais publier, et les renvoie. Une offre en
- * modération n'en fait jamais partie : seul un verdict ou une décision humaine la publie.
+ * Publie les offres d'un recruteur dont le compte peut désormais publier, et les renvoie : les offres EN_ATTENTE, et
+ * celles annulées à leur date pendant l'attente (cf. JOB_PENDING_EXPIRATION_ORIGIN). Une offre en modération n'en
+ * fait jamais partie : seul un verdict ou une décision humaine la publie.
+ *
+ * Les appelants viennent d'écrire la validation du rôle ou de l'e-mail : tout est relu sur le primaire (cf. READ_OWN_WRITES).
  */
 export const checkForJobActivations = async (userId: ObjectId, entrepriseId: ObjectId): Promise<IJobsPartnersOfferPrivate[]> => {
-  const entreprise = await getDbCollection("entreprises").findOne({ _id: entrepriseId })
+  const entreprise = await getDbCollection("entreprises").findOne({ _id: entrepriseId }, READ_OWN_WRITES)
   if (!entreprise) {
     return []
   }
   const awaitingJobs = await getDbCollection("jobs_partners")
-    .find({
-      managed_by: userId,
-      offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE,
-      workplace_siret: entreprise.siret,
-    })
+    .find(
+      {
+        managed_by: userId,
+        workplace_siret: entreprise.siret,
+        $or: [
+          { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE },
+          { offer_status: JOB_STATUS_ENGLISH.ANNULEE, $expr: { $eq: [{ $last: "$offer_status_history.granted_by" }, JOB_PENDING_EXPIRATION_ORIGIN] } },
+        ],
+      },
+      READ_OWN_WRITES
+    )
     .toArray()
   if (!awaitingJobs.length) return []
   const managedByObjectId = userId
-  const [userOpt, roles] = await Promise.all([getDbCollection("userswithaccounts").findOne({ _id: managedByObjectId }), getGrantedRoles(userId.toString())])
+  const [userOpt, roles] = await Promise.all([getDbCollection("userswithaccounts").findOne({ _id: managedByObjectId }, READ_OWN_WRITES), getGrantedRoles(userId.toString())])
   if (!userOpt || !isUserEmailChecked(userOpt) || !entreprise) return []
   const recruiterRole = roles.find((role) => role.authorized_id === entreprise._id.toString())
   if (!recruiterRole) return []
