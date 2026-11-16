@@ -45,37 +45,15 @@ export const secteursData: ISecteurData[] = [
     q_recherche: "informatique",
     description: {
       intro:
-        "L'informatique regroupe les métiers qui conçoivent, font fonctionner et protègent les outils numériques des entreprises : sites et applications, réseaux, serveurs, postes de travail et données.",
-      blocs: [
-        {
-          titre: "Qui recrute ?",
-          texte:
-            "Les entreprises de services numériques (ESN), les éditeurs de logiciels et les start-up, mais aussi les services informatiques des banques, de l'industrie, du commerce, des collectivités et des hôpitaux.",
-        },
-        {
-          titre: "Votre quotidien",
-          texte:
-            "Dès les premières semaines : dépanner les utilisateurs, déployer des postes, développer une fonctionnalité ou surveiller un réseau, avec un maître d'apprentissage qui vous accompagne.",
-        },
-        {
-          titre: "Le rythme",
-          texte:
-            "Au moins 25 % du contrat d'apprentissage se passe en formation (service-public.fr). Selon l'école : quelques jours par semaine, une semaine sur deux ou plusieurs semaines d'affilée.",
-        },
-        {
-          titre: "À quel niveau commencer ?",
-          texte:
-            "Dès le bac pro CIEL, le plus souvent en BTS SIO (bac+2), puis en BUT, licence pro ou bachelor (bac+3). Cybersécurité, data et gestion de projet visent plutôt bac+3 à bac+5.",
-        },
-        {
-          titre: "Petite structure ou grand groupe ?",
-          texte: "Dans une petite entreprise, vos missions sont variées. Dans un grand groupe, votre périmètre est plus précis et les méthodes plus cadrées.",
-        },
-        {
-          titre: "Notre conseil",
-          texte: "Les intitulés de poste changent d'une entreprise à l'autre : lisez les missions décrites dans l'offre plutôt que le seul titre.",
-        },
+        "L'informatique regroupe les métiers qui **conçoivent, font fonctionner et protègent les outils numériques** des entreprises : sites et applications, réseaux, serveurs, postes de travail et données.",
+      points: [
+        "**Qui recrute ?** Les entreprises de services numériques (ESN), les éditeurs de logiciels et les start-up, mais aussi **les services informatiques des banques, de l'industrie, du commerce, des collectivités et des hôpitaux**.",
+        "**Votre quotidien** : dès les premières semaines, vous dépannez les utilisateurs, déployez des postes, développez une fonctionnalité ou surveillez un réseau, **accompagné par un maître d'apprentissage**.",
+        "**Le rythme** : au moins 25 % du contrat d'apprentissage se passe en formation. Selon l'école, **quelques jours par semaine, une semaine sur deux ou plusieurs semaines d'affilée**.",
+        "**À quel niveau commencer ?** Dès le bac pro CIEL, le plus souvent en **BTS SIO (bac+2)**, puis en BUT, licence pro ou bachelor. Cybersécurité, data et gestion de projet visent plutôt **bac+3 à bac+5**.",
       ],
+      conclusion:
+        "Dans une petite entreprise, vos missions sont variées ; dans un grand groupe, elles sont plus cadrées. Dans tous les cas, **lisez les missions décrites dans l'offre** plutôt que le seul intitulé du poste, qui change d'une entreprise à l'autre.",
     },
     chiffres_cles: [
       {

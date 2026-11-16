@@ -39,9 +39,11 @@ const ZSeoSecteurMarche = z.object({
   interpretation: z.string(),
 })
 
+// Texte balisé avec **…** pour les passages mis en valeur (cf. TexteEmphase).
 const ZSeoSecteurDescription = z.object({
   intro: z.string(),
-  blocs: z.array(z.object({ titre: z.string(), texte: z.string() })),
+  points: z.array(z.string()),
+  conclusion: z.string(),
 })
 
 const ZSeoSecteurChiffreCle = z.object({

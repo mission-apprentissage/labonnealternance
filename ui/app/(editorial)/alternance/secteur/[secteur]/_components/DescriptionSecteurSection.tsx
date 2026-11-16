@@ -1,68 +1,88 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
-import Image from "next/image"
-import { kpiCardSx, seoCardSx, seoH2Sx, seoHrSx, seoSectionSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
+import { seoHrSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import type { ISeoSecteurJson } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/secteur.types"
+import { TexteEmphase } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/TexteEmphase"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type Props = Pick<ISeoSecteurJson, "secteur_complement" | "description" | "chiffres_cles">
 
-// Même mise en forme que le bloc « Missions principales » de la page métier : une introduction, puis des cartes courtes.
+const h3Sx = { mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }
+
+// Même gabarit que le bloc « La vie d'alternant » de la page ville : texte à gauche, chiffres clés à droite.
 export function DescriptionSecteurSection({ secteur_complement, description, chiffres_cles }: Props) {
   return (
-    <Box sx={seoSectionSx}>
-      <Typography component="h2" variant="h2" sx={seoH2Sx}>
-        L'alternance dans le secteur <span style={{ color: fr.colors.decisions.text.default.info.default }}>{secteur_complement}</span>
+    <Box
+      sx={{
+        mb: fr.spacing("8v"),
+        py: fr.spacing("8v"),
+        px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
+        backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+      }}
+    >
+      <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+        L'alternance <span style={{ color: "#161616" }}>dans le secteur {secteur_complement}</span>
       </Typography>
       <Box aria-hidden="true" component="hr" sx={seoHrSx} />
-      <Typography sx={{ fontSize: "1.125rem", mb: fr.spacing("6v") }}>{description.intro}</Typography>
 
-      {chiffres_cles.length > 0 && (
-        <Box
-          component="ul"
-          sx={{
-            listStyle: "none",
-            pl: 0,
-            display: "grid",
-            gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", sm: "repeat(2, minmax(0, 1fr))", md: `repeat(${Math.min(chiffres_cles.length, 4)}, minmax(0, 1fr))` },
-            gap: fr.spacing("4v"),
-            mb: fr.spacing("10v"),
-          }}
-        >
-          {chiffres_cles.map((chiffre) => (
-            <Box component="li" key={chiffre.libelle} sx={kpiCardSx}>
-              <Typography sx={{ fontSize: { xs: "1.75rem", md: "2.25rem" }, fontWeight: 700, color: fr.colors.decisions.text.default.info.default, lineHeight: 1.1 }}>
-                {chiffre.valeur}
-              </Typography>
-              <Typography sx={{ mt: fr.spacing("1v"), fontSize: "0.95rem", fontWeight: 700 }}>{chiffre.libelle}</Typography>
-              <Typography component="span" sx={{ mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default, lineHeight: 1.3 }}>
-                {chiffre.source_url ? <DsfrLink href={chiffre.source_url}>{chiffre.source_libelle}</DsfrLink> : chiffre.source_libelle}, {chiffre.annee}
-              </Typography>
+      <Box sx={{ mt: fr.spacing("6v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("8v") }}>
+        <Box sx={{ flex: 3 }}>
+          <Typography sx={{ mb: fr.spacing("3v") }}>
+            <TexteEmphase texte={description.intro} />
+          </Typography>
+          {description.points.length > 0 && (
+            <Box component="ul" sx={{ mb: fr.spacing("3v") }}>
+              {description.points.map((point) => (
+                <li key={point.slice(0, 40)}>
+                  <Typography component="span">
+                    <TexteEmphase texte={point} />
+                  </Typography>
+                </li>
+              ))}
             </Box>
-          ))}
-        </Box>
-      )}
-
-      {description.blocs.length > 0 && (
-        <>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Image src="/images/seo/metier/mission.svg" alt="" aria-hidden="true" width={60} height={60} />
-            <Typography component="h3" sx={{ ml: fr.spacing("4v"), fontSize: "1.25rem", fontWeight: "bold" }}>
-              Ce qu'il faut savoir
+          )}
+          {description.conclusion && (
+            <Typography>
+              <TexteEmphase texte={description.conclusion} />
             </Typography>
+          )}
+        </Box>
+
+        {chiffres_cles.length > 0 && (
+          <Box sx={{ flex: 2 }}>
+            <Typography component="h3" sx={h3Sx}>
+              En chiffres :
+            </Typography>
+            <Box component="ul" sx={{ listStyle: "none", pl: 0, m: 0, display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
+              {chiffres_cles.map((chiffre) => (
+                <Box
+                  component="li"
+                  key={chiffre.libelle}
+                  sx={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: fr.spacing("4v"),
+                    backgroundColor: "white",
+                    p: fr.spacing("4v"),
+                    borderRadius: "5px",
+                    boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                  }}
+                >
+                  <Typography sx={{ fontSize: "1.75rem", fontWeight: 700, lineHeight: 1.1, color: fr.colors.decisions.text.default.info.default, whiteSpace: "nowrap" }}>
+                    {chiffre.valeur}
+                  </Typography>
+                  <Box>
+                    <Typography sx={{ fontWeight: 700 }}>{chiffre.libelle}</Typography>
+                    <Typography sx={{ mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>
+                      {chiffre.source_url ? <DsfrLink href={chiffre.source_url}>{chiffre.source_libelle}</DsfrLink> : chiffre.source_libelle}, {chiffre.annee}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
           </Box>
-          <Box sx={seoThreeColGridSx}>
-            {description.blocs.map((bloc) => (
-              <Box key={bloc.titre} sx={seoCardSx}>
-                <Typography component="h4" sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>
-                  {bloc.titre}
-                </Typography>
-                <Typography sx={{ mt: fr.spacing("1v") }}>{bloc.texte}</Typography>
-              </Box>
-            ))}
-          </Box>
-        </>
-      )}
+        )}
+      </Box>
     </Box>
   )
 }

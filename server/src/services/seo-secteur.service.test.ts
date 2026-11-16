@@ -17,7 +17,7 @@ const secteur = (overrides = {}) => ({
   accroche: "accroche",
   meta_description: "meta",
   q_recherche: "informatique",
-  description: { intro: "intro", blocs: [] },
+  description: { intro: "intro", points: [], conclusion: "" },
   chiffres_cles: [],
   metiers: [
     { libelle: "Développeur web", romes: ["M1805"], description: "code", niveau_acces: "Bac+2", metier_slug: "developpeur-web" },
