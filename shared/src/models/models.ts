@@ -82,6 +82,7 @@ import searchSynonymsModel from "./search-synonyms.model.js"
 import searchTrainingsModel from "./search-trainings.model.js"
 import seoDiplomeModel from "./seo-diplome.model.js"
 import seoMetierModel from "./seo-metier.model.js"
+import seoSecteurModel from "./seo-secteur.model.js"
 import seoVilleModel from "./seo-ville.model.js"
 import sessionModel from "./session.model.js"
 import sitemapModel from "./sitemap.model.js"
@@ -182,6 +183,7 @@ const modelDescriptorMap = {
   [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
   [seoDiplomeModel.collectionName]: seoDiplomeModel,
   [seoMetierModel.collectionName]: seoMetierModel,
+  [seoSecteurModel.collectionName]: seoSecteurModel,
   [rawHelloWorkBuddiModel.collectionName]: rawHelloWorkBuddiModel,
 } as const satisfies Record<string, IModelDescriptor>
 
