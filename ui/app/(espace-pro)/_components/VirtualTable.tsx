@@ -23,6 +23,12 @@ declare module "@tanstack/react-table" {
 
 const ARIA_SORT = { asc: "ascending", desc: "descending", none: "none" } as const satisfies Record<SortDirection | "none", React.AriaAttributes["aria-sort"]>
 
+/**
+ * Tri côté serveur : une seule clé, jamais retirée. Par défaut, tanstack retire le tri au troisième clic : l'appelant
+ * retomberait sur son tri par défaut, et un clic sur la colonne de ce tri resterait sans effet (#5757).
+ */
+export const SERVER_SORTING_OPTIONS = { manualSorting: true, enableSortingRemoval: false, enableMultiSort: false } as const
+
 function fuzzyFilter<T>(row: import("@tanstack/react-table").Row<T>, columnId: string, filterValue: string): boolean {
   const value = row.getValue(columnId)
   const stringValue = value == null ? "" : String(value)
@@ -92,7 +98,7 @@ export function VirtualTable<T>({
     state: { globalFilter, sorting },
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: onSortingChange ? (updater) => onSortingChange(typeof updater === "function" ? updater(sorting) : updater) : setLocalSorting,
-    manualSorting: Boolean(onSortingChange),
+    ...(onSortingChange ? SERVER_SORTING_OPTIONS : {}),
     globalFilterFn: fuzzyFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

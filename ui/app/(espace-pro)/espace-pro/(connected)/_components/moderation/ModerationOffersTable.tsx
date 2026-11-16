@@ -145,7 +145,7 @@ export function ModerationOffersResults({
           sorting={sorting}
           onSortingChange={(next) => {
             onOffsetChange(0)
-            onSortingChange(next.length ? next : MODERATION_DEFAULT_SORTING)
+            onSortingChange(next)
           }}
         />
       </Box>
