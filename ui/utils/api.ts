@@ -312,12 +312,12 @@ export const getEligibleTrainingsForAppointments = async (siret: string) =>
 
 export const getEtablissement = async (siret: string) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })
 
-export async function unsubscribeCompany({ email, reason }: { email: string; reason: string }) {
-  return apiPost("/unsubscribe", { body: { email, reason } })
+export async function unsubscribeCompany(body: IBody<IRoutes["post"]["/unsubscribe"]>) {
+  return apiPost("/unsubscribe", { body })
 }
 
-export async function unsubscribeCompanySirets({ email, reason, sirets }: { email: string; reason: string; sirets: string[] }) {
-  return apiPost("/unsubscribe/sirets", { body: { email, reason, sirets } })
+export async function unsubscribeCompanySirets(body: IBody<IRoutes["post"]["/unsubscribe/sirets"]>) {
+  return apiPost("/unsubscribe/sirets", { body })
 }
 
 export async function sendIntentionComment(id: string, token: string, body: IBody<IRoutes["post"]["/application/intentionComment/:id"]>) {

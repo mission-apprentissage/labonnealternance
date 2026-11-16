@@ -15,12 +15,14 @@ const imagePath = `${config.publicUrl}/images/emails/`
 
 const ARBITRARY_COMPANY_LIMIT = 50
 
+type IUnsubscribeReason = { reason: string; reasonDetail?: string | null }
+
 export async function unsubscribeNoSiret({
   email,
   reason,
-}: {
+  reasonDetail,
+}: IUnsubscribeReason & {
   email: string
-  reason: string
 }): Promise<{ modifiedCount: number } | { possibleCompanies: IUnsubscribePossibleCompany[] }> {
   const lbaCompaniesToUnsubscribe = await getDbCollection("jobs_partners")
     .find({
@@ -33,7 +35,7 @@ export async function unsubscribeNoSiret({
   if (lbaCompaniesToUnsubscribe.length === 0) {
     return { modifiedCount: lbaCompaniesToUnsubscribe.length }
   } else if (lbaCompaniesToUnsubscribe.length === 1) {
-    await unsubscribeCompanies(lbaCompaniesToUnsubscribe, reason)
+    await unsubscribeCompanies(lbaCompaniesToUnsubscribe, { reason, reasonDetail })
     return { modifiedCount: lbaCompaniesToUnsubscribe.length }
   } else {
     const possibleCompanies = lbaCompaniesToUnsubscribe.map((company) => {
@@ -43,7 +45,7 @@ export async function unsubscribeNoSiret({
   }
 }
 
-export async function unsubscribeWithSirets({ email, reason, sirets }: { email: string; reason: string; sirets: string[] }) {
+export async function unsubscribeWithSirets({ email, reason, reasonDetail, sirets }: IUnsubscribeReason & { email: string; sirets: string[] }) {
   const lbaCompaniesToUnsubscribe = await getDbCollection("jobs_partners")
     .find({
       apply_email: email,
@@ -52,11 +54,11 @@ export async function unsubscribeWithSirets({ email, reason, sirets }: { email: 
     })
     .limit(ARBITRARY_COMPANY_LIMIT)
     .toArray()
-  await unsubscribeCompanies(lbaCompaniesToUnsubscribe, reason)
+  await unsubscribeCompanies(lbaCompaniesToUnsubscribe, { reason, reasonDetail })
   return { modifiedCount: lbaCompaniesToUnsubscribe.length }
 }
 
-async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], reason: string) {
+async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], { reason, reasonDetail }: IUnsubscribeReason) {
   const now = new Date()
 
   const unsubscribeObjects = companies.map((company) => {
@@ -88,6 +90,7 @@ async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], reas
       created_at,
       last_update_at: updated_at,
       unsubscribe_reason: reason,
+      unsubscribe_reason_detail: reason === "Autre" ? reasonDetail || null : null,
       unsubscribe_date: now,
     }
     return unsubscribedLbaCompany
