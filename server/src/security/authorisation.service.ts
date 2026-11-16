@@ -303,6 +303,21 @@ function canAccessJob(userAccess: ComputedUserAccess, resource: JobResource): bo
   }
 }
 
+/**
+ * Accès d'un recruteur ou d'un CFA à une offre : les mêmes règles que canAccessJob, sans le rattachement OPCO,
+ * qui ouvre l'offre à la modération mais pas aux données des candidats (#5769).
+ */
+export async function canAccessJobAsEntrepriseOrCfa(userAccess: ComputedUserAccess | undefined, job: IJobsPartnersOfferPrivate): Promise<boolean> {
+  if (!userAccess) {
+    return false
+  }
+  if (userAccess.admin) {
+    return true
+  }
+  const resource = await jobToJobResource(job)
+  return resource !== null && canAccessJob({ ...userAccess, opcos: [] }, resource)
+}
+
 function canAccessUser(userAccess: ComputedUserAccess, resource: Resources["users"][number]): boolean {
   if (userAccess.users.includes(resource.user._id.toString())) {
     return true

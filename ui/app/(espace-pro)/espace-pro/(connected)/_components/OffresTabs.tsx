@@ -5,6 +5,7 @@ import { Box, Typography } from "@mui/material"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Image from "next/image"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 import type { IJobJson, IRecruiterJson, JOB_START_TYPE } from "shared"
 import { JOB_STATUS } from "shared"
@@ -18,6 +19,7 @@ import { useToast } from "@/app/hooks/useToast"
 import { useAuth } from "@/context/UserContext"
 import { extendOffre, getModerationSummaries } from "@/utils/api"
 import { sortReactTableDate } from "@/utils/date-utils"
+import { PAGES } from "@/utils/routes.utils"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import { ConformityWithAgentNote } from "./moderation/AgentNote"
 import { awaitsModerationDecision } from "./moderation/moderation.types"
@@ -74,17 +76,32 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
 
 type LocalJob = Omit<IJobJson, "_id"> & { candidatures: number; candidatures_en_attente: number; geo_coordinates: string; _id: string }
 
-const CandidaturesCell = ({ job }: { job: LocalJob }) => {
+const getJobTitle = ({ offer_title_custom, rome_appellation_label, rome_label }: Pick<LocalJob, "offer_title_custom" | "rome_appellation_label" | "rome_label">) =>
+  offer_title_custom ?? rome_appellation_label ?? rome_label
+
+const CandidaturesCell = ({ job, canOpenApplications }: { job: LocalJob; canOpenApplications: boolean }) => {
   const total = Math.max(job.candidatures ?? 0, 0)
   if (total === 0) {
     return total
   }
   const consultation = getApplicationsConsultation(job.job_expiration_date)
+  const totalLabel =
+    canOpenApplications && consultation.status !== "unavailable" ? (
+      <Link
+        className="fr-link"
+        href={PAGES.dynamic.backEntrepriseCandidaturesOffre({ job_id: job._id }).getPath()}
+        aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}
+      >
+        {total}
+      </Link>
+    ) : (
+      total
+    )
   if (consultation.status === "offer_open") {
     const pending = Math.max(job.candidatures_en_attente ?? 0, 0)
     return (
       <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
-        {total}
+        {totalLabel}
         {pending > 0 && (
           <Badge variant="awaiting" fontSize="12px">
             {pending}
@@ -100,7 +117,7 @@ const CandidaturesCell = ({ job }: { job: LocalJob }) => {
 
   return (
     <>
-      {total}
+      {totalLabel}
       <Box component="span" sx={{ display: "block", color }}>
         {detail}
       </Box>
@@ -217,8 +234,7 @@ export const OffresTabs = ({
           row: { id },
         },
       }) => {
-        const { rome_label, rome_appellation_label, offer_title_custom } = data[id]
-        return offer_title_custom ?? rome_appellation_label ?? rome_label
+        return getJobTitle(data[id])
       },
       width: "340",
     },
@@ -285,7 +301,7 @@ export const OffresTabs = ({
           width: "150",
           disableSortBy: true,
           accessor: ({ candidatures = 0 }) => Math.max(candidatures, 0),
-          Cell: ({ row: { original } }: { row: { original: LocalJob } }) => <CandidaturesCell job={original} />,
+          Cell: ({ row: { original } }: { row: { original: LocalJob } }) => <CandidaturesCell job={original} canOpenApplications={user?.type === AUTHTYPE.ENTREPRISE} />,
         },
       ]
     : []

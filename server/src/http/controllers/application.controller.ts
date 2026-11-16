@@ -12,6 +12,7 @@ import {
   getCompanyEmailFromToken,
   sendRecruiterIntention,
 } from "@/services/application.service"
+import { getJobApplicationsForRecruiter } from "@/services/job-applications.service"
 
 const rateLimitConfig = {
   rateLimit: {
@@ -94,6 +95,17 @@ export default function (server: Server) {
       await getDbCollection("applications").updateOne({ _id: new ObjectId(id) }, { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED } })
 
       return res.status(200).send({})
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId",
+    {
+      schema: zRoutes.get["/application/job/:jobId"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId"]),
+    },
+    async (req, res) => {
+      return res.status(200).send(await getJobApplicationsForRecruiter(req.params.jobId, req.userAccess))
     }
   )
 

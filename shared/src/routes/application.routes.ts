@@ -2,6 +2,7 @@ import { ApplicationIntention, RefusalReasons } from "../constants/application.j
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 import { CompanyFeebackSendStatus, ZHelloworkApplication } from "../models/applications.model.js"
+import { zObjectId } from "../models/common.js"
 import { ZLbacError } from "../models/lbac-error.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
@@ -83,6 +84,37 @@ export const zApplicationRoutes = {
     },
   },
   get: {
+    "/application/job/:jobId": {
+      path: "/application/job/:jobId",
+      method: "get",
+      params: z.strictObject({ jobId: zObjectId }),
+      response: {
+        "200": z.strictObject({
+          job: z.strictObject({
+            _id: zObjectId,
+            offer_title: z.string(),
+            offer_rome_appellation: z.string().nullable(),
+            offer_expiration: z.date().nullable(),
+          }),
+          applications: z.array(
+            z.strictObject({
+              _id: zObjectId,
+              applicant_first_name: z.string(),
+              applicant_last_name: z.string(),
+              company_recruitment_intention: z.string().nullable(),
+              created_at: z.date().nullable(),
+            })
+          ),
+        }),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "application:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
+    },
     "/application/company/email": {
       path: "/application/company/email",
       method: "get",

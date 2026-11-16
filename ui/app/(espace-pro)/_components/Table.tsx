@@ -1,13 +1,26 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useMemo } from "react"
-import { useFlexLayout, useSortBy, useTable } from "react-table"
+import { useFlexLayout, usePagination, useSortBy, useTable } from "react-table"
 import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 import { getFlatTableCellBordersSx, getFlatTableResetSx, getFlatTableWrapperSx } from "@/app/(espace-pro)/_components/table-styles"
+import { PaginationReactQuery } from "@/components/espace_pro/PaginationReactQuery"
 
-const Table = ({ caption, data, columns }: { caption: string; data: any[]; columns: any }) => {
+type TableProps = {
+  caption: string
+  data: any[]
+  columns: any
+  /** Sans valeur, toutes les lignes s'affichent sur une seule page. */
+  pageSize?: number
+  /** Colonnes dont les cellules identifient la ligne : rendues en `th scope="row"` et référencées par les autres cellules (RGAA 5.7). */
+  rowHeaderColumnIds?: string[]
+  initialSortBy?: { id: string; desc: boolean }[]
+  captionSrOnly?: boolean
+}
+
+const Table = ({ caption, data, columns, pageSize, rowHeaderColumnIds = [], initialSortBy = [{ id: "createdAt", desc: true }], captionSrOnly = false }: TableProps) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -16,12 +29,22 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
       columns: tableColumns,
       data: tableData,
       defaultColumn: { width: 150 },
-      initialState: { sortBy: [{ id: "createdAt", desc: true }] },
+      initialState: { sortBy: initialSortBy, pageSize: pageSize ?? Number.MAX_SAFE_INTEGER },
     },
     useFlexLayout,
-    useSortBy
+    useSortBy,
+    usePagination
   )
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    pageCount,
+    gotoPage,
+    prepareRow,
+    state: { pageIndex },
+  } = tableInstance
 
   return (
     <Box className="fr-table">
@@ -34,9 +57,14 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
               sx={{
                 ...getFlatTableResetSx(),
                 ...getFlatTableCellBordersSx(),
+                "& tbody th": { backgroundColor: "var(--background-default-grey) !important" },
               }}
             >
-              <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v") }} component="caption">
+              <Box
+                className={captionSrOnly ? "fr-sr-only" : undefined}
+                sx={captionSrOnly ? undefined : { position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v") }}
+                component="caption"
+              >
                 {caption}
               </Box>
               <Box component="thead">
@@ -108,18 +136,22 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                 })}
               </Box>
               <Box as="tbody" {...getTableBodyProps()}>
-                {rows.map((row) => {
+                {page.map((row) => {
                   prepareRow(row)
                   const { key: rowKey, ...rowProps } = row.getRowProps()
+                  const rowHeaderIds = rowHeaderColumnIds.map((columnId) => `${columnId}-${row.id}`)
                   return (
                     <Box key={rowKey} as="tr" {...rowProps}>
                       {row.cells.map((cell) => {
                         const { key: cellKey, ...cellProps } = cell.getCellProps()
+                        const isRowHeader = rowHeaderColumnIds.includes(cell.column.id)
+                        const headerProps = isRowHeader
+                          ? { as: "th", scope: "row", id: `${cell.column.id}-${row.id}`, headers: cell.column.id }
+                          : { as: "td", headers: [cell.column.id, ...rowHeaderIds].join(" ") }
                         return (
                           <Box
                             key={cellKey}
-                            headers={cell.column.id}
-                            as="td"
+                            {...headerProps}
                             {...cellProps}
                             {...(cell.column.id === "action" ? { sx: { padding: `${fr.spacing("1v")} !important` } } : {})}
                             alignContent={"center"}
@@ -136,6 +168,7 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
           </Box>
         </Box>
       </Box>
+      {pageSize !== undefined && <PaginationReactQuery gotoPage={gotoPage} pageCount={pageCount} currentPage={pageIndex} />}
     </Box>
   )
 }

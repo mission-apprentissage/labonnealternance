@@ -141,6 +141,8 @@ export const setJobPartnerClassification = async (id: string, classification: "p
  */
 export const getModerationQueue = async (querystring: IQuery<IRoutes["get"]["/moderation/jobs"]>) => apiGet("/moderation/jobs", { querystring: removeUndefinedFields(querystring) })
 
+export const getJobApplications = async (jobId: string) => apiGet("/application/job/:jobId", { params: { jobId } })
+
 export const getModerationSummaries = async (ids: string[]) => apiGet("/moderation/jobs/summary", { querystring: { ids } })
 
 export const getModerationJob = async (id: string) => apiGet("/moderation/jobs/:id", { params: { id } })
