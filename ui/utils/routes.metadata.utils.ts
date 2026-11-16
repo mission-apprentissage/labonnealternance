@@ -62,6 +62,10 @@ export const METADATA = {
       title: "30 métiers en alternance qui recrutent | La bonne alternance",
       description: "Découvrez 30 métiers accessibles en alternance avec offres, salaires moyens et formations. Tertiaire, numérique, médico-social, artisanat.",
     }),
+    alternanceSecteurs: () => ({
+      title: "Alternance par secteur : métiers, offres et formations | La bonne alternance",
+      description: "Trouvez votre alternance par secteur : métiers, offres, entreprises qui recrutent, salaires et formations du CAP au bac+5.",
+    }),
     alternanceVilles: () => ({
       title: "Alternance dans 30 grandes villes | La bonne alternance",
       description: "Trouvez votre alternance dans 30 grandes villes françaises. Offres, entreprises qui recrutent, logement, transports et vie d'alternant.",
