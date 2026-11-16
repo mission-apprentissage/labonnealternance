@@ -3,7 +3,7 @@ import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { roleManagementEventFactory, saveDbEntity, saveEntreprise, saveEntrepriseUserTest, saveRoleManagement, validatedUserStatus } from "@tests/utils/user.test.utils"
 import { omit } from "lodash-es"
-import { ObjectId } from "mongodb"
+import { Collection, ObjectId } from "mongodb"
 import { AccessEntityType, AccessStatus, JOB_CLOSURE_ORIGIN, JOB_CLOSURE_REASON, JOB_STATUS_ENGLISH, removeAccents } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
@@ -13,6 +13,7 @@ import { generateJobFixture } from "shared/fixtures/recruiter.fixture"
 import { generateRoleManagementFixture, generateRoleManagementStatusEventFixture } from "shared/fixtures/role-management.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
+import dayjs from "shared/helpers/dayjs"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IFormationCatalogue } from "shared/models/formation.model"
 import { zFormationCatalogueSchema } from "shared/models/formation.model"
@@ -21,8 +22,10 @@ import { JOB_START_TYPE, OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobs-partners-computed.model"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { UserEventType } from "shared/models/user-with-account.model"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { expireJobsPartners } from "@/jobs/offre-partenaire/expire-jobs-partners"
 import { buildEstablishmentId } from "./etablissement.service"
 import {
   ARCHIVE_FORMULAIRE_REASON,
@@ -698,6 +701,80 @@ describe("checkForJobActivations", () => {
 
     await expect(checkForJobActivations(user._id, entreprise._id)).resolves.toEqual([])
     expect(mailer.sendEmail).not.toHaveBeenCalled()
+  })
+
+  describe("offre en attente annulée à son expiration (#5762)", () => {
+    const expired = () => dayjs().subtract(1, "day").toDate()
+
+    it("la republie avec une nouvelle échéance à la validation du compte", async () => {
+      const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+      const job = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE, offer_expiration: expired() })
+      await expireJobsPartners()
+      expect((await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+
+      const activated = await checkForJobActivations(user._id, entreprise._id)
+
+      expect(activated.map(({ _id }) => _id.toString())).toEqual([job._id.toString()])
+      const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: job._id })
+      expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+      expect(dayjs(updatedJob?.offer_expiration).isAfter(dayjs().add(1, "month"))).toBe(true)
+    })
+
+    it("ne republie ni une offre publiée expirée, ni une offre en attente expirée puis archivée", async () => {
+      const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+      const publishedExpired = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_expiration: expired() })
+      const pendingArchived = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE, offer_expiration: expired() })
+      await expireJobsPartners()
+      await getDbCollection("jobs_partners").updateOne(
+        { _id: pendingArchived._id },
+        { $push: { offer_status_history: { status: JOB_STATUS_ENGLISH.ANNULEE, reason: ARCHIVE_FORMULAIRE_REASON, date: new Date(), granted_by: "archive-formulaire" } } }
+      )
+
+      await expect(checkForJobActivations(user._id, entreprise._id)).resolves.toEqual([])
+      const statuses = await getDbCollection("jobs_partners")
+        .find({ _id: { $in: [publishedExpired._id, pendingArchived._id] } })
+        .toArray()
+      expect(statuses.map(({ offer_status }) => offer_status)).toEqual([JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.ANNULEE])
+    })
+  })
+
+  describe("validation pas encore répliquée sur le secondaire (#5762)", () => {
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    const isPrimaryRead = (options: unknown) => (options as { readPreference?: string } | undefined)?.readPreference === "primary"
+
+    it("publie l'offre quand la lecture hors primaire ne voit pas encore l'e-mail validé", async () => {
+      const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+      const job = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE })
+      const realFindOne = Collection.prototype.findOne
+      vi.spyOn(Collection.prototype, "findOne").mockImplementation(async function (this: Collection, ...args: Parameters<Collection["findOne"]>) {
+        const doc = await realFindOne.apply(this, args)
+        if (this.collectionName !== "userswithaccounts" || isPrimaryRead(args[1]) || !doc) return doc
+        return { ...doc, status: (doc as IUserWithAccount).status.filter(({ status }) => status !== UserEventType.VALIDATION_EMAIL) }
+      } as Collection["findOne"])
+
+      await checkForJobActivations(user._id, entreprise._id)
+
+      expect((await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    })
+
+    it("publie l'offre quand la lecture hors primaire ne voit pas encore le rôle validé", async () => {
+      const { user, entreprise } = await saveEntrepriseUserTest({ status: validatedUserStatus }, {}, { siret: ENTREPRISE_SIRET })
+      const job = await saveJob(user, entreprise, { offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE })
+      const realFind = Collection.prototype.find
+      vi.spyOn(Collection.prototype, "find").mockImplementation(function (this: Collection, ...args: Parameters<Collection["find"]>) {
+        if (this.collectionName === "rolemanagements" && !isPrimaryRead(args[1])) {
+          return realFind.call(this, { _id: new ObjectId() }, args[1])
+        }
+        return realFind.apply(this, args)
+      } as Collection["find"])
+
+      await checkForJobActivations(user._id, entreprise._id)
+
+      expect((await getDbCollection("jobs_partners").findOne({ _id: job._id }))?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    })
   })
 })
 

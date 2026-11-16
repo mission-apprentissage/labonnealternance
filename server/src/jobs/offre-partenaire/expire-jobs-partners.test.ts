@@ -7,6 +7,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { JOB_AUTO_CLOSURE_ORIGIN, JOB_PENDING_EXPIRATION_ORIGIN } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 import { expireJobsPartners } from "./expire-jobs-partners"
 
@@ -36,12 +37,15 @@ describe("expireJobsPartners", () => {
     await expireJobsPartners()
 
     const statuses = await getDbCollection("jobs_partners")
-      .find({}, { projection: { offer_title: 1, offer_status: 1 } })
+      .find({}, { projection: { offer_title: 1, offer_status: 1, offer_status_history: 1 } })
       .toArray()
-    expect(Object.fromEntries(statuses.map(({ offer_title, offer_status }) => [offer_title, offer_status]))).toEqual({
-      [JOB_STATUS_ENGLISH.ACTIVE]: JOB_STATUS_ENGLISH.ANNULEE,
-      [JOB_STATUS_ENGLISH.EN_MODERATION]: JOB_STATUS_ENGLISH.ANNULEE,
-      [JOB_STATUS_ENGLISH.EN_ATTENTE]: JOB_STATUS_ENGLISH.ANNULEE,
+    expect(
+      Object.fromEntries(statuses.map(({ offer_title, offer_status, offer_status_history }) => [offer_title, [offer_status, offer_status_history.at(-1)?.granted_by]]))
+    ).toEqual({
+      [JOB_STATUS_ENGLISH.ACTIVE]: [JOB_STATUS_ENGLISH.ANNULEE, JOB_AUTO_CLOSURE_ORIGIN.EXPIRATION],
+      [JOB_STATUS_ENGLISH.EN_MODERATION]: [JOB_STATUS_ENGLISH.ANNULEE, JOB_AUTO_CLOSURE_ORIGIN.EXPIRATION],
+      // Marqueur relu à la validation du compte pour republier l'offre (cf. checkForJobActivations).
+      [JOB_STATUS_ENGLISH.EN_ATTENTE]: [JOB_STATUS_ENGLISH.ANNULEE, JOB_PENDING_EXPIRATION_ORIGIN],
     })
     expect(vi.mocked(mailer.sendEmail).mock.calls.map(([{ data }]) => (data as { offres: { job_title: string }[] }).offres.map(({ job_title }) => job_title))).toEqual([
       [JOB_STATUS_ENGLISH.ACTIVE],
