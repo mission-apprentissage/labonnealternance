@@ -2,11 +2,20 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
-import { SEO_METIER_FORMATION_TITRES } from "shared/models/seo-metier.model"
+import { SEO_METIER_FORMATION_NIVEAUX } from "shared/models/seo-metier.model"
 import { seoCardSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import type { ISeoSecteurJson } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/secteur.types"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { PAGES } from "@/utils/routes.utils"
+
+// Libellés courts : les titres des pages métier (« Master, diplôme d'école de commerce… ») débordent des cartes.
+const NIVEAU_COURT: Record<string, string> = {
+  [SEO_METIER_FORMATION_NIVEAUX["3 (CAP...)"]]: "CAP",
+  [SEO_METIER_FORMATION_NIVEAUX["4 (BAC...)"]]: "Bac",
+  [SEO_METIER_FORMATION_NIVEAUX["5 (BTS, DEUST...)"]]: "Bac+2",
+  [SEO_METIER_FORMATION_NIVEAUX["6 (Licence, BUT...)"]]: "Bac+3",
+  [SEO_METIER_FORMATION_NIVEAUX["7 (Master, titre ingénieur...)"]]: "Bac+5",
+}
 
 type Props = Pick<ISeoSecteurJson, "secteur" | "formations_niveaux" | "formations"> & { formationsSearchUrl: string }
 
@@ -33,7 +42,7 @@ export function FormationsSecteurSection({ secteur, formations_niveaux, formatio
           return (
             <Box key={niveau.niveau} sx={{ ...seoCardSx, textAlign: "center" }}>
               <Typography component="h3" sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
-                {SEO_METIER_FORMATION_TITRES[niveau.niveau]}
+                {NIVEAU_COURT[niveau.niveau] ?? niveau.niveau}
               </Typography>
               <Typography sx={{ my: fr.spacing("4v"), fontSize: "1.125rem", color: "#666" }}>{niveau.diplomes}</Typography>
               {count ? <Typography sx={{ fontSize: "1.375rem", fontWeight: 700 }}>{count} formations</Typography> : null}

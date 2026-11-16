@@ -12,7 +12,7 @@ import { updateSeoSecteurs } from "@/services/seo.service"
  * groupes métier de la recherche LBA (`/api/rome`), vérifiés un à un sur `/api/rome/detail/:rome`.
  * Cybersécurité et data analyst ne renvoient pas vers leur page métier : celle-ci compte sur M1802 et M1403,
  * hors du périmètre de la carte (le compteur affiché différerait).
- * `marche` reste à null tant que les chiffres BMO de l'année ne sont pas sourcés.
+ * Chiffres clés, indicateurs de marché et FAQ : chaque chiffre cite sa source (vérifiées le 16 novembre 2026).
  *
  * Upsert par slug : les champs éditoriaux sont réécrits, les champs calculés sont laissés à updateSeoSecteurs().
  */
@@ -43,11 +43,70 @@ export const secteursData: ISecteurData[] = [
     meta_description:
       "Trouvez votre alternance en informatique : développeur, technicien support, administrateur réseau, cybersécurité, data. Offres, entreprises qui recrutent, salaires et formations du bac au bac+5.",
     q_recherche: "informatique",
-    description: [
-      "L'informatique regroupe les métiers qui conçoivent, font fonctionner et protègent les outils numériques des entreprises : sites et applications, réseaux, serveurs, postes de travail et données. On y trouve des postes dans les entreprises de services numériques (ESN), les éditeurs de logiciels et les start-up, mais aussi dans les services informatiques de toutes les grandes organisations : banques, industrie, commerce, administrations, hôpitaux.",
-      "En alternance, vous travaillez sur des projets réels dès le premier mois : répondre aux demandes des utilisateurs, déployer un poste, développer une fonctionnalité, surveiller un réseau. L'informatique accueille des apprentis à tous les niveaux, du bac pro au diplôme d'ingénieur. Le niveau bac+2 (BTS SIO) et le niveau bac+3 (BUT informatique, bachelors) sont les portes d'entrée les plus courantes.",
+    description: {
+      intro:
+        "L'informatique regroupe les métiers qui conçoivent, font fonctionner et protègent les outils numériques des entreprises : sites et applications, réseaux, serveurs, postes de travail et données.",
+      blocs: [
+        {
+          titre: "Qui recrute ?",
+          texte:
+            "Les entreprises de services numériques (ESN), les éditeurs de logiciels et les start-up, mais aussi les services informatiques des banques, de l'industrie, du commerce, des collectivités et des hôpitaux.",
+        },
+        {
+          titre: "Votre quotidien",
+          texte:
+            "Dès les premières semaines : dépanner les utilisateurs, déployer des postes, développer une fonctionnalité ou surveiller un réseau, avec un maître d'apprentissage qui vous accompagne.",
+        },
+        {
+          titre: "Le rythme",
+          texte:
+            "Au moins 25 % du contrat d'apprentissage se passe en formation (service-public.fr). Selon l'école : quelques jours par semaine, une semaine sur deux ou plusieurs semaines d'affilée.",
+        },
+        {
+          titre: "À quel niveau commencer ?",
+          texte:
+            "Dès le bac pro CIEL, le plus souvent en BTS SIO (bac+2), puis en BUT, licence pro ou bachelor (bac+3). Cybersécurité, data et gestion de projet visent plutôt bac+3 à bac+5.",
+        },
+        {
+          titre: "Petite structure ou grand groupe ?",
+          texte: "Dans une petite entreprise, vos missions sont variées. Dans un grand groupe, votre périmètre est plus précis et les méthodes plus cadrées.",
+        },
+        {
+          titre: "Notre conseil",
+          texte: "Les intitulés de poste changent d'une entreprise à l'autre : lisez les missions décrites dans l'offre plutôt que le seul titre.",
+        },
+      ],
+    },
+    chiffres_cles: [
+      {
+        valeur: "46",
+        libelle: "fiches métiers ROME couvertes par cette page",
+        source_libelle: "Référentiel ROME 4.0, France Travail",
+        source_url: "https://www.data.gouv.fr/datasets/repertoire-operationnel-des-metiers-et-des-emplois-rome",
+        annee: 2026,
+      },
+      {
+        valeur: "670 000",
+        libelle: "personnes employées par les entreprises du numérique en France",
+        source_libelle: "Numeum, communiqué du 18 décembre 2025",
+        source_url: "https://numeum.fr/wp-content/uploads/2025/12/Numeum_Communique-de-presse-S2-2025-2026.pdf",
+        annee: 2025,
+      },
+      {
+        valeur: "27 510",
+        libelle: "projets de recrutement d'ingénieurs de l'informatique en 2026",
+        source_libelle: "France Travail, enquête BMO 2026",
+        source_url: "https://statistiques.francetravail.org/bmo/bmo?ld=0&pp=2026",
+        annee: 2026,
+      },
+      {
+        valeur: "65 %",
+        libelle: "des apprentis sortis d'un BTS en emploi salarié 6 mois après",
+        source_libelle: "DEPP et Dares, InserJeunes, Note d'information n° 25.69",
+        source_url: "https://www.education.gouv.fr/sites/default/files/document/Education_nationale_DEPP_NI%20IJ%20apprentis%2025-69.pdf-476813.pdf",
+        annee: 2025,
+      },
     ],
-    chiffres_cles: [],
     metiers: [
       {
         libelle: "Développeur web",
@@ -92,7 +151,49 @@ export const secteursData: ISecteurData[] = [
         metier_slug: null,
       },
     ],
-    marche: null,
+    marche: {
+      comparaison: {
+        titre: "Part des recrutements jugés difficiles par les employeurs en 2026",
+        barres: [
+          {
+            libelle: "Ingénieurs de l'informatique",
+            valeur: 53.2,
+            affichage: "53,2 %",
+          },
+          {
+            libelle: "Techniciens de l'informatique",
+            valeur: 45.8,
+            affichage: "45,8 %",
+          },
+          {
+            libelle: "Ensemble des métiers",
+            valeur: 43.8,
+            affichage: "43,8 %",
+          },
+        ],
+        source_libelle: "France Travail, enquête Besoins en main-d'œuvre 2026",
+        source_url: "https://statistiques.francetravail.org/bmo/bmo?ld=0&pp=2026",
+        annee: 2026,
+      },
+      faits: [
+        {
+          valeur: "1,1",
+          texte: "indicateur de tension des ingénieurs de l'informatique, contre 0,6 pour l'ensemble des métiers",
+          source_libelle: "Insee Références, données Dares et France Travail",
+          source_url: "https://www.insee.fr/fr/statistiques/8616805",
+          annee: 2023,
+        },
+        {
+          valeur: "3,1 %",
+          texte: "de recrutements saisonniers chez les techniciens de l'informatique, contre 32,2 % tous métiers confondus",
+          source_libelle: "France Travail, enquête BMO 2026",
+          source_url: "https://statistiques.francetravail.org/bmo/bmo?ld=0&pp=2026",
+          annee: 2026,
+        },
+      ],
+      interpretation:
+        "Les employeurs ont plus de mal à recruter des ingénieurs de l'informatique que la moyenne des métiers : il manque de candidats qualifiés, mais l'embauche n'est pas assurée pour autant. Pour les techniciens, l'écart est faible. Dans les deux cas, les recrutements se font toute l'année.",
+    },
     formations_niveaux: [
       { niveau: SEO_METIER_FORMATION_NIVEAUX["4 (BAC...)"], diplomes: "Bac pro CIEL", diplome_slug: "bac-pro-ciel" },
       { niveau: SEO_METIER_FORMATION_NIVEAUX["5 (BTS, DEUST...)"], diplomes: "BTS SIO (options SISR et SLAM), BTS CIEL", diplome_slug: "bts-sio" },
@@ -107,27 +208,42 @@ export const secteursData: ISecteurData[] = [
       {
         question: "Quel diplôme préparer pour une alternance en informatique ?",
         reponse:
-          "Après le bac, le BTS SIO (bac+2) est le diplôme le plus courant en alternance. Il prépare au support et aux réseaux (option SISR) ou au développement (option SLAM). Vous pouvez ensuite poursuivre en BUT, en licence professionnelle ou en bachelor (bac+3), puis en master ou en école d'ingénieur (bac+5).",
+          "Tout dépend de votre niveau et du métier visé. Après la 3e, le bac pro CIEL prépare au support et aux réseaux. Après le bac, le BTS SIO (bac+2) est le diplôme le plus courant en alternance : l'option SISR mène au support, aux systèmes et aux réseaux, l'option SLAM au développement. Vous pouvez poursuivre en BUT, en licence professionnelle ou en bachelor (bac+3), puis en master ou en école d'ingénieur (bac+5). Pour la cybersécurité, la data ou la gestion de projet, les entreprises demandent le plus souvent un niveau bac+3 à bac+5.",
       },
       {
-        question: "Peut-on trouver une alternance en informatique sans école ?",
+        question: "Peut-on commencer une formation en alternance sans avoir trouvé d'entreprise ?",
         reponse:
-          "Oui. L'entreprise et l'école se cherchent en parallèle, et beaucoup d'écoles aident leurs candidats à trouver une entreprise. Sur La bonne alternance, vous pouvez chercher les offres et les formations au même endroit.",
+          "Oui, sous conditions. Le Code du travail (article L6222-12-1) permet à une personne de 16 à 29 ans révolus de commencer une formation en apprentissage sans employeur, pendant trois mois au maximum. Elle a alors le statut de stagiaire de la formation professionnelle et le CFA l'aide à trouver une entreprise. Si un contrat est signé ensuite, sa durée est réduite des mois déjà passés en formation. Renseignez-vous auprès de l'école, car toutes ne le proposent pas. Sur La bonne alternance, vous pouvez chercher les formations et les offres au même endroit.",
       },
       {
-        question: "Quand chercher une alternance en informatique ?",
+        question: "Quand et comment chercher une entreprise en informatique ?",
         reponse:
-          "La plupart des contrats démarrent entre septembre et novembre, et les entreprises commencent à recruter dès le printemps. Commencez vos recherches plusieurs mois avant la rentrée.",
+          "La plupart des formations démarrent à la rentrée, et beaucoup d'entreprises recrutent leurs alternants dès le printemps : commencez plusieurs mois à l'avance. Selon service-public.fr, l'apprenti doit entrer en formation dans les 3 mois qui suivent le début de son contrat. Ne vous limitez pas aux offres publiées : de nombreuses entreprises recrutent sans diffuser d'annonce. Sur La bonne alternance, vous pouvez repérer des entreprises susceptibles de recruter près de chez vous et leur envoyer une candidature spontanée. Adaptez votre message à chaque entreprise et mentionnez vos projets personnels : site, application, serveur installé chez vous.",
       },
       {
         question: "Quel salaire pour un alternant en informatique ?",
         reponse:
-          "Le salaire minimum d'un apprenti dépend de son âge et de son année de contrat. Il est fixé en pourcentage du Smic. Une entreprise peut payer plus que ce minimum.",
+          "En apprentissage, le salaire minimum dépend de votre âge et de l'année de contrat. Selon service-public.fr, il est de 27 %, 39 % puis 55 % du Smic entre 16 et 17 ans, de 43 %, 51 % puis 67 % entre 18 et 20 ans, et de 53 %, 61 % puis 78 % entre 21 et 25 ans, en 1re, 2e et 3e année. À partir de 26 ans, c'est au moins le Smic. Entre 21 et 25 ans, le salaire minimum conventionnel s'applique s'il est plus favorable. L'entreprise peut toujours payer plus que ce minimum.",
       },
       {
         question: "Apprentissage ou contrat de professionnalisation ?",
         reponse:
-          "Les deux alternent formation et entreprise. Le contrat d'apprentissage prépare à un diplôme ou à un titre reconnu, et c'est le plus répandu. Le contrat de professionnalisation vise une qualification et il est plus souvent proposé aux personnes en reconversion. La bonne alternance publie les offres des deux types.",
+          "Les deux contrats alternent formation et travail en entreprise. Le contrat d'apprentissage prépare à un diplôme ou à un titre professionnel ; selon service-public.fr, il s'adresse aux jeunes de 16 à 29 ans révolus, avec des exceptions. Le contrat de professionnalisation est ouvert aux jeunes de 16 à 25 ans révolus et aux demandeurs d'emploi d'au moins 26 ans, ce qui en fait une voie fréquente en reconversion. Sa rémunération minimale est de 55 % du Smic avant 21 ans, 70 % de 21 à 25 ans, et le Smic à partir de 26 ans, avec une majoration selon votre niveau de diplôme. La bonne alternance publie les offres des deux types.",
+      },
+      {
+        question: "Peut-on faire une alternance en informatique après un bac général ou en reconversion ?",
+        reponse:
+          "Oui. Le BTS SIO, le BUT informatique et de nombreux bachelors recrutent des bacheliers généraux, sur dossier et parfois après un entretien. Les entreprises regardent aussi vos projets personnels : un site, un script, un serveur monté chez vous montrent votre motivation. En reconversion, l'apprentissage reste possible jusqu'à 29 ans révolus, et au-delà dans certains cas prévus par la loi. Après 26 ans, le contrat de professionnalisation est ouvert aux demandeurs d'emploi. Des titres professionnels inscrits au RNCP se préparent aussi en alternance.",
+      },
+      {
+        question: "Est-on embauché après une alternance en informatique ?",
+        reponse:
+          "Ce n'est pas automatique, mais l'alternance donne une expérience que les recruteurs regardent. Selon la DEPP et la Dares (InserJeunes), 65 % des apprentis sortis d'un BTS en 2024 sans poursuivre d'études avaient un emploi salarié six mois plus tard, toutes spécialités confondues. Tous niveaux du CAP au BTS, 25 % travaillaient chez l'employeur de leur apprentissage et 37 % chez un autre employeur. Côté recruteurs, l'enquête BMO 2026 de France Travail compte 27 510 projets de recrutement d'ingénieurs de l'informatique, dont 53,2 % jugés difficiles.",
+      },
+      {
+        question: "Quel est le rythme entre l'école et l'entreprise ?",
+        reponse:
+          "Le rythme est fixé par l'école et figure dans le calendrier remis à l'entreprise. Les plus courants sont deux ou trois jours en formation par semaine, une semaine sur deux, ou plusieurs semaines d'affilée en entreprise puis en formation. Selon service-public.fr, la formation en CFA doit représenter au moins 25 % de la durée totale du contrat d'apprentissage. Avant de vous inscrire, vérifiez que le rythme proposé convient aux entreprises que vous visez : certaines préfèrent des périodes longues pour suivre un projet.",
       },
     ],
   },

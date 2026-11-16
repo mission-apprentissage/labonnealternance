@@ -20,19 +20,28 @@ const ZSeoSecteurSource = {
   annee: z.number(),
 }
 
-// Indicateur du secteur comparé à une référence de même source et de même année (ex. moyenne tous métiers).
-const ZSeoSecteurIndicateur = z.object({
-  libelle: z.string(),
-  valeur_secteur: z.number(),
-  valeur_reference: z.number(),
-  libelle_reference: z.string(),
-  unite: z.string(),
+// Une seule comparaison en barres (rendue par BarChartHorizontal du baromètre), la référence en dernière barre.
+const ZSeoSecteurComparaison = z.object({
+  titre: z.string(),
+  barres: z.array(z.object({ libelle: z.string(), valeur: z.number(), affichage: z.string() })),
+  ...ZSeoSecteurSource,
+})
+
+const ZSeoSecteurFait = z.object({
+  valeur: z.string(),
+  texte: z.string(),
   ...ZSeoSecteurSource,
 })
 
 const ZSeoSecteurMarche = z.object({
-  indicateurs: z.array(ZSeoSecteurIndicateur),
+  comparaison: ZSeoSecteurComparaison.nullable(),
+  faits: z.array(ZSeoSecteurFait),
   interpretation: z.string(),
+})
+
+const ZSeoSecteurDescription = z.object({
+  intro: z.string(),
+  blocs: z.array(z.object({ titre: z.string(), texte: z.string() })),
 })
 
 const ZSeoSecteurChiffreCle = z.object({
@@ -68,7 +77,7 @@ export const ZSeoSecteur = z.strictObject({
   accroche: z.string(),
   meta_description: z.string(),
   q_recherche: z.string(),
-  description: z.array(z.string()),
+  description: ZSeoSecteurDescription,
   chiffres_cles: z.array(ZSeoSecteurChiffreCle),
   metiers: z.array(ZSeoSecteurMetier),
   marche: ZSeoSecteurMarche.nullable(),
