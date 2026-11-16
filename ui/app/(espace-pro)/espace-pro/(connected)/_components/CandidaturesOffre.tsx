@@ -15,7 +15,7 @@ import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import Table from "@/app/(espace-pro)/_components/Table"
 import { publicConfig } from "@/config.public"
-import { getJobApplications } from "@/utils/api"
+import { getFormulaire, getJobApplications } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
 const APPLICATIONS_PAGE_SIZE = 20
@@ -91,15 +91,28 @@ const columns = [
   },
 ]
 
-export const CandidaturesOffre = ({ job_id }: { job_id: string }) => {
+/** Sans `cfaEstablishmentId`, page du recruteur ; avec, page du CFA pour l'entreprise qu'il gère. */
+export const CandidaturesOffre = ({ job_id, cfaEstablishmentId }: { job_id: string; cfaEstablishmentId?: string }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["job-applications", job_id],
     queryFn: () => getJobApplications(job_id),
     retry: false,
   })
+  // Même clé que la page entreprise du CFA : le nom de l'entreprise y est déjà en cache.
+  const { data: recruiter } = useQuery({
+    queryKey: ["recruiter", cfaEstablishmentId],
+    queryFn: () => getFormulaire(cfaEstablishmentId),
+    enabled: Boolean(cfaEstablishmentId),
+  })
 
-  const homePage = { ...PAGES.static.backHomeEntreprise, title: "Entreprise" }
-  const breadcrumbPages = [homePage, PAGES.dynamic.backEntrepriseCandidaturesOffre({ job_id })]
+  const breadcrumbPages = cfaEstablishmentId
+    ? [
+        PAGES.static.backCfaHome,
+        PAGES.dynamic.backCfaPageEntreprise(cfaEstablishmentId, recruiter?.establishment_raison_sociale ?? recruiter?.establishment_siret),
+        PAGES.dynamic.backCfaEntrepriseCandidaturesOffre({ establishment_id: cfaEstablishmentId, job_id }),
+      ]
+    : [{ ...PAGES.static.backHomeEntreprise, title: "Entreprise" }, PAGES.dynamic.backEntrepriseCandidaturesOffre({ job_id })]
+  const backPath = cfaEstablishmentId ? PAGES.dynamic.backCfaPageEntreprise(cfaEstablishmentId).getPath() : PAGES.static.backHomeEntreprise.getPath()
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -120,7 +133,7 @@ export const CandidaturesOffre = ({ job_id }: { job_id: string }) => {
           <CandidaturesOffreContent data={data} />
         )}
         <Box sx={{ mt: fr.spacing("2v") }}>
-          <Link className="fr-link fr-link--sm fr-link--icon-left fr-icon-arrow-left-line" href={PAGES.static.backHomeEntreprise.getPath()}>
+          <Link className="fr-link fr-link--sm fr-link--icon-left fr-icon-arrow-left-line" href={backPath}>
             Retour à mes offres
           </Link>
         </Box>

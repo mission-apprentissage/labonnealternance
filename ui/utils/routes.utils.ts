@@ -571,6 +571,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}` as string,
       title: establishmentLabel ?? "Entreprise",
     }),
+    backCfaEntrepriseCandidaturesOffre: ({ establishment_id, job_id }: { establishment_id: string; job_id: string }): IPage => ({
+      getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/offre/${job_id}/candidatures` as string,
+      title: "Candidatures",
+    }),
     backCfaPageInformations: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/informations` as string,
       title: "Informations de contact",

@@ -79,19 +79,15 @@ type LocalJob = Omit<IJobJson, "_id"> & { candidatures: number; candidatures_en_
 const getJobTitle = ({ offer_title_custom, rome_appellation_label, rome_label }: Pick<LocalJob, "offer_title_custom" | "rome_appellation_label" | "rome_label">) =>
   offer_title_custom ?? rome_appellation_label ?? rome_label
 
-const CandidaturesCell = ({ job, canOpenApplications }: { job: LocalJob; canOpenApplications: boolean }) => {
+const CandidaturesCell = ({ job, applicationsPath }: { job: LocalJob; applicationsPath?: string }) => {
   const total = Math.max(job.candidatures ?? 0, 0)
   if (total === 0) {
     return total
   }
   const consultation = getApplicationsConsultation(job.job_expiration_date)
   const totalLabel =
-    canOpenApplications && consultation.status !== "unavailable" ? (
-      <Link
-        className="fr-link"
-        href={PAGES.dynamic.backEntrepriseCandidaturesOffre({ job_id: job._id }).getPath()}
-        aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}
-      >
+    applicationsPath && consultation.status !== "unavailable" ? (
+      <Link className="fr-link" href={applicationsPath} aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}>
         {total}
       </Link>
     ) : (
@@ -272,6 +268,17 @@ export const OffresTabs = ({
         },
       ]
     : []
+  // Les candidatures ne s'ouvrent qu'au recruteur et au CFA qui gère l'entreprise (cf. getJobApplicationsForRecruiter).
+  const buildApplicationsPath = (job_id: string): string | undefined => {
+    switch (user?.type) {
+      case AUTHTYPE.ENTREPRISE:
+        return PAGES.dynamic.backEntrepriseCandidaturesOffre({ job_id }).getPath()
+      case AUTHTYPE.CFA:
+        return PAGES.dynamic.backCfaEntrepriseCandidaturesOffre({ establishment_id: recruiter.establishment_id, job_id }).getPath()
+      default:
+        return undefined
+    }
+  }
   const statsColumns = showStats
     ? [
         {
@@ -301,7 +308,7 @@ export const OffresTabs = ({
           width: "150",
           disableSortBy: true,
           accessor: ({ candidatures = 0 }) => Math.max(candidatures, 0),
-          Cell: ({ row: { original } }: { row: { original: LocalJob } }) => <CandidaturesCell job={original} canOpenApplications={user?.type === AUTHTYPE.ENTREPRISE} />,
+          Cell: ({ row: { original } }: { row: { original: LocalJob } }) => <CandidaturesCell job={original} applicationsPath={buildApplicationsPath(original._id)} />,
         },
       ]
     : []
