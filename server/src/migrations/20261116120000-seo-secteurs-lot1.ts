@@ -10,6 +10,8 @@ import { updateSeoSecteurs } from "@/services/seo.service"
  *
  * Les libellés de métiers reprennent les mots tapés par les étudiants (GSC). Les codes ROME v4 viennent des
  * groupes métier de la recherche LBA (`/api/rome`), vérifiés un à un sur `/api/rome/detail/:rome`.
+ * Cybersécurité et data analyst ne renvoient pas vers leur page métier : celle-ci compte sur M1802 et M1403,
+ * hors du périmètre de la carte (le compteur affiché différerait).
  * `marche` reste à null tant que les chiffres BMO de l'année ne sont pas sourcés.
  *
  * Upsert par slug : les champs éditoriaux sont réécrits, les champs calculés sont laissés à updateSeoSecteurs().
@@ -71,14 +73,14 @@ export const secteursData: ISecteurData[] = [
         romes: ["M1812", "M1817", "M1819", "M1833", "M1844", "M1856", "M1866", "M1882", "M1883", "M1884"],
         description: "Protège les systèmes contre les attaques et gère les incidents de sécurité.",
         niveau_acces: "Bac+3 à bac+5",
-        metier_slug: "developpeur-cybersecurite",
+        metier_slug: null,
       },
       {
         libelle: "Data analyst",
         romes: ["M1811", "M1824", "M1851", "M1868", "M1872", "M1889", "M1894"],
         description: "Collecte et analyse les données pour aider l'entreprise à prendre des décisions.",
         niveau_acces: "Bac+3 à bac+5",
-        metier_slug: "data-analyst",
+        metier_slug: null,
       },
       {
         libelle: "Chef de projet informatique",

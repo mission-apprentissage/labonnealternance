@@ -1,10 +1,11 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { metierData } from "@/jobs/seo/data-metier-seo"
 import { secteursData, up } from "@/migrations/20261116120000-seo-secteurs-lot1"
 
 // Pages /alternance/metier existantes (ui/app/(editorial)/alternance/_components/metier_data.tsx).
-const METIER_PAGES_EXISTANTES = ["developpeur-web", "developpeur-cybersecurite", "data-analyst"]
+const METIER_PAGES_EXISTANTES = ["developpeur-web"]
 
 describe("migration seo-secteurs-lot1", () => {
   useMongo()
@@ -31,6 +32,17 @@ describe("migration seo-secteurs-lot1", () => {
     expect(slugs.length).toBeGreaterThan(0)
     for (const slug of slugs) {
       expect(METIER_PAGES_EXISTANTES).toContain(slug)
+    }
+  })
+
+  // Le compteur de la carte doit porter sur le même périmètre que la page métier vers laquelle elle renvoie.
+  it("ne renvoie vers une page métier que si la carte couvre ses codes ROME", () => {
+    for (const metier of secteursData.flatMap((s) => s.metiers).filter((m) => m.metier_slug)) {
+      const page = metierData.find((m) => m.slug === metier.metier_slug)
+      expect(page, metier.metier_slug ?? "").toBeDefined()
+      for (const rome of page?.romes ?? []) {
+        expect(metier.romes, `${metier.libelle} → ${metier.metier_slug}`).toContain(rome)
+      }
     }
   })
 })

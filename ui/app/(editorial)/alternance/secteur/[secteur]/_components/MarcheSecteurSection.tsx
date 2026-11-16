@@ -9,6 +9,8 @@ type Props = Pick<ISeoSecteurJson, "secteur" | "marche" | "job_count" | "company
 const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value)
 
 export function MarcheSecteurSection({ secteur, marche, job_count, company_count }: Props) {
+  if (!marche && !job_count) return null
+
   return (
     <Box sx={seoSectionSx}>
       <Typography component="h2" variant="h2" sx={seoH2Sx}>
