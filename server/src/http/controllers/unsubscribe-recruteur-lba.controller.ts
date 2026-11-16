@@ -19,9 +19,9 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const email = req.body.email.toLowerCase()
-      const reason = req.body.reason
+      const { reason, reason_detail } = req.body
 
-      const result = await unsubscribeNoSiret({ email, reason })
+      const result = await unsubscribeNoSiret({ email, reason, reasonDetail: reason_detail })
       if ("modifiedCount" in result && result.modifiedCount === 0) {
         throw notFound(UNSUBSCRIBE_EMAIL_ERRORS.UNKNOWN_COMPANY)
       }
@@ -41,12 +41,11 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const email = req.body.email.toLowerCase()
-      const reason = req.body.reason
-      const sirets = req.body.sirets
+      const { reason, reason_detail, sirets } = req.body
       if (!sirets.length) {
         throw badRequest(UNSUBSCRIBE_EMAIL_ERRORS.SIRETS_EMPTY)
       }
-      const result = await unsubscribeWithSirets({ email, reason, sirets })
+      const result = await unsubscribeWithSirets({ email, reason, reasonDetail: reason_detail, sirets })
       if (result.modifiedCount === 0) {
         throw notFound(UNSUBSCRIBE_EMAIL_ERRORS.UNKNOWN_COMPANY)
       }

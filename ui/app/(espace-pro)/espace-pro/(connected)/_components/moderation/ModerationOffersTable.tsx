@@ -11,8 +11,9 @@ import type { ColumnDef } from "@/app/(espace-pro)/_components/VirtualTable"
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { PaginationButton } from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/PaginationButton"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
+import { ConformityWithAgentNote } from "./AgentNote"
 import { AccountStatusBadge, AccountTypeBadge, ConformityBadge, OfferStatusBadge } from "./ModerationBadges"
-import type { IModerationQueueItemJson, IModerationUserType } from "./moderation.types"
+import type { IModerationQueueItemJson, IModerationSummaryJson, IModerationUserType } from "./moderation.types"
 
 export const MODERATION_PAGE_SIZE = 50
 export const MODERATION_DEFAULT_SORTING: SortingState = [{ id: "created_at", desc: true }]
@@ -31,7 +32,11 @@ export const toModerationSort = ([current]: SortingState): { sort: IModerationQu
 })
 
 // Tri côté serveur : accessorFn ne sert qu'à rendre la colonne triable (cf. VirtualTable, onSortingChange).
-export const getModerationColumns = (userType: IModerationUserType, renderMenu: (row: IModerationQueueItemJson) => ReactNode): ColumnDef<IModerationQueueItemJson>[] => [
+export const getModerationColumns = (
+  userType: IModerationUserType,
+  renderMenu: (row: IModerationQueueItemJson) => ReactNode,
+  summariesById: Map<string, IModerationSummaryJson> = new Map()
+): ColumnDef<IModerationQueueItemJson>[] => [
   {
     id: "action",
     header: "",
@@ -69,7 +74,12 @@ export const getModerationColumns = (userType: IModerationUserType, renderMenu: 
     header: "Conformité",
     accessorFn: (row) => row.offer_moderation_status,
     size: 170,
-    cell: (info) => <ConformityBadge verdict={info.row.original.offer_moderation_verdict} status={info.row.original.offer_moderation_status} />,
+    cell: (info) => {
+      const { _id, offer_moderation_verdict, offer_moderation_status } = info.row.original
+      const summary = summariesById.get(_id)
+      // Badge seul tant que les constats ne sont pas chargés : une note vide se lirait « Conforme ».
+      return summary ? <ConformityWithAgentNote summary={summary} /> : <ConformityBadge verdict={offer_moderation_verdict} status={offer_moderation_status} />
+    },
   },
   {
     id: "created_at",

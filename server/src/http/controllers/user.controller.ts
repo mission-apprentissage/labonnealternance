@@ -7,10 +7,12 @@ import { CFA, OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJob } from "shared/index"
 import { getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
 import type { ICFA } from "shared/models/cfa.model"
+import type { ComputedUserAccess } from "shared/models/computed-user-access.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { HANDI_ENGAGEMENT_OUI } from "shared/models/referentiel-engagement-entreprise.model"
+import type { IRoleManagement } from "shared/models/role-management.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -20,6 +22,7 @@ import { buildEstablishmentId } from "@/services/etablissement.service"
 import { getFormulaireWithRomeDetail } from "@/services/formulaire.service"
 import { updateEntrepriseHandiEngagement } from "@/services/organization.service"
 import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, getGrantedRoles, getOrganizationFromRole, roleToUserType } from "@/services/role-management.service"
+import { getSameSiretAccounts } from "@/services/same-siret-accounts.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -30,6 +33,40 @@ import {
   userAndRoleAndOrganizationToUserRecruteur,
 } from "@/services/user-recruteur.service"
 import { createSuperUser } from "@/services/user-with-account.service"
+
+/**
+ * Rôles de l'utilisateur ciblé que le demandeur peut consulter. Le `securityScheme` ne contrôle `organizationId`
+ * que s'il désigne une entreprise : un OPCO ne doit pas atteindre, par `"unused"` ou un id de CFA, un rôle hors de son OPCO.
+ */
+const getReadableRoles = async (userId: string, userAccess: ComputedUserAccess | undefined) => {
+  const allRoles = await getDbCollection("rolemanagements")
+    .find({ user_id: new ObjectId(userId) })
+    .toArray()
+  if (!userAccess) return { allRoles, readableRoles: [] }
+  if (userAccess.admin || userAccess.users.includes(userId)) return { allRoles, readableRoles: allRoles }
+  const entrepriseIds = allRoles.flatMap((role) =>
+    role.authorized_type === AccessEntityType.ENTREPRISE && ObjectId.isValid(role.authorized_id) ? [new ObjectId(role.authorized_id)] : []
+  )
+  const entreprisesOfOpco = await getDbCollection("entreprises")
+    .find({ _id: { $in: entrepriseIds }, opco: { $in: userAccess.opcos } }, { projection: { _id: 1 } })
+    .toArray()
+  const readableIds = new Set(entreprisesOfOpco.map(({ _id }) => _id.toString()))
+  return { allRoles, readableRoles: allRoles.filter((role) => role.authorized_type === AccessEntityType.ENTREPRISE && readableIds.has(role.authorized_id)) }
+}
+
+const assertReadableRole = ({ allRoles, readableRoles }: { allRoles: IRoleManagement[]; readableRoles: IRoleManagement[] }, organizationId: string) => {
+  if (allRoles.length === 0) throw badRequest("role not found")
+  if (readableRoles.length === 0 || (allRoles.some((role) => role.authorized_id === organizationId) && !readableRoles.some((role) => role.authorized_id === organizationId))) {
+    throw forbidden()
+  }
+}
+
+// Prefer exact organizationId match > GRANTED > AWAITING_VALIDATION > any (fallback for deactivated users with a single DENIED role)
+const findTargetRole = (roles: IRoleManagement[], organizationId: string): IRoleManagement | undefined =>
+  roles.find((r) => r.authorized_id === organizationId) ??
+  roles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.GRANTED) ??
+  roles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.AWAITING_VALIDATION) ??
+  roles[0]
 
 export default (server: Server) => {
   server.get(
@@ -175,6 +212,31 @@ export default (server: Server) => {
   )
 
   server.get(
+    "/user/:userId/organization/:organizationId/same-siret-accounts",
+    {
+      schema: zRoutes.get["/user/:userId/organization/:organizationId/same-siret-accounts"],
+      onRequest: [server.auth(zRoutes.get["/user/:userId/organization/:organizationId/same-siret-accounts"])],
+    },
+    async (req, res) => {
+      const { userAccess } = req
+      // user:manage est aussi accordé à un recruteur sur son propre compte : la liste est réservée aux validateurs.
+      if (!(userAccess?.admin || userAccess?.opcos.length)) {
+        throw forbidden()
+      }
+      const { userId, organizationId } = req.params
+      const roles = await getReadableRoles(userId.toString(), userAccess)
+      assertReadableRole(roles, organizationId)
+      // L'UI passe toujours l'organisation de la fiche : pas de repli sur un autre rôle.
+      const role = roles.readableRoles.find((readable) => readable.authorized_id === organizationId)
+      if (!role) {
+        throw badRequest("role not found")
+      }
+      const accounts = await getSameSiretAccounts({ role, opcos: userAccess.admin ? null : userAccess.opcos })
+      return res.status(200).send(accounts)
+    }
+  )
+
+  server.get(
     "/user/:userId/organization/:organizationId",
     {
       schema: zRoutes.get["/user/:userId/organization/:organizationId"],
@@ -185,15 +247,9 @@ export default (server: Server) => {
       if (!requestUser) throw badRequest()
 
       const { userId, organizationId } = req.params
-      // Prefer exact organizationId match > GRANTED > AWAITING_VALIDATION > any (fallback for deactivated users with a single DENIED role)
-      const allRoles = await getDbCollection("rolemanagements")
-        .find({ user_id: new ObjectId(userId) })
-        .toArray()
-      const role =
-        allRoles.find((r) => r.authorized_id === organizationId) ??
-        allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.GRANTED) ??
-        allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.AWAITING_VALIDATION) ??
-        allRoles[0]
+      const roles = await getReadableRoles(userId, req.userAccess)
+      assertReadableRole(roles, organizationId)
+      const role = findTargetRole(roles.readableRoles, organizationId)
       if (!role) {
         throw badRequest("role not found")
       }

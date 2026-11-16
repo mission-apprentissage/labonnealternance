@@ -10,9 +10,7 @@ import { ZResError } from "./common.routes.js"
 
 // Les trois champs texte sont bornés : le front n'envoie que des motifs d'une liste fermée (le plus
 // long fait 53 caractères) et deux précisions libres saisies dans la modale, mais la route accepte
-// n'importe quelle chaîne. job_status_comment est le plus exposé — il est recopié dans
-// offer_status_history, un tableau qui ne fait que croître, où un texte non borné ferait enfler le
-// document à chaque clôture.
+// n'importe quelle chaîne, écrite telle quelle sur l'offre.
 const zJobClosingBody = z.strictObject({
   job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
   job_status_comment: z.string().max(500),
@@ -20,8 +18,8 @@ const zJobClosingBody = z.strictObject({
   job_recruitment_channel: z.string().max(500).optional(),
 })
 
-// alreadyClosed : l'offre portait déjà le statut demandé au moment de la requête (ex: lien de clôture
-// utilisé deux fois) — rien n'est réécrit, et le front adapte son message.
+// alreadyClosed : l'offre était déjà close au moment de la requête, et le front adapte son message.
+// La réponse est écrite ou non selon le dernier événement de l'offre (cf. closeOffreWithMotif).
 const zJobClosingResponse = z.strictObject({ alreadyClosed: z.boolean() })
 const zInvalidRessourceError = z.strictObject({ status: z.literal("INVALID_RESSOURCE"), message: z.string() })
 

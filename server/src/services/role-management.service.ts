@@ -11,7 +11,7 @@ import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
-import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { getDbCollection, READ_OWN_WRITES } from "@/common/utils/mongodb-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { buildEstablishmentId } from "./etablissement.service"
@@ -21,10 +21,6 @@ import mailer from "./mailer.service"
 import { applyPendingHandiEngagementIfGranted } from "./organization.service"
 import { sendWelcomeEmailToUserRecruteur } from "./user-recruteur.service"
 import { activateUser, hasActiveRoleOnAnotherOrganization } from "./user-with-account.service"
-
-// Le rôle (ou l'entreprise) a souvent été écrit plus tôt dans la même requête : la readPreference globale
-// `secondaryPreferred` peut servir un secondaire qui ne l'a pas encore répliqué (#5747).
-const READ_OWN_WRITES = { readPreference: "primary" } as const
 
 /**
  * OPCO figé à la création du rôle (#5410). Relu en base : l'appelant détient parfois une entreprise lue avant la mise à jour de son OPCO.
@@ -114,8 +110,9 @@ const applyGrantedSideEffects = async (updatedRole: IRoleManagement, becameGrant
 }
 
 export const getGrantedRoles = async (userId: string) => {
+  // Souvent appelée juste après la validation du rôle ou de l'e-mail (cf. checkForJobActivations).
   const roles = await getDbCollection("rolemanagements")
-    .find({ user_id: new ObjectId(userId) })
+    .find({ user_id: new ObjectId(userId) }, READ_OWN_WRITES)
     .toArray()
   return roles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
 }

@@ -1,4 +1,4 @@
-import { badRequest } from "@hapi/boom"
+import { badRequest, isBoom } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { assertUnreachable, zRoutes } from "shared"
 
@@ -116,8 +116,8 @@ export const jobsApiV3Routes = (server: Server) => {
           })
         } catch (err) {
           results.push({
-            error: err + "",
-            status: 500,
+            error: isBoom(err) ? err.output.payload.message : "Internal Server Error",
+            status: isBoom(err) ? err.output.statusCode : 500,
           })
         }
       })

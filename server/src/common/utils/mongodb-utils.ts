@@ -15,6 +15,12 @@ let mongodbClientState: string | null = null
 
 export const changeStreams: Set<ChangeStream> = new Set()
 
+/**
+ * Pour relire un document écrit plus tôt dans la même requête ou le même traitement : la readPreference globale
+ * `secondaryPreferred` (cf. connectToMongodb) peut servir un secondaire qui ne l'a pas encore répliqué (#5747, #5762).
+ */
+export const READ_OWN_WRITES = { readPreference: "primary" } as const
+
 export const ensureInitialization = () => {
   if (!mongodbClient) {
     throw new Error("Database connection does not exist. Please call connectToMongodb before.")

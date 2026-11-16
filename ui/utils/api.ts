@@ -106,6 +106,8 @@ export const createEtablissementDelegationByToken = async ({ data, jobId, token 
  * User API
  */
 export const getUser = async (userId: string, organizationId: string = "unused") => apiGet("/user/:userId/organization/:organizationId", { params: { userId, organizationId } })
+export const getSameSiretAccounts = async (userId: string, organizationId: string) =>
+  apiGet("/user/:userId/organization/:organizationId/same-siret-accounts", { params: { userId, organizationId } })
 export const getUserStatus = async (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
 export const getUserStatusByToken = async (userId: string, token: string) =>
   apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
@@ -147,6 +149,9 @@ export const searchModerationOffers = async (querystring: IQuery<IRoutes["get"][
 export const getCfaNonConformeCounts = async (cfaId: string) => apiGet("/moderation/cfa/:cfaId/entreprises", { params: { cfaId } })
 
 export const getModerationJob = async (id: string) => apiGet("/moderation/jobs/:id", { params: { id } })
+
+export const getModerationQueueNeighbors = async (id: string, querystring: IQuery<IRoutes["get"]["/moderation/jobs/:id/neighbors"]>) =>
+  apiGet("/moderation/jobs/:id/neighbors", { params: { id }, querystring: removeUndefinedFields(querystring) })
 
 export const validateModerationJob = async (id: string, moderationId: string) => apiPost("/moderation/jobs/:id/validate", { params: { id }, body: { moderation_id: moderationId } })
 
@@ -312,12 +317,12 @@ export const getEligibleTrainingsForAppointments = async (siret: string) =>
 
 export const getEtablissement = async (siret: string) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })
 
-export async function unsubscribeCompany({ email, reason }: { email: string; reason: string }) {
-  return apiPost("/unsubscribe", { body: { email, reason } })
+export async function unsubscribeCompany(body: IBody<IRoutes["post"]["/unsubscribe"]>) {
+  return apiPost("/unsubscribe", { body })
 }
 
-export async function unsubscribeCompanySirets({ email, reason, sirets }: { email: string; reason: string; sirets: string[] }) {
-  return apiPost("/unsubscribe/sirets", { body: { email, reason, sirets } })
+export async function unsubscribeCompanySirets(body: IBody<IRoutes["post"]["/unsubscribe/sirets"]>) {
+  return apiPost("/unsubscribe/sirets", { body })
 }
 
 export async function sendIntentionComment(id: string, token: string, body: IBody<IRoutes["post"]["/application/intentionComment/:id"]>) {

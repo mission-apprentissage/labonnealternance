@@ -21,4 +21,5 @@ readonly next_version="${1}"
 readonly COMMIT_HASH="${2}"
 readonly mode=${3:-$defaultMode}
 
-"$ROOT_DIR"/.bin/mna app:build $next_version $mode $COMMIT_HASH production
+# Image UI de recette construite avec la release : deploy-recette la déploie sans attendre un second build.
+"$ROOT_DIR"/.bin/mna app:build $next_version $mode $COMMIT_HASH release

@@ -77,7 +77,7 @@ describe("anonimize-users-with-accounts", () => {
     // Ce bump refaisait entrer des annulations anciennes dans les tableaux de bord datés sur updated_at.
     const user = await saveStaleUser()
     const updated_at = new Date("2026-01-15T09:00:00.000Z")
-    const expiration = { date: updated_at, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "offre expirée (date dépassée)", granted_by: "expire-jobs-partners" }
+    const expiration = { date: updated_at, status: JOB_STATUS_ENGLISH.ANNULEE, reason: "EXPIRED (date dépassée)", granted_by: "expire-jobs-partners" }
     await insertOffer("deja-annulee", user._id, { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at, offer_status_history: [expiration] })
 
     await anonimizeUsersWithAccounts()

@@ -71,6 +71,7 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
       // (liens générés pour les vœux Parcoursup, par des sites tiers ou pour les partenaires PRDV).
       // channel=api exclu : scripts et collecteurs qui balaient un vocabulaire, pas des usagers (#5640).
       // Paliers d'élargissement du rayon exclus : résultats jamais vus par l'usager (#5634).
+      // `purpose` exclu : comptages lancés par l'UI, pas des recherches de l'usager (#5637).
       {
         $match: {
           created_at: { $gte: since },
@@ -78,6 +79,7 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
           search_source: { $nin: ["training_links", "external_sites", "partner_links"] },
           channel: { $ne: "api" },
           auto_radius_intermediate: { $ne: true },
+          purpose: { $exists: false },
         },
       },
       {

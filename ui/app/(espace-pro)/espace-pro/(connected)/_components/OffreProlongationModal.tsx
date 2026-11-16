@@ -3,6 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Typography } from "@mui/material"
 import Box from "@mui/material/Box"
 import { Formik } from "formik"
+import { useId } from "react"
 import { JOB_START_TYPE } from "shared"
 import dayjs from "shared/helpers/dayjs"
 import * as Yup from "yup"
@@ -23,6 +24,7 @@ export const OffreProlongationModal = ({
   onOffreProlongationSubmit: (props: { job_start_type: JOB_START_TYPE; job_start_date_flexible: boolean; job_start_date: string }) => void
 }) => {
   const { isOpen, onClose } = modalControls
+  const titleId = useId()
 
   const minStartDate = dayjs().startOf("day")
   const maxStartDate = dayjs().add(2, "years")
@@ -36,7 +38,7 @@ export const OffreProlongationModal = ({
     .required("Champ obligatoire")
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={titleId}>
       <Box>
         <Formik
           validateOnMount
@@ -55,7 +57,7 @@ export const OffreProlongationModal = ({
             return (
               <>
                 <Box sx={{ px: fr.spacing("8v") }}>
-                  <ModalTitle>Prolongez votre offre</ModalTitle>
+                  <ModalTitle id={titleId}>Prolongez votre offre</ModalTitle>
                   <Typography
                     sx={{
                       my: fr.spacing("4v"),

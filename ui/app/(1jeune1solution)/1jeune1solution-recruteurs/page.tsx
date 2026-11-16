@@ -188,7 +188,7 @@ export default function UnJeune1Solution() {
             </Box>
           </Box>
           <Box sx={{ flex: 1, minWidth: 0, "& > img": { display: "block", width: "100%", maxWidth: "697px", height: "auto" } }}>
-            <NextImage src="/images/1j1s/partner.webp" alt="" aria-hidden="true" width={697} height={417} unoptimized />
+            <NextImage src="/images/1j1s/diffusion-partenaires.webp" alt="" aria-hidden="true" width={697} height={417} unoptimized />
           </Box>
         </Box>
 

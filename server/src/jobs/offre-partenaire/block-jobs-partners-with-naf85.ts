@@ -1,4 +1,5 @@
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
+import { TRAINING_ORGANIZATION_NAF_REGEX } from "shared/utils/naf-utils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import type { FillComputedJobsPartnersContext } from "./fill-computed-jobs-partners"
@@ -9,7 +10,7 @@ export const blockJobsPartnersWithNaf85 = async ({ addedMatchFilter }: FillCompu
   jobLogger.info(`job ${job} : début d'enrichissement des données`)
 
   const filter = {
-    workplace_naf_code: { $regex: "^85" },
+    workplace_naf_code: { $regex: TRAINING_ORGANIZATION_NAF_REGEX },
     business_error: null,
     jobs_in_success: { $nin: [job] },
     ...(addedMatchFilter ?? {}),

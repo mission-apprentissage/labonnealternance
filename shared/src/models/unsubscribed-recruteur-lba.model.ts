@@ -5,6 +5,8 @@ import { zObjectId } from "./common.js"
 
 const collectionName = "unsubscribedrecruteurslba" as const
 
+export const UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH = 500
+
 const ZUnsubscribedLbaCompany = z.strictObject({
   _id: zObjectId,
   siret: z.string().describe("Le Siret de la société"), // use extension.siret
@@ -21,6 +23,7 @@ const ZUnsubscribedLbaCompany = z.strictObject({
   last_update_at: z.date().describe("Date de dernières mise à jour"),
   unsubscribe_date: z.coerce.date<Date>().describe("Date de désinscription"),
   unsubscribe_reason: z.string().describe("Raison de la désinscription"),
+  unsubscribe_reason_detail: z.string().max(UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH).nullish().describe("Précision libre saisie par l'entreprise avec le motif « Autre »"),
 })
 
 export type IUnsubscribedLbaCompany = z.output<typeof ZUnsubscribedLbaCompany>

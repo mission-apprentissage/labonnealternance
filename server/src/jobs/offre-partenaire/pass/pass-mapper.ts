@@ -42,6 +42,7 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   const dcFormat = job["dc:format"]
   const dcCoverage = job["dc:coverage"]
   const dcCreator = job["dc:creator"]
+  const dcContributor = job["dc:contributor"]
   let email: string | null = null
   let phone: string | null = null
 
@@ -89,6 +90,8 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
     offer_opening_count: 1,
     offer_multicast: true,
     workplace_name: author,
+    // PASS ne transmet pas de SIRET : l'enseigne porte le ministère employeur pour regrouper ses offres
+    workplace_brand: dcContributor?.trim() || null,
     workplace_address_label: `${dcCoverage} ${dcDescription}`,
     apply_url: link,
     apply_email: email,

@@ -45,13 +45,8 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .node-version
-          cache: "yarn"
-
       - name: Install dependencies
-        run: yarn install --immutable
+        uses: ./.github/actions/install-dependencies
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -83,63 +78,14 @@ jobs:
         id: get-version
         run: echo "VERSION=$(git describe --tags --abbrev=0 | cut -c2-)" >> "$GITHUB_OUTPUT"
 
-  build-ui-recette:
-    name: Build UI image (recette)
-    needs: ["release"]
-    if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
-    runs-on: ubuntu-26.04
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          submodules: true
-
-      - name: Initialize the GnuPG keyring
-        run: |
-          install -d -m 700 "${RUNNER_TEMP}/gnupg"
-          echo "GNUPGHOME=${RUNNER_TEMP}/gnupg" >> "${GITHUB_ENV}"
-          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
-          echo -n "$OPENPGP_KEY" | gpg --batch --import
-        env:
-          OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
-
-      - name: Setup SOPS
-        uses: nhedger/setup-sops@v3
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .node-version
-          cache: "yarn"
-
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-        with:
-          platforms: linux/amd64
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Expose GitHub Runtime
-        uses: crazy-max/ghaction-github-runtime@v4
-
-      - name: Build UI recette
-        run: .bin/mna app:build ${{ needs.release.outputs.VERSION }} push $(git rev-parse HEAD) recette
-        env:
-          CI: true
-
   docker-scout-server:
     name: Docker Scout scan (server)
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     needs: ["release"]
     runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Authenticate to Docker
         uses: docker/login-action@v4
@@ -160,7 +106,9 @@ jobs:
       - name: Server Docker Scout summary
         uses: docker/scout-action@e7e2a72bf1485d10a58f30696b6c513b261ce4fa # v1.29.0
         with:
-          command: quickview,recommendations,compare
+          # `recommendations` panique en v1.29.0 (nil pointer dans recommendations.genMk),
+          # qui lit l'image de base node-caged dans l'attestation au lieu d'auto-détecter debian.
+          command: quickview,compare
           image: ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}
           to: ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.PREV_VERSION }}
           only-vex-affected: true
@@ -168,6 +116,7 @@ jobs:
           ignore-unchanged: true
 
       - name: Server Docker Upload SARIF result
+        if: ${{ !cancelled() && hashFiles('sarif-server.output.json') != '' }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: sarif-server.output.json
@@ -178,6 +127,9 @@ jobs:
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     needs: ["release"]
     runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Authenticate to Docker
         uses: docker/login-action@v4
@@ -198,7 +150,7 @@ jobs:
       - name: UI Docker Scout summary
         uses: docker/scout-action@e7e2a72bf1485d10a58f30696b6c513b261ce4fa # v1.29.0
         with:
-          command: quickview,recommendations,compare
+          command: quickview,compare # cf. Server Docker Scout summary
           image: ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production
           to: ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.PREV_VERSION }}-production
           only-vex-affected: true
@@ -206,6 +158,7 @@ jobs:
           ignore-unchanged: true
 
       - name: UI Docker Upload SARIF result
+        if: ${{ !cancelled() && hashFiles('sarif-ui.output.json') != '' }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: sarif-ui.output.json
@@ -214,12 +167,15 @@ jobs:
   deploy-recette:
     concurrency:
       group: "deploy-${{ github.workflow }}-${{ github.ref }}"
-    needs: ["release", "build-ui-recette"]
+    needs: ["release"]
+    if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     name: Deploy ${{ needs.release.outputs.VERSION }} on recette
     uses: "./.github/workflows/_deploy.yml"
     with:
       environment: recette
       app_version: ${{ needs.release.outputs.VERSION }}
+      # Déjà vérifié par npm-packages-check, dont dépend release.
+      skip_npm_check: true
     secrets:
       DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
       DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
@@ -250,13 +206,8 @@ jobs:
       - name: Setup SOPS
         uses: nhedger/setup-sops@v3
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .node-version
-          cache: "yarn"
-
       - name: Install dependencies
-        run: yarn install --immutable
+        uses: ./.github/actions/install-dependencies
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v4

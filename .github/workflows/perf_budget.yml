@@ -28,13 +28,8 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .node-version
-          cache: "yarn"
-
       - name: Install dependencies
-        run: yarn install --immutable
+        uses: ./.github/actions/install-dependencies
 
       # `shared` est résolu depuis ./dist/src (shared/package.json) : sans ce build, le build UI échoue.
       # Même ordre que le stage builder_ui du Dockerfile.

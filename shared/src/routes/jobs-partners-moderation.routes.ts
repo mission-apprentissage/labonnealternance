@@ -34,6 +34,21 @@ const zQueryArray = <T extends z.ZodType>(item: T) =>
 
 const offerShape = ZJobsPartnersOfferPrivate.shape
 
+const SEARCH_DESCRIPTION = "Raison sociale, SIRET, e-mail du recruteur ou identifiant de l'offre"
+
+/** Filtres et tri de la file, repris par la navigation entre offres de la page de détail. */
+export const ZModerationQueueFilters = z.object({
+  conformity: zQueryArray(z.enum(MODERATION_QUEUE_CONFORMITY)),
+  account_status: zQueryArray(z.enum([AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION])),
+  account_type: zQueryArray(z.enum(MODERATION_ACCOUNT_TYPES)),
+  opco: zQueryArray(extensions.buildEnum(OPCOS_LABEL)).describe("Ignoré pour un OPCO, limité à son OPCO"),
+  // `search` et non `q` : la valeur peut être un e-mail, masqué dans Sentry sous ce nom (cf. PERSONAL_QUERY_PARAMS).
+  search: z.string().trim().max(200).optional().describe(SEARCH_DESCRIPTION),
+  sort: z.enum(MODERATION_QUEUE_SORTS).optional().describe("Par défaut : date de dépôt, la plus récente d'abord"),
+  order: z.enum(["asc", "desc"]).optional(),
+})
+export type IModerationQueueFilters = z.output<typeof ZModerationQueueFilters>
+
 export const ZModerationRecruiter = z.object({
   user_id: zObjectId.nullable(),
   first_name: z.string().nullable(),
@@ -139,8 +154,8 @@ const moderationAccess = {
 const moderationAdminAccess = { auth: "cookie-session", access: "admin", resources: {} } as const
 
 const zPageQuery = {
-  sort: z.enum(MODERATION_QUEUE_SORTS).optional().describe("Par défaut : date de dépôt, la plus récente d'abord"),
-  order: z.enum(["asc", "desc"]).optional(),
+  sort: ZModerationQueueFilters.shape.sort,
+  order: ZModerationQueueFilters.shape.order,
   limit: z.coerce.number<number>().int().min(1).max(100).optional(),
   offset: z.coerce.number<number>().int().min(0).optional(),
 }
@@ -150,22 +165,12 @@ const ZModerationJobsPage = z.strictObject({
   pagination: z.strictObject({ total: z.number(), limit: z.number(), offset: z.number() }),
 })
 
-// `search` et non `q` : la valeur peut être un e-mail, masqué dans Sentry sous ce nom (cf. PERSONAL_QUERY_PARAMS).
-const SEARCH_DESCRIPTION = "Raison sociale, SIRET, e-mail du recruteur ou identifiant de l'offre"
-
 export const zJobsPartnersModerationRoutes = {
   get: {
     "/moderation/jobs": {
       method: "get",
       path: "/moderation/jobs",
-      querystring: z.object({
-        conformity: zQueryArray(z.enum(MODERATION_QUEUE_CONFORMITY)),
-        account_status: zQueryArray(z.enum([AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION])),
-        account_type: zQueryArray(z.enum(MODERATION_ACCOUNT_TYPES)),
-        opco: zQueryArray(extensions.buildEnum(OPCOS_LABEL)).describe("Ignoré pour un OPCO, limité à son OPCO"),
-        search: z.string().trim().max(200).optional().describe(SEARCH_DESCRIPTION),
-        ...zPageQuery,
-      }),
+      querystring: ZModerationQueueFilters.extend(zPageQuery),
       response: { "200": ZModerationJobsPage },
       securityScheme: moderationAccess,
     },
@@ -209,6 +214,19 @@ export const zJobsPartnersModerationRoutes = {
       path: "/moderation/jobs/:id",
       params: z.strictObject({ id: zObjectId }),
       response: { "200": ZModerationJobDetail },
+      securityScheme: moderationAccess,
+    },
+    "/moderation/jobs/:id/neighbors": {
+      method: "get",
+      path: "/moderation/jobs/:id/neighbors",
+      params: z.strictObject({ id: zObjectId }),
+      querystring: ZModerationQueueFilters,
+      response: {
+        "200": z.strictObject({
+          previous: zObjectId.nullable().describe("Offre qui précède dans la file, null en tête de file"),
+          next: zObjectId.nullable().describe("Offre qui suit dans la file, null en fin de file"),
+        }),
+      },
       securityScheme: moderationAccess,
     },
     "/moderation/jobs/:id/history": {

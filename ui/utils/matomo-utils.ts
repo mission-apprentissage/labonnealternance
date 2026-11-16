@@ -38,12 +38,14 @@ export const MATOMO_EVENTS = {
   SEARCH_FILTER_REMOVED: "search_filter_removed",
   SEARCH_FILTER_OPENED: "search_filter_opened",
   SEARCH_TYPE_CHANGED: "search_type_changed",
+  SEARCH_MODE_FALLBACK_DISPLAYED: "search_mode_fallback_displayed",
   SEARCH_SORT_CHANGED: "search_sort_changed",
   CFA_SHARE_STEP_VIEWED: "cfa_share_step_viewed",
   CFA_SELECTED: "cfa_selected",
   CFA_DESELECTED: "cfa_deselected",
   CFA_DETAILS_CLICKED: "cfa_details_clicked",
   CFA_SHARE_CONFIRMED: "cfa_share_confirmed",
+  CONSEILLERS_ENTREPRISES_CLICKED: "conseillers_entreprises_clicked",
 }
 
 // Identifiants de moteur de recherche pour la télémétrie de bascule (dimension

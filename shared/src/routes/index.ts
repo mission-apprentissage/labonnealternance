@@ -5,7 +5,9 @@ import type { core } from "zod"
 import { zProcessorAdminRoutes } from "./_private/admin/processor.admin.routes.js"
 import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
 import { zPrivateMetiersRoutes } from "./_private/metiers.routes.js"
+import { zPrivatePartnerSearchRoutes } from "./_private/partner-search.routes.js"
 import { zPrivateSeoRoutes } from "./_private/seo.routes.js"
+import { zPrivateWebVitalsRoutes } from "./_private/web-vitals.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
 import type { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
@@ -40,6 +42,7 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zPrivateGeoRoutes.get,
   ...zPrivateMetiersRoutes.get,
+  ...zPrivatePartnerSearchRoutes.get,
   ...zPrivateSeoRoutes.get,
   ...zProcessorAdminRoutes.get,
 } as const
@@ -110,6 +113,7 @@ const zRoutesPost3 = {
   ...zJobsPartnersAdminRoutes.post,
   ...zJobsPartnersModerationRoutes.post,
   ...zFeedbackFormsRoutes.post,
+  ...zPrivateWebVitalsRoutes.post,
 }
 
 const zRoutesPost = {
