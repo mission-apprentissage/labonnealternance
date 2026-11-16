@@ -1,30 +1,29 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Alert, Box, CircularProgress, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useRef } from "react"
-import type { INewSuperUser } from "shared"
 import { BusinessErrorCodes, EntrepriseErrorCodes } from "shared/constants/error-codes"
-import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
-import { AUTHTYPE } from "shared/constants/recruteur"
+import type { OPCOS_LABEL } from "shared/constants/recruteur"
+import { AUTHTYPE, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { DeclarationExactCheckbox } from "@/app/_components/DeclarationExactCheckbox"
+import { FormSection } from "@/app/_components/FormSection"
 import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
-import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
-import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useToast } from "@/app/hooks/useToast"
 import { emailValidation, frenchPhoneValidation, toSubmittedPhone } from "@/common/validation/field-validations"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { AnimationContainer, ConfirmationModificationOpco } from "@/components/espace_pro"
-import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
+import { AnimationContainer } from "@/components/espace_pro"
+import { updateEntrepriseCFA } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { EMAIL_ALREADY_USED_ERROR } from "@/utils/validation-messages"
@@ -32,7 +31,7 @@ import { AccountReview } from "./account-review/AccountReview"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
 
-type Variables = { userId: string; values: INewSuperUser; siret: string; setFieldError: (field: string, message: string) => void }
+type Variables = { values: { email: string; first_name: string; last_name: string; phone: string }; setFieldError: (field: string, message: string) => void }
 
 export default function DetailEntreprise({
   userRecruteur,
@@ -50,31 +49,26 @@ export default function DetailEntreprise({
   onDeleteEntreprisePartenaire?: () => void
 }) {
   const router = useRouter()
-  const confirmationModificationOpco = useDisclosure()
   const formRef = useRef<HTMLFormElement>(null)
   const serverFieldErrors = useServerFieldErrors()
 
   const toast = useToast()
   const { user } = useConnectedSessionClient()
-  const isDeclarationExactField = user.type === AUTHTYPE.CFA ? { isDeclarationExact: true } : {}
-  const isDeclarationExactValidation = user.type === AUTHTYPE.CFA ? { isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations") } : {}
+  const isCfaUser = user.type === AUTHTYPE.CFA
+  const isDeclarationExactField = isCfaUser ? { isDeclarationExact: true } : {}
+  const isDeclarationExactValidation = isCfaUser ? { isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations") } : {}
   // Une entreprise gérée par un CFA n'a pas de compte utilisateur propre : ses informations de contact,
   // son statut et son historique proviennent en réalité du CFA gestionnaire, pas de l'entreprise elle-même.
   const showAccountLifecycle = user.type !== AUTHTYPE.CFA && !isCfaManagedEntreprise
 
   const userMutation = useMutation({
     mutationFn: async (props: Variables) => {
-      const { userId, values, siret, setFieldError } = props
-      const { type, ...value } = values
+      const { values, setFieldError } = props
 
       try {
-        if (user.type === AUTHTYPE.CFA || isCfaManagedEntreprise) {
-          const { email, first_name, last_name, phone } = values
-          await updateEntrepriseCFA(userRecruteur.establishment_id, { email, first_name, last_name, phone })
-        } else {
-          await updateEntrepriseAdmin(userId, value, siret)
-        }
-        onChange?.({ opco: "opco" in values ? values.opco : undefined })
+        const { email, first_name, last_name, phone } = values
+        await updateEntrepriseCFA(userRecruteur.establishment_id, { email, first_name, last_name, phone })
+        onChange?.({})
         toast({
           title: "Mise à jour enregistrée avec succès",
         })
@@ -112,7 +106,17 @@ export default function DetailEntreprise({
         }}
       >
         <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
-          <Typography sx={{ fontSize: "32px", fontWeight: 700, ml: 0, mr: fr.spacing("8v"), wordBreak: "break-word" }} component="h2">
+          <Typography
+            sx={{
+              fontSize: { xs: "28px !important", md: "32px !important" },
+              lineHeight: { xs: "36px !important", md: "40px !important" },
+              fontWeight: 700,
+              ml: 0,
+              mr: fr.spacing("8v"),
+              overflowWrap: "anywhere",
+            }}
+            component="h1"
+          >
             {establishmentLabel}
           </Typography>
 
@@ -163,6 +167,9 @@ export default function DetailEntreprise({
             </Box>
           )}
         </Box>
+        <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("8v") }}>
+          Tous les champs sont obligatoires.
+        </Typography>
         <Formik
           validateOnMount={true}
           enableReinitialize={true}
@@ -171,8 +178,6 @@ export default function DetailEntreprise({
             first_name: userRecruteur.first_name,
             phone: userRecruteur.phone,
             email: userRecruteur.email,
-            opco: userRecruteur.opco,
-            type: userRecruteur.type,
             ...isDeclarationExactField,
           }}
           validationSchema={Yup.object().shape({
@@ -180,8 +185,6 @@ export default function DetailEntreprise({
             first_name: Yup.string().required("champ obligatoire"),
             phone: frenchPhoneValidation().required("champ obligatoire"),
             email: emailValidation().required("champ obligatoire"),
-            type: Yup.string().default(userRecruteur.type),
-            opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
             ...isDeclarationExactValidation,
           })}
           validate={serverFieldErrors.validate}
@@ -189,86 +192,53 @@ export default function DetailEntreprise({
             setSubmitting(true)
             const phone = toSubmittedPhone(values.phone)
             setFieldValue("phone", phone, false)
-            // For companies we update the User Collection and the Formulaire collection at the same time
-            userMutation.mutate({ userId: userRecruteur._id, values: { ...values, phone }, siret: userRecruteur.establishment_siret, setFieldError })
+            userMutation.mutate({ values: { ...values, phone }, setFieldError })
             setSubmitting(false)
           }}
         >
           {(formik) => {
-            const { values, isSubmitting, setFieldValue, errors, touched } = formik
+            const { isSubmitting } = formik
             // Le bouton "Enregistrer" ne dépend pas de isValid : cf. createSubmitWithFocusOnError.
             const handleSubmit = createSubmitWithFocusOnError(formRef, formik)
 
             return (
               <>
-                <ConfirmationModificationOpco
-                  {...confirmationModificationOpco}
-                  establishment_raison_sociale={establishmentLabel}
-                  setFieldValue={setFieldValue}
-                  previousValue={userRecruteur.opco}
-                  newValue={values.opco}
-                />
                 <form ref={formRef} onSubmit={handleSubmit} noValidate>
                   <TwoColumnFormLayout
-                    left={
+                    aside={
                       <>
-                        <Typography
-                          component="h2"
-                          sx={{ fontWeight: 700, fontSize: { xs: "24px !important", md: "32px !important" }, lineHeight: { xs: "32px !important", md: "40px !important" } }}
-                        >
-                          Informations de contact
-                        </Typography>
-                        <Box
-                          sx={{
-                            mt: fr.spacing("8v"),
-                          }}
-                        >
-                          <ContactInfoFields thirdParty />
-                          {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
-                            <OpcoSelect
-                              value={values.opco}
-                              name="opco"
-                              errors={errors}
-                              touched={touched}
-                              onChange={(newValue) => {
-                                setFieldValue("opco", newValue)
-                                confirmationModificationOpco.onOpen()
-                              }}
-                            />
-                          )}
-                          {user.type === AUTHTYPE.CFA && (
-                            <>
-                              <Typography sx={{ color: "#0063CB" }}>
-                                <Box component="span" sx={{ fontWeight: 700 }}>
-                                  Important :
-                                </Box>{" "}
-                                Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des fins de
-                                contrôles.
-                              </Typography>
-                              <DeclarationExactCheckbox />
-                            </>
-                          )}
-                          {userMutation.error && (
-                            <Alert sx={{ marginTop: fr.spacing("4v") }} severity="error">
-                              {/* Affiche le message d'erreur métier quand il est disponible, sinon un message générique en français (RGAA 8.7). */}
-                              {userMutation.error instanceof ApiError && userMutation.error.context.statusCode === 400
-                                ? userMutation.error.message
-                                : "La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement."}
-                            </Alert>
-                          )}
-                        </Box>
+                        {/* Ce formulaire ne sert qu'aux entreprises gérées par un CFA : la réponse de getEntrepriseManagedByCfa (ZRecruiter) n'a pas de champ type */}
+                        <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={ENTREPRISE} />
+                        {user.type !== "CFA" && (
+                          <Box sx={{ my: fr.spacing("8v") }}>
+                            <FieldWithValue title="Origine" value={userRecruteur.origin} />
+                          </Box>
+                        )}
                       </>
                     }
-                    right={
+                    content={
                       <>
-                        <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
-                        {user.type !== "CFA" && (
-                          <Box
-                            sx={{
-                              my: fr.spacing("8v"),
-                            }}
-                          >
-                            <FieldWithValue title="Origine" value={userRecruteur.origin} />
+                        <FormSection title="1. Informations de contact de l'entreprise partenaire">
+                          {isCfaUser && (
+                            <Typography sx={{ mb: fr.spacing("6v") }}>
+                              Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
+                            </Typography>
+                          )}
+                          <ContactInfoFields thirdParty variant={isCfaUser ? "partenaire" : "default"} showRequiredMention={false} />
+                          {isCfaUser && <DeclarationExactCheckbox />}
+                        </FormSection>
+                        {userMutation.error && (
+                          <Box sx={{ mt: fr.spacing("6v") }}>
+                            {/* Affiche le message d'erreur métier quand il est disponible, sinon un message générique en français (RGAA 8.7). */}
+                            <Alert
+                              severity="error"
+                              small
+                              description={
+                                userMutation.error instanceof ApiError && userMutation.error.context.statusCode === 400
+                                  ? userMutation.error.message
+                                  : "La mise à jour n'a pas pu être enregistrée. Veuillez réessayer ultérieurement."
+                              }
+                            />
                           </Box>
                         )}
                       </>
