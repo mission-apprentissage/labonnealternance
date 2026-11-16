@@ -38,13 +38,8 @@ jobs:
       - name: start mongodb / mongot (background)
         run: nohup .github/scripts/ci-start-test-services.sh /tmp/services.exit > /tmp/services.log 2>&1 &
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .node-version
-          cache: "yarn"
-
       - name: Install dependencies
-        run: yarn install --immutable
+        uses: ./.github/actions/install-dependencies
 
       - name: Make sure to use same dependencies version across all packages
         run: yarn dedupe --check

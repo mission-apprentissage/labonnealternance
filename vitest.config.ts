@@ -7,7 +7,13 @@ import { configDefaults, defineConfig } from "vitest/config"
 // fois par worker au lieu d'une fois par fichier, représentait les deux tiers du temps des tests. Les fichiers
 // qui initialisent Sentry restent isolés : son client et l'instrumentation OpenTelemetry valent pour tout le
 // processus, et sentry-pii doit charger Sentry avant mongodb. État partagé remis à zéro : cf. tests/utils/setup.ts.
-const serverIsolatedFiles = ["src/common/sentry/sentry-pii.test.ts", "src/common/utils/sentry-utils.test.ts"]
+// web-vitals.private.controller et access-log.service remplacent le logger de tout le graphe serveur qu'ils démarrent.
+const serverIsolatedFiles = [
+  "src/common/sentry/sentry-pii.test.ts",
+  "src/common/utils/sentry-utils.test.ts",
+  "src/http/controllers/_private/web-vitals.private.controller.test.ts",
+  "src/security/access-log.service.test.ts",
+]
 
 const serverProject = {
   resolve: {

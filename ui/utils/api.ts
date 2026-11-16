@@ -106,6 +106,8 @@ export const createEtablissementDelegationByToken = async ({ data, jobId, token 
  * User API
  */
 export const getUser = async (userId: string, organizationId: string = "unused") => apiGet("/user/:userId/organization/:organizationId", { params: { userId, organizationId } })
+export const getSameSiretAccounts = async (userId: string, organizationId: string) =>
+  apiGet("/user/:userId/organization/:organizationId/same-siret-accounts", { params: { userId, organizationId } })
 export const getUserStatus = async (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
 export const getUserStatusByToken = async (userId: string, token: string) =>
   apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
@@ -142,6 +144,9 @@ export const getModerationQueue = async (querystring: IQuery<IRoutes["get"]["/mo
 export const getModerationSummaries = async (ids: string[]) => apiGet("/moderation/jobs/summary", { querystring: { ids } })
 
 export const getModerationJob = async (id: string) => apiGet("/moderation/jobs/:id", { params: { id } })
+
+export const getModerationQueueNeighbors = async (id: string, querystring: IQuery<IRoutes["get"]["/moderation/jobs/:id/neighbors"]>) =>
+  apiGet("/moderation/jobs/:id/neighbors", { params: { id }, querystring: removeUndefinedFields(querystring) })
 
 export const validateModerationJob = async (id: string, moderationId: string) => apiPost("/moderation/jobs/:id/validate", { params: { id }, body: { moderation_id: moderationId } })
 

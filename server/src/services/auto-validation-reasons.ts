@@ -4,8 +4,9 @@
  * `validaton par : bonnes boites ou referentiel opco` couvrait aussi le référentiel OPCO jusqu'à sa suppression (v1.711.3).
  * Un résultat indéterminé n'est pas un refus (vocabulaire fixé sur #5405) : il part en validation manuelle comme un refus.
  */
-export const AUTO_VALIDATION_REFUSED_REASON = "pas de validation automatique possible"
-export const AUTO_VALIDATION_INDETERMINATE_PREFIX = "validation automatique indéterminée : "
+import { AUTO_VALIDATION_INDETERMINATE_PREFIX } from "shared/constants/auto-validation"
+
+export { AUTO_VALIDATION_INDETERMINATE_PREFIX, AUTO_VALIDATION_REFUSED_REASON } from "shared/constants/auto-validation"
 export const API_KEY_CREATION_REASON = "création par clef API"
 
 type ICorrespondance = "email" | "domain" | null

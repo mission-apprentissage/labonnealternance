@@ -18264,6 +18264,7 @@ __metadata:
     shared: "workspace:*"
     type-fest: ^5.2.0
     typescript: ^7.0.2
+    web-vitals: ^6.2.3
     yup: ^1.7.1
     zod: ^4.4.3
     zod-formik-adapter: ^2.0.0
@@ -18728,6 +18729,13 @@ __metadata:
     node-fetch: ^2.6.0
     valid-data-url: ^3.0.0
   checksum: 17d9e53a6e5f07361abc584b6bb2bb8470978be580f8b5cdcab5998507ffccf5fb645616d3fe1550965d2db497f4a5cdc1ea1460c9cf464de315751962708ecc
+  languageName: node
+  linkType: hard
+
+"web-vitals@npm:^6.2.3":
+  version: 6.2.3
+  resolution: "web-vitals@npm:6.2.3"
+  checksum: 0a5f061927a40ddc89e6865a05502084e1d321e75c880bf4a8358e35e462755bd236b135cd82d7392989a24ae707f6e513a797dcb890563c29c71d069ab00e18
   languageName: node
   linkType: hard
 

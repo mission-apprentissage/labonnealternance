@@ -1,10 +1,8 @@
+import * as Sentry from "@sentry/node"
 import type { FastifyRequest } from "fastify"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { assertUnreachable } from "shared/utils/index"
-import { logger } from "@/common/logger"
 import type { IAccessLog } from "./access-log.types"
-
-const loggerAccess = logger.child({ module: "accessLog" })
 
 export const createAccessLog = async <S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest, authorized: boolean) => {
   if (schema?.securityScheme?.skipLogAccess) {
@@ -21,6 +19,9 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
     user_email: null,
     user_siret: null,
     user_type: null,
+    user_organisation: null,
+    // Trace continuée depuis l'en-tête `sentry-trace` de l'appelant, échantillonnée ou non : relie l'appel à celui de l'API Apprentissage.
+    trace_id: Sentry.getActiveSpan()?.spanContext().traceId ?? null,
     created_at: new Date(),
     parameters: req.params as { [key: string]: string },
     resources: req?.authorizationContext?.resources,
@@ -54,6 +55,7 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
       case "IApiApprentissage": {
         acl.user_type = req.user.type
         acl.user_email = req.user.value.email
+        acl.user_organisation = req.user.value.organisation
         break
       }
       default: {
@@ -63,6 +65,8 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
     }
   }
 
+  // Logger de la requête, qui porte son reqId.
+  const loggerAccess = req.log.child({ module: "accessLog" })
   if (authorized) {
     loggerAccess.info(acl)
   } else {

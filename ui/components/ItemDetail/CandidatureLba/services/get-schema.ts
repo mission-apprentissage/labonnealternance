@@ -50,3 +50,18 @@ export const QuestionAnswerSchema = z
   .max(APPLICANT_ANSWER_MAX_LENGTH, `Votre réponse dépasse ${formatCount(APPLICANT_ANSWER_MAX_LENGTH)} caractères, veuillez la raccourcir.`)
   .trim()
   .min(1, "Une réponse est obligatoire")
+
+// Questions fixes de LBA (cf. getApplicantQuestions) : même limite, réponse facultative. Une réponse vide n'est pas envoyée.
+export const OptionalQuestionAnswerSchema = z
+  .string()
+  .max(APPLICANT_ANSWER_MAX_LENGTH, `Votre réponse dépasse ${formatCount(APPLICANT_ANSWER_MAX_LENGTH)} caractères, veuillez la raccourcir.`)
+  .optional()
+
+export type IQuestionField = { question: string; name: string }
+
+// Champs du formulaire → réponses envoyées à l'API, dans l'ordre des questions. Une réponse vide n'est pas envoyée.
+export const buildApplicantAnswers = (questionFields: IQuestionField[], values: Record<string, unknown>) =>
+  questionFields.flatMap(({ question, name }) => {
+    const answer = values[name]
+    return typeof answer === "string" && answer.trim() ? [{ question, answer }] : []
+  })

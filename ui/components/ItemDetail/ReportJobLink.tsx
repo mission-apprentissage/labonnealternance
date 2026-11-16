@@ -81,6 +81,7 @@ export const ReportJobLink = ({
   const { storedValue, setLocalStorage } = useLocalStorage(`report-job-${itemId}`, false)
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
   const reasonDetailsId = useId()
+  const titleId = useId()
   const formRef = useRef<HTMLFormElement>(null)
 
   const onReport = async ({ reason, reason_details }: IFormValues) => {
@@ -110,12 +111,12 @@ export const ReportJobLink = ({
           {linkLabelNotReported}
         </Button>
       )}
-      <ModalReadOnly isOpen={isModalOpen} onClose={closeModal}>
+      <ModalReadOnly isOpen={isModalOpen} onClose={closeModal} ariaLabelledBy={titleId}>
         {storedValue ? (
-          <ReportedAcknowledgement />
+          <ReportedAcknowledgement titleId={titleId} />
         ) : (
           <Box sx={{ px: { xs: fr.spacing("4v"), md: fr.spacing("8v") }, pb: fr.spacing("8v"), pt: fr.spacing("4v"), maxWidth: "708px" }}>
-            <ModalTitle>{content.title}</ModalTitle>
+            <ModalTitle id={titleId}>{content.title}</ModalTitle>
             <Typography sx={{ my: 3, fontSize: "14px" }}>{content.introductionText}</Typography>
             <Formik
               initialValues={{ reason: "", reason_details: "" }}
@@ -183,7 +184,7 @@ export const ReportJobLink = ({
   )
 }
 
-const ReportedAcknowledgement = () => {
+const ReportedAcknowledgement = ({ titleId }: { titleId: string }) => {
   return (
     <Box sx={{ justifySelf: "center", p: fr.spacing("8v"), maxWidth: "708px" }}>
       <Stack
@@ -195,7 +196,9 @@ const ReportedAcknowledgement = () => {
         }}
       >
         <Image width={23} height={23} src="/images/icons/coche_verte.svg" alt="" />
-        <ModalTitle focusOnMount>Votre signalement a bien été envoyé à notre équipe.</ModalTitle>
+        <ModalTitle id={titleId} focusOnMount>
+          Votre signalement a bien été envoyé à notre équipe.
+        </ModalTitle>
       </Stack>
       <Typography>Merci de votre participation à l'amélioration du service La bonne alternance.</Typography>
     </Box>

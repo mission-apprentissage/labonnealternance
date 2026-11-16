@@ -23,7 +23,7 @@ export const UserMenu = ({
     {
       label: "Voir les informations",
       hint: entrepriseLabel,
-      link: PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath(),
+      link: PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string, organization_id: row.organizationId }).getPath(),
       type: "link",
     },
     tabIndex === "disabled" || tabIndex === "awaiting"

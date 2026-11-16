@@ -6,7 +6,7 @@ import { Box, CircularProgress, Typography } from "@mui/material"
 import { captureException } from "@sentry/browser"
 import { useMutation } from "@tanstack/react-query"
 import { FormikContext, useFormik } from "formik"
-import { useRef, useState } from "react"
+import { useId, useRef, useState } from "react"
 import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
@@ -73,6 +73,7 @@ const ConfirmationDesinscription = ({
   const [selectedSirets, setSelectedSirets] = useState(allSirets)
   const [hasSubmitAttempt, setHasSubmitAttempt] = useState(false)
   const fieldsetRef = useRef<HTMLFieldSetElement>(null)
+  const titleId = useId()
   const areAllSelected: boolean = companies.length === selectedSirets.length
   const hasSelectionError = hasSubmitAttempt && !selectedSirets.length
 
@@ -117,9 +118,9 @@ const ConfirmationDesinscription = ({
   }
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={handleClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={handleClose} ariaLabelledBy={titleId}>
       <Box sx={{ p: fr.spacing("6v") }}>
-        <Typography variant="h3" sx={{ mb: fr.spacing("6v") }}>
+        <Typography id={titleId} variant="h3" sx={{ mb: fr.spacing("6v") }}>
           Plusieurs établissements correspondent à cet e-mail
         </Typography>
         <Box>

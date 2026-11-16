@@ -1,12 +1,12 @@
 "use client"
 
+import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, Typography } from "@mui/material"
-import type { UseComboboxGetInputPropsReturnValue, UseComboboxState } from "downshift"
+import type { UseComboboxState } from "downshift"
 import { useCombobox } from "downshift"
 import { useField } from "formik"
 import { useState } from "react"
 
-import CustomInput from "@/app/_components/CustomInput"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import { pluralize } from "@/utils/strutils"
 
@@ -23,10 +23,16 @@ export default function DropdownCombobox(props) {
   const [searching, setSearching] = useState(false)
 
   const { saveSelectedItem, handleSearch, value, placeholder, name, label } = props
-  const [, , helpers] = useField(props.name)
+  const [field, meta, helpers] = useField(props.name)
+  const errorMessage = meta.touched && meta.error ? meta.error : undefined
 
   const itemToString = (item) => (item ? item.appellation : "")
-  const onInputValueChange = ({ inputValue }) => {
+  const onInputValueChange = ({ inputValue, type }) => {
+    // Toute saisie invalide le métier retenu, sinon le formulaire garde un métier que le champ n'affiche plus.
+    // Le test porte sur la valeur Formik et non sur selectedItem, absent quand le métier vient d'une offre éditée.
+    if ((type === useCombobox.stateChangeTypes.InputChange || type === useCombobox.stateChangeTypes.InputKeyDownEscape) && field.value) {
+      saveSelectedItem(null, reset)
+    }
     setSearching(true)
     // handleSearch est débouncé : seule la dernière promesse aboutit.
     handleSearch(inputValue)
@@ -35,7 +41,8 @@ export default function DropdownCombobox(props) {
   }
 
   const onSelectedItemChange = (changes: Partial<UseComboboxState<any>>) => {
-    if ("selectedItem" in changes) {
+    // La désélection (Échap menu fermé) passe par onInputValueChange
+    if (changes.selectedItem) {
       saveSelectedItem(changes.selectedItem, reset)
     }
   }
@@ -54,13 +61,22 @@ export default function DropdownCombobox(props) {
     }
   }
 
-  const { isOpen, inputValue, getMenuProps, getInputProps, highlightedIndex, getItemProps, reset, openMenu } = useCombobox({
+  const { isOpen, inputValue, getLabelProps, getMenuProps, getInputProps, highlightedIndex, getItemProps, reset, openMenu } = useCombobox({
     itemToString,
-    onInputValueChange: ({ inputValue }) => onInputValueChange({ inputValue }),
+    onInputValueChange,
     onSelectedItemChange,
     stateReducer,
     items: inputItems,
-    initialInputValue: value ?? [],
+    initialInputValue: value ?? "",
+  })
+
+  const inputProps = getInputProps({
+    onFocus() {
+      openMenu()
+    },
+    onBlur() {
+      helpers.setTouched(true)
+    },
   })
 
   const statusMessage =
@@ -71,27 +87,29 @@ export default function DropdownCombobox(props) {
         : `${pluralize(inputItems.length, "métier proposé", "métiers proposés")}, utilisez les flèches pour naviguer`
 
   return (
-    <div data-testid={props.dataTestId}>
-      <CustomInput
-        label={label}
-        pb="0"
-        // hideAsterisk plutôt que required={false} : le champ est obligatoire (aria-required conservé,
-        // astérisque masquée car le formulaire porte déjà la mention "Tous les champs sont obligatoires").
-        hideAsterisk
-        name={name}
-        info={"Sélectionnez un métier pour référencer l'offre"}
-        placeholder={placeholder || "sélectionner un métier"}
-        {...toCustomInputComboboxProps(
-          getInputProps({
-            onFocus() {
-              openMenu()
-            },
-            onBlur() {
-              helpers.setTouched(true)
-            },
-          })
-        )}
-      />
+    <Box data-testid={props.dataTestId} sx={{ position: "relative" }}>
+      {/* Le DSFR ajoute une marge basse à tout .fr-input-group qui n'est pas le dernier enfant de son parent :
+          le conteneur l'isole de la liste et de la zone de statut. */}
+      <div>
+        <Input
+          label={label}
+          hintText="Sélectionnez un métier pour référencer l'offre"
+          state={errorMessage ? "error" : "default"}
+          stateRelatedMessage={errorMessage}
+          nativeLabelProps={getLabelProps()}
+          nativeInputProps={{
+            ...inputProps,
+            // downshift vide aria-activedescendant sans option active : un id vide ne désigne aucun élément
+            "aria-activedescendant": inputProps["aria-activedescendant"] || undefined,
+            name,
+            placeholder: placeholder || "sélectionner un métier",
+            // Obligatoire sans astérisque : le formulaire porte la mention "Tous les champs sont obligatoires"
+            required: true,
+            // aria-invalid : cf. HandiEngagementSelect
+            "aria-invalid": Boolean(errorMessage),
+          }}
+        />
+      </div>
       {/* getMenuProps() pose role="listbox" : la cible doit être un <ul> et ses enfants des <li>
           (RGAA 8.2). Les marges et le listStyle sont déjà neutralisés ici ; la mise en forme des
           listes de DepotSimplifieStyling exclut explicitement les [role="listbox"]. */}
@@ -108,7 +126,6 @@ export default function DropdownCombobox(props) {
           background: "#fff",
           overflow: "auto",
           boxShadow: "0px 1px 8px rgba(8, 67, 85, 0.24)",
-          maxH: "50vh",
         }}
         {...getMenuProps({ "aria-label": label })}
       >
@@ -145,27 +162,6 @@ export default function DropdownCombobox(props) {
         )}
       </Box>
       <LiveStatus message={statusMessage} />
-    </div>
+    </Box>
   )
-}
-
-/**
- * MUI Input pose les attributs inconnus sur sa div racine : ref, role et aria-* passent par inputProps pour
- * atteindre l'<input> (cf. AutocompleteAsync). Le label pointé par downshift n'est jamais rendu : le nom vient
- * du <label for> de CustomInput (RGAA 11.1).
- */
-function toCustomInputComboboxProps({
-  ref,
-  "aria-labelledby": _ariaLabelledBy,
-  role,
-  "aria-activedescendant": ariaActiveDescendant,
-  "aria-autocomplete": ariaAutocomplete,
-  "aria-controls": ariaControls,
-  "aria-expanded": ariaExpanded,
-  ...comboboxProps
-}: UseComboboxGetInputPropsReturnValue & { ref?: React.Ref<HTMLInputElement> }) {
-  return {
-    ...comboboxProps,
-    inputProps: { ref, role, "aria-activedescendant": ariaActiveDescendant, "aria-autocomplete": ariaAutocomplete, "aria-controls": ariaControls, "aria-expanded": ariaExpanded },
-  }
 }

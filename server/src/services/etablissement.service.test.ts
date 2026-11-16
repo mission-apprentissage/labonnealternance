@@ -5,6 +5,7 @@ import nock from "nock"
 import { AccessEntityType, AccessStatus } from "shared"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { ENTREPRISE, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { generateCacheInfoSiretForSiret } from "shared/fixtures/cache-info-siret.fixture"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -16,9 +17,13 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vites
 import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "@/common/apis/france-competences/france-competences-client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
-import { autoValidateUserRoleOnCompany, getOpcoData, verifyRecruiterEmailInUse } from "./etablissement.service"
+import { autoValidateUserRoleOnCompany, getEntrepriseDataFromSiret, getOpcoData, validateCreationEntrepriseFromCfa, verifyRecruiterEmailInUse } from "./etablissement.service"
 
 vi.mock("@/common/utils/sentry-utils")
+vi.mock("./geolocation.service", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./geolocation.service")>()),
+  getGeoCoordinates: vi.fn(async () => ({ latitude: 48.86, longitude: 2.34 })),
+}))
 
 useMongo()
 
@@ -307,5 +312,44 @@ describe("getOpcoData", () => {
 
     expect(await getOpcoData(siret)).toEqual({ opco: OPCOS_LABEL.ATLAS, idcc: 1486 })
     expect(await getDbCollection("opcos").findOne({ siren: "424761419" })).toMatchObject({ opco: OPCOS_LABEL.ATLAS, idcc: 1486 })
+  })
+})
+
+describe("refus des organismes de formation selon le code NAF", () => {
+  const siret = "42476141900045"
+  const cfa_delegated_siret = "13002526500013"
+
+  const givenSiretWithNaf = async (code: string) => {
+    const fixture = generateCacheInfoSiretForSiret(siret)
+    await getDbCollection("cache_siret").insertOne({ ...fixture, data: { data: { ...fixture.data!.data, activite_principale: { code, libelle: "libellé" } } } })
+  }
+
+  it.each([
+    ["85.59G", true],
+    ["85.59A", true],
+    ["85.10Y", false],
+  ])("compte entreprise, NAF %s : refusé = %s", async (code, refused) => {
+    await givenSiretWithNaf(code)
+
+    const result = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
+
+    if (refused) {
+      expect(result).toMatchObject({ error: true, errorCode: BusinessErrorCodes.IS_CFA })
+    } else {
+      expect(result).toMatchObject({ establishment_siret: siret, naf_code: code })
+    }
+  })
+
+  it.each([
+    ["85.59G", true],
+    ["85.10Y", false],
+  ])("entreprise déléguée par un CFA, NAF %s : refusée = %s", async (nafCode, refused) => {
+    const result = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret, nafCode })
+
+    if (refused) {
+      expect(result).toMatchObject({ error: true, errorCode: BusinessErrorCodes.IS_CFA })
+    } else {
+      expect(result).toBeUndefined()
+    }
   })
 })

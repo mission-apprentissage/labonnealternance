@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
+import { useId } from "react"
 
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
@@ -15,6 +16,7 @@ interface ConfirmationModificationOpcoProps {
 
 export default function ConfirmationModificationOpco(props: ConfirmationModificationOpcoProps) {
   const { isOpen, onClose, setFieldValue, previousValue, newValue, establishment_raison_sociale } = props
+  const titleId = useId()
 
   const handleUpdate = () => {
     setFieldValue("opco", newValue)
@@ -27,9 +29,9 @@ export default function ConfirmationModificationOpco(props: ConfirmationModifica
   }
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
+        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Changement d’OPCO pour l’entreprise {establishment_raison_sociale}
         </Typography>
 

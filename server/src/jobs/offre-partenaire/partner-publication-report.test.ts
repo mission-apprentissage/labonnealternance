@@ -215,7 +215,9 @@ describe("formatPartnerNightlyTable", () => {
     // 23 h UTC le 08/11 = 09/11 à Paris
     expect(tableRows[0]).toMatch(/^! Hellowork +10 +0 +10 +100% +0 +10 +1\/4 +2 09\/11 +GF absentes 156 \(7.9 %\)$/)
     expect(tableRows[2]).toMatch(/^APEC +10 +0 +10 +100% +0 +10 +0\/1 +1 jamais$/)
-    expect(lines.at(-1)).toBe('Après vérification d\'un « GF absentes » : yarn cli forceCancelRemovedJobsPartners --partnerLabel "<Partenaire>"')
+    expect(lines.at(-1)).toBe(
+      'GF absentes N (x %) = offres actives sorties du flux depuis le run précédent, laissées en ligne : annulées au bout de 3 jours si elles ne reviennent pas. Pour les annuler dès maintenant, après vérification : yarn cli forceCancelRemovedJobsPartners --partnerLabel "<Partenaire>"'
+    )
   })
 
   it("ajoute une ligne pour un garde-fou hors des partenaires mesurés, mais pas pour un signal de cadence seul", () => {

@@ -77,10 +77,10 @@ function AdministrationOpco() {
           row: { id },
         },
       }) => {
-        const { establishment_raison_sociale, establishment_siret, _id } = data[id]
+        const { establishment_raison_sociale, establishment_siret, _id, organizationId } = data[id]
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: _id }).getPath()}>
+            <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: _id, organization_id: organizationId }).getPath()}>
               {establishment_raison_sociale}
             </Link>
             <Typography sx={{ color: "#666666", fontSize: "14px" }}>SIRET {establishment_siret}</Typography>

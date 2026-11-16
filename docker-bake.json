@@ -18,6 +18,13 @@
         "ui-recette"
       ]
     },
+    "release": {
+      "targets": [
+        "server",
+        "ui-production",
+        "ui-recette"
+      ]
+    },
     "preview": {
       "targets": [
         "server",

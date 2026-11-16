@@ -1,0 +1,44 @@
+name: Install dependencies
+description: Node et node_modules, restaurés du cache tant que les manifestes yarn ne changent pas
+
+runs:
+  using: composite
+  steps:
+    # Les package.json font partie de la clé : sans eux, un ajout de dépendance sans mise à jour
+    # du yarn.lock trouverait le cache et échapperait au `yarn install --immutable`.
+    - name: Restore node_modules
+      id: node-modules
+      uses: actions/cache/restore@v6
+      with:
+        path: |
+          node_modules
+          ui/node_modules
+          server/node_modules
+          shared/node_modules
+          .yarn/install-state.gz
+        key: node-modules-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.node-version', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'ui/package.json', 'server/package.json', 'shared/package.json') }}
+
+    # Le cache yarn ne sert qu'à l'installation : inutile de le restaurer quand node_modules l'est.
+    - uses: actions/setup-node@v7
+      with:
+        node-version-file: .node-version
+        cache: ${{ steps.node-modules.outputs.cache-hit != 'true' && 'yarn' || '' }}
+
+    - name: Install dependencies
+      if: steps.node-modules.outputs.cache-hit != 'true'
+      shell: bash
+      run: yarn install --immutable
+
+    # Sauvegarde depuis main seulement : un cache créé sur une branche n'est lisible que par elle,
+    # et le quota de cache du dépôt est partagé avec les couches buildkit (cache type=gha du bake).
+    - name: Save node_modules
+      if: steps.node-modules.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main'
+      uses: actions/cache/save@v6
+      with:
+        path: |
+          node_modules
+          ui/node_modules
+          server/node_modules
+          shared/node_modules
+          .yarn/install-state.gz
+        key: ${{ steps.node-modules.outputs.cache-primary-key }}

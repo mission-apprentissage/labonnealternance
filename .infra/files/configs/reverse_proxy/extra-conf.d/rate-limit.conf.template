@@ -33,6 +33,10 @@ limit_req_zone $lba_limit_key zone=lba_public_search:10m rate=30r/m;
 # Autocomplétion métiers (/api/rome) : 1 appel par frappe, rafales tolérées.
 limit_req_zone $lba_limit_key zone=lba_autocomplete:10m rate=2r/s;
 
+# Liens partenaires (/monmaster/<RNCP>) : un usager clique une fois depuis le site partenaire.
+# Débit bas pour qu'une énumération des codes RNCP finisse dans le jail fail2ban.
+limit_req_zone $lba_limit_key zone=lba_partner_links:10m rate=6r/m;
+
 # limit_req_status 429 déjà défini globalement par l'image du reverse proxy
 # (/etc/nginx/extra-conf.d/limit_req.conf dans le conteneur, hors de ce repo) :
 # ne pas le redéclarer ici sous peine de "directive is duplicate" au reload nginx.

@@ -17,9 +17,8 @@ import { CODE_NAF_REGEX } from "../constants/regex.js"
  * partenaires envoient (code division sur deux chiffres, nomenclature maison) et perdre
  * l'information serait pire que la garder brute.
  *
- * Le préfixe de division reste intact dans tous les cas, donc les filtres existants sur les CFA
- * (`$regex: "^85"` dans blockJobsPartnersWithNaf85, `startsWith("85")` dans
- * validateCreationEntrepriseFromCfa) matchent quelle que soit la forme reçue.
+ * Le préfixe de division reste intact dans tous les cas, donc TRAINING_ORGANIZATION_NAF_REGEX
+ * matche quelle que soit la forme reçue.
  */
 export const normalizeNafCode = (nafCode: string | null | undefined): string | null => {
   if (!nafCode) return null
@@ -27,6 +26,16 @@ export const normalizeNafCode = (nafCode: string | null | undefined): string | n
   if (!compact) return null
   return CODE_NAF_REGEX.test(compact) ? `${compact.slice(0, 2)}.${compact.slice(2)}` : compact
 }
+
+/**
+ * Division 85 (enseignement) = organisme de formation, sauf 85.10Y : en NAF 2025, cette sous-classe
+ * absorbe une partie des crèches (88.91A en NAF rév. 2), qui recrutent des apprentis (#5869).
+ * Sans flag `i` pour rester utilisable en `$regex` sur l'index `workplace_naf_code`, dont les codes sont
+ * déjà normalisés en amont (formatTextFieldsJobsPartners). Une forme non canonique est sur-bloquée.
+ */
+export const TRAINING_ORGANIZATION_NAF_REGEX = /^85(?!\.?10Y)/
+
+export const isTrainingOrganizationNafCode = (nafCode: string | null | undefined): boolean => TRAINING_ORGANIZATION_NAF_REGEX.test(normalizeNafCode(nafCode) ?? "")
 
 // U+2018/U+2019/U+201B et la lettre modificative U+02BC, toutes rendues comme une apostrophe
 const APOSTROPHES_REGEX = /[‘’‛ʼ]/g

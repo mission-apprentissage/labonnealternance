@@ -3,7 +3,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, Typography } from "@mui/material"
-import { useRef, useState } from "react"
+import { useId, useRef, useState } from "react"
 import type { IJobsPartnersOfferForAdminJSON } from "shared/models/jobs-partners.model"
 import { useJobsPartnersAdminActions } from "@/app/hooks/use-jobs-partners-admin-actions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
@@ -13,6 +13,7 @@ export function ConfirmationDesactivationOffre({ offer, isOpen, onClose }: { off
   const [showError, setShowError] = useState(false)
   const reasonRef = useRef<HTMLTextAreaElement>(null)
   const { deactivate } = useJobsPartnersAdminActions()
+  const titleId = useId()
 
   if (!offer) return null
 
@@ -25,9 +26,9 @@ export function ConfirmationDesactivationOffre({ offer, isOpen, onClose }: { off
   }
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={handleClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={handleClose} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
+        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Désactivation de l'offre
         </Typography>
         <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>
@@ -67,6 +68,7 @@ export function ConfirmationDesactivationOffre({ offer, isOpen, onClose }: { off
 
 export function ConfirmationClassificationOffre({ offer, isOpen, onClose }: { offer: IJobsPartnersOfferForAdminJSON | null; isOpen: boolean; onClose: () => void }) {
   const { setClassification } = useJobsPartnersAdminActions()
+  const titleId = useId()
 
   if (!offer) return null
 
@@ -74,9 +76,9 @@ export function ConfirmationClassificationOffre({ offer, isOpen, onClose }: { of
   const nextClassification = isCfaFlagged ? "publish" : "unpublish"
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
+        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           {isCfaFlagged ? "Retirer le signalement CFA" : "Signaler comme offre de CFA"}
         </Typography>
         <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>

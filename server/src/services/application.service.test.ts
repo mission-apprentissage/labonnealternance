@@ -4,6 +4,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import { omit } from "lodash-es"
+import { PARTNER_JOB_APPLICATION_QUESTIONS } from "shared/constants/applicant-questions"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { applicationTestFile, generateApplicantFixture, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
@@ -740,6 +741,8 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
       to_company_message_id: null,
       to_applicant_message_id: null,
       scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
+      applicant_message_to_company: "Bonjour,<br />Je postule.",
+      applicant_answers_to_recruiter_questions: [{ question: PARTNER_JOB_APPLICATION_QUESTIONS[0], answer: "Pour votre équipe." }],
     })
     await getDbCollection("applications").insertOne(application)
 
@@ -750,6 +753,9 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
 
     // Should call Taleez API (not send company email)
     expect(vi.mocked(axios.default.post)).toHaveBeenCalledOnce()
+    expect(vi.mocked(axios.default.post).mock.calls[0][1]).toMatchObject({
+      coverText: `Bonjour,<br />Je postule.<br /><br />Vos motivations<br /><br />${PARTNER_JOB_APPLICATION_QUESTIONS[0]}<br />Pour votre équipe.`,
+    })
 
     // Should send only applicant email (not company email)
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(1)

@@ -8,6 +8,7 @@ import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { formatSlackTable } from "@/common/utils/slack-utils"
 import type { FluxCadence } from "./flux-cadence-digest"
 import { getFluxCadenceByPartner } from "./flux-cadence-digest"
+import { REMOVAL_GRACE_DAYS } from "./jobs-partners-guardrails"
 import { jobPartnersByFlux } from "./process-job-partners"
 
 /** Seuil d'alerte à confirmer (#5671). */
@@ -198,7 +199,11 @@ export const formatPartnerNightlyTable = (stats: PartnerPublicationStats[], { gu
     `Partenaires flux${toCheck ? ` (${toCheck} à vérifier)` : ""} :`,
     ...formatSlackTable(NIGHTLY_TABLE_HEADER, rows.map(toNightlyRow), { alignRight: NIGHTLY_TABLE_ALIGN_RIGHT }),
     NIGHTLY_TABLE_LEGEND,
-    ...(hasRemovalGuardrail ? [`Après vérification d'un « ${REMOVAL_GUARDRAIL_ALERT_PREFIX} » : yarn cli forceCancelRemovedJobsPartners --partnerLabel "<Partenaire>"`] : []),
+    ...(hasRemovalGuardrail
+      ? [
+          `${REMOVAL_GUARDRAIL_ALERT_PREFIX} N (x %) = offres actives sorties du flux depuis le run précédent, laissées en ligne : annulées au bout de ${REMOVAL_GRACE_DAYS} jours si elles ne reviennent pas. Pour les annuler dès maintenant, après vérification : yarn cli forceCancelRemovedJobsPartners --partnerLabel "<Partenaire>"`,
+        ]
+      : []),
   ]
 }
 
