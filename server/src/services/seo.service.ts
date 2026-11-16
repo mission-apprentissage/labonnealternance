@@ -3,6 +3,7 @@ import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { type IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import seoDiplomeModel, { type IDiplomeEcoleCard } from "shared/models/seo-diplome.model"
 import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seo-metier.model"
+import seoSecteurModel from "shared/models/seo-secteur.model"
 import seoVilleModel from "shared/models/seo-ville.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
@@ -130,13 +131,31 @@ export const getSeoMetier = async ({ metier }: { metier: string }) => {
   return seoMetier
 }
 
+export const getSeoSecteur = async ({ secteur }: { secteur: string }) => {
+  return await getDbCollection(seoSecteurModel.collectionName).findOne({ slug: secteur })
+}
+
 export const getSeoDiplome = async ({ diplome }: { diplome: string }) => {
   const seoDiplome = await getDbCollection(seoDiplomeModel.collectionName).findOne({ slug: diplome })
   return seoDiplome
 }
 
-const getJobCountForMetier = async (romes: string[]) => {
-  return await getDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+type IRomeQueryOptions = { includeAlgo?: boolean }
+
+// Les pages métier, ville et diplôme comptent les entreprises à contacter parmi les offres ; la page secteur les sépare.
+const algoFilter = ({ includeAlgo = true }: IRomeQueryOptions) => (includeAlgo ? {} : { partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA } })
+
+const getJobCountForMetier = async (romes: string[], options: IRomeQueryOptions = {}) => {
+  return await getDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE, ...algoFilter(options) })
+}
+
+const getAlgoCompanyCountForRomes = async (romes: string[]) => {
+  const sirets = await getDbCollection("jobs_partners").distinct("workplace_siret", {
+    offer_rome_codes: { $in: romes },
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+  })
+  return sirets.filter(Boolean).length
 }
 
 const getCompanyCountForMetier = async (romes: string[]) => {
@@ -189,7 +208,7 @@ const getApplicantCountForMetier = async (romes: string[]) => {
   return applicantCountResult[0]?.distinctApplicants || 0
 }
 
-const getTopCompaniesForMetier = async (romes: string[]) => {
+const getTopCompaniesForMetier = async (romes: string[], options: IRomeQueryOptions = {}) => {
   const topLimit = 6
 
   const topCompanies = await getDbCollection("jobs_partners")
@@ -198,6 +217,7 @@ const getTopCompaniesForMetier = async (romes: string[]) => {
         $match: {
           offer_status: JOB_STATUS_ENGLISH.ACTIVE,
           offer_rome_codes: { $in: romes },
+          ...algoFilter(options),
         },
       },
       {
@@ -258,7 +278,7 @@ const cities = [
   { name: "Clermont-Ferrand", lat: 45.7772, long: 3.087 },
 ]
 
-const getTopCitiesForMetier = async (romes: string[]) => {
+const getTopCitiesForMetier = async (romes: string[], options: IRomeQueryOptions = {}) => {
   const topLimit = 6
   const radius = 30_000
 
@@ -275,6 +295,7 @@ const getTopCitiesForMetier = async (romes: string[]) => {
               query: {
                 offer_status: JOB_STATUS_ENGLISH.ACTIVE,
                 offer_rome_codes: { $in: romes },
+                ...algoFilter(options),
                 $or: [{ offer_expiration: null }, { offer_expiration: { $gt: new Date() } }],
               },
             },
@@ -357,12 +378,17 @@ const getJobPartnerDataForSeo = (jobPartner: IJobsPartnersOfferPrivateWithDistan
   }
 }
 
-const getJobCards = async (params: { geo: { latitude: number; longitude: number; radius: number } | null; romes: string[] | null; rncp: null; opco: null }) => {
+const getJobCards = async (
+  params: { geo: { latitude: number; longitude: number; radius: number } | null; romes: string[] | null; rncp: null; opco: null },
+  { includeAlgo = true }: IRomeQueryOptions = {}
+) => {
   const lbaJobs = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
   const jobsForSeo = lbaJobs.slice(0, 6).map((job) => getJobPartnerDataForSeo(job))
 
-  const lbaCompanies = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
-  jobsForSeo.push(...lbaCompanies.slice(0, 6).map((job) => getJobPartnerDataForSeo(job)))
+  if (includeAlgo) {
+    const lbaCompanies = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+    jobsForSeo.push(...lbaCompanies.slice(0, 6).map((job) => getJobPartnerDataForSeo(job)))
+  }
 
   const partnerJobs = await getJobsPartnersFromDBForUI({ ...params, partners_to_exclude: [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA] })
   jobsForSeo.push(...partnerJobs.slice(0, 12 - jobsForSeo.length).map((job) => getJobPartnerDataForSeo(job)))
@@ -528,4 +554,50 @@ export const updateSeoDiplome = async () => {
   })
 
   logger.info("ended job updateSeoDiplome")
+}
+
+const SECTEUR_CARDS_LIMIT = 6
+
+export const updateSeoSecteurs = async () => {
+  logger.info("starting job updateSeoSecteurs")
+  const secteurs = await getDbCollection(seoSecteurModel.collectionName).find({}).toArray()
+
+  await asyncForEach(secteurs, async (secteur) => {
+    try {
+      const sansAlgo = { includeAlgo: false }
+      const [jobCount, companyCount, algoCompanyCount, applicantCount, metiersCounts, entreprises, villes, formations, cards] = await Promise.all([
+        getJobCountForMetier(secteur.romes, sansAlgo),
+        getCompanyCountForMetier(secteur.romes),
+        getAlgoCompanyCountForRomes(secteur.romes),
+        getApplicantCountForMetier(secteur.romes),
+        Promise.all(secteur.metiers.map(async (metier) => ({ libelle: metier.libelle, job_count: await getJobCountForMetier(metier.romes, sansAlgo) }))),
+        getTopCompaniesForMetier(secteur.romes, sansAlgo),
+        getTopCitiesForMetier(secteur.romes, sansAlgo),
+        getFormationsForMetier(secteur.romes),
+        getJobCards({ geo: null, romes: secteur.romes, rncp: null, opco: null }, sansAlgo),
+      ])
+
+      await getDbCollection(seoSecteurModel.collectionName).updateOne(
+        { slug: secteur.slug },
+        {
+          $set: {
+            job_count: jobCount,
+            company_count: companyCount,
+            algo_company_count: algoCompanyCount,
+            applicant_count: applicantCount,
+            metiers_counts: metiersCounts,
+            entreprises,
+            villes,
+            formations,
+            cards: cards.slice(0, SECTEUR_CARDS_LIMIT),
+            updated_at: new Date(),
+          },
+        }
+      )
+    } catch (error) {
+      logger.error({ err: error }, "Error in updateSeoSecteurs for secteur " + secteur.slug)
+    }
+  })
+
+  logger.info("ended job updateSeoSecteurs")
 }
