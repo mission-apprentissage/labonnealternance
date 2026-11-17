@@ -345,7 +345,7 @@ describe("POST /etablissement/creation", () => {
 
         expect.soft((await roleEvents(user._id)).at(-1)).toMatchObject({
           status: AccessStatus.GRANTED,
-          reason: "validation par : Référentiel (sources : catalogue, acce ; correspondance : domaine)",
+          reason: "validation par : Référentiel (sources : acce, catalogue ; correspondance : domaine)",
         })
       })
 

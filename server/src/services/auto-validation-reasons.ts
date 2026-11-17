@@ -16,11 +16,13 @@ const formatCorrespondance = (on: ICorrespondance) => (on === "domain" ? "domain
 
 export const recruteursLbaReason = (on: "email" | "domain") => `validation par : recruteurs LBA (correspondance : ${formatCorrespondance(on)})`
 
-export const balValidReason = ({ sources, on }: { sources: string[]; on: ICorrespondance }) =>
-  `validation par : BAL (sources : ${sources.length ? sources.join(", ") : "non transmises"} ; correspondance : ${formatCorrespondance(on)})`
+/** Format lu par la regex de catégorisation de l'alerte (cf. AUTO_REASON_CATEGORIES). */
+const formatSourcesAndMatch = ({ sources, on }: { sources: string[]; on: ICorrespondance }) =>
+  `sources : ${sources.length ? sources.join(", ") : "non transmises"} ; correspondance : ${formatCorrespondance(on)}`
 
-export const referentielContactReason = ({ sources, on }: { sources: string[]; on: "email" | "domain" }) =>
-  `validation par : Référentiel (sources : ${sources.length ? sources.join(", ") : "non transmises"} ; correspondance : ${formatCorrespondance(on)})`
+export const balValidReason = (props: { sources: string[]; on: ICorrespondance }) => `validation par : BAL (${formatSourcesAndMatch(props)})`
+
+export const referentielContactReason = (props: { sources: string[]; on: "email" | "domain" }) => `validation par : Référentiel (${formatSourcesAndMatch(props)})`
 
 export const indeterminateReason = (unavailableSources: string[]) =>
   `${AUTO_VALIDATION_INDETERMINATE_PREFIX}${unavailableSources.join(", ")} indisponible${unavailableSources.length > 1 ? "s" : ""}`

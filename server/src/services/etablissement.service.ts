@@ -421,7 +421,7 @@ export const getCfaSiretInfos = async (siret: string) => {
 /** Contacts du Référentiel qui autorisent la validation automatique d'un compte CFA, avec leurs sources pour la raison du rôle. */
 export const matchCfaReferentielContact = (contacts: ICfaReferentielData["contacts"], email: string): { on: "email" | "domain"; sources: string[] } | null => {
   const userEmail = email.toLowerCase()
-  const sourcesOf = (matched: ICfaReferentielData["contacts"]) => [...new Set(matched.flatMap(({ sources }) => sources))]
+  const sourcesOf = (matched: ICfaReferentielData["contacts"]) => [...new Set(matched.flatMap(({ sources }) => sources))].sort()
 
   const byEmail = contacts.filter((contact) => contact.email.toLowerCase() === userEmail)
   if (byEmail.length) return { on: "email", sources: sourcesOf(byEmail) }

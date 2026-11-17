@@ -298,12 +298,6 @@ export default (server: Server) => {
           }
           const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa))
           const userAndOrganization: UserAndOrganization = { user: userCfa, organization }
-          if (!contacts.length) {
-            // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            await setUserHasToBeManuallyValidated(userAndOrganization)
-            await notifyToSlack(slackNotification)
-            return res.status(200).send({ user: userCfa, validated: false, token })
-          }
           const contactMatch = matchCfaReferentielContact(contacts, formatedEmail)
           if (contactMatch) {
             await autoValidateUser(userAndOrganization, referentielContactReason(contactMatch))

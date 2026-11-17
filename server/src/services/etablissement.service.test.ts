@@ -320,6 +320,10 @@ describe("matchCfaReferentielContact", () => {
     expect(matchCfaReferentielContact([contact("john.doe@cfa.com", ["acce"])], "john.doe@autre-cfa.fr")).toBeNull()
   })
 
+  it("ne valide rien sans contact", () => {
+    expect(matchCfaReferentielContact([], "admin@cfa.com")).toBeNull()
+  })
+
   it("ne retient pas un contact sans e-mail", () => {
     expect(matchCfaReferentielContact([contact("", ["catalogue"])], "admin@cfa.com")).toBeNull()
   })
@@ -333,9 +337,9 @@ describe("matchCfaReferentielContact", () => {
     expect(matchCfaReferentielContact([contact("contact.cfa@gmail.com", ["catalogue"])], "Contact.CFA@gmail.com")).toEqual({ on: "email", sources: ["catalogue"] })
   })
 
-  it("réunit sans doublon les sources de tous les contacts du domaine", () => {
+  it("réunit sans doublon et trie les sources de tous les contacts du domaine", () => {
     const contacts = [contact("admin@cfa.com", ["catalogue"]), contact("john.doe@cfa.com", ["acce", "catalogue"]), contact("autre@ailleurs.fr", ["deca"])]
-    expect(matchCfaReferentielContact(contacts, "nouveau@cfa.com")).toEqual({ on: "domain", sources: ["catalogue", "acce"] })
+    expect(matchCfaReferentielContact(contacts, "nouveau@cfa.com")).toEqual({ on: "domain", sources: ["acce", "catalogue"] })
   })
 
   it("signale dans la raison un contact sans source", () => {

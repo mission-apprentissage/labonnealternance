@@ -63,7 +63,7 @@ describe("classifyRole", () => {
     ["validation par : BAL (sources : catalogue, deca ; correspondance : domaine)", "BAL (catalogue, deca)", true],
     ["validaton par : BAL", "BAL (ancienne raison)", true],
     ["validation par : Référentiel (sources : acce ; correspondance : email)", "contact CFA (acce)", false],
-    ["validation par : Référentiel (sources : catalogue, acce ; correspondance : domaine)", "contact CFA (catalogue, acce)", false],
+    ["validation par : Référentiel (sources : acce, catalogue ; correspondance : domaine)", "contact CFA (acce, catalogue)", false],
     ["l'email correspond à un contact", "contact CFA (ancienne raison)", false],
     ["le nom de domaine de l'email correspond à celui d'un contact", "contact CFA (ancienne raison)", false],
   ])("classe « %s » en auto-validation", (reason, category, bal) => {
