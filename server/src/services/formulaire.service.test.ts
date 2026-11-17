@@ -412,6 +412,34 @@ describe("getFormulairesForCfaManagedEnterprises", () => {
     expect(recruiter.jobs[0].candidatures).toBeUndefined()
   })
 
+  it("compte les candidatures de l'entreprise, et celles en attente sur ses seules offres ouvertes", async () => {
+    const role = generateRoleManagementFixture({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString(), user_id: cfaUser._id })
+    await getDbCollection("rolemanagements").insertOne(role)
+    await insertEntrepriseManagedByCfa({ entreprise_id: entreprise._id, cfa_id: cfa._id, ...entrepriseManagedByCfaContact })
+    const openJob = generateJobsPartnersOfferPrivate({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      workplace_siret: entreprise.siret,
+      managed_by: cfaUser._id,
+      offer_expiration: new Date(Date.now() + 30 * 24 * 3600 * 1000),
+    })
+    const expiredJob = generateJobsPartnersOfferPrivate({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      workplace_siret: entreprise.siret,
+      managed_by: cfaUser._id,
+      offer_expiration: new Date(Date.now() - 30 * 24 * 3600 * 1000),
+    })
+    await getDbCollection("jobs_partners").insertMany([openJob, expiredJob])
+    await getDbCollection("applications").insertMany([
+      generateApplicationFixture({ job_id: openJob._id, company_recruitment_intention: null }),
+      generateApplicationFixture({ job_id: openJob._id, company_recruitment_intention: ApplicationIntention.REFUS }),
+      generateApplicationFixture({ job_id: expiredJob._id, company_recruitment_intention: null }),
+    ])
+
+    const [recruiter] = await getFormulairesForCfaManagedEnterprises(cfaUser._id, cfa._id, false)
+
+    expect(recruiter).toMatchObject({ applications_count: 3, pending_applications_count: 1 })
+  })
+
   it("should return an empty array when the cfa manages no entreprise", async () => {
     const role = generateRoleManagementFixture({
       authorized_type: AccessEntityType.CFA,

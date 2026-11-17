@@ -2,6 +2,7 @@ import { captureException } from "@sentry/nextjs"
 import { unstable_rethrow } from "next/navigation"
 import type {
   IBody,
+  ICfaManagedRecruiterJson,
   IJobCreate,
   ILbaItemLbaCompanyJson,
   ILbaItemLbaJobJson,
@@ -9,7 +10,6 @@ import type {
   INewDelegations,
   INewSuperUser,
   IQuery,
-  IRecruiterJson,
   IResponse,
   IRoutes,
 } from "shared"
@@ -201,7 +201,7 @@ export const sendValidationLink = async (userId: string, token: string) =>
 /**
  * Etablissement API
  */
-export const getEntreprisesManagedByCfa = async (cfaId: string): Promise<IRecruiterJson[]> => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
+export const getEntreprisesManagedByCfa = async (cfaId: string): Promise<ICfaManagedRecruiterJson[]> => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
 export const getCfaInformation = async (siret: string) => {
   try {
     const data = await apiGet("/etablissement/cfa/:siret", { params: { siret } })

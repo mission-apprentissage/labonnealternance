@@ -7,7 +7,7 @@ import { ZPointGeometry } from "../models/address.model.js"
 import { zCFA } from "../models/cfa.model.js"
 import { zObjectId } from "../models/common.js"
 import { ZEntreprise } from "../models/entreprise.model.js"
-import { ZRecruiter } from "../models/recruiter.model.js"
+import { ZCfaManagedRecruiter, ZRecruiter } from "../models/recruiter.model.js"
 import { EntrepriseEngagementSources, HANDI_ENGAGEMENT_VALUES } from "../models/referentiel-engagement-entreprise.model.js"
 import { ZUserWithAccount } from "../models/user-with-account.model.js"
 import { ZPersonNameInput, ZUserOriginInput, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/users-recruteur.model.js"
@@ -109,7 +109,7 @@ export const zRecruiterRoutes = {
       path: "/etablissement/cfa/:cfaId/entreprises",
       params: z.strictObject({ cfaId: zObjectId }),
       response: {
-        "200": z.array(ZRecruiter),
+        "200": z.array(ZCfaManagedRecruiter),
       },
       securityScheme: {
         auth: "cookie-session",

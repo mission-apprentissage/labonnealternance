@@ -8,8 +8,11 @@ import dayjs from "dayjs"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import type { IRecruiter, IRecruiterJson } from "shared"
+import type { ICfaManagedRecruiterJson, IRecruiterJson } from "shared"
+import { JOB_STATUS } from "shared/models/job.model"
+import { isOfferExpired } from "shared/utils/offer-expiration"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
@@ -145,8 +148,8 @@ function ListeEntreprise() {
     {
       Header: "Contact entreprise",
       id: "contact_entreprise",
-      width: "350",
-      maxWidth: "350",
+      width: "300",
+      maxWidth: "300",
       accessor: "contact_entreprise",
       sortType: (a, b) => sortReactTableString(`${a.original.last_name} ${a.original.first_name}`, `${b.original.last_name} ${b.original.first_name}`),
       Cell: ({
@@ -168,30 +171,52 @@ function ListeEntreprise() {
       },
     },
     {
-      Header: "Offres",
-      id: "nombre_offres",
+      Header: "Offres actives",
+      id: "offres_actives",
       sortType: "basic",
-      accessor: ({ jobs }: IRecruiterJson) => jobs.length,
+      accessor: ({ jobs }: ICfaManagedRecruiterJson) => jobs.filter((job) => job.job_status === JOB_STATUS.ACTIVE && !isOfferExpired(job.job_expiration_date)).length,
+    },
+    {
+      Header: (
+        <>
+          Candidatures
+          <Box component="span" sx={{ display: "block", fontWeight: 400 }}>
+            dont « en attente »
+          </Box>
+        </>
+      ),
+      sortLabel: "Candidatures dont « en attente »",
+      id: "candidatures",
+      // Assez large pour « dont « en attente » » et l'icône de tri sur une ligne.
+      width: "200",
+      // Tri sur les candidatures en attente d'abord : par ordre décroissant, les entreprises qui attendent une réponse passent en tête.
+      sortType: (a, b) => a.original.pending_applications_count - b.original.pending_applications_count || a.original.applications_count - b.original.applications_count,
+      accessor: ({ applications_count }: ICfaManagedRecruiterJson) => applications_count,
+      Cell: ({
+        data,
+        cell: {
+          row: { id },
+        },
+      }) => {
+        const { applications_count, pending_applications_count } = data[id] as ICfaManagedRecruiterJson
+        return (
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: fr.spacing("1v") }}>
+            {applications_count}
+            {pending_applications_count > 0 && (
+              <Badge variant="awaiting" fontSize="12px">
+                {pending_applications_count}
+                <span className="fr-sr-only"> en attente</span>
+              </Badge>
+            )}
+          </Box>
+        )
+      },
     },
     {
       Header: "Ajoutée le",
       accessor: ({ createdAt }) => dayjs(createdAt).format("DD/MM/YYYY"),
       id: "createdAt",
       sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
-    },
-    {
-      Header: "Dernière offre créée le",
-      id: "date_creation_offre",
-      disableSortBy: true,
-      width: "225",
-      accessor: ({ jobs }: IRecruiter /* should be IRecruiterJson but jobs is not typed properly */) => {
-        if (jobs.length > 0) {
-          const last = jobs.pop()
-          return dayjs(last.job_creation_date).format("DD/MM/YYYY")
-        } else {
-          return ""
-        }
-      },
     },
   ]
 
@@ -223,7 +248,7 @@ function ListeEntreprise() {
           </Box>
         </Box>
         {entreprises?.length ? (
-          <TableWithPagination caption="Liste des entreprises" columns={columns} data={entreprises} exportable={false} defaultSortBy={[{ id: "createdAt", desc: true }]} />
+          <TableWithPagination caption="Liste des entreprises" columns={columns} data={entreprises} exportable={false} defaultSortBy={[{ id: "candidatures", desc: true }]} />
         ) : (
           <EmptySpace />
         )}
