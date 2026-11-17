@@ -30,6 +30,7 @@ import type { IModerationTrigger, IOfferModerationStatus } from "shared/models/j
 import { MODERATION_CLASSIFICATION_STATUS, MODERATION_TRIGGER } from "shared/models/jobs-partners-moderation.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { getOfferClosure } from "shared/utils/applications-consultation"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { isRecruiterWrittenDescription } from "shared/utils/job-description.utils"
 import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
@@ -624,6 +625,8 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
       delete job.candidatures
       // @ts-expect-error
       delete job.candidatures_en_attente
+      // @ts-expect-error
+      delete job.job_closure
     })
     const { email, first_name, last_name, phone } = entrepriseManagedByCfa
     recruiters.push({ ...recruiter, email, first_name, last_name, phone })
@@ -719,6 +722,8 @@ const getRecruiterFromJobsPartnerFilter = async ({
       delete job.candidatures
       // @ts-expect-error
       delete job.candidatures_en_attente
+      // @ts-expect-error
+      delete job.job_closure
     })
   }
   return recruiter
@@ -1698,6 +1703,7 @@ export function jobPartnersToRecruiter(
       offer_title_custom: customTitle,
       candidatures: jobPartner.application_count ?? 0,
       candidatures_en_attente: jobPartner.pending_application_count ?? 0,
+      job_closure: getOfferClosure(jobPartner),
       to_applicant_questions: jobPartner.to_applicant_questions,
       ft_support: jobPartner.ft_support ?? false,
     }

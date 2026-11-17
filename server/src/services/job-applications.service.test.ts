@@ -5,6 +5,7 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import type { ComputedUserAccess } from "shared/models/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -77,10 +78,31 @@ describe("getJobApplicationsForRecruiter", () => {
     await expect(getJobApplicationsForRecruiter(job._id, opcoAccess)).rejects.toThrow("Accès réservé au recruteur de l'offre")
   })
 
-  it("refuse l'accès plus de deux mois après l'expiration de l'offre", async () => {
-    const job = await insertJob({ offer_expiration: new Date(Date.now() - 70 * 24 * 3600 * 1000) })
+  it("refuse l'accès plus de trois mois après l'expiration de l'offre", async () => {
+    const job = await insertJob({ offer_expiration: new Date(Date.now() - 100 * 24 * 3600 * 1000) })
 
     await expect(getJobApplicationsForRecruiter(job._id, recruiterAccess)).rejects.toThrow("Les candidatures de cette offre ne sont plus consultables")
+  })
+
+  it("compte les trois mois depuis la clôture d'une offre pourvue, même avant son expiration", async () => {
+    const closedAt = new Date(Date.now() - 100 * 24 * 3600 * 1000)
+    const job = await insertJob({
+      offer_status: JOB_STATUS_ENGLISH.POURVUE,
+      offer_status_history: [{ status: JOB_STATUS_ENGLISH.POURVUE, date: closedAt, reason: "Offre pourvue", granted_by: "recruteur" }],
+      offer_expiration: new Date(Date.now() + 30 * 24 * 3600 * 1000),
+    })
+
+    await expect(getJobApplicationsForRecruiter(job._id, recruiterAccess)).rejects.toThrow("Les candidatures de cette offre ne sont plus consultables")
+  })
+
+  it("renvoie la clôture d'une offre pourvue, pour le bandeau de fin de consultation", async () => {
+    const closedAt = new Date(Date.now() - 10 * 24 * 3600 * 1000)
+    const job = await insertJob({
+      offer_status: JOB_STATUS_ENGLISH.POURVUE,
+      offer_status_history: [{ status: JOB_STATUS_ENGLISH.POURVUE, date: closedAt, reason: "Offre pourvue", granted_by: "recruteur" }],
+    })
+
+    expect((await getJobApplicationsForRecruiter(job._id, recruiterAccess)).job.closure).toEqual({ reason: "filled", date: closedAt })
   })
 
   it("répond 404 pour une offre qui n'est pas une offre LBA", async () => {

@@ -8,7 +8,7 @@ import { ApplicationScanStatus } from "shared/models/applications.model"
 import type { ComputedUserAccess, IApplicant, IApplication } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
-import { getApplicationsConsultation } from "shared/utils/applications-consultation"
+import { getApplicationsConsultation, getOfferClosure } from "shared/utils/applications-consultation"
 import { getApplicationsExportFileName } from "shared/utils/applications-export"
 import { decodeSanitizedText } from "shared/utils/string-utils"
 import type { z } from "zod"
@@ -35,7 +35,7 @@ const getConsultableJob = async (jobId: ObjectId, userAccess: ComputedUserAccess
   if (!(await canAccessJobAsEntrepriseOrCfa(userAccess, job))) {
     throw forbidden("Accès réservé au recruteur de l'offre")
   }
-  if (job.offer_expiration && getApplicationsConsultation(job.offer_expiration).status === "unavailable") {
+  if (getApplicationsConsultation({ expiration: job.offer_expiration, closure: getOfferClosure(job) }).status === "unavailable") {
     throw forbidden("Les candidatures de cette offre ne sont plus consultables")
   }
   return job
@@ -66,6 +66,7 @@ export const getJobApplicationsForRecruiter = async (jobId: ObjectId, userAccess
       offer_rome_appellation: job.offer_rome_appellation ?? null,
       offer_expiration: job.offer_expiration ?? null,
       offer_status: job.offer_status,
+      closure: getOfferClosure(job),
     },
     applications: applications.map(({ _id, applicant, company_recruitment_intention, created_at }) => ({
       _id,

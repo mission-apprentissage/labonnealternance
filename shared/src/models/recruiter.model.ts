@@ -69,6 +69,10 @@ export const ZRecruiterWithRomeDetailAndApplicationCount = ZRecruiter.omit({ job
     ZJob.extend({
       candidatures: z.number(),
       candidatures_en_attente: z.number().describe("Candidatures sans intention exprimée par le recruteur"),
+      job_closure: z
+        .object({ reason: z.enum(["filled", "cancelled"]), date: z.date() })
+        .nullable()
+        .describe("Clôture de l'offre (pourvue ou annulée), point de départ de la consultation des candidatures"),
       rome_detail: ZReferentielRome.nullish(),
     })
   ),

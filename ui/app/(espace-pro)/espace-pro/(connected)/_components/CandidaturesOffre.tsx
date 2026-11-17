@@ -10,6 +10,7 @@ import Link from "next/link"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
+import { APPLICATIONS_CONSULTATION_MONTHS_AFTER_CLOSURE, getApplicationsConsultation } from "shared/utils/applications-consultation"
 import { getApplicationsExportFileName } from "shared/utils/applications-export"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
@@ -186,6 +187,7 @@ const CandidaturesOffreContent = ({
         </Typography>
         <DownloadApplicationsLink jobId={job._id} offerTitle={job.offer_title} />
       </Box>
+      <ConsultationDeadlineAlert expiration={job.offer_expiration} closure={job.closure} />
       {/* La marge basse du .fr-table DSFR éloignerait le lien de retour posé juste sous le tableau. */}
       <Box sx={{ "& .fr-table": { mb: 0 } }}>
         <Table
@@ -199,6 +201,32 @@ const CandidaturesOffreContent = ({
         />
       </Box>
     </>
+  )
+}
+
+const OFFER_END_LABELS = {
+  filled: "est pourvue depuis le",
+  cancelled: "est annulée depuis le",
+  expired: "a expiré ou a été fermée le",
+} as const
+
+/** Offre clôturée ou expirée : prévient de la date à laquelle ses candidatures ne seront plus consultables. */
+type JobApplicationsData = Awaited<ReturnType<typeof getJobApplications>>
+
+const ConsultationDeadlineAlert = ({ expiration, closure }: { expiration: string | null; closure: JobApplicationsData["job"]["closure"] }) => {
+  const consultation = getApplicationsConsultation({ expiration, closure: closure?.reason && closure.date ? { reason: closure.reason, date: closure.date } : null })
+  if (consultation.status !== "consultable") {
+    return null
+  }
+  const formatDate = (date: Date) => dayjs(date).format("DD/MM/YYYY")
+  return (
+    <Box sx={{ mb: fr.spacing("4v") }}>
+      <Alert
+        severity="info"
+        small
+        description={`Cette offre ${OFFER_END_LABELS[consultation.end.reason]} ${formatDate(consultation.end.date)}. Ses candidatures restent consultables pendant ${APPLICATIONS_CONSULTATION_MONTHS_AFTER_CLOSURE} mois après la clôture de l'offre, soit jusqu'au ${formatDate(consultation.until)}.`}
+      />
+    </Box>
   )
 }
 

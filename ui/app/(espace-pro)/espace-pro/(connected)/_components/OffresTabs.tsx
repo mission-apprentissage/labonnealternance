@@ -10,7 +10,7 @@ import { useEffect, useState } from "react"
 import type { IJobJson, IRecruiterJson, JOB_START_TYPE } from "shared"
 import { JOB_STATUS } from "shared"
 import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants/index"
-import { getApplicationsConsultation } from "shared/utils/applications-consultation"
+import { getApplicationsConsultation, type IOfferClosure } from "shared/utils/applications-consultation"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import Table from "@/app/(espace-pro)/_components/Table"
 import { OffreProlongationModal } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffreProlongationModal"
@@ -74,7 +74,13 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
   }
 }
 
-type LocalJob = Omit<IJobJson, "_id"> & { candidatures: number; candidatures_en_attente: number; geo_coordinates: string; _id: string }
+type LocalJob = Omit<IJobJson, "_id"> & {
+  candidatures: number
+  candidatures_en_attente: number
+  job_closure?: IOfferClosure | null
+  geo_coordinates: string
+  _id: string
+}
 
 const getJobTitle = ({ offer_title_custom, rome_appellation_label, rome_label }: Pick<LocalJob, "offer_title_custom" | "rome_appellation_label" | "rome_label">) =>
   offer_title_custom ?? rome_appellation_label ?? rome_label
@@ -84,7 +90,7 @@ const CandidaturesCell = ({ job, applicationsPath }: { job: LocalJob; applicatio
   if (total === 0) {
     return total
   }
-  const consultation = getApplicationsConsultation(job.job_expiration_date)
+  const consultation = getApplicationsConsultation({ expiration: job.job_expiration_date, closure: job.job_closure ?? null })
   const totalLabel =
     applicationsPath && consultation.status !== "unavailable" ? (
       <Link className="fr-link" href={applicationsPath} aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}>

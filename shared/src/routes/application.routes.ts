@@ -112,6 +112,10 @@ export const zApplicationRoutes = {
             offer_rome_appellation: z.string().nullable(),
             offer_expiration: z.date().nullable(),
             offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH),
+            closure: z
+              .strictObject({ reason: z.enum(["filled", "cancelled"]), date: z.date() })
+              .nullable()
+              .describe("Clôture de l'offre, point de départ de la consultation des candidatures"),
           }),
           applications: z.array(
             z.strictObject({
