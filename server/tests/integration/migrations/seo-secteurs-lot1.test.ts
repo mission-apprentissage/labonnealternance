@@ -4,8 +4,10 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { metierData } from "@/jobs/seo/data-metier-seo"
 import { secteursData, up } from "@/migrations/20261116120000-seo-secteurs-lot1"
 
-// Pages métier dont on connaît les codes ROME : le test suivant compare le périmètre de la carte au leur.
-const METIER_PAGES_EXISTANTES = metierData.map((m) => m.slug)
+// `metierData` ne porte qu'une partie des pages métier publiées, les autres étant déclarées côté ui dans
+// metier_data.tsx. Seules celles-ci sont liables depuis une carte : le test de périmètre ROME ci-dessous a
+// besoin de leurs codes pour contraindre le compteur affiché.
+const METIER_PAGES_VERIFIABLES = metierData.map((m) => m.slug)
 
 describe("migration seo-secteurs-lot1", () => {
   useMongo()
@@ -27,11 +29,11 @@ describe("migration seo-secteurs-lot1", () => {
     expect(secteur?.job_count).toBe(0)
   })
 
-  it("ne renvoie que vers des pages métier existantes", () => {
+  it("ne renvoie que vers des pages métier dont les codes ROME sont connus ici", () => {
     const slugs = secteursData.flatMap((s) => s.metiers).flatMap((m) => (m.metier_slug ? [m.metier_slug] : []))
     expect(slugs.length).toBeGreaterThan(0)
     for (const slug of slugs) {
-      expect(METIER_PAGES_EXISTANTES).toContain(slug)
+      expect(METIER_PAGES_VERIFIABLES).toContain(slug)
     }
   })
 

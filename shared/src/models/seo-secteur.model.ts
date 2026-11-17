@@ -20,7 +20,7 @@ const ZSeoSecteurSource = {
   annee: z.number(),
 }
 
-// Une seule comparaison en barres (rendue par BarChartHorizontal du baromètre), la référence en dernière barre.
+// Comparaison chiffrée du marché, rendue en liste « libellé : affichage » par MarcheSecteurSection.
 const ZSeoSecteurComparaison = z.object({
   titre: z.string(),
   barres: z.array(z.object({ libelle: z.string(), valeur: z.number(), affichage: z.string() })),
