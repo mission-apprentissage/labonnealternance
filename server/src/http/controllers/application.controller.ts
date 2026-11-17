@@ -2,12 +2,12 @@ import { captureException } from "@sentry/node"
 import { ObjectId } from "mongodb"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
-import { assertUnreachable, CompanyFeebackSendStatus, zRoutes } from "shared/index"
-import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { assertUnreachable, zRoutes } from "shared/index"
 import config from "@/config"
 import type { Server } from "@/http/server"
 import {
   buildApplicationFromHelloworkAndSaveToDb,
+  cancelScheduledRecruiterIntention,
   getApplicationDataForIntentionAndScheduleMessage,
   getCompanyEmailFromToken,
   sendRecruiterIntention,
@@ -16,6 +16,7 @@ import {
   exportJobApplicationsForRecruiter,
   getJobApplicationAttachmentForRecruiter,
   getJobApplicationDetailForRecruiter,
+  getJobApplicationReplyTokenForRecruiter,
   getJobApplicationsForRecruiter,
   markJobApplicationTreatedElsewhere,
 } from "@/services/job-applications.service"
@@ -108,7 +109,7 @@ export default function (server: Server) {
     async (req, res) => {
       const { id } = req.params
 
-      await getDbCollection("applications").updateOne({ _id: new ObjectId(id) }, { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED } })
+      await cancelScheduledRecruiterIntention(new ObjectId(id))
 
       return res.status(200).send({})
     }
@@ -134,6 +135,19 @@ export default function (server: Server) {
     async (req, res) => {
       const { jobId, applicationId } = req.params
       return res.status(200).send(await getJobApplicationDetailForRecruiter(jobId, applicationId, req.userAccess))
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId/application/:applicationId/reply-token",
+    {
+      schema: zRoutes.get["/application/job/:jobId/application/:applicationId/reply-token"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId/application/:applicationId/reply-token"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      const result = await getJobApplicationReplyTokenForRecruiter(jobId, applicationId, req.query.intention, req.userAccess)
+      return res.status(200).header("cache-control", "no-store").send(result)
     }
   )
 

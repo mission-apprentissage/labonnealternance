@@ -1,4 +1,5 @@
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
+import type { ApplicationIntention } from "shared/constants/application"
 import type { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/index"
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -579,6 +580,20 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/offre/${job_id}/candidature/${application_id}` as string,
       title: "Détail d'une candidature",
     }),
+    backCfaEntrepriseCandidatureReponse: ({
+      establishment_id,
+      job_id,
+      application_id,
+      intention,
+    }: {
+      establishment_id: string
+      job_id: string
+      application_id: string
+      intention: ApplicationIntention
+    }): IPage => ({
+      getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/offre/${job_id}/candidature/${application_id}/repondre/${intention}` as string,
+      title: "Répondre au candidat",
+    }),
     backCfaPageInformations: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/informations` as string,
       title: "Informations de contact",
@@ -618,6 +633,10 @@ export const PAGES = {
     backEntrepriseCandidatureDetail: ({ job_id, application_id }: { job_id: string; application_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}/candidature/${application_id}` as string,
       title: "Détail d'une candidature",
+    }),
+    backEntrepriseCandidatureReponse: ({ job_id, application_id, intention }: { job_id: string; application_id: string; intention: ApplicationIntention }): IPage => ({
+      getPath: () => `/espace-pro/entreprise/offre/${job_id}/candidature/${application_id}/repondre/${intention}` as string,
+      title: "Répondre au candidat",
     }),
     backEntrepriseMiseEnRelation: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}/mise-en-relation` as string,

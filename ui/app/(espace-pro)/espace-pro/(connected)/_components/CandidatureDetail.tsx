@@ -8,14 +8,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Link from "next/link"
 import { useEffect, useRef } from "react"
-import { APPLICATION_TREATED_ELSEWHERE } from "shared/constants/application"
+import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-status"
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
 import { downloadJobApplicationAttachment, getFormulaire, getJobApplicationAttachmentUrl, getJobApplicationDetail, markJobApplicationTreatedElsewhere } from "@/utils/api"
-import { PAGES } from "@/utils/routes.utils"
+import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
 
 type ApplicationDetail = Awaited<ReturnType<typeof getJobApplicationDetail>>
 
@@ -32,20 +32,10 @@ export const CandidatureDetail = ({ job_id, application_id, cfaEstablishmentId }
     enabled: Boolean(cfaEstablishmentId),
   })
 
-  const applicationsPage = cfaEstablishmentId
-    ? PAGES.dynamic.backCfaEntrepriseCandidaturesOffre({ establishment_id: cfaEstablishmentId, job_id })
-    : PAGES.dynamic.backEntrepriseCandidaturesOffre({ job_id })
-  const detailPage = cfaEstablishmentId
-    ? PAGES.dynamic.backCfaEntrepriseCandidatureDetail({ establishment_id: cfaEstablishmentId, job_id, application_id })
-    : PAGES.dynamic.backEntrepriseCandidatureDetail({ job_id, application_id })
-  const breadcrumbPages = cfaEstablishmentId
-    ? [
-        PAGES.static.backCfaHome,
-        PAGES.dynamic.backCfaPageEntreprise(cfaEstablishmentId, recruiter?.establishment_raison_sociale ?? recruiter?.establishment_siret),
-        applicationsPage,
-        detailPage,
-      ]
-    : [{ ...PAGES.static.backHomeEntreprise, title: "Entreprise" }, applicationsPage, detailPage]
+  const pages = getApplicationPages({ job_id, cfaEstablishmentId, establishmentName: recruiter?.establishment_raison_sociale ?? recruiter?.establishment_siret })
+  const applicationsPage = pages.applications
+  const breadcrumbPages = [...pages.parents, applicationsPage, pages.detail(application_id)]
+  const getReplyPath = (intention: ApplicationIntention) => pages.reply(application_id, intention).getPath()
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -63,7 +53,7 @@ export const CandidatureDetail = ({ job_id, application_id, cfaEstablishmentId }
             <Alert severity="error" small description={error?.message ?? "Cette candidature est indisponible."} />
           </>
         ) : (
-          <CandidatureDetailContent data={data} />
+          <CandidatureDetailContent data={data} getReplyPath={getReplyPath} />
         )}
         <Box sx={{ mt: fr.spacing("6v") }}>
           <Link className="fr-link fr-link--sm fr-link--icon-left fr-icon-arrow-left-line" href={applicationsPage.getPath()}>
@@ -204,7 +194,7 @@ const ResponseBanner = ({ application }: { application: Application }) => {
   )
 }
 
-const ApplicationActions = ({ jobId, application }: { jobId: string; application: Application }) => {
+const ApplicationActions = ({ jobId, application, getReplyPath }: { jobId: string; application: Application; getReplyPath: (intention: ApplicationIntention) => string }) => {
   const client = useQueryClient()
   const refreshApplication = () =>
     Promise.all([
@@ -221,14 +211,14 @@ const ApplicationActions = ({ jobId, application }: { jobId: string; application
   })
 
   if (!application.company_recruitment_intention) {
-    // Contacter et Refuser arrivent avec la suite de #5769 : boutons posés, inactifs.
+    // Contacter et Refuser ouvrent les formulaires de réponse du mail au recruteur (cf. CandidatureReponse).
     return (
       <Box sx={{ mt: fr.spacing("6v") }}>
         <Box sx={{ display: "flex", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
-          <Button iconId="fr-icon-mail-send-line" iconPosition="left" disabled>
+          <Button iconId="fr-icon-mail-send-line" iconPosition="left" linkProps={{ href: getReplyPath(ApplicationIntention.ENTRETIEN) }}>
             Contacter le candidat
           </Button>
-          <Button priority="secondary" disabled>
+          <Button priority="secondary" linkProps={{ href: getReplyPath(ApplicationIntention.REFUS) }}>
             Refuser la candidature
           </Button>
           <Button priority="secondary" onClick={() => treatedElsewhere.mutate()} disabled={treatedElsewhere.isPending}>
@@ -359,7 +349,7 @@ const QuestionsCard = ({ questions, application }: { questions: string[]; applic
   )
 }
 
-const CandidatureDetailContent = ({ data }: { data: ApplicationDetail }) => {
+const CandidatureDetailContent = ({ data, getReplyPath }: { data: ApplicationDetail; getReplyPath: (intention: ApplicationIntention) => string }) => {
   const { job, application } = data
   const status = getApplicationStatus(application.company_recruitment_intention)
 
@@ -381,7 +371,7 @@ const CandidatureDetailContent = ({ data }: { data: ApplicationDetail }) => {
           Pour le poste : <strong>{job.offer_title}</strong>
         </Typography>
       </Box>
-      <ApplicationActions jobId={job._id} application={application} />
+      <ApplicationActions jobId={job._id} application={application} getReplyPath={getReplyPath} />
       <Typography component="h2" sx={{ mt: fr.spacing("8v"), mb: fr.spacing("4v"), fontWeight: 700 }}>
         Sa candidature
       </Typography>

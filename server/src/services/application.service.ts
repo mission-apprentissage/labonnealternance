@@ -1297,6 +1297,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
 
   let recruiter_phone: string
   let company_name: string
+  let espace_pro: { job_id: string; cfa_establishment_id: string | null; establishment_name: string } | null = null
 
   switch (type) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
@@ -1307,6 +1308,11 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
         await validateUserWithAccountEmail(new ObjectId(managed_by))
       }
       recruiter_phone = cfa_apply_phone || apply_phone || ""
+      espace_pro = {
+        job_id: job._id.toString(),
+        cfa_establishment_id: job.is_delegated && managed_by && job.workplace_siret ? buildEstablishmentId(new ObjectId(managed_by), job.workplace_siret) : null,
+        establishment_name: workplace_brand || workplace_legal_name || job.workplace_siret || "",
+      }
       break
     }
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
@@ -1355,6 +1361,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     applicant_phone: applicant.phone,
     company_name,
     sent_intention,
+    espace_pro,
   }
 }
 
@@ -1394,6 +1401,17 @@ export const processRecruiterIntention = async ({ application }: { application: 
   } else {
     throw internal(`unexpected: intention scheduled message not sent for application ${application._id}`)
   }
+}
+
+/**
+ * Annule la réponse programmée à l'ouverture du formulaire : la candidature redevient sans réponse (l'intention est
+ * reposée à l'envoi, cf. sendRecruiterIntention). Une réponse déjà envoyée n'est pas touchée.
+ */
+export const cancelScheduledRecruiterIntention = async (applicationId: ObjectId) => {
+  await getDbCollection("applications").updateOne(
+    { _id: applicationId, company_feedback_send_status: { $ne: CompanyFeebackSendStatus.SENT } },
+    { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED, company_recruitment_intention: null, company_recruitment_intention_date: null } }
+  )
 }
 
 export const sendRecruiterIntention = async ({

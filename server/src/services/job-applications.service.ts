@@ -14,7 +14,15 @@ import { decodeSanitizedText } from "shared/utils/string-utils"
 import type { z } from "zod"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { canAccessJobAsEntrepriseOrCfa } from "@/security/authorisation.service"
-import { buildRecruiterIntentionEmailSubject, getApplicationAttachmentFile, getApplicationAttachmentSize, getApplicationPartnerName } from "@/services/application.service"
+import { generateApplicationReplyToken } from "@/services/app-links.service"
+import {
+  buildRecruiterIntentionEmailSubject,
+  buildUserForToken,
+  getApplicationAttachmentFile,
+  getApplicationAttachmentSize,
+  getApplicationPartnerName,
+  getUserManagingOffer,
+} from "@/services/application.service"
 
 type IJobApplicationsResponse = z.output<(typeof zRoutes)["get"]["/application/job/:jobId"]["response"]["200"]>
 
@@ -227,4 +235,27 @@ export const markJobApplicationTreatedElsewhere = async (jobId: ObjectId, applic
   if (!matchedCount) {
     throw conflict("Une réponse a déjà été enregistrée pour cette candidature")
   }
+}
+
+/**
+ * Jeton des formulaires de réponse au candidat, pour les ouvrir depuis l'espace pro (#5769) : ce sont ceux du
+ * mail au recruteur, signés pour le gestionnaire de l'offre comme dans le mail, mais valables 2 heures.
+ */
+export const getJobApplicationReplyTokenForRecruiter = async (
+  jobId: ObjectId,
+  applicationId: ObjectId,
+  intention: ApplicationIntention,
+  userAccess: ComputedUserAccess | undefined
+): Promise<{ token: string }> => {
+  const job = await getConsultableJob(jobId, userAccess)
+  const [application] = await getApplicationsWithApplicant(jobId, { _id: 1 }, applicationId)
+  if (!application) {
+    throw notFound("Candidature introuvable")
+  }
+  // Le formulaire programme une réponse dès son ouverture : il ne doit pas écraser une réponse donnée hors de LBA.
+  if (application.company_recruitment_intention === APPLICATION_TREATED_ELSEWHERE) {
+    throw conflict("Vous avez déjà indiqué avoir répondu au candidat par un autre canal")
+  }
+  const manager = await getUserManagingOffer(job)
+  return { token: generateApplicationReplyToken(buildUserForToken(application, manager), applicationId.toString(), intention, "2h") }
 }

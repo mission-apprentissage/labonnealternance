@@ -409,6 +409,9 @@ export const METADATA = {
     backEntrepriseCandidatureDetail: (): Metadata => ({
       title: "Détail d'une candidature - La bonne alternance",
     }),
+    backEntrepriseCandidatureReponse: (): Metadata => ({
+      title: "Répondre au candidat - La bonne alternance",
+    }),
     backEntrepriseCandidaturesOffre: (): Metadata => ({
       title: "Candidatures de l'offre - La bonne alternance",
     }),

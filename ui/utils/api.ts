@@ -144,6 +144,8 @@ export const getModerationQueue = async (querystring: IQuery<IRoutes["get"]["/mo
 export const getJobApplications = async (jobId: string) => apiGet("/application/job/:jobId", { params: { jobId } })
 export const getJobApplicationDetail = async (jobId: string, applicationId: string) =>
   apiGet("/application/job/:jobId/application/:applicationId", { params: { jobId, applicationId } })
+export const getJobApplicationReplyToken = async (jobId: string, applicationId: string, intention: ApplicationIntention) =>
+  apiGet("/application/job/:jobId/application/:applicationId/reply-token", { params: { jobId, applicationId }, querystring: { intention } })
 export const markJobApplicationTreatedElsewhere = async (jobId: string, applicationId: string) =>
   apiPost("/application/job/:jobId/application/:applicationId/treated-elsewhere", { params: { jobId, applicationId } })
 export const getJobApplicationAttachmentUrl = (jobId: string, applicationId: string) =>

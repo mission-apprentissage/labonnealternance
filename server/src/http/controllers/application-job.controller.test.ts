@@ -11,6 +11,7 @@ import {
 } from "@tests/utils/user.test.utils"
 import type { ObjectId } from "mongodb"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention, RefusalReasons } from "shared/constants/application"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -444,5 +445,65 @@ describe("POST /application/job/:jobId/application/:applicationId/treated-elsewh
 
     expect(response.statusCode).toBe(404)
     expect((await getApplication(otherApplication._id))?.company_recruitment_intention).toBeNull()
+  })
+})
+
+describe("GET /application/job/:jobId/application/:applicationId/reply-token", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const getReplyToken = async (jobId: ObjectId, applicationId: ObjectId, intention: ApplicationIntention, headers?: Record<string, string>) =>
+    httpClient().inject({ method: "GET", path: `/api/application/job/${jobId}/application/${applicationId}/reply-token?intention=${intention}`, ...(headers ? { headers } : {}) })
+
+  it("donne au recruteur un jeton qui ouvre le formulaire de réponse du mail", async () => {
+    const recruiter = await saveRecruiter("recruteur-jeton")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Contacte", { job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, company_siret: recruiter.entreprise.siret })
+
+    const response = await getReplyToken(offer._id, application._id, ApplicationIntention.ENTRETIEN, (await logUser(httpClient, "recruteur-jeton")).bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    const schedule = await httpClient().inject({
+      method: "GET",
+      path: `/api/application/intention/schedule/${application._id}?intention=${ApplicationIntention.ENTRETIEN}`,
+      headers: { authorization: `Bearer ${response.json().token}` },
+    })
+    expect(schedule.statusCode).toBe(200)
+    expect(schedule.json().espace_pro).toEqual({ job_id: offer._id.toString(), cfa_establishment_id: null, establishment_name: expect.any(String) })
+    expect((await getDbCollection("applications").findOne({ _id: application._id }))?.company_recruitment_intention).toBe(ApplicationIntention.ENTRETIEN)
+  })
+
+  it("refuse le jeton à une candidature déjà traitée par un autre canal", async () => {
+    const recruiter = await saveRecruiter("recruteur-jeton-autre-canal")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Appele", { company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE })
+
+    const response = await getReplyToken(offer._id, application._id, ApplicationIntention.REFUS, (await logUser(httpClient, "recruteur-jeton-autre-canal")).bearerToken)
+
+    expect(response.statusCode).toBe(409)
+  })
+
+  it("refuse le jeton au recruteur d'une autre entreprise", async () => {
+    const recruiter = await saveRecruiter("proprietaire-jeton")
+    await saveRecruiter("voisin-jeton")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Confidentiel")
+
+    const response = await getReplyToken(offer._id, application._id, ApplicationIntention.REFUS, (await logUser(httpClient, "voisin-jeton")).bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect(response.body).not.toContain("token")
+  })
+
+  it("refuse le jeton d'une candidature d'une autre offre, via une offre accessible", async () => {
+    const recruiter = await saveRecruiter("recruteur-jeton-croise")
+    const otherRecruiter = await saveRecruiter("autre-recruteur-jeton")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const otherOffer = await saveOffer({ managedBy: otherRecruiter.user._id, siret: otherRecruiter.entreprise.siret })
+    const otherApplication = await saveApplication(otherOffer._id, "Etrangere")
+
+    const response = await getReplyToken(offer._id, otherApplication._id, ApplicationIntention.REFUS, (await logUser(httpClient, "recruteur-jeton-croise")).bearerToken)
+
+    expect(response.statusCode).toBe(404)
   })
 })

@@ -190,6 +190,22 @@ export const zApplicationRoutes = {
         },
       },
     },
+    "/application/job/:jobId/application/:applicationId/reply-token": {
+      path: "/application/job/:jobId/application/:applicationId/reply-token",
+      method: "get",
+      params: z.strictObject({ jobId: zObjectId, applicationId: zObjectId }),
+      querystring: z.strictObject({ intention: extensions.buildEnum(ApplicationIntention) }),
+      response: {
+        "200": z.strictObject({ token: z.string().describe("Jeton des routes de réponse au candidat (/application/intention…)") }),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "application:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
+    },
     "/application/job/:jobId/export": {
       path: "/application/job/:jobId/export",
       method: "get",
@@ -239,6 +255,10 @@ export const zApplicationRoutes = {
               company_recruitment_intention: extensions.buildEnum(ApplicationIntention).nullable(),
             })
             .optional(),
+          espace_pro: z
+            .strictObject({ job_id: z.string(), cfa_establishment_id: z.string().nullable(), establishment_name: z.string() })
+            .nullable()
+            .describe("Pages de l'espace pro de la candidature, pour le fil d'Ariane ; null hors offre LBA"),
         }),
       },
       securityScheme: {
