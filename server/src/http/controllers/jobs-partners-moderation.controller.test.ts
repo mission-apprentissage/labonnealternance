@@ -733,6 +733,24 @@ describe("modération des offres libres (#5499)", () => {
       ])
     })
 
+    it("filtre sur l'OPCO de l'entreprise, sans retenir une offre sans OPCO", async () => {
+      const recruiter = await saveRecruiter({ raisonSociale: "Imprimerie Morel" })
+      const name = { workplace_legal_name: "Imprimerie Morel" }
+      const atlas = await saveModeratedOffer(recruiter, { offer: { ...name, workplace_opco: OPCOS_LABEL.ATLAS } })
+      const akto = await saveModeratedOffer(recruiter, { offer: { ...name, workplace_opco: OPCOS_LABEL.AKTO } })
+      const sansOpco = await saveModeratedOffer(recruiter, { offer: { ...name, workplace_opco: null } })
+      const { bearerToken } = await loginAdmin()
+      const opco = (label: OPCOS_LABEL) => `opco=${encodeURIComponent(label)}`
+
+      const atlasOnly = await search(bearerToken, `search=imprimerie&${opco(OPCOS_LABEL.ATLAS)}`)
+      const atlasOrAkto = await search(bearerToken, `search=imprimerie&${opco(OPCOS_LABEL.ATLAS)}&${opco(OPCOS_LABEL.AKTO)}`)
+      const unfiltered = await search(bearerToken, "search=imprimerie")
+
+      expect(ids(atlasOnly)).toEqual(idsOf(atlas))
+      expect(ids(atlasOrAkto)).toEqual(idsOf(atlas, akto))
+      expect(ids(unfiltered)).toEqual(idsOf(atlas, akto, sansOpco))
+    })
+
     it("ne renvoie ni le texte saisi par le recruteur ni la description de l'offre", async () => {
       const recruiter = await saveRecruiter({ raisonSociale: "Pâtisserie Lenoir" })
       await saveModeratedOffer(recruiter, { offer: { workplace_legal_name: "Pâtisserie Lenoir", workplace_description: "Présentation de l'entreprise" } })

@@ -7,6 +7,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import type { SortingState } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { AccessStatus } from "shared/models/role-management.model"
@@ -54,6 +55,7 @@ const OFFER_STATUS_OPTIONS: { value: IOfferStatusGroup; label: string }[] = [
   { value: "expiree", label: "Expirée" },
 ]
 const CONFORMITY_OPTIONS = MODERATION_SEARCH_CONFORMITY.map((value) => ({ value, label: MODERATION_CONFORMITY_LABELS[value] }))
+const OPCO_OPTIONS = Object.values(OPCOS_LABEL).map((value) => ({ value, label: value }))
 
 const CLOSED_STATUSES: JOB_STATUS_ENGLISH[] = [JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.POURVUE]
 
@@ -102,6 +104,7 @@ export function ModerationSearch() {
   const [accountType, setAccountType] = useState<IModerationAccountType[]>([])
   const [offerStatus, setOfferStatus] = useState<IOfferStatusGroup[]>([])
   const [conformity, setConformity] = useState<IModerationSearchConformity[]>([])
+  const [opco, setOpco] = useState<OPCOS_LABEL[]>([])
   const [sorting, setSorting] = useState<SortingState>(MODERATION_DEFAULT_SORTING)
   const [offset, setOffset] = useState(0)
 
@@ -109,7 +112,7 @@ export function ModerationSearch() {
   const hasSearch = search.length >= MIN_SEARCH_LENGTH
 
   const { data, isLoading, isError, isPlaceholderData, isFetching } = useQuery({
-    queryKey: ["moderation-search", search, accountStatus, accountType, offerStatus, conformity, sort, order, offset],
+    queryKey: ["moderation-search", search, accountStatus, accountType, offerStatus, conformity, opco, sort, order, offset],
     queryFn: () =>
       searchModerationOffers({
         search,
@@ -117,6 +120,7 @@ export function ModerationSearch() {
         account_type: accountType.length ? accountType : undefined,
         offer_status: offerStatus.length ? offerStatus.flatMap((group) => OFFER_STATUS_GROUPS[group]) : undefined,
         conformity: conformity.length ? conformity : undefined,
+        opco: opco.length ? opco : undefined,
         sort,
         order,
         limit: MODERATION_PAGE_SIZE,
@@ -166,6 +170,7 @@ export function ModerationSearch() {
         <MultiSelect id="recherche-type-compte" label="Type de compte" width={200} items={ACCOUNT_TYPE_OPTIONS} value={accountType} onChange={withFirstPage(setAccountType)} />
         <MultiSelect id="recherche-statut-offre" label="Statut de l’offre" width={200} items={OFFER_STATUS_OPTIONS} value={offerStatus} onChange={withFirstPage(setOfferStatus)} />
         <MultiSelect id="recherche-conformite" label="Niveau de conformité" width={230} items={CONFORMITY_OPTIONS} value={conformity} onChange={withFirstPage(setConformity)} />
+        <MultiSelect id="recherche-opco" label="OPCO" width={260} items={OPCO_OPTIONS} value={opco} onChange={withFirstPage(setOpco)} />
       </Box>
 
       <LiveStatus message={isPageLoading ? `Chargement de la page ${currentPage} sur ${pageCount}…` : counter} />

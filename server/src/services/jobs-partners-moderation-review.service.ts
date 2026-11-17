@@ -290,6 +290,7 @@ export const searchModerationOffers = async ({
   conformity,
   account_status,
   account_type,
+  opco,
   offer_status,
   ...page
 }: IModerationPageOptions & {
@@ -297,10 +298,12 @@ export const searchModerationOffers = async ({
   conformity?: IModerationSearchConformity[]
   account_status?: IModerationSearchAccountStatus[]
   account_type?: IModerationAccountType[]
+  opco?: OPCOS_LABEL[]
   offer_status?: JOB_STATUS_ENGLISH[]
 }): Promise<{ jobs: IModerationQueueItem[]; total: number }> => {
   const filters: Filter<IJobsPartnersOfferPrivate>[] = [{ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA }, await buildSearchFilter(search), ...accountTypeFilter(account_type)]
   if (conformity?.length) filters.push({ $or: conformity.map((value) => CONFORMITY_FILTERS[value]) })
+  if (opco?.length) filters.push({ workplace_opco: { $in: opco } })
   if (offer_status?.length) filters.push({ offer_status: { $in: offer_status } })
   return listModerationOffers({ filters, accountStatus: account_status, ...page })
 }

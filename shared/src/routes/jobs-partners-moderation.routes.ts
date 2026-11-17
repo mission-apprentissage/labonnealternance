@@ -185,6 +185,7 @@ export const zJobsPartnersModerationRoutes = {
         conformity: zQueryArray(z.enum(MODERATION_SEARCH_CONFORMITY)),
         account_status: zQueryArray(z.enum(MODERATION_SEARCH_ACCOUNT_STATUSES)),
         account_type: zQueryArray(z.enum(MODERATION_ACCOUNT_TYPES)),
+        opco: zQueryArray(extensions.buildEnum(OPCOS_LABEL)),
         offer_status: zQueryArray(extensions.buildEnum(JOB_STATUS_ENGLISH)),
         ...zPageQuery,
       }),
