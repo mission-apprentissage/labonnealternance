@@ -29,6 +29,13 @@ export enum JOB_STATUS_ENGLISH {
   EN_MODERATION = "InReview",
 }
 
+/**
+ * Offres non closes : publiées, en modération, ou en attente de la validation du compte. Colonne « Offres actives » des
+ * entreprises d'un CFA, sur le même périmètre que la conformité du compte (cf. getAccountOfferConformities) (#5757).
+ */
+export const countOpenJobs = (jobs: { job_status?: JOB_STATUS }[]) =>
+  jobs.filter(({ job_status }) => job_status === JOB_STATUS.ACTIVE || job_status === JOB_STATUS.EN_MODERATION || job_status === JOB_STATUS.EN_ATTENTE).length
+
 /** Statuts du contrat de l'API publique : une offre en modération n'y est ni lue ni écrite. */
 export const JOB_STATUS_ENGLISH_PUBLIC = {
   ACTIVE: JOB_STATUS_ENGLISH.ACTIVE,

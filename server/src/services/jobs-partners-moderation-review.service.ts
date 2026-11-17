@@ -300,7 +300,7 @@ export const searchModerationOffers = async ({
 
 /**
  * Offres non conformes en attente de décision, par entreprise partenaire d'un CFA : le périmètre de la file, sur les
- * offres que compte la colonne Offres de sa fiche (cf. getFormulairesForCfaManagedEnterprises). Réservé aux administrateurs.
+ * offres que compte la colonne Offres actives de sa fiche (cf. getFormulairesForCfaManagedEnterprises, countOpenJobs). Réservé aux administrateurs.
  */
 export const countNonConformeOffersByPartner = async (cfaId: ObjectId): Promise<{ siret: string; non_conformes: number }[]> => {
   const [role, managed] = await Promise.all([

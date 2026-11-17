@@ -1,10 +1,12 @@
 import { renderToStaticMarkup } from "react-dom/server"
+import { JOB_STATUS } from "shared/models/job.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 
 const state = vi.hoisted(() => ({ userType: "ADMIN", counterFails: false, queries: [] as { queryKey: unknown[]; enabled: boolean }[] }))
 const SIRET_NON_CONFORME = "11000001500013"
 const SIRET_CONFORME = "11000001500021"
+const JOB_STATUSES = [JOB_STATUS.ACTIVE, JOB_STATUS.ACTIVE, JOB_STATUS.EN_MODERATION, JOB_STATUS.EN_ATTENTE, JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]
 
 vi.mock("@/context/UserContext", () => ({ useAuth: () => ({ user: { type: state.userType } }) }))
 vi.mock("./EntreprisesGereesParCfaMenu", () => ({ EntreprisesGereesParCfaMenu: () => null }))
@@ -15,13 +17,14 @@ vi.mock("@tanstack/react-query", () => ({
       if (!enabled || state.counterFails) return { data: undefined, isSuccess: false, isError: state.counterFails }
       return { data: { entreprises: [{ siret: SIRET_NON_CONFORME, non_conformes: 3 }] }, isSuccess: true }
     }
-    // Deux offres par entreprise : la colonne « Offres » n'affiche pas de 0 qui se confondrait avec celui des non conformes.
+    // Quatre offres non closes par entreprise : la colonne « Offres actives » n'affiche pas de 0 qui se confondrait avec
+    // celui des non conformes, ni le 3 de leur badge.
     return {
       isLoading: false,
       data: [SIRET_NON_CONFORME, SIRET_CONFORME].map((siret) => ({
         establishment_siret: siret,
         establishment_raison_sociale: `Entreprise ${siret}`,
-        jobs: [{}, {}],
+        jobs: JOB_STATUSES.map((job_status) => ({ job_status })),
         createdAt: "2026-10-01",
       })),
     }
@@ -65,5 +68,15 @@ describe("EntreprisesGereesParCfa, colonne « Non conformes » (#5757)", () => {
 
     expect(counterQuery()?.enabled).toBe(false)
     expect(html).not.toContain("Non conformes")
+  })
+})
+
+describe("EntreprisesGereesParCfa, colonne « Offres actives » (#5757)", () => {
+  it.each(["ADMIN", "OPCO"])("compte pour un %s les offres publiées, en modération et en attente, pas les offres pourvues ni annulées", (userType) => {
+    const html = render(userType)
+
+    expect(html).toContain("Offres actives")
+    expect(html.match(/<td[^>]*>4<\/td>/g)).toHaveLength(2)
+    expect(html).not.toMatch(/>6</)
   })
 })

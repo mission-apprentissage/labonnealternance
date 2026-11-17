@@ -8,6 +8,7 @@ import dayjs from "dayjs"
 import { useMemo, useState } from "react"
 import type { IRecruiterJson } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
+import { countOpenJobs } from "shared/models/job.model"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useAuth } from "@/context/UserContext"
@@ -109,10 +110,10 @@ export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; user
       },
     },
     {
-      Header: "Offres",
+      Header: "Offres actives",
       id: "nombre_offres",
       sortType: "basic",
-      accessor: ({ jobs }: IRecruiterJson) => jobs.length,
+      accessor: ({ jobs }: IRecruiterJson) => countOpenJobs(jobs),
     },
     ...(isAdmin
       ? [
