@@ -26,7 +26,9 @@ import {
 
 type IJobApplicationsResponse = z.output<(typeof zRoutes)["get"]["/application/job/:jobId"]["response"]["200"]>
 
-const getConsultableJob = async (jobId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<IJobsPartnersOfferPrivate> => {
+const isConsultable = (job: IJobsPartnersOfferPrivate) => getApplicationsConsultation({ expiration: job.offer_expiration, closure: getOfferClosure(job) }).status !== "unavailable"
+
+const getManagedJob = async (jobId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<IJobsPartnersOfferPrivate> => {
   const job = await getDbCollection("jobs_partners").findOne({ _id: jobId, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
   if (!job) {
     throw notFound("Offre introuvable")
@@ -35,7 +37,12 @@ const getConsultableJob = async (jobId: ObjectId, userAccess: ComputedUserAccess
   if (!(await canAccessJobAsEntrepriseOrCfa(userAccess, job))) {
     throw forbidden("Accès réservé au recruteur de l'offre")
   }
-  if (getApplicationsConsultation({ expiration: job.offer_expiration, closure: getOfferClosure(job) }).status === "unavailable") {
+  return job
+}
+
+const getConsultableJob = async (jobId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<IJobsPartnersOfferPrivate> => {
+  const job = await getManagedJob(jobId, userAccess)
+  if (!isConsultable(job)) {
     throw forbidden("Les candidatures de cette offre ne sont plus consultables")
   }
   return job
@@ -54,10 +61,13 @@ const getApplicationsWithApplicant = (jobId: ObjectId, applicantFields: Partial<
     ])
     .toArray()
 
-/** Candidatures d'une offre LBA pour son recruteur ou le CFA qui la gère (#5769). */
+/**
+ * Candidatures d'une offre LBA pour son recruteur ou le CFA qui la gère (#5769). Passé le délai de consultation,
+ * l'offre est renvoyée sans ses candidatures : la page explique pourquoi elles ne sont plus disponibles.
+ */
 export const getJobApplicationsForRecruiter = async (jobId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<IJobApplicationsResponse> => {
-  const job = await getConsultableJob(jobId, userAccess)
-  const applications = await getApplicationsWithApplicant(jobId, { firstname: 1, lastname: 1 })
+  const job = await getManagedJob(jobId, userAccess)
+  const applications = isConsultable(job) ? await getApplicationsWithApplicant(jobId, { firstname: 1, lastname: 1 }) : []
 
   return {
     job: {

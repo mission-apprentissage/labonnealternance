@@ -9,7 +9,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { getJobApplicationsForRecruiter } from "./job-applications.service"
+import { exportJobApplicationsForRecruiter, getJobApplicationsForRecruiter } from "./job-applications.service"
 
 useMongo()
 
@@ -78,10 +78,14 @@ describe("getJobApplicationsForRecruiter", () => {
     await expect(getJobApplicationsForRecruiter(job._id, opcoAccess)).rejects.toThrow("Accès réservé au recruteur de l'offre")
   })
 
-  it("refuse l'accès plus de trois mois après l'expiration de l'offre", async () => {
+  it("ne renvoie plus les candidatures plus de trois mois après l'expiration de l'offre, et refuse leur export", async () => {
     const job = await insertJob({ offer_expiration: new Date(Date.now() - 100 * 24 * 3600 * 1000) })
+    await insertApplication(job._id, {}, { firstname: "Expire", lastname: "Candidat" })
 
-    await expect(getJobApplicationsForRecruiter(job._id, recruiterAccess)).rejects.toThrow("Les candidatures de cette offre ne sont plus consultables")
+    const { job: returnedJob, applications } = await getJobApplicationsForRecruiter(job._id, recruiterAccess)
+    expect(returnedJob.offer_title).toBe(job.offer_title)
+    expect(applications).toEqual([])
+    await expect(exportJobApplicationsForRecruiter(job._id, recruiterAccess)).rejects.toThrow("Les candidatures de cette offre ne sont plus consultables")
   })
 
   it("compte les trois mois depuis la clôture d'une offre pourvue, même avant son expiration", async () => {
@@ -91,8 +95,9 @@ describe("getJobApplicationsForRecruiter", () => {
       offer_status_history: [{ status: JOB_STATUS_ENGLISH.POURVUE, date: closedAt, reason: "Offre pourvue", granted_by: "recruteur" }],
       offer_expiration: new Date(Date.now() + 30 * 24 * 3600 * 1000),
     })
+    await insertApplication(job._id, {}, { firstname: "Pourvue", lastname: "Candidat" })
 
-    await expect(getJobApplicationsForRecruiter(job._id, recruiterAccess)).rejects.toThrow("Les candidatures de cette offre ne sont plus consultables")
+    expect((await getJobApplicationsForRecruiter(job._id, recruiterAccess)).applications).toEqual([])
   })
 
   it("renvoie la clôture d'une offre pourvue, pour le bandeau de fin de consultation", async () => {

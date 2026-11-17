@@ -10,7 +10,7 @@ import Link from "next/link"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
-import { APPLICATIONS_CONSULTATION_MONTHS_AFTER_CLOSURE, getApplicationsConsultation } from "shared/utils/applications-consultation"
+import { APPLICATIONS_CONSULTATION_MONTHS_AFTER_CLOSURE, getApplicationsConsultation, type IOfferEnd } from "shared/utils/applications-consultation"
 import { getApplicationsExportFileName } from "shared/utils/applications-export"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
@@ -155,6 +155,11 @@ const CandidaturesOffreContent = ({
   buildApplicationPath: (applicationId: string) => string
 }) => {
   const { job, applications } = data
+  const consultation = getApplicationsConsultation({
+    expiration: job.offer_expiration,
+    closure: job.closure?.reason && job.closure.date ? { reason: job.closure.reason, date: job.closure.date } : null,
+  })
+  const isAvailable = consultation.status !== "unavailable"
   const closureModal = useDisclosure()
   const isClosed = job.offer_status === JOB_STATUS_ENGLISH.POURVUE || job.offer_status === JOB_STATUS_ENGLISH.ANNULEE
   const offerUrl = `${publicConfig.baseUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, job.offer_rome_appellation || undefined)}`
@@ -166,40 +171,48 @@ const CandidaturesOffreContent = ({
         <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700 }}>
           Candidatures
         </Typography>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
-          <Button
-            priority="secondary"
-            iconId="fr-icon-external-link-line"
-            iconPosition="right"
-            linkProps={{ href: offerUrl, target: "_blank", rel: "noopener noreferrer", title: "Voir l'offre en ligne - nouvelle fenêtre" }}
-          >
-            Voir l'offre en ligne
-          </Button>
-          <Button disabled={isClosed} onClick={closureModal.onOpen}>
-            Clôturer le recrutement
-          </Button>
-        </Box>
+        {isAvailable && (
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
+            <Button
+              priority="secondary"
+              iconId="fr-icon-external-link-line"
+              iconPosition="right"
+              linkProps={{ href: offerUrl, target: "_blank", rel: "noopener noreferrer", title: "Voir l'offre en ligne - nouvelle fenêtre" }}
+            >
+              Voir l'offre en ligne
+            </Button>
+            <Button disabled={isClosed} onClick={closureModal.onOpen}>
+              Clôturer le recrutement
+            </Button>
+          </Box>
+        )}
       </Box>
       <Box sx={{ mt: fr.spacing("4v"), mb: fr.spacing("4v"), display: "flex", justifyContent: "space-between", alignItems: "center", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
         {/* "&&" passe devant la taille des h2 imposée par DepotSimplifieStyling. */}
         <Typography component="h2" sx={{ "&&": { fontSize: "1rem", lineHeight: "1.5rem" }, fontWeight: 400, m: 0 }}>
           Offre : <strong>{job.offer_title}</strong>
         </Typography>
-        <DownloadApplicationsLink jobId={job._id} offerTitle={job.offer_title} />
+        {isAvailable && <DownloadApplicationsLink jobId={job._id} offerTitle={job.offer_title} />}
       </Box>
-      <ConsultationDeadlineAlert expiration={job.offer_expiration} closure={job.closure} />
-      {/* La marge basse du .fr-table DSFR éloignerait le lien de retour posé juste sous le tableau. */}
-      <Box sx={{ "& .fr-table": { mb: 0 } }}>
-        <Table
-          caption="Liste des candidatures"
-          captionSrOnly
-          columns={getColumns(buildApplicationPath)}
-          data={applications}
-          pageSize={APPLICATIONS_PAGE_SIZE}
-          rowHeaderColumnIds={["applicant_first_name", "applicant_last_name"]}
-          initialSortBy={[{ id: "created_at", desc: true }]}
-        />
-      </Box>
+      {consultation.status === "unavailable" ? (
+        <UnavailableApplicationsNotice end={consultation.end} until={consultation.until} />
+      ) : (
+        <>
+          {consultation.status === "consultable" && <ConsultationDeadlineAlert end={consultation.end} until={consultation.until} />}
+          {/* La marge basse du .fr-table DSFR éloignerait le lien de retour posé juste sous le tableau. */}
+          <Box sx={{ "& .fr-table": { mb: 0 } }}>
+            <Table
+              caption="Liste des candidatures"
+              captionSrOnly
+              columns={getColumns(buildApplicationPath)}
+              data={applications}
+              pageSize={APPLICATIONS_PAGE_SIZE}
+              rowHeaderColumnIds={["applicant_first_name", "applicant_last_name"]}
+              initialSortBy={[{ id: "created_at", desc: true }]}
+            />
+          </Box>
+        </>
+      )}
     </>
   )
 }
@@ -210,25 +223,31 @@ const OFFER_END_LABELS = {
   expired: "a expiré ou a été fermée le",
 } as const
 
-/** Offre clôturée ou expirée : prévient de la date à laquelle ses candidatures ne seront plus consultables. */
-type JobApplicationsData = Awaited<ReturnType<typeof getJobApplications>>
+const formatDate = (date: Date) => dayjs(date).format("DD/MM/YYYY")
+const describeOfferEnd = (end: IOfferEnd) => `Cette offre ${OFFER_END_LABELS[end.reason]} ${formatDate(end.date)}`
 
-const ConsultationDeadlineAlert = ({ expiration, closure }: { expiration: string | null; closure: JobApplicationsData["job"]["closure"] }) => {
-  const consultation = getApplicationsConsultation({ expiration, closure: closure?.reason && closure.date ? { reason: closure.reason, date: closure.date } : null })
-  if (consultation.status !== "consultable") {
-    return null
-  }
-  const formatDate = (date: Date) => dayjs(date).format("DD/MM/YYYY")
-  return (
-    <Box sx={{ mb: fr.spacing("4v") }}>
-      <Alert
-        severity="info"
-        small
-        description={`Cette offre ${OFFER_END_LABELS[consultation.end.reason]} ${formatDate(consultation.end.date)}. Ses candidatures restent consultables pendant ${APPLICATIONS_CONSULTATION_MONTHS_AFTER_CLOSURE} mois après la clôture de l'offre, soit jusqu'au ${formatDate(consultation.until)}.`}
-      />
-    </Box>
-  )
-}
+/** Offre clôturée ou expirée : prévient de la date à laquelle ses candidatures ne seront plus consultables. */
+const ConsultationDeadlineAlert = ({ end, until }: { end: IOfferEnd; until: Date }) => (
+  <Box sx={{ mb: fr.spacing("4v") }}>
+    <Alert
+      severity="info"
+      small
+      description={`${describeOfferEnd(end)}. Ses candidatures restent consultables pendant ${APPLICATIONS_CONSULTATION_MONTHS_AFTER_CLOSURE} mois après la clôture de l'offre, soit jusqu'au ${formatDate(until)}.`}
+    />
+  </Box>
+)
+
+/** Délai de consultation dépassé : la page explique pourquoi la liste a disparu (écran 16 de la maquette). */
+const UnavailableApplicationsNotice = ({ end, until }: { end: IOfferEnd; until: Date }) => (
+  <Box sx={{ p: fr.spacing("6v"), backgroundColor: fr.colors.decisions.background.alt.grey.default }}>
+    <span className="fr-icon-archive-line" aria-hidden="true" style={{ color: fr.colors.decisions.text.mention.grey.default }} />
+    <Typography sx={{ mt: fr.spacing("3v"), fontWeight: 700 }}>Les candidatures de cette offre ne sont plus disponibles</Typography>
+    <Typography sx={{ mt: fr.spacing("2v"), fontSize: "0.875rem" }}>
+      Les candidatures sont conservées pendant {APPLICATIONS_CONSULTATION_MONTHS_AFTER_CLOSURE} mois après la clôture de l'offre. {describeOfferEnd(end)} : ses candidatures ne sont
+      plus consultables depuis le {formatDate(until)}.
+    </Typography>
+  </Box>
+)
 
 const DOWNLOAD_MESSAGES = {
   loading: "Préparation du récapitulatif des candidatures en cours.",

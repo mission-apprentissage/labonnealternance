@@ -92,7 +92,8 @@ const CandidaturesCell = ({ job, applicationsPath }: { job: LocalJob; applicatio
   }
   const consultation = getApplicationsConsultation({ expiration: job.job_expiration_date, closure: job.job_closure ?? null })
   const totalLabel =
-    applicationsPath && consultation.status !== "unavailable" ? (
+    // Lien aussi passé le délai de consultation : la page explique pourquoi les candidatures ne sont plus disponibles.
+    applicationsPath ? (
       <Link className="fr-link" href={applicationsPath} aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}>
         {total}
       </Link>
