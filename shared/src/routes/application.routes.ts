@@ -117,6 +117,63 @@ export const zApplicationRoutes = {
         },
       },
     },
+    "/application/job/:jobId/application/:applicationId": {
+      path: "/application/job/:jobId/application/:applicationId",
+      method: "get",
+      params: z.strictObject({ jobId: zObjectId, applicationId: zObjectId }),
+      response: {
+        "200": z.strictObject({
+          job: z.strictObject({ _id: zObjectId, offer_title: z.string(), to_applicant_questions: z.array(z.string()) }),
+          application: z.strictObject({
+            _id: zObjectId,
+            created_at: z.date().nullable(),
+            applicant_first_name: z.string(),
+            applicant_last_name: z.string(),
+            applicant_email: z.string(),
+            applicant_phone: z.string(),
+            company_recruitment_intention: z.string().nullable(),
+            company_recruitment_intention_date: z.date().nullable(),
+            company_feedback: z.string().nullable(),
+            company_feedback_reasons: z.array(z.string()),
+            company_feedback_date: z.date().nullable(),
+            company_feedback_send_status: z.string().nullable(),
+            feedback_email_subject: z.string().nullable().describe("Objet du mail de réponse envoyé au candidat"),
+            applicant_message_to_company: z.string().nullable(),
+            applicant_attachment_name: z.string(),
+            applicant_attachment_deleted_at: z.date().nullable(),
+            applicant_inscription_formation: z.boolean().nullable(),
+            applicant_contract_duration: z.string().nullable(),
+            applicant_contract_start: z.array(z.string()),
+            applicant_formation_description: z.string().nullable(),
+            applicant_rythm_description: z.string().nullable(),
+            applicant_answers_to_recruiter_questions: z.array(z.strictObject({ question: z.string(), answer: z.string() })),
+            partner_name: z.string().nullable().describe("Plateforme partenaire par laquelle le candidat a postulé"),
+          }),
+        }),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "application:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
+    },
+    "/application/job/:jobId/application/:applicationId/attachment": {
+      path: "/application/job/:jobId/application/:applicationId/attachment",
+      method: "get",
+      params: z.strictObject({ jobId: zObjectId, applicationId: zObjectId }),
+      response: {
+        "200": z.any().describe("Pièce jointe de la candidature (PDF ou DOCX)"),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "application:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
+    },
     "/application/job/:jobId/export": {
       path: "/application/job/:jobId/export",
       method: "get",

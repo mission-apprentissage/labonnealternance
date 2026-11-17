@@ -406,6 +406,9 @@ export const METADATA = {
     backEntrepriseEditionOffre: ({ job_id }: { job_id: string }): Metadata => ({
       title: `${job_id ? "Edition d'une offre" : "Création d'une offre"} - La bonne alternance`,
     }),
+    backEntrepriseCandidatureDetail: (): Metadata => ({
+      title: "Détail d'une candidature - La bonne alternance",
+    }),
     backEntrepriseCandidaturesOffre: (): Metadata => ({
       title: "Candidatures de l'offre - La bonne alternance",
     }),

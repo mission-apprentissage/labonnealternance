@@ -65,6 +65,30 @@ const PARTNER_NAMES = {
 
 export const PARTNERS_WITH_APPLICATION_API = ["Taleez"]
 
+export const getApplicationPartnerName = (caller: IApplication["caller"]): string | null => (caller && PARTNER_NAMES[caller]) ?? null
+
+/** Objet du mail de réponse au candidat, repris tel quel par le détail d'une candidature côté recruteur (#5769). */
+export const buildRecruiterIntentionEmailSubject = ({
+  intention,
+  companyName,
+  partner,
+  applicant,
+}: {
+  intention: ApplicationIntention
+  companyName: string
+  partner: string | null
+  applicant: Pick<IApplicant, "firstname" | "lastname">
+}): string => {
+  switch (intention) {
+    case ApplicationIntention.ENTRETIEN:
+      return `Suite donnée à votre candidature - ${companyName}${partner ? ` via ${partner}` : ""}`
+    case ApplicationIntention.REFUS:
+      return `Réponse négative de ${companyName} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`
+    default:
+      assertUnreachable(intention)
+  }
+}
+
 const images: object = {
   images: {
     logoLba: `${imagePath}logo_LBA.png`,
@@ -715,7 +739,7 @@ export const sendMailToApplicant = async ({
   company_feedback: string
   refusal_reasons: RefusalReasons[]
 }): Promise<{ messageId: string; accepted?: string[] | undefined } | null> => {
-  const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
+  const partner = getApplicationPartnerName(application.caller)
   const jobSourceType: string = await getJobSourceType(application)
   const { email: applicantEmail } = applicant
   let sentMessageId: {
@@ -728,7 +752,7 @@ export const sendMailToApplicant = async ({
       sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
         cc: email || undefined,
-        subject: `Suite donnée à votre candidature - ${application.company_name}${partner ? ` via ${partner}` : ""}`,
+        subject: buildRecruiterIntentionEmailSubject({ intention: ApplicationIntention.ENTRETIEN, companyName: application.company_name, partner, applicant }),
         template: getEmailTemplate("mail-candidat-entretien"),
         data: {
           ...sanitizeApplicationForEmail(application),
@@ -746,7 +770,7 @@ export const sendMailToApplicant = async ({
     case ApplicationIntention.REFUS: {
       sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
-        subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
+        subject: buildRecruiterIntentionEmailSubject({ intention: ApplicationIntention.REFUS, companyName: application.company_name, partner, applicant }),
         template: getEmailTemplate("mail-candidat-refus"),
         data: {
           ...sanitizeApplicationForEmail(application),
@@ -951,13 +975,23 @@ export const buildApplicantAnswersForEmail = ({
 
 const getApplicationCvS3Filename = (application: Pick<IApplication, "_id">) => getApplicationCvS3Key(application._id)
 
-const getApplicationAttachmentContent = async (application: IApplication): Promise<string> => {
+const getApplicationAttachmentContent = async (application: Pick<IApplication, "_id">): Promise<string> => {
   const content = await s3ReadAsString("applications", getApplicationCvS3Filename(application))
   if (!content) {
     throw internal(`inattendu : cv vide pour la candidature avec id=${application._id}`)
   }
   return content
 }
+/** Pièce jointe d'une candidature, décodée de la data URL stockée sur S3. */
+export const getApplicationAttachmentFile = async (application: Pick<IApplication, "_id">): Promise<{ contentType: string; content: Buffer }> => {
+  const dataUrl = await getApplicationAttachmentContent(application)
+  const header = findAttachmentHeader(dataUrl)
+  return {
+    contentType: header ? header.slice("data:".length, header.indexOf(";")) : "application/octet-stream",
+    content: Buffer.from(removeDataUrlPrefix(dataUrl), "base64"),
+  }
+}
+
 export const processApplicationScanForVirus = async (application: IApplication, applicant: IApplicant) => {
   const fileContent = await getApplicationAttachmentContent(application)
   const hasVirus = await isInfected(fileContent)

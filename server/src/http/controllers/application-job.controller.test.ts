@@ -14,10 +14,14 @@ import { ApplicationIntention, RefusalReasons } from "shared/constants/applicati
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
+import { ApplicationScanStatus } from "shared/models/applications.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { AccessEntityType } from "shared/models/role-management.model"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { s3ReadAsString } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+
+vi.mock("@/common/utils/aws-utils", () => ({ s3ReadAsString: vi.fn() }))
 
 // Les candidatures d'une offre n'appartiennent qu'à son recruteur ou au CFA qui la gère : chaque profil
 // voisin (autre entreprise, autre CFA, OPCO de rattachement) doit être refusé.
@@ -228,5 +232,132 @@ describe("GET /application/job/:jobId/export", () => {
 
     expect(response.statusCode).toBe(403)
     expect(response.body).not.toContain("Protege")
+  })
+})
+
+describe("GET /application/job/:jobId/application/:applicationId", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const getDetail = async (jobId: ObjectId, applicationId: ObjectId, headers?: Record<string, string>) =>
+    httpClient().inject({ method: "GET", path: `/api/application/job/${jobId}/application/${applicationId}`, ...(headers ? { headers } : {}) })
+
+  it("renvoie au recruteur le détail de la candidature, avec les mêmes informations que l'export", async () => {
+    const recruiter = await saveRecruiter("recruteur-detail")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Detaille", {
+      applicant_attachment_name: "cv-detaille.pdf",
+      applicant_answers_to_recruiter_questions: [{ question: "Pourquoi nous ?", answer: "Pour apprendre" }],
+    })
+
+    const response = await getDetail(offer._id, application._id, (await logUser(httpClient, "recruteur-detail")).bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    const body = response.json()
+    expect(body.application).toMatchObject({
+      applicant_first_name: "Prénom",
+      applicant_last_name: "Detaille",
+      applicant_phone: "0123456789",
+      applicant_attachment_name: "cv-detaille.pdf",
+      company_recruitment_intention: null,
+      feedback_email_subject: null,
+      applicant_answers_to_recruiter_questions: [{ question: "Pourquoi nous ?", answer: "Pour apprendre" }],
+    })
+  })
+
+  it("donne l'objet du mail de réponse envoyé au candidat", async () => {
+    const recruiter = await saveRecruiter("recruteur-detail-reponse")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Refuse", { company_recruitment_intention: ApplicationIntention.REFUS, company_name: "Boulangerie du test" })
+
+    const response = await getDetail(offer._id, application._id, (await logUser(httpClient, "recruteur-detail-reponse")).bearerToken)
+
+    expect(response.json().application.feedback_email_subject).toBe("Réponse négative de Boulangerie du test à la candidature de Prénom Refuse")
+  })
+
+  it("refuse de lire, via une offre accessible, une candidature d'une autre offre", async () => {
+    const recruiter = await saveRecruiter("recruteur-detail-croise")
+    const otherRecruiter = await saveRecruiter("autre-recruteur-detail")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const otherOffer = await saveOffer({ managedBy: otherRecruiter.user._id, siret: otherRecruiter.entreprise.siret })
+    const otherApplication = await saveApplication(otherOffer._id, "Etrangere")
+
+    const response = await getDetail(offer._id, otherApplication._id, (await logUser(httpClient, "recruteur-detail-croise")).bearerToken)
+
+    expect(response.statusCode).toBe(404)
+    expect(response.body).not.toContain("Etrangere")
+  })
+
+  it("refuse le détail au recruteur d'une autre entreprise", async () => {
+    const recruiter = await saveRecruiter("proprietaire-detail")
+    await saveRecruiter("voisin-detail")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Confidentiel")
+
+    const response = await getDetail(offer._id, application._id, (await logUser(httpClient, "voisin-detail")).bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect(response.body).not.toContain("Confidentiel")
+  })
+})
+
+describe("GET /application/job/:jobId/application/:applicationId/attachment", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  beforeEach(() => {
+    vi.mocked(s3ReadAsString).mockReset()
+    vi.mocked(s3ReadAsString).mockResolvedValue(`data:application/pdf;base64,${Buffer.from("toto").toString("base64")}`)
+  })
+
+  const getAttachment = async (jobId: ObjectId, applicationId: ObjectId, headers?: Record<string, string>) =>
+    httpClient().inject({ method: "GET", path: `/api/application/job/${jobId}/application/${applicationId}/attachment`, ...(headers ? { headers } : {}) })
+
+  it("télécharge la pièce jointe décodée, sous le nom donné par le candidat", async () => {
+    const recruiter = await saveRecruiter("recruteur-pj")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Joint", { applicant_attachment_name: "CV Hélène.pdf" })
+
+    const response = await getAttachment(offer._id, application._id, (await logUser(httpClient, "recruteur-pj")).bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.headers["content-type"]).toBe("application/pdf")
+    expect(response.headers["content-disposition"]).toBe(`attachment; filename="CV Helene.pdf"; filename*=UTF-8''CV%20H%C3%A9l%C3%A8ne.pdf`)
+    expect(response.body).toBe("toto")
+  })
+
+  it("ne sert pas une pièce jointe que l'antivirus n'a pas validée", async () => {
+    const recruiter = await saveRecruiter("recruteur-pj-virus")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Infecte", { scan_status: ApplicationScanStatus.VIRUS_DETECTED })
+
+    const response = await getAttachment(offer._id, application._id, (await logUser(httpClient, "recruteur-pj-virus")).bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect(s3ReadAsString).not.toHaveBeenCalled()
+  })
+
+  it("répond 404 pour une pièce jointe supprimée", async () => {
+    const recruiter = await saveRecruiter("recruteur-pj-purge")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Purge", { applicant_attachment_deleted_at: new Date() })
+
+    const response = await getAttachment(offer._id, application._id, (await logUser(httpClient, "recruteur-pj-purge")).bearerToken)
+
+    expect(response.statusCode).toBe(404)
+    expect(s3ReadAsString).not.toHaveBeenCalled()
+  })
+
+  it("refuse la pièce jointe au recruteur d'une autre entreprise et à une autre offre", async () => {
+    const recruiter = await saveRecruiter("proprietaire-pj")
+    const neighbour = await saveRecruiter("voisin-pj")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const neighbourOffer = await saveOffer({ managedBy: neighbour.user._id, siret: neighbour.entreprise.siret })
+    const application = await saveApplication(offer._id, "Confidentiel")
+    const neighbourSession = (await logUser(httpClient, "voisin-pj")).bearerToken
+
+    expect((await getAttachment(offer._id, application._id, neighbourSession)).statusCode).toBe(403)
+    expect((await getAttachment(neighbourOffer._id, application._id, neighbourSession)).statusCode).toBe(404)
+    expect(s3ReadAsString).not.toHaveBeenCalled()
   })
 })

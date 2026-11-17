@@ -575,6 +575,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/offre/${job_id}/candidatures` as string,
       title: "Candidatures",
     }),
+    backCfaEntrepriseCandidatureDetail: ({ establishment_id, job_id, application_id }: { establishment_id: string; job_id: string; application_id: string }): IPage => ({
+      getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/offre/${job_id}/candidature/${application_id}` as string,
+      title: "Détail d'une candidature",
+    }),
     backCfaPageInformations: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/informations` as string,
       title: "Informations de contact",
@@ -610,6 +614,10 @@ export const PAGES = {
     backEntrepriseCandidaturesOffre: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}/candidatures` as string,
       title: "Candidatures",
+    }),
+    backEntrepriseCandidatureDetail: ({ job_id, application_id }: { job_id: string; application_id: string }): IPage => ({
+      getPath: () => `/espace-pro/entreprise/offre/${job_id}/candidature/${application_id}` as string,
+      title: "Détail d'une candidature",
     }),
     backEntrepriseMiseEnRelation: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}/mise-en-relation` as string,

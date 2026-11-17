@@ -3,13 +3,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, CircularProgress, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Link from "next/link"
-import type { MouseEvent } from "react"
-import { useState } from "react"
-import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
@@ -18,7 +15,9 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import Table from "@/app/(espace-pro)/_components/Table"
+import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-status"
 import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
+import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { publicConfig } from "@/config.public"
 import { downloadJobApplications, getFormulaire, getJobApplications, getJobApplicationsExportUrl } from "@/utils/api"
@@ -28,17 +27,9 @@ const APPLICATIONS_PAGE_SIZE = 20
 
 type JobApplication = Awaited<ReturnType<typeof getJobApplications>>["applications"][number]
 
-// Hors refus et traitement hors LBA, une intention vaut prise de contact du candidat.
-const getApplicationStatus = (intention: string | null) => {
-  if (!intention) return { label: "EN ATTENTE", variant: "awaiting" }
-  if (intention === ApplicationIntention.REFUS) return { label: "REFUSÉ", variant: "inactive" }
-  if (intention === APPLICATION_TREATED_ELSEWHERE) return { label: "TRAITÉE PAR UN AUTRE MOYEN", variant: "neutral" }
-  return { label: "CONTACTÉ", variant: "active" }
-}
-
 const getApplicantFullName = ({ applicant_first_name, applicant_last_name }: JobApplication) => `${applicant_first_name} ${applicant_last_name.toUpperCase()}`
 
-const columns = [
+const getColumns = (buildApplicationPath: (applicationId: string) => string) => [
   {
     Header: "Prénom",
     id: "applicant_first_name",
@@ -82,15 +73,13 @@ const columns = [
     width: "230",
     disableSortBy: true,
     accessor: () => null,
-    // Le détail d'une candidature n'existe pas encore : le bouton est posé, inactif (#5769).
     Cell: ({ row: { original } }: { row: { original: JobApplication } }) => (
       <Button
         priority="secondary"
         size="small"
         iconId="fr-icon-arrow-right-line"
         iconPosition="right"
-        disabled
-        nativeButtonProps={{ "aria-label": `Voir la candidature de ${getApplicantFullName(original)}` }}
+        linkProps={{ href: buildApplicationPath(original._id), "aria-label": `Voir la candidature de ${getApplicantFullName(original)}` }}
       >
         Voir la candidature
       </Button>
@@ -137,7 +126,15 @@ export const CandidaturesOffre = ({ job_id, cfaEstablishmentId }: { job_id: stri
             <Alert severity="error" small description={error?.message ?? "Les candidatures de cette offre sont indisponibles."} />
           </>
         ) : (
-          <CandidaturesOffreContent data={data} />
+          <CandidaturesOffreContent
+            data={data}
+            buildApplicationPath={(application_id) =>
+              (cfaEstablishmentId
+                ? PAGES.dynamic.backCfaEntrepriseCandidatureDetail({ establishment_id: cfaEstablishmentId, job_id, application_id })
+                : PAGES.dynamic.backEntrepriseCandidatureDetail({ job_id, application_id })
+              ).getPath()
+            }
+          />
         )}
         <Box sx={{ mt: fr.spacing("2v") }}>
           <Link className="fr-link fr-link--sm fr-link--icon-left fr-icon-arrow-left-line" href={backPath}>
@@ -149,7 +146,13 @@ export const CandidaturesOffre = ({ job_id, cfaEstablishmentId }: { job_id: stri
   )
 }
 
-const CandidaturesOffreContent = ({ data }: { data: Awaited<ReturnType<typeof getJobApplications>> }) => {
+const CandidaturesOffreContent = ({
+  data,
+  buildApplicationPath,
+}: {
+  data: Awaited<ReturnType<typeof getJobApplications>>
+  buildApplicationPath: (applicationId: string) => string
+}) => {
   const { job, applications } = data
   const closureModal = useDisclosure()
   const isClosed = job.offer_status === JOB_STATUS_ENGLISH.POURVUE || job.offer_status === JOB_STATUS_ENGLISH.ANNULEE
@@ -188,7 +191,7 @@ const CandidaturesOffreContent = ({ data }: { data: Awaited<ReturnType<typeof ge
         <Table
           caption="Liste des candidatures"
           captionSrOnly
-          columns={columns}
+          columns={getColumns(buildApplicationPath)}
           data={applications}
           pageSize={APPLICATIONS_PAGE_SIZE}
           rowHeaderColumnIds={["applicant_first_name", "applicant_last_name"]}
@@ -200,62 +203,19 @@ const CandidaturesOffreContent = ({ data }: { data: Awaited<ReturnType<typeof ge
 }
 
 const DOWNLOAD_MESSAGES = {
-  idle: "",
   loading: "Préparation du récapitulatif des candidatures en cours.",
   done: "Récapitulatif des candidatures téléchargé.",
   error: "Le téléchargement du récapitulatif a échoué. Veuillez réessayer.",
 } as const
 
-/**
- * Le lien pointe sur l'export : sans JavaScript, le navigateur télécharge le fichier lui-même. Avec, le
- * téléchargement passe par fetch pour afficher l'attente et l'éventuelle erreur, annoncées par la zone role="status".
- */
-const DownloadApplicationsLink = ({ jobId, offerTitle }: { jobId: string; offerTitle: string }) => {
-  const [status, setStatus] = useState<keyof typeof DOWNLOAD_MESSAGES>("idle")
-  const fileName = getApplicationsExportFileName(offerTitle)
-  const isLoading = status === "loading"
-
-  const onClick = async (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault()
-    if (isLoading) return
-    setStatus("loading")
-    try {
-      const url = URL.createObjectURL(await downloadJobApplications(jobId))
-      const anchor = document.createElement("a")
-      anchor.href = url
-      anchor.download = fileName
-      document.body.appendChild(anchor)
-      anchor.click()
-      anchor.remove()
-      // Révoquée tout de suite, l'URL peut annuler le téléchargement que le navigateur n'a pas encore lancé (Firefox).
-      setTimeout(() => URL.revokeObjectURL(url), 10_000)
-      setStatus("done")
-    } catch {
-      setStatus("error")
-    }
-  }
-
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
-        {isLoading && <CircularProgress size={16} aria-hidden="true" sx={{ color: fr.colors.decisions.text.actionHigh.blueFrance.default }} />}
-        <a
-          className="fr-link fr-link--icon-left fr-icon-download-line"
-          href={getJobApplicationsExportUrl(jobId)}
-          download={fileName}
-          onClick={onClick}
-          aria-disabled={isLoading || undefined}
-        >
-          Télécharger le récapitulatif des candidatures<span className="fr-sr-only"> au format CSV</span>
-        </a>
-      </Box>
-      <Box
-        role="status"
-        className={status === "error" ? undefined : "fr-sr-only"}
-        sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.default.error.default, mt: status === "error" ? fr.spacing("1v") : 0 }}
-      >
-        {DOWNLOAD_MESSAGES[status]}
-      </Box>
-    </Box>
-  )
-}
+const DownloadApplicationsLink = ({ jobId, offerTitle }: { jobId: string; offerTitle: string }) => (
+  <DownloadLink
+    href={getJobApplicationsExportUrl(jobId)}
+    fileName={getApplicationsExportFileName(offerTitle)}
+    download={() => downloadJobApplications(jobId)}
+    messages={DOWNLOAD_MESSAGES}
+    align="flex-end"
+  >
+    Télécharger le récapitulatif des candidatures<span className="fr-sr-only"> au format CSV</span>
+  </DownloadLink>
+)

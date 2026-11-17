@@ -12,7 +12,12 @@ import {
   getCompanyEmailFromToken,
   sendRecruiterIntention,
 } from "@/services/application.service"
-import { exportJobApplicationsForRecruiter, getJobApplicationsForRecruiter } from "@/services/job-applications.service"
+import {
+  exportJobApplicationsForRecruiter,
+  getJobApplicationAttachmentForRecruiter,
+  getJobApplicationDetailForRecruiter,
+  getJobApplicationsForRecruiter,
+} from "@/services/job-applications.service"
 
 const rateLimitConfig = {
   rateLimit: {
@@ -20,6 +25,16 @@ const rateLimitConfig = {
     timeWindow: "5s",
   },
 } as const
+
+// RFC 6266 : filename en ASCII pour les clients anciens, filename* pour garder les accents du nom saisi par le candidat.
+const buildAttachmentDisposition = (fileName: string) => {
+  const asciiName = fileName
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\x20-\x7e]|["\\]/g, "_")
+  const encodedName = encodeURIComponent(fileName).replace(/['()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`)
+  return `attachment; filename="${asciiName}"; filename*=UTF-8''${encodedName}`
+}
 
 export default function (server: Server) {
   server.post(
@@ -106,6 +121,39 @@ export default function (server: Server) {
     },
     async (req, res) => {
       return res.status(200).send(await getJobApplicationsForRecruiter(req.params.jobId, req.userAccess))
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId/application/:applicationId",
+    {
+      schema: zRoutes.get["/application/job/:jobId/application/:applicationId"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId/application/:applicationId"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      return res.status(200).send(await getJobApplicationDetailForRecruiter(jobId, applicationId, req.userAccess))
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId/application/:applicationId/attachment",
+    {
+      schema: zRoutes.get["/application/job/:jobId/application/:applicationId/attachment"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId/application/:applicationId/attachment"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      const { fileName, contentType, content } = await getJobApplicationAttachmentForRecruiter(jobId, applicationId, req.userAccess)
+      return res
+        .status(200)
+        .headers({
+          "content-type": contentType,
+          "content-disposition": buildAttachmentDisposition(fileName),
+          "cache-control": "no-store",
+          "x-content-type-options": "nosniff",
+        })
+        .send(content)
     }
   )
 
