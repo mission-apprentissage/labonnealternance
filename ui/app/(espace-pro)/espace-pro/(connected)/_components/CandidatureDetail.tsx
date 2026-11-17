@@ -4,16 +4,17 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Link from "next/link"
+import { useEffect, useRef } from "react"
 import { APPLICATION_TREATED_ELSEWHERE } from "shared/constants/application"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-status"
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
-import { downloadJobApplicationAttachment, getFormulaire, getJobApplicationAttachmentUrl, getJobApplicationDetail } from "@/utils/api"
+import { downloadJobApplicationAttachment, getFormulaire, getJobApplicationAttachmentUrl, getJobApplicationDetail, markJobApplicationTreatedElsewhere } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
 type ApplicationDetail = Awaited<ReturnType<typeof getJobApplicationDetail>>
@@ -139,23 +140,31 @@ const Tags = ({ items }: { items: string[] }) => (
   </Box>
 )
 
-const Banner = ({ success = true, title, children }: { success?: boolean; title: string; children?: React.ReactNode }) => (
-  <Box sx={{ mt: fr.spacing("6v"), p: fr.spacing("6v"), backgroundColor: fr.colors.decisions.background.alt.grey.default }}>
-    <Typography
-      sx={{
-        fontWeight: 700,
-        display: "flex",
-        alignItems: "center",
-        gap: fr.spacing("2v"),
-        color: success ? fr.colors.decisions.text.default.success.default : fr.colors.decisions.text.default.error.default,
-      }}
-    >
-      <span className={success ? "fr-icon-checkbox-circle-fill" : "fr-icon-error-fill"} aria-hidden="true" />
-      {title}
-    </Typography>
-    {children}
-  </Box>
-)
+const Banner = ({ success = true, title, focusOnMount = false, children }: { success?: boolean; title: string; focusOnMount?: boolean; children?: React.ReactNode }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  // Le bandeau remplace le bouton qui vient d'être activé : sans ce focus, le clavier repartirait du haut de la page.
+  useEffect(() => {
+    if (focusOnMount) ref.current?.focus()
+  }, [focusOnMount])
+
+  return (
+    <Box ref={ref} tabIndex={focusOnMount ? -1 : undefined} sx={{ mt: fr.spacing("6v"), p: fr.spacing("6v"), backgroundColor: fr.colors.decisions.background.alt.grey.default }}>
+      <Typography
+        sx={{
+          fontWeight: 700,
+          display: "flex",
+          alignItems: "center",
+          gap: fr.spacing("2v"),
+          color: success ? fr.colors.decisions.text.default.success.default : fr.colors.decisions.text.default.error.default,
+        }}
+      >
+        <span className={success ? "fr-icon-checkbox-circle-fill" : "fr-icon-error-fill"} aria-hidden="true" />
+        {title}
+      </Typography>
+      {children}
+    </Box>
+  )
+}
 
 /** Bandeau d'une réponse envoyée par LBA (entretien ou refus), à la place des boutons de réponse. */
 const ResponseBanner = ({ application }: { application: Application }) => {
@@ -195,26 +204,46 @@ const ResponseBanner = ({ application }: { application: Application }) => {
   )
 }
 
-const ApplicationActions = ({ application }: { application: Application }) => {
+const ApplicationActions = ({ jobId, application }: { jobId: string; application: Application }) => {
+  const client = useQueryClient()
+  const refreshApplication = () =>
+    Promise.all([
+      client.invalidateQueries({ queryKey: ["job-application", jobId, application._id] }),
+      // Liste des candidatures et compteur « en attente » du tableau des offres.
+      client.invalidateQueries({ queryKey: ["job-applications", jobId] }),
+      client.invalidateQueries({ queryKey: ["offre-liste"] }),
+    ])
+  const treatedElsewhere = useMutation({
+    mutationFn: () => markJobApplicationTreatedElsewhere(jobId, application._id),
+    onSuccess: refreshApplication,
+    // Un 409 signale une réponse enregistrée entre-temps (autre onglet, lien du mail) : on affiche l'état réel.
+    onError: refreshApplication,
+  })
+
   if (!application.company_recruitment_intention) {
-    // Les réponses depuis cette page arrivent avec la suite de #5769 : boutons posés, inactifs.
+    // Contacter et Refuser arrivent avec la suite de #5769 : boutons posés, inactifs.
     return (
-      <Box sx={{ mt: fr.spacing("6v"), display: "flex", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
-        <Button iconId="fr-icon-mail-send-line" iconPosition="left" disabled>
-          Contacter le candidat
-        </Button>
-        <Button priority="secondary" disabled>
-          Refuser la candidature
-        </Button>
-        <Button priority="secondary" disabled>
-          J'ai contacté le candidat par un autre canal
-        </Button>
+      <Box sx={{ mt: fr.spacing("6v") }}>
+        <Box sx={{ display: "flex", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
+          <Button iconId="fr-icon-mail-send-line" iconPosition="left" disabled>
+            Contacter le candidat
+          </Button>
+          <Button priority="secondary" disabled>
+            Refuser la candidature
+          </Button>
+          <Button priority="secondary" onClick={() => treatedElsewhere.mutate()} disabled={treatedElsewhere.isPending}>
+            J'ai contacté le candidat par un autre canal
+          </Button>
+        </Box>
+        <Box role="alert" sx={{ mt: treatedElsewhere.isError ? fr.spacing("4v") : 0 }}>
+          {treatedElsewhere.isError && <Alert severity="error" small description="La mise à jour du statut a échoué. Veuillez réessayer." />}
+        </Box>
       </Box>
     )
   }
   if (application.company_recruitment_intention === APPLICATION_TREATED_ELSEWHERE) {
     return (
-      <Banner title={`Statut mis à jour le ${formatDateTime(application.company_recruitment_intention_date)}`}>
+      <Banner title={`Statut mis à jour le ${formatDateTime(application.company_recruitment_intention_date)}`} focusOnMount={treatedElsewhere.isSuccess}>
         <Typography sx={{ mt: fr.spacing("2v") }}>Vous nous avez indiqué avoir répondu au candidat par un autre canal (mail ou téléphone).</Typography>
       </Banner>
     )
@@ -352,7 +381,7 @@ const CandidatureDetailContent = ({ data }: { data: ApplicationDetail }) => {
           Pour le poste : <strong>{job.offer_title}</strong>
         </Typography>
       </Box>
-      <ApplicationActions application={application} />
+      <ApplicationActions jobId={job._id} application={application} />
       <Typography component="h2" sx={{ mt: fr.spacing("8v"), mb: fr.spacing("4v"), fontWeight: 700 }}>
         Sa candidature
       </Typography>

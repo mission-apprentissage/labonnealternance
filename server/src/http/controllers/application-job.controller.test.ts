@@ -10,7 +10,7 @@ import {
   validatedUserStatus,
 } from "@tests/utils/user.test.utils"
 import type { ObjectId } from "mongodb"
-import { ApplicationIntention, RefusalReasons } from "shared/constants/application"
+import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention, RefusalReasons } from "shared/constants/application"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -385,5 +385,64 @@ describe("GET /application/job/:jobId/application/:applicationId/attachment", ()
 
     expect(response.statusCode).toBe(404)
     expect(s3ReadAsString).not.toHaveBeenCalled()
+  })
+})
+
+describe("POST /application/job/:jobId/application/:applicationId/treated-elsewhere", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const markTreatedElsewhere = async (jobId: ObjectId, applicationId: ObjectId, headers?: Record<string, string>) =>
+    httpClient().inject({ method: "POST", path: `/api/application/job/${jobId}/application/${applicationId}/treated-elsewhere`, ...(headers ? { headers } : {}) })
+
+  const getApplication = (applicationId: ObjectId) => getDbCollection("applications").findOne({ _id: applicationId })
+
+  it("pose le statut sur une candidature sans réponse, sans programmer de mail au candidat", async () => {
+    const recruiter = await saveRecruiter("recruteur-autre-canal")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Appele")
+
+    const response = await markTreatedElsewhere(offer._id, application._id, (await logUser(httpClient, "recruteur-autre-canal")).bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    const saved = await getApplication(application._id)
+    expect(saved).toMatchObject({ company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE, company_feedback_send_status: null })
+    expect(saved?.company_recruitment_intention_date).toBeInstanceOf(Date)
+  })
+
+  it("refuse de remplacer une réponse déjà enregistrée", async () => {
+    const recruiter = await saveRecruiter("recruteur-autre-canal-repondu")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Refuse", { company_recruitment_intention: ApplicationIntention.REFUS })
+
+    const response = await markTreatedElsewhere(offer._id, application._id, (await logUser(httpClient, "recruteur-autre-canal-repondu")).bearerToken)
+
+    expect(response.statusCode).toBe(409)
+    expect((await getApplication(application._id))?.company_recruitment_intention).toBe(ApplicationIntention.REFUS)
+  })
+
+  it("refuse le recruteur d'une autre entreprise", async () => {
+    const recruiter = await saveRecruiter("proprietaire-autre-canal")
+    await saveRecruiter("voisin-autre-canal")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Confidentiel")
+
+    const response = await markTreatedElsewhere(offer._id, application._id, (await logUser(httpClient, "voisin-autre-canal")).bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect((await getApplication(application._id))?.company_recruitment_intention).toBeNull()
+  })
+
+  it("refuse de modifier, via une offre accessible, une candidature d'une autre offre", async () => {
+    const recruiter = await saveRecruiter("recruteur-autre-canal-croise")
+    const otherRecruiter = await saveRecruiter("autre-recruteur-autre-canal")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const otherOffer = await saveOffer({ managedBy: otherRecruiter.user._id, siret: otherRecruiter.entreprise.siret })
+    const otherApplication = await saveApplication(otherOffer._id, "Etrangere")
+
+    const response = await markTreatedElsewhere(offer._id, otherApplication._id, (await logUser(httpClient, "recruteur-autre-canal-croise")).bearerToken)
+
+    expect(response.statusCode).toBe(404)
+    expect((await getApplication(otherApplication._id))?.company_recruitment_intention).toBeNull()
   })
 })

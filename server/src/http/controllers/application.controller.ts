@@ -17,6 +17,7 @@ import {
   getJobApplicationAttachmentForRecruiter,
   getJobApplicationDetailForRecruiter,
   getJobApplicationsForRecruiter,
+  markJobApplicationTreatedElsewhere,
 } from "@/services/job-applications.service"
 
 const rateLimitConfig = {
@@ -133,6 +134,19 @@ export default function (server: Server) {
     async (req, res) => {
       const { jobId, applicationId } = req.params
       return res.status(200).send(await getJobApplicationDetailForRecruiter(jobId, applicationId, req.userAccess))
+    }
+  )
+
+  server.post(
+    "/application/job/:jobId/application/:applicationId/treated-elsewhere",
+    {
+      schema: zRoutes.post["/application/job/:jobId/application/:applicationId/treated-elsewhere"],
+      onRequest: server.auth(zRoutes.post["/application/job/:jobId/application/:applicationId/treated-elsewhere"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      await markJobApplicationTreatedElsewhere(jobId, applicationId, req.userAccess)
+      return res.status(200).send({})
     }
   )
 

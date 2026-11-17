@@ -1,4 +1,4 @@
-import { forbidden, notFound } from "@hapi/boom"
+import { conflict, forbidden, notFound } from "@hapi/boom"
 import { stringify } from "csv-stringify/sync"
 import type { ObjectId } from "mongodb"
 import { parseEnum, type zRoutes } from "shared"
@@ -207,4 +207,24 @@ export const getJobApplicationAttachmentForRecruiter = async (
   }
   const { contentType, content } = await getApplicationAttachmentFile(application)
   return { fileName: application.applicant_attachment_name, contentType, content }
+}
+
+/**
+ * Le recruteur indique avoir répondu au candidat hors de LBA (#5769) : statut posé sans mail au candidat.
+ * Réservé aux candidatures sans réponse, le filtre sur l'intention écarte une réponse enregistrée entre-temps.
+ */
+export const markJobApplicationTreatedElsewhere = async (jobId: ObjectId, applicationId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<void> => {
+  await getConsultableJob(jobId, userAccess)
+  const [application] = await getApplicationsWithApplicant(jobId, { _id: 1 }, applicationId)
+  if (!application) {
+    throw notFound("Candidature introuvable")
+  }
+  const now = new Date()
+  const { matchedCount } = await getDbCollection("applications").updateOne(
+    { _id: applicationId, job_id: jobId, company_recruitment_intention: null },
+    { $set: { company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE, company_recruitment_intention_date: now, last_update_at: now } }
+  )
+  if (!matchedCount) {
+    throw conflict("Une réponse a déjà été enregistrée pour cette candidature")
+  }
 }
