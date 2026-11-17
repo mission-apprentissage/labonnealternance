@@ -13,9 +13,6 @@ export function MarcheSecteurSection({ secteur, marche, job_count, total_job_cou
   if (!marche && !job_count) return null
 
   const part = job_count && total_job_count ? Math.round((job_count / total_job_count) * 100) : null
-  // La dernière barre de la comparaison est la référence (cf. modèle seo_secteurs).
-  const barres = marche?.comparaison?.barres ?? []
-  const reference = barres.at(-1)
   const sources = [...(marche?.comparaison ? [marche.comparaison] : []), ...(marche?.faits ?? [])].filter(
     (source, idx, all) => all.findIndex((s) => s.source_url === source.source_url) === idx
   )
@@ -36,24 +33,33 @@ export function MarcheSecteurSection({ secteur, marche, job_count, total_job_cou
 
       {marche && (
         <>
-          <Box component="ul" sx={{ mb: fr.spacing("3v") }}>
-            {reference &&
-              barres.slice(0, -1).map((barre) => (
-                <li key={barre.libelle}>
+          {marche.comparaison && marche.comparaison.barres.length > 0 && (
+            <>
+              <Typography sx={{ mb: fr.spacing("1v") }}>
+                {marche.comparaison.titre} ({marche.comparaison.annee}) :
+              </Typography>
+              <Box component="ul" sx={{ mb: fr.spacing("3v") }}>
+                {marche.comparaison.barres.map((barre) => (
+                  <li key={barre.libelle}>
+                    <Typography component="span">
+                      {barre.libelle} : <strong style={strongSx}>{barre.affichage}</strong>
+                    </Typography>
+                  </li>
+                ))}
+              </Box>
+            </>
+          )}
+          {marche.faits.length > 0 && (
+            <Box component="ul" sx={{ mb: fr.spacing("3v") }}>
+              {marche.faits.map((fait) => (
+                <li key={fait.texte}>
                   <Typography component="span">
-                    {barre.libelle} : <strong style={strongSx}>{barre.affichage}</strong> des recrutements jugés difficiles par les employeurs, contre {reference.affichage} pour l'
-                    {reference.libelle.toLowerCase()} ({marche.comparaison?.annee}).
+                    <strong style={strongSx}>{fait.valeur}</strong> {fait.texte} ({fait.annee}).
                   </Typography>
                 </li>
               ))}
-            {marche.faits.map((fait) => (
-              <li key={fait.texte}>
-                <Typography component="span">
-                  <strong style={strongSx}>{fait.valeur}</strong> {fait.texte} ({fait.annee}).
-                </Typography>
-              </li>
-            ))}
-          </Box>
+            </Box>
+          )}
           <Typography sx={{ mb: fr.spacing("3v") }}>{marche.interpretation}</Typography>
           {sources.length > 0 && (
             <Typography sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>

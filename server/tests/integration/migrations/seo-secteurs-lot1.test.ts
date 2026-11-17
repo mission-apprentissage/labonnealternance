@@ -4,8 +4,8 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { metierData } from "@/jobs/seo/data-metier-seo"
 import { secteursData, up } from "@/migrations/20261116120000-seo-secteurs-lot1"
 
-// Pages /alternance/metier existantes (ui/app/(editorial)/alternance/_components/metier_data.tsx).
-const METIER_PAGES_EXISTANTES = ["developpeur-web"]
+// Pages métier dont on connaît les codes ROME : le test suivant compare le périmètre de la carte au leur.
+const METIER_PAGES_EXISTANTES = metierData.map((m) => m.slug)
 
 describe("migration seo-secteurs-lot1", () => {
   useMongo()

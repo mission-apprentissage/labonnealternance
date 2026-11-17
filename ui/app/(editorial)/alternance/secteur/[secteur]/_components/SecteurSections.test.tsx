@@ -10,6 +10,26 @@ describe("MarcheSecteurSection", () => {
     expect(renderToStaticMarkup(<MarcheSecteurSection secteur="informatique" marche={null} job_count={0} company_count={0} />)).toBe("")
   })
 
+  it("affiche le titre de la comparaison plutôt qu'une phrase écrite en dur", () => {
+    const marche = {
+      comparaison: {
+        titre: "Taux d'emploi six mois après le diplôme",
+        barres: [
+          { libelle: "BTS informatique", valeur: 70, affichage: "70 %" },
+          { libelle: "Ensemble des BTS", valeur: 65, affichage: "65 %" },
+        ],
+        source_libelle: "DEPP",
+        source_url: "https://example.org",
+        annee: 2025,
+      },
+      faits: [],
+      interpretation: "",
+    }
+    const html = renderToStaticMarkup(<MarcheSecteurSection secteur="informatique" marche={marche} job_count={0} company_count={0} />)
+    expect(html).toContain("Taux d&#x27;emploi six mois après le diplôme")
+    expect(html).not.toContain("jugés difficiles")
+  })
+
   it("affiche le compteur LBA quand il y a des offres", () => {
     expect(renderToStaticMarkup(<MarcheSecteurSection secteur="informatique" marche={null} job_count={12} company_count={3} />)).toContain("12 offres en alternance")
   })

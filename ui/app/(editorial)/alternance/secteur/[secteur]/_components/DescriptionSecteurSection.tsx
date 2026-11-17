@@ -32,8 +32,9 @@ export function DescriptionSecteurSection({ secteur_complement, description, chi
           </Typography>
           {description.points.length > 0 && (
             <Box component="ul" sx={{ mb: fr.spacing("3v") }}>
-              {description.points.map((point) => (
-                <li key={point.slice(0, 40)}>
+              {description.points.map((point, idx) => (
+                // Liste statique, jamais réordonnée : l'index suffit et évite deux clés identiques.
+                <li key={idx}>
                   <Typography component="span">
                     <TexteEmphase texte={point} />
                   </Typography>

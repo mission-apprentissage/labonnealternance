@@ -28,7 +28,7 @@ export function VillesSecteurSection({ secteur, villes, q_recherche, utmParams }
             title={ville.nom}
             desc={`${ville.job_count} offres en alternance en ${secteur}`}
             linkProps={{
-              href: `${buildSearchUrl({ mode: "emplois", q: q_recherche, radius: 30, page: 0, hitsPerPage: 20, latitude: ville.geopoint.lat, longitude: ville.geopoint.long, lieu_label: ville.nom })}&${utmParams}`,
+              href: `${buildSearchUrl({ mode: "emplois", q: q_recherche, is_algo_company: [false], radius: 30, page: 0, hitsPerPage: 20, latitude: ville.geopoint.lat, longitude: ville.geopoint.long, lieu_label: ville.nom })}&${utmParams}`,
             }}
             style={{ height: "100%" }}
           />

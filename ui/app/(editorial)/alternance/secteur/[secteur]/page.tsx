@@ -88,12 +88,14 @@ async function SecteurContent({ params }: { params: Promise<{ secteur: string }>
   const faqItems = data.faq.map(({ question, reponse }) => ({ question, answer: reponse }))
   const autresSecteurs = secteurData.filter((s) => s.slug !== data.slug)
 
+  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value)
+  // Une tuile à 0 ferait vide (ex. aucune candidature récente) : on ne la montre pas, comme les blocs vides.
   const statItems = [
     { icon: "/images/seo/malette.svg", value: data.job_count ?? 0, label: "offres d'emploi en alternance" },
     { icon: "/images/seo/usine.svg", value: data.company_count ?? 0, label: "entreprises qui recrutent activement" },
     { icon: "/images/seo/candidature-spontanee.svg", value: data.algo_company_count ?? 0, label: "entreprises à qui envoyer une candidature spontanée" },
     { icon: "/images/seo/metier/ecosystem.svg", value: data.applicant_count ?? 0, label: "candidats sur les 3 derniers mois" },
-  ]
+  ].filter((item) => item.value > 0)
 
   return (
     <Box>
@@ -146,12 +148,18 @@ async function SecteurContent({ params }: { params: Promise<{ secteur: string }>
               </Typography>
             </Typography>
             <Typography sx={{ mb: fr.spacing("8v"), fontSize: "1.25rem" }}>{data.accroche}</Typography>
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", md: "repeat(4, minmax(0, 1fr))" }, gap: fr.spacing("4v") }}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", md: `repeat(${Math.max(statItems.length, 1)}, minmax(0, 1fr))` },
+                gap: fr.spacing("4v"),
+              }}
+            >
               {statItems.map(({ icon, value, label: statLabel }) => (
                 <Box key={statLabel} sx={seoStatBoxSx}>
                   <Image alt="" aria-hidden="true" src={icon} width={80} height={80} />
                   <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
-                    {value}
+                    {formatNumber(value)}
                   </Typography>
                   <Typography sx={{ mt: fr.spacing("4v"), fontSize: { xs: "1.125rem", md: "1.25rem" }, fontWeight: "bold", lineHeight: 1.2, color: "#161616" }}>
                     {statLabel}

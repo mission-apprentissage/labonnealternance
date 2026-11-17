@@ -23,6 +23,7 @@ type ISecteurData = Omit<
   | "created_at"
   | "updated_at"
   | "job_count"
+  | "total_job_count"
   | "company_count"
   | "algo_company_count"
   | "applicant_count"
@@ -131,7 +132,7 @@ export const secteursData: ISecteurData[] = [
     ],
     marche: {
       comparaison: {
-        titre: "Part des recrutements jugés difficiles par les employeurs en 2026",
+        titre: "Part des recrutements jugés difficiles par les employeurs",
         barres: [
           {
             libelle: "Ingénieurs de l'informatique",

@@ -25,7 +25,7 @@ export function MetiersSecteurSection({ secteur, metiers, metiers_counts, utmPar
           // Maillage interne : page métier si elle existe, sinon recherche préremplie avec le libellé étudiant.
           const href = metier.metier_slug
             ? `${PAGES.dynamic.seoMetier(metier.metier_slug).getPath()}?${utmParams}`
-            : `${buildSearchUrl({ mode: "emplois", q: metier.libelle, radius: 30, page: 0, hitsPerPage: 20 })}&${utmParams}`
+            : `${buildSearchUrl({ mode: "emplois", q: metier.libelle, is_algo_company: [false], radius: 30, page: 0, hitsPerPage: 20 })}&${utmParams}`
           return (
             <Link key={metier.libelle} href={href} style={cardLinkStyle}>
               <Box
