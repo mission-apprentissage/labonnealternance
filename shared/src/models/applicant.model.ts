@@ -31,6 +31,7 @@ export default {
   indexes: [
     [{ email: 1 }, { unique: true }],
     [{ last_connection: 1 }, {}],
+    [{ createdAt: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
