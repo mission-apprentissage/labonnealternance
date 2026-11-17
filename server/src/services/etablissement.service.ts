@@ -418,6 +418,18 @@ export const getCfaSiretInfos = async (siret: string) => {
   return response.cfa
 }
 
+/** Contacts du Référentiel qui autorisent la validation automatique d'un compte CFA, avec leurs sources pour la raison du rôle. */
+export const matchCfaReferentielContact = (contacts: ICfaReferentielData["contacts"], email: string): { on: "email" | "domain"; sources: string[] } | null => {
+  const userEmail = email.toLowerCase()
+  const sourcesOf = (matched: ICfaReferentielData["contacts"]) => [...new Set(matched.flatMap(({ sources }) => sources))].sort()
+
+  const byEmail = contacts.filter((contact) => contact.email.toLowerCase() === userEmail)
+  if (byEmail.length) return { on: "email", sources: sourcesOf(byEmail) }
+  if (!isEmailFromPrivateCompany(userEmail)) return null
+  const byDomain = contacts.filter((contact) => isEmailSameDomain(userEmail, contact.email))
+  return byDomain.length ? { on: "domain", sources: sourcesOf(byDomain) } : null
+}
+
 export const validateEligibiliteCfa = async (siret: string) => {
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
