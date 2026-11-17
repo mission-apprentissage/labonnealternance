@@ -81,7 +81,9 @@ const SuccesDesinscription = () => (
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>Répondre aux problématiques de recrutement en formant un vivier de candidats employables</Typography>
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>Disposer d'un regard nouveau et sensibilisé aux enjeux de demain</Typography>
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>
-              <DsfrLink href="https://alternance.emploi.gouv.fr/simulateur-employeur/etape-1">Profiter d'un financement gouvernemental</DsfrLink>
+              <DsfrLink href="https://travail-emploi.gouv.fr/aides-couts-salaire-le-simulateur-en-ligne-pour-les-employeurs-apprentis">
+                Profiter d'un financement gouvernemental
+              </DsfrLink>
             </Typography>
           </Box>
         </Stack>
