@@ -11,6 +11,7 @@ import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { AccessStatus } from "shared/models/role-management.model"
 import type { IModerationAccountType, IModerationSearchAccountStatus, IModerationSearchConformity } from "shared/routes/jobs-partners-moderation.routes"
+import { MODERATION_SEARCH_CONFORMITY } from "shared/routes/jobs-partners-moderation.routes"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
@@ -22,6 +23,7 @@ import { publicConfig } from "@/config.public"
 import { searchModerationOffers } from "@/utils/api"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { pluralize } from "@/utils/strutils"
+import { MODERATION_CONFORMITY_LABELS } from "./ModerationBadges"
 import { getModerationColumns, getModerationPagination, MODERATION_DEFAULT_SORTING, MODERATION_PAGE_SIZE, ModerationOffersResults, toModerationSort } from "./ModerationOffersTable"
 import type { IModerationQueueItemJson } from "./moderation.types"
 import { getOfferEditionPath, getRecruiterAccountPath } from "./moderation-links"
@@ -51,13 +53,7 @@ const OFFER_STATUS_OPTIONS: { value: IOfferStatusGroup; label: string }[] = [
   { value: "pourvue", label: "Pourvue" },
   { value: "expiree", label: "Expirée" },
 ]
-const CONFORMITY_OPTIONS: { value: IModerationSearchConformity; label: string }[] = [
-  { value: "non_conforme", label: "Non conforme" },
-  { value: "a_verifier", label: "À vérifier" },
-  { value: "indisponible", label: "Analyse indisponible" },
-  { value: "conforme", label: "Conforme" },
-  { value: "non_applicable", label: "Non applicable" },
-]
+const CONFORMITY_OPTIONS = MODERATION_SEARCH_CONFORMITY.map((value) => ({ value, label: MODERATION_CONFORMITY_LABELS[value] }))
 
 const CLOSED_STATUSES: JOB_STATUS_ENGLISH[] = [JOB_STATUS_ENGLISH.ANNULEE, JOB_STATUS_ENGLISH.POURVUE]
 

@@ -24,7 +24,12 @@ import type {
   IModerationSearchAccountStatus,
   IModerationSearchConformity,
 } from "shared/routes/jobs-partners-moderation.routes"
-import { MODERATION_DECISION_BLOCKED_REASONS, ZModerationJobDetail, ZModerationLatestClassification } from "shared/routes/jobs-partners-moderation.routes"
+import {
+  MODERATION_DECISION_BLOCKED_REASONS,
+  MODERATION_SEARCH_CONFORMITY,
+  ZModerationJobDetail,
+  ZModerationLatestClassification,
+} from "shared/routes/jobs-partners-moderation.routes"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -153,6 +158,8 @@ const SUMMARY_PROJECTION = {
   recruiter: 1,
 } as const
 
+const conformityRank = (conformity: IModerationSearchConformity) => MODERATION_SEARCH_CONFORMITY.indexOf(conformity)
+
 /** Clés de tri de la file et de la recherche. Seule celle du recruteur lit les jointures, pour trier sur la raison sociale affichée. */
 const SORT_KEYS: Record<IModerationQueueSort, unknown> = {
   created_at: "$created_at",
@@ -161,12 +168,12 @@ const SORT_KEYS: Record<IModerationQueueSort, unknown> = {
   conformity: {
     $switch: {
       branches: [
-        { case: IS_NEVER_CLASSIFIED_EXPR, then: 4 },
-        { case: { $ne: ["$offer_moderation_status", OFFER_MODERATION_STATUS.OK] }, then: 2 },
-        { case: { $eq: ["$offer_moderation_verdict", "a_verifier"] }, then: 1 },
-        { case: { $eq: ["$offer_moderation_verdict", "conforme"] }, then: 3 },
+        { case: IS_NEVER_CLASSIFIED_EXPR, then: conformityRank("non_applicable") },
+        { case: { $ne: ["$offer_moderation_status", OFFER_MODERATION_STATUS.OK] }, then: conformityRank("indisponible") },
+        { case: { $eq: ["$offer_moderation_verdict", "a_verifier"] }, then: conformityRank("a_verifier") },
+        { case: { $eq: ["$offer_moderation_verdict", "conforme"] }, then: conformityRank("conforme") },
       ],
-      default: 0,
+      default: conformityRank("non_conforme"),
     },
   },
   recruiter: { $toLower: { $ifNull: ["$recruiter.raison_sociale", ""] } },

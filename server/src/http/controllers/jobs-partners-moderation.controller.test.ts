@@ -573,7 +573,7 @@ describe("modération des offres libres (#5499)", () => {
 
       expect(await firstOfPage("sort=offer_title&order=asc")).toBe(indisponible.offer._id.toString())
       expect(await firstOfPage("sort=conformity&order=asc")).toBe(nonConforme.offer._id.toString())
-      expect(await firstOfPage("sort=conformity&order=desc")).toBe(indisponible.offer._id.toString())
+      expect(await firstOfPage("sort=conformity&order=desc")).toBe(aVerifier.offer._id.toString())
       expect(await firstOfPage("sort=recruiter&order=asc")).toBe(indisponible.offer._id.toString())
       expect(await firstOfPage("sort=recruiter&order=desc")).toBe(nonConforme.offer._id.toString())
       expect(await firstOfPage(`sort=recruiter&order=asc&account_status=${AccessStatus.GRANTED}`)).toBe(indisponible.offer._id.toString())
@@ -714,7 +714,7 @@ describe("modération des offres libres (#5499)", () => {
       expect(ids(cfas)).toEqual([])
     })
 
-    it("trie la conformité dans l'ordre de la file, puis les offres conformes et celles jamais analysées", async () => {
+    it("trie la conformité dans l'ordre de gravité des listes de comptes, offres jamais analysées en dernier", async () => {
       const recruiter = await saveRecruiter({ raisonSociale: "Fleuriste Rose" })
       const name = { workplace_legal_name: "Fleuriste Rose", offer_status: JOB_STATUS_ENGLISH.ACTIVE }
       const conforme = await saveModeratedOffer(recruiter, { offer: { ...name, offer_moderation_verdict: "conforme" } })
@@ -728,7 +728,7 @@ describe("modération des offres libres (#5499)", () => {
       const asc = await search(bearerToken, "search=fleuriste&sort=conformity&order=asc")
 
       expect(asc.json().jobs.map(({ _id }) => _id)).toEqual([
-        ...[nonConforme, aVerifier, indisponible, conforme].map(({ offer }) => offer._id.toString()),
+        ...[nonConforme, indisponible, aVerifier, conforme].map(({ offer }) => offer._id.toString()),
         jamaisAnalysee._id.toString(),
       ])
     })

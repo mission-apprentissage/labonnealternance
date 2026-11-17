@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from "react"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/role-management.model"
 import type { IModerationAccountType, IModerationQueueConformity } from "shared/routes/jobs-partners-moderation.routes"
+import { MODERATION_QUEUE_CONFORMITY } from "shared/routes/jobs-partners-moderation.routes"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
@@ -20,17 +21,14 @@ import { DsfrIcon } from "@/components/DsfrIcon"
 import { getModerationQueue, getModerationSummaries, reclassifyFailedModerationJobs } from "@/utils/api"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { pluralize } from "@/utils/strutils"
+import { MODERATION_CONFORMITY_LABELS } from "./ModerationBadges"
 import { getModerationColumns, getModerationPagination, MODERATION_DEFAULT_SORTING, MODERATION_PAGE_SIZE, ModerationOffersResults, toModerationSort } from "./ModerationOffersTable"
 import type { IModerationQueueItemJson, IModerationUserType } from "./moderation.types"
 import { getOfferEditionPath } from "./moderation-links"
 import type { IModerationQueueState } from "./moderation-queue-state"
 import { getEmptyPageFallbackOffset, readModerationQueueState, toModerationQueueQuery, writeModerationQueueState } from "./moderation-queue-state"
 
-const CONFORMITY_OPTIONS: { value: IModerationQueueConformity; label: string }[] = [
-  { value: "non_conforme", label: "Non conforme" },
-  { value: "a_verifier", label: "À vérifier" },
-  { value: "indisponible", label: "Analyse indisponible" },
-]
+const CONFORMITY_OPTIONS = MODERATION_QUEUE_CONFORMITY.map((value) => ({ value, label: MODERATION_CONFORMITY_LABELS[value] }))
 const ACCOUNT_STATUS_OPTIONS: { value: AccessStatus.AWAITING_VALIDATION | AccessStatus.GRANTED; label: string }[] = [
   { value: AccessStatus.AWAITING_VALIDATION, label: "En attente" },
   { value: AccessStatus.GRANTED, label: "Actif" },

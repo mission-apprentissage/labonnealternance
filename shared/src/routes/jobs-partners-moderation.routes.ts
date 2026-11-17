@@ -9,8 +9,11 @@ import { AccessStatus } from "../models/role-management.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 
-/** Filtre de conformité de la file : `indisponible` regroupe les classifications en échec (`indisponible` et `epuise`). */
-export const MODERATION_QUEUE_CONFORMITY = ["non_conforme", "a_verifier", OFFER_MODERATION_STATUS.INDISPONIBLE] as const
+/**
+ * Filtre de conformité de la file : `indisponible` regroupe les classifications en échec (`indisponible` et `epuise`).
+ * Ordre de gravité des listes de comptes (cf. ACCOUNT_OFFER_CONFORMITIES), repris par les filtres et le tri (#5757).
+ */
+export const MODERATION_QUEUE_CONFORMITY = ["non_conforme", OFFER_MODERATION_STATUS.INDISPONIBLE, "a_verifier"] as const
 export type IModerationQueueConformity = (typeof MODERATION_QUEUE_CONFORMITY)[number]
 
 /** Filtre de conformité de la recherche : celui de la file, plus les offres conformes et celles jamais analysées. */

@@ -6,6 +6,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { IAccountOfferConformity, IModerationReviewStatus, IModerationVerdict, IOfferModerationStatus } from "shared/models/jobs-partners-moderation.model"
 import { ACCOUNT_OFFER_CONFORMITIES, OFFER_MODERATION_STATUS } from "shared/models/jobs-partners-moderation.model"
 import { AccessStatus } from "shared/models/role-management.model"
+import type { IModerationSearchConformity } from "shared/routes/jobs-partners-moderation.routes"
 
 type IBadgeTone = "success" | "error" | "warning" | "new" | "info" | "na"
 
@@ -83,6 +84,15 @@ export const ReviewStatusBadge = ({
   if (review === "refusee") return <ModerationBadge tone="error">Refusé</ModerationBadge>
   if (verdict === "conforme" && status === OFFER_MODERATION_STATUS.OK) return <ModerationBadge tone="na">Non requise</ModerationBadge>
   return <ModerationBadge tone="new">En attente</ModerationBadge>
+}
+
+/** Libellés des filtres de conformité, ceux des badges (cf. ConformityBadge). */
+export const MODERATION_CONFORMITY_LABELS: Record<IModerationSearchConformity, string> = {
+  non_conforme: "Non conforme",
+  indisponible: "Analyse indisponible",
+  a_verifier: "À vérifier",
+  conforme: "Conforme",
+  non_applicable: "Non applicable",
 }
 
 /** Le statut de la classification passe avant le verdict : en échec, le verdict stocké vaut `a_verifier`. */
