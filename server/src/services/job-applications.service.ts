@@ -2,7 +2,7 @@ import { forbidden, notFound } from "@hapi/boom"
 import { stringify } from "csv-stringify/sync"
 import type { ObjectId } from "mongodb"
 import type { zRoutes } from "shared"
-import { ApplicationIntention } from "shared/constants/application"
+import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import dayjs from "shared/helpers/dayjs"
 import type { ComputedUserAccess, IApplicant, IApplication } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
@@ -53,6 +53,7 @@ export const getJobApplicationsForRecruiter = async (jobId: ObjectId, userAccess
       offer_title: job.offer_title,
       offer_rome_appellation: job.offer_rome_appellation ?? null,
       offer_expiration: job.offer_expiration ?? null,
+      offer_status: job.offer_status,
     },
     applications: applications.map(({ _id, applicant, company_recruitment_intention, created_at }) => ({
       _id,
@@ -68,8 +69,13 @@ const formatDate = (date: Date | null | undefined) => (date ? dayjs(date).tz("Eu
 const formatText = (text: string | null | undefined) => (text ? decodeSanitizedText(text).trim() : "")
 const formatBoolean = (value: boolean | null | undefined) => (value === true ? "Oui" : value === false ? "Non" : "")
 
-// Mêmes libellés que la page des candidatures : toute intention autre que le refus vaut prise de contact.
-const formatStatus = (intention: string | null | undefined) => (!intention ? "En attente" : intention === ApplicationIntention.REFUS ? "Refusé" : "Contacté")
+// Mêmes libellés que la page des candidatures (cf. getApplicationStatus).
+const formatStatus = (intention: string | null | undefined) => {
+  if (!intention) return "En attente"
+  if (intention === ApplicationIntention.REFUS) return "Refusé"
+  if (intention === APPLICATION_TREATED_ELSEWHERE) return "Traitée par un autre moyen"
+  return "Contacté"
+}
 
 /**
  * Récapitulatif des candidatures d'une offre, en CSV séparé par des tabulations (#5769).

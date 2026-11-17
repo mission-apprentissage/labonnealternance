@@ -9,14 +9,17 @@ import dayjs from "dayjs"
 import Link from "next/link"
 import type { MouseEvent } from "react"
 import { useState } from "react"
-import { ApplicationIntention } from "shared/constants/application"
+import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { getApplicationsExportFileName } from "shared/utils/applications-export"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import Table from "@/app/(espace-pro)/_components/Table"
+import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
+import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { publicConfig } from "@/config.public"
 import { downloadJobApplications, getFormulaire, getJobApplications, getJobApplicationsExportUrl } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -25,10 +28,11 @@ const APPLICATIONS_PAGE_SIZE = 20
 
 type JobApplication = Awaited<ReturnType<typeof getJobApplications>>["applications"][number]
 
-// Toute intention autre que le refus vaut prise de contact du candidat.
+// Hors refus et traitement hors LBA, une intention vaut prise de contact du candidat.
 const getApplicationStatus = (intention: string | null) => {
   if (!intention) return { label: "EN ATTENTE", variant: "awaiting" }
   if (intention === ApplicationIntention.REFUS) return { label: "REFUSÉ", variant: "inactive" }
+  if (intention === APPLICATION_TREATED_ELSEWHERE) return { label: "TRAITÉE PAR UN AUTRE MOYEN", variant: "neutral" }
   return { label: "CONTACTÉ", variant: "active" }
 }
 
@@ -57,7 +61,7 @@ const columns = [
     Cell: ({ row: { original } }: { row: { original: JobApplication } }) => {
       const { label, variant } = getApplicationStatus(original.company_recruitment_intention)
       return (
-        <Badge variant={variant} textTransform="uppercase">
+        <Badge variant={variant} textTransform="uppercase" whiteSpace="normal">
           {label}
         </Badge>
       )
@@ -147,10 +151,13 @@ export const CandidaturesOffre = ({ job_id, cfaEstablishmentId }: { job_id: stri
 
 const CandidaturesOffreContent = ({ data }: { data: Awaited<ReturnType<typeof getJobApplications>> }) => {
   const { job, applications } = data
+  const closureModal = useDisclosure()
+  const isClosed = job.offer_status === JOB_STATUS_ENGLISH.POURVUE || job.offer_status === JOB_STATUS_ENGLISH.ANNULEE
   const offerUrl = `${publicConfig.baseUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, job.offer_rome_appellation || undefined)}`
 
   return (
     <>
+      <ConfirmationSuppressionOffre {...closureModal} offre={{ _id: job._id }} />
       <Box sx={{ display: "flex", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center", flexWrap: "wrap" }}>
         <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700 }}>
           Candidatures
@@ -164,8 +171,9 @@ const CandidaturesOffreContent = ({ data }: { data: Awaited<ReturnType<typeof ge
           >
             Voir l'offre en ligne
           </Button>
-          {/* La clôture depuis cette page arrive avec la suite de #5769. */}
-          <Button disabled>Clôturer le recrutement</Button>
+          <Button disabled={isClosed} onClick={closureModal.onOpen}>
+            Clôturer le recrutement
+          </Button>
         </Box>
       </Box>
       <Box sx={{ mt: fr.spacing("4v"), mb: fr.spacing("4v"), display: "flex", justifyContent: "space-between", alignItems: "center", gap: fr.spacing("4v"), flexWrap: "wrap" }}>

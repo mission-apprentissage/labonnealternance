@@ -28,9 +28,11 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
       title: `Offre supprimée.`,
       description: "Votre offre a bien été mise à jour.",
     })
-    await client.invalidateQueries({
-      queryKey: ["offre-liste"],
-    })
+    await Promise.all([
+      client.invalidateQueries({ queryKey: ["offre-liste"] }),
+      // La page des candidatures lit le statut de l'offre pour désactiver son bouton de clôture.
+      client.invalidateQueries({ queryKey: ["job-applications", offreId] }),
+    ])
   }
 
   return (

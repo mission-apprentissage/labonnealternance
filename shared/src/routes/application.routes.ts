@@ -3,6 +3,7 @@ import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 import { CompanyFeebackSendStatus, ZHelloworkApplication } from "../models/applications.model.js"
 import { zObjectId } from "../models/common.js"
+import { JOB_STATUS_ENGLISH } from "../models/job.model.js"
 import { ZLbacError } from "../models/lbac-error.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
@@ -95,6 +96,7 @@ export const zApplicationRoutes = {
             offer_title: z.string(),
             offer_rome_appellation: z.string().nullable(),
             offer_expiration: z.date().nullable(),
+            offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH),
           }),
           applications: z.array(
             z.strictObject({
