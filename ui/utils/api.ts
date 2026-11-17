@@ -20,7 +20,7 @@ import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { ILbaCompanySearchField } from "shared/routes/update-lba-company.routes"
 import type { Jsonify } from "type-fest"
-import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
+import { ApiError, apiDelete, apiGet, apiGetBlob, apiPatch, apiPost, apiPut, generateUrl } from "./api.utils"
 
 const errorHandler = (error: any): undefined => {
   if (error) {
@@ -142,6 +142,8 @@ export const setJobPartnerClassification = async (id: string, classification: "p
 export const getModerationQueue = async (querystring: IQuery<IRoutes["get"]["/moderation/jobs"]>) => apiGet("/moderation/jobs", { querystring: removeUndefinedFields(querystring) })
 
 export const getJobApplications = async (jobId: string) => apiGet("/application/job/:jobId", { params: { jobId } })
+export const getJobApplicationsExportUrl = (jobId: string) => generateUrl("/application/job/:jobId/export", { params: { jobId } })
+export const downloadJobApplications = async (jobId: string) => apiGetBlob("/application/job/:jobId/export", { params: { jobId } })
 
 export const getModerationSummaries = async (ids: string[]) => apiGet("/moderation/jobs/summary", { querystring: { ids } })
 

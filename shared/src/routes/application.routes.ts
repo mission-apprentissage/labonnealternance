@@ -115,6 +115,21 @@ export const zApplicationRoutes = {
         },
       },
     },
+    "/application/job/:jobId/export": {
+      path: "/application/job/:jobId/export",
+      method: "get",
+      params: z.strictObject({ jobId: zObjectId }),
+      response: {
+        "200": z.string().describe("Fichier CSV séparé par des tabulations"),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "application:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
+    },
     "/application/company/email": {
       path: "/application/company/email",
       method: "get",

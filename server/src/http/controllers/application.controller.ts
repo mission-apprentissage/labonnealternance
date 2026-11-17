@@ -12,7 +12,7 @@ import {
   getCompanyEmailFromToken,
   sendRecruiterIntention,
 } from "@/services/application.service"
-import { getJobApplicationsForRecruiter } from "@/services/job-applications.service"
+import { exportJobApplicationsForRecruiter, getJobApplicationsForRecruiter } from "@/services/job-applications.service"
 
 const rateLimitConfig = {
   rateLimit: {
@@ -106,6 +106,25 @@ export default function (server: Server) {
     },
     async (req, res) => {
       return res.status(200).send(await getJobApplicationsForRecruiter(req.params.jobId, req.userAccess))
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId/export",
+    {
+      schema: zRoutes.get["/application/job/:jobId/export"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId/export"]),
+    },
+    async (req, res) => {
+      const { fileName, content } = await exportJobApplicationsForRecruiter(req.params.jobId, req.userAccess)
+      return res
+        .status(200)
+        .headers({
+          "content-type": "text/csv; charset=utf-8",
+          "content-disposition": `attachment; filename="${fileName}"`,
+          "cache-control": "no-store",
+        })
+        .send(content)
     }
   )
 

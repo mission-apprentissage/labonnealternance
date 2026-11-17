@@ -172,6 +172,16 @@ export async function apiGet<P extends keyof IGetRoutes, S extends IGetRoutes[P]
   return res.json()
 }
 
+/** Comme apiGet, pour une réponse fichier (export) plutôt que JSON. */
+export async function apiGetBlob<P extends keyof IGetRoutes, S extends IGetRoutes[P] = IGetRoutes[P]>(path: P, options: IRequest<S>): Promise<Blob> {
+  const { requestInit, headers } = await optionsToFetchParams("GET", options, {})
+  const res = await fetch(generateUrl(path, options), requestInit)
+  if (!res.ok) {
+    throw await ApiError.build(path, headers, options, res)
+  }
+  return res.blob()
+}
+
 export async function apiPut<P extends keyof IPutRoutes, S extends IPutRoutes[P] = IPutRoutes[P]>(
   path: P,
   options: IRequest<S>,

@@ -10,6 +10,7 @@ import {
   validatedUserStatus,
 } from "@tests/utils/user.test.utils"
 import type { ObjectId } from "mongodb"
+import { ApplicationIntention, RefusalReasons } from "shared/constants/application"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -47,10 +48,10 @@ const saveOffer = async ({ managedBy, siret, cfaSiret = null }: { managedBy: Obj
   return offer
 }
 
-const saveApplication = async (jobId: ObjectId, lastname: string) => {
+const saveApplication = async (jobId: ObjectId, lastname: string, data: Parameters<typeof generateApplicationFixture>[0] = {}) => {
   const applicant = generateApplicantFixture({ email: `${lastname.toLowerCase()}@candidat.fr`, firstname: "Prénom", lastname })
   await getDbCollection("applicants").insertOne(applicant)
-  const application = generateApplicationFixture({ job_id: jobId, applicant_id: applicant._id, created_at: new Date() })
+  const application = generateApplicationFixture({ job_id: jobId, applicant_id: applicant._id, created_at: new Date(), ...data })
   await getDbCollection("applications").insertOne(application)
   return application
 }
@@ -149,5 +150,83 @@ describe("GET /application/job/:jobId", () => {
 
     expect(response.statusCode).toBe(403)
     expect(response.body).not.toContain("Anonyme")
+  })
+})
+
+describe("GET /application/job/:jobId/export", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const exportApplications = async (jobId: ObjectId, headers?: Record<string, string>) =>
+    httpClient().inject({ method: "GET", path: `/api/application/job/${jobId}/export`, ...(headers ? { headers } : {}) })
+
+  it("télécharge un CSV séparé par des tabulations, nommé d'après l'offre, avec le nom de la pièce jointe", async () => {
+    const recruiter = await saveRecruiter("recruteur-export")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    await getDbCollection("jobs_partners").updateOne({ _id: offer._id }, { $set: { offer_title: "Maçon / Maçonne du paysage" } })
+    await saveApplication(offer._id, "Exporte", {
+      applicant_attachment_name: "cv-exporte.pdf",
+      applicant_message_to_company: "Motivé &amp; disponible",
+      applicant_answers_to_recruiter_questions: [{ question: "Pourquoi nous ?", answer: "Pour apprendre" }],
+      company_recruitment_intention: ApplicationIntention.REFUS,
+      company_feedback_reasons: [RefusalReasons.CONTRAT_INADAPTE],
+    })
+
+    const response = await exportApplications(offer._id, (await logUser(httpClient, "recruteur-export")).bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.headers["content-type"]).toBe("text/csv; charset=utf-8")
+    expect(response.headers["content-disposition"]).toBe('attachment; filename="candidatures_de_macon_maconne_du_paysage.csv"')
+    const [header, row] = response.body
+      .replace(/^\uFEFF/, "")
+      .trimEnd()
+      .split("\n")
+    const columns = header.split("\t")
+    const values = Object.fromEntries(row.split("\t").map((value, index) => [columns[index], value]))
+    expect(values).toMatchObject({
+      Nom: "EXPORTE",
+      "E-mail": "exporte@candidat.fr",
+      Téléphone: "'0123456789",
+      Statut: "Refusé",
+      "Motifs de refus": "Type de contrat inadapté",
+      "Message du candidat": "Motivé & disponible",
+      "Pièce jointe": "cv-exporte.pdf",
+      "Pourquoi nous ?": "Pour apprendre",
+    })
+  })
+
+  it("neutralise un texte du candidat qui serait lu comme une formule par un tableur", async () => {
+    const recruiter = await saveRecruiter("recruteur-formule")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    await saveApplication(offer._id, "Formule", { applicant_message_to_company: '=HYPERLINK("http://exemple.test")' })
+
+    const response = await exportApplications(offer._id, (await logUser(httpClient, "recruteur-formule")).bearerToken)
+
+    expect(response.body).not.toMatch(/\t=HYPERLINK/)
+    expect(response.body).toContain("'=HYPERLINK")
+  })
+
+  it("refuse l'export au recruteur d'une autre entreprise", async () => {
+    const recruiter = await saveRecruiter("proprietaire-export")
+    await saveRecruiter("voisin-export")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    await saveApplication(offer._id, "Confidentiel")
+
+    const response = await exportApplications(offer._id, (await logUser(httpClient, "voisin-export")).bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect(response.body).not.toContain("Confidentiel")
+  })
+
+  it("refuse l'export à l'OPCO de rattachement de l'offre", async () => {
+    const recruiter = await saveRecruiter("recruteur-export-opco")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    await saveApplication(offer._id, "Protege")
+    const { bearerToken } = await createAndLogUser(httpClient, "opco-export", { type: "OPCO" })
+
+    const response = await exportApplications(offer._id, bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect(response.body).not.toContain("Protege")
   })
 })
