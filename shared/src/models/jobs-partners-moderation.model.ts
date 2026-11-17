@@ -57,6 +57,12 @@ export const MODERATION_REVIEW_STATUS = {
   REFUSEE: "refusee",
 } as const
 
+/**
+ * Conformité des offres d'un compte recruteur, de la plus défavorable à la moins défavorable : le compte prend celle de
+ * sa pire offre non close (cf. getAccountOfferConformities). `indisponible` regroupe les analyses en échec.
+ */
+export const ACCOUNT_OFFER_CONFORMITIES = ["non_conforme", "indisponible", "a_verifier", "conforme", "non_applicable", "aucune_offre"] as const
+
 export const MODERATION_TRIGGER = {
   CREATION: "creation",
   EDITION: "edition",
@@ -75,6 +81,7 @@ export type IModerationClassificationStatus = (typeof MODERATION_CLASSIFICATION_
 export type IOfferModerationStatus = (typeof OFFER_MODERATION_STATUS)[keyof typeof OFFER_MODERATION_STATUS]
 export type IModerationReviewStatus = (typeof MODERATION_REVIEW_STATUS)[keyof typeof MODERATION_REVIEW_STATUS]
 export type IModerationTrigger = (typeof MODERATION_TRIGGER)[keyof typeof MODERATION_TRIGGER]
+export type IAccountOfferConformity = (typeof ACCOUNT_OFFER_CONFORMITIES)[number]
 
 export const ZModerationTexts = z.object({
   job_description: z.string().nullable(),

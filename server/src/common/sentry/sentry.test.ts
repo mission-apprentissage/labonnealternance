@@ -1,11 +1,13 @@
 import type * as Sentry from "@sentry/node"
 import * as SentryNode from "@sentry/node"
 import axios from "axios"
+import type { FastifyRequest } from "fastify"
 import FormData from "form-data"
 import nock from "nock"
 import { zRoutes } from "shared"
 import { afterEach, describe, expect, it } from "vitest"
 
+import { serializers } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slack-utils"
 import { scrubSensitiveEventData } from "./sentry"
 import { getDiagnosticQuery } from "./sentry.fastify"
@@ -252,6 +254,17 @@ describe("paramètres de query déclarés par les routes", () => {
   const declared = new Set(
     Object.values(zRoutes).flatMap((routes) => Object.values(routes).flatMap((route) => Object.keys((route as { querystring?: { shape?: object } }).querystring?.shape ?? {})))
   )
+
+  it("sont masqués dans les logs serveur quand ils le sont dans Sentry", () => {
+    const query = Object.fromEntries([...QUERY_PARAMS_MASKED, "q"].map((key) => [key, `valeur-${key}`]))
+
+    const logged = JSON.stringify(
+      serializers.req({ method: "GET", url: `/api/x?${new URLSearchParams(query)}`, headers: {}, query, params: {}, socket: {} } as unknown as FastifyRequest)
+    )
+
+    expect(QUERY_PARAMS_MASKED.filter((key) => logged.includes(`valeur-${key}`))).toEqual([])
+    expect(logged).toContain("valeur-q")
+  })
 
   it("sont tous classés", () => {
     expect([...declared].sort()).toEqual([...QUERY_PARAMS_MASKED, ...QUERY_PARAMS_KEPT].sort())

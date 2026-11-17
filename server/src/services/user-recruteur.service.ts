@@ -8,7 +8,6 @@ import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
-import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IRoleManagement, IRoleManagementEvent } from "shared/models/role-management.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
@@ -22,6 +21,7 @@ import config from "@/config"
 import type { RoleManagement360Document } from "@/jobs/metabase/metabase-role-management360"
 import { roleManagement360AggregationStages } from "@/jobs/metabase/metabase-role-management360"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
+import { getAccountOfferConformities } from "./account-offer-conformity.service"
 import { createAuthMagicLink, createCharteRedactionLink } from "./app-links.service"
 import { AUTO_VALIDATION_REFUSED_REASON } from "./auto-validation-reasons"
 import { buildEstablishmentId } from "./etablissement.service"
@@ -436,6 +436,9 @@ export const getAdminUsers = async () => {
   })
 }
 
+/** Sans la conformité des offres : chaque espace la calcule sur son périmètre (cf. getAccountOfferConformities). */
+type IUserRecruteurForManagement = Omit<IUserRecruteurForAdmin, "offer_conformity">
+
 export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: { opco?: OPCOS_LABEL; activeRoleLimit?: number }) => {
   const nonGrantedRoles = await getDbCollection("rolemanagements")
     .find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } })
@@ -486,7 +489,7 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
       const organization = "entreprise" in result ? result.entreprise : result.cfa
       const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization)
       const { _id, establishment_raison_sociale, establishment_siret, type, first_name, last_name, email, phone, createdAt, origin, opco, status } = userRecruteur
-      const userRecruteurForAdmin: IUserRecruteurForAdmin = {
+      const userRecruteurForAdmin: IUserRecruteurForManagement = {
         _id,
         establishment_raison_sociale,
         establishment_siret,
@@ -500,7 +503,6 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
         opco,
         status,
         organizationId: organization._id.toString(),
-        hasJobs: false, // 2026-04-03 pas utilisé pour les OPCO (rustine spécifique admin lba)
       }
       return userRecruteurForAdmin
     })
@@ -529,10 +531,10 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
       }
     },
     {
-      awaiting: [] as IUserRecruteurForAdmin[],
-      active: [] as IUserRecruteurForAdmin[],
-      disabled: [] as IUserRecruteurForAdmin[],
-      error: [] as IUserRecruteurForAdmin[],
+      awaiting: [] as IUserRecruteurForManagement[],
+      active: [] as IUserRecruteurForManagement[],
+      disabled: [] as IUserRecruteurForManagement[],
+      error: [] as IUserRecruteurForManagement[],
     }
   )
 }
@@ -609,7 +611,7 @@ export const getUserRecruteursForManagement2 = async ({
 
   const documents = (await getDbCollection("rolemanagements").aggregate(aggregationStages).toArray()) as RoleManagement360Document[]
 
-  const result: IUserRecruteurForAdmin[] = []
+  const result: IUserRecruteurForManagement[] = []
   for (const document of documents) {
     const { user, entreprise, cfa } = document
     const role = document
@@ -623,10 +625,8 @@ export const getUserRecruteursForManagement2 = async ({
       continue
     }
 
-    // « A des offres publiées » : une offre en attente du compte, en modération ou close ne compte pas.
-    const publishedJobsCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
     const { _id, establishment_raison_sociale, establishment_siret, type, first_name, last_name, email, phone, createdAt, origin, opco, status } = userRecruteur
-    const userRecruteurForAdmin: IUserRecruteurForAdmin = {
+    const userRecruteurForAdmin: IUserRecruteurForManagement = {
       _id,
       establishment_raison_sociale,
       establishment_siret,
@@ -640,9 +640,11 @@ export const getUserRecruteursForManagement2 = async ({
       opco,
       status,
       organizationId: organization._id.toString(),
-      hasJobs: publishedJobsCount > 0,
     }
     result.push(userRecruteurForAdmin)
   }
-  return result
+  const conformities = await getAccountOfferConformities(
+    result.map(({ _id, type, establishment_siret }) => ({ userId: _id, type: type === CFA ? CFA : ENTREPRISE, siret: establishment_siret }))
+  )
+  return result.map((userRecruteur, index): IUserRecruteurForAdmin => ({ ...userRecruteur, offer_conformity: conformities[index] }))
 }

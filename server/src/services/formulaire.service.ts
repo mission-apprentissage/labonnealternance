@@ -534,6 +534,12 @@ export const getFormulaireWithRomeDetailAndApplicationCount = async ({
   return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: true })
 }
 
+/** Compte CFA propriétaire de l'organisation : le plus ancien rôle validé sur ce CFA. */
+export const getCfaReferenceRole = async (cfaId: ObjectId) =>
+  (await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }).toArray())
+    .filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
+    .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0] ?? null
+
 export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId, isAdmin: boolean = false): Promise<IRecruiter[]> => {
   const [ownRole, entreprisesManagedByCfa, cfa] = await Promise.all([
     getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }),
@@ -542,13 +548,7 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
   ])
   // Un admin n'a pas nécessairement de role CFA sur ce cfaId : on retombe sur le compte CFA
   // propriétaire de l'organisation pour construire les establishment_id et filtrer les offres.
-  const mainRole =
-    ownRole ??
-    (isAdmin
-      ? ((await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }).toArray())
-          .filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
-          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0] ?? null)
-      : null)
+  const mainRole = ownRole ?? (isAdmin ? await getCfaReferenceRole(cfaId) : null)
   if (!mainRole && isAdmin) {
     return []
   }

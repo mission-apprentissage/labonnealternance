@@ -2,15 +2,26 @@ import { CFA, ENTREPRISE, OPCOS_LABEL } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 import { zObjectId } from "../models/common.js"
+import { JOB_STATUS_ENGLISH } from "../models/job.model.js"
 import { ZJobsPartnersOfferPrivate } from "../models/jobs-partners.model.js"
 import { MODERATION_VERDICTS, OFFER_MODERATION_STATUS, ZJobsPartnersModeration } from "../models/jobs-partners-moderation.model.js"
 import { AccessStatus } from "../models/role-management.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 
-/** Filtre de conformité de la file : `indisponible` regroupe les classifications en échec (`indisponible` et `epuise`). */
-export const MODERATION_QUEUE_CONFORMITY = ["non_conforme", "a_verifier", OFFER_MODERATION_STATUS.INDISPONIBLE] as const
+/**
+ * Filtre de conformité de la file : `indisponible` regroupe les classifications en échec (`indisponible` et `epuise`).
+ * Ordre de gravité des listes de comptes (cf. ACCOUNT_OFFER_CONFORMITIES), repris par les filtres et le tri (#5757).
+ */
+export const MODERATION_QUEUE_CONFORMITY = ["non_conforme", OFFER_MODERATION_STATUS.INDISPONIBLE, "a_verifier"] as const
 export type IModerationQueueConformity = (typeof MODERATION_QUEUE_CONFORMITY)[number]
+
+/** Filtre de conformité de la recherche : celui de la file, plus les offres conformes et celles jamais analysées. */
+export const MODERATION_SEARCH_CONFORMITY = [...MODERATION_QUEUE_CONFORMITY, "conforme", "non_applicable"] as const
+export type IModerationSearchConformity = (typeof MODERATION_SEARCH_CONFORMITY)[number]
+
+export const MODERATION_SEARCH_ACCOUNT_STATUSES = [AccessStatus.AWAITING_VALIDATION, AccessStatus.GRANTED, AccessStatus.DENIED] as const
+export type IModerationSearchAccountStatus = (typeof MODERATION_SEARCH_ACCOUNT_STATUSES)[number]
 
 export const MODERATION_QUEUE_SORTS = ["created_at", "offer_title", "offer_status", "conformity", "recruiter"] as const
 export type IModerationQueueSort = (typeof MODERATION_QUEUE_SORTS)[number]
@@ -26,14 +37,16 @@ const zQueryArray = <T extends z.ZodType>(item: T) =>
 
 const offerShape = ZJobsPartnersOfferPrivate.shape
 
+const SEARCH_DESCRIPTION = "Raison sociale, SIRET, e-mail du recruteur ou identifiant de l'offre"
+
 /** Filtres et tri de la file, repris par la navigation entre offres de la page de détail. */
 export const ZModerationQueueFilters = z.object({
   conformity: zQueryArray(z.enum(MODERATION_QUEUE_CONFORMITY)),
   account_status: zQueryArray(z.enum([AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION])),
   account_type: zQueryArray(z.enum(MODERATION_ACCOUNT_TYPES)),
   opco: zQueryArray(extensions.buildEnum(OPCOS_LABEL)).describe("Ignoré pour un OPCO, limité à son OPCO"),
-  // `search` et non `q` : la valeur peut être un e-mail, masqué dans Sentry sous ce nom (cf. PERSONAL_QUERY_PARAMS).
-  search: z.string().trim().max(200).optional().describe("Raison sociale, SIRET, e-mail du recruteur ou identifiant de l'offre"),
+  // `search` et non `q` : la valeur peut être un e-mail, masqué dans les logs et dans Sentry sous ce nom (cf. PERSONAL_QUERY_PARAMS).
+  search: z.string().trim().max(200).optional().describe(SEARCH_DESCRIPTION),
   sort: z.enum(MODERATION_QUEUE_SORTS).optional().describe("Par défaut : date de dépôt, la plus récente d'abord"),
   order: z.enum(["asc", "desc"]).optional(),
 })
@@ -138,25 +151,46 @@ const moderationAccess = {
   resources: {},
 } as const
 
-// Décider et relancer l'analyse sont réservés aux administrateurs : un OPCO consulte la modération de son périmètre.
-const moderationDecisionAccess = { auth: "cookie-session", access: "admin", resources: {} } as const
+// Décider, relancer l'analyse, rechercher dans toutes les offres et compter les offres non conformes d'un CFA sont réservés
+// aux administrateurs : un OPCO consulte la modération de son périmètre. Un 403 fermant la session (cf. errorMiddleware),
+// l'interface n'appelle ces routes que pour un administrateur.
+const moderationAdminAccess = { auth: "cookie-session", access: "admin", resources: {} } as const
+
+const zPageQuery = {
+  sort: ZModerationQueueFilters.shape.sort,
+  order: ZModerationQueueFilters.shape.order,
+  limit: z.coerce.number<number>().int().min(1).max(100).optional(),
+  offset: z.coerce.number<number>().int().min(0).optional(),
+}
+
+const ZModerationJobsPage = z.strictObject({
+  jobs: z.array(ZModerationQueueItem),
+  pagination: z.strictObject({ total: z.number(), limit: z.number(), offset: z.number() }),
+})
 
 export const zJobsPartnersModerationRoutes = {
   get: {
     "/moderation/jobs": {
       method: "get",
       path: "/moderation/jobs",
-      querystring: ZModerationQueueFilters.extend({
-        limit: z.coerce.number<number>().int().min(1).max(100).optional(),
-        offset: z.coerce.number<number>().int().min(0).optional(),
-      }),
-      response: {
-        "200": z.strictObject({
-          jobs: z.array(ZModerationQueueItem),
-          pagination: z.strictObject({ total: z.number(), limit: z.number(), offset: z.number() }),
-        }),
-      },
+      querystring: ZModerationQueueFilters.extend(zPageQuery),
+      response: { "200": ZModerationJobsPage },
       securityScheme: moderationAccess,
+    },
+    "/moderation/jobs/search": {
+      method: "get",
+      path: "/moderation/jobs/search",
+      querystring: z.object({
+        search: z.string().trim().min(2).max(200).describe(`${SEARCH_DESCRIPTION}, au moins 2 caractères`),
+        conformity: zQueryArray(z.enum(MODERATION_SEARCH_CONFORMITY)),
+        account_status: zQueryArray(z.enum(MODERATION_SEARCH_ACCOUNT_STATUSES)),
+        account_type: zQueryArray(z.enum(MODERATION_ACCOUNT_TYPES)),
+        opco: zQueryArray(extensions.buildEnum(OPCOS_LABEL)),
+        offer_status: zQueryArray(extensions.buildEnum(JOB_STATUS_ENGLISH)),
+        ...zPageQuery,
+      }),
+      response: { "200": ZModerationJobsPage },
+      securityScheme: moderationAdminAccess,
     },
     "/moderation/jobs/summary": {
       method: "get",
@@ -206,6 +240,19 @@ export const zJobsPartnersModerationRoutes = {
       response: { "200": z.strictObject({ moderations: z.array(ZJobsPartnersModeration) }) },
       securityScheme: moderationAccess,
     },
+    "/moderation/cfa/:cfaId/entreprises": {
+      method: "get",
+      path: "/moderation/cfa/:cfaId/entreprises",
+      params: z.strictObject({ cfaId: zObjectId }),
+      response: {
+        "200": z.strictObject({
+          entreprises: z
+            .array(z.strictObject({ siret: z.string(), non_conformes: z.number().int() }))
+            .describe("Entreprises partenaires du CFA qui ont au moins une offre non conforme en attente de décision"),
+        }),
+      },
+      securityScheme: moderationAdminAccess,
+    },
   },
   post: {
     "/moderation/jobs/:id/validate": {
@@ -214,7 +261,7 @@ export const zJobsPartnersModerationRoutes = {
       params: z.strictObject({ id: zObjectId }),
       body: z.strictObject({ moderation_id: zObjectId.describe("Classification sur laquelle porte la décision") }),
       response: { "200": z.strictObject({ offer_status: offerShape.offer_status }) },
-      securityScheme: moderationDecisionAccess,
+      securityScheme: moderationAdminAccess,
     },
     "/moderation/jobs/:id/refuse": {
       method: "post",
@@ -226,7 +273,7 @@ export const zJobsPartnersModerationRoutes = {
         comment: z.string().trim().max(2000).nullish().describe("Commentaire personnalisé inséré dans l'e-mail au recruteur"),
       }),
       response: { "200": z.strictObject({ offer_status: offerShape.offer_status, email_sent: z.boolean() }) },
-      securityScheme: moderationDecisionAccess,
+      securityScheme: moderationAdminAccess,
     },
     "/moderation/jobs/:id/reclassify": {
       method: "post",
@@ -239,13 +286,13 @@ export const zJobsPartnersModerationRoutes = {
           offer_status: offerShape.offer_status,
         }),
       },
-      securityScheme: moderationDecisionAccess,
+      securityScheme: moderationAdminAccess,
     },
     "/moderation/jobs/reclassify": {
       method: "post",
       path: "/moderation/jobs/reclassify",
       response: { "200": z.strictObject({ pending: z.number().int() }) },
-      securityScheme: moderationDecisionAccess,
+      securityScheme: moderationAdminAccess,
     },
   },
 } as const satisfies IRoutesDef
