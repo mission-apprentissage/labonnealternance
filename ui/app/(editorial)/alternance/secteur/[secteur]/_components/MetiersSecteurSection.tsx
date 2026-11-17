@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
 import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
-import { cardLinkStyle, seoCardSx, seoH2Sx, seoHrSx, seoSectionSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
+import { cardLinkStyle, formatNumber, seoCardSx, seoH2Sx, seoHrSx, seoSectionSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import type { ISeoSecteurJson } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/secteur.types"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { PAGES } from "@/utils/routes.utils"
@@ -45,7 +45,7 @@ export function MetiersSecteurSection({ secteur, metiers, metiers_counts, utmPar
                   Niveau d'accès : {metier.niveau_acces}
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", mt: fr.spacing("2v") }}>
-                  <Typography sx={{ flex: 1, fontWeight: "bold" }}>{jobCount !== undefined ? `${jobCount} offres` : "Voir les offres"}</Typography>
+                  <Typography sx={{ flex: 1, fontWeight: "bold" }}>{jobCount !== undefined ? `${formatNumber(jobCount)} offres` : "Voir les offres"}</Typography>
                   <ArrowRightLine sx={{ color: fr.colors.decisions.background.actionHigh.blueFrance.default, width: 16, height: 16 }} />
                 </Box>
               </Box>

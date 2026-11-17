@@ -10,7 +10,7 @@ import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
-import { seoCardSx, seoH2Sx, seoHrSx, seoSectionSx, seoStatBoxSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
+import { formatNumber, seoCardSx, seoH2Sx, seoHrSx, seoSectionSx, seoStatBoxSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { secteurData } from "@/app/(editorial)/alternance/_components/secteur_data"
 import { SalaireSection } from "@/app/(editorial)/alternance/diplome/[slug]/_components/SalaireSection"
@@ -88,7 +88,6 @@ async function SecteurContent({ params }: { params: Promise<{ secteur: string }>
   const faqItems = data.faq.map(({ question, reponse }) => ({ question, answer: reponse }))
   const autresSecteurs = secteurData.filter((s) => s.slug !== data.slug)
 
-  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value)
   // Une tuile à 0 ferait vide (ex. aucune candidature récente) : on ne la montre pas, comme les blocs vides.
   const statItems = [
     { icon: "/images/seo/malette.svg", value: data.job_count ?? 0, label: "offres d'emploi en alternance" },
@@ -197,7 +196,7 @@ async function SecteurContent({ params }: { params: Promise<{ secteur: string }>
               {entreprises.map((entreprise) => (
                 <Box key={entreprise.nom} sx={seoCardSx}>
                   <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{entreprise.nom}</Typography>
-                  <Typography sx={{ mt: fr.spacing("1v"), color: fr.colors.decisions.text.label.grey.default }}>{entreprise.job_count} postes</Typography>
+                  <Typography sx={{ mt: fr.spacing("1v"), color: fr.colors.decisions.text.label.grey.default }}>{formatNumber(entreprise.job_count)} postes</Typography>
                 </Box>
               ))}
             </Box>

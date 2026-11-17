@@ -1,12 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
-import { seoH2Sx, seoHrSx, seoSectionSx } from "@/app/(editorial)/alternance/_components/hub-styles"
+import { formatNumber, seoH2Sx, seoHrSx, seoSectionSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import type { ISeoSecteurJson } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/secteur.types"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type Props = Pick<ISeoSecteurJson, "secteur" | "marche" | "job_count" | "total_job_count" | "company_count">
 
-const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value)
 const strongSx = { fontWeight: 700, color: fr.colors.decisions.text.default.info.default }
 
 export function MarcheSecteurSection({ secteur, marche, job_count, total_job_count, company_count }: Props) {

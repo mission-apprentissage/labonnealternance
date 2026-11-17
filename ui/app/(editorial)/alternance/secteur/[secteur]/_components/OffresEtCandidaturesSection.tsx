@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
-import { seoH2Sx, seoHrSx, seoSectionSx } from "@/app/(editorial)/alternance/_components/hub-styles"
+import { formatNumber, seoH2Sx, seoHrSx, seoSectionSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
 import type { ISeoSecteurJson } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/secteur.types"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
@@ -41,7 +41,7 @@ export function OffresEtCandidaturesSection({ secteur, job_count, algo_company_c
             <Box sx={{ display: "flex", flex: 1 }}>
               <Box sx={{ flex: 2 }}>
                 <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: fr.colors.decisions.text.default.info.default, mt: fr.spacing("4v") }}>
-                  {job_count ?? 0}
+                  {formatNumber(job_count ?? 0)}
                 </Typography>
                 <Typography sx={{ fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                   offres d'emploi{" "}
@@ -67,7 +67,9 @@ export function OffresEtCandidaturesSection({ secteur, job_count, algo_company_c
             <TagCandidatureSpontanee />
             <Box sx={{ display: "flex", flex: 1 }}>
               <Box sx={{ flex: 2 }}>
-                <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: "#716043", mt: fr.spacing("4v") }}>{algo_company_count ?? 0}</Typography>
+                <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: "#716043", mt: fr.spacing("4v") }}>
+                  {formatNumber(algo_company_count ?? 0)}
+                </Typography>
                 <Typography sx={{ fontWeight: "bold", color: "#716043" }}>
                   entreprises{" "}
                   <Typography component="span" sx={{ fontWeight: "bold", color: "#161616" }}>

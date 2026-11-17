@@ -3,7 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
 import { SEO_METIER_FORMATION_NIVEAUX } from "shared/models/seo-metier.model"
-import { seoCardSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
+import { formatNumber, seoCardSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import type { ISeoSecteurJson } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/secteur.types"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { PAGES } from "@/utils/routes.utils"
@@ -45,7 +45,7 @@ export function FormationsSecteurSection({ secteur, formations_niveaux, formatio
                 {NIVEAU_COURT[niveau.niveau] ?? niveau.niveau}
               </Typography>
               <Typography sx={{ my: fr.spacing("4v"), fontSize: "1.125rem", color: "#666" }}>{niveau.diplomes}</Typography>
-              {count ? <Typography sx={{ fontSize: "1.375rem", fontWeight: 700 }}>{count} formations</Typography> : null}
+              {count ? <Typography sx={{ fontSize: "1.375rem", fontWeight: 700 }}>{formatNumber(count)} formations</Typography> : null}
               {niveau.diplome_slug && (
                 <Link href={PAGES.dynamic.seoDiplome(niveau.diplome_slug).getPath()} className={fr.cx("fr-link")}>
                   Découvrir ce diplôme en alternance

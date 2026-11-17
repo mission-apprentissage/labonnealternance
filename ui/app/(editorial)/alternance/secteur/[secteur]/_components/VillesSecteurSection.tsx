@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Card from "@codegouvfr/react-dsfr/Card"
 import { Box, Typography } from "@mui/material"
 import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
-import { seoH2Sx, seoHrSx, seoSectionSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
+import { formatNumber, seoH2Sx, seoHrSx, seoSectionSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
 import type { ISeoSecteurJson } from "@/app/(editorial)/alternance/secteur/[secteur]/_components/secteur.types"
 
 type Props = Pick<ISeoSecteurJson, "secteur" | "villes" | "q_recherche"> & { utmParams: string }
@@ -26,7 +26,7 @@ export function VillesSecteurSection({ secteur, villes, q_recherche, utmParams }
             size="small"
             titleAs="h3"
             title={ville.nom}
-            desc={`${ville.job_count} offres en alternance en ${secteur}`}
+            desc={`${formatNumber(ville.job_count)} offres en alternance en ${secteur}`}
             linkProps={{
               href: `${buildSearchUrl({ mode: "emplois", q: q_recherche, is_algo_company: [false], radius: 30, page: 0, hitsPerPage: 20, latitude: ville.geopoint.lat, longitude: ville.geopoint.long, lieu_label: ville.nom })}&${utmParams}`,
             }}

@@ -54,6 +54,8 @@ export const cardArrowSx = {
 
 export const formatLong = (raw: string) => raw.charAt(0) + raw.slice(1).toLowerCase()
 
+export const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value)
+
 // Blocs des pages /alternance/secteur, repris à l'identique de la page métier.
 export const seoSectionSx = { my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } } as const
 
