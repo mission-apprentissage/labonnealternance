@@ -141,7 +141,7 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
   )
 }
 
-export function createCancelJobLink(user: UserForAccessToken, jobId: string, utmData: string | undefined = undefined) {
+export function createCancelJobLink(user: UserForAccessToken, jobId: string, utm: Record<string, string> = {}) {
   const token = generateAccessToken(
     user,
     [
@@ -160,7 +160,10 @@ export function createCancelJobLink(user: UserForAccessToken, jobId: string, utm
     }
   )
 
-  return `${config.publicUrl}/espace-pro/offre/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
+  const url = new URL(`${config.publicUrl}/espace-pro/offre/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${jobId}/cancel`)
+  for (const [key, value] of Object.entries(utm)) url.searchParams.set(key, value)
+  url.searchParams.set("token", token)
+  return url.toString()
 }
 
 export function createViewDelegationLink(email: string, establishment_id: string, job_id: string, siret_formateur: string) {
