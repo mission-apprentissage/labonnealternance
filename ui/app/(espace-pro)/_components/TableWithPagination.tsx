@@ -169,6 +169,8 @@ function TableWithPagination({
             <Box
               className="fr-table__content"
               sx={{
+                // useFlexLayout fige la largeur des colonnes : le tableau défile dans son conteneur au lieu de déborder.
+                overflowX: "auto",
                 "& table": { margin: "0 !important", ...getFlatTableResetSx() },
                 ...getFlatTableCellBordersSx(),
               }}
