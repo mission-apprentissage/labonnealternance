@@ -141,6 +141,7 @@ export const zApplicationRoutes = {
             applicant_message_to_company: z.string().nullable(),
             applicant_attachment_name: z.string(),
             applicant_attachment_deleted_at: z.date().nullable(),
+            applicant_attachment_size: z.number().nullable().describe("Taille de la pièce jointe en octets, null si elle est inconnue"),
             applicant_inscription_formation: z.boolean().nullable(),
             applicant_contract_duration: z.string().nullable(),
             applicant_contract_start: z.array(z.string()),

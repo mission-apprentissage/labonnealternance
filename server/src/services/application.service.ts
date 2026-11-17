@@ -25,7 +25,7 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 import { z } from "zod"
 import { logger } from "@/common/logger"
-import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/aws-utils"
+import { getS3FileSize, s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/aws-utils"
 import { manageApiError } from "@/common/utils/error-manager"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { createToken, getTokenValue } from "@/common/utils/jwt-utils"
@@ -990,6 +990,18 @@ export const getApplicationAttachmentFile = async (application: Pick<IApplicatio
     contentType: header ? header.slice("data:".length, header.indexOf(";")) : "application/octet-stream",
     content: Buffer.from(removeDataUrlPrefix(dataUrl), "base64"),
   }
+}
+
+/**
+ * Taille de la pièce jointe déduite de celle de sa data URL sur S3, sans la télécharger : le base64 code 3 octets
+ * sur 4 caractères, à 2 octets de remplissage près. null si le format ou la taille est inconnu.
+ */
+export const getApplicationAttachmentSize = async (application: Pick<IApplication, "_id" | "applicant_attachment_name">): Promise<number | null> => {
+  const fileType = parseEnum(AcceptedFileType, getFiletypeFromFilename(application.applicant_attachment_name).toLowerCase())
+  if (!fileType) return null
+  const dataUrlSize = await getS3FileSize("applications", getApplicationCvS3Filename(application))
+  if (dataUrlSize === null) return null
+  return Math.max(0, Math.floor(((dataUrlSize - mappingFileTypeToHeader[fileType].length) * 3) / 4))
 }
 
 export const processApplicationScanForVirus = async (application: IApplication, applicant: IApplicant) => {

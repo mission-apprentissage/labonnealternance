@@ -18,10 +18,10 @@ import { ApplicationScanStatus } from "shared/models/applications.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { AccessEntityType } from "shared/models/role-management.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { s3ReadAsString } from "@/common/utils/aws-utils"
+import { getS3FileSize, s3ReadAsString } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
-vi.mock("@/common/utils/aws-utils", () => ({ s3ReadAsString: vi.fn() }))
+vi.mock("@/common/utils/aws-utils", () => ({ s3ReadAsString: vi.fn(), getS3FileSize: vi.fn().mockResolvedValue(null) }))
 
 // Les candidatures d'une offre n'appartiennent qu'à son recruteur ou au CFA qui la gère : chaque profil
 // voisin (autre entreprise, autre CFA, OPCO de rattachement) doit être refusé.
@@ -265,6 +265,20 @@ describe("GET /application/job/:jobId/application/:applicationId", () => {
     })
   })
 
+  it("donne la taille de la pièce jointe déduite de sa data URL sur S3, sans la télécharger", async () => {
+    const recruiter = await saveRecruiter("recruteur-detail-taille")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Taille", { applicant_attachment_name: "cv.pdf" })
+    const deleted = await saveApplication(offer._id, "Purge", { applicant_attachment_deleted_at: new Date() })
+    // 4 caractères base64 par tranche de 3 octets : 254 976 octets de fichier.
+    vi.mocked(getS3FileSize).mockResolvedValue("data:application/pdf;base64,".length + 339_968)
+    const session = (await logUser(httpClient, "recruteur-detail-taille")).bearerToken
+
+    expect((await getDetail(offer._id, application._id, session)).json().application.applicant_attachment_size).toBe(254_976)
+    expect((await getDetail(offer._id, deleted._id, (await logUser(httpClient, "recruteur-detail-taille")).bearerToken)).json().application.applicant_attachment_size).toBeNull()
+    expect(s3ReadAsString).not.toHaveBeenCalled()
+  })
+
   it("donne l'objet du mail de réponse envoyé au candidat", async () => {
     const recruiter = await saveRecruiter("recruteur-detail-reponse")
     const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
@@ -348,16 +362,28 @@ describe("GET /application/job/:jobId/application/:applicationId/attachment", ()
     expect(s3ReadAsString).not.toHaveBeenCalled()
   })
 
-  it("refuse la pièce jointe au recruteur d'une autre entreprise et à une autre offre", async () => {
+  it("refuse la pièce jointe au recruteur d'une autre entreprise", async () => {
     const recruiter = await saveRecruiter("proprietaire-pj")
-    const neighbour = await saveRecruiter("voisin-pj")
+    await saveRecruiter("voisin-pj")
     const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
-    const neighbourOffer = await saveOffer({ managedBy: neighbour.user._id, siret: neighbour.entreprise.siret })
     const application = await saveApplication(offer._id, "Confidentiel")
-    const neighbourSession = (await logUser(httpClient, "voisin-pj")).bearerToken
 
-    expect((await getAttachment(offer._id, application._id, neighbourSession)).statusCode).toBe(403)
-    expect((await getAttachment(neighbourOffer._id, application._id, neighbourSession)).statusCode).toBe(404)
+    const response = await getAttachment(offer._id, application._id, (await logUser(httpClient, "voisin-pj")).bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect(s3ReadAsString).not.toHaveBeenCalled()
+  })
+
+  it("refuse de lire, via une offre accessible, la pièce jointe d'une candidature d'une autre offre", async () => {
+    const recruiter = await saveRecruiter("recruteur-pj-croise")
+    const otherRecruiter = await saveRecruiter("autre-recruteur-pj")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const otherOffer = await saveOffer({ managedBy: otherRecruiter.user._id, siret: otherRecruiter.entreprise.siret })
+    const otherApplication = await saveApplication(otherOffer._id, "Etrangere")
+
+    const response = await getAttachment(offer._id, otherApplication._id, (await logUser(httpClient, "recruteur-pj-croise")).bearerToken)
+
+    expect(response.statusCode).toBe(404)
     expect(s3ReadAsString).not.toHaveBeenCalled()
   })
 })

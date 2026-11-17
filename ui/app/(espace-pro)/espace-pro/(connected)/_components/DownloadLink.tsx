@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, CircularProgress } from "@mui/material"
 import type { MouseEvent, ReactNode } from "react"
-import { useState } from "react"
+import { useId, useState } from "react"
 
 type DownloadStatus = "idle" | "loading" | "done" | "error"
 
@@ -20,6 +20,7 @@ export const DownloadLink = ({
   messages,
   align = "flex-start",
   className = "fr-link fr-link--icon-left fr-icon-download-line",
+  detail,
   children,
 }: {
   href: string
@@ -28,9 +29,12 @@ export const DownloadLink = ({
   messages: DownloadMessages
   align?: "flex-start" | "flex-end"
   className?: string
+  /** Format, taille… : affiché sous le lien, hors de son intitulé, et rattaché à lui par aria-describedby. */
+  detail?: ReactNode
   children: ReactNode
 }) => {
   const [status, setStatus] = useState<DownloadStatus>("idle")
+  const detailId = useId()
   const isLoading = status === "loading"
 
   const onClick = async (event: MouseEvent<HTMLAnchorElement>) => {
@@ -57,10 +61,23 @@ export const DownloadLink = ({
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: align }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v"), maxWidth: "100%" }}>
         {isLoading && <CircularProgress size={16} aria-hidden="true" sx={{ flexShrink: 0, color: fr.colors.decisions.text.actionHigh.blueFrance.default }} />}
-        <a className={className} href={href} download={fileName} onClick={onClick} aria-disabled={isLoading || undefined} style={{ overflowWrap: "anywhere" }}>
+        <a
+          className={className}
+          href={href}
+          download={fileName}
+          onClick={onClick}
+          aria-disabled={isLoading || undefined}
+          aria-describedby={detail ? detailId : undefined}
+          style={{ overflowWrap: "anywhere" }}
+        >
           {children}
         </a>
       </Box>
+      {detail && (
+        <Box id={detailId} sx={{ mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>
+          {detail}
+        </Box>
+      )}
       <Box
         role="status"
         className={status === "error" ? undefined : "fr-sr-only"}

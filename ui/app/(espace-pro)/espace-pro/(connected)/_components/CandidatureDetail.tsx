@@ -228,27 +228,35 @@ const ATTACHMENT_DOWNLOAD_MESSAGES = {
   error: "Le téléchargement de la pièce jointe a échoué. Veuillez réessayer.",
 } as const
 
+// Unités du DSFR pour les liens de téléchargement (« PDF – 61,88 Ko »).
+const formatFileSize = (size: number) => {
+  if (size < 1024 * 1024) return `${Math.max(1, Math.round(size / 1024))} Ko`
+  return `${(size / (1024 * 1024)).toFixed(1).replace(".", ",")} Mo`
+}
+
 const AttachmentCard = ({ jobId, application }: { jobId: string; application: Application }) => {
-  const { _id: applicationId, applicant_attachment_name: name, applicant_attachment_deleted_at: deletedAt } = application
+  const { _id: applicationId, applicant_attachment_name: name, applicant_attachment_deleted_at: deletedAt, applicant_attachment_size: size } = application
   const extension = name.split(".").pop()?.toUpperCase()
   return (
     <Card title="Pièce jointe">
       {deletedAt ? (
-        <EmptyText>
-          La pièce jointe « {name} » a été supprimée le {dayjs(deletedAt).format("DD/MM/YYYY")} : les CV sont conservés 12 mois après la candidature.
-        </EmptyText>
+        <>
+          <Typography sx={{ overflowWrap: "anywhere" }}>{name}</Typography>
+          <Typography sx={{ mt: fr.spacing("1v"), fontSize: "0.75rem", color: greyText }}>
+            {[extension, `Supprimée le ${dayjs(deletedAt).format("DD/MM/YYYY")}`].filter(Boolean).join(" – ")}
+          </Typography>
+        </>
       ) : (
-        // Lien de téléchargement du DSFR : le format figure dans l'intitulé du lien (fr-link__detail).
         <DownloadLink
           href={getJobApplicationAttachmentUrl(jobId, applicationId)}
           fileName={name}
           download={() => downloadJobApplicationAttachment(jobId, applicationId)}
           messages={ATTACHMENT_DOWNLOAD_MESSAGES}
-          className="fr-link fr-link--download"
+          className="fr-link fr-link--icon-right fr-icon-download-line"
+          detail={[extension, size === null ? null : formatFileSize(size)].filter(Boolean).join(" – ") || undefined}
         >
           <span className="fr-sr-only">Télécharger la pièce jointe </span>
           {name}
-          {extension && <span className="fr-link__detail">{extension}</span>}
         </DownloadLink>
       )}
     </Card>

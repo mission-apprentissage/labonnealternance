@@ -14,7 +14,7 @@ import { decodeSanitizedText } from "shared/utils/string-utils"
 import type { z } from "zod"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { canAccessJobAsEntrepriseOrCfa } from "@/security/authorisation.service"
-import { buildRecruiterIntentionEmailSubject, getApplicationAttachmentFile, getApplicationPartnerName } from "@/services/application.service"
+import { buildRecruiterIntentionEmailSubject, getApplicationAttachmentFile, getApplicationAttachmentSize, getApplicationPartnerName } from "@/services/application.service"
 
 type IJobApplicationsResponse = z.output<(typeof zRoutes)["get"]["/application/job/:jobId"]["response"]["200"]>
 
@@ -176,6 +176,7 @@ export const getJobApplicationDetailForRecruiter = async (
       applicant_message_to_company: nullableText(application.applicant_message_to_company),
       applicant_attachment_name: application.applicant_attachment_name,
       applicant_attachment_deleted_at: application.applicant_attachment_deleted_at ?? null,
+      applicant_attachment_size: application.applicant_attachment_deleted_at ? null : await getApplicationAttachmentSize(application),
       applicant_inscription_formation: application.applicant_inscription_formation ?? null,
       applicant_contract_duration: nullableText(application.applicant_contract_duration),
       applicant_contract_start: application.applicant_contract_start ?? [],
