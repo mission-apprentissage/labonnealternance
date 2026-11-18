@@ -1,6 +1,9 @@
 import { badRequest } from "@hapi/boom"
+import type { FastifyRequest } from "fastify"
+import { Netmask } from "netmask"
 import { zRoutes } from "shared"
 import { isPrivateIp } from "@/common/utils/private-network"
+import config from "@/config"
 
 import type { Server } from "@/http/server"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
@@ -16,12 +19,40 @@ const PUBLIC_MAX_HITS_PER_PAGE = 20
 const PUBLIC_MAX_PAGES = 20
 const NON_BROWSER_MAX_PAGES = 1
 
+// Relais Cloudflare (WARP, iCloud Private Relay) : leurs IP sont partagées entre de vrais visiteurs et un
+// aspirateur qui en fait tourner plus d'une centaine, chacune sous la limite par IP. Les appels qui n'arrivent
+// pas du site partagent donc un quota unique. Posé ici et non dans nginx : un dépassement nginx alimente
+// fail2ban, qui bannirait l'IP du relais pour tous ses utilisateurs.
+const SHARED_RELAY_NETWORKS = [new Netmask("104.28.0.0/16")]
+const RELAY_OFF_SITE_KEY = "relais-hors-site"
+// Par instance de serveur : le quota effectif est multiplié par le nombre de réplicas.
+const RELAY_OFF_SITE_MAX_PER_MINUTE = 5
+
+const isFromSharedRelay = (ip: string): boolean => {
+  try {
+    return SHARED_RELAY_NETWORKS.some((block) => block.contains(ip))
+  } catch {
+    return false
+  }
+}
+
+// En-têtes falsifiables (cf. channel) : pour sortir du quota partagé, un script doit se faire passer pour le site.
+const isFromSite = (req: FastifyRequest): boolean => req.headers["sec-fetch-site"] === "same-origin" || (req.headers.referer?.startsWith(`${config.publicUrl}/`) ?? false)
+
+const searchRateLimitKey = (req: FastifyRequest): string => (isFromSharedRelay(req.ip) && !isFromSite(req) ? RELAY_OFF_SITE_KEY : req.ip)
+
 export default (server: Server) => {
   server.get(
     "/v1/search",
     {
       schema: zRoutes.get["/v1/search"],
-      config: { rateLimit: { max: 30, timeWindow: "1s" } },
+      config: {
+        rateLimit: {
+          keyGenerator: searchRateLimitKey,
+          max: (_req, key) => (key === RELAY_OFF_SITE_KEY ? RELAY_OFF_SITE_MAX_PER_MINUTE : 30),
+          timeWindow: (_req, key) => (key === RELAY_OFF_SITE_KEY ? 60_000 : 1_000),
+        },
+      },
     },
     async (req, res) => {
       // Log des recherches au fil de l'eau : fire-and-forget (jamais d'await — zéro impact
