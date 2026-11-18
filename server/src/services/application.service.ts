@@ -608,14 +608,6 @@ export const getEmailTemplate = (type = "mail-candidat"): string => {
   return getStaticFilePath(`./templates/${type}.mjml.ejs`)
 }
 
-// TODO KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
-export const validatePermanentEmail = (email: string): string => {
-  if (isEmailBurner(email)) {
-    return "email temporaire non autorisé"
-  }
-  return "ok"
-}
-
 async function getApplicationCountForItemV2(applicantId: ObjectId, LbaJob: IJobOrCompanyV2) {
   const { type, job } = LbaJob
 

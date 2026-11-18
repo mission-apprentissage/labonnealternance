@@ -52,7 +52,7 @@ export function generatePath(originalPath: string, params: PathParam = {}): stri
           throw new Error(`Missing ":${key}" param`)
         }
 
-        return stringify(encodeURIComponent(param))
+        return param == null ? "" : encodeURIComponent(param)
       }
 
       // Remove any optional markers from optional static segments

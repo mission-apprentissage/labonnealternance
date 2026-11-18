@@ -41,10 +41,8 @@ export default function WidgetPostuler() {
     }
   }
 
-  // @ts-ignore TODO
-  const { isLoading, isFetching, isError, data, error }: { data: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson } = useQuery({
+  const { isLoading, isFetching, isError, data, error } = useQuery<ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson>({
     queryKey: ["jobDetail"],
-    // @ts-ignore TODO
     queryFn: () => fetchPostulerItem({ type, itemId }),
     enabled: Boolean(type) && Boolean(itemId) && Boolean(caller),
     retry: false,
