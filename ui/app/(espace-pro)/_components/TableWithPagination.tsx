@@ -178,43 +178,48 @@ function TableWithPagination({
                   {caption}
                 </Box>
                 <Box component="thead">
-                  {headerGroups.map((headerGroup, k) => (
-                    <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
-                      {headerGroup.headers.map((column, i) => {
-                        const sortProps = column.getSortByToggleProps()
-                        // Le tri se déclenche sur le bouton de l'en-tête (cf. ColumnHeaderContent), pas sur la cellule.
-                        const { onClick: _onSortClick, ...headerSortProps } = sortProps
-
-                        return (
-                          <Box
-                            key={i}
-                            as="th"
-                            scope="col"
-                            id={column.id}
-                            {...column.getHeaderProps(headerSortProps)}
-                            title={null}
-                            aria-sort={getColumnAriaSort(column)}
-                            sx={{ display: "flex !important", alignItems: "center" }}
-                          >
-                            <ColumnHeaderContent column={column} />
-                          </Box>
-                        )
-                      })}
-                    </Box>
-                  ))}
-                </Box>
-                <Box as="tbody" {...getTableBodyProps()}>
-                  {page.map((row, i) => {
-                    prepareRow(row)
+                  {headerGroups.map((headerGroup) => {
+                    const { key: headerGroupKey, ...headerGroupProps } = headerGroup.getHeaderGroupProps()
                     return (
-                      <Box key={i} as="tr" {...row.getRowProps()}>
-                        {row.cells.map((cell, j) => {
+                      <Box key={headerGroupKey} as="tr" {...headerGroupProps}>
+                        {headerGroup.headers.map((column) => {
+                          // Le tri se déclenche sur le bouton de l'en-tête (cf. ColumnHeaderContent), pas sur la cellule.
+                          const { onClick: _onSortClick, ...headerSortProps } = column.getSortByToggleProps()
+                          const { key: headerKey, ...headerProps } = column.getHeaderProps(headerSortProps)
+
                           return (
                             <Box
-                              key={j}
+                              key={headerKey}
+                              as="th"
+                              scope="col"
+                              id={column.id}
+                              {...headerProps}
+                              title={null}
+                              aria-sort={getColumnAriaSort(column)}
+                              sx={{ display: "flex !important", alignItems: "center" }}
+                            >
+                              <ColumnHeaderContent column={column} />
+                            </Box>
+                          )
+                        })}
+                      </Box>
+                    )
+                  })}
+                </Box>
+                <Box as="tbody" {...getTableBodyProps()}>
+                  {page.map((row) => {
+                    prepareRow(row)
+                    const { key: rowKey, ...rowProps } = row.getRowProps()
+                    return (
+                      <Box key={rowKey} as="tr" {...rowProps}>
+                        {row.cells.map((cell) => {
+                          const { key: cellKey, ...cellProps } = cell.getCellProps()
+                          return (
+                            <Box
+                              key={cellKey}
                               headers={cell.column.id}
                               component="td"
-                              {...cell.getCellProps()}
+                              {...cellProps}
                               {...(cell.column.id === "action" ? { padding: "4px !important" } : {})}
                               display={"flex"}
                               alignContent={"center"}
