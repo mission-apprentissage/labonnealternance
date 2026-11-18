@@ -3,7 +3,6 @@ import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_da
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
 import { secteurData } from "@/app/(editorial)/alternance/_components/secteur_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
-import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 import { DsfrHeaderProps } from "./Header"
 import { footerId, type ZoneName } from "./zone-ids"
@@ -81,6 +80,12 @@ const linkListContent: LinkCategory[] = [
         },
         text: "Statistiques",
       },
+      {
+        linkProps: {
+          href: PAGES.static.EspaceDeveloppeurs.getPath(),
+        },
+        text: "Espace développeurs",
+      },
     ],
   },
   {
@@ -110,24 +115,6 @@ const linkListContent: LinkCategory[] = [
           href: PAGES.static.contact.getPath(),
         },
         text: "Contact",
-      },
-    ],
-  },
-  {
-    categoryName: "Développeurs",
-    links: [
-      {
-        linkProps: {
-          href: PAGES.static.EspaceDeveloppeurs.getPath(),
-        },
-        text: "Espace développeurs",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.codeSources.getPath(),
-        },
-        text: `Code source v${publicConfig.version}`,
-        isExternal: true,
       },
     ],
   },
