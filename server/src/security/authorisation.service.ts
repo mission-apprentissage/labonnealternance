@@ -44,9 +44,7 @@ export type ResourceIds = {
 // Specify what we need to simplify mocking in tests
 type IRequest = Pick<FastifyRequest, "user" | "params" | "query" | "authorizationContext" | "userAccess">
 
-// TODO: Unit test access control
 // TODO: job.delegations
-// TODO: Unit schema access path properly defined (exists in Zod schema)
 
 function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): any {
   const obj = req[path.type] as Record<string, Primitive>

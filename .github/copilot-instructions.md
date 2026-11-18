@@ -19,7 +19,7 @@ These apply when generating code **and** when reviewing it — flag violations e
 
 **Zod v4**: use top-level validators (`z.email()`, not `z.string().email()`); use `z.codec(input, output, { decode, encode })` instead of `.transform()` for two-way schemas; `AnyZodObject`/`ZodTypeAny` are gone, use `z.ZodObject<any>`/`z.ZodType`.
 
-**Comments**: no comment by default. Write one only for what the code cannot say: a decision and its reason, an external constraint (a tool limit, an API behavior), a non-obvious business rule, or deliberately counter-intuitive behavior. Describe the code as it is, not its history (no "no longer", "previously", "now", no debugging narrative) — history belongs in the commit or PR. Explain each thing in one place and point to it elsewhere with a one-line reference (`cf. buildSortStage`). Aim for 1–3 lines; a longer block must carry information found nowhere else. Cite only stable references (issue/PR number, symbol name), never internal milestones ("recette #3"). When renaming or moving a symbol, search for comments that mention it. In review, flag comments that paraphrase the code, duplicate an explanation, or reference a symbol that no longer exists.
+**Comments**: no comment by default. Write one only for what the code cannot say: a decision and its reason, an external constraint (a tool limit, an API behavior), a non-obvious business rule, or deliberately counter-intuitive behavior. Describe the code as it is, not its history (no "no longer", "previously", "now", no debugging narrative) — history belongs in the commit or PR. Explain each thing in one place and point to it elsewhere with a one-line reference (`cf. buildSortStage`). Aim for 1–3 lines; a longer block must carry information found nowhere else. Cite only stable references (issue/PR number, symbol name), never internal milestones ("recette #3"). Before renaming, moving or deleting a file or symbol, `git grep` its name in `docs/`, comments and instruction files (`CLAUDE.md`, `ui/AGENTS.md`, this file) and update every mention. In review, flag comments that paraphrase the code, duplicate an explanation, or reference a symbol that no longer exists.
 
 **UI**: DSFR icons first (`fr-icon-*`); check react-dsfr typings at https://github.com/codegouvfr/react-dsfr/tree/main/src.
 
@@ -78,7 +78,7 @@ yarn dev                        # services + server (5001) + ui (3000)
 yarn cli <command>              # jobs and migrations, from server/dist
 yarn migration:create -d <description>
 yarn migrations:status / yarn migrations:up
-yarn knip                       # unused files/exports (baseline in docs/developpement/knip.md)
+yarn knip                       # unused files/exports (known false positives: docs/developpement/knip.md)
 ```
 
 After any dependency bump: `yarn install` then `yarn dedupe --strategy highest` (CI runs `yarn dedupe --check`).
@@ -132,4 +132,4 @@ Local services (`docker-compose.yml`): `mongodb` (replica set, 27017, 5 GB limit
 
 ## When Instructions Are Incomplete
 
-Trust these instructions first; search the codebase only when a command fails, information is missing, or an error suggests the instructions are outdated — and report the outdated part.
+Use these instructions for commands and conventions; search the codebase when a command fails or information is missing. The code is the source of truth: when these instructions, a comment or a file in `docs/` contradict it, follow the code and fix the outdated text in the same PR, or report it if the fix is out of scope. `docs/` holds current reference only (actual behavior, procedures); one-off analyses, experiments and finished plans belong in the issue, the PR or Notion.

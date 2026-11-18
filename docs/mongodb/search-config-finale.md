@@ -2,7 +2,6 @@
 
 > Source de vérité unique de la configuration de recherche de La Bonne Alternance.
 > Alignée sur le code : `shared/src/models/search-corpus.model.ts`, `server/src/jobs/search/generate-search-items-collection.ts`, `server/src/services/search/search.service.ts`, `server/src/common/utils/mongodb-utils.ts`.
-> Pour le contexte de la décision (pourquoi cette architecture), voir [analyse-search-analyzers.md](./analyse-search-analyzers.md).
 
 ---
 
@@ -31,7 +30,7 @@ Pour que le classement soit correct sur cet ensemble hétérogène, les champs *
 Champs de filtrage / facette (`token`) : `type`, `type_filter_label`, `sub_type`, `contract_type`, `level`, `activity_sector`.
 Autres : `location` (geo), `smart_apply` (boolean), `application_count` (number), `publication_date` (date).
 
-`rome_labels` (`string[]`) est résolu **déterministiquement** depuis les codes ROME via une `Map<code_rome, intitulé>` chargée une fois du référentiel `referentielromes` (`resolveRomeLabels` / `loadRomeLabelByCode` dans `generateSearchItemsCollection.ts`). Le recall métier ne dépend donc **plus** de Mistral.
+`rome_labels` (`string[]`) est résolu **déterministiquement** depuis les codes ROME via une `Map<code_rome, intitulé>` chargée une fois du référentiel `referentielromes` (`resolveRomeLabels` / `loadRomeLabelByCode` dans `search-items.service.ts`). Le recall métier ne dépend donc **plus** de Mistral.
 
 ---
 

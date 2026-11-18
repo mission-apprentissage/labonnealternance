@@ -1,5 +1,6 @@
 import env from "env-var"
 import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS } from "shared/constants/session"
+import { parseSearchTokenKeys } from "shared/utils/search-token"
 
 const config = {
   version: env.get("PUBLIC_VERSION").required().asString(),
@@ -31,6 +32,8 @@ const config = {
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").required().asString(),
   lbaSecret: env.get("LBA_SECRET").required().asString(),
+  // Clés des jetons de recherche du site, partagées avec l'UI qui les émet (cf. shared/utils/search-token).
+  searchTokenKeys: parseSearchTokenKeys(env.get("LBA_SEARCH_TOKEN_KEYS").required().asString()),
   allowedSources: env.get("LBA_ALLOWED_SOURCES").required().asString(),
   esdClientId: env.get("LBA_ESD_CLIENT_ID").required().asString(),
   esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").required().asString(),

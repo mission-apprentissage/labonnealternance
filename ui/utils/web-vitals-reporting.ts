@@ -2,11 +2,12 @@ import type { IWebVitalReport } from "shared/routes/_private/web-vitals.routes"
 import { onCLS, onINP } from "web-vitals/attribution"
 
 import { publicConfig } from "@/config.public"
+import { BFF_PREFIX } from "@/utils/bff-routes"
 import type { IRouteHistory } from "@/utils/route-history.utils"
 import { buildClsReport, buildInpReport, type IWebVitalContext, toRouteTemplate } from "@/utils/web-vitals.utils"
 
 const send = (report: IWebVitalReport) => {
-  const url = `${publicConfig.apiEndpoint}/_private/web-vitals`
+  const url = `${BFF_PREFIX}/_private/web-vitals`
   const body = JSON.stringify(report)
   // sendBeacon part même pendant la fermeture de l'onglet, moment où web-vitals rapporte la valeur finale
   if (navigator.sendBeacon?.(url, new Blob([body], { type: "application/json" }))) return

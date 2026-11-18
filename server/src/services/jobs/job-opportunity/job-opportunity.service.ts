@@ -604,7 +604,6 @@ export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJ
 export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: Omit<IJobOfferApiWriteV3, "identifier">): Promise<void> {
   const current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ _id: id })
 
-  // TODO: Move to authorisation service
   if (!current) {
     throw notFound("Job offer not found")
   }

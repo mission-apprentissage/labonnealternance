@@ -4,11 +4,12 @@
 import { captureConsoleIntegration, extraErrorDataIntegration, init } from "@sentry/nextjs"
 
 import { publicConfig } from "./config.public"
+import { getServerApiEndpoint } from "./utils/server-api-endpoint"
 
 init({
   dsn: publicConfig.sentry_dsn,
   tracesSampleRate: publicConfig.env === "production" ? 0.001 : 1.0,
-  tracePropagationTargets: [/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/, publicConfig.baseUrl, publicConfig.apiEndpoint],
+  tracePropagationTargets: [/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/, publicConfig.baseUrl, publicConfig.apiEndpoint, getServerApiEndpoint()],
   environment: publicConfig.env,
   enabled: !publicConfig.sentryDisabled,
   release: publicConfig.version,

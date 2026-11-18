@@ -34,10 +34,10 @@ export const ZSearchQuery = z.object({
     .optional()
     .describe("Mode tel que transmis dans le querystring, null s'il est absent (appels API sans mode). Absent des documents antérieurs à #5635"),
   channel: z
-    .enum(["site", "api"])
+    .enum(["site", "widget", "api"])
     .optional()
     .describe(
-      "site : appel du navigateur depuis notre domaine (Sec-Fetch-Site: same-origin, widget compris) ; api : tout autre appelant (scripts, robots, consommateurs directs). Signal statistique : un client hors navigateur peut poser l'en-tête lui-même. Absent des documents antérieurs à #5635"
+      "site / widget : recherche relayée par le BFF de l'UI (widget : page affichée dans une iframe tierce) ; api : tout autre appelant. Dans les documents antérieurs au BFF de l'UI, site désigne tout appel Sec-Fetch-Site: same-origin, widget compris. Absent des documents antérieurs à #5635"
     ),
   filters: z
     .object({
