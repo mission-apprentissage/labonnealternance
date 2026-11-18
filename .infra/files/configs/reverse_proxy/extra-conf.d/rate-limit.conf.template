@@ -31,6 +31,14 @@ map $lba_limited $lba_limit_key {
 limit_req_zone $lba_limit_key zone=lba_jeton_recherche:10m rate=10r/m;
 # Rendu des pages /recherche (navigation, filtres, widget).
 limit_req_zone $lba_limit_key zone=lba_rendu_recherche:10m rate=60r/m;
+# Recherche relayée par le BFF (/bff/v1/search) : débit de l'ancienne zone de /api/v1/search, et plafond
+# par IP même pour un client qui résout les défis ALTCHA.
+limit_req_zone $lba_limit_key zone=lba_bff_recherche:10m rate=30r/m;
+# Suggestions (/bff/v1/search/suggest) : 1 appel par frappe, rafales tolérées.
+limit_req_zone $lba_limit_key zone=lba_suggest_recherche:10m rate=2r/s;
+# Routes _private relayées par le BFF (fiches, candidature, RDV, espace pro) : débit de l'ancienne zone de
+# /api/_private/.
+limit_req_zone $lba_limit_key zone=lba_private_recherche:10m rate=30r/m;
 
 # Autocomplétion métiers (/api/rome) : 1 appel par frappe, rafales tolérées.
 limit_req_zone $lba_limit_key zone=lba_autocomplete:10m rate=2r/s;

@@ -117,7 +117,14 @@ async function fetchApi(path: string, url: string, requestInit: RequestInit): Pr
   if (typeof message !== "string" || !SEARCH_TOKEN_REFUSALS.includes(message)) return res
 
   const { renewSearchToken } = await import("@/utils/search-token.client")
-  await renewSearchToken(startedAt)
+  try {
+    await renewSearchToken(startedAt)
+  } catch (error) {
+    // Échec de la preuve de travail : signalé à Sentry, l'appelant reçoit l'ApiError du 401 d'origine.
+    const { captureException } = await import("@sentry/nextjs")
+    captureException(error)
+    return res
+  }
   return fetch(url, requestInit)
 }
 

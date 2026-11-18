@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-const { renewSearchToken } = vi.hoisted(() => ({ renewSearchToken: vi.fn(async () => undefined) }))
+const { renewSearchToken, captureException } = vi.hoisted(() => ({ renewSearchToken: vi.fn(async () => undefined), captureException: vi.fn() }))
 vi.mock("@/utils/search-token.client", () => ({ renewSearchToken }))
+vi.mock("@sentry/nextjs", () => ({ captureException }))
 
-import { apiGet, generateUrl } from "./api.utils"
+import { ApiError, apiGet, generateUrl } from "./api.utils"
 
 const fetchMock = vi.fn<typeof fetch>()
 const refusal = (message: string) => Response.json({ statusCode: 401, error: "Unauthorized", message }, { status: 401 })
@@ -17,6 +18,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock)
   fetchMock.mockReset()
   renewSearchToken.mockClear()
+  captureException.mockClear()
 })
 afterEach(() => vi.unstubAllGlobals())
 
@@ -64,6 +66,18 @@ describe("jeton de recherche dans le navigateur", () => {
     fetchMock.mockResolvedValueOnce(refusal("JETON_REQUIS"))
     await expect(apiGet("/_private/appointment", { querystring: {} as never })).rejects.toThrow()
     expect(renewSearchToken).not.toHaveBeenCalled()
+  })
+
+  it("rend une ApiError 401 et signale l'échec quand la preuve de travail échoue", async () => {
+    asBrowser()
+    const failure = new Error("preuve de travail non résolue")
+    renewSearchToken.mockRejectedValueOnce(failure)
+    fetchMock.mockResolvedValueOnce(refusal("JETON_REQUIS"))
+    const error = await apiGet("/v1/search", { querystring: { q: "a" } as never }).catch((e: unknown) => e)
+    expect(error).toBeInstanceOf(ApiError)
+    expect((error as ApiError).context).toMatchObject({ statusCode: 401, message: "JETON_REQUIS" })
+    expect(captureException).toHaveBeenCalledWith(failure)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
   it("ne rejoue qu'une fois si le second appel est encore refusé", async () => {
