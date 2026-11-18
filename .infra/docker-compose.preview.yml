@@ -117,6 +117,7 @@ services:
           memory: 2g
     environment:
       JAVA_OPTS: "-Xmx512m"
+      JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
       JAVA_TIMEZONE: Europe/Paris
       MB_SITE_LOCALE: fr
       MB_SITE_URL: "https://metabase.{{dns_name}}"
