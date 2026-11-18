@@ -42,7 +42,13 @@ Après un bump de dépendances : `yarn install` puis `yarn dedupe --strategy hig
 - Chaque explication à un seul endroit, les autres y renvoient en une ligne (`cf. buildSortStage`).
 - Viser 1 à 3 lignes. Un bloc plus long doit apporter une information introuvable ailleurs.
 - Ne citer que des références stables : numéro d'issue ou de PR, nom de symbole. Pas de jalon interne (« recette #3 »).
-- Quand on renomme ou déplace un symbole, chercher les commentaires qui le citent.
+- Quand on renomme, déplace ou supprime un symbole, cf. « Documentation ».
+
+## Documentation
+
+- Le code fait foi. Quand un commentaire, un fichier de `docs/` ou ces instructions contredisent le code, suivre le code et corriger le texte dans la même PR, ou signaler l'écart s'il sort du périmètre.
+- Avant de renommer, déplacer ou supprimer un fichier ou un symbole, `git grep` son nom dans `docs/`, les commentaires et les fichiers d'instructions (`CLAUDE.md`, `ui/AGENTS.md`, `.github/copilot-instructions.md`), puis mettre à jour chaque mention.
+- `docs/` ne contient que de la référence à jour : comportement actuel, procédures. Les analyses ponctuelles, expériences et plans terminés vont dans l'issue, la PR ou Notion.
 
 ## Pièges connus
 
