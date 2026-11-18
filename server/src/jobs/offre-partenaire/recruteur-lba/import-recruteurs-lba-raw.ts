@@ -61,8 +61,9 @@ const importRecruteursLbaToRawCollection = async (sourceStream: Stream.Readable)
       const parseResult = ZRecruteursLbaRaw.safeParse(recruteur)
       if (!parseResult.success) {
         rejected++
-        for (const issue of parseResult.error.issues) {
-          const key = `${issue.path.join(".")}: ${issue.code}`
+        // indices de tableau remplacés par * : une même erreur sur rome_codes donne une seule clé, comptée une fois par ligne
+        const keys = new Set(parseResult.error.issues.map((issue) => `${issue.path.map((p) => (typeof p === "number" ? "*" : String(p))).join(".")}: ${issue.code}`))
+        for (const key of keys) {
           rejectedByIssue.set(key, (rejectedByIssue.get(key) ?? 0) + 1)
         }
         return callback()

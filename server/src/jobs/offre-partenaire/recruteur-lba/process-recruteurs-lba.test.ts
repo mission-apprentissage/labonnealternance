@@ -214,7 +214,7 @@ describe("import-recruteurs-lba-raw", () => {
       email_confirme_deca: false,
       email_source_date: "2026-11-21",
     })
-    const sansDate = { ...generateRecruiterRawFixture(), siret: "80841382700019", email_source: "france_travail", email_confirme_deca: true, email_source_date: null }
+    const sansDate = generateRecruiterRawFixture({ siret: "80841382700019", email_source: "france_travail", email_confirme_deca: true, email_source_date: null })
     const sourceInconnue = { ...generateRecruiterRawFixture(), siret: "11000201100044", email_source: "autre_source" }
 
     const result = await importRecruteursLbaRaw(stringToStream(JSON.stringify([avecProvenance, sansDate, sourceInconnue])))
@@ -232,6 +232,22 @@ describe("import-recruteurs-lba-raw", () => {
       { siret: "13002526500013", email_source: "deca_employeur", email_confirme_deca: false, email_source_date: "2026-11-21" },
       { siret: "80841382700019", email_source: "france_travail", email_confirme_deca: true, email_source_date: null },
     ])
+  })
+
+  it("regroupe les erreurs de rome_codes sous une seule clé, comptée une fois par ligne", async () => {
+    const romeCodes = (invalides: number[]) => Array.from({ length: 4 }, (_, i) => ({ rome_code: invalides.includes(i) ? null : "M1607", normalized_score: 0.1 }))
+    const lignes = [
+      { ...generateRecruiterRawFixture(), siret: "11000201100044", rome_codes: romeCodes([0, 2]) },
+      { ...generateRecruiterRawFixture(), siret: "80841382700019", rome_codes: romeCodes([3]) },
+    ]
+
+    const result = await importRecruteursLbaRaw(stringToStream(JSON.stringify(lignes)))
+
+    expect.soft(result).toEqual({ count: 0, rejected: 2 })
+    expect.soft(captureMessage).toHaveBeenCalledWith("import recruteurs lba : lignes invalides ignorées", {
+      level: "warning",
+      extra: { rejected: 2, rejectedByIssue: { "rome_codes.*.rome_code: invalid_type": 2 } },
+    })
   })
 
   it("propage l'erreur (et la capture dans Sentry) au lieu de l'avaler silencieusement quand le flux source échoue", async () => {
