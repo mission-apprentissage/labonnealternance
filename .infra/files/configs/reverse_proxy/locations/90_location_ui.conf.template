@@ -103,12 +103,14 @@ location / {
         }
 
         # Émission des jetons de recherche (défi ALTCHA puis échange de la solution, cf. ui/app/bff/jeton).
+        # Une émission fait 2 requêtes : le burst laisse 60 visiteurs d'une même IP (réseau d'établissement)
+        # obtenir leur jeton d'un coup, comme le burst de la recherche.
         location = /bff/jeton {
             if ($lba_denied) {
                 return 403;
             }
 
-            limit_req zone=lba_jeton_recherche burst=20 nodelay;
+            limit_req zone=lba_jeton_recherche burst=120 nodelay;
             error_page 429 = @lba_limite_jeton_recherche;
 
             set $upstream http://ui:3000;

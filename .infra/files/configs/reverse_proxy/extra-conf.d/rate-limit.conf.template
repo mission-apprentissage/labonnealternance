@@ -26,7 +26,8 @@ map $lba_limited $lba_limit_key {
 # Recherche du site (cf. locations/90_location_ui.conf.template). Les zones suffixées _recherche ne
 # déclenchent pas de ban : le filtre fail2ban nginx-req-limit les ignore (repo infra), car une IP de relais
 # partagée (iCloud Private Relay, Cloudflare WARP, réseau d'établissement) bannie couperait tout le site à
-# ses autres utilisateurs. La preuve de travail et le quota par jeton tiennent le débit des aspirateurs.
+# ses autres utilisateurs. La preuve de travail écarte les scripts qui n'exécutent pas le défi ; elle coûte
+# moins d'une milliseconde par recherche à ceux qui le résolvent, dont seules ces limites par IP bornent le débit.
 # Émission des jetons de recherche (/bff/jeton) : un jeton couvre 100 recherches.
 limit_req_zone $lba_limit_key zone=lba_jeton_recherche:10m rate=10r/m;
 # Rendu des pages /recherche (navigation, filtres, widget).
