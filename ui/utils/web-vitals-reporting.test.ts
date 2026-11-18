@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { CLSMetricWithAttribution, INPMetricWithAttribution } from "web-vitals/attribution"
 import { onCLS, onINP } from "web-vitals/attribution"
 
-import { publicConfig } from "@/config.public"
 import { createRouteHistory } from "@/utils/route-history.utils"
 import { startWebVitalsReporting } from "@/utils/web-vitals-reporting"
 
@@ -79,7 +78,7 @@ describe("startWebVitalsReporting", () => {
     reportInp(inpMetric(700))
 
     const { url, body } = await sentBeacon()
-    expect(url).toBe(`${publicConfig.apiEndpoint}/_private/web-vitals`)
+    expect(url).toBe("/bff/_private/web-vitals")
     expect(body).toMatchObject({ metric: "INP", landing_route: "/", route: "/emploi/offres_emploi_lba/[id]", viewport_width: 412, cpu_cores: 8 })
   })
 
@@ -107,7 +106,7 @@ describe("startWebVitalsReporting", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1)
     const [url, init] = fetchMock.mock.calls[0]
-    expect(url).toBe(`${publicConfig.apiEndpoint}/_private/web-vitals`)
+    expect(url).toBe("/bff/_private/web-vitals")
     expect(init).toMatchObject({ method: "POST", keepalive: true })
     expect(JSON.parse(init.body)).toMatchObject({ metric: "INP", route: "/emploi/offres_emploi_lba/[id]" })
   })

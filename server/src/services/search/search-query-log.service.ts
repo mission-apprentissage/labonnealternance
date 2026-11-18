@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb"
+import type { ISearchSiteChannel } from "shared/constants/search-token"
 import { isAutoRadiusWidening } from "shared/utils/auto-radius"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -60,7 +61,7 @@ const roundCoord = (value: number) => Math.round(value * 10) / 10
 
 type SearchOutcome = { status: "ok" | "degraded"; nbHits: number } | { status: "error"; nbHits: null }
 
-export type SearchChannel = "site" | "api"
+export type SearchChannel = ISearchSiteChannel | "api"
 
 export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOutcome, channel: SearchChannel): Promise<void> {
   try {

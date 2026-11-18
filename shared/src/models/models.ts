@@ -80,6 +80,7 @@ import searchJobsKeywordsModel from "./search-jobs-keywords.model.js"
 import searchQueriesModel from "./search-queries.model.js"
 import searchSuggestionsModel from "./search-suggestions.model.js"
 import searchSynonymsModel from "./search-synonyms.model.js"
+import searchTokensModel from "./search-tokens.model.js"
 import searchTrainingsModel from "./search-trainings.model.js"
 import seoDiplomeModel from "./seo-diplome.model.js"
 import seoMetierModel from "./seo-metier.model.js"
@@ -180,6 +181,7 @@ const modelDescriptorMap = {
   [mistralBatchJobsModel.collectionName]: mistralBatchJobsModel,
   [searchSuggestionsModel.collectionName]: searchSuggestionsModel,
   [searchSynonymsModel.collectionName]: searchSynonymsModel,
+  [searchTokensModel.collectionName]: searchTokensModel,
   [seoVilleModel.collectionName]: seoVilleModel,
   [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
   [seoDiplomeModel.collectionName]: seoDiplomeModel,

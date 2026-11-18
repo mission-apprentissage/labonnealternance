@@ -8,7 +8,7 @@ location /api {
     include includes/proxy.conf;
 }
 
-# Routes réservées au front : rate limiting nginx (zones dans extra-conf.d/rate-limit.conf.template).
+# Autocomplétion métiers du front : rate limiting nginx (zones dans extra-conf.d/rate-limit.conf.template).
 # Regex insensibles à la casse, comme le routeur Fastify (caseSensitive: false) : un préfixe
 # nginx laisserait /api/ROME passer par `location /api`, sans limite.
 location ~* ^/api/rome {
@@ -23,64 +23,28 @@ location ~* ^/api/rome {
     include includes/proxy.conf;
 }
 
-# Mesures web-vitals envoyées par les navigateurs : hors de lba_search, dont les dépassements alimentent fail2ban
-# et dont le quota est partagé par tous les visiteurs d'une même IP (réseau d'établissement). Débit borné par
-# Fastify (cf. webVitalsRouteController). Correspondance exacte, prioritaire sur les regex ; une variante de
-# casse retombe dans `^/api/_private/`, donc limitée.
-location = /api/_private/web-vitals {
-    if ($lba_denied) {
-        return 403;
+# Fermées à Internet (cf. extra-conf.d/api-site.conf.template) : le navigateur passe par le BFF de l'UI,
+# qui appelle l'API sur le réseau docker. Regex insensibles à la casse, comme le routeur Fastify.
+location ~* ^/api/(v1/|v2/)?_private/ {
+    # Type de la réponse 404 ci-dessous ; les réponses de l'API portent le leur.
+    default_type application/json;
+    if ($lba_api_site_fermee) {
+        return 404 '{"statusCode":404,"error":"Not Found","message":"Not Found"}';
     }
+
+    # Candidature (/api/v2/_private/application) relayée par le BFF des previews.
+    client_max_body_size    5M;
 
     set $upstream http://server:5000;
     include includes/error_page_json.conf;
     include includes/proxy.conf;
 }
 
-# Résolution des liens partenaires (/monmaster/<RNCP>) : appelée par le seul rendu serveur de l'UI,
-# depuis le réseau docker. 404 pour toute autre IP, doublé par partnerSearchRouteController. Regex et non
-# correspondance exacte : le routeur Fastify ignore la casse. Placée avant `^/api/_private/` (1re regex gagnante).
-location ~* ^/api/_private/search/partner-link {
-    if ($lba_limited) {
-        return 404;
+location ~* ^/api/v1/search {
+    default_type application/json;
+    if ($lba_api_site_fermee) {
+        return 404 '{"statusCode":404,"error":"Not Found","message":"Recherche réservée au site La bonne alternance ; usage programmatique : https://api.apprentissage.beta.gouv.fr"}';
     }
-
-    set $upstream http://server:5000;
-    include includes/error_page_json.conf;
-    include includes/proxy.conf;
-}
-
-location ~* ^/api/_private/ {
-    if ($lba_denied) {
-        return 403;
-    }
-
-    limit_req zone=lba_search burst=60 nodelay;
-
-    set $upstream http://server:5000;
-    include includes/error_page_json.conf;
-    include includes/proxy.conf;
-}
-
-location ~* ^/api/v1/_private/ {
-    if ($lba_denied) {
-        return 403;
-    }
-
-    limit_req zone=lba_search burst=60 nodelay;
-
-    set $upstream http://server:5000;
-    include includes/error_page_json.conf;
-    include includes/proxy.conf;
-}
-
-# Recherche publique ; /api/v1/search/suggest n'est pas concerné.
-location ~* ^/api/v1/search/?$ {
-    if ($lba_denied) {
-        return 403;
-    }
-
-    limit_req zone=lba_public_search burst=60 nodelay;
 
     set $upstream http://server:5000;
     include includes/error_page_json.conf;
@@ -95,7 +59,7 @@ location ~* ^/api/v1/application$ {
     include includes/proxy.conf;
 }
 
-location ~* ^(/api/v2/application$|/api/v2/_private/application$) {
+location ~* ^/api/v2/application$ {
     client_max_body_size    5M;
 
     set $upstream http://server:5000;

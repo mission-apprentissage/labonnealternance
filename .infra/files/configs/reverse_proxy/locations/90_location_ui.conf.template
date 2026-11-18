@@ -35,8 +35,20 @@ location / {
     }
 
     location /recherche {
+        limit_req zone=lba_rendu_recherche burst=120 nodelay;
+        error_page 429 = @lba_limite_rendu_recherche;
+
         set $upstream http://ui:3000;
         include extra-includes/proxy-iframe.conf;
+    }
+
+    # Émission des jetons de recherche (défi ALTCHA puis échange de la solution, cf. ui/app/bff/jeton).
+    location = /bff/jeton {
+        limit_req zone=lba_jeton_recherche burst=20 nodelay;
+        error_page 429 = @lba_limite_jeton_recherche;
+
+        set $upstream http://ui:3000;
+        include includes/proxy.conf;
     }
 
     location /recherche-emploi {
@@ -58,4 +70,18 @@ location / {
         set $upstream http://ui:3000;
         include extra-includes/proxy-iframe.conf;
     }
+}
+
+# Réponses des limites sans ban (zones _recherche, cf. extra-conf.d/rate-limit.conf.template) : l'en-tête
+# X-LBA-Limite nomme la limite atteinte.
+location @lba_limite_jeton_recherche {
+    default_type application/json;
+    add_header X-LBA-Limite jeton_recherche always;
+    return 429 '{"statusCode":429,"error":"Too Many Requests","message":"limite jeton_recherche"}';
+}
+
+location @lba_limite_rendu_recherche {
+    default_type text/plain;
+    add_header X-LBA-Limite rendu_recherche always;
+    return 429 'Trop de requêtes, réessayez dans une minute.';
 }
