@@ -109,6 +109,22 @@ describe("forwardToApi", () => {
     expect(new Headers(init?.headers).get("x-lba-search-token")).toBe("v1.k1.1.n.m")
   })
 
+  it("prend le jeton de l'en-tête quand le cookie manque (cookie partitionné refusé)", async () => {
+    const response = await forwardToApi(browserRequest("/bff/v1/search?q=a", { "x-lba-search-token": "v1.k1.1.n.entete" }), ["v1", "search"])
+    expect(response.status).toBe(200)
+    expect(new Headers(fetchMock.mock.calls[0][1]?.headers).get("x-lba-search-token")).toBe("v1.k1.1.n.entete")
+  })
+
+  it("préfère le cookie à l'en-tête", async () => {
+    await forwardToApi(browserRequest("/bff/v1/search?q=a", { cookie: "lba_st=v1.k1.1.n.cookie", "x-lba-search-token": "v1.k1.1.n.entete" }), ["v1", "search"])
+    expect(new Headers(fetchMock.mock.calls[0][1]?.headers).get("x-lba-search-token")).toBe("v1.k1.1.n.cookie")
+  })
+
+  it("ne relaie pas un en-tête de jeton vers une route _private", async () => {
+    await forwardToApi(browserRequest("/bff/_private/appointment", { "x-lba-search-token": "v1.k1.1.n.entete" }), ["_private", "appointment"])
+    expect(new Headers(fetchMock.mock.calls[0][1]?.headers).has("x-lba-search-token")).toBe(false)
+  })
+
   it("relaie le statut et le corps d'une erreur de l'API", async () => {
     fetchMock.mockResolvedValue(Response.json({ statusCode: 401, error: "Unauthorized", message: "JETON_EPUISE" }, { status: 401 }))
     const response = await forwardToApi(browserRequest("/bff/v1/search", { cookie: "lba_st=x" }), ["v1", "search"])

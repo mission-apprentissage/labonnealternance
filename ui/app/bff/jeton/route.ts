@@ -17,7 +17,8 @@ export async function POST(request: Request) {
   if ("error" in result) {
     return NextResponse.json({ statusCode: 400, error: "Bad Request", message: `preuve de travail refusée (${result.error})` }, { status: 400, headers: NO_STORE })
   }
-  const response = new NextResponse(null, { status: 204, headers: NO_STORE })
+  // Cookie, et jeton dans le corps pour le navigateur qui refuse le cookie partitionné (cf. search-token.store).
+  const response = NextResponse.json({ token: result.token }, { headers: NO_STORE })
   response.cookies.set({ ...SEARCH_TOKEN_COOKIE, value: result.token })
   return response
 }

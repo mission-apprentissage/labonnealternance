@@ -5,6 +5,7 @@ vi.mock("@/utils/search-token.client", () => ({ renewSearchToken }))
 vi.mock("@sentry/nextjs", () => ({ captureException }))
 
 import { ApiError, apiGet, generateUrl } from "./api.utils"
+import { setSearchToken } from "./search-token.store"
 
 const fetchMock = vi.fn<typeof fetch>()
 const refusal = (message: string) => Response.json({ statusCode: 401, error: "Unauthorized", message }, { status: 401 })
@@ -85,6 +86,24 @@ describe("jeton de recherche dans le navigateur", () => {
     fetchMock.mockResolvedValue(refusal("JETON_REQUIS"))
     await expect(apiGet("/v1/search", { querystring: { q: "a" } as never })).rejects.toThrow()
     expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it("envoie le jeton en mémoire en en-tête, et le jeton renouvelé au rejeu", async () => {
+    asBrowser()
+    setSearchToken("v1.k1.1.n.ancien")
+    renewSearchToken.mockImplementationOnce(async () => setSearchToken("v1.k1.1.n.nouveau"))
+    fetchMock.mockResolvedValueOnce(refusal("JETON_EPUISE")).mockResolvedValueOnce(Response.json({ hits: [] }))
+    await apiGet("/v1/search", { querystring: { q: "a" } as never })
+    const sentTokens = fetchMock.mock.calls.map(([, init]) => new Headers(init?.headers).get("x-lba-search-token"))
+    expect(sentTokens).toEqual(["v1.k1.1.n.ancien", "v1.k1.1.n.nouveau"])
+  })
+
+  it("n'envoie pas le jeton en mémoire hors recherche", async () => {
+    asBrowser()
+    setSearchToken("v1.k1.1.n.memoire")
+    fetchMock.mockResolvedValueOnce(Response.json({}))
+    await apiGet("/_private/appointment", { querystring: {} as never })
+    expect(new Headers(fetchMock.mock.calls[0][1]?.headers).has("x-lba-search-token")).toBe(false)
   })
 
   it.each([

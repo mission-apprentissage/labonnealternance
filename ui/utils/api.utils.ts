@@ -1,5 +1,5 @@
 import type { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IRequestFetchOptions, IResponse } from "shared"
-import { SEARCH_CHANNEL_HEADER, SEARCH_TOKEN_EXHAUSTED, SEARCH_TOKEN_REQUIRED } from "shared/constants/search-token"
+import { SEARCH_CHANNEL_HEADER, SEARCH_TOKEN_EXHAUSTED, SEARCH_TOKEN_HEADER, SEARCH_TOKEN_REQUIRED } from "shared/constants/search-token"
 import type { PathParam, QueryString, WithQueryStringAndPathParam } from "shared/helpers/generate-uri"
 import { generateUri } from "shared/helpers/generate-uri"
 import type { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
@@ -9,6 +9,7 @@ import type { core } from "zod"
 
 import { publicConfig } from "@/config.public"
 import { BFF_PREFIX, isBffPath, isSearchTokenPath } from "@/utils/bff-routes"
+import { getSearchToken } from "@/utils/search-token.store"
 import { getServerApiEndpoint } from "@/utils/server-api-endpoint"
 
 type OptionsGet = {
@@ -104,9 +105,18 @@ const SEARCH_TOKEN_REFUSALS: string[] = [SEARCH_TOKEN_REQUIRED, SEARCH_TOKEN_EXH
  * Sur un refus de jeton de recherche, obtient un nouveau jeton (preuve de travail, cf. search-token.client)
  * puis rejoue la requête une fois. Le module de preuve de travail n'est chargé qu'à ce moment-là.
  */
+// Jeton en mémoire relu à chaque envoi : le rejeu qui suit un renouvellement porte le nouveau.
+function fetchWithSearchToken(path: string, url: string, requestInit: RequestInit): Promise<Response> {
+  const token = global.window && isSearchTokenPath(path) ? getSearchToken() : null
+  if (!token) return fetch(url, requestInit)
+  const headers = new Headers(requestInit.headers)
+  headers.set(SEARCH_TOKEN_HEADER, token)
+  return fetch(url, { ...requestInit, headers })
+}
+
 async function fetchApi(path: string, url: string, requestInit: RequestInit): Promise<Response> {
   const startedAt = performance.now()
-  const res = await fetch(url, requestInit)
+  const res = await fetchWithSearchToken(path, url, requestInit)
   if (res.status !== 401 || !global.window || !isSearchTokenPath(path)) return res
 
   const message = await res
@@ -125,7 +135,7 @@ async function fetchApi(path: string, url: string, requestInit: RequestInit): Pr
     captureException(error)
     return res
   }
-  return fetch(url, requestInit)
+  return fetchWithSearchToken(path, url, requestInit)
 }
 
 interface ApiErrorContext {

@@ -60,7 +60,8 @@ export async function forwardToApi(request: NextRequest, segments: string[]): Pr
     return jsonError(404, "Not Found", "Route inconnue")
   }
 
-  const searchToken = request.cookies.get(SEARCH_TOKEN_COOKIE_NAME)?.value
+  // Cookie d'abord ; en-tête posé par le navigateur quand il refuse le cookie partitionné (cf. search-token.store).
+  const searchToken = request.cookies.get(SEARCH_TOKEN_COOKIE_NAME)?.value ?? request.headers.get(SEARCH_TOKEN_HEADER) ?? undefined
   // Sans jeton, l'API répondrait la même chose : le client relance une preuve de travail sans aller-retour.
   if (isSearchTokenPath(apiPath) && !searchToken) {
     return jsonError(401, "Unauthorized", SEARCH_TOKEN_REQUIRED)
