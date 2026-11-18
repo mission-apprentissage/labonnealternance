@@ -2,7 +2,7 @@
 # Un usage humain fait des rafales courtes ; un scraper tient un débit soutenu.
 # Les zones limitent donc le débit continu avec un burst généreux.
 # Les dépassements sont logués dans error.log et alimentent le jail fail2ban
-# nginx-req-limit (ban iptables 1h au-delà de 50 dépassements sur 1h).
+# nginx-req-limit (ban iptables 1h au-delà de 50 dépassements sur 1h), sauf les zones _recherche.
 
 # Les IPs internes (healthchecks, réseau docker) ne sont pas limitées, ni celles de
 # LBA_NGINX_RATELIMIT_ALLOWLIST (env chiffré, IP séparées par des virgules) : serveurs
@@ -23,12 +23,23 @@ map $lba_limited $lba_limit_key {
     1 $binary_remote_addr;
 }
 
-# Recherche d'offres du front (/api/v1/_private/, /api/_private/).
-limit_req_zone $lba_limit_key zone=lba_search:10m rate=30r/m;
-
-# Recherche publique (/api/v1/search), appelée aussi par le front. Zone distincte de
-# lba_search pour qu'une session de navigation ne consomme pas le quota de recherche.
-limit_req_zone $lba_limit_key zone=lba_public_search:10m rate=30r/m;
+# Recherche du site (cf. locations/90_location_ui.conf.template). Les zones suffixées _recherche ne
+# déclenchent pas de ban : le filtre fail2ban nginx-req-limit les ignore (repo infra), car une IP de relais
+# partagée (iCloud Private Relay, Cloudflare WARP, réseau d'établissement) bannie couperait tout le site à
+# ses autres utilisateurs. La preuve de travail écarte les scripts qui n'exécutent pas le défi ; elle coûte
+# moins d'une milliseconde par recherche à ceux qui le résolvent, dont seules ces limites par IP bornent le débit.
+# Émission des jetons de recherche (/bff/jeton) : un jeton couvre 100 recherches.
+limit_req_zone $lba_limit_key zone=lba_jeton_recherche:10m rate=10r/m;
+# Rendu des pages /recherche (navigation, filtres, widget).
+limit_req_zone $lba_limit_key zone=lba_rendu_recherche:10m rate=60r/m;
+# Recherche relayée par le BFF (/bff/v1/search) : débit de l'ancienne zone de /api/v1/search, et plafond
+# par IP même pour un client qui résout les défis ALTCHA.
+limit_req_zone $lba_limit_key zone=lba_bff_recherche:10m rate=30r/m;
+# Suggestions (/bff/v1/search/suggest) : 1 appel par frappe, rafales tolérées.
+limit_req_zone $lba_limit_key zone=lba_suggest_recherche:10m rate=2r/s;
+# Routes _private relayées par le BFF (fiches, candidature, RDV, espace pro) : débit de l'ancienne zone de
+# /api/_private/.
+limit_req_zone $lba_limit_key zone=lba_private_recherche:10m rate=30r/m;
 
 # Autocomplétion métiers (/api/rome) : 1 appel par frappe, rafales tolérées.
 limit_req_zone $lba_limit_key zone=lba_autocomplete:10m rate=2r/s;
