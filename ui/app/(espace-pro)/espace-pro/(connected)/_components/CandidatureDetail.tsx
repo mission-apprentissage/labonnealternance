@@ -13,14 +13,16 @@ import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-status"
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
+import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
 import { ApplicationStatusBanner, formatApplicationDateTime, TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
 import { downloadJobApplicationAttachment, getFormulaire, getJobApplicationAttachmentUrl, getJobApplicationDetail, markJobApplicationTreatedElsewhere } from "@/utils/api"
 import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
 
 type ApplicationDetail = Awaited<ReturnType<typeof getJobApplicationDetail>>
 
-/** Sans `cfaEstablishmentId`, page du recruteur ; avec, page du CFA pour l'entreprise qu'il gère (cf. CandidaturesOffre). */
-export const CandidatureDetail = ({ job_id, application_id, cfaEstablishmentId }: { job_id: string; application_id: string; cfaEstablishmentId?: string }) => {
+/** Page du recruteur, ou du CFA pour l'entreprise qu'il gère quand la route porte `establishment_id` (cf. CandidaturesOffre). */
+export const CandidatureDetail = () => {
+  const { job_id, application_id, cfaEstablishmentId } = useApplicationRouteParams()
   const { data, isLoading, error } = useQuery({
     queryKey: ["job-application", job_id, application_id],
     queryFn: () => getJobApplicationDetail(job_id, application_id),

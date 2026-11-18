@@ -10,25 +10,17 @@ import { parseEnum } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
 import { IntentionPage } from "@/components/IntentionPage/IntentionPage"
 import { getFormulaire, getJobApplicationDetail, getJobApplicationReplyToken } from "@/utils/api"
 import { getApplicationPages, getApplicationReplyBreadcrumb } from "@/utils/application-breadcrumb.utils"
 
 /**
  * Formulaires de réponse du mail au recruteur (IntentionPage), ouverts depuis le détail d'une candidature :
- * la session donne accès au jeton que le mail porte dans son lien. Avec `cfaEstablishmentId`, page du CFA.
+ * la session donne accès au jeton que le mail porte dans son lien. Route avec `establishment_id` : page du CFA.
  */
-export const CandidatureReponse = ({
-  job_id,
-  application_id,
-  intention: rawIntention,
-  cfaEstablishmentId,
-}: {
-  job_id: string
-  application_id: string
-  intention: string
-  cfaEstablishmentId?: string
-}) => {
+export const CandidatureReponse = () => {
+  const { job_id, application_id, intention: rawIntention, cfaEstablishmentId } = useApplicationRouteParams()
   const intention = parseEnum(ApplicationIntention, rawIntention)
   if (!intention) {
     notFound()

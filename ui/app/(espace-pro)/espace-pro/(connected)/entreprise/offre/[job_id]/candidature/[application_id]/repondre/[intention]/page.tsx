@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   title: METADATA.dynamic.backEntrepriseCandidatureReponse().title,
 }
 
-export default async function Page({ params }: { params: Promise<{ job_id: string; application_id: string; intention: string }> }) {
-  const { job_id, application_id, intention } = await params
-  return <CandidatureReponse job_id={job_id} application_id={application_id} intention={intention} />
+export default function Page() {
+  return <CandidatureReponse />
 }

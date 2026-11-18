@@ -9,7 +9,6 @@ import dayjs from "dayjs"
 import Link from "next/link"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
-import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { APPLICATIONS_CONSULTATION_MONTHS_AFTER_CLOSURE, getApplicationsConsultation, type IOfferEnd } from "shared/utils/applications-consultation"
 import { getApplicationsExportFileName } from "shared/utils/applications-export"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -19,6 +18,7 @@ import Table from "@/app/(espace-pro)/_components/Table"
 import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-status"
 import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
+import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { publicConfig } from "@/config.public"
 import { downloadJobApplications, getFormulaire, getJobApplications, getJobApplicationsExportUrl } from "@/utils/api"
@@ -88,8 +88,9 @@ const getColumns = (buildApplicationPath: (applicationId: string) => string) => 
   },
 ]
 
-/** Sans `cfaEstablishmentId`, page du recruteur ; avec, page du CFA pour l'entreprise qu'il gère. */
-export const CandidaturesOffre = ({ job_id, cfaEstablishmentId }: { job_id: string; cfaEstablishmentId?: string }) => {
+/** Page du recruteur, ou du CFA pour l'entreprise qu'il gère quand la route porte `establishment_id`. */
+export const CandidaturesOffre = () => {
+  const { job_id, cfaEstablishmentId } = useApplicationRouteParams()
   const { data, isLoading, error } = useQuery({
     queryKey: ["job-applications", job_id],
     queryFn: () => getJobApplications(job_id),
@@ -161,7 +162,6 @@ const CandidaturesOffreContent = ({
   })
   const isAvailable = consultation.status !== "unavailable"
   const closureModal = useDisclosure()
-  const isClosed = job.offer_status === JOB_STATUS_ENGLISH.POURVUE || job.offer_status === JOB_STATUS_ENGLISH.ANNULEE
   const offerUrl = `${publicConfig.baseUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, job.offer_rome_appellation || undefined)}`
 
   return (
@@ -171,7 +171,8 @@ const CandidaturesOffreContent = ({
         <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700 }}>
           Candidatures
         </Typography>
-        {isAvailable && (
+        {/* Pourvue, annulée ou expirée, l'offre n'est plus en ligne ni à clôturer (écran 15 de la maquette). */}
+        {consultation.status === "offer_open" && (
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
             <Button
               priority="secondary"
@@ -181,9 +182,7 @@ const CandidaturesOffreContent = ({
             >
               Voir l'offre en ligne
             </Button>
-            <Button disabled={isClosed} onClick={closureModal.onOpen}>
-              Clôturer le recrutement
-            </Button>
+            <Button onClick={closureModal.onOpen}>Clôturer le recrutement</Button>
           </Box>
         )}
       </Box>
