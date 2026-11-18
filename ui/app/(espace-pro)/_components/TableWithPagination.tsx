@@ -45,8 +45,7 @@ function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }: Glob
 }
 
 function fuzzyTextFilterFn(rows, id, filterValue) {
-  // @ts-expect-error: TODO
-  return matchSorter(rows, filterValue, { keys: [(row) => row.values[id]], threshold: matchSorter.rankings.CONTAINS })
+  return matchSorter<{ values: Record<string, string> }>(rows, filterValue, { keys: [(row) => row.values[id]], threshold: matchSorter.rankings.CONTAINS })
 }
 
 // Let the table remove the filter if the string is empty

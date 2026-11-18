@@ -44,8 +44,6 @@ const LBA_PARTNER_LABELS = jobPartnersExcludedFromFlux as string[]
 
 const FLUX_PARTNER_LABELS = Object.values(JOBPARTNERS_LABEL).filter((label) => !LBA_PARTNER_LABELS.includes(label))
 
-//TODO Scrapping partners doivent être identifiés
-
 const SCRAPPING_PARTNER_LABELS = ["Amazon", "BPCE", "Bpifrance", "Daher", "Engie", "Formaposte", "Framatome", "GRDF", "Institut Pasteur", "L'Oreal", "Serpe", "Thales", "Veritone"]
 
 export const up = async () => {

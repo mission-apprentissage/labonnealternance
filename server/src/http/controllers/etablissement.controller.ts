@@ -99,14 +99,18 @@ export default (server: Server) => {
       })
 
       // Emails des lieux de formation, hors email décisionnaire (gestionnaire_email)
-      let emailsAffelnet = eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      emailsAffelnet = [...new Set(emailsAffelnet.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
+      const emailsAffelnet = [
+        ...new Set(
+          eligibleTrainingsForAppointmentsAffelnetFound
+            .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
+            .filter((email): email is string => !_.isNil(email) && email !== etablissement!.gestionnaire_email)
+        ),
+      ]
 
       await Promise.all(
         emailsAffelnet.map(async (email) =>
           mailer.sendEmail({
-            // TODO string | null
-            to: email as string,
+            to: email,
             subject: `Le formulaire de contact La bonne alternance est activé pour votre CFA sur Choisir son affectation après la 3e`,
             template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
@@ -190,14 +194,18 @@ export default (server: Server) => {
       })
 
       // Emails des lieux de formation, hors email décisionnaire (gestionnaire_email)
-      let emailsParcoursup = eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      emailsParcoursup = [...new Set(emailsParcoursup.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
+      const emailsParcoursup = [
+        ...new Set(
+          eligibleTrainingsForAppointmentsParcoursupFound
+            .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
+            .filter((email): email is string => !_.isNil(email) && email !== etablissement!.gestionnaire_email)
+        ),
+      ]
 
       await Promise.all(
         emailsParcoursup.map(async (email) =>
           mailer.sendEmail({
-            // TODO string | null
-            to: email as string,
+            to: email,
             subject: `Le formulaire de contact La bonne alternance est activé pour votre CFA sur Parcoursup`,
             template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
