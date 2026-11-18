@@ -8,7 +8,7 @@ import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicati
 import { ApplicationScanStatus, assertUnreachable, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS_ENGLISH, parseEnum } from "shared"
 import { getApplicantQuestions, getLbaApplicantQuestions } from "shared/constants/applicant-questions"
 import type { RefusalReasons } from "shared/constants/application"
-import { ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
+import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
@@ -1289,6 +1289,10 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   if (!application) throw notFound("Candidature non trouvée")
   const applicant = await getDbCollection("applicants").findOne({ _id: application.applicant_id })
   if (!applicant) throw notFound("Candidat non trouvé")
+  // Réponse déclarée donnée hors de LBA : le formulaire affiche ce statut et ne programme rien par-dessus
+  // (cf. getJobApplicationReplyTokenForRecruiter pour la navigation connectée).
+  const treated_elsewhere_at =
+    application.company_recruitment_intention === APPLICATION_TREATED_ELSEWHERE ? (application.company_recruitment_intention_date ?? application.last_update_at ?? null) : null
 
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
 
@@ -1331,6 +1335,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     {
       _id: application._id,
       company_feedback_send_status: { $ne: CompanyFeebackSendStatus.SENT },
+      company_recruitment_intention: { $ne: APPLICATION_TREATED_ELSEWHERE },
     },
     {
       $set: {
@@ -1361,6 +1366,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     applicant_phone: applicant.phone,
     company_name,
     sent_intention,
+    treated_elsewhere_at,
     espace_pro,
   }
 }
@@ -1404,12 +1410,17 @@ export const processRecruiterIntention = async ({ application }: { application: 
 }
 
 /**
- * Annule la réponse programmée à l'ouverture du formulaire : la candidature redevient sans réponse (l'intention est
- * reposée à l'envoi, cf. sendRecruiterIntention). Une réponse déjà envoyée n'est pas touchée.
+ * « Annuler l'envoi » du formulaire de réponse, ouvert par le lien du mail comme depuis l'espace pro : la candidature
+ * redevient sans réponse (l'intention est reposée à l'envoi, cf. sendRecruiterIntention). Une réponse déjà envoyée ou
+ * donnée hors de LBA n'est pas touchée.
  */
 export const cancelScheduledRecruiterIntention = async (applicationId: ObjectId) => {
   await getDbCollection("applications").updateOne(
-    { _id: applicationId, company_feedback_send_status: { $ne: CompanyFeebackSendStatus.SENT } },
+    {
+      _id: applicationId,
+      company_feedback_send_status: { $ne: CompanyFeebackSendStatus.SENT },
+      company_recruitment_intention: { $ne: APPLICATION_TREATED_ELSEWHERE },
+    },
     { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED, company_recruitment_intention: null, company_recruitment_intention_date: null } }
   )
 }

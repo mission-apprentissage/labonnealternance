@@ -15,7 +15,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
-import { ApplicationScanStatus } from "shared/models/applications.model"
+import { ApplicationScanStatus, CompanyFeebackSendStatus } from "shared/models/applications.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { AccessEntityType } from "shared/models/role-management.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -471,6 +471,23 @@ describe("GET /application/job/:jobId/application/:applicationId/reply-token", (
     expect(schedule.statusCode).toBe(200)
     expect(schedule.json().espace_pro).toEqual({ job_id: offer._id.toString(), cfa_establishment_id: null, establishment_name: expect.any(String) })
     expect((await getDbCollection("applications").findOne({ _id: application._id }))?.company_recruitment_intention).toBe(ApplicationIntention.ENTRETIEN)
+  })
+
+  it("annule l'envoi comme depuis le lien du mail : la candidature repasse en attente", async () => {
+    const recruiter = await saveRecruiter("recruteur-jeton-annulation")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Annule", { job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, company_siret: recruiter.entreprise.siret })
+    const { token } = (await getReplyToken(offer._id, application._id, ApplicationIntention.REFUS, (await logUser(httpClient, "recruteur-jeton-annulation")).bearerToken)).json()
+    const headers = { authorization: `Bearer ${token}` }
+
+    await httpClient().inject({ method: "GET", path: `/api/application/intention/schedule/${application._id}?intention=${ApplicationIntention.REFUS}`, headers })
+    const cancel = await httpClient().inject({ method: "POST", path: `/api/application/intention/cancel/${application._id}`, headers })
+
+    expect(cancel.statusCode).toBe(200)
+    expect(await getDbCollection("applications").findOne({ _id: application._id })).toMatchObject({
+      company_recruitment_intention: null,
+      company_feedback_send_status: CompanyFeebackSendStatus.CANCELED,
+    })
   })
 
   it("refuse le jeton à une candidature déjà traitée par un autre canal", async () => {

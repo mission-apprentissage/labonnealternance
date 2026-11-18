@@ -6,6 +6,7 @@ import { useState } from "react"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { DsfrIcon } from "@/components/DsfrIcon"
+import { TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
 import type { IntentionPageFormValues } from "./IntentionPageForm"
@@ -86,6 +87,15 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         <Box role="alert" sx={{ fontSize: "20px", margin: "auto" }}>
           {error?.message ?? "Une erreur technique s'est produite"}
         </Box>
+      </Box>
+    )
+  }
+
+  if (data.treated_elsewhere_at) {
+    // Aucune réponse n'a été programmée (cf. getApplicationDataForIntentionAndScheduleMessage) : même bandeau que le détail de l'espace pro.
+    return (
+      <Box sx={{ maxWidth: "660px", margin: "auto" }}>
+        <TreatedElsewhereBanner date={data.treated_elsewhere_at} />
       </Box>
     )
   }

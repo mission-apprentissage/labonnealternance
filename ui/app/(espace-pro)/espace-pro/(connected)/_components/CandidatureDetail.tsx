@@ -7,13 +7,13 @@ import { Box, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Link from "next/link"
-import { useEffect, useRef } from "react"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-status"
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
+import { ApplicationStatusBanner, formatApplicationDateTime, TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
 import { downloadJobApplicationAttachment, getFormulaire, getJobApplicationAttachmentUrl, getJobApplicationDetail, markJobApplicationTreatedElsewhere } from "@/utils/api"
 import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
 
@@ -67,7 +67,6 @@ export const CandidatureDetail = ({ job_id, application_id, cfaEstablishmentId }
 
 type Application = ApplicationDetail["application"]
 
-const formatDateTime = (date: string | null) => (date ? dayjs(date).format("DD/MM/YYYY [à] HH:mm") : "")
 // Le schéma tel: n'admet que les chiffres et le + initial : les espaces ou points saisis par le candidat sont retirés.
 const toTelUri = (phone: string) => phone.replace(/[^\d+]/g, "")
 const formatPhone = (phone: string) => phone.replace(/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/, "$1 $2 $3 $4 $5")
@@ -130,39 +129,13 @@ const Tags = ({ items }: { items: string[] }) => (
   </Box>
 )
 
-const Banner = ({ success = true, title, focusOnMount = false, children }: { success?: boolean; title: string; focusOnMount?: boolean; children?: React.ReactNode }) => {
-  const ref = useRef<HTMLDivElement>(null)
-  // Le bandeau remplace le bouton qui vient d'être activé : sans ce focus, le clavier repartirait du haut de la page.
-  useEffect(() => {
-    if (focusOnMount) ref.current?.focus()
-  }, [focusOnMount])
-
-  return (
-    <Box ref={ref} tabIndex={focusOnMount ? -1 : undefined} sx={{ mt: fr.spacing("6v"), p: fr.spacing("6v"), backgroundColor: fr.colors.decisions.background.alt.grey.default }}>
-      <Typography
-        sx={{
-          fontWeight: 700,
-          display: "flex",
-          alignItems: "center",
-          gap: fr.spacing("2v"),
-          color: success ? fr.colors.decisions.text.default.success.default : fr.colors.decisions.text.default.error.default,
-        }}
-      >
-        <span className={success ? "fr-icon-checkbox-circle-fill" : "fr-icon-error-fill"} aria-hidden="true" />
-        {title}
-      </Typography>
-      {children}
-    </Box>
-  )
-}
-
 /** Bandeau d'une réponse envoyée par LBA (entretien ou refus), à la place des boutons de réponse. */
 const ResponseBanner = ({ application }: { application: Application }) => {
   const { company_feedback_send_status: sendStatus, company_feedback, feedback_email_subject, company_feedback_reasons } = application
   // Sans statut d'envoi, la réponse date d'avant la programmation des envois : elle est partie à la saisie.
   const isSent = sendStatus === "SENT" || sendStatus === null
   const title = isSent
-    ? `Votre réponse a bien été envoyée au candidat le ${formatDateTime(application.company_feedback_date ?? application.company_recruitment_intention_date)}`
+    ? `Votre réponse a bien été envoyée au candidat le ${formatApplicationDateTime(application.company_feedback_date ?? application.company_recruitment_intention_date)}`
     : sendStatus === "SCHEDULED"
       ? "Votre réponse va être envoyée au candidat."
       : sendStatus === "CANCELED"
@@ -170,7 +143,7 @@ const ResponseBanner = ({ application }: { application: Application }) => {
         : "Votre réponse n'a pas pu être envoyée au candidat."
 
   return (
-    <Banner success={isSent || sendStatus === "SCHEDULED"} title={title}>
+    <ApplicationStatusBanner success={isSent || sendStatus === "SCHEDULED"} title={title}>
       {company_feedback && (
         <>
           <Typography sx={{ mt: fr.spacing("2v"), fontSize: "0.875rem", color: greyText }}>
@@ -190,7 +163,7 @@ const ResponseBanner = ({ application }: { application: Application }) => {
           <Tags items={company_feedback_reasons} />
         </Box>
       )}
-    </Banner>
+    </ApplicationStatusBanner>
   )
 }
 
@@ -232,11 +205,7 @@ const ApplicationActions = ({ jobId, application, getReplyPath }: { jobId: strin
     )
   }
   if (application.company_recruitment_intention === APPLICATION_TREATED_ELSEWHERE) {
-    return (
-      <Banner title={`Statut mis à jour le ${formatDateTime(application.company_recruitment_intention_date)}`} focusOnMount={treatedElsewhere.isSuccess}>
-        <Typography sx={{ mt: fr.spacing("2v") }}>Vous nous avez indiqué avoir répondu au candidat par un autre canal (mail ou téléphone).</Typography>
-      </Banner>
-    )
+    return <TreatedElsewhereBanner date={application.company_recruitment_intention_date} focusOnMount={treatedElsewhere.isSuccess} />
   }
   return <ResponseBanner application={application} />
 }

@@ -259,6 +259,7 @@ export const zApplicationRoutes = {
               company_recruitment_intention: extensions.buildEnum(ApplicationIntention).nullable(),
             })
             .optional(),
+          treated_elsewhere_at: z.date().nullable().describe("Date à laquelle le recruteur a déclaré avoir répondu hors de LBA ; aucune réponse n'est alors programmée"),
           espace_pro: z
             .strictObject({ job_id: z.string(), cfa_establishment_id: z.string().nullable(), establishment_name: z.string() })
             .nullable()
