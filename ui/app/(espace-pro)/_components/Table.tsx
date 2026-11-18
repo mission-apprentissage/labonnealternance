@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useMemo } from "react"
 import { useFlexLayout, usePagination, useSortBy, useTable } from "react-table"
-import { ColumnHeaderContent } from "@/app/(espace-pro)/_components/ColumnHeaderContent"
+import { ColumnHeaderContent, getColumnAriaSort } from "@/app/(espace-pro)/_components/ColumnHeaderContent"
 import { getFlatTableCellBordersSx, getFlatTableResetSx, getFlatTableWrapperSx } from "@/app/(espace-pro)/_components/table-styles"
 import { PaginationReactQuery } from "@/components/espace_pro/PaginationReactQuery"
 
@@ -76,7 +76,16 @@ const Table = ({ caption, data, columns, pageSize, rowHeaderColumnIds = [], init
                         const { key: headerKey, ...headerProps } = column.getHeaderProps(headerSortProps)
 
                         return (
-                          <Box key={headerKey} as="th" {...headerProps} title={null} scope="col" id={column.id} sx={{ display: "flex !important", alignItems: "center" }}>
+                          <Box
+                            key={headerKey}
+                            as="th"
+                            {...headerProps}
+                            title={null}
+                            scope="col"
+                            id={column.id}
+                            aria-sort={getColumnAriaSort(column)}
+                            sx={{ display: "flex !important", alignItems: "center" }}
+                          >
                             <ColumnHeaderContent column={column} />
                           </Box>
                         )

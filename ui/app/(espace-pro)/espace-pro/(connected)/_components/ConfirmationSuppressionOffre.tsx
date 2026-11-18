@@ -30,7 +30,7 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
     })
     await Promise.all([
       client.invalidateQueries({ queryKey: ["offre-liste"] }),
-      // La page des candidatures lit le statut de l'offre pour désactiver son bouton de clôture.
+      // La page des candidatures lit le statut de l'offre pour masquer ses boutons une fois l'offre clôturée.
       client.invalidateQueries({ queryKey: ["job-applications", offreId] }),
     ])
   }

@@ -108,6 +108,7 @@ const CandidaturesCell = ({ job, applicationsPath }: { job: LocalJob; applicatio
         {pending > 0 && (
           <Badge variant="awaiting" fontSize="12px">
             {pending}
+            <span className="fr-sr-only"> en attente</span>
           </Badge>
         )}
       </Box>

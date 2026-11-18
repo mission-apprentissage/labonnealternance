@@ -5,6 +5,13 @@ import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 
+/** État du tri porté par le `th`, comme dans VirtualTable (motif « tableau triable » de l'APG) : il n'est pas répété dans le nom du bouton. */
+export const getColumnAriaSort = (column: Pick<HeaderGroup<any>, "canSort" | "isSorted" | "isSortedDesc">): "ascending" | "descending" | "none" | undefined => {
+  if (!column.canSort) return undefined
+  if (!column.isSorted) return "none"
+  return column.isSortedDesc ? "descending" : "ascending"
+}
+
 /**
  * Contenu d'un en-tête de colonne react-table : libellé, et pour une colonne triable un bouton avec l'icône de tri
  * encadrée du DSFR. `sortLabel` nomme la colonne pour le tri quand `Header` n'est pas un texte.
@@ -20,14 +27,13 @@ export const ColumnHeaderContent = ({ column }: { column: HeaderGroup<any> & { s
     return <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", width: "100%" }}>{label}</Box>
   }
   const { onClick } = column.getSortByToggleProps()
-  const sortState = column.isSorted ? (column.isSortedDesc ? ", trié par ordre décroissant" : ", trié par ordre croissant") : ""
 
   return (
     <Box
       component="button"
       type="button"
       onClick={onClick}
-      aria-label={`Trier par ${column.sortLabel || column.srOnly || column.Header}${sortState}`}
+      aria-label={`Trier par ${column.sortLabel || column.srOnly || column.Header}`}
       sx={{
         display: "flex",
         flexDirection: "row",

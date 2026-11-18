@@ -233,7 +233,9 @@ function ListeEntreprise() {
         <Breadcrumb pages={[PAGES.static.backCfaHome]} />
         <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("8v"), justifyContent: "space-between", mb: fr.spacing("6v") }}>
           <Box>
-            <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
+            <Typography component="h1" sx={{ fontSize: "2rem !important", fontWeight: 700, mb: 0 }}>
+              Mes entreprises
+            </Typography>
           </Box>
           <Box
             sx={{

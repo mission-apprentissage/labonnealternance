@@ -7,7 +7,7 @@ import React, { useMemo } from "react"
 import { useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import { LiveStatus } from "@/app/_components/LiveStatus"
-import { ColumnHeaderContent } from "@/app/(espace-pro)/_components/ColumnHeaderContent"
+import { ColumnHeaderContent, getColumnAriaSort } from "@/app/(espace-pro)/_components/ColumnHeaderContent"
 import { getFlatTableCellBordersSx, getFlatTableResetSx } from "@/app/(espace-pro)/_components/table-styles"
 import ExportButtonNew from "@/components/espace_pro/ExportButton/ExportButtonNew"
 import { PaginationReactQuery } from "@/components/espace_pro/PaginationReactQuery"
@@ -193,6 +193,7 @@ function TableWithPagination({
                             id={column.id}
                             {...column.getHeaderProps(headerSortProps)}
                             title={null}
+                            aria-sort={getColumnAriaSort(column)}
                             sx={{ display: "flex !important", alignItems: "center" }}
                           >
                             <ColumnHeaderContent column={column} />
