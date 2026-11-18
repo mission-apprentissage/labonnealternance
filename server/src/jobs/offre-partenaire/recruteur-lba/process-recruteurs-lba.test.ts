@@ -1,5 +1,6 @@
 import fs from "node:fs"
 import { Readable } from "node:stream"
+import { captureMessage } from "@sentry/node"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import omit from "lodash-es/omit"
@@ -16,6 +17,11 @@ import * as sentryUtils from "@/common/utils/sentry-utils"
 import { stringToStream } from "@/common/utils/stream-utils"
 import { importRecruteursLbaRaw } from "./import-recruteurs-lba-raw"
 import { processRecruteursLba } from "./process-recruteurs-lba"
+
+vi.mock("@sentry/node", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@sentry/node")>()),
+  captureMessage: vi.fn(),
+}))
 
 useMongo()
 
@@ -199,6 +205,33 @@ describe("import-recruteurs-lba-raw", () => {
     // then
     const publishedJobPartners = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).toArray()
     expect.soft(publishedJobPartners.length).toBe(0)
+  })
+
+  it("stocke la provenance de l'email dans raw_recruteurslba et compte les lignes rejetées", async () => {
+    const avecProvenance = generateRecruiterRawFixture({
+      siret: "13002526500013",
+      email_source: "deca_employeur",
+      email_confirme_deca: false,
+      email_source_date: "2026-11-21",
+    })
+    const sansDate = { ...generateRecruiterRawFixture(), siret: "80841382700019", email_source: "france_travail", email_confirme_deca: true, email_source_date: null }
+    const sourceInconnue = { ...generateRecruiterRawFixture(), siret: "11000201100044", email_source: "autre_source" }
+
+    const result = await importRecruteursLbaRaw(stringToStream(JSON.stringify([avecProvenance, sansDate, sourceInconnue])))
+
+    expect.soft(result).toEqual({ count: 2, rejected: 1 })
+    expect.soft(captureMessage).toHaveBeenCalledWith("import recruteurs lba : lignes invalides ignorées", {
+      level: "warning",
+      extra: { rejected: 1, rejectedByIssue: { "email_source: invalid_value": 1 } },
+    })
+    const raws = await getDbCollection("raw_recruteurslba")
+      .find({}, { projection: { _id: 0, siret: 1, email_source: 1, email_confirme_deca: 1, email_source_date: 1 } })
+      .sort({ siret: 1 })
+      .toArray()
+    expect.soft(raws).toEqual([
+      { siret: "13002526500013", email_source: "deca_employeur", email_confirme_deca: false, email_source_date: "2026-11-21" },
+      { siret: "80841382700019", email_source: "france_travail", email_confirme_deca: true, email_source_date: null },
+    ])
   })
 
   it("propage l'erreur (et la capture dans Sentry) au lieu de l'avaler silencieusement quand le flux source échoue", async () => {
