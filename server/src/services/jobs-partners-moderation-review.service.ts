@@ -14,20 +14,29 @@ import { buildAgentNoteParagraphs } from "shared/models/jobs-partners-moderation
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
 import type {
+  IModerationAccountType,
   IModerationJobDetail,
   IModerationQueueConformity,
   IModerationQueueFilters,
   IModerationQueueItem,
   IModerationQueueSort,
   IModerationRecruiter,
+  IModerationSearchAccountStatus,
+  IModerationSearchConformity,
 } from "shared/routes/jobs-partners-moderation.routes"
-import { MODERATION_DECISION_BLOCKED_REASONS, ZModerationJobDetail, ZModerationLatestClassification } from "shared/routes/jobs-partners-moderation.routes"
+import {
+  MODERATION_DECISION_BLOCKED_REASONS,
+  MODERATION_SEARCH_CONFORMITY,
+  ZModerationJobDetail,
+  ZModerationLatestClassification,
+} from "shared/routes/jobs-partners-moderation.routes"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { REPRISE_CLASSIFICATION_FILTER } from "@/jobs/moderation/retry-classification"
-import { applyStoredOfferClassification, getStoredModerationTexts, releaseOfferInReview } from "./formulaire.service"
+import { IS_NEVER_CLASSIFIED_EXPR } from "./account-offer-conformity.service"
+import { applyStoredOfferClassification, getCfaReferenceRole, getStoredModerationTexts, releaseOfferInReview } from "./formulaire.service"
 import { sendMailOffreRefusee } from "./formulaire-notifications.service"
 import { buildJobStatusChangeUpdate } from "./job-partner-status.service"
 import { classifyOffreTexts, getLatestModeration, PENDING_MODERATION_DECISION_FILTER } from "./jobs-partners-moderation.service"
@@ -60,11 +69,14 @@ const QUEUE_FILTER: Filter<IJobsPartnersOfferPrivate> = {
   ...PENDING_MODERATION_DECISION_FILTER,
 }
 
-// Le statut est testé avant le verdict : en échec, le verdict stocké vaut `a_verifier`.
-const CONFORMITY_FILTERS: Record<IModerationQueueConformity, Filter<IJobsPartnersOfferPrivate>> = {
+// Le statut est testé avant le verdict : en échec, le verdict stocké vaut `a_verifier`. Offre jamais analysée : cf.
+// IS_NEVER_CLASSIFIED_EXPR.
+const CONFORMITY_FILTERS: Record<IModerationSearchConformity, Filter<IJobsPartnersOfferPrivate>> = {
   non_conforme: { offer_moderation_status: OFFER_MODERATION_STATUS.OK, offer_moderation_verdict: "non_conforme" },
   a_verifier: { offer_moderation_status: OFFER_MODERATION_STATUS.OK, offer_moderation_verdict: "a_verifier" },
   indisponible: { offer_moderation_status: { $in: [OFFER_MODERATION_STATUS.INDISPONIBLE, OFFER_MODERATION_STATUS.EPUISE] } },
+  conforme: { offer_moderation_status: OFFER_MODERATION_STATUS.OK, offer_moderation_verdict: "conforme" },
+  non_applicable: { $or: [{ offer_moderation_verdict: null }, { offer_moderation_status: null }] },
 }
 
 /**
@@ -146,7 +158,9 @@ const SUMMARY_PROJECTION = {
   recruiter: 1,
 } as const
 
-/** Clés de tri de la file. Seule celle du recruteur lit les jointures, pour trier sur la raison sociale affichée. */
+const conformityRank = (conformity: IModerationSearchConformity) => MODERATION_SEARCH_CONFORMITY.indexOf(conformity)
+
+/** Clés de tri de la file et de la recherche. Seule celle du recruteur lit les jointures, pour trier sur la raison sociale affichée. */
 const SORT_KEYS: Record<IModerationQueueSort, unknown> = {
   created_at: "$created_at",
   offer_title: { $toLower: "$offer_title" },
@@ -154,10 +168,12 @@ const SORT_KEYS: Record<IModerationQueueSort, unknown> = {
   conformity: {
     $switch: {
       branches: [
-        { case: { $ne: ["$offer_moderation_status", OFFER_MODERATION_STATUS.OK] }, then: 2 },
-        { case: { $eq: ["$offer_moderation_verdict", "a_verifier"] }, then: 1 },
+        { case: IS_NEVER_CLASSIFIED_EXPR, then: conformityRank("non_applicable") },
+        { case: { $ne: ["$offer_moderation_status", OFFER_MODERATION_STATUS.OK] }, then: conformityRank("indisponible") },
+        { case: { $eq: ["$offer_moderation_verdict", "a_verifier"] }, then: conformityRank("a_verifier") },
+        { case: { $eq: ["$offer_moderation_verdict", "conforme"] }, then: conformityRank("conforme") },
       ],
-      default: 0,
+      default: conformityRank("non_conforme"),
     },
   },
   recruiter: { $toLower: { $ifNull: ["$recruiter.raison_sociale", ""] } },
@@ -178,27 +194,47 @@ const buildSearchFilter = async (search: string): Promise<Filter<IJobsPartnersOf
   return { $or: [{ workplace_legal_name: pattern }, { workplace_name: pattern }, { workplace_brand: pattern }, { cfa_legal_name: pattern }] }
 }
 
+type IModerationPageOptions = {
+  sort?: IModerationQueueSort
+  order?: "asc" | "desc"
+  limit?: number
+  offset?: number
+}
+
 type IModerationQueueQuery = IModerationQueueFilters & { scope: IModerationScope }
 
-/**
- * Étapes communes à la file et à la navigation entre offres : filtres, puis jointures quand le filtre sur le compte ou le
- * tri par recruteur les lisent. Sinon les jointures ne portent que sur la page affichée.
- */
-const buildQueueStages = async ({ scope, conformity, account_status, account_type, opco, search, sort = "created_at" }: IModerationQueueQuery) => {
-  const filters: Filter<IJobsPartnersOfferPrivate>[] = [QUEUE_FILTER, scopeFilter(scope)]
-  if (conformity?.length) filters.push({ $or: conformity.map((value) => CONFORMITY_FILTERS[value]) })
-  if (account_type?.length === 1) filters.push(account_type[0] === AccessEntityType.CFA ? { is_delegated: true } : { is_delegated: { $ne: true } })
-  // Le filtre OPCO de l'écran n'est proposé qu'aux administrateurs : celui d'un OPCO est imposé par scopeFilter.
-  if (scope.admin && opco?.length) filters.push({ workplace_opco: { $in: opco } })
-  if (search) filters.push(await buildSearchFilter(search))
+const accountTypeFilter = (accountType: IModerationAccountType[] | undefined): Filter<IJobsPartnersOfferPrivate>[] => {
+  if (accountType?.length !== 1) return []
+  return [accountType[0] === AccessEntityType.CFA ? { is_delegated: true } : { is_delegated: { $ne: true } }]
+}
 
-  const lookupBeforePaging = Boolean(account_status?.length) || sort === "recruiter"
+/** Filtres, puis jointures quand le filtre sur le compte ou le tri par recruteur les lisent. Sinon les jointures ne portent que sur la page affichée. */
+const buildOffersStages = ({
+  filters,
+  accountStatus,
+  sort = "created_at",
+}: {
+  filters: Filter<IJobsPartnersOfferPrivate>[]
+  accountStatus?: AccessStatus[]
+  sort?: IModerationQueueSort
+}) => {
+  const lookupBeforePaging = Boolean(accountStatus?.length) || sort === "recruiter"
   const stages: Document[] = [
     { $match: { $and: filters } },
     ...(lookupBeforePaging ? RECRUITER_LOOKUP_STAGES : []),
-    ...(account_status?.length ? [{ $match: { "recruiter.account_status": { $in: account_status } } }] : []),
+    ...(accountStatus?.length ? [{ $match: { "recruiter.account_status": { $in: accountStatus } } }] : []),
   ]
   return { stages, lookupBeforePaging }
+}
+
+/** Filtres de la file, communs à la liste et à la navigation entre offres. */
+const buildQueueFilters = async ({ scope, conformity, account_type, opco, search }: IModerationQueueQuery) => {
+  const filters: Filter<IJobsPartnersOfferPrivate>[] = [QUEUE_FILTER, scopeFilter(scope), ...accountTypeFilter(account_type)]
+  if (conformity?.length) filters.push({ $or: conformity.map((value) => CONFORMITY_FILTERS[value]) })
+  // Le filtre OPCO de l'écran n'est proposé qu'aux administrateurs : celui d'un OPCO est imposé par scopeFilter.
+  if (scope.admin && opco?.length) filters.push({ workplace_opco: { $in: opco } })
+  if (search) filters.push(await buildSearchFilter(search))
+  return filters
 }
 
 /** Ordre de la file : `_id` départage les ex aequo, toujours décroissant. `backward` le parcourt à rebours (offre précédente). */
@@ -207,13 +243,16 @@ const buildQueueSort = (order: "asc" | "desc", direction: "forward" | "backward"
   return { _sort: (order === "asc" ? 1 : -1) * sign, _id: -1 * sign }
 }
 
-export const listModerationQueue = async ({
+/** Page d'offres LBA avec leur recruteur, sans texte d'offre (cf. SUMMARY_PROJECTION). */
+const listModerationOffers = async ({
+  filters,
+  accountStatus,
+  sort = "created_at",
+  order = "desc",
   limit = 50,
   offset = 0,
-  ...query
-}: IModerationQueueQuery & { limit?: number; offset?: number }): Promise<{ jobs: IModerationQueueItem[]; total: number }> => {
-  const { sort = "created_at", order = "desc" } = query
-  const { stages, lookupBeforePaging } = await buildQueueStages(query)
+}: IModerationPageOptions & { filters: Filter<IJobsPartnersOfferPrivate>[]; accountStatus?: AccessStatus[] }): Promise<{ jobs: IModerationQueueItem[]; total: number }> => {
+  const { stages, lookupBeforePaging } = buildOffersStages({ filters, accountStatus, sort })
   const [{ data, totalCount }] = await getDbCollection("jobs_partners")
     .aggregate<{ data: IModerationQueueItem[]; totalCount: [{ count: number }] | [] }>([
       ...stages,
@@ -235,6 +274,64 @@ export const listModerationQueue = async ({
   return { jobs: data, total: totalCount[0]?.count ?? 0 }
 }
 
+export const listModerationQueue = async ({
+  limit,
+  offset,
+  ...query
+}: IModerationQueueQuery & { limit?: number; offset?: number }): Promise<{ jobs: IModerationQueueItem[]; total: number }> =>
+  listModerationOffers({ filters: await buildQueueFilters(query), accountStatus: query.account_status, sort: query.sort, order: query.order, limit, offset })
+
+/**
+ * Recherche d'un administrateur sur toutes les offres LBA, quel que soit leur statut : une offre supprimée est annulée,
+ * pas effacée (#5757). La recherche est obligatoire : sans elle, la page n'affiche aucun résultat.
+ */
+export const searchModerationOffers = async ({
+  search,
+  conformity,
+  account_status,
+  account_type,
+  opco,
+  offer_status,
+  ...page
+}: IModerationPageOptions & {
+  search: string
+  conformity?: IModerationSearchConformity[]
+  account_status?: IModerationSearchAccountStatus[]
+  account_type?: IModerationAccountType[]
+  opco?: OPCOS_LABEL[]
+  offer_status?: JOB_STATUS_ENGLISH[]
+}): Promise<{ jobs: IModerationQueueItem[]; total: number }> => {
+  const filters: Filter<IJobsPartnersOfferPrivate>[] = [{ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA }, await buildSearchFilter(search), ...accountTypeFilter(account_type)]
+  if (conformity?.length) filters.push({ $or: conformity.map((value) => CONFORMITY_FILTERS[value]) })
+  if (opco?.length) filters.push({ workplace_opco: { $in: opco } })
+  if (offer_status?.length) filters.push({ offer_status: { $in: offer_status } })
+  return listModerationOffers({ filters, accountStatus: account_status, ...page })
+}
+
+/**
+ * Offres non conformes en attente de décision, par entreprise partenaire d'un CFA : le périmètre de la file, sur les
+ * offres que compte la colonne Offres actives de sa fiche (cf. getFormulairesForCfaManagedEnterprises, countOpenJobs). Réservé aux administrateurs.
+ */
+export const countNonConformeOffersByPartner = async (cfaId: ObjectId): Promise<{ siret: string; non_conformes: number }[]> => {
+  const [role, managed] = await Promise.all([
+    getCfaReferenceRole(cfaId),
+    getDbCollection("entreprise_managed_by_cfa")
+      .find({ cfa_id: cfaId }, { projection: { entreprise_id: 1 } })
+      .toArray(),
+  ])
+  if (!role || !managed.length) return []
+  const entreprises = await getDbCollection("entreprises")
+    .find({ _id: { $in: managed.map(({ entreprise_id }) => entreprise_id) } }, { projection: { siret: 1 } })
+    .toArray()
+  return getDbCollection("jobs_partners")
+    .aggregate<{ siret: string; non_conformes: number }>([
+      { $match: { $and: [QUEUE_FILTER, CONFORMITY_FILTERS.non_conforme, { managed_by: role.user_id, workplace_siret: { $in: entreprises.map(({ siret }) => siret) } }] } },
+      { $group: { _id: "$workplace_siret", non_conformes: { $sum: 1 } } },
+      { $project: { _id: 0, siret: "$_id", non_conformes: 1 } },
+    ])
+    .toArray()
+}
+
 /**
  * Offres qui précèdent et suivent `id` dans la file, mêmes filtres et même tri. La position se lit sur la clé de tri de
  * l'offre et non sur sa présence dans la file : une offre qui vient d'être décidée en sort, sa suivante reste trouvable.
@@ -250,7 +347,7 @@ export const getModerationQueueNeighbors = async ({ id, ...query }: IModerationQ
     .toArray()
   if (!current) throw notFound("Offre introuvable")
 
-  const { stages } = await buildQueueStages(query)
+  const { stages } = buildOffersStages({ filters: await buildQueueFilters(query), accountStatus: query.account_status, sort })
   // `$literal` : un intitulé qui commence par `$` serait lu comme un chemin de champ.
   const currentSort = { $literal: current._sort }
   const findAdjacent = async (direction: "next" | "previous") => {

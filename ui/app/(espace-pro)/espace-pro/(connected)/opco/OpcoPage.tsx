@@ -6,9 +6,11 @@ import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useEffect, useState } from "react"
 import type { IUserRecruteurForAdminJSON } from "shared"
+import type { IAccountOfferConformity } from "shared/models/jobs-partners-moderation.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
+import { AccountConformityBadge, accountConformityRank } from "@/app/(espace-pro)/espace-pro/(connected)/_components/moderation/ModerationBadges"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useToast } from "@/app/hooks/useToast"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
@@ -22,6 +24,8 @@ import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 import { UserMenu } from "./_component/UserMenu"
 
 type TabKey = "awaiting" | "active" | "disabled"
+
+const conformityRank = ({ offer_conformity }: { offer_conformity: IAccountOfferConformity }) => accountConformityRank(offer_conformity)
 
 function AdministrationOpco() {
   const { newUser } = useSearchParamsRecord()
@@ -136,6 +140,19 @@ function AdministrationOpco() {
       disableSortBy: true,
       sortType: "basic",
       accessor: ({ jobs_count }) => jobs_count,
+    },
+    {
+      Header: "Conformité de l’offre",
+      id: "offer_conformity",
+      width: "190",
+      accessor: conformityRank,
+      sortType: (a, b) => conformityRank(a.original) - conformityRank(b.original),
+      Cell: ({
+        data,
+        cell: {
+          row: { id },
+        },
+      }) => <AccountConformityBadge conformity={data[id].offer_conformity} />,
     },
     {
       Header: "Origine",

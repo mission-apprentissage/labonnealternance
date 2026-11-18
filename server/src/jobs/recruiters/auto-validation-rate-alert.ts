@@ -21,7 +21,8 @@ const AUTO_REASON_CATEGORIES: Array<{ pattern: RegExp; bal: boolean; toCategory:
   { pattern: /^validaton par : bonnes boites ou referentiel opco/, bal: false, toCategory: () => "recruteurs LBA (ancienne raison)" },
   { pattern: /^validation par : BAL \(sources : ([^;]*) ;/, bal: true, toCategory: (match) => `BAL (${match[1]})` },
   { pattern: /^validaton par : BAL/, bal: true, toCategory: () => "BAL (ancienne raison)" },
-  { pattern: /correspond(?: à celui d'un| à un) contact$/, bal: false, toCategory: () => "contact CFA" },
+  { pattern: /^validation par : Référentiel \(sources : ([^;]*) ;/, bal: false, toCategory: (match) => `contact CFA (${match[1]})` },
+  { pattern: /correspond(?: à celui d'un| à un) contact$/, bal: false, toCategory: () => "contact CFA (ancienne raison)" },
 ]
 
 const categorizeAutoReason = (reason: string): { category: string; bal: boolean } => {

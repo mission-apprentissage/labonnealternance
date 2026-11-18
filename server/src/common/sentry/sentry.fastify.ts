@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/node"
 import type { FastifyError, FastifyRequest } from "fastify"
 import { assertUnreachable } from "shared"
 
+import { PERSONAL_QUERY_PARAMS } from "@/common/logger"
 import type { Server } from "@/http/server"
 
 import { REDACTED } from "./sentry"
@@ -32,10 +33,6 @@ function extractUserData(request: FastifyRequest): Sentry.User {
   }
   assertUnreachable(userType)
 }
-
-// Recherche en texte libre de l'admin : nom ou e-mail d'un compte. Classement de tous les paramètres
-// déclarés : cf. QUERY_PARAMS_MASKED dans sentry.test.ts.
-const PERSONAL_QUERY_PARAMS: ReadonlySet<string> = new Set(["search"])
 
 /**
  * Query entrante gardée pour le diagnostic (critères de recherche, identifiants) : seules les valeurs

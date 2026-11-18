@@ -9,8 +9,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { ICfaManagedRecruiterJson, IRecruiterJson } from "shared"
-import { JOB_STATUS } from "shared/models/job.model"
-import { isOfferExpired } from "shared/utils/offer-expiration"
+import { countOpenJobs } from "shared/models/job.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -172,9 +171,9 @@ function ListeEntreprise() {
     },
     {
       Header: "Offres actives",
-      id: "offres_actives",
+      id: "nombre_offres",
       sortType: "basic",
-      accessor: ({ jobs }: ICfaManagedRecruiterJson) => jobs.filter((job) => job.job_status === JOB_STATUS.ACTIVE && !isOfferExpired(job.job_expiration_date)).length,
+      accessor: ({ jobs }: ICfaManagedRecruiterJson) => countOpenJobs(jobs),
     },
     {
       Header: (

@@ -157,6 +157,11 @@ export const downloadJobApplications = async (jobId: string) => apiGetBlob("/app
 
 export const getModerationSummaries = async (ids: string[]) => apiGet("/moderation/jobs/summary", { querystring: { ids } })
 
+export const searchModerationOffers = async (querystring: IQuery<IRoutes["get"]["/moderation/jobs/search"]>) =>
+  apiGet("/moderation/jobs/search", { querystring: removeUndefinedFields(querystring) })
+
+export const getCfaNonConformeCounts = async (cfaId: string) => apiGet("/moderation/cfa/:cfaId/entreprises", { params: { cfaId } })
+
 export const getModerationJob = async (id: string) => apiGet("/moderation/jobs/:id", { params: { id } })
 
 export const getModerationQueueNeighbors = async (id: string, querystring: IQuery<IRoutes["get"]["/moderation/jobs/:id/neighbors"]>) =>

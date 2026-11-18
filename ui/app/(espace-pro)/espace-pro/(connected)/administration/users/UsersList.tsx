@@ -37,13 +37,6 @@ export const statusLabels = {
   [ETAT_UTILISATEUR.ERROR]: "En erreur",
 }
 
-export const statusTagColor: Record<ETAT_UTILISATEUR, "green" | "yellow" | "red" | "pink"> = {
-  [ETAT_UTILISATEUR.VALIDE]: "green",
-  [ETAT_UTILISATEUR.ATTENTE]: "yellow",
-  [ETAT_UTILISATEUR.DESACTIVE]: "red",
-  [ETAT_UTILISATEUR.ERROR]: "pink",
-}
-
 const TRAITABLE_STATUSES = [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR] as const
 
 export function UsersList() {
@@ -179,7 +172,7 @@ function UserContent({
       />
       {/* Ligne 1 : recherche */}
       <Box sx={{ mb: fr.spacing("6v") }}>
-        <AdminSearchInput label="Rechercher" placeholder="Raison sociale, email, téléphone..." onSearch={onSearch} onReset={onReset} />
+        <AdminSearchInput label="Rechercher" placeholder="Raison sociale, email ou téléphone" onSearch={onSearch} onReset={onReset} />
       </Box>
 
       {/* Ligne 2 : filtres */}

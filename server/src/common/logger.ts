@@ -11,9 +11,13 @@ const SENSIBLE_KEYS = new Set(["authorization", "password", "applicant_file_cont
 
 const REDACTED = "[Filtered]"
 
+// Recherche en texte libre de l'admin : nom ou e-mail d'un compte, masquée dans les logs et dans Sentry. Classement de
+// tous les paramètres déclarés : cf. QUERY_PARAMS_MASKED dans sentry.test.ts.
+export const PERSONAL_QUERY_PARAMS: ReadonlySet<string> = new Set(["search"])
+
 const isSensibleQueryParam = (key: string): boolean => {
   const lower = key.toLowerCase()
-  return lower.includes("token") || lower === "email" || SENSIBLE_KEYS.has(lower) || SENSIBLE_KEYS.has(lower.replace(/[-_]/g, ""))
+  return lower.includes("token") || lower === "email" || PERSONAL_QUERY_PARAMS.has(lower) || SENSIBLE_KEYS.has(lower) || SENSIBLE_KEYS.has(lower.replace(/[-_]/g, ""))
 }
 
 /**

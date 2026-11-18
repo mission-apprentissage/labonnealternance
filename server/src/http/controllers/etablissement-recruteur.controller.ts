@@ -7,7 +7,6 @@ import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { getSourceFromCookies } from "@/common/utils/http-utils"
-import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mail-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { startSession } from "@/common/utils/session.service"
 import { notifyToSlack } from "@/common/utils/slack-utils"
@@ -16,6 +15,7 @@ import type { Server } from "@/http/server"
 import { userWithAccountToUserForToken } from "@/security/access-token.service"
 import { getUserFromRequest } from "@/security/authentication.service"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/app-links.service"
+import { referentielContactReason } from "@/services/auto-validation-reasons"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import {
   entrepriseOnboardingWorkflow,
@@ -25,6 +25,7 @@ import {
   getEntrepriseDataFromSiret,
   getOpcoData,
   isCfaCreationValid,
+  matchCfaReferentielContact,
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
   validateEligibiliteCfa,
@@ -297,29 +298,12 @@ export default (server: Server) => {
           }
           const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa))
           const userAndOrganization: UserAndOrganization = { user: userCfa, organization }
-          if (!contacts.length) {
-            // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            await setUserHasToBeManuallyValidated(userAndOrganization)
-            await notifyToSlack(slackNotification)
-            return res.status(200).send({ user: userCfa, validated: false, token })
-          }
-          if (isUserMailExistInReferentiel(contacts, email)) {
-            // Validation automatique de l'utilisateur
-            await autoValidateUser(userAndOrganization, "l'email correspond à un contact")
+          const contactMatch = matchCfaReferentielContact(contacts, formatedEmail)
+          if (contactMatch) {
+            await autoValidateUser(userAndOrganization, referentielContactReason(contactMatch))
             await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
             return res.status(200).send({ user: userCfa, validated: true, token })
-          }
-          if (isEmailFromPrivateCompany(formatedEmail)) {
-            const domains = getAllDomainsFromEmailList(contacts.map(({ email }) => email))
-            const userEmailDomain = getEmailDomain(formatedEmail)
-            if (userEmailDomain && domains.includes(userEmailDomain)) {
-              // Validation automatique de l'utilisateur
-              await autoValidateUser(userAndOrganization, "le nom de domaine de l'email correspond à celui d'un contact")
-              await sendUserConfirmationEmail(userCfa)
-              // Keep the same structure as ENTREPRISE
-              return res.status(200).send({ user: userCfa, validated: true, token })
-            }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
           await setUserHasToBeManuallyValidated(userAndOrganization)

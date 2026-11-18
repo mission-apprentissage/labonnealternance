@@ -7,6 +7,7 @@ import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "../validator
 
 import { ZGlobalAddress, ZPointGeometry } from "./address.model.js"
 import { zObjectId } from "./common.js"
+import { ACCOUNT_OFFER_CONFORMITIES } from "./jobs-partners-moderation.model.js"
 import type { IUserWithAccount } from "./user-with-account.model.js"
 import { ZValidationUtilisateur } from "./user-with-account.model.js"
 
@@ -180,9 +181,11 @@ export const UserRecruteurForAdminProjection = {
   status: true,
 } as const
 
+export const ZAccountOfferConformity = z.enum(ACCOUNT_OFFER_CONFORMITIES).describe("Conformité de la pire offre non close du compte, réservée aux administrateurs et aux OPCO")
+
 export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminProjection).extend({
   organizationId: z.string(),
-  hasJobs: z.boolean().describe("Le recruteur a au moins une offre publiée"),
+  offer_conformity: ZAccountOfferConformity,
 })
 
 export type IUserRecruteurForAdmin = z.output<typeof ZUserRecruteurForAdmin>
