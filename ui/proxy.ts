@@ -218,9 +218,9 @@ const isConnectionRequired = (path: string) => {
 export const config = {
   matcher: [
     {
-      // Exclut les assets statiques et le manifest PWA : le proxy résout la session via
-      // 2 appels API dès que le cookie lba_session est présent, inutile pour ces fichiers
-      source: "/((?!_next/static|_next/image|favicon|images|assets|fonts|styles|ressources|manifest\\.webmanifest).*)",
+      // Exclut les assets statiques, le manifest PWA et le BFF (/bff) : le proxy résout la session via
+      // 2 appels API dès que le cookie lba_session est présent, inutile pour ces requêtes
+      source: "/((?!_next/static|_next/image|bff/|favicon|images|assets|fonts|styles|ressources|manifest\\.webmanifest).*)",
     },
   ],
 }

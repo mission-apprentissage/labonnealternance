@@ -369,6 +369,7 @@ export async function obfuscateCollections(): Promise<void> {
     "reported_companies",
     "rolemanagement360",
     "search_queries",
+    "search_tokens",
     "sessions",
     "trafficsources",
     "unsubscribedofs",

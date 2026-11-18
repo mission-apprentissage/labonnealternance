@@ -8,6 +8,10 @@ Endpoint de recherche unifié utilisant **MongoDB Search** (mongot / Lucene) sur
 GET /api/v1/search
 ```
 
+## Accès
+
+Route non publique : nginx répond 404 hors du réseau docker. Le navigateur l'appelle par le BFF de l'UI (`/bff/v1/search`, `ui/app/bff/[...path]/route.ts`), qui transmet l'IP de l'internaute et un jeton de recherche (`x-lba-search-token`). Le jeton s'obtient sur `/bff/jeton` après une preuve de travail ALTCHA et couvre 100 recherches. Le rendu serveur de l'UI l'appelle en direct, sans jeton. Les intégrateurs passent par l'API Apprentissage.
+
 ## Paramètres de requête
 
 | Paramètre | Type | Défaut | Description |
