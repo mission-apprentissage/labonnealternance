@@ -1,0 +1,60 @@
+<%#
+  Pied de page : bloc « Ce courriel est généré automatiquement… » puis mentions légales.
+  Paramètres :
+  - data (data.publicEmail) ;
+  - contactReason : phrase (ou liste de phrases) qui suit le paragraphe DGEFP, HTML brut ;
+  - contact (défaut true) : false quand le template porte son propre bloc de contact ;
+  - utm : query string sans « ? » ajoutée aux liens FAQ et politique de confidentialité ;
+    faqUtm et privacyUtm la remplacent pour un seul lien ;
+  - faqAnchor : ancre de la FAQ (« recruteur ») ;
+  - contactSubject : objet du mailto du bloc de contact, encodé ;
+  - legal : "tableau-de-bord" pour la mention des données reçues du Tableau de bord de l'apprentissage (CFA, OPCO).
+%>
+<%
+  const withQuery = (url, query, anchor) => `${url}${query ? `?${query}` : ""}${anchor ? `#${anchor}` : ""}`
+  const faqUrl = withQuery("https://labonnealternance.apprentissage.beta.gouv.fr/faq", locals.faqUtm ?? locals.utm, locals.faqAnchor)
+  const privacyUrl = withQuery("https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite", locals.privacyUtm ?? locals.utm)
+  const contactMailto = withQuery(`mailto:${data.publicEmail}`, locals.contactSubject ? `subject=${contactSubject}` : "")
+  const reasons = [].concat(locals.contactReason ?? [])
+  const linkStyle = "text-decoration: underline; color: inherit;"
+%>
+<mj-spacer height="24px"></mj-spacer>
+<% if (locals.contact !== false) { %>
+<mj-section border-radius="4px" css-class="section">
+  <mj-group>
+    <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+      <mj-text mj-class="text text-muted">
+        Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+        <br />Pour toute question, consultez notre <a href="<%= faqUrl %>" style="<%= linkStyle %>">FAQ</a> ou écrivez-nous à <a href="<%= contactMailto %>" style="<%= linkStyle %>"><%= data.publicEmail %></a>
+        <br />
+      </mj-text>
+    </mj-column>
+  </mj-group>
+</mj-section>
+<mj-spacer height="24px"></mj-spacer>
+<% } %>
+<mj-section border-radius="4px" css-class="section">
+  <mj-group>
+    <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+      <mj-text mj-class="text text-muted">
+        La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
+        <% reasons.forEach((reason) => { %>
+        <br />
+        <br /><%- reason %>
+        <% }) %>
+        <% if (locals.legal === "tableau-de-bord") { %>
+        <br />
+        <br />Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>" style="<%= linkStyle %>"><%= data.publicEmail %></a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
+        <br />
+        <br />Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="<%= privacyUrl %>" style="<%= linkStyle %>">politique de confidentialité de La bonne alternance</a>.
+        <% } else { %>
+        <br />
+        <br />Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>?subject=Droit%20opposition" style="<%= linkStyle %>"><%= data.publicEmail %></a>
+        <br />
+        <br />Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="<%= privacyUrl %>" style="<%= linkStyle %>">politique de confidentialité</a> de La bonne alternance.
+        <% } %>
+        <br />
+      </mj-text>
+    </mj-column>
+  </mj-group>
+</mj-section>

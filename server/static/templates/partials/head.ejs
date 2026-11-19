@@ -1,0 +1,69 @@
+<%#
+  <mj-head> commun. Paramètres optionnels : title (balise <title>), preview (texte d'aperçu dans la boîte de réception).
+  Les mj-class évitent de répéter les attributs de texte : un attribut posé sur la balise l'emporte sur la classe.
+%>
+<mj-head>
+  <% if (locals.title) { %><mj-title><%= title %></mj-title><% } %>
+  <% if (locals.preview) { %><mj-preview><%= preview %></mj-preview><% } %>
+  <mj-breakpoint width="480px"></mj-breakpoint>
+  <mj-attributes>
+    <mj-all padding="0"></mj-all>
+    <mj-all font-family="Arial, sans-serif" />
+    <mj-class name="text" align="left" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" />
+    <mj-class name="text-body" color="#161616" font-size="16px" font-weight="400" line-height="24px" />
+    <mj-class name="text-muted" color="#666666" font-size="14px" font-weight="400" line-height="24px" />
+    <mj-class name="title" color="#000091" font-size="20px" font-weight="700" line-height="22px" />
+  </mj-attributes>
+  <mj-style>
+    @media only screen and (max-width: 799px) {
+      .text > div {
+        text-align: inherit !important;
+      }
+
+      .wrapper > table > tbody > tr > td {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+      }
+
+      .section > table > tbody > tr > td {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+      }
+
+      .column > table > tbody > tr > td {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+      }
+
+      .padB40 {
+        padding-bottom: 40px !important;
+      }
+
+      .image {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+      }
+
+      .image > table {
+        text-align: center !important;
+        margin: 0 auto !important;
+      }
+
+      .divider {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+      }
+
+      .button > table {
+        width: 100% !important;
+      }
+
+      .button > table > tbody > tr > td > a {
+        width: 80% !important;
+      }
+    }
+  </mj-style>
+  <mj-style inline="inline">
+    .column > table { border-collapse: separate; }
+  </mj-style>
+</mj-head>
