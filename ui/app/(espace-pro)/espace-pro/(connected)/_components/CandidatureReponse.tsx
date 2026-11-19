@@ -44,9 +44,12 @@ export const CandidatureReponse = () => {
     queryKey: ["job-application-reply-token", job_id, application_id, intention],
     queryFn: () => getJobApplicationReplyToken(job_id, application_id, intention),
     retry: false,
-    // Un nouveau jeton à chaque ouverture : il ne sert qu'au formulaire affiché.
+    // Un jeton par ouverture du formulaire, jamais relu pendant son affichage : un nouveau jeton changerait la clé
+    // du formulaire (cf. useIntentionData), qui relirait ses données et reprogrammerait une réponse annulée.
+    staleTime: Number.POSITIVE_INFINITY,
     gcTime: 0,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   if (isDetailLoading || isTokenLoading) {

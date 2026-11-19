@@ -22,6 +22,7 @@ import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connec
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { publicConfig } from "@/config.public"
 import { downloadJobApplications, getFormulaire, getJobApplications, getJobApplicationsExportUrl } from "@/utils/api"
+import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 const APPLICATIONS_PAGE_SIZE = 20
@@ -103,13 +104,8 @@ export const CandidaturesOffre = () => {
     enabled: Boolean(cfaEstablishmentId),
   })
 
-  const breadcrumbPages = cfaEstablishmentId
-    ? [
-        PAGES.static.backCfaHome,
-        PAGES.dynamic.backCfaPageEntreprise(cfaEstablishmentId, recruiter?.establishment_raison_sociale ?? recruiter?.establishment_siret),
-        PAGES.dynamic.backCfaEntrepriseCandidaturesOffre({ establishment_id: cfaEstablishmentId, job_id }),
-      ]
-    : [{ ...PAGES.static.backHomeEntreprise, title: "Entreprise" }, PAGES.dynamic.backEntrepriseCandidaturesOffre({ job_id })]
+  const pages = getApplicationPages({ job_id, cfaEstablishmentId, establishmentName: recruiter?.establishment_raison_sociale ?? recruiter?.establishment_siret })
+  const breadcrumbPages = [...pages.parents, pages.applications]
   const backPath = cfaEstablishmentId ? PAGES.dynamic.backCfaPageEntreprise(cfaEstablishmentId).getPath() : PAGES.static.backHomeEntreprise.getPath()
 
   if (isLoading) {
@@ -128,15 +124,7 @@ export const CandidaturesOffre = () => {
             <Alert severity="error" small description={error?.message ?? "Les candidatures de cette offre sont indisponibles."} />
           </>
         ) : (
-          <CandidaturesOffreContent
-            data={data}
-            buildApplicationPath={(application_id) =>
-              (cfaEstablishmentId
-                ? PAGES.dynamic.backCfaEntrepriseCandidatureDetail({ establishment_id: cfaEstablishmentId, job_id, application_id })
-                : PAGES.dynamic.backEntrepriseCandidatureDetail({ job_id, application_id })
-              ).getPath()
-            }
-          />
+          <CandidaturesOffreContent data={data} buildApplicationPath={(application_id) => pages.detail(application_id).getPath()} />
         )}
         <Box sx={{ mt: fr.spacing("2v") }}>
           <Link className="fr-link fr-link--sm fr-link--icon-left fr-icon-arrow-left-line" href={backPath}>

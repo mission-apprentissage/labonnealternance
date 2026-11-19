@@ -18,8 +18,8 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useToast } from "@/app/hooks/useToast"
 import { useAuth } from "@/context/UserContext"
 import { extendOffre, getModerationSummaries } from "@/utils/api"
+import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
 import { sortReactTableDate } from "@/utils/date-utils"
-import { PAGES } from "@/utils/routes.utils"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import { ConformityWithAgentNote } from "./moderation/AgentNote"
 import { awaitsModerationDecision } from "./moderation/moderation.types"
@@ -280,9 +280,9 @@ export const OffresTabs = ({
   const buildApplicationsPath = (job_id: string): string | undefined => {
     switch (user?.type) {
       case AUTHTYPE.ENTREPRISE:
-        return PAGES.dynamic.backEntrepriseCandidaturesOffre({ job_id }).getPath()
+        return getApplicationPages({ job_id }).applications.getPath()
       case AUTHTYPE.CFA:
-        return PAGES.dynamic.backCfaEntrepriseCandidaturesOffre({ establishment_id: recruiter.establishment_id, job_id }).getPath()
+        return getApplicationPages({ job_id, cfaEstablishmentId: recruiter.establishment_id }).applications.getPath()
       default:
         return undefined
     }

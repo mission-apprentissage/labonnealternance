@@ -42,10 +42,11 @@ const cardBodySx = {
  * Lire ces données programme la réponse (cf. getApplicationDataForIntentionAndScheduleMessage) : une lecture par
  * ouverture du formulaire, partagée avec le fil d'Ariane, et aucune au retour sur l'onglet, qui reprogrammerait un
  * envoi annulé. gcTime 0 : rouvrir le formulaire relit, donc reprogramme, comme un nouveau clic dans le mail.
+ * Le jeton fait partie de la clé : il doit rester le même tant que le formulaire est affiché (cf. CandidatureReponse).
  */
 export const useIntentionData = ({ id, company_recruitment_intention, token }: IntentionPageProps) =>
   useQuery({
-    queryKey: ["getApplicationDataForIntention", id, company_recruitment_intention],
+    queryKey: ["getApplicationDataForIntention", id, company_recruitment_intention, token],
     queryFn: () => getApplicationDataForIntention(id, company_recruitment_intention, token),
     enabled: Boolean(id && company_recruitment_intention && token),
     retry: false,
