@@ -10,7 +10,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: METADATA.static.guideRecruteurRecruterUnAlternant().description,
     imageUrl: `${IMAGE_BASE_PATH}recruter-un-alternant.svg`,
     path: PAGES.static.guideRecruteurRecruterUnAlternant.getPath(),
-    updatedAt: "11/08/2026",
+    updatedAt: "01/12/2026",
   },
   ["je-suis-employeur-public"]: {
     id: "je-suis-employeur-public",
