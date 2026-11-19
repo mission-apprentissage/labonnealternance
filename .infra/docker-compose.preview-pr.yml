@@ -23,8 +23,6 @@ services:
       - VIRTUAL_HOST={{pr_number}}.labonnealternance-preview.apprentissage.beta.gouv.fr
       - VIRTUAL_PATH=/api
       - VIRTUAL_PORT=5000
-      - LETSENCRYPT_HOST={{pr_number}}.labonnealternance-preview.apprentissage.beta.gouv.fr
-      - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
     volumes:
       - server:/data
       - ./.env_server:/app/server/.env
@@ -46,8 +44,6 @@ services:
       - VIRTUAL_HOST={{pr_number}}.labonnealternance-preview.apprentissage.beta.gouv.fr
       - VIRTUAL_PATH=/
       - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST={{pr_number}}.labonnealternance-preview.apprentissage.beta.gouv.fr
-      - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
       - HOSTNAME=0.0.0.0
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:3000/healthcheck"]
