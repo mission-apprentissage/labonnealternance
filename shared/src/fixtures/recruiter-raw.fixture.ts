@@ -4,7 +4,6 @@ import type { IRecruteursLbaRaw } from "../models/raw-recruteurs-lba.model.js"
 
 export function generateRecruiterRawFixture(data: Partial<IRecruteursLbaRaw> = {}): IRecruteursLbaRaw {
   return {
-    ...data,
     _id: new ObjectId(),
     createdAt: new Date(),
     siret: "13002526500013",
@@ -34,5 +33,6 @@ export function generateRecruiterRawFixture(data: Partial<IRecruteursLbaRaw> = {
         normalized_score: 0.0106687117,
       },
     ],
+    ...data,
   }
 }
