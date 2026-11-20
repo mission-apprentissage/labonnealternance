@@ -119,7 +119,6 @@ const APPLICATION_FIELDS: { key: string; label: string; value: (application: IAp
   { key: "rythm", label: "Rythme de la formation", value: (application) => formatText(application.applicant_rythm_description) },
   { key: "contract_duration", label: "Durée de contrat souhaitée", value: (application) => formatText(application.applicant_contract_duration) },
   { key: "contract_start", label: "Début de contrat souhaité", value: (application) => (application.applicant_contract_start ?? []).join(", ") },
-  { key: "job_searched", label: "Métier recherché", value: (application) => formatText(application.job_searched_by_user) },
 ]
 
 const getAnswers = (application: IApplicationWithApplicant) =>

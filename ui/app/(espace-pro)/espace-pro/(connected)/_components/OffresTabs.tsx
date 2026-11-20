@@ -94,7 +94,11 @@ const CandidaturesCell = ({ job, applicationsPath }: { job: LocalJob; applicatio
   const totalLabel =
     // Lien aussi passé le délai de consultation : la page explique pourquoi les candidatures ne sont plus disponibles.
     applicationsPath ? (
-      <Link className="fr-link" href={applicationsPath} aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}>
+      <Link
+        className="fr-link fr-link--sm"
+        href={applicationsPath}
+        aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}
+      >
         {total}
       </Link>
     ) : (
@@ -333,6 +337,7 @@ export const OffresTabs = ({
       accessor: (row) => {
         return (
           <OffresTabsMenu
+            applicationsPath={row.candidatures > 0 ? buildApplicationsPath(row._id) : undefined}
             openSuppression={openSuppression}
             buildOfferEditionUrl={buildOfferEditionUrl}
             row={row}

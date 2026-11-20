@@ -17,6 +17,7 @@ import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 
 export const OffresTabsMenu = ({
   row,
+  applicationsPath,
   openSuppression,
   buildOfferEditionUrl,
   onOffreProlongationClick,
@@ -25,6 +26,8 @@ export const OffresTabsMenu = ({
   awaitsModerationDecision = false,
 }: {
   row: any
+  /** Page des candidatures de l'offre, quand l'utilisateur peut les consulter et qu'il y en a. */
+  applicationsPath?: string
   openSuppression: (row: any) => any
   buildOfferEditionUrl: (offerId: string) => string
   onOffreProlongationClick: (offerId: string) => void
@@ -74,6 +77,15 @@ export const OffresTabsMenu = ({
           link: MODERATION_PAGES.offre({ job_id: row._id, userType: user.type as "ADMIN" | "OPCO" }).getPath(),
           type: "link",
           icon: <DsfrIcon name="fr-icon-scales-3-line" size={16} />,
+        }
+      : null,
+    applicationsPath
+      ? {
+          label: "Voir les candidatures",
+          hint: `${offerTitle}`,
+          link: applicationsPath,
+          type: "link",
+          icon: <DsfrIcon name="fr-icon-user-line" size={16} />,
         }
       : null,
     {
