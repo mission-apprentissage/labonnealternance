@@ -6,6 +6,7 @@ import { useState } from "react"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { DsfrIcon } from "@/components/DsfrIcon"
+import { TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
 import type { IntentionPageFormValues } from "./IntentionPageForm"
@@ -37,19 +38,28 @@ const cardBodySx = {
   py: "24px",
 }
 
+/**
+ * Lire ces données programme la réponse (cf. getApplicationDataForIntentionAndScheduleMessage) : une lecture par
+ * ouverture du formulaire, partagée avec le fil d'Ariane, et aucune au retour sur l'onglet, qui reprogrammerait un
+ * envoi annulé. gcTime 0 : rouvrir le formulaire relit, donc reprogramme, comme un nouveau clic dans le mail.
+ * Le jeton fait partie de la clé : il doit rester le même tant que le formulaire est affiché (cf. CandidatureReponse).
+ */
+export const useIntentionData = ({ id, company_recruitment_intention, token }: IntentionPageProps) =>
+  useQuery({
+    queryKey: ["getApplicationDataForIntention", id, company_recruitment_intention, token],
+    queryFn: () => getApplicationDataForIntention(id, company_recruitment_intention, token),
+    enabled: Boolean(id && company_recruitment_intention && token),
+    retry: false,
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+  })
+
 const IntentionPageContent = ({ company_recruitment_intention, id, token, onCancel, onSentNow }: IntentionPageProps & { onCancel: () => void; onSentNow: () => void }) => {
   const [isEditing, setEditing] = useState(false)
   const [formState, setFormState] = useState({ isSubmitting: false })
 
-  const {
-    data,
-    error: getIntentionError,
-    isLoading,
-  } = useQuery({
-    queryKey: ["getApplicationDataForIntention"],
-    queryFn: () => getApplicationDataForIntention(id, company_recruitment_intention, token),
-    retry: false,
-  })
+  const { data, error: getIntentionError, isLoading } = useIntentionData({ id, company_recruitment_intention, token })
 
   const sendIntentionCommentMutation = useMutation({
     mutationKey: ["sendIntentionComment", id, token],
@@ -78,6 +88,15 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         <Box role="alert" sx={{ fontSize: "20px", margin: "auto" }}>
           {error?.message ?? "Une erreur technique s'est produite"}
         </Box>
+      </Box>
+    )
+  }
+
+  if (data.treated_elsewhere_at) {
+    // Aucune réponse n'a été programmée (cf. getApplicationDataForIntentionAndScheduleMessage) : même bandeau que le détail de l'espace pro.
+    return (
+      <Box sx={{ maxWidth: "660px", margin: "auto" }}>
+        <TreatedElsewhereBanner date={data.treated_elsewhere_at} />
       </Box>
     )
   }

@@ -1,13 +1,24 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box } from "@mui/material"
 import { useMemo } from "react"
-import { useFlexLayout, useSortBy, useTable } from "react-table"
-import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
-import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
-import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
+import { useFlexLayout, usePagination, useSortBy, useTable } from "react-table"
+import { ColumnHeaderContent, getColumnAriaSort } from "@/app/(espace-pro)/_components/ColumnHeaderContent"
 import { getFlatTableCellBordersSx, getFlatTableResetSx, getFlatTableWrapperSx } from "@/app/(espace-pro)/_components/table-styles"
+import { PaginationReactQuery } from "@/components/espace_pro/PaginationReactQuery"
 
-const Table = ({ caption, data, columns }: { caption: string; data: any[]; columns: any }) => {
+type TableProps = {
+  caption: string
+  data: any[]
+  columns: any
+  /** Sans valeur, toutes les lignes s'affichent sur une seule page. */
+  pageSize?: number
+  /** Colonnes dont les cellules identifient la ligne : rendues en `th scope="row"` et référencées par les autres cellules (RGAA 5.7). */
+  rowHeaderColumnIds?: string[]
+  initialSortBy?: { id: string; desc: boolean }[]
+  captionSrOnly?: boolean
+}
+
+const Table = ({ caption, data, columns, pageSize, rowHeaderColumnIds = [], initialSortBy = [{ id: "createdAt", desc: true }], captionSrOnly = false }: TableProps) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -16,12 +27,22 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
       columns: tableColumns,
       data: tableData,
       defaultColumn: { width: 150 },
-      initialState: { sortBy: [{ id: "createdAt", desc: true }] },
+      initialState: { sortBy: initialSortBy, pageSize: pageSize ?? Number.MAX_SAFE_INTEGER },
     },
     useFlexLayout,
-    useSortBy
+    useSortBy,
+    usePagination
   )
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    pageCount,
+    gotoPage,
+    prepareRow,
+    state: { pageIndex },
+  } = tableInstance
 
   return (
     <Box className="fr-table">
@@ -34,73 +55,63 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
               sx={{
                 ...getFlatTableResetSx(),
                 ...getFlatTableCellBordersSx(),
+                "& tbody th": { backgroundColor: "var(--background-default-grey) !important" },
               }}
             >
-              <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v") }} component="caption">
+              <Box
+                className={captionSrOnly ? "fr-sr-only" : undefined}
+                sx={captionSrOnly ? undefined : { position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v") }}
+                component="caption"
+              >
                 {caption}
               </Box>
               <Box component="thead">
-                {headerGroups.map((headerGroup, g) => (
-                  <Box key={g} as="tr" {...headerGroup.getHeaderGroupProps({})}>
-                    {headerGroup.headers.map((column, i) => {
-                      const sortProps = column.getSortByToggleProps()
-                      const { onClick: sortOnClick, ...headerSortProps } = sortProps
-
-                      return (
-                        <Box key={i} as="th" {...column.getHeaderProps(headerSortProps)} title={null} scope="col" id={column.id}>
-                          {column.canSort ? (
-                            <Box
-                              component="button"
-                              type="button"
-                              onClick={sortOnClick}
-                              aria-label={`Trier par ${column.srOnly || column.Header}${column.isSorted ? (column.isSortedDesc ? ", trié par ordre décroissant" : ", trié par ordre croissant") : ""}`}
-                              sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "flex-start",
-                                width: "100%",
-                                background: "none",
-                                border: "none",
-                                padding: 0,
-                                cursor: "pointer",
-                                font: "inherit",
-                                color: "inherit",
-                                "&:focus-visible": {
-                                  outline: "2px solid #0a76f6",
-                                  outlineOffset: "2px",
-                                },
-                              }}
-                            >
-                              <Typography component="span" className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
-                                {column.srOnly ? column.srOnly : column.render("Header")}
-                              </Typography>
-                              <Box component="span" sx={{ pl: fr.spacing("2v") }}>
-                                {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : <ArrowUpDownLine />}
-                              </Box>
-                            </Box>
-                          ) : (
-                            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start", width: "100%" }}>
-                              <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
-                            </Box>
-                          )}
-                        </Box>
-                      )
-                    })}
-                  </Box>
-                ))}
-              </Box>
-              <Box as="tbody" {...getTableBodyProps()}>
-                {rows.map((row, i) => {
-                  prepareRow(row)
+                {headerGroups.map((headerGroup) => {
+                  const { key: headerGroupKey, ...headerGroupProps } = headerGroup.getHeaderGroupProps()
                   return (
-                    <Box key={i} as="tr" {...row.getRowProps()}>
-                      {row.cells.map((cell, j) => {
+                    <Box key={headerGroupKey} as="tr" {...headerGroupProps}>
+                      {headerGroup.headers.map((column) => {
+                        // Le tri se déclenche sur le bouton de l'en-tête (cf. ColumnHeaderContent), pas sur la cellule.
+                        const { onClick: _onSortClick, ...headerSortProps } = column.getSortByToggleProps()
+                        const { key: headerKey, ...headerProps } = column.getHeaderProps(headerSortProps)
+
                         return (
                           <Box
-                            key={j}
-                            headers={cell.column.id}
-                            as="td"
-                            {...cell.getCellProps()}
+                            key={headerKey}
+                            as="th"
+                            {...headerProps}
+                            title={null}
+                            scope="col"
+                            id={column.id}
+                            aria-sort={getColumnAriaSort(column)}
+                            sx={{ display: "flex !important", alignItems: "center" }}
+                          >
+                            <ColumnHeaderContent column={column} />
+                          </Box>
+                        )
+                      })}
+                    </Box>
+                  )
+                })}
+              </Box>
+              <Box as="tbody" {...getTableBodyProps()}>
+                {page.map((row) => {
+                  prepareRow(row)
+                  const { key: rowKey, ...rowProps } = row.getRowProps()
+                  const rowHeaderIds = rowHeaderColumnIds.map((columnId) => `${columnId}-${row.id}`)
+                  return (
+                    <Box key={rowKey} as="tr" {...rowProps}>
+                      {row.cells.map((cell) => {
+                        const { key: cellKey, ...cellProps } = cell.getCellProps()
+                        const isRowHeader = rowHeaderColumnIds.includes(cell.column.id)
+                        const headerProps = isRowHeader
+                          ? { as: "th", scope: "row", id: `${cell.column.id}-${row.id}`, headers: cell.column.id }
+                          : { as: "td", headers: [cell.column.id, ...rowHeaderIds].join(" ") }
+                        return (
+                          <Box
+                            key={cellKey}
+                            {...headerProps}
+                            {...cellProps}
                             {...(cell.column.id === "action" ? { sx: { padding: `${fr.spacing("1v")} !important` } } : {})}
                             alignContent={"center"}
                           >
@@ -116,6 +127,7 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
           </Box>
         </Box>
       </Box>
+      {pageSize !== undefined && <PaginationReactQuery gotoPage={gotoPage} pageCount={pageCount} currentPage={pageIndex} />}
     </Box>
   )
 }

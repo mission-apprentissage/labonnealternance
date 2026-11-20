@@ -7,7 +7,7 @@ import { ObjectId } from "mongodb"
 import type { IApplicationApiPublic } from "shared"
 import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
 import { PARTNER_JOB_APPLICATION_QUESTIONS, SPONTANEOUS_APPLICATION_QUESTIONS } from "shared/constants/applicant-questions"
-import { ApplicationIntention } from "shared/constants/application"
+import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import {
@@ -506,6 +506,8 @@ describe("POST /v2/application", () => {
       company_name: "ASSEMBLEE NATIONALE",
       recruiter_email: "faux_email@faux-domaine-compagnie.com",
       recruiter_phone: "0300000000",
+      treated_elsewhere_at: null,
+      espace_pro: { job_id: "64a43d28eeeb7c3b210faf59", cfa_establishment_id: null, establishment_name: "ASSEMBLEE NATIONALE" },
     })
     const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
     expect.soft(application).toMatchObject({
@@ -535,8 +537,64 @@ describe("POST /v2/application", () => {
       company_feedback_reasons: null,
       company_feedback: null,
       company_feedback_send_status: CompanyFeebackSendStatus.CANCELED,
-      company_recruitment_intention: ApplicationIntention.ENTRETIEN,
+      company_recruitment_intention: null,
+      company_recruitment_intention_date: null,
     })
+  })
+
+  it("does not cancel an intention already sent", async () => {
+    await getDbCollection("applications").updateOne(
+      { _id: new ObjectId("6081289803569600282e0001") },
+      { $set: { company_feedback_send_status: CompanyFeebackSendStatus.SENT, company_recruitment_intention: ApplicationIntention.REFUS } }
+    )
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/application/intention/cancel/6081289803569600282e0001",
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(200)
+    const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
+    expect.soft(application).toMatchObject({
+      company_feedback_send_status: CompanyFeebackSendStatus.SENT,
+      company_recruitment_intention: ApplicationIntention.REFUS,
+    })
+  })
+
+  it("does not schedule an intention on an application treated elsewhere", async () => {
+    await getDbCollection("applications").updateOne(
+      { _id: new ObjectId("6081289803569600282e0001") },
+      { $set: { company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE, company_recruitment_intention_date: new Date(), company_feedback_send_status: null } }
+    )
+
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/application/intention/schedule/6081289803569600282e0001?intention=${ApplicationIntention.ENTRETIEN}`,
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(200)
+    expect.soft(response.json().treated_elsewhere_at).toEqual(expect.any(String))
+    const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
+    expect.soft(application).toMatchObject({ company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE, company_feedback_send_status: null })
+  })
+
+  it("does not cancel an application treated elsewhere", async () => {
+    await getDbCollection("applications").updateOne(
+      { _id: new ObjectId("6081289803569600282e0001") },
+      { $set: { company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE, company_feedback_send_status: null } }
+    )
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/application/intention/cancel/6081289803569600282e0001",
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(200)
+    const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
+    expect.soft(application).toMatchObject({ company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE, company_feedback_send_status: null })
   })
 
   it("does not reset SENT application to SCHEDULED when schedule link is re-opened", async () => {
@@ -565,6 +623,8 @@ describe("POST /v2/application", () => {
       company_name: "ASSEMBLEE NATIONALE",
       recruiter_email: "faux_email@faux-domaine-compagnie.com",
       recruiter_phone: "0300000000",
+      treated_elsewhere_at: null,
+      espace_pro: { job_id: "64a43d28eeeb7c3b210faf59", cfa_establishment_id: null, establishment_name: "ASSEMBLEE NATIONALE" },
       sent_intention: {
         company_feedback_send_status: CompanyFeebackSendStatus.SENT,
         company_feedback: null,

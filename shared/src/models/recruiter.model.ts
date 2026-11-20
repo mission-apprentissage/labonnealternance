@@ -68,9 +68,23 @@ export const ZRecruiterWithRomeDetailAndApplicationCount = ZRecruiter.omit({ job
   jobs: z.array(
     ZJob.extend({
       candidatures: z.number(),
+      candidatures_en_attente: z.number().describe("Candidatures sans intention exprimée par le recruteur"),
+      job_closure: z
+        .object({ reason: z.enum(["filled", "cancelled"]), date: z.date() })
+        .nullable()
+        .describe("Clôture de l'offre (pourvue ou annulée), point de départ de la consultation des candidatures"),
       rome_detail: ZReferentielRome.nullish(),
     })
   ),
 })
+
+/** Entreprise gérée par un CFA, avec ses candidatures pour la liste « Mes entreprises » (#5769). */
+export const ZCfaManagedRecruiter = ZRecruiter.extend({
+  applications_count: z.number().describe("Candidatures reçues sur toutes les offres de l'entreprise"),
+  pending_applications_count: z.number().describe("Candidatures sans réponse sur les offres ouvertes, comme dans le tableau des offres"),
+})
+
+export type ICfaManagedRecruiter = z.output<typeof ZCfaManagedRecruiter>
+export type ICfaManagedRecruiterJson = Jsonify<z.input<typeof ZCfaManagedRecruiter>>
 
 export type IRecruiterWithRomeDetailAndApplicationCount = z.output<typeof ZRecruiterWithRomeDetailAndApplicationCount>

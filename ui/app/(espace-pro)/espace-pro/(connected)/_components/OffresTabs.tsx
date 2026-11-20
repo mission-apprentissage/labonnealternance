@@ -5,10 +5,12 @@ import { Box, Typography } from "@mui/material"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Image from "next/image"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 import type { IJobJson, IRecruiterJson, JOB_START_TYPE } from "shared"
 import { JOB_STATUS } from "shared"
 import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants/index"
+import { getApplicationsConsultation, type IOfferClosure } from "shared/utils/applications-consultation"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import Table from "@/app/(espace-pro)/_components/Table"
 import { OffreProlongationModal } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffreProlongationModal"
@@ -16,6 +18,7 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useToast } from "@/app/hooks/useToast"
 import { useAuth } from "@/context/UserContext"
 import { extendOffre, getModerationSummaries } from "@/utils/api"
+import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
 import { sortReactTableDate } from "@/utils/date-utils"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import { ConformityWithAgentNote } from "./moderation/AgentNote"
@@ -71,7 +74,64 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
   }
 }
 
-type LocalJob = Omit<IJobJson, "_id"> & { candidatures: number; geo_coordinates: string; _id: string }
+type LocalJob = Omit<IJobJson, "_id"> & {
+  candidatures: number
+  candidatures_en_attente: number
+  job_closure?: IOfferClosure | null
+  geo_coordinates: string
+  _id: string
+}
+
+const getJobTitle = ({ offer_title_custom, rome_appellation_label, rome_label }: Pick<LocalJob, "offer_title_custom" | "rome_appellation_label" | "rome_label">) =>
+  offer_title_custom ?? rome_appellation_label ?? rome_label
+
+const CandidaturesCell = ({ job, applicationsPath }: { job: LocalJob; applicationsPath?: string }) => {
+  const total = Math.max(job.candidatures ?? 0, 0)
+  if (total === 0) {
+    return total
+  }
+  const consultation = getApplicationsConsultation({ expiration: job.job_expiration_date, closure: job.job_closure ?? null })
+  const totalLabel =
+    // Lien aussi passé le délai de consultation : la page explique pourquoi les candidatures ne sont plus disponibles.
+    applicationsPath ? (
+      <Link
+        className="fr-link fr-link--sm"
+        href={applicationsPath}
+        aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}
+      >
+        {total}
+      </Link>
+    ) : (
+      total
+    )
+  if (consultation.status === "offer_open") {
+    const pending = Math.max(job.candidatures_en_attente ?? 0, 0)
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
+        {totalLabel}
+        {pending > 0 && (
+          <Badge variant="awaiting" fontSize="12px">
+            {pending}
+            <span className="fr-sr-only"> en attente</span>
+          </Badge>
+        )}
+      </Box>
+    )
+  }
+  const [detail, color] =
+    consultation.status === "unavailable"
+      ? ["plus disponible", fr.colors.decisions.text.default.error.default]
+      : [`consultables jusqu’au ${dayjs(consultation.until).format("DD/MM/YYYY")}`, fr.colors.decisions.text.mention.grey.default]
+
+  return (
+    <>
+      {totalLabel}
+      <Box component="span" sx={{ display: "block", color }}>
+        {detail}
+      </Box>
+    </>
+  )
+}
 
 export const OffresTabs = ({
   caption,
@@ -182,30 +242,28 @@ export const OffresTabs = ({
           row: { id },
         },
       }) => {
-        const { rome_label, rome_appellation_label, offer_title_custom } = data[id]
-        return offer_title_custom ?? rome_appellation_label ?? rome_label
+        return getJobTitle(data[id])
       },
-      width: "300",
-      maxWidth: "300",
+      width: "340",
     },
     {
       Header: "Statut",
       id: "job_status",
       sortType: (a, b) => sortReactTableDate(a.original.job_status, b.original.job_status),
       accessor: ({ job_status }) => displayJobStatus(job_status, recruiter),
-      width: "150",
-      maxWidth: "150",
+      width: "110",
     },
     {
       Header: "Postée le",
       id: "job_creation_date",
+      width: "128",
       sortType: (a, b) => sortReactTableDate(a.original.job_creation_date, b.original.job_creation_date),
       accessor: ({ job_creation_date }) => dayjs(job_creation_date).format("DD/MM/YYYY"),
     },
     {
       Header: "Expire le",
       id: "job_expiration_date",
-      width: "175",
+      width: "126",
       sortType: (a, b) => sortReactTableDate(a.original.job_expiration_date, b.original.job_expiration_date),
       accessor: ({ job_expiration_date }) => dayjs(job_expiration_date).format("DD/MM/YYYY"),
     },
@@ -222,29 +280,47 @@ export const OffresTabs = ({
         },
       ]
     : []
+  // Les candidatures ne s'ouvrent qu'au recruteur et au CFA qui gère l'entreprise (cf. getJobApplicationsForRecruiter).
+  const buildApplicationsPath = (job_id: string): string | undefined => {
+    switch (user?.type) {
+      case AUTHTYPE.ENTREPRISE:
+        return getApplicationPages({ job_id }).applications.getPath()
+      case AUTHTYPE.CFA:
+        return getApplicationPages({ job_id, cfaEstablishmentId: recruiter.establishment_id }).applications.getPath()
+      default:
+        return undefined
+    }
+  }
   const statsColumns = showStats
     ? [
         {
           Header: "Recherches",
           id: "searches",
-          width: "170",
-          accessor: ({ stats_search_view = 0 }) => {
-            return <NumberCell>{stats_search_view}</NumberCell>
-          },
+          width: "130",
+          disableSortBy: true,
+          accessor: ({ stats_search_view = 0 }) => stats_search_view,
         },
         {
           Header: "Vues",
           id: "views",
-          width: "120",
-          accessor: ({ stats_detail_view = 0 }) => {
-            return <NumberCell>{stats_detail_view}</NumberCell>
-          },
+          width: "100",
+          disableSortBy: true,
+          accessor: ({ stats_detail_view = 0 }) => stats_detail_view,
         },
         {
-          Header: "Candidats",
+          Header: (
+            <>
+              Candidatures
+              <Box component="span" sx={{ display: "block", fontWeight: 400, color: fr.colors.decisions.text.mention.grey.default }}>
+                dont en attente
+              </Box>
+            </>
+          ),
           id: "candidat",
-          width: "170",
-          accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
+          width: "150",
+          disableSortBy: true,
+          accessor: ({ candidatures = 0 }) => Math.max(candidatures, 0),
+          Cell: ({ row: { original } }: { row: { original: LocalJob } }) => <CandidaturesCell job={original} applicationsPath={buildApplicationsPath(original._id)} />,
         },
       ]
     : []
@@ -261,6 +337,7 @@ export const OffresTabs = ({
       accessor: (row) => {
         return (
           <OffresTabsMenu
+            applicationsPath={row.candidatures > 0 ? buildApplicationsPath(row._id) : undefined}
             openSuppression={openSuppression}
             buildOfferEditionUrl={buildOfferEditionUrl}
             row={row}
@@ -287,13 +364,5 @@ export const OffresTabs = ({
       {currentOffre && <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />}
       <Table caption={caption} columns={columns} data={jobsWithGeoCoords} />
     </>
-  )
-}
-
-const NumberCell = ({ children }) => {
-  return (
-    <Typography component="span" sx={{ textAlign: "right", width: "100%", pr: fr.spacing("4v") }}>
-      <Badge variant="stat_number">{children}</Badge>
-    </Typography>
   )
 }

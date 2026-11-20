@@ -8,7 +8,7 @@ import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicati
 import { ApplicationScanStatus, assertUnreachable, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS_ENGLISH, parseEnum } from "shared"
 import { getApplicantQuestions, getLbaApplicantQuestions } from "shared/constants/applicant-questions"
 import type { RefusalReasons } from "shared/constants/application"
-import { ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
+import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
@@ -25,7 +25,7 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 import { z } from "zod"
 import { logger } from "@/common/logger"
-import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/aws-utils"
+import { getS3FileSize, s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/aws-utils"
 import { manageApiError } from "@/common/utils/error-manager"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { createToken, getTokenValue } from "@/common/utils/jwt-utils"
@@ -64,6 +64,30 @@ const PARTNER_NAMES = {
 }
 
 export const PARTNERS_WITH_APPLICATION_API = ["Taleez"]
+
+export const getApplicationPartnerName = (caller: IApplication["caller"]): string | null => (caller && PARTNER_NAMES[caller]) ?? null
+
+/** Objet du mail de réponse au candidat, repris tel quel par le détail d'une candidature côté recruteur (#5769). */
+export const buildRecruiterIntentionEmailSubject = ({
+  intention,
+  companyName,
+  partner,
+  applicant,
+}: {
+  intention: ApplicationIntention
+  companyName: string
+  partner: string | null
+  applicant: Pick<IApplicant, "firstname" | "lastname">
+}): string => {
+  switch (intention) {
+    case ApplicationIntention.ENTRETIEN:
+      return `Suite donnée à votre candidature - ${companyName}${partner ? ` via ${partner}` : ""}`
+    case ApplicationIntention.REFUS:
+      return `Réponse négative de ${companyName} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`
+    default:
+      assertUnreachable(intention)
+  }
+}
 
 const images: object = {
   images: {
@@ -707,7 +731,7 @@ export const sendMailToApplicant = async ({
   company_feedback: string
   refusal_reasons: RefusalReasons[]
 }): Promise<{ messageId: string; accepted?: string[] | undefined } | null> => {
-  const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
+  const partner = getApplicationPartnerName(application.caller)
   const jobSourceType: string = await getJobSourceType(application)
   const { email: applicantEmail } = applicant
   let sentMessageId: {
@@ -720,7 +744,7 @@ export const sendMailToApplicant = async ({
       sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
         cc: email || undefined,
-        subject: `Suite donnée à votre candidature - ${application.company_name}${partner ? ` via ${partner}` : ""}`,
+        subject: buildRecruiterIntentionEmailSubject({ intention: ApplicationIntention.ENTRETIEN, companyName: application.company_name, partner, applicant }),
         template: getEmailTemplate("mail-candidat-entretien"),
         data: {
           ...sanitizeApplicationForEmail(application),
@@ -738,7 +762,7 @@ export const sendMailToApplicant = async ({
     case ApplicationIntention.REFUS: {
       sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
-        subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
+        subject: buildRecruiterIntentionEmailSubject({ intention: ApplicationIntention.REFUS, companyName: application.company_name, partner, applicant }),
         template: getEmailTemplate("mail-candidat-refus"),
         data: {
           ...sanitizeApplicationForEmail(application),
@@ -943,13 +967,35 @@ export const buildApplicantAnswersForEmail = ({
 
 const getApplicationCvS3Filename = (application: Pick<IApplication, "_id">) => getApplicationCvS3Key(application._id)
 
-const getApplicationAttachmentContent = async (application: IApplication): Promise<string> => {
+const getApplicationAttachmentContent = async (application: Pick<IApplication, "_id">): Promise<string> => {
   const content = await s3ReadAsString("applications", getApplicationCvS3Filename(application))
   if (!content) {
     throw internal(`inattendu : cv vide pour la candidature avec id=${application._id}`)
   }
   return content
 }
+/** Pièce jointe d'une candidature, décodée de la data URL stockée sur S3. */
+export const getApplicationAttachmentFile = async (application: Pick<IApplication, "_id">): Promise<{ contentType: string; content: Buffer }> => {
+  const dataUrl = await getApplicationAttachmentContent(application)
+  const header = findAttachmentHeader(dataUrl)
+  return {
+    contentType: header ? header.slice("data:".length, header.indexOf(";")) : "application/octet-stream",
+    content: Buffer.from(removeDataUrlPrefix(dataUrl), "base64"),
+  }
+}
+
+/**
+ * Taille de la pièce jointe déduite de celle de sa data URL sur S3, sans la télécharger : le base64 code 3 octets
+ * sur 4 caractères, à 2 octets de remplissage près. null si le format ou la taille est inconnu.
+ */
+export const getApplicationAttachmentSize = async (application: Pick<IApplication, "_id" | "applicant_attachment_name">): Promise<number | null> => {
+  const fileType = parseEnum(AcceptedFileType, getFiletypeFromFilename(application.applicant_attachment_name).toLowerCase())
+  if (!fileType) return null
+  const dataUrlSize = await getS3FileSize("applications", getApplicationCvS3Filename(application))
+  if (dataUrlSize === null) return null
+  return Math.max(0, Math.floor(((dataUrlSize - mappingFileTypeToHeader[fileType].length) * 3) / 4))
+}
+
 export const processApplicationScanForVirus = async (application: IApplication, applicant: IApplicant) => {
   const fileContent = await getApplicationAttachmentContent(application)
   const hasVirus = await isInfected(fileContent)
@@ -1235,6 +1281,10 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   if (!application) throw notFound("Candidature non trouvée")
   const applicant = await getDbCollection("applicants").findOne({ _id: application.applicant_id })
   if (!applicant) throw notFound("Candidat non trouvé")
+  // Réponse déclarée donnée hors de LBA : le formulaire affiche ce statut et ne programme rien par-dessus
+  // (cf. getJobApplicationReplyTokenForRecruiter pour la navigation connectée).
+  const treated_elsewhere_at =
+    application.company_recruitment_intention === APPLICATION_TREATED_ELSEWHERE ? (application.company_recruitment_intention_date ?? application.last_update_at ?? null) : null
 
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
 
@@ -1243,6 +1293,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
 
   let recruiter_phone: string
   let company_name: string
+  let espace_pro: { job_id: string; cfa_establishment_id: string | null; establishment_name: string } | null = null
 
   switch (type) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
@@ -1253,6 +1304,11 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
         await validateUserWithAccountEmail(new ObjectId(managed_by))
       }
       recruiter_phone = cfa_apply_phone || apply_phone || ""
+      espace_pro = {
+        job_id: job._id.toString(),
+        cfa_establishment_id: job.is_delegated && managed_by && job.workplace_siret ? buildEstablishmentId(new ObjectId(managed_by), job.workplace_siret) : null,
+        establishment_name: workplace_brand || workplace_legal_name || job.workplace_siret || "",
+      }
       break
     }
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
@@ -1271,6 +1327,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     {
       _id: application._id,
       company_feedback_send_status: { $ne: CompanyFeebackSendStatus.SENT },
+      company_recruitment_intention: { $ne: APPLICATION_TREATED_ELSEWHERE },
     },
     {
       $set: {
@@ -1301,6 +1358,8 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     applicant_phone: applicant.phone,
     company_name,
     sent_intention,
+    treated_elsewhere_at,
+    espace_pro,
   }
 }
 
@@ -1340,6 +1399,22 @@ export const processRecruiterIntention = async ({ application }: { application: 
   } else {
     throw internal(`unexpected: intention scheduled message not sent for application ${application._id}`)
   }
+}
+
+/**
+ * « Annuler l'envoi » du formulaire de réponse, ouvert par le lien du mail comme depuis l'espace pro : la candidature
+ * redevient sans réponse (l'intention est reposée à l'envoi, cf. sendRecruiterIntention). Une réponse déjà envoyée ou
+ * donnée hors de LBA n'est pas touchée.
+ */
+export const cancelScheduledRecruiterIntention = async (applicationId: ObjectId) => {
+  await getDbCollection("applications").updateOne(
+    {
+      _id: applicationId,
+      company_feedback_send_status: { $ne: CompanyFeebackSendStatus.SENT },
+      company_recruitment_intention: { $ne: APPLICATION_TREATED_ELSEWHERE },
+    },
+    { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED, company_recruitment_intention: null, company_recruitment_intention_date: null } }
+  )
 }
 
 export const sendRecruiterIntention = async ({
