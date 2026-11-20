@@ -73,7 +73,7 @@ jobs:
       - name: Run playbook
         run: .bin/mna app:deploy preview "${{ github.event.issue.number }}"
         env:
-          ANSIBLE_REMOTE_USER: deploy-runner
+          ANSIBLE_REMOTE_USER: runner-deploy
           ANSIBLE_SKIP_GALAXY: "true"
           FORCE_SEED: ${{ steps.force_seed.outputs.value }}
 
