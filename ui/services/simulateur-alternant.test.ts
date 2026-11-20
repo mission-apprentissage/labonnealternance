@@ -278,7 +278,8 @@ describe("Tranche de salaire", () => {
     })
 
     const { min, max } = result.anneesSimulation[0].salaireMensuelBrut
-    expect(min).toBeCloseTo(max * 0.97, 0)
+    // min et max sont arrondis séparément à l'euro : l'écart avec max * 0,97 peut atteindre 1 €.
+    expect(Math.abs(min - max * 0.97)).toBeLessThanOrEqual(1)
   })
 })
 
@@ -898,7 +899,7 @@ describe("Cas de tests", () => {
         secteur: "privé",
       })
 
-      const salaireAnnuelBrutAttendu = 11874.0
+      const salaireAnnuelBrutAttendu = 12067.0
       // const salaireAnnuelNetMiniAttendu = 11118.0
       // const salaireAnnuelNetMaxiAttendu = 11462.0
 
@@ -919,9 +920,9 @@ describe("Cas de tests", () => {
         secteur: "privé",
       })
 
-      const salaireAnnuelBrutAttendu = 9634.0
-      const salaireAnnuelNetMiniAttendu = 9345.0
-      const salaireAnnuelNetMaxiAttendu = 9634.0
+      const salaireAnnuelBrutAttendu = 9790.0
+      const salaireAnnuelNetMiniAttendu = 9496.0
+      const salaireAnnuelNetMaxiAttendu = 9790.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
@@ -939,9 +940,9 @@ describe("Cas de tests", () => {
         secteur: "privé",
       })
 
-      const salaireAnnuelBrutAttendu = 6049.0
-      const salaireAnnuelNetMiniAttendu = 5868.0
-      const salaireAnnuelNetMaxiAttendu = 6049.0
+      const salaireAnnuelBrutAttendu = 6147.0
+      const salaireAnnuelNetMiniAttendu = 5963.0
+      const salaireAnnuelNetMaxiAttendu = 6147.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
@@ -959,7 +960,7 @@ describe("Cas de tests", () => {
         secteur: "privé",
       })
 
-      const salaireAnnuelBrutAttendu = 22404.0
+      const salaireAnnuelBrutAttendu = 22768.0
       // const salaireAnnuelNetMiniAttendu = 19136.0
       // const salaireAnnuelNetMaxiAttendu = 19728.0
 
@@ -980,7 +981,7 @@ describe("Cas de tests", () => {
         secteur: "public",
       })
 
-      const salaireAnnuelBrutAttendu = 11874.0
+      const salaireAnnuelBrutAttendu = 12067.0
       // const salaireAnnuelNetMiniAttendu = 11118.0
       // const salaireAnnuelNetMaxiAttendu = 11462.0
 
@@ -1001,7 +1002,7 @@ describe("Cas de tests", () => {
         secteur: "privé",
       })
 
-      const salaireAnnuelBrutAttendu = 11874.0
+      const salaireAnnuelBrutAttendu = 12067.0
       // const salaireAnnuelNetMiniAttendu = 11118.0
       // const salaireAnnuelNetMaxiAttendu = 11462.0
 
@@ -1022,7 +1023,7 @@ describe("Cas de tests", () => {
         secteur: "privé",
       })
 
-      const salaireAnnuelBrutAttendu = 11874.0
+      const salaireAnnuelBrutAttendu = 12067.0
       // const salaireAnnuelNetMiniAttendu = 11118.0
       // const salaireAnnuelNetMaxiAttendu = 11462.0
 
@@ -1043,7 +1044,7 @@ describe("Cas de tests", () => {
         secteur: "privé",
       })
 
-      const salaireAnnuelBrutAttendu = 17923.0
+      const salaireAnnuelBrutAttendu = 18215.0
       // const salaireAnnuelNetMaxiAttendu = 16128.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)

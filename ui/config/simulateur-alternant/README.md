@@ -2,9 +2,14 @@
 
 ## Valeurs de SMIC
 
-Pour modifier les valeurs de SMIC accéder au fichier [smic.ts](./smic.ts) et modifier les valeurs pour la métropole et pour Mayotte.
+Les valeurs de SMIC sont dans [smic.ts](./smic.ts), sous forme de barèmes datés (métropole et Mayotte). `SMIC` désigne le barème appliqué par le simulateur et affiché sur les pages éditoriales (`utils/smic.utils.ts`) : la mise en production se cale sur la date d'effet.
 
-_Note : les valeurs mensuelles ne sont pas utilisées mais doivent quand même être tenues à jour._
+Pour une revalorisation :
+
+1. ajouter le nouveau barème et le désigner comme `SMIC` ;
+2. supprimer le barème marqué « à supprimer à la prochaine revalorisation », et reporter cette mention sur le barème qui devient le précédent.
+
+_Note : les valeurs nettes ne sont pas utilisées mais doivent quand même être tenues à jour._
 
 ## Taux de SMIC
 
