@@ -17,7 +17,7 @@ jobs:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}
       cancel-in-progress: true
     name: Deploy Preview ${{ github.event.issue.number }}
-    runs-on: ubuntu-26.04
+    runs-on: [self-hosted, deploy-lba]
     steps:
       - name: Get Run URL
         id: run_url
@@ -56,46 +56,8 @@ jobs:
         with:
           ref: ${{ steps.get-branch.outputs.branch }}
           submodules: true
-
-      - name: Create LFS file list
-        run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
-
-      - name: LFS Cache
-        uses: actions/cache@v6
-        with:
-          path: .git/lfs/objects
-          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
-          restore-keys: |
-            ${{ runner.os }}-lfs-
-
-      - name: Git LFS Pull
-        run: git lfs pull
-
-      - name: Initialize the GnuPG keyring
-        run: |
-          install -d -m 700 "${RUNNER_TEMP}/gnupg"
-          echo "GNUPGHOME=${RUNNER_TEMP}/gnupg" >> "${GITHUB_ENV}"
-          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
-          echo -n "$OPENPGP_KEY" | gpg --batch --import
-        env:
-          OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
-
-      - name: Setup SOPS
-        uses: nhedger/setup-sops@v3
-
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          name: github_actions
-          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-          known_hosts: ${{ vars.SSH_KNOWN_HOSTS }}
-          config: |
-            Host *
-              IdentityFile ~/.ssh/github_actions
-
-      - name: Install jmespath
-        run: |
-          sudo pipx inject ansible-core jmespath
+          lfs: true
+          persist-credentials: false
 
       - name: Detect force reseed
         id: force_seed
@@ -111,8 +73,8 @@ jobs:
       - name: Run playbook
         run: .bin/mna app:deploy preview "${{ github.event.issue.number }}"
         env:
-          ANSIBLE_REMOTE_USER: deploy
-          ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS_PREVIEW }}
+          ANSIBLE_REMOTE_USER: deploy-runner
+          ANSIBLE_SKIP_GALAXY: "true"
           FORCE_SEED: ${{ steps.force_seed.outputs.value }}
 
       - name: Encrypt logs
