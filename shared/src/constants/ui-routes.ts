@@ -12,6 +12,8 @@ export const UI_ROUTE_PATTERNS = [
   "/alternance/diplomes",
   "/alternance/metier/:metier",
   "/alternance/metiers",
+  "/alternance/secteur/:secteur",
+  "/alternance/secteurs",
   "/alternance/ville/:ville",
   "/alternance/villes",
   "/barometre",

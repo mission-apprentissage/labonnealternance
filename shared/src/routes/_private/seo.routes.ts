@@ -1,6 +1,7 @@
 import { z } from "../../helpers/zod-with-open-api.js"
 import { ZSeoDiplome, ZSeoVille } from "../../models/index.js"
 import { ZSeoMetier } from "../../models/seo-metier.model.js"
+import { ZSeoSecteur } from "../../models/seo-secteur.model.js"
 import type { IRoutesDef } from "../common.routes.js"
 
 export const zPrivateSeoRoutes = {
@@ -35,6 +36,17 @@ export const zPrivateSeoRoutes = {
       }),
       response: {
         "200": ZSeoDiplome.nullable(),
+      },
+      securityScheme: null,
+    },
+    "/_private/seo/secteur/:secteur": {
+      method: "get",
+      path: "/_private/seo/secteur/:secteur",
+      params: z.strictObject({
+        secteur: z.string(),
+      }),
+      response: {
+        "200": ZSeoSecteur.nullable(),
       },
       securityScheme: null,
     },

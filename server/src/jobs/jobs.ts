@@ -13,6 +13,7 @@ import {
   generateSearchItemsKeywordsContinuous,
   submitSearchItemsKeywordsBatch,
 } from "@/services/search/search-items-keywords.service"
+import { updateSeoSecteurs } from "@/services/seo.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimize-users-with-accounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymize-applicant-and-applications"
@@ -449,6 +450,10 @@ export async function setupJobProcessor() {
           "Mise à jour des données calculées pour les pages SEO": {
             cron_string: "0 4 * * SAT",
             handler: updateSEO,
+          },
+          "Mise à jour des données calculées pour les pages SEO secteur": {
+            cron_string: "0 5 * * *",
+            handler: updateSeoSecteurs,
           },
           "Traitement des recruteur LBA par la pipeline jobs partners": {
             cron_string: "0 10 * * SUN",

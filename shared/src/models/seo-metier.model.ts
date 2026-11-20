@@ -24,7 +24,7 @@ const ZSeoMetierSalaire = z.object({
   salaire_median: z.number(),
 })
 
-const ZSeoMetierEntreprise = z.object({
+export const ZSeoMetierEntreprise = z.object({
   nom: z.string(),
   job_count: z.number(),
 })
@@ -37,7 +37,7 @@ export enum SEO_METIER_FORMATION_NIVEAUX {
   "7 (Master, titre ingénieur...)" = "7 (Master, titre ingénieur...)",
 }
 
-const ZFormationsNiveaux = extensions.buildEnum(SEO_METIER_FORMATION_NIVEAUX)
+export const ZFormationsNiveaux = extensions.buildEnum(SEO_METIER_FORMATION_NIVEAUX)
 
 export enum SEO_METIER_FORMATION_TITRES {
   "3 (CAP...)" = "CAP, BEP, ...",
@@ -59,14 +59,14 @@ export enum SEO_METIER_FORMATION_DESCRIPTIONS {
 
 const ZFormationsDescriptions = extensions.buildEnum(SEO_METIER_FORMATION_DESCRIPTIONS)
 
-const ZSeoMetierFormation = z.object({
+export const ZSeoMetierFormation = z.object({
   title: ZFormationsTitres,
   description: ZFormationsDescriptions,
   niveau: ZFormationsNiveaux,
   count: z.number(),
 })
 
-const ZSeoMetierVille = z.object({
+export const ZSeoMetierVille = z.object({
   nom: z.string(),
   job_count: z.number(),
   geopoint: z.object({ lat: z.number(), long: z.number() }),

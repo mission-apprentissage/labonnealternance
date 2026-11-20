@@ -53,3 +53,46 @@ export const cardArrowSx = {
 } as const
 
 export const formatLong = (raw: string) => raw.charAt(0) + raw.slice(1).toLowerCase()
+
+export const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value)
+
+// Blocs des pages /alternance/secteur, repris à l'identique de la page métier.
+export const seoSectionSx = { my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } } as const
+
+export const seoStatBoxSx = {
+  textAlign: "center",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: fr.spacing("3v"),
+  backgroundColor: "white",
+  borderRadius: "5px",
+  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+  justifySelf: "center",
+} as const
+
+export const seoCardSx = {
+  backgroundColor: "white",
+  padding: fr.spacing("7v"),
+  borderRadius: "5px",
+  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+} as const
+
+export const seoHrSx = {
+  maxWidth: "93px",
+  border: "none",
+  borderBottom: "none",
+  borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`,
+  opacity: 1,
+} as const
+
+export const seoThreeColGridSx = {
+  display: "grid",
+  gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+  gap: fr.spacing("4v"),
+  alignItems: "stretch",
+  mt: fr.spacing("4v"),
+} as const
+
+export const seoH2Sx = { mb: fr.spacing("4v"), color: "#161616" } as const

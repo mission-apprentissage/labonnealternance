@@ -1,8 +1,8 @@
 import { Typography } from "@mui/material"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
+import { secteurData } from "@/app/(editorial)/alternance/_components/secteur_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
-import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 import { DsfrHeaderProps } from "./Header"
 import { footerId, type ZoneName } from "./zone-ids"
@@ -80,6 +80,12 @@ const linkListContent: LinkCategory[] = [
         },
         text: "Statistiques",
       },
+      {
+        linkProps: {
+          href: PAGES.static.EspaceDeveloppeurs.getPath(),
+        },
+        text: "Espace développeurs",
+      },
     ],
   },
   {
@@ -109,24 +115,6 @@ const linkListContent: LinkCategory[] = [
           href: PAGES.static.contact.getPath(),
         },
         text: "Contact",
-      },
-    ],
-  },
-  {
-    categoryName: "Développeurs",
-    links: [
-      {
-        linkProps: {
-          href: PAGES.static.EspaceDeveloppeurs.getPath(),
-        },
-        text: "Espace développeurs",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.codeSources.getPath(),
-        },
-        text: `Code source v${publicConfig.version}`,
-        isExternal: true,
       },
     ],
   },
@@ -178,6 +166,23 @@ const linkListContent: LinkCategory[] = [
           href: PAGES.static.alternanceDiplomes.getPath(),
         },
         text: "Voir tous les diplômes en alternance",
+      },
+    ],
+  },
+  {
+    categoryName: "Alternance par secteur",
+    links: [
+      ...secteurData.slice(0, 10).map((secteur) => ({
+        linkProps: {
+          href: PAGES.dynamic.seoSecteur(secteur.slug).getPath(),
+        },
+        text: `Alternance ${secteur.secteur.toLowerCase()}`,
+      })),
+      {
+        linkProps: {
+          href: PAGES.static.alternanceSecteurs.getPath(),
+        },
+        text: "Voir tous les secteurs en alternance",
       },
     ],
   },
