@@ -9,42 +9,17 @@ concurrency:
 jobs:
   cleanup:
     name: Delete expired previews
-    runs-on: ubuntu-26.04
+    runs-on: [self-hosted, deploy-lba]
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
         with:
-          lfs: true
           submodules: true
-
-      - name: Initialize the GnuPG keyring
-        run: |
-          install -d -m 700 "${RUNNER_TEMP}/gnupg"
-          echo "GNUPGHOME=${RUNNER_TEMP}/gnupg" >> "${GITHUB_ENV}"
-          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
-          echo -n "$OPENPGP_KEY" | gpg --batch --import
-        env:
-          OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
-
-      - name: Setup SOPS
-        uses: nhedger/setup-sops@v3
-
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          name: github_actions
-          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-          known_hosts: ${{ vars.SSH_KNOWN_HOSTS }}
-          config: |
-            Host *
-              IdentityFile ~/.ssh/github_actions
-
-      - name: Install jmespath
-        run: |
-          sudo pipx inject ansible-core jmespath
+          lfs: true
+          persist-credentials: false
 
       - name: Run playbook
         run: .bin/mna preview:cleanup
         env:
-          ANSIBLE_REMOTE_USER: deploy
-          ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
+          ANSIBLE_REMOTE_USER: deploy-runner
+          ANSIBLE_SKIP_GALAXY: "true"
