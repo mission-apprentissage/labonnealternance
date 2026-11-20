@@ -23,9 +23,9 @@ location ~* ^/api/rome {
     include includes/proxy.conf;
 }
 
-# Transition de #5963 : une page chargée avant la mise en production envoie encore sa candidature sur /api.
-# Seule écriture _private d'un visiteur, laissée ouverte pour ne pas perdre un formulaire en cours de saisie ;
-# à refermer une fois ces pages rechargées. Avant `^/api/(v1/|v2/)?_private/` : la 1re regex gagne.
+# Candidature du site : le navigateur l'envoie en direct, hors BFF (cf. DIRECT_API_PATHS dans ui/utils/bff-routes.ts),
+# pour qu'une panne ou une limite du BFF ne bloque jamais une candidature. Sans liste de blocage ni limite nginx :
+# Fastify la limite par IP. Avant `^/api/(v1/|v2/)?_private/` : la 1re regex gagne.
 location ~* ^/api/v2/_private/application$ {
     client_max_body_size    5M;
 
