@@ -16,8 +16,11 @@ const normalize = (path: string) => path.split("?")[0].toLowerCase()
 /** Recherche du site : exige un jeton de recherche (cf. shared/constants/search-token). */
 export const isSearchTokenPath = (path: string): boolean => SEARCH_PATHS.includes(normalize(path).replace(/\/$/, ""))
 
+/** Routes que le navigateur envoie en direct sur /api au lieu du BFF. */
+export const isDirectApiPath = (path: string): boolean => DIRECT_API_PATHS.includes(normalize(path))
+
+// Le BFF sert aussi les routes directes : les onglets ouverts avant la bascule y postent encore.
 export const isBffPath = (path: string): boolean => {
   const normalized = normalize(path)
-  if (DIRECT_API_PATHS.includes(normalized)) return false
   return isSearchTokenPath(normalized) || PRIVATE_PREFIXES.some((prefix) => normalized.startsWith(prefix))
 }
