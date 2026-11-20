@@ -63,6 +63,8 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
     const { data } = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=partenaire`, tokenParams, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 3000,
+      // En incident, FT redirige l'OAuth vers une page HTML de secours : on veut l'erreur 302 et sa cible, pas la page.
+      maxRedirects: 0,
     })
 
     const validation = ZFTApiToken.safeParse(data)
@@ -75,8 +77,9 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
     return validation.data.access_token
   } catch (error: any) {
     // Erreur dédiée : l'AxiosError porte `config.data` (client_secret urlencoded), cf. SENSITIVE_KEY_PATTERN.
-    sentryCaptureException(new Error(`france-travail: échec d'obtention du token (${error.message ?? "erreur inconnue"})`), {
-      extra: { status: error.response?.status, responseData: error.response?.data },
+    const location: string | undefined = error.response?.headers?.location
+    sentryCaptureException(new Error(`france-travail: échec d'obtention du token (${error.message ?? "erreur inconnue"}${location ? ` → ${location}` : ""})`), {
+      extra: { status: error.response?.status, location, responseData: error.response?.data },
     })
     throw internal("impossible d'obtenir un token pour l'API france travail")
   }
