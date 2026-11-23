@@ -83,7 +83,7 @@ Les observations du cron comptent les pertes : `comptes_supprimes` (rôles dont 
 
 Chaque lien ouvre la fiche du compte au back-office, où le bloc des autres comptes du même SIRET (#5451) signale un téléphone ou un nom en commun. Ce bloc lit le statut d'un compte au dernier rang de son historique, pas à la dernière date, et compte toutes ses offres, closes comprises : la règle ne le réutilise pas.
 
-À date égale, le dernier événement d'un historique est le dernier du tableau, comme pour `getLastStatusEvent` (cf. `lastEventExpr`).
+À date égale, le dernier événement d'un historique est le dernier du tableau, comme pour `getLastStatusEvent` (cf. `lastEventOf`, que partagent les règles des comptes recruteur).
 
 La règle reconstitue le stock au créneau évalué, ce qui rend le rejeu valable sur les dates passées, à deux approximations près. Le statut de dépôt d'une offre n'est pas tracé : il est déduit en attente si l'historique commence par la publication de l'offre ou par l'expiration d'une offre en attente, et publié sinon. Avant #5479 (24/09/2026), la clôture d'une offre par son recruteur ne laissait pas de trace : #5429 l'a datée de `updated_at`, postérieure à la clôture, et seule l'expiration borne alors la période en ligne. Un compte supprimé depuis (effacement RGPD) n'est plus lu.
 

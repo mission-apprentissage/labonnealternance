@@ -11,8 +11,14 @@ export const getRolesWindowFilter = (from: Date, to: Date) => ({
   createdAt: { $gte: from, $lt: to },
 })
 
-// Statut courant : le dernier événement par date, cf. getLastStatusEvent.
-export const lastStatusOf = (events: string) => ({ $getField: { field: "status", input: { $last: { $sortArray: { input: events, sortBy: { date: 1 } } } } } })
+/**
+ * Premier et dernier événement d'un historique par date, à date égale dans l'ordre du tableau, comme le tri stable de
+ * getLastStatusEvent. `$sortArray` ne garantit pas l'ordre des égalités : au-delà de 16 éléments, il le mélange (mongod 8.3).
+ */
+export const firstEventOf = (events: string) => ({ $first: { $filter: { input: events, cond: { $eq: ["$$this.date", { $min: `${events}.date` }] } } } })
+export const lastEventOf = (events: string) => ({ $last: { $filter: { input: events, cond: { $eq: ["$$this.date", { $max: `${events}.date` }] } } } })
+
+export const lastStatusOf = (events: string) => ({ $getField: { field: "status", input: lastEventOf(events) } })
 
 export const currentStatus = lastStatusOf("$status")
 
@@ -37,5 +43,7 @@ export const autoValidatedOf = (events: string) => ({
 export const autoValidated = autoValidatedOf("$status")
 
 export const formatParisDate = (date: Date | null) => (date ? date.toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "short", timeStyle: "short" }) : "n/a")
+
+export const formatParisDay = (date: Date) => date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" })
 
 export const accountUrl = (id: ObjectId) => `${config.publicUrl}/espace-pro/administration/users/${id.toHexString()}`

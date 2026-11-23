@@ -8,9 +8,9 @@ import { z } from "zod"
 
 import { isFreeEmailProviderDomain } from "@/common/utils/mail-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import config from "@/config"
 import type { IDetectionFinding, IDetectionRule } from "@/jobs/detection/detection-rule"
 import { JOB_PENDING_EXPIRATION_ORIGIN } from "@/services/job-partner-status.service"
+import { accountUrl, firstEventOf, formatParisDay, lastStatusOf } from "./recruiter-detection-utils"
 
 // Le message doit tenir dans SLACK_MESSAGE_MAX_LENGTH : la liste complète reste dans les métriques de l'alerte.
 const LISTED_ACCOUNTS = 20
@@ -55,18 +55,11 @@ const thresholdsSchema = z.strictObject({
 
 export type IMultiAccountSiretThresholds = z.output<typeof thresholdsSchema>
 
-/**
- * Premier et dernier événement d'un historique par date, à date égale dans l'ordre du tableau, comme le tri stable de
- * getLastStatusEvent. `$sortArray` ne garantit pas l'ordre des égalités : au-delà de 16 éléments, il le mélange (mongod 8.3).
- */
-const firstEventExpr = (events: string) => ({ $first: { $filter: { input: events, cond: { $eq: ["$$this.date", { $min: `${events}.date` }] } } } })
-const lastEventExpr = (events: string) => ({ $last: { $filter: { input: events, cond: { $eq: ["$$this.date", { $max: `${events}.date` }] } } } })
-
 const eventsUntil = (events: string, at: unknown) => ({ $filter: { input: events, cond: { $lte: ["$$this.date", at] } } })
 
 /** Statut d'un rôle à la date `at` : son dernier événement daté au plus tard de `at`. */
 const roleStatusAtExpr = (at: unknown) => ({
-  $let: { vars: { past: eventsUntil("$status", at) }, in: { $getField: { field: "status", input: lastEventExpr("$$past") } } },
+  $let: { vars: { past: eventsUntil("$status", at) }, in: lastStatusOf("$$past") },
 })
 
 /**
@@ -79,11 +72,11 @@ const offerStatusAtExpr = (at: unknown) => ({
     vars: { history: { $ifNull: ["$offer_status_history", []] } },
     in: {
       $let: {
-        vars: { past: eventsUntil("$$history", at), first: firstEventExpr("$$history") },
+        vars: { past: eventsUntil("$$history", at), first: firstEventOf("$$history") },
         in: {
           $switch: {
             branches: [
-              { case: { $gt: [{ $size: "$$past" }, 0] }, then: { $getField: { field: "status", input: lastEventExpr("$$past") } } },
+              { case: { $gt: [{ $size: "$$past" }, 0] }, then: lastStatusOf("$$past") },
               { case: { $eq: [{ $size: "$$history" }, 0] }, then: "$offer_status" },
               {
                 case: { $or: [{ $eq: ["$$first.status", JOB_STATUS_ENGLISH.ACTIVE] }, { $eq: ["$$first.granted_by", JOB_PENDING_EXPIRATION_ORIGIN] }] },
@@ -241,14 +234,10 @@ export const evaluateMultiAccountSiret = ({ accounts }: Pick<ISiretAccounts, "ac
   }
 }
 
-const formatParisDate = (date: Date) => date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" })
-
 const plural = (count: number, singular: string, pluralForm: string) => `${count} ${count > 1 ? pluralForm : singular}`
 
-const accountUrl = (id: ObjectId) => `${config.publicUrl}/espace-pro/administration/users/${id.toHexString()}`
-
 const formatAccount = ({ userId, createdAt, activeOffers }: ISiretAccount) =>
-  `${userId.toHexString()} (créé le ${formatParisDate(createdAt)}, ${plural(activeOffers, "offre", "offres")})`
+  `${userId.toHexString()} (créé le ${formatParisDay(createdAt)}, ${plural(activeOffers, "offre", "offres")})`
 
 const formatAccountList = (accounts: ISiretAccount[]) => {
   const listed = accounts.slice(0, LISTED_ACCOUNTS).map(formatAccount)
@@ -289,7 +278,7 @@ export const buildSiretFinding = (
     ? ` Sous le seuil d'entrée, l'alerte reste ouverte tant que le SIRET garde ${thresholds.minAccounts} comptes actifs, dont ${plural(heldMinAccountsWithOffers(thresholds), "compte", "comptes")} avec des offres en ligne, et que l'ensemble de ses comptes actifs remplit les critères d'identités et d'écart de création.`
     : ""
   const summary = [
-    `${accounts.length} comptes entreprise actifs sur le SIRET ${siret}, dont ${accountsWithOffers} avec des offres en ligne (${plural(activeOffers, "offre", "offres")}). Leurs adresses relèvent de ${plural(corporateDomains, "domaine d'entreprise", "domaines d'entreprise")} et de ${plural(webmailAccounts, "webmail", "webmails")}.${first && last ? ` Comptes créés du ${formatParisDate(first.createdAt)} au ${formatParisDate(last.createdAt)}.` : ""}${gapText}${heldText}`,
+    `${accounts.length} comptes entreprise actifs sur le SIRET ${siret}, dont ${accountsWithOffers} avec des offres en ligne (${plural(activeOffers, "offre", "offres")}). Leurs adresses relèvent de ${plural(corporateDomains, "domaine d'entreprise", "domaines d'entreprise")} et de ${plural(webmailAccounts, "webmail", "webmails")}.${first && last ? ` Comptes créés du ${formatParisDay(first.createdAt)} au ${formatParisDay(last.createdAt)}.` : ""}${gapText}${heldText}`,
     `Comptes : ${formatAccountList(accounts)}`,
   ].join("\n")
   return {
