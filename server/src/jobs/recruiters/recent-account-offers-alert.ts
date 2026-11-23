@@ -182,17 +182,26 @@ export const recentAccountsPipeline = (observationStart: Date, now: Date, window
       from: "jobs_partners",
       localField: "_id",
       foreignField: "managed_by",
-      let: { started_at: "$started_at" },
-      pipeline: [
-        {
-          $match: {
-            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-            $expr: { $and: [{ $gte: ["$created_at", "$$started_at"] }, { $lt: ["$created_at", { $min: [now, { $add: ["$$started_at", windowMs] }] }] }] },
+      // Sans filtre, comme les rôles : un filtre sur le libellé fait parfois choisir partner_label_1, toutes les offres LBA.
+      pipeline: [{ $project: { _id: 0, partner_label: 1, created_at: 1, workplace_siret: 1, offer_opening_count: 1, non_conforme: isNonConforme } }],
+      as: "offers",
+    },
+  },
+  {
+    $set: {
+      offers: {
+        $filter: {
+          input: "$offers",
+          as: "offer",
+          cond: {
+            $and: [
+              { $eq: ["$$offer.partner_label", JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA] },
+              { $gte: ["$$offer.created_at", "$started_at"] },
+              { $lt: ["$$offer.created_at", { $min: [now, { $add: ["$started_at", windowMs] }] }] },
+            ],
           },
         },
-        { $project: { _id: 0, created_at: 1, workplace_siret: 1, offer_opening_count: 1, non_conforme: isNonConforme } },
-      ],
-      as: "offers",
+      },
     },
   },
   {
