@@ -8,7 +8,7 @@ import type z from "zod"
 import type { core } from "zod"
 
 import { publicConfig } from "@/config.public"
-import { BFF_PREFIX, isBffPath, isSearchTokenPath } from "@/utils/bff-routes"
+import { BFF_PREFIX, isBffPath, isDirectApiPath, isSearchTokenPath } from "@/utils/bff-routes"
 import { getSearchToken } from "@/utils/search-token.store"
 import { getServerApiEndpoint } from "@/utils/server-api-endpoint"
 
@@ -86,10 +86,10 @@ async function getHeaders(options: IRequestOptions) {
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
 // Le serveur Next appelle l'API en direct ; le navigateur passe par le BFF pour les routes fermées à
-// Internet (cf. bff-routes.ts).
+// Internet, sauf celles que nginx laisse ouvertes sur /api (cf. bff-routes.ts).
 function apiBaseUrl(path: string): string {
   if (!global.window) return getServerApiEndpoint()
-  if (isBffPath(path)) return BFF_PREFIX
+  if (isBffPath(path) && !isDirectApiPath(path)) return BFF_PREFIX
   return removeAtEnd(publicConfig.apiEndpoint, "/")
 }
 

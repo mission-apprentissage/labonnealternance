@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { sleep } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { FT_SEARCH_MAX_ATTEMPTS, FT_SEARCH_RETRY_DELAY_MS, getAllFTJobsByDepartments, searchForFtJobs } from "./france-travail.client"
+import { FT_SEARCH_MAX_ATTEMPTS, FT_SEARCH_RETRY_DELAY_MS, getAllFTJobsByDepartments, getFranceTravailTokenFromAPI, searchForFtJobs } from "./france-travail.client"
 import { generateFtJobFixture, nockFranceTravailOffreSearch, nockFranceTravailTokenAccessOffre } from "./france-travail.client.fixture"
 
 useMongo()
@@ -112,6 +112,38 @@ describe("searchForFtJobs", () => {
       await expect(searchForFtJobs({ sort: 2, natureContrat: "E2,FS", range: "0-149" }, { throwOnError: true })).rejects.toThrow()
       expect(sentryCaptureException).toHaveBeenCalledTimes(0)
     })
+  })
+})
+
+describe("getFranceTravailTokenFromAPI", () => {
+  const SECOURS_URL = "https://secours-hp.francetravail.fr/accueil/"
+
+  beforeEach(() => {
+    vi.mocked(sentryCaptureException).mockClear()
+    return () => {
+      nock.cleanAll()
+    }
+  })
+
+  it("remonte la redirection vers la page de secours FT sans la suivre", async () => {
+    nock("https://entreprise.francetravail.fr").post("/connexion/oauth2/access_token").query({ realm: "partenaire" }).reply(302, "", { Location: SECOURS_URL })
+    const secours = nock("https://secours-hp.francetravail.fr").get("/accueil/").reply(200, "<html>Site en maintenance</html>", { "Content-Type": "text/html" })
+
+    await expect(getFranceTravailTokenFromAPI("OFFRE")).rejects.toThrowError("impossible d'obtenir un token pour l'API france travail")
+
+    expect(secours.isDone()).toBe(false)
+    expect(sentryCaptureException).toHaveBeenCalledTimes(1)
+    const [error, options] = vi.mocked(sentryCaptureException).mock.calls[0]
+    expect(error.message).toBe(`france-travail: échec d'obtention du token (Request failed with status code 302 → ${SECOURS_URL})`)
+    expect(options).toEqual({ extra: { status: 302, location: SECOURS_URL, responseData: "" } })
+  })
+
+  it("garde le message de format invalide quand FT répond 200 sans token", async () => {
+    nock("https://entreprise.francetravail.fr").post("/connexion/oauth2/access_token").query({ realm: "partenaire" }).reply(200, "<html></html>", { "Content-Type": "text/html" })
+
+    await expect(getFranceTravailTokenFromAPI("OFFRE")).rejects.toThrowError("impossible d'obtenir un token pour l'API france travail")
+
+    expect(vi.mocked(sentryCaptureException).mock.calls[0][0].message).toBe("france-travail: échec d'obtention du token (inattendu: FT api token format non valide)")
   })
 })
 

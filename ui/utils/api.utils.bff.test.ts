@@ -4,7 +4,8 @@ const { renewSearchToken, captureException } = vi.hoisted(() => ({ renewSearchTo
 vi.mock("@/utils/search-token.client", () => ({ renewSearchToken }))
 vi.mock("@sentry/nextjs", () => ({ captureException }))
 
-import { ApiError, apiGet, generateUrl } from "./api.utils"
+import { ApiError, apiGet, apiPost, generateUrl } from "./api.utils"
+import { isBffPath, isDirectApiPath } from "./bff-routes"
 import { setSearchToken } from "./search-token.store"
 
 const fetchMock = vi.fn<typeof fetch>()
@@ -36,6 +37,40 @@ describe("generateUrl dans le navigateur", () => {
 
   it.each(["/v1/searchx", "/v3/jobs/search", "/rome", "/user"])("laisse %s sur l'API publique", (path) => {
     expect(generateUrl(path)).toMatch(/\/api\//)
+  })
+
+  it.each(["/v2/_private/application", "/V2/_private/Application", "/v2/_private/application?x=1"])("envoie la candidature %s en direct sur l'API", (path) => {
+    expect(generateUrl(path)).toMatch(/^https?:\/\/[^/]+\/api\/v2\/_private\/application(\?|$)/i)
+  })
+
+  // nginx n'ouvre que le chemin exact : tout voisin reste fermé sur /api et doit passer par le BFF.
+  it.each(["/v2/_private/application/", "/v2/_private/applications", "/v1/_private/application", "/_private/application"])("garde le voisin %s sur le BFF", (path) => {
+    expect(generateUrl(path)).toMatch(/^\/bff\//)
+  })
+
+  it("envoie la candidature sur l'API avec le jeton d'accès de l'offre, sans jeton de recherche", async () => {
+    setSearchToken("jeton-de-recherche")
+    fetchMock.mockResolvedValueOnce(Response.json({}))
+    await apiPost("/v2/_private/application", { body: {} as never, headers: { authorization: "Bearer jeton-offre" } })
+    const [url, init] = fetchMock.mock.calls[0]
+    const headers = new Headers(init?.headers)
+    expect(url).toMatch(/^https?:\/\/[^/]+\/api\/v2\/_private\/application$/)
+    expect(headers.get("authorization")).toBe("Bearer jeton-offre")
+    expect(headers.has("x-lba-search-token")).toBe(false)
+  })
+})
+
+// isBffPath a deux consommateurs : le routage navigateur (apiBaseUrl) et l'allowlist d'entrée du BFF
+// (toApiPath). Une route directe doit sortir du premier sans sortir du second.
+describe("contrat des prédicats de routage", () => {
+  it("la candidature est directe côté navigateur et reste servie par le BFF", () => {
+    expect(isDirectApiPath("/v2/_private/application")).toBe(true)
+    expect(isBffPath("/v2/_private/application")).toBe(true)
+  })
+
+  it.each(["/_private/appointment", "/v1/search"])("%s n'est pas une route directe", (path) => {
+    expect(isDirectApiPath(path)).toBe(false)
+    expect(isBffPath(path)).toBe(true)
   })
 })
 
