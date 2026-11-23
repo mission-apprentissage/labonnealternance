@@ -630,7 +630,7 @@ describe("règle comptes_multiples_siret dans le socle de détection", () => {
       expect(await alertedSirets(NOW)).toEqual([SIRET])
     })
 
-    // 30 égalités, au-delà du seuil où $sortArray les mélange (cf. lastEventExpr).
+    // 30 égalités, au-delà du seuil où $sortArray les mélange (cf. lastEventOf).
     it("retient à date égale le dernier événement du tableau, comme getLastStatusEvent", async () => {
       const entreprise = await insertEntreprise()
       const { webmail } = await insertSuspiciousSiret(entreprise)
