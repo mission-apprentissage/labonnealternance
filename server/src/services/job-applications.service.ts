@@ -22,8 +22,8 @@ import {
   getApplicationAttachmentSize,
   getApplicationPartnerName,
   getUserManagingOffer,
-  SENT_TO_COMPANY_FILTER,
 } from "@/services/application.service"
+import { SENT_TO_COMPANY_FILTER } from "@/services/sent-to-company.filter"
 
 type IJobApplicationsResponse = z.output<(typeof zRoutes)["get"]["/application/job/:jobId"]["response"]["200"]>
 
