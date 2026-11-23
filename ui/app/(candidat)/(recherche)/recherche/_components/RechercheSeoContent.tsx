@@ -10,9 +10,9 @@ import { buildHitDetailUrl, buildRechercheH1, buildSearchUrl } from "../_utils/s
 const MAX_SEO_OFFERS = 10
 
 /**
- * Contenu SEO server-rendered de `/recherche`, en `sr-only` : un H1 « Alternance {métier}{ à {lieu}} »
- * (la page n'en a aucun autre, le rendu visible étant client) et les premières offres en vrais
- * liens `<a href>` pour le maillage interne.
+ * Contenu SEO server-rendered de `/recherche`, en `sr-only` : le H1 de la page (cf. buildRechercheH1),
+ * la maquette n'ayant pas de titre visible, et les premières offres en vrais liens `<a href>` pour le
+ * maillage interne.
  *
  * Le bloc offres est réservé aux robots (`aria-hidden` + `tabIndex={-1}`) : sinon ces liens
  * invisibles précèdent le formulaire dans le DOM et captent une dizaine de Tab (issue #5257).
@@ -24,7 +24,7 @@ export function RechercheSeoContent({ params }: { params: ISearchPageParams }) {
 
   return (
     <div className="fr-sr-only">
-      {h1 && <h1>{h1}</h1>}
+      <h1>{h1}</h1>
       {hasSearch && (
         <Suspense fallback={null}>
           <RechercheSeoOffers params={params} />
