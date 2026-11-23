@@ -35,6 +35,7 @@ Déclarer un `IDetectionRule` ([detection-rule.ts](../server/src/jobs/detection/
 | `auto_validation_taux_global` | moyenne | Le taux d'auto-validation des comptes entreprise et CFA baisse d'au moins `dropThresholdPoints` points. Deux constats consécutifs. | 7 j contre 28 j, 10 points, `minVolume` 30 rôles tranchés par fenêtre |
 | `auto_validation_indetermines` | technique | Les validations automatiques indéterminées (BAL ou fournisseur indisponible) dépassent `thresholdPercent` % des rôles évalués. | 7 j, 5 %, `minVolume` 30 rôles évalués |
 | `creations_comptes_domaine` | haute | Un même domaine email cumule sur `windowHours` heures au moins `companyMinAccounts` comptes recruteur (`webmailMinAccounts` pour un webmail grand public ou jetable), et au moins `companySpikeRatio` (`webmailSpikeRatio`) fois son volume attendu. Une alerte ouverte se ferme quand le domaine passe sous `exitRatio` de l'un des deux seuils. Un constat par domaine, avec les identifiants des comptes, ceux créés dans la fenêtre et le nombre de rôles validés automatiquement. | 72 h, référence 28 j, 10 comptes et 3 fois le volume attendu pour chaque type de domaine, sortie sous la moitié |
+| `comptes_multiples_siret` | moyenne | Un même SIRET porte au moins `minAccounts` comptes entreprise actifs ayant chacun une offre en ligne. Ces comptes relèvent d'au moins `minIdentities` identités email, et deux d'entre eux ont été créés à moins de `maxCreationGapHours` heures d'écart. Une alerte ouverte reste ouverte tant que le SIRET garde `minAccounts` comptes actifs, dont `exitRatio` × `minAccounts` avec une offre en ligne, et que l'ensemble de ses comptes actifs remplit les deux critères. Un constat par SIRET, avec les identifiants des comptes, leur date de création et leur nombre d'offres. | Désactivée par défaut. 2 comptes, 2 identités, créés à moins de 24 h d'écart, fermée sous 2 comptes qui publient |
 | `offres_compte_recent` | haute | Un compte dépose au moins `minOffers` offres, des offres qui cumulent au moins `minOpenings` postes, ou au moins `minNonConformeOffers` offres non conformes selon la modération, dans les `windowHours` heures qui suivent son ouverture. L'alerte reste ouverte jusqu'à `windowHours` + `holdHours` heures après l'ouverture, ou jusqu'à ce que tous les rôles du compte soient refusés ou désactivés. Un constat par compte, avec les SIRET de ses offres et le lien vers sa fiche au back-office. Désactivée par défaut. | 7 jours, 10 offres, 20 postes ou 2 non conformes, suivi 24 h de plus |
 
 Les trois règles d'auto-validation passent chaque jour à 5 h UTC, sur des fenêtres arrêtées à minuit UTC, et rappellent une alerte en cours chaque semaine. Code : [auto-validation-rate-alert.ts](../server/src/jobs/recruiters/auto-validation-rate-alert.ts).
@@ -46,6 +47,47 @@ Une alerte ouverte ne se ferme qu'une fois le domaine passé sous `exitRatio` du
 Le rejeu sur la production retrouve 21 comptes pour l'incident de juin 2026, du 29/06 au 04/07, dont 16 au plus sur 72 h ; l'issue en annonçait 25 en 3 jours. Avec un `webmailMinAccounts` de 17 ou plus, la règle l'aurait manqué.
 
 Limite : avec le multiple par défaut de 3, un pic de P comptes passe inaperçu sur un domaine qui pèse habituellement plus de P / (2W + 3P) des créations, W étant le nombre de comptes créés dans la fenêtre hors pic. Pour un pic de 25 comptes : 9 % des créations pour W = 100, l'ordre de grandeur de la production en 2025-2026 ; 4 % pour W = 300. Code : [account-creation-domain-alert.ts](../server/src/jobs/recruiters/account-creation-domain-alert.ts).
+
+`comptes_multiples_siret` (#5424) passe chaque jour à 6 h UTC et rappelle une alerte en cours tous les 30 jours. Elle traite le stock : plusieurs comptes entreprise publient sur un même SIRET. C'est un signal, pas une preuve, car des collègues d'un même établissement publient légitimement. Les comptes d'un SIRET sont ceux dont le rôle porte sur l'entreprise de ce SIRET, `entreprises.siret` étant unique.
+
+Elle est livrée désactivée. Pour l'activer, rejouer d'abord l'année écoulée sur la production et comparer les épisodes au tableau ci-dessous. L'état au dernier créneau du rejeu donne le nombre d'alertes qui partiront au premier passage. Les clés d'épisode journalisées sont des SIRET : elles restent dans les journaux du serveur.
+
+```bash
+sudo ./scripts/cli.sh replayDetectionRules --rule comptes_multiples_siret --from 2025-11-18 --to 2026-11-17
+sudo ./scripts/cli.sh configureDetectionRule --rule comptes_multiples_siret --enabled true
+```
+
+- Compte actif : rôle entreprise dont le dernier événement de statut daté au plus tard du créneau est GRANTED. Un compte désactivé au back-office (rôle DENIED) ne compte plus, même s'il garde des offres en ligne. Un compte CFA ne compte pas, même au SIRET de l'entreprise, ni ses offres déléguées.
+- Offre en ligne : offre LBA déposée par le compte, au SIRET de l'entreprise, déposée avant le créneau, pas encore expirée, et publiée au créneau d'après `offer_status_history`.
+- Identités email : un domaine d'entreprise compte une fois, chaque compte webmail à part (liste de `company-email-validator`, comme pour `creations_comptes_domaine`). Des collègues sous le domaine de leur entreprise n'alertent pas ; un compte webmail à côté d'un compte d'entreprise, deux webmails ou deux domaines d'entreprise alertent. Le message ne donne que le nombre de domaines et de webmails, jamais le domaine.
+- Écart de création : deux au moins des comptes qui publient ont été créés à moins de `maxCreationGapHours` heures d'écart (date de création du rôle). Un compte qui rejoint le SIRET des mois plus tard n'alerte pas : le cas cité par l'issue, une offre publiée en 2025 puis une autre sous un second compte en 2026, est hors cible. Sur le rejeu de l'année, l'ancienneté n'est suivie que d'une désactivation par le support (tableau ci-dessous).
+- Alerte ouverte : les deux critères se lisent sur l'ensemble des comptes actifs du SIRET, y compris ceux qui ne publient plus. Par défaut (`exitRatio` 1), l'alerte se ferme dès qu'il reste moins de deux comptes qui publient. Un `exitRatio` de 0,5 la maintient tant qu'un compte publie. Sur le rejeu sans critère, il évite 10 réouvertures sur 243 alertes, mais double leur durée médiane et ajoute 73 notifications. Avec les critères par défaut, il n'évite qu'une réouverture.
+
+Choix des critères : rejeu de la production du 18/11/2025 au 17/11/2026, rappel à 30 jours, sans maintien. L'agrégation Compass arrondit les créations au jour, d'où une fourchette pour l'écart de 24 h.
+
+| Critère | Alertes ouvertes | SIRET | Notifications | Alertes suivies d'une désactivation par le support (hors nettoyage du 20 au 24/07) |
+|---|---|---|---|---|
+| Aucun | 243 | 199 | 591 | 22 (9) |
+| Identités | 119 | 101 | 300 | 10 (3) |
+| Écart de création < 24 h | 78 à 81 | 67 à 70 | 195 à 204 | 15 (5) |
+| Identités et écart < 24 h (défaut) | 42 à 45 | 37 à 40 | 109 à 118 | 9 (2) |
+| Comptes créés à 180 jours d'écart au moins | 65 | 53 | 151 | 1 (1) |
+
+La dernière colonne n'est pas une précision, et elle repose sur peu de cas. Dans 11 des 15 SIRET concernés, le compte désactivé avait été créé le même jour qu'un autre, ce qui avantage d'office l'écart de création ; elle ne dit rien des SIRET que le support n'a pas regardés. Les identités divisent le volume par deux sans changer cette part, l'ancienneté la fait tomber à presque rien, l'écart de création la double.
+
+Le défaut combine les deux critères, lus indépendamment : avec trois comptes qui publient ou plus, la paire créée à moins de 24 h peut partager un domaine d'entreprise, l'autre identité venant d'un troisième compte. Exiger que la paire elle-même relève de deux identités ne change rien sur le rejeu de l'année. Du 09 au 11/06/2026, des offres LBA annulées à tort puis restaurées (#4813) ferment et rouvrent les alertes en cours : sans cet incident, le défaut en ouvre 37.
+
+Limite : un webmail absent de la liste de `company-email-validator` compte comme un domaine d'entreprise. Deux comptes `proton.me`, `bbox.fr` ou `nordnet.fr` sur un même SIRET font une seule identité et n'alertent pas, quand deux comptes `gmail.com` alertent. Le message les compte aussi parmi les domaines d'entreprise. La liste est celle de BAL et de `creations_comptes_domaine` : la compléter change aussi cette règle.
+
+Les observations du cron comptent les pertes : `comptes_supprimes` (rôles dont l'utilisateur a été effacé) et `roles_sans_siret` (rôles d'une entreprise introuvable ou sans SIRET, dans les groupes d'au moins `minAccounts` rôles). Les deux valent 0 sur la copie locale de la production.
+
+Chaque lien ouvre la fiche du compte au back-office, où le bloc des autres comptes du même SIRET (#5451) signale un téléphone ou un nom en commun. Ce bloc lit le statut d'un compte au dernier rang de son historique, pas à la dernière date, et compte toutes ses offres, closes comprises : la règle ne le réutilise pas.
+
+À date égale, le dernier événement d'un historique est le dernier du tableau, comme pour `getLastStatusEvent` (cf. `lastEventExpr`).
+
+La règle reconstitue le stock au créneau évalué, ce qui rend le rejeu valable sur les dates passées, à deux approximations près. Le statut de dépôt d'une offre n'est pas tracé : il est déduit en attente si l'historique commence par la publication de l'offre ou par l'expiration d'une offre en attente, et publié sinon. Avant #5479 (24/09/2026), la clôture d'une offre par son recruteur ne laissait pas de trace : #5429 l'a datée de `updated_at`, postérieure à la clôture, et seule l'expiration borne alors la période en ligne. Un compte supprimé depuis (effacement RGPD) n'est plus lu.
+
+La requête lit tous les rôles entreprise créés avant le créneau par l'index `authorized_type_1_createdAt_1`, puis joint les entreprises par `_id`, les offres par `managed_by_1` et les comptes par `_id`. Sur une copie obfusquée de la production au 10/11/2026 (28 000 rôles), une évaluation prend environ 250 ms. Code : [multi-account-siret-alert.ts](../server/src/jobs/recruiters/multi-account-siret-alert.ts).
 
 `offres_compte_recent` (#5423) passe toutes les heures. Une alerte dure au plus 8 jours avec les seuils par défaut et n'est rappelée qu'après 4 jours, donc au plus une fois. Elle est livrée désactivée, tant que les comptes de son rejeu ne sont pas qualifiés (cf. ci-dessous) ; `configureDetectionRule --rule offres_compte_recent --enabled true` l'active.
 
