@@ -22,14 +22,14 @@ export default function GlobalError({ error }: ErrorProps) {
       </head>
       <body>
         <div id="global_error_container">
-          <div id="content">
+          <main id="content">
             <Image id="logo" src="/images/logo_LBA.svg" alt="La bonne alternance" width={213} height={55} />
             <div id="center-container">
               <h1>Le service est temporairement indisponible.</h1>
               <p>Nous mettons tout en œuvre pour rétablir l’accès rapidement. Merci de votre patience et à très bientôt !</p>
               <Image id="woman" src="/images/5xx.svg" alt="" aria-hidden="true" height={661} width={391} />
             </div>
-          </div>
+          </main>
         </div>
       </body>
     </html>
