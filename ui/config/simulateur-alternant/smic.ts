@@ -26,7 +26,7 @@ const SMIC_2026_06_01: BaremeSmic = {
   },
 }
 
-// Métropole : +1,6 % annoncé par le gouvernement, à confirmer par le décret (#5953).
+// Métropole : +1,6 % annoncé par le gouvernement (https://www.info.gouv.fr/actualite/conference-sociale-hausse-du-smic-de-1-6), à confirmer par le décret au JO (#5953).
 // Mayotte : montants du 1er juin 2026 reconduits tant que la nouvelle valeur n'est pas publiée.
 const SMIC_2026_12_01: BaremeSmic = {
   dateEffet: new Date("2026-12-01T00:00:00"),
