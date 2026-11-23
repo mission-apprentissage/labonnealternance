@@ -15692,7 +15692,7 @@ __metadata:
 
 "react-notion-x@patch:react-notion-x@npm%3A7.10.0#./.yarn/patches/react-notion-x-npm-7.10.0-bc6011c92e.patch::locator=mna-lba%40workspace%3A.":
   version: 7.10.0
-  resolution: "react-notion-x@patch:react-notion-x@npm%3A7.10.0#./.yarn/patches/react-notion-x-npm-7.10.0-bc6011c92e.patch::version=7.10.0&hash=58a6b0&locator=mna-lba%40workspace%3A."
+  resolution: "react-notion-x@patch:react-notion-x@npm%3A7.10.0#./.yarn/patches/react-notion-x-npm-7.10.0-bc6011c92e.patch::version=7.10.0&hash=d9f37a&locator=mna-lba%40workspace%3A."
   dependencies:
     "@fisch0920/medium-zoom": ^1.0.7
     "@matejmazur/react-katex": ^3.1.3
@@ -15713,7 +15713,7 @@ __metadata:
   dependenciesMeta:
     react-pdf:
       optional: true
-  checksum: 1c75c91bc6dc6668c37dcc3eaaa32a5c09cf94946c43ac28ef4f4e7b5ba55eacb9d87ee6ab260beea9a3c4632bfd16a7e95f7c057c3d8a39ed8103125b064699
+  checksum: 38c14931ba3e1aa4f156e25faaac8cc8ea4a9dd776ccac79c19ca779f72b7935d299d02dbe4d9ff5f128ed3f3a184d89af0ad19d35fccc0e8c011f7364777281
   languageName: node
   linkType: hard
 
