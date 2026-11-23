@@ -22,6 +22,7 @@ import {
   getApplicationAttachmentSize,
   getApplicationPartnerName,
   getUserManagingOffer,
+  SENT_TO_COMPANY_FILTER,
 } from "@/services/application.service"
 
 type IJobApplicationsResponse = z.output<(typeof zRoutes)["get"]["/application/job/:jobId"]["response"]["200"]>
@@ -54,7 +55,7 @@ type IApplicationWithApplicant = IApplication & { applicant: Pick<IApplicant, "f
 const getApplicationsWithApplicant = (jobId: ObjectId, applicantFields: Partial<Record<keyof IApplicant, 1>>, applicationId?: ObjectId) =>
   getDbCollection("applications")
     .aggregate<IApplicationWithApplicant>([
-      { $match: { job_id: jobId, ...(applicationId ? { _id: applicationId } : {}) } },
+      { $match: { job_id: jobId, ...SENT_TO_COMPANY_FILTER, ...(applicationId ? { _id: applicationId } : {}) } },
       { $lookup: { from: "applicants", localField: "applicant_id", foreignField: "_id", pipeline: [{ $project: applicantFields }], as: "applicant" } },
       { $unwind: "$applicant" },
       { $sort: { created_at: -1 } },
@@ -89,7 +90,10 @@ export const getJobApplicationsForRecruiter = async (jobId: ObjectId, userAccess
 }
 
 const formatDate = (date: Date | null | undefined) => (date ? dayjs(date).tz("Europe/Paris").format("DD/MM/YYYY") : "")
-const formatText = (text: string | null | undefined) => (text ? decodeSanitizedText(text).trim() : "")
+// Le message du candidat est stocké avec des <br /> à la place de ses sauts de ligne (cf. prepareMessageForMail) :
+// rendus en vrais sauts de ligne, le texte saisi par le candidat ne passe jamais par du HTML interprété.
+const LINE_BREAK_TAG = /<br\s*\/?>/gi
+const formatText = (text: string | null | undefined) => (text ? decodeSanitizedText(text).replace(LINE_BREAK_TAG, "\n").trim() : "")
 const formatBoolean = (value: boolean | null | undefined) => (value === true ? "Oui" : value === false ? "Non" : "")
 
 // Libellés de la page des candidatures (cf. getApplicationStatus), en précisant le traitement hors LBA.
@@ -239,7 +243,7 @@ export const markJobApplicationTreatedElsewhere = async (jobId: ObjectId, applic
   }
   const now = new Date()
   const { matchedCount } = await getDbCollection("applications").updateOne(
-    { _id: applicationId, job_id: jobId, company_recruitment_intention: null },
+    { _id: applicationId, job_id: jobId, ...SENT_TO_COMPANY_FILTER, company_recruitment_intention: null },
     { $set: { company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE, company_recruitment_intention_date: now, last_update_at: now } }
   )
   if (!matchedCount) {

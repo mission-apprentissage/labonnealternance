@@ -65,6 +65,12 @@ const PARTNER_NAMES = {
 
 export const PARTNERS_WITH_APPLICATION_API = ["Taleez"]
 
+/**
+ * Candidature réellement transmise au recruteur : son mail est parti, donc l'antivirus est passé (cf. processApplicationEmails).
+ * Avant, elle est encore dans le circuit d'envoi et n'est ni affichée ni comptée dans l'espace pro (#5769).
+ */
+export const SENT_TO_COMPANY_FILTER = { to_company_message_id: { $nin: [null, ""] } } as const
+
 export const getApplicationPartnerName = (caller: IApplication["caller"]): string | null => (caller && PARTNER_NAMES[caller]) ?? null
 
 /** Objet du mail de réponse au candidat, repris tel quel par le détail d'une candidature côté recruteur (#5769). */

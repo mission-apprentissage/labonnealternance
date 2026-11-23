@@ -46,7 +46,7 @@ import { getDbCollection, READ_OWN_WRITES } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { sanitizeTextField, sanitizeToPlainText } from "@/common/utils/string-utils"
 import config from "@/config"
-import { getUserManagingOffer } from "./application.service"
+import { getUserManagingOffer, SENT_TO_COMPANY_FILTER } from "./application.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDataFromSiret } from "./etablissement.service"
 import { sendDelegationMailToCFA, sendMailNouvelleOffre } from "./formulaire-notifications.service"
@@ -462,14 +462,15 @@ const romeDetailJoin = [
   { $unwind: { path: "$rome_detail", preserveNullAndEmptyArrays: true } },
 ]
 
-// Une candidature est en attente tant que le recruteur n'a exprimé aucune intention (#5769).
+// Seules les candidatures transmises au recruteur comptent (cf. SENT_TO_COMPANY_FILTER) ; l'une d'elles est en
+// attente tant que le recruteur n'a exprimé aucune intention (#5769).
 const applicationCountJoin = [
   {
     $lookup: {
       from: "applications",
       localField: "_id",
       foreignField: "job_id",
-      pipeline: [{ $project: { _id: 0, company_recruitment_intention: 1 } }],
+      pipeline: [{ $match: SENT_TO_COMPANY_FILTER }, { $project: { _id: 0, company_recruitment_intention: 1 } }],
       as: "applications",
     },
   },

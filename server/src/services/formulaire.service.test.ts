@@ -412,7 +412,7 @@ describe("getFormulairesForCfaManagedEnterprises", () => {
     expect(recruiter.jobs[0].candidatures).toBeUndefined()
   })
 
-  it("compte les candidatures de l'entreprise, et celles en attente sur ses seules offres ouvertes", async () => {
+  it("compte les candidatures transmises de l'entreprise, et celles en attente sur ses seules offres ouvertes", async () => {
     const role = generateRoleManagementFixture({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString(), user_id: cfaUser._id })
     await getDbCollection("rolemanagements").insertOne(role)
     await insertEntrepriseManagedByCfa({ entreprise_id: entreprise._id, cfa_id: cfa._id, ...entrepriseManagedByCfaContact })
@@ -433,6 +433,8 @@ describe("getFormulairesForCfaManagedEnterprises", () => {
       generateApplicationFixture({ job_id: openJob._id, company_recruitment_intention: null }),
       generateApplicationFixture({ job_id: openJob._id, company_recruitment_intention: ApplicationIntention.REFUS }),
       generateApplicationFixture({ job_id: expiredJob._id, company_recruitment_intention: null }),
+      // Encore dans le circuit d'envoi : ni comptée, ni en attente.
+      generateApplicationFixture({ job_id: openJob._id, company_recruitment_intention: null, to_company_message_id: null }),
     ])
 
     const [recruiter] = await getFormulairesForCfaManagedEnterprises(cfaUser._id, cfa._id, false)

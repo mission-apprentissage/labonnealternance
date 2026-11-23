@@ -81,6 +81,18 @@ describe("GET /application/job/:jobId", () => {
     expect(response.json().applications.map(({ applicant_last_name }) => applicant_last_name)).toEqual(["Retenu"])
   })
 
+  it("n'affiche pas une candidature encore dans le circuit d'envoi, avant le mail au recruteur", async () => {
+    const recruiter = await saveRecruiter("recruteur-envoi")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    await saveApplication(offer._id, "Envoyee")
+    await saveApplication(offer._id, "Enattente", { to_company_message_id: null, scan_status: ApplicationScanStatus.WAITING_FOR_SCAN })
+
+    const response = await getApplications(offer._id, (await logUser(httpClient, "recruteur-envoi")).bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().applications.map(({ applicant_last_name }) => applicant_last_name)).toEqual(["Envoyee"])
+  })
+
   it("refuse le recruteur d'une autre entreprise", async () => {
     const recruiter = await saveRecruiter("proprietaire")
     await saveRecruiter("voisin")
@@ -200,6 +212,19 @@ describe("GET /application/job/:jobId/export", () => {
     })
   })
 
+  it("n'exporte que les candidatures transmises au recruteur, avec les sauts de ligne du candidat", async () => {
+    const recruiter = await saveRecruiter("recruteur-export-envoi")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    await saveApplication(offer._id, "Envoyee", { applicant_message_to_company: "Bonjour,<br />Je suis motivé" })
+    await saveApplication(offer._id, "Enattente", { to_company_message_id: null })
+
+    const response = await exportApplications(offer._id, (await logUser(httpClient, "recruteur-export-envoi")).bearerToken)
+
+    expect(response.body).toContain("ENVOYEE")
+    expect(response.body).not.toContain("ENATTENTE")
+    expect(response.body).toContain('"Bonjour,\nJe suis motivé"')
+  })
+
   it("neutralise un texte du candidat qui serait lu comme une formule par un tableur", async () => {
     const recruiter = await saveRecruiter("recruteur-formule")
     const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
@@ -264,6 +289,32 @@ describe("GET /application/job/:jobId/application/:applicationId", () => {
       feedback_email_subject: null,
       applicant_answers_to_recruiter_questions: [{ question: "Pourquoi nous ?", answer: "Pour apprendre" }],
     })
+  })
+
+  it("rend en sauts de ligne les <br /> du message et des réponses du candidat", async () => {
+    const recruiter = await saveRecruiter("recruteur-lignes")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Lignes", {
+      applicant_message_to_company: "Bonjour,<br />Je suis motivé.<br/><br>Cordialement",
+      applicant_answers_to_recruiter_questions: [{ question: "Pourquoi nous ?", answer: "Pour apprendre<br />et progresser" }],
+    })
+
+    const response = await getDetail(offer._id, application._id, (await logUser(httpClient, "recruteur-lignes")).bearerToken)
+
+    expect(response.json().application).toMatchObject({
+      applicant_message_to_company: "Bonjour,\nJe suis motivé.\n\nCordialement",
+      applicant_answers_to_recruiter_questions: [{ question: "Pourquoi nous ?", answer: "Pour apprendre\net progresser" }],
+    })
+  })
+
+  it("répond 404 pour une candidature encore dans le circuit d'envoi", async () => {
+    const recruiter = await saveRecruiter("recruteur-detail-envoi")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Enattente", { to_company_message_id: null })
+
+    const response = await getDetail(offer._id, application._id, (await logUser(httpClient, "recruteur-detail-envoi")).bearerToken)
+
+    expect(response.statusCode).toBe(404)
   })
 
   it("donne la taille de la pièce jointe déduite de sa data URL sur S3, sans la télécharger", async () => {
@@ -349,6 +400,17 @@ describe("GET /application/job/:jobId/application/:applicationId/attachment", ()
     const response = await getAttachment(offer._id, application._id, (await logUser(httpClient, "recruteur-pj-virus")).bearerToken)
 
     expect(response.statusCode).toBe(403)
+    expect(s3ReadAsString).not.toHaveBeenCalled()
+  })
+
+  it("répond 404, et non 403, pour la pièce jointe d'une candidature qui attend encore l'antivirus", async () => {
+    const recruiter = await saveRecruiter("recruteur-pj-attente")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Enattente", { to_company_message_id: null, scan_status: ApplicationScanStatus.WAITING_FOR_SCAN })
+
+    const response = await getAttachment(offer._id, application._id, (await logUser(httpClient, "recruteur-pj-attente")).bearerToken)
+
+    expect(response.statusCode).toBe(404)
     expect(s3ReadAsString).not.toHaveBeenCalled()
   })
 
