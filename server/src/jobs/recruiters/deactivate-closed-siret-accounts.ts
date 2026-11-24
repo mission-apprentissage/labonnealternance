@@ -33,9 +33,16 @@ const MAX_CONSECUTIVE_NO_RESPONSE = 10
 const CANCELLABLE_OFFER_STATUSES = [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION]
 const DEACTIVATABLE_ROLE_STATUSES = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
 export const ZDeactivateClosedSiretOptions = z.object({
   dryRun: z.boolean().default(false).describe("Interroge l'API Entreprise et rapporte les actions sans rien écrire en base"),
   limit: z.coerce.number().int().positive().optional().describe("Nombre maximal de SIRET interrogés"),
+  maxDurationMinutes: z.coerce
+    .number()
+    .positive()
+    .optional()
+    .describe("Durée d'une tranche : passé ce délai, le job s'arrête et laisse les SIRET restants à la tranche suivante (cf. cron dans jobs.ts)"),
   requestsPerMinute: z.coerce.number().int().positive().max(API_ENTREPRISE_REQUESTS_PER_MINUTE).default(200),
   rateLimitReserve: z.coerce
     .number()
@@ -48,7 +55,12 @@ export const ZDeactivateClosedSiretOptions = z.object({
     .nonnegative()
     .default(30)
     .describe("Ignore les organisations vérifiées plus récemment (lastUpdateFromSource) : une relance après interruption reprend où le job s'était arrêté"),
-  maxTechnicalErrorRatio: z.coerce.number().min(0).max(1).default(0.05).describe("Au-delà de cette part de SIRET en erreur technique (5xx, timeout), le job termine en échec"),
+  maxTechnicalErrorRatio: z.coerce
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.05)
+    .describe("Au-delà de cette part de SIRET en erreur technique (5xx, timeout, réponse illisible), le job termine en échec"),
 })
 
 export type IDeactivateClosedSiretOptions = z.input<typeof ZDeactivateClosedSiretOptions>
@@ -69,11 +81,15 @@ export type IDeactivateClosedSiretReport = {
   processingErrors: number
   actions: Record<keyof typeof CLOSED_SIRET_ACTION, number>
   offersCancelled: number
+  /** SIRET laissés à la tranche suivante, faute de temps (maxDurationMinutes). */
+  remaining: number
+  /** RateLimit-Reset présent mais illisible : la réserve laissée au site ne s'applique plus. */
+  rateLimitResetUnreadable: boolean
   aborted: string | null
 }
 
 const getOrganizationsToCheck = async ({ recheckAfterDays, limit }: { recheckAfterDays: number; limit?: number }, now: Date): Promise<Map<string, Organization[]>> => {
-  const recheckBefore = new Date(now.getTime() - recheckAfterDays * 24 * 60 * 60 * 1000)
+  const recheckBefore = new Date(now.getTime() - recheckAfterDays * DAY_MS)
   const notRecentlyChecked = { $or: [{ lastUpdateFromSource: null }, { lastUpdateFromSource: { $lt: recheckBefore } }] }
 
   const entreprises = await getDbCollection("entreprises")
@@ -86,10 +102,10 @@ const getOrganizationsToCheck = async ({ recheckAfterDays, limit }: { recheckAft
     .toArray()
 
   const organizations: Organization[] = [
-    ...cfas.map(({ _id, siret }) => ({ type: CLOSED_SIRET_ORGANIZATION_TYPE.CFA, _id, siret })),
     ...entreprises
       .filter(({ status }) => getLastStatusEvent(status)?.status !== EntrepriseStatus.DESACTIVE)
       .map(({ _id, siret }) => ({ type: CLOSED_SIRET_ORGANIZATION_TYPE.ENTREPRISE, _id, siret })),
+    ...cfas.map(({ _id, siret }) => ({ type: CLOSED_SIRET_ORGANIZATION_TYPE.CFA, _id, siret })),
   ]
 
   // Un même SIRET peut porter une entreprise et un CFA : un seul appel pour les deux.
@@ -173,13 +189,6 @@ const cancelOffers = async (ctx: ClosureContext, organization: Organization, fil
 }
 
 const closeEntreprise = async (ctx: ClosureContext, organization: Organization, report: IDeactivateClosedSiretReport) => {
-  const entreprise = await getDbCollection("entreprises").findOne({ _id: organization._id }, { projection: { status: 1 } })
-  if (entreprise && getLastStatusEvent(entreprise.status)?.status !== EntrepriseStatus.DESACTIVE) {
-    if (!ctx.dryRun) await deactivateEntreprise(organization._id, CLOSED_SIRET_REASON)
-    await pushAction(ctx, organization, { action: CLOSED_SIRET_ACTION.ENTREPRISE_DESACTIVEE })
-    report.actions.ENTREPRISE_DESACTIVEE++
-  }
-
   await deactivateRoles(ctx, organization, report)
 
   const cfaLinks = await getDbCollection("entreprise_managed_by_cfa").find({ entreprise_id: organization._id }).toArray()
@@ -191,30 +200,20 @@ const closeEntreprise = async (ctx: ClosureContext, organization: Organization, 
 
   // Offres du recruteur comme offres déléguées par un CFA : toutes portent le SIRET de l'entreprise.
   await cancelOffers(ctx, organization, { workplace_siret: ctx.siret }, report)
+
+  // En dernier : DESACTIVE écarte l'entreprise des passages suivants (cf. getOrganizationsToCheck). Posé plus tôt, un échec
+  // sur les rôles ou les offres laisserait un compte actif sur un SIRET fermé, sans reprise possible.
+  const entreprise = await getDbCollection("entreprises").findOne({ _id: organization._id }, { projection: { status: 1 } })
+  if (entreprise && getLastStatusEvent(entreprise.status)?.status !== EntrepriseStatus.DESACTIVE) {
+    if (!ctx.dryRun) await deactivateEntreprise(organization._id, CLOSED_SIRET_REASON)
+    await pushAction(ctx, organization, { action: CLOSED_SIRET_ACTION.ENTREPRISE_DESACTIVEE })
+    report.actions.ENTREPRISE_DESACTIVEE++
+  }
 }
 
 const closeCfa = async (ctx: ClosureContext, organization: Organization, report: IDeactivateClosedSiretReport) => {
   await deactivateRoles(ctx, organization, report)
   await cancelOffers(ctx, organization, { cfa_siret: ctx.siret }, report)
-}
-
-const formatReport = (report: IDeactivateClosedSiretReport, durationMs: number): string => {
-  const unknown = Object.entries(report.unknown)
-    .map(([reason, count]) => `${reason} : ${count}`)
-    .join(", ")
-  return [
-    report.dryRun ? "*Dry-run* : aucune écriture en base." : null,
-    report.aborted ? `*Arrêt anticipé* : ${report.aborted}. Une relance reprend les SIRET non vérifiés.` : null,
-    `SIRET interrogés : ${report.checked} (actifs ${report.active}, fermés ${report.closed}, non concluants ${report.checked - report.active - report.closed}${unknown ? ` : ${unknown}` : ""})`,
-    report.processingErrors ? `*SIRET en échec de traitement* : ${report.processingErrors} (cf. Sentry)` : null,
-    `Entreprises désactivées : ${report.actions.ENTREPRISE_DESACTIVEE}`,
-    `Rôles désactivés : ${report.actions.ROLE_DESACTIVE}`,
-    `Entreprises retirées d'un CFA : ${report.actions.RETRAIT_DU_CFA}`,
-    `Offres annulées : ${report.offersCancelled}`,
-    `Durée : ${Math.round(durationMs / 60_000)} min. Journal : collection closed_siret_actions, run_id ${report.runId}`,
-  ]
-    .filter(Boolean)
-    .join("\n")
 }
 
 const applyEtatAdministratif = async (
@@ -255,6 +254,49 @@ const applyEtatAdministratif = async (
   }
 }
 
+/** Bilan de la vérification en cours, toutes tranches confondues : organisations lues et actions journalisées depuis `since`. */
+const formatCampaignSummary = async (since: Date): Promise<string> => {
+  const [entreprises, cfas, actions] = await Promise.all([
+    getDbCollection("entreprises").countDocuments({ lastUpdateFromSource: { $gte: since } }),
+    getDbCollection("cfas").countDocuments({ lastUpdateFromSource: { $gte: since } }),
+    getDbCollection("closed_siret_actions")
+      .aggregate<{ _id: string; count: number; offers: number }>([
+        { $match: { createdAt: { $gte: since } } },
+        { $group: { _id: "$action", count: { $sum: 1 }, offers: { $sum: { $ifNull: ["$offers_count", 0] } } } },
+      ])
+      .toArray(),
+  ])
+  const byAction = new Map(actions.map(({ _id, count, offers }) => [_id, { count, offers }]))
+  return [
+    `*Bilan depuis le ${since.toISOString().slice(0, 10)}* : ${entreprises} entreprises et ${cfas} CFA vérifiés`,
+    `entreprises désactivées ${byAction.get(CLOSED_SIRET_ACTION.ENTREPRISE_DESACTIVEE)?.count ?? 0}`,
+    `rôles désactivés ${byAction.get(CLOSED_SIRET_ACTION.ROLE_DESACTIVE)?.count ?? 0}`,
+    `retraits d'un CFA ${byAction.get(CLOSED_SIRET_ACTION.RETRAIT_DU_CFA)?.count ?? 0}`,
+    `offres annulées ${byAction.get(CLOSED_SIRET_ACTION.OFFRES_ANNULEES)?.offers ?? 0}`,
+  ].join(", ")
+}
+
+const formatReport = (report: IDeactivateClosedSiretReport, durationMs: number): string => {
+  const unknown = Object.entries(report.unknown)
+    .map(([reason, count]) => `${reason} : ${count}`)
+    .join(", ")
+  return [
+    report.dryRun ? "*Dry-run* : aucune écriture en base." : null,
+    report.aborted ? `*Arrêt anticipé* : ${report.aborted}. Une relance reprend les SIRET non vérifiés.` : null,
+    `SIRET interrogés : ${report.checked} (actifs ${report.active}, fermés ${report.closed}, non concluants ${report.checked - report.active - report.closed}${unknown ? ` : ${unknown}` : ""})`,
+    report.remaining ? `SIRET restants, repris à la tranche suivante : ${report.remaining}` : null,
+    report.processingErrors ? `*SIRET en échec de traitement* : ${report.processingErrors} (cf. Sentry)` : null,
+    report.rateLimitResetUnreadable ? "*Header RateLimit-Reset illisible* : la réserve laissée au site ne s'applique pas, seuls les 429 freinent le job." : null,
+    `Entreprises désactivées : ${report.actions.ENTREPRISE_DESACTIVEE}`,
+    `Rôles désactivés : ${report.actions.ROLE_DESACTIVE}`,
+    `Entreprises retirées d'un CFA : ${report.actions.RETRAIT_DU_CFA}`,
+    `Offres annulées : ${report.offersCancelled}`,
+    `Durée : ${Math.round(durationMs / 60_000)} min. Journal : collection closed_siret_actions, run_id ${report.runId}`,
+  ]
+    .filter(Boolean)
+    .join("\n")
+}
+
 /**
  * Désactive les comptes recruteurs et CFA dont le SIRET est fermé à l'INSEE (#5437). Règles et champs modifiés :
  * docs/desactivation-siret-fermes.md.
@@ -274,6 +316,8 @@ export const deactivateClosedSiretAccounts = async (rawOptions: IDeactivateClose
     processingErrors: 0,
     actions: { ENTREPRISE_DESACTIVEE: 0, ROLE_DESACTIVE: 0, OFFRES_ANNULEES: 0, RETRAIT_DU_CFA: 0 },
     offersCancelled: 0,
+    remaining: 0,
+    rateLimitResetUnreadable: false,
     aborted: null,
   }
 
@@ -281,15 +325,27 @@ export const deactivateClosedSiretAccounts = async (rawOptions: IDeactivateClose
   logger.info({ dryRun: options.dryRun, runId: report.runId }, `${CLOSED_SIRET_JOB_NAME}: ${organizationsBySiret.size} SIRET à vérifier`)
 
   const pacer = createPacer(options)
+  const deadline = options.maxDurationMinutes === undefined ? null : startedAt + options.maxDurationMinutes * 60_000
   let consecutiveRateLimited = 0
   let consecutiveNoResponse = 0
+  let index = 0
 
   for (const [siret, organizations] of organizationsBySiret) {
+    if (deadline !== null && Date.now() >= deadline) {
+      report.remaining = organizationsBySiret.size - index
+      break
+    }
+    index++
+
     let result: IEtatAdministratifResult | null = null
     while (result === null) {
       await pacer.waitTurn()
       const response = await getEtatAdministratifFromGouv(siret)
       pacer.observe(response.rateLimit)
+      if (response.rateLimit.resetUnreadable && !report.rateLimitResetUnreadable) {
+        report.rateLimitResetUnreadable = true
+        logger.warn(`${CLOSED_SIRET_JOB_NAME}: header RateLimit-Reset illisible, la réserve laissée au site ne s'applique pas`)
+      }
       if (response.result.kind !== "rate_limited") {
         consecutiveRateLimited = 0
         result = response.result
@@ -303,6 +359,11 @@ export const deactivateClosedSiretAccounts = async (rawOptions: IDeactivateClose
       await sleep(response.result.retryAfterMs)
     }
     if (result === null) break
+
+    if (result.kind === "unauthorized") {
+      report.aborted = `jeton API Entreprise refusé (${result.reason})`
+      break
+    }
     report.checked++
 
     if (result.kind === "unknown") {
@@ -327,9 +388,19 @@ export const deactivateClosedSiretAccounts = async (rawOptions: IDeactivateClose
 
   const technicalErrorRatio = report.checked ? report.technicalErrors / report.checked : 0
   const failed = report.aborted !== null || report.processingErrors > 0 || technicalErrorRatio > options.maxTechnicalErrorRatio
+  const finished = !report.aborted && report.remaining === 0
   const message = formatReport(report, Date.now() - startedAt)
   logger.info(`${CLOSED_SIRET_JOB_NAME}: ${message}`)
-  await notifyToSlack({ subject: "Désactivation des comptes à SIRET fermé", message, error: failed })
+
+  // Une tranche sans SIRET à vérifier ne publie rien : le cron en lance jusqu'à la fin de la fenêtre, une fois la vérification terminée.
+  if (report.checked > 0 || failed) {
+    const summary = finished && !options.dryRun ? `\n${await formatCampaignSummary(new Date(startedAt - options.recheckAfterDays * DAY_MS))}` : ""
+    await notifyToSlack({
+      subject: finished ? "Désactivation des comptes à SIRET fermé" : "Désactivation des comptes à SIRET fermé (tranche)",
+      message: `${message}${summary}`,
+      error: failed || report.rateLimitResetUnreadable,
+    })
+  }
 
   if (report.aborted) {
     throw new Error(`${CLOSED_SIRET_JOB_NAME}: arrêt anticipé, ${report.aborted}`)

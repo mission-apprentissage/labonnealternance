@@ -26,6 +26,7 @@ import { sleep } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
+import { modifyPermissionToUser } from "@/services/role-management.service"
 import { deactivateEntreprise } from "@/services/user-recruteur.service"
 import { emailHasActiveRole, isUserDisabled } from "@/services/user-with-account.service"
 import { CLOSED_SIRET_JOB_NAME, deactivateClosedSiretAccounts } from "./deactivate-closed-siret-accounts"
@@ -45,6 +46,11 @@ vi.mock("@/services/user-recruteur.service", async (importOriginal) => {
   return { ...original, deactivateEntreprise: vi.fn(original.deactivateEntreprise) }
 })
 
+vi.mock("@/services/role-management.service", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/services/role-management.service")>()
+  return { ...original, modifyPermissionToUser: vi.fn(original.modifyPermissionToUser) }
+})
+
 useMongo()
 
 const SIRET_FERME = "42476141900045"
@@ -58,7 +64,7 @@ const DATE_FERMETURE = new Date("2026-06-30T00:00:00.000Z")
 
 const FOUND_ACTIVE: IEtatAdministratifResult = { kind: "found", etat: "A", dateFermeture: null }
 const FOUND_CLOSED: IEtatAdministratifResult = { kind: "found", etat: "F", dateFermeture: DATE_FERMETURE }
-const NO_RATE_LIMIT = { remaining: null, resetAt: null }
+const NO_RATE_LIMIT = { remaining: null, resetAt: null, resetUnreadable: false }
 
 const mockApi = (bySiret: Record<string, IEtatAdministratifResult | IEtatAdministratifResult[]>) => {
   const queues = new Map(Object.entries(bySiret).map(([siret, results]) => [siret, Array.isArray(results) ? [...results] : results]))
@@ -136,7 +142,6 @@ describe("deactivateClosedSiretAccounts", () => {
     it.each<[string, IEtatAdministratifResult]>([
       ["SIRET inconnu (404)", { kind: "unknown", reason: "HTTP 404", technical: false }],
       ["non diffusible (451)", { kind: "unknown", reason: "HTTP 451", technical: false }],
-      ["réponse sans état administratif", { kind: "unknown", reason: "réponse sans état administratif", technical: false }],
     ])("ne conclut pas à une fermeture sur %s", async (_label, result) => {
       const { user, entreprise, role } = await saveRecruteur(SIRET_FERME)
       await insertOffer("offre", user._id, { workplace_siret: SIRET_FERME })
@@ -310,6 +315,8 @@ describe("deactivateClosedSiretAccounts", () => {
 
       expect.soft(report.checked).toBe(0)
       expect.soft(getEtatAdministratifFromGouv).not.toHaveBeenCalled()
+      // Les tranches lancées après la fin de la vérification ne publient rien.
+      expect.soft(notifyToSlack).not.toHaveBeenCalled()
     })
 
     it("n'appelle l'API qu'une fois pour une entreprise et un CFA de même SIRET", async () => {
@@ -320,6 +327,62 @@ describe("deactivateClosedSiretAccounts", () => {
       await deactivateClosedSiretAccounts()
 
       expect(getEtatAdministratifFromGouv).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe("limite et tranches", () => {
+    it("n'interroge que `limit` SIRET, entreprises d'abord", async () => {
+      await saveEntrepriseNonVerifiee({ siret: SIRET_ACTIF, status: valideEntreprise() })
+      await saveEntrepriseNonVerifiee({ siret: AUTRE_SIRET, status: valideEntreprise() })
+      await saveCfaNonVerifie({ siret: SIRET_CFA })
+      mockApi({ [SIRET_ACTIF]: FOUND_ACTIVE, [AUTRE_SIRET]: FOUND_ACTIVE, [SIRET_CFA]: FOUND_ACTIVE })
+
+      const report = await deactivateClosedSiretAccounts({ limit: 2 })
+
+      expect.soft(report.checked).toBe(2)
+      expect.soft(vi.mocked(getEtatAdministratifFromGouv).mock.calls.map(([siret]) => siret)).toEqual([SIRET_ACTIF, AUTRE_SIRET])
+    })
+
+    it("compte une seule fois, dans la limite, un SIRET partagé par une entreprise et un CFA", async () => {
+      const { role: roleEntreprise } = await saveRecruteur(SIRET_FERME)
+      const user = await saveUserWithAccount()
+      const cfa = await saveCfaNonVerifie({ siret: SIRET_FERME })
+      const roleCfa = await saveRoleManagement({ user_id: user._id, authorized_id: cfa._id.toString(), authorized_type: AccessEntityType.CFA, status: grantedRole() })
+      await saveEntrepriseNonVerifiee({ siret: AUTRE_SIRET, status: valideEntreprise() })
+      mockApi({ [SIRET_FERME]: FOUND_CLOSED })
+
+      const report = await deactivateClosedSiretAccounts({ limit: 1 })
+
+      expect.soft(report.checked).toBe(1)
+      expect.soft((await lastRoleStatus(roleEntreprise._id))?.status).toBe(AccessStatus.DENIED)
+      expect.soft((await lastRoleStatus(roleCfa._id))?.status).toBe(AccessStatus.DENIED)
+    })
+
+    it("s'arrête au bout de maxDurationMinutes et laisse la suite à la tranche suivante, qui publie le bilan", async () => {
+      const { role } = await saveRecruteur(SIRET_FERME)
+      await saveEntrepriseNonVerifiee({ siret: SIRET_ACTIF, status: valideEntreprise() })
+      await saveEntrepriseNonVerifiee({ siret: AUTRE_SIRET, status: valideEntreprise() })
+      const results: Record<string, IEtatAdministratifResult> = { [SIRET_FERME]: FOUND_CLOSED, [SIRET_ACTIF]: FOUND_ACTIVE, [AUTRE_SIRET]: FOUND_ACTIVE }
+      vi.mocked(getEtatAdministratifFromGouv).mockImplementation(async (siret) => {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        return { result: results[siret], rateLimit: NO_RATE_LIMIT }
+      })
+
+      // 30 ms : la tranche s'arrête après le premier SIRET, qui prend 50 ms.
+      const firstSlice = await deactivateClosedSiretAccounts({ maxDurationMinutes: 0.0005 })
+
+      expect.soft(firstSlice).toMatchObject({ checked: 1, remaining: 2 })
+      expect.soft((await lastRoleStatus(role._id))?.status).toBe(AccessStatus.DENIED)
+      expect.soft(notifyToSlack).toHaveBeenLastCalledWith(expect.objectContaining({ subject: expect.stringContaining("(tranche)"), error: false }))
+
+      const lastSlice = await deactivateClosedSiretAccounts()
+
+      expect.soft(lastSlice).toMatchObject({ checked: 2, remaining: 0 })
+      expect
+        .soft(notifyToSlack)
+        .toHaveBeenLastCalledWith(
+          expect.objectContaining({ message: expect.stringMatching(/Bilan depuis le .* 3 entreprises et 0 CFA vérifiés, entreprises désactivées 1, rôles désactivés 1/) })
+        )
     })
   })
 
@@ -382,7 +445,7 @@ describe("deactivateClosedSiretAccounts", () => {
     })
 
     it("poursuit après un échec de traitement en base, le signale à Sentry et termine en échec", async () => {
-      const enEchec = await saveRecruteur(SIRET_FERME)
+      await saveRecruteur(SIRET_FERME)
       const traite = await saveRecruteur(AUTRE_SIRET)
       mockApi({ [SIRET_FERME]: FOUND_CLOSED, [AUTRE_SIRET]: FOUND_CLOSED })
       vi.mocked(deactivateEntreprise).mockRejectedValueOnce(new Error("Document failed validation"))
@@ -391,15 +454,61 @@ describe("deactivateClosedSiretAccounts", () => {
       expect.soft(sentryCaptureException).toHaveBeenCalledTimes(1)
       expect.soft(notifyToSlack).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
       expect.soft((await lastRoleStatus(traite.role._id))?.status).toBe(AccessStatus.DENIED)
-      // Sans lecture enregistrée, le SIRET en échec est repris au passage suivant.
-      expect.soft((await getDbCollection("entreprises").findOne({ _id: enEchec.entreprise._id }))?.lastUpdateFromSource ?? null).toBeNull()
+    })
+
+    // L'entreprise ne passe DESACTIVE qu'en dernier : un échec plus tôt la laisse dans la sélection du passage suivant.
+    it.each<[string, () => void]>([
+      ["la désactivation d'un rôle", () => vi.mocked(modifyPermissionToUser).mockRejectedValueOnce(new Error("Document failed validation"))],
+      ["la désactivation de l'entreprise", () => vi.mocked(deactivateEntreprise).mockRejectedValueOnce(new Error("Document failed validation"))],
+    ])("reprend au passage suivant un SIRET dont %s a échoué", async (_label, failOnce) => {
+      const { user, entreprise, role } = await saveRecruteur(SIRET_FERME)
+      await insertOffer("active", user._id, { workplace_siret: SIRET_FERME })
+      mockApi({ [SIRET_FERME]: [FOUND_CLOSED, FOUND_CLOSED] })
+      failOnce()
+
+      await expect(deactivateClosedSiretAccounts()).rejects.toThrow("1 SIRET en échec de traitement")
+      const secondRun = await deactivateClosedSiretAccounts()
+
+      expect.soft(secondRun.checked).toBe(1)
+      expect.soft((await lastRoleStatus(role._id))?.status).toBe(AccessStatus.DENIED)
+      expect.soft(await offerStatuses()).toEqual({ active: JOB_STATUS_ENGLISH.ANNULEE })
+      expect.soft(await lastEntrepriseStatus(entreprise._id)).toMatchObject({ status: EntrepriseStatus.DESACTIVE, reason: CLOSED_SIRET_REASON })
+    })
+
+    it("s'arrête dès le premier refus du jeton (401, 403), sans rien modifier", async () => {
+      const { role } = await saveRecruteur(SIRET_FERME)
+      await saveEntrepriseNonVerifiee({ siret: AUTRE_SIRET, status: valideEntreprise() })
+      mockApi({ [SIRET_FERME]: { kind: "unauthorized", reason: "HTTP 401" }, [AUTRE_SIRET]: FOUND_CLOSED })
+
+      await expect(deactivateClosedSiretAccounts()).rejects.toThrow("jeton API Entreprise refusé (HTTP 401)")
+      expect.soft(getEtatAdministratifFromGouv).toHaveBeenCalledTimes(1)
+      expect.soft((await lastRoleStatus(role._id))?.status).toBe(AccessStatus.GRANTED)
+      expect.soft(notifyToSlack).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+    })
+
+    it("termine en échec quand les réponses n'ont plus d'état administratif, sans rien modifier", async () => {
+      const { role } = await saveRecruteur(SIRET_FERME)
+      mockApi({ [SIRET_FERME]: { kind: "unknown", reason: "réponse sans état administratif", technical: true } })
+
+      await expect(deactivateClosedSiretAccounts()).rejects.toThrow("erreurs techniques")
+      expect.soft((await lastRoleStatus(role._id))?.status).toBe(AccessStatus.GRANTED)
+    })
+
+    it("signale sur Slack un header RateLimit-Reset illisible, sans faire échouer le job", async () => {
+      await saveEntrepriseNonVerifiee({ siret: SIRET_ACTIF, status: valideEntreprise() })
+      vi.mocked(getEtatAdministratifFromGouv).mockResolvedValue({ result: FOUND_ACTIVE, rateLimit: { remaining: 10, resetAt: null, resetUnreadable: true } })
+
+      const report = await deactivateClosedSiretAccounts()
+
+      expect.soft(report.rateLimitResetUnreadable).toBe(true)
+      expect.soft(notifyToSlack).toHaveBeenCalledWith(expect.objectContaining({ error: true, message: expect.stringContaining("RateLimit-Reset illisible") }))
     })
 
     it("attend la minute suivante quand le quota restant passe sous la réserve", async () => {
       await saveEntrepriseNonVerifiee({ siret: SIRET_ACTIF, status: valideEntreprise() })
       await saveEntrepriseNonVerifiee({ siret: AUTRE_SIRET, status: valideEntreprise() })
       const resetAt = new Date(Date.now() + 30_000)
-      vi.mocked(getEtatAdministratifFromGouv).mockResolvedValue({ result: FOUND_ACTIVE, rateLimit: { remaining: 10, resetAt } })
+      vi.mocked(getEtatAdministratifFromGouv).mockResolvedValue({ result: FOUND_ACTIVE, rateLimit: { remaining: 10, resetAt, resetUnreadable: false } })
 
       await deactivateClosedSiretAccounts({ rateLimitReserve: 25 })
 

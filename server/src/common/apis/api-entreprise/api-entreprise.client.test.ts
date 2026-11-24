@@ -40,14 +40,15 @@ describe("getEtablissementFromGouvSafe", () => {
 })
 
 describe("getEtatAdministratifFromGouv", () => {
-  const RESET = 1795526460
+  // Fin de la minute en cours, en secondes Unix, comme le renvoie l'API (constaté sur un appel réel).
+  const RESET = Math.floor(Date.now() / 1000) + 30
 
   it("renvoie l'état administratif et le quota restant lu dans les headers RateLimit", async () => {
     nockApiEntreprise(200, apiEntrepriseEtablissementFixture.dinum, { "RateLimit-Limit": "250", "RateLimit-Remaining": "249", "RateLimit-Reset": String(RESET) })
 
     await expect(getEtatAdministratifFromGouv(siret)).resolves.toEqual({
       result: { kind: "found", etat: "A", dateFermeture: null },
-      rateLimit: { remaining: 249, resetAt: new Date(RESET * 1000) },
+      rateLimit: { remaining: 249, resetAt: new Date(RESET * 1000), resetUnreadable: false },
     })
   })
 
@@ -63,7 +64,7 @@ describe("getEtatAdministratifFromGouv", () => {
 
     await expect(getEtatAdministratifFromGouv(siret)).resolves.toEqual({
       result: { kind: "rate_limited", retryAfterMs: 17_000 },
-      rateLimit: { remaining: 0, resetAt: new Date(RESET * 1000) },
+      rateLimit: { remaining: 0, resetAt: new Date(RESET * 1000), resetUnreadable: false },
     })
   })
 
@@ -79,10 +80,31 @@ describe("getEtatAdministratifFromGouv", () => {
     await expect(getEtatAdministratifFromGouv(siret)).resolves.toMatchObject({ result: { kind: "unknown", reason: `HTTP ${status}`, technical } })
   })
 
-  it("ne conclut rien sur une réponse 200 sans état administratif", async () => {
+  it("compte comme erreur technique une réponse 200 sans état administratif", async () => {
     nockApiEntreprise(200, { data: { siret } })
 
-    await expect(getEtatAdministratifFromGouv(siret)).resolves.toMatchObject({ result: { kind: "unknown", technical: false } })
+    await expect(getEtatAdministratifFromGouv(siret)).resolves.toMatchObject({ result: { kind: "unknown", technical: true } })
+  })
+
+  it.each([401, 403])("distingue le refus du jeton (%i)", async (status) => {
+    nockApiEntreprise(status)
+
+    await expect(getEtatAdministratifFromGouv(siret)).resolves.toMatchObject({ result: { kind: "unauthorized", reason: `HTTP ${status}` } })
+  })
+
+  it.each([
+    ["une date ISO", "2026-11-24T14:00:00Z"],
+    ["une durée en secondes", "42"],
+  ])("signale un RateLimit-Reset illisible : %s", async (_label, reset) => {
+    nockApiEntreprise(200, apiEntrepriseEtablissementFixture.dinum, { "RateLimit-Remaining": "10", "RateLimit-Reset": reset })
+
+    await expect(getEtatAdministratifFromGouv(siret)).resolves.toMatchObject({ rateLimit: { remaining: 10, resetAt: null, resetUnreadable: true } })
+  })
+
+  it("ne signale rien quand les headers RateLimit sont absents", async () => {
+    nockApiEntreprise(200, apiEntrepriseEtablissementFixture.dinum)
+
+    await expect(getEtatAdministratifFromGouv(siret)).resolves.toMatchObject({ rateLimit: { remaining: null, resetAt: null, resetUnreadable: false } })
   })
 
   it("distingue l'absence de réponse, signe possible d'un bannissement de l'IP", async () => {

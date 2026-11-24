@@ -464,11 +464,14 @@ export async function setupJobProcessor() {
             cron_string: "0 8 * * SUN",
             handler: updateDiplomeMetier,
           },
-          // 15 février et 15 novembre (#5437), la nuit comme le recommande l'API Entreprise pour les traitements de masse.
+          // Nuits des 15 et 16 février et novembre (#5437), comme le recommande l'API Entreprise pour les traitements de masse.
+          // Environ 5 h d'appels à 200/min : découpés en tranches de 10 min, chacune reprenant où la précédente s'est arrêtée
+          // (lastUpdateFromSource), pour ne pas monopoliser un worker qui exécute un seul job à la fois.
           // Production seule : une exécution en recette consommerait le même quota de 250 requêtes/minute.
           "Désactivation des comptes à SIRET fermé": {
-            cron_string: "0 1 15 2,11 *",
-            handler: config.env === "production" ? async () => deactivateClosedSiretAccounts() : async () => Promise.resolve(0),
+            cron_string: "*/15 0-7 15,16 2,11 *",
+            handler: config.env === "production" ? async () => deactivateClosedSiretAccounts({ maxDurationMinutes: 10 }) : async () => Promise.resolve(0),
+            maxRuntimeInMinutes: 20,
           },
           "update-handi-engagement": {
             cron_string: "45 4 * * SAT",
