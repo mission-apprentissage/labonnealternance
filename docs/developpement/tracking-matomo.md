@@ -122,7 +122,7 @@ Catégories en usage (à réutiliser avant d'en créer une) :
    (cf. `lastTrackedItemIdRef` dans `JobDetailRendererClient.tsx`, `lastTrackedSearchKeyRef` dans
    `SearchPageClient.tsx`).
 5. Une dimension calculée (statut, tranche, libellé) sort dans une fonction pure testée, à côté du composant
-   (cf. `applications-tracking.ts` et son test).
+   (cf. `diffFilterChanges` dans `search.tracking.utils.ts` et son test).
 6. Retirer une constante de `MATOMO_EVENTS` dès que plus rien ne la pousse, et nettoyer le conteneur en même temps
    (cf. §7).
 
