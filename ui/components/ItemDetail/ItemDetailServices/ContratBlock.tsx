@@ -43,26 +43,28 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
           Niveau de formation visé en fin de contrat :
         </Box>
         {job?.target_diploma_level ? (
-          <Stack component="dd" direction="row" sx={{ flexWrap: "wrap", m: 0, p: 0 }}>
-            {getDiplomaPills(job.target_diploma_level).map((pill, idx) => (
-              <Typography
-                component="span"
-                key={idx}
-                sx={{
-                  fontSize: "14px",
-                  textAlign: "center",
-                  color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-                  background: "#e3e3fd",
-                  px: fr.spacing("4v"),
-                  borderRadius: "40px",
-                  ml: fr.spacing("2v"),
-                  mb: fr.spacing("2v"),
-                }}
-              >
-                {pill}
-              </Typography>
-            ))}
-          </Stack>
+          <Box component="dd" sx={{ m: 0, p: 0 }}>
+            <Stack component="ul" direction="row" className="fr-raw-list" sx={{ flexWrap: "wrap" }}>
+              {getDiplomaPills(job.target_diploma_level).map((pill, idx) => (
+                <Typography
+                  component="li"
+                  key={idx}
+                  sx={{
+                    fontSize: "14px",
+                    textAlign: "center",
+                    color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+                    background: "#e3e3fd",
+                    px: fr.spacing("4v"),
+                    borderRadius: "40px",
+                    ml: fr.spacing("2v"),
+                    mb: fr.spacing("2v"),
+                  }}
+                >
+                  {pill}
+                </Typography>
+              ))}
+            </Stack>
+          </Box>
         ) : (
           <Typography component="dd" sx={{ ml: fr.spacing("2v"), mb: fr.spacing("2v"), p: 0 }}>
             Indifférent

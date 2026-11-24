@@ -30,7 +30,7 @@ export const GeiqJobDetail = ({ job, title, jobSearchedByUser }: { job: ILbaItem
       <JobPostingSchema title={title} description={job?.job?.description || null} id={job?.id} job={job} />
 
       <Box sx={{ pb: 0, mt: fr.spacing("6v"), position: "relative", backgroundColor: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" component="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Contrat
         </Typography>
         <ContratBlock job={job} />
@@ -46,7 +46,7 @@ export const GeiqJobDetail = ({ job, title, jobSearchedByUser }: { job: ILbaItem
       />
 
       <Box sx={{ pb: 0, mt: fr.spacing("6v"), position: "relative", backgroundColor: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" component="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Description de l&apos;offre
         </Typography>
         <JobDescription job={job} />
