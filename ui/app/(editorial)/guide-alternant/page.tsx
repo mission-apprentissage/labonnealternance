@@ -67,6 +67,8 @@ const GuideAlternantPage = () => {
           <Grid
             container
             size={12}
+            component="ul"
+            className="fr-raw-list"
             sx={{
               "& .fr-card__content": {
                 padding: fr.spacing("6v"),
@@ -77,28 +79,28 @@ const GuideAlternantPage = () => {
               },
             }}
           >
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES_PARTAGES["decouvrir-l-alternance"]} source="guide-alternant" />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES["preparer-son-projet-en-alternance"]} />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES_PARTAGES["apprentissage-et-handicap"]} source="guide-alternant" />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"]} />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES["comment-signer-un-contrat-en-alternance"]} />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES["la-rupture-de-contrat"]} />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES["se-faire-accompagner"]} />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES_PARTAGES["prevention-des-risques-professionnels-pour-les-apprentis"]} source="guide-alternant" />
             </Grid>
           </Grid>
@@ -367,7 +369,7 @@ const GuideAlternantPage = () => {
           <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("6v"), py: fr.spacing("4v") }}>
             <Grid size={{ md: 9, xs: 12 }}>
               <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
-                <Typography variant="body1" fontWeight={700}>
+                <Typography variant="body1" component="h2" fontWeight={700}>
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
                 <Box>

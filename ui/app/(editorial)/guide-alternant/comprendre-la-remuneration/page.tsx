@@ -73,7 +73,10 @@ const BlocSalaire = () => (
         boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
       }}
     >
-      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+      <Typography
+        component="h4"
+        sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+      >
         Moins de 18 ans
       </Typography>
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
@@ -106,7 +109,10 @@ const BlocSalaire = () => (
         boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
       }}
     >
-      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+      <Typography
+        component="h4"
+        sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+      >
         De 18 ans à 20 ans
       </Typography>
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
@@ -139,7 +145,10 @@ const BlocSalaire = () => (
         boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
       }}
     >
-      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+      <Typography
+        component="h4"
+        sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+      >
         De 21 ans à 25 ans
       </Typography>
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
@@ -172,7 +181,10 @@ const BlocSalaire = () => (
         boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
       }}
     >
-      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+      <Typography
+        component="h4"
+        sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+      >
         26 ans et plus
       </Typography>
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
@@ -210,7 +222,10 @@ const BlocSalaireProfessionalisation = () => (
         boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
       }}
     >
-      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+      <Typography
+        component="h3"
+        sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+      >
         Avec un diplôme actuel inférieur au Bac
       </Typography>
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
@@ -243,7 +258,10 @@ const BlocSalaireProfessionalisation = () => (
         boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
       }}
     >
-      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+      <Typography
+        component="h3"
+        sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+      >
         Diplôme actuel égal ou supérieur au Bac
       </Typography>
       <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>

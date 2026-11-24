@@ -91,11 +91,13 @@ export const LayoutArticle = ({
                   }}
                 />
               </Grid>
-              {allerPlusLoinItems.map((item, index) => (
-                <Grid key={index} size={{ md: 4, xs: 12 }}>
-                  <AllerPlusLoinItem {...item} source={sourceAllerPlusLoin} />
-                </Grid>
-              ))}
+              <Grid container size={12} component="ul" className="fr-raw-list">
+                {allerPlusLoinItems.map((item, index) => (
+                  <Grid key={index} size={{ md: 4, xs: 12 }} component="li">
+                    <AllerPlusLoinItem {...item} source={sourceAllerPlusLoin} />
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
           </>
         )}
