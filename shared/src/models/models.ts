@@ -41,6 +41,7 @@ import jobsPartnersFluxSignalModel from "./jobs-partners-flux-signal.model.js"
 import jobsPartnersModerationModel from "./jobs-partners-moderation.model.js"
 import jobsPartnersProcessingLockModel from "./jobs-partners-processing-lock.model.js"
 import mistralBatchJobsModel from "./mistral-batch-jobs.model.js"
+import newsletterModel from "./newsletter.model.js"
 import opcoModel from "./opco.model.js"
 import rawApecModel from "./raw-apec.model.js"
 import rawAtlasModel from "./raw-atlas.model.js"
@@ -136,6 +137,7 @@ const modelDescriptorMap = {
   [jobsPartnersFluxSignalModel.collectionName]: jobsPartnersFluxSignalModel,
   [jobsPartnersModerationModel.collectionName]: jobsPartnersModerationModel,
   [jobsPartnersProcessingLockModel.collectionName]: jobsPartnersProcessingLockModel,
+  [newsletterModel.collectionName]: newsletterModel,
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawEdfModel.collectionName]: rawEdfModel,

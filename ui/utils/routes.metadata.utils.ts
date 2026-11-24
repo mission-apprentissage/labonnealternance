@@ -33,6 +33,10 @@ export const METADATA = {
       title: "À propos de La bonne alternance - Notre mission et engagement",
       description: "Apprenez-en plus sur La bonne alternance, notre mission et notre engagement pour faciliter votre recherche d’alternance.",
     }),
+    laLettreDeLAlternance: () => ({
+      title: "La lettre de l'alternance - La bonne alternance",
+      description: "Abonnez-vous à La lettre de l'alternance sur LinkedIn et retrouvez les dernières éditions de l'infolettre de La bonne alternance.",
+    }),
     cgu: () => ({
       title: "Conditions générales d'utilisation - La bonne alternance",
       description: "Consultez les conditions générales d’utilisation de La bonne alternance pour comprendre nos règles et engagements.",
@@ -311,6 +315,9 @@ export const METADATA = {
     }),
     backAdminFeedbackForms: () => ({
       title: "Formulaires de feedback - La bonne alternance",
+    }),
+    backAdminNewsletters: () => ({
+      title: "Infolettres - La bonne alternance",
     }),
     backAdminFeedbackFormCreation: () => ({
       title: "Créer un formulaire de feedback - La bonne alternance",

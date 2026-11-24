@@ -43,6 +43,11 @@ export const PAGES = {
       title: "À propos",
       index: false,
     },
+    laLettreDeLAlternance: {
+      getPath: () => `/a-propos/la-lettre-de-l-alternance` as string,
+      title: "La lettre de l'alternance",
+      index: true,
+    },
     cgu: {
       getPath: () => `/conditions-generales-utilisation` as string,
       title: "Conditions générales d'utilisation",
@@ -307,6 +312,10 @@ export const PAGES = {
     backAdminFeedbackForms: {
       getPath: () => `/espace-pro/administration/formulaires-feedback` as string,
       title: "Formulaires de feedback",
+    },
+    backAdminNewsletters: {
+      getPath: () => `/espace-pro/administration/infolettres` as string,
+      title: "Infolettres",
     },
     backAdminFeedbackFormCreation: {
       getPath: () => `/espace-pro/administration/formulaires-feedback/creation` as string,

@@ -10,7 +10,7 @@ import { getStaticMetiers } from "@/utils/get-static-data"
 import { getHostFromHeader } from "@/utils/request-utils"
 
 // Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
-export const mainSitemapLastModificationDate = new Date("2026-08-11T00:00:00.000Z")
+export const mainSitemapLastModificationDate = new Date("2026-11-24T00:00:00.000Z")
 
 // Une page référencée à la fois dans le sitemap et dans le llms.txt.
 // `label` et `description` ne servent qu'au llms.txt (le sitemap n'utilise que le path).
@@ -48,6 +48,11 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
       priority: 0.9,
       pages: [
         { path: "/a-propos", label: "À propos", description: "Présentation de La bonne alternance, service public gratuit d'aide à l'alternance." },
+        {
+          path: "/a-propos/la-lettre-de-l-alternance",
+          label: "La lettre de l'alternance",
+          description: "Abonnement à l'infolettre de La bonne alternance sur LinkedIn et dernières éditions.",
+        },
         {
           path: "/barometre",
           label: "Baromètre de l'alternance",

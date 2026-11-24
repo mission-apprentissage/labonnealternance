@@ -23,6 +23,7 @@ import { zV1JobsRoutes } from "./jobs.routes.js"
 import { zJobsPartnersAdminRoutes } from "./jobs-partners-admin.routes.js"
 import { zJobsPartnersModerationRoutes } from "./jobs-partners-moderation.routes.js"
 import { zLoginRoutes } from "./login.routes.js"
+import { zNewslettersRoutes } from "./newsletters.routes.js"
 import { zPartnersRoutes } from "./partners.routes.js"
 import { zRecruiterRoutes } from "./recruiters.routes.js"
 import { zReportedCompanyRoutes } from "./reported-company.routes.js"
@@ -76,6 +77,7 @@ const zRoutesGetP5 = {
   ...zJobsPartnersAdminRoutes.get,
   ...zJobsPartnersModerationRoutes.get,
   ...zFeedbackFormsRoutes.get,
+  ...zNewslettersRoutes.get,
   ...zAppointmentsRouteV2.get,
 } as const
 
@@ -113,6 +115,7 @@ const zRoutesPost3 = {
   ...zJobsPartnersAdminRoutes.post,
   ...zJobsPartnersModerationRoutes.post,
   ...zFeedbackFormsRoutes.post,
+  ...zNewslettersRoutes.post,
   ...zPrivateWebVitalsRoutes.post,
 }
 
@@ -128,12 +131,14 @@ const zRoutesPut = {
   ...zUpdateLbaCompanyRoutes.put,
   ...zJobsRoutesV3.put,
   ...zFeedbackFormsRoutes.put,
+  ...zNewslettersRoutes.put,
 } as const
 
 const zRoutesDelete = {
   ...zUserRecruteurRoutes.delete,
   ...zFormulaireRoute.delete,
   ...zFeedbackFormsRoutes.delete,
+  ...zNewslettersRoutes.delete,
 } as const
 
 const zRoutesPatch = {

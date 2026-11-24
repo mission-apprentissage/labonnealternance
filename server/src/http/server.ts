@@ -26,6 +26,7 @@ import adminEtablissementRoute from "./controllers/admin/etablissement.controlle
 import adminFeedbackFormsRoute from "./controllers/admin/feedback-forms.controller"
 import formationsRoute from "./controllers/admin/formations.controller"
 import jobsPartnersAdminRoute from "./controllers/admin/jobs-partners.controller"
+import adminNewslettersRoute from "./controllers/admin/newsletters.controller"
 import application from "./controllers/application.controller"
 import appointmentRequestRoute from "./controllers/appointment-request.controller"
 import { coreRoutes } from "./controllers/core.controller"
@@ -39,6 +40,7 @@ import inserjeunesRoute from "./controllers/inserjeunes.controller"
 import jobsV1Route from "./controllers/jobs.controller"
 import jobsPartnersModerationRoute from "./controllers/jobs-partners-moderation.controller"
 import login from "./controllers/login.controller"
+import newslettersRoute from "./controllers/newsletters.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reported-company.controller"
 import rome from "./controllers/rome.controller"
@@ -151,6 +153,8 @@ export async function bind(app: Server) {
       jobsPartnersModerationRoute(typedSubApp)
       adminFeedbackFormsRoute(typedSubApp)
       feedbackFormsRoute(typedSubApp)
+      adminNewslettersRoute(typedSubApp)
+      newslettersRoute(typedSubApp)
 
       trainingLinks(typedSubApp)
       jobsApiV3Routes(typedSubApp)
