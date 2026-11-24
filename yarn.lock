@@ -3194,86 +3194,86 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/bundle-analyzer@npm:16.0.1":
-  version: 16.0.1
-  resolution: "@next/bundle-analyzer@npm:16.0.1"
+"@next/bundle-analyzer@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/bundle-analyzer@npm:16.4.6"
   dependencies:
     webpack-bundle-analyzer: 4.10.1
-  checksum: 2fb2c0ce0ab25cec81a44ee9acc9824ca3dde11250ea3785c2ca4f49a5f665c484e370bf09a69aaa351ccded7b479abe159501ab2249941f952d30db65cd5980
+  checksum: db3a51f56dd106fef79d0986704f5de4db309842fd69a65798128471e51d11d67b9f1541e818a00fb429ac89627b6e68d8294741822e81b50e79a4239fce16b7
   languageName: node
   linkType: hard
 
-"@next/env@npm:16.4.2":
-  version: 16.4.2
-  resolution: "@next/env@npm:16.4.2"
-  checksum: 4482d2ca53f17b650bf2f2837fdfc4a8723ca91e5a9f2da07700ed1fe9b22fb8119ca4768d8ccb258a799163087b7fa317806df6983ccd121a94ff2c72ff3c14
+"@next/env@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/env@npm:16.4.6"
+  checksum: 8b1dfa24fc003cd8128cdc0aed81a2c5fd34433a818d3d75c5b51c175508a970c37c7c19f9e5ff1f509fc66fdcf163a2ad5ce506ae2c854806d0acd69ea1c00e
   languageName: node
   linkType: hard
 
-"@next/playwright@npm:16.4.1":
-  version: 16.4.1
-  resolution: "@next/playwright@npm:16.4.1"
+"@next/playwright@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/playwright@npm:16.4.6"
   peerDependencies:
     "@playwright/test": ">=1.0.0"
   peerDependenciesMeta:
     "@playwright/test":
       optional: true
-  checksum: 0fa5cf3379ed2085b59e40711332e79056f6512dc00e2085b6ed8c6436e56074e4cb4fa1384ce6657f0939983da4263c1d8dea95a34ce8e6634b934c67bd2ccd
+  checksum: 1564daded5bd1300dbe41cd67563d9ce150c7f69c4eb9f2a7acc823fd3eea616ba13d95fafde115304351725c8da2c1089c00ed639e08f5e02333cf71f83fcbd
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-arm64@npm:16.4.2":
-  version: 16.4.2
-  resolution: "@next/swc-darwin-arm64@npm:16.4.2"
+"@next/swc-darwin-arm64@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-darwin-arm64@npm:16.4.6"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-x64@npm:16.4.2":
-  version: 16.4.2
-  resolution: "@next/swc-darwin-x64@npm:16.4.2"
+"@next/swc-darwin-x64@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-darwin-x64@npm:16.4.6"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-gnu@npm:16.4.2":
-  version: 16.4.2
-  resolution: "@next/swc-linux-arm64-gnu@npm:16.4.2"
+"@next/swc-linux-arm64-gnu@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-linux-arm64-gnu@npm:16.4.6"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-musl@npm:16.4.2":
-  version: 16.4.2
-  resolution: "@next/swc-linux-arm64-musl@npm:16.4.2"
+"@next/swc-linux-arm64-musl@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-linux-arm64-musl@npm:16.4.6"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-gnu@npm:16.4.2":
-  version: 16.4.2
-  resolution: "@next/swc-linux-x64-gnu@npm:16.4.2"
+"@next/swc-linux-x64-gnu@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-linux-x64-gnu@npm:16.4.6"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-musl@npm:16.4.2":
-  version: 16.4.2
-  resolution: "@next/swc-linux-x64-musl@npm:16.4.2"
+"@next/swc-linux-x64-musl@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-linux-x64-musl@npm:16.4.6"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-win32-arm64-msvc@npm:16.4.2":
-  version: 16.4.2
-  resolution: "@next/swc-win32-arm64-msvc@npm:16.4.2"
+"@next/swc-win32-arm64-msvc@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-win32-arm64-msvc@npm:16.4.6"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-win32-x64-msvc@npm:16.4.2":
-  version: 16.4.2
-  resolution: "@next/swc-win32-x64-msvc@npm:16.4.2"
+"@next/swc-win32-x64-msvc@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-win32-x64-msvc@npm:16.4.6"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -13718,19 +13718,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:^16.4.1":
-  version: 16.4.2
-  resolution: "next@npm:16.4.2"
+"next@npm:^16.4.6":
+  version: 16.4.6
+  resolution: "next@npm:16.4.6"
   dependencies:
-    "@next/env": 16.4.2
-    "@next/swc-darwin-arm64": 16.4.2
-    "@next/swc-darwin-x64": 16.4.2
-    "@next/swc-linux-arm64-gnu": 16.4.2
-    "@next/swc-linux-arm64-musl": 16.4.2
-    "@next/swc-linux-x64-gnu": 16.4.2
-    "@next/swc-linux-x64-musl": 16.4.2
-    "@next/swc-win32-arm64-msvc": 16.4.2
-    "@next/swc-win32-x64-msvc": 16.4.2
+    "@next/env": 16.4.6
+    "@next/swc-darwin-arm64": 16.4.6
+    "@next/swc-darwin-x64": 16.4.6
+    "@next/swc-linux-arm64-gnu": 16.4.6
+    "@next/swc-linux-arm64-musl": 16.4.6
+    "@next/swc-linux-x64-gnu": 16.4.6
+    "@next/swc-linux-x64-musl": 16.4.6
+    "@next/swc-win32-arm64-msvc": 16.4.6
+    "@next/swc-win32-x64-msvc": 16.4.6
     "@swc/helpers": 0.5.23
     baseline-browser-mapping: ^2.9.19
     caniuse-lite: ^1.0.30001579
@@ -13774,7 +13774,7 @@ __metadata:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: 82c91afb4ce078bc9d7ebb7d34f94d9bf31a7b0308e1ab45e1517812d721bf036a0e0a5b038eae29c0b12db4308cec6d8c7a0d2107434b6cb1bcaea8dcde142d
+  checksum: edf755b3cdb9f00dcacff7cdc73c5a300efd4cae1ed2c19db1319bb83351794860e411b836ed83456e2274309a17ced6a799ad22ddfe02e1a0d5e75a9026592d
   languageName: node
   linkType: hard
 
@@ -18272,8 +18272,8 @@ __metadata:
     "@mui/material": ^7.3.7
     "@mui/material-nextjs": ^7.3.7
     "@mui/x-data-grid": ^8.17.0
-    "@next/bundle-analyzer": 16.0.1
-    "@next/playwright": 16.4.1
+    "@next/bundle-analyzer": 16.4.6
+    "@next/playwright": 16.4.6
     "@playwright/test": 1.62.1
     "@sentry/browser": ^10.70.0
     "@sentry/cli": ^2.58.6
@@ -18299,7 +18299,7 @@ __metadata:
     lodash-es: ^4.17.21
     match-sorter: ^8.1.0
     motion: ^12.23.24
-    next: ^16.4.1
+    next: ^16.4.6
     next-plausible: ^3.12.5
     next-recompose-plugins: ^3.0.1
     notion-client: 7.10.0

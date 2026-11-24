@@ -55,6 +55,13 @@ const fieldSx = (error?: boolean) => ({
 
 const POPPER_PAPER_SX = { mt: "4px", borderRadius: "4px", py: "8px", boxShadow: "0 6px 18px rgba(0,0,18,0.16)" }
 
+// Le Popper MUI relance popper.forceUpdate() à chaque rendu, et son modifier `onUpdate` fait alors un
+// setPlacement hors événement. Pendant une rafale de frappes, cette mise à jour reste en attente d'un
+// commit à l'autre et React 19 compte chaque commit comme imbriqué : erreur #185 au-delà de 50 (#5937).
+// L'Autocomplete ne lit pas ce state, popper.js positionne la liste sans lui. Référence stable : les
+// modifiers sont une dépendance de l'effet qui crée l'instance popper.js.
+const POPPER_SLOT_PROPS = { modifiers: [{ name: "onUpdate", enabled: false }] }
+
 // Mode inlineSuggestions : le paper se borne à l'espace restant sous le champ (le calc retranche
 // son mt) et la liste scrolle à l'intérieur ; la hauteur vient du flex de l'écran de saisie, pas
 // du cap 40vh de MUI.
@@ -667,6 +674,7 @@ export function SearchBar({
           )}
           slotProps={{
             paper: { sx: inlineSuggestions ? INLINE_PAPER_SX : POPPER_PAPER_SX },
+            popper: POPPER_SLOT_PROPS,
             listbox: { sx: inlineSuggestions ? INLINE_LISTBOX_SX : { maxHeight: metierListbox.maxHeight } },
             clearIndicator: { tabIndex: 0 },
           }}
@@ -811,6 +819,7 @@ export function SearchBar({
           }
           slotProps={{
             paper: { sx: inlineSuggestions ? INLINE_PAPER_SX : POPPER_PAPER_SX },
+            popper: POPPER_SLOT_PROPS,
             listbox: { sx: inlineSuggestions ? INLINE_LISTBOX_SX : { maxHeight: lieuListbox.maxHeight } },
             clearIndicator: { tabIndex: 0 },
           }}
