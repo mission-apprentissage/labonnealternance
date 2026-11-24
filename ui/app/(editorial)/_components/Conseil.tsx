@@ -30,7 +30,7 @@ export const Conseil = ({ title, href, icon }: { title: string; href: string; ic
             <Box my={"auto"}>
               <DsfrIcon name={icon} size={20} color={fr.colors.decisions.text.title.blueFrance.default}></DsfrIcon>
             </Box>
-            <Typography component={"h3"} variant="h6">
+            <Typography component="span" variant="h6" color={fr.colors.decisions.text.title.grey.default}>
               {title}
             </Typography>
           </Grid>

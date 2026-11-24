@@ -11,7 +11,7 @@ export const ParagraphList = ({ listItems, ordered }: { listItems: Array<ReactNo
   >
     {listItems.map((item, index) => (
       <ListItem key={index} sx={{ display: "list-item" }}>
-        <Typography component="span" variant="body1">
+        <Typography component="div" variant="body1">
           {item}
         </Typography>
       </ListItem>
