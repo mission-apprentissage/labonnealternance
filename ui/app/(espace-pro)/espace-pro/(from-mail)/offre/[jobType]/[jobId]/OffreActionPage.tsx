@@ -33,11 +33,12 @@ export function OffreActionPage({ jobId, token }: { jobId: string; token: string
       }}
     >
       {result ? (
-        <FocusedTitle sx={homeEditorialH2}>
+        <FocusedTitle component="h1" sx={homeEditorialH2}>
           {result === "already-closed" ? "Cette offre était déjà clôturée. Votre réponse a bien été enregistrée." : "Votre offre a été modifiée"}
         </FocusedTitle>
       ) : (
         <ClotureRecrutementForm
+          titleAs="h1"
           offreId={jobId}
           onSuccess={(cloturationResult) => setResult(cloturationResult?.alreadyClosed ? "already-closed" : "ok")}
           onCancel={cancelAction}

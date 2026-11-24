@@ -56,8 +56,10 @@ export const RomeDetail = ({
   return (
     <BorderedBox>
       <Typography
-        component="h2"
+        component="h4"
         sx={{
+          fontSize: ["16px", "16px", "16px", "24px"],
+          lineHeight: ["24px", "24px", "24px", "32px"],
           fontWeight: 700,
           mb: fr.spacing("8v"),
         }}
@@ -75,6 +77,7 @@ export const RomeDetail = ({
       </Box>
       <Accordion
         id="metier"
+        titleAs="h5"
         defaultExpanded={true}
         label={
           <Box>
@@ -121,7 +124,7 @@ export const RomeDetail = ({
           isSelected={isSelected("savoirs")}
         />
       )}
-      <Accordion style={{ marginBottom: fr.spacing("4v") }} id="accessibilite" label="À qui ce métier est-il accessible ?">
+      <Accordion style={{ marginBottom: fr.spacing("4v") }} id="accessibilite" titleAs="h5" label="À qui ce métier est-il accessible ?">
         <Typography>{acces_metier}</Typography>
       </Accordion>
       <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px" }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
@@ -211,6 +214,7 @@ const RequiredCompetenceAccordion = ({
   return (
     <Accordion
       id={id}
+      titleAs="h5"
       label={
         <>
           <Typography component="span" sx={{ mr: fr.spacing("2v") }}>

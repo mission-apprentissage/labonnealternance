@@ -80,7 +80,8 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
         <hr aria-hidden="true" />
       </Box>
       <Box sx={{ backgroundColor: "#F2F2F9", p: fr.spacing("6v") }}>
-        <Typography component="h3" sx={{ fontSize: "28px", lineHeight: "36px", fontWeight: 700 }}>
+        {/* !important : DepotSimplifieStyling impose sa taille aux h2 */}
+        <Typography component="h2" sx={{ fontSize: "28px !important", lineHeight: "36px !important", fontWeight: 700 }}>
           Souhaitez-vous proposer des candidats à cette entreprise ?
         </Typography>
         <Typography sx={{ fontSize: "16px", mt: fr.spacing("5v") }}>
@@ -115,7 +116,9 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
         <Box sx={{ border: { xs: "none", lg: "1px solid #ddd" }, p: { xs: 0, lg: fr.spacing("6v") } }}>
           {job.job_employer_description && (
             <Box>
-              <Typography sx={{ fontSize: "24px", mb: fr.spacing("6v"), fontWeight: 700 }}>Présentation de l’entreprise</Typography>
+              <Typography component="h2" sx={{ fontSize: "24px !important", lineHeight: "1.5rem !important", mb: fr.spacing("6v"), fontWeight: 700 }}>
+                Présentation de l’entreprise
+              </Typography>
               {/* stocké ré-encodé par sanitizeTextField, qui conserve <p> et <ul> : rendu en HTML dans un div,
                   comme sur la fiche détail — un <p> les invaliderait */}
               <Typography
@@ -127,7 +130,9 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
             </Box>
           )}
 
-          <Typography sx={{ fontSize: "24px", mb: fr.spacing("6v"), fontWeight: 700 }}>Contrat recherché</Typography>
+          <Typography component="h2" sx={{ fontSize: "24px !important", lineHeight: "1.5rem !important", mb: fr.spacing("6v"), fontWeight: 700 }}>
+            Contrat recherché
+          </Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v"), my: fr.spacing("6v") }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography sx={{ mr: fr.spacing("3v") }}>Métier :</Typography>
@@ -160,7 +165,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
               le texte du recruteur remplace la fiche métier, comme sur la fiche détail. */}
           {job.job_description ? (
             <Box>
-              <Typography component="h4" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("6v") }}>
+              <Typography component="h2" sx={{ fontSize: "24px !important", lineHeight: "32px !important", fontWeight: 700, mb: fr.spacing("6v") }}>
                 Description
               </Typography>
               {/* cf. job_employer_description */}
@@ -194,7 +199,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
           </Box>
           <Box sx={{ border: "solid 1px #000091", p: fr.spacing("6v") }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v") }}>
-              <Typography component="h4" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("3v") }}>
+              <Typography component="h2" sx={{ fontSize: "24px !important", lineHeight: "32px !important", fontWeight: 700, mb: fr.spacing("3v") }}>
                 Informations de contact
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -214,7 +219,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
                 <Typography sx={valueWithEllipsis}>{formulaire.phone}</Typography>
               </Box>
               <Divider aria-hidden="true" sx={{ mb: 0, p: 0, backgroundImage: "none" }} />
-              <Typography component="h4" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("3v") }}>
+              <Typography component="h2" sx={{ fontSize: "24px !important", lineHeight: "32px !important", fontWeight: 700, mb: fr.spacing("3v") }}>
                 Informations légales
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center" }}>

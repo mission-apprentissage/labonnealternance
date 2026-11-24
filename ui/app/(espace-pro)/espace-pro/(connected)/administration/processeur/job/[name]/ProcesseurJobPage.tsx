@@ -13,7 +13,7 @@ export default function JobTypePage({ params }: { params: Promise<{ name: string
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.adminProcessor, PAGES.dynamic.adminProcessorJob(name)]} />
-      <Typography variant="h2" gutterBottom>
+      <Typography variant="h2" component="h1" gutterBottom>
         {PAGES.dynamic.adminProcessorJob(name).title}
       </Typography>
       <ProcessorStatusProvider>

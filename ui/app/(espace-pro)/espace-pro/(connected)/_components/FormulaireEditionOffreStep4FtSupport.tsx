@@ -96,24 +96,34 @@ export const FormulaireEditionOffreStep4FtSupport = ({
               <Typography fontSize={{ xs: "18px !important", md: "20px !important" }} lineHeight={{ xs: "28px !important", md: "32px !important" }} mb={fr.spacing("5v")}>
                 Pour faciliter vos recrutements en alternance, le conseiller pro France Travail peut vous aider à :
               </Typography>
-              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }, gap: fr.spacing("2v") }}>
-                <Box sx={blueBoxStyle}>
+              <Box
+                component="ul"
+                className="fr-raw-list"
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" },
+                  gap: fr.spacing("2v"),
+                  // cf. DecisionPanel : les encarts ne doivent pas hériter de l'espacement des listes de DepotSimplifieStyling.
+                  "& > li": { mx: "0 !important", mb: "0 !important" },
+                }}
+              >
+                <Box component="li" sx={blueBoxStyle}>
                   <Image src="/images/espace_pro/xp_france_travail/profil.svg" aria-hidden="true" alt="" width={56} height={56} />
                   <Typography sx={blueBoxTextStyle}>Définir le profil à recruter</Typography>
                 </Box>
-                <Box sx={blueBoxStyle}>
+                <Box component="li" sx={blueBoxStyle}>
                   <Image src="/images/espace_pro/xp_france_travail/selection.svg" aria-hidden="true" alt="" width={56} height={56} />
                   <Typography sx={blueBoxTextStyle}>Faire une première sélection de candidats</Typography>
                 </Box>
-                <Box sx={blueBoxStyle}>
+                <Box component="li" sx={blueBoxStyle}>
                   <Image src="/images/espace_pro/xp_france_travail/handicap.svg" aria-hidden="true" alt="" width={56} height={56} />
                   <Typography sx={blueBoxTextStyle}>Recruter un profil en situation de handicap</Typography>
                 </Box>
-                <Box sx={blueBoxStyle}>
+                <Box component="li" sx={blueBoxStyle}>
                   <Image src="/images/espace_pro/xp_france_travail/entretien.svg" aria-hidden="true" alt="" width={56} height={56} />
                   <Typography sx={blueBoxTextStyle}>Préparer une trame d’entretien de recrutement</Typography>
                 </Box>
-                <Box sx={blueBoxStyle}>
+                <Box component="li" sx={blueBoxStyle}>
                   <Image src="/images/espace_pro/xp_france_travail/page.svg" aria-hidden="true" alt="" width={56} height={56} />
                   <Typography sx={blueBoxTextStyle}>Rendre attractive votre page employeur sur francetravail.fr</Typography>
                 </Box>

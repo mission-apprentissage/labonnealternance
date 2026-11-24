@@ -90,7 +90,7 @@ export default function PremiumAffelnet() {
   return (
     <Container sx={{ my: fr.spacing("12v") }}>
       <Box sx={{ border: `1px solid ${fr.colors.decisions.text.actionHigh.blueFrance.default}`, px: fr.spacing("14v") }}>
-        <Typography variant="h3" sx={{ my: fr.spacing("6v") }}>
+        <Typography variant="h3" component="h1" sx={{ my: fr.spacing("6v") }}>
           Activation du service “RDV Apprentissage” sur Choisir son affectation après la 3e
         </Typography>
         {hasRefused && !hasAccepted && (

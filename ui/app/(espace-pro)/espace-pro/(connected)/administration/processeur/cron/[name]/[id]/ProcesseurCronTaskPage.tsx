@@ -15,7 +15,7 @@ export default function JobInstancePage({ params }: { params: Promise<{ name: st
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.adminProcessor, PAGES.dynamic.adminProcessorCron(name), PAGES.dynamic.adminProcessorCronTask({ name, id })]} />
-      <Typography variant="h2" gutterBottom>
+      <Typography variant="h2" component="h1" gutterBottom>
         {PAGES.dynamic.adminProcessorCronTask({ name, id }).title}
       </Typography>
       <ProcessorStatusProvider>

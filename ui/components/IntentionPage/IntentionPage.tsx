@@ -75,8 +75,10 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
     return (
       <Box sx={{ width: "80%", maxWidth: "800px", margin: "auto", pt: fr.spacing("5v"), display: "flex" }}>
         {/* Remplace le formulaire quand l'envoi ou l'annulation échoue : annoncé à l'affichage. */}
-        <Box role="alert" sx={{ fontSize: "20px", margin: "auto" }}>
-          {error?.message ?? "Une erreur technique s'est produite"}
+        <Box role="alert" sx={{ margin: "auto" }}>
+          <Typography component="h1" sx={{ fontSize: "20px", fontWeight: 400, color: "inherit" }}>
+            {error?.message ?? "Une erreur technique s'est produite"}
+          </Typography>
         </Box>
       </Box>
     )
@@ -92,7 +94,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
       <Box sx={{ mb: fr.spacing("6v") }}>
         {alreadySent ? (
           <>
-            <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700 }}>
+            <Typography component="h1" sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700, color: "inherit" }}>
               <span aria-hidden="true">✅</span>{" "}
               {`Votre réponse a déjà été envoyée au candidat ${applicant_first_name} ${applicant_last_name} le ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })} à ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
             </Typography>
@@ -100,8 +102,12 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
           </>
         ) : (
           <>
-            {!isEditing && (
-              <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700 }}>
+            {isEditing ? (
+              <Typography component="h1" className={fr.cx("fr-sr-only")}>
+                Modifier votre réponse à {applicant_first_name} {applicant_last_name}
+              </Typography>
+            ) : (
+              <Typography component="h1" sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700, color: "inherit" }}>
                 Dans 30 minutes, sans modification de votre part, votre réponse sera envoyée à {applicant_first_name} {applicant_last_name} :
               </Typography>
             )}
@@ -119,10 +125,13 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
       {/* Card */}
       <Box sx={{ ...cardSx, ...(isEditing ? { borderColor: "#000091" } : {}) }}>
         {/* Card title */}
-        <Box sx={{ ...cardTitleSx, ...(isEditing ? { backgroundColor: "#F5F5FE", color: "#000091", borderColor: "transparent" } : {}) }}>
+        <Typography
+          component="h2"
+          sx={{ ...cardTitleSx, fontWeight: 400, color: "inherit", ...(isEditing ? { backgroundColor: "#F5F5FE", color: "#000091", borderColor: "transparent" } : {}) }}
+        >
           <DsfrIcon name="fr-icon-mail-unread-fill" size={24} /> Objet :{" "}
           {actualIntention === ApplicationIntention.ENTRETIEN ? "Suite donnée à votre candidature -" : "Réponse négative de l’entreprise"} {company_name}
-        </Box>
+        </Typography>
 
         {/* Card body */}
         <Box sx={cardBodySx}>

@@ -81,12 +81,14 @@ function TriggerButton({ name, label, confirmMessage }: { name: TriggerableJob; 
 export function ProcessorTriggerButtons() {
   return (
     <Box sx={{ my: "24px" }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" component="h2" gutterBottom>
         Déclencher un job manuellement
       </Typography>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <Box component="ul" className="fr-raw-list" sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {JOBS.filter(({ hiddenInProduction }) => !(hiddenInProduction && publicConfig.env === "production")).map((job) => (
-          <TriggerButton key={job.name} name={job.name} label={job.label} confirmMessage={job.confirmMessage} />
+          <li key={job.name}>
+            <TriggerButton name={job.name} label={job.label} confirmMessage={job.confirmMessage} />
+          </li>
         ))}
       </Box>
     </Box>
