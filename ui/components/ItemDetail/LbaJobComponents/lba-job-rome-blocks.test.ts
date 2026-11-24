@@ -23,6 +23,6 @@ describe("blocs de la fiche métier sur une offre sans champs ROME", () => {
 
   it("affiche chaque condition d'accès séparément", () => {
     const html = renderToStaticMarkup(createElement(LbaJobAcces, { job: jobWith({ offer_access_conditions: ["Accessible avec un CAP.", "Permis B requis."] }) }))
-    expect(html).toMatch(/Accessible avec un CAP\.<\/p>.*Permis B requis\.<\/p>/)
+    expect(html).toMatch(/<ul[^>]*>.*<li[^>]*>Accessible avec un CAP\.<\/li>.*<li[^>]*>Permis B requis\.<\/li>.*<\/ul>/)
   })
 })

@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import type React from "react"
+import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 
 type DataDisplayForError = {
   title: string
@@ -76,12 +77,12 @@ const CandidatureLbaFailed = ({ titleId, detailId, error }: { titleId?: string; 
   return (
     // Remplace le formulaire de candidature : l'échec est annoncé à son affichage (RGAA 7.5).
     <Box role="alert" sx={{ px: fr.spacing("8v") }}>
-      <Typography id={titleId} component="p" variant="h1" sx={{ mb: 5, fontSize: "1.5rem", fontWeight: 700 }}>
+      <ModalTitle id={titleId} sx={{ mb: 5 }}>
         Erreur
-      </Typography>
+      </ModalTitle>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
         <Image src="/images/icons/input_value_error.svg" width={24} height={24} style={{ marginRight: "16px" }} alt="" />
-        <Typography id={detailId} variant="h3" data-testid={dataTestId}>
+        <Typography id={detailId} variant="h3" component="h2" data-testid={dataTestId}>
           {title}
         </Typography>
       </Box>

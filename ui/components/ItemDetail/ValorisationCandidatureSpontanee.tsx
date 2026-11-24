@@ -9,6 +9,11 @@ import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 
 const TITLE = "Plus de 60% des recrutements en alternance se font sans qu’aucune offre n’ait été déposée."
 const ACTION_LABEL = " - Voir les entreprises à contacter pour une candidature spontanée"
+const AVANTAGES = [
+  "Vous étendez votre champ d'opportunités,",
+  "Vous choisissez les entreprises qui vous intéressent,",
+  "Vous augmentez vos chances car il y a moins de concurrence.",
+]
 
 export const ValorisationCandidatureSpontanee = ({
   overridenQueryParams = {},
@@ -85,7 +90,7 @@ export const ValorisationCandidatureSpontanee = ({
       }}
     >
       <Box>
-        <Typography component="p" variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography component="h2" variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           {titleContent}
         </Typography>
         <Typography>
@@ -96,14 +101,13 @@ export const ValorisationCandidatureSpontanee = ({
           </Box>
         </Typography>
 
-        <Typography sx={{ pt: fr.spacing("4v") }}>
-          <span aria-hidden="true">👉</span> Vous étendez votre champ d'opportunités,
-          <br />
-          <span aria-hidden="true">👉</span> Vous choisissez les entreprises qui vous intéressent,
-          <br />
-          <span aria-hidden="true">👉</span> Vous augmentez vos chances car il y a moins de concurrence.
-          <br />
-        </Typography>
+        <Box component="ul" className="fr-raw-list" sx={{ pt: fr.spacing("4v") }}>
+          {AVANTAGES.map((avantage) => (
+            <Typography component="li" key={avantage}>
+              <span aria-hidden="true">👉</span> {avantage}
+            </Typography>
+          ))}
+        </Box>
       </Box>
       <Image src="/images/dame_papier_coche_verte.svg" aria-hidden={true} alt="" width={170} height={156} />
     </Box>

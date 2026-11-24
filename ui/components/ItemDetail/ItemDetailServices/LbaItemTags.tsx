@@ -21,7 +21,7 @@ export function LbaItemTags({
   displayTooltips?: boolean
 }) {
   const { ideaType, company } = item
-  const tags: React.ReactNode[] = []
+  const tags: React.ReactElement[] = []
   const isUrgentRecruitment = "job" in item && item?.job?.startType === JOB_START_TYPE.DES_QUE_POSSIBLE
 
   if (ideaType === LBA_ITEM_TYPE_OLD.LBA || ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
@@ -70,7 +70,8 @@ export function LbaItemTags({
 
   return (
     <Box
-      component="p"
+      component="ul"
+      className="fr-raw-list"
       sx={{
         display: "flex",
         flexWrap: "wrap",
@@ -78,7 +79,11 @@ export function LbaItemTags({
         m: 0,
       }}
     >
-      {tags}
+      {tags.map((tag) => (
+        <Box component="li" key={tag.key} sx={{ display: "flex" }}>
+          {tag}
+        </Box>
+      ))}
     </Box>
   )
 }
