@@ -21,6 +21,7 @@ import z from "zod"
 import { getEtablissementFromGouvSafe } from "@/common/apis/api-entreprise/api-entreprise.client"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { blockJobsPartnersWithoutApplyMethod } from "@/jobs/offre-partenaire/block-jobs-partners-without-apply-method"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 
 vi.mock("@/common/apis/france-travail/france-travail.client")
@@ -551,6 +552,29 @@ describe("POST /v4/jobs/multi-partner", () => {
 
     expect.soft(response.statusCode).toBe(200)
     expect(await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: "valide" })).toMatchObject({ offer_description: validDescription })
+  })
+
+  it.each([
+    ["sans moyen de candidature n'est pas publiée", {}, { status: "WILL_NOT_BE_PUBLISHED", error: { code: "NO_APPLY_METHOD", label: expect.any(String) } }],
+    ["avec un seul moyen de candidature reste publiable", { apply_phone: "0102030405" }, { status: "WILL_BE_PUBLISHED" }],
+  ])("une offre %s (#5872)", async (_, apply, publishing) => {
+    const created = await httpClient().inject({
+      method: "POST",
+      path: "/api/v4/jobs/multi-partner",
+      body: { ...buildBody("candidature", validDescription), ...apply },
+      headers: { authorization: apiKey },
+    })
+    expect(created.statusCode).toBe(200)
+
+    await blockJobsPartnersWithoutApplyMethod({})
+
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${created.json().id}/publishing-informations`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    expect.soft(response.statusCode).toBe(200)
+    expect.soft(response.json()).toEqual({ publishing })
   })
 
   it("en bulk, refuse en 400 les seules offres sans description ou à description trop courte", async () => {

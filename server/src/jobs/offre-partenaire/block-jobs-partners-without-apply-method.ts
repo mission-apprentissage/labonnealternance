@@ -11,7 +11,8 @@ const BLANK = { $not: /\S/ }
 
 /**
  * Bloque les offres sans aucun moyen de candidature (#5872). Les recruteurs LBA et les offres LBA candidatent par LBA,
- * pas par les apply_*. Le business_error fait annuler l'offre publiée par cancelRemovedJobsPartners.
+ * pas par les apply_*. Pour une offre de flux déjà publiée, le business_error la fait annuler par cancelRemovedJobsPartners.
+ * Une offre API bloquée n'est pas importée, sans annuler la version déjà publiée.
  */
 export const blockJobsPartnersWithoutApplyMethod = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const jobLogger = logger.child({ job: "blockJobsPartnersWithoutApplyMethod" })

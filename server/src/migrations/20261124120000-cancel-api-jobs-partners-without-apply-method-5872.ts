@@ -5,6 +5,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
 
+// Repris dans REACTIVATION_ALLOWED_GRANTED_BY : une offre renvoyée avec un moyen de candidature est réactivée.
 const GRANTED_BY = "20261124120000-cancel-api-jobs-partners-without-apply-method-5872"
 
 const BLANK = { $not: /\S/ }

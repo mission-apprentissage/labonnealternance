@@ -6,7 +6,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
-import { beforeEach, describe, expect, it } from "vitest"
+import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { blockJobsPartnersWithoutApplyMethod } from "./block-jobs-partners-without-apply-method"
 import { cancelRemovedJobsPartners } from "./cancel-removed-jobs-partners"
@@ -22,11 +22,6 @@ const getComputed = () => getDbCollection("computed_jobs_partners").findOne({ pa
 
 describe("blockJobsPartnersWithoutApplyMethod", () => {
   useMongo()
-
-  beforeEach(() => async () => {
-    await getDbCollection("computed_jobs_partners").deleteMany({})
-    await getDbCollection("jobs_partners").deleteMany({})
-  })
 
   it.each([
     ["null", NO_APPLY],

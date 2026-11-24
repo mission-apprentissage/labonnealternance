@@ -1,10 +1,14 @@
+import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
+import { generateComputedJobsPartnersFull, generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { blockJobsPartnersWithoutApplyMethod } from "@/jobs/offre-partenaire/block-jobs-partners-without-apply-method"
+import { importFromComputedToJobsPartners } from "@/jobs/offre-partenaire/import-from-computed-to-jobs-partners"
+import { validateComputedJobPartners } from "@/jobs/offre-partenaire/validate-computed-job-partners"
 import { up } from "@/migrations/20261124120000-cancel-api-jobs-partners-without-apply-method-5872"
 
 // cf. backfill-offer-status-history-lba-5429.test.ts pour l'emplacement de ce test hors du dossier migrations
@@ -33,6 +37,23 @@ describe("migration cancel-api-jobs-partners-without-apply-method-5872", () => {
     expect
       .soft(offer?.offer_status_history.filter((entry) => entry.granted_by === GRANTED_BY))
       .toEqual([{ date: expect.any(Date), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "NO_APPLY_METHOD", granted_by: GRANTED_BY }])
+  })
+
+  it.each([
+    ["réactive une offre renvoyée avec un moyen de candidature", { apply_url: "https://exemple.fr/postuler" }, JOB_STATUS_ENGLISH.ACTIVE],
+    ["laisse annulée une offre renvoyée toujours sans moyen de candidature", {}, JOB_STATUS_ENGLISH.ANNULEE],
+  ])("%s", async (_, apply, expectedStatus) => {
+    await insert([generateJobsPartnersOfferPrivate({ partner_job_id: "renvoyee", partner_label: API_PARTNER, ...NO_APPLY })])
+    await up()
+
+    await givenSomeComputedJobPartners([
+      { ...generateComputedJobsPartnersFull({ partner_job_id: "renvoyee", partner_label: API_PARTNER }), ...NO_APPLY, ...apply, business_error: null },
+    ])
+    await blockJobsPartnersWithoutApplyMethod({})
+    await validateComputedJobPartners({})
+    await importFromComputedToJobsPartners()
+
+    expect((await readAll()).get("renvoyee")?.offer_status).toBe(expectedStatus)
   })
 
   it("ne touche ni aux offres candidatables, ni aux offres déjà closes, ni aux offres de flux ou LBA", async () => {
