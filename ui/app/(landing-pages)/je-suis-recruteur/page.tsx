@@ -196,7 +196,7 @@ const JeSuisRecruteurPage = () => {
               gap: fr.spacing("10v"),
             }}
           >
-            <Typography component="h1" variant="h1">
+            <Typography component="h2" variant="h1">
               Nos offres d’emploi en alternance
               <br />
               <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
@@ -205,6 +205,8 @@ const JeSuisRecruteurPage = () => {
             </Typography>
             <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
             <Box
+              component="ul"
+              className="fr-raw-list"
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
@@ -213,7 +215,7 @@ const JeSuisRecruteurPage = () => {
                 mt: fr.spacing("4v"),
               }}
             >
-              <Box sx={{ ...cardSx }}>
+              <Box component="li" sx={{ ...cardSx }}>
                 <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
                   <Image src="/images/home_pics/icons/malette.svg" alt="" aria-hidden={true} width={80} height={80} />
                 </Typography>
@@ -224,7 +226,7 @@ const JeSuisRecruteurPage = () => {
                   collectées sur les 12 derniers mois
                 </Typography>
               </Box>
-              <Box sx={{ ...cardSx }}>
+              <Box component="li" sx={{ ...cardSx }}>
                 <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
                   <Image src="/images/home_pics/icons/file_eyes.svg" alt="" aria-hidden={true} width={80} height={80} />
                 </Typography>
@@ -235,7 +237,7 @@ const JeSuisRecruteurPage = () => {
                   en moyenne par offre
                 </Typography>
               </Box>
-              <Box sx={{ ...cardSx }}>
+              <Box component="li" sx={{ ...cardSx }}>
                 <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
                   <Image src="/images/home_pics/icons/files.svg" alt="" aria-hidden={true} width={80} height={80} />
                 </Typography>

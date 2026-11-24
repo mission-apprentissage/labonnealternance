@@ -4,6 +4,8 @@ import Image from "next/image"
 
 export const HowTo = () => (
   <Box
+    component="ol"
+    className="fr-raw-list"
     sx={{
       display: "grid",
       gridTemplateColumns: {
@@ -18,6 +20,7 @@ export const HowTo = () => (
     }}
   >
     <Box
+      component="li"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -31,7 +34,7 @@ export const HowTo = () => (
           les deux autres sont sous la ligne de flottaison et se disputaient la bande passante */}
       <Image fetchPriority="high" priority src="/images/howto1.svg" alt="" unoptimized width={286} height={141} style={{ width: "100%", height: "auto" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
-        <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>
+        <Typography component="h2" className={fr.cx("fr-text--bold", "fr-text--lg")} sx={{ color: "inherit" }}>
           Le <span lang="en">job</span> de vos rêves
         </Typography>
         <Typography>
@@ -49,6 +52,7 @@ export const HowTo = () => (
     </Box>
 
     <Box
+      component="li"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -58,7 +62,9 @@ export const HowTo = () => (
     >
       <Image src="/images/howto2.svg" alt="" unoptimized width={299} height={145} style={{ width: "100%", height: "auto" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
-        <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>En un clin d’oeil</Typography>
+        <Typography component="h2" className={fr.cx("fr-text--bold", "fr-text--lg")} sx={{ color: "inherit" }}>
+          En un clin d’oeil
+        </Typography>
         <Typography>
           Obtenez en un clin d’oeil la
           <Box component="span" className={fr.cx("fr-text--bold")}>
@@ -70,6 +76,7 @@ export const HowTo = () => (
     </Box>
 
     <Box
+      component="li"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -79,7 +86,9 @@ export const HowTo = () => (
     >
       <Image src="/images/howto3.svg" alt="" unoptimized width={285} height={140} style={{ width: "100%", height: "auto" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
-        <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Un contact facile</Typography>
+        <Typography component="h2" className={fr.cx("fr-text--bold", "fr-text--lg")} sx={{ color: "inherit" }}>
+          Un contact facile
+        </Typography>
         <Typography>
           <Box component="span" className={fr.cx("fr-text--bold")}>
             {"Contactez facilement "}

@@ -18,19 +18,19 @@ const TESTIMONIES: Record<"candidat" | "recruteur" | "cfa", [Testimony, Testimon
       name: "Cassandra",
       role: "alternante en Licence\nÉconomie Sociale et Familiale (ESF)",
       quote:
-        "“La bonne alternance est un outil très simple d'utilisation avec pas mal d'offres. J'apprécie particulièrement les suggestions de candidatures spontanées, qu'on ne retrouve nulle part ailleurs.“",
+        "“La bonne alternance est un outil très simple d'utilisation avec pas mal d'offres. J'apprécie particulièrement les suggestions de candidatures spontanées, qu'on ne retrouve nulle part ailleurs.”",
     },
     {
       avatar: "/images/home_pics/avatars/avatar_homme_01.png",
       name: "Simon",
       role: "alternant en master\nMention maintenance aéronautique",
-      quote: "“La bonne alternance est un service pratique pour candidater, pas besoin de se créer de compte pour envoyer son CV.“",
+      quote: "“La bonne alternance est un service pratique pour candidater, pas besoin de se créer de compte pour envoyer son CV.”",
     },
     {
       avatar: "/images/home_pics/avatars/avatar_femme_02.png",
       name: "Lise",
       role: "alternante en BTS\nGestion",
-      quote: "“J'ai pu explorer plein de formations et contacter les écoles directement. Ça aide pour bien s'orienter.“",
+      quote: "“J'ai pu explorer plein de formations et contacter les écoles directement. Ça aide pour bien s'orienter.”",
     },
   ],
   recruteur: [
@@ -39,7 +39,7 @@ const TESTIMONIES: Record<"candidat" | "recruteur" | "cfa", [Testimony, Testimon
       name: "Philippe",
       role: "Gérant de commerce",
       quote:
-        "“La bonne alternance est un outil qui me facilite mes recrutements en alternance, moi qui n’ai pas le temps de rédiger des fiches de poste... Je reçois ensuite les candidatures directement dans ma boîte mail.“",
+        "“La bonne alternance est un outil qui me facilite mes recrutements en alternance, moi qui n’ai pas le temps de rédiger des fiches de poste... Je reçois ensuite les candidatures directement dans ma boîte mail.”",
     },
     {
       avatar: "/images/home_pics/avatars/recruteur_02.png",
@@ -84,7 +84,7 @@ type Props = {
 
 export const AppreciationUsagers = ({ realm }: Props) => {
   const [expanded, setExpanded] = useState(false)
-  const firstTestimonyRef = useRef<HTMLDivElement>(null)
+  const firstTestimonyRef = useRef<HTMLLIElement>(null)
 
   const toggle = () => {
     setExpanded((v) => !v)
@@ -102,7 +102,7 @@ export const AppreciationUsagers = ({ realm }: Props) => {
         gap: fr.spacing("10v"),
       }}
     >
-      <Typography variant="h1">
+      <Typography variant="h1" component="h2">
         Apprécié
         <br />
         <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
@@ -112,6 +112,8 @@ export const AppreciationUsagers = ({ realm }: Props) => {
       <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
       <Box>
         <Box
+          component="ul"
+          className="fr-raw-list"
           sx={{
             display: "flex",
             flexDirection: { xs: "column", lg: "row" },
@@ -120,6 +122,7 @@ export const AppreciationUsagers = ({ realm }: Props) => {
         >
           {testimonies.map((testimony, index) => (
             <Box
+              component="li"
               key={index}
               ref={index === 0 ? firstTestimonyRef : undefined}
               sx={{
@@ -134,17 +137,21 @@ export const AppreciationUsagers = ({ realm }: Props) => {
               }}
             >
               <Image src={testimony.avatar} alt="" width={98} height={98} />
-              <Typography sx={{ textAlign: "center", fontSize: "14px", fontWeight: 700, lineHeight: "24px", mt: fr.spacing("6v"), mb: fr.spacing("2v") }}>
-                {testimony.name},
-                <br />
-                {testimony.role.split("\n").map((line, i) => (
-                  <span key={i}>
-                    {i > 0 && <br />}
-                    {line}
-                  </span>
-                ))}
-              </Typography>
-              <Typography sx={{ textAlign: "center" }}>{testimony.quote}</Typography>
+              <Box component="figure" sx={{ m: 0 }}>
+                <Typography component="figcaption" sx={{ textAlign: "center", fontSize: "14px", fontWeight: 700, lineHeight: "24px", mt: fr.spacing("6v"), mb: fr.spacing("2v") }}>
+                  {testimony.name},
+                  <br />
+                  {testimony.role.split("\n").map((line, i) => (
+                    <span key={i}>
+                      {i > 0 && <br />}
+                      {line}
+                    </span>
+                  ))}
+                </Typography>
+                <Typography component="blockquote" sx={{ textAlign: "center" }}>
+                  {testimony.quote}
+                </Typography>
+              </Box>
             </Box>
           ))}
         </Box>
