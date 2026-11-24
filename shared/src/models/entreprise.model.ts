@@ -44,6 +44,7 @@ export const ZEntreprise = z.strictObject({
   naf_code: z.string().nullish().describe("Code NAF de l'entreprise"),
   naf_label: z.string().nullish().describe("Libelle NAF de l'entreprise"),
   status: z.array(ZEntrepriseStatusEvent).describe("historique de la mise à jour des données entreprise"),
+  lastUpdateFromSource: z.date().nullish().describe("Date de la dernière lecture de l'état administratif du SIRET auprès de l'API Entreprise (INSEE)"),
 })
 
 export type IEntreprise = z.output<typeof ZEntreprise>

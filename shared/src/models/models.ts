@@ -14,6 +14,7 @@ import cacheDiagorienteModel from "./cache-diagoriente.model.js"
 import cacheGeolocationModel from "./cache-geolocation.model.js"
 import cacheInfosSiretModel from "./cache-infos-siret.model.js"
 import cfaModel from "./cfa.model.js"
+import closedSiretActionsModel from "./closed-siret-actions.model.js"
 import type { IModelDescriptor } from "./common.js"
 import credentialsModel from "./credentials.model.js"
 import customEmailETFAModel from "./custom-email-etfa.model.js"
@@ -110,6 +111,7 @@ const modelDescriptorMap = {
   [cacheDiagorienteModel.collectionName]: cacheDiagorienteModel,
   [cacheGeolocationModel.collectionName]: cacheGeolocationModel,
   [cfaModel.collectionName]: cfaModel,
+  [closedSiretActionsModel.collectionName]: closedSiretActionsModel,
   [cacheClassificationModel.collectionName]: cacheClassificationModel,
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,

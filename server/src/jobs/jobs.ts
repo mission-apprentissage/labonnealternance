@@ -68,6 +68,7 @@ import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
 import { createApiUser } from "./recruiters/create-api-user"
+import { deactivateClosedSiretAccounts } from "./recruiters/deactivate-closed-siret-accounts"
 import { disableApiUser } from "./recruiters/disable-api-user"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
 import { OPCO_REMINDER_JOB_NAME, opcoReminderJob } from "./recruiters/opco-reminder-job"
@@ -463,6 +464,12 @@ export async function setupJobProcessor() {
             cron_string: "0 8 * * SUN",
             handler: updateDiplomeMetier,
           },
+          // 15 février et 15 novembre (#5437), la nuit comme le recommande l'API Entreprise pour les traitements de masse.
+          // Production seule : une exécution en recette consommerait le même quota de 250 requêtes/minute.
+          "Désactivation des comptes à SIRET fermé": {
+            cron_string: "0 1 15 2,11 *",
+            handler: config.env === "production" ? async () => deactivateClosedSiretAccounts() : async () => Promise.resolve(0),
+          },
           "update-handi-engagement": {
             cron_string: "45 4 * * SAT",
             handler: async () => updateHandiEngagement(),
@@ -484,6 +491,9 @@ export async function setupJobProcessor() {
           await recreateIndexes({ drop })
           return
         },
+      },
+      "closed-siret:deactivate": {
+        handler: async (job) => deactivateClosedSiretAccounts(job.payload as any),
       },
       "update-handi-engagement:force": {
         // Déclenchement manuel uniquement, cf. UpdateHandiEngagementOptions.force.
