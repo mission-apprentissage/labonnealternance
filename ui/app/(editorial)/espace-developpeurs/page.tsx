@@ -89,6 +89,7 @@ export default function EspaceDeveloppeurs() {
               </Grid>
               <Typography
                 variant="h4"
+                component="h2"
                 sx={{
                   mb: fr.spacing("4v"),
                 }}
@@ -96,6 +97,7 @@ export default function EspaceDeveloppeurs() {
                 Obtenir des données
               </Typography>
               <Typography
+                component="h3"
                 sx={{
                   mb: fr.spacing("4v"),
                   fontWeight: 700,
@@ -129,6 +131,7 @@ export default function EspaceDeveloppeurs() {
                 <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/explorer">https://api.apprentissage.beta.gouv.fr/fr/explorer</DsfrLink>
               </Typography>
               <Typography
+                component="h3"
                 sx={{
                   mb: fr.spacing("4v"),
                   fontWeight: 700,
@@ -179,6 +182,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 variant="h4"
+                component="h2"
                 sx={{
                   mb: fr.spacing("4v"),
                 }}
@@ -187,6 +191,7 @@ export default function EspaceDeveloppeurs() {
               </Typography>
 
               <Typography
+                component="h3"
                 sx={{
                   mb: fr.spacing("4v"),
                   fontWeight: 700,
@@ -205,6 +210,7 @@ export default function EspaceDeveloppeurs() {
                 <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre">https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre</DsfrLink>
               </Typography>
               <Typography
+                component="h3"
                 sx={{
                   mb: fr.spacing("4v"),
                   fontWeight: 700,
