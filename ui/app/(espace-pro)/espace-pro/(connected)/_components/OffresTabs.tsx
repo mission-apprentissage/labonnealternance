@@ -20,6 +20,7 @@ import { useAuth } from "@/context/UserContext"
 import { extendOffre, getModerationSummaries } from "@/utils/api"
 import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
 import { sortReactTableDate } from "@/utils/date-utils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import { ConformityWithAgentNote } from "./moderation/AgentNote"
 import { awaitsModerationDecision } from "./moderation/moderation.types"
@@ -85,7 +86,7 @@ type LocalJob = Omit<IJobJson, "_id"> & {
 const getJobTitle = ({ offer_title_custom, rome_appellation_label, rome_label }: Pick<LocalJob, "offer_title_custom" | "rome_appellation_label" | "rome_label">) =>
   offer_title_custom ?? rome_appellation_label ?? rome_label
 
-const CandidaturesCell = ({ job, applicationsPath }: { job: LocalJob; applicationsPath?: string }) => {
+const CandidaturesCell = ({ job, applicationsPath, userType }: { job: LocalJob; applicationsPath?: string; userType: string }) => {
   const total = Math.max(job.candidatures ?? 0, 0)
   if (total === 0) {
     return total
@@ -97,6 +98,7 @@ const CandidaturesCell = ({ job, applicationsPath }: { job: LocalJob; applicatio
       <Link
         className="fr-link fr-link--sm"
         href={applicationsPath}
+        onClick={() => pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATIONS_ENTRY_CLICKED, entry_point: "offers_table", user_type: userType })}
         aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}
       >
         {total}
@@ -320,7 +322,9 @@ export const OffresTabs = ({
           width: "150",
           disableSortBy: true,
           accessor: ({ candidatures = 0 }) => Math.max(candidatures, 0),
-          Cell: ({ row: { original } }: { row: { original: LocalJob } }) => <CandidaturesCell job={original} applicationsPath={buildApplicationsPath(original._id)} />,
+          Cell: ({ row: { original } }: { row: { original: LocalJob } }) => (
+            <CandidaturesCell job={original} applicationsPath={buildApplicationsPath(original._id)} userType={user?.type === AUTHTYPE.CFA ? "cfa" : "entreprise"} />
+          ),
         },
       ]
     : []

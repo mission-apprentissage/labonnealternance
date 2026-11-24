@@ -1,10 +1,12 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import { parseEnum } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { IntentionPage, useIntentionData } from "@/components/IntentionPage/IntentionPage"
 import { getApplicationReplyBreadcrumb } from "@/utils/application-breadcrumb.utils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { useSearchParamsRecord } from "@/utils/use-search-params-record"
 
 export default function FormulaireIntentionPage() {
@@ -13,6 +15,16 @@ export default function FormulaireIntentionPage() {
   // Même requête que le formulaire (même clé) : le fil d'Ariane ne déclenche pas de lecture de plus.
   const { data } = useIntentionData({ id, company_recruitment_intention: intention, token })
   const espacePro = data?.espace_pro
+  const userType = espacePro ? (espacePro.cfa_establishment_id ? "cfa" : "entreprise") : null
+
+  // Accès au formulaire depuis le mail, en regard de l'accès depuis l'espace pro (cf. ApplicationActions) : seules les
+  // offres LBA ont un espace pro, les autres candidatures ne sont pas comparables.
+  const trackedForm = useRef<string | null>(null)
+  useEffect(() => {
+    if (!userType || !intention || trackedForm.current === `${id}-${intention}`) return
+    trackedForm.current = `${id}-${intention}`
+    pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATION_REPLY_OPENED, source: "email", intention, user_type: userType })
+  }, [id, intention, userType])
 
   return (
     <>

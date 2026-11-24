@@ -85,6 +85,8 @@ export const OffresTabsMenu = ({
           hint: `${offerTitle}`,
           link: applicationsPath,
           type: "link",
+          onClick: () =>
+            pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATIONS_ENTRY_CLICKED, entry_point: "offer_menu", user_type: user.type === AUTHTYPE.CFA ? "cfa" : "entreprise" }),
           icon: <DsfrIcon name="fr-icon-user-line" size={16} />,
         }
       : null,

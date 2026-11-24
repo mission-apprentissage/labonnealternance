@@ -21,6 +21,7 @@ export const DownloadLink = ({
   align = "flex-start",
   className = "fr-link fr-link--icon-left fr-icon-download-line",
   detail,
+  onDownloaded,
   children,
 }: {
   href: string
@@ -31,6 +32,8 @@ export const DownloadLink = ({
   className?: string
   /** Format, taille… : affiché sous le lien, hors de son intitulé, et rattaché à lui par aria-describedby. */
   detail?: ReactNode
+  /** Appelé une fois le fichier téléchargé, par exemple pour la mesure d'audience. */
+  onDownloaded?: () => void
   children: ReactNode
 }) => {
   const [status, setStatus] = useState<DownloadStatus>("idle")
@@ -52,6 +55,7 @@ export const DownloadLink = ({
       // Révoquée tout de suite, l'URL peut annuler le téléchargement que le navigateur n'a pas encore lancé (Firefox).
       setTimeout(() => URL.revokeObjectURL(url), 10_000)
       setStatus("done")
+      onDownloaded?.()
     } catch {
       setStatus("error")
     }

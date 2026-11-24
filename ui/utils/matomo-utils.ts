@@ -46,6 +46,13 @@ export const MATOMO_EVENTS = {
   CFA_DETAILS_CLICKED: "cfa_details_clicked",
   CFA_SHARE_CONFIRMED: "cfa_share_confirmed",
   CONSEILLERS_ENTREPRISES_CLICKED: "conseillers_entreprises_clicked",
+  // Suivi des candidatures côté recruteur et CFA (#5769, indicateurs de #5767)
+  APPLICATIONS_ENTRY_CLICKED: "applications_entry_clicked",
+  APPLICATIONS_LIST_VIEWED: "applications_list_viewed",
+  APPLICATION_DETAIL_OPENED: "application_detail_opened",
+  APPLICATION_ATTACHMENT_DOWNLOADED: "application_attachment_downloaded",
+  APPLICATIONS_EXPORT_DOWNLOADED: "applications_export_downloaded",
+  APPLICATION_REPLY_OPENED: "application_reply_opened",
 }
 
 // Identifiants de moteur de recherche pour la télémétrie de bascule (dimension

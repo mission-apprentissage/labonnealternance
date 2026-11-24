@@ -7,6 +7,7 @@ import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Link from "next/link"
+import { useEffect, useRef } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import { APPLICATIONS_CONSULTATION_MONTHS_AFTER_CLOSURE, getApplicationsConsultation, type IOfferEnd } from "shared/utils/applications-consultation"
@@ -16,6 +17,7 @@ import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import Table from "@/app/(espace-pro)/_components/Table"
 import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-status"
+import { getApplicationStatusDimension, getOfferStateDimension, getUserTypeDimension } from "@/app/(espace-pro)/espace-pro/(connected)/_components/applications-tracking"
 import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
 import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
@@ -23,6 +25,7 @@ import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { publicConfig } from "@/config.public"
 import { downloadJobApplications, getFormulaire, getJobApplications, getJobApplicationsExportUrl } from "@/utils/api"
 import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { PAGES } from "@/utils/routes.utils"
 
 const APPLICATIONS_PAGE_SIZE = 20
@@ -31,7 +34,7 @@ type JobApplication = Awaited<ReturnType<typeof getJobApplications>>["applicatio
 
 const getApplicantFullName = ({ applicant_first_name, applicant_last_name }: JobApplication) => `${applicant_first_name} ${applicant_last_name.toUpperCase()}`
 
-const getColumns = (buildApplicationPath: (applicationId: string) => string) => [
+const getColumns = (buildApplicationPath: (applicationId: string) => string, userType: string) => [
   {
     Header: "Prénom",
     id: "applicant_first_name",
@@ -81,7 +84,17 @@ const getColumns = (buildApplicationPath: (applicationId: string) => string) => 
         size="small"
         iconId="fr-icon-arrow-right-line"
         iconPosition="right"
-        linkProps={{ href: buildApplicationPath(original._id), "aria-label": `Voir la candidature de ${getApplicantFullName(original)}` }}
+        linkProps={{
+          href: buildApplicationPath(original._id),
+          "aria-label": `Voir la candidature de ${getApplicantFullName(original)}`,
+          onClick: () =>
+            pushMatomoEvent({
+              event: MATOMO_EVENTS.APPLICATION_DETAIL_OPENED,
+              source: "applications_list",
+              user_type: userType,
+              application_status: getApplicationStatusDimension(original.company_recruitment_intention),
+            }),
+        }}
       >
         Voir la candidature
       </Button>
@@ -124,7 +137,11 @@ export const CandidaturesOffre = () => {
             <Alert severity="error" small description={error?.message ?? "Les candidatures de cette offre sont indisponibles."} />
           </>
         ) : (
-          <CandidaturesOffreContent data={data} buildApplicationPath={(application_id) => pages.detail(application_id).getPath()} />
+          <CandidaturesOffreContent
+            data={data}
+            buildApplicationPath={(application_id) => pages.detail(application_id).getPath()}
+            userType={getUserTypeDimension(cfaEstablishmentId)}
+          />
         )}
         <Box sx={{ mt: fr.spacing("2v") }}>
           <Link className="fr-link fr-link--sm fr-link--icon-left fr-icon-arrow-left-line" href={backPath}>
@@ -139,9 +156,11 @@ export const CandidaturesOffre = () => {
 const CandidaturesOffreContent = ({
   data,
   buildApplicationPath,
+  userType,
 }: {
   data: Awaited<ReturnType<typeof getJobApplications>>
   buildApplicationPath: (applicationId: string) => string
+  userType: string
 }) => {
   const { job, applications } = data
   const consultation = getApplicationsConsultation({
@@ -149,6 +168,21 @@ const CandidaturesOffreContent = ({
     closure: job.closure?.reason && job.closure.date ? { reason: job.closure.reason, date: job.closure.date } : null,
   })
   const isAvailable = consultation.status !== "unavailable"
+  const offerState = getOfferStateDimension(job.offer_status, consultation)
+  // Une consultation par offre affichée : ni une relecture des candidatures (réponse, retour sur l'onglet) ni le double
+  // appel des effets du mode strict de React n'en comptent une de plus.
+  const trackedJobId = useRef<string | null>(null)
+  useEffect(() => {
+    if (trackedJobId.current === job._id) return
+    trackedJobId.current = job._id
+    pushMatomoEvent({
+      event: MATOMO_EVENTS.APPLICATIONS_LIST_VIEWED,
+      user_type: userType,
+      offer_state: offerState,
+      consultation: consultation.status,
+      applications_count: applications.length,
+    })
+  }, [job._id])
   const closureModal = useDisclosure()
   const offerUrl = `${publicConfig.baseUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, job.offer_rome_appellation || undefined)}`
 
@@ -179,7 +213,20 @@ const CandidaturesOffreContent = ({
         <Typography component="h2" sx={{ "&&": { fontSize: "1rem", lineHeight: "1.5rem" }, fontWeight: 400, m: 0 }}>
           Offre : <strong>{job.offer_title}</strong>
         </Typography>
-        {isAvailable && <DownloadApplicationsLink jobId={job._id} offerTitle={job.offer_title} />}
+        {isAvailable && (
+          <DownloadApplicationsLink
+            jobId={job._id}
+            offerTitle={job.offer_title}
+            onDownloaded={() =>
+              pushMatomoEvent({
+                event: MATOMO_EVENTS.APPLICATIONS_EXPORT_DOWNLOADED,
+                user_type: userType,
+                offer_state: offerState,
+                applications_count: applications.length,
+              })
+            }
+          />
+        )}
       </Box>
       {consultation.status === "unavailable" ? (
         <UnavailableApplicationsNotice end={consultation.end} until={consultation.until} />
@@ -191,7 +238,7 @@ const CandidaturesOffreContent = ({
             <Table
               caption="Liste des candidatures"
               captionSrOnly
-              columns={getColumns(buildApplicationPath)}
+              columns={getColumns(buildApplicationPath, userType)}
               data={applications}
               pageSize={APPLICATIONS_PAGE_SIZE}
               rowHeaderColumnIds={["applicant_first_name", "applicant_last_name"]}
@@ -242,9 +289,10 @@ const DOWNLOAD_MESSAGES = {
   error: "Le téléchargement du récapitulatif a échoué. Veuillez réessayer.",
 } as const
 
-const DownloadApplicationsLink = ({ jobId, offerTitle }: { jobId: string; offerTitle: string }) => (
+const DownloadApplicationsLink = ({ jobId, offerTitle, onDownloaded }: { jobId: string; offerTitle: string; onDownloaded: () => void }) => (
   <DownloadLink
     href={getJobApplicationsExportUrl(jobId)}
+    onDownloaded={onDownloaded}
     fileName={getApplicationsExportFileName(offerTitle)}
     download={() => downloadJobApplications(jobId)}
     messages={DOWNLOAD_MESSAGES}

@@ -12,11 +12,13 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-status"
+import { getApplicationStatusDimension, getUserTypeDimension } from "@/app/(espace-pro)/espace-pro/(connected)/_components/applications-tracking"
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
 import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
 import { ApplicationStatusBanner, formatApplicationDateTime, TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
 import { downloadJobApplicationAttachment, getFormulaire, getJobApplicationAttachmentUrl, getJobApplicationDetail, markJobApplicationTreatedElsewhere } from "@/utils/api"
 import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
 type ApplicationDetail = Awaited<ReturnType<typeof getJobApplicationDetail>>
 
@@ -55,7 +57,7 @@ export const CandidatureDetail = () => {
             <Alert severity="error" small description={error?.message ?? "Cette candidature est indisponible."} />
           </>
         ) : (
-          <CandidatureDetailContent data={data} getReplyPath={getReplyPath} />
+          <CandidatureDetailContent data={data} getReplyPath={getReplyPath} userType={getUserTypeDimension(cfaEstablishmentId)} />
         )}
         <Box sx={{ mt: fr.spacing("6v") }}>
           <Link className="fr-link fr-link--sm fr-link--icon-left fr-icon-arrow-left-line" href={applicationsPage.getPath()}>
@@ -169,7 +171,20 @@ const ResponseBanner = ({ application }: { application: Application }) => {
   )
 }
 
-const ApplicationActions = ({ jobId, application, getReplyPath }: { jobId: string; application: Application; getReplyPath: (intention: ApplicationIntention) => string }) => {
+const ApplicationActions = ({
+  jobId,
+  application,
+  getReplyPath,
+  userType,
+}: {
+  jobId: string
+  application: Application
+  getReplyPath: (intention: ApplicationIntention) => string
+  userType: string
+}) => {
+  // Pendant de l'accès au formulaire depuis le mail, que mesurent les UTM de ses boutons (indicateur de #5767).
+  const trackReplyOpened = (intention: ApplicationIntention) =>
+    pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATION_REPLY_OPENED, source: "espace_pro", intention, user_type: userType })
   const client = useQueryClient()
   const refreshApplication = () =>
     Promise.all([
@@ -190,10 +205,14 @@ const ApplicationActions = ({ jobId, application, getReplyPath }: { jobId: strin
     return (
       <Box sx={{ mt: fr.spacing("6v") }}>
         <Box sx={{ display: "flex", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
-          <Button iconId="fr-icon-mail-send-line" iconPosition="left" linkProps={{ href: getReplyPath(ApplicationIntention.ENTRETIEN) }}>
+          <Button
+            iconId="fr-icon-mail-send-line"
+            iconPosition="left"
+            linkProps={{ href: getReplyPath(ApplicationIntention.ENTRETIEN), onClick: () => trackReplyOpened(ApplicationIntention.ENTRETIEN) }}
+          >
             Contacter le candidat
           </Button>
-          <Button priority="secondary" linkProps={{ href: getReplyPath(ApplicationIntention.REFUS) }}>
+          <Button priority="secondary" linkProps={{ href: getReplyPath(ApplicationIntention.REFUS), onClick: () => trackReplyOpened(ApplicationIntention.REFUS) }}>
             Refuser la candidature
           </Button>
           <Button priority="secondary" onClick={() => treatedElsewhere.mutate()} disabled={treatedElsewhere.isPending}>
@@ -224,7 +243,7 @@ const formatFileSize = (size: number) => {
   return `${(size / (1024 * 1024)).toFixed(1).replace(".", ",")} Mo`
 }
 
-const AttachmentCard = ({ jobId, application }: { jobId: string; application: Application }) => {
+const AttachmentCard = ({ jobId, application, userType }: { jobId: string; application: Application; userType: string }) => {
   const { _id: applicationId, applicant_attachment_name: name, applicant_attachment_deleted_at: deletedAt, applicant_attachment_size: size } = application
   const extension = name.split(".").pop()?.toUpperCase()
   return (
@@ -243,6 +262,13 @@ const AttachmentCard = ({ jobId, application }: { jobId: string; application: Ap
           download={() => downloadJobApplicationAttachment(jobId, applicationId)}
           messages={ATTACHMENT_DOWNLOAD_MESSAGES}
           className="fr-link fr-link--icon-right fr-icon-download-line"
+          onDownloaded={() =>
+            pushMatomoEvent({
+              event: MATOMO_EVENTS.APPLICATION_ATTACHMENT_DOWNLOADED,
+              user_type: userType,
+              application_status: getApplicationStatusDimension(application.company_recruitment_intention),
+            })
+          }
           detail={[extension, size === null ? null : formatFileSize(size)].filter(Boolean).join(" – ") || undefined}
         >
           <span className="fr-sr-only">Télécharger la pièce jointe </span>
@@ -320,7 +346,7 @@ const QuestionsCard = ({ questions, application }: { questions: string[]; applic
   )
 }
 
-const CandidatureDetailContent = ({ data, getReplyPath }: { data: ApplicationDetail; getReplyPath: (intention: ApplicationIntention) => string }) => {
+const CandidatureDetailContent = ({ data, getReplyPath, userType }: { data: ApplicationDetail; getReplyPath: (intention: ApplicationIntention) => string; userType: string }) => {
   const { job, application } = data
   const status = getApplicationStatus(application.company_recruitment_intention)
 
@@ -342,7 +368,7 @@ const CandidatureDetailContent = ({ data, getReplyPath }: { data: ApplicationDet
           Pour le poste : <strong>{job.offer_title}</strong>
         </Typography>
       </Box>
-      <ApplicationActions jobId={job._id} application={application} getReplyPath={getReplyPath} />
+      <ApplicationActions jobId={job._id} application={application} getReplyPath={getReplyPath} userType={userType} />
       <Typography component="h2" sx={{ mt: fr.spacing("8v"), mb: fr.spacing("4v"), fontWeight: 700 }}>
         Sa candidature
       </Typography>
@@ -361,7 +387,7 @@ const CandidatureDetailContent = ({ data, getReplyPath }: { data: ApplicationDet
               ]}
             />
           </Card>
-          <AttachmentCard jobId={job._id} application={application} />
+          <AttachmentCard jobId={job._id} application={application} userType={userType} />
           <ProjectCard application={application} />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
