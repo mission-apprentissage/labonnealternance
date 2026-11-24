@@ -13,7 +13,7 @@ import { generateRoleManagementFixture } from "shared/fixtures/role-management.f
 import { generateUserWithAccountFixture } from "shared/fixtures/user-with-account.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "@/common/apis/france-competences/france-competences-client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
@@ -26,6 +26,7 @@ import {
   validateCreationEntrepriseFromCfa,
   verifyRecruiterEmailInUse,
 } from "./etablissement.service"
+import { getGeoCoordinates } from "./geolocation.service"
 
 vi.mock("@/common/utils/sentry-utils")
 vi.mock("./geolocation.service", async (importOriginal) => ({
@@ -403,5 +404,59 @@ describe("refus des organismes de formation selon le code NAF", () => {
     } else {
       expect(result).toBeUndefined()
     }
+  })
+})
+
+describe("refus des établissements domiciliés à l'étranger", () => {
+  const siret = "42476141900045"
+
+  const givenSiretWithAdresse = async (adresse: Record<string, unknown>) => {
+    const fixture = generateCacheInfoSiretForSiret(siret)
+    const data = fixture.data!.data
+    await getDbCollection("cache_siret").insertOne({ ...fixture, data: { data: { ...data, adresse: { ...data.adresse, ...adresse } } } })
+  }
+
+  beforeEach(() => {
+    vi.mocked(getGeoCoordinates).mockClear()
+  })
+
+  afterEach(() => {
+    vi.mocked(getGeoCoordinates).mockImplementation(async () => ({ latitude: 48.86, longitude: 2.34 }))
+  })
+
+  it.each([[{ code_pays_etranger: "99404" }], [{ libelle_pays_etranger: "ETATS-UNIS" }]])("adresse %o : erreur métier sans géocodage", async (adresse) => {
+    await givenSiretWithAdresse(adresse)
+
+    const result = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
+
+    expect.soft(result).toEqual({ error: true, message: "Les établissements domiciliés à l'étranger ne sont pas pris en charge.", errorCode: undefined })
+    expect.soft(getGeoCoordinates).not.toHaveBeenCalled()
+  })
+
+  it("répond en anglais pour l'API apprentissage", async () => {
+    await givenSiretWithAdresse({ code_pays_etranger: "99404" })
+
+    const result = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE, isApiApprentissage: true })
+
+    expect(result).toMatchObject({ error: true, message: "Establishments located outside France are not supported." })
+  })
+
+  it.each([[{}], [{ code_pays_etranger: null, libelle_pays_etranger: null }], [{ libelle_commune_etranger: null, code_pays_etranger: "" }]])(
+    "adresse française %o : géocodée et acceptée",
+    async (adresse) => {
+      await givenSiretWithAdresse(adresse)
+
+      const result = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
+
+      expect.soft(result).toMatchObject({ establishment_siret: siret, geo_coordinates: "48.86,2.34" })
+      expect.soft(getGeoCoordinates).toHaveBeenCalled()
+    }
+  )
+
+  it("lève toujours quand le géocodage d'une adresse française échoue", async () => {
+    await givenSiretWithAdresse({})
+    vi.mocked(getGeoCoordinates).mockRejectedValue(new Error("getGeoPoint: addresse non trouvée"))
+
+    await expect(getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })).rejects.toThrow("getGeoPoint: addresse non trouvée")
   })
 })

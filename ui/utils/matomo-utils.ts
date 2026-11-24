@@ -40,6 +40,7 @@ export const MATOMO_EVENTS = {
   CFA_DETAILS_CLICKED: "cfa_details_clicked",
   CFA_SHARE_CONFIRMED: "cfa_share_confirmed",
   CONSEILLERS_ENTREPRISES_CLICKED: "conseillers_entreprises_clicked",
+  ACCOUNT_CREATED: "account_created",
 } as const
 
 export type MatomoEventName = (typeof MATOMO_EVENTS)[keyof typeof MATOMO_EVENTS]
