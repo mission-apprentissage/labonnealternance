@@ -219,35 +219,38 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
               <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
                 Activités porteuses :
               </Typography>
-              {(data.content.vie.activites as { naf_label?: string; rome_codes?: string[] }[]).map((activite) => (
-                <Link
-                  key={activite.naf_label}
-                  underline="none"
-                  href={`${buildSearchUrl({ mode: "emplois", q: activite.naf_label, radius: 30, page: 0, hitsPerPage: 20, latitude: data.geopoint.lat, longitude: data.geopoint.long, lieu_label: `${data.ville} (${data.cp})` })}&${utmParams}`}
-                  sx={{
-                    display: "flex",
-                    width: "100%",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      width: "100%",
-                      mb: fr.spacing("2v"),
-                      backgroundColor: "white",
-                      padding: fr.spacing("4v"),
-                      borderRadius: "5px",
-                      boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                      ":hover": {
-                        backgroundColor: "#E8EDFF",
-                      },
-                    }}
-                  >
-                    {activite.naf_label}
-                    <ArrowRightLine sx={{ ml: "auto", width: 16, height: 16 }} />
-                  </Box>
-                </Link>
-              ))}
+              <Box component="ul" className="fr-raw-list">
+                {(data.content.vie.activites as { naf_label?: string; rome_codes?: string[] }[]).map((activite) => (
+                  <li key={activite.naf_label}>
+                    <Link
+                      underline="none"
+                      href={`${buildSearchUrl({ mode: "emplois", q: activite.naf_label, radius: 30, page: 0, hitsPerPage: 20, latitude: data.geopoint.lat, longitude: data.geopoint.long, lieu_label: `${data.ville} (${data.cp})` })}&${utmParams}`}
+                      sx={{
+                        display: "flex",
+                        width: "100%",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          width: "100%",
+                          mb: fr.spacing("2v"),
+                          backgroundColor: "white",
+                          padding: fr.spacing("4v"),
+                          borderRadius: "5px",
+                          boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                          ":hover": {
+                            backgroundColor: "#E8EDFF",
+                          },
+                        }}
+                      >
+                        {activite.naf_label}
+                        <ArrowRightLine sx={{ ml: "auto", width: 16, height: 16 }} />
+                      </Box>
+                    </Link>
+                  </li>
+                ))}
+              </Box>
               <Box sx={{ mt: fr.spacing("4v"), textAlign: "right" }}>
                 <Link sx={{ textDecoration: "underline" }} href={`/?${utmParams}`}>
                   Voir toutes les opportunités à {data.ville}
@@ -315,6 +318,8 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
         {data.cards?.length > 0 && (
           <Box sx={{ mb: fr.spacing("8v"), mt: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
             <Box
+              component="ul"
+              className="fr-raw-list"
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
@@ -323,7 +328,9 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
               }}
             >
               {data.cards.map((card, idx) => (
-                <CarteOffre key={idx} card={card} utmParams={utmParams} />
+                <li key={idx}>
+                  <CarteOffre card={card} utmParams={utmParams} />
+                </li>
               ))}
             </Box>
 
@@ -365,6 +372,8 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
           <Box sx={{ mt: fr.spacing("2v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("2v"), md: fr.spacing("8v") } }}>
             <Box sx={{ flex: 1 }}>
               <Box
+                component="ul"
+                className="fr-raw-list"
                 sx={{
                   display: "grid",
                   gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
@@ -373,6 +382,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
               >
                 {(data.content.mobilite.transports as { type?: string; label?: string }[]).map((transport) => (
                   <Box
+                    component="li"
                     key={transport.type}
                     sx={{
                       textAlign: "center",
@@ -416,6 +426,8 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
 
             <Box sx={{ flex: 1, alignItems: "center", justifyContent: "center", alignContent: "center" }}>
               <Box
+                component="ul"
+                className="fr-raw-list"
                 sx={{
                   display: "grid",
                   alignItems: "center",
@@ -427,6 +439,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
               >
                 {(data.content.logement.loyers as { type?: string; price_range?: string }[]).map((appartement) => (
                   <Box
+                    component="li"
                     sx={{
                       display: "flex",
                       flexDirection: "column",
@@ -477,6 +490,8 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
               }}
             >
               <Box
+                component="ul"
+                className="fr-raw-list"
                 sx={{
                   display: "grid",
                   gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
@@ -485,6 +500,7 @@ async function VilleContent({ params }: { params: Promise<{ ville: string }> }) 
               >
                 {(data.content.loisirs.types as { type?: string; label?: string }[]).map((loisir) => (
                   <Box
+                    component="li"
                     key={loisir.type}
                     sx={{
                       textAlign: "center",

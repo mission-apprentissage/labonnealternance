@@ -199,6 +199,8 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
               </Typography>
             </Typography>
             <Box
+              component="ul"
+              className="fr-raw-list"
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", md: "repeat(4, minmax(0, 1fr))" },
@@ -206,7 +208,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
               }}
             >
               {statItems.map(({ icon, value, label }) => (
-                <Box key={label} sx={boxCss}>
+                <Box component="li" key={label} sx={boxCss}>
                   <Image alt="" aria-hidden="true" src={icon} width={80} height={80} />
                   <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                     {value}
@@ -235,13 +237,17 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Image src="/images/seo/metier/mission.svg" alt="" aria-hidden="true" width={60} height={60} />
-            <Typography sx={{ ml: fr.spacing("4v"), fontSize: "1.25rem", fontWeight: "bold" }}>Missions principales :</Typography>
+            <Typography component="h3" sx={{ ml: fr.spacing("4v"), fontSize: "1.25rem", fontWeight: "bold" }}>
+              Missions principales :
+            </Typography>
           </Box>
 
-          <Box sx={threeColGridSx}>
+          <Box component="ul" className="fr-raw-list" sx={threeColGridSx}>
             {(data.missions as { title: string; description: string }[]).map((mission) => (
-              <Box key={mission.title} sx={cardSx}>
-                <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{mission.title} :</Typography>
+              <Box component="li" key={mission.title} sx={cardSx}>
+                <Typography component="h4" sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>
+                  {mission.title} :
+                </Typography>
                 <Typography sx={{ mt: fr.spacing("1v") }}>{mission.description}</Typography>
               </Box>
             ))}
@@ -249,13 +255,17 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
 
           <Box sx={{ display: "flex", alignItems: "center", mt: fr.spacing("10v"), mb: fr.spacing("4v") }}>
             <Image src="/images/seo/metier/competence.svg" alt="" aria-hidden="true" width={60} height={60} />
-            <Typography sx={{ ml: fr.spacing("4v"), fontWeight: "bold" }}>Compétences développées :</Typography>
+            <Typography component="h3" sx={{ ml: fr.spacing("4v"), fontWeight: "bold" }}>
+              Compétences développées :
+            </Typography>
           </Box>
 
-          <Box sx={threeColGridSx}>
+          <Box component="ul" className="fr-raw-list" sx={threeColGridSx}>
             {(data.competences as { title: string; description: string }[]).map((competence) => (
-              <Box key={competence.title} sx={cardSx}>
-                <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{competence.title} :</Typography>
+              <Box component="li" key={competence.title} sx={cardSx}>
+                <Typography component="h4" sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>
+                  {competence.title} :
+                </Typography>
                 <Typography sx={{ mt: fr.spacing("1v") }}>{competence.description}</Typography>
               </Box>
             ))}
@@ -286,9 +296,9 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
               </Typography>{" "}
               qui recrutent activement des alternants {data.metier.toLowerCase()} :
             </Typography>
-            <Box sx={threeColGridSx}>
+            <Box component="ul" className="fr-raw-list" sx={threeColGridSx}>
               {(data.entreprises as { nom: string; job_count: number }[]).map((entreprise) => (
-                <Box key={entreprise.nom} sx={cardSx}>
+                <Box component="li" key={entreprise.nom} sx={cardSx}>
                   <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{entreprise.nom}</Typography>
                   <Typography sx={{ mt: fr.spacing("1v"), color: fr.colors.decisions.text.label.grey.default }}>{entreprise.job_count} postes</Typography>
                 </Box>
@@ -315,10 +325,12 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
           <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
             Niveaux de formation disponibles
           </Typography>
-          <Box sx={threeColGridSx}>
+          <Box component="ul" className="fr-raw-list" sx={threeColGridSx}>
             {(data.formations as { title: string; description: string; duree: string; niveau: string; count: number; competences: string[] }[]).map((formation) => (
-              <Box key={formation.title} sx={{ ...cardSx, textAlign: "center" }}>
-                <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>{formation.title}</Typography>
+              <Box component="li" key={formation.title} sx={{ ...cardSx, textAlign: "center" }}>
+                <Typography component="h4" sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                  {formation.title}
+                </Typography>
                 <Typography sx={{ my: fr.spacing("6v"), fontSize: "1.125rem", color: "#666" }}>{formation.description}</Typography>
                 <Typography sx={{ fontSize: "1.375rem", fontWeight: 700 }}>{formation.count} formations</Typography>
               </Box>
@@ -345,6 +357,8 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
             </Typography>
           </Box>
           <Box
+            component="ul"
+            className="fr-raw-list"
             sx={{
               display: "grid",
               gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
@@ -359,41 +373,43 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
                 ? `/alternance/ville/${villeSlug}?${UTM_PARAMS}`
                 : `${buildSearchUrl({ mode: "emplois", q: data.metier, radius: 30, page: 0, hitsPerPage: 20, latitude: ville.geopoint.lat, longitude: ville.geopoint.long, lieu_label: ville.nom })}&${UTM_PARAMS}`
               return (
-                <Link key={ville.nom} href={href} aria-label={`${ville.nom} - ${ville.job_count} offres en alternance de ${data.metier}`} style={{ background: "transparent" }}>
-                  <Box
-                    sx={{
-                      ...boxCss,
-                      minWidth: "220px",
-                      width: "100%",
-                      maxWidth: "100%",
-                      paddingY: fr.spacing("8v"),
-                      paddingX: fr.spacing("6v"),
-                      ":hover": {
-                        backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-                        cursor: "pointer",
-                      },
-                    }}
-                  >
-                    <Box sx={{ width: "100%", textAlign: "center" }}>
-                      <Image alt="" aria-hidden="true" src="/images/seo/metier/france.svg" width={60} height={60} />
-                    </Box>
-                    <Box sx={{ width: "100%", textAlign: "left" }}>
-                      <Typography
-                        sx={{ mt: fr.spacing("1v"), fontSize: "2rem", fontWeight: "bold", lineHeight: 1.2, color: fr.colors.decisions.background.actionHigh.blueFrance.default }}
-                      >
-                        {ville.nom}
-                      </Typography>
-                      <Box sx={{ width: "100%", display: "flex", alignItems: "center", flexDirection: "row" }}>
-                        <Typography sx={{ flex: 1, mt: fr.spacing("2v"), fontSize: "1.375rem", fontWeight: "bold", lineHeight: 1.1, color: "#161616" }}>
-                          {ville.job_count} offres
+                <li key={ville.nom}>
+                  <Link href={href} aria-label={`${ville.nom} - ${ville.job_count} offres en alternance de ${data.metier}`} style={{ display: "block", background: "transparent" }}>
+                    <Box
+                      sx={{
+                        ...boxCss,
+                        minWidth: "220px",
+                        width: "100%",
+                        maxWidth: "100%",
+                        paddingY: fr.spacing("8v"),
+                        paddingX: fr.spacing("6v"),
+                        ":hover": {
+                          backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+                          cursor: "pointer",
+                        },
+                      }}
+                    >
+                      <Box sx={{ width: "100%", textAlign: "center" }}>
+                        <Image alt="" aria-hidden="true" src="/images/seo/metier/france.svg" width={60} height={60} />
+                      </Box>
+                      <Box sx={{ width: "100%", textAlign: "left" }}>
+                        <Typography
+                          sx={{ mt: fr.spacing("1v"), fontSize: "2rem", fontWeight: "bold", lineHeight: 1.2, color: fr.colors.decisions.background.actionHigh.blueFrance.default }}
+                        >
+                          {ville.nom}
                         </Typography>
-                        <ArrowRightLine
-                          sx={{ color: fr.colors.decisions.background.actionHigh.blueFrance.default, mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }}
-                        />
+                        <Box sx={{ width: "100%", display: "flex", alignItems: "center", flexDirection: "row" }}>
+                          <Typography sx={{ flex: 1, mt: fr.spacing("2v"), fontSize: "1.375rem", fontWeight: "bold", lineHeight: 1.1, color: "#161616" }}>
+                            {ville.job_count} offres
+                          </Typography>
+                          <ArrowRightLine
+                            sx={{ color: fr.colors.decisions.background.actionHigh.blueFrance.default, mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }}
+                          />
+                        </Box>
                       </Box>
                     </Box>
-                  </Box>
-                </Link>
+                  </Link>
+                </li>
               )
             })}
           </Box>
@@ -410,6 +426,8 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
               <Box aria-hidden="true" component="hr" sx={hrSx} />
             </Box>
             <Box
+              component="ul"
+              className="fr-raw-list"
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
@@ -418,7 +436,9 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
               }}
             >
               {data.cards.map((card, idx) => (
-                <CarteOffre key={idx} card={card} utmParams={UTM_PARAMS} />
+                <li key={idx}>
+                  <CarteOffre card={card} utmParams={UTM_PARAMS} />
+                </li>
               ))}
             </Box>
 
