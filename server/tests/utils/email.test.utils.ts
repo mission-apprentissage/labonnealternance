@@ -9,8 +9,9 @@ const fontWeightAt = (html: string, text: string): string => {
   const index = bodyStart + match.index + match[0].length - text.length
 
   const openTags: { tag: string; weight: string | null }[] = []
-  const before = html.slice(0, index).replace(/<!--[\s\S]*?-->/g, "")
-  for (const [, closing, name, attributes] of before.matchAll(/<(\/?)([a-zA-Z][\w-]*)([^>]*)>/g)) {
+  // Les commentaires sont consommés par la même expression que les balises : celles qu'ils contiennent sont ignorées.
+  for (const [, closing, name, attributes] of html.slice(0, index).matchAll(/<!--[\s\S]*?-->|<(\/?)([a-zA-Z][\w-]*)([^>]*)>/g)) {
+    if (name === undefined) continue
     const tag = name.toLowerCase()
     if (VOID_TAGS.has(tag) || attributes.endsWith("/")) continue
     if (closing) {
