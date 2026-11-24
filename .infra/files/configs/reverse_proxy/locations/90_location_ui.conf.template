@@ -4,6 +4,15 @@ location / {
 
     client_max_body_size 0;
 
+    # Assets versionnés de Next, immuables et servis depuis le cache proxy : le premier chargement d'une page
+    # en demande plus que le burst de `flood` (#5939). Zone sans limite, cf. extra-conf.d/rate-limit.conf.template.
+    location ^~ /_next/static/ {
+        limit_req zone=lba_static_unlimited;
+
+        set $upstream http://ui:3000;
+        include includes/proxy.conf;
+    }
+
     # Next 16 répond 500 quand le slug d'une fiche n'est pas décodable, avant même d'appeler proxy.ts :
     # UTF-8 invalide (liens partenaires encodés en Latin-1, `%E9`) ou `%` littéral, que cacheComponents
     # décode une seconde fois. Le slug est décoratif : on redirige vers la fiche avec un slug neutre (#5456).
