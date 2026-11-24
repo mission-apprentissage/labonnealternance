@@ -16,4 +16,17 @@ describe("SuccesDesinscription", () => {
     expect(link).toContain(" - nouvelle fenêtre")
     expect(html).not.toContain("alternance.emploi.gouv.fr")
   })
+
+  it("structure les énumérations en listes et les intertitres en titres de niveau 2 (RGAA 9.1, 9.3)", () => {
+    const html = renderToStaticMarkup(<SuccesDesinscription />)
+
+    expect(html.match(/<ul\b/g)).toHaveLength(2)
+    expect(html.match(/<li\b/g)).toHaveLength(7)
+    expect(html).not.toContain("list-item")
+    expect([...html.matchAll(/<h2\b[^>]*>([^<]*)<\/h2>/g)].map(([, text]) => text)).toEqual([
+      "En complément, permettez-nous de vous expliquer notre fonctionnement.",
+      "Votre établissement se situait dans la troisième catégorie.",
+      "Le saviez-vous ?",
+    ])
+  })
 })
