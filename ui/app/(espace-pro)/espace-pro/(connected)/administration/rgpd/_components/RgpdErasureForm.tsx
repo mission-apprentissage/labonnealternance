@@ -22,10 +22,14 @@ type IStep = IPreview["steps"][number]
 const MODE_OPTIONS: { value: IRgpdErasureMode; label: string; hint: string }[] = [
   {
     value: RGPD_ERASURE_MODE.ANONYMIZE,
-    label: "Anonymiser",
-    hint: "Les données nominatives sont supprimées ; une copie sans donnée personnelle (dates, statuts, SIRET) est gardée pour les statistiques.",
+    label: "Anonymiser (recommandé)",
+    hint: "Les données personnelles sont effacées. Une copie sans aucune donnée personnelle (dates, statuts, SIRET) est conservée pour les statistiques. À utiliser pour toute demande RGPD classique.",
   },
-  { value: RGPD_ERASURE_MODE.DELETE, label: "Supprimer définitivement", hint: "Aucune copie n'est conservée." },
+  {
+    value: RGPD_ERASURE_MODE.DELETE,
+    label: "Supprimer définitivement",
+    hint: "Les données personnelles sont effacées, sans copie pour les statistiques. À réserver aux comptes frauduleux, de test ou en doublon.",
+  },
 ]
 
 const STATUS_ALERT = {
