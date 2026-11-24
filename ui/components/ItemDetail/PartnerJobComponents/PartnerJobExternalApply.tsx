@@ -3,12 +3,13 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Dialog, Typography } from "@mui/material"
 import { useId } from "react"
 import type { ILbaItemPartnerJobJson } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { notifyJobPostulerV3 } from "@/utils/api"
-import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
+import { MATOMO_EVENTS, type MatomoEventName, pushMatomoEvent } from "@/utils/matomo-utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 const partnerLabelsShownInCta = [
@@ -46,13 +47,13 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
 
   const matomoPayload = {
     job_offer_id: job.id,
-    job_offer_type: "offre-partenaire",
+    job_offer_type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     job_offer_company: job.company?.name ?? "",
     job_offer_name: job.title,
     partner_name: job.job.partner_label,
   }
 
-  const closeModalWithEvent = (event: string) => {
+  const closeModalWithEvent = (event: MatomoEventName) => {
     pushMatomoEvent({
       ...matomoPayload,
       event,

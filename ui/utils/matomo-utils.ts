@@ -1,9 +1,6 @@
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 export const MATOMO_EVENTS = {
-  FILTER_HANDI_CHANGED: "filter_handi_changed",
-  FILTER_DROPDOWN_OPENED: "filter_dropdown_opened",
-  FILTER_TYPE_OFFER_APPLIED: "filter_type_offer_applied",
   SALARY_SIMULATION_COMPLETED: "salary_simulation_completed",
   PARTNER_APPLY_POPIN_SHOW: "partner_apply_popin_show",
   PARTNER_APPLY_POPIN_CONFIRMED: "partner_apply_popin_confirmed",
@@ -32,21 +29,20 @@ export const MATOMO_EVENTS = {
   OFFER_CFA_SHARE_CLICKED: "offer_cfa_share_clicked",
   OFFER_DELETE_CLICKED: "offer_delete_clicked",
   OFFER_DELETE_CONFIRMED: "offer_delete_confirmed",
-  NEW_SEARCH_OPTIN: "new_search_optin",
-  NEW_SEARCH_OPTOUT: "new_search_optout",
   SEARCH_FILTER_APPLIED: "search_filter_applied",
   SEARCH_FILTER_REMOVED: "search_filter_removed",
   SEARCH_FILTER_OPENED: "search_filter_opened",
   SEARCH_TYPE_CHANGED: "search_type_changed",
   SEARCH_MODE_FALLBACK_DISPLAYED: "search_mode_fallback_displayed",
   SEARCH_SORT_CHANGED: "search_sort_changed",
-  CFA_SHARE_STEP_VIEWED: "cfa_share_step_viewed",
   CFA_SELECTED: "cfa_selected",
   CFA_DESELECTED: "cfa_deselected",
   CFA_DETAILS_CLICKED: "cfa_details_clicked",
   CFA_SHARE_CONFIRMED: "cfa_share_confirmed",
   CONSEILLERS_ENTREPRISES_CLICKED: "conseillers_entreprises_clicked",
-}
+} as const
+
+export type MatomoEventName = (typeof MATOMO_EVENTS)[keyof typeof MATOMO_EVENTS]
 
 // Identifiants de moteur de recherche pour la télémétrie de bascule (dimension
 // `search_engine`) : legacy /recherche vs nouveau moteur /beta/recherche (versionné).
@@ -75,7 +71,7 @@ export function getMatomoJobOfferType(ideaType: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OL
 }
 
 type MatomoEvent = {
-  event: (typeof MATOMO_EVENTS)[keyof typeof MATOMO_EVENTS] | string
+  event: MatomoEventName
   [key: string]: unknown
 }
 
