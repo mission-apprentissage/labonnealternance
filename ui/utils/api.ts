@@ -315,6 +315,12 @@ export const reportLbaItem = async (itemId: string, type: LBA_ITEM_TYPE, reason:
 export const getEligibleTrainingsForAppointments = async (siret: string) =>
   apiGet("/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret", { params: { siret: siret } })
 
+export const patchEligibleTrainingsForAppointments = async (body: IBody<IRoutes["patch"]["/admin/eligible-trainings-for-appointment"]>) =>
+  apiPatch("/admin/eligible-trainings-for-appointment", { body })
+
+export const patchEligibleTrainingForAppointmentEmail = async (id: string, body: IBody<IRoutes["patch"]["/admin/eligible-trainings-for-appointment/:id"]>) =>
+  apiPatch("/admin/eligible-trainings-for-appointment/:id", { params: { id }, body })
+
 export const getEtablissement = async (siret: string) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })
 
 export async function unsubscribeCompany(body: IBody<IRoutes["post"]["/unsubscribe"]>) {

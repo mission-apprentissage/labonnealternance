@@ -4,12 +4,12 @@ import { pipeline } from "node:stream/promises"
 import type { AnyBulkWriteOperation } from "mongodb"
 import { MongoBulkWriteError, ObjectId } from "mongodb"
 import type { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
-import { referrers } from "shared/constants/referers"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { getEmailForRdv } from "@/services/eligible-trainings-for-appointment.service"
 import { findFirstNonBlacklistedEmail, getFormationTitle } from "@/services/formation.service"
+import { applyReferrerOverrides, computeAutoReferrers, DIFFUSION_DATES_PROJECTION, getDiffusionFlags, getEligibleReferrers } from "@/services/referrers-diffusion.service"
 
 /**
  * Champs de formationcatalogues réellement consommés ici. Sans projection le curseur tire aussi le
@@ -42,12 +42,7 @@ const FORMATION_PROJECTION = {
 } as const
 
 const ETABLISSEMENT_PROJECTION = {
-  premium_affelnet_activation_date: 1,
-  optout_refusal_date: 1,
-  optout_activation_date: 1,
-  premium_refusal_date: 1,
-  premium_activation_date: 1,
-  premium_affelnet_refusal_date: 1,
+  ...DIFFUSION_DATES_PROJECTION,
   gestionnaire_email: 1,
 } as const
 
@@ -61,8 +56,6 @@ const BULK_SIZE = 500
 const MAX_CONSECUTIVE_ERRORS = 50
 
 type IFormationEmailFields = Pick<IFormationCatalogue, "email" | "etablissement_gestionnaire_courriel" | "etablissement_gestionnaire_siret">
-
-const isSet = (value: unknown) => value !== null && value !== undefined
 
 const cacheKey = (...parts: unknown[]) => JSON.stringify(parts)
 
@@ -167,45 +160,27 @@ export const syncEtablissementsAndFormations = async () => {
         const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
           getDbCollection("eligible_trainings_for_appointments").findOne(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
-            { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1 } }
+            { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1, referrers_forced_on: 1, referrers_forced_off: 1 } }
           ),
           getDbCollection("etablissements").find({ gestionnaire_siret: formation.etablissement_gestionnaire_siret }, { projection: ETABLISSEMENT_PROJECTION }).toArray(),
           // Seule l'existence est utilisée en aval.
           getDbCollection("referentieloniseps").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }, { projection: { _id: 1 } }),
         ])
 
-        const dateFlags = {
-          hasPremiumAffelnetActivation: false,
-          hasOptOutRefusal: false,
-          hasOptOutActivation: false,
-          hasPremiumRefusal: false,
-          hasPremiumActivation: false,
-          hasPremiumAffelnetRefusal: false,
-        }
-        for (const etablissement of etablissements) {
-          if (isSet(etablissement.premium_affelnet_activation_date)) dateFlags.hasPremiumAffelnetActivation = true
-          if (isSet(etablissement.optout_refusal_date)) dateFlags.hasOptOutRefusal = true
-          if (isSet(etablissement.optout_activation_date)) dateFlags.hasOptOutActivation = true
-          if (isSet(etablissement.premium_refusal_date)) dateFlags.hasPremiumRefusal = true
-          if (isSet(etablissement.premium_activation_date)) dateFlags.hasPremiumActivation = true
-          if (isSet(etablissement.premium_affelnet_refusal_date)) dateFlags.hasPremiumAffelnetRefusal = true
-        }
-
         const emailArray = etablissements.map((etab) => ({ email: etab.gestionnaire_email }))
         let gestionnaireEmail = await findFirstNonBlacklistedEmail(emailArray)
 
-        const referrersToActivate: string[] = []
-        if (dateFlags.hasOptOutActivation && !dateFlags.hasOptOutRefusal) {
-          referrersToActivate.push(referrers.LBA.name, referrers.JEUNE_1_SOLUTION.name)
-          if (existInReferentielOnisep) referrersToActivate.push(referrers.ONISEP.name)
+        const eligibility = {
+          parcoursup_visible: formation.parcoursup_visible,
+          affelnet_visible: formation.affelnet_visible,
+          inReferentielOnisep: Boolean(existInReferentielOnisep),
         }
-
-        if (dateFlags.hasPremiumActivation && !dateFlags.hasPremiumRefusal && formation.parcoursup_visible) {
-          referrersToActivate.push(referrers.PARCOURSUP.name)
-        }
-        if (dateFlags.hasPremiumAffelnetActivation && !dateFlags.hasPremiumAffelnetRefusal && formation.affelnet_visible) {
-          referrersToActivate.push(referrers.AFFELNET.name)
-        }
+        const referrersToActivate = applyReferrerOverrides({
+          auto: computeAutoReferrers(getDiffusionFlags(etablissements), eligibility),
+          eligible: getEligibleReferrers(eligibility),
+          forcedOn: eligibleTrainingsForAppointment?.referrers_forced_on ?? [],
+          forcedOff: eligibleTrainingsForAppointment?.referrers_forced_off ?? [],
+        })
 
         // Un email personnalisé sur la fiche existante n'est jamais réécrit ; sinon on le recalcule.
         const emailRdv = eligibleTrainingsForAppointment?.is_lieu_formation_email_customized

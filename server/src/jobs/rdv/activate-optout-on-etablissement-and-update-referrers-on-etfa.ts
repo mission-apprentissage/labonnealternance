@@ -1,5 +1,4 @@
 import * as _ from "lodash-es"
-import { referrers } from "shared/constants/referers"
 
 import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
@@ -9,6 +8,7 @@ import config from "@/config"
 import { createRdvaOptOutUnsubscribePageLink } from "@/services/app-links.service"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligible-trainings-for-appointment.service"
 import mailer from "@/services/mailer.service"
+import { recomputeReferrers } from "@/services/referrers-diffusion.service"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
@@ -29,28 +29,14 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
     })
     .toArray()
 
-  // Activate all formations, for all referrers that have a mail
+  // Active les formations qui ont un e-mail, une fois la date posée : recomputeReferrers la lit
   await Promise.all(
     etablissementsToActivate.map(async (etablissement) => {
-      await Promise.all([
-        getDbCollection("eligible_trainings_for_appointments").updateMany(
-          {
-            etablissement_formateur_siret: etablissement.formateur_siret,
-            lieu_formation_email: { $nin: [null, ""] },
-          },
-          {
-            $set: {
-              referrers: [referrers.JEUNE_1_SOLUTION.name, referrers.LBA.name],
-            },
-          }
-        ),
-        getDbCollection("etablissements").findOneAndUpdate(
-          {
-            _id: etablissement._id,
-          },
-          { $set: { optout_activation_date: new Date() } }
-        ),
-      ])
+      await getDbCollection("etablissements").findOneAndUpdate({ _id: etablissement._id }, { $set: { optout_activation_date: new Date() } })
+      await recomputeReferrers({
+        etablissement_formateur_siret: etablissement.formateur_siret,
+        lieu_formation_email: { $nin: [null, ""] },
+      })
 
       if (!etablissement.gestionnaire_email) return
       if (!etablissement.gestionnaire_siret) return

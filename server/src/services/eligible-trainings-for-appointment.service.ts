@@ -54,7 +54,10 @@ export const disableEligibleTraininForAppointmentWithEmail = async (disabledEmai
 
   await Promise.all(
     eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
-      await getDbCollection("eligible_trainings_for_appointments").updateOne({ _id: eligibleTrainingsForAppointment._id }, { $set: { referrers: [], lieu_formation_email: "" } })
+      await getDbCollection("eligible_trainings_for_appointments").updateOne(
+        { _id: eligibleTrainingsForAppointment._id },
+        { $set: { referrers: [], lieu_formation_email: "" }, $unset: { referrers_forced_on: "", referrers_forced_off: "" } }
+      )
 
       logger.info(
         {

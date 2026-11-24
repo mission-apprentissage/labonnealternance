@@ -209,6 +209,29 @@ describe("sync-etablissements-and-formations", () => {
     expect(etfa?.referrers).toEqual(["LBA", "JEUNE_1_SOLUTION"])
   })
 
+  it("applique les forçages de l'admin RDVA et ignore ceux d'une plateforme non éligible", async () => {
+    await getDbCollection("etablissements").insertOne({
+      _id: new ObjectId(),
+      gestionnaire_siret: GESTIONNAIRE_SIRET,
+      formateur_siret: FORMATEUR_SIRET,
+      raison_sociale: "CFA TEST",
+      gestionnaire_email: null,
+      optout_activation_date: new Date("2026-01-01"),
+    })
+    await getDbCollection("formationcatalogues").insertOne(givenFormation({ affelnet_visible: true, parcoursup_visible: false }))
+    await syncEtablissementsAndFormations()
+    await getDbCollection("eligible_trainings_for_appointments").updateOne(
+      { cle_ministere_educatif: "cle-1" },
+      { $set: { referrers_forced_on: ["AFFELNET", "PARCOURSUP"], referrers_forced_off: ["LBA"] } }
+    )
+
+    await syncEtablissementsAndFormations()
+
+    const etfa = await getDbCollection("eligible_trainings_for_appointments").findOne({ cle_ministere_educatif: "cle-1" })
+    expect.soft(etfa?.referrers).toEqual(["JEUNE_1_SOLUTION", "AFFELNET"])
+    expect.soft(etfa?.referrers_forced_on).toEqual(["AFFELNET", "PARCOURSUP"])
+  })
+
   it("écrit les formations valides d'un lot même si l'une d'elles est rejetée, et échoue à la fin", async () => {
     await getDbCollection("formationcatalogues").insertMany([
       givenFormation({ cle_ministere_educatif: "cle-ok-1" }),
