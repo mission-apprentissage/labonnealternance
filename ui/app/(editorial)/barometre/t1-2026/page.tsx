@@ -120,7 +120,7 @@ export default function BarometreT1Page() {
               </Box>
 
               <Callout variant="highlight">
-                <Typography component="p" sx={{ fontWeight: 700, mb: fr.spacing("3v") }}>
+                <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("3v") }}>
                   Ce qu’il faut retenir du premier trimestre 2026&nbsp;:
                 </Typography>
                 <Box component="ul" sx={{ pl: fr.spacing("4v"), m: 0, "& > li": { mb: fr.spacing("2v") } }}>
@@ -492,7 +492,7 @@ export default function BarometreT1Page() {
 
               {/* ---------- CONCLUSION ---------- */}
               <Callout variant="watch">
-                <Typography component="p" sx={{ fontWeight: 700, mb: fr.spacing("3v") }}>
+                <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("3v") }}>
                   Ce qu’il faudra surveiller au deuxième trimestre 2026
                 </Typography>
                 <Typography component="p" sx={{ m: 0 }}>

@@ -11,10 +11,10 @@ const MIN_LABELLED_SHARE = 8
 export function CompositionBars({ title, caption, series, rows, note }: { title: string; caption?: string; series: CompositionSeries[]; rows: CompositionRow[]; note?: string }) {
   return (
     <ChartFrame title={title} caption={caption}>
-      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), rowGap: fr.spacing("1v"), mb: fr.spacing("5v") }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), rowGap: fr.spacing("1v"), mb: fr.spacing("5v") }} aria-hidden="true">
         {series.map((entry) => (
           <Box key={entry.key} sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
-            <Box sx={{ width: "12px", height: "12px", borderRadius: "2px", backgroundColor: entry.color, flexShrink: 0 }} aria-hidden="true" />
+            <Box sx={{ width: "12px", height: "12px", borderRadius: "2px", backgroundColor: entry.color, flexShrink: 0 }} />
             <Typography component="span" sx={{ fontSize: "13px", color: fr.colors.decisions.text.default.grey.default }}>
               {entry.label}
             </Typography>

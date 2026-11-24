@@ -43,7 +43,7 @@ function RankedList({
 }) {
   return (
     <Box>
-      <Typography component="p" sx={{ fontSize: "13px", fontWeight: 700, color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("1v") }}>
+      <Typography component="h3" sx={{ fontSize: "13px", fontWeight: 700, color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("1v") }}>
         {title}
       </Typography>
       <Box component="dl" sx={{ m: 0, p: 0 }}>
@@ -207,9 +207,9 @@ export function RegionsMap({
         </Box>
       </Box>
 
-      <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), rowGap: fr.spacing("1v"), mt: fr.spacing("4v") }}>
+      <Box component="ul" className="fr-raw-list" sx={{ display: "flex", flexWrap: "wrap", columnGap: fr.spacing("4v"), rowGap: fr.spacing("1v"), mt: fr.spacing("4v") }}>
         {classes.map((entry, index) => (
-          <Box key={entry.label} sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
+          <Box component="li" key={entry.label} sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
             <Box sx={{ width: "12px", height: "12px", borderRadius: "2px", backgroundColor: FILLS[index]?.fill }} aria-hidden="true" />
             <Typography component="span" sx={{ fontSize: "12px", color: fr.colors.decisions.text.mention.grey.default }}>
               {entry.label}
