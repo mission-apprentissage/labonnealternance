@@ -6,7 +6,7 @@ import { Box, Container, Typography, useMediaQuery, useTheme } from "@mui/materi
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useParams, useRouter } from "next/navigation"
-import { Fragment, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
@@ -204,7 +204,7 @@ function TrainingDetailPage({
 
               <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />
 
-              <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
+              <Typography variant="h3" component="h1" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
                 {actualTitle}
               </Typography>
 
@@ -318,7 +318,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
       </Box>
       {IJStats.isFetched && IJStats.data ? <StatsInserJeunes stats={IJStats.data} /> : null}
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" component="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur l'établissement
         </Typography>
 
@@ -365,7 +365,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
       </Box>
       {isCfaDEntreprise && (
         <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
-          <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+          <Typography variant="h4" component="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
             Cet établissement est un CFA d&apos;entreprise
           </Typography>
 
@@ -399,6 +399,9 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
   )
 }
 
+// Rubriques au style du texte courant : `inherit` neutralise la couleur que le DSFR donne aux h2.
+const sectionTitleSx = { fontWeight: 700, color: "inherit" }
+
 const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 }) => {
   const isPermanentEntry = training.sessions?.some((session: any) => session.isPermanentEntry)
   return (
@@ -412,7 +415,9 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
               whiteSpace: "pre-wrap",
             }}
           >
-            <Typography sx={{ fontWeight: "700" }}>Description de la formation</Typography>
+            <Typography component="h2" sx={sectionTitleSx}>
+              Description de la formation
+            </Typography>
             <Typography sx={dontBreakOutCssParameters}>{training.description}</Typography>
           </Box>
         </Box>
@@ -426,7 +431,9 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
               whiteSpace: "pre-wrap",
             }}
           >
-            <Typography sx={{ fontWeight: "700" }}>Objectifs</Typography>
+            <Typography component="h2" sx={sectionTitleSx}>
+              Objectifs
+            </Typography>
             <Typography sx={dontBreakOutCssParameters}>{training.objectif}</Typography>
           </Box>
         </Box>
@@ -435,17 +442,20 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
         <Box sx={{ display: "flex", alignItems: "flex-start", mt: fr.spacing("4v") }}>
           <Image width={24} height={24} src="/images/icons/training-academic-cap.svg" alt="" />
           <Box sx={{ pl: fr.spacing("8v"), whiteSpace: "pre-wrap" }}>
-            <Typography sx={{ fontWeight: "700" }}>Sessions de formation</Typography>
-            <Typography>
-              {isPermanentEntry
-                ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
-                : training["sessions"].map((session: any, i: number) => (
-                    <Fragment key={i}>
-                      du {formatDate(session.startDate)} au {formatDate(session.endDate)}
-                      <br />
-                    </Fragment>
-                  ))}
+            <Typography component="h2" sx={sectionTitleSx}>
+              Sessions de formation
             </Typography>
+            {isPermanentEntry ? (
+              <Typography>Il est possible de s’inscrire à cette formation tout au long de l’année.</Typography>
+            ) : (
+              <Box component="ul" className="fr-raw-list">
+                {training.sessions.map((session: any, i: number) => (
+                  <Typography component="li" key={i}>
+                    du {formatDate(session.startDate)} au {formatDate(session.endDate)}
+                  </Typography>
+                ))}
+              </Box>
+            )}
           </Box>
         </Box>
       ) : null}

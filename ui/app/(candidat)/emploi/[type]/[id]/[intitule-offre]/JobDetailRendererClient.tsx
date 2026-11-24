@@ -246,7 +246,7 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
                 <LbaItemTags item={selectedItem} />
                 <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
               </Box>
-              {/* Rappel du titre dans le bandeau fixe : le vrai titre (h3) reste celui de la fiche (RGAA 8.9) */}
+              {/* Rappel du titre dans le bandeau fixe : le vrai titre (h1) reste celui de la fiche (RGAA 8.9) */}
               <Typography
                 component="p"
                 variant={"h3"}
@@ -306,7 +306,8 @@ function JobDetail({ selectedItem, rechercheParams }: { rechercheParams: IRecher
               {getJobPublishedTimeAndApplications({ item: selectedItem })}
               <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />
               <Typography
-                variant={"h3"}
+                variant="h3"
+                component="h1"
                 sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
                 dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
               />
