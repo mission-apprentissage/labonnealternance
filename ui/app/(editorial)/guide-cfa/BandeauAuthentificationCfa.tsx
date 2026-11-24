@@ -18,7 +18,7 @@ export const BandeauAuthentificationCfa = () => {
         <DsfrIcon name="fr-icon-info-fill" size={19} style={{ color: fr.colors.decisions.text.inverted.grey.default, marginLeft: "auto", marginRight: "auto" }} />
       </Box>
       <Box p={fr.spacing("3v")} display="flex" flexDirection="column" gap={fr.spacing("2v")} flex={1}>
-        <Typography component="p" variant="h6">
+        <Typography component="h2" variant="h6">
           Vous aviez déjà un compte CFA sur le Portail de l'alternance ?
         </Typography>
         <Typography variant="body1">

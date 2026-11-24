@@ -65,6 +65,8 @@ const guideCfaPage = () => {
           <Grid
             container
             size={12}
+            component="ul"
+            className="fr-raw-list"
             sx={{
               "& .fr-card__content": {
                 padding: fr.spacing("6v"),
@@ -75,19 +77,19 @@ const guideCfaPage = () => {
               },
             }}
           >
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES_PARTAGES["decouvrir-l-alternance"]} source="guide-cfa" />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES_PARTAGES["apprentissage-et-handicap"]} source="guide-cfa" />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES["la-carte-etudiant-des-metiers"]} />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES["accompagner-vos-alternants"]} />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }} component="li">
               <AllerPlusLoinItem {...ARTICLES_PARTAGES["rediger-son-offre-d-alternance"]} source="guide-cfa" />
             </Grid>
           </Grid>
@@ -238,7 +240,7 @@ const guideCfaPage = () => {
             </Grid>
             <Grid size={{ md: 9, xs: 12 }} sx={{ display: "flex", alignItems: "center" }}>
               <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
-                <Typography variant="body1" fontWeight={700}>
+                <Typography variant="body1" component="h2" fontWeight={700}>
                   Diffusez simplement et gratuitement les offres en alternance de vos partenaires
                 </Typography>
                 <Box>
@@ -253,7 +255,7 @@ const guideCfaPage = () => {
           <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("6v"), py: fr.spacing("4v") }}>
             <Grid size={{ md: 9, xs: 12 }}>
               <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
-                <Typography variant="body1" fontWeight={700}>
+                <Typography variant="body1" component="h2" fontWeight={700}>
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
                 <Box>
