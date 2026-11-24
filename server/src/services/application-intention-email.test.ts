@@ -1,3 +1,4 @@
+import { isInBold } from "@tests/utils/email.test.utils"
 import { ApplicationIntention, RefusalReasons } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
@@ -7,37 +8,6 @@ import { sendMailToApplicant } from "./application.service"
 import mailer from "./mailer.service"
 
 const COMPANY_NAME = "Boulangerie du test"
-
-const VOID_TAGS = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"])
-
-// Graisse héritée de l'ancêtre le plus proche qui en fixe une, par style inline, <b> ou <strong>. Les règles de <style> ne sont pas lues.
-const fontWeightAt = (html: string, text: string): string => {
-  // Première occurrence dans un nœud texte du corps : le nom du recruteur figure aussi dans <title> et dans un aria-label.
-  const bodyStart = Math.max(html.indexOf("<body"), 0)
-  const match = new RegExp(`>[^<]*?${RegExp.escape(text)}`).exec(html.slice(bodyStart))
-  if (!match) throw new Error(`Texte absent du corps : ${text}`)
-  const index = bodyStart + match.index + match[0].length - text.length
-
-  const openTags: { tag: string; weight: string | null }[] = []
-  const before = html.slice(0, index).replace(/<!--[\s\S]*?-->/g, "")
-  for (const [, closing, name, attributes] of before.matchAll(/<(\/?)([a-zA-Z][\w-]*)([^>]*)>/g)) {
-    const tag = name.toLowerCase()
-    if (VOID_TAGS.has(tag) || attributes.endsWith("/")) continue
-    if (closing) {
-      const opened = openTags.findLastIndex((openTag) => openTag.tag === tag)
-      if (opened !== -1) openTags.length = opened
-      continue
-    }
-    const inlineWeight = /\sstyle="[^"]*font-weight:\s*([\w-]+)/i.exec(attributes)?.[1] ?? null
-    openTags.push({ tag, weight: inlineWeight ?? (tag === "b" || tag === "strong" ? "700" : null) })
-  }
-  return openTags.findLast(({ weight }) => weight !== null)?.weight ?? "400"
-}
-
-const isInBold = (html: string, text: string) => {
-  const weight = fontWeightAt(html, text)
-  return weight === "bold" || weight === "bolder" || Number(weight) >= 600
-}
 
 const renderIntentionEmail = async ({
   intention,
@@ -100,30 +70,6 @@ describe.each([
     expect(html).not.toContain("<b>gras")
     expect(html).not.toContain("<script>alert(1)")
     expect(html).toMatch(/DEBUT gras\s+1 &lt; 2 FIN/)
-  })
-})
-
-describe("isInBold", () => {
-  it.each([
-    { html: '<span style="font-weight: 700;">X</span>', expected: true },
-    { html: '<td style="font-weight:700">A<br>X</td>', expected: true },
-    { html: "<strong>X</strong>", expected: true },
-    { html: "<b>X</b>", expected: true },
-    { html: '<span style="font-weight:700"><span>X</span></span>', expected: true },
-    { html: '<span style="font-weight: 700;">A</span> X', expected: false },
-    { html: '<div style="font-weight:400">A<br>X</div>', expected: false },
-    { html: "<body>X</body>", expected: false },
-    { html: '<title>X</title><body><div style="font-weight:700" aria-label="X">A</div><p>X</p></body>', expected: false },
-    { html: '<span style="font-weight: 700;">Voici <em>la</em> réponse : X</span>', expected: true },
-    { html: '<span style="font-weight: 700;"><a href="#">lien</a><br/>X</span>', expected: true },
-    { html: '<span style="font-weight:600">X</span>', expected: true },
-    { html: '<span style="font-weight: bold">X</span>', expected: true },
-    { html: '<div style="font-weight:700"><span style="font-weight: 700;">A</span> X</div>', expected: true },
-    { html: '<span style="font-weight: 700;"><span style="font-weight:400">X</span></span>', expected: false },
-    { html: '<br data-x="font-weight:700">X', expected: false },
-    { html: '<!--[if mso]><td style="font-weight:700"><![endif]-->X', expected: false },
-  ])("$html → $expected", ({ html, expected }) => {
-    expect(isInBold(html, "X")).toBe(expected)
   })
 })
 
