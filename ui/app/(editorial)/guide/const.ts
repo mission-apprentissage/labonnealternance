@@ -34,7 +34,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: METADATA.static.guideRedigerSonOffreDAlternance().description,
     imageUrl: `${IMAGE_BASE_PATH}rediger-son-offre-d-alternance.svg`,
     path: PAGES.static.guideRedigerSonOffreDAlternance.getPath(),
-    updatedAt: "11/09/2026",
+    updatedAt: "05/11/2026",
   },
   ["guide-alternant"]: {
     id: "guide-alternant",

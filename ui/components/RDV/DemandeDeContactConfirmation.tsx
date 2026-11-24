@@ -6,8 +6,8 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { BarberGuy } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
-export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appointmentId: string; token: string }) => {
-  const { isPending, data } = useQuery({
+export const DemandeDeContactConfirmation = ({ appointmentId, token, titleId }: { appointmentId: string; token: string; titleId?: string }) => {
+  const { data } = useQuery({
     queryKey: ["/appointment-request/context/short-recap", appointmentId],
     queryFn: () =>
       apiGet("/appointment-request/context/short-recap", {
@@ -17,49 +17,52 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
         },
       }),
   })
-  if (isPending) return null
-
   return (
     <div>
+      {/* Titre rendu pendant le chargement : il nomme la modale (aria-labelledby) et reçoit le focus. */}
       <Box sx={{ mb: fr.spacing("4v"), display: "flex", alignItems: "center" }}>
         <Box component="img" src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
-        <ModalTitle focusOnMount>
-          Voilà une bonne chose de faite {data.user.firstname} {data.user.lastname} !
+        <ModalTitle id={titleId} focusOnMount>
+          Voilà une bonne chose de faite !
         </ModalTitle>
       </Box>
-      <Box sx={{ mb: fr.spacing("6v") }}>
-        <Typography sx={{ fontWeight: 700, color: "grey.750" }}>
-          {data.formation.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
-          <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.default.info.default }}>
-            {data.user.phone.match(/.{1,2}/g).join(".")}
-          </Typography>{" "}
-          ou sur{" "}
-          <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.default.info.default }}>
-            {data.user.email}
-          </Typography>{" "}
-          pour répondre à vos questions.
-        </Typography>
-      </Box>
-      <Typography sx={{ mb: fr.spacing("6v") }}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Typography>
-      <Box sx={{ display: "flex", backgroundColor: "#F9F8F6" }}>
-        <Box sx={{ width: "100px", px: "40px", py: "16px" }}>
-          <BarberGuy sx={{ width: "34px", height: "38px" }} />
-        </Box>
-        <Box sx={{ mt: "12px", pb: "24px", pr: "10px" }}>
-          <Typography sx={{ fontSize: "20px", fontWeight: 700, mt: "6px" }}>
-            Psst, nous avons une{" "}
-            <Box component="span" sx={{ color: fr.colors.decisions.text.default.info.default }}>
-              info pour vous !
+      {data && (
+        <>
+          <Box sx={{ mb: fr.spacing("6v") }}>
+            <Typography sx={{ fontWeight: 700, color: "grey.750" }}>
+              {data.formation.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
+              <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.default.info.default }}>
+                {data.user.phone.match(/.{1,2}/g).join(".")}
+              </Typography>{" "}
+              ou sur{" "}
+              <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.default.info.default }}>
+                {data.user.email}
+              </Typography>{" "}
+              pour répondre à vos questions.
+            </Typography>
+          </Box>
+          <Typography sx={{ mb: fr.spacing("6v") }}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Typography>
+          <Box sx={{ display: "flex", backgroundColor: "#F9F8F6" }}>
+            <Box sx={{ width: "100px", px: "40px", py: "16px" }}>
+              <BarberGuy sx={{ width: "34px", height: "38px" }} />
             </Box>
-          </Typography>
-          <Typography sx={{ fontSize: "16px", mt: "12px" }}>
-            <Box component="span" sx={{ fontWeight: 700 }}>
-              Pour préparer votre premier contact avec le centre formation,
-            </Box>{" "}
-            répondez à notre quiz <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Prendre contact avec une école</DsfrLink>
-          </Typography>
-        </Box>
-      </Box>
+            <Box sx={{ mt: "12px", pb: "24px", pr: "10px" }}>
+              <Typography sx={{ fontSize: "20px", fontWeight: 700, mt: "6px" }}>
+                Psst, nous avons une{" "}
+                <Box component="span" sx={{ color: fr.colors.decisions.text.default.info.default }}>
+                  info pour vous !
+                </Box>
+              </Typography>
+              <Typography sx={{ fontSize: "16px", mt: "12px" }}>
+                <Box component="span" sx={{ fontWeight: 700 }}>
+                  Pour préparer votre premier contact avec le centre formation,
+                </Box>{" "}
+                répondez à notre quiz <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987">Prendre contact avec une école</DsfrLink>
+              </Typography>
+            </Box>
+          </Box>
+        </>
+      )}
     </div>
   )
 }

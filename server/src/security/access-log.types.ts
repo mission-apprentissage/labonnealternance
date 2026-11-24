@@ -6,6 +6,8 @@ interface IAccessLog {
   user_email: string | null
   user_siret: string | null
   user_type: string | null
+  user_organisation: string | null
+  trace_id: string | null
   auth_type: string
   path: string
   parameters: { [key: string]: string } | null

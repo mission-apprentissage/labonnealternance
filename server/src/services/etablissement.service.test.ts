@@ -4,7 +4,8 @@ import { ObjectId } from "mongodb"
 import nock from "nock"
 import { AccessEntityType, AccessStatus } from "shared"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
-import { ENTREPRISE, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { ENTREPRISE, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { generateCacheInfoSiretForSiret } from "shared/fixtures/cache-info-siret.fixture"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
@@ -13,11 +14,24 @@ import { generateUserWithAccountFixture } from "shared/fixtures/user-with-accoun
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "@/common/apis/france-competences/france-competences-client.fixture"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import config from "@/config"
-import { autoValidateUserRoleOnCompany, verifyRecruiterEmailInUse } from "./etablissement.service"
+import { referentielContactReason } from "./auto-validation-reasons"
+import {
+  autoValidateUserRoleOnCompany,
+  getEntrepriseDataFromSiret,
+  getOpcoData,
+  matchCfaReferentielContact,
+  validateCreationEntrepriseFromCfa,
+  verifyRecruiterEmailInUse,
+} from "./etablissement.service"
 
 vi.mock("@/common/utils/sentry-utils")
+vi.mock("./geolocation.service", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./geolocation.service")>()),
+  getGeoCoordinates: vi.fn(async () => ({ latitude: 48.86, longitude: 2.34 })),
+}))
 
 useMongo()
 
@@ -287,5 +301,107 @@ describe("autoValidateUserRoleOnCompany : raison enregistrée sur le rôle", () 
     mockBal().reply(503)
 
     expect(await validate()).toMatchObject({ validated: false, status: AccessStatus.AWAITING_VALIDATION, reason: "validation automatique indéterminée : BAL indisponible" })
+  })
+})
+
+describe("matchCfaReferentielContact", () => {
+  const contact = (email: string, sources: string[]) => ({ email, sources, confirmé: false, date_collecte: "2025-01-16T04:30:06.597Z" })
+
+  it("ne valide pas un webmail grand public partagé avec un contact", () => {
+    expect(matchCfaReferentielContact([contact("contact.cfa@gmail.com", ["catalogue"])], "autre@gmail.com")).toBeNull()
+  })
+
+  it("ne valide pas un domaine qui ne fait que contenir celui d'un contact", () => {
+    expect(matchCfaReferentielContact([contact("admin@cfa.com", ["catalogue"])], "admin@faux-cfa.com")).toBeNull()
+    expect(matchCfaReferentielContact([contact("admin@cfa.com", ["catalogue"])], "admin@cfa.com.evil.fr")).toBeNull()
+  })
+
+  it("ne valide pas le même identifiant sur un autre domaine", () => {
+    expect(matchCfaReferentielContact([contact("john.doe@cfa.com", ["acce"])], "john.doe@autre-cfa.fr")).toBeNull()
+  })
+
+  it("ne valide rien sans contact", () => {
+    expect(matchCfaReferentielContact([], "admin@cfa.com")).toBeNull()
+  })
+
+  it("ne retient pas un contact sans e-mail", () => {
+    expect(matchCfaReferentielContact([contact("", ["catalogue"])], "admin@cfa.com")).toBeNull()
+  })
+
+  it("ne garde que les sources du contact exact, même si d'autres contacts partagent le domaine", () => {
+    const contacts = [contact("admin@cfa.com", ["catalogue"]), contact("John.Doe@CFA.com", ["acce"])]
+    expect(matchCfaReferentielContact(contacts, "john.doe@cfa.com")).toEqual({ on: "email", sources: ["acce"] })
+  })
+
+  it("accepte un webmail grand public quand l'e-mail exact est un contact", () => {
+    expect(matchCfaReferentielContact([contact("contact.cfa@gmail.com", ["catalogue"])], "Contact.CFA@gmail.com")).toEqual({ on: "email", sources: ["catalogue"] })
+  })
+
+  it("réunit sans doublon et trie les sources de tous les contacts du domaine", () => {
+    const contacts = [contact("admin@cfa.com", ["catalogue"]), contact("john.doe@cfa.com", ["acce", "catalogue"]), contact("autre@ailleurs.fr", ["deca"])]
+    expect(matchCfaReferentielContact(contacts, "nouveau@cfa.com")).toEqual({ on: "domain", sources: ["acce", "catalogue"] })
+  })
+
+  it("signale dans la raison un contact sans source", () => {
+    const match = matchCfaReferentielContact([contact("admin@cfa.com", [])], "admin@cfa.com")
+    expect(match && referentielContactReason(match)).toBe("validation par : Référentiel (sources : non transmises ; correspondance : email)")
+  })
+})
+
+describe("getOpcoData", () => {
+  const siret = "42476141900045"
+
+  beforeEach(() => {
+    nock.disableNetConnect()
+    return () => {
+      nock.cleanAll()
+      nock.enableNetConnect()
+    }
+  })
+
+  it("enregistre l'IDCC renvoyé par France Compétences", async () => {
+    nockFranceCompetencesOpcoSearch(siret, generateFCOpcoResponseFixture({ siret, idcc: "1486", opcoRattachement: { code: "1", nom: "ATLAS" } }))
+
+    expect(await getOpcoData(siret)).toEqual({ opco: OPCOS_LABEL.ATLAS, idcc: 1486 })
+    expect(await getDbCollection("opcos").findOne({ siren: "424761419" })).toMatchObject({ opco: OPCOS_LABEL.ATLAS, idcc: 1486 })
+  })
+})
+
+describe("refus des organismes de formation selon le code NAF", () => {
+  const siret = "42476141900045"
+  const cfa_delegated_siret = "13002526500013"
+
+  const givenSiretWithNaf = async (code: string) => {
+    const fixture = generateCacheInfoSiretForSiret(siret)
+    await getDbCollection("cache_siret").insertOne({ ...fixture, data: { data: { ...fixture.data!.data, activite_principale: { code, libelle: "libellé" } } } })
+  }
+
+  it.each([
+    ["85.59G", true],
+    ["85.59A", true],
+    ["85.10Y", false],
+  ])("compte entreprise, NAF %s : refusé = %s", async (code, refused) => {
+    await givenSiretWithNaf(code)
+
+    const result = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
+
+    if (refused) {
+      expect(result).toMatchObject({ error: true, errorCode: BusinessErrorCodes.IS_CFA })
+    } else {
+      expect(result).toMatchObject({ establishment_siret: siret, naf_code: code })
+    }
+  })
+
+  it.each([
+    ["85.59G", true],
+    ["85.10Y", false],
+  ])("entreprise déléguée par un CFA, NAF %s : refusée = %s", async (nafCode, refused) => {
+    const result = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret, nafCode })
+
+    if (refused) {
+      expect(result).toMatchObject({ error: true, errorCode: BusinessErrorCodes.IS_CFA })
+    } else {
+      expect(result).toBeUndefined()
+    }
   })
 })

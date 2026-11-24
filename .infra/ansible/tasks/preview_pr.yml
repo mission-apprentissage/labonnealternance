@@ -176,11 +176,6 @@
         chdir: "/opt/app/projects/{{ pr_number }}"
         cmd: docker compose up -d --remove-orphans --wait
 
-    - name: "[{{ pr_number }}] Trigger ACME companion"
-      shell:
-        chdir: /opt/app
-        cmd: docker exec "$(docker ps -q --filter label=com.docker.compose.project=app --filter label=com.docker.compose.service=acme-companion)" /app/signal_le_service
-
     - name: "[{{ pr_number }}] Register database in Metabase"
       shell:
         cmd: "bash /opt/app/configs/metabase/add-preview-database.sh {{ pr_number }} '{{ LBA_METABASE_MONGODB_URI }}'"

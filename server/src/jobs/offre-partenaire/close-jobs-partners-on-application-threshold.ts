@@ -1,89 +1,14 @@
-import { groupBy } from "lodash-es"
-import { ObjectId } from "mongodb"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/async-utils"
-import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { sentryCaptureException } from "@/common/utils/sentry-utils"
-import { sanitizeTextField } from "@/common/utils/string-utils"
-import config from "@/config"
-import { userWithAccountToUserForToken } from "@/security/access-token.service"
-import { createCancelJobLink } from "@/services/app-links.service"
 import { getApplicationByJobCount } from "@/services/application.service"
-import { buildJobStatusChangeUpdate } from "@/services/job-partner-status.service"
-import mailer from "@/services/mailer.service"
-
-const APPLICATION_COUNT_THRESHOLD = 80
-
-const getReminderCompanyName = ({
-  workplace_name,
-  workplace_brand,
-  workplace_legal_name,
-}: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => {
-  // `||` et non `??` : workplace_name peut valoir "" (cf. formatTextFieldsJobsPartners).
-  return workplace_name || workplace_brand || workplace_legal_name || ""
-}
-
-const sendThresholdEmails = async (closedJobs: IJobsPartnersOfferPrivate[]) => {
-  const managedClosedJobs = closedJobs.filter((job) => job.managed_by)
-  if (!managedClosedJobs.length) {
-    return
-  }
-
-  const groupByUserOffres = groupBy(managedClosedJobs, (job) => job.managed_by?.toString())
-
-  await asyncForEach(Object.values(groupByUserOffres), async (jobsGroup) => {
-    const firstJob = jobsGroup.at(0)
-    try {
-      if (!firstJob) {
-        throw new Error("inattendu: groupe vide")
-      }
-      const { managed_by } = firstJob
-      if (!managed_by) {
-        throw new Error(`managed_by vide pour l'offre avec id=${firstJob._id}`)
-      }
-      const contactUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
-      if (!contactUser) {
-        throw new Error(`impossible de trouver l'utilisateur gérant l'offre avec id=${firstJob._id}`)
-      }
-
-      await mailer.sendEmail({
-        to: contactUser.email,
-        subject: "Votre offre d'alternance a été dépubliée",
-        template: getStaticFilePath("./templates/mail-offre-seuil-candidatures.mjml.ejs"),
-        data: {
-          images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-          },
-          last_name: sanitizeTextField(contactUser.last_name),
-          first_name: sanitizeTextField(contactUser.first_name),
-          establishment_raison_sociale: getReminderCompanyName(firstJob),
-          offres: jobsGroup.map((job) => ({
-            job_title: job.offer_title,
-            cloturer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
-          })),
-          publicEmail: config.publicEmail,
-        },
-      })
-    } catch (err) {
-      logger.error(err)
-      logger.error(`closeJobsPartnersOnApplicationThreshold: envoi du mail de seuil, offre id=${firstJob?._id}, erreur`)
-      sentryCaptureException(err)
-    }
-  })
-}
+import { APPLICATION_COUNT_THRESHOLD, closeJobsOnApplicationThreshold } from "@/services/application-threshold.service"
 
 /**
- * @description Clôture automatiquement les offres LBA actives ayant atteint un nombre élevé de candidatures
- * (seuil au-delà duquel on considère que le recruteur n'a plus besoin de nouvelles candidatures),
- * et notifie le recruteur par mail avec un lien vers le formulaire de clôture de recrutement.
+ * @description Filet de sécurité de la clôture au seuil de candidatures, faite au dépôt
+ * (cf. closeJobsOnApplicationThreshold) : rattrape les offres LBA actives restées au-dessus du seuil.
  */
 export const closeJobsPartnersOnApplicationThreshold = async (payload?: { threshold?: string | number }) => {
   // Surchargeable (CLI --threshold) pour tester en preview sans créer autant de candidatures réelles.
@@ -106,26 +31,10 @@ export const closeJobsPartnersOnApplicationThreshold = async (payload?: { thresh
     return
   }
 
-  const now = new Date()
-  const closedJobs: IJobsPartnersOfferPrivate[] = []
-
-  await asyncForEach(jobsToClose, async (job) => {
-    const found = await getDbCollection("jobs_partners").findOneAndUpdate(
-      { _id: job._id },
-      buildJobStatusChangeUpdate({
-        status: JOB_STATUS_ENGLISH.ANNULEE,
-        reason: `seuil de ${threshold} candidatures atteint`,
-        grantedBy: "close-jobs-partners-on-application-threshold",
-        date: now,
-      }),
-      { returnDocument: "after" }
-    )
-    if (found) {
-      closedJobs.push(found)
-    }
-  })
+  const closedJobs = await closeJobsOnApplicationThreshold(
+    jobsToClose.map(({ _id }) => _id),
+    threshold
+  )
 
   logger.info(`closeJobsPartnersOnApplicationThreshold: ${closedJobs.length} offres clôturées (seuil de ${threshold} candidatures atteint)`)
-
-  await sendThresholdEmails(closedJobs)
 }

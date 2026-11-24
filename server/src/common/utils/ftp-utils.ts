@@ -4,6 +4,7 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 import type { Readable } from "node:stream"
 import Ftp from "basic-ftp"
+import type { SFTPWrapper } from "ssh2"
 import { Client as SFTPClient } from "ssh2"
 import { logger } from "@/common/logger"
 import { sentryCaptureException } from "./sentry-utils"
@@ -79,8 +80,10 @@ const SFTP_CONNECT_ATTEMPTS = 2
 
 const isHandshakeTimeout = (err: unknown): boolean => (err as { level?: string } | null)?.level === "client-timeout"
 
-const connectAndDownload = (remotePath: string, localPath: string, options: SFTPConnectOptions): Promise<void> =>
-  new Promise<void>((resolve, reject) => {
+export type SFTPFileStats = { mtime: Date | null; size: number | null }
+
+const runSftpSession = <T>(options: SFTPConnectOptions, task: (sftp: SFTPWrapper) => Promise<T>): Promise<T> =>
+  new Promise<T>((resolve, reject) => {
     const conn = new SFTPClient()
 
     conn.on("ready", () => {
@@ -90,10 +93,16 @@ const connectAndDownload = (remotePath: string, localPath: string, options: SFTP
           return reject(err)
         }
 
-        sftp.fastGet(remotePath, localPath, FASTGET_OPTIONS, (err) => {
-          conn.end()
-          return err ? reject(err) : resolve()
-        })
+        task(sftp).then(
+          (value) => {
+            conn.end()
+            resolve(value)
+          },
+          (taskError) => {
+            conn.end()
+            reject(taskError)
+          }
+        )
       })
     })
 
@@ -111,19 +120,53 @@ const connectAndDownload = (remotePath: string, localPath: string, options: SFTP
     })
   })
 
-/**
- * Télécharge un fichier distant et retourne un stream de lecture sur une copie locale.
- *
- * Le fichier temporaire est supprimé à la fermeture du stream. L'appelant DOIT donc soit le
- * consommer jusqu'au bout, soit le détruire — un `try/finally { stream.destroy() }` suffit :
- * sans cela le fichier reste sur disque (plusieurs dizaines de Mo par flux).
- */
-export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConnectOptions): Promise<Readable> => {
+const runSftpSessionWithRetry = async <T>(options: SFTPConnectOptions, task: (sftp: SFTPWrapper) => Promise<T>): Promise<T> => {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await runSftpSession(options, task)
+    } catch (err) {
+      if (!isHandshakeTimeout(err) || attempt >= SFTP_CONNECT_ATTEMPTS) {
+        throw err
+      }
+      logger.warn({ err, host: options.host, attempt }, "SFTP: handshake expiré, nouvelle tentative")
+    }
+  }
+}
+
+const statRemoteFile = (sftp: SFTPWrapper, remotePath: string): Promise<SFTPFileStats> =>
+  new Promise((resolve, reject) => {
+    sftp.stat(remotePath, (err, stats) => (err ? reject(err) : resolve({ mtime: new Date(stats.mtime * 1000), size: stats.size })))
+  })
+
+const fastGetRemoteFile = (sftp: SFTPWrapper, remotePath: string, localPath: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    sftp.fastGet(remotePath, localPath, FASTGET_OPTIONS, (err) => (err ? reject(err) : resolve()))
+  })
+
+const assertCredentials = (options: SFTPConnectOptions) => {
   // Sans identifiant, ssh2 tente l'auth « none » et échoue avec « All configured authentication
   // methods failed », qui ne dit pas que c'est la configuration qui manque.
   if (!options.password && !options.privateKey) {
     throw new Error(`SFTP: aucun identifiant fourni pour ${options.username}@${options.host} (password ou privateKey requis)`)
   }
+}
+
+/** Date de modification et taille du fichier distant, sans le télécharger. */
+export const statFileOnSFTP = async (remotePath: string, options: SFTPConnectOptions): Promise<SFTPFileStats> => {
+  assertCredentials(options)
+  return runSftpSessionWithRetry(options, (sftp) => statRemoteFile(sftp, remotePath))
+}
+
+/**
+ * Télécharge un fichier distant et retourne un stream de lecture sur une copie locale, avec la date
+ * de modification et la taille lues dans la même session.
+ *
+ * Le fichier temporaire est supprimé à la fermeture du stream. L'appelant DOIT donc soit le
+ * consommer jusqu'au bout, soit le détruire — un `try/finally { stream.destroy() }` suffit :
+ * sans cela le fichier reste sur disque (plusieurs dizaines de Mo par flux).
+ */
+export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConnectOptions): Promise<{ stream: Readable; stats: SFTPFileStats }> => {
+  assertCredentials(options)
 
   // mkdtemp plutôt qu'un nom aléatoire dans /tmp : répertoire en 0700, non lisible par les autres
   // utilisateurs du conteneur.
@@ -131,18 +174,17 @@ export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConn
   const localPath = join(localDir, "download")
   const discard = () => rm(localDir, { recursive: true, force: true })
 
+  let stats: SFTPFileStats
   try {
-    for (let attempt = 1; ; attempt++) {
-      try {
-        await connectAndDownload(remotePath, localPath, options)
-        break
-      } catch (err) {
-        if (!isHandshakeTimeout(err) || attempt >= SFTP_CONNECT_ATTEMPTS) {
-          throw err
-        }
-        logger.warn({ err, host: options.host, attempt }, "SFTP: handshake expiré, nouvelle tentative")
-      }
-    }
+    stats = await runSftpSessionWithRetry(options, async (sftp) => {
+      // les stats ne servent qu'au signal de changement (#5669) : leur échec ne doit pas bloquer l'import
+      const remoteStats = await statRemoteFile(sftp, remotePath).catch((err): SFTPFileStats => {
+        logger.warn({ err, host: options.host, remotePath }, "SFTP: stat du fichier distant impossible, téléchargement sans date ni taille")
+        return { mtime: null, size: null }
+      })
+      await fastGetRemoteFile(sftp, remotePath, localPath)
+      return remoteStats
+    })
 
     // `fastGet` appelle son callback sans erreur quand le fichier distant est vide (cf. `fastXfer`
     // dans ssh2 : `if (fsize <= 0) return onerror()`, sans argument). Sans ce contrôle, un flux
@@ -172,5 +214,5 @@ export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConn
   stream.on("close", cleanup)
   stream.on("error", cleanup)
 
-  return stream
+  return { stream, stats }
 }

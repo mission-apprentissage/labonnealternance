@@ -8,7 +8,7 @@ import { ObjectId } from "bson"
 import { omit } from "lodash-es"
 import nock from "nock"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
-import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
+import { CFA, ENTREPRISE, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/index"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { UserEventType } from "shared/models/index"
@@ -126,6 +126,34 @@ describe("POST /etablissement/creation", () => {
       })
       const { formulaire: formulaire2 } = response2.json() as CreationResponse
       expect.soft(formulaire2?.opco).toBe(OPCOS_LABEL.AKTO)
+    })
+
+    describe("IDCC de l'entreprise", () => {
+      const siret = defaultCreationEntreprisePayload.establishment_siret
+      const { idcc: _idcc, ...payloadSansIdcc } = defaultCreationEntreprisePayload
+      const givenKnownOpco = (opco: OPCOS_LABEL, idcc: number) => getDbCollection("opcos").insertOne({ _id: new ObjectId(), siren: siret.substring(0, 9), opco, idcc })
+      const getEntrepriseIdcc = async () => (await getDbCollection("entreprises").findOne({ siret }))?.idcc
+
+      it("reprend l'IDCC connu dans opcos quand le formulaire n'en transmet pas", async () => {
+        await givenKnownOpco(OPCOS_LABEL.AKTO, 1486)
+        const response = await callCreation(payloadSansIdcc)
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(await getEntrepriseIdcc()).toBe(1486)
+      })
+
+      it("ignore l'IDCC connu dans opcos quand il est rattaché à un autre OPCO", async () => {
+        await givenKnownOpco(OPCOS_LABEL.CONSTRUCTYS, 1486)
+        const response = await callCreation(payloadSansIdcc)
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(await getEntrepriseIdcc()).toBeNull()
+      })
+
+      it("garde l'IDCC transmis par le formulaire", async () => {
+        await givenKnownOpco(OPCOS_LABEL.AKTO, 1486)
+        const response = await callCreation(defaultCreationEntreprisePayload)
+        expect.soft(response.statusCode).toBe(200)
+        expect.soft(await getEntrepriseIdcc()).toBe(3248)
+      })
     })
 
     it("fige sur le rôle l'OPCO de l'entreprise, y compris celui posé par l'inscription", async () => {
@@ -294,6 +322,40 @@ describe("POST /etablissement/creation", () => {
 
       const role = await getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(user._id) })
       expect(role?.opco_at_creation).toBe(ROLE_OPCO_NOT_APPLICABLE)
+    })
+
+    describe("raison de la validation automatique", () => {
+      const roleEvents = async (userId: ObjectId) => (await getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(userId) }))?.status ?? []
+
+      it("enregistre la source du contact du Référentiel dont l'e-mail correspond", async () => {
+        const response = await callCreation({ ...defaultCreationCFAPayload, email: "John.Doe@cfa.com" })
+        const { user, validated } = response.json() as CreationResponse
+
+        expect.soft(validated).toBe(true)
+        expect.soft((await roleEvents(user._id)).at(-1)).toMatchObject({
+          status: AccessStatus.GRANTED,
+          validation_type: VALIDATION_UTILISATEUR.AUTO,
+          reason: "validation par : Référentiel (sources : acce ; correspondance : email)",
+        })
+      })
+
+      it("enregistre les sources de tous les contacts du domaine", async () => {
+        const response = await callCreation({ ...defaultCreationCFAPayload, email: "nouveau@cfa.com" })
+        const { user } = response.json() as CreationResponse
+
+        expect.soft((await roleEvents(user._id)).at(-1)).toMatchObject({
+          status: AccessStatus.GRANTED,
+          reason: "validation par : Référentiel (sources : acce, catalogue ; correspondance : domaine)",
+        })
+      })
+
+      it("laisse en validation manuelle un e-mail sans contact correspondant", async () => {
+        const response = await callCreation(defaultCreationCFAPayload)
+        const { user, validated } = response.json() as CreationResponse
+
+        expect.soft(validated).toBe(false)
+        expect.soft((await roleEvents(user._id)).map(({ status }) => status)).not.toContain(AccessStatus.GRANTED)
+      })
     })
 
     it("Vérifie qu un email ne peut pas créer 2 comptes CFA", async () => {

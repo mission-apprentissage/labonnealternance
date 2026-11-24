@@ -9,6 +9,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { IRecruiter, IRecruiterJson } from "shared"
+import { countOpenJobs } from "shared/models/job.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
@@ -168,10 +169,10 @@ function ListeEntreprise() {
       },
     },
     {
-      Header: "Offres",
+      Header: "Offres actives",
       id: "nombre_offres",
       sortType: "basic",
-      accessor: ({ jobs }: IRecruiterJson) => jobs.length,
+      accessor: ({ jobs }: IRecruiterJson) => countOpenJobs(jobs),
     },
     {
       Header: "Ajoutée le",

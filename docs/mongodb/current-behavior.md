@@ -11,7 +11,7 @@ Le tri est **configurable** via le paramètre `sort` (`buildSortStage` / `buildC
 
 | `sort` | Étape de tri appliquée |
 |---|---|
-| _(absent, défaut)_ | `searchScore` desc, puis `smart_apply` asc (non-smart d'abord), puis `application_count` asc (moins candidatées d'abord) |
+| _(absent, défaut)_ | `searchScore` desc, puis `smart_apply` desc (candidature simplifiée d'abord), puis `application_count` asc (moins candidatées d'abord) |
 | `date` | `is_algo_company` asc (recruteurs algo relégués en fin), puis `publication_date` desc (plus récent d'abord) ; docs sans vraie date de publication écartés |
 | `applications` | `application_count` asc (moins candidatées d'abord), puis `searchScore` desc ; docs sans compteur écartés |
 | `start_date` | `start_date` asc (démarrages les plus proches d'abord), puis `searchScore` desc ; docs sans date de début écartés |
@@ -38,9 +38,9 @@ Ajouté à la réponse `/v1/search` ([`search.routes.ts`](../../shared/src/route
 ## 3. Géo : le champ `location` doit être peuplé
 
 - Le filtre géo utilise l'opérateur Atlas Search **`geoWithin`** (cercle, rayon en mètres) sur le champ **`location`** (GeoJSON `Point [lng, lat]`, mappé `type: "geo"` dans chaque index par mode). Le tri par proximité utilise `near` sur ce même champ (cf. §1).
-- **`location` est le seul champ géo** du modèle ([`searchItems.model.ts`](../../shared/src/models/searchItems.model.ts)). L'ancien champ Algolia `_geoloc { lat, lng }` a été **supprimé**, ainsi que le job de backfill `OneTimeJob_AddLocationToAlgolia`.
+- **`location` est le seul champ géo** du modèle ([`search-corpus.model.ts`](../../shared/src/models/search-corpus.model.ts)). L'ancien champ Algolia `_geoloc { lat, lng }` a été **supprimé**, ainsi que le job de backfill `OneTimeJob_AddLocationToAlgolia`.
 - **Si `location` est absent/`null`, toute recherche géo renvoie `0` résultat** (le `geoWithin` ne matche rien) — alors que la recherche globale fonctionne.
-- Alimentation : le job [`fillSearchItemsCollection`](../../server/src/jobs/search/generateSearchItemsCollection.ts) écrit `location` **à la source** pour chaque document (formations, jobs, recruteurs) — aucun backfill nécessaire sur les données régénérées.
+- Alimentation : le job [`fillSearchItemsCollection`](../../server/src/jobs/search/generate-search-items-collection.ts) écrit `location` **à la source** pour chaque document (formations, jobs, recruteurs) — aucun backfill nécessaire sur les données régénérées.
 
 ---
 

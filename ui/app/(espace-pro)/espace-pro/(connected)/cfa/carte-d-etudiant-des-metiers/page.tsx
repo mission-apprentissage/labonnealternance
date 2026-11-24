@@ -25,7 +25,7 @@ const CarteDEtudiantDesMetiersPage = () => (
           <Box display={"flex"} justifyContent={"center"}>
             <Image
               fetchPriority="low"
-              src="/images/carte-d-etudiant-des-metiers-recto.svg"
+              src="/images/carte-d-etudiant-des-metiers-2026-2027-recto.svg"
               width={181}
               height={121}
               alt="Aperçu du recto de la carte d'étudiant des métiers"
@@ -34,7 +34,7 @@ const CarteDEtudiantDesMetiersPage = () => (
             />
             <Image
               fetchPriority="low"
-              src="/images/carte-d-etudiant-des-metiers-verso.svg"
+              src="/images/carte-d-etudiant-des-metiers-2026-2027-verso.svg"
               width={181}
               height={121}
               alt="Aperçu du verso de la carte d'étudiant des métiers"

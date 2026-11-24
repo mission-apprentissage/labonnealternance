@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
+import { useId } from "react"
 import { useToast } from "@/app/hooks/useToast"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { archiveFormulaire } from "@/utils/api"
@@ -16,6 +17,7 @@ interface ConfirmationSuppressionEntrepriseProps {
 export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppressionEntrepriseProps) {
   const { isOpen, onClose, establishment_raison_sociale, establishment_id, onSuccess } = props
   const toast = useToast()
+  const titleId = useId()
 
   const SupprimerFormulaire = () => {
     archiveFormulaire(establishment_id)
@@ -39,9 +41,9 @@ export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppression
   }
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
+        <Typography id={titleId} className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Supprimer {establishment_raison_sociale ?? ""}
         </Typography>
 

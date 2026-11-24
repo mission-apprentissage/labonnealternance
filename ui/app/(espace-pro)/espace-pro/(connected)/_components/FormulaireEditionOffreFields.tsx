@@ -26,7 +26,8 @@ export const FormulaireEditionOffreFields = ({
   section,
   allowPastStartDate = false,
 }: {
-  onRomeChange?: (rome: string, appellation: string) => void
+  /** null quand le métier est effacé */
+  onRomeChange?: (romeAndAppellation: { rome: string; appellation: string } | null) => void
   section: "contract" | "offer"
   /** en édition, une date de début passée reste acceptée (cf. jobStartDateYup dans FormulaireEditionOffreStep1) */
   allowPastStartDate?: boolean
@@ -57,30 +58,28 @@ export const FormulaireEditionOffreFields = ({
   if (section === "offer") {
     return (
       <>
-        <FormControl required={true} sx={{ width: "100%" }}>
-          <DropdownCombobox
-            label="Métier"
-            handleSearch={debounce(handleJobSearch, 300)}
-            saveSelectedItem={(item: IAppellationsRomes["coupleAppellationRomeMetier"][number]) => {
-              setTimeout(() => {
-                setValues(
-                  (prev) => ({
-                    ...prev,
-                    rome_label: item.intitule,
-                    rome_appellation_label: item.appellation,
-                    rome_code: [item.code_rome],
-                  }),
-                  true
-                )
-                onRomeChange?.(item.code_rome, item.appellation)
-              }, 0)
-            }}
-            name="rome_label"
-            value={values.rome_appellation_label}
-            placeholder="Rechercher un métier"
-            dataTestId="offre-metier"
-          />
-        </FormControl>
+        <DropdownCombobox
+          label="Métier"
+          handleSearch={debounce(handleJobSearch, 300)}
+          saveSelectedItem={(item: IAppellationsRomes["coupleAppellationRomeMetier"][number] | null) => {
+            setTimeout(() => {
+              setValues(
+                (prev) => ({
+                  ...prev,
+                  rome_label: item?.intitule ?? "",
+                  rome_appellation_label: item?.appellation ?? "",
+                  rome_code: item ? [item.code_rome] : [],
+                }),
+                true
+              )
+              onRomeChange?.(item ? { rome: item.code_rome, appellation: item.appellation } : null)
+            }, 0)
+          }}
+          name="rome_label"
+          value={values.rome_appellation_label}
+          placeholder="Rechercher un métier"
+          dataTestId="offre-metier"
+        />
         {values.rome_label && (
           <Box sx={{ mt: fr.spacing("4v") }}>
             <Input

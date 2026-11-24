@@ -13,13 +13,19 @@ export const ModalReadOnly = ({
   size = "md",
   hideCloseButton = false,
   ariaLabelledBy,
+  disableRestoreFocus = false,
+  onExited,
 }: {
   children: React.ReactNode
   isOpen: boolean
   onClose: () => void
   size?: "xs" | "sm" | "md" | "lg" | "xl"
   hideCloseButton?: boolean
-  ariaLabelledBy?: string
+  /** id du titre visible de la modale : sans lui, MUI référence un id absent du DOM. */
+  ariaLabelledBy: string
+  /** Avec `onExited`, quand l'appelant place lui-même le focus : le piège à focus reste actif jusqu'à la fin de la transition de fermeture. */
+  disableRestoreFocus?: boolean
+  onExited?: () => void
 }) => {
   const isMobile = useIsMobileDevice()
 
@@ -34,6 +40,7 @@ export const ModalReadOnly = ({
     <Dialog
       open={isOpen}
       aria-labelledby={ariaLabelledBy}
+      disableRestoreFocus={disableRestoreFocus}
       onClose={(event: SyntheticEvent) => {
         event.stopPropagation()
         onClose()
@@ -41,6 +48,7 @@ export const ModalReadOnly = ({
       fullScreen={isMobile}
       maxWidth={size}
       slotProps={{
+        transition: { onExited },
         paper: {
           onClick: (e) => {
             // empêche la propagation du click sur les éléments sous jacents lors du click en dehors de la modale

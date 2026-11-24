@@ -343,8 +343,8 @@ export const FormulaireEditionOffreStep1 = ({
   const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? formValues?.competences_rome ?? null)
   const [descriptionMode, setDescriptionMode] = useState<DescriptionMode>(offre?.job_description || formValues?.job_description ? "custom" : "structured")
 
-  const onRomeChange = (rome: string, appellation: string) => {
-    setRomeAndAppellation({ rome, appellation })
+  const onRomeChange = (romeAndAppellation: { rome: string; appellation: string } | null) => {
+    setRomeAndAppellation(romeAndAppellation)
     setSelectedCompetences(null)
   }
 

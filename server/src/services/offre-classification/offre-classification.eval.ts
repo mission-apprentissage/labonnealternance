@@ -16,13 +16,20 @@
 import { maskPersonalData } from "@/common/utils/mask-personal-data"
 
 import { ADVERSARIAL_CASES, BENIGN_CASES, EVAL_CASES, type IEvalCase } from "./offre-classification.eval-dataset"
-import { CLASSIFICATION_SYSTEM_PROMPT, type IOffreClassificationCategory, type IOffreClassificationVerdict, parseClassification } from "./offre-classification.prompt"
+import {
+  CLASSIFICATION_MODEL,
+  CLASSIFICATION_SYSTEM_PROMPT,
+  type IOffreClassificationCategory,
+  type IOffreClassificationVerdict,
+  parseClassification,
+} from "./offre-classification.prompt"
 
 const MISTRAL_KEY = process.env.MISTALAI_API_KEY
 const FT_CLIENT_ID = process.env.LBA_ESD_CLIENT_ID
 const FT_CLIENT_SECRET = process.env.LBA_ESD_CLIENT_SECRET
 
-const CHAT_MODEL = "mistral-large-latest"
+// Modèle de production : une éval sur un alias `-latest` ne dit rien du classifieur déployé.
+const CHAT_MODEL = CLASSIFICATION_MODEL
 const MODERATION_MODEL = "mistral-moderation-latest"
 const CONCURRENCY = 4
 

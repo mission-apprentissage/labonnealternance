@@ -443,9 +443,10 @@ describe("formulaire.controller", () => {
       const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies: entrepriseCookies })
       const job = offerResponse.json() as GetOfferResponse
 
-      const cancelResponse = await entrepriseSdkInstance.providedOffer({
+      const cancelResponse = await entrepriseSdkInstance.cancelOffer({
         jobId,
         user,
+        body: { job_status: JOB_STATUS.POURVUE, job_status_comment: "J'ai pourvu l'offre avec La bonne alternance" },
       })
       expect.soft(cancelResponse.statusCode).toBe(200)
       // when
@@ -509,38 +510,6 @@ describe("formulaire.controller", () => {
 
       // when
       const response = await entrepriseSdkInstance.cancelOffer({
-        jobId: new ObjectId().toString(),
-        user,
-      })
-      expect.soft(response.statusCode).toBe(400)
-    })
-  })
-  describe("PUT /formulaire/offre/:jobId/provided", () => {
-    it("dépublie une offre avec status Pourvue", async () => {
-      // given
-      const { cookies: entrepriseCookies, formulaire, user } = await entrepriseSdkInstance.createAndGetConnectedUser()
-
-      const createOfferResponse = await entrepriseSdkInstance.createOffer({
-        establishment_id: formulaire!.establishment_id,
-        cookies: entrepriseCookies,
-        job: buildCreateJobDataFromReferentiel(referentielRome),
-      })
-      const { _id: jobObjectId } = createOfferResponse.json() as OfferCreationResponse
-      const jobId = jobObjectId.toString()
-
-      // when
-      const response = await entrepriseSdkInstance.providedOffer({
-        jobId,
-        user,
-      })
-      expect.soft(response.statusCode).toBe(200)
-    })
-    it("renvoie une 400 lorsque l'offre n'existe pas", async () => {
-      // given
-      const { user } = await entrepriseSdkInstance.createAndGetConnectedUser()
-
-      // when
-      const response = await entrepriseSdkInstance.providedOffer({
         jobId: new ObjectId().toString(),
         user,
       })
@@ -791,22 +760,39 @@ describe("formulaire.controller", () => {
       })
 
       it("bloque une offre dont la classification dépasse l'échéance", async () => {
+        const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
         const timeoutMs = config.moderation.classificationTimeoutMs
         config.moderation.classificationTimeoutMs = 50
+        // Horloge et échéances simulées : un timer réel compte en ms entières et peut expirer avant les 50 ms lues
+        // par performance.now() (#5853).
+        let now = 0
+        const deadlines = new Map<AbortSignal, { expiresAt: number; controller: AbortController }>()
+        const clock = vi.spyOn(performance, "now").mockImplementation(() => now)
+        const timeout = vi.spyOn(AbortSignal, "timeout").mockImplementation((delay) => {
+          const controller = new AbortController()
+          deadlines.set(controller.signal, { expiresAt: now + delay, controller })
+          return controller.signal
+        })
         vi.mocked(sendMistralMessages).mockImplementation(async ({ messages, signal }) => {
           if (messages[0]?.content !== CLASSIFICATION_SYSTEM_PROMPT) return null
-          await new Promise((resolve) => signal?.addEventListener("abort", resolve))
+          // Le classifieur ne répond pas : le temps avance jusqu'à l'expiration de son échéance.
+          const deadline = signal && deadlines.get(signal)
+          expect.soft(deadline, "classifieur appelé sans échéance").toBeDefined()
+          if (!deadline) return null
+          now = deadline.expiresAt
+          deadline.controller.abort()
           return null
         })
         try {
-          const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
           const jobId = await createOfferWithTexts({ cookies, establishment_id: formulaire!.establishment_id, job_description: CONFORME })
 
           const [moderation] = await getModerations(jobId)
           expect(moderation).toMatchObject({ status: "indisponible" })
-          expect(moderation.duration_ms).toBeGreaterThanOrEqual(50)
+          expect(moderation.duration_ms).toBe(50)
           expect((await getDbCollection("jobs_partners").findOne({ _id: jobId }))?.offer_status).toBe(JOB_STATUS_ENGLISH.EN_MODERATION)
         } finally {
+          clock.mockRestore()
+          timeout.mockRestore()
           config.moderation.classificationTimeoutMs = timeoutMs
         }
       })

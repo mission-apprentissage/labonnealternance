@@ -3,14 +3,20 @@ import type { ColumnDef } from "@tanstack/react-table"
 import dayjs from "dayjs"
 import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 import type { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { CFA } from "shared/constants/recruteur"
 import type { IUserRecruteur } from "shared/models/users-recruteur.model"
 import { getUserStatus } from "shared/models/users-recruteur.model"
-
+import {
+  AccountConformityBadge,
+  AccountTypeBadge,
+  accountConformityRank,
+  UserRecruteurStatusBadge,
+} from "@/app/(espace-pro)/espace-pro/(connected)/_components/moderation/ModerationBadges"
 import type { useDisclosure } from "@/app/hooks/use-disclosure"
-import { CustomTag } from "@/components/SearchForTrainingsAndJobs/components/CustomTag"
 import { sortReactTableDate, sortReactTableString } from "@/utils/date-utils"
 import { UserMenu } from "../users/_component/UserMenu"
-import { statusLabels, statusTagColor } from "../users/UsersList"
+
+const conformityRank = (row: IUserRecruteurJson) => accountConformityRank((row as IUserRecruteurForAdminJSON).offer_conformity)
 
 type DisclosureReturn = ReturnType<typeof useDisclosure>
 
@@ -50,7 +56,7 @@ export function getRecruteursColumns({
         const organizationId = (info.row.original as IUserRecruteurForAdminJSON).organizationId || "unused"
         const siretText = (
           <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>
-            SIRET {establishment_siret} <CustomTag color={type === "CFA" ? "yellow" : "green"}>{type}</CustomTag>
+            SIRET {establishment_siret} <AccountTypeBadge as="span" type={type === CFA ? CFA : "ENTREPRISE"} />
           </Typography>
         )
         const detailHref = `/espace-pro/administration/users/${_id}?organizationId=${organizationId}`
@@ -109,28 +115,22 @@ export function getRecruteursColumns({
     },
     {
       id: "currentStatus",
-      header: "Statut",
+      header: "Statut du compte",
       size: 160,
       accessorFn: (row) => getUserStatus(row.status as unknown as IUserRecruteur["status"]),
       sortingFn: (a, b) =>
         sortReactTableString(getUserStatus(a.original.status as unknown as IUserRecruteur["status"]), getUserStatus(b.original.status as unknown as IUserRecruteur["status"])),
-      cell: (info) => {
-        const s = info.getValue<ETAT_UTILISATEUR | null>()
-        if (!s) return null
-        return <CustomTag color={statusTagColor[s]}>{statusLabels[s]}</CustomTag>
-      },
+      cell: (info) => <UserRecruteurStatusBadge status={info.getValue<ETAT_UTILISATEUR | null>()} />,
     },
     {
-      id: "hasJobs",
-      header: "Détail",
-      accessorKey: "hasJobs",
-      size: 180,
-      sortingFn: (a, b) => {
-        const aJobs = (a.original as IUserRecruteurForAdminJSON).hasJobs
-        const bJobs = (b.original as IUserRecruteurForAdminJSON).hasJobs
-        return aJobs === bJobs ? 0 : aJobs ? 1 : -1
-      },
-      cell: (info) => (info.getValue<boolean>() ? <CustomTag color="green">A des offres publiées</CustomTag> : <CustomTag color="pink">Aucune offre publiée</CustomTag>),
+      id: "offer_conformity",
+      header: "Conformité de l’offre",
+      accessorFn: conformityRank,
+      size: 190,
+      // Valeur numérique : sans cette option, TanStack trie d'abord en décroissant, « aucune offre » en tête.
+      sortDescFirst: false,
+      sortingFn: (a, b) => conformityRank(a.original) - conformityRank(b.original),
+      cell: (info) => <AccountConformityBadge conformity={(info.row.original as IUserRecruteurForAdminJSON).offer_conformity} />,
     },
   ]
 }

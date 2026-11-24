@@ -27,6 +27,7 @@ export const ZSearchSuggestion = z.object({
       days_seen_30d: z.number(),
       zero_hits_30d: z.number(),
       free_text_30d: z.number(),
+      known_source_30d: z.number().optional().describe("Recherches d'origine connue (free_text ou suggestion), dénominateur du taux free_text. Absent avant #5635"),
       median_nb_hits: z.number(),
     })
     .describe("Snapshot des statistiques au moment de la décision"),

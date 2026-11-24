@@ -1,12 +1,17 @@
+import { randomBytes } from "node:crypto"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
+import { SEARCH_TOKEN_EXHAUSTED, SEARCH_TOKEN_QUOTA, SEARCH_TOKEN_REQUIRED } from "shared/constants/search-token"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
+import { parseSearchTokenKeys, signSearchToken } from "shared/utils/search-token"
 import { describe, expect, it, vi } from "vitest"
 
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import config from "@/config"
 import * as searchService from "@/services/search/search.service"
+import * as searchQueryLogService from "@/services/search/search-query-log.service"
 
 // Intercepte les appels `aggregate` sur search_jobs (corpus du mode par défaut) pour simuler un échec mongot précis
 // (même pattern que search.service.test.ts), sans toucher au reste de la stack.
@@ -181,12 +186,43 @@ describe("search.controller", () => {
         expect(doc).toMatchObject({ status: "ok", nb_hits: 0 })
       })
 
-      it("logue search_source par défaut à free_text quand non fourni", async () => {
+      it("logue search_source=null quand l'origine n'est pas transmise", async () => {
         const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=sansSource&page=0" })
         expect(response.statusCode).toBe(200)
 
         const doc = await waitForLoggedQuery("sansSource")
+        expect(doc).toMatchObject({ search_source: null })
+      })
+
+      it("logue search_source=free_text quand l'UI le transmet", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=texteLibre&page=0&search_source=free_text" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("texteLibre")
         expect(doc).toMatchObject({ search_source: "free_text" })
+      })
+
+      it.each([
+        ["emplois", "&mode=emplois", "modeEmplois"],
+        ["emplois_formation", "&mode=emplois_formation", "modeEmploisFormation"],
+        // `type=formation` sert le corpus formations, mais le mode enregistré est celui transmis.
+        [null, "&type=formation", "modeAbsentType"],
+        [null, "", "modeAbsent"],
+      ])("logue mode=%s", async (mode, params, q) => {
+        const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?q=${q}&page=0${params}` })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery(q)
+        expect(doc).toMatchObject({ mode })
+      })
+
+      // Canal site / widget : annoncé par le BFF, cf. « canal statistique » plus bas.
+      it("logue channel=api sans canal annoncé, Sec-Fetch-Site n'étant plus lu", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=canalSansBff&page=0", headers: { "sec-fetch-site": "same-origin" } })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("canalSansBff")
+        expect(doc).toMatchObject({ channel: "api" })
       })
 
       it.each([
@@ -201,8 +237,7 @@ describe("search.controller", () => {
         expect(doc).toMatchObject({ search_source: searchSource })
       })
 
-      // Alias déprécié : liens émis avant le renommage (campagne traininglinks du 2026-08-24)
-      // et bundles UI pré-renommage (version skew au déploiement).
+      // Alias déprécié : liens émis avant le renommage (campagne traininglinks du 2026-08-24).
       it("accepte l'alias déprécié source= et le logue en search_source", async () => {
         const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=aliasLegacy&page=0&source=training_links" })
         expect(response.statusCode).toBe(200)
@@ -211,8 +246,55 @@ describe("search.controller", () => {
         expect(doc).toMatchObject({ search_source: "training_links" })
       })
 
+      it("marque purpose un comptage lancé par l'UI", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=comptageRepli&page=0&hitsPerPage=1&mode=emplois&purpose=mode_fallback_count" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("comptageRepli")
+        expect(doc).toMatchObject({ purpose: "mode_fallback_count", mode: "emplois" })
+      })
+
+      it("ne marque pas purpose une recherche de l'usager", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=rechercheUsager&page=0&mode=emplois" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("rechercheUsager")
+        expect(doc).not.toHaveProperty("purpose")
+      })
+
+      it("rejette une valeur de purpose inconnue (400)", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=purposeInvalide&page=0&purpose=bogus" })
+        expect(response.statusCode).toBe(400)
+      })
+
       it("rejette une valeur de search_source inconnue (400)", async () => {
         const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=sourceInvalide&page=0&search_source=bogus" })
+        expect(response.statusCode).toBe(400)
+      })
+
+      // Base vide : toute recherche renvoie 0 résultat (cas nb_hits > 0 : cf. tests de isAutoRadiusWidening).
+      it("marque auto_radius_intermediate une recherche autour d'un point sans résultat sous 100 km", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=palierRayon&page=0&latitude=45&longitude=2&radius=40" })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery("palierRayon")
+        expect(doc).toMatchObject({ radius: 40, nb_hits: 0, auto_radius_intermediate: true })
+      })
+
+      it.each([
+        ["à 100 km, dernier palier", "&latitude=45&longitude=2&radius=100", "palierFinal"],
+        ["en emprise administrative", "&latitude=45&longitude=2&radius=20&admin_area=departement:15", "palierDepartement"],
+        ["sans lieu", "", "palierSansLieu"],
+      ])("ne marque pas auto_radius_intermediate %s", async (_label, params, q) => {
+        const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?q=${q}&page=0${params}` })
+        expect(response.statusCode).toBe(200)
+
+        const doc = await waitForLoggedQuery(q)
+        expect(doc).not.toHaveProperty("auto_radius_intermediate")
+      })
+
+      it("rejette un paramètre auto_radius_step déclaré par l'appelant (400)", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=palierDeclare&page=0&auto_radius_step=true" })
         expect(response.statusCode).toBe(400)
       })
 
@@ -229,7 +311,12 @@ describe("search.controller", () => {
       })
 
       it("logue une requête marquée internal venant d'une IP publique", async () => {
-        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?q=internePublique&page=0&internal=true", remoteAddress: "203.0.113.10" })
+        const response = await httpClient().inject({
+          method: "GET",
+          path: "/api/v1/search?q=internePublique&page=0&internal=true",
+          remoteAddress: "203.0.113.10",
+          headers: { "x-lba-search-token": signSearchToken(config.searchTokenKeys, randomBytes(16).toString("hex"), new Date()) },
+        })
         expect(response.statusCode).toBe(200)
 
         await waitForLoggedQuery("internePublique")
@@ -240,7 +327,7 @@ describe("search.controller", () => {
           method: "GET",
           path: "/api/v1/search?q=xffForge&page=0&internal=true",
           remoteAddress: "172.18.0.1",
-          headers: { "x-forwarded-for": "10.0.0.1, 203.0.113.10" },
+          headers: { "x-forwarded-for": "10.0.0.1, 203.0.113.10", "x-lba-search-token": signSearchToken(config.searchTokenKeys, randomBytes(16).toString("hex"), new Date()) },
         })
         expect(response.statusCode).toBe(200)
 
@@ -293,16 +380,20 @@ describe("search.controller", () => {
     })
   })
 
-  // cf. PUBLIC_MAX_HITS_PER_PAGE et PUBLIC_MAX_PAGES dans search.controller.ts
-  describe("plafonds hors réseau interne", () => {
+  // cf. requireSearchToken (search-token.service.ts) et PUBLIC_MAX_* (search.controller.ts)
+  describe("appelants : jeton, canal et plafonds", () => {
     const PUBLIC_IP = "203.0.113.10"
-    const BROWSER = { "sec-fetch-site": "same-origin" }
+    const UI_CONTAINER = "172.18.0.5"
 
     type Caller = { remoteAddress?: string; headers?: Record<string, string> }
-    const publicBrowser: Caller = { remoteAddress: PUBLIC_IP, headers: BROWSER }
-    const publicScript: Caller = { remoteAddress: PUBLIC_IP }
-    const publicCrossSite: Caller = { remoteAddress: PUBLIC_IP, headers: { "sec-fetch-site": "cross-site" } }
-    const internal: Caller = {}
+    const newToken = (now = new Date()) => signSearchToken(config.searchTokenKeys, randomBytes(16).toString("hex"), now)
+    // Le BFF appelle l'API depuis le réseau docker et lui transmet l'IP de l'internaute en X-Forwarded-For.
+    const bff = (token: string | null, { clientIp = PUBLIC_IP, channel = "site" }: { clientIp?: string; channel?: string } = {}): Caller => ({
+      remoteAddress: UI_CONTAINER,
+      headers: { "x-forwarded-for": clientIp, "x-lba-channel": channel, ...(token ? { "x-lba-search-token": token } : {}) },
+    })
+    const publicDirect = (token?: string): Caller => ({ remoteAddress: PUBLIC_IP, headers: token ? { "x-lba-search-token": token } : {} })
+    const internalSsr: Caller = {}
 
     const call = (path: string, caller: Caller) => httpClient().inject({ method: "GET", path, ...caller })
 
@@ -328,44 +419,95 @@ describe("search.controller", () => {
       }
     }
 
-    it("ramène hitsPerPage à 20 pour une IP publique, navigateur ou non", async () => {
-      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", publicBrowser)).toBe(20)
-      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", publicScript)).toBe(20)
-      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=10", publicBrowser)).toBe(10)
+    const loggedChannel = async (caller: Caller) => {
+      const spy = vi.spyOn(searchQueryLogService, "logSearchQuery").mockResolvedValue()
+      try {
+        expect((await call("/api/v1/search?q=boulanger", caller)).statusCode).toBe(200)
+        return spy.mock.calls[0][2]
+      } finally {
+        spy.mockRestore()
+      }
+    }
+
+    describe("refus", () => {
+      it.each([
+        ["IP publique sans jeton", publicDirect()],
+        ["IP publique avec un en-tête de canal et sans jeton", { remoteAddress: PUBLIC_IP, headers: { "x-lba-channel": "site" } }],
+        ["BFF sans jeton", bff(null)],
+        ["BFF en preview (IP privée transmise) sans jeton", bff(null, { clientIp: "172.18.0.1" })],
+        ["jeton illisible", bff("pas-un-jeton")],
+        ["jeton expiré (tranche n-2)", bff(newToken(new Date(Date.now() - 2 * 3600 * 1000)))],
+        ["jeton d'une autre clé", bff(signSearchToken(parseSearchTokenKeys(`k1:${randomBytes(32).toString("base64")}`), randomBytes(16).toString("hex"), new Date()))],
+      ])("401 JETON_REQUIS : %s", async (_label, caller) => {
+        for (const path of ["/api/v1/search?q=boulanger", "/api/v1/search/suggest?q=boulanger"]) {
+          const response = await call(path, caller)
+          expect(response.statusCode).toBe(401)
+          expect(response.json().message).toBe(SEARCH_TOKEN_REQUIRED)
+        }
+      })
+
+      it("épuise le jeton à la 101e recherche, sans compter les suggestions", async () => {
+        const token = newToken()
+        await getDbCollection("search_tokens").insertOne({
+          _id: token.split(".")[3],
+          count: SEARCH_TOKEN_QUOTA - 1,
+          created_at: new Date(),
+          expires_at: new Date(Date.now() + 3600 * 1000),
+        })
+        expect((await call("/api/v1/search/suggest?q=boulanger", bff(token))).statusCode).toBe(200)
+        expect((await call("/api/v1/search?q=boulanger", bff(token))).statusCode).toBe(200)
+        const exhausted = await call("/api/v1/search?q=boulanger", bff(token))
+        expect(exhausted.statusCode).toBe(401)
+        expect(exhausted.json().message).toBe(SEARCH_TOKEN_EXHAUSTED)
+        expect((await call("/api/v1/search/suggest?q=boulanger", bff(token))).statusCode).toBe(200)
+      })
+
+      it("compte une même solution rejouée sur un seul quota", async () => {
+        const token = newToken()
+        await call("/api/v1/search?q=boulanger", bff(token))
+        await call("/api/v1/search?q=boulanger", bff(token, { clientIp: "198.51.100.7" }))
+        expect(await getDbCollection("search_tokens").findOne({ _id: token.split(".")[3] })).toMatchObject({ count: 2 })
+      })
     })
 
-    it("laisse hitsPerPage intact depuis le réseau interne", async () => {
-      expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", internal)).toBe(100)
+    describe("canal statistique", () => {
+      it("ignore un en-tête de canal posé par un appelant hors réseau docker", async () => {
+        expect(await loggedChannel({ remoteAddress: PUBLIC_IP, headers: { "x-lba-channel": "widget", "x-lba-search-token": newToken() } })).toBe("api")
+      })
+
+      it("ignore une valeur de canal inconnue du BFF", async () => {
+        expect(await loggedChannel(bff(newToken(), { channel: "partenaire" }))).toBe("api")
+      })
+
+      it.each(["site", "widget"])("retient le canal %s annoncé par le BFF", async (channel) => {
+        expect(await loggedChannel(bff(newToken(), { channel }))).toBe(channel)
+      })
     })
 
-    it("plafonne nbPages à 20 pour un navigateur public, sans toucher à nbHits", async () => {
-      expect(await nbPagesReturned(publicBrowser)).toMatchObject({ nbPages: 20, nbHits: 1140 })
-    })
+    describe("plafonds", () => {
+      it("applique les plafonds publics à l'internaute relayé par le BFF", async () => {
+        expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", bff(newToken()))).toBe(20)
+        expect(await nbPagesReturned(bff(newToken()))).toMatchObject({ nbPages: 20, nbHits: 1140 })
+        expect((await call("/api/v1/search?page=19", bff(newToken()))).statusCode).toBe(200)
+        expect((await call("/api/v1/search?page=20", bff(newToken()))).statusCode).toBe(400)
+      })
 
-    it("plafonne nbPages à 1 sans Sec-Fetch-Site same-origin, ce qui masque « Voir plus » au rendu Googlebot", async () => {
-      expect(await nbPagesReturned(publicScript)).toMatchObject({ nbPages: 1, nbHits: 1140 })
-      expect(await nbPagesReturned(publicCrossSite)).toMatchObject({ nbPages: 1 })
-    })
+      it("n'honore pas internal=true pour un internaute relayé par le BFF", async () => {
+        const spy = vi.spyOn(searchQueryLogService, "logSearchQuery").mockResolvedValue()
+        try {
+          expect((await call("/api/v1/search?q=boulanger&internal=true", bff(newToken()))).statusCode).toBe(200)
+          expect(spy).toHaveBeenCalledTimes(1)
+        } finally {
+          spy.mockRestore()
+        }
+      })
 
-    it("ne plafonne pas nbPages depuis le réseau interne, même sans l'en-tête", async () => {
-      expect(await nbPagesReturned(internal)).toMatchObject({ nbPages: 57 })
-    })
-
-    it("navigateur public : pages 0 à 19 servies, 400 au-delà", async () => {
-      expect((await call("/api/v1/search?page=19", publicBrowser)).statusCode).toBe(200)
-      expect((await call("/api/v1/search?page=20", publicBrowser)).statusCode).toBe(400)
-    })
-
-    it("sans Sec-Fetch-Site same-origin : page 0 servie, 400 dès la page 1", async () => {
-      expect((await call("/api/v1/search?page=0", publicScript)).statusCode).toBe(200)
-      expect((await call("/api/v1/search", publicScript)).statusCode).toBe(200)
-      expect((await call("/api/v1/search?page=1", publicScript)).statusCode).toBe(400)
-      expect((await call("/api/v1/search?page=1", publicCrossSite)).statusCode).toBe(400)
-    })
-
-    it("réseau interne : aucune limite de page, avec ou sans l'en-tête", async () => {
-      expect((await call("/api/v1/search?page=20", internal)).statusCode).toBe(200)
-      expect((await call("/api/v1/search?page=20", { headers: BROWSER })).statusCode).toBe(200)
+      it("sert le rendu serveur sans jeton ni plafond", async () => {
+        expect(await hitsPerPageSent("/api/v1/search?hitsPerPage=100", internalSsr)).toBe(100)
+        expect(await nbPagesReturned(internalSsr)).toMatchObject({ nbPages: 57 })
+        expect((await call("/api/v1/search?page=20", internalSsr)).statusCode).toBe(200)
+        expect((await call("/api/v1/search/suggest?q=boulanger", internalSsr)).statusCode).toBe(200)
+      })
     })
   })
 

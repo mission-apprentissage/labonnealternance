@@ -71,6 +71,17 @@ describe("serializers.req", () => {
     expect(query).toEqual({ email: "[Filtered]", api_key: "[Filtered]", page: "2" })
   })
 
+  it("masque la recherche libre de l'admin, qui peut être un e-mail, et pas les paramètres au nom voisin", () => {
+    const { url, query } = serializers.req(
+      fakeRequest({
+        url: "/api/moderation/jobs/search?search=recruteur%40exemple.fr&search_source=home&search_item=abc",
+        query: { search: "recruteur@exemple.fr", search_source: "home", search_item: "abc" },
+      })
+    ) as { url: string; query: Record<string, unknown> }
+    expect(url).toBe("/api/moderation/jobs/search?search=[Filtered]&search_source=home&search_item=abc")
+    expect(query).toEqual({ search: "[Filtered]", search_source: "home", search_item: "abc" })
+  })
+
   it("ne plante pas sur une clé mal encodée", () => {
     const { url } = serializers.req(fakeRequest({ url: "/api/x?%E0%A4%A=1&token=abc" })) as { url: string }
     expect(url).toBe("/api/x?%E0%A4%A=1&token=[Filtered]")

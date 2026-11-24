@@ -40,6 +40,39 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
     expect(isCompanyInBlockedCfaList("IEF2I EDUCATION")).toBe(true)
     expect(isCompanyInBlockedCfaList("IFCE")).toBe(true)
     expect(isCompanyInBlockedCfaList("IFCE INSTITUT FORMATION COMPTABLE EUROPE")).toBe(true)
+    expect(isCompanyInBlockedCfaList("My-BS")).toBe(true)
+    expect(isCompanyInBlockedCfaList("ISTEC")).toBe(true)
+    expect(isCompanyInBlockedCfaList("ISTEC - Ecole Supérieure de Commerce et de Marketing")).toBe(true)
+    expect(isCompanyInBlockedCfaList("HBC SCHOOL")).toBe(true)
+    expect(isCompanyInBlockedCfaList("Campus Pro")).toBe(true)
+    expect(isCompanyInBlockedCfaList("ESUP VANNES")).toBe(true)
+    expect(isCompanyInBlockedCfaList("Pôle Formation UIMM Bretagne")).toBe(true)
+    expect(isCompanyInBlockedCfaList("La formation sera assurée par le Pôle formation UIMM de Vannes")).toBe(true)
+    expect(isCompanyInBlockedCfaList("SmartForum")).toBe(true)
+  })
+
+  it("devrait trouver les CFA des offres France Travail de l'issue #5766", () => {
+    expect(isCompanyInBlockedCfaList("Disciplina")).toBe(true)
+    expect(isCompanyInBlockedCfaList("SKALE_Antony&amp;Orleans")).toBe(true)
+    expect(isCompanyInBlockedCfaList("SKALE Orléans")).toBe(true)
+    expect(isCompanyInBlockedCfaList("SKALE Collaborative Business School")).toBe(true)
+    expect(isCompanyInBlockedCfaList("Skale France Collaborative Business School")).toBe(true)
+    expect(isCompanyInBlockedCfaList("Win Sport School")).toBe(true)
+  })
+
+  it("ne doit pas bloquer les mots proches des CFA de l'issue #5766", () => {
+    expect(isCompanyInBlockedCfaList("Club de judo : rigueur et discipline exigées")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Skalea Conseil")).toBe(false)
+    // SKALE est aussi une blockchain, citée dans des offres de développeur
+    expect(isCompanyInBlockedCfaList("Développeur Solidity : smart contracts sur Ethereum, Polygon et SKALE")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Win Sport")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Magasin de sport : win-win pour notre école de vente")).toBe(false)
+  })
+
+  it("ne doit pas bloquer un employeur qui mentionne seulement l'UIMM", () => {
+    // l'UIMM est la fédération patronale de la métallurgie : la citer est courant dans une offre industrielle
+    expect(isCompanyInBlockedCfaList("Notre entreprise adhère à l'UIMM et recrute un apprenti en usinage")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Safran Nacelles recherche un alternant, partenariat UIMM Normandie")).toBe(false)
   })
 
   it("devrait trouver les CFA lorsqu'ils sont mentionnés dans un texte", () => {

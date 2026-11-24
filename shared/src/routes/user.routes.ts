@@ -1,3 +1,4 @@
+import type { Jsonify } from "type-fest"
 import { ETAT_UTILISATEUR } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
@@ -6,7 +7,7 @@ import { ZJob } from "../models/job.model.js"
 import { HANDI_ENGAGEMENT_VALUES } from "../models/referentiel-engagement-entreprise.model.js"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/role-management.model.js"
 import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountFields } from "../models/user-with-account.model.js"
-import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/users-recruteur.model.js"
+import { ZAccountOfferConformity, ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/users-recruteur.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
@@ -26,9 +27,29 @@ const ZUserForOpco = ZUserRecruteur.pick({
   jobs_count: z.number(),
   origin: z.string(),
   organizationId: z.string(),
+  offer_conformity: ZAccountOfferConformity,
 })
 
 export type IUserForOpco = z.output<typeof ZUserForOpco>
+
+const ZSameSiretAccount = z.strictObject({
+  _id: zObjectId,
+  organizationId: z.string(),
+  first_name: z.string(),
+  last_name: z.string(),
+  email: z.string(),
+  createdAt: z.date().describe("Date de création du rattachement du compte à l'organisation"),
+  status: ZEtatUtilisateur,
+  status_date: z.date().nullable(),
+  status_reason: z.string().nullable(),
+  last_action_date: z.date().nullable(),
+  jobs_count: z.number(),
+  matches: z.array(z.enum(["phone", "name"])).describe("Points communs avec le compte consulté"),
+})
+
+export type SameSiretAccountMatch = z.output<typeof ZSameSiretAccount>["matches"][number]
+export type ISameSiretAccount = z.output<typeof ZSameSiretAccount>
+export type ISameSiretAccountJson = Jsonify<ISameSiretAccount>
 
 export const zUserRecruteurRoutes = {
   get: {
@@ -117,6 +138,25 @@ export const zUserRecruteurRoutes = {
               _id: { type: "params", key: "userId" },
             },
           ],
+          entreprise: [{ _id: { type: "params", key: "organizationId" } }],
+        },
+      },
+    },
+    "/user/:userId/organization/:organizationId/same-siret-accounts": {
+      method: "get",
+      path: "/user/:userId/organization/:organizationId/same-siret-accounts",
+      params: z.strictObject({
+        userId: zObjectId,
+        organizationId: z.string(),
+      }),
+      response: {
+        "200": z.array(ZSameSiretAccount),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
           entreprise: [{ _id: { type: "params", key: "organizationId" } }],
         },
       },

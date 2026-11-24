@@ -169,9 +169,10 @@ assets/*
 tmp
 
 venv
-# CLAUDE.md générés par next dev (ui/) ; celui de la racine est versionné
+# CLAUDE.md personnels ignorés ; ceux de la racine et de ui/ (import de AGENTS.md) sont versionnés
 CLAUDE.md
 !/CLAUDE.md
+!/ui/CLAUDE.md
 .mcp.json
 _temp/
 

@@ -519,7 +519,8 @@ function buildSortStage(filters: ISearchFilters): Record<string, unknown> {
 
   return {
     score: { $meta: "searchScore", order: -1 },
-    smart_apply: { order: 1 },
+    // Candidature simplifiée d'abord ; null (formations) en dernier.
+    smart_apply: { order: -1, noData: "lowest" },
     application_count: { order: 1 },
   }
 }

@@ -27,6 +27,11 @@ on:
         type: string
         required: false
         default: latest
+      skip_npm_check:
+        description: Skip the NPM dependency check when the caller already ran it on the same commit
+        type: boolean
+        required: false
+        default: false
     secrets:
       DEPLOY_SSH_PRIVATE_KEY:
         description: SSH private key
@@ -75,6 +80,7 @@ jobs:
 
   npm-packages-check:
     name: NPM dependency check
+    if: ${{ !inputs.skip_npm_check }}
     runs-on: ubuntu-26.04
     steps:
       - name: Checkout project
@@ -93,7 +99,7 @@ jobs:
         run: mna-npm-check/npm-check.sh -p .
 
   deploy:
-    if: ${{ success() }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && contains(fromJSON('["success", "skipped"]'), needs.npm-packages-check.result) }}
     needs: ["version", "npm-packages-check"]
     name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
     runs-on: ubuntu-26.04
@@ -123,10 +129,15 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
-          cache: "yarn"
 
-      - name: Install dependencies
-        run: yarn install --immutable
+      # Seule dépendance npm du job (cf. sentry-deploy-*.sh). Le paquet binaire de la plateforme n'a ni
+      # dépendance ni script : rien de non figé par yarn.lock ne s'exécute à côté de la clé GPG importée.
+      - name: Install sentry-cli
+        run: |
+          version=$(awk '/^"@sentry\/cli@npm:/ { found = 1 } found && /^  version:/ { print $2; exit }' yarn.lock)
+          [ -n "$version" ] || { echo "::error::Version de @sentry/cli introuvable dans yarn.lock"; exit 1; }
+          npm install --prefix "${RUNNER_TEMP}/sentry-cli" --no-save --no-audit --no-fund --ignore-scripts "@sentry/cli-linux-x64@${version}"
+          echo "SENTRY_CLI=${RUNNER_TEMP}/sentry-cli/node_modules/@sentry/cli-linux-x64/bin/sentry-cli" >> "${GITHUB_ENV}"
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -188,7 +199,7 @@ jobs:
           GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
 
   changelog:
-    if: ${{ success() && inputs.environment == 'production' }}
+    if: ${{ !cancelled() && needs.deploy.result == 'success' && inputs.environment == 'production' }}
     needs: ["version", "deploy"]
     name: Post changelog to Slack
     runs-on: ubuntu-26.04

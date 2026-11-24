@@ -56,6 +56,19 @@ describe("classifyFreeText", () => {
     expect(systemMessage?.content).toContain("la contradiction ne lève pas l'infraction")
   })
 
+  // #5843 : une attente de présentation professionnelle n'est pas un critère d'apparence physique.
+  it("should not treat a professional appearance requirement as discrimination in the system prompt", async () => {
+    vi.mocked(sendMistralMessages).mockResolvedValue(mistralResponse({ verdict: "conforme", findings: [] }))
+    await classifyFreeText("un texte quelconque", "job_description")
+
+    const [{ messages }] = vi.mocked(sendMistralMessages).mock.calls[0]
+    const systemMessage = messages.find(({ role }) => role === "system")?.content ?? ""
+    const discriminationRule = systemMessage.split("\n").find((line) => line.startsWith('- "discrimination"'))
+    expect(discriminationRule).toBeDefined()
+    expect(discriminationRule).not.toMatch(/présentation/i)
+    expect(systemMessage).toContain("elle porte sur le comportement au travail, pas sur l'apparence physique")
+  })
+
   it("should tag each finding with the field it was found in", async () => {
     vi.mocked(sendMistralMessages).mockResolvedValue(
       mistralResponse({ verdict: "non_conforme", findings: [{ category: "remuneration", severity: "bloquant", verbatim: "des pourboires" }] })
@@ -106,21 +119,49 @@ describe("verdict reconciliation", () => {
     expect(parsed?.verdict).toBe("a_verifier")
   })
 
-  it("should keep a non_conforme verdict announced without any finding", () => {
-    const parsed = parseClassification(mistralResponse({ verdict: "non_conforme", findings: [] }))
-    expect(parsed?.verdict).toBe("non_conforme")
+  // Une offre bloquée doit avoir un extrait à montrer au recruteur (#5843) : sans finding, la réponse se contredit.
+  it.each(["non_conforme", "a_verifier"])("should send a %s verdict announced without any finding to review", (verdict) => {
+    const parsed = parseClassification(mistralResponse({ verdict, findings: [] }))
+    expect(parsed).toEqual({ verdict: "a_verifier", findings: [] })
+  })
+
+  it("should not block on a non_conforme verdict whose findings are only doubts", () => {
+    const parsed = parseClassification(mistralResponse({ verdict: "non_conforme", findings: [{ category: "mineurs", severity: "doute", verbatim: "service en bar" }] }))
+    expect(parsed?.verdict).toBe("a_verifier")
   })
 
   // Arbitrage de la modération (#5352) : les règles de la charte envoient en revue, jamais en blocage,
   // même quand le modèle les juge bloquantes.
   it("should never block on charter findings alone", () => {
     const parsed = parseClassification(
-      mistralResponse({ verdict: "non_conforme", findings: [{ category: "candidature_hors_plateforme", severity: "bloquant", verbatim: "candidatures par e-mail uniquement" }] })
+      mistralResponse({ verdict: "non_conforme", findings: [{ category: "experience_exigee", severity: "bloquant", verbatim: "deux ans d'expérience exigés" }] })
     )
     expect(parsed).toEqual({
       verdict: "a_verifier",
+      findings: [{ category: "experience_exigee", severity: "doute", verbatim: "deux ans d'expérience exigés" }],
+    })
+  })
+
+  // #5843 : la consigne de candidature hors plateforme est gardée pour la trace, sans amener l'offre dans la file.
+  it("should keep an off-platform application finding without counting it in the verdict", () => {
+    const parsed = parseClassification(
+      mistralResponse({ verdict: "non_conforme", findings: [{ category: "candidature_hors_plateforme", severity: "bloquant", verbatim: "candidatures par e-mail uniquement" }] })
+    )
+    expect(parsed).toEqual({
+      verdict: "conforme",
       findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim: "candidatures par e-mail uniquement" }],
     })
+  })
+
+  it.each([
+    ["a legal doubt", { category: "mineurs", severity: "doute", verbatim: "service en bar" }, "a_verifier"],
+    ["another charter finding", { category: "teletravail_integral", severity: "doute", verbatim: "100 % télétravail" }, "a_verifier"],
+    ["a legal blocking finding", { category: "discrimination", severity: "bloquant", verbatim: "âgé de 18 à 22 ans" }, "non_conforme"],
+  ])("should still count %s reported alongside an off-platform application", (_label, finding, expected) => {
+    const parsed = parseClassification(
+      mistralResponse({ verdict: "a_verifier", findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim: "CV par e-mail" }, finding] })
+    )
+    expect(parsed?.verdict).toBe(expected)
   })
 
   it("should flag charter findings announced as conforme", () => {
@@ -144,17 +185,12 @@ describe("verdict reconciliation", () => {
     expect(parsed?.findings.map(({ severity }) => severity)).toEqual(["doute", "bloquant"])
   })
 
-  it("should not cap a non_conforme verdict whose findings are legal doubts", () => {
-    const parsed = parseClassification(mistralResponse({ verdict: "non_conforme", findings: [{ category: "mineurs", severity: "doute", verbatim: "service en bar" }] }))
-    expect(parsed?.verdict).toBe("non_conforme")
-  })
-
   it("should treat a contact_bypass on already masked coordinates as an off-platform application", () => {
     const parsed = parseClassification(
       mistralResponse({ verdict: "non_conforme", findings: [{ category: "contact_bypass", severity: "bloquant", verbatim: "au 06xxxxxxxx ou à emxxx@xxx.fr" }] })
     )
     expect(parsed).toEqual({
-      verdict: "a_verifier",
+      verdict: "conforme",
       findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim: "au 06xxxxxxxx ou à emxxx@xxx.fr" }],
     })
   })
@@ -172,6 +208,39 @@ describe("verdict reconciliation", () => {
     })
   })
 
+  // Le masquage ne couvre pas les pseudos : classés en candidature hors plateforme, ils sortiraient du verdict (#5843).
+  it.each([
+    ["Retrouvez-nous sur insta : @recrut_alternance_2026", "candidature_hors_plateforme"],
+    ["Suivez-nous (@monentreprise)", "candidature_hors_plateforme"],
+    ["CV à emxxx@xxx.fr ou @jean_dupont", "contact_bypass"],
+  ] as const)("should keep a social network handle as a disguised contact: %s", (verbatim, category) => {
+    const parsed = parseClassification(mistralResponse({ verdict: "a_verifier", findings: [{ category, severity: "doute", verbatim }] }))
+    expect(parsed).toEqual({ verdict: "a_verifier", findings: [{ category: "contact_bypass", severity: "doute", verbatim }] })
+  })
+
+  it("should not let a charter finding announced as blocking block an offer through a handle", () => {
+    const verbatim = "Postulez via insta : @boulangerie_dupont"
+    const parsed = parseClassification(mistralResponse({ verdict: "non_conforme", findings: [{ category: "candidature_hors_plateforme", severity: "bloquant", verbatim }] }))
+    expect(parsed).toEqual({ verdict: "a_verifier", findings: [{ category: "contact_bypass", severity: "doute", verbatim }] })
+  })
+
+  it("should keep the severity of a handle the model already classified as a disguised contact", () => {
+    const parsed = parseClassification(
+      mistralResponse({ verdict: "non_conforme", findings: [{ category: "contact_bypass", severity: "bloquant", verbatim: "écrivez-moi sur snap @jean_dupont" }] })
+    )
+    expect(parsed?.verdict).toBe("non_conforme")
+  })
+
+  it.each([
+    "Candidatures à emxxx@xxx.fr uniquement",
+    "Suivez-nous sur Instagram pour candidater",
+    "Envoyez votre CV @ l'accueil du magasin",
+    "Venez déposer votre CV en boutique (@10h)",
+  ])("should not mistake a masked address or a plain mention for a handle: %s", (verbatim) => {
+    const parsed = parseClassification(mistralResponse({ verdict: "a_verifier", findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim }] }))
+    expect(parsed?.verdict).toBe("conforme")
+  })
+
   it("should keep blocking a disguised coordinate written next to a masked one", () => {
     const parsed = parseClassification(
       mistralResponse({ verdict: "non_conforme", findings: [{ category: "contact_bypass", severity: "bloquant", verbatim: "emxxx@xxx.fr ou jean arobase gmail point com" }] })
@@ -187,7 +256,7 @@ describe("verdict reconciliation", () => {
         findings: [{ category: "candidature_hors_plateforme", severity: "doute", verbatim: "déposez votre CV au point de vente ou sur emxxx@xxx.fr" }],
       })
     )
-    expect(parsed?.verdict).toBe("a_verifier")
+    expect(parsed?.verdict).toBe("conforme")
     expect(parsed?.findings[0].category).toBe("candidature_hors_plateforme")
   })
 
@@ -200,6 +269,7 @@ describe("verdict reconciliation", () => {
         { category: "remuneration", severity: "bloquant", verbatim: "y" },
       ])
     ).toBe("non_conforme")
+    expect(verdictFromFindings([{ category: "candidature_hors_plateforme", severity: "doute", verbatim: "x" }])).toBe("conforme")
   })
 
   it("should keep the most severe of two verdicts", () => {

@@ -4,6 +4,21 @@ location / {
 
     client_max_body_size 0;
 
+    # Assets versionnés de Next, immuables et servis depuis le cache proxy : le premier chargement d'une page
+    # en demande plus que le burst de `flood` (#5939). Zone sans limite, cf. extra-conf.d/rate-limit.conf.template.
+    location ^~ /_next/static/ {
+        # La location est choisie sur l'URI normalisée, mais Next reçoit l'URI brute : sans ce refus,
+        # /recherche/%2E%2E/_next/static/x passerait ici hors limite et Next y rendrait une page.
+        if ($request_uri !~ "^/_next/static/") {
+            return 404;
+        }
+
+        limit_req zone=lba_static_unlimited;
+
+        set $upstream http://ui:3000;
+        include includes/proxy.conf;
+    }
+
     # Next 16 répond 500 quand le slug d'une fiche n'est pas décodable, avant même d'appeler proxy.ts :
     # UTF-8 invalide (liens partenaires encodés en Latin-1, `%E9`) ou `%` littéral, que cacheComponents
     # décode une seconde fois. Le slug est décoratif : on redirige vers la fiche avec un slug neutre (#5456).
@@ -21,9 +36,101 @@ location / {
         include includes/proxy.conf;
     }
 
+    # Liens partenaires (/monmaster/<RNCP>) : chaque clic déclenche une résolution côté API, débit borné
+    # par IP contre l'énumération des codes (zone dans extra-conf.d/rate-limit.conf.template).
+    location /monmaster/ {
+        if ($lba_denied) {
+            return 403;
+        }
+
+        limit_req zone=lba_partner_links burst=10 nodelay;
+
+        set $upstream http://ui:3000;
+        include includes/proxy.conf;
+    }
+
     location /recherche {
+        limit_req zone=lba_rendu_recherche burst=120 nodelay;
+        error_page 429 = @lba_limite_rendu_recherche;
+
         set $upstream http://ui:3000;
         include extra-includes/proxy-iframe.conf;
+    }
+
+    # BFF de l'UI (ui/app/bff) : seul accès du navigateur à la recherche et aux routes _private, fermées sur
+    # /api. Mêmes refus et débits par IP que ces routes sur /api, sans ban (zones _recherche, cf.
+    # extra-conf.d/rate-limit.conf.template). Regex insensibles à la casse : le BFF relaie sans tenir compte
+    # de la casse, comme le routeur Fastify.
+    location /bff/ {
+        if ($lba_denied) {
+            return 403;
+        }
+
+        set $upstream http://ui:3000;
+        include includes/proxy.conf;
+
+        location ~* ^/bff/v1/search/?$ {
+            if ($lba_denied) {
+                return 403;
+            }
+
+            limit_req zone=lba_bff_recherche burst=60 nodelay;
+            error_page 429 = @lba_limite_bff_recherche;
+
+            set $upstream http://ui:3000;
+            include includes/proxy.conf;
+        }
+
+        location ~* ^/bff/v1/search/suggest {
+            if ($lba_denied) {
+                return 403;
+            }
+
+            limit_req zone=lba_suggest_recherche burst=40 nodelay;
+            error_page 429 = @lba_limite_suggest_recherche;
+
+            set $upstream http://ui:3000;
+            include includes/proxy.conf;
+        }
+
+        # Mesures web-vitals : hors quota de la navigation (débit borné par Fastify, cf. webVitalsRouteController).
+        location = /bff/_private/web-vitals {
+            if ($lba_denied) {
+                return 403;
+            }
+
+            set $upstream http://ui:3000;
+            include includes/proxy.conf;
+        }
+
+        location ~* ^/bff/(v1/|v2/)?_private/ {
+            if ($lba_denied) {
+                return 403;
+            }
+
+            limit_req zone=lba_private_recherche burst=60 nodelay;
+            error_page 429 = @lba_limite_private_recherche;
+            # Candidature (/bff/v2/_private/application).
+            client_max_body_size 5M;
+
+            set $upstream http://ui:3000;
+            include includes/proxy.conf;
+        }
+
+        # Émission des jetons de recherche (défi ALTCHA puis échange de la solution, cf. ui/app/bff/jeton).
+        # Une émission fait 2 requêtes : le burst laisse 60 visiteurs d'une même IP (réseau d'établissement)
+        # obtenir leur jeton d'un coup, comme le burst de la recherche.
+        location = /bff/jeton {
+            if ($lba_denied) {
+                return 403;
+            }
+
+            limit_req zone=lba_jeton_recherche burst=120 nodelay;
+            error_page 429 = @lba_limite_jeton_recherche;
+
+            set $upstream http://ui:3000;
+            include includes/proxy.conf;
+        }
     }
 
     location /recherche-emploi {
@@ -45,4 +152,36 @@ location / {
         set $upstream http://ui:3000;
         include extra-includes/proxy-iframe.conf;
     }
+}
+
+# Réponses des limites sans ban (zones _recherche, cf. extra-conf.d/rate-limit.conf.template) : l'en-tête
+# X-LBA-Limite nomme la limite atteinte.
+location @lba_limite_jeton_recherche {
+    default_type application/json;
+    add_header X-LBA-Limite jeton_recherche always;
+    return 429 '{"statusCode":429,"error":"Too Many Requests","message":"limite jeton_recherche"}';
+}
+
+location @lba_limite_bff_recherche {
+    default_type application/json;
+    add_header X-LBA-Limite bff_recherche always;
+    return 429 '{"statusCode":429,"error":"Too Many Requests","message":"limite bff_recherche"}';
+}
+
+location @lba_limite_suggest_recherche {
+    default_type application/json;
+    add_header X-LBA-Limite suggest_recherche always;
+    return 429 '{"statusCode":429,"error":"Too Many Requests","message":"limite suggest_recherche"}';
+}
+
+location @lba_limite_private_recherche {
+    default_type application/json;
+    add_header X-LBA-Limite private_recherche always;
+    return 429 '{"statusCode":429,"error":"Too Many Requests","message":"limite private_recherche"}';
+}
+
+location @lba_limite_rendu_recherche {
+    default_type text/plain;
+    add_header X-LBA-Limite rendu_recherche always;
+    return 429 'Trop de requêtes, réessayez dans une minute.';
 }

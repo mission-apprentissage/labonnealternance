@@ -8,6 +8,7 @@ import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { commitRawImport, discardRawImport } from "./raw-import-commit"
 
 export const importFromStreamInJson = async ({
   stream,
@@ -20,9 +21,6 @@ export const importFromStreamInJson = async ({
   partnerLabel: string
   getOffers: (json: object) => object[]
 }) => {
-  logger.info("deleting old data")
-  await getDbCollection(destinationCollection).deleteMany({})
-
   logger.info("import starting...")
 
   const now = new Date()
@@ -52,6 +50,7 @@ export const importFromStreamInJson = async ({
     const json = JSON.parse(content)
     await readJson(json)
   } catch (err) {
+    await discardRawImport({ destinationCollection, importDate: now, importName: partnerLabel })
     const error = internal(`importFromStreamInJson: erreur lors de l'import ${partnerLabel}`)
     error.cause = err
     logger.error(err, error.message)
@@ -59,8 +58,8 @@ export const importFromStreamInJson = async ({
     throw error
   }
 
-  logger.info(`${offerInsertCount} offers inserted`)
-  logger.info("Pipeline succeeded.")
+  await commitRawImport({ destinationCollection, importDate: now, importName: partnerLabel, insertedCount: offerInsertCount })
+
   logger.info(`import ${partnerLabel} terminé : ${offerInsertCount} offres importées`)
   return {
     offerInsertCount,

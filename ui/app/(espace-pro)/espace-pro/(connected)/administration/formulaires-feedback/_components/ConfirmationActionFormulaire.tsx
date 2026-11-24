@@ -5,7 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { useId, useState } from "react"
 import type { IFeedbackFormForAdminJSON } from "shared/models/feedback-form.model"
 
 import { useToast } from "@/app/hooks/useToast"
@@ -13,8 +13,6 @@ import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { ApiError, apiDelete, apiPost } from "@/utils/api.utils"
 
 export type IFeedbackFormAction = "delete" | "archive"
-
-const TITLE_ID = "confirmation-action-formulaire-titre"
 
 const ACTIONS: Record<
   IFeedbackFormAction,
@@ -69,6 +67,7 @@ export function ConfirmationActionFormulaire({
   onDone: () => void
 }) {
   const toast = useToast()
+  const titleId = useId()
   const queryClient = useQueryClient()
   const [isPending, setIsPending] = useState(false)
 
@@ -95,9 +94,9 @@ export function ConfirmationActionFormulaire({
   const paragraphs = config.description(form)
 
   return (
-    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={TITLE_ID}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose} ariaLabelledBy={titleId}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
-        <Typography id={TITLE_ID} component="h2" className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }}>
+        <Typography id={titleId} component="h2" className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }}>
           {config.title}
         </Typography>
         {paragraphs.map((paragraph, index) => (

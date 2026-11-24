@@ -12,7 +12,7 @@ interface FCOpcoResponseCode99 {
 interface FCOpcoResponseCode01 {
   code: "01"
   siret: string
-  idcc: string
+  idcc?: string
   opcoRattachement: {
     code: string
     nom: string
@@ -26,7 +26,7 @@ interface FCOpcoResponseCode01 {
 interface FCOpcoResponseCode02 {
   code: "02"
   siret: string
-  idcc: string
+  idcc?: string
   opcoRattachement: {
     code: string
     nom: string
@@ -40,7 +40,7 @@ interface FCOpcoResponseCode02 {
 interface FCOpcoResponseCode03 {
   code: "03"
   siret: string
-  idcc: string
+  idcc?: string
   opcoRattachement: {
     code: string
     nom: string

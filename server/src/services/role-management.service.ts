@@ -1,5 +1,5 @@
 import { badRequest, internal } from "@hapi/boom"
-import { ObjectId } from "mongodb"
+import { MongoServerError, ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
@@ -11,7 +11,7 @@ import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
-import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { getDbCollection, READ_OWN_WRITES } from "@/common/utils/mongodb-utils"
 import { sanitizeTextField } from "@/common/utils/string-utils"
 import config from "@/config"
 import { buildEstablishmentId } from "./etablissement.service"
@@ -35,12 +35,29 @@ const getOpcoAtCreation = async ({
   if (authorized_type !== AccessEntityType.ENTREPRISE) {
     return {}
   }
-  const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(authorized_id) }, { projection: { opco: 1 } })
+  const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(authorized_id) }, { projection: { opco: 1 }, ...READ_OWN_WRITES })
   return { opco_at_creation: entreprise?.opco ?? OPCOS_LABEL.UNKNOWN_OPCO }
 }
 
+type RoleKey = Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id">
+
+const findRole = ({ authorized_id, authorized_type, user_id }: RoleKey) => getDbCollection("rolemanagements").findOne({ authorized_id, authorized_type, user_id }, READ_OWN_WRITES)
+
+/** Renvoie false quand un autre écrivain a inséré le même rôle entre la lecture et l'insertion (seul index unique de la collection). */
+const insertRoleIfAbsent = async (role: IRoleManagement): Promise<boolean> => {
+  try {
+    await getDbCollection("rolemanagements").insertOne(role)
+    return true
+  } catch (err) {
+    if (err instanceof MongoServerError && err.code === 11000) {
+      return false
+    }
+    throw err
+  }
+}
+
 export const modifyPermissionToUser = async (
-  props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id"> & Partial<Pick<IRoleManagement, "handiEngagement">>,
+  props: RoleKey & Partial<Pick<IRoleManagement, "handiEngagement">>,
   eventProps: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 ): Promise<IRoleManagement> => {
   const now = new Date()
@@ -48,28 +65,9 @@ export const modifyPermissionToUser = async (
     ...eventProps,
     date: now,
   }
-  const { authorized_id, authorized_type, user_id } = props
-  const role = await getDbCollection("rolemanagements").findOne({ authorized_id, authorized_type, user_id })
+  let role = await findRole(props)
 
-  let updatedRole: IRoleManagement
-  let becameGranted: boolean
-
-  if (role) {
-    const lastEvent = getLastStatusEvent(role.status)
-    if (lastEvent?.status === eventProps.status) {
-      return role
-    }
-    const newRole = await getDbCollection("rolemanagements").findOneAndUpdate(
-      { _id: role._id },
-      { $push: { status: event }, $set: { updatedAt: new Date() } },
-      { returnDocument: "after" }
-    )
-    if (!newRole) {
-      throw internal("inattendu")
-    }
-    updatedRole = newRole
-    becameGranted = lastEvent?.status !== AccessStatus.GRANTED && eventProps.status === AccessStatus.GRANTED
-  } else {
+  if (!role) {
     const newRole: IRoleManagement = {
       ...props,
       ...(await getOpcoAtCreation(props)),
@@ -78,11 +76,31 @@ export const modifyPermissionToUser = async (
       updatedAt: now,
       createdAt: now,
     }
-    await getDbCollection("rolemanagements").insertOne(newRole)
-    updatedRole = newRole
-    becameGranted = eventProps.status === AccessStatus.GRANTED
+    if (await insertRoleIfAbsent(newRole)) {
+      return applyGrantedSideEffects(newRole, eventProps.status === AccessStatus.GRANTED)
+    }
+    role = await findRole(props)
+    if (!role) {
+      throw internal("inattendu : rôle en doublon introuvable")
+    }
   }
 
+  const lastEvent = getLastStatusEvent(role.status)
+  if (lastEvent?.status === eventProps.status) {
+    return role
+  }
+  const updatedRole = await getDbCollection("rolemanagements").findOneAndUpdate(
+    { _id: role._id },
+    { $push: { status: event }, $set: { updatedAt: new Date() } },
+    { returnDocument: "after" }
+  )
+  if (!updatedRole) {
+    throw internal("inattendu")
+  }
+  return applyGrantedSideEffects(updatedRole, lastEvent?.status !== AccessStatus.GRANTED && eventProps.status === AccessStatus.GRANTED)
+}
+
+const applyGrantedSideEffects = async (updatedRole: IRoleManagement, becameGranted: boolean): Promise<IRoleManagement> => {
   // Point de passage unique de toute transition réelle vers GRANTED (cf. applyPendingHandiEngagementIfGranted).
   if (becameGranted) {
     await applyPendingHandiEngagementIfGranted(updatedRole)
@@ -92,8 +110,9 @@ export const modifyPermissionToUser = async (
 }
 
 export const getGrantedRoles = async (userId: string) => {
+  // Souvent appelée juste après la validation du rôle ou de l'e-mail (cf. checkForJobActivations).
   const roles = await getDbCollection("rolemanagements")
-    .find({ user_id: new ObjectId(userId) })
+    .find({ user_id: new ObjectId(userId) }, READ_OWN_WRITES)
     .toArray()
   return roles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
 }

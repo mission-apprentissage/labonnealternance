@@ -1,4 +1,6 @@
 import { ObjectId } from "mongodb"
+import type { ISearchSiteChannel } from "shared/constants/search-token"
+import { isAutoRadiusWidening } from "shared/utils/auto-radius"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
@@ -36,6 +38,7 @@ export function normalizeQuery(q: string): string {
 type SearchQuerystring = {
   q?: string
   type?: string
+  mode?: "emplois" | "formations" | "emplois_formation"
   type_filter_label?: string[]
   contract_type?: string[]
   level?: string[]
@@ -46,9 +49,9 @@ type SearchQuerystring = {
   longitude?: number
   radius?: number
   admin_area?: string
+  purpose?: "mode_fallback_count"
   search_source?: "suggestion" | "free_text" | "training_links" | "external_sites" | "partner_links"
-  // Alias déprécié (cf. search.routes.ts) : encore envoyé volontairement par l'UI courante
-  // (transition anti-version-skew) et par les liens traininglinks émis avant le 2026-08-24.
+  // Alias déprécié (cf. search.routes.ts) : liens traininglinks émis avant le 2026-08-24.
   source?: "suggestion" | "free_text" | "training_links" | "external_sites" | "partner_links"
 }
 
@@ -58,7 +61,9 @@ const roundCoord = (value: number) => Math.round(value * 10) / 10
 
 type SearchOutcome = { status: "ok" | "degraded"; nbHits: number } | { status: "error"; nbHits: null }
 
-export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOutcome): Promise<void> {
+export type SearchChannel = ISearchSiteChannel | "api"
+
+export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOutcome, channel: SearchChannel): Promise<void> {
   try {
     const q = query.q?.trim().slice(0, 200)
     if (!q || containsPii(q)) return
@@ -75,7 +80,9 @@ export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOu
       q_normalized,
       status: outcome.status,
       nb_hits: outcome.nbHits,
-      search_source: query.search_source ?? query.source ?? "free_text",
+      search_source: query.search_source ?? query.source ?? null,
+      mode: query.mode ?? null,
+      channel,
       filters: {
         type: query.type ?? null,
         type_filter_label: query.type_filter_label?.length ?? 0,
@@ -89,6 +96,9 @@ export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOu
       geo: hasGeo ? { lat: roundCoord(query.latitude!), lng: roundCoord(query.longitude!) } : null,
       radius: hasGeo ? (query.radius ?? null) : null,
       admin_area: query.admin_area ?? null,
+      // Calculé, pas déclaré par l'appelant (falsifiable) : cf. isAutoRadiusWidening.
+      ...(isAutoRadiusWidening(query, outcome.nbHits) ? { auto_radius_intermediate: true as const } : {}),
+      ...(query.purpose ? { purpose: query.purpose } : {}),
       created_at: now,
     })
   } catch (error) {

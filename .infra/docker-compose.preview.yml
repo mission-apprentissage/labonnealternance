@@ -104,8 +104,6 @@ services:
       - VIRTUAL_HOST=smtp.{{dns_name}}
       - VIRTUAL_PATH=/
       - VIRTUAL_PORT=8025
-      - LETSENCRYPT_HOST=smtp.{{dns_name}}
-      - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
 
   metabase:
     <<: *default
@@ -117,6 +115,7 @@ services:
           memory: 2g
     environment:
       JAVA_OPTS: "-Xmx512m"
+      JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
       JAVA_TIMEZONE: Europe/Paris
       MB_SITE_LOCALE: fr
       MB_SITE_URL: "https://metabase.{{dns_name}}"
@@ -126,8 +125,6 @@ services:
       VIRTUAL_HOST: "metabase.{{dns_name}}"
       VIRTUAL_PATH: /
       VIRTUAL_PORT: 3000
-      LETSENCRYPT_HOST: "metabase.{{dns_name}}"
-      LETSENCRYPT_EMAIL: misson.apprentissage.devops@gmail.com
     volumes:
       - metabase:/metabase.db
     healthcheck:

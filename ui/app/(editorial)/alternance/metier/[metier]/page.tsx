@@ -14,6 +14,7 @@ import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCta
 import { findVilleLandingSlug } from "@/app/(editorial)/alternance/_components/landing_links"
 import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { SalaireSection } from "@/app/(editorial)/alternance/diplome/[slug]/_components/SalaireSection"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { ArrowRightLine } from "@/theme/components/icons"
@@ -106,9 +107,10 @@ export async function generateMetadata({ params }: { params: Promise<{ metier: s
   }
 }
 
+// Hauteur d'écran réservée pendant le streaming du contenu : évite que le pied de page ne saute à son arrivée (#5759)
 export default function Metier({ params }: { params: Promise<{ metier: string }> }) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoadingEmptySpace />}>
       <MetierContent params={params} />
     </Suspense>
   )

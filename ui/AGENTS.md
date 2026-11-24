@@ -58,24 +58,20 @@ changement chez MUI ou react-dsfr.
 Réévaluer seulement si MUI relance le projet (ou équivalent zéro-runtime) **et** que react-dsfr
 le supporte.
 
-# Contenu éditorial Notion : cache et rate-limit (issue Sentry LBA-UI-5CVZZZZZZG4TR)
+# Contenu éditorial Notion : cache et rate-limit
 
 Les pages `app/(editorial-with-notion)/**` lisent Notion via `services/fetch-notion-page.ts`
 (API v3 non officielle, sans authentification, rate-limitée par IP).
 
-Piège : `cacheMaxMemorySize: 0` dans `next.config.mjs` rend le cache handler `"use cache"` **no-op
-en production** (`createDefaultCacheHandler(0)` renvoie un handler vide ; en `next dev` Next force
-une taille mémoire, donc le bug ne se reproduit pas en dev). Le `cacheLife("days")` du service ne
-cachait donc rien : chaque requête sur /faq, /cgu, /politique-de-confidentialite… retapait Notion,
-d'où des 429 en rafale. `fetch-notion-page.ts` porte son propre cache process + retry +
-stale-if-error, indépendant du cache handler Next.
+`cacheMaxMemorySize: 0` dans `next.config.mjs` rend le cache handler `"use cache"` **no-op en
+production** (`createDefaultCacheHandler(0)` renvoie un handler vide). `next dev` force une taille
+mémoire : le problème ne se voit qu'en build de production. `fetch-notion-page.ts` porte donc son
+propre cache process + retry + stale-if-error, indépendant du cache handler Next.
 
 `fetch-notion-page.ts` est le seul `"use cache"` serveur du projet — les autres sont
 `"use cache: private"`, non concernés par `cacheMaxMemorySize`.
 
-## Reproduire en local
-
-Le bug n'apparaît qu'en build de production :
+## Vérifier en local (build de production)
 
 ```bash
 node ui/scripts/notion-api-stub.mjs &           # bouchon Notion sur :4545, compte les appels
@@ -88,11 +84,9 @@ for i in 1 2 3 4 5; do curl -s -o /dev/null localhost:3100/faq; done
 curl -s localhost:4545/__stats                  # appels réellement envoyés à Notion
 ```
 
-Mesures (5 requêtes, instance fraîche) :
+# Tracking Matomo
 
-| Scénario | /conditions-generales-utilisation | /faq |
-| --- | --- | --- |
-| avant (cache no-op) | 5 appels | 40 appels |
-| après | 1 appel | 8 appels |
-
-Sous `mode=flaky` (429 puis OK) la page rendait vide avant le correctif, elle rend le contenu après.
+Tout ajout, renommage ou suppression d'un événement `pushMatomoEvent` suit
+[`docs/developpement/tracking-matomo.md`](../docs/developpement/tracking-matomo.md) : fiche de tracking dans
+l'issue, action Matomo fixe, push complet des champs lus par la balise, aucune donnée personnelle, conteneur
+publié avant le déploiement.

@@ -2,11 +2,27 @@ import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { entrepriseStatusEventFactory, saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest, validatedUserStatus } from "@tests/utils/user.test.utils"
+import {
+  entrepriseStatusEventFactory,
+  roleManagementEventFactory,
+  saveAdminUserTest,
+  saveCfa,
+  saveCfaUserTest,
+  saveEntreprise,
+  saveEntrepriseUserTest,
+  saveOpcoUserTest,
+  saveRoleManagement,
+  saveUserWithAccount,
+  validatedUserStatus,
+} from "@tests/utils/user.test.utils"
 import { OPCOS_LABEL } from "shared/constants/index"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
+import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import { validateSIRET } from "shared/validators/siret-validator"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
@@ -376,25 +392,304 @@ describe("Modification du compte par l'entreprise elle-même (PUT /user/:userId,
   })
 })
 
-describe("GET /admin/users-recruteurs", () => {
+describe("conformité des offres dans les listes de comptes (#5757)", () => {
   useMongo()
   const httpClient = useServer()
 
-  it("n'indique des offres publiées que pour un recruteur qui a une offre en ligne", async () => {
-    const sansOffrePubliee = await saveEntrepriseUserTest({}, {}, { siret: "90000000000001", raison_sociale: "Boulangerie recette sans publication" })
-    const avecOffrePubliee = await saveEntrepriseUserTest({}, {}, { siret: "90000000000019", raison_sociale: "Boulangerie recette avec publication" })
-    // En attente du compte, en modération ou refusée : aucune n'est en ligne.
-    for (const offer_status of [JOB_STATUS_ENGLISH.EN_ATTENTE, JOB_STATUS_ENGLISH.EN_MODERATION, JOB_STATUS_ENGLISH.ANNULEE]) {
-      await createJobPartner({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: sansOffrePubliee.user._id, offer_status })
-    }
-    await createJobPartner({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: avecOffrePubliee.user._id, offer_status: JOB_STATUS_ENGLISH.ANNULEE })
-    await createJobPartner({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: avecOffrePubliee.user._id, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+  // La réponse valide la clé de Luhn des SIRET : le dernier chiffre est choisi pour la satisfaire.
+  let siretSequence = 0
+  const nextSiret = () => {
+    const prefix = String(9100000000000 + ++siretSequence)
+    return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => `${prefix}${digit}`).find(validateSIRET) as string
+  }
+  const DESCRIPTION = "Description de l'offre, jamais renvoyée par les listes de comptes"
+
+  const saveAccount = (raison_sociale: string, { opco = OPCOS_LABEL.AKTO, roleStatus = AccessStatus.AWAITING_VALIDATION } = {}) =>
+    saveEntrepriseUserTest(
+      {},
+      { status: [roleManagementEventFactory({ status: roleStatus })] },
+      { siret: nextSiret(), raison_sociale, opco, status: [entrepriseStatusEventFactory()] }
+    )
+
+  type IAccount = Awaited<ReturnType<typeof saveAccount>>
+
+  const saveOffer = (account: IAccount, offer: Partial<IJobsPartnersOfferPrivate> = {}) =>
+    createJobPartner({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      managed_by: account.user._id,
+      workplace_siret: account.entreprise.siret,
+      workplace_opco: OPCOS_LABEL.AKTO,
+      offer_description: DESCRIPTION,
+      offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE,
+      offer_moderation_verdict: "conforme",
+      offer_moderation_status: "ok",
+      offer_moderation_review: null,
+      ...offer,
+    })
+
+  const conformityBySociete = (rows: { establishment_raison_sociale?: string; offer_conformity: string }[]) =>
+    Object.fromEntries(rows.map(({ establishment_raison_sociale, offer_conformity }) => [establishment_raison_sociale, offer_conformity]))
+
+  it("donne à chaque compte la conformité de sa pire offre non close, par entreprise et pour les offres déposées par un CFA", async () => {
+    await saveAccount("Recette sans offre")
+    const partenaire = await saveAccount("Recette avec offre partenaire")
+    await saveOffer(partenaire, { partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_moderation_verdict: "non_conforme" })
+    const closes = await saveAccount("Recette offres closes")
+    await saveOffer(closes, { offer_status: JOB_STATUS_ENGLISH.ANNULEE, offer_moderation_verdict: "non_conforme" })
+    await saveOffer(closes, { offer_status: JOB_STATUS_ENGLISH.POURVUE, offer_moderation_verdict: "non_conforme" })
+    const jamaisAnalysee = await saveAccount("Recette jamais analysée")
+    await saveOffer(jamaisAnalysee, { offer_moderation_verdict: undefined, offer_moderation_status: undefined })
+    const aVerifier = await saveAccount("Recette à vérifier")
+    await saveOffer(aVerifier, { offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await saveOffer(aVerifier, { offer_moderation_verdict: "a_verifier" })
+    await saveOffer(aVerifier, { offer_moderation_verdict: undefined, offer_moderation_status: undefined })
+    const indisponible = await saveAccount("Recette analyse indisponible")
+    await saveOffer(indisponible, { offer_moderation_verdict: "a_verifier" })
+    await saveOffer(indisponible, { offer_status: JOB_STATUS_ENGLISH.EN_MODERATION, offer_moderation_verdict: "a_verifier", offer_moderation_status: "epuise" })
+    const nonConforme = await saveAccount("Recette non conforme")
+    await saveOffer(nonConforme, { offer_moderation_status: "indisponible", offer_moderation_verdict: "a_verifier" })
+    await saveOffer(nonConforme, { offer_status: JOB_STATUS_ENGLISH.EN_MODERATION, offer_moderation_verdict: "non_conforme" })
+    const validee = await saveAccount("Recette validée par la modération", { roleStatus: AccessStatus.GRANTED })
+    await saveOffer(validee, { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_moderation_verdict: "non_conforme", offer_moderation_review: "validee" })
+    // Un même utilisateur sur deux entreprises : chacune garde la conformité de ses offres.
+    const premiere = await saveAccount("Recette première entreprise")
+    const seconde = await saveEntrepriseUserTest(
+      {},
+      { user_id: premiere.user._id, status: [roleManagementEventFactory({ status: AccessStatus.AWAITING_VALIDATION })] },
+      { siret: nextSiret(), raison_sociale: "Recette seconde entreprise", status: [entrepriseStatusEventFactory()] }
+    )
+    await getDbCollection("userswithaccounts").deleteOne({ _id: seconde.user._id })
+    await saveOffer(premiere, { offer_moderation_verdict: "non_conforme" })
+    await saveOffer({ user: premiere.user, entreprise: seconde.entreprise } as IAccount)
+    const cfa = await saveCfaUserTest({}, { siret: nextSiret(), raison_sociale: "Recette CFA" }, { siret: nextSiret() })
+    await getDbCollection("rolemanagements").updateOne({ _id: cfa.role._id }, { $set: { status: [roleManagementEventFactory({ status: AccessStatus.AWAITING_VALIDATION })] } })
+    await createJobPartner({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      managed_by: cfa.user._id,
+      workplace_siret: cfa.entreprise.siret,
+      is_delegated: true,
+      cfa_siret: cfa.cfa.siret,
+      offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE,
+      offer_moderation_verdict: "non_conforme",
+      offer_moderation_status: "ok",
+      offer_moderation_review: null,
+    })
     const { bearerToken } = await createAndLogUser(httpClient, "admin-recruteurs", { type: "ADMIN" })
 
-    const response = await httpClient().inject({ method: "GET", path: "/api/admin/users-recruteurs?search=Boulangerie%20recette", headers: bearerToken })
+    const response = await httpClient().inject({ method: "GET", path: "/api/admin/users-recruteurs?search=Recette", headers: bearerToken })
 
     expect(response.statusCode).toBe(200)
-    const hasJobsBySociete = Object.fromEntries(response.json().map(({ establishment_raison_sociale, hasJobs }) => [establishment_raison_sociale, hasJobs]))
-    expect(hasJobsBySociete).toEqual({ "Boulangerie recette sans publication": false, "Boulangerie recette avec publication": true })
+    expect(conformityBySociete(response.json())).toEqual({
+      "Recette sans offre": "aucune_offre",
+      "Recette avec offre partenaire": "aucune_offre",
+      "Recette offres closes": "aucune_offre",
+      "Recette jamais analysée": "non_applicable",
+      "Recette à vérifier": "a_verifier",
+      "Recette analyse indisponible": "indisponible",
+      "Recette non conforme": "non_conforme",
+      "Recette validée par la modération": "conforme",
+      "Recette première entreprise": "non_conforme",
+      "Recette seconde entreprise": "conforme",
+      "Recette CFA": "non_conforme",
+    })
+    expect(response.body).not.toContain(DESCRIPTION)
+  })
+
+  it("calcule la conformité des entreprises d'un OPCO sur les seules offres de son OPCO", async () => {
+    const dansPerimetre = await saveAccount("Recette OPCO dans le périmètre")
+    await saveOffer(dansPerimetre, { offer_moderation_verdict: "non_conforme" })
+    // Offre rattachée à un autre OPCO : l'OPCO ne peut pas l'ouvrir, sa conformité ne lui est pas montrée.
+    const horsPerimetre = await saveAccount("Recette OPCO offre d'un autre OPCO")
+    await saveOffer(horsPerimetre, { offer_moderation_verdict: "non_conforme", workplace_opco: OPCOS_LABEL.ATLAS })
+    await saveOffer(horsPerimetre, { offer_moderation_verdict: "a_verifier" })
+    await saveAccount("Recette entreprise d'un autre OPCO", { opco: OPCOS_LABEL.ATLAS })
+    const { bearerToken } = await createAndLogUser(httpClient, "opco-recruteurs", { type: "OPCO" })
+
+    const response = await httpClient().inject({ method: "GET", path: "/api/user/opco", headers: bearerToken })
+
+    expect(response.statusCode).toBe(200)
+    expect(conformityBySociete(response.json().awaiting)).toEqual({
+      "Recette OPCO dans le périmètre": "non_conforme",
+      "Recette OPCO offre d'un autre OPCO": "a_verifier",
+    })
+    expect(response.body).not.toContain(DESCRIPTION)
+  })
+
+  it("refuse les listes de comptes à un CFA et à un recruteur", async () => {
+    await saveEntrepriseUserTest({ email: "recruteur-listes@mail.com" }, {}, { siret: nextSiret() })
+
+    // Une réponse 403 ferme la session (cf. errorMiddleware) : chaque appel refusé part d'une connexion neuve.
+    const responses = [
+      await httpClient().inject({ method: "GET", path: "/api/admin/users-recruteurs", headers: (await createAndLogUser(httpClient, "cfa-listes", { type: "CFA" })).bearerToken }),
+      await httpClient().inject({ method: "GET", path: "/api/user/opco", headers: (await logUser(httpClient, "cfa-listes")).bearerToken }),
+      await httpClient().inject({ method: "GET", path: "/api/admin/users-recruteurs", headers: (await logUser(httpClient, "recruteur-listes")).bearerToken }),
+      await httpClient().inject({ method: "GET", path: "/api/user/opco", headers: (await logUser(httpClient, "recruteur-listes")).bearerToken }),
+    ]
+
+    expect(responses.map(({ statusCode }) => statusCode)).toEqual([403, 403, 403, 403])
+  })
+})
+
+describe("GET /user/:userId/organization/:organizationId/same-siret-accounts", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const SIRET = "90000000000027"
+  const AUTRE_SIRET = "90000000000035"
+
+  const setup = async () => {
+    const entreprise = await saveEntreprise({ siret: SIRET, opco: OPCOS_LABEL.AKTO, status: [entrepriseStatusEventFactory()] })
+    const autreEntreprise = await saveEntreprise({ siret: AUTRE_SIRET, opco: OPCOS_LABEL.AKTO, status: [entrepriseStatusEventFactory()] })
+    const saveAccount = async (
+      organizationId: string,
+      status: AccessStatus,
+      createdAt: Date,
+      authorized_type = AccessEntityType.ENTREPRISE,
+      reason = "reason",
+      contact: { first_name?: string; last_name?: string; phone?: string } = {}
+    ) => {
+      const user = await saveUserWithAccount({ status: validatedUserStatus, first_name: "Hugo", last_name: "Martin", phone: "0699999999", ...contact })
+      await saveRoleManagement({ user_id: user._id, authorized_id: organizationId, authorized_type, createdAt, status: [roleManagementEventFactory({ status, reason })] })
+      return user
+    }
+    const cible = await saveAccount(entreprise._id.toString(), AccessStatus.AWAITING_VALIDATION, new Date("2026-11-01"), AccessEntityType.ENTREPRISE, "reason", {
+      first_name: "Léa",
+      last_name: "Durand",
+      phone: "0601020304",
+    })
+    await saveRoleManagement({
+      user_id: cible._id,
+      authorized_id: autreEntreprise._id.toString(),
+      authorized_type: AccessEntityType.ENTREPRISE,
+      status: [roleManagementEventFactory()],
+    })
+    const ancien = await saveAccount(entreprise._id.toString(), AccessStatus.GRANTED, new Date("2025-03-01"))
+    const desactive = await saveAccount(entreprise._id.toString(), AccessStatus.DENIED, new Date("2026-06-01"), AccessEntityType.ENTREPRISE, "doublon", {
+      first_name: "Lea",
+      last_name: "DURAND",
+      phone: "+33 6 01 02 03 04",
+    })
+    await saveAccount(autreEntreprise._id.toString(), AccessStatus.GRANTED, new Date("2026-01-01"))
+    const cfa = await saveCfa({ siret: SIRET })
+    await saveAccount(cfa._id.toString(), AccessStatus.GRANTED, new Date("2026-01-01"), AccessEntityType.CFA)
+
+    const offre = { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: ancien._id }
+    await createJobPartner({ ...offre, workplace_siret: SIRET, workplace_opco: OPCOS_LABEL.AKTO })
+    await createJobPartner({ ...offre, workplace_siret: SIRET, workplace_opco: OPCOS_LABEL.AKTO })
+    await createJobPartner({ ...offre, workplace_siret: SIRET, workplace_opco: OPCOS_LABEL.ATLAS })
+    await createJobPartner({ ...offre, workplace_siret: AUTRE_SIRET, workplace_opco: OPCOS_LABEL.AKTO })
+    await createJobPartner({ ...offre, partner_label: JOBPARTNERS_LABEL.HELLOWORK, workplace_siret: SIRET, workplace_opco: OPCOS_LABEL.AKTO })
+
+    return { entreprise, cible, ancien, desactive }
+  }
+
+  const callRoute = (userId: string, organizationId: string, headers: Record<string, string>) =>
+    httpClient().inject({ method: "GET", path: `/api/user/${userId}/organization/${organizationId}/same-siret-accounts`, headers })
+
+  it("liste les autres comptes du même SIRET, sans le compte consulté, ses autres SIRET ni un CFA de même SIRET", async () => {
+    const { entreprise, cible, ancien, desactive } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "admin-same-siret", { type: "ADMIN" })
+
+    const response = await callRoute(cible._id.toString(), entreprise._id.toString(), bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toEqual([
+      expect.objectContaining({ _id: desactive._id.toString(), status: ETAT_UTILISATEUR.DESACTIVE, status_reason: "doublon", jobs_count: 0, matches: ["phone", "name"] }),
+      expect.objectContaining({ _id: ancien._id.toString(), status: ETAT_UTILISATEUR.VALIDE, createdAt: new Date("2025-03-01").toISOString(), jobs_count: 3, matches: [] }),
+    ])
+  })
+
+  it("ne compte pour un OPCO que les offres de son OPCO", async () => {
+    const { entreprise, cible, ancien } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "opco-same-siret", { type: "OPCO" })
+
+    const response = await callRoute(cible._id.toString(), entreprise._id.toString(), bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().find(({ _id }) => _id === ancien._id.toString())?.jobs_count).toBe(2)
+  })
+
+  it("renvoie une liste vide quand aucun autre compte n'a ce SIRET", async () => {
+    const { user, entreprise } = await saveEntrepriseUserTest({}, {}, { siret: SIRET, status: [entrepriseStatusEventFactory()] })
+    const { bearerToken } = await createAndLogUser(httpClient, "admin-same-siret-vide", { type: "ADMIN" })
+
+    const response = await callRoute(user._id.toString(), entreprise._id.toString(), bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toEqual([])
+  })
+
+  it("refuse un recruteur qui consulte son propre compte", async () => {
+    const { bearerToken, user } = await createAndLogUser(httpClient, "cfa-same-siret", { type: "CFA" })
+    const role = await getDbCollection("rolemanagements").findOne({ user_id: user._id })
+    const autreCompte = await saveUserWithAccount({ status: validatedUserStatus })
+    await saveRoleManagement({ user_id: autreCompte._id, authorized_id: role!.authorized_id, authorized_type: AccessEntityType.CFA, status: [roleManagementEventFactory()] })
+
+    const response = await callRoute(user._id.toString(), role!.authorized_id, bearerToken)
+
+    expect(response.statusCode).toBe(403)
+  })
+})
+
+describe("Périmètre d'un OPCO sur les fiches d'un utilisateur multi-compte", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const setup = async () => {
+    const entrepriseAkto = await saveEntreprise({ siret: "90000000000043", opco: OPCOS_LABEL.AKTO, status: [entrepriseStatusEventFactory()] })
+    const entrepriseAtlas = await saveEntreprise({ siret: "90000000000050", opco: OPCOS_LABEL.ATLAS, status: [entrepriseStatusEventFactory()] })
+    const cfa = await saveCfa({ siret: "90000000000068" })
+    const cible = await saveUserWithAccount({ status: validatedUserStatus })
+    const saveRole = (authorized_id: string, authorized_type: AccessEntityType, status: AccessStatus) =>
+      saveRoleManagement({ user_id: cible._id, authorized_id, authorized_type, status: [roleManagementEventFactory({ status })] })
+    await saveRole(entrepriseAkto._id.toString(), AccessEntityType.ENTREPRISE, AccessStatus.AWAITING_VALIDATION)
+    await saveRole(entrepriseAtlas._id.toString(), AccessEntityType.ENTREPRISE, AccessStatus.GRANTED)
+    await saveRole(cfa._id.toString(), AccessEntityType.CFA, AccessStatus.GRANTED)
+    return { cible, entrepriseAkto, entrepriseAtlas, cfa }
+  }
+
+  const get = (path: string, headers: Record<string, string>) => httpClient().inject({ method: "GET", path: `/api${path}`, headers })
+
+  it("ne laisse pas un OPCO atteindre, par repli, l'entreprise d'un autre OPCO", async () => {
+    const { cible, entrepriseAkto } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "opco-perimetre", { type: "OPCO" })
+
+    const response = await get(`/user/${cible._id}/organization/unused`, bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().organizationId).toBe(entrepriseAkto._id.toString())
+  })
+
+  it.each([
+    ["l'entreprise d'un autre OPCO", "entrepriseAtlas"],
+    ["un CFA", "cfa"],
+  ] as const)("refuse à un OPCO la fiche et les autres comptes de %s", async (_label, organization) => {
+    const fixtures = await setup()
+    const username = `opco-perimetre-${organization}`
+    const { bearerToken } = await createAndLogUser(httpClient, username, { type: "OPCO" })
+    const organizationId = fixtures[organization]._id.toString()
+
+    expect((await get(`/user/${fixtures.cible._id}/organization/${organizationId}`, bearerToken)).statusCode).toBe(403)
+    // errorMiddleware ferme la session à chaque 403 : nouvelle connexion avant la seconde route.
+    const { bearerToken: newToken } = await logUser(httpClient, username)
+    expect((await get(`/user/${fixtures.cible._id}/organization/${organizationId}/same-siret-accounts`, newToken)).statusCode).toBe(403)
+  })
+
+  it("exige l'organisation exacte pour lister les autres comptes", async () => {
+    const { cible, entrepriseAkto } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "opco-perimetre-exact", { type: "OPCO" })
+
+    expect((await get(`/user/${cible._id}/organization/unused/same-siret-accounts`, bearerToken)).statusCode).toBe(400)
+    expect((await get(`/user/${cible._id}/organization/${entrepriseAkto._id}/same-siret-accounts`, bearerToken)).statusCode).toBe(200)
+  })
+
+  it("laisse un admin retomber sur le rôle validé, comme avant", async () => {
+    const { cible, entrepriseAtlas } = await setup()
+    const { bearerToken } = await createAndLogUser(httpClient, "admin-perimetre", { type: "ADMIN" })
+
+    const response = await get(`/user/${cible._id}/organization/unused`, bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json().organizationId).toBe(entrepriseAtlas._id.toString())
   })
 })

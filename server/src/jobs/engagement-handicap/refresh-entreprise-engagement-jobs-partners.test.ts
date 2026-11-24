@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
@@ -5,8 +6,9 @@ import { JOB_STATUS_ENGLISH } from "shared"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/api-entreprise/api-entreprise.client.fixture"
+import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { refreshEntrepriseEngagementJobsPartners, refreshReferentielEngagementFranceTravail } from "./refresh-entreprise-engagement-jobs-partners"
+import { HANDIMATCH_FT_CSV_PATH, refreshEntrepriseEngagementJobsPartners, refreshReferentielEngagementFranceTravail } from "./refresh-entreprise-engagement-jobs-partners"
 
 vi.mock("node:fs/promises", () => ({
   default: {
@@ -18,6 +20,13 @@ const ENGAGED_SIRET = apiEntrepriseEtablissementFixture.dinum.data.siret
 const NOT_ENGAGED_SIRET = "42476141900045"
 
 useMongo()
+
+describe("HANDIMATCH_FT_CSV_PATH", () => {
+  // node:fs n'est pas mocké (seul node:fs/promises l'est) : le chemin réel est résolu
+  it("should point to an existing static file", () => {
+    expect(existsSync(getStaticFilePath(HANDIMATCH_FT_CSV_PATH))).toBe(true)
+  })
+})
 
 describe("refreshReferentielEngagementFranceTravail", () => {
   beforeEach(async () => {

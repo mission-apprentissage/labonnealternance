@@ -14,10 +14,13 @@ import cacheDiagorienteModel from "./cache-diagoriente.model.js"
 import cacheGeolocationModel from "./cache-geolocation.model.js"
 import cacheInfosSiretModel from "./cache-infos-siret.model.js"
 import cfaModel from "./cfa.model.js"
+import closedSiretActionsModel from "./closed-siret-actions.model.js"
 import type { IModelDescriptor } from "./common.js"
 import credentialsModel from "./credentials.model.js"
 import customEmailETFAModel from "./custom-email-etfa.model.js"
 import decaContratsModel from "./deca-contrats.model.js"
+import detectionAlertsModel from "./detection-alerts.model.js"
+import detectionRulesModel from "./detection-rules.model.js"
 import diplomesMetiersModel from "./diplomes-metiers.model.js"
 import domainesMetiersModel from "./domaines-metiers.model.js"
 import elligibleTrainingModel from "./elligible-training.model.js"
@@ -34,7 +37,9 @@ import franceTravailAccessModel from "./france-travail-access.model.js"
 import jobsModel from "./jobs.model.js"
 import jobsPartnersModel from "./jobs-partners.model.js"
 import jobsPartnersComputedModel from "./jobs-partners-computed.model.js"
+import jobsPartnersFluxSignalModel from "./jobs-partners-flux-signal.model.js"
 import jobsPartnersModerationModel from "./jobs-partners-moderation.model.js"
+import jobsPartnersProcessingLockModel from "./jobs-partners-processing-lock.model.js"
 import mistralBatchJobsModel from "./mistral-batch-jobs.model.js"
 import opcoModel from "./opco.model.js"
 import rawApecModel from "./raw-apec.model.js"
@@ -66,6 +71,7 @@ import recruteurLbaUpdateEventModel from "./recruteur-lba-update-event.model.js"
 import { referentielCommuneModel } from "./referentiel/communes.model.js"
 import referentielEngagementEntrepriseModel from "./referentiel-engagement-entreprise.model.js"
 import referentielOnisepModel from "./referentiel-onisep.model.js"
+import referentielRomeNafModel from "./referentiel-rome-naf.model.js"
 import reportedCompanyModel from "./reported-company.model.js"
 import rgpdErasureModel from "./rgpd-erasure.model.js"
 import roleManagementModel from "./role-management.model.js"
@@ -76,6 +82,7 @@ import searchJobsKeywordsModel from "./search-jobs-keywords.model.js"
 import searchQueriesModel from "./search-queries.model.js"
 import searchSuggestionsModel from "./search-suggestions.model.js"
 import searchSynonymsModel from "./search-synonyms.model.js"
+import searchTokensModel from "./search-tokens.model.js"
 import searchTrainingsModel from "./search-trainings.model.js"
 import seoDiplomeModel from "./seo-diplome.model.js"
 import seoMetierModel from "./seo-metier.model.js"
@@ -105,10 +112,13 @@ const modelDescriptorMap = {
   [cacheDiagorienteModel.collectionName]: cacheDiagorienteModel,
   [cacheGeolocationModel.collectionName]: cacheGeolocationModel,
   [cfaModel.collectionName]: cfaModel,
+  [closedSiretActionsModel.collectionName]: closedSiretActionsModel,
   [cacheClassificationModel.collectionName]: cacheClassificationModel,
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
   [decaContratsModel.collectionName]: decaContratsModel,
+  [detectionAlertsModel.collectionName]: detectionAlertsModel,
+  [detectionRulesModel.collectionName]: detectionRulesModel,
   [diplomesMetiersModel.collectionName]: diplomesMetiersModel,
   [domainesMetiersModel.collectionName]: domainesMetiersModel,
   [elligibleTrainingModel.collectionName]: elligibleTrainingModel,
@@ -124,7 +134,9 @@ const modelDescriptorMap = {
   [jobsModel.collectionName]: jobsModel,
   [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
+  [jobsPartnersFluxSignalModel.collectionName]: jobsPartnersFluxSignalModel,
   [jobsPartnersModerationModel.collectionName]: jobsPartnersModerationModel,
+  [jobsPartnersProcessingLockModel.collectionName]: jobsPartnersProcessingLockModel,
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawEdfModel.collectionName]: rawEdfModel,
@@ -141,6 +153,7 @@ const modelDescriptorMap = {
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielEngagementEntrepriseModel.collectionName]: referentielEngagementEntrepriseModel,
+  [referentielRomeNafModel.collectionName]: referentielRomeNafModel,
   [romeModel.collectionName]: romeModel,
   [roleManagementModel.collectionName]: roleManagementModel,
   [roleManagement360Model.collectionName]: roleManagement360Model,
@@ -172,6 +185,7 @@ const modelDescriptorMap = {
   [mistralBatchJobsModel.collectionName]: mistralBatchJobsModel,
   [searchSuggestionsModel.collectionName]: searchSuggestionsModel,
   [searchSynonymsModel.collectionName]: searchSynonymsModel,
+  [searchTokensModel.collectionName]: searchTokensModel,
   [seoVilleModel.collectionName]: seoVilleModel,
   [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
   [seoDiplomeModel.collectionName]: seoDiplomeModel,

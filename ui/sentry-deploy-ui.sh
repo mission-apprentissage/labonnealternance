@@ -22,4 +22,4 @@ export SENTRY_URL=https://sentry.apprentissage.beta.gouv.fr
 export SENTRY_ORG=sentry
 export SENTRY_PROJECT=lba-ui
 
-../node_modules/.bin/sentry-cli releases deploys "$PUBLIC_VERSION" new -e "${ENVIRONMENT}"
+"${SENTRY_CLI:-../node_modules/.bin/sentry-cli}" releases deploys "$PUBLIC_VERSION" new -e "${ENVIRONMENT}"

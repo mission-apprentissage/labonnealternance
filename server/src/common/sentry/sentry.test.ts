@@ -1,11 +1,14 @@
 import type * as Sentry from "@sentry/node"
 import * as SentryNode from "@sentry/node"
 import axios from "axios"
+import type { FastifyRequest } from "fastify"
 import FormData from "form-data"
 import nock from "nock"
 import { zRoutes } from "shared"
 import { afterEach, describe, expect, it } from "vitest"
 
+import { serializers } from "@/common/logger"
+import { notifyToSlack } from "@/common/utils/slack-utils"
 import { scrubSensitiveEventData } from "./sentry"
 import { getDiagnosticQuery } from "./sentry.fastify"
 
@@ -144,6 +147,19 @@ describe("scrubSensitiveEventData — régression sur de vraies AxiosError (axio
     expect(JSON.stringify(scrubSensitiveEventData(event))).not.toContain("super-secret-cs")
   })
 
+  it.each([
+    ["un refus HTTP", (scope: nock.Interceptor) => scope.reply(404, "no_service"), "HTTP 404"],
+    ["une erreur réseau", (scope: nock.Interceptor) => scope.replyWithError(Object.assign(new Error("socket hang up"), { code: "ECONNRESET" })), "ECONNRESET"],
+  ])("ne laisse pas fuiter l'URL du webhook quand Slack refuse l'envoi sur %s, et garde la raison", async (_, reply, reason) => {
+    reply(nock("https://hooks.slack.com").post("/services/T000/B000/WEBHOOK_SECRET"))
+
+    const event = await captureRealAxiosError(() => notifyToSlack({ subject: "TEST", message: "test", webhook: "https://hooks.slack.com/services/T000/B000/WEBHOOK_SECRET" }))
+
+    const json = JSON.stringify(scrubSensitiveEventData(event))
+    expect(json).not.toContain("WEBHOOK_SECRET")
+    expect(event.exception?.values?.[0]?.value).toContain(reason)
+  })
+
   it("préserve le corps de réponse (non sensible) utile au diagnostic", async () => {
     nock("http://fake-diag.test").get("/z").reply(422, { message: "siret invalide" })
 
@@ -179,6 +195,7 @@ const QUERY_PARAMS_KEPT = [
   "appointmentId",
   "cfa_delegated_siret",
   "cleMinistereEducatif",
+  "code",
   "conformity",
   "contract_type",
   "cursor",
@@ -205,8 +222,10 @@ const QUERY_PARAMS_KEPT = [
   "order",
   "organization_name",
   "page",
+  "partner",
   "partner_label",
   "partners_to_exclude",
+  "purpose",
   "q",
   "question_id",
   "radius",
@@ -235,6 +254,17 @@ describe("paramètres de query déclarés par les routes", () => {
   const declared = new Set(
     Object.values(zRoutes).flatMap((routes) => Object.values(routes).flatMap((route) => Object.keys((route as { querystring?: { shape?: object } }).querystring?.shape ?? {})))
   )
+
+  it("sont masqués dans les logs serveur quand ils le sont dans Sentry", () => {
+    const query = Object.fromEntries([...QUERY_PARAMS_MASKED, "q"].map((key) => [key, `valeur-${key}`]))
+
+    const logged = JSON.stringify(
+      serializers.req({ method: "GET", url: `/api/x?${new URLSearchParams(query)}`, headers: {}, query, params: {}, socket: {} } as unknown as FastifyRequest)
+    )
+
+    expect(QUERY_PARAMS_MASKED.filter((key) => logged.includes(`valeur-${key}`))).toEqual([])
+    expect(logged).toContain("valeur-q")
+  })
 
   it("sont tous classés", () => {
     expect([...declared].sort()).toEqual([...QUERY_PARAMS_MASKED, ...QUERY_PARAMS_KEPT].sort())

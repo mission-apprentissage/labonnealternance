@@ -5,7 +5,7 @@ exports[`helloWorkJobToJobsPartners > should convert a hellowork job to a partne
   "apply_email": "apply.82788-F1vycE.bonnealternance@apply-talentdetection.com",
   "apply_phone": null,
   "apply_url": null,
-  "business_error": null,
+  "business_error": "IS_CFA",
   "contract_duration": null,
   "contract_is_disabled_elligible": false,
   "contract_remote": null,

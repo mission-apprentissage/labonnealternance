@@ -11,7 +11,8 @@ export const MODERATION_LEGAL_CATEGORIES = ["discrimination", "remuneration", "s
 
 /**
  * Règles de la charte de rédaction, hors légalité : relevées pour la revue humaine, jamais
- * bloquantes (arbitrage de la modération, #5352). parseClassification ramène leur sévérité à "doute".
+ * bloquantes (arbitrage de la modération, #5352). parseClassification ramène leur sévérité à "doute". Certaines ne
+ * comptent pas du tout dans le verdict (cf. MODERATION_TRACE_ONLY_CATEGORIES).
  */
 export const MODERATION_CHARTER_CATEGORIES = [
   "candidature_hors_plateforme",
@@ -22,11 +23,19 @@ export const MODERATION_CHARTER_CATEGORIES = [
   "intermediaire",
 ] as const
 
+/**
+ * Catégories de la charte relevées pour la trace seulement : elles ne comptent pas dans le verdict, donc n'amènent pas
+ * l'offre dans la file de revue (#5843). Le finding reste enregistré et affiché dans la note de l'agent.
+ */
+export const MODERATION_TRACE_ONLY_CATEGORIES = ["candidature_hors_plateforme"] as const satisfies readonly (typeof MODERATION_CHARTER_CATEGORIES)[number][]
+
 export const MODERATION_CATEGORIES = [...MODERATION_LEGAL_CATEGORIES, ...MODERATION_CHARTER_CATEGORIES] as const
 
 export const MODERATION_SEVERITIES = ["bloquant", "doute"] as const
 
 export const MODERATION_VERDICTS = ["conforme", "a_verifier", "non_conforme"] as const
+/** Verdicts qui laissent une offre publiée ou bloquée en attente d'une décision humaine, tant qu'elle n'est pas tranchée (#5499). */
+export const MODERATION_PENDING_VERDICTS = ["a_verifier", "non_conforme"] as const satisfies readonly (typeof MODERATION_VERDICTS)[number][]
 
 /** Champs libres classifiés, sous leur nom du formulaire : `job_employer_description` est stocké dans `workplace_description`. */
 export const MODERATION_FIELDS = ["job_description", "job_employer_description"] as const
@@ -48,6 +57,12 @@ export const MODERATION_REVIEW_STATUS = {
   REFUSEE: "refusee",
 } as const
 
+/**
+ * Conformité des offres d'un compte recruteur, de la plus défavorable à la moins défavorable : le compte prend celle de
+ * sa pire offre non close (cf. getAccountOfferConformities). `indisponible` regroupe les analyses en échec.
+ */
+export const ACCOUNT_OFFER_CONFORMITIES = ["non_conforme", "indisponible", "a_verifier", "conforme", "non_applicable", "aucune_offre"] as const
+
 export const MODERATION_TRIGGER = {
   CREATION: "creation",
   EDITION: "edition",
@@ -66,6 +81,7 @@ export type IModerationClassificationStatus = (typeof MODERATION_CLASSIFICATION_
 export type IOfferModerationStatus = (typeof OFFER_MODERATION_STATUS)[keyof typeof OFFER_MODERATION_STATUS]
 export type IModerationReviewStatus = (typeof MODERATION_REVIEW_STATUS)[keyof typeof MODERATION_REVIEW_STATUS]
 export type IModerationTrigger = (typeof MODERATION_TRIGGER)[keyof typeof MODERATION_TRIGGER]
+export type IAccountOfferConformity = (typeof ACCOUNT_OFFER_CONFORMITIES)[number]
 
 export const ZModerationTexts = z.object({
   job_description: z.string().nullable(),

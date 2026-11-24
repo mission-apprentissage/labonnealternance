@@ -8,6 +8,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import config from "@/config"
+import { commitRawImport } from "@/jobs/offre-partenaire/raw-import-commit"
 import { emploiInclusionJobToJobsPartners, isEligiblePoste } from "./emploi-inclusion.mapper"
 
 const partnerLabel = JOBPARTNERS_LABEL.EMPLOI_INCLUSION
@@ -15,8 +16,6 @@ const rawCollectionName = rawEmploiInclusionModel.collectionName
 
 export const importEmploiInclusionRaw = async () => {
   const now = new Date()
-
-  await getDbCollection(rawCollectionName).deleteMany({})
 
   const apiClient = new ApiClient({ key: config.apiApprentissage.apiKey })
   const departements = await apiClient.geographie.listDepartements()
@@ -38,6 +37,7 @@ export const importEmploiInclusionRaw = async () => {
   if (jobsById.size > 0) {
     await getDbCollection(rawCollectionName).insertMany([...jobsById.values()].map((job) => ({ ...job, _id: new ObjectId(), createdAt: now })))
   }
+  await commitRawImport({ destinationCollection: rawCollectionName, importDate: now, importName: partnerLabel, insertedCount: jobsById.size })
 
   logger.info(`import ${partnerLabel} terminé : ${jobsById.size} offres importées`)
   return { jobCount: jobsById.size }

@@ -31,7 +31,7 @@ Après un bump de dépendances : `yarn install` puis `yarn dedupe --strategy hig
 - Zod v4 : validateurs de premier niveau (`z.email()`), `z.codec()` plutôt que `.transform()` pour les schémas bidirectionnels.
 - Next : `cacheComponents` actif. Après lecture de `headers()` ou de la session, `"use cache: private"` avec `cacheTag`/`cacheLife`, jamais `"use cache"` seul. Avec `<Activity>`, un composant reste monté au retour arrière : tout `useState(prop)` doit être resynchronisé par un `useEffect`.
 - Icônes : DSFR en priorité (`fr-icon-*`). Typage des composants : https://github.com/codegouvfr/react-dsfr/tree/main/src
-- `ui/AGENTS.md` et `ui/CLAUDE.md` sont générés par `next dev` : ne pas les modifier.
+- `ui/AGENTS.md` porte les règles propres à `ui/`, pour Claude (via `ui/CLAUDE.md`) comme pour Copilot. `next dev` réécrit son bloc `nextjs-agent-rules` : ne pas le modifier ; le reste se maintient à la main.
 - PR : titre `type: sujet (#XXX)` où `XXX` est le numéro de l'issue, suffixe omis quand il n'y a pas d'issue liée ; description qui commence par `Closes #XXX`. Le tout via le skill `pull-request-lba`. Le check de titre n'accepte que `fix`, `feat`, `refactor`, `chore` et `docs`, avec un scope optionnel qui désigne un workspace (`chore(ui): …`) et jamais l'issue (`.github/pr-title-checker-config.json`).
 - `_temp/` est ignoré par git : notes de passation et plans de travail.
 
@@ -42,7 +42,13 @@ Après un bump de dépendances : `yarn install` puis `yarn dedupe --strategy hig
 - Chaque explication à un seul endroit, les autres y renvoient en une ligne (`cf. buildSortStage`).
 - Viser 1 à 3 lignes. Un bloc plus long doit apporter une information introuvable ailleurs.
 - Ne citer que des références stables : numéro d'issue ou de PR, nom de symbole. Pas de jalon interne (« recette #3 »).
-- Quand on renomme ou déplace un symbole, chercher les commentaires qui le citent.
+- Quand on renomme, déplace ou supprime un symbole, cf. « Documentation ».
+
+## Documentation
+
+- Le code fait foi. Quand un commentaire, un fichier de `docs/` ou ces instructions contredisent le code, suivre le code et corriger le texte dans la même PR, ou signaler l'écart s'il sort du périmètre.
+- Avant de renommer, déplacer ou supprimer un fichier ou un symbole, `git grep` son nom dans `docs/`, les commentaires et les fichiers d'instructions (`CLAUDE.md`, `ui/AGENTS.md`, `.github/copilot-instructions.md`), puis mettre à jour chaque mention.
+- `docs/` ne contient que de la référence à jour : comportement actuel, procédures. Les analyses ponctuelles, expériences et plans terminés vont dans l'issue, la PR ou Notion.
 
 ## Pièges connus
 

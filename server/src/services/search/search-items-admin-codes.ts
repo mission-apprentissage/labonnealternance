@@ -29,7 +29,7 @@ export type IAdminCodes = { departement_code: string | null; region_code: string
 
 const NO_CODES: IAdminCodes = { departement_code: null, region_code: null }
 
-type Bbox = [minLon: number, minLat: number, maxLon: number, maxLat: number]
+export type Bbox = [minLon: number, minLat: number, maxLon: number, maxLat: number]
 
 type CommuneRef = {
   insee: string
@@ -86,7 +86,7 @@ export const addCommune = (
 }
 
 /** La bbox du référentiel est un Polygon GeoJSON à 5 sommets ; on n'en garde que les bornes. */
-const toBbox = (geometry: { type: string; coordinates: unknown } | null | undefined): Bbox | null => {
+export const toBbox = (geometry: { type: string; coordinates: unknown } | null | undefined): Bbox | null => {
   if (!geometry || geometry.type !== "Polygon") return null
   const ring = (geometry.coordinates as [number, number][][])[0]
   if (!ring?.length) return null
@@ -114,7 +114,7 @@ const nearest = (candidates: CommuneRef[], point: [number, number]): CommuneRef 
   return best
 }
 
-const contains = ([minLon, minLat, maxLon, maxLat]: Bbox, [lon, lat]: [number, number]) => lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat
+export const contains = ([minLon, minLat, maxLon, maxLat]: Bbox, [lon, lat]: [number, number]) => lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat
 
 /**
  * Arrondissements municipaux → commune. Le catalogue des formations code Paris, Lyon et

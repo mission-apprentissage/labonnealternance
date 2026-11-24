@@ -1,7 +1,9 @@
+import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { IJobsPartnersModeration, IModerationTrigger } from "shared/models/jobs-partners-moderation.model"
-import { MODERATION_CLASSIFICATION_STATUS, MODERATION_TRIGGER } from "shared/models/jobs-partners-moderation.model"
+import { MODERATION_CLASSIFICATION_STATUS, MODERATION_PENDING_VERDICTS, MODERATION_TRIGGER } from "shared/models/jobs-partners-moderation.model"
 
 import { logger } from "@/common/logger"
 import { maskPersonalData } from "@/common/utils/mask-personal-data"
@@ -19,6 +21,13 @@ export type IModerationTexts = { job_description: string | null; job_employer_de
 export type ITimedClassification = { result: IOffreClassificationResult; durationMs: number }
 
 type IOfferModerationFields = Pick<IJobsPartnersOfferPrivate, "offer_moderation_verdict" | "offer_moderation_status" | "offer_moderation_review">
+
+/** Offre en attente d'une décision de modération : seuls Valider et Refuser l'en sortent en gardant la trace (#5499). */
+export const PENDING_MODERATION_DECISION_FILTER: Filter<IJobsPartnersOfferPrivate> = {
+  offer_status: { $in: [JOB_STATUS_ENGLISH.ACTIVE, JOB_STATUS_ENGLISH.EN_MODERATION] },
+  offer_moderation_verdict: { $in: [...MODERATION_PENDING_VERDICTS] },
+  offer_moderation_review: null,
+}
 
 /** Classification des deux champs libres sous l'échéance de la configuration : au-delà, elle est indisponible. */
 export const classifyOffreTexts = async (texts: IModerationTexts): Promise<ITimedClassification> => {

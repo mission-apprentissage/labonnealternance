@@ -8,6 +8,10 @@ Endpoint de recherche unifié utilisant **MongoDB Search** (mongot / Lucene) sur
 GET /api/v1/search
 ```
 
+## Accès
+
+Route non publique : nginx répond 404 hors du réseau docker. Le navigateur l'appelle par le BFF de l'UI (`/bff/v1/search`, `ui/app/bff/[...path]/route.ts`), qui transmet l'IP de l'internaute et un jeton de recherche (`x-lba-search-token`). Le jeton s'obtient sur `/bff/jeton` après une preuve de travail ALTCHA et couvre 100 recherches. Le rendu serveur de l'UI l'appelle en direct, sans jeton. Les intégrateurs passent par l'API Apprentissage.
+
 ## Paramètres de requête
 
 | Paramètre | Type | Défaut | Description |
@@ -113,7 +117,7 @@ GET /api/v1/search?q=web&page=2&hitsPerPage=10
 - **Géo** : les paramètres `latitude`, `longitude` et `radius` sont indépendants du texte — entièrement combinables
 - **Lien de détail** : construire l'URL depuis `url_id` et `type` (ex: `/offre/{url_id}`)
 - **`smart_apply`** : afficher le badge "Postuler rapidement" lorsque `true`
-- **Tri** : configurable via `sort` (`proximity` / `date` / `applications` / `start_date`). Par défaut : pertinence, avec `smart_apply` puis `application_count` (moins candidatées d'abord) en tie-break. Le tri `smart_apply` a été retiré (« Candidature simplifiée » est un filtre). Détail des étapes dans [`current-behavior.md`](./current-behavior.md) §1.
+- **Tri** : configurable via `sort` (`proximity` / `date` / `applications` / `start_date`). Par défaut : pertinence, avec `smart_apply` (candidature simplifiée d'abord) puis `application_count` (moins candidatées d'abord) en tie-break. La valeur `sort=smart_apply` a été retirée (« Candidature simplifiée » est un filtre). Détail des étapes dans [`current-behavior.md`](./current-behavior.md) §1.
 
 ## Recherche textuelle « Métier » (`q`)
 

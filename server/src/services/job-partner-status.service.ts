@@ -6,6 +6,18 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 
+/** `granted_by` des clôtures automatiques dont le mail invite le recruteur à donner son motif (cf. closeOffreWithMotif). */
+export const JOB_AUTO_CLOSURE_ORIGIN = {
+  EXPIRATION: "expire-jobs-partners",
+  APPLICATION_THRESHOLD: "close-jobs-partners-on-application-threshold",
+} as const
+
+/**
+ * `granted_by` de l'expiration d'une offre en attente de validation du compte. Distinct de JOB_AUTO_CLOSURE_ORIGIN :
+ * aucun mail n'est envoyé, et la validation du compte republie l'offre (cf. checkForJobActivations, #5762).
+ */
+export const JOB_PENDING_EXPIRATION_ORIGIN = "expire-jobs-partners-en-attente"
+
 /** Champs que le constructeur écrit lui-même : exclus du type d'extraSet et retirés à l'exécution. */
 const PILOTED_FIELDS = ["offer_status", "updated_at", "offer_status_history"] as const
 

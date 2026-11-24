@@ -3,6 +3,7 @@ import { pipeline } from "node:stream/promises"
 
 import { internal } from "@hapi/boom"
 import type { AnyBulkWriteOperation, Filter } from "mongodb"
+import { MongoBulkWriteError } from "mongodb"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import type { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
 import { logger as globalLogger } from "@/common/logger"
@@ -48,6 +49,8 @@ export const buildComputedPartnersCandidateFilter = <SourceFields extends keyof 
  * @param getData: fonction récupérant les nouvelles données.
  * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
  * Les valeurs retournées seront modifiées et écraseront les anciennes données.
+ * Une offre absente du tableau retourné reçoit l'erreur « data not found » ; l'ordre du tableau est libre.
+ * Le tableau ne contient que des documents du lot reçu.
  */
 export const fillFieldsForComputedPartnersFactory = async <SourceFields extends keyof IComputedJobsPartners, FilledFields extends keyof IComputedJobsPartners | "business_error">({
   job,
@@ -97,75 +100,69 @@ export const fillFieldsForComputedPartnersFactory = async <SourceFields extends 
       counters.total += documents.length
       if (counters.total % 10_000 === 0) logger.info(`processing document ${counters.total}`)
 
+      let responses: Awaited<ReturnType<typeof getData>>
       try {
-        const responses = await getData(documents)
-        const dataToWrite = responses.flatMap((response) => {
-          const { _id, ...newFields } = response
-          const updates: AnyBulkWriteOperation<IComputedJobsPartners>[] = [
-            { updateOne: { filter: { _id }, update: { $pull: { errors: { source: job } } } } },
-            { updateOne: { filter: { _id }, update: { $set: { ...newFields, updated_at: now } } } },
-          ]
-          const doc = documents.find((d) => d._id.equals(_id))
-          if (doc && !doc.jobs_in_success.includes(job)) {
-            updates.push({
-              updateOne: { filter: { _id }, update: { $push: { jobs_in_success: job } } },
-            })
-          }
-          return updates
-        })
-
-        if (dataToWrite.length) {
-          await getDbCollection("computed_jobs_partners").bulkWrite(dataToWrite, { ordered: false })
-          counters.success += responses.length
-        }
-
-        const missing = documents.filter((_, i) => !responses[i])
-        if (missing.length) {
-          await getDbCollection("computed_jobs_partners").bulkWrite(
-            missing.map((doc) => ({
-              updateOne: {
-                filter: { _id: doc._id },
-                update: {
-                  $push: {
-                    errors: { source: job, error: `data not found` },
-                  },
-                },
-              },
-            })),
-            { ordered: false }
-          )
-          counters.error += missing.length
-        }
-        callback()
+        responses = await getData(documents)
       } catch (err) {
         counters.error += documents.length
         const newError = internal(`error lors du traitement d'un groupe de documents`)
         logger.error(err, newError.message)
         sentryCaptureException(newError)
 
-        await getDbCollection("computed_jobs_partners").bulkWrite(
-          documents.flatMap((doc) => [
-            {
-              updateOne: {
-                filter: { _id: doc._id },
-                update: { $pull: { errors: { source: job } } },
-              },
-            },
-            {
-              updateOne: {
-                filter: { _id: doc._id },
-                update: {
-                  $push: {
-                    errors: { source: job, error: `${err}` },
-                  },
-                },
-              },
-            },
-          ]),
-          { ordered: true }
-        )
-        callback()
+        try {
+          await getDbCollection("computed_jobs_partners").bulkWrite(
+            documents.flatMap((doc) => [
+              { updateOne: { filter: { _id: doc._id }, update: { $pull: { errors: { source: job } } } } },
+              { updateOne: { filter: { _id: doc._id }, update: { $push: { errors: { source: job, error: `${err}` } } } } },
+            ]),
+            { ordered: true }
+          )
+        } catch (writeErr) {
+          logger.error(writeErr, `job ${job} : échec de l'écriture des erreurs du groupe`)
+          sentryCaptureException(writeErr)
+        }
+        return callback()
       }
+
+      // Une opération atomique par offre : un enrichissement refusé laisse l'offre inchangée, donc candidate au run suivant.
+      const enrichments: AnyBulkWriteOperation<IComputedJobsPartners>[] = responses.map(({ _id, ...newFields }) => ({
+        updateOne: {
+          filter: { _id },
+          update: { $pull: { errors: { source: job } }, $set: { ...newFields, updated_at: now }, $addToSet: { jobs_in_success: job } },
+        },
+      }))
+      if (enrichments.length) {
+        let rejected = 0
+        try {
+          await getDbCollection("computed_jobs_partners").bulkWrite(enrichments, { ordered: false })
+        } catch (err) {
+          const writeErrors = err instanceof MongoBulkWriteError ? [err.writeErrors].flat() : []
+          rejected = writeErrors.length || enrichments.length
+          logger.error(err, `job ${job} : ${rejected} enrichissement(s) refusé(s)`)
+          sentryCaptureException(err)
+        }
+        counters.success += enrichments.length - rejected
+        counters.error += rejected
+      }
+
+      const respondedIds = new Set(responses.map(({ _id }) => _id.toString()))
+      const missing = documents.filter((doc) => !respondedIds.has(doc._id.toString()))
+      if (missing.length) {
+        counters.error += missing.length
+        try {
+          await getDbCollection("computed_jobs_partners").bulkWrite(
+            missing.flatMap((doc) => [
+              { updateOne: { filter: { _id: doc._id }, update: { $pull: { errors: { source: job } } } } },
+              { updateOne: { filter: { _id: doc._id }, update: { $push: { errors: { source: job, error: `data not found` } } } } },
+            ]),
+            { ordered: true }
+          )
+        } catch (err) {
+          logger.error(err, `job ${job} : échec de l'écriture de « data not found »`)
+          sentryCaptureException(err)
+        }
+      }
+      callback()
     },
   })
 

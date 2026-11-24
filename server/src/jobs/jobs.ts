@@ -27,9 +27,12 @@ import { processRecruiterIntentions } from "./applications/process-recruiter-int
 import { purgeApplicationCvFiles } from "./applications/purge-application-cv-files"
 import { relanceCandidatsInactifs } from "./applications/relance-candidats-inactifs"
 import { relanceIncitationSpontanee } from "./applications/relance-incitation-spontanee"
+import { importReferentielRomeNaf } from "./cross-naf/import-referentiel-rome-naf"
+import { processSuggestionsNaf } from "./cross-naf/process-suggestions-naf"
 import { recreateIndexes } from "./database/recreate-indexes"
 import { validateModels } from "./database/schema-validation"
 import { importDecaContratsParAnnee } from "./deca/import-deca-contrats-par-annee"
+import { DETECTION_TICK_MINUTES, runDetectionRules } from "./detection/detection-engine"
 import { updateDiplomeMetier } from "./diplomes-metiers/update-diplomes-metiers"
 import { updateHandiEngagement } from "./engagement-handicap/update-handi-engagement"
 import { importCatalogueFormationJob } from "./formations-catalogue/formations-catalogue"
@@ -64,8 +67,8 @@ import { removeEligibleTrainingsForAppointmentsNotInCatalogue } from "./rdv/remo
 import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
-import { autoValidationRateAlert } from "./recruiters/auto-validation-rate-alert"
 import { createApiUser } from "./recruiters/create-api-user"
+import { deactivateClosedSiretAccounts } from "./recruiters/deactivate-closed-siret-accounts"
 import { disableApiUser } from "./recruiters/disable-api-user"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
 import { OPCO_REMINDER_JOB_NAME, opcoReminderJob } from "./recruiters/opco-reminder-job"
@@ -121,9 +124,10 @@ export async function setupJobProcessor() {
             handler: async () => closeJobsPartnersOnApplicationThreshold(),
             tag: "main",
           },
-          "Alerte sur le taux d'auto-validation des comptes": {
-            cron_string: "0 7 * * *",
-            handler: async () => autoValidationRateAlert(),
+          // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners) : une seule exécution évalue une règle à la fois (cf. acquireRuleLease).
+          "Évaluation des règles de détection": {
+            cron_string: `*/${DETECTION_TICK_MINUTES} * * * *`,
+            handler: async () => runDetectionRules(),
             tag: "main",
           },
           // Pas de `concurrency: { mode: "exclusive" }` (cf. cron jobs_partners) : deux exécutions concurrentes classifient au
@@ -284,6 +288,11 @@ export async function setupJobProcessor() {
           "Incitation aux candidatures spontanées (J+7 sans candidature spontanée)": {
             cron_string: "10 7 * * *",
             handler: config.env === "production" ? async () => relanceIncitationSpontanee() : async () => Promise.resolve(0),
+          },
+          "Suggestions d'offres sur d'autres secteurs aux nouveaux candidats de la veille": {
+            cron_string: "20 7 * * *",
+            handler: config.env === "production" ? async () => processSuggestionsNaf() : async () => Promise.resolve(0),
+            maxRuntimeInMinutes: 90,
           },
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
             cron_string: "0 5 * * *",
@@ -455,6 +464,15 @@ export async function setupJobProcessor() {
             cron_string: "0 8 * * SUN",
             handler: updateDiplomeMetier,
           },
+          // Nuits des 15 et 16 février et novembre (#5437), comme le recommande l'API Entreprise pour les traitements de masse.
+          // Environ 5 h d'appels à 200/min : découpés en tranches de 10 min, chacune reprenant où la précédente s'est arrêtée
+          // (lastUpdateFromSource), pour ne pas monopoliser un worker qui exécute un seul job à la fois.
+          // Production seule : une exécution en recette consommerait le même quota de 250 requêtes/minute.
+          "Désactivation des comptes à SIRET fermé": {
+            cron_string: "*/15 0-7 15,16 2,11 *",
+            handler: config.env === "production" ? async () => deactivateClosedSiretAccounts({ maxDurationMinutes: 10 }) : async () => Promise.resolve(0),
+            maxRuntimeInMinutes: 20,
+          },
           "update-handi-engagement": {
             cron_string: "45 4 * * SAT",
             handler: async () => updateHandiEngagement(),
@@ -462,6 +480,11 @@ export async function setupJobProcessor() {
           "Mise à jour mensuelle des contrats DECA": {
             cron_string: "15 5 1 * *",
             handler: async () => importDecaContratsParAnnee(),
+          },
+          // Fichier déposé par l'équipe data en début de semaine (constaté le lundi après-midi)
+          "Mise à jour hebdomadaire du référentiel ROME × NAF": {
+            cron_string: "30 5 * * TUE",
+            handler: async () => importReferentielRomeNaf(),
           },
         },
     jobs: {
@@ -471,6 +494,9 @@ export async function setupJobProcessor() {
           await recreateIndexes({ drop })
           return
         },
+      },
+      "closed-siret:deactivate": {
+        handler: async (job) => deactivateClosedSiretAccounts(job.payload as any),
       },
       "update-handi-engagement:force": {
         // Déclenchement manuel uniquement, cf. UpdateHandiEngagementOptions.force.
