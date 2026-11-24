@@ -3,15 +3,27 @@ import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
 import { ContactInfoFields, type ContactInfoFieldsVariant } from "./ContactInfoFields"
 
-const render = ({ variant, emailDisabled = false, phoneError }: { variant?: ContactInfoFieldsVariant; emailDisabled?: boolean; phoneError?: string }) => {
+const render = ({
+  variant,
+  emailDisabled = false,
+  phoneError,
+  phoneHiddenOption,
+  phoneHidden,
+}: {
+  variant?: ContactInfoFieldsVariant
+  emailDisabled?: boolean
+  phoneError?: string
+  phoneHiddenOption?: { hint?: string }
+  phoneHidden?: boolean
+}) => {
   const html = renderToStaticMarkup(
     <Formik
-      initialValues={{ last_name: "", first_name: "", phone: "", email: "" }}
+      initialValues={{ last_name: "", first_name: "", phone: "", email: "", ...(phoneHidden !== undefined ? { phone_hidden: phoneHidden } : {}) }}
       initialTouched={phoneError ? { phone: true } : {}}
       initialErrors={phoneError ? { phone: phoneError } : {}}
       onSubmit={vi.fn()}
     >
-      <ContactInfoFields variant={variant} emailDisabled={emailDisabled} />
+      <ContactInfoFields variant={variant} emailDisabled={emailDisabled} phoneHiddenOption={phoneHiddenOption} />
     </Formik>
   )
   const input = (name: string) => html.match(new RegExp(`<input [^>]*name="${name}"[^>]*>`))?.[0] ?? ""
@@ -70,5 +82,39 @@ describe("ContactInfoFields", () => {
 
     expect(describedIds("phone")).toHaveLength(1)
     expect(describedIds("email").map(textOf).join(" ")).toContain("<b>Important</b> : ces informations restent confidentielles")
+  })
+
+  describe("option de masquage du téléphone (#5886)", () => {
+    it("sans l'option : aucune case phone_hidden et mention inchangée", () => {
+      const { html, input, describedIds, textOf } = render({ variant: "recruteur" })
+
+      expect(input("phone_hidden")).toBe("")
+      expect(html).not.toContain("Même masqué")
+      expect(textOf(describedIds("phone")[1])).toContain("Nos équipes")
+    })
+
+    it("variante recruteur : case sur « mes offres », aide affichée, mention précisant que le numéro reste obligatoire", () => {
+      const { html, input, describedIds, textOf } = render({ variant: "recruteur", phoneHiddenOption: { hint: "Vous pourrez modifier ce choix dans votre compte." } })
+
+      expect(input("phone_hidden")).toContain('type="checkbox"')
+      expect(input("phone_hidden")).not.toContain("checked")
+      expect(html).toContain("Masquer mon numéro de téléphone sur mes offres")
+      expect(html).toContain("Vous pourrez modifier ce choix dans votre compte.")
+      expect(textOf(describedIds("phone")[1])).toContain("Même masqué, votre numéro reste obligatoire.")
+    })
+
+    it("variante opérateur : libellé à la troisième personne, sans mention, case cochée quand le compte est masqué", () => {
+      const { html, input } = render({ phoneHiddenOption: {}, phoneHidden: true })
+
+      expect(html).toContain("Masquer le numéro de téléphone sur les offres")
+      expect(input("phone_hidden")).toContain("checked")
+      expect(html).not.toContain("Même masqué")
+    })
+
+    it("variante partenaire : pas de case même si l'option est demandée, ses coordonnées n'apparaissent pas sur les offres", () => {
+      const { input } = render({ variant: "partenaire", phoneHiddenOption: {} })
+
+      expect(input("phone_hidden")).toBe("")
+    })
   })
 })

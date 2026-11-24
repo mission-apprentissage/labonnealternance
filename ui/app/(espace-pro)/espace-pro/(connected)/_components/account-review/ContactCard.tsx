@@ -28,6 +28,7 @@ export type ContactAccount = {
   last_name: string
   email: string
   phone: string
+  phone_hidden?: boolean
   opco: OPCOS_LABEL
   establishment_siret: string
 }
@@ -78,6 +79,7 @@ export const ContactCard = ({
   const serverFieldErrors = useServerFieldErrors()
   const toast = useToast()
   const isEntreprise = account.type === AUTHTYPE.ENTREPRISE
+  const canHidePhone = isEntreprise || account.type === AUTHTYPE.CFA
 
   useEffect(() => {
     if (isEditing) {
@@ -116,7 +118,7 @@ export const ContactCard = ({
         <Box component="dl" sx={{ m: 0, display: "grid", gridTemplateColumns: "120px minmax(0, 1fr)", rowGap: fr.spacing("2v"), columnGap: fr.spacing("4v") }}>
           <ReadOnlyRow label="Nom" value={`${account.first_name} ${account.last_name}`.trim()} />
           <ReadOnlyRow label="E-mail" value={account.email} />
-          <ReadOnlyRow label="Téléphone" value={account.phone} />
+          <ReadOnlyRow label="Téléphone" value={account.phone && account.phone_hidden ? `${account.phone} (masqué sur les offres)` : account.phone} />
           {isEntreprise && <ReadOnlyRow label="OPCO" value={account.opco} />}
         </Box>
       </Box>
@@ -130,6 +132,7 @@ export const ContactCard = ({
         last_name: account.last_name,
         first_name: account.first_name,
         phone: account.phone,
+        ...(canHidePhone ? { phone_hidden: Boolean(account.phone_hidden) } : {}),
         email: account.email,
         opco: account.opco,
         type: account.type,
@@ -197,7 +200,7 @@ export const ContactCard = ({
                 }
               }}
             >
-              <ContactInfoFields thirdParty />
+              <ContactInfoFields thirdParty phoneHiddenOption={canHidePhone ? {} : undefined} />
               {isEntreprise && (
                 <OpcoSelect
                   value={values.opco}

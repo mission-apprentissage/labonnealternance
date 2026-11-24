@@ -6,7 +6,7 @@ import { zObjectId } from "../models/common.js"
 import { ZJob } from "../models/job.model.js"
 import { HANDI_ENGAGEMENT_VALUES } from "../models/referentiel-engagement-entreprise.model.js"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/role-management.model.js"
-import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountFields } from "../models/user-with-account.model.js"
+import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountContactFields, ZUserWithAccountFields } from "../models/user-with-account.model.js"
 import { ZAccountOfferConformity, ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/users-recruteur.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
@@ -275,6 +275,7 @@ export const zUserRecruteurRoutes = {
         last_name: true,
         first_name: true,
         phone: true,
+        phone_hidden: true,
         email: true,
       })
         .extend({
@@ -315,7 +316,7 @@ export const zUserRecruteurRoutes = {
       method: "put",
       path: "/admin/users/:userId/organization/:siret",
       params: z.strictObject({ userId: zObjectId, siret: z.string() }),
-      body: ZUserWithAccountFields.extend({
+      body: ZUserWithAccountContactFields.extend({
         opco: ZUserRecruteur.shape.opco,
       }).partial(),
       response: {

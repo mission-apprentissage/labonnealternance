@@ -559,6 +559,16 @@ const offreOrCompanyToCompanyFields = (
   }
 }
 
+/**
+ * L'offre LBA d'un recruteur qui masque son numéro n'en porte pas (cf. getOfferApplyPhone) : le candidat le
+ * reçoit quand même dans son e-mail de confirmation, pour pouvoir relancer le recruteur (#5886).
+ */
+const getCompanyPhoneForApplicant = async (LbaJob: IJobOrCompanyV2, companyPhone: string | null | undefined): Promise<string | null | undefined> => {
+  if (companyPhone || LbaJob.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || !LbaJob.job.managed_by) return companyPhone
+  const user = await getDbCollection("userswithaccounts").findOne({ _id: LbaJob.job.managed_by }, { projection: { phone: 1 } })
+  return user?.phone || companyPhone
+}
+
 const newApplicationToApplicationDocumentV2 = async (
   newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput,
   applicant: IApplicant,
@@ -566,6 +576,7 @@ const newApplicationToApplicationDocumentV2 = async (
   caller?: string
 ) => {
   const now = new Date()
+  const companyFields = offreOrCompanyToCompanyFields(LbaJob)
   const application: IApplication = {
     _id: new ObjectId(),
     applicant_id: applicant._id,
@@ -595,7 +606,8 @@ const newApplicationToApplicationDocumentV2 = async (
     application_url: "application_url" in newApplication ? newApplication.application_url : null,
     foreign_application_status_url: "foreign_application_status_url" in newApplication ? newApplication.foreign_application_status_url : null,
     foreign_application_id: "foreign_application_id" in newApplication ? newApplication.foreign_application_id : null,
-    ...offreOrCompanyToCompanyFields(LbaJob),
+    ...companyFields,
+    company_phone: await getCompanyPhoneForApplicant(LbaJob, companyFields.company_phone),
   }
   return application
 }

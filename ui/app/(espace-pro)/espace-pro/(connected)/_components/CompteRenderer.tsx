@@ -7,7 +7,7 @@ import { Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Formik } from "formik"
 import { useRef } from "react"
-import type { IUserWithAccountFields } from "shared"
+import type { IUserWithAccountContactFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import type { HandiEngagement } from "shared/models/referentiel-engagement-entreprise.model"
@@ -33,7 +33,7 @@ import ModificationCompteEmail from "./ModificationCompteEmail"
 
 // handiEngagement n'est pertinent que pour un utilisateur de type ENTREPRISE (cf. isHandiEngagementLocked/
 // hideHandiEngagement plus bas) : optionnel, comme sur la route PUT /user/:userId qu'il alimente.
-interface IUpdateUserWithAccountFields extends IUserWithAccountFields {
+interface IUpdateUserWithAccountFields extends IUserWithAccountContactFields {
   handiEngagement?: HandiEngagement
 }
 
@@ -104,6 +104,7 @@ export default function CompteRenderer() {
           last_name: data.last_name,
           first_name: data.first_name,
           phone: data.phone,
+          ...(isAccountWithEstablishment ? { phone_hidden: Boolean(data.phone_hidden) } : {}),
           email: data.email,
           // "non" par défaut tant que ce n'est pas verrouillé sur "oui"
           ...(data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement ? { handiEngagement: isHandiEngagementLocked ? "oui" : "non" } : {}),
@@ -166,10 +167,20 @@ export default function CompteRenderer() {
                       <FormSection title="1. Vos informations de contact">
                         <Typography sx={{ mb: fr.spacing("6v") }}>
                           {user.type === AUTHTYPE.CFA
-                            ? "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires. Vous recevrez les candidatures sur l'e-mail enregistré."
-                            : "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l'e-mail enregistré."}
+                            ? "Vos informations de contact sont visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires. Vous pouvez choisir de masquer votre numéro de téléphone. Vous recevez les candidatures sur l'e-mail enregistré."
+                            : user.type === AUTHTYPE.ENTREPRISE
+                              ? "Vos informations de contact sont visibles sur vos offres en ligne. Vous pouvez choisir de masquer votre numéro de téléphone. Vous recevez les candidatures sur l'e-mail enregistré."
+                              : "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l'e-mail enregistré."}
                         </Typography>
-                        <ContactInfoFields variant={contactVariant} showRequiredMention={false} />
+                        <ContactInfoFields
+                          variant={contactVariant}
+                          showRequiredMention={false}
+                          phoneHiddenOption={
+                            isAccountWithEstablishment
+                              ? { hint: "Les candidats vous contacteront uniquement par e-mail, via leur candidature sur La bonne alternance." }
+                              : undefined
+                          }
+                        />
                       </FormSection>
                       {data.type === AUTHTYPE.ENTREPRISE && !hideHandiEngagement && (
                         <HandiEngagementSection

@@ -136,6 +136,43 @@ describe("Sending application", () => {
 
     expect(await getDbCollection("applications").findOne({ _id: result._id })).not.toBeNull()
   })
+  describe("téléphone du recruteur transmis au candidat (#5886)", () => {
+    const sendToJob = async (jobId: ObjectId) => {
+      const result = await sendApplicationV2({ newApplication: { ...fakeApplication, recipient_id: { collectionName: "partners", jobId: jobId.toString() } } })
+      return getDbCollection("applications").findOne({ _id: result._id })
+    }
+    const activeJob = {
+      apply_email: "email@gmail.com",
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(1, "day").toDate(),
+    }
+
+    afterEach(async () => {
+      await getDbCollection("userswithaccounts").deleteMany({})
+    })
+
+    it("reprend le numéro du compte quand l'offre LBA ne l'affiche pas", async () => {
+      const user = await saveUserWithAccount({ phone: "0102030405" })
+      const job = await createJobPartner({ ...activeJob, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: user._id, apply_phone: null })
+
+      expect((await sendToJob(job._id))?.company_phone).toBe("0102030405")
+    })
+
+    it("garde le numéro de l'offre LBA quand elle l'affiche", async () => {
+      const user = await saveUserWithAccount({ phone: "0102030405" })
+      const job = await createJobPartner({ ...activeJob, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, managed_by: user._id, apply_phone: "0607080910" })
+
+      expect((await sendToJob(job._id))?.company_phone).toBe("0607080910")
+    })
+
+    it("ne reprend pas le numéro d'un compte pour une offre partenaire sans téléphone", async () => {
+      const user = await saveUserWithAccount({ phone: "0102030405" })
+      const job = await createJobPartner({ ...activeJob, partner_label: JOBPARTNERS_LABEL.HELLOWORK, managed_by: user._id, apply_phone: null })
+
+      expect((await sendToJob(job._id))?.company_phone).toBeFalsy()
+    })
+  })
   it("Should refuse sending application to non existent job", async () => {
     await expect(
       sendApplicationV2({

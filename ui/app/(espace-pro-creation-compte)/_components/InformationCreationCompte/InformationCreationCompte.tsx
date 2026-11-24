@@ -115,6 +115,7 @@ const Formulaire = ({
           last_name: "",
           first_name: "",
           phone: "",
+          phone_hidden: false,
           email,
           origin: origin ?? "Labonnealternance",
         }}
@@ -143,12 +144,13 @@ const Formulaire = ({
                     <FormSection title="1. Vos informations de contact">
                       <Typography sx={{ mb: fr.spacing("6v") }}>
                         {type === AUTHTYPE.ENTREPRISE
-                          ? "Vous recevrez les candidatures sur l'e-mail renseigné. Ces informations de contact servent également à vérifier votre identité avant publication de votre offre. La transmission de données inexactes ou fausses pourra donner lieu au refus de votre compte."
-                          : "Vous recevrez les candidatures sur l'e-mail renseigné. Ces informations de contact servent à vérifier votre identité avant la validation de votre compte. La transmission de données inexactes ou fausses pourra donner lieu au refus de votre compte."}
+                          ? "Votre numéro de téléphone est visible sur vos offres, sauf si vous choisissez de le masquer. Vous recevrez les candidatures sur l'e-mail renseigné. Ces informations de contact servent également à vérifier votre identité avant publication de votre offre. La transmission de données inexactes ou fausses pourra donner lieu au refus de votre compte."
+                          : "Votre numéro de téléphone est visible sur les offres que vous publiez, sauf si vous choisissez de le masquer. Vous recevrez les candidatures sur l'e-mail renseigné. Ces informations de contact servent à vérifier votre identité avant la validation de votre compte. La transmission de données inexactes ou fausses pourra donner lieu au refus de votre compte."}
                       </Typography>
                       <ContactInfoFields
                         variant={type === AUTHTYPE.ENTREPRISE ? "recruteur" : "cfa"}
                         showRequiredMention={false}
+                        phoneHiddenOption={{ hint: "Vous pourrez modifier ce choix dans votre compte." }}
                         emailDisabled={Boolean(email)}
                         emailHint={
                           email
