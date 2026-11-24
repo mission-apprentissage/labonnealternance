@@ -7,6 +7,8 @@ import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, Typography } from "@mui/material"
 import { useId, useRef, useState } from "react"
 import type { IUserRecruteurJson } from "shared"
+import { DEACTIVATION_REASON_MAX_LENGTH, DEACTIVATION_REASON_MIN_LENGTH, ZDeactivationReason } from "shared/models/role-management.model"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
 import { AUTHTYPE } from "@/common/contants"
@@ -26,8 +28,9 @@ const ConfirmationDesactivationUtilisateur = ({
   const [autre, setAutre] = useState("")
   const [showErrors, setShowErrors] = useState(false)
   const motifRef = useRef<HTMLSelectElement>(null)
-  const autreRef = useRef<HTMLInputElement>(null)
+  const autreRef = useRef<HTMLTextAreaElement>(null)
   const titleId = useId()
+  const autreCounterId = useId()
   const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id, organizationId)
 
   if (!userRecruteur) return null
@@ -35,7 +38,8 @@ const ConfirmationDesactivationUtilisateur = ({
   const isAutre = motif === "Autre"
   const reason = isAutre ? autre.trim() : motif
   const motifError = showErrors && !motif ? "Sélectionnez un motif de désactivation" : null
-  const autreError = showErrors && isAutre && reason.length < 3 ? "Précisez le motif en 3 caractères minimum" : null
+  const isAutreInvalid = isAutre && !ZDeactivationReason.safeParse(autre).success
+  const autreError = showErrors && isAutreInvalid ? `Précisez le motif en ${DEACTIVATION_REASON_MIN_LENGTH} caractères minimum et ${DEACTIVATION_REASON_MAX_LENGTH} maximum` : null
 
   const close = () => {
     setMotif("")
@@ -45,28 +49,27 @@ const ConfirmationDesactivationUtilisateur = ({
   }
 
   const handleUpdate = async () => {
-    if (!motif || (isAutre && reason.length < 3)) {
+    if (!motif || isAutreInvalid) {
       setShowErrors(true)
       const firstInvalidField = motif ? autreRef : motifRef
       firstInvalidField.current?.focus()
       return
     }
+    let isUpdated: boolean
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
-        if (reason === NOT_MY_OPCO_REASON) {
-          await reassignUserToAdmin(reason)
-        } else {
-          await disableUser(reason)
-        }
+        isUpdated = reason === NOT_MY_OPCO_REASON ? await reassignUserToAdmin(reason) : await disableUser(reason)
         break
 
       case AUTHTYPE.CFA:
       case AUTHTYPE.ADMIN:
-        await disableUser(reason)
+        isUpdated = await disableUser(reason)
         break
       default:
         throw new Error(`unsupported type: ${type}`)
     }
+    // En cas d'échec, le toast d'erreur s'affiche et la modale garde le motif saisi.
+    if (!isUpdated) return
     onUpdate?.({ reason })
     close()
   }
@@ -92,7 +95,7 @@ const ConfirmationDesactivationUtilisateur = ({
             <option value="" hidden>
               Sélectionnez un motif
             </option>
-            <option value="Siret ou information non conforme à l'identité déclarée ">Siret ou information non conforme à l'identité déclarée </option>
+            <option value="Siret ou information non conforme à l'identité déclarée">Siret ou information non conforme à l'identité déclarée</option>
             <option value="Compte créé par un étudiant">Compte créé par un étudiant</option>
             <option value="Compte entreprise créé par un CFA">Compte entreprise créé par un CFA</option>
             <option value="Compte en doublon">Compte en doublon</option>
@@ -110,20 +113,35 @@ const ConfirmationDesactivationUtilisateur = ({
             <Box sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
               <Input
                 label="Précisez le motif (obligatoire)"
-                hintText="3 caractères minimum"
+                hintText={`${DEACTIVATION_REASON_MIN_LENGTH} caractères minimum, ${DEACTIVATION_REASON_MAX_LENGTH} maximum`}
                 state={autreError ? "error" : "default"}
                 stateRelatedMessage={autreError}
-                nativeInputProps={{
+                textArea
+                nativeTextAreaProps={{
                   ref: autreRef,
-                  type: "text",
                   name: "autre",
                   required: true,
-                  minLength: 3,
+                  minLength: DEACTIVATION_REASON_MIN_LENGTH,
+                  maxLength: DEACTIVATION_REASON_MAX_LENGTH,
+                  rows: 4,
                   value: autre,
                   onChange: (e) => setAutre(e.target.value),
                   "aria-invalid": Boolean(autreError),
+                  "aria-describedby": autreCounterId,
                 }}
+                style={{ marginBottom: 0 }}
               />
+              {/* « N / 500 » se lit « barre oblique » : les lecteurs d'écran reçoivent « N caractères sur 500 ». */}
+              <Typography id={autreCounterId} className={fr.cx("fr-hint-text")} sx={{ mt: fr.spacing("1v"), mb: 0, textAlign: "right" }}>
+                <span aria-hidden="true">
+                  {autre.length} / {DEACTIVATION_REASON_MAX_LENGTH} caractères
+                </span>
+                <span className={fr.cx("fr-sr-only")}>
+                  {autre.length} {autre.length > 1 ? "caractères" : "caractère"} sur {DEACTIVATION_REASON_MAX_LENGTH}
+                </span>
+              </Typography>
+              {/* maxLength bloque la frappe sans retour : la limite atteinte est annoncée. */}
+              <LiveStatus message={autre.length >= DEACTIVATION_REASON_MAX_LENGTH ? `Vous avez atteint la limite de ${DEACTIVATION_REASON_MAX_LENGTH} caractères.` : ""} />
             </Box>
           </Box>
         )}

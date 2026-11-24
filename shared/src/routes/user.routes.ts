@@ -5,7 +5,7 @@ import { z } from "../helpers/zod-with-open-api.js"
 import { zObjectId } from "../models/common.js"
 import { ZJob } from "../models/job.model.js"
 import { HANDI_ENGAGEMENT_VALUES } from "../models/referentiel-engagement-entreprise.model.js"
-import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/role-management.model.js"
+import { AccessEntityType, ZDeactivationReason, ZRoleManagement, ZRoleManagementEvent } from "../models/role-management.model.js"
 import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountContactFields, ZUserWithAccountFields } from "../models/user-with-account.model.js"
 import { ZAccountOfferConformity, ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/users-recruteur.model.js"
 
@@ -233,9 +233,7 @@ export const zUserRecruteurRoutes = {
       method: "post",
       path: "/user/:userId/organization/:organizationId/deactivate",
       params: z.strictObject({ userId: zObjectId, organizationId: zObjectId }),
-      body: ZRoleManagementEvent.pick({
-        reason: true,
-      }),
+      body: z.strictObject({ reason: ZDeactivationReason }),
       response: {
         "200": z.strictObject({}),
       },
@@ -251,9 +249,7 @@ export const zUserRecruteurRoutes = {
       method: "post",
       path: "/user/:userId/organization/:organizationId/not-my-opco",
       params: z.strictObject({ userId: zObjectId, organizationId: zObjectId }),
-      body: ZRoleManagementEvent.pick({
-        reason: true,
-      }),
+      body: z.strictObject({ reason: ZDeactivationReason }),
       response: {
         "200": z.strictObject({}),
       },

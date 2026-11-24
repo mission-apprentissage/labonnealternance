@@ -4,17 +4,13 @@ import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { EApplicantRole } from "shared/constants/rdva"
 import dayjs from "shared/helpers/dayjs"
 import { zRoutes } from "shared/index"
-import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { sanitizeTextField } from "@/common/utils/string-utils"
-import config from "@/config"
 import type { Server } from "@/http/server"
 import { createRdvaShortRecapToken } from "@/services/app-links.service"
 import * as appointmentService from "@/services/appointment.service"
-import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "@/services/appointment.service"
+import { sendCandidateAppointmentEmail, sendCfaAnswerToApplicantEmail, sendFormateurAppointmentEmail } from "@/services/appointment.service"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligible-trainings-for-appointment.service"
 import { findElligibleTrainingForAppointment, getParameterByCleMinistereEducatif } from "@/services/eligible-trainings-for-appointment.service"
-import mailer from "@/services/mailer.service"
 import { getReferrerByKeyName } from "@/services/referrers.service"
 import * as users from "@/services/user.service"
 
@@ -271,25 +267,11 @@ export default (server: Server) => {
       if (cfa_intention_to_applicant === "personalised_answer") {
         const formationCatalogue = cle_ministere_educatif ? await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif }) : undefined
 
-        await mailer.sendEmail({
-          to: user.email,
-          subject: `La bonne alternance - Le centre de formation vous répond`,
-          template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
-          data: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            prenom: sanitizeTextField(user.firstname),
-            nom: sanitizeTextField(user.lastname),
-            message: sanitizeTextField(cfa_message_to_applicant),
-            nom_formation: eligibleTrainingsForAppointment?.training_intitule_long,
-            nom_cfa: eligibleTrainingsForAppointment?.etablissement_formateur_raison_sociale,
-            cfa_email: eligibleTrainingsForAppointment?.lieu_formation_email,
-            cfa_phone: formationCatalogue?.num_tel,
-            images: {
-              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-            },
-            publicEmail: config.publicEmail,
-          },
+        await sendCfaAnswerToApplicantEmail({
+          applicant: user,
+          message: cfa_message_to_applicant,
+          eligibleTrainingsForAppointment,
+          cfaPhone: formationCatalogue?.num_tel,
         })
       }
       const cfa_message_to_applicant_date = new Date()
