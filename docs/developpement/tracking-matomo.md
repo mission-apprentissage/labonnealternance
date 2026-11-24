@@ -1,8 +1,12 @@
 # Tracking Matomo : règles à appliquer
 
-À suivre dès qu'une issue demande de mesurer un usage (« tracker », « mesurer », « indicateur », « KPI »).
-Le site a un seul flux de collecte : le front pousse un événement métier, Matomo Tag Manager (MTM)
-le transforme en événement Matomo.
+À suivre dès qu'une issue demande de mesurer un usage (« tracker », « mesurer », « indicateur », « KPI »)
+ou d'attribuer du trafic à une source (« UTM », « lien tracké », « campagne »). Deux mécanismes :
+
+- **Événements** (§1 à §7) : le front pousse un événement métier, Matomo Tag Manager (MTM) le transforme en
+  événement Matomo.
+- **Liens tracés** (§8) : les paramètres `utm_*` d'un lien entrant attribuent la visite à une campagne
+  dans Matomo et, côté serveur, la candidature, le compte ou l'offre qui en découle.
 
 ```
 composant React ──pushMatomoEvent({ event, …champs })──▶ window._mtm
@@ -181,7 +185,92 @@ Pour supprimer un événement : retirer le push et la constante, puis le déclen
 qui ne servent plus (`find_orphan_triggers`), puis les objectifs, entonnoirs et rapports qui filtrent dessus.
 Les déclencheurs et variables orphelins se suppriment à chaque version.
 
-## 8. Checklist de PR
+## 8. Liens tracés (UTM)
+
+### Ce que les UTM déclenchent
+
+| Côté | Mécanisme | Conséquence |
+| --- | --- | --- |
+| Matomo | Lit `utm_campaign`, `utm_source`, `utm_medium` (et `mtm_*`) de l'URL d'arrivée | La visite passe en canal « Campagne ». Par défaut, Matomo ouvre une nouvelle visite quand la campagne change en cours de visite (`create_new_visit_when_campaign_changes`, réglage de l'instance à confirmer) |
+| Front | `setTrackingCookies` ([`tracking-cookie-utils.ts`](../../ui/tracking/tracking-cookie-utils.ts)) copie `utm_campaign` (ou `mtm_campaign`), `utm_source` et `utm_medium` dans des cookies valables 3 mois | Dernier clic gagnant. **Seuls les paramètres présents dans l'URL sont réécrits** : les autres gardent la valeur d'un lien précédent |
+| Serveur | `getSourceFromCookies` ([`http-utils.ts`](../../server/src/common/utils/http-utils.ts)) relit ces cookies, `traffic-source.service.ts` les enregistre dans `trafficsources` | La candidature, le compte ou l'offre créés sont attribués à cette campagne |
+
+### Règle 1 : jamais d'UTM sur un lien interne
+
+Un UTM ne se met que sur un lien qui **entre** sur La bonne alternance depuis l'extérieur : e-mail, site
+partenaire, affiche ou QR code, réseau social, application installée. Un lien d'une page LBA vers une autre
+page LBA n'en porte pas. Sinon la visite est réattribuée à une campagne interne : la vraie source (moteur de
+recherche, partenaire, e-mail) disparaît de Matomo, et les cookies du tableau ci-dessus l'écrasent pour
+`trafficsources`.
+
+Pour mesurer un lien interne, on utilise :
+
+- un paramètre dédié, déjà lu par la page cible : `search_source` (recherche), `guide_source` (guides),
+  `print_source` (impression), `origin` (création de compte recruteur ou CFA) ;
+- ou un événement Matomo au clic (§1 à §7).
+
+### Règle 2 : les trois paramètres, toujours ensemble
+
+`utm_source`, `utm_medium` et `utm_campaign` sont tous présents sur chaque lien tracé. Un lien qui n'en porte
+qu'un mélange sa valeur avec les deux autres, restés dans les cookies depuis un lien précédent.
+`utm_content` est facultatif. `utm_term` n'est pas utilisé.
+
+### Règle 3 : le vocabulaire
+
+| Paramètre | Rôle | Valeurs |
+| --- | --- | --- |
+| `utm_source` | Qui émet le lien | `lba` : e-mail envoyé par le serveur LBA. `lba-brevo` : lien inséré dans une campagne Brevo (cf. `relance-search-url.ts`). `lba-phygital` : affiche et QR code. `<partenaire>` : lien fourni à un partenaire, identifiant en minuscules (`monmaster`, `parcoursup`…). `pwa` : lancement depuis l'application installée |
+| `utm_medium` | Canal | `email`, `phygital`, `partenariat`, `referral` (lien sortant, cf. règle 5) |
+| `utm_campaign` | Message et lien | Format ci-dessous |
+| `utm_content` | Variante dans un même message | Facultatif, minuscules |
+
+`lba-brevo-transactionnel` existe sur des e-mails transactionnels déjà en production. On le garde sur ces
+e-mails pour ne pas couper leurs séries, mais un nouvel e-mail transactionnel utilise `lba`.
+
+Format de `utm_campaign` pour un e-mail envoyé par le serveur :
+
+```
+lba_<destinataire>-<message>_<lien>
+```
+
+- `destinataire` : `candidat`, `recruteur`, `cfa` ou `opco` ;
+- `message` : identifiant de l'e-mail, en kebab-case, stable dans le temps ;
+- `lien` : le lien dans l'e-mail (`lien-home`, `faq`, `politique-confidentialite`, `lien-recherche`…).
+
+Exemple tiré du code : `lba_candidat-reponse-refus_faq`. Les campagnes créées dans Brevo suivent le format
+`AAMM_lba_<cible>_<objet>_brevo<id>` (par exemple `2609_lba_jsc_promo-emplois_brevo1189`).
+
+Pour toutes les valeurs : minuscules, sans accent ni espace, 100 caractères au plus (même limite que
+`MAX_UTM_LENGTH` dans `partner-search-link.utils.ts`). Pas de donnée personnelle ni d'identifiant
+d'utilisateur.
+
+### Règle 4 : construire l'URL, ne pas concaténer
+
+- Passer par `URL` et `searchParams.set()`, jamais par `` `${url}?${utmParams}` `` ni `` `${url}&utm_…` `` :
+  la concaténation suppose de savoir si l'URL contient déjà un `?`.
+- Avant de tracer une URL qui vient d'ailleurs (URL d'origine d'une candidature, lien partenaire), supprimer
+  les cinq `utm_*` qu'elle porte déjà (cf. `buildTaggedSearchUrl` dans `relance-search-url.ts`).
+- Côté serveur, les valeurs de `utm_campaign` sont des constantes nommées dans le service (cf.
+  `RELANCE_INACTIVITE_UTM_CAMPAIGN`, `UTM_CAMPAIGNS` dans `send-suggestions-naf-emails.ts`). Le template
+  d'e-mail reçoit des URL déjà tracées, sans `utm_` écrit en dur.
+- Un test vérifie les paramètres du lien produit (cf. `relance-candidats-inactifs.test.ts`).
+
+### Règle 5 : liens sortants vers un partenaire
+
+Un lien de LBA vers un autre site porte des UTM qui désignent LBA : `utm_source=labonnealternance`,
+`utm_medium=referral`, `utm_campaign=<objet du partenariat>`. Jamais `utm_source=<le partenaire>` : la
+source est le site qui envoie le visiteur, pas celui qui le reçoit.
+
+### Liens entrants fournis aux partenaires
+
+- Recherche : `/<partenaire>/<code>` (cf. [`docs/partenaires/`](../partenaires/)). La redirection garde les
+  `utm_*` reçus et pose `utm_source=<partenaire>` par défaut, avec `search_source=partner_links`.
+- Liens de prise de rendez-vous servis par l'API (`eligible-trainings-for-appointment.service.ts`) :
+  `search_source=partner_links` et `utm_source` égal au referrer du partenaire.
+- Liens emploi des vœux de formation (`training-links.service.ts`) : `search_source=training_links` et les
+  `utm_*` du vœu, ou à défaut `lba` / `email` / `promotion-emploi-jeunes-voeux`.
+
+## 9. Checklist de PR
 
 - [ ] La fiche de tracking est dans l'issue, et l'implémentation la suit (noms, champs, moment).
 - [ ] Les événements sont dans `MATOMO_EVENTS`, sans chaîne littérale.
@@ -191,3 +280,5 @@ Les déclencheurs et variables orphelins se suppriment à chaque version.
 - [ ] Les dimensions calculées sont testées.
 - [ ] Balises, déclencheurs et variables sont prêts dans le brouillon `s4n03ZE1`, avec une description qui cite l'issue.
 - [ ] La description de PR liste les événements ajoutés et indique si la version du conteneur est publiée.
+- [ ] Liens tracés : aucun UTM sur un lien interne. Les trois `utm_*` sont présents, construits avec `URL`,
+      dans le vocabulaire du §8, et couverts par un test côté serveur.
