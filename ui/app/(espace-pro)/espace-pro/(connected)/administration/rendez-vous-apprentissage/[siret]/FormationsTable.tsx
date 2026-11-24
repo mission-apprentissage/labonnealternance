@@ -25,6 +25,10 @@ import { DEFAULT_FILTERS, filterFormations, getDiffusionState, groupByEmail, MIS
 
 type IModal = "email" | "diffusion" | "reset" | null
 
+// Sans ripple, MUI n'indique plus le focus clavier : contour DSFR à la place.
+// Le fond des lignes sélectionnées double la classe (&&) pour passer devant `.fr-table__content table tbody td`.
+const CHECKBOX_SX = { "&.Mui-focusVisible": { outline: "2px solid #0a76f6", outlineOffset: "2px" } }
+
 const formations = (count: number) => pluralize(count, "formation")
 
 const Legend = () => (
@@ -206,18 +210,20 @@ export const FormationsTable = ({ formations: all }: { formations: IFormation[] 
 
       <Legend />
 
-      <Box className={fr.cx("fr-table", "fr-mb-0")}>
+      <Box className={fr.cx("fr-table", "fr-table--no-caption", "fr-mb-0")}>
         <Box className="fr-table__wrapper">
           {/* Défilement vertical dans le conteneur qui défile aussi à l'horizontale : sa barre horizontale reste à l'écran sur desktop */}
           <Box className="fr-table__container" sx={{ maxHeight: { md: "70vh" }, "& thead th": { position: { md: "sticky" }, top: 0, zIndex: 1 } }}>
             <Box className="fr-table__content">
               <table>
-                <caption className="fr-sr-only">Formations de l'établissement</caption>
+                <caption>Formations de l'établissement</caption>
                 <thead>
                   <tr>
                     <th scope="col">
                       <Checkbox
                         size="small"
+                        disableRipple
+                        sx={CHECKBOX_SX}
                         checked={visible.length > 0 && visibleSelected === visible.length}
                         indeterminate={visibleSelected > 0 && visibleSelected < visible.length}
                         onChange={(event) => toggleAllVisible(event.target.checked)}
@@ -247,12 +253,13 @@ export const FormationsTable = ({ formations: all }: { formations: IFormation[] 
                       <Box
                         component="tr"
                         key={formation._id}
-                        aria-selected={selected}
-                        sx={{ verticalAlign: "top", ...(selected && { backgroundColor: `${fr.colors.decisions.background.alt.blueFrance.default} !important` }) }}
+                        sx={{ verticalAlign: "top", ...(selected && { "&& > td": { backgroundColor: fr.colors.decisions.background.alt.blueFrance.default } }) }}
                       >
                         <td>
                           <Checkbox
                             size="small"
+                            disableRipple
+                            sx={CHECKBOX_SX}
                             checked={selected}
                             onChange={(event) => toggle(formation._id, event.target.checked, (event.nativeEvent as MouseEvent).shiftKey)}
                             slotProps={{ input: { "aria-label": `Sélectionner ${formation.training_intitule_long}` } }}
@@ -273,6 +280,7 @@ export const FormationsTable = ({ formations: all }: { formations: IFormation[] 
                               </span>
                             )}
                             <DsfrLink
+                              size="sm"
                               href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(formation.cle_ministere_educatif)}%22`}
                             >
                               Catalogue

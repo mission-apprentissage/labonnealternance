@@ -1,9 +1,10 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Badge from "@codegouvfr/react-dsfr/Badge"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
-import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
+import { SegmentedControl, type SegmentedControlProps } from "@codegouvfr/react-dsfr/SegmentedControl"
 import { Box, Typography } from "@mui/material"
 import type { ReactNode } from "react"
 import { useId, useState } from "react"
@@ -140,12 +141,32 @@ const BulkEmailForm = ({ titleId, selection, onClose, onSubmit }: IModalProps<(e
 
 type IDiffusionChoice = "keep" | IDiffusionMode
 
-const CHOICES: { value: IDiffusionChoice; label: string }[] = [
+const CHOICES = [
   { value: "keep", label: "Inchangé" },
   { value: "auto", label: "Automatique" },
   { value: "on", label: "Activer" },
   { value: "off", label: "Désactiver" },
-]
+] as const satisfies readonly { value: IDiffusionChoice; label: string }[]
+
+const EligibilityBadge = ({ eligible, total }: { eligible: number; total: number }) => {
+  if (eligible === total)
+    return (
+      <Badge small noIcon severity="info">
+        Éligible
+      </Badge>
+    )
+  if (eligible === 0)
+    return (
+      <Badge small noIcon severity="error">
+        Non éligible
+      </Badge>
+    )
+  return (
+    <Badge small noIcon severity="warning">
+      {`Éligible ${eligible} / ${total}`}
+    </Badge>
+  )
+}
 
 type IDiffusionSubmit = (changes: { referrer: IReferrerName; mode: IDiffusionMode }[]) => Promise<void>
 
@@ -197,35 +218,58 @@ const BulkDiffusionForm = ({ titleId, selection, onClose, onSubmit }: IModalProp
       }
     >
       <Typography className={fr.cx("fr-hint-text")} sx={{ mb: 0 }}>
-        « Activer » et « Désactiver » forcent l'état : la synchronisation de la nuit le conserve. « Automatique » retire le forçage.
+        « Activer » et « Désactiver » forcent l'état, conservé par la synchronisation de nuit. « Automatique » suit de nouveau l'opt-out et le premium.
       </Typography>
-      {PLATFORMS.map(({ name, label }) => {
-        const states = selection.map((formation) => getDiffusionState(formation, name))
-        const active = states.filter((state) => state.active).length
-        const forced = states.filter((state) => state.forced).length
-        const notEligible = states.filter((state) => !state.eligible).length
-        const hint = [`activée sur ${active} / ${selection.length}`, forced && pluralize(forced, "forcée"), notEligible && pluralize(notEligible, "non éligible", "non éligibles")]
-          .filter(Boolean)
-          .join(" · ")
-        return (
-          <RadioButtons
-            key={name}
-            legend={label}
-            hintText={hint}
-            name={`diffusion-${name}`}
-            orientation="horizontal"
-            small
-            style={{ marginBottom: 0 }}
-            options={CHOICES.map((choice) => ({
-              label: choice.label,
-              nativeInputProps: {
-                checked: (choices[name] ?? "keep") === choice.value,
-                onChange: () => setChoices((previous) => ({ ...previous, [name]: choice.value })),
-              },
-            }))}
-          />
-        )
-      })}
+      <Box component="ul" sx={{ listStyle: "none", m: 0, p: 0 }}>
+        {PLATFORMS.map(({ name, label }) => {
+          const states = selection.map((formation) => getDiffusionState(formation, name))
+          const eligible = states.filter((state) => state.eligible).length
+          const active = states.filter((state) => state.active).length
+          const forced = states.filter((state) => state.forced).length
+          const toSegment = (choice: (typeof CHOICES)[number]): SegmentedControlProps.SegmentWithoutIcon => ({
+            label: choice.label,
+            nativeInputProps: {
+              value: choice.value,
+              checked: (choices[name] ?? "keep") === choice.value,
+              // Aucune formation éligible : forcer n'aurait d'effet sur aucune ligne.
+              disabled: eligible === 0 && (choice.value === "on" || choice.value === "off"),
+              onChange: () => setChoices((previous) => ({ ...previous, [name]: choice.value })),
+            },
+          })
+          return (
+            <Box
+              component="li"
+              key={name}
+              sx={{ py: fr.spacing("3v"), borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, opacity: eligible === 0 ? 0.7 : 1 }}
+            >
+              <SegmentedControl
+                name={`diffusion-${name}`}
+                small
+                inlineLegend
+                legend={
+                  // La légende DSFR est en display: contents : ce span est l'élément flex, il prend la place libre pour aligner les sélecteurs à droite.
+                  <Box component="span" sx={{ flex: "1 1 auto", display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: fr.spacing("2v"), mr: fr.spacing("3v") }}>
+                    <Box component="span" sx={{ fontWeight: 700, minWidth: "9.5rem" }}>
+                      {label}
+                    </Box>
+                    <EligibilityBadge eligible={eligible} total={selection.length} />
+                    <Badge small noIcon>
+                      {`Activée ${active} / ${selection.length}`}
+                    </Badge>
+                    {forced > 0 && (
+                      <Badge small noIcon severity="new">
+                        {pluralize(forced, "forcée")}
+                      </Badge>
+                    )}
+                  </Box>
+                }
+                classes={{ root: fr.cx("fr-mb-0") }}
+                segments={[toSegment(CHOICES[0]), toSegment(CHOICES[1]), toSegment(CHOICES[2]), toSegment(CHOICES[3])]}
+              />
+            </Box>
+          )
+        })}
+      </Box>
       <Impact rows={[{ label: "Forçages ignorés (plateforme non éligible)", count: ignored, warn: true }]} />
     </ModalLayout>
   )
