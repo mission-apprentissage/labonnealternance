@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
+import { getWorkplaceDisplayName } from "shared/utils/company-display-name"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
@@ -22,14 +23,7 @@ export const APPLICATION_COUNT_THRESHOLD = 80
 
 export const buildApplicationThresholdReason = (threshold: number) => `seuil de ${threshold} candidatures atteint`
 
-const getReminderCompanyName = ({
-  workplace_name,
-  workplace_brand,
-  workplace_legal_name,
-}: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => {
-  // `||` et non `??` : workplace_name peut valoir "" (cf. formatTextFieldsJobsPartners).
-  return workplace_name || workplace_brand || workplace_legal_name || ""
-}
+const getReminderCompanyName = (job: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => getWorkplaceDisplayName(job) ?? ""
 
 const sendThresholdEmails = async (closedJobs: IJobsPartnersOfferPrivate[]) => {
   // Le lien de clôture du mail ne vaut que pour une offre LBA, gérée par un compte de l'espace pro.

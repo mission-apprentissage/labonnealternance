@@ -7,6 +7,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ISearchItem } from "shared/models/search-corpus.model"
 import { isGeiqEntreprise } from "shared/services/is-geiq-entreprise"
+import { getJobCompanyDisplayName, getWorkplaceDisplayName } from "shared/utils/company-display-name"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
@@ -382,8 +383,7 @@ export const getJobOrganizationName = (
   job: Pick<IJobPartnerForSearchItem, "is_delegated" | "cfa_legal_name" | "workplace_name" | "workplace_brand" | "workplace_legal_name">,
   ctx: SearchItemBuildContext
 ): string => {
-  const name = job.is_delegated ? job.cfa_legal_name : job.workplace_name || job.workplace_brand || job.workplace_legal_name
-  return canonicalizeCase(ctx.organizationCaseMap, name || "")
+  return canonicalizeCase(ctx.organizationCaseMap, getJobCompanyDisplayName(job) ?? "")
 }
 
 export const buildJobOfferSearchItem = (job: IJobPartnerForSearchItem, ctx: SearchItemBuildContext): ISearchItem => ({
@@ -427,7 +427,7 @@ export const buildJobOfferSearchItem = (job: IJobPartnerForSearchItem, ctx: Sear
 
 export const buildRecruteurSearchItem = (job: IJobPartnerForSearchItem, ctx: SearchItemBuildContext): ISearchItem => {
   // title des recruteurs = nom d'entreprise → même canonicalisation que organization_name.
-  const organizationName = canonicalizeCase(ctx.organizationCaseMap, job.workplace_name || job.workplace_brand || job.workplace_legal_name || "")
+  const organizationName = canonicalizeCase(ctx.organizationCaseMap, getWorkplaceDisplayName(job) ?? "")
   return {
     _id: job._id,
     // url_id des recruteurs = SIRET (page détail /emploi/recruteurs_lba/{siret}) ; fallback
