@@ -43,7 +43,10 @@ export function SalaireSection({ titre, utmParams }: { titre: React.ReactNode; u
         }}
       >
         <Box sx={cardSx}>
-          <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+          <Typography
+            component="h4"
+            sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+          >
             Moins de 18 ans
           </Typography>
           <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
@@ -68,7 +71,10 @@ export function SalaireSection({ titre, utmParams }: { titre: React.ReactNode; u
           </List>
         </Box>
         <Box sx={cardSx}>
-          <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+          <Typography
+            component="h4"
+            sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+          >
             18 à 20 ans
           </Typography>
           <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
@@ -93,7 +99,10 @@ export function SalaireSection({ titre, utmParams }: { titre: React.ReactNode; u
           </List>
         </Box>
         <Box sx={cardSx}>
-          <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+          <Typography
+            component="h4"
+            sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+          >
             21 à 25 ans
           </Typography>
           <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
@@ -118,7 +127,10 @@ export function SalaireSection({ titre, utmParams }: { titre: React.ReactNode; u
           </List>
         </Box>
         <Box sx={cardSx}>
-          <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+          <Typography
+            component="h4"
+            sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}
+          >
             26 ans et plus
           </Typography>
           <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
