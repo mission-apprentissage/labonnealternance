@@ -1,29 +1,27 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Card from "@codegouvfr/react-dsfr/Card"
-import { Box, Divider, Grid, List, ListItem, Typography } from "@mui/material"
+import { Box, Grid, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Image from "next/image"
 import { Suspense } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { SectionTitle } from "@/app/_components/Title/SectionTitle"
 import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
 import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
 import { GrandsGroupesRecruteur } from "@/app/(home)/_components/GrandsGroupesRecruteur"
+import { StatCard } from "@/app/(landing-pages)/_components/StatCard"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
+import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { getDepotCtaHref } from "@/services/get-depot-cta-href"
 import { getSession } from "@/utils/get-session"
 import { METADATA } from "@/utils/routes.metadata.utils"
 import { PAGES } from "@/utils/routes.utils"
 
-export const cardSx = {
-  backgroundColor: "white",
-  padding: fr.spacing("7v"),
-  borderRadius: fr.spacing("1v"),
-  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-  textAlign: "center",
-}
+const featureImageStyle = { width: "100%", maxWidth: "280px", height: "160px", objectFit: "contain", objectPosition: "left bottom" } as const
 
 export const metadata: Metadata = METADATA.static.jeSuisRecruteur()
 
@@ -76,10 +74,11 @@ const JeSuisRecruteurPage = () => {
                 Vous êtes une entreprise
               </Typography>
               <Typography variant="h2" component="p" gutterBottom color={fr.colors.decisions.text.default.grey.default}>
-                Diffusez simplement et gratuitement vos offres en alternance
+                Diffusez gratuitement vos offres en alternance sur le service public de l'alternance
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Exprimez vos besoins en alternance afin d’être visible auprès des jeunes en recherche de contrat, et des centres de formation pouvant vous accompagner.
+                Exprimez votre besoin en moins d'une minute. Votre offre est vérifiée, puis visible sur La bonne alternance et chez nos partenaires, auprès des candidats et des
+                centres de formation proches de vous.
               </Typography>
               <Suspense fallback={<Box sx={{ height: 40 }} />}>
                 <DepotCtaButtons />
@@ -98,157 +97,168 @@ const JeSuisRecruteurPage = () => {
               />
             </Grid>
           </Grid>
-          <Grid
-            container
+          <Box
+            component="section"
+            aria-label="Fonctionnalités"
             sx={{
               mt: fr.spacing("8v"),
               backgroundColor: fr.colors.decisions.background.default.grey.hover,
               borderRadius: fr.spacing("2v"),
               padding: { md: fr.spacing("12v"), xs: fr.spacing("4v") },
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "repeat(3, minmax(0, 1fr))" },
+              gap: fr.spacing("8v"),
+              alignItems: "start",
             }}
           >
-            <Grid container display={"flex"} flexDirection={"row"} spacing={fr.spacing("4v")}>
-              <Grid size={{ md: 6, xs: 12 }} sx={{ my: { md: "auto", xs: fr.spacing("4v") } }}>
-                <Image
-                  fetchPriority="low"
-                  src={"/images/je-suis-recruteur/illu-offre-emploi.svg"}
-                  alt=""
-                  width={529}
-                  height={281}
-                  unoptimized
-                  style={{ width: "100%", height: "auto" }}
-                  aria-hidden={true}
-                />
-              </Grid>
-              <Grid size={{ md: 6, xs: 12 }} sx={{ my: "auto", px: { md: fr.spacing("4v") } }}>
-                <Typography component={"h2"} variant={"h3"}>
-                  Postez votre offre d’alternance en quelques secondes
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  Exprimez votre besoin en quelques clics, nous générons votre offre instantanément. Retrouvez vos offres dans votre compte en vous connectant avec votre email
-                  uniquement.
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container display={"flex"} flexDirection={{ md: "row", xs: "column-reverse" }} spacing={fr.spacing("4v")}>
-              <Grid size={{ md: 6, xs: 12 }} sx={{ my: "auto", px: { md: fr.spacing("4v") } }}>
-                <Typography component={"h2"} variant={"h3"}>
-                  Vos offres sont diffusées gratuitement au plus près des candidats
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
-                  <DsfrLink href={PAGES.static.home.getPath()}>La bonne alternance</DsfrLink>, <DsfrLink href="https://www.francetravail.fr/accueil/">France Travail</DsfrLink>,{" "}
-                  <DsfrLink href="https://parcoursup.fr">Parcoursup</DsfrLink>, <DsfrLink href="https://www.hellowork.com">HelloWork</DsfrLink> et{" "}
-                  <DsfrLink href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1">
-                    bien d’autres
-                    <span className="fr-sr-only">{" - Consulter les autres partenaires de La bonne alternance"}</span>
-                  </DsfrLink>
-                  .
-                </Typography>
-              </Grid>
-              <Grid size={{ md: 6, xs: 12 }} sx={{ my: { md: "auto", xs: fr.spacing("4v") } }}>
-                <Image
-                  fetchPriority="low"
-                  src={"/images/je-suis-recruteur/illu-plateforme-jeunes.svg"}
-                  alt=""
-                  width={504}
-                  height={292}
-                  unoptimized
-                  style={{ width: "100%", height: "auto" }}
-                  aria-hidden={true}
-                />
-              </Grid>
-            </Grid>
-            <Grid container display={"flex"} flexDirection={"row"} spacing={fr.spacing("4v")}>
-              <Grid size={{ md: 6, xs: 12 }} sx={{ my: { md: "auto", xs: fr.spacing("4v") } }}>
-                <Image
-                  fetchPriority="low"
-                  src={"/images/je-suis-recruteur/illu-soliciter-cfa.svg"}
-                  alt=""
-                  width={561}
-                  height={378}
-                  unoptimized
-                  style={{ width: "100%", height: "auto" }}
-                  aria-hidden={true}
-                />
-              </Grid>
-              <Grid size={{ md: 6, xs: 12 }} sx={{ my: "auto", px: { md: fr.spacing("4v") } }}>
-                <Typography component={"h2"} variant={"h3"}>
-                  Identifiez facilement les organismes de formation en lien avec votre offre d’emploi
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  Vous pouvez choisir d’être accompagné par les centres de formation et votre OPCO de rattachement, afin d’accélérer vos recrutements.
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+              <Typography component="h2" variant="h6" sx={{ mb: 0 }}>
+                Postez votre offre d’alternance en quelques secondes
+              </Typography>
+              <Typography sx={{ mb: 0 }}>
+                Exprimez votre besoin en quelques clics, nous générons votre offre instantanément. Retrouvez vos offres dans votre compte en vous connectant avec votre email
+                uniquement.
+              </Typography>
+              <Image fetchPriority="low" src="/images/je-suis-recruteur/illu-offre-emploi.svg" alt="" width={575} height={280} unoptimized style={featureImageStyle} />
+            </Box>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+              <Typography component="h2" variant="h6" sx={{ mb: 0 }}>
+                Vos offres sont diffusées gratuitement au plus près des candidats
+              </Typography>
+              <Typography sx={{ mb: 0 }}>
+                Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
+                <DsfrLink href={PAGES.static.home.getPath()}>La bonne alternance</DsfrLink>, <DsfrLink href="https://www.francetravail.fr/accueil/">France Travail</DsfrLink>,{" "}
+                <DsfrLink href="https://parcoursup.fr">Parcoursup</DsfrLink>, <DsfrLink href="https://www.hellowork.com">HelloWork</DsfrLink> et{" "}
+                <DsfrLink href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1">
+                  bien d’autres
+                  <span className="fr-sr-only">{" - Consulter les autres partenaires de La bonne alternance"}</span>
+                </DsfrLink>
+                .
+              </Typography>
+              <Image fetchPriority="low" src="/images/je-suis-recruteur/illu-plateforme-jeunes.svg" alt="" width={549} height={320} unoptimized style={featureImageStyle} />
+            </Box>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+              <Typography component="h2" variant="h6" sx={{ mb: 0 }}>
+                Identifiez facilement les organismes de formation en lien avec votre offre d’emploi
+              </Typography>
+              <Typography sx={{ mb: 0 }}>
+                Vous pouvez choisir d’être accompagné par les centres de formation et votre OPCO de rattachement, afin d’accélérer vos recrutements.
+              </Typography>
+              <Image fetchPriority="low" src="/images/je-suis-recruteur/illu-soliciter-cfa.svg" alt="" width={543} height={372} unoptimized style={featureImageStyle} />
+            </Box>
+          </Box>
 
           <Box
-            sx={{
-              mt: fr.spacing("10v"),
-              mb: fr.spacing("8v"),
-              py: fr.spacing("8v"),
-              px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
-              backgroundColor: fr.colors.decisions.background.default.grey.hover,
-              borderRadius: fr.spacing("2v"),
-              display: "flex",
-              flexDirection: "column",
-              gap: fr.spacing("10v"),
-            }}
+            component="section"
+            aria-labelledby="toutes-les-entreprises"
+            sx={{ mt: { xs: fr.spacing("10v"), md: fr.spacing("16v") }, display: "flex", flexDirection: "column", gap: fr.spacing("8v") }}
           >
-            <Typography component="h1" variant="h1">
-              Nos offres d’emploi en alternance
-              <br />
-              <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
-                en chiffres
+            <SectionTitle id="toutes-les-entreprises" highlight="surtout les plus petites">
+              Pensé pour toutes les entreprises
+            </SectionTitle>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 2fr" }, gap: fr.spacing("12v"), alignItems: "start" }}>
+              <Box>
+                <Typography className={fr.cx("fr-text--lg")}>
+                  Beaucoup d'entreprises n'ont pas d'équipe dédiée au recrutement. La bonne alternance vous permet de publier une offre simplement et gratuitement. Et même sans
+                  offre publiée, des candidats peuvent vous contacter directement.
+                </Typography>
+                <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0, display: "flex", flexDirection: "column", gap: fr.spacing("3v") }}>
+                  {["Un dépôt d'offre en moins d'une minute", "Des candidatures reçues par mail", "Une mise en relation avec les écoles qui forment sur vos métiers"].map(
+                    (item) => (
+                      <Box component="li" key={item} sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-start", fontWeight: 700 }}>
+                        <span className={fr.cx("fr-icon-check-line")} aria-hidden="true" style={{ color: fr.colors.decisions.text.title.blueFrance.default }} />
+                        {item}
+                      </Box>
+                    )
+                  )}
+                </Box>
               </Box>
-            </Typography>
-            <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
-                gap: fr.spacing("4v"),
-                alignItems: "stretch",
-                mt: fr.spacing("4v"),
-              }}
-            >
-              <Box sx={{ ...cardSx }}>
-                <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
-                  <Image src="/images/home_pics/icons/malette.svg" alt="" aria-hidden={true} width={80} height={80} />
-                </Typography>
-                <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>+ 347 000</Typography>
-                <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
-                  offres en alternance
-                  <br />
-                  collectées sur les 12 derniers mois
-                </Typography>
-              </Box>
-              <Box sx={{ ...cardSx }}>
-                <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
-                  <Image src="/images/home_pics/icons/file_eyes.svg" alt="" aria-hidden={true} width={80} height={80} />
-                </Typography>
-                <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>17</Typography>
-                <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
-                  consultations
-                  <br />
-                  en moyenne par offre
-                </Typography>
-              </Box>
-              <Box sx={{ ...cardSx }}>
-                <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
-                  <Image src="/images/home_pics/icons/files.svg" alt="" aria-hidden={true} width={80} height={80} />
-                </Typography>
-                <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>11</Typography>
-                <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
-                  candidatures
-                  <br />
-                  en moyenne par offre
-                </Typography>
+              <Box>
+                <Box
+                  component="ul"
+                  sx={{ listStyle: "none", p: 0, m: 0, display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" }, gap: fr.spacing("4v") }}
+                >
+                  <StatCard
+                    layout="row"
+                    icon="/images/home_pics/icons/file_eyes.svg"
+                    value="113"
+                    label="consultations par offre"
+                    source="(moyenne calculée sur les offres La bonne alternance entre janvier et novembre 2026)"
+                  />
+                  <StatCard
+                    layout="row"
+                    icon="/images/home_pics/icons/files.svg"
+                    value="23"
+                    label="candidatures par offre"
+                    source="(moyenne calculée sur les offres La bonne alternance entre janvier et novembre 2026)"
+                  />
+                  <StatCard
+                    layout="row"
+                    icon="/images/home_pics/icons/malette.svg"
+                    value="389 000"
+                    label="offres en alternance collectées en 2026"
+                    source="(année partielle, donnée établie au 23/11/2026)"
+                  />
+                  <StatCard
+                    layout="row"
+                    icon="/images/home_pics/icons/contrat.png"
+                    value="9 sur 10"
+                    label="entreprises qui ont recruté un alternant grâce à La bonne alternance en 2026 sont des TPE ou des PME"
+                  />
+                </Box>
               </Box>
             </Box>
+          </Box>
 
-            <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#161616" }}>* Données calculées sur l'année 2025</Typography>
+          <Box
+            component="section"
+            aria-labelledby="marche-cache"
+            sx={{
+              mt: { md: fr.spacing("16v"), xs: fr.spacing("10v") },
+              backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+              borderRadius: fr.spacing("2v"),
+              padding: { md: fr.spacing("12v"), xs: fr.spacing("4v") },
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "7fr 5fr" },
+              gap: { md: fr.spacing("12v"), xs: fr.spacing("6v") },
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+              <SectionTitle id="marche-cache" variant="h2" highlight="Les candidats peuvent quand même vous trouver">
+                Pas d'offre publiée ?
+              </SectionTitle>
+              <Typography sx={{ mb: 0 }}>
+                Une grande partie des recrutements en alternance se fait sans offre publiée. Ce marché caché profite surtout aux candidats qui ont du réseau. Pour l'ouvrir à tous,
+                La bonne alternance montre aux candidats deux types d'opportunités :
+              </Typography>
+              <Box component="ul" sx={{ listStyleType: "disc", pl: fr.spacing("6v"), m: 0, display: "flex", flexDirection: "column", gap: fr.spacing("3v") }}>
+                <li>
+                  <span className="fr-text--bold">Les offres d'emploi</span> <TagOffreEmploi />, déposées par les recruteurs ou issues de nos partenaires.
+                </li>
+                <li>
+                  <span className="fr-text--bold">Les entreprises à fort potentiel d'embauche</span> <TagCandidatureSpontanee />. Chaque mois, La bonne alternance identifie des
+                  entreprises à fort potentiel d'embauche en alternance grâce à l'analyse de diverses données, pour repérer les entreprises susceptibles de recruter un alternant
+                  dans les 6 prochains mois, y compris celles qui ne l'ont jamais fait.
+                </li>
+              </Box>
+              <Typography sx={{ mb: 0 }}>Votre entreprise fait partie de la liste ? Vous recevez des candidatures spontanées ciblées, sans rien publier.</Typography>
+              <Box>
+                <DsfrLink href={PAGES.static.desinscription.getPath()} arrow="right">
+                  Je ne souhaite plus recevoir de candidature spontanée
+                </DsfrLink>
+              </Box>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
+              <Image
+                fetchPriority="low"
+                src="/images/je-suis-recruteur/illu-marche-cache.svg"
+                alt=""
+                width={506}
+                height={618}
+                unoptimized
+                style={{ width: "100%", maxWidth: "380px", height: "auto" }}
+              />
+            </Box>
           </Box>
 
           <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") } }}>
@@ -316,70 +326,6 @@ const JeSuisRecruteurPage = () => {
               </Button>
             </Grid>
           </Grid>
-          <Grid
-            container
-            sx={{
-              mt: { md: fr.spacing("16v"), xs: fr.spacing("8v") },
-              backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-              borderRadius: fr.spacing("2v"),
-              padding: { md: fr.spacing("12v"), xs: fr.spacing("3v") },
-              mb: fr.spacing("16v"),
-            }}
-            spacing={{
-              md: fr.spacing("8v"),
-              xs: fr.spacing("4v"),
-            }}
-          >
-            <Grid size={12} spacing={fr.spacing("8v")}>
-              <Typography component="h2" variant="h2">
-                La bonne alternance révèle{" "}
-                <Box component="span" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default }}>
-                  le marché caché de l’emploi
-                </Box>
-              </Typography>
-              <Divider
-                aria-hidden="true"
-                sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
-              />
-            </Grid>
-            <Grid size={{ md: 7, xs: 12 }} lineHeight={fr.spacing("8v")}>
-              <Typography fontSize={fr.spacing("4v")}>
-                Le saviez-vous ? Afin d’aider les candidats intéressés par l'alternance à trouver un contrat, nous exposons différents types d'entreprises sur notre service :{" "}
-              </Typography>
-              <Typography fontWeight={"bold"} fontSize={fr.spacing("4v")}>
-                Celles ayant émis un besoin en recrutement
-              </Typography>{" "}
-              <Typography fontSize={fr.spacing("4v")}>sur notre plateforme ainsi que sur France Travail et ses sites partenaires</Typography>
-              <List sx={{ listStyleType: "disc", ml: 2, pl: 2, mb: 2 }} disablePadding dense>
-                <ListItem sx={{ display: "list-item" }}>
-                  <Typography>
-                    <span className="fr-text--bold">Celles ayant émis un besoin en recrutement</span> sur notre plateforme ainsi que sur France Travail et ses sites partenaires
-                  </Typography>
-                </ListItem>
-                <ListItem sx={{ display: "list-item" }}>
-                  <Typography>
-                    <span className="fr-text--bold">Celles n'ayant pas diffusé d'offres, mais ayant été identifiées comme "à fort potentiel d'embauche en alternance"</span> par un
-                    algorithme prédictif de France Travail, qui analyse les recrutements des 6 années passées en CDI, CDD de plus de 30 jours et alternance. L’objectif de cet
-                    algorithme est de rendre accessible le marché caché de l’emploi, et ainsi faciliter les démarches de candidatures spontanées des usagers du service.
-                  </Typography>
-                </ListItem>
-              </List>
-              <DsfrLink href={PAGES.static.desinscription.getPath()}>Je ne souhaite plus recevoir de candidature spontanée</DsfrLink>
-            </Grid>
-            <Grid size={{ md: 5, xs: 12 }} sx={{ mb: "auto" }}>
-              <Image
-                fetchPriority="low"
-                src={"/images/je-suis-recruteur/illu-marche-cache.svg"}
-                alt=""
-                width={398}
-                height={431}
-                unoptimized
-                style={{ width: "100%" }}
-                aria-hidden={true}
-              />
-            </Grid>
-          </Grid>
-
           <FollowLinkedIn />
         </DefaultContainer>
       </Box>
