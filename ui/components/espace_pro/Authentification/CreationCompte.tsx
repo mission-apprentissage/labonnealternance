@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { isTrainingOrganizationNafCode } from "shared/utils/naf-utils"
 import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau"
-import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
+import { alertTitleSx, Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { AUTHTYPE } from "@/common/contants"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InformationsSiret } from "@/components/espace_pro/CreationRecruteur/InformationsSiret"
@@ -129,28 +129,31 @@ export const CreationCompteForm = ({
   return (
     <>
       {isCfa && (
-        <Alert
-          severity="info"
-          title={
-            <Typography>
-              Pour les organismes de formation,{" "}
-              <Link
-                onClick={(event) => {
-                  event.preventDefault()
-                  setIsCfa(false)
-                  router.push(PAGES.static.espaceProCreationCfa.getPath())
-                }}
-                underline="hover"
-                // Bascule l'onglet courant via router.push : pas de target="_blank", qui annoncerait un
-                // changement de contexte qui n'a pas lieu (RGAA 6.1). Le href garde le lien utilisable hors JS.
-                href={PAGES.static.espaceProCreationCfa.getPath()}
-                sx={{ cursor: "pointer" }}
-              >
-                veuillez utiliser ce lien
-              </Link>
-            </Typography>
-          }
-        />
+        <Box sx={{ "& .fr-alert__title": alertTitleSx }}>
+          <Alert
+            severity="info"
+            as="h2"
+            title={
+              <Typography component="span">
+                Pour les organismes de formation,{" "}
+                <Link
+                  onClick={(event) => {
+                    event.preventDefault()
+                    setIsCfa(false)
+                    router.push(PAGES.static.espaceProCreationCfa.getPath())
+                  }}
+                  underline="hover"
+                  // Bascule l'onglet courant via router.push : pas de target="_blank", qui annoncerait un
+                  // changement de contexte qui n'a pas lieu (RGAA 6.1). Le href garde le lien utilisable hors JS.
+                  href={PAGES.static.espaceProCreationCfa.getPath()}
+                  sx={{ cursor: "pointer" }}
+                >
+                  veuillez utiliser ce lien
+                </Link>
+              </Typography>
+            }
+          />
+        </Box>
       )}
       <SiretAutocomplete onSubmit={submitSiret} onSelectOrganisation={onSelectOrganisation} />
     </>
@@ -186,7 +189,6 @@ export default function CreationCompte({ type, isWidget = false, origin = "Labon
 
   return (
     <AnimationContainer>
-      {bandeau && <Bandeau {...bandeau} />}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: { xs: 0, md: fr.spacing("4v") }, mt: 0 }}>
         <Box
           sx={{
@@ -196,6 +198,11 @@ export default function CreationCompte({ type, isWidget = false, origin = "Labon
           <Typography component="h1" sx={{ fontSize: "32px", fontWeight: 700 }}>
             Vous recrutez des alternants ?
           </Typography>
+          {bandeau && (
+            <Box sx={{ mt: fr.spacing("4v") }}>
+              <Bandeau {...bandeau} />
+            </Box>
+          )}
           <Typography sx={{ fontSize: "20px", lineHeight: "24px", mb: fr.spacing("4v"), mt: fr.spacing("8v") }}>
             Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
           </Typography>

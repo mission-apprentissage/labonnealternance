@@ -7,9 +7,13 @@ export type BandeauProps = {
   description: React.ReactNode
   lien?: string
   type: "success" | "error"
+  titleAs?: `h${2 | 3 | 4 | 5 | 6}`
 }
 
-export const Bandeau = ({ header, description, lien = null, type }: BandeauProps) => {
+// Taille DSFR du titre d'alerte, que DepotSimplifieStyling écraserait sur un h2
+export const alertTitleSx = { fontSize: "1.125rem", lineHeight: "1.5rem" }
+
+export const Bandeau = ({ header, description, lien = null, type, titleAs = "h2" }: BandeauProps) => {
   const descriptionContent = (
     <>
       {description}
@@ -35,9 +39,10 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
     <Box
       sx={{
         mb: fr.spacing("2v"),
+        "& .fr-alert__title": alertTitleSx,
       }}
     >
-      <Alert severity={type === "success" ? "success" : "error"} role={type === "success" ? "status" : "alert"} title={header} description={descriptionContent} />
+      <Alert as={titleAs} severity={type === "success" ? "success" : "error"} role={type === "success" ? "status" : "alert"} title={header} description={descriptionContent} />
     </Box>
   )
 }
