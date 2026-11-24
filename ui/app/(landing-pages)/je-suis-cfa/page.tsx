@@ -227,11 +227,11 @@ const JeSuisCFAPage = () => {
             Présents sur le parcours des candidats,
           </SectionTitle>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "minmax(0, 1fr) minmax(0, 1.2fr)" }, gap: fr.spacing("12v"), alignItems: "start" }}>
-            <Box>
-              <Typography className={fr.cx("fr-text--lg")}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
+              <Typography className={fr.cx("fr-text--lg")} sx={{ mb: 0 }}>
                 Un candidat qui choisit une formation en alternance doit trouver un employeur pour confirmer son inscription. Il a donc intérêt à chercher le plus tôt possible.
               </Typography>
-              <Typography className={fr.cx("fr-text--lg")}>
+              <Typography className={fr.cx("fr-text--lg")} sx={{ mb: 0 }}>
                 C'est pourquoi La bonne alternance est intégrée aux plateformes d'orientation publiques. Les candidats découvrent les offres d'emploi en alternance au moment où ils
                 formulent leurs vœux, et commencent leur recherche d'employeur avant la rentrée.
               </Typography>
@@ -303,7 +303,7 @@ const JeSuisCFAPage = () => {
               1 sur 5
             </Typography>
             <Typography sx={{ mb: 0 }}>
-              offres partenaires écartées par nos contrôles
+              offre partenaire écartée par nos contrôles
               <br />
               entre février 2025 et octobre 2026
             </Typography>

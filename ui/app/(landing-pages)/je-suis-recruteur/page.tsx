@@ -157,8 +157,8 @@ const JeSuisRecruteurPage = () => {
               Pensé pour toutes les entreprises
             </SectionTitle>
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 2fr" }, gap: fr.spacing("12v"), alignItems: "start" }}>
-              <Box>
-                <Typography className={fr.cx("fr-text--lg")}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
+                <Typography className={fr.cx("fr-text--lg")} sx={{ mb: 0 }}>
                   Beaucoup d'entreprises n'ont pas d'équipe dédiée au recrutement. La bonne alternance vous permet de publier une offre simplement et gratuitement. Et même sans
                   offre publiée, des candidats peuvent vous contacter directement.
                 </Typography>

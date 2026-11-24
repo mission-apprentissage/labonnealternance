@@ -2,9 +2,9 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Grid, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Image from "next/image"
-
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { SommaireAPropos } from "@/app/(editorial)/a-propos/_components/SommaireAPropos"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import affelnet from "@/public/images/logosPartenaires/partenaire-affelnet.webp"
 import apec from "@/public/images/logosPartenaires/partenaire-apec.webp"
@@ -101,17 +101,7 @@ export default function APropos() {
                   component="hr"
                   sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
                 />
-                <Box component="nav" aria-label="Sommaire de la page" sx={{ mt: fr.spacing("6v"), position: { md: "sticky" }, top: { md: fr.spacing("6v") } }}>
-                  <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0, display: "flex", flexDirection: "column", gap: fr.spacing("3v") }}>
-                    {SOMMAIRE.map((entry) => (
-                      <li key={entry.id}>
-                        <a href={`#${entry.id}`} className={fr.cx("fr-link")}>
-                          {entry.label}
-                        </a>
-                      </li>
-                    ))}
-                  </Box>
-                </Box>
+                <SommaireAPropos entries={SOMMAIRE} />
               </Grid>
               <Grid size={{ xs: 12, md: 9 }} sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("12v"), "& p": { mb: 0 } }}>
                 <Box component="section" aria-labelledby="pourquoi-un-service-public" sx={sectionSx}>
@@ -342,7 +332,7 @@ export default function APropos() {
                     D’abord développé par France Travail, La bonne alternance a été repris en 2020 par{" "}
                     <DsfrLink href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html">la mission interministérielle pour l'apprentissage</DsfrLink>, membre de la
                     communauté <DsfrLink href="https://beta.gouv.fr">beta.gouv.fr</DsfrLink> et suit à ce titre une démarche spécifique de conception de services numériques. Depuis
-                    2025, le service est édité par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP).
+                    2024, le service est édité par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP).
                   </Typography>
                 </Box>
               </Grid>

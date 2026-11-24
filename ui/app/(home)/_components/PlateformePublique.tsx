@@ -34,7 +34,7 @@ const ENGAGEMENTS: Engagement[] = [
     title: "Des offres vérifiées",
     description: "Chaque offre est contrôlée. Les fausses offres et les stages sont écartés. Les candidats peuvent également nous signaler des offres non conformes.",
     kpi: "1 sur 5",
-    kpiLabel: "offres partenaires écartées par nos contrôles",
+    kpiLabel: "offre partenaire écartée par nos contrôles",
     kpiSource: "Entre février 2025 et octobre 2026",
   },
   {
