@@ -41,6 +41,11 @@ limit_req_zone $lba_limit_key zone=lba_suggest_recherche:10m rate=2r/s;
 # /api/_private/.
 limit_req_zone $lba_limit_key zone=lba_private_recherche:10m rate=30r/m;
 
+# Fiches emploi et formation (/emploi/*, /formation/*) : chaque rendu appelle l'API. Un visiteur en ouvre
+# quelques-unes par minute ; les pics par IP observés en production viennent de robots (1 à 4 r/s). Sans ban,
+# comme les zones _recherche : les IP de relais partagées y passent aussi.
+limit_req_zone $lba_limit_key zone=lba_fiche_recherche:10m rate=60r/m;
+
 # Autocomplétion métiers (/api/rome) : 1 appel par frappe, rafales tolérées.
 limit_req_zone $lba_limit_key zone=lba_autocomplete:10m rate=2r/s;
 

@@ -3,13 +3,14 @@
 # Test de non-régression des limites de débit du reverse proxy (zones LBA et zone `flood` de l'image).
 #
 # Envoie des rafales simultanées depuis une seule IP et vérifie, pour chaque URI, quelle zone la
-# limite, ou qu'aucune ne la limite. Les cas /_next/static/ verrouillent l'issue 5939.
+# limite, ou qu'aucune ne la limite. Les cas /_next/static/ verrouillent l'issue 5939. Une seconde passe,
+# avec toutes les IP dans la denylist, vérifie le refus sur chaque location.
 #
 # Le reverse proxy est construit depuis le repo infra (public), au tag de la version déployée en
 # prod (`reverse_proxy_version` de .infra/inventories/env.ini), avec la zone `flood` de infra/main.
 #
 # Divergences assumées avec la prod :
-#   - seules les locations et zones de l'UI sont montées ;
+#   - seules les locations et zones de l'UI et de l'API sont montées ;
 #   - les templates jinja sont rendus en supprimant leurs boucles (listes d'IP vides) ;
 #   - les plages d'IP privées sont retirées des listes blanches : le client du test arrive par le
 #     réseau docker, qui serait sinon exempté de toutes les limites et rendrait le test vacuous.
@@ -17,6 +18,8 @@
 # Pour vérifier que le test n'est pas vacuous, chaque manipulation doit le faire échouer :
 #   - retirer `limit_req zone=lba_static_unlimited;` de la location /_next/static/ → assets en 429
 #   - retirer le bloc `if ($request_uri !~ ...)` de la même location → cas %2E%2E servis en 200
+#   - retirer `limit_req zone=lba_fiche_recherche` de la location des fiches → fiches limitées par `flood`
+#   - vider locations/00_denylist.conf.template → passe denylist servie en 200
 #
 # Volontairement écrit pour bash 3.2 (bash système de macOS).
 #
@@ -32,6 +35,7 @@ readonly RP=../../files/configs/reverse_proxy
 # "attendu|nombre de requêtes simultanées|uri"
 #   unlimited : que des 200, aucun rejet journalisé
 #   refused   : que des 404 du reverse proxy (l'amont répond 200 à tout), aucun rejet journalisé
+#   denied    : que des 403 (passe denylist uniquement)
 #   <zone>    : des 200 puis des 429, rejets journalisés dans cette seule zone
 readonly CASES=(
   "unlimited|200|/_next/static/chunks/a.js"
@@ -46,6 +50,26 @@ readonly CASES=(
   "flood|200|/_next/static/%2E%2E/x"
   "lba_partner_links|20|/monmaster/x"
   "lba_rendu_recherche|200|/recherche"
+  "lba_fiche_recherche|200|/emploi/recruteurs_lba/12345678900011/x"
+  "lba_fiche_recherche|200|/emploi/offres_emploi_lba/x/y?_rsc=abc"
+  "lba_fiche_recherche|200|/formation/x/y"
+  "flood|200|/api/x"
+  # Regex insensible à la casse, comme le routeur Fastify.
+  "lba_autocomplete|200|/api/ROME"
+)
+
+# Passe denylist : toutes les IP refusées, sur chaque location montée (préfixe, regex, imbriquée).
+readonly DENIED_CASES=(
+  "denied|20|/"
+  "denied|20|/_next/static/chunks/a.js"
+  "denied|20|/recherche"
+  "denied|20|/emploi/recruteurs_lba/12345678900011/x"
+  "denied|20|/monmaster/x"
+  "denied|20|/bff/v1/search"
+  "denied|20|/bff/_private/web-vitals"
+  "denied|20|/api/x"
+  "denied|20|/api/ROME"
+  "denied|20|/api/v2/_private/application"
 )
 
 fail() { echo "ECHEC : $*" >&2; exit 2; }
@@ -76,7 +100,9 @@ grep -q 'zone=flood' "$BENCH_DIR/flood.jinja2" || fail "zone flood absente du fi
 render "$BENCH_DIR/flood.jinja2" "$BENCH_DIR/extra-conf.d/limit_req.conf.template"
 render "$RP/extra-conf.d/rate-limit.conf.template" "$BENCH_DIR/extra-conf.d/rate-limit.conf.template"
 render "$RP/extra-conf.d/denylist.conf.template" "$BENCH_DIR/extra-conf.d/denylist.conf.template"
-cp "$RP/locations/90_location_ui.conf.template" "$BENCH_DIR/locations/"
+render "$RP/extra-conf.d/api-site.conf.template" "$BENCH_DIR/extra-conf.d/api-site.conf.template"
+cp "$RP/locations/00_denylist.conf.template" "$RP/locations/10_api.conf.template" "$RP/locations/90_location_ui.conf.template" \
+  "$BENCH_DIR/locations/"
 cp "$RP/extra-includes/proxy-iframe.conf.template" "$BENCH_DIR/extra-includes/"
 # L'image tourne sous un utilisateur non root : il doit pouvoir lire les montages et écrire le journal.
 chmod -R a+rX "$BENCH_DIR" && chmod a+w "$BENCH_DIR/log"
@@ -89,7 +115,8 @@ restart() {
   docker compose restart reverse_proxy >/dev/null 2>&1
   local i
   for i in $(seq 30); do
-    [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 "$BASE/")" = "200" ] && { : > "$BENCH_DIR/log/error.log"; return 0; }
+    # 403 vaut disponibilité : la passe denylist refuse tout, et c'est à ses cas de le vérifier.
+    case $(curl -s -o /dev/null -w '%{http_code}' --max-time 2 "$BASE/") in 200|403) : > "$BENCH_DIR/log/error.log"; return 0 ;; esac
     sleep 1
   done
   docker compose logs reverse_proxy >&2
@@ -103,22 +130,27 @@ burst() { # $1=n  $2=uri  -> un code HTTP par ligne
 }
 
 ko=0
-printf '%-58s %-20s %s\n' "URI × requêtes" ATTENDU OBTENU
-for c in "${CASES[@]}"; do
+check() { # $1=cas "attendu|n|uri"
+  local c=$1 attendu reste n uri codes n200 n403 n404 n429 zones obtenu verdict
   attendu=${c%%|*}; reste=${c#*|}; n=${reste%%|*}; uri=${reste#*|}
   restart
   codes=$(burst "$n" "$uri")
   sleep 0.5
-  n200=$(grep -c '^200$' <<< "$codes"); n404=$(grep -c '^404$' <<< "$codes"); n429=$(grep -c '^429$' <<< "$codes")
+  n200=$(grep -c '^200$' <<< "$codes"); n403=$(grep -c '^403$' <<< "$codes")
+  n404=$(grep -c '^404$' <<< "$codes"); n429=$(grep -c '^429$' <<< "$codes")
   zones=$(grep -o 'limiting requests.*by zone "[a-z0-9_]*"' "$BENCH_DIR/log/error.log" | sed -E 's/.*zone "([a-z0-9_]*)"/\1/' | sort -u | tr '\n' ' ')
-  obtenu="200:$n200 404:$n404 429:$n429 zones:[${zones% }]"
+  obtenu="200:$n200 403:$n403 404:$n404 429:$n429 zones:[${zones% }]"
   case $attendu in
     unlimited) [ "$n200" = "$n" ] && [ -z "$zones" ] ;;
     refused)   [ "$n404" = "$n" ] && [ -z "$zones" ] ;;
+    denied)    [ "$n403" = "$n" ] && [ -z "$zones" ] ;;
     *)         [ "$n200" -gt 0 ] && [ "$n429" -gt 0 ] && [ $((n200 + n429)) = "$n" ] && [ "${zones% }" = "$attendu" ] ;;
   esac && verdict=OK || { verdict=ECHEC; ko=1; }
   printf '%-58s %-20s %s %s\n' "$uri × $n" "$attendu" "$obtenu" "$verdict"
-done
+}
+
+printf '%-58s %-20s %s\n' "URI × requêtes" ATTENDU OBTENU
+for c in "${CASES[@]}"; do check "$c"; done
 
 # Le cache proxy doit rester actif sur les assets servis par la location dédiée.
 restart
@@ -128,6 +160,10 @@ for _ in 1 2; do
 done
 [ "$statuts" = "MISS HIT " ] && verdict=OK || { verdict=ECHEC; ko=1; }
 printf '%-58s %-20s %s %s\n' "/_next/static/chunks/cache.js × 2 (X-Cache-Status)" "MISS HIT" "$statuts" "$verdict"
+
+# Passe denylist, en dernier : elle remplace la denylist rendue pour le reste du test.
+printf 'geo $lba_denied {\n    default 1;\n}\n' > "$BENCH_DIR/extra-conf.d/denylist.conf.template"
+for c in "${DENIED_CASES[@]}"; do check "$c"; done
 
 echo
 if [ $ko -eq 0 ]; then echo "Tous les cas passent."; else echo "Au moins un cas échoue."; fi
