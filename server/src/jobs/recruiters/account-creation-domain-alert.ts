@@ -1,5 +1,4 @@
 import type { ObjectId } from "mongodb"
-import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IDetectionMetrics } from "shared/models/detection-alerts.model"
 import { DETECTION_ALERT_STATUS } from "shared/models/detection-alerts.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
@@ -7,10 +6,8 @@ import { z } from "zod"
 
 import { isFreeEmailProviderDomain } from "@/common/utils/mail-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import config from "@/config"
 import type { IDetectionFinding, IDetectionRule } from "@/jobs/detection/detection-rule"
-import { API_KEY_CREATION_REASON } from "@/services/auto-validation-reasons"
-import { getRolesWindowFilter } from "./auto-validation-rate-alert"
+import { accountUrl, autoValidated, currentStatus, formatParisDate, getRolesWindowFilter } from "./recruiter-detection-utils"
 
 const HOUR_MS = 60 * 60 * 1000
 const DAY_MS = 24 * HOUR_MS
@@ -89,26 +86,6 @@ export const evaluateDomainSpike = (
 }
 
 const countInWindow = (condition: unknown) => ({ $sum: { $cond: [{ $and: ["$in_window", condition] }, 1, 0] } })
-
-// Statut courant : le dernier événement par date, cf. getLastStatusEvent.
-const currentStatus = { $getField: { field: "status", input: { $last: { $sortArray: { input: "$status", sortBy: { date: 1 } } } } } }
-
-// Même lecture que classifyRole : la première validation automatique, hors création par clé API, qui ne vérifie rien.
-const autoValidated = {
-  $let: {
-    vars: {
-      grant: {
-        $first: {
-          $filter: {
-            input: "$status",
-            cond: { $and: [{ $eq: ["$$this.status", AccessStatus.GRANTED] }, { $eq: ["$$this.validation_type", VALIDATION_UTILISATEUR.AUTO] }] },
-          },
-        },
-      },
-    },
-    in: { $and: [{ $ne: [{ $type: "$$grant" }, "missing"] }, { $ne: ["$$grant.reason", API_KEY_CREATION_REASON] }] },
-  },
-}
 
 /**
  * Comptes recruteur créés par domaine sur [baselineStart, end[, ceux de la fenêtre [windowStart, end[ à part. Le domaine
@@ -218,10 +195,6 @@ export const loadCreationsByDomain = async (now: Date, thresholds: Pick<IDomainS
 }
 
 const KIND_LABELS: Record<IDomainKind, string> = { webmail: "webmail grand public ou jetable", entreprise: "domaine d'entreprise" }
-
-const formatParisDate = (date: Date | null) => (date ? date.toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "short", timeStyle: "short" }) : "n/a")
-
-const accountUrl = (id: ObjectId) => `${config.publicUrl}/espace-pro/administration/users/${id.toHexString()}`
 
 const formatAccountList = (ids: ObjectId[]) => {
   const listed = ids.slice(0, LISTED_ACCOUNTS).map((id) => id.toHexString())

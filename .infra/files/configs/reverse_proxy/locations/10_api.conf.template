@@ -1,8 +1,4 @@
 location /api {
-    if ($lba_denied) {
-        return 403;
-    }
-
     set $upstream http://server:5000;
     include includes/error_page_json.conf;
     include includes/proxy.conf;
@@ -12,10 +8,6 @@ location /api {
 # Regex insensibles à la casse, comme le routeur Fastify (caseSensitive: false) : un préfixe
 # nginx laisserait /api/ROME passer par `location /api`, sans limite.
 location ~* ^/api/rome {
-    if ($lba_denied) {
-        return 403;
-    }
-
     limit_req zone=lba_autocomplete burst=40 nodelay;
 
     set $upstream http://server:5000;
@@ -27,10 +19,6 @@ location ~* ^/api/rome {
 # pour qu'une panne ou une limite du BFF ne bloque jamais une candidature. Sans limite de débit nginx : Fastify
 # la limite par IP. Avant `^/api/(v1/|v2/)?_private/` : la 1re regex gagne.
 location ~* ^/api/v2/_private/application$ {
-    if ($lba_denied) {
-        return 403;
-    }
-
     client_max_body_size    5M;
 
     set $upstream http://server:5000;

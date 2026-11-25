@@ -1,0 +1,5 @@
+# Inclus au niveau server par l'image (`include locations/*.conf;`) : la phase rewrite du server précède le
+# choix de la location, ce refus couvre donc toutes les locations, imbriquées comprises.
+if ($lba_denied) {
+    return 403;
+}

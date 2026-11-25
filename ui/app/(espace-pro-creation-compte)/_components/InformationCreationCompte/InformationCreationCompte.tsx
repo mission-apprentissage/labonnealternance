@@ -20,6 +20,7 @@ import { ContactInfoFields } from "@/app/_components/ContactInfoFields"
 import { AccountFormHeading, FormSection } from "@/app/_components/FormSection"
 import { createSubmitWithFocusOnError, useServerFieldErrors } from "@/app/_components/submit-with-focus-on-error"
 import { TwoColumnFormLayout } from "@/app/_components/TwoColumnFormLayout"
+import { getAccountCreatedTracking } from "@/app/(espace-pro-creation-compte)/_components/InformationCreationCompte/account-created-tracking"
 import { OpcoSection } from "@/app/(espace-pro-creation-compte)/_components/OpcoSection"
 import { HandiEngagementSection } from "@/app/(espace-pro)/_components/HandiEngagementSection"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -31,6 +32,7 @@ import { AnimationContainer } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { getEntrepriseOpco } from "@/utils/api"
 import { ApiError, apiPost } from "@/utils/api.utils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { isIdentifiedOpco } from "@/utils/opco-labels"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -242,6 +244,8 @@ export const InformationCreationCompte = ({
         if (!user) {
           throw new Error("unexpected: data.user is empty")
         }
+
+        pushMatomoEvent({ event: MATOMO_EVENTS.ACCOUNT_CREATED, ...getAccountCreatedTracking(type, validated) })
 
         switch (type) {
           case "ENTREPRISE": {

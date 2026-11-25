@@ -10,6 +10,7 @@ import config from "@/config"
 import type { IDetectionEvaluation, IDetectionRule } from "@/jobs/detection/detection-rule"
 import { DETECTION_GLOBAL_KEY } from "@/jobs/detection/detection-rule"
 import { API_KEY_CREATION_REASON, AUTO_VALIDATION_INDETERMINATE_PREFIX } from "@/services/auto-validation-reasons"
+import { getRolesWindowFilter } from "./recruiter-detection-utils"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -121,12 +122,6 @@ export const evaluateIndeterminateSpike = (recent: IWindowStats, { minVolume, th
   const share = evaluated ? recent.indeterminate / evaluated : 0
   return { share, alert: evaluated >= minVolume && share * 100 >= thresholdPercent }
 }
-
-// Filtre servi par l'index { authorized_type, createdAt } de rolemanagements.
-export const getRolesWindowFilter = (from: Date, to: Date) => ({
-  authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] },
-  createdAt: { $gte: from, $lt: to },
-})
 
 const startOfUtcDay = (date: Date) => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
 

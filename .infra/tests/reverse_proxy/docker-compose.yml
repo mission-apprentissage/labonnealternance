@@ -1,0 +1,25 @@
+# Stack du test de limitation de débit du reverse proxy (cf. run.sh, qui fixe les variables).
+# Montages calqués sur le service reverse_proxy de la prod (repo infra, docker-compose.system.yml.jinja2).
+services:
+  reverse_proxy:
+    image: ${REVERSE_PROXY_IMAGE:?lancer via run.sh}
+    ports: ["127.0.0.1:18082:8080"]
+    environment:
+      - SERVER_NAME=localhost
+      - NGINX_ALWAYS_TLS_REDIRECT=false
+      - MODSEC_RULE_ENGINE=Off
+    volumes:
+      - ${BENCH_DIR:?lancer via run.sh}/locations/:/etc/nginx/templates/locations/:ro
+      - ${BENCH_DIR}/extra-conf.d/:/etc/nginx/templates/extra-conf.d/:ro
+      - ${BENCH_DIR}/extra-includes/:/etc/nginx/templates/extra-includes/:ro
+      - ${BENCH_DIR}/log/:/var/log/nginx/:rw
+  # Service nommé comme l'UI en prod (`http://ui:3000` dans les locations).
+  ui:
+    image: nginx:1.29-alpine
+    volumes:
+      - ./upstream/default.conf:/etc/nginx/conf.d/default.conf:ro
+  # Service nommé comme l'API en prod (`http://server:5000` dans locations/10_api.conf.template).
+  server:
+    image: nginx:1.29-alpine
+    volumes:
+      - ./upstream/server.conf:/etc/nginx/conf.d/default.conf:ro

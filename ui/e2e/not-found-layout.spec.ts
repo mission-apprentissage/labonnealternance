@@ -7,7 +7,7 @@ import { footerId, mainId } from "@/app/_components/zone-ids"
 test.describe("404 déclenchées par notFound() — ossature unique", () => {
   test("une 404 éditoriale (métier inexistant) n'affiche qu'une seule ossature", async ({ page }) => {
     await page.goto("/metiers/slug-inexistant-e2e")
-    await expect(page.getByRole("heading", { name: "404" })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: "Vous êtes perdu·e ?" })).toBeVisible()
     // Le rendu client de la 404 intervient après l'hydratation.
     await page.waitForLoadState("networkidle")
 
@@ -15,18 +15,20 @@ test.describe("404 déclenchées par notFound() — ossature unique", () => {
     await expect(page.locator(`#${footerId("editorial")}`)).toHaveCount(1)
   })
 
+  // Requête document : le proxy répond avant le rendu, avec la 404 racine (cf. isFicheIntrouvable).
   test("une 404 d'offre n'affiche qu'une seule ossature", async ({ page }) => {
-    await page.goto("/emploi/matcha/000000000000000000000000/offre-inexistante-e2e")
-    await expect(page.getByRole("heading", { name: "404" })).toBeVisible()
+    const response = await page.goto("/emploi/matcha/000000000000000000000000/offre-inexistante-e2e")
+    expect(response?.status()).toBe(404)
+    await expect(page.getByRole("heading", { level: 1, name: "Vous êtes perdu·e ?" })).toBeVisible()
     await page.waitForLoadState("networkidle")
 
-    await expect(page.locator(`#${mainId("detail-emploi")}`)).toHaveCount(1)
-    await expect(page.locator(`#${footerId("detail-emploi")}`)).toHaveCount(1)
+    await expect(page.locator(`#${mainId("not-found")}`)).toHaveCount(1)
+    await expect(page.locator(`#${footerId("not-found")}`)).toHaveCount(1)
   })
 
   test("une 404 d'opt-out RDVA (établissement inconnu) n'affiche qu'une seule ossature", async ({ page }) => {
     await page.goto("/optout/unsubscribe/000000000000000000000000?token=jeton-invalide-e2e")
-    await expect(page.getByRole("heading", { name: "404" })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: "Vous êtes perdu·e ?" })).toBeVisible()
     await page.waitForLoadState("networkidle")
 
     await expect(page.locator(`#${mainId("rdva")}`)).toHaveCount(1)

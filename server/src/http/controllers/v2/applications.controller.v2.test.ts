@@ -228,6 +228,81 @@ describe("POST /v2/application", () => {
     })
   })
 
+  describe("company_name : même nom que la fiche offre (#5944)", () => {
+    const names = { workplace_name: null, workplace_brand: "Boulangerie Dupont", workplace_legal_name: "SAS DUPONT" }
+    const cases = [
+      {
+        label: "offre LBA, raison sociale + enseigne",
+        job: { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: "11000001500054", ...names },
+        source: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+        expected: "Boulangerie Dupont",
+      },
+      {
+        label: "offre LBA, raison sociale seule",
+        job: { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: "11000001500062", ...names, workplace_brand: null },
+        source: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+        expected: "SAS DUPONT",
+      },
+      {
+        label: "offre LBA déléguée : le CFA, pas l'enseigne",
+        job: {
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          workplace_siret: "11000001500070",
+          ...names,
+          is_delegated: true,
+          cfa_siret: "11000001500005",
+          cfa_legal_name: "CFA DES METIERS",
+          cfa_apply_email: "cfa@mail.fr",
+        },
+        source: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+        expected: "CFA DES METIERS",
+      },
+      {
+        label: 'offre partenaire, workplace_name sanitizé en "" + enseigne',
+        job: { partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL, workplace_siret: "11000001500088", ...names, workplace_name: "" },
+        source: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+        expected: "Boulangerie Dupont",
+      },
+      {
+        label: "offre partenaire, workplace_name prime sur l'enseigne",
+        job: { partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL, workplace_siret: "11000001500096", ...names, workplace_name: "Dupont Lyon 3" },
+        source: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+        expected: "Dupont Lyon 3",
+      },
+      {
+        label: "recruteur LBA (candidature spontanée), raison sociale + enseigne",
+        job: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, workplace_siret: "11000001500104", ...names },
+        source: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+        expected: "Boulangerie Dupont",
+      },
+    ] as const
+
+    it.each(cases)("$label", async ({ job: jobData, source, expected }) => {
+      const job = generateJobsPartnersOfferPrivate({ apply_email: "recruteur@mail.fr", ...jobData })
+      await getDbCollection("jobs_partners").insertOne(job)
+
+      const detailId = source === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.workplace_siret : job._id.toString()
+      const detail = await httpClient().inject({ method: "GET", path: `/api/_private/jobs/${source}/${detailId}` })
+      expect.soft(detail.statusCode).toBe(200)
+      expect.soft(detail.json().company.name).toBe(expected)
+
+      const body: IApplicationApiPublic = {
+        applicant_attachment_name: "cv.pdf",
+        applicant_attachment_content: applicationTestFile,
+        applicant_email: "jeam.dupont@mail.com",
+        applicant_first_name: "Jean",
+        applicant_last_name: "Dupont",
+        applicant_phone: "0101010101",
+        recipient_id: getRecipientID(JobCollectionName.partners, job._id.toString()),
+      }
+      const response = await httpClient().inject({ method: "POST", path: "/api/v2/application", body, headers: { authorization: `Bearer ${token}` } })
+      expect.soft(response.statusCode).toBe(202)
+
+      const application = await getDbCollection("applications").findOne({ job_id: job._id })
+      expect(application?.company_name).toBe(expected)
+    })
+  })
+
   describe("applicant_answers_to_recruiter_questions", () => {
     const baseBody = (recipientJobId: string): IApplicationApiPublic => ({
       applicant_attachment_name: "cv.pdf",

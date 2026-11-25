@@ -14,8 +14,11 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { groupStreamData, limitStream } from "@/common/utils/stream-utils"
 
-/** Seule origine d'annulation qu'une réapparition dans le flux invalide légitimement. */
-const REACTIVATION_ALLOWED_GRANTED_BY = "cancel-removed-jobs-partners"
+/**
+ * Origines d'annulation qu'une réapparition de l'offre invalide légitimement : sortie du flux, et absence de moyen de
+ * candidature (migration #5872), que le partenaire corrige en renvoyant l'offre.
+ */
+const REACTIVATION_ALLOWED_GRANTED_BY = new Set(["cancel-removed-jobs-partners", "20261124120000-cancel-api-jobs-partners-without-apply-method-5872"])
 
 // Une lecture et une écriture par lot plutôt que deux requêtes par offre : le flux recruteurs LBA
 // compte ~285 000 offres (#5607).
@@ -126,7 +129,7 @@ const toUpsertOperation = (
 ): { operation: AnyBulkWriteOperation<IJobsPartnersOfferPrivate>; isPublishedChange: boolean } => {
   const partnerJobToUpsert = toJobPartner(computedJobPartner)
 
-  // Une offre annulée n'est réactivée par le flux que si c'est le flux qui l'avait annulée.
+  // Une offre annulée n'est réactivée que pour une origine de REACTIVATION_ALLOWED_GRANTED_BY.
   // Les fermetures décidées ailleurs (seuil de candidatures, doublons, classification, admin)
   // ne doivent pas être écrasées (observé en prod : PASS rouvrait chaque nuit ses offres
   // fermées au seuil de 80 candidatures). Sans preuve de l'auteur de l'annulation (historique
@@ -134,7 +137,7 @@ const toUpsertOperation = (
   const lastTransition = existingJob?.offer_status_history?.at(-1)
   const lastCancellation = lastTransition?.status === JOB_STATUS_ENGLISH.ANNULEE ? lastTransition : undefined
   const isReactivation = existingJob?.offer_status === JOB_STATUS_ENGLISH.ANNULEE && partnerJobToUpsert.offer_status === JOB_STATUS_ENGLISH.ACTIVE
-  if (isReactivation && lastCancellation && lastCancellation.granted_by !== REACTIVATION_ALLOWED_GRANTED_BY) {
+  if (isReactivation && lastCancellation && !REACTIVATION_ALLOWED_GRANTED_BY.has(lastCancellation.granted_by)) {
     partnerJobToUpsert.offer_status = JOB_STATUS_ENGLISH.ANNULEE
   }
 

@@ -9,6 +9,7 @@ import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ILbaCompanyForAdminSearch, ILbaCompanyForContactUpdate, ILbaCompanySearchField } from "shared/routes/update-lba-company.routes"
+import { getWorkplaceDisplayName } from "shared/utils/company-display-name"
 import { validateSIRET } from "shared/validators/siret-validator"
 import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -45,7 +46,7 @@ const transformCompanyV2 = ({
     ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
     status: company.offer_status,
     id: company.workplace_siret!,
-    title: company.workplace_brand || company.workplace_legal_name,
+    title: getWorkplaceDisplayName(company),
     contact: {
       phone: company.apply_phone,
       hasEmail: company.apply_email ? true : false,
@@ -59,7 +60,7 @@ const transformCompanyV2 = ({
       address: company.workplace_address_label,
     },
     company: {
-      name: company.workplace_legal_name,
+      name: getWorkplaceDisplayName(company),
       siret: company.workplace_siret,
       size: company.workplace_size,
       url: company.workplace_website,
