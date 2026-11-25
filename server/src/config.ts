@@ -56,6 +56,7 @@ const config = {
       relanceCandidats: env.get("LBA_BREVO_RELANCE_CANDIDATS_LIST_ID").asString(),
       relanceSpontanee: env.get("LBA_BREVO_RELANCE_SPONTANEE_LIST_ID").asString(),
       nurturingEntreprises: env.get("LBA_BREVO_NURTURING_ENTREPRISES_LIST_ID").asString(),
+      nurturingDesinscrits: env.get("LBA_BREVO_NURTURING_DESINSCRITS_LIST_ID").asString(),
     },
   },
   auth: {

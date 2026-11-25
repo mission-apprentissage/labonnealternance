@@ -25,6 +25,7 @@ const ZUnsubscribedLbaCompany = z.strictObject({
   unsubscribe_reason: z.string().describe("Raison de la désinscription"),
   unsubscribe_reason_detail: z.string().max(UNSUBSCRIBE_REASON_DETAIL_MAX_LENGTH).nullish().describe("Précision libre saisie par l'entreprise avec le motif « Autre »"),
   email: z.string().nullish().describe("E-mail de l'établissement, conservé uniquement pour le motif « déjà trouvé nos alternants » (relance de nurturing)"),
+  relance_nurturing_date: z.date().nullish().describe("Date à laquelle l'établissement a été poussé vers la liste Brevo de nurturing (une seule relance)"),
 })
 
 export type IUnsubscribedLbaCompany = z.output<typeof ZUnsubscribedLbaCompany>

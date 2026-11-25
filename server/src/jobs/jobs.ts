@@ -70,6 +70,7 @@ import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-f
 import { createApiUser } from "./recruiters/create-api-user"
 import { deactivateClosedSiretAccounts } from "./recruiters/deactivate-closed-siret-accounts"
 import { disableApiUser } from "./recruiters/disable-api-user"
+import { nurturingDesinscrits } from "./recruiters/nurturing-desinscrits"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
 import { OPCO_REMINDER_JOB_NAME, opcoReminderJob } from "./recruiters/opco-reminder-job"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiter-offer-expiration-reminder-job"
@@ -205,6 +206,10 @@ export async function setupJobProcessor() {
           "Nurturing des entreprises dormantes (anniversaire du dépôt d'offre)": {
             cron_string: "0 8 * * *",
             handler: config.env === "production" ? async () => nurturingEntreprises() : async () => Promise.resolve(0),
+          },
+          "Nurturing des entreprises désinscrites « déjà trouvé nos alternants » (9 mois après la désinscription)": {
+            cron_string: "5 8 * * *",
+            handler: config.env === "production" ? async () => nurturingDesinscrits() : async () => Promise.resolve(0),
           },
           "Anonymisation des reasons de plus de (1) an": {
             cron_string: "35 0 * * *",
