@@ -1,10 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container, Typography } from "@mui/material"
+import { Box, Container } from "@mui/material"
+import { SectionTitle } from "@/app/_components/Title/SectionTitle"
 import { GrandsGroupes } from "@/app/(home)/_components/GrandsGroupes"
 import { GrandsGroupesLink } from "@/app/(home)/_components/GrandsGroupesLink"
 
 export const GrandsGroupesCandidat = () => (
-  <Container sx={{ padding: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section">
+  <Container sx={{ padding: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section" aria-labelledby="grands-groupes-tpe">
     <Box
       sx={{
         display: "flex",
@@ -12,15 +13,10 @@ export const GrandsGroupesCandidat = () => (
         gap: fr.spacing("10v"),
       }}
     >
-      <Typography variant="h1" component="h2">
-        Retrouvez les offres en alternance
-        <br />
-        <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
-          de grands groupes
-        </Box>
-      </Typography>
-      <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
-      <GrandsGroupes />
+      <SectionTitle id="grands-groupes-tpe" highlight="aux TPE près de chez vous">
+        Des grands groupes
+      </SectionTitle>
+      <GrandsGroupes intro="La bonne alternance réunit les offres de nombreuses entreprises, dont de grands groupes. Et parmi les entreprises que nous vous suggérons, 9 sur 10 sont des TPE ou des PME." />
     </Box>
     <GrandsGroupesLink />
   </Container>

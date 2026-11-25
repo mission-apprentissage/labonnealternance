@@ -327,8 +327,10 @@ export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reas
   if (!entreprise) {
     throw internal(`could not find entreprise with id=${entrepriseId}`)
   }
-  const lastStatus = getLastStatusEvent(entreprise.status)?.status
-  if (lastStatus === status && status === EntrepriseStatus.VALIDE) return
+  const lastEvent = getLastStatusEvent(entreprise.status)
+  if (lastEvent?.status === status && status === EntrepriseStatus.VALIDE) return
+  // Un échec rejoué à l'identique garde l'événement d'origine : sa date reste celle du début du blocage.
+  if (lastEvent?.status === status && status === EntrepriseStatus.ERROR && lastEvent.reason === reason) return
   const event: IEntrepriseStatusEvent = {
     date: new Date(),
     reason,

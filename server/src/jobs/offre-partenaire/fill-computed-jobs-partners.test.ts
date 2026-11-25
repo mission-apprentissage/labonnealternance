@@ -4,8 +4,9 @@ import { ObjectId } from "mongodb"
 import nock from "nock"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { generateCacheInfoSiretForSiret } from "shared/fixtures/cache-info-siret.fixture"
+import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IComputedJobsPartners } from "shared/models/jobs-partners-computed.model"
-import { COMPUTED_ERROR_SOURCE } from "shared/models/jobs-partners-computed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
 import { entriesToTypedRecord } from "shared/utils/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -61,6 +62,26 @@ describe("fill-computed-jobs-partners", () => {
     // then
     expect.soft(await getDbCollection("computed_jobs_partners").countDocuments({ validated: false })).toEqual(1)
   }, 10_000)
+  it("bloque en NO_APPLY_METHOD, avant la classification, une offre sans moyen de candidature", async () => {
+    const [given] = await givenSomeComputedJobPartners([{ partner_label: JOBPARTNERS_LABEL.HELLOWORK, apply_url: null, apply_email: null, apply_phone: null }])
+    // Classification servie par le cache, sans appel Mistral : si elle passait en premier, elle marquerait l'offre.
+    await getDbCollection("cache_classification").insertOne({
+      _id: new ObjectId(),
+      partner_label: given.partner_label,
+      partner_job_id: given.partner_job_id,
+      classification: "publish",
+      scores: { publish: 0.9, unpublish: 0.1 },
+      model: "mistral:test",
+      created_at: new Date(),
+    })
+
+    await fillComputedJobsPartners()
+
+    const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(job.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.NO_APPLY_METHOD)
+    expect.soft(job.jobs_in_success).not.toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
+    expect.soft(job.validated).toBe(false)
+  })
   describe("PARTNER_WHITELIST filtering for OPCO EP", () => {
     it("should not apply BLOCK_CFA_NAME to a job with partner_label 'OPCO EP'", async () => {
       // given: an "OPCO EP" job whose workplace_name contains a blocked CFA name

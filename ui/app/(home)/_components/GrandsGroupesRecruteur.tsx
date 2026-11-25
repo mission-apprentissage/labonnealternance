@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
+import { SectionTitle } from "@/app/_components/Title/SectionTitle"
 import { GrandsGroupes, LogosList } from "@/app/(home)/_components/GrandsGroupes"
 import { GrandsGroupesLink } from "@/app/(home)/_components/GrandsGroupesLink"
 
@@ -22,14 +23,9 @@ export const GrandsGroupesRecruteur = () => (
         gap: fr.spacing("10v"),
       }}
     >
-      <Typography variant="h1" component="h2">
+      <SectionTitle id="ils-nous-font-confiance" highlight="confiance">
         Ils nous font
-        <br />
-        <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
-          confiance
-        </Box>
-      </Typography>
-      <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+      </SectionTitle>
       <GrandsGroupes />
 
       <Typography sx={{ width: "100%", fontSize: "18px", lineHeight: "28px" }}>

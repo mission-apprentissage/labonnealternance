@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobs-partners-computed.model"
+import { getWorkplaceDisplayName } from "shared/utils/company-display-name"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
@@ -16,14 +17,7 @@ import { createCancelJobLink } from "@/services/app-links.service"
 import { changeJobsPartnersStatus, JOB_AUTO_CLOSURE_ORIGIN, JOB_PENDING_EXPIRATION_ORIGIN } from "@/services/job-partner-status.service"
 import mailer from "@/services/mailer.service"
 
-const getReminderCompanyName = ({
-  workplace_name,
-  workplace_brand,
-  workplace_legal_name,
-}: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => {
-  // `||` et non `??` : workplace_name peut valoir "" (cf. formatTextFieldsJobsPartners).
-  return workplace_name || workplace_brand || workplace_legal_name || ""
-}
+const getReminderCompanyName = (job: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => getWorkplaceDisplayName(job) ?? ""
 
 const sendExpirationEmails = async (expiredJobs: IJobsPartnersOfferPrivate[]) => {
   // Seules les offres gérées par LBA (managed_by renseigné) reçoivent le mail de clôture automatique.

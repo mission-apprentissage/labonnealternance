@@ -19,6 +19,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { ITrackingCookies } from "shared/models/traffic-sources.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { getJobCompanyDisplayName, getWorkplaceDisplayName } from "shared/utils/company-display-name"
 import { isOfferExpired } from "shared/utils/offer-expiration"
 import { resolveSearchParamsFromUrl, SEARCH_PAGE_PATH } from "shared/utils/search-url-compat"
 import { Transform } from "stream"
@@ -504,10 +505,9 @@ const getCompanyNameAndSiretFromRecruiter = async (application: IApplication): P
     if (jobOrCompany.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
       throw internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
     }
-    const { workplace_name, workplace_siret, workplace_legal_name, workplace_brand } = jobOrCompany.job
     return {
-      company_name: workplace_name || workplace_legal_name || workplace_brand || UNKNOWN_COMPANY,
-      company_siret: workplace_siret,
+      company_name: getWorkplaceDisplayName(jobOrCompany.job) ?? UNKNOWN_COMPANY,
+      company_siret: jobOrCompany.job.workplace_siret,
     }
   }
   return { company_name: application.company_name, company_siret: application.company_siret }
@@ -521,17 +521,14 @@ const offreOrCompanyToCompanyFields = (
     const { job } = LbaJob
     const {
       workplace_siret,
-      workplace_name,
       workplace_naf_label,
       apply_phone,
       apply_email,
       offer_title,
       workplace_address_label,
-      workplace_legal_name,
       is_delegated,
       cfa_siret,
       cfa_address_label,
-      cfa_legal_name,
       cfa_apply_phone,
       cfa_apply_email,
     } = job
@@ -540,17 +537,16 @@ const offreOrCompanyToCompanyFields = (
       job_id: job._id,
       job_title: offer_title ?? undefined,
       company_naf: workplace_naf_label || "",
+      company_name: getJobCompanyDisplayName(job) ?? UNKNOWN_COMPANY,
       ...(is_delegated
         ? {
             company_siret: cfa_siret || null,
-            company_name: cfa_legal_name || UNKNOWN_COMPANY,
             company_address: cfa_address_label,
             company_phone: cfa_apply_phone,
             company_email: cfa_apply_email || "",
           }
         : {
             company_siret: workplace_siret || null,
-            company_name: workplace_name || workplace_legal_name || UNKNOWN_COMPANY,
             company_address: workplace_address_label,
             company_phone: apply_phone,
             company_email: apply_email || "",
@@ -1246,9 +1242,9 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
 
   switch (type) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
-      const { managed_by, apply_phone, cfa_apply_phone, cfa_legal_name, workplace_brand, workplace_legal_name } = job
+      const { managed_by, apply_phone, cfa_apply_phone } = job
 
-      company_name = cfa_legal_name || workplace_brand || workplace_legal_name || ""
+      company_name = getJobCompanyDisplayName(job) ?? ""
       if (managed_by) {
         await validateUserWithAccountEmail(new ObjectId(managed_by))
       }
@@ -1257,9 +1253,8 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     }
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-      const { apply_phone, workplace_brand, workplace_name, workplace_legal_name } = job
-      recruiter_phone = apply_phone || ""
-      company_name = workplace_brand || workplace_name || workplace_legal_name || ""
+      recruiter_phone = job.apply_phone || ""
+      company_name = getJobCompanyDisplayName(job) ?? ""
       break
     }
     default: {

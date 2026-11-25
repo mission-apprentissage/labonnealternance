@@ -28,11 +28,13 @@ export const LogosList = ({ logos }: { logos: { src: string; alt: string }[] }) 
   </Box>
 )
 
-export const GrandsGroupes = () => (
+type Props = {
+  intro?: string
+}
+
+export const GrandsGroupes = ({ intro = "La bonne alternance expose les offres d'emploi en alternance de nombreuses entreprises, dont :" }: Props) => (
   <>
-    <Typography sx={{ width: "100%", fontSize: "18px", lineHeight: "28px" }}>
-      La bonne alternance expose les offres d'emploi en alternance de nombreuses entreprises, dont :
-    </Typography>
+    <Typography sx={{ width: "100%", fontSize: "18px", lineHeight: "28px" }}>{intro}</Typography>
 
     <LogosList logos={LOGOS} />
   </>

@@ -14,6 +14,7 @@ import cacheDiagorienteModel from "./cache-diagoriente.model.js"
 import cacheGeolocationModel from "./cache-geolocation.model.js"
 import cacheInfosSiretModel from "./cache-infos-siret.model.js"
 import cfaModel from "./cfa.model.js"
+import closedSiretActionsModel from "./closed-siret-actions.model.js"
 import type { IModelDescriptor } from "./common.js"
 import credentialsModel from "./credentials.model.js"
 import customEmailETFAModel from "./custom-email-etfa.model.js"
@@ -72,6 +73,7 @@ import referentielEngagementEntrepriseModel from "./referentiel-engagement-entre
 import referentielOnisepModel from "./referentiel-onisep.model.js"
 import referentielRomeNafModel from "./referentiel-rome-naf.model.js"
 import reportedCompanyModel from "./reported-company.model.js"
+import rgpdErasureModel from "./rgpd-erasure.model.js"
 import roleManagementModel from "./role-management.model.js"
 import roleManagement360Model from "./role-management360.model.js"
 import romeModel from "./rome.model.js"
@@ -110,6 +112,7 @@ const modelDescriptorMap = {
   [cacheDiagorienteModel.collectionName]: cacheDiagorienteModel,
   [cacheGeolocationModel.collectionName]: cacheGeolocationModel,
   [cfaModel.collectionName]: cfaModel,
+  [closedSiretActionsModel.collectionName]: closedSiretActionsModel,
   [cacheClassificationModel.collectionName]: cacheClassificationModel,
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
@@ -154,6 +157,7 @@ const modelDescriptorMap = {
   [romeModel.collectionName]: romeModel,
   [roleManagementModel.collectionName]: roleManagementModel,
   [roleManagement360Model.collectionName]: roleManagement360Model,
+  [rgpdErasureModel.collectionName]: rgpdErasureModel,
   [sessionModel.collectionName]: sessionModel,
   [unsubscribedLbaCompanyModel.collectionName]: unsubscribedLbaCompanyModel,
   [unsubscribeOFModel.collectionName]: unsubscribeOFModel,
