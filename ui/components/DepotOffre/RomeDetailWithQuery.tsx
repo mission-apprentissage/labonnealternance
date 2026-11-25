@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import image from "@/public/assets/checkbox-list.webp"
@@ -11,7 +11,8 @@ import { type RomeCompetenceKey, RomeDetail } from "./RomeDetail"
 
 const fakeLoadingDuration = 1000
 
-export const RomeDetailWithQuery = ({
+// mémoïsé : sinon chaque frappe dans un champ du formulaire parent re-rend toute la fiche métier (#6008)
+export const RomeDetailWithQuery = memo(function RomeDetailWithQuery({
   rome,
   onChange,
   selectedCompetences,
@@ -21,7 +22,7 @@ export const RomeDetailWithQuery = ({
   onChange: (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => void
   selectedCompetences: Record<RomeCompetenceKey, Set<string>>
   title: string
-}) => {
+}) {
   const [fakeLoading, setFakeLoading] = useState<{ id: string; isLoading: boolean }>({ id: new Date().toISOString(), isLoading: true })
   const {
     data: romeReferentiel,
@@ -70,7 +71,7 @@ export const RomeDetailWithQuery = ({
   ) : (
     <RomeDetail title={title} romeReferentiel={romeReferentiel} onChange={setCompetenceSelection} selectedCompetences={selectedCompetences} />
   )
-}
+})
 
 const LoadingBox = () => {
   return (
