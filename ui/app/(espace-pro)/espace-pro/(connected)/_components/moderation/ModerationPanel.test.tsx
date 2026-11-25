@@ -52,7 +52,7 @@ describe("ModerationPanel", () => {
 
     expect(html).toMatch(/La description de l’entreprise :<\/span> Conforme/)
     expect(html).toMatch(
-      /La description de l’offre :<\/p>(<style[^>]*>[^<]*<\/style>)?<ul[^>]*><li>Responsabilités de salarié confirmé \(“Tu es son bras droit”\)<\/li><li>Expérience exigée \(“Une première alternance réussie”\)<\/li><\/ul>/
+      /La description de l’offre :<\/p>(<style[^>]*>[^<]*<\/style>)?<ul[^>]*><li>Responsabilités de salarié confirmé \(<q>Tu es son bras droit<\/q>\)<\/li><li>Expérience exigée \(<q>Une première alternance réussie<\/q>\)<\/li><\/ul>/
     )
     expect(html.indexOf("La description de l’entreprise")).toBeLessThan(html.indexOf("La description de l’offre"))
     expect(html).not.toContain(" ; ")
