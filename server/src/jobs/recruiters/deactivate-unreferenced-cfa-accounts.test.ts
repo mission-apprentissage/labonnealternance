@@ -10,26 +10,31 @@ import { AccessEntityType, AccessStatus, CFA_NOT_REFERENCED_REASON } from "share
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { IReferentielOnisepPresence } from "@/common/apis/referentiel-onisep/referentiel-onisep.client"
-import { getReferentielOnisepPresence, getReferentielOnisepSirets } from "@/common/apis/referentiel-onisep/referentiel-onisep.client"
+import type { IReferentielOrganismePresence } from "@/common/apis/referentiel-organismes/referentiel-organismes.client"
+import { getReferentielOrganismePresence, getReferentielOrganismesSirets } from "@/common/apis/referentiel-organismes/referentiel-organismes.client"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { notifyToSlack } from "@/common/utils/slack-utils"
+import { changeJobsPartnersStatus } from "@/services/job-partner-status.service"
 import { modifyPermissionToUser } from "@/services/role-management.service"
 import { isUserDisabled } from "@/services/user-with-account.service"
 import type { IDeactivateUnreferencedCfaOptions } from "./deactivate-unreferenced-cfa-accounts"
 import { deactivateUnreferencedCfaAccounts, UNREFERENCED_CFA_JOB_NAME } from "./deactivate-unreferenced-cfa-accounts"
 
-vi.mock("@/common/apis/referentiel-onisep/referentiel-onisep.client", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/common/apis/referentiel-onisep/referentiel-onisep.client")>()),
-  getReferentielOnisepSirets: vi.fn(),
-  getReferentielOnisepPresence: vi.fn(),
+vi.mock("@/common/apis/referentiel-organismes/referentiel-organismes.client", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/common/apis/referentiel-organismes/referentiel-organismes.client")>()),
+  getReferentielOrganismesSirets: vi.fn(),
+  getReferentielOrganismePresence: vi.fn(),
 }))
 vi.mock("@/common/utils/slack-utils")
 vi.mock("@/common/utils/sentry-utils")
 vi.mock("@/services/role-management.service", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/services/role-management.service")>()
   return { ...original, modifyPermissionToUser: vi.fn(original.modifyPermissionToUser) }
+})
+vi.mock("@/services/job-partner-status.service", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/services/job-partner-status.service")>()
+  return { ...original, changeJobsPartnersStatus: vi.fn(original.changeJobsPartnersStatus) }
 })
 
 useMongo()
@@ -46,9 +51,9 @@ const PAST = new Date("2025-01-01T00:00:00.000Z")
 /** Les garde-fous de volumétrie ont leurs propres tests : ailleurs, une base de quelques CFA les déclencherait. */
 const run = (options: IDeactivateUnreferencedCfaOptions = {}) => deactivateUnreferencedCfaAccounts({ minReferentielSize: 0, maxDeactivationRatio: 1, ...options })
 
-const mockReferentiel = (sirets: string[], presence: Record<string, IReferentielOnisepPresence> = {}) => {
-  vi.mocked(getReferentielOnisepSirets).mockResolvedValue(new Set(sirets))
-  vi.mocked(getReferentielOnisepPresence).mockImplementation(async (siret) => presence[siret] ?? { kind: "absent" })
+const mockReferentiel = (sirets: string[], presence: Record<string, IReferentielOrganismePresence> = {}) => {
+  vi.mocked(getReferentielOrganismesSirets).mockResolvedValue(new Set(sirets))
+  vi.mocked(getReferentielOrganismePresence).mockImplementation(async (siret) => presence[siret] ?? { kind: "absent" })
 }
 
 const saveCfaAccount = async (siret: string, status: AccessStatus = AccessStatus.GRANTED) => {
@@ -80,11 +85,12 @@ const lastRoleStatus = async (roleId: ObjectId) => getLastStatusEvent((await get
 
 describe("deactivateUnreferencedCfaAccounts", () => {
   beforeEach(() => {
-    vi.mocked(getReferentielOnisepSirets).mockReset()
-    vi.mocked(getReferentielOnisepPresence).mockReset()
+    vi.mocked(getReferentielOrganismesSirets).mockReset()
+    vi.mocked(getReferentielOrganismePresence).mockReset()
     vi.mocked(notifyToSlack).mockClear()
     vi.mocked(sentryCaptureException).mockClear()
     vi.mocked(modifyPermissionToUser).mockClear()
+    vi.mocked(changeJobsPartnersStatus).mockClear()
   })
 
   describe("ne désactive aucun CFA référencé", () => {
@@ -98,7 +104,7 @@ describe("deactivateUnreferencedCfaAccounts", () => {
       expect.soft(report).toMatchObject({ cfasWithActiveRole: 1, absentFromList: 0, deactivatedCfas: [] })
       expect.soft((await lastRoleStatus(role._id))?.status).toBe(AccessStatus.GRANTED)
       expect.soft(await offerStatuses()).toEqual({ offre: JOB_STATUS_ENGLISH.ACTIVE })
-      expect.soft(getReferentielOnisepPresence).not.toHaveBeenCalled()
+      expect.soft(getReferentielOrganismePresence).not.toHaveBeenCalled()
     })
 
     it("compare le SIRET entier : un établissement du même SIREN au Référentiel ne couvre pas le CFA", async () => {
@@ -140,7 +146,7 @@ describe("deactivateUnreferencedCfaAccounts", () => {
       const report = await run()
 
       expect.soft(report).toMatchObject({ cfasWithActiveRole: 0, absentFromList: 0, rolesDenied: 0 })
-      expect.soft(getReferentielOnisepPresence).not.toHaveBeenCalled()
+      expect.soft(getReferentielOrganismePresence).not.toHaveBeenCalled()
       expect.soft(modifyPermissionToUser).not.toHaveBeenCalled()
     })
   })
@@ -271,7 +277,7 @@ describe("deactivateUnreferencedCfaAccounts", () => {
       await expect(run({ minReferentielSize: 2 })).rejects.toThrow(/1 organismes reçus du Référentiel/)
 
       expect.soft((await lastRoleStatus(role._id))?.status).toBe(AccessStatus.GRANTED)
-      expect.soft(getReferentielOnisepPresence).not.toHaveBeenCalled()
+      expect.soft(getReferentielOrganismePresence).not.toHaveBeenCalled()
       expect.soft(vi.mocked(notifyToSlack).mock.calls[0]?.[0]).toMatchObject({ error: true })
     })
 
@@ -283,7 +289,7 @@ describe("deactivateUnreferencedCfaAccounts", () => {
       await expect(run({ maxDeactivationRatio: 0.4 })).rejects.toThrow(/1 CFA sur 2 absents de la liste/)
 
       expect.soft((await lastRoleStatus(absent.role._id))?.status).toBe(AccessStatus.GRANTED)
-      expect.soft(getReferentielOnisepPresence).not.toHaveBeenCalled()
+      expect.soft(getReferentielOrganismePresence).not.toHaveBeenCalled()
     })
 
     it("applique le seuil à 50 % pile sans s'arrêter", async () => {
@@ -298,7 +304,7 @@ describe("deactivateUnreferencedCfaAccounts", () => {
 
     it("s'arrête si la liste du Référentiel est illisible", async () => {
       const { role } = await saveCfaAccount(SIRET_ABSENT)
-      vi.mocked(getReferentielOnisepSirets).mockRejectedValue(new Error("Référentiel Onisep : 10 SIRET distincts reçus pour un total annoncé de 11528"))
+      vi.mocked(getReferentielOrganismesSirets).mockRejectedValue(new Error("Référentiel Onisep : 10 SIRET distincts reçus pour un total annoncé de 11528"))
 
       await expect(run()).rejects.toThrow(/lecture du Référentiel impossible/)
 
@@ -311,7 +317,7 @@ describe("deactivateUnreferencedCfaAccounts", () => {
       mockReferentiel(Array.from({ length: 4999 }, (_, i) => String(i)))
 
       await expect(deactivateUnreferencedCfaAccounts({ maxDeactivationRatio: 1 })).rejects.toThrow(/moins que le minimum attendu \(5000\)/)
-      expect(getReferentielOnisepPresence).not.toHaveBeenCalled()
+      expect(getReferentielOrganismePresence).not.toHaveBeenCalled()
     })
 
     it.each([
@@ -334,10 +340,39 @@ describe("deactivateUnreferencedCfaAccounts", () => {
       const sirets = Array.from({ length: 12 }, (_, i) => `1000000000${String(i).padStart(4, "0")}`)
       for (const siret of sirets) await saveCfaAccount(siret)
       mockReferentiel([SIRET_REFERENCE])
-      vi.mocked(getReferentielOnisepPresence).mockResolvedValue({ kind: "error", reason: "sans réponse" })
+      vi.mocked(getReferentielOrganismePresence).mockResolvedValue({ kind: "error", reason: "sans réponse" })
 
       await expect(run()).rejects.toThrow(/10 erreurs consécutives/)
-      expect(getReferentielOnisepPresence).toHaveBeenCalledTimes(10)
+      expect(getReferentielOrganismePresence).toHaveBeenCalledTimes(10)
+    })
+
+    it("remet le compteur d'erreurs consécutives à zéro après une réponse exploitable", async () => {
+      const sirets = Array.from({ length: 19 }, (_, i) => `1000000000${String(i).padStart(4, "0")}`)
+      for (const siret of sirets) await saveCfaAccount(siret)
+      mockReferentiel([SIRET_REFERENCE], {
+        ...Object.fromEntries(sirets.map((siret) => [siret, { kind: "error", reason: "HTTP 503" } as const])),
+        [sirets[9]]: { kind: "present" },
+      })
+
+      await expect(run()).rejects.toThrow(/18 erreurs techniques/)
+      expect(getReferentielOrganismePresence).toHaveBeenCalledTimes(19)
+    })
+
+    it("reprend au passage suivant un CFA dont l'annulation des offres a échoué", async () => {
+      const { role } = await saveCfaAccount(SIRET_ABSENT)
+      await insertOffer("active", { cfa_siret: SIRET_ABSENT })
+      mockReferentiel([SIRET_REFERENCE])
+      vi.mocked(changeJobsPartnersStatus).mockRejectedValueOnce(new Error("panne"))
+
+      await expect(run()).rejects.toThrow(/1 CFA en échec de traitement/)
+      expect.soft((await lastRoleStatus(role._id))?.status).toBe(AccessStatus.GRANTED)
+      expect.soft(await offerStatuses()).toEqual({ active: JOB_STATUS_ENGLISH.ACTIVE })
+
+      const report = await run()
+
+      expect.soft(report).toMatchObject({ rolesDenied: 1, offersCancelled: 1 })
+      expect.soft((await lastRoleStatus(role._id))?.status).toBe(AccessStatus.DENIED)
+      expect.soft(await offerStatuses()).toEqual({ active: JOB_STATUS_ENGLISH.ANNULEE })
     })
 
     it("poursuit après l'échec de traitement d'un CFA, le signale à Sentry et termine en échec", async () => {

@@ -47,14 +47,18 @@ Après 10 erreurs techniques consécutives sur les appels unitaires, le job s'ar
 
 Toutes les modifications portent le motif `Non référencé dans le catalogue du Réseau des Carif-Oref` (`CFA_NOT_REFERENCED_REASON`), celui que proposent les admins à la désactivation manuelle d'un CFA. Elles sont faites par `deactivate-unreferenced-cfa-accounts` (`granted_by`).
 
+Dans l'ordre d'application :
+
 | Donnée | Collection | Modification |
 |---|---|---|
-| Rôles du CFA | `rolemanagements` (`authorized_type` = `CFA`) | Ajout d'un événement `DENIED` en validation `AUTOMATIQUE`, pour les rôles dont le dernier statut est `GRANTED` ou `AWAITING_VALIDATION` |
 | Offres déléguées | `jobs_partners` (`partner_label` = `offres_emploi_lba`, `cfa_siret` = SIRET du CFA) | `offer_status` passe à `Cancelled` pour les offres `Active`, `Pending` et `InReview`, avec une entrée dans `offer_status_history` |
+| Rôles du CFA | `rolemanagements` (`authorized_type` = `CFA`) | Ajout d'un événement `DENIED` en validation `AUTOMATIQUE`, pour les rôles dont le dernier statut est `GRANTED` ou `AWAITING_VALIDATION` |
+
+Les rôles passent `DENIED` en dernier : un CFA n'est sélectionné que tant qu'il a un rôle actif. Si l'annulation des offres échoue, le CFA garde ses rôles et le passage suivant reprend ses offres.
 
 Ce qui n'est pas modifié :
 
-- le compte utilisateur (`userswithaccounts`) : son email redevient disponible pour un autre SIRET ;
+- le compte utilisateur (`userswithaccounts`). Son email ne permet pas de créer un compte CFA sur un autre SIRET : la création de compte CFA refuse tout email déjà associé à un compte ;
 - les entreprises partenaires du CFA, ni désactivées ni détachées ;
 - `lastUpdateFromSource` du CFA, réservé à la lecture INSEE.
 

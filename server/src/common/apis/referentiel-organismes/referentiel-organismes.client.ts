@@ -3,7 +3,7 @@ import { z } from "zod"
 
 import { getHttpClient } from "@/common/utils/http-utils"
 
-export const REFERENTIEL_ONISEP_API_URL = "https://referentiel.apprentissage.onisep.fr/api/v1"
+export const REFERENTIEL_ORGANISMES_API_URL = "https://referentiel.apprentissage.onisep.fr/api/v1"
 
 /** Le Référentiel compte environ 11 500 organismes : une page suffit, la boucle ne sert que si l'API plafonne la taille. */
 const PAGE_SIZE = 20_000
@@ -13,13 +13,13 @@ const ZOrganismesPage = z.object({
   organismes: z.array(z.object({ siret: z.string() })),
 })
 
-/** La liste complète pèse environ 800 Ko : timeout élargi pour elle seule. */
+/** La liste complète pèse environ 300 Ko : timeout élargi pour elle seule. */
 const LIST_TIMEOUT_MS = 120_000
 
-const client = getHttpClient({ baseURL: REFERENTIEL_ONISEP_API_URL })
+const client = getHttpClient({ baseURL: REFERENTIEL_ORGANISMES_API_URL })
 
 /** SIRET de tous les organismes du Référentiel. Lève une erreur si les SIRET reçus ne couvrent pas exactement le total annoncé. */
-export const getReferentielOnisepSirets = async (): Promise<Set<string>> => {
+export const getReferentielOrganismesSirets = async (): Promise<Set<string>> => {
   const sirets = new Set<string>()
   let total: number | null = null
   for (let page = 1; ; page++) {
@@ -38,10 +38,10 @@ export const getReferentielOnisepSirets = async (): Promise<Set<string>> => {
   return sirets
 }
 
-export type IReferentielOnisepPresence = { kind: "present" } | { kind: "absent" } | { kind: "error"; reason: string }
+export type IReferentielOrganismePresence = { kind: "present" } | { kind: "absent" } | { kind: "error"; reason: string }
 
 /** Seul un 404 signifie l'absence, comme à la création de compte (cf. validateEligibiliteCfa). */
-export const getReferentielOnisepPresence = async (siret: string): Promise<IReferentielOnisepPresence> => {
+export const getReferentielOrganismePresence = async (siret: string): Promise<IReferentielOrganismePresence> => {
   try {
     const { data } = await client.get(`/organismes/${siret}`)
     const parsed = z.object({ siret: z.string() }).safeParse(data)

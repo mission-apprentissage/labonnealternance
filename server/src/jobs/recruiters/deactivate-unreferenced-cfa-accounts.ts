@@ -7,7 +7,7 @@ import { AccessEntityType, AccessStatus, CFA_NOT_REFERENCED_REASON } from "share
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { z } from "zod"
 
-import { getReferentielOnisepPresence, getReferentielOnisepSirets } from "@/common/apis/referentiel-onisep/referentiel-onisep.client"
+import { getReferentielOrganismePresence, getReferentielOrganismesSirets } from "@/common/apis/referentiel-organismes/referentiel-organismes.client"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
@@ -77,16 +77,8 @@ const getActiveCfaRoles = async (): Promise<Map<string, IRoleManagement[]>> => {
 }
 
 const deactivateCfa = async (cfa: UnreferencedCfa, roles: IRoleManagement[], dryRun: boolean, report: IDeactivateUnreferencedCfaReport) => {
-  for (const role of roles) {
-    if (!dryRun) {
-      await modifyPermissionToUser(
-        { user_id: role.user_id, authorized_id: role.authorized_id, authorized_type: role.authorized_type },
-        { status: AccessStatus.DENIED, reason: CFA_NOT_REFERENCED_REASON, validation_type: VALIDATION_UTILISATEUR.AUTO, granted_by: UNREFERENCED_CFA_JOB_NAME }
-      )
-    }
-    report.rolesDenied++
-  }
-
+  // Offres avant rôles : un CFA n'est resélectionné que par ses rôles actifs (cf. getActiveCfaRoles). Rôles désactivés
+  // en premier, un échec sur les offres les laisserait diffusées sans reprise possible.
   const offersFilter = { cfa_siret: cfa.siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: { $in: CANCELLABLE_OFFER_STATUSES } }
   report.offersCancelled += dryRun
     ? await getDbCollection("jobs_partners").countDocuments(offersFilter)
@@ -98,6 +90,16 @@ const deactivateCfa = async (cfa: UnreferencedCfa, roles: IRoleManagement[], dry
           date: new Date(),
         })
       ).modifiedCount
+
+  for (const role of roles) {
+    if (!dryRun) {
+      await modifyPermissionToUser(
+        { user_id: role.user_id, authorized_id: role.authorized_id, authorized_type: role.authorized_type },
+        { status: AccessStatus.DENIED, reason: CFA_NOT_REFERENCED_REASON, validation_type: VALIDATION_UTILISATEUR.AUTO, granted_by: UNREFERENCED_CFA_JOB_NAME }
+      )
+    }
+    report.rolesDenied++
+  }
   report.deactivatedCfas.push(cfa)
 }
 
@@ -145,7 +147,7 @@ export const deactivateUnreferencedCfaAccounts = async (rawOptions: IDeactivateU
 
   let referentielSirets: Set<string> | null = null
   try {
-    referentielSirets = await getReferentielOnisepSirets()
+    referentielSirets = await getReferentielOrganismesSirets()
     report.referentielSize = referentielSirets.size
   } catch (error) {
     report.aborted = `lecture du Référentiel impossible : ${error instanceof Error ? error.message : String(error)}`
@@ -175,7 +177,7 @@ export const deactivateUnreferencedCfaAccounts = async (rawOptions: IDeactivateU
     } else {
       let consecutiveErrors = 0
       for (const cfa of absent) {
-        const presence = await getReferentielOnisepPresence(cfa.siret)
+        const presence = await getReferentielOrganismePresence(cfa.siret)
         if (presence.kind === "error") {
           report.technicalErrors++
           consecutiveErrors++
