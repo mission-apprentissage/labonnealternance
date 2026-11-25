@@ -102,7 +102,7 @@ describe("nurturing-desinscrits", () => {
   })
 
   it("exclut les adresses blacklistées", async () => {
-    await createEmailBlacklistTest({ email: EMAIL.toUpperCase() })
+    await createEmailBlacklistTest({ email: EMAIL })
     await getDbCollection("unsubscribedrecruteurslba").insertOne(makeUnsubscribed())
 
     await nurturingDesinscrits()
