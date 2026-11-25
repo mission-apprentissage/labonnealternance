@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest"
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
 import * as sentryUtils from "@/common/utils/sentry-utils"
-import { resolveSearchMode, searchItems, tokenizeQuery } from "@/services/search/search.service"
+import { diplomaSigleOf, resolveSearchMode, searchItems, tokenizeQuery } from "@/services/search/search.service"
 
 /**
  * Repli sans fuzzy ni synonymes quand mongot dépasse maxClauseCount=1024 (#5153). Ni un plafond
@@ -141,5 +141,30 @@ describe("resolveSearchMode", () => {
     [{ mode: "emplois_formation" as const, type: "formation" }, "emplois_formation"],
   ])("%j → %s", (filters, mode) => {
     expect(resolveSearchMode(filters)).toBe(mode)
+  })
+})
+
+describe("diplomaSigleOf", () => {
+  it.each([
+    ["ndrc", "ndrc"],
+    ["BTS MCO", "mco"],
+    ["cap aepe en alternance", "aepe"],
+    ["électrotechnique", "electrotechnique"],
+  ])("mode emplois : %s → %s", (q, sigle) => {
+    expect(diplomaSigleOf(q, "emplois")).toBe(sigle)
+  })
+
+  it.each(["formations", "emplois_formation"] as const)("mode %s : le sigle n'ouvre pas les métiers", (mode) => {
+    expect(diplomaSigleOf("ndrc", mode)).toBeNull()
+  })
+
+  it.each([
+    ["commercial", "un métier n'est pas un sigle"],
+    ["ndrc commercial", "le sigle accompagné d'un autre terme"],
+    ["cgt", "near-miss sur un sigle court"],
+    ["constructor", "clé héritée de Object.prototype"],
+    ["bts", "requête réduite à un mot de diplôme"],
+  ])("%s : pas de sigle (%s)", (q) => {
+    expect(diplomaSigleOf(q, "emplois")).toBeNull()
   })
 })

@@ -142,6 +142,26 @@ export const loadRomeLabelByCode = async (): Promise<Map<string, string>> => {
   return map
 }
 
+const ROME_LABELS_CACHE_TTL_MS = 24 * 60 * 60 * 1000
+let romeLabelsCache: { value: Promise<Map<string, string>>; expiresAt: number } | null = null
+
+/** loadRomeLabelByCode mis en cache 24 h, pour les chemins de requête (le référentiel bouge rarement). */
+export const getCachedRomeLabelByCode = (): Promise<Map<string, string>> => {
+  if (!romeLabelsCache || romeLabelsCache.expiresAt <= Date.now()) {
+    const value = loadRomeLabelByCode()
+    romeLabelsCache = { value, expiresAt: Date.now() + ROME_LABELS_CACHE_TTL_MS }
+    // Un échec de chargement ne doit pas rester en cache 24 h.
+    value.catch(() => {
+      if (romeLabelsCache?.value === value) romeLabelsCache = null
+    })
+  }
+  return romeLabelsCache.value
+}
+
+export const resetRomeLabelByCodeCache = () => {
+  romeLabelsCache = null
+}
+
 /** Résout des codes ROME en intitulés uniques (ignore les codes inconnus / vides). */
 export const resolveRomeLabels = (codes: (string | null | undefined)[] | null | undefined, romeLabelByCode: Map<string, string>): string[] => {
   const labels = (codes ?? []).map((code) => (code ? romeLabelByCode.get(code) : undefined)).filter((label): label is string => Boolean(label))

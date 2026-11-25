@@ -72,6 +72,7 @@ Voies de couverture d'un terme (boost) :
 | `keywords` | ×5 | requête **mono-terme : recruteurs uniquement** (un keyword générique faisait entrer des offres hors sujet) ; multi-termes : tous types (le msm exige les autres termes ailleurs) |
 | `autocomplete` title/rome_labels | ×3 | **mono-terme uniquement** (troncature volontaire « compta » → comptable ; en multi-termes « product » couvrait « production ») |
 | synonymes `lba_synonyms` | ×6 | clause **`phrase`** (séquence exigée — en `text`, « vigile » → « agent de sécurité » laissait entrer tout doc contenant « agent ») sur `title` + `rome_labels` seulement (la clause matche aussi la requête brute : l'étendre à keywords/description rouvrirait la porte dérobée) |
+| métiers d'un sigle de diplôme | score constant 1 | **mode emplois, requête réduite à un sigle connu** (« ndrc », « BTS MCO », « cap aepe ») : `phrase` sur les `rome_labels` des métiers visés (`DIPLOMA_JOB_ROME_CODES`, `search-diploma-jobs.ts`), sens unique, hors collection de synonymes pour ne pas toucher le mode formations. Les offres qui citent le sigle restent devant |
 
 Bonus de score (`should`, n'élargissent pas le result set) : phrase title/rome_labels ×10, phrase organization_name ×8, `keywords` ×3, `description` ×1.
 

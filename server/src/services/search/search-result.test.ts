@@ -1,11 +1,12 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
+import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { beforeAll, describe, expect, it } from "vitest"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
-import { getSearchCorpusCollection } from "@/services/search/search-items.service"
+import { getSearchCorpusCollection, resetRomeLabelByCodeCache } from "@/services/search/search-items.service"
 
 /**
  * Tests de pertinence du moteur de recherche MongoDB Search ($search).
@@ -539,7 +540,58 @@ const CORPUS = [
     organization_name: "AGENCE WAM",
     is_algo_company: true,
   }),
+  // — sigles de diplôme → métiers en mode emplois (#5638) : l'offre qui cite le sigle, celles
+  //   du métier visé qui ne le citent pas, et les pièges (intitulé englobant, corpus formations).
+  generateSearchItemFixture({
+    url_id: "offre-aepe-sigle",
+    title: "Apprenti CAP AEPE",
+    description: "Accueil des enfants en crèche.",
+    keywords: null,
+    rome_labels: ["Educateur / Educatrice de jeunes enfants"],
+    organization_name: "Crèche Les Lutins",
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-garde-enfant",
+    title: "Garde d'enfants à domicile",
+    description: "Sorties d'école et accompagnement aux devoirs.",
+    keywords: null,
+    rome_labels: ["Garde d'enfant"],
+    organization_name: "Family Services",
+  }),
+  generateSearchItemFixture({
+    url_id: "formation-garde-enfant",
+    type: "formation",
+    type_filter_label: "Formations",
+    title: "Titre professionnel assistant de vie aux familles",
+    description: "Formation aux métiers de l'aide à domicile.",
+    keywords: null,
+    rome_labels: ["Garde d'enfant"],
+    organization_name: "CFA Services à la personne",
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-comptable-general",
+    title: "Comptable général",
+    description: "Tenue de la comptabilité générale.",
+    keywords: null,
+    rome_labels: ["Comptable"],
+    organization_name: "Groupe Industriel",
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-expert-comptable",
+    title: "Collaborateur en cabinet",
+    description: "Missions d'audit et de révision.",
+    keywords: null,
+    rome_labels: ["Expert-comptable / Experte-comptable"],
+    organization_name: "Cabinet Audit Conseil",
+  }),
 ]
+
+// Référentiel ROME minimal : la correspondance sigle → métiers résout ses codes ici (cf. search-diploma-jobs.ts).
+const ROME_REFERENTIEL = [
+  ["K1303", "Garde d'enfant"],
+  ["M1203", "Comptable"],
+  ["M1211", "Expert-comptable / Experte-comptable"],
+].map(([code_rome, intitule]) => generateReferentielRome({ rome: { code_rome, intitule, code_ogr: code_rome } }))
 
 // Groupes de synonymes minimaux pour reproduire les cas "acronymes" de la recette.
 // NB : l'analyzer de la collection de synonymes est lucene.standard (pas de folding
@@ -581,6 +633,8 @@ async function seedCorpus() {
   for (const doc of CORPUS) await getDbCollection(getSearchCorpusCollection(doc)).insertOne(doc)
   await getDbCollection("search_synonyms").insertMany(SYNONYMS)
   await getDbCollection("search_suggestions").insertMany(USER_SUGGESTIONS)
+  await getDbCollection("referentielromes").insertMany(ROME_REFERENTIEL)
+  resetRomeLabelByCodeCache()
 }
 
 // L'indexation mongot est asynchrone : on attend que le corpus complet soit visible
@@ -1131,6 +1185,41 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   // 3. SUGGESTIONS APPRISES — fusion de `search_suggestions` (recherches
   // utilisateurs validées par analyzeSearchQueries) dans l'autocomplétion.
   // ──────────────────────────────────────────────────────────────────────────
+  describe("sigles de diplôme → métiers visés, mode emplois (#5638)", () => {
+    it("'cap aepe' trouve aussi les offres du métier visé, derrière l'offre qui cite le sigle", async () => {
+      const result = await search({ q: "cap aepe", mode: "emplois" })
+
+      expect(ids(result)).toContain("offre-garde-enfant")
+      expect(rankOf(result, "offre-aepe-sigle")).toBe(0)
+    })
+
+    it("sens unique : 'garde d'enfant' ne remonte pas l'offre qui ne cite que le sigle", async () => {
+      const result = await search({ q: "garde d'enfant", mode: "emplois" })
+
+      expect(ids(result)).toContain("offre-garde-enfant")
+      expect(ids(result)).not.toContain("offre-aepe-sigle")
+    })
+
+    it("mode formations inchangé : 'aepe' ne remonte pas une formation du métier visé", async () => {
+      const result = await search({ q: "aepe", mode: "formations" })
+
+      expect(ids(result)).not.toContain("formation-garde-enfant")
+    })
+
+    it("'cg' ouvre le métier « Comptable » sans les intitulés qui le contiennent (« Expert-comptable »)", async () => {
+      const result = await search({ q: "bts cg", mode: "emplois" })
+
+      expect(ids(result)).toContain("offre-comptable-general")
+      expect(ids(result)).not.toContain("offre-expert-comptable")
+    })
+
+    it("un sigle accompagné d'un autre terme reste une recherche par couverture : 'aepe crèche' n'ouvre pas les gardes d'enfant", async () => {
+      const result = await search({ q: "aepe crèche", mode: "emplois" })
+
+      expect(ids(result)).not.toContain("offre-garde-enfant")
+    })
+  })
+
   describe("suggestions apprises des recherches utilisateurs", () => {
     it("sert les suggestions actives en complément du contenu indexé", async () => {
       const { suggestions } = await suggestSearchTerms({ q: "boulanger", limit: 8 })
