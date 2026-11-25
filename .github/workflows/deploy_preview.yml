@@ -44,20 +44,49 @@ jobs:
           commentId: ${{ github.event.comment.id }}
           reaction: "+1"
 
-      - id: "get-branch"
-        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName')" >> $GITHUB_OUTPUT
-        env:
-          REPO: ${{ github.repository }}
-          PR_NO: ${{ github.event.issue.number }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # gh absent du runner privé ; un ref vide ferait retomber actions/checkout sur main.
+      - name: Resolve PR head commit
+        id: pr_head
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            })
+            // Le runner a accès aux secrets de déploiement : jamais de code venant d'un fork.
+            if (pr.head.repo?.full_name !== pr.base.repo.full_name) {
+              core.setFailed(`PR #${pr.number} ouverte depuis un fork (${pr.head.repo?.full_name ?? "dépôt supprimé"}), pas de prévisualisation`)
+              return
+            }
+            if (!/^[0-9a-f]{40}$/.test(pr.head.sha ?? "")) {
+              core.setFailed(`SHA de tête invalide pour la PR #${pr.number} : "${pr.head.sha}"`)
+              return
+            }
+            core.info(`PR #${pr.number} : ${pr.head.ref} @ ${pr.head.sha}`)
+            core.setOutput("sha", pr.head.sha)
 
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ steps.get-branch.outputs.branch }}
+          ref: ${{ steps.pr_head.outputs.sha }}
           submodules: true
           lfs: true
           persist-credentials: false
+
+      - name: Verify checked out commit
+        id: verify_checkout
+        env:
+          EXPECTED_SHA: ${{ steps.pr_head.outputs.sha }}
+        run: |
+          set -euo pipefail
+          actual_sha=$(git rev-parse HEAD)
+          if [ -z "$EXPECTED_SHA" ] || [ "$actual_sha" != "$EXPECTED_SHA" ]; then
+            echo "::error::Checkout sur ${actual_sha}, attendu ${EXPECTED_SHA:-<vide>}"
+            exit 1
+          fi
+          echo "Checkout sur ${actual_sha}"
 
       - name: Detect force reseed
         id: force_seed
@@ -76,13 +105,15 @@ jobs:
           ANSIBLE_REMOTE_USER: runner-deploy
           ANSIBLE_SKIP_GALAXY: "true"
           FORCE_SEED: ${{ steps.force_seed.outputs.value }}
+          PR_HEAD_SHA: ${{ steps.pr_head.outputs.sha }}
 
+      # Sans checkout vérifié, le workspace et /tmp peuvent venir d'un run précédent.
       - name: Encrypt logs
         run: .bin/mna app:deploy:log:encrypt
-        if: always()
+        if: always() && steps.verify_checkout.outcome == 'success'
 
       - name: Upload logs artifacts
-        if: always()
+        if: always() && steps.verify_checkout.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: logs-${{ github.event.issue.number }}
