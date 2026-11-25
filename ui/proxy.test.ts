@@ -305,3 +305,34 @@ describe("proxy - filtre OPCO de session", () => {
     expect(response.cookies.get("lba_opco")?.value).toBe("AKTO")
   })
 })
+
+describe("proxy - guide de modération OPCO (#6006)", () => {
+  const GUIDE_PATH = "/espace-pro/opco/guide-de-moderation"
+  const sessionAs = (type: string) =>
+    fetchMock.mockImplementation(async (url: string) => new Response(url.endsWith("/auth/session") ? JSON.stringify({ _id: "u1", type }) : JSON.stringify({}), { status: 200 }))
+
+  it("redirige un visiteur non connecté vers la connexion", async () => {
+    const response = await proxy(new NextRequest(new URL(GUIDE_PATH, BASE_URL)))
+
+    expect(response.status).toBe(307)
+    expect(new URL(response.headers.get("location")!).pathname).toBe("/espace-pro/authentification")
+  })
+
+  it("sert le guide à un utilisateur OPCO", async () => {
+    sessionAs("OPCO")
+
+    const response = await proxy(requestWithSessionCookie(GUIDE_PATH))
+
+    expect(response.headers.get("location")).toBeNull()
+    expect(response.headers.get("x-middleware-request-x-session")).toContain('"type":"OPCO"')
+  })
+
+  it.each(["ENTREPRISE", "CFA", "ADMIN"])("refuse le guide à un utilisateur %s", async (type) => {
+    sessionAs(type)
+
+    const response = await proxy(requestWithSessionCookie(GUIDE_PATH))
+
+    expect(response.status).toBe(307)
+    expect(new URL(response.headers.get("location")!).pathname).toBe("/espace-pro/authentification")
+  })
+})

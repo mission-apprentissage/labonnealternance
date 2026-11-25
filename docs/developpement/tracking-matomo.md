@@ -65,6 +65,7 @@ Catégories en usage (à réutiliser avant d'en créer une) :
 | `recruiter_applications` | suivi des candidatures côté recruteur et CFA |
 | `admin_recruiter` | actions sur les offres depuis l'espace pro |
 | `cfa_sharing` | partage d'une offre avec des CFA |
+| `opco_moderation` | modération par les OPCO : guide de modération |
 
 ### Valeurs
 

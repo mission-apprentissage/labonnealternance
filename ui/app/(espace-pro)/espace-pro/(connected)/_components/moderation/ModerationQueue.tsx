@@ -18,6 +18,7 @@ import { AdminSearchInput } from "@/app/(espace-pro)/espace-pro/(connected)/admi
 import { MultiSelect } from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/MultiSelect"
 import { useToast } from "@/app/hooks/useToast"
 import { DsfrIcon } from "@/components/DsfrIcon"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getModerationQueue, getModerationSummaries, reclassifyFailedModerationJobs } from "@/utils/api"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 import { pluralize } from "@/utils/strutils"
@@ -27,6 +28,7 @@ import type { IModerationQueueItemJson, IModerationUserType } from "./moderation
 import { getOfferEditionPath } from "./moderation-links"
 import type { IModerationQueueState } from "./moderation-queue-state"
 import { getEmptyPageFallbackOffset, readModerationQueueState, toModerationQueueQuery, writeModerationQueueState } from "./moderation-queue-state"
+import { getOpcoGuideHref, trackOpcoGuideLinkClicked } from "./opco-guide.utils"
 
 const CONFORMITY_OPTIONS = MODERATION_QUEUE_CONFORMITY.map((value) => ({ value, label: MODERATION_CONFORMITY_LABELS[value] }))
 const ACCOUNT_STATUS_OPTIONS: { value: AccessStatus.AWAITING_VALIDATION | AccessStatus.GRANTED; label: string }[] = [
@@ -184,6 +186,18 @@ export function ModerationQueueContent({ userType, initialState }: { userType: I
         )}
         {userType === "ADMIN" && <MultiSelect id="moderation-opco" label="OPCO" width={260} items={OPCO_OPTIONS} value={opco} onChange={withFirstPage(setOpco)} />}
       </Box>
+      {userType === "OPCO" && (
+        <Typography sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v"), mb: fr.spacing("6v"), fontSize: "0.875rem" }}>
+          <DsfrIcon name="fr-icon-information-line" size={16} />
+          <span>
+            Les signalements sont expliqués dans le{" "}
+            <DsfrLink href={getOpcoGuideHref("guide-analyse")} size="sm" onClick={() => trackOpcoGuideLinkClicked("offres_moderation")}>
+              guide de modération
+            </DsfrLink>
+            .
+          </span>
+        </Typography>
+      )}
 
       <LiveStatus message={isPageLoading ? `Chargement de la page ${currentPage} sur ${pageCount}…` : counter} />
       {counter && <Typography sx={{ mb: fr.spacing("3v"), color: "#666666" }}>{counter} :</Typography>}
