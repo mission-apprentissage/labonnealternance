@@ -44,7 +44,7 @@ jobs:
           commentId: ${{ github.event.comment.id }}
           reaction: "+1"
 
-      # gh et jq absents du runner privé ; un ref vide ferait retomber actions/checkout sur main.
+      # gh absent du runner privé ; un ref vide ferait retomber actions/checkout sur main.
       - name: Resolve PR head commit
         id: pr_head
         uses: actions/github-script@v9
@@ -76,6 +76,7 @@ jobs:
           persist-credentials: false
 
       - name: Verify checked out commit
+        id: verify_checkout
         env:
           EXPECTED_SHA: ${{ steps.pr_head.outputs.sha }}
         run: |
@@ -104,13 +105,15 @@ jobs:
           ANSIBLE_REMOTE_USER: runner-deploy
           ANSIBLE_SKIP_GALAXY: "true"
           FORCE_SEED: ${{ steps.force_seed.outputs.value }}
+          PR_HEAD_SHA: ${{ steps.pr_head.outputs.sha }}
 
+      # Sans checkout vérifié, le workspace et /tmp peuvent venir d'un run précédent.
       - name: Encrypt logs
         run: .bin/mna app:deploy:log:encrypt
-        if: always()
+        if: always() && steps.verify_checkout.outcome == 'success'
 
       - name: Upload logs artifacts
-        if: always()
+        if: always() && steps.verify_checkout.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: logs-${{ github.event.issue.number }}
