@@ -19,7 +19,7 @@ const sectionSx = { mb: fr.spacing("10v"), scrollMarginTop: fr.spacing("4v") }
 export function OpcoGuideView({ guide }: { guide: OpcoGuide | null }) {
   return (
     <Box sx={{ px: { xs: 2, md: 0 } }}>
-      <OpcoGuideDisplayedTracking />
+      {guide ? <OpcoGuideDisplayedTracking /> : null}
       <Breadcrumb pages={[PAGES.static.backOpcoHome, MODERATION_PAGES.opcoGuide]} />
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 3fr" }, gap: fr.spacing("8v"), alignItems: "start" }}>
         <Box sx={{ position: { md: "sticky" }, top: { md: fr.spacing("4v") } }}>

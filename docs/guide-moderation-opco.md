@@ -6,7 +6,7 @@ Page `/espace-pro/opco/guide-de-moderation`, réservée aux utilisateurs OPCO. S
 
 - Page Notion « Guide de modération des comptes et des offres (espace OPCO) », sous « Contenus web ». Son identifiant est `OPCO_GUIDE_NOTION_PAGE_ID` (`fetch-opco-guide.ts`).
 - La page reste **privée** : ne jamais la publier sur le web. Elle est lue par l'API Notion officielle avec le jeton d'une intégration, et non par `fetch-notion-page.ts`, qui ne lit que les pages publiques.
-- Le site met le contenu en cache 15 minutes. Une modification dans Notion apparaît donc au plus tard 15 minutes après, sans déploiement.
+- Le site garde le contenu 15 minutes en cache, par processus. Passé ce délai, la visite suivante reçoit encore l'ancienne version et déclenche la relecture : une modification dans Notion apparaît à la visite d'après, sans déploiement.
 
 ## Règles de rédaction dans Notion
 

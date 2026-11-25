@@ -16,6 +16,8 @@ const TTL_MS = 15 * 60 * 1_000
 const MAX_STALE_MS = 7 * 24 * 60 * 60 * 1_000
 const FAILURE_COOLDOWN_MS = 60 * 1_000
 const RETRY_DELAYS_MS = [500, 1_500]
+// Sans délai, une API Notion bloquée bloquerait la page au lieu de passer au contenu de secours.
+const REQUEST_TIMEOUT_MS = 10_000
 
 export type OpcoGuideResult = { status: "ok"; guide: OpcoGuide } | { status: "unavailable" }
 
@@ -40,6 +42,7 @@ async function notionGet(path: string, token: string): Promise<{ results: Notion
       const response = await fetch(`${NOTION_API_URL}${path}`, {
         headers: { Authorization: `Bearer ${token}`, "Notion-Version": NOTION_VERSION },
         cache: "no-store",
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       })
       if (!response.ok) throw new NotionApiError(response.status)
       return await response.json()

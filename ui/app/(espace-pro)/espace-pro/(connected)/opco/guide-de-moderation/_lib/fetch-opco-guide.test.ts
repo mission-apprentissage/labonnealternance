@@ -81,6 +81,15 @@ describe("fetchOpcoGuide", () => {
     expect(await fetchOpcoGuide()).toEqual(first)
   })
 
+  it("borne chaque appel par un délai, pour retomber sur le contenu de secours", async () => {
+    fetchMock.mockResolvedValue(page(sectionHeadings(7)))
+    const { fetchOpcoGuide } = await loadModule()
+
+    await fetchOpcoGuide()
+
+    expect(fetchMock.mock.calls.every(([, init]) => init.signal instanceof AbortSignal)).toBe(true)
+  })
+
   it("ne réessaie pas une erreur d'autorisation", async () => {
     fetchMock.mockResolvedValue(json({ message: "Could not find block" }, 404))
     const { fetchOpcoGuide } = await loadModule()

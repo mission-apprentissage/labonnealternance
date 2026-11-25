@@ -6,6 +6,14 @@ import { block, heading2, paragraph, text } from "../_lib/notion-guide.fixtures"
 import { OpcoGuideView } from "./OpcoGuideView"
 
 vi.mock("server-only", () => ({}))
+const tracking = vi.hoisted(() => ({ displayed: vi.fn() }))
+vi.mock("../OpcoGuideTracking", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../OpcoGuideTracking")>()),
+  OpcoGuideDisplayedTracking: () => {
+    tracking.displayed()
+    return null
+  },
+}))
 
 const fixtureGuide = () => {
   const sections = OPCO_GUIDE_SECTIONS.flatMap((_, index) => [heading2(`${index + 1}. Titre Notion ${index + 1}`), paragraph(text(`Texte fictif ${index + 1}`))])
@@ -49,6 +57,12 @@ describe("OpcoGuideView, contenu Notion disponible", () => {
     expect(html).not.toContain("notion.so")
   })
 
+  it("compte l'affichage du guide", () => {
+    tracking.displayed.mockClear()
+    renderToStaticMarkup(<OpcoGuideView guide={fixtureGuide()} />)
+    expect(tracking.displayed).toHaveBeenCalledTimes(1)
+  })
+
   it("n'affiche pas le contenu de secours", () => {
     expect(html).not.toContain("Contenu momentanément indisponible")
     expect(html).toMatch(/href="\/espace-pro\/opco"[^>]*>[^<]*(<[^>]+>)*Vérifier les comptes en attente/)
@@ -61,6 +75,12 @@ describe("OpcoGuideView, contenu indisponible", () => {
   it("garde la structure et les ancres de la page", () => {
     expect(headingsOf(html)).toEqual({ h1: 1, h2: OPCO_GUIDE_SECTIONS.length })
     for (const { id } of OPCO_GUIDE_SECTIONS) expect(html).toMatch(new RegExp(`<section[^>]* id="${id}"`))
+  })
+
+  it("ne compte pas un affichage sans contenu", () => {
+    tracking.displayed.mockClear()
+    renderToStaticMarkup(<OpcoGuideView guide={null} />)
+    expect(tracking.displayed).not.toHaveBeenCalled()
   })
 
   it("annonce l'indisponibilité et garde le contact et le CTA", () => {
