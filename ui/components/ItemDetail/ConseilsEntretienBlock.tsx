@@ -13,7 +13,7 @@ export function ConseilsEntretienBlock() {
     <Stack spacing={2} direction="row" sx={{ alignItems: "center", my: fr.spacing("6v"), mx: { xs: 2, sm: 2, md: "auto" } }}>
       <Image src="/images/whisper.svg" alt="" aria-hidden={true} width={34} height={39} style={{ marginTop: "2px" }} />
       <Box>
-        <Typography component="h2" sx={{ fontWeight: 700, fontSize: "20px", color: "#3a3a3a" }}>
+        <Typography component="div" sx={{ fontWeight: 700, fontSize: "20px", color: "#3a3a3a" }}>
           Psst !
         </Typography>
         <Typography sx={{ color: "grey.700" }}>
