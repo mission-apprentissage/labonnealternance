@@ -135,6 +135,14 @@ export const getSeoSecteur = async ({ secteur }: { secteur: string }) => {
   return await getDbCollection(seoSecteurModel.collectionName).findOne({ slug: secteur })
 }
 
+// Même règle que le `noindex` de la page secteur : une page sans offre n'est ni indexée ni annoncée au sitemap.
+export const getSeoSecteursIndexables = async (): Promise<string[]> => {
+  const secteurs = await getDbCollection(seoSecteurModel.collectionName)
+    .find({ job_count: { $gt: 0 } }, { projection: { slug: 1 } })
+    .toArray()
+  return secteurs.map((s) => s.slug)
+}
+
 export const getSeoDiplome = async ({ diplome }: { diplome: string }) => {
   const seoDiplome = await getDbCollection(seoDiplomeModel.collectionName).findOne({ slug: diplome })
   return seoDiplome

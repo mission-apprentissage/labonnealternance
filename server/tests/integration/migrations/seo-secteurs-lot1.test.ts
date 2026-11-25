@@ -1,13 +1,10 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { SEO_METIER_PAGES } from "shared/constants/seo-metier-pages"
 import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { metierData } from "@/jobs/seo/data-metier-seo"
 import { secteursData, up } from "@/migrations/20261116120000-seo-secteurs-lot1"
 
-// `metierData` ne porte qu'une partie des pages métier publiées, les autres étant déclarées côté ui dans
-// metier_data.tsx. Seules celles-ci sont liables depuis une carte : le test de périmètre ROME ci-dessous a
-// besoin de leurs codes pour contraindre le compteur affiché.
-const METIER_PAGES_VERIFIABLES = metierData.map((m) => m.slug)
+const metiersLies = secteursData.flatMap((s) => s.metiers).filter((m) => m.metier_slug)
 
 describe("migration seo-secteurs-lot1", () => {
   useMongo()
@@ -29,19 +26,18 @@ describe("migration seo-secteurs-lot1", () => {
     expect(secteur?.job_count).toBe(0)
   })
 
-  it("ne renvoie que vers des pages métier dont les codes ROME sont connus ici", () => {
-    const slugs = secteursData.flatMap((s) => s.metiers).flatMap((m) => (m.metier_slug ? [m.metier_slug] : []))
-    expect(slugs.length).toBeGreaterThan(0)
-    for (const slug of slugs) {
-      expect(METIER_PAGES_VERIFIABLES).toContain(slug)
+  it("ne renvoie que vers des pages métier publiées", () => {
+    expect(metiersLies.length).toBeGreaterThan(0)
+    const publiees = SEO_METIER_PAGES.map((p) => p.slug)
+    for (const metier of metiersLies) {
+      expect(publiees, `${metier.libelle} → ${metier.metier_slug}`).toContain(metier.metier_slug)
     }
   })
 
   // Le compteur de la carte doit porter sur le même périmètre que la page métier vers laquelle elle renvoie.
   it("ne renvoie vers une page métier que si la carte couvre ses codes ROME", () => {
-    for (const metier of secteursData.flatMap((s) => s.metiers).filter((m) => m.metier_slug)) {
-      const page = metierData.find((m) => m.slug === metier.metier_slug)
-      expect(page, metier.metier_slug ?? "").toBeDefined()
+    for (const metier of metiersLies) {
+      const page = SEO_METIER_PAGES.find((p) => p.slug === metier.metier_slug)
       for (const rome of page?.romes ?? []) {
         expect(metier.romes, `${metier.libelle} → ${metier.metier_slug}`).toContain(rome)
       }

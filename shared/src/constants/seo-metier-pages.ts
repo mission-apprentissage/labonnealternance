@@ -1,4 +1,6 @@
-export const metierData = [
+// Pages /alternance/metier/<slug> publiées, avec les codes ROME sur lesquels elles comptent leurs offres.
+// Partagé pour que le test de maillage des pages secteur (seo-secteurs-lot1.test.ts) contrôle l'existence et le périmètre ROME.
+export const SEO_METIER_PAGES = [
   {
     metier: "Aide-soignant",
     slug: "aide-soignant",

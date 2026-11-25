@@ -6,7 +6,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { updateSeoMetierJobCounts, updateSeoSecteurs } from "@/services/seo.service"
+import { getSeoSecteursIndexables, updateSeoMetierJobCounts, updateSeoSecteurs } from "@/services/seo.service"
 
 const secteur = (overrides = {}) => ({
   _id: new ObjectId(),
@@ -118,5 +118,14 @@ describe("updateSeoSecteurs", () => {
     await updateSeoMetierJobCounts()
     const metier = await getDbCollection("seo_metiers").findOne({ slug: "developpeur-web" })
     expect(metier?.job_count).toBe(5)
+  })
+})
+
+describe("getSeoSecteursIndexables", () => {
+  useMongo()
+
+  it("ne renvoie que les secteurs qui ont des offres", async () => {
+    await getDbCollection("seo_secteurs").insertMany([secteur({ slug: "informatique", job_count: 3 }), secteur({ slug: "sport", job_count: 0 }), secteur({ slug: "sante" })])
+    expect(await getSeoSecteursIndexables()).toEqual(["informatique"])
   })
 })

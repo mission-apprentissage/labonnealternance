@@ -58,3 +58,19 @@ describe("generateMainSitemap (non-régression)", () => {
     expect(sitemap).toContain(`<loc>https://${host}/metiers/developpeur-web</loc>\n<priority>0.8</priority>`)
   })
 })
+
+describe("secteurs sans offre", () => {
+  it("retire du sitemap et du llms.txt les secteurs absents de la liste indexable", () => {
+    const options = { secteursIndexables: [] }
+    expect(generateMainSitemap(request, options)).not.toContain("/alternance/secteur/informatique")
+    expect(generateLlmsTxt(request, options)).not.toContain("/alternance/secteur/informatique")
+  })
+
+  it("publie les secteurs indexables", () => {
+    expect(generateMainSitemap(request, { secteursIndexables: ["informatique"] })).toContain("/alternance/secteur/informatique")
+  })
+
+  it("publie tous les secteurs quand la liste est inconnue (API indisponible)", () => {
+    expect(generateMainSitemap(request)).toContain("/alternance/secteur/informatique")
+  })
+})

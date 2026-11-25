@@ -23,6 +23,10 @@ export type SitemapPage = {
 
 // Un groupe de pages partageant la même priorité dans le sitemap et une même section dans le llms.txt.
 // `optional: true` => la section est regroupée sous "## Optional" dans le llms.txt (cf. spec llmstxt.org).
+// `secteursIndexables` : slugs des secteurs qui ont des offres (cf. noindex de la page secteur).
+// Absent quand l'API n'a pas répondu : tous les secteurs sont alors publiés.
+export type SitemapOptions = { secteursIndexables?: string[] }
+
 export type SitemapPageGroup = {
   title: string
   priority: number
@@ -39,7 +43,7 @@ export type SitemapPageGroup = {
  * Attention : l'ordre des groupes définit l'ordre des URLs du sitemap. Ne pas réordonner sans
  * mettre à jour mainSitemapLastModificationDate.
  */
-export function getMainSitemapPageGroups(): SitemapPageGroup[] {
+export function getMainSitemapPageGroups({ secteursIndexables }: SitemapOptions = {}): SitemapPageGroup[] {
   const txtDirectory = path.join(process.cwd(), "config")
   const dataJobs = getStaticMetiers(txtDirectory)
 
@@ -210,11 +214,13 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
     {
       title: "L'alternance par secteur",
       priority: 0.95,
-      pages: secteurData.map((secteur) => ({
-        path: `/alternance/secteur/${secteur.slug}`,
-        label: `Alternance ${secteur.secteur.toLowerCase()}`,
-        description: `Alternance en ${secteur.secteur.toLowerCase()} : métiers, offres, entreprises qui recrutent et formations.`,
-      })),
+      pages: secteurData
+        .filter((secteur) => !secteursIndexables || secteursIndexables.includes(secteur.slug))
+        .map((secteur) => ({
+          path: `/alternance/secteur/${secteur.slug}`,
+          label: `Alternance ${secteur.secteur.toLowerCase()}`,
+          description: `Alternance en ${secteur.secteur.toLowerCase()} : métiers, offres, entreprises qui recrutent et formations.`,
+        })),
     },
     {
       title: "L'alternance par diplôme",
@@ -248,9 +254,9 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
   ]
 }
 
-export function generateMainSitemap(request: Request) {
+export function generateMainSitemap(request: Request, options: SitemapOptions = {}) {
   const host = getHostFromHeader(request)
-  const groups = getMainSitemapPageGroups()
+  const groups = getMainSitemapPageGroups(options)
 
   const sitemapEntries: SitemapUrlEntry[] = [
     { loc: host, priority: 1 },

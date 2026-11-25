@@ -1,4 +1,4 @@
-import { getMainSitemapPageGroups } from "@/services/generate-main-sitemap"
+import { getMainSitemapPageGroups, type SitemapOptions } from "@/services/generate-main-sitemap"
 import { getHostFromHeader } from "@/utils/request-utils"
 
 /**
@@ -8,9 +8,9 @@ import { getHostFromHeader } from "@/utils/request-utils"
  * toute page ajoutée au sitemap apparaît donc automatiquement ici. Les offres d'emploi, dynamiques et
  * volatiles, sont volontairement exclues (cf. /sitemap-offers.xml) pour éviter les liens morts.
  */
-export function generateLlmsTxt(request: Request) {
+export function generateLlmsTxt(request: Request, options: SitemapOptions = {}) {
   const host = getHostFromHeader(request)
-  const groups = getMainSitemapPageGroups()
+  const groups = getMainSitemapPageGroups(options)
 
   const renderSection = (title: string, pages: { path: string; label: string; description: string }[]) =>
     [`## ${title}`, "", ...pages.map((page) => `- [${page.label}](${host}${page.path}): ${page.description}`)].join("\n")

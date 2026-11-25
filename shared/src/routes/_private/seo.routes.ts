@@ -50,5 +50,13 @@ export const zPrivateSeoRoutes = {
       },
       securityScheme: null,
     },
+    "/_private/seo/secteurs/indexables": {
+      method: "get",
+      path: "/_private/seo/secteurs/indexables",
+      response: {
+        "200": z.array(z.string()),
+      },
+      securityScheme: null,
+    },
   },
 } as const satisfies IRoutesDef
