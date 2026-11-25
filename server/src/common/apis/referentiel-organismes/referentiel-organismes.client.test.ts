@@ -111,6 +111,13 @@ describe("referentiel-organismes.client", () => {
       expect(await getReferentielOrganismePresence(SIRET)).toEqual({ kind: "error", reason })
     })
 
+    it("encode le SIRET dans le chemin : une valeur hors format ne sort pas de /organismes/", async () => {
+      const scope = nock(ORIGIN).get("/api/v1/organismes/..%2Fadmin").reply(404)
+
+      expect(await getReferentielOrganismePresence("../admin")).toEqual({ kind: "absent" })
+      expect(scope.isDone()).toBe(true)
+    })
+
     it("erreur sur une absence de réponse", async () => {
       nock(ORIGIN).get(`/api/v1/organismes/${SIRET}`).replyWithError("socket hang up")
 

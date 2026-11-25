@@ -83,7 +83,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IEtabliss
 }
 const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
   try {
-    const { data } = await getHttpClient().get<IReferentiel>(`${REFERENTIEL_ORGANISMES_API_URL}/organismes/${siret}`)
+    const { data } = await getHttpClient().get<IReferentiel>(`${REFERENTIEL_ORGANISMES_API_URL}/organismes/${encodeURIComponent(siret)}`)
     return data
   } catch (error: any) {
     if (error?.response?.status === 404) {

@@ -43,7 +43,7 @@ export type IReferentielOrganismePresence = { kind: "present" } | { kind: "absen
 /** Seul un 404 signifie l'absence, comme à la création de compte (cf. validateEligibiliteCfa). */
 export const getReferentielOrganismePresence = async (siret: string): Promise<IReferentielOrganismePresence> => {
   try {
-    const { data } = await client.get(`/organismes/${siret}`)
+    const { data } = await client.get(`/organismes/${encodeURIComponent(siret)}`)
     const parsed = z.object({ siret: z.string() }).safeParse(data)
     if (!parsed.success || parsed.data.siret !== siret) return { kind: "error", reason: "réponse 200 illisible" }
     return { kind: "present" }
