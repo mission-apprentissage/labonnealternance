@@ -3,6 +3,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { useRef, useState } from "react"
+import { SectionTitle } from "@/app/_components/Title/SectionTitle"
 
 type Testimony = {
   avatar: string
@@ -11,28 +12,7 @@ type Testimony = {
   quote: string
 }
 
-const TESTIMONIES: Record<"candidat" | "recruteur" | "cfa", [Testimony, Testimony, Testimony]> = {
-  candidat: [
-    {
-      avatar: "/images/home_pics/avatars/avatar_femme_01.png",
-      name: "Cassandra",
-      role: "alternante en Licence\nÉconomie Sociale et Familiale (ESF)",
-      quote:
-        "“La bonne alternance est un outil très simple d'utilisation avec pas mal d'offres. J'apprécie particulièrement les suggestions de candidatures spontanées, qu'on ne retrouve nulle part ailleurs.“",
-    },
-    {
-      avatar: "/images/home_pics/avatars/avatar_homme_01.png",
-      name: "Simon",
-      role: "alternant en master\nMention maintenance aéronautique",
-      quote: "“La bonne alternance est un service pratique pour candidater, pas besoin de se créer de compte pour envoyer son CV.“",
-    },
-    {
-      avatar: "/images/home_pics/avatars/avatar_femme_02.png",
-      name: "Lise",
-      role: "alternante en BTS\nGestion",
-      quote: "“J'ai pu explorer plein de formations et contacter les écoles directement. Ça aide pour bien s'orienter.“",
-    },
-  ],
+const TESTIMONIES: Record<"recruteur" | "cfa", [Testimony, Testimony, Testimony]> = {
   recruteur: [
     {
       avatar: "/images/home_pics/avatars/recruteur_01.png",
@@ -79,7 +59,7 @@ const TESTIMONIES: Record<"candidat" | "recruteur" | "cfa", [Testimony, Testimon
 }
 
 type Props = {
-  realm: "candidat" | "recruteur" | "cfa"
+  realm: "recruteur" | "cfa"
 }
 
 export const AppreciationUsagers = ({ realm }: Props) => {
@@ -102,14 +82,9 @@ export const AppreciationUsagers = ({ realm }: Props) => {
         gap: fr.spacing("10v"),
       }}
     >
-      <Typography variant="h1">
+      <SectionTitle id="apprecie-de-nos-usagers" highlight="de nos usagers">
         Apprécié
-        <br />
-        <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
-          de nos usagers
-        </Box>
-      </Typography>
-      <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+      </SectionTitle>
       <Box>
         <Box
           sx={{

@@ -43,6 +43,7 @@ import login from "./controllers/login.controller"
 import newslettersRoute from "./controllers/newsletters.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reported-company.controller"
+import rgpdErasureRoute from "./controllers/rgpd-erasure.controller"
 import rome from "./controllers/rome.controller"
 import searchRoute from "./controllers/search.controller"
 import sitemapController from "./controllers/sitemap.controller"
@@ -151,6 +152,7 @@ export async function bind(app: Server) {
       etablissementsRecruteurRoute(typedSubApp)
       jobsPartnersAdminRoute(typedSubApp)
       jobsPartnersModerationRoute(typedSubApp)
+      rgpdErasureRoute(typedSubApp)
       adminFeedbackFormsRoute(typedSubApp)
       feedbackFormsRoute(typedSubApp)
       adminNewslettersRoute(typedSubApp)

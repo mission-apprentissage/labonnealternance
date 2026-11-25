@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 import type { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 import { mailType } from "shared/constants/appointment"
 import type { ReferrerObject } from "shared/constants/referers"
+import { prepareMessageForMail } from "shared/helpers/common"
 import dayjs from "shared/helpers/dayjs"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -90,6 +91,37 @@ export const sendCandidateAppointmentEmail = async (
     { $push: { to_applicant_mails: { campaign: mailType.CANDIDAT_APPOINTMENT, status: null, message_id: email.messageId, email_sent_at: dayjs().toDate() } } }
   )
 }
+
+export const sendCfaAnswerToApplicantEmail = async ({
+  applicant,
+  message,
+  eligibleTrainingsForAppointment,
+  cfaPhone,
+}: {
+  applicant: Pick<IUser, "email" | "firstname" | "lastname">
+  message: string | null
+  eligibleTrainingsForAppointment: Pick<IEligibleTrainingsForAppointment, "training_intitule_long" | "etablissement_formateur_raison_sociale" | "lieu_formation_email"> | null
+  cfaPhone: string | null | undefined
+}) =>
+  mailer.sendEmail({
+    to: applicant.email,
+    subject: `La bonne alternance - Le centre de formation vous répond`,
+    template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
+    data: {
+      prenom: sanitizeTextField(applicant.firstname),
+      nom: sanitizeTextField(applicant.lastname),
+      message: prepareMessageForMail(sanitizeTextField(message)),
+      nom_formation: eligibleTrainingsForAppointment?.training_intitule_long,
+      nom_cfa: eligibleTrainingsForAppointment?.etablissement_formateur_raison_sociale,
+      cfa_email: eligibleTrainingsForAppointment?.lieu_formation_email,
+      cfa_phone: cfaPhone,
+      images: {
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+      },
+      publicEmail: config.publicEmail,
+    },
+  })
 
 export const sendFormateurAppointmentEmail = async (
   candidate: IUser,

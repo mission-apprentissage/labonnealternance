@@ -21,10 +21,12 @@ import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { EntrepriseEngagementSources } from "shared/models/referentiel-engagement-entreprise.model"
-import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
+import { AccessEntityType, AccessStatus, DEACTIVATION_REASON_MAX_LENGTH, DEACTIVATION_REASON_MIN_LENGTH } from "shared/models/role-management.model"
 import { validateSIRET } from "shared/validators/siret-validator"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+
+vi.mock("@/services/mailer.service", () => ({ default: { sendEmail: vi.fn().mockResolvedValue({}) } }))
 
 describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () => {
   beforeEach(async () => {
@@ -691,5 +693,67 @@ describe("Périmètre d'un OPCO sur les fiches d'un utilisateur multi-compte", (
 
     expect(response.statusCode).toBe(200)
     expect(response.json().organizationId).toBe(entrepriseAtlas._id.toString())
+  })
+})
+
+describe("motif de désactivation d'un compte (#6022)", () => {
+  beforeEach(async () => {
+    await getDbCollection("entreprises").deleteMany({})
+    await getDbCollection("userswithaccounts").deleteMany({})
+    await getDbCollection("rolemanagements").deleteMany({})
+  })
+
+  useMongo()
+  const httpClient = useServer()
+
+  const postReason = async (action: "deactivate" | "not-my-opco", reason: string) => {
+    const { bearerToken } = await createAndLogUser(httpClient, "userAdmin", { type: "ADMIN" })
+    const { user, entreprise, role } = await saveEntrepriseUserTest()
+    const response = await httpClient().inject({
+      method: "POST",
+      path: `/api/user/${user._id}/organization/${entreprise._id}/${action}`,
+      headers: bearerToken,
+      body: { reason },
+    })
+    const savedRole = await getDbCollection("rolemanagements").findOne({ _id: role._id })
+    return { response, lastEvent: savedRole?.status.at(-1) }
+  }
+
+  it.each([
+    ["trop court", "a".repeat(DEACTIVATION_REASON_MIN_LENGTH - 1)],
+    ["trop court une fois les espaces retirés", `  ${"a".repeat(DEACTIVATION_REASON_MIN_LENGTH - 1)}  `],
+    ["trop long", "a".repeat(DEACTIVATION_REASON_MAX_LENGTH + 1)],
+  ])("refuse un motif %s sans désactiver le compte", async (_label, reason) => {
+    const { response, lastEvent } = await postReason("deactivate", reason)
+    expect.soft(response.statusCode).toBe(400)
+    expect.soft(lastEvent?.status).toBe(AccessStatus.GRANTED)
+  })
+
+  it("enregistre un motif de longueur maximale sans le tronquer", async () => {
+    const reason = "ligne 1\nligne 2 ".padEnd(DEACTIVATION_REASON_MAX_LENGTH, "é")
+    expect(reason).toHaveLength(DEACTIVATION_REASON_MAX_LENGTH)
+    const { response, lastEvent } = await postReason("deactivate", reason)
+    expect.soft(response.statusCode).toBe(200)
+    expect.soft(lastEvent?.status).toBe(AccessStatus.DENIED)
+    expect.soft(lastEvent?.reason).toBe(reason)
+  })
+
+  it("enregistre le motif sans ses espaces de début et de fin", async () => {
+    const { response, lastEvent } = await postReason("deactivate", "  motif valide  ")
+    expect.soft(response.statusCode).toBe(200)
+    expect.soft(lastEvent?.reason).toBe("motif valide")
+  })
+
+  it("remet le compte en attente de validation sur not-my-opco avec un motif valide", async () => {
+    const { response, lastEvent } = await postReason("not-my-opco", "Ne relève pas des champs de compétences de mon OPCO")
+    expect.soft(response.statusCode).toBe(200)
+    expect.soft(lastEvent?.status).toBe(AccessStatus.AWAITING_VALIDATION)
+    expect.soft(lastEvent?.reason).toBe("Ne relève pas des champs de compétences de mon OPCO")
+  })
+
+  it("refuse un motif vide sur not-my-opco", async () => {
+    const { response, lastEvent } = await postReason("not-my-opco", "")
+    expect.soft(response.statusCode).toBe(400)
+    expect.soft(lastEvent?.status).toBe(AccessStatus.GRANTED)
   })
 })
