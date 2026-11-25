@@ -30,8 +30,9 @@ export const METADATA = {
       description: "Connectez-vous à votre compte La bonne alternance pour accéder à vos offres d’alternance.",
     }),
     aPropos: () => ({
-      title: "À propos de La bonne alternance - Notre mission et engagement",
-      description: "Apprenez-en plus sur La bonne alternance, notre mission et notre engagement pour faciliter votre recherche d’alternance.",
+      title: "À propos de La bonne alternance | Service public de l'alternance",
+      description:
+        "La bonne alternance, service public numérique de la DGEFP : nos engagements, la mesure de notre impact et nos partenaires pour faciliter l'accès à l'alternance.",
     }),
     cgu: () => ({
       title: "Conditions générales d'utilisation - La bonne alternance",
@@ -157,7 +158,7 @@ export const METADATA = {
     }),
     jeSuisRecruteur: () => ({
       title: "Recruteur alternance | Publiez vos offres gratuitement",
-      description: "Diffusez gratuitement vos offres d'alternance sur La bonne alternance, 1jeune1solution et Parcoursup. Recevez des candidatures en quelques clics.",
+      description: "Publiez gratuitement vos offres d'alternance sur le service public de l'alternance. Offres vérifiées, diffusées sur France Travail, Parcoursup et Hellowork.",
     }),
     guideRecruteur: () => ({
       title: "Guide recruteur alternance 2026 | Ressources employeurs",

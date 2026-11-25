@@ -4,6 +4,7 @@ import { Transform } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import { internal } from "@hapi/boom"
+import * as Sentry from "@sentry/node"
 import { ObjectId } from "bson"
 import type { AnyBulkWriteOperation } from "mongodb"
 import { MongoBulkWriteError } from "mongodb"
@@ -50,6 +51,8 @@ const importRecruteursLbaToRawCollection = async (sourceStream: Stream.Readable)
 
   const now = new Date()
   let count = 0
+  let rejected = 0
+  const rejectedByIssue = new Map<string, number>()
 
   const validationStream = new Transform({
     objectMode: true,
@@ -57,7 +60,13 @@ const importRecruteursLbaToRawCollection = async (sourceStream: Stream.Readable)
       const recruteur = { ...chunk.value, createdAt: now, _id: new ObjectId() }
       const parseResult = ZRecruteursLbaRaw.safeParse(recruteur)
       if (!parseResult.success) {
-        return callback() // ignore les entrées invalides sans erreur
+        rejected++
+        // indices de tableau remplacés par * : une même erreur sur rome_codes donne une seule clé, comptée une fois par ligne
+        const keys = new Set(parseResult.error.issues.map((issue) => `${issue.path.map((p) => (typeof p === "number" ? "*" : String(p))).join(".")}: ${issue.code}`))
+        for (const key of keys) {
+          rejectedByIssue.set(key, (rejectedByIssue.get(key) ?? 0) + 1)
+        }
+        return callback()
       }
       callback(null, recruteur)
     },
@@ -83,8 +92,14 @@ const importRecruteursLbaToRawCollection = async (sourceStream: Stream.Readable)
 
   await pipeline(sourceStream, parser(), streamArray(), validationStream, groupStreamData({ size: 10_000 }), insertionStream)
 
-  logger.info(`import recruteurs lba terminé : ${count} recruteurs importées`)
-  return { count }
+  logger.info(`import recruteurs lba terminé : ${count} recruteurs importés`)
+  if (rejected) {
+    const extra = { rejected, rejectedByIssue: Object.fromEntries(rejectedByIssue) }
+    logger.warn(extra, `import recruteurs lba : ${rejected} lignes invalides ignorées`)
+    // message fixe : Sentry regroupe les imports successifs dans une seule issue
+    Sentry.captureMessage("import recruteurs lba : lignes invalides ignorées", { level: "warning", extra })
+  }
+  return { count, rejected }
 }
 
 export const importRecruteursLbaRaw = async (sourceFileReadStream?: Stream.Readable) => {

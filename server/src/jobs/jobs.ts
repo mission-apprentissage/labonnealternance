@@ -68,6 +68,7 @@ import { resetInvitationDates } from "./rdv/reset-invitation-dates"
 import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
 import { createApiUser } from "./recruiters/create-api-user"
+import { deactivateClosedSiretAccounts } from "./recruiters/deactivate-closed-siret-accounts"
 import { disableApiUser } from "./recruiters/disable-api-user"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
 import { OPCO_REMINDER_JOB_NAME, opcoReminderJob } from "./recruiters/opco-reminder-job"
@@ -463,6 +464,15 @@ export async function setupJobProcessor() {
             cron_string: "0 8 * * SUN",
             handler: updateDiplomeMetier,
           },
+          // Nuits des 15 et 16 février et novembre (#5437), comme le recommande l'API Entreprise pour les traitements de masse.
+          // Environ 5 h d'appels à 200/min : découpés en tranches de 10 min, chacune reprenant où la précédente s'est arrêtée
+          // (lastUpdateFromSource), pour ne pas monopoliser un worker qui exécute un seul job à la fois.
+          // Production seule : une exécution en recette consommerait le même quota de 250 requêtes/minute.
+          "Désactivation des comptes à SIRET fermé": {
+            cron_string: "*/15 0-7 15,16 2,11 *",
+            handler: config.env === "production" ? async () => deactivateClosedSiretAccounts({ maxDurationMinutes: 10 }) : async () => Promise.resolve(0),
+            maxRuntimeInMinutes: 20,
+          },
           "update-handi-engagement": {
             cron_string: "45 4 * * SAT",
             handler: async () => updateHandiEngagement(),
@@ -484,6 +494,9 @@ export async function setupJobProcessor() {
           await recreateIndexes({ drop })
           return
         },
+      },
+      "closed-siret:deactivate": {
+        handler: async (job) => deactivateClosedSiretAccounts(job.payload as any),
       },
       "update-handi-engagement:force": {
         // Déclenchement manuel uniquement, cf. UpdateHandiEngagementOptions.force.
@@ -527,8 +540,8 @@ export async function setupJobProcessor() {
       },
       "anonymize-individual": {
         handler: async (job) => {
-          const { collection, id } = job.payload as any
-          await anonymizeIndividual({ collection, id: new ObjectId(id) })
+          const { collection, id, mode } = job.payload as any
+          await anonymizeIndividual({ collection, id: new ObjectId(id), mode })
           return
         },
       },

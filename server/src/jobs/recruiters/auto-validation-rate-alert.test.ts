@@ -24,8 +24,8 @@ import {
   evaluateBalShare,
   evaluateIndeterminateSpike,
   evaluateRateDrop,
-  getRolesWindowFilter,
 } from "./auto-validation-rate-alert"
+import { getRolesWindowFilter } from "./recruiter-detection-utils"
 
 vi.mock("@/common/utils/slack-utils")
 vi.mock("@/common/utils/sentry-utils")

@@ -8,6 +8,7 @@ import type { IJobsPartnersOfferPrivateWithDistance } from "shared/models/jobs-p
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { isCfaEntreprise } from "shared/services/is-cfa-entreprise"
 import { isGeiqEntreprise } from "shared/services/is-geiq-entreprise"
+import { getJobCompanyDisplayName } from "shared/utils/company-display-name"
 import { isOfferExpired } from "shared/utils/offer-expiration"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -56,9 +57,7 @@ function transformPartnerJob(
     },
     company: {
       siret: partnerJob.is_delegated ? partnerJob.cfa_siret : partnerJob.workplace_siret,
-      // `||` et non `??` : workplace_name est sanitizé côté pipeline et peut valoir "" (cf.
-      // formatTextFieldsJobsPartners) ; même repli que la carte de résultat (buildJobOfferSearchItem).
-      name: partnerJob.is_delegated ? partnerJob.cfa_legal_name : partnerJob.workplace_name || partnerJob.workplace_brand || partnerJob.workplace_legal_name || UNKNOWN_COMPANY,
+      name: getJobCompanyDisplayName(partnerJob) ?? UNKNOWN_COMPANY,
       size: partnerJob.workplace_size,
       opco: { label: partnerJob.workplace_opco, url: null },
       url: partnerJob.workplace_website,

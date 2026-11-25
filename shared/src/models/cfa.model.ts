@@ -18,6 +18,7 @@ export const zCFA = z.strictObject({
   address_detail: ZGlobalAddress.nullish(),
   address: z.string().nullish(),
   geo_coordinates: z.string().nullish(),
+  lastUpdateFromSource: z.date().nullish().describe("Date de la dernière lecture de l'état administratif du SIRET auprès de l'API Entreprise (INSEE)"),
 })
 
 export type ICFA = z.output<typeof zCFA>

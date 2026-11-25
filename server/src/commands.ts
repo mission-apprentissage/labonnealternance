@@ -237,6 +237,16 @@ program
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
+  .command("closed-siret:deactivate")
+  .description("Désactive les comptes recruteurs et CFA dont le SIRET est fermé à l'INSEE (API Entreprise)")
+  .option("--dry-run", "Interroge l'API Entreprise et rapporte les actions sans rien écrire en base", false)
+  .option("--limit <number>", "Nombre maximal de SIRET interrogés")
+  .option("--requests-per-minute <number>", "Cadence d'appel à l'API Entreprise (250 au plus)")
+  .option("--recheck-after-days <number>", "Ignore les organisations vérifiées depuis moins de N jours")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("closed-siret:deactivate"))
+
+program
   .command("update-handi-engagement:force")
   .description("Force la mise à jour de l'engagement handicap en ignorant le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -253,6 +263,7 @@ program
   .description("Anonymize elements based on id")
   .requiredOption("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
   .requiredOption("-i, --id <string>", " <id> est l'identifiant de l'élément à anonymiser")
+  .option("-m, --mode <string>", "anonymize (copie non nominative dans anonymized_*) ou delete (suppression définitive)", "anonymize")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("anonymize-individual"))
 

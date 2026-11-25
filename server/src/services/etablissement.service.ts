@@ -387,6 +387,11 @@ export const getEntrepriseDataFromSiret = async ({
       }
     }
   }
+  // Le géocodage ne couvre que la France et une offre exige un workplace_geopoint : une adresse à l'étranger
+  // est un refus métier, pas une erreur à retenter (cf. updateSiretInfosInError).
+  if (result.data.adresse?.code_pays_etranger || result.data.adresse?.libelle_pays_etranger) {
+    return errorFactory(isApiApprentissage ? "Establishments located outside France are not supported." : "Les établissements domiciliés à l'étranger ne sont pas pris en charge.")
+  }
   const entrepriseData = formatEntrepriseData(result.data)
   if (!entrepriseData.establishment_raison_sociale) {
     throw internal("pas de raison sociale trouvée", { siret, type, entrepriseData, apiData: result.data })
