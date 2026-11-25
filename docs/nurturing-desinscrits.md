@@ -28,6 +28,7 @@ Attributs poussés : `EMAIL`, `RAISON_SOCIALE`, `DATE_DESINSCRIPTION`. Pas de `P
 ## Configuration
 
 - `LBA_BREVO_NURTURING_DESINSCRITS_LIST_ID` (→ `config.brevo.listIds.nurturingDesinscrits`) : ID de la liste Brevo. **Garde-fou** : job inactif si absente. À ajouter dans les secrets SOPS **et** dans le template `.infra/.env_server`.
+- Attribut Brevo `DATE_DESINSCRIPTION` (type date), déclaré dans `BREVO_CONTACT_ATTRIBUTES` : l'import ignore sans erreur une colonne sans attribut correspondant sur le compte. À créer via la commande de synchronisation des attributs avant le premier envoi.
 - Côté Brevo : template + automation sur la liste (déclencheur : ajout à la liste, entrée unique). L'appel à l'action est le dépôt d'offre, `/espace-pro/creation/entreprise` avec `utm_campaign=nurturing-desinscrits`.
 - Le délai (9 mois) est la constante `NURTURING_MONTHS`.
 
