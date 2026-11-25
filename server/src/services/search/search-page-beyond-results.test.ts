@@ -15,6 +15,8 @@ const BOULANGERS = ORGANIZATIONS.map((organization_name, i) =>
 const { location: _location, ...SANS_LOCATION } = generateSearchItemFixture({ url_id: "patissier", title: "Pâtissier", rome_labels: ["Pâtisserie"], keywords: [] })
 const CORPUS = [...BOULANGERS, SANS_LOCATION]
 const PARIS = { latitude: 48.8566, longitude: 2.3522 }
+// Emprise + tri par proximité : seule combinaison où les facettes comptent SANS_LOCATION et la recherche non.
+const PROXIMITY_IN_AREA = { ...PARIS, admin_area: "departement:75", sort: "proximity" as const }
 
 async function seedCorpus() {
   await getDbCollection("search_jobs").insertMany(CORPUS)
@@ -49,8 +51,8 @@ describe.runIf(RUN_RELEVANCE)("searchItems — page située après la dernière"
       expect(await totals({ q: "plombier", page: 3 })).toEqual({ hits: 0, nbHits: 0, nbPages: 0 })
     })
 
-    it("en page 0, quand les facettes comptent un document que la recherche écarte", async () => {
-      const result = await search({ q: "pâtissier", ...PARIS, admin_area: "departement:75", sort: "proximity" })
+    it.each([0, 1, 3])("page %i, quand les facettes comptent un document que la recherche écarte", async (page) => {
+      const result = await search({ q: "pâtissier", ...PROXIMITY_IN_AREA, page })
 
       expect(result.facets?.type).toEqual({ offre: 1 })
       expect({ hits: result.hits.length, nbHits: result.nbHits, nbPages: result.nbPages }).toEqual({ hits: 0, nbHits: 0, nbPages: 0 })
@@ -84,6 +86,11 @@ describe.runIf(RUN_RELEVANCE)("searchItems — page située après la dernière"
 
       expect(await totals({ ...proximity, page: 0 })).toEqual({ hits: 2, nbHits: 5, nbPages: 3 })
       expect(await totals({ ...proximity, page: 3 })).toEqual({ hits: 0, nbHits: 5, nbPages: 3 })
+    })
+
+    it("tri par proximité sur une emprise : ne compte pas le document sans géopoint", async () => {
+      expect(await totals({ q: undefined, ...PROXIMITY_IN_AREA, page: 0 })).toEqual({ hits: 2, nbHits: 5, nbPages: 3 })
+      expect(await totals({ q: undefined, ...PROXIMITY_IN_AREA, page: 5 })).toEqual({ hits: 0, nbHits: 5, nbPages: 3 })
     })
 
     it("laisse inchangée la dernière page", async () => {

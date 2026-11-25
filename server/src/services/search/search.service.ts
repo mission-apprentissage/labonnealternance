@@ -579,7 +579,7 @@ function buildFacetCompound(filters: ISearchFilters, corpus: SearchCorpus, exclu
   return { ...(gate ? { must: [gate] } : {}), filter }
 }
 
-type FacetMetaRow = { count?: { total?: number }; facet?: Record<string, { buckets: { _id: string; count: number }[] }> }
+type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: number }[] }> }
 
 // Compteurs des chips booléennes (« Employeur handi-accueillant », « Recrutement urgent »,
 // « Candidature simplifiée ») : champs boolean/token indexés non facettables (les facettes
@@ -648,7 +648,7 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
 
   // Retry unique si mongot annule une des requêtes (transitoire — cf. search-transient-retry.ts) ;
   // relancer l'ensemble est sans risque, ce ne sont que des lectures.
-  const [rows, chipCountArrays, ...metaArrays] = await retryOnTransientSearchCancellation(
+  const [rows, totalArray, chipCountArrays, ...metaArrays] = await retryOnTransientSearchCancellation(
     () =>
       Promise.all([
         getDbCollection(corpus.collection)
@@ -680,6 +680,14 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
           )
           .toArray(),
 
+        // $$SEARCH_META n'est lisible que sur une ligne de la page : passé la dernière, le total vient
+        // de ce comptage sur le même compound. Pas en page 0, où une page sans ligne vaut 0 résultat.
+        page > 0
+          ? getDbCollection(corpus.collection)
+              .aggregate<{ count?: { total?: number } }>([{ $searchMeta: { index: corpus.index, compound, count: { type: "total" } } }], SEARCH_AGGREGATE_OPTIONS)
+              .toArray()
+          : [],
+
         Promise.all(
           chipCountKeys.map((key) =>
             getDbCollection(corpus.collection)
@@ -699,7 +707,7 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
           )
         ),
 
-        ...facetGroups.map((group, i) =>
+        ...facetGroups.map((group) =>
           getDbCollection(corpus.collection)
             .aggregate<FacetMetaRow>(
               [
@@ -710,8 +718,6 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
                       operator: { compound: group.compound },
                       facets: Object.fromEntries(group.keys.map((key) => [key, FACET_FIELD_DEFS[key]])),
                     },
-                    // cf. totalBeyondLastPage
-                    ...(i === 0 ? { count: { type: "total" } } : {}),
                   },
                 },
               ],
@@ -723,16 +729,7 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
     { q: params.q }
   )
 
-  return { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys }
-}
-
-/**
- * Total d'une page sans ligne. $$SEARCH_META n'est lisible que sur une ligne de la page : passé la
- * dernière, il vient du premier groupe de facettes, seul à garder tous les filtres de la recherche
- * (cf. buildFacetGroups). En page 0, une page sans ligne est une recherche sans résultat.
- */
-function totalBeyondLastPage(page: number, metaArrays: FacetMetaRow[][]): number {
-  return page > 0 ? (metaArrays[0]?.[0]?.count?.total ?? 0) : 0
+  return { rows, total: totalArray[0]?.count?.total ?? 0, chipCountArrays, metaArrays, facetGroups, chipCountKeys }
 }
 
 export async function searchItems(params: ISearchFilters): Promise<{
@@ -760,9 +757,9 @@ export async function searchItems(params: ISearchFilters): Promise<{
     aggregations = await runSearchAggregations(params, true)
     degraded = true
   }
-  const { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys } = aggregations
+  const { rows, total, chipCountArrays, metaArrays, facetGroups, chipCountKeys } = aggregations
 
-  const nbHits = rows[0]?._meta?.count?.total ?? totalBeyondLastPage(page, metaArrays)
+  const nbHits = rows[0]?._meta?.count?.total ?? total
   const nbPages = Math.ceil(nbHits / hitsPerPage)
 
   // Pas de distance affichée pour une recherche par emprise : elle serait mesurée depuis le
