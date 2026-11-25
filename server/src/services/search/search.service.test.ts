@@ -156,8 +156,12 @@ describe("diplomaSigleOf", () => {
     expect(diplomaSigleOf(q, "emplois")).toBe(sigle)
   })
 
-  it.each(["formations", "emplois_formation"] as const)("mode %s : le sigle n'ouvre pas les métiers", (mode) => {
-    expect(diplomaSigleOf("ndrc", mode)).toBeNull()
+  it("mode emplois avec formation incluse : le sigle ouvre aussi les métiers", () => {
+    expect(diplomaSigleOf("BTS NDRC", "emplois_formation")).toBe("ndrc")
+  })
+
+  it("mode formations : le sigle n'ouvre pas les métiers", () => {
+    expect(diplomaSigleOf("ndrc", "formations")).toBeNull()
   })
 
   it.each([
@@ -184,7 +188,7 @@ describe("resolveDiplomaJobsClause", () => {
     expect(JSON.stringify(await resolveDiplomaJobsClause("BTS NDRC", "emplois"))).toContain("Attaché commercial / Attachée commerciale")
   })
 
-  it("ne lit pas le référentiel hors mode emplois", async () => {
+  it("ne lit pas le référentiel en mode formations", async () => {
     const load = vi.spyOn(searchItemsService, "getCachedRomeLabelByCode")
 
     expect(await resolveDiplomaJobsClause("ndrc", "formations")).toBeNull()

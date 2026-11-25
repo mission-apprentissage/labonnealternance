@@ -319,6 +319,8 @@ type SearchCorpus = (typeof SEARCH_CORPORA)[SearchMode]
 const LEVEL_AGNOSTIC_VALUES = ["", "Indifférent"]
 const buildLevelFilter = (level: string[]) => ({ in: { path: "level", value: [...level, ...LEVEL_AGNOSTIC_VALUES] } })
 
+const IS_RECRUITER = { equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } }
+
 // Un doc « couvre » un terme s'il le matche sur au moins un champ pondéré. Deux différences
 // entre mono-terme et multi-termes :
 // - autocomplete (edgeGram) en mono-terme seulement : en multi-termes, il couvre par préfixe
@@ -326,7 +328,8 @@ const buildLevelFilter = (level: string[]) => ({ in: { path: "level", value: [..
 // - keywords (Mistral) : en mono-terme, couverture réservée aux recruteurs, sinon un keyword
 //   générique (« commercial ») suffit à faire entrer une offre hors sujet. En multi-termes,
 //   msmFor exige déjà les autres termes ailleurs, keywords couvre donc pour tous.
-function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQuery: boolean): object {
+// Sigle de diplôme (`isSigle`) : ni nom d'entreprise ni autocomplete, cf. buildTextGate.
+function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQuery: boolean, isSigle = false): object {
   const fuzzy = simplifyQuery ? undefined : fuzzyFor(term)
   const text = (path: string, boost: number) => ({ text: { query: term, path, ...(fuzzy ? { fuzzy } : {}), score: { boost: { value: boost } } } })
   return {
@@ -337,9 +340,9 @@ function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQu
         // organization_name sans fuzzy : sur des noms propres, 1 édition donne des faux positifs
         // massifs (« vigile » → VIRGILE, VIGIER). description absente volontairement : bonus de
         // score seulement (buildTextBonusClauses), elle ne fait pas entrer un doc.
-        { text: { query: term, path: "organization_name", score: { boost: { value: 6 } } } },
-        isSingleTerm ? { compound: { must: [text("keywords", 5)], filter: [{ equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } }] } } : text("keywords", 5),
-        ...(isSingleTerm
+        ...(isSigle ? [] : [{ text: { query: term, path: "organization_name", score: { boost: { value: 6 } } } }]),
+        isSingleTerm ? { compound: { must: [text("keywords", 5)], filter: [IS_RECRUITER] } } : text("keywords", 5),
+        ...(isSingleTerm && !isSigle
           ? [
               { autocomplete: { query: term, path: "title", score: { boost: { value: 3 } } } },
               { autocomplete: { query: term, path: "rome_labels", score: { boost: { value: 3 } } } },
@@ -355,11 +358,11 @@ type TextGateOptions = { simplifyQuery: boolean; diplomaJobs: object | null }
 
 /**
  * Sigle de diplôme connu (clé de DIPLOMA_JOB_ROME_CODES) quand la requête se réduit à lui, mots
- * de diplôme et mots vides retirés (« BTS MCO » → « mco »). Mode emplois seulement : en mode
- * formations, le sigle trouve déjà le diplôme ; emplois_formation est hors périmètre de #5638.
+ * de diplôme et mots vides retirés (« BTS MCO » → « mco »). Modes d'offres seulement : en mode
+ * formations, le sigle trouve déjà le diplôme.
  */
 export function diplomaSigleOf(q: string | undefined, mode: SearchMode): string | null {
-  if (mode !== "emplois" || !q) return null
+  if (mode === "formations" || !q) return null
   const terms = tokenizeQuery(q)
   if (terms.length !== 1) return null
   const sigle = normalizeTerm(terms[0])
@@ -403,16 +406,26 @@ export async function resolveDiplomaJobsClause(q: string | undefined, mode: Sear
  * exacte, peu probable sur un texte libre long.
  *
  * `diplomaJobs` : troisième voie d'entrée, les métiers visés par un sigle de diplôme (cf. resolveDiplomaJobsClause).
+ * Sur un sigle, un nom d'entreprise ou un préfixe ne vaut pas une mention du diplôme (« CG PAYSAGE »,
+ * « SIOULE » pour « sio ») : pas de couverture par organization_name ni par autocomplete, et un
+ * recruteur, dont le titre est le nom, ne marque que 0,5, sous les métiers visés (1).
  */
 function buildTextGate(q: string | undefined, { simplifyQuery, diplomaJobs }: TextGateOptions, corpus: SearchCorpus): object | null {
   if (!q?.trim()) return null
   const contentTerms = tokenizeQuery(q)
   const terms = !contentTerms.length && corpus.diplomaTerms === "qualifier" ? tokenizeQuery(q, { diplomaWords: true }) : contentTerms
-  const coverage = terms.length
-    ? [{ compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1, simplifyQuery)), minimumShouldMatch: msmFor(terms.length) } }]
-    : []
+  const isSigle = diplomaJobs !== null
+  const termCoverage = terms.length
+    ? { compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1, simplifyQuery, isSigle)), minimumShouldMatch: msmFor(terms.length) } }
+    : null
   const synonyms = simplifyQuery ? [] : [{ phrase: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", slop: 0, score: { boost: { value: 6 } } } }]
-  const should = [...coverage, ...synonyms, ...(diplomaJobs ? [diplomaJobs] : [])]
+  const textEntry = [...(termCoverage ? [termCoverage] : []), ...synonyms]
+  // La clause synonymes matche aussi la requête brute dans le titre : elle passe sous le même plafond.
+  const recruiterCapped = (clauses: object[]) => {
+    const entry = { compound: { should: clauses, minimumShouldMatch: 1 } }
+    return [{ compound: { must: [entry], mustNot: [IS_RECRUITER] } }, { compound: { must: [entry], filter: [IS_RECRUITER], score: { constant: { value: 0.5 } } } }]
+  }
+  const should = [...(isSigle && textEntry.length ? recruiterCapped(textEntry) : textEntry), ...(diplomaJobs ? [diplomaJobs] : [])]
   // simplifyQuery peut vider les deux voies d'entrée à la fois (q composé uniquement de
   // stopwords, sans la clause synonymes — qui opère sur le q brut, pas sur `terms` — pour
   // compenser) : un compound `should: []` est un comportement $search non défini côté mongot.
@@ -422,17 +435,20 @@ function buildTextGate(q: string | undefined, { simplifyQuery, diplomaJobs }: Te
 
 // Bonus de score (bloc `should`, n'élargit pas le result set). phrase sur title/rome_labels
 // favorise les termes adjacents (« Product Manager ») ; phrase sur organization_name fait
-// passer le match employeur devant les mentions en description.
-function buildTextBonusClauses(q: string | undefined, corpus: SearchCorpus): object[] {
+// passer le match employeur devant les mentions en description. Sur un sigle de diplôme, ni
+// bonus employeur ni bonus pour les recruteurs (cf. buildTextGate).
+function buildTextBonusClauses(q: string | undefined, corpus: SearchCorpus, isSigle: boolean): object[] {
   if (!q?.trim()) return []
   const diplomaTerms = corpus.diplomaTerms === "qualifier" ? tokenizeQuery(q, { diplomaWords: true }) : []
-  return [
-    { phrase: { query: q, path: ["title", "rome_labels"], slop: 2, score: { boost: { value: 10 } } } },
-    { phrase: { query: q, path: "organization_name", slop: 1, score: { boost: { value: 8 } } } },
+  const titleBonus = { phrase: { query: q, path: ["title", "rome_labels"], slop: 2, score: { boost: { value: 10 } } } }
+  const organizationBonus = { phrase: { query: q, path: "organization_name", slop: 1, score: { boost: { value: 8 } } } }
+  const contentBonus = [
     { text: { query: q, path: "keywords", score: { boost: { value: 3 } } } },
     { text: { query: q, path: "description", score: { boost: { value: 1 } } } },
     ...(diplomaTerms.length ? [{ text: { query: diplomaTerms.join(" "), path: "title", score: { boost: { value: 7 } } } }] : []),
   ]
+  if (isSigle) return [{ compound: { should: [titleBonus, ...contentBonus], mustNot: [IS_RECRUITER], minimumShouldMatch: 1 } }]
+  return [titleBonus, organizationBonus, ...contentBonus]
 }
 
 /**
@@ -530,7 +546,7 @@ function buildCompoundOperator(filters: ISearchFilters, corpus: SearchCorpus, ga
   // Porte de pertinence en `must` (gate le result set — vaut pour TOUS les tris, y compris
   // date : un doc trop peu couvrant n'apparaît plus, quel que soit l'ordre) ; bonus phrase
   // en `should` pur (score uniquement, n'élargit pas les résultats).
-  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q, corpus) } : {}), filter }
+  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q, corpus, gateOptions.diplomaJobs !== null) } : {}), filter }
 }
 
 // Les candidatures spontanées (is_algo_company) passent en fin de liste sur les tris par date :

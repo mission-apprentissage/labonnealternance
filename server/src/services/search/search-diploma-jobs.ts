@@ -1,5 +1,5 @@
 /**
- * Sigles de diplôme → métiers visés, en mode emplois seulement (#5638). Les offres citent
+ * Sigles de diplôme → métiers visés, dans les modes d'offres (#5638). Les offres citent
  * rarement le sigle : la recherche d'un sigle seul ouvre aussi les offres des métiers auxquels
  * le diplôme prépare, repérées par leurs `rome_labels`.
  *

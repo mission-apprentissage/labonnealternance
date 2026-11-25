@@ -596,6 +596,40 @@ const CORPUS = [
     organization_name: "GESTION PLUS",
     is_algo_company: true,
   }),
+  // Sur un sigle, un nom d'entreprise ne vaut pas une mention du diplôme : nom qui contient « CG »,
+  // nom qui commence par « sio » (préfixe d'autocomplete).
+  generateSearchItemFixture({
+    url_id: "recruteur-cg-nom",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "CG PAYSAGE",
+    description: "",
+    keywords: null,
+    rome_labels: ["Jardinier paysagiste / Jardinière paysagiste"],
+    organization_name: "CG PAYSAGE",
+    is_algo_company: true,
+  }),
+  generateSearchItemFixture({
+    url_id: "recruteur-sioule",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "SIOULE LOISIRS",
+    description: "",
+    keywords: null,
+    rome_labels: ["Animateur / Animatrice de loisirs"],
+    organization_name: "SIOULE LOISIRS",
+    is_algo_company: true,
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-metier-ndrc-cfa",
+    type_filter_label: "Offres d'emploi postées par des écoles",
+    title: "Prospection clientèle avec formation incluse",
+    description: "Contrat d'apprentissage associé à une formation au CFA.",
+    keywords: null,
+    rome_labels: ["Attaché commercial / Attachée commerciale"],
+    organization_name: "CFA du Commerce",
+    is_formation_included: true,
+  }),
   // Une offre par sigle restant, qui ne cite pas le sigle et porte un intitulé ROME visé.
   ...(
     [
@@ -1147,7 +1181,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     it("mode=emplois_formation : uniquement les offres CFA/GEIQ", async () => {
       const result = await search({ mode: "emplois_formation" })
 
-      expect(ids(result)).toEqual(["offre-travaux-cfa"])
+      expect(ids(result).sort()).toEqual(["offre-metier-ndrc-cfa", "offre-travaux-cfa"])
     })
 
     it("is_algo_company=true : uniquement les entreprises à contacter (candidatures spontanées)", async () => {
@@ -1255,6 +1289,30 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
 
       expect(ids(result)).toContain("offre-comptable-general")
       expect(ids(result)).not.toContain("offre-expert-comptable")
+    })
+
+    it("'cg' : le recruteur dont seul le nom contient le sigle passe après le métier visé", async () => {
+      const result = await search({ q: "cg", mode: "emplois" })
+
+      expect(rankOf(result, "recruteur-cg-nom")).toBeGreaterThan(rankOf(result, "offre-comptable-general"))
+      expect(rankOf(result, "offre-comptable-general")).toBeGreaterThanOrEqual(0)
+    })
+
+    it("'sio' : un nom qui commence par le sigle n'entre pas (pas d'autocomplete sur un sigle)", async () => {
+      expect(ids(await search({ q: "sio", mode: "emplois" }))).not.toContain("recruteur-sioule")
+      expect(ids(await search({ q: "siou", mode: "emplois" }))).toContain("recruteur-sioule")
+    })
+
+    it("mode emplois avec formation incluse : 'ndrc' trouve l'offre CFA du métier visé", async () => {
+      const result = await search({ q: "ndrc", mode: "emplois_formation" })
+
+      expect(ids(result)).toContain("offre-metier-ndrc-cfa")
+    })
+
+    it("hors sigle, le nom d'entreprise couvre toujours : 'cg paysage' trouve le recruteur en tête", async () => {
+      const result = await search({ q: "cg paysage", mode: "emplois" })
+
+      expect(rankOf(result, "recruteur-cg-nom")).toBe(0)
     })
 
     // Perte acceptée : mongot ne sépare pas les éléments d'un tableau (cf. buildDiplomaJobsClause).
