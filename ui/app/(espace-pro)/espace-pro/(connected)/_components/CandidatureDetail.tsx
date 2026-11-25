@@ -7,15 +7,19 @@ import { Box, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useEffect, useRef } from "react"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { getNeighborApplicationIds } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-neighbors"
 import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/_components/application-status"
 import { getApplicationStatusDimension, getUserTypeDimension } from "@/app/(espace-pro)/espace-pro/(connected)/_components/applications-tracking"
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
+import { NeighborNavigationLinks } from "@/app/(espace-pro)/espace-pro/(connected)/_components/NeighborNavigationLinks"
 import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
+import { useHorizontalSwipe } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-horizontal-swipe"
 import { ApplicationStatusBanner, formatApplicationDateTime, TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
 import {
   cancelJobApplicationTreatedElsewhere,
@@ -23,6 +27,7 @@ import {
   getFormulaire,
   getJobApplicationAttachmentUrl,
   getJobApplicationDetail,
+  getJobApplications,
   markJobApplicationTreatedElsewhere,
 } from "@/utils/api"
 import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
@@ -44,10 +49,27 @@ export const CandidatureDetail = () => {
     enabled: Boolean(cfaEstablishmentId),
   })
 
+  // Même clé que le tableau des candidatures, d'où l'on arrive le plus souvent : la liste y est déjà en cache. Son ordre
+  // est celui du tri par défaut du tableau (cf. getApplicationsWithApplicant).
+  const { data: applicationList } = useQuery({
+    queryKey: ["job-applications", job_id],
+    queryFn: () => getJobApplications(job_id),
+    retry: false,
+  })
+
   const pages = getApplicationPages({ job_id, cfaEstablishmentId, establishmentName: recruiter?.establishment_raison_sociale ?? recruiter?.establishment_siret })
   const applicationsPage = pages.applications
   const breadcrumbPages = [...pages.parents, applicationsPage, pages.detail(application_id)]
   const getReplyPath = (intention: ApplicationIntention) => pages.reply(application_id, intention).getPath()
+
+  const router = useRouter()
+  const neighbors = applicationList ? getNeighborApplicationIds(applicationList.applications, application_id) : null
+  const previousPath = neighbors?.previous ? pages.detail(neighbors.previous).getPath() : null
+  const nextPath = neighbors?.next ? pages.detail(neighbors.next).getPath() : null
+  const swipeHandlers = useHorizontalSwipe({
+    onSwipeLeft: nextPath ? () => router.push(nextPath) : undefined,
+    onSwipeRight: previousPath ? () => router.push(previousPath) : undefined,
+  })
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -56,7 +78,7 @@ export const CandidatureDetail = () => {
   return (
     <>
       <Breadcrumb pages={breadcrumbPages} />
-      <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("4v") }}>
+      <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("4v") }} {...swipeHandlers}>
         {error || !data ? (
           <>
             <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700, mb: fr.spacing("4v") }}>
@@ -65,7 +87,22 @@ export const CandidatureDetail = () => {
             <Alert severity="error" small description={error?.message ?? "Cette candidature est indisponible."} />
           </>
         ) : (
-          <CandidatureDetailContent data={data} getReplyPath={getReplyPath} userType={getUserTypeDimension(cfaEstablishmentId)} />
+          // `key` : passer à la candidature voisine garde la page montée, l'état des actions (envoi, focus) ne doit pas suivre.
+          <CandidatureDetailContent
+            key={application_id}
+            data={data}
+            getReplyPath={getReplyPath}
+            userType={getUserTypeDimension(cfaEstablishmentId)}
+            navigation={
+              (previousPath || nextPath) && (
+                <NeighborNavigationLinks
+                  ariaLabel="Navigation entre les candidatures de l'offre"
+                  previous={{ href: previousPath, label: "Candidature précédente" }}
+                  next={{ href: nextPath, label: "Candidature suivante" }}
+                />
+              )
+            }
+          />
         )}
         <Box sx={{ mt: fr.spacing("6v") }}>
           <Link className="fr-link fr-link--sm fr-link--icon-left fr-icon-arrow-left-line" href={applicationsPage.getPath()}>
@@ -376,27 +413,43 @@ const QuestionsCard = ({ questions, application }: { questions: string[]; applic
   )
 }
 
-const CandidatureDetailContent = ({ data, getReplyPath, userType }: { data: ApplicationDetail; getReplyPath: (intention: ApplicationIntention) => string; userType: string }) => {
+const CandidatureDetailContent = ({
+  data,
+  getReplyPath,
+  userType,
+  navigation,
+}: {
+  data: ApplicationDetail
+  getReplyPath: (intention: ApplicationIntention) => string
+  userType: string
+  navigation: React.ReactNode
+}) => {
   const { job, application } = data
   const status = getApplicationStatus(application.company_recruitment_intention)
 
   return (
     <>
-      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), flexWrap: "wrap", mb: fr.spacing("4v") }}>
-        <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700 }}>
-          {application.applicant_first_name} {application.applicant_last_name.toUpperCase()}
-        </Typography>
-        <Badge variant={status.variant} textTransform="uppercase" whiteSpace="normal">
-          {status.label}
-        </Badge>
-      </Box>
-      <Box sx={{ mt: fr.spacing("2v") }}>
-        <Typography sx={{ mb: fr.spacing("1v") }}>
-          Candidature reçue le : <strong>{application.created_at ? dayjs(application.created_at).format("DD/MM/YYYY") : "date inconnue"}</strong>
-        </Typography>
-        <Typography>
-          Pour le poste : <strong>{job.offer_title}</strong>
-        </Typography>
+      {/* La navigation se place à droite de l'en-tête, et passe dessous quand la largeur manque. */}
+      <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: fr.spacing("4v") }}>
+        <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), flexWrap: "wrap", mb: fr.spacing("4v") }}>
+            <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700 }}>
+              {application.applicant_first_name} {application.applicant_last_name.toUpperCase()}
+            </Typography>
+            <Badge variant={status.variant} textTransform="uppercase" whiteSpace="normal">
+              {status.label}
+            </Badge>
+          </Box>
+          <Box sx={{ mt: fr.spacing("2v") }}>
+            <Typography sx={{ mb: fr.spacing("1v") }}>
+              Candidature reçue le : <strong>{application.created_at ? dayjs(application.created_at).format("DD/MM/YYYY") : "date inconnue"}</strong>
+            </Typography>
+            <Typography>
+              Pour le poste : <strong>{job.offer_title}</strong>
+            </Typography>
+          </Box>
+        </Box>
+        {navigation}
       </Box>
       <ApplicationActions jobId={job._id} application={application} getReplyPath={getReplyPath} userType={userType} />
       <Typography component="h2" sx={{ mt: fr.spacing("8v"), mb: fr.spacing("4v"), fontWeight: 700 }}>

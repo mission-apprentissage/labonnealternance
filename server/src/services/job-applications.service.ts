@@ -60,7 +60,8 @@ const getApplicationsWithApplicant = (jobId: ObjectId | ObjectId[], applicantFie
       { $match: { job_id: Array.isArray(jobId) ? { $in: jobId } : jobId, ...SENT_TO_COMPANY_FILTER, ...(applicationId ? { _id: applicationId } : {}) } },
       { $lookup: { from: "applicants", localField: "applicant_id", foreignField: "_id", pipeline: [{ $project: applicantFields }], as: "applicant" } },
       { $unwind: "$applicant" },
-      { $sort: { created_at: -1 } },
+      // `_id` départage les dates égales : la navigation entre candidatures du détail suit cet ordre.
+      { $sort: { created_at: -1, _id: -1 } },
     ])
     .toArray()
 
