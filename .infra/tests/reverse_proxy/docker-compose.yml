@@ -18,3 +18,8 @@ services:
     image: nginx:1.29-alpine
     volumes:
       - ./upstream/default.conf:/etc/nginx/conf.d/default.conf:ro
+  # Service nommé comme l'API en prod (`http://server:5000` dans locations/10_api.conf.template).
+  server:
+    image: nginx:1.29-alpine
+    volumes:
+      - ./upstream/server.conf:/etc/nginx/conf.d/default.conf:ro

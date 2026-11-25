@@ -149,7 +149,8 @@ export async function proxy(request: NextRequest) {
   return response
 }
 
-// Ne correspond à aucune route : Next y rend app/not-found.tsx avec un statut 404 (cf. isFicheIntrouvable).
+// Ne correspond à aucune route (un dossier app/_* est privé) : Next y rend app/not-found.tsx en 404. Une route
+// qui appellerait notFound() dans le segment de la fiche serait prérendue, et servie avec cette même 404 racine.
 const FICHE_INTROUVABLE_PATH = "/_fiche-introuvable"
 
 async function routeRequest(request: NextRequest): Promise<NextResponse> {

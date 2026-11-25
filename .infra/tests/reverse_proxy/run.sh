@@ -10,7 +10,7 @@
 # prod (`reverse_proxy_version` de .infra/inventories/env.ini), avec la zone `flood` de infra/main.
 #
 # Divergences assumées avec la prod :
-#   - seules les locations et zones de l'UI sont montées ;
+#   - seules les locations et zones de l'UI et de l'API sont montées ;
 #   - les templates jinja sont rendus en supprimant leurs boucles (listes d'IP vides) ;
 #   - les plages d'IP privées sont retirées des listes blanches : le client du test arrive par le
 #     réseau docker, qui serait sinon exempté de toutes les limites et rendrait le test vacuous.
@@ -53,6 +53,9 @@ readonly CASES=(
   "lba_fiche_recherche|200|/emploi/recruteurs_lba/12345678900011/x"
   "lba_fiche_recherche|200|/emploi/offres_emploi_lba/x/y?_rsc=abc"
   "lba_fiche_recherche|200|/formation/x/y"
+  "flood|200|/api/x"
+  # Regex insensible à la casse, comme le routeur Fastify.
+  "lba_autocomplete|200|/api/ROME"
 )
 
 # Passe denylist : toutes les IP refusées, sur chaque location montée (préfixe, regex, imbriquée).
@@ -64,6 +67,9 @@ readonly DENIED_CASES=(
   "denied|20|/monmaster/x"
   "denied|20|/bff/v1/search"
   "denied|20|/bff/_private/web-vitals"
+  "denied|20|/api/x"
+  "denied|20|/api/ROME"
+  "denied|20|/api/v2/_private/application"
 )
 
 fail() { echo "ECHEC : $*" >&2; exit 2; }
@@ -94,7 +100,9 @@ grep -q 'zone=flood' "$BENCH_DIR/flood.jinja2" || fail "zone flood absente du fi
 render "$BENCH_DIR/flood.jinja2" "$BENCH_DIR/extra-conf.d/limit_req.conf.template"
 render "$RP/extra-conf.d/rate-limit.conf.template" "$BENCH_DIR/extra-conf.d/rate-limit.conf.template"
 render "$RP/extra-conf.d/denylist.conf.template" "$BENCH_DIR/extra-conf.d/denylist.conf.template"
-cp "$RP/locations/00_denylist.conf.template" "$RP/locations/90_location_ui.conf.template" "$BENCH_DIR/locations/"
+render "$RP/extra-conf.d/api-site.conf.template" "$BENCH_DIR/extra-conf.d/api-site.conf.template"
+cp "$RP/locations/00_denylist.conf.template" "$RP/locations/10_api.conf.template" "$RP/locations/90_location_ui.conf.template" \
+  "$BENCH_DIR/locations/"
 cp "$RP/extra-includes/proxy-iframe.conf.template" "$BENCH_DIR/extra-includes/"
 # L'image tourne sous un utilisateur non root : il doit pouvoir lire les montages et écrire le journal.
 chmod -R a+rX "$BENCH_DIR" && chmod a+w "$BENCH_DIR/log"
@@ -107,8 +115,8 @@ restart() {
   docker compose restart reverse_proxy >/dev/null 2>&1
   local i
   for i in $(seq 30); do
-    # Toute réponse HTTP vaut disponibilité : la passe denylist répond 403 à tout.
-    [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 "$BASE/")" != "000" ] && { : > "$BENCH_DIR/log/error.log"; return 0; }
+    # 403 vaut disponibilité : la passe denylist refuse tout, et c'est à ses cas de le vérifier.
+    case $(curl -s -o /dev/null -w '%{http_code}' --max-time 2 "$BASE/") in 200|403) : > "$BENCH_DIR/log/error.log"; return 0 ;; esac
     sleep 1
   done
   docker compose logs reverse_proxy >&2
