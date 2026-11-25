@@ -43,12 +43,7 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
 
     await instant(page, async () => {
       await offerLink.click()
-      await expect(
-        page
-          .locator(`#${mainId("detail-emploi")}`)
-          .getByRole("heading", { level: 3 })
-          .first()
-      ).toBeVisible()
+      await expect(page.locator(`#${mainId("detail-emploi")}`).getByRole("heading", { level: 1 })).toBeVisible()
     })
   })
 
@@ -61,12 +56,7 @@ test.describe("navigation instantanée — fiches offre et formation", () => {
 
     await instant(page, async () => {
       await formationLink.click()
-      await expect(
-        page
-          .locator(`#${mainId("detail-formation")}`)
-          .getByRole("heading", { level: 3 })
-          .first()
-      ).toBeVisible()
+      await expect(page.locator(`#${mainId("detail-formation")}`).getByRole("heading", { level: 1 })).toBeVisible()
     })
   })
 })
