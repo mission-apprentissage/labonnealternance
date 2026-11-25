@@ -584,6 +584,18 @@ const CORPUS = [
     rome_labels: ["Expert-comptable / Experte-comptable"],
     organization_name: "Cabinet Audit Conseil",
   }),
+  // Une offre par sigle restant, qui ne cite pas le sigle et porte un intitulé ROME visé.
+  ...(
+    [
+      ["offre-metier-ndrc", "Prospection terrain B2B", "Attaché commercial / Attachée commerciale"],
+      ["offre-metier-mco", "Implantation des linéaires", "Merchandiser"],
+      ["offre-metier-gpme", "Gestion administrative polyvalente", "Assistant / Assistante de gestion administrative"],
+      ["offre-metier-sio", "Exploitation du parc informatique", "Technicien / Technicienne d'exploitation informatique"],
+      ["offre-metier-electrotechnique", "Mise en service de lignes de production", "Technicien / Technicienne d'installation d'équipements industriels"],
+    ] as const
+  ).map(([url_id, title, romeLabel]) =>
+    generateSearchItemFixture({ url_id, title, description: "Poste en alternance.", keywords: null, rome_labels: [romeLabel], organization_name: "Entreprise Exemple" })
+  ),
 ]
 
 // Référentiel ROME minimal : la correspondance sigle → métiers résout ses codes ici (cf. search-diploma-jobs.ts).
@@ -591,6 +603,11 @@ const ROME_REFERENTIEL = [
   ["K1303", "Garde d'enfant"],
   ["M1203", "Comptable"],
   ["M1211", "Expert-comptable / Experte-comptable"],
+  ["D1410", "Attaché commercial / Attachée commerciale"],
+  ["D1506", "Merchandiser"],
+  ["M1621", "Assistant / Assistante de gestion administrative"],
+  ["M1810", "Technicien / Technicienne d'exploitation informatique"],
+  ["I1324", "Technicien / Technicienne d'installation d'équipements industriels"],
 ].map(([code_rome, intitule]) => generateReferentielRome({ rome: { code_rome, intitule, code_ogr: code_rome } }))
 
 // Groupes de synonymes minimaux pour reproduire les cas "acronymes" de la recette.
@@ -786,7 +803,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     })
 
     it("tri par proximité : les documents remontent du plus proche au plus lointain", async () => {
-      const result = await search({ ...PARIS, radius: 1_000, sort: "proximity" })
+      const result = await search({ ...PARIS, radius: 1_000, sort: "proximity", hitsPerPage: CORPUS.length })
 
       const resultIds = ids(result)
       // Marseille (~660 km) en dernier, Versailles (~17 km) juste avant — tous
@@ -1186,6 +1203,20 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   // utilisateurs validées par analyzeSearchQueries) dans l'autocomplétion.
   // ──────────────────────────────────────────────────────────────────────────
   describe("sigles de diplôme → métiers visés, mode emplois (#5638)", () => {
+    it.each([
+      ["ndrc", "offre-metier-ndrc"],
+      ["BTS MCO", "offre-metier-mco"],
+      ["bts gpme", "offre-metier-gpme"],
+      ["aepe", "offre-garde-enfant"],
+      ["BTS SIO", "offre-metier-sio"],
+      ["cg", "offre-comptable-general"],
+      ["électrotechnique", "offre-metier-electrotechnique"],
+    ])("'%s' trouve %s, une offre du métier visé qui ne cite pas le sigle", async (q, urlId) => {
+      const result = await search({ q, mode: "emplois" })
+
+      expect(ids(result)).toContain(urlId)
+    })
+
     it("'cap aepe' trouve aussi les offres du métier visé, derrière l'offre qui cite le sigle", async () => {
       const result = await search({ q: "cap aepe", mode: "emplois" })
 

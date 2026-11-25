@@ -1,30 +1,32 @@
 /**
  * Sigles de diplôme → métiers visés, en mode emplois seulement (#5638). Les offres citent
- * rarement le sigle (« ndrc » : 4 offres, 171 formations) : la recherche d'un sigle seul ouvre
- * aussi les offres des métiers auxquels le diplôme prépare, repérées par leurs `rome_labels`.
+ * rarement le sigle : la recherche d'un sigle seul ouvre aussi les offres des métiers auxquels
+ * le diplôme prépare, repérées par leurs `rome_labels`.
  *
  * Hors collection de synonymes : `lba_synonyms` sert les trois index, une correspondance sigle →
  * métier y élargirait aussi le mode formations, et un groupe `equivalent` ferait remonter les
  * formations ou offres « NDRC » sur la recherche « attaché commercial ». Ici le sens est unique.
  *
- * Codes retenus : lien RNCP → ROME du catalogue des formations, hors postes d'encadrement, plus
- * les codes portés par au moins 5 % des offres qui citent le diplôme (relevé sur jobs_partners).
+ * Codes retenus : lien RNCP → ROME du catalogue des formations, plus les codes portés par au
+ * moins 5 % des offres jobs_partners qui citent le diplôme. Sont écartés les postes de cadre
+ * (direction, chef de produit, marketing, ingénieur) et les exceptions notées par sigle.
  * Clés : sigle passé par normalizeTerm (minuscules, sans accents).
  */
 export const DIPLOMA_JOB_ROME_CODES: Readonly<Record<string, readonly string[]>> = {
   // BTS Négociation et digitalisation de la relation client
   ndrc: ["D1410", "D1401", "M1704", "D1408", "D1501"],
-  // BTS Management commercial opérationnel
+  // BTS Management commercial opérationnel. Sans G1401 Adjoint de direction en hôtellerie-restauration
+  // (9 % des offres) : hors du commerce de détail que vise le diplôme.
   mco: ["D1401", "D1501", "D1506", "M1704", "D1106", "D1403", "D1410", "D1214"],
   // BTS Gestion de la PME. Sans M1203 Comptable (lien catalogue) : métier propre au BTS CG.
   gpme: ["M1607", "M1621", "M1501", "M1604"],
-  // CAP Accompagnant éducatif petite enfance
+  // CAP Accompagnant éducatif petite enfance. Sans K1306 AES (15 % des offres) : métier du DEAES.
   aepe: ["K1303", "K1310", "K1307"],
   // BTS Services informatiques aux organisations
   sio: ["M1810", "M1801", "M1805", "I1401", "M1861"],
   // BTS Comptabilité et gestion
   cg: ["M1203", "M1213"],
-  // BTS Électrotechnique
+  // BTS Électrotechnique. Sans H1506 Contrôleur technique en métallurgie (8 % des offres) : hors électricité.
   electrotechnique: ["I1309", "I1324", "F1602", "F1629", "I1304", "H1504", "H1209", "I1307"],
 }
 
