@@ -87,7 +87,6 @@ const LaRuptureDeContratPage = () => {
         </Paragraph>
         <Paragraph>Voici la procédure détaillée en 3 étapes :</Paragraph>
         <ParagraphList
-          ordered
           listItems={[
             <>
               <Typography fontWeight="bold">Étape 1 : Saisir le médiateur de l'apprentissage (quand il existe).</Typography>
