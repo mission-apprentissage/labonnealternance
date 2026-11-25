@@ -8,7 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
@@ -18,6 +18,7 @@ import { getApplicationStatus } from "@/app/(espace-pro)/espace-pro/(connected)/
 import { getApplicationStatusDimension, getUserTypeDimension } from "@/app/(espace-pro)/espace-pro/(connected)/_components/applications-tracking"
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
 import { NeighborNavigationLinks } from "@/app/(espace-pro)/espace-pro/(connected)/_components/NeighborNavigationLinks"
+import { clearReplyJustSent, wasReplyJustSent } from "@/app/(espace-pro)/espace-pro/(connected)/_components/sent-reply-focus"
 import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
 import { useHorizontalSwipe } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-horizontal-swipe"
 import { ApplicationStatusBanner, formatApplicationDateTime, TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
@@ -179,7 +180,7 @@ const Tags = ({ items }: { items: string[] }) => (
 )
 
 /** Bandeau d'une réponse envoyée par LBA (entretien ou refus), à la place des boutons de réponse. */
-const ResponseBanner = ({ application }: { application: Application }) => {
+const ResponseBanner = ({ application, focusOnMount }: { application: Application; focusOnMount: boolean }) => {
   const { company_feedback_send_status: sendStatus, company_feedback, feedback_email_subject, company_feedback_reasons } = application
   // Sans statut d'envoi, la réponse date d'avant la programmation des envois : elle est partie à la saisie.
   const isSent = sendStatus === "SENT" || sendStatus === null
@@ -192,7 +193,7 @@ const ResponseBanner = ({ application }: { application: Application }) => {
         : "Votre réponse n'a pas pu être envoyée au candidat."
 
   return (
-    <ApplicationStatusBanner success={isSent || sendStatus === "SCHEDULED"} title={title}>
+    <ApplicationStatusBanner success={isSent || sendStatus === "SCHEDULED"} title={title} focusOnMount={focusOnMount}>
       {company_feedback && (
         <>
           <Typography sx={{ mt: fr.spacing("2v"), fontSize: "0.875rem", color: greyText }}>
@@ -227,6 +228,8 @@ const ApplicationActions = ({
   getReplyPath: (intention: ApplicationIntention) => string
   userType: string
 }) => {
+  const [replyJustSent] = useState(() => wasReplyJustSent(application._id))
+  useEffect(() => clearReplyJustSent(application._id), [application._id])
   // Pendant de l'accès au formulaire depuis le mail, que mesurent les UTM de ses boutons (indicateur de #5767).
   const trackReplyOpened = (intention: ApplicationIntention) =>
     pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATION_REPLY_OPENED, reply_source: "espace_pro", reply_intention: intention, user_type: userType })
@@ -295,7 +298,7 @@ const ApplicationActions = ({
       />
     )
   }
-  return <ResponseBanner application={application} />
+  return <ResponseBanner application={application} focusOnMount={replyJustSent} />
 }
 
 const ATTACHMENT_DOWNLOAD_MESSAGES = {

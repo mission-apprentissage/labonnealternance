@@ -3,13 +3,14 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { Box } from "@mui/material"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, useRouter } from "next/navigation"
 import { parseEnum } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { markReplyJustSent } from "@/app/(espace-pro)/espace-pro/(connected)/_components/sent-reply-focus"
 import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
 import { IntentionPage } from "@/components/IntentionPage/IntentionPage"
 import { getFormulaire, getJobApplicationDetail, getJobApplicationReplyToken } from "@/utils/api"
@@ -52,12 +53,26 @@ export const CandidatureReponse = () => {
     refetchOnReconnect: false,
   })
 
+  const client = useQueryClient()
+  const router = useRouter()
+
   if (isDetailLoading || isTokenLoading) {
     return <LoadingEmptySpace />
   }
 
   const context = { job_id, cfaEstablishmentId, establishmentName: recruiter?.establishment_raison_sociale ?? recruiter?.establishment_siret }
   const detailPage = getApplicationPages(context).detail(application_id)
+  // Retour direct au détail, qui affiche le bandeau « réponse envoyée » une fois la candidature relue. `replace` : le
+  // retour arrière ne rouvre pas un formulaire déjà envoyé.
+  const returnToDetail = async () => {
+    markReplyJustSent(application_id)
+    await Promise.all([
+      client.invalidateQueries({ queryKey: ["job-application", job_id, application_id] }),
+      client.invalidateQueries({ queryKey: ["job-applications", job_id] }),
+      client.invalidateQueries({ queryKey: ["offre-liste"] }),
+    ])
+    router.replace(detailPage.getPath())
+  }
   const applicantName = detail ? `${detail.application.applicant_first_name} ${detail.application.applicant_last_name.toUpperCase()}` : detailPage.title
 
   return (
@@ -67,7 +82,7 @@ export const CandidatureReponse = () => {
         {error || !reply ? (
           <Alert severity="error" small description={error?.message ?? "Le formulaire de réponse est indisponible."} />
         ) : (
-          <IntentionPage id={application_id} company_recruitment_intention={intention} token={reply.token} />
+          <IntentionPage id={application_id} company_recruitment_intention={intention} token={reply.token} onSentNow={returnToDetail} />
         )}
         <Box sx={{ mt: fr.spacing("6v") }}>
           <Link className="fr-link fr-link--sm fr-link--icon-left fr-icon-arrow-left-line" href={detailPage.getPath()}>

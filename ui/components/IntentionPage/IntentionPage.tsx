@@ -289,13 +289,14 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
   )
 }
 
-export function IntentionPage(props: IntentionPageProps) {
+/** `onSentNow` remplace l'écran de fin après « Envoyer maintenant » (espace pro, qui revient au détail de la candidature). */
+export function IntentionPage({ onSentNow, ...props }: IntentionPageProps & { onSentNow?: () => void }) {
   const { company_recruitment_intention } = props
   const [displayMode, setDisplayMode] = useState<"form" | "canceled" | "sent_now">("form")
 
   return (
     <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
-      {displayMode === "form" && <IntentionPageContent {...props} onCancel={() => setDisplayMode("canceled")} onSentNow={() => setDisplayMode("sent_now")} />}
+      {displayMode === "form" && <IntentionPageContent {...props} onCancel={() => setDisplayMode("canceled")} onSentNow={onSentNow ?? (() => setDisplayMode("sent_now"))} />}
       {displayMode === "canceled" && <IntentionPageResult intention={company_recruitment_intention} canceled={true} />}
       {displayMode === "sent_now" && <IntentionPageResult intention={company_recruitment_intention} />}
     </Box>
