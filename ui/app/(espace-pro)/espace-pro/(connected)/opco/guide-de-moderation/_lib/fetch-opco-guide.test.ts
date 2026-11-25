@@ -28,6 +28,41 @@ afterEach(() => {
   sentry.captureMessage.mockReset()
 })
 
+describe("createLimit", () => {
+  it("ne laisse pas un nouvel appel prendre la place libérée avant celui qui attendait", async () => {
+    const { createLimit } = await loadModule()
+    const limit = createLimit(1)
+    let active = 0
+    let maxActive = 0
+    const track = async () => {
+      active++
+      maxActive = Math.max(maxActive, active)
+      await new Promise((resolve) => setTimeout(resolve, 1))
+      active--
+    }
+    const gate: { release?: () => void } = {}
+    const first = limit(
+      () =>
+        new Promise<void>((resolve) => {
+          gate.release = resolve
+        })
+    )
+    const queued = limit(track)
+    let late: Promise<void> = Promise.resolve()
+
+    gate.release?.()
+    // Microtâche planifiée avant le réveil de `queued` : c'est la fenêtre où un appel pourrait doubler la file.
+    queueMicrotask(() => {
+      late = limit(track)
+    })
+    await first
+    await queued
+    await late
+
+    expect(maxActive).toBe(1)
+  })
+})
+
 describe("fetchOpcoGuide", () => {
   it("sans jeton, n'appelle pas Notion et le signale une seule fois", async () => {
     vi.stubEnv("LBA_NOTION_API_TOKEN", "")
@@ -57,6 +92,25 @@ describe("fetchOpcoGuide", () => {
     expect(fetchMock.mock.calls.some(([url]) => url.includes(childPage.id))).toBe(false)
     expect(fetchMock.mock.calls[0][1].headers).toMatchObject({ Authorization: "Bearer jeton-de-test", "Notion-Version": "2026-03-11" })
     expect(sentry.captureMessage).toHaveBeenCalledWith("Guide de modération OPCO : blocs Notion non rendus", expect.objectContaining({ extra: { types: ["child_page"] } }))
+  })
+
+  it("lit les enfants en parallèle, 3 appels au plus en même temps", async () => {
+    const toggles = Array.from({ length: 6 }, (_, index) => ({ ...block("toggle", { rich_text: [text(`Question fictive ${index}`)] }), has_children: true }))
+    let inFlight = 0
+    let maxInFlight = 0
+    fetchMock.mockImplementation(async (url: string) => {
+      inFlight++
+      maxInFlight = Math.max(maxInFlight, inFlight)
+      await new Promise((resolve) => setTimeout(resolve, 5))
+      inFlight--
+      if (toggles.some(({ id }) => url.includes(`/blocks/${id}/`))) return page([block("paragraph", { rich_text: [text("Réponse fictive")] })])
+      return page([...sectionHeadings(7), ...toggles])
+    })
+    const { fetchOpcoGuide } = await loadModule()
+
+    expect((await fetchOpcoGuide()).status).toBe("ok")
+    expect(fetchMock).toHaveBeenCalledTimes(1 + toggles.length)
+    expect(maxInFlight).toBe(3)
   })
 
   it("refuse une structure inattendue sans remonter le texte du guide", async () => {

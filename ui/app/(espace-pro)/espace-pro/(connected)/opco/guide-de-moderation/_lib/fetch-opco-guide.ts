@@ -18,6 +18,8 @@ const FAILURE_COOLDOWN_MS = 60 * 1_000
 const RETRY_DELAYS_MS = [500, 1_500]
 // Sans délai, une API Notion bloquée bloquerait la page au lieu de passer au contenu de secours.
 const REQUEST_TIMEOUT_MS = 10_000
+// L'API Notion limite à environ 3 requêtes par seconde en moyenne, avec des pointes tolérées ; un 429 est réessayé.
+const MAX_CONCURRENT_REQUESTS = 3
 
 export type OpcoGuideResult = { status: "ok"; guide: OpcoGuide } | { status: "unavailable" }
 
@@ -31,6 +33,25 @@ let cached: { guide: OpcoGuide; fetchedAt: number } | null = null
 let inFlight: Promise<OpcoGuide> | null = null
 let lastFailureAt: number | null = null
 let missingTokenReported = false
+
+export type Limit = <T>(task: () => Promise<T>) => Promise<T>
+
+// Une place libérée passe directement au premier en attente, pour qu'un nouvel appel ne la double pas.
+export function createLimit(max: number): Limit {
+  let active = 0
+  const queue: (() => void)[] = []
+  return async (task) => {
+    if (active < max) active++
+    else await new Promise<void>((resolve) => queue.push(resolve))
+    try {
+      return await task()
+    } finally {
+      const next = queue.shift()
+      if (next) next()
+      else active--
+    }
+  }
+}
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -53,29 +74,30 @@ async function notionGet(path: string, token: string): Promise<{ results: Notion
   }
 }
 
-// Appels séquentiels : l'API Notion limite à environ 3 requêtes par seconde.
-async function listChildren(blockId: string, token: string): Promise<NotionBlock[]> {
+async function listChildren(blockId: string, token: string, limit: Limit): Promise<NotionBlock[]> {
   const blocks: NotionBlock[] = []
   let cursor: string | null = null
   do {
     const query = new URLSearchParams({ page_size: "100" })
     if (cursor) query.set("start_cursor", cursor)
-    const page = await notionGet(`/blocks/${blockId}/children?${query}`, token)
+    const page = await limit(() => notionGet(`/blocks/${blockId}/children?${query}`, token))
     blocks.push(...page.results)
     cursor = page.has_more ? page.next_cursor : null
   } while (cursor)
 
-  for (const block of blocks) {
-    if (block.has_children && CONTAINER_BLOCK_TYPES.has(block.type)) {
-      block.children = await listChildren(block.id, token)
-    }
-  }
+  await Promise.all(
+    blocks
+      .filter((block) => block.has_children && CONTAINER_BLOCK_TYPES.has(block.type))
+      .map(async (block) => {
+        block.children = await listChildren(block.id, token, limit)
+      })
+  )
   return blocks
 }
 
 // Les messages remontés ne contiennent jamais le texte du guide, seulement le statut ou la structure.
 async function loadGuide(token: string): Promise<OpcoGuide> {
-  const structure = structureOpcoGuide(await listChildren(OPCO_GUIDE_NOTION_PAGE_ID, token))
+  const structure = structureOpcoGuide(await listChildren(OPCO_GUIDE_NOTION_PAGE_ID, token, createLimit(MAX_CONCURRENT_REQUESTS)))
   if (structure.status === "invalid") {
     throw new Error(`Guide de modération OPCO : structure Notion refusée (${structure.reason})`)
   }
