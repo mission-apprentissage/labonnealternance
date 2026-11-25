@@ -78,6 +78,7 @@ export const UI_ROUTE_PATTERNS = [
   "/espace-pro/offre/impression/:jobId",
   "/espace-pro/opco",
   "/espace-pro/opco/compte",
+  "/espace-pro/opco/guide-de-moderation",
   "/espace-pro/opco/offres-a-moderer",
   "/espace-pro/opco/offres-a-moderer/:jobId",
   "/espace-pro/opco/users/:userId",
