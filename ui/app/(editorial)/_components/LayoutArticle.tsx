@@ -58,20 +58,16 @@ export const LayoutArticle = ({
     <Breadcrumb pages={pages} />
     <DefaultContainer sx={{ marginBottom: fr.spacing("10v") }}>
       <Grid container spacing={fr.spacing("6v")}>
-        <Grid container sx={{ marginBottom: fr.spacing("6v") }}>
-          <Grid size={{ md: 2, xs: 0 }}></Grid>
-          <Grid size={{ md: 8, xs: 12 }}>
-            <Typography component="h1" variant="h1" sx={{ marginBottom: fr.spacing("6v") }}>
-              {title}
-            </Typography>
-            <Box gap={fr.spacing("6v")} display={"flex"} flexDirection={"column"}>
-              {bandeau}
-              {updatedAt}
-              {description}
-              {children}
-            </Box>
-          </Grid>
-          <Grid size={{ md: 2, xs: 0 }}></Grid>
+        <Grid size={12} sx={{ marginBottom: fr.spacing("6v") }}>
+          <Typography component="h1" variant="h1" sx={{ marginBottom: fr.spacing("6v") }}>
+            {title}
+          </Typography>
+          <Box gap={fr.spacing("6v")} display={"flex"} flexDirection={"column"}>
+            {bandeau}
+            {updatedAt}
+            {description}
+            {children}
+          </Box>
         </Grid>
         {redirectionInterne}
         {allerPlusLoinItems?.length > 0 && (
