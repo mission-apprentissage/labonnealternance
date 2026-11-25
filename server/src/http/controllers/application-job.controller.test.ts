@@ -9,7 +9,7 @@ import {
   saveRoleManagement,
   validatedUserStatus,
 } from "@tests/utils/user.test.utils"
-import type { ObjectId } from "mongodb"
+import { ObjectId } from "mongodb"
 import { readSheet } from "read-excel-file/node"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention, RefusalReasons } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -765,5 +765,144 @@ describe("GET /application/job/:jobId/application/:applicationId/reply-token", (
     const response = await getReplyToken(offer._id, otherApplication._id, ApplicationIntention.REFUS, (await logUser(httpClient, "recruteur-jeton-croise")).bearerToken)
 
     expect(response.statusCode).toBe(404)
+  })
+})
+
+type IApplicationRoute = {
+  name: string
+  method: "GET" | "POST"
+  path: (jobId: ObjectId, applicationId: ObjectId) => string
+  data?: Parameters<typeof generateApplicationFixture>[0]
+}
+
+// Routes qui exposent ou modifient les candidatures d'une offre, avec l'état que chaque action attend.
+const APPLICATION_ROUTES: IApplicationRoute[] = [
+  { name: "l'export des candidatures de l'offre", method: "GET", path: (jobId) => `/api/application/job/${jobId}/export` },
+  { name: "le détail d'une candidature", method: "GET", path: (jobId, id) => `/api/application/job/${jobId}/application/${id}` },
+  { name: "la pièce jointe", method: "GET", path: (jobId, id) => `/api/application/job/${jobId}/application/${id}/attachment` },
+  {
+    name: "le jeton de réponse",
+    method: "GET",
+    path: (jobId, id) => `/api/application/job/${jobId}/application/${id}/reply-token?intention=${ApplicationIntention.REFUS}`,
+  },
+  { name: "« contacté par un autre canal »", method: "POST", path: (jobId, id) => `/api/application/job/${jobId}/application/${id}/treated-elsewhere` },
+  {
+    name: "l'annulation de « contacté par un autre canal »",
+    method: "POST",
+    path: (jobId, id) => `/api/application/job/${jobId}/application/${id}/treated-elsewhere/cancel`,
+    data: { company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE, company_recruitment_intention_date: new Date() },
+  },
+  {
+    name: "l'annulation d'une réponse programmée",
+    method: "POST",
+    path: (jobId, id) => `/api/application/job/${jobId}/application/${id}/reply/cancel`,
+    data: {
+      company_recruitment_intention: ApplicationIntention.REFUS,
+      company_recruitment_intention_date: new Date(),
+      company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED,
+    },
+  },
+]
+const INDEXED_APPLICATION_ROUTES = APPLICATION_ROUTES.map((route, index) => ({ ...route, index }))
+
+// Le middleware laisse passer l'OPCO par workplace_opco : chaque service doit le refuser (cf. canAccessJobAsEntrepriseOrCfa).
+describe("Refus de l'OPCO de rattachement de l'offre", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  it.each(INDEXED_APPLICATION_ROUTES)("refuse $name", async ({ method, path, data, index }) => {
+    const recruiter = await saveRecruiter(`recruteur-opco-${index}`)
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Protege", data)
+    const { bearerToken } = await createAndLogUser(httpClient, `opco-akto-${index}`, { type: "OPCO" })
+
+    const response = await httpClient().inject({ method, path: path(offer._id, application._id), headers: bearerToken })
+
+    expect(response.statusCode).toBe(403)
+    expect(response.json().message).toBe("Accès réservé au recruteur de l'offre")
+    expect(response.body).not.toMatch(/protege|token/i)
+    expect(await getDbCollection("applications").findOne({ _id: application._id })).toEqual(application)
+  })
+
+  it("refuse l'export des candidatures de l'entreprise", async () => {
+    const recruiter = await saveRecruiter("recruteur-opco-export-entreprise")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    await saveApplication(offer._id, "Protege")
+    const { bearerToken } = await createAndLogUser(httpClient, "opco-akto-export-entreprise", { type: "OPCO" })
+
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/application/establishment/${recruiter.user._id}_${recruiter.entreprise.siret}/export`,
+      headers: bearerToken,
+    })
+
+    expect(response.statusCode).toBe(403)
+    expect(response.json().message).toBe("Accès réservé au recruteur de l'entreprise ou au CFA qui la gère")
+    expect(response.body).not.toMatch(/protege/i)
+  })
+})
+
+describe("Refus d'un autre CFA que celui qui gère l'offre", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  it.each(INDEXED_APPLICATION_ROUTES)("refuse $name", async ({ method, path, data, index }) => {
+    const owner = await saveCfa(`cfa-gestionnaire-${index}`)
+    await saveCfa(`cfa-voisin-${index}`)
+    const offer = await saveOffer({ managedBy: owner.user._id, siret: owner.entreprise.siret, cfaSiret: owner.cfa.siret })
+    const application = await saveApplication(offer._id, "Protege", data)
+
+    const response = await httpClient().inject({ method, path: path(offer._id, application._id), headers: (await logUser(httpClient, `cfa-voisin-${index}`)).bearerToken })
+
+    expect(response.statusCode).toBe(403)
+    expect(response.body).not.toMatch(/protege|token/i)
+    expect(await getDbCollection("applications").findOne({ _id: application._id })).toEqual(application)
+  })
+})
+
+describe("Refus de l'export des candidatures d'une autre entreprise", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  // Le middleware ne trouve aucune offre du demandeur sur ce siret et laisse passer : c'est le service qui refuse.
+  it("refuse au recruteur d'une autre entreprise l'export d'une entreprise qui n'est pas la sienne", async () => {
+    const recruiter = await saveRecruiter("proprietaire-export-entreprise")
+    await saveRecruiter("voisin-export-entreprise")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    await saveApplication(offer._id, "Protege")
+
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/application/establishment/${recruiter.user._id}_${recruiter.entreprise.siret}/export`,
+      headers: (await logUser(httpClient, "voisin-export-entreprise")).bearerToken,
+    })
+
+    expect(response.statusCode).toBe(403)
+    expect(response.json().message).toBe("Accès réservé au recruteur de l'entreprise ou au CFA qui la gère")
+    expect(response.body).not.toMatch(/protege/i)
+  })
+})
+
+describe("Refus d'agir, via une offre accessible, sur la candidature d'une autre offre", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const CANCEL_ROUTES = INDEXED_APPLICATION_ROUTES.filter(({ path }) => /\/cancel$/.test(path(new ObjectId(), new ObjectId())))
+
+  it.each(CANCEL_ROUTES)("refuse $name", async ({ method, path, data, index }) => {
+    const recruiter = await saveRecruiter(`recruteur-croise-${index}`)
+    const otherRecruiter = await saveRecruiter(`autre-recruteur-croise-${index}`)
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const otherOffer = await saveOffer({ managedBy: otherRecruiter.user._id, siret: otherRecruiter.entreprise.siret })
+    const otherApplication = await saveApplication(otherOffer._id, "Etrangere", data)
+
+    const response = await httpClient().inject({
+      method,
+      path: path(offer._id, otherApplication._id),
+      headers: (await logUser(httpClient, `recruteur-croise-${index}`)).bearerToken,
+    })
+
+    expect(response.statusCode).toBe(404)
+    expect(await getDbCollection("applications").findOne({ _id: otherApplication._id })).toEqual(otherApplication)
   })
 })
