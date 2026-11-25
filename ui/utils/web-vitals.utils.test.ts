@@ -1,8 +1,8 @@
-import { ZWebVitalReport, zWebVitalRoute } from "shared/routes/_private/web-vitals.routes"
+import { ZWebVitalMetric, ZWebVitalsBatch, zWebVitalRoute } from "shared/routes/_private/web-vitals.routes"
 import { describe, expect, it } from "vitest"
-import type { CLSMetricWithAttribution, INPMetricWithAttribution } from "web-vitals/attribution"
+import type { CLSMetricWithAttribution, FCPMetricWithAttribution, INPMetricWithAttribution, LCPMetricWithAttribution, TTFBMetricWithAttribution } from "web-vitals/attribution"
 
-import { buildClsReport, buildInpReport, type IWebVitalContext, toRouteTemplate } from "./web-vitals.utils"
+import { buildBatch, buildClsMetric, buildFcpMetric, buildInpMetric, buildLcpMetric, buildTtfbMetric, toRouteTemplate } from "./web-vitals.utils"
 
 describe("toRouteTemplate", () => {
   it.each([
@@ -40,25 +40,15 @@ describe("toRouteTemplate", () => {
   })
 })
 
-const context: IWebVitalContext = {
-  landingRoute: "/emploi/offres_emploi_lba/[id]",
-  route: "/emploi/offres_emploi_lba/[id]",
-  version: "1.952.0",
-  viewportWidth: 412.5,
-  cpuCores: 8,
-  deviceMemory: 4,
-  effectiveType: "4g",
-}
+const ROUTE = "/emploi/offres_emploi_lba/[id]"
+
+const base = { rating: "needs-improvement", delta: 0, id: "v5-1", entries: [], navigationType: "navigate", navigationId: 1 } as const
 
 const inpMetric = (attribution: Partial<INPMetricWithAttribution["attribution"]>) =>
   ({
+    ...base,
     name: "INP",
     value: 288.4,
-    rating: "needs-improvement",
-    delta: 288.4,
-    id: "v5-1",
-    entries: [],
-    navigationType: "navigate",
     attribution: {
       interactionTarget: "div.MuiBox-root>button.fr-btn",
       interactionType: "pointer",
@@ -70,11 +60,28 @@ const inpMetric = (attribution: Partial<INPMetricWithAttribution["attribution"]>
       longAnimationFrameEntries: [],
       ...attribution,
     },
-  }) as INPMetricWithAttribution
+  }) as unknown as INPMetricWithAttribution
 
-describe("buildInpReport", () => {
-  it("construit un rapport accepté par l'API, sans la query de l'URL du script", () => {
-    const report = buildInpReport(
+const lcpMetric = (attribution: Partial<LCPMetricWithAttribution["attribution"]>) =>
+  ({
+    ...base,
+    name: "LCP",
+    value: 3120.6,
+    rating: "poor",
+    attribution: {
+      target: "main>img.hero",
+      url: "https://labonnealternance.apprentissage.beta.gouv.fr/_next/image?url=%2Fimages%2Fhome.png&w=1080&q=75",
+      timeToFirstByte: 640.2,
+      resourceLoadDelay: 910.4,
+      resourceLoadDuration: 1200.1,
+      elementRenderDelay: 369.9,
+      ...attribution,
+    },
+  }) as unknown as LCPMetricWithAttribution
+
+describe("buildInpMetric", () => {
+  it("construit une mesure acceptée par l'API, sans la query de l'URL du script", () => {
+    const metric = buildInpMetric(
       inpMetric({
         totalScriptDuration: 170.2,
         totalStyleAndLayoutDuration: 60.4,
@@ -84,23 +91,17 @@ describe("buildInpReport", () => {
           intersectingDuration: 150.7,
         },
       }),
-      context
+      ROUTE
     )
 
-    expect(report).toEqual({
+    expect(metric).toEqual({
       metric: "INP",
       value: 288,
       rating: "needs-improvement",
+      route: ROUTE,
       navigation_type: "navigate",
       load_state: "complete",
       target: "div.MuiBox-root>button.fr-btn",
-      landing_route: "/emploi/offres_emploi_lba/[id]",
-      route: "/emploi/offres_emploi_lba/[id]",
-      version: "1.952.0",
-      viewport_width: 413,
-      cpu_cores: 8,
-      device_memory: 4,
-      effective_type: "4g",
       interaction_type: "pointer",
       input_delay: 12,
       processing_duration: 181,
@@ -112,19 +113,14 @@ describe("buildInpReport", () => {
       longest_script_subpart: "processing-duration",
       longest_script_duration: 151,
     })
-    expect(ZWebVitalReport.parse(report)).toEqual(report)
+    expect(ZWebVitalMetric.parse(metric)).toEqual(metric)
   })
 
   it("reste accepté sans Long Animation Frame ni cible (Safari, élément retiré du DOM)", () => {
-    const report = buildInpReport(inpMetric({ interactionTarget: "", interactionType: undefined }), {
-      ...context,
-      cpuCores: undefined,
-      deviceMemory: undefined,
-      effectiveType: undefined,
-    })
+    const metric = buildInpMetric(inpMetric({ interactionTarget: "", interactionType: undefined }), ROUTE)
 
-    expect(report).toMatchObject({ target: null, interaction_type: null, longest_script_url: null, total_script_duration: null, cpu_cores: null, device_memory: null })
-    expect(() => ZWebVitalReport.parse(report)).not.toThrow()
+    expect(metric).toMatchObject({ target: null, interaction_type: null, longest_script_url: null, total_script_duration: null })
+    expect(() => ZWebVitalMetric.parse(metric)).not.toThrow()
   })
 
   it.each([
@@ -133,38 +129,170 @@ describe("buildInpReport", () => {
     ["élément avec id, gardé intact", "BUTTON#postuler.onclick", "BUTTON#postuler.onclick"],
     ["callback sans URL", "TimerHandler:setTimeout", "TimerHandler:setTimeout"],
   ])("retire la query des URL de l'invoker : %s", (_case, invoker, expected) => {
-    const report = buildInpReport(
+    const metric = buildInpMetric(
       inpMetric({ longestScript: { entry: { sourceURL: "", invoker } as PerformanceScriptTiming, subpart: "processing-duration", intersectingDuration: 80 } }),
-      context
+      ROUTE
     )
 
-    expect(report).toMatchObject({ longest_script_invoker: expected })
+    expect(metric).toMatchObject({ longest_script_invoker: expected })
   })
 
-  it("tronque une cible trop longue pour que l'API ne rejette pas le rapport", () => {
-    const report = buildInpReport(inpMetric({ interactionTarget: "div>".repeat(200) }), context)
+  it("tronque une cible trop longue pour que l'API ne rejette pas le lot", () => {
+    const metric = buildInpMetric(inpMetric({ interactionTarget: "div>".repeat(200) }), ROUTE)
 
-    expect(report.target).toHaveLength(300)
-    expect(() => ZWebVitalReport.parse(report)).not.toThrow()
+    expect(metric).toMatchObject({ target: expect.any(String) })
+    expect((metric as { target: string }).target).toHaveLength(300)
+    expect(() => ZWebVitalMetric.parse(metric)).not.toThrow()
   })
 })
 
-describe("buildClsReport", () => {
-  it("construit un rapport accepté par l'API", () => {
-    const metric = {
-      name: "CLS",
-      value: 0.312345,
+describe("buildClsMetric", () => {
+  it("construit une mesure acceptée par l'API", () => {
+    const metric = buildClsMetric(
+      {
+        ...base,
+        name: "CLS",
+        value: 0.312345,
+        rating: "poor",
+        attribution: { largestShiftTarget: "main>footer", largestShiftValue: 0.28456, loadState: "dom-content-loaded" },
+      } as unknown as CLSMetricWithAttribution,
+      "/"
+    )
+
+    expect(metric).toMatchObject({ metric: "CLS", value: 0.3123, largest_shift_value: 0.2846, target: "main>footer", load_state: "dom-content-loaded", route: "/" })
+    expect(ZWebVitalMetric.parse(metric)).toEqual(metric)
+  })
+})
+
+describe("buildLcpMetric", () => {
+  it("construit une mesure acceptée par l'API, avec le découpage du LCP", () => {
+    const metric = buildLcpMetric(lcpMetric({}), "/")
+
+    expect(metric).toEqual({
+      metric: "LCP",
+      value: 3121,
       rating: "poor",
-      delta: 0.312345,
-      id: "v5-2",
-      entries: [],
-      navigationType: "navigate",
-      attribution: { largestShiftTarget: "main>footer", largestShiftValue: 0.28456, loadState: "dom-content-loaded" },
-    } as unknown as CLSMetricWithAttribution
+      route: "/",
+      navigation_type: "navigate",
+      target: "main>img.hero",
+      url: "https://labonnealternance.apprentissage.beta.gouv.fr/_next/image",
+      time_to_first_byte: 640,
+      resource_load_delay: 910,
+      resource_load_duration: 1200,
+      element_render_delay: 370,
+    })
+    expect(ZWebVitalMetric.parse(metric)).toEqual(metric)
+  })
 
-    const report = buildClsReport(metric, context)
+  it.each([
+    ["image next/image", "https://lba.fr/_next/image?url=%2Flogo%2F6a30155208d7f8e3d76cf05c.png&w=64", "https://lba.fr/_next/image"],
+    ["pixel avec identifiant de visite", "https://stats.beta.gouv.fr/p.gif?uid=42#x", "https://stats.beta.gouv.fr/p.gif"],
+    ["fragment seul", "https://lba.fr/hero.webp#v2", "https://lba.fr/hero.webp"],
+    ["image en data: URL", `data:image/png;base64,${"A".repeat(500)}`, "data:"],
+  ])("retire la query et le fragment de l'URL de la ressource : %s", (_case, url, expected) => {
+    const metric = buildLcpMetric(lcpMetric({ url }), "/")
 
-    expect(report).toMatchObject({ metric: "CLS", value: 0.3123, largest_shift_value: 0.2846, target: "main>footer", load_state: "dom-content-loaded" })
-    expect(ZWebVitalReport.parse(report)).toEqual(report)
+    expect(metric).toMatchObject({ url: expected })
+    expect(() => ZWebVitalMetric.parse(metric)).not.toThrow()
+  })
+
+  it("rapporte un LCP textuel sans ressource", () => {
+    const metric = buildLcpMetric(lcpMetric({ url: undefined, resourceLoadDelay: 0, resourceLoadDuration: 0 }), "/")
+
+    expect(metric).toMatchObject({ url: null, resource_load_delay: 0 })
+    expect(() => ZWebVitalMetric.parse(metric)).not.toThrow()
+  })
+
+  it("borne une durée aberrante plutôt que de faire refuser tout le lot", () => {
+    const metric = buildLcpMetric({ ...lcpMetric({ elementRenderDelay: 9_000_000 }), value: 9_000_000 }, "/")
+
+    expect(metric).toMatchObject({ value: 600_000, element_render_delay: 600_000 })
+    expect(() => ZWebVitalMetric.parse(metric)).not.toThrow()
+  })
+})
+
+describe("buildTtfbMetric", () => {
+  it("construit une mesure acceptée par l'API, avec le découpage du TTFB", () => {
+    const metric = buildTtfbMetric(
+      {
+        ...base,
+        name: "TTFB",
+        value: 812.3,
+        attribution: { waitingDuration: 12.1, cacheDuration: 0.4, dnsDuration: 30.2, connectionDuration: 90.6, requestDuration: 679 },
+      } as unknown as TTFBMetricWithAttribution,
+      ROUTE
+    )
+
+    expect(metric).toEqual({
+      metric: "TTFB",
+      value: 812,
+      rating: "needs-improvement",
+      route: ROUTE,
+      navigation_type: "navigate",
+      waiting_duration: 12,
+      cache_duration: 0,
+      dns_duration: 30,
+      connection_duration: 91,
+      request_duration: 679,
+    })
+    expect(ZWebVitalMetric.parse(metric)).toEqual(metric)
+  })
+})
+
+describe("buildFcpMetric", () => {
+  it("construit une mesure acceptée par l'API, avec le découpage du FCP", () => {
+    const metric = buildFcpMetric(
+      { ...base, name: "FCP", value: 1820.5, attribution: { timeToFirstByte: 640.2, firstByteToFCP: 1180.3, loadState: "dom-interactive" } } as unknown as FCPMetricWithAttribution,
+      ROUTE
+    )
+
+    expect(metric).toEqual({
+      metric: "FCP",
+      value: 1821,
+      rating: "needs-improvement",
+      route: ROUTE,
+      navigation_type: "navigate",
+      load_state: "dom-interactive",
+      time_to_first_byte: 640,
+      first_byte_to_fcp: 1180,
+    })
+    expect(ZWebVitalMetric.parse(metric)).toEqual(metric)
+  })
+})
+
+describe("buildBatch", () => {
+  const page = {
+    pageId: "0123456789abcdef",
+    landingRoute: ROUTE,
+    version: "1.952.0",
+    viewportWidth: 412.5,
+    cpuCores: 8,
+    deviceMemory: 4,
+    effectiveType: "4g",
+  }
+
+  it("regroupe les mesures d'une page dans un lot accepté par l'API", () => {
+    const metrics = [buildInpMetric(inpMetric({}), ROUTE), buildLcpMetric(lcpMetric({}), ROUTE)]
+
+    const batch = buildBatch(page, metrics)
+
+    expect(batch).toEqual({
+      page_id: "0123456789abcdef",
+      landing_route: ROUTE,
+      version: "1.952.0",
+      viewport_width: 413,
+      cpu_cores: 8,
+      device_memory: 4,
+      effective_type: "4g",
+      metrics,
+    })
+    expect(ZWebVitalsBatch.parse(batch)).toEqual(batch)
+  })
+
+  it("reste accepté sans les informations d'appareil (Safari, Firefox)", () => {
+    const batch = buildBatch({ ...page, cpuCores: undefined, deviceMemory: undefined, effectiveType: undefined }, [buildLcpMetric(lcpMetric({}), "/")])
+
+    expect(batch).toMatchObject({ cpu_cores: null, device_memory: null, effective_type: null })
+    expect(() => ZWebVitalsBatch.parse(batch)).not.toThrow()
   })
 })
