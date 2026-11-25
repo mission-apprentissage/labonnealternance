@@ -749,6 +749,7 @@ const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> 
   [JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA]: "The offer contains bad data",
   [JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND]: "We were unable to geolocate the offer's address",
   [JOB_PARTNER_BUSINESS_ERROR.DESCRIPTION_TOO_SHORT]: OFFER_DESCRIPTION_TOO_SHORT_MESSAGE,
+  [JOB_PARTNER_BUSINESS_ERROR.NO_APPLY_METHOD]: "The offer has no application method: at least one of apply_url, apply_email or apply_phone is required",
 }
 
 const computedJobsPartnersToPublishing = (job: IComputedJobsPartners): IJobOfferPublishingV3 => {

@@ -25,6 +25,10 @@ export const ZRecruteursLbaRaw = z.object({
   coordonneeLambertOrdonneeEtablissement: z.number().nullable(),
   rome_codes: z.array(z.object({ rome_code: z.string(), normalized_score: z.number() })),
   site_web: z.string().nullish(),
+  email_source: z.enum(["france_travail", "deca_employeur", "deca_maitre_apprentissage"]).nullish(),
+  // email issu de France Travail et également renseigné dans DECA
+  email_confirme_deca: z.boolean().nullish(),
+  email_source_date: z.iso.date().nullish(),
 })
 
 export type IRecruteursLbaRaw = z.output<typeof ZRecruteursLbaRaw>

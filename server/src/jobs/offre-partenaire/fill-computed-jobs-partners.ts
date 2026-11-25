@@ -7,6 +7,7 @@ import { blockJobsPartnersFromFluxCompanyList } from "@/jobs/offre-partenaire/bl
 import { blockBadRomeJobsPartners } from "./block-bad-rome-jobs-partners"
 import { blockJobsPartnersFromCfaList } from "./block-jobs-partners-from-cfa-list"
 import { blockJobsPartnersWithNaf85 } from "./block-jobs-partners-with-naf85"
+import { blockJobsPartnersWithoutApplyMethod } from "./block-jobs-partners-without-apply-method"
 import { detectClassificationJobsPartners } from "./detect-classification-jobs-partners"
 import { detectDuplicateJobPartners } from "./detect-duplicate-job-partners"
 import { fillEntrepriseEngagementComputedJobsPartners } from "./fill-entreprise-engagement-computed-jobs-partners"
@@ -33,6 +34,7 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
     blockJobsPartnersFromExpirationDate: await blockJobsPartnersFromExpirationDate(context),
     fillEntrepriseEngagementComputedJobsPartners: await fillEntrepriseEngagementComputedJobsPartners(context),
     formatTextFieldsJobsPartners: await formatTextFieldsJobsPartners(context),
+    blockJobsPartnersWithoutApplyMethod: await blockJobsPartnersWithoutApplyMethod(context),
     blockJobsPartnersFromCfaList: await blockJobsPartnersFromCfaList(context),
     detectClassificationJobsPartners: await detectClassificationJobsPartners(context),
 

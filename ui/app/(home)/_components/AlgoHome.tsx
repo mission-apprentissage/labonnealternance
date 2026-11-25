@@ -1,73 +1,78 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
 import Image from "next/image"
-
+import { SectionTitle } from "@/app/_components/Title/SectionTitle"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
+import { TagEmploiFormation } from "@/components/ItemDetail/TagEmploiFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 
 export const AlgoHome = () => (
-  <Container sx={{ px: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section">
+  <Container sx={{ px: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section" aria-labelledby="toutes-les-opportunites">
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: {
-          xs: "1fr",
-          md: "2fr 1fr",
-        },
-        gap: fr.spacing("4v"),
+        gridTemplateColumns: { xs: "1fr", md: "2fr 1fr" },
+        columnGap: fr.spacing("6v"),
+        rowGap: fr.spacing("8v"),
+        alignItems: "end",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: fr.spacing("10v"),
-        }}
-      >
-        <Typography variant="h1">
-          Vous révéler
-          <br />
-          <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
-            le marché caché de l&apos;emploi
-          </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
+        <SectionTitle id="toutes-les-opportunites" highlight="même celles qui ne sont pas publiées">
+          Toutes les opportunités,
+        </SectionTitle>
+        <Typography className={fr.cx("fr-text--lg")} sx={{ mb: 0 }}>
+          Une grande partie des recrutements en alternance se fait sans offre publiée. Ce marché profite d'abord aux candidats qui ont un réseau. L'objectif de La bonne alternance
+          est de le rendre visible à tous.
         </Typography>
-        <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
-        <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
-          <Typography className={fr.cx("fr-text--lg")}>La bonne alternance expose différents types d&apos;opportunités d&apos;emplois :</Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
-            <Box className={fr.cx("fr-text--lg")}>
-              <Typography sx={{ fontSize: "18px" }}>
-                <Box component="span" sx={{ fontWeight: 700 }}>
-                  Les offres d&apos;emploi
-                </Box>{" "}
-                identifiables grâce au tag <TagOffreEmploi /> qui sont de 3 types :
-              </Typography>
-              <ul>
-                <li>celles publiées directement sur notre plateforme</li>
-                <li>celles issues de nos partenaires : France Travail, Hellowork, MétéoJob et bien d’autres,</li>
-                <li>celles publiées par des écoles qui recrutent pour le compte des entreprises de leur réseau.</li>
-              </ul>
-            </Box>
-            <Typography className={fr.cx("fr-text--lg")}>
-              <Box component="span" sx={{ fontWeight: 700 }}>
-                Les candidatures spontanées :
-              </Box>{" "}
-              correspondant au marché caché de l'emploi. Chaque mois, un algorithme prédictif de France Travail analyse les recrutements des 6 années passées pour prédire ceux des
-              6 mois à venir. Grâce à ces données, il identifie une liste restreinte d'entreprises "à fort potentiel d'embauche en alternance" pour faciliter vos démarches de
-              candidatures spontanées. Elles sont identifiées grâce au tag <TagCandidatureSpontanee />
-            </Typography>
+        <Typography className={fr.cx("fr-text--lg")} sx={{ mb: 0 }}>
+          Vous avez ainsi accès à trois types d'opportunités :
+        </Typography>
+        <Typography className={fr.cx("fr-text--lg")} sx={{ mb: 0 }}>
+          <Box component="span" sx={{ fontWeight: 700 }}>
+            Les offres d'emploi
           </Box>
-        </Box>
+          , repérables grâce au tag <TagOffreEmploi /> : publiées sur notre site, ou issues de nos partenaires (France Travail, Hellowork, Meteojob…). Toutes sont vérifiées avant
+          d'être affichées.
+        </Typography>
+        <Typography className={fr.cx("fr-text--lg")} sx={{ mb: 0 }}>
+          <Box component="span" sx={{ fontWeight: 700 }}>
+            Les candidatures spontanées
+          </Box>
+          , repérables grâce au tag <TagCandidatureSpontanee />. Chaque mois, La bonne alternance identifie des entreprises à fort potentiel d'embauche en alternance grâce à
+          l'analyse de diverses données, pour repérer les entreprises susceptibles de recruter un alternant dans les 6 prochains mois, y compris celles qui ne l'ont jamais fait.
+        </Typography>
+        <Typography className={fr.cx("fr-text--lg")} sx={{ mb: 0 }}>
+          <Box component="span" sx={{ fontWeight: 700 }}>
+            Les offres des centres de formation
+          </Box>
+          , repérables grâce au tag <TagEmploiFormation /> : publiées par des CFA pour le compte d'entreprises partenaires. En postulant, vous candidatez à la fois pour un contrat
+          en alternance et pour une place dans la formation correspondante.
+        </Typography>
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: { xs: "center", sm: "center", md: "center", lg: "flex-end" },
-          "& > img": { maxWidth: "100%", height: "auto" },
-        }}
-      >
-        <Image src="/images/icons/algo-home.png" alt="" width={324} height={387} />
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: fr.spacing("2v"),
+            p: fr.spacing("7v"),
+            borderRadius: fr.spacing("2v"),
+            border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+            backgroundColor: fr.colors.decisions.background.default.grey.default,
+          }}
+        >
+          <Typography component="p" sx={{ mb: 0, fontSize: "36px", lineHeight: "44px", fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
+            Près de 1 sur 3
+          </Typography>
+          <Typography sx={{ mb: 0 }}>
+            <Box component="span" sx={{ fontWeight: 700 }}>
+              Près d'un tiers des contrats
+            </Box>{" "}
+            signés grâce à La bonne alternance entre 2025 et 2026 proviennent d'une candidature spontanée.
+          </Typography>
+        </Box>
+        <Image src="/images/service-public/opportunites.png" alt="" width={598} height={355} style={{ width: "100%", maxWidth: "324px", height: "auto" }} />
       </Box>
     </Box>
   </Container>
