@@ -366,10 +366,18 @@ export function diplomaSigleOf(q: string | undefined, mode: SearchMode): string 
   return isDiplomaSigle(sigle) ? sigle : null
 }
 
-async function resolveDiplomaJobsClause(q: string | undefined, mode: SearchMode): Promise<object | null> {
+// Référentiel illisible : la recherche continue sans les métiers du sigle, plutôt qu'un 500.
+export async function resolveDiplomaJobsClause(q: string | undefined, mode: SearchMode): Promise<object | null> {
   const sigle = diplomaSigleOf(q, mode)
   if (!sigle) return null
-  const { clause, unresolvedCodes } = buildDiplomaJobsClause(sigle, await getCachedRomeLabelByCode())
+  let romeLabelByCode: Map<string, string>
+  try {
+    romeLabelByCode = await getCachedRomeLabelByCode()
+  } catch (err) {
+    sentryCaptureException(err, { level: "warning", extra: { q, fallback: "search-without-diploma-jobs" } })
+    return null
+  }
+  const { clause, unresolvedCodes } = buildDiplomaJobsClause(sigle, romeLabelByCode)
   if (unresolvedCodes.length) logger.warn({ sigle, unresolvedCodes }, "Codes ROME absents du référentiel : métiers du sigle ignorés")
   return clause
 }

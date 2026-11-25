@@ -54,6 +54,14 @@ describe("buildDiplomaJobsClause", () => {
     expect(buildDiplomaJobsClause("cg", new Map())).toEqual({ clause: null, unresolvedCodes: ["M1203", "M1213"] })
   })
 
+  it("calcule la clause une fois par sigle et par référentiel chargé", () => {
+    const first = buildDiplomaJobsClause("cg", ROME_LABELS)
+
+    expect(buildDiplomaJobsClause("cg", ROME_LABELS)).toBe(first)
+    expect(buildDiplomaJobsClause("cg", new Map(ROME_LABELS))).not.toBe(first)
+    expect(buildDiplomaJobsClause("cg", new Map(ROME_LABELS))).toEqual(first)
+  })
+
   it("une clé héritée de Object.prototype n'est pas un sigle", () => {
     expect(buildDiplomaJobsClause("constructor", ROME_LABELS).clause).toBeNull()
   })

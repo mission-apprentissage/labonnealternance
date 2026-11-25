@@ -584,6 +584,18 @@ const CORPUS = [
     rome_labels: ["Expert-comptable / Experte-comptable"],
     organization_name: "Cabinet Audit Conseil",
   }),
+  // Intitulés cibles de cg voisins dans le tableau : `phrase` « Secrétaire comptable » les matche à cheval.
+  generateSearchItemFixture({
+    url_id: "recruteur-secretaire-comptable",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "GESTION PLUS",
+    description: "",
+    keywords: null,
+    rome_labels: ["Secrétaire", "Comptable"],
+    organization_name: "GESTION PLUS",
+    is_algo_company: true,
+  }),
   // Une offre par sigle restant, qui ne cite pas le sigle et porte un intitulé ROME visé.
   ...(
     [
@@ -603,6 +615,7 @@ const ROME_REFERENTIEL = [
   ["K1303", "Garde d'enfant"],
   ["M1203", "Comptable"],
   ["M1211", "Expert-comptable / Experte-comptable"],
+  ["M1608", "Secrétaire comptable"],
   ["D1410", "Attaché commercial / Attachée commerciale"],
   ["D1506", "Merchandiser"],
   ["M1621", "Assistant / Assistante de gestion administrative"],
@@ -1242,6 +1255,13 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
 
       expect(ids(result)).toContain("offre-comptable-general")
       expect(ids(result)).not.toContain("offre-expert-comptable")
+    })
+
+    // Perte acceptée : mongot ne sépare pas les éléments d'un tableau (cf. buildDiplomaJobsClause).
+    it.fails("'cg' garde une entreprise qui porte « Secrétaire » et « Comptable » côte à côte [perte connue]", async () => {
+      const result = await search({ q: "cg", mode: "emplois" })
+
+      expect(ids(result)).toContain("recruteur-secretaire-comptable")
     })
 
     it("un sigle accompagné d'un autre terme reste une recherche par couverture : 'aepe crèche' n'ouvre pas les gardes d'enfant", async () => {

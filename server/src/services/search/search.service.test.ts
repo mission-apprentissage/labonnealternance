@@ -1,10 +1,12 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
 import * as sentryUtils from "@/common/utils/sentry-utils"
-import { diplomaSigleOf, resolveSearchMode, searchItems, tokenizeQuery } from "@/services/search/search.service"
+import { diplomaSigleOf, resolveDiplomaJobsClause, resolveSearchMode, searchItems, tokenizeQuery } from "@/services/search/search.service"
+import { DIPLOMA_JOB_ROME_CODES } from "@/services/search/search-diploma-jobs"
+import * as searchItemsService from "@/services/search/search-items.service"
 
 /**
  * Repli sans fuzzy ni synonymes quand mongot dépasse maxClauseCount=1024 (#5153). Ni un plafond
@@ -166,5 +168,34 @@ describe("diplomaSigleOf", () => {
     ["bts", "requête réduite à un mot de diplôme"],
   ])("%s : pas de sigle (%s)", (q) => {
     expect(diplomaSigleOf(q, "emplois")).toBeNull()
+  })
+})
+
+describe("resolveDiplomaJobsClause", () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it("chaque clé de DIPLOMA_JOB_ROME_CODES est atteignable depuis une requête (clé normalisée)", () => {
+    for (const key of Object.keys(DIPLOMA_JOB_ROME_CODES)) expect(diplomaSigleOf(key, "emplois")).toBe(key)
+  })
+
+  it("construit la clause des métiers du sigle depuis le référentiel en cache", async () => {
+    vi.spyOn(searchItemsService, "getCachedRomeLabelByCode").mockResolvedValue(new Map([["D1410", "Attaché commercial / Attachée commerciale"]]))
+
+    expect(JSON.stringify(await resolveDiplomaJobsClause("BTS NDRC", "emplois"))).toContain("Attaché commercial / Attachée commerciale")
+  })
+
+  it("ne lit pas le référentiel hors mode emplois", async () => {
+    const load = vi.spyOn(searchItemsService, "getCachedRomeLabelByCode")
+
+    expect(await resolveDiplomaJobsClause("ndrc", "formations")).toBeNull()
+    expect(load).not.toHaveBeenCalled()
+  })
+
+  it("référentiel illisible : pas de clause et un warning Sentry, au lieu d'une erreur", async () => {
+    vi.spyOn(searchItemsService, "getCachedRomeLabelByCode").mockRejectedValue(new Error("referentielromes indisponible"))
+    const capture = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => undefined)
+
+    expect(await resolveDiplomaJobsClause("ndrc", "emplois")).toBeNull()
+    expect(capture).toHaveBeenCalledWith(expect.any(Error), expect.objectContaining({ level: "warning" }))
   })
 })

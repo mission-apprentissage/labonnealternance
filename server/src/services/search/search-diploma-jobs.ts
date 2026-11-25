@@ -52,18 +52,38 @@ const containsSequence = (haystack: string[], needle: string[]): boolean => {
 
 const phrase = (query: string) => ({ phrase: { query, path: ROME_LABELS_PATH, slop: 0 } })
 
+type DiplomaJobsClause = { clause: object | null; unresolvedCodes: string[] }
+
+// Une entrée par Map du référentiel (renouvelée par le cache de getCachedRomeLabelByCode) :
+// le calcul des intitulés englobants parcourt tout le référentiel.
+const clausesByReferentiel = new WeakMap<ReadonlyMap<string, string>, Map<string, DiplomaJobsClause>>()
+
 /**
  * Clause d'entrée « le doc porte l'un des intitulés ROME visés par le sigle ». Un `phrase` matche
  * aussi tout intitulé qui contient la cible (« Comptable » dans « Expert-comptable / Experte-comptable ») :
  * ces intitulés englobants sont exclus, sauf s'ils sont eux-mêmes visés. L'exclusion porte sur le
  * doc entier : une offre qui porte aussi un intitulé englobant sort, perte préférée au bruit
  * (« Secrétaire » seul ferait entrer secrétaires de mairie et secrétaires médicales).
- * Score constant bas : les offres qui citent le sigle restent devant.
+ * mongot ne sépare pas les éléments d'un tableau : un `phrase` peut matcher à cheval sur deux
+ * intitulés voisins, et ["Secrétaire", "Comptable"] tombe sous l'exclusion « Secrétaire comptable ».
+ * Score constant bas : en tri par pertinence, les offres qui citent le sigle restent devant.
+ * Résultat partagé entre requêtes, à ne pas muter.
  */
-export function buildDiplomaJobsClause(sigle: string, romeLabelByCode: ReadonlyMap<string, string>): { clause: object | null; unresolvedCodes: string[] } {
+export function buildDiplomaJobsClause(sigle: string, romeLabelByCode: ReadonlyMap<string, string>): DiplomaJobsClause {
   if (!isDiplomaSigle(sigle)) return { clause: null, unresolvedCodes: [] }
-  const codes = DIPLOMA_JOB_ROME_CODES[sigle]
+  let cache = clausesByReferentiel.get(romeLabelByCode)
+  if (!cache) {
+    cache = new Map()
+    clausesByReferentiel.set(romeLabelByCode, cache)
+  }
+  const cached = cache.get(sigle)
+  if (cached) return cached
+  const built = computeDiplomaJobsClause(DIPLOMA_JOB_ROME_CODES[sigle], romeLabelByCode)
+  cache.set(sigle, built)
+  return built
+}
 
+function computeDiplomaJobsClause(codes: readonly string[], romeLabelByCode: ReadonlyMap<string, string>): DiplomaJobsClause {
   const unresolvedCodes = codes.filter((code) => !romeLabelByCode.has(code))
   const targets = [...new Set(codes.flatMap((code) => romeLabelByCode.get(code) ?? []))]
   if (!targets.length) return { clause: null, unresolvedCodes }
