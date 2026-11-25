@@ -90,7 +90,6 @@ const getColumns = (buildApplicationPath: (applicationId: string) => string, use
           onClick: () =>
             pushMatomoEvent({
               event: MATOMO_EVENTS.APPLICATION_DETAIL_OPENED,
-              source: "applications_list",
               user_type: userType,
               application_status: getApplicationStatusDimension(original.company_recruitment_intention),
             }),
@@ -179,7 +178,7 @@ const CandidaturesOffreContent = ({
       event: MATOMO_EVENTS.APPLICATIONS_LIST_VIEWED,
       user_type: userType,
       offer_state: offerState,
-      consultation: consultation.status,
+      applications_consultation: consultation.status,
       applications_count: applications.length,
     })
   }, [job._id])

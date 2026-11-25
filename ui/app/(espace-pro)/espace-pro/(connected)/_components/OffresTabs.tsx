@@ -98,7 +98,7 @@ const CandidaturesCell = ({ job, applicationsPath, userType }: { job: LocalJob; 
       <Link
         className="fr-link fr-link--sm"
         href={applicationsPath}
-        onClick={() => pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATIONS_ENTRY_CLICKED, entry_point: "offers_table", user_type: userType })}
+        onClick={() => pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATIONS_ENTRY_CLICKED, applications_entry_point: "offers_table", user_type: userType })}
         aria-label={`${total} candidature${total > 1 ? "s" : ""}, voir les candidatures de l'offre ${getJobTitle(job)}`}
       >
         {total}

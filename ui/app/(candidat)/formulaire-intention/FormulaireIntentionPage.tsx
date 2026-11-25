@@ -23,7 +23,7 @@ export default function FormulaireIntentionPage() {
   useEffect(() => {
     if (!userType || !intention || trackedForm.current === `${id}-${intention}`) return
     trackedForm.current = `${id}-${intention}`
-    pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATION_REPLY_OPENED, source: "email", intention, user_type: userType })
+    pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATION_REPLY_OPENED, reply_source: "email", reply_intention: intention, user_type: userType })
   }, [id, intention, userType])
 
   return (

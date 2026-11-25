@@ -1303,7 +1303,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
       espace_pro = {
         job_id: job._id.toString(),
         cfa_establishment_id: job.is_delegated && managed_by && job.workplace_siret ? buildEstablishmentId(new ObjectId(managed_by), job.workplace_siret) : null,
-        establishment_name: workplace_brand || workplace_legal_name || job.workplace_siret || "",
+        establishment_name: getWorkplaceDisplayName(job) || job.workplace_siret || "",
       }
       break
     }

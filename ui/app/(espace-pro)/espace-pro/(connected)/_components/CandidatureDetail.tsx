@@ -184,7 +184,7 @@ const ApplicationActions = ({
 }) => {
   // Pendant de l'accès au formulaire depuis le mail, que mesurent les UTM de ses boutons (indicateur de #5767).
   const trackReplyOpened = (intention: ApplicationIntention) =>
-    pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATION_REPLY_OPENED, source: "espace_pro", intention, user_type: userType })
+    pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATION_REPLY_OPENED, reply_source: "espace_pro", reply_intention: intention, user_type: userType })
   const client = useQueryClient()
   const refreshApplication = () =>
     Promise.all([
