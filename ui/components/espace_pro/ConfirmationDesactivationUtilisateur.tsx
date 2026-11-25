@@ -7,7 +7,7 @@ import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, Typography } from "@mui/material"
 import { useId, useRef, useState } from "react"
 import type { IUserRecruteurJson } from "shared"
-import { DEACTIVATION_REASON_MAX_LENGTH, DEACTIVATION_REASON_MIN_LENGTH, ZDeactivationReason } from "shared/models/role-management.model"
+import { CFA_NOT_REFERENCED_REASON, DEACTIVATION_REASON_MAX_LENGTH, DEACTIVATION_REASON_MIN_LENGTH, ZDeactivationReason } from "shared/models/role-management.model"
 import { LiveStatus } from "@/app/_components/LiveStatus"
 import type { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useUserPermissionsActions } from "@/app/hooks/use-user-permissions-actions"
@@ -100,7 +100,7 @@ const ConfirmationDesactivationUtilisateur = ({
             <option value="Compte entreprise créé par un CFA">Compte entreprise créé par un CFA</option>
             <option value="Compte en doublon">Compte en doublon</option>
             <option value="Offre non conforme">Offre non conforme</option>
-            {type === "CFA" && <option value="Non référencé dans le catalogue du Réseau des Carif-Oref">Non référencé dans le catalogue du Réseau des Carif-Oref</option>}
+            {type === "CFA" && <option value={CFA_NOT_REFERENCED_REASON}>{CFA_NOT_REFERENCED_REASON}</option>}
             <option value={NOT_MY_OPCO_REASON}>{NOT_MY_OPCO_REASON}</option>
             <option value="Besoin de recrutement pourvu">Besoin de recrutement pourvu</option>
             <option value="Injoignable">Injoignable</option>

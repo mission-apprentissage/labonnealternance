@@ -247,6 +247,15 @@ program
   .action(createJobAction("closed-siret:deactivate"))
 
 program
+  .command("cfa-referentiel:deactivate")
+  .description("Désactive les comptes des CFA dont le SIRET est absent du Référentiel Onisep")
+  .option("--dry-run", "Interroge le Référentiel et liste les CFA concernés sans rien écrire en base", false)
+  .option("--max-deactivation-ratio <number>", "Part maximale des CFA à compte actif absents de la liste (0.1 par défaut)")
+  .option("--min-referentiel-size <number>", "Nombre minimal d'organismes attendus du Référentiel (5000 par défaut)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("cfa-referentiel:deactivate"))
+
+program
   .command("update-handi-engagement:force")
   .description("Force la mise à jour de l'engagement handicap en ignorant le garde-fou de marge ±20% (MISSING_SIRETS_CLEANUP_MARGIN_RATIO)")
   .option("-q, --queued", "Run job asynchronously", false)
