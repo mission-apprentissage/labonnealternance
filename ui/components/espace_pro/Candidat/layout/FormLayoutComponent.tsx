@@ -8,9 +8,7 @@ export const FormLayoutComponent = ({ children, headerText }: PropsWithChildren<
   return (
     <Container sx={{ boxShadow: "0px 0px 24px rgba(30, 30, 30, 0.24)" }} disableGutters>
       <FormHeaderComponent>{headerText}</FormHeaderComponent>
-      <Box role="main" component="main" sx={{ mx: { xs: fr.spacing("4v"), sm: fr.spacing("24v"), md: fr.spacing("24v") } }}>
-        {children}
-      </Box>
+      <Box sx={{ mx: { xs: fr.spacing("4v"), sm: fr.spacing("24v"), md: fr.spacing("24v") } }}>{children}</Box>
     </Container>
   )
 }
