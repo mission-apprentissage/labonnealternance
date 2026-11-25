@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
-import { memo, useEffect, useState } from "react"
+import { memo, useCallback, useEffect, useState } from "react"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import image from "@/public/assets/checkbox-list.webp"
@@ -43,15 +43,18 @@ export const RomeDetailWithQuery = memo(function RomeDetailWithQuery({
     return () => clearTimeout(timeoutId)
   }, [rome, setFakeLoading])
 
-  const setCompetenceSelection = (groupKey: RomeCompetenceKey, competence: string, selected: boolean) => {
-    const group = selectedCompetences[groupKey]
-    if (selected) {
-      group.add(competence)
-    } else {
-      group.delete(competence)
-    }
-    onChange(selectedCompetences)
-  }
+  const setCompetenceSelection = useCallback(
+    (groupKey: RomeCompetenceKey, competence: string, selected: boolean) => {
+      const group = selectedCompetences[groupKey]
+      if (selected) {
+        group.add(competence)
+      } else {
+        group.delete(competence)
+      }
+      onChange(selectedCompetences)
+    },
+    [selectedCompetences, onChange]
+  )
 
   return isLoading || fakeLoading.isLoading ? (
     <LoadingBox />
