@@ -14,6 +14,7 @@ import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { FOURCHETTE_SALAIRE_APPRENTISSAGE } from "@/utils/smic.utils"
 import { DescriptionDiplome } from "./_components/DescriptionDiplome"
 import { EcolesSection } from "./_components/EcolesSection"
 import { ExplorerDiplomesSection } from "./_components/ExplorerDiplomesSection"
@@ -147,7 +148,12 @@ async function DiplomeContent({ params }: { params: Promise<{ slug: string }> })
       <Breadcrumb pages={[PAGES.static.alternanceDiplomes, diplomePage]} />
 
       <DefaultContainer sx={{ px: 0 }}>
-        <HeroDiplome titre={data.titre} sousTitre={data.sousTitre} kpis={data.kpis} searchHref={rechercheEmploiHref} />
+        <HeroDiplome
+          titre={data.titre}
+          sousTitre={data.sousTitre}
+          kpis={{ ...data.kpis, salaire: data.kpis.salaire ?? FOURCHETTE_SALAIRE_APPRENTISSAGE }}
+          searchHref={rechercheEmploiHref}
+        />
 
         <Box sx={{ py: fr.spacing("8v") }}>
           <DescriptionDiplome titre={data.titre} text={data.description.text} objectifs={data.description.objectifs} />
