@@ -215,7 +215,7 @@ export const zApplicationRoutes = {
       method: "get",
       params: z.strictObject({ jobId: zObjectId }),
       response: {
-        "200": z.string().describe("Fichier CSV séparé par des tabulations"),
+        "200": z.any().describe("Fichier Excel (xlsx) des candidatures de l'offre"),
       },
       securityScheme: {
         auth: "cookie-session",

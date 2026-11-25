@@ -298,6 +298,6 @@ const DownloadApplicationsLink = ({ jobId, offerTitle, onDownloaded }: { jobId: 
     messages={DOWNLOAD_MESSAGES}
     align="flex-end"
   >
-    Télécharger le récapitulatif des candidatures<span className="fr-sr-only"> au format CSV</span>
+    Télécharger le récapitulatif des candidatures<span className="fr-sr-only"> au format Excel</span>
   </DownloadLink>
 )

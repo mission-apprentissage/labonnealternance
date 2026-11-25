@@ -1,5 +1,4 @@
 import { conflict, forbidden, notFound } from "@hapi/boom"
-import { stringify } from "csv-stringify/sync"
 import type { ObjectId } from "mongodb"
 import { parseEnum, type zRoutes } from "shared"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
@@ -11,6 +10,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { getApplicationsConsultation, getOfferClosure } from "shared/utils/applications-consultation"
 import { getApplicationsExportFileName } from "shared/utils/applications-export"
 import { decodeSanitizedText } from "shared/utils/string-utils"
+import writeExcelFile from "write-excel-file/node"
 import type { z } from "zod"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { canAccessJobAsEntrepriseOrCfa } from "@/security/authorisation.service"
@@ -117,7 +117,6 @@ const APPLICATION_FIELDS: { key: string; label: string; value: (application: IAp
   { key: "feedback_reasons", label: "Motifs de refus", value: (application) => (application.company_feedback_reasons ?? []).join(", ") },
   { key: "message", label: "Message du candidat", value: (application) => formatText(application.applicant_message_to_company) },
   { key: "attachment", label: "Pièce jointe", value: (application) => application.applicant_attachment_name },
-  { key: "attachment_deleted_at", label: "Pièce jointe supprimée le", value: (application) => formatDate(application.applicant_attachment_deleted_at) },
   { key: "inscription_formation", label: "Inscrit en formation", value: (application) => formatBoolean(application.applicant_inscription_formation) },
   { key: "formation", label: "Formation suivie", value: (application) => formatText(application.applicant_formation_description) },
   { key: "rythm", label: "Rythme de la formation", value: (application) => formatText(application.applicant_rythm_description) },
@@ -128,33 +127,34 @@ const APPLICATION_FIELDS: { key: string; label: string; value: (application: IAp
 const getAnswers = (application: IApplicationWithApplicant) =>
   new Map((application.applicant_answers_to_recruiter_questions ?? []).map(({ question, answer }) => [formatText(question), formatText(answer)]))
 
+// Colonnes de texte long : plus larges, et le texte y passe à la ligne.
+const WIDE_COLUMNS = new Set(["feedback", "message", "formation", "rythm"])
+
 /**
- * Récapitulatif des candidatures d'une offre, en CSV séparé par des tabulations (#5769).
- * Seul le nom de la pièce jointe figure dans le fichier, jamais son contenu.
+ * Récapitulatif des candidatures d'une offre, au format Excel (#5769). Seul le nom de la pièce jointe figure dans le
+ * fichier, jamais son contenu. Chaque cellule est un texte : le tableur n'interprète ni une saisie du candidat qui
+ * commencerait par = + - @ comme une formule, ni un téléphone comme un nombre (zéro initial perdu).
  */
-export const exportJobApplicationsForRecruiter = async (jobId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<{ fileName: string; content: string }> => {
+export const exportJobApplicationsForRecruiter = async (jobId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<{ fileName: string; content: Buffer }> => {
   const job = await getConsultableJob(jobId, userAccess)
   const applications = await getApplicationsWithApplicant(jobId, { firstname: 1, lastname: 1, email: 1, phone: 1 })
 
   // Une colonne par question posée, dans l'ordre où elles apparaissent.
   const questions = [...new Set(applications.flatMap((application) => [...getAnswers(application).keys()]))]
-  const columns = [...APPLICATION_FIELDS.map(({ label }) => label), ...questions]
+  const columns = [...APPLICATION_FIELDS.map(({ key, label }) => ({ label, wide: WIDE_COLUMNS.has(key) })), ...questions.map((label) => ({ label, wide: true }))]
+  const textCell = (value: string) => ({ type: String, value, wrap: true })
 
+  const header = columns.map(({ label }) => ({ type: String, value: label, fontWeight: "bold" as const, wrap: true }))
   const rows = applications.map((application) => {
     const answers = getAnswers(application)
-    return [
-      ...APPLICATION_FIELDS.map(({ key, value }) => {
-        const text = value(application)
-        // Apostrophe comme dans l'export des OPCO : sans elle, le tableur lit un nombre et retire le 0 initial.
-        return key === "phone" && text ? `'${text}` : text
-      }),
-      ...questions.map((question) => answers.get(question) ?? ""),
-    ]
+    return [...APPLICATION_FIELDS.map(({ value }) => textCell(value(application))), ...questions.map((question) => textCell(answers.get(question) ?? ""))]
   })
 
-  // BOM : Excel lit sinon le fichier en Windows-1252. escape_formulas neutralise les textes saisis par le
-  // candidat qui commenceraient par = + - @ (injection de formule à l'ouverture dans un tableur).
-  const content = stringify([columns, ...rows], { delimiter: "\t", bom: true, escape_formulas: true })
+  const content = await writeExcelFile([header, ...rows], {
+    sheet: "Candidatures",
+    stickyRowsCount: 1,
+    columns: columns.map(({ wide }) => ({ width: wide ? 50 : 22 })),
+  }).toBuffer()
   return { fileName: getApplicationsExportFileName(job.offer_title), content }
 }
 

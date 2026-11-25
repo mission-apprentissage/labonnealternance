@@ -196,8 +196,8 @@ export default function (server: Server) {
       return res
         .status(200)
         .headers({
-          "content-type": "text/csv; charset=utf-8",
-          "content-disposition": `attachment; filename="${fileName}"`,
+          "content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "content-disposition": buildAttachmentDisposition(fileName),
           "cache-control": "no-store",
         })
         .send(content)

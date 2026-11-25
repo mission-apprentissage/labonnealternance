@@ -10,6 +10,7 @@ import {
   validatedUserStatus,
 } from "@tests/utils/user.test.utils"
 import type { ObjectId } from "mongodb"
+import { readSheet } from "read-excel-file/node"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention, RefusalReasons } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
@@ -177,7 +178,14 @@ describe("GET /application/job/:jobId/export", () => {
   const exportApplications = async (jobId: ObjectId, headers?: Record<string, string>) =>
     httpClient().inject({ method: "GET", path: `/api/application/job/${jobId}/export`, ...(headers ? { headers } : {}) })
 
-  it("télécharge un CSV séparé par des tabulations, nommé d'après l'offre, avec le nom de la pièce jointe", async () => {
+  // Première feuille du fichier Excel, en objets indexés par l'en-tête de colonne.
+  const readExport = async (content: Buffer) => {
+    const [header, ...rows] = await readSheet(content)
+    const columns = header.map(String)
+    return { columns, rows: rows.map((row) => Object.fromEntries(row.map((value, index) => [columns[index], value]))) }
+  }
+
+  it("télécharge un fichier Excel nommé d'après l'offre, avec le nom de la pièce jointe", async () => {
     const recruiter = await saveRecruiter("recruteur-export")
     const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
     await getDbCollection("jobs_partners").updateOne({ _id: offer._id }, { $set: { offer_title: "Maçon / Maçonne du paysage" } })
@@ -192,18 +200,17 @@ describe("GET /application/job/:jobId/export", () => {
     const response = await exportApplications(offer._id, (await logUser(httpClient, "recruteur-export")).bearerToken)
 
     expect(response.statusCode).toBe(200)
-    expect(response.headers["content-type"]).toBe("text/csv; charset=utf-8")
-    expect(response.headers["content-disposition"]).toBe('attachment; filename="candidatures_de_macon_maconne_du_paysage.csv"')
-    const [header, row] = response.body
-      .replace(/^\uFEFF/, "")
-      .trimEnd()
-      .split("\n")
-    const columns = header.split("\t")
-    const values = Object.fromEntries(row.split("\t").map((value, index) => [columns[index], value]))
-    expect(values).toMatchObject({
+    expect(response.headers["content-type"]).toBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    expect(response.headers["content-disposition"]).toBe(
+      `attachment; filename="candidatures_de_macon_maconne_du_paysage.xlsx"; filename*=UTF-8''candidatures_de_macon_maconne_du_paysage.xlsx`
+    )
+    const { columns, rows } = await readExport(response.rawPayload)
+    expect(columns).not.toContain("Pièce jointe supprimée le")
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toMatchObject({
       Nom: "EXPORTE",
       "E-mail": "exporte@candidat.fr",
-      Téléphone: "'0123456789",
+      Téléphone: "0123456789",
       Statut: "Refusé",
       "Motifs de refus": "Type de contrat inadapté",
       "Message du candidat": "Motivé & disponible",
@@ -220,20 +227,21 @@ describe("GET /application/job/:jobId/export", () => {
 
     const response = await exportApplications(offer._id, (await logUser(httpClient, "recruteur-export-envoi")).bearerToken)
 
-    expect(response.body).toContain("ENVOYEE")
-    expect(response.body).not.toContain("ENATTENTE")
-    expect(response.body).toContain('"Bonjour,\nJe suis motivé"')
+    const { rows } = await readExport(response.rawPayload)
+    expect(rows.map((row) => row.Nom)).toEqual(["ENVOYEE"])
+    expect(rows[0]["Message du candidat"]).toBe("Bonjour,\nJe suis motivé")
   })
 
-  it("neutralise un texte du candidat qui serait lu comme une formule par un tableur", async () => {
+  it("garde en texte une saisie du candidat qu'un tableur lirait comme une formule", async () => {
     const recruiter = await saveRecruiter("recruteur-formule")
     const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
     await saveApplication(offer._id, "Formule", { applicant_message_to_company: '=HYPERLINK("http://exemple.test")' })
 
     const response = await exportApplications(offer._id, (await logUser(httpClient, "recruteur-formule")).bearerToken)
 
-    expect(response.body).not.toMatch(/\t=HYPERLINK/)
-    expect(response.body).toContain("'=HYPERLINK")
+    // Une cellule de formule n'aurait pas de valeur en cache : la relecture renverrait null, pas le texte.
+    const { rows } = await readExport(response.rawPayload)
+    expect(rows[0]["Message du candidat"]).toBe('=HYPERLINK("http://exemple.test")')
   })
 
   it("refuse l'export au recruteur d'une autre entreprise", async () => {
