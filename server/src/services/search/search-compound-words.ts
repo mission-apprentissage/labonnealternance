@@ -7,15 +7,30 @@
  * de terme en plus dans le minimumShouldMatch.
  */
 
-// Éléments savants en -o attestés soudés dans le référentiel ROME (test dans search-compound-words.test.ts).
-// « para », « auto », « multi » écartés : la forme soudée y est la norme et la coupe toucherait des mots courants.
-export const WELDED_COMPOUND_PREFIXES = ["aero", "agro", "audio", "bio", "eco", "electro", "geo", "hydro", "medico", "pharmaco", "photo", "psycho", "radio", "socio"]
+// Éléments savants en -o coupés après eux, choisis à la main parmi ceux que le référentiel ROME écrit
+// soudés. Tout élément en -o suivi d'un mot autonome dans le référentiel est soit retenu ici, soit
+// exclu ci-dessous avec sa raison (test de complétude dans search-compound-words.test.ts).
+export const WELDED_COMPOUND_PREFIXES = ["aero", "agro", "audio", "bio", "eco", "electro", "geo", "hydro", "medico", "ortho", "pharmaco", "photo", "psycho", "radio", "socio"]
 
-// Longueur minimale de la seconde moitié : en deçà, la coupe tombe sur un suffixe (« socio|logie »,
+export const EXCLUDED_COMPOUND_PREFIXES: Record<string, string> = {
+  auto: "la coupe « auto mobile » rejoindrait des suites de mots sans rapport (« lavage auto mobile »)",
+  cinemato: "« cinématographique » n'a pas de forme à trait d'union",
+  ergo: "« ergothérapeute » n'a pas de forme à trait d'union",
+  loco: "« locomotion » n'est pas un composé",
+  moto: "« motocycles » n'a pas de forme à trait d'union",
+  physio: "« physiothérapeute » n'a pas de forme à trait d'union",
+  pro: "« promotion » n'est pas un composé",
+}
+
+// Seconde moitié d'au moins 6 lettres : en deçà, la coupe tombe sur un suffixe (« socio|logie »,
 // « psycho|se ») et la phrase pourrait se réduire au préfixe seul si la moitié est un mot vide.
 const MIN_REMAINDER_LENGTH = 6
+// Suffixes savants (-logue, -nomie, -graphe…) : « socio|logues », « éco|nomiste » ne sont pas des
+// composés. Les coupes restantes sans composé (« électro|nicien ») ne ramènent rien, elles coûtent 3 clauses.
+const NON_COMPOUND_REMAINDER = /^(log|nom|graph)/
 
-const HYPHENS = /^[-‐‑]$/u
+// Trait d'union, ou tiret saisi à sa place, espaces autour tolérées (« médico - social », « médico–social »).
+const HYPHENS = /^\s*[-‐‑–]\s*$/u
 
 export type CompoundSpellingVariants = {
   /** Forme coupée, à chercher en `phrase` (« médicosocial » → « médico social »). */
@@ -35,7 +50,7 @@ function splitWelded(token: string): string | null {
   // pas en un seul (ligature…) décalerait la position.
   if (folded.some((c) => c.length !== 1)) return null
   const prefix = weldedPrefixOf(folded.join(""))
-  if (!prefix || chars.length - prefix.length < MIN_REMAINDER_LENGTH) return null
+  if (!prefix || chars.length - prefix.length < MIN_REMAINDER_LENGTH || NON_COMPOUND_REMAINDER.test(folded.slice(prefix.length).join(""))) return null
   return `${chars.slice(0, prefix.length).join("")} ${chars.slice(prefix.length).join("")}`
 }
 

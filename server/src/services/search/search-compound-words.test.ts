@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, it } from "vitest"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
 import { type SearchMode, searchItems } from "@/services/search/search.service"
-import { compoundSpellingVariants, WELDED_COMPOUND_PREFIXES, withCompoundSpellingVariants } from "@/services/search/search-compound-words"
+import { compoundSpellingVariants, EXCLUDED_COMPOUND_PREFIXES, WELDED_COMPOUND_PREFIXES, withCompoundSpellingVariants } from "@/services/search/search-compound-words"
 import { getSearchCorpusCollection } from "@/services/search/search-items.service"
 
 const variantsOf = (q: string, term: string) => compoundSpellingVariants(q).get(term)
@@ -22,6 +22,7 @@ const PREFIX_CASES = [
   { prefix: "geo", welded: "géotechnicien", hyphenTitle: "Géo-technicien de chantier" },
   { prefix: "hydro", welded: "hydrothérapie", hyphenTitle: "Agent d'hydro-thérapie" },
   { prefix: "medico", welded: "médicotechnique", hyphenTitle: "Assistant médico-technique" },
+  { prefix: "ortho", welded: "orthoprothésiste", hyphenTitle: "Ortho-prothésiste" },
   { prefix: "pharmaco", welded: "pharmacovigilance", hyphenTitle: "Chargé de pharmaco-vigilance" },
   { prefix: "photo", welded: "photovoltaïque", hyphenTitle: "Installateur photo-voltaïque" },
   { prefix: "psycho", welded: "psychomotricien", hyphenTitle: "Psycho-motricien" },
@@ -30,12 +31,26 @@ const PREFIX_CASES = [
 ]
 
 describe("compoundSpellingVariants — faux positifs", () => {
-  it.each(["médicament", "médical", "sociologie", "sociologue", "psychologue", "psychose", "paramédical", "école", "automobile", "sociétés"])(
-    "ne coupe pas « %s », qui n'est pas un composé soudé",
-    (q) => {
-      expect(variantsOf(q, q)).toBeUndefined()
-    }
-  )
+  it.each([
+    "médicament",
+    "médical",
+    "sociologie",
+    "sociologue",
+    "sociologues",
+    "psychologue",
+    "psychologues",
+    "radiologue",
+    "économiste",
+    "photographe",
+    "géographie",
+    "psychose",
+    "paramédical",
+    "école",
+    "automobile",
+    "sociétés",
+  ])("ne coupe pas « %s », qui n'est pas un composé soudé", (q) => {
+    expect(variantsOf(q, q)).toBeUndefined()
+  })
 
   it("ne coupe pas un préfixe employé seul", () => {
     expect(compoundSpellingVariants("médico").size).toBe(0)
@@ -54,6 +69,12 @@ describe("compoundSpellingVariants — faux positifs", () => {
     expect(compoundSpellingVariants("secrétaire médical").size).toBe(0)
     const clause = { text: { query: "secrétaire", path: "title" } }
     expect(withCompoundSpellingVariants(clause, "title", 7, undefined)).toBe(clause)
+  })
+
+  // Coupe acceptée : le reste n'est pas un suffixe connu, la phrase « électro nicien » ne ramène rien
+  // et coûte 3 clauses.
+  it("coupe « électronicien » sans composé à retrouver (accepté)", () => {
+    expect(variantsOf("électronicien", "électronicien")?.phrases).toEqual(["électro nicien"])
   })
 
   it("ne soude pas deux mots séparés par une ponctuation autre que le trait d'union", () => {
@@ -93,17 +114,40 @@ describe("compoundSpellingVariants — cas nominaux", () => {
     expect(variantsOf("socio éducatif", "éducatif")).toEqual({ phrases: [], welded: ["socioéducatif"] })
   })
 
+  it("tiret saisi à la place du trait d'union, espaces autour comprises", () => {
+    expect(variantsOf("médico–social", "social")?.welded).toEqual(["médicosocial"])
+    expect(variantsOf("médico - social", "social")?.welded).toEqual(["médicosocial"])
+  })
+
   it("trait d'union hors éléments savants : la forme soudée est proposée aussi (« e-commerce »)", () => {
     expect(variantsOf("e-commerce", "commerce")).toEqual({ phrases: [], welded: ["ecommerce"] })
   })
 })
 
 describe("WELDED_COMPOUND_PREFIXES", () => {
-  // Chaque élément doit être attesté soudé dans le référentiel ROME du dépôt : un élément ajouté
-  // sans attestation (« auto », « para ») couperait des mots courants sans composé à retrouver.
-  it("chaque élément est attesté soudé dans un libellé du référentiel ROME", () => {
-    const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
-    const words = new Set(fold(readFileSync(getStaticFilePath("referentiel/unix_referentiel_code_rome_v460_utf8.csv"), "utf8")).match(/[a-z]+/g))
+  const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+  const words = new Set(fold(readFileSync(getStaticFilePath("referentiel/unix_referentiel_code_rome_v460_utf8.csv"), "utf8")).match(/[a-z]+/g))
+
+  // Élément en -o suivi, dans un même mot du référentiel, d'un mot qui y figure seul (« socio|culturel »,
+  // « auto|mobile ») : chacun doit être tranché, retenu ou exclu avec sa raison.
+  it("tout élément en -o suivi d'un mot autonome du référentiel ROME est retenu ou exclu", () => {
+    const candidates = new Set<string>()
+    for (const word of words) {
+      for (let i = 3; i <= word.length - 6; i++) {
+        if (word[i - 1] === "o" && words.has(word.slice(i))) candidates.add(word.slice(0, i))
+      }
+    }
+    const decided = new Set([...WELDED_COMPOUND_PREFIXES, ...Object.keys(EXCLUDED_COMPOUND_PREFIXES)])
+    expect([...candidates].filter((prefix) => !decided.has(prefix)).sort()).toEqual([])
+  })
+
+  it("aucun élément n'est à la fois retenu et exclu", () => {
+    expect(WELDED_COMPOUND_PREFIXES.filter((prefix) => prefix in EXCLUDED_COMPOUND_PREFIXES)).toEqual([])
+  })
+
+  // hydro, pharmaco et psycho n'ont pas de mot autonome derrière eux dans le référentiel
+  // (« psycho|motricien ») : la complétude ne les couvre pas, ils sont retenus pour leur forme soudée.
+  it("chaque élément retenu est attesté soudé dans un libellé du référentiel ROME", () => {
     const unattested = WELDED_COMPOUND_PREFIXES.filter((prefix) => ![...words].some((word) => word.startsWith(prefix) && word.length - prefix.length >= 6))
     expect(unattested).toEqual([])
   })
