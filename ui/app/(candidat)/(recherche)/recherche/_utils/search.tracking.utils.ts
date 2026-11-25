@@ -108,3 +108,30 @@ export function searchTypeOf(mode: SearchMode): "jobs_only" | "trainings_only" |
       return "jobs_and_trainings"
   }
 }
+
+/**
+ * Résultats affichables pour la télémétrie : données de la recherche courante (pas le placeholder de
+ * keepPreviousData) et dernier palier d'élargissement du rayon atteint (#5634).
+ */
+export function isSearchDisplaySettled<R extends { data?: unknown; isPlaceholderData: boolean }>(
+  result: R,
+  stillWidening: boolean
+): result is R & { data: NonNullable<R["data"]> } {
+  return Boolean(result.data) && !result.isPlaceholderData && !stillWidening
+}
+
+/**
+ * Garde d'un événement d'affichage : `claim` vaut true si la recherche n'a pas encore été suivie.
+ * Portée : l'instance de la page (ref), pour ne pas réémettre une recherche que le cache de React
+ * Query sert sans appel serveur (#6052) ; un rechargement repart de zéro, comme ce cache.
+ */
+export function createSearchKeyTracker() {
+  const trackedKeys = new Set<string>()
+  return {
+    claim(searchKey: string): boolean {
+      if (trackedKeys.has(searchKey)) return false
+      trackedKeys.add(searchKey)
+      return true
+    },
+  }
+}

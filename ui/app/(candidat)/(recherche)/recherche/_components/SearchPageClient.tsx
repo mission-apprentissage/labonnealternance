@@ -21,7 +21,7 @@ import { emploisFallbackParams } from "../_utils/mode-fallback.utils"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { ACTIVE_HIT_PARAM, buildSearchUrl } from "../_utils/search.params.utils"
 import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
-import { diffFilterChanges, diffSortChange, searchTypeOf } from "../_utils/search.tracking.utils"
+import { createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeOf } from "../_utils/search.tracking.utils"
 import { parseSearchPageParamsWithLegacy } from "../_utils/search-legacy-utils"
 import { searchResultsStatus } from "../_utils/search-results-status"
 import { SearchBar } from "./SearchBar"
@@ -128,11 +128,10 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const resultsStatus = searchResultsStatus({ hasData: Boolean(result.data), waiting: isRefreshing || stillWidening, nbHits, emploisFallback: emploisFallbackCount })
 
   // Affichage de la proposition : une fois par recherche, pour mesurer son taux de clic.
-  const lastFallbackTrackedKeyRef = useRef<string | null>(null)
+  const fallbackTrackedSearchesRef = useRef(createSearchKeyTracker())
   useEffect(() => {
     if (emploisFallbackCount.status !== "done" || emploisFallbackCount.count === 0) return
-    if (lastFallbackTrackedKeyRef.current === searchKey) return
-    lastFallbackTrackedKeyRef.current = searchKey
+    if (!fallbackTrackedSearchesRef.current.claim(searchKey)) return
     pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_MODE_FALLBACK_DISPLAYED, results_count: emploisFallbackCount.count, search_engine: SEARCH_ENGINES.BETA })
   })
 
@@ -148,15 +147,11 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // pas à chaque page chargée via « Voir plus » ni à chaque palier d'élargissement du rayon
   // (#5634) — même événement que le legacy, enrichi de search_engine. Les compteurs par type
   // viennent de la facette `type` du result set.
-  const lastTrackedSearchKeyRef = useRef<string | null>(null)
+  const trackedSearchesRef = useRef(createSearchKeyTracker())
   useEffect(() => {
-    if (!result.data) return
-    // keepPreviousData : pendant le refetch, result.data appartient à la recherche PRÉCÉDENTE
-    // → attendre les données fraîches (sinon compteurs faux sur les événements ci-dessous).
-    if (result.isPlaceholderData) return
-    // Palier intermédiaire : rien n'est encore affiché à l'usager, les événements attendent le
-    // dernier palier (cf. handleAutoRadiusStep, qui y reporte les changements en attente).
-    if (stillWidening) return
+    // Palier intermédiaire : les événements attendent le dernier palier (cf. handleAutoRadiusStep,
+    // qui y reporte les changements en attente).
+    if (!isSearchDisplaySettled(result, stillWidening)) return
 
     // Flush des search_filter_applied/removed de la recherche affichée (compteurs post-application).
     if (pendingFilterChangesRef.current?.searchKey === searchKey) {
@@ -185,8 +180,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       pendingSortChangeRef.current = null
     }
 
-    if (lastTrackedSearchKeyRef.current === searchKey) return
-    lastTrackedSearchKeyRef.current = searchKey
+    if (!trackedSearchesRef.current.claim(searchKey)) return
     pushMatomoEvent({
       event: MATOMO_EVENTS.SEARCH_RESULTS_DISPLAYED,
       total_results: result.data.pages.at(-1)?.nbHits ?? 0,

@@ -1,4 +1,4 @@
-import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query"
+import { infiniteQueryOptions, keepPreviousData, useInfiniteQuery } from "@tanstack/react-query"
 
 import { apiGet } from "@/utils/api.utils"
 import { readOpcoFilterCookie } from "@/utils/opco-search-filter.utils"
@@ -35,17 +35,11 @@ export function paramsToQuerystring(params: ISearchPageParams) {
   return qs
 }
 
-export function useSearchResults(params: ISearchPageParams, { enabled = true }: { enabled?: boolean } = {}) {
-  // page exclu du queryKey — chaque page est chargée via pageParam par useInfiniteQuery.
-  // Sans `opco` dans l'URL, repli sur le cookie de session (cf. applyOpcoFilterFromUrl). Absent au
-  // rendu serveur, sans effet sur le balisage : la requête ne part que du navigateur.
-  const opco = params.opco ?? (typeof document === "undefined" ? undefined : readOpcoFilterCookie(document.cookie))
-  const baseQs = paramsToQuerystring({ ...params, opco })
-
-  return useInfiniteQuery({
+// page exclu du queryKey — chaque page est chargée via pageParam par useInfiniteQuery.
+export const searchResultsQueryOptions = (baseQs: Record<string, unknown>) =>
+  infiniteQueryOptions({
     queryKey: ["/v1/search", baseQs],
     queryFn: ({ signal, pageParam }) => apiGet("/v1/search", { querystring: { ...baseQs, page: pageParam } as never }, { signal }),
-    enabled,
     initialPageParam: 0,
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
       if (lastPageParam + 1 < lastPage.nbPages) return lastPageParam + 1
@@ -57,4 +51,10 @@ export function useSearchResults(params: ISearchPageParams, { enabled = true }: 
     // déclenché par un changement de filtre → évite le flicker des filtres et de la liste.
     placeholderData: keepPreviousData,
   })
+
+export function useSearchResults(params: ISearchPageParams, { enabled = true }: { enabled?: boolean } = {}) {
+  // Sans `opco` dans l'URL, repli sur le cookie de session (cf. applyOpcoFilterFromUrl). Absent au
+  // rendu serveur, sans effet sur le balisage : la requête ne part que du navigateur.
+  const opco = params.opco ?? (typeof document === "undefined" ? undefined : readOpcoFilterCookie(document.cookie))
+  return useInfiniteQuery({ ...searchResultsQueryOptions(paramsToQuerystring({ ...params, opco })), enabled })
 }
