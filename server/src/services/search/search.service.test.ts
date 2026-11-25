@@ -93,6 +93,28 @@ describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy ni synonymes sur
     getDbCollectionSpy.mockRestore()
   })
 
+  it("garde le total de la recherche sur une page située après la dernière", async () => {
+    // biome-ignore lint/suspicious/noEmptyBlockStatements: test
+    const sentrySpy = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
+    const getDbCollectionSpy = mockFirstAggregateCallToFail(
+      "MongoServerError: Executor error during aggregate command on namespace: labonnealternance.search_jobs :: caused by :: maxClauseCount is set to 1024"
+    )
+
+    try {
+      const result = await searchItems({ q: "développeur", radius: 30, page: 1, hitsPerPage: 10 })
+
+      expect({ hits: result.hits.length, nbHits: result.nbHits, nbPages: result.nbPages, degraded: result.degraded }).toEqual({
+        hits: 0,
+        nbHits: CORPUS.length,
+        nbPages: 1,
+        degraded: true,
+      })
+    } finally {
+      sentrySpy.mockRestore()
+      getDbCollectionSpy.mockRestore()
+    }
+  })
+
   it("propage sans repli une erreur qui n'est pas liée à maxClauseCount", async () => {
     const getDbCollectionSpy = mockFirstAggregateCallToFail("connection reset")
 
@@ -118,6 +140,66 @@ describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy ni synonymes sur
 
     sentrySpy.mockRestore()
     getDbCollectionSpy.mockRestore()
+  })
+})
+
+type Pipeline = Array<{ $search?: { compound: object }; $searchMeta?: { compound?: object; facet?: object } }>
+
+/**
+ * Remplace mongot par des réponses fixes : `rows` pour la requête $search, `total` pour un
+ * $searchMeta de comptage sur le compound de cette requête, 0 pour les autres comptages.
+ * Les pipelines émis sont rendus pour inspection.
+ */
+function mockSearchAggregations({ rows, total }: { rows: object[]; total: number }) {
+  const pipelines: Pipeline[] = []
+  const spy = vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation(
+    () =>
+      ({
+        aggregate: (pipeline: Pipeline) => {
+          pipelines.push(pipeline)
+          const [{ $search, $searchMeta }] = pipeline
+          if ($search) return { toArray: async () => rows }
+          if ($searchMeta?.facet) return { toArray: async () => [{ facet: {} }] }
+          const mainCompound = pipelines.find(([stage]) => stage.$search)?.[0].$search?.compound
+          const isMainCompound = JSON.stringify($searchMeta?.compound) === JSON.stringify(mainCompound)
+          return { toArray: async () => [{ count: { total: isMainCompound ? total : 0 } }] }
+        },
+      }) as never
+  )
+  const totalCounts = () => {
+    const mainCompound = pipelines.find(([stage]) => stage.$search)?.[0].$search?.compound
+    return pipelines.filter(([stage]) => stage.$searchMeta?.compound && JSON.stringify(stage.$searchMeta.compound) === JSON.stringify(mainCompound)).length
+  }
+  return { spy, totalCounts }
+}
+
+const row = (total: number) => ({ ...generateSearchItemFixture(), highlights: [], _meta: { count: { total } } })
+
+describe("searchItems — total d'une page sans ligne (#6063)", () => {
+  const run = async (aggregations: Parameters<typeof mockSearchAggregations>[0], page: number) => {
+    const { spy, totalCounts } = mockSearchAggregations(aggregations)
+    try {
+      const { hits, nbHits, nbPages } = await searchItems({ q: "boulanger", radius: 30, page, hitsPerPage: 20 })
+      return { hits: hits.length, nbHits, nbPages, totalCounts: totalCounts() }
+    } finally {
+      spy.mockRestore()
+    }
+  }
+
+  it("page 0 : aucun comptage émis, une page sans ligne vaut 0 résultat", async () => {
+    expect(await run({ rows: [], total: 25 }, 0)).toEqual({ hits: 0, nbHits: 0, nbPages: 0, totalCounts: 0 })
+  })
+
+  it("page ≥ 1 sans ligne : total du comptage sur le compound de la recherche", async () => {
+    expect(await run({ rows: [], total: 25 }, 2)).toEqual({ hits: 0, nbHits: 25, nbPages: 2, totalCounts: 1 })
+  })
+
+  it("page ≥ 1 sans ligne d'une recherche sans résultat : 0", async () => {
+    expect(await run({ rows: [], total: 0 }, 2)).toEqual({ hits: 0, nbHits: 0, nbPages: 0, totalCounts: 1 })
+  })
+
+  it("page ≥ 1 avec lignes : total porté par les lignes", async () => {
+    expect(await run({ rows: [row(41)], total: 99 }, 2)).toEqual({ hits: 1, nbHits: 41, nbPages: 3, totalCounts: 1 })
   })
 })
 

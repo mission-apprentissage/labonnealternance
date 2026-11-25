@@ -429,6 +429,33 @@ describe("search.controller", () => {
       }
     }
 
+    describe("trace d'une page située après la dernière", () => {
+      const hit = { ...generateSearchItemFixture(), preview: [], matched_words: [], distance: null }
+      const logged = async (result: { hits: (typeof hit)[]; nbHits: number; nbPages: number }) => {
+        const searchSpy = vi.spyOn(searchService, "searchItems").mockResolvedValue({ ...result, page: 2 })
+        const traceSpy = vi.spyOn(searchQueryLogService, "logSearchPageBeyondLast")
+        try {
+          expect((await call("/api/v1/search?q=boulanger&page=2", bff(newToken()))).statusCode).toBe(200)
+          return traceSpy.mock.calls.map(([trace]) => trace)
+        } finally {
+          searchSpy.mockRestore()
+          traceSpy.mockRestore()
+        }
+      }
+
+      it("ne trace pas une recherche sans résultat", async () => {
+        expect(await logged({ hits: [], nbHits: 0, nbPages: 0 })).toEqual([])
+      })
+
+      it("ne trace pas une page qui porte des offres", async () => {
+        expect(await logged({ hits: [hit], nbHits: 41, nbPages: 3 })).toEqual([])
+      })
+
+      it("trace le canal, la page et le total", async () => {
+        expect(await logged({ hits: [], nbHits: 25, nbPages: 2 })).toEqual([{ channel: "site", page: 2, nbHits: 25 }])
+      })
+    })
+
     describe("refus", () => {
       it.each([
         ["IP publique sans jeton", publicDirect()],

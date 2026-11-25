@@ -714,7 +714,7 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
 
   // Retry unique si mongot annule une des requêtes (transitoire — cf. search-transient-retry.ts) ;
   // relancer l'ensemble est sans risque, ce ne sont que des lectures.
-  const [rows, chipCountArrays, ...metaArrays] = await retryOnTransientSearchCancellation(
+  const [rows, totalArray, chipCountArrays, ...metaArrays] = await retryOnTransientSearchCancellation(
     () =>
       Promise.all([
         getDbCollection(corpus.collection)
@@ -745,6 +745,14 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
             SEARCH_AGGREGATE_OPTIONS
           )
           .toArray(),
+
+        // $$SEARCH_META n'est lisible que sur une ligne de la page : passé la dernière, le total vient
+        // de ce comptage sur le même compound. Pas en page 0, où une page sans ligne vaut 0 résultat.
+        page > 0
+          ? getDbCollection(corpus.collection)
+              .aggregate<{ count?: { total?: number } }>([{ $searchMeta: { index: corpus.index, compound, count: { type: "total" } } }], SEARCH_AGGREGATE_OPTIONS)
+              .toArray()
+          : [],
 
         Promise.all(
           chipCountKeys.map((key) =>
@@ -787,7 +795,7 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
     { q: params.q }
   )
 
-  return { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys }
+  return { rows, total: totalArray[0]?.count?.total ?? 0, chipCountArrays, metaArrays, facetGroups, chipCountKeys }
 }
 
 export async function searchItems(params: ISearchFilters): Promise<{
@@ -815,9 +823,9 @@ export async function searchItems(params: ISearchFilters): Promise<{
     aggregations = await runSearchAggregations(params, true)
     degraded = true
   }
-  const { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys } = aggregations
+  const { rows, total, chipCountArrays, metaArrays, facetGroups, chipCountKeys } = aggregations
 
-  const nbHits = rows[0]?._meta?.count?.total ?? 0
+  const nbHits = rows[0]?._meta?.count?.total ?? total
   const nbPages = Math.ceil(nbHits / hitsPerPage)
 
   // Pas de distance affichée pour une recherche par emprise : elle serait mesurée depuis le
