@@ -1,28 +1,43 @@
-import { renderToStaticMarkup } from "react-dom/server"
-import { describe, expect, it } from "vitest"
-import { OPCO_GUIDE_SECTIONS } from "@/app/(espace-pro)/espace-pro/(connected)/_components/moderation/opco-guide.utils"
-import GuideModerationOpcoPage, { metadata } from "./page"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const html = renderToStaticMarkup(<GuideModerationOpcoPage />)
+vi.mock("server-only", () => ({}))
+const mocks = vi.hoisted(() => ({ getSession: vi.fn(), fetchOpcoGuide: vi.fn() }))
+vi.mock("@/utils/get-session", () => ({ getSession: mocks.getSession }))
+vi.mock("./_lib/fetch-opco-guide", () => ({ fetchOpcoGuide: mocks.fetchOpcoGuide }))
 
-describe("Guide de modération OPCO", () => {
-  it("n'est pas indexé", () => {
+const { default: GuideModerationOpcoPage, metadata } = await import("./page")
+
+beforeEach(() => {
+  mocks.getSession.mockReset()
+  mocks.fetchOpcoGuide.mockReset().mockResolvedValue({ status: "unavailable" })
+})
+
+describe("page Guide de modération OPCO", () => {
+  it("n'est pas indexée", () => {
     expect(metadata.robots).toEqual({ index: false, follow: false })
   })
 
-  it("a un seul H1, une section H2 par entrée du sommaire et aucun autre titre", () => {
-    expect(html.match(/<h1[\s>]/g)).toHaveLength(1)
-    expect(html.match(/<h2[\s>]/g)).toHaveLength(OPCO_GUIDE_SECTIONS.length)
-    expect(html).not.toMatch(/<h[3-6][\s>]/)
+  it("lit le contenu Notion pour un utilisateur OPCO", async () => {
+    mocks.getSession.mockResolvedValue({ user: { type: "OPCO" } })
+
+    await GuideModerationOpcoPage()
+
+    expect(mocks.fetchOpcoGuide).toHaveBeenCalledTimes(1)
   })
 
-  it.each(OPCO_GUIDE_SECTIONS.map(({ id }) => id))("le sommaire mène à une section existante : %s", (id) => {
-    expect(html).toContain(`href="#${id}"`)
-    expect(html).toMatch(new RegExp(`<section[^>]* id="${id}"`))
+  it.each([["ADMIN"], ["ENTREPRISE"], ["CFA"]])("ne lit pas le contenu pour un utilisateur %s, même si le proxy le laissait passer", async (type) => {
+    mocks.getSession.mockResolvedValue({ user: { type } })
+
+    await GuideModerationOpcoPage()
+
+    expect(mocks.fetchOpcoGuide).not.toHaveBeenCalled()
   })
 
-  it("propose le contact par mail et renvoie vers les comptes en attente", () => {
-    expect(html).toContain('href="mailto:contact@labonnealternance.apprentissage.beta.gouv.fr"')
-    expect(html).toMatch(/href="\/espace-pro\/opco"[^>]*>[^<]*(<[^>]+>)*Vérifier les comptes en attente/)
+  it("ne lit pas le contenu sans session", async () => {
+    mocks.getSession.mockResolvedValue({})
+
+    await GuideModerationOpcoPage()
+
+    expect(mocks.fetchOpcoGuide).not.toHaveBeenCalled()
   })
 })
