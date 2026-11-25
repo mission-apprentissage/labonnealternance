@@ -8,6 +8,7 @@ import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { buildAdminAreaClause } from "@/services/geo-administrative/admin-area"
 import { promoteSmartApplyHits } from "@/services/search/promote-smart-apply"
+import { type CompoundSpellingVariants, compoundSpellingVariants, withCompoundSpellingVariants } from "@/services/search/search-compound-words"
 import { buildDiplomaJobsClause, isDiplomaSigle } from "@/services/search/search-diploma-jobs"
 import { getCachedRomeLabelByCode } from "@/services/search/search-items.service"
 import { retryOnTransientSearchCancellation } from "@/services/search/search-transient-retry"
@@ -329,9 +330,14 @@ const IS_RECRUITER = { equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEU
 //   générique (« commercial ») suffit à faire entrer une offre hors sujet. En multi-termes,
 //   msmFor exige déjà les autres termes ailleurs, keywords couvre donc pour tous.
 // Sigle de diplôme (`isSigle`) : ni nom d'entreprise ni autocomplete, cf. buildTextGate.
-function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQuery: boolean, isSigle = false): object {
+// Les variantes de graphie (« médicosocial » ↔ « médico-social ») suivent les mêmes règles de chemin
+// que le terme (cf. search-compound-words.ts).
+type TermCoverageOptions = { variants?: CompoundSpellingVariants; isSigle?: boolean }
+
+function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQuery: boolean, { variants, isSigle = false }: TermCoverageOptions = {}): object {
   const fuzzy = simplifyQuery ? undefined : fuzzyFor(term)
-  const text = (path: string, boost: number) => ({ text: { query: term, path, ...(fuzzy ? { fuzzy } : {}), score: { boost: { value: boost } } } })
+  const text = (path: string, boost: number) =>
+    withCompoundSpellingVariants({ text: { query: term, path, ...(fuzzy ? { fuzzy } : {}), score: { boost: { value: boost } } } }, path, boost, variants)
   return {
     compound: {
       should: [
@@ -415,8 +421,14 @@ function buildTextGate(q: string | undefined, { simplifyQuery, diplomaJobs }: Te
   const contentTerms = tokenizeQuery(q)
   const terms = !contentTerms.length && corpus.diplomaTerms === "qualifier" ? tokenizeQuery(q, { diplomaWords: true }) : contentTerms
   const isSigle = diplomaJobs !== null
+  const variants = compoundSpellingVariants(q)
   const termCoverage = terms.length
-    ? { compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1, simplifyQuery, isSigle)), minimumShouldMatch: msmFor(terms.length) } }
+    ? {
+        compound: {
+          should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1, simplifyQuery, { variants: variants.get(term), isSigle })),
+          minimumShouldMatch: msmFor(terms.length),
+        },
+      }
     : null
   const synonyms = simplifyQuery ? [] : [{ phrase: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", slop: 0, score: { boost: { value: 6 } } } }]
   const textEntry = [...(termCoverage ? [termCoverage] : []), ...synonyms]
