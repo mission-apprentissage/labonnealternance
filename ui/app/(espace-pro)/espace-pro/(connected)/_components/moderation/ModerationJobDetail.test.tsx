@@ -33,6 +33,7 @@ const detail = {
   offer: {
     _id: "6ad734de852d3675eb942548",
     offer_title: "Assistant commercial",
+    offer_rome_appellation: "Assistant / Assistante commercial",
     contract_type: ["Apprentissage"],
     offer_status: "InReview",
     offer_moderation_verdict: "non_conforme",
@@ -74,5 +75,16 @@ describe("ModerationJobDetail, offre chargée", () => {
     expect(headings[0]).toBe("h1 Assistant commercial")
     expect(headings).toContain("h2 Compte recruteur")
     expect(headings).toContain("h2 Entreprise partenaire :")
+  })
+
+  it("affiche le titre de l'offre et son métier avant les cartes du compte, dans l'ordre visuel", () => {
+    query.error = null
+    query.data = detail
+    const html = renderToStaticMarkup(<ModerationJobDetail jobId="6ad734de852d3675eb942548" userType="OPCO" />)
+    const positions = ["Assistant commercial</h1>", "Assistant / Assistante commercial", "Compte recruteur", "La présentation de l’entreprise"].map((text) => html.indexOf(text))
+
+    expect(positions).not.toContain(-1)
+    expect(positions).toEqual([...positions].sort((a, b) => a - b))
+    expect(html).not.toContain("order:-1")
   })
 })

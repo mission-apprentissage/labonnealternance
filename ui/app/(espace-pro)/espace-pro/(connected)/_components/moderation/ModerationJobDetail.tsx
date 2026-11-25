@@ -87,8 +87,7 @@ const RecruiterCards = ({ detail }: { detail: IModerationJobDetailJson }) => {
 const OfferContent = ({ offer }: { offer: IModerationJobDetailJson["offer"] }) => {
   const isCustomDescription = offer.offer_description_mode === OFFER_DESCRIPTION_MODE.CUSTOM
   return (
-    <Box>
-      {offer.offer_rome_appellation && <Typography sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.mention.grey.default }}>{offer.offer_rome_appellation}</Typography>}
+    <Box sx={{ mt: fr.spacing("6v") }}>
       <Typography component="h2" variant="h4" sx={{ mb: fr.spacing("3v") }}>
         La présentation de l’entreprise
       </Typography>
@@ -165,19 +164,21 @@ export function ModerationJobDetail({ jobId, userType }: { jobId: string; userTy
         )}
         <ModerationJobNavigation jobId={jobId} userType={userType} />
       </Box>
-      {/* Le h1 précède dans le DOM les blocs titrés en h2 : `order` rétablit l'ordre visuel (compte, encart de modération, offre). */}
+      <Box sx={{ mb: fr.spacing("6v") }}>
+        <Typography component="h1" variant="h2">
+          {data.offer.offer_title}
+        </Typography>
+        {data.offer.offer_rome_appellation && (
+          <Typography sx={{ mt: fr.spacing("2v"), color: fr.colors.decisions.text.mention.grey.default }}>{data.offer.offer_rome_appellation}</Typography>
+        )}
+      </Box>
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), alignItems: "flex-start" }}>
-        <Box sx={{ flex: 1, minWidth: 0, width: "100%", display: "flex", flexDirection: "column" }}>
-          <Typography component="h1" variant="h2" sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v") }}>
-            {data.offer.offer_title}
-          </Typography>
-          <Box sx={{ order: -1 }}>
-            <ModerationPanel detail={data} onChange={() => refetch()} readOnly={userType === "OPCO"} />
-          </Box>
-          <OfferContent offer={data.offer} />
-        </Box>
-        <Box sx={{ order: -1, width: { xs: "100%", md: "33%" }, flexShrink: 0 }}>
+        <Box sx={{ width: { xs: "100%", md: "33%" }, flexShrink: 0 }}>
           <RecruiterCards detail={data} />
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
+          <ModerationPanel detail={data} onChange={() => refetch()} readOnly={userType === "OPCO"} />
+          <OfferContent offer={data.offer} />
         </Box>
       </Box>
     </Box>
