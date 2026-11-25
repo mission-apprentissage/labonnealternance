@@ -83,3 +83,10 @@ curl -s "localhost:4545/__reset?mode=normal"    # modes: normal | 429 | flaky | 
 for i in 1 2 3 4 5; do curl -s -o /dev/null localhost:3100/faq; done
 curl -s localhost:4545/__stats                  # appels réellement envoyés à Notion
 ```
+
+# Tracking Matomo
+
+Tout ajout, renommage ou suppression d'un événement `pushMatomoEvent` suit
+[`docs/developpement/tracking-matomo.md`](../docs/developpement/tracking-matomo.md) : fiche de tracking dans
+l'issue, action Matomo fixe, push complet des champs lus par la balise, aucune donnée personnelle, conteneur
+publié avant le déploiement.

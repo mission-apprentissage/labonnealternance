@@ -81,7 +81,9 @@ const UserValidationHistory = ({ histories, withHeading = true }: { histories: I
                               <td headers="statut_historique">{getStatut(status)}</td>
                               <td headers="type_validation_historique">{validation_type}</td>
                               <td headers="operateur_historique">{<Badge>{user}</Badge>}</td>
-                              <td headers="motif_historique">{reason}</td>
+                              <td headers="motif_historique" style={{ whiteSpace: "pre-line" }}>
+                                {reason}
+                              </td>
                             </tr>
                           )
                         })
