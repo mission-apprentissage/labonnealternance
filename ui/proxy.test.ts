@@ -305,3 +305,95 @@ describe("proxy - filtre OPCO de session", () => {
     expect(response.cookies.get("lba_opco")?.value).toBe("AKTO")
   })
 })
+
+describe("proxy - fiche introuvable (vrai 404 avant le streaming)", () => {
+  const INTERNAL_API = "http://server:5000/api"
+  const SIRET = "12345678900011"
+  const FICHE = `/emploi/recruteurs_lba/${SIRET}/boulangerie`
+
+  beforeEach(() => {
+    vi.stubEnv("LBA_INTERNAL_API_URL", INTERNAL_API)
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  const rewriteTarget = (response: Response): string | null => {
+    const rewrite = response.headers.get("x-middleware-rewrite")
+    return rewrite ? new URL(rewrite).pathname : null
+  }
+
+  it("laisse passer une fiche qui existe", async () => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 200 }))
+
+    const response = await proxy(new NextRequest(new URL(FICHE, BASE_URL)))
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock.mock.calls[0][0]).toBe(`${INTERNAL_API}/_private/jobs/recruteurs_lba/${SIRET}`)
+    expect(rewriteTarget(response)).toBeNull()
+  })
+
+  it.each([
+    ["une panne de l'API (500)", () => Promise.resolve(new Response(null, { status: 500 }))],
+    ["une limite de débit (429)", () => Promise.resolve(new Response(null, { status: 429 }))],
+    ["une erreur réseau ou un timeout", () => Promise.reject(new DOMException("timeout", "TimeoutError"))],
+  ])("laisse passer sur %s", async (_, reply) => {
+    fetchMock.mockImplementation(reply)
+
+    const response = await proxy(new NextRequest(new URL(FICHE, BASE_URL)))
+
+    expect(rewriteTarget(response)).toBeNull()
+  })
+
+  it.each([
+    ["navigation client", { rsc: "1" }],
+    ["préchargement", { "next-router-prefetch": "1" }],
+    ["préchargement par segment", { "next-router-segment-prefetch": "/_tree" }],
+  ])("n'interroge pas l'API sur une %s", async (_, headers) => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 404 }))
+
+    const response = await proxy(new NextRequest(new URL(FICHE, BASE_URL), { headers }))
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(rewriteTarget(response)).toBeNull()
+  })
+
+  it.each([
+    ["une fiche sans slug", `/emploi/recruteurs_lba/${SIRET}`],
+    ["une sous-page de la fiche", `${FICHE}/autre`],
+    ["un identifiant encodé hors liste", "/formation/a%2Fb/x"],
+    ["une page voisine", "/emploi-recruteurs_lba/1/x"],
+  ])("n'interroge pas l'API pour %s", async (_, path) => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 404 }))
+
+    const response = await proxy(new NextRequest(new URL(path, BASE_URL)))
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(rewriteTarget(response)).toBeNull()
+  })
+
+  it("réécrit vers une route inexistante quand l'API confirme le 404", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 404 }))
+
+    const response = await proxy(new NextRequest(new URL(FICHE, BASE_URL)))
+
+    expect(rewriteTarget(response)).toBe("/_fiche-introuvable")
+  })
+
+  it("réécrit une fiche formation introuvable", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 404 }))
+
+    const response = await proxy(new NextRequest(new URL("/formation/abc-123/bts-mco", BASE_URL)))
+
+    expect(fetchMock.mock.calls[0][0]).toBe(`${INTERNAL_API}/_private/formations/abc-123`)
+    expect(rewriteTarget(response)).toBe("/_fiche-introuvable")
+  })
+
+  it("réécrit un type d'offre inconnu sans appeler l'API", async () => {
+    const response = await proxy(new NextRequest(new URL(`/emploi/inconnu/${SIRET}/x`, BASE_URL)))
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(rewriteTarget(response)).toBe("/_fiche-introuvable")
+  })
+})
