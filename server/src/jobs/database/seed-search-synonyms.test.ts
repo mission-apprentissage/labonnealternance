@@ -31,3 +31,18 @@ describe("search-synonyms.json — pas de mot générique isolé mélangé à un
     expect(offenders.map((o) => o.synonyms)).toEqual([])
   })
 })
+
+describe("search-synonyms.json — sigles ambigus (#5638)", () => {
+  const filePath = path.resolve(__dirname(import.meta.url), "../../../../docs/mongodb/search-synonyms.json")
+  const groups = JSON.parse(fs.readFileSync(filePath, "utf-8")) as Array<{ mappingType: string; synonyms: string[] }>
+  const groupsContaining = (term: string) => groups.filter(({ synonyms }) => synonyms.some((s) => s.trim().toLowerCase() === term))
+
+  it("aepe ne désigne que le CAP Accompagnant éducatif petite enfance", () => {
+    expect(groupsContaining("aepe")).toEqual([{ mappingType: "equivalent", synonyms: ["ACCOMPAGNANT EDUCATIF PETITE ENFANCE", "aepe"] }])
+  })
+
+  // lucene.standard ne replie pas les accents : sans accent, la forme longue ne matche jamais « économique ».
+  it("ape désigne Analyse et politique économique, forme longue accentuée", () => {
+    expect(groupsContaining("ape")).toEqual([{ mappingType: "equivalent", synonyms: ["ANALYSE ET POLITIQUE ÉCONOMIQUE", "ape"] }])
+  })
+})

@@ -1,10 +1,12 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import * as mongodbUtils from "@/common/utils/mongodb-utils"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
 import * as sentryUtils from "@/common/utils/sentry-utils"
-import { resolveSearchMode, searchItems, tokenizeQuery } from "@/services/search/search.service"
+import { diplomaSigleOf, resolveDiplomaJobsClause, resolveSearchMode, searchItems, tokenizeQuery } from "@/services/search/search.service"
+import { DIPLOMA_JOB_ROME_CODES } from "@/services/search/search-diploma-jobs"
+import * as searchItemsService from "@/services/search/search-items.service"
 
 /**
  * Repli sans fuzzy ni synonymes quand mongot dépasse maxClauseCount=1024 (#5153). Ni un plafond
@@ -141,5 +143,63 @@ describe("resolveSearchMode", () => {
     [{ mode: "emplois_formation" as const, type: "formation" }, "emplois_formation"],
   ])("%j → %s", (filters, mode) => {
     expect(resolveSearchMode(filters)).toBe(mode)
+  })
+})
+
+describe("diplomaSigleOf", () => {
+  it.each([
+    ["ndrc", "ndrc"],
+    ["BTS MCO", "mco"],
+    ["cap aepe en alternance", "aepe"],
+    ["électrotechnique", "electrotechnique"],
+  ])("mode emplois : %s → %s", (q, sigle) => {
+    expect(diplomaSigleOf(q, "emplois")).toBe(sigle)
+  })
+
+  it("mode emplois avec formation incluse : le sigle ouvre aussi les métiers", () => {
+    expect(diplomaSigleOf("BTS NDRC", "emplois_formation")).toBe("ndrc")
+  })
+
+  it("mode formations : le sigle n'ouvre pas les métiers", () => {
+    expect(diplomaSigleOf("ndrc", "formations")).toBeNull()
+  })
+
+  it.each([
+    ["commercial", "un métier n'est pas un sigle"],
+    ["ndrc commercial", "le sigle accompagné d'un autre terme"],
+    ["cgt", "near-miss sur un sigle court"],
+    ["constructor", "clé héritée de Object.prototype"],
+    ["bts", "requête réduite à un mot de diplôme"],
+  ])("%s : pas de sigle (%s)", (q) => {
+    expect(diplomaSigleOf(q, "emplois")).toBeNull()
+  })
+})
+
+describe("resolveDiplomaJobsClause", () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it("chaque clé de DIPLOMA_JOB_ROME_CODES est atteignable depuis une requête (clé normalisée)", () => {
+    for (const key of Object.keys(DIPLOMA_JOB_ROME_CODES)) expect(diplomaSigleOf(key, "emplois")).toBe(key)
+  })
+
+  it("construit la clause des métiers du sigle depuis le référentiel en cache", async () => {
+    vi.spyOn(searchItemsService, "getCachedRomeLabelByCode").mockResolvedValue(new Map([["D1410", "Attaché commercial / Attachée commerciale"]]))
+
+    expect(JSON.stringify(await resolveDiplomaJobsClause("BTS NDRC", "emplois"))).toContain("Attaché commercial / Attachée commerciale")
+  })
+
+  it("ne lit pas le référentiel en mode formations", async () => {
+    const load = vi.spyOn(searchItemsService, "getCachedRomeLabelByCode")
+
+    expect(await resolveDiplomaJobsClause("ndrc", "formations")).toBeNull()
+    expect(load).not.toHaveBeenCalled()
+  })
+
+  it("référentiel illisible : pas de clause et un warning Sentry, au lieu d'une erreur", async () => {
+    vi.spyOn(searchItemsService, "getCachedRomeLabelByCode").mockRejectedValue(new Error("referentielromes indisponible"))
+    const capture = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => undefined)
+
+    expect(await resolveDiplomaJobsClause("ndrc", "emplois")).toBeNull()
+    expect(capture).toHaveBeenCalledWith(expect.any(Error), expect.objectContaining({ level: "warning" }))
   })
 })
