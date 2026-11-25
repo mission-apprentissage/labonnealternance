@@ -8,7 +8,7 @@ import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicati
 import { ApplicationScanStatus, assertUnreachable, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS_ENGLISH, parseEnum } from "shared"
 import { getApplicantQuestions, getLbaApplicantQuestions } from "shared/constants/applicant-questions"
 import type { RefusalReasons } from "shared/constants/application"
-import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
+import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS, SCHEDULED_REPLY_DELAY_MINUTES } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
@@ -1487,7 +1487,7 @@ export const processScheduledRecruiterIntentions = async () => {
   try {
     const stream = await getDbCollection("applications")
       .find({
-        company_recruitment_intention_date: { $lte: dayjs().subtract(30, "minutes").toDate() },
+        company_recruitment_intention_date: { $lte: dayjs().subtract(SCHEDULED_REPLY_DELAY_MINUTES, "minutes").toDate() },
         company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED,
       })
       .stream()

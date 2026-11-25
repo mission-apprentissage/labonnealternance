@@ -635,6 +635,62 @@ describe("POST /application/job/:jobId/application/:applicationId/treated-elsewh
   })
 })
 
+describe("POST /application/job/:jobId/application/:applicationId/reply/cancel", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const cancelReply = async (jobId: ObjectId, applicationId: ObjectId, headers?: Record<string, string>) =>
+    httpClient().inject({ method: "POST", path: `/api/application/job/${jobId}/application/${applicationId}/reply/cancel`, ...(headers ? { headers } : {}) })
+
+  const getApplication = (applicationId: ObjectId) => getDbCollection("applications").findOne({ _id: applicationId })
+  const scheduledReply = {
+    company_recruitment_intention: ApplicationIntention.REFUS,
+    company_recruitment_intention_date: new Date(),
+    company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED,
+  }
+
+  it("annule une réponse programmée comme le formulaire de réponse : la candidature repasse en attente", async () => {
+    const recruiter = await saveRecruiter("recruteur-annule-programmee")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Programme", scheduledReply)
+
+    const response = await cancelReply(offer._id, application._id, (await logUser(httpClient, "recruteur-annule-programmee")).bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getApplication(application._id)).toMatchObject({
+      company_recruitment_intention: null,
+      company_recruitment_intention_date: null,
+      company_feedback_send_status: CompanyFeebackSendStatus.CANCELED,
+    })
+  })
+
+  it("répond 409 quand la réponse est déjà partie", async () => {
+    const recruiter = await saveRecruiter("recruteur-annule-trop-tard")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Envoye", { ...scheduledReply, company_feedback_send_status: CompanyFeebackSendStatus.SENT })
+
+    const response = await cancelReply(offer._id, application._id, (await logUser(httpClient, "recruteur-annule-trop-tard")).bearerToken)
+
+    expect(response.statusCode).toBe(409)
+    expect(await getApplication(application._id)).toMatchObject({
+      company_recruitment_intention: ApplicationIntention.REFUS,
+      company_feedback_send_status: CompanyFeebackSendStatus.SENT,
+    })
+  })
+
+  it("refuse le recruteur d'une autre entreprise", async () => {
+    const recruiter = await saveRecruiter("proprietaire-annule-programmee")
+    await saveRecruiter("voisin-annule-programmee")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Confidentiel", scheduledReply)
+
+    const response = await cancelReply(offer._id, application._id, (await logUser(httpClient, "voisin-annule-programmee")).bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect((await getApplication(application._id))?.company_feedback_send_status).toBe(CompanyFeebackSendStatus.SCHEDULED)
+  })
+})
+
 describe("GET /application/job/:jobId/application/:applicationId/reply-token", () => {
   useMongo()
   const httpClient = useServer()

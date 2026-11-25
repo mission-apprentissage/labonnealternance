@@ -47,6 +47,32 @@ export const ApplicationStatusBanner = ({
   )
 }
 
+/** Bouton « Annuler » d'un bandeau d'état de l'espace pro, suivi de son message d'échec. */
+export const StatusCancelAction = ({
+  srLabel,
+  errorMessage,
+  onCancel,
+  isCancelling,
+  cancelFailed,
+}: {
+  srLabel: string
+  errorMessage: string
+  onCancel: () => void
+  isCancelling: boolean
+  cancelFailed: boolean
+}) => (
+  <>
+    <Box sx={{ mt: fr.spacing("4v") }}>
+      <Button priority="secondary" iconId="fr-icon-arrow-go-back-line" iconPosition="left" onClick={onCancel} disabled={isCancelling}>
+        Annuler<span className="fr-sr-only"> {srLabel}</span>
+      </Button>
+    </Box>
+    <Box role="alert" sx={{ mt: cancelFailed ? fr.spacing("4v") : 0 }}>
+      {cancelFailed && <Alert severity="error" small description={errorMessage} />}
+    </Box>
+  </>
+)
+
 /**
  * Candidature que le recruteur a déclaré avoir traitée hors de LBA (#5769). Avec `onCancel`, le recruteur peut revenir
  * sur ce statut (espace pro) ; le formulaire ouvert depuis le mail ne le propose pas.
@@ -67,16 +93,13 @@ export const TreatedElsewhereBanner = ({
   <ApplicationStatusBanner title={date ? `Statut mis à jour le ${formatApplicationDateTime(date)}` : "Statut mis à jour"} focusOnMount={focusOnMount}>
     <Typography sx={{ mt: fr.spacing("2v") }}>Vous nous avez indiqué avoir répondu au candidat par un autre canal (mail ou téléphone).</Typography>
     {onCancel && (
-      <>
-        <Box sx={{ mt: fr.spacing("4v") }}>
-          <Button priority="secondary" iconId="fr-icon-arrow-go-back-line" iconPosition="left" onClick={onCancel} disabled={isCancelling}>
-            Annuler<span className="fr-sr-only"> le statut « contacté par un autre canal »</span>
-          </Button>
-        </Box>
-        <Box role="alert" sx={{ mt: cancelFailed ? fr.spacing("4v") : 0 }}>
-          {cancelFailed && <Alert severity="error" small description="L'annulation du statut a échoué. Veuillez réessayer." />}
-        </Box>
-      </>
+      <StatusCancelAction
+        srLabel="le statut « contacté par un autre canal »"
+        errorMessage="L'annulation du statut a échoué. Veuillez réessayer."
+        onCancel={onCancel}
+        isCancelling={isCancelling}
+        cancelFailed={cancelFailed}
+      />
     )}
   </ApplicationStatusBanner>
 )

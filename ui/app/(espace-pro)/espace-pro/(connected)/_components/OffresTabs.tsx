@@ -86,7 +86,7 @@ type LocalJob = Omit<IJobJson, "_id"> & {
 const getJobTitle = ({ offer_title_custom, rome_appellation_label, rome_label }: Pick<LocalJob, "offer_title_custom" | "rome_appellation_label" | "rome_label">) =>
   offer_title_custom ?? rome_appellation_label ?? rome_label
 
-const CandidaturesCell = ({ job, applicationsPath, userType }: { job: LocalJob; applicationsPath?: string; userType: string }) => {
+export const CandidaturesCell = ({ job, applicationsPath, userType }: { job: LocalJob; applicationsPath?: string; userType: string }) => {
   const total = Math.max(job.candidatures ?? 0, 0)
   if (total === 0) {
     return total
@@ -106,19 +106,21 @@ const CandidaturesCell = ({ job, applicationsPath, userType }: { job: LocalJob; 
     ) : (
       total
     )
+  // « En attente » tant que le recruteur peut encore répondre, offre close comprise.
+  const pending = consultation.status === "unavailable" ? 0 : Math.max(job.candidatures_en_attente ?? 0, 0)
+  const counts = (
+    <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
+      {totalLabel}
+      {pending > 0 && (
+        <Badge variant="awaiting" fontSize="12px">
+          {pending}
+          <span className="fr-sr-only"> en attente</span>
+        </Badge>
+      )}
+    </Box>
+  )
   if (consultation.status === "offer_open") {
-    const pending = Math.max(job.candidatures_en_attente ?? 0, 0)
-    return (
-      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
-        {totalLabel}
-        {pending > 0 && (
-          <Badge variant="awaiting" fontSize="12px">
-            {pending}
-            <span className="fr-sr-only"> en attente</span>
-          </Badge>
-        )}
-      </Box>
-    )
+    return counts
   }
   const [detail, color] =
     consultation.status === "unavailable"
@@ -127,7 +129,7 @@ const CandidaturesCell = ({ job, applicationsPath, userType }: { job: LocalJob; 
 
   return (
     <>
-      {totalLabel}
+      {counts}
       <Box component="span" sx={{ display: "block", color }}>
         {detail}
       </Box>

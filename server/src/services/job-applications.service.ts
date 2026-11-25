@@ -3,7 +3,7 @@ import type { ObjectId } from "mongodb"
 import { parseEnum, type zRoutes } from "shared"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import dayjs from "shared/helpers/dayjs"
-import { ApplicationScanStatus } from "shared/models/applications.model"
+import { ApplicationScanStatus, CompanyFeebackSendStatus } from "shared/models/applications.model"
 import type { ComputedUserAccess, IApplicant, IApplication } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
@@ -334,6 +334,32 @@ export const cancelJobApplicationTreatedElsewhere = async (jobId: ObjectId, appl
   )
   if (!matchedCount) {
     throw conflict("Cette candidature n'est pas marquée comme traitée par un autre canal")
+  }
+}
+
+/**
+ * « Annuler » sur le bandeau d'une réponse programmée (#5769) : même effet que l'annulation du formulaire de réponse
+ * (cf. cancelScheduledRecruiterIntention), restreint à une réponse pas encore partie.
+ */
+export const cancelJobApplicationScheduledReply = async (jobId: ObjectId, applicationId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<void> => {
+  await getConsultableJob(jobId, userAccess)
+  const [application] = await getApplicationsWithApplicant(jobId, { _id: 1 }, applicationId)
+  if (!application) {
+    throw notFound("Candidature introuvable")
+  }
+  const { matchedCount } = await getDbCollection("applications").updateOne(
+    { _id: applicationId, job_id: jobId, ...SENT_TO_COMPANY_FILTER, company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED },
+    {
+      $set: {
+        company_feedback_send_status: CompanyFeebackSendStatus.CANCELED,
+        company_recruitment_intention: null,
+        company_recruitment_intention_date: null,
+        last_update_at: new Date(),
+      },
+    }
+  )
+  if (!matchedCount) {
+    throw conflict("Cette réponse n'est plus en attente d'envoi")
   }
 }
 

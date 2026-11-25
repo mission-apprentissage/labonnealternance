@@ -10,6 +10,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
+import { getScheduledReplySendDate } from "shared/utils/scheduled-reply"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -21,8 +22,10 @@ import { NeighborNavigationLinks } from "@/app/(espace-pro)/espace-pro/(connecte
 import { clearReplyJustSent, wasReplyJustSent } from "@/app/(espace-pro)/espace-pro/(connected)/_components/sent-reply-focus"
 import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
 import { useHorizontalSwipe } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-horizontal-swipe"
-import { ApplicationStatusBanner, formatApplicationDateTime, TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
+import { useToast } from "@/app/hooks/useToast"
+import { ApplicationStatusBanner, formatApplicationDateTime, StatusCancelAction, TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
 import {
+  cancelJobApplicationScheduledReply,
   cancelJobApplicationTreatedElsewhere,
   downloadJobApplicationAttachment,
   getFormulaire,
@@ -31,10 +34,13 @@ import {
   getJobApplications,
   markJobApplicationTreatedElsewhere,
 } from "@/utils/api"
+import { ApiError } from "@/utils/api.utils"
 import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
 type ApplicationDetail = Awaited<ReturnType<typeof getJobApplicationDetail>>
+
+const isConflictError = (error: unknown) => error instanceof ApiError && error.context.statusCode === 409
 
 /** Page du recruteur, ou du CFA pour l'entreprise qu'il gère quand la route porte `establishment_id` (cf. CandidaturesOffre). */
 export const CandidatureDetail = () => {
@@ -180,14 +186,24 @@ const Tags = ({ items }: { items: string[] }) => (
 )
 
 /** Bandeau d'une réponse envoyée par LBA (entretien ou refus), à la place des boutons de réponse. */
-const ResponseBanner = ({ application, focusOnMount }: { application: Application; focusOnMount: boolean }) => {
+const ResponseBanner = ({
+  application,
+  focusOnMount,
+  cancel,
+}: {
+  application: Application
+  focusOnMount: boolean
+  cancel: { onCancel: () => void; isCancelling: boolean; cancelFailed: boolean }
+}) => {
   const { company_feedback_send_status: sendStatus, company_feedback, feedback_email_subject, company_feedback_reasons } = application
   // Sans statut d'envoi, la réponse date d'avant la programmation des envois : elle est partie à la saisie.
   const isSent = sendStatus === "SENT" || sendStatus === null
   const title = isSent
     ? `Votre réponse a bien été envoyée au candidat le ${formatApplicationDateTime(application.company_feedback_date ?? application.company_recruitment_intention_date)}`
     : sendStatus === "SCHEDULED"
-      ? "Votre réponse va être envoyée au candidat."
+      ? application.company_recruitment_intention_date
+        ? `Votre réponse va être envoyée au candidat le ${dayjs(getScheduledReplySendDate(application.company_recruitment_intention_date)).format("DD/MM/YYYY [vers] HH:mm")}.`
+        : "Votre réponse va être envoyée au candidat."
       : sendStatus === "CANCELED"
         ? "L'envoi de votre réponse a été annulé."
         : "Votre réponse n'a pas pu être envoyée au candidat."
@@ -213,6 +229,7 @@ const ResponseBanner = ({ application, focusOnMount }: { application: Applicatio
           <Tags items={company_feedback_reasons} />
         </Box>
       )}
+      {sendStatus === "SCHEDULED" && <StatusCancelAction srLabel="l'envoi de votre réponse" errorMessage="L'annulation de l'envoi a échoué. Veuillez réessayer." {...cancel} />}
     </ApplicationStatusBanner>
   )
 }
@@ -234,6 +251,7 @@ const ApplicationActions = ({
   const trackReplyOpened = (intention: ApplicationIntention) =>
     pushMatomoEvent({ event: MATOMO_EVENTS.APPLICATION_REPLY_OPENED, reply_source: "espace_pro", reply_intention: intention, user_type: userType })
   const client = useQueryClient()
+  const toast = useToast()
   const refreshApplication = () =>
     Promise.all([
       client.invalidateQueries({ queryKey: ["job-application", jobId, application._id] }),
@@ -255,12 +273,29 @@ const ApplicationActions = ({
     },
     onError: refreshApplication,
   })
+  const cancelScheduledReply = useMutation({
+    // L'intention annulée sert à rendre le focus au bouton qui avait ouvert le formulaire de réponse.
+    mutationFn: (_intention: string | null) => cancelJobApplicationScheduledReply(jobId, application._id),
+    onSuccess: refreshApplication,
+    // Un 409 signale une réponse partie entre-temps : la fiche relue affiche son état réel, le toast dit pourquoi.
+    onError: async (error) => {
+      if (isConflictError(error)) {
+        toast({ variant: "error", description: "Il est trop tard pour annuler : votre réponse a déjà été envoyée au candidat.", autoHideDuration: 7000 })
+      }
+      await refreshApplication()
+    },
+  })
+  const cancelReplyTooLate = cancelScheduledReply.isError && isConflictError(cancelScheduledReply.error)
   // Le bandeau disparaît avec le bouton Annuler : le focus revient sur le bouton qui avait posé le statut.
   const treatedElsewhereButtonRef = useRef<HTMLButtonElement>(null)
+  const contactButtonRef = useRef<HTMLAnchorElement>(null)
+  const refuseButtonRef = useRef<HTMLAnchorElement>(null)
   const isPending = !application.company_recruitment_intention
   useEffect(() => {
-    if (cancelTreatedElsewhere.isSuccess && isPending) treatedElsewhereButtonRef.current?.focus()
-  }, [cancelTreatedElsewhere.isSuccess, isPending])
+    if (!isPending) return
+    if (cancelTreatedElsewhere.isSuccess) treatedElsewhereButtonRef.current?.focus()
+    if (cancelScheduledReply.isSuccess) (cancelScheduledReply.variables === ApplicationIntention.REFUS ? refuseButtonRef : contactButtonRef).current?.focus()
+  }, [cancelTreatedElsewhere.isSuccess, cancelScheduledReply.isSuccess, cancelScheduledReply.variables, isPending])
 
   if (isPending) {
     // Contacter et Refuser ouvrent les formulaires de réponse du mail au recruteur (cf. CandidatureReponse).
@@ -268,13 +303,18 @@ const ApplicationActions = ({
       <Box sx={{ mt: fr.spacing("6v") }}>
         <Box sx={{ display: "flex", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
           <Button
+            ref={contactButtonRef}
             iconId="fr-icon-mail-send-line"
             iconPosition="left"
             linkProps={{ href: getReplyPath(ApplicationIntention.ENTRETIEN), onClick: () => trackReplyOpened(ApplicationIntention.ENTRETIEN) }}
           >
             Contacter le candidat
           </Button>
-          <Button priority="secondary" linkProps={{ href: getReplyPath(ApplicationIntention.REFUS), onClick: () => trackReplyOpened(ApplicationIntention.REFUS) }}>
+          <Button
+            ref={refuseButtonRef}
+            priority="secondary"
+            linkProps={{ href: getReplyPath(ApplicationIntention.REFUS), onClick: () => trackReplyOpened(ApplicationIntention.REFUS) }}
+          >
             Refuser la candidature
           </Button>
           <Button ref={treatedElsewhereButtonRef} priority="secondary" onClick={() => treatedElsewhere.mutate()} disabled={treatedElsewhere.isPending}>
@@ -298,7 +338,18 @@ const ApplicationActions = ({
       />
     )
   }
-  return <ResponseBanner application={application} focusOnMount={replyJustSent} />
+  return (
+    <ResponseBanner
+      application={application}
+      // Après un refus pour cause d'envoi déjà parti, le bouton Annuler disparaît : le focus passe au bandeau relu.
+      focusOnMount={replyJustSent || cancelReplyTooLate}
+      cancel={{
+        onCancel: () => cancelScheduledReply.mutate(application.company_recruitment_intention),
+        isCancelling: cancelScheduledReply.isPending,
+        cancelFailed: cancelScheduledReply.isError && !cancelReplyTooLate,
+      }}
+    />
+  )
 }
 
 const ATTACHMENT_DOWNLOAD_MESSAGES = {

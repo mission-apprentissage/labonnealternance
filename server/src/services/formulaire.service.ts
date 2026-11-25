@@ -634,8 +634,9 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
       delete job.job_closure
     })
     const { email, first_name, last_name, phone } = entrepriseManagedByCfa
-    // « En attente » suit la règle du tableau des offres : seules les offres encore ouvertes affichent ce compteur.
-    const isOpen = (job: IJobsPartnersOfferPrivate) => getApplicationsConsultation({ expiration: job.offer_expiration, closure: getOfferClosure(job) }).status === "offer_open"
+    // « En attente » suit la règle du tableau des offres (cf. CandidaturesCell) : offres dont les candidatures sont encore consultables.
+    const isConsultable = (job: IJobsPartnersOfferPrivate) =>
+      getApplicationsConsultation({ expiration: job.offer_expiration, closure: getOfferClosure(job) }).status !== "unavailable"
     recruiters.push({
       ...recruiter,
       email,
@@ -643,7 +644,7 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
       last_name,
       phone,
       applications_count: sumBy(jobs, (job) => job.application_count ?? 0),
-      pending_applications_count: sumBy(jobs.filter(isOpen), (job) => job.pending_application_count ?? 0),
+      pending_applications_count: sumBy(jobs.filter(isConsultable), (job) => job.pending_application_count ?? 0),
     })
   }
   return recruiters

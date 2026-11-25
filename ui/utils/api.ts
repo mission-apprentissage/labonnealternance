@@ -150,6 +150,8 @@ export const markJobApplicationTreatedElsewhere = async (jobId: string, applicat
   apiPost("/application/job/:jobId/application/:applicationId/treated-elsewhere", { params: { jobId, applicationId } })
 export const cancelJobApplicationTreatedElsewhere = async (jobId: string, applicationId: string) =>
   apiPost("/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel", { params: { jobId, applicationId } })
+export const cancelJobApplicationScheduledReply = async (jobId: string, applicationId: string) =>
+  apiPost("/application/job/:jobId/application/:applicationId/reply/cancel", { params: { jobId, applicationId } })
 export const getJobApplicationAttachmentUrl = (jobId: string, applicationId: string) =>
   generateUrl("/application/job/:jobId/application/:applicationId/attachment", { params: { jobId, applicationId } })
 export const downloadJobApplicationAttachment = async (jobId: string, applicationId: string) =>
