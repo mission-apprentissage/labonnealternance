@@ -1,3 +1,5 @@
+"use client"
+
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useId, useState } from "react"
