@@ -83,6 +83,21 @@ export const zApplicationRoutes = {
       },
       securityScheme: null,
     },
+    "/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel": {
+      path: "/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel",
+      method: "post",
+      params: z.strictObject({ jobId: zObjectId, applicationId: zObjectId }),
+      response: {
+        "200": z.strictObject({}),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "application:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
+    },
     "/application/job/:jobId/application/:applicationId/treated-elsewhere": {
       path: "/application/job/:jobId/application/:applicationId/treated-elsewhere",
       method: "post",

@@ -318,6 +318,25 @@ export const markJobApplicationTreatedElsewhere = async (jobId: ObjectId, applic
 }
 
 /**
+ * Le recruteur revient sur « contacté par un autre canal » (#5769) : la candidature repasse en attente. Le filtre sur
+ * l'intention écarte une candidature qui aurait reçu entre-temps une réponse envoyée par LBA.
+ */
+export const cancelJobApplicationTreatedElsewhere = async (jobId: ObjectId, applicationId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<void> => {
+  await getConsultableJob(jobId, userAccess)
+  const [application] = await getApplicationsWithApplicant(jobId, { _id: 1 }, applicationId)
+  if (!application) {
+    throw notFound("Candidature introuvable")
+  }
+  const { matchedCount } = await getDbCollection("applications").updateOne(
+    { _id: applicationId, job_id: jobId, ...SENT_TO_COMPANY_FILTER, company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE },
+    { $set: { company_recruitment_intention: null, company_recruitment_intention_date: null, last_update_at: new Date() } }
+  )
+  if (!matchedCount) {
+    throw conflict("Cette candidature n'est pas marquée comme traitée par un autre canal")
+  }
+}
+
+/**
  * Jeton des formulaires de réponse au candidat, pour les ouvrir depuis l'espace pro (#5769) : ce sont ceux du
  * mail au recruteur, signés pour le gestionnaire de l'offre comme dans le mail, mais valables 2 heures.
  */

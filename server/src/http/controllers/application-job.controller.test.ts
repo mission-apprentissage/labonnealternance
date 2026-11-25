@@ -590,6 +590,51 @@ describe("POST /application/job/:jobId/application/:applicationId/treated-elsewh
   })
 })
 
+describe("POST /application/job/:jobId/application/:applicationId/treated-elsewhere/cancel", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const cancelTreatedElsewhere = async (jobId: ObjectId, applicationId: ObjectId, headers?: Record<string, string>) =>
+    httpClient().inject({ method: "POST", path: `/api/application/job/${jobId}/application/${applicationId}/treated-elsewhere/cancel`, ...(headers ? { headers } : {}) })
+
+  const getApplication = (applicationId: ObjectId) => getDbCollection("applications").findOne({ _id: applicationId })
+  const treatedElsewhere = { company_recruitment_intention: APPLICATION_TREATED_ELSEWHERE, company_recruitment_intention_date: new Date() }
+
+  it("remet la candidature en attente de réponse", async () => {
+    const recruiter = await saveRecruiter("recruteur-annule-autre-canal")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Appele", treatedElsewhere)
+
+    const response = await cancelTreatedElsewhere(offer._id, application._id, (await logUser(httpClient, "recruteur-annule-autre-canal")).bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(await getApplication(application._id)).toMatchObject({ company_recruitment_intention: null, company_recruitment_intention_date: null })
+  })
+
+  it("refuse d'annuler une réponse envoyée par LBA", async () => {
+    const recruiter = await saveRecruiter("recruteur-annule-refus")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Refuse", { company_recruitment_intention: ApplicationIntention.REFUS })
+
+    const response = await cancelTreatedElsewhere(offer._id, application._id, (await logUser(httpClient, "recruteur-annule-refus")).bearerToken)
+
+    expect(response.statusCode).toBe(409)
+    expect((await getApplication(application._id))?.company_recruitment_intention).toBe(ApplicationIntention.REFUS)
+  })
+
+  it("refuse le recruteur d'une autre entreprise", async () => {
+    const recruiter = await saveRecruiter("proprietaire-annule-autre-canal")
+    await saveRecruiter("voisin-annule-autre-canal")
+    const offer = await saveOffer({ managedBy: recruiter.user._id, siret: recruiter.entreprise.siret })
+    const application = await saveApplication(offer._id, "Confidentiel", treatedElsewhere)
+
+    const response = await cancelTreatedElsewhere(offer._id, application._id, (await logUser(httpClient, "voisin-annule-autre-canal")).bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect((await getApplication(application._id))?.company_recruitment_intention).toBe(APPLICATION_TREATED_ELSEWHERE)
+  })
+})
+
 describe("GET /application/job/:jobId/application/:applicationId/reply-token", () => {
   useMongo()
   const httpClient = useServer()

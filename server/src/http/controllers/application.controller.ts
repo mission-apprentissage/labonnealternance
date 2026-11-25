@@ -13,6 +13,7 @@ import {
   sendRecruiterIntention,
 } from "@/services/application.service"
 import {
+  cancelJobApplicationTreatedElsewhere,
   exportEstablishmentApplicationsForRecruiter,
   exportJobApplicationsForRecruiter,
   getJobApplicationAttachmentForRecruiter,
@@ -161,6 +162,19 @@ export default function (server: Server) {
     async (req, res) => {
       const { jobId, applicationId } = req.params
       await markJobApplicationTreatedElsewhere(jobId, applicationId, req.userAccess)
+      return res.status(200).send({})
+    }
+  )
+
+  server.post(
+    "/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel",
+    {
+      schema: zRoutes.post["/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel"],
+      onRequest: server.auth(zRoutes.post["/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      await cancelJobApplicationTreatedElsewhere(jobId, applicationId, req.userAccess)
       return res.status(200).send({})
     }
   )

@@ -7,6 +7,7 @@ import { Box, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Link from "next/link"
+import { useEffect, useRef } from "react"
 import { APPLICATION_TREATED_ELSEWHERE, ApplicationIntention } from "shared/constants/application"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import Badge from "@/app/(espace-pro)/_components/Badge"
@@ -16,7 +17,14 @@ import { getApplicationStatusDimension, getUserTypeDimension } from "@/app/(espa
 import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
 import { useApplicationRouteParams } from "@/app/(espace-pro)/espace-pro/(connected)/_components/use-application-route-params"
 import { ApplicationStatusBanner, formatApplicationDateTime, TreatedElsewhereBanner } from "@/components/IntentionPage/ApplicationStatusBanner"
-import { downloadJobApplicationAttachment, getFormulaire, getJobApplicationAttachmentUrl, getJobApplicationDetail, markJobApplicationTreatedElsewhere } from "@/utils/api"
+import {
+  cancelJobApplicationTreatedElsewhere,
+  downloadJobApplicationAttachment,
+  getFormulaire,
+  getJobApplicationAttachmentUrl,
+  getJobApplicationDetail,
+  markJobApplicationTreatedElsewhere,
+} from "@/utils/api"
 import { getApplicationPages } from "@/utils/application-breadcrumb.utils"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 
@@ -199,8 +207,22 @@ const ApplicationActions = ({
     // Un 409 signale une réponse enregistrée entre-temps (autre onglet, lien du mail) : on affiche l'état réel.
     onError: refreshApplication,
   })
+  const cancelTreatedElsewhere = useMutation({
+    mutationFn: () => cancelJobApplicationTreatedElsewhere(jobId, application._id),
+    onSuccess: async () => {
+      treatedElsewhere.reset()
+      await refreshApplication()
+    },
+    onError: refreshApplication,
+  })
+  // Le bandeau disparaît avec le bouton Annuler : le focus revient sur le bouton qui avait posé le statut.
+  const treatedElsewhereButtonRef = useRef<HTMLButtonElement>(null)
+  const isPending = !application.company_recruitment_intention
+  useEffect(() => {
+    if (cancelTreatedElsewhere.isSuccess && isPending) treatedElsewhereButtonRef.current?.focus()
+  }, [cancelTreatedElsewhere.isSuccess, isPending])
 
-  if (!application.company_recruitment_intention) {
+  if (isPending) {
     // Contacter et Refuser ouvrent les formulaires de réponse du mail au recruteur (cf. CandidatureReponse).
     return (
       <Box sx={{ mt: fr.spacing("6v") }}>
@@ -215,7 +237,7 @@ const ApplicationActions = ({
           <Button priority="secondary" linkProps={{ href: getReplyPath(ApplicationIntention.REFUS), onClick: () => trackReplyOpened(ApplicationIntention.REFUS) }}>
             Refuser la candidature
           </Button>
-          <Button priority="secondary" onClick={() => treatedElsewhere.mutate()} disabled={treatedElsewhere.isPending}>
+          <Button ref={treatedElsewhereButtonRef} priority="secondary" onClick={() => treatedElsewhere.mutate()} disabled={treatedElsewhere.isPending}>
             J'ai contacté le candidat par un autre canal
           </Button>
         </Box>
@@ -226,7 +248,15 @@ const ApplicationActions = ({
     )
   }
   if (application.company_recruitment_intention === APPLICATION_TREATED_ELSEWHERE) {
-    return <TreatedElsewhereBanner date={application.company_recruitment_intention_date} focusOnMount={treatedElsewhere.isSuccess} />
+    return (
+      <TreatedElsewhereBanner
+        date={application.company_recruitment_intention_date}
+        focusOnMount={treatedElsewhere.isSuccess}
+        onCancel={() => cancelTreatedElsewhere.mutate()}
+        isCancelling={cancelTreatedElsewhere.isPending}
+        cancelFailed={cancelTreatedElsewhere.isError}
+      />
+    )
   }
   return <ResponseBanner application={application} />
 }
@@ -352,7 +382,7 @@ const CandidatureDetailContent = ({ data, getReplyPath, userType }: { data: Appl
 
   return (
     <>
-      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), flexWrap: "wrap", mb: fr.spacing("4v") }}>
         <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700 }}>
           {application.applicant_first_name} {application.applicant_last_name.toUpperCase()}
         </Typography>

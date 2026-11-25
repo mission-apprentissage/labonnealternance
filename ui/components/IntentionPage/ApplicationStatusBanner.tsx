@@ -1,6 +1,8 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import type { ReactNode } from "react"
@@ -45,9 +47,36 @@ export const ApplicationStatusBanner = ({
   )
 }
 
-/** Candidature que le recruteur a déclaré avoir traitée hors de LBA (#5769). */
-export const TreatedElsewhereBanner = ({ date, focusOnMount = false }: { date: string | Date | null; focusOnMount?: boolean }) => (
+/**
+ * Candidature que le recruteur a déclaré avoir traitée hors de LBA (#5769). Avec `onCancel`, le recruteur peut revenir
+ * sur ce statut (espace pro) ; le formulaire ouvert depuis le mail ne le propose pas.
+ */
+export const TreatedElsewhereBanner = ({
+  date,
+  focusOnMount = false,
+  onCancel,
+  isCancelling = false,
+  cancelFailed = false,
+}: {
+  date: string | Date | null
+  focusOnMount?: boolean
+  onCancel?: () => void
+  isCancelling?: boolean
+  cancelFailed?: boolean
+}) => (
   <ApplicationStatusBanner title={date ? `Statut mis à jour le ${formatApplicationDateTime(date)}` : "Statut mis à jour"} focusOnMount={focusOnMount}>
     <Typography sx={{ mt: fr.spacing("2v") }}>Vous nous avez indiqué avoir répondu au candidat par un autre canal (mail ou téléphone).</Typography>
+    {onCancel && (
+      <>
+        <Box sx={{ mt: fr.spacing("4v") }}>
+          <Button priority="secondary" iconId="fr-icon-arrow-go-back-line" iconPosition="left" onClick={onCancel} disabled={isCancelling}>
+            Annuler<span className="fr-sr-only"> le statut « contacté par un autre canal »</span>
+          </Button>
+        </Box>
+        <Box role="alert" sx={{ mt: cancelFailed ? fr.spacing("4v") : 0 }}>
+          {cancelFailed && <Alert severity="error" small description="L'annulation du statut a échoué. Veuillez réessayer." />}
+        </Box>
+      </>
+    )}
   </ApplicationStatusBanner>
 )
