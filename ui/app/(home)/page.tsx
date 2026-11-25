@@ -3,7 +3,6 @@ import { Box, Container, Grid } from "@mui/material"
 
 import type { Metadata } from "next"
 import { mainId } from "@/app/_components/zone-ids"
-import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
 import { GrandsGroupesCandidat } from "@/app/(home)/_components/GrandsGroupesCandidat"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { METADATA } from "@/utils/routes.metadata.utils"
@@ -14,6 +13,7 @@ import { HomeCircleImageDecoration } from "./_components/HomeCircleImageDecorati
 import { HomeRechercheOptIn } from "./_components/HomeRechercheOptIn"
 import { HowTo } from "./_components/HowTo"
 import { InformationsAlternance } from "./_components/InformationsAlternance"
+import { PlateformePublique } from "./_components/PlateformePublique"
 
 export const metadata: Metadata = {
   title: METADATA.static.home().title,
@@ -90,13 +90,11 @@ export default function HomePage() {
           </Grid>
         </Grid>
 
-        <GrandsGroupesCandidat />
-
-        <Box sx={{ px: { xs: fr.spacing("6v"), lg: 0 } }}>
-          <AppreciationUsagers realm="candidat" />
-        </Box>
+        <PlateformePublique />
 
         <AlgoHome />
+
+        <GrandsGroupesCandidat />
       </Container>
     </>
   )
