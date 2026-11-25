@@ -5,7 +5,8 @@
 
 - name: "[{{ pr_number }}] Save Pull Requests Infos"
   set_fact:
-    pr_commit_id: "{{ result.stdout | from_json | json_query('head.sha') }}"
+    # PR_HEAD_SHA (deploy_preview.yml) aligne l'image sur le commit dont vient ce playbook ; absent au cleanup.
+    pr_commit_id: "{{ lookup('env', 'PR_HEAD_SHA') | default(result.stdout | from_json | json_query('head.sha'), true) }}"
     pr_title: "{{ result.stdout | from_json | json_query('title') }}"
     pr_state: "{{ result.stdout | from_json | json_query('state') }}"
 
