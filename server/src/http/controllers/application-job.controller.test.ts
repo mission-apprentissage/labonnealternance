@@ -206,8 +206,11 @@ describe("GET /application/job/:jobId/export", () => {
     )
     const { columns, rows } = await readExport(response.rawPayload)
     expect(columns).not.toContain("Pièce jointe supprimée le")
+    expect(columns[0]).toBe("Offre")
+    expect(columns).not.toContain("Entreprise")
     expect(rows).toHaveLength(1)
     expect(rows[0]).toMatchObject({
+      Offre: "Maçon / Maçonne du paysage",
       Nom: "EXPORTE",
       "E-mail": "exporte@candidat.fr",
       Téléphone: "0123456789",
@@ -266,6 +269,75 @@ describe("GET /application/job/:jobId/export", () => {
 
     expect(response.statusCode).toBe(403)
     expect(response.body).not.toContain("Protege")
+  })
+})
+
+describe("GET /application/establishment/:establishment_id/export", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  const exportEstablishment = async (establishmentId: string, headers?: Record<string, string>) =>
+    httpClient().inject({ method: "GET", path: `/api/application/establishment/${establishmentId}/export`, ...(headers ? { headers } : {}) })
+
+  const readExport = async (content: Buffer) => {
+    const [header, ...rows] = await readSheet(content)
+    const columns = header.map(String)
+    return { columns, rows: rows.map((row) => Object.fromEntries(row.map((value, index) => [columns[index], value]))) }
+  }
+
+  it("exporte pour le CFA les candidatures de toutes les offres de l'entreprise, avec l'entreprise et l'offre", async () => {
+    const cfa = await saveCfa("cfa-export-entreprise")
+    const siret = cfa.entreprise.siret
+    const firstOffer = await saveOffer({ managedBy: cfa.user._id, siret, cfaSiret: cfa.cfa.siret })
+    const secondOffer = await saveOffer({ managedBy: cfa.user._id, siret, cfaSiret: cfa.cfa.siret })
+    const outdatedOffer = await saveOffer({ managedBy: cfa.user._id, siret, cfaSiret: cfa.cfa.siret })
+    const otherCompanyOffer = await saveOffer({ managedBy: cfa.user._id, siret: nextSiret(), cfaSiret: cfa.cfa.siret })
+    await getDbCollection("jobs_partners").updateOne({ _id: firstOffer._id }, { $set: { offer_title: "Maçon" } })
+    await getDbCollection("jobs_partners").updateOne({ _id: secondOffer._id }, { $set: { offer_title: "Paysagiste" } })
+    // Expirée depuis plus de 3 mois : ses candidatures ne sont plus consultables.
+    await getDbCollection("jobs_partners").updateOne({ _id: outdatedOffer._id }, { $set: { offer_expiration: new Date(Date.now() - 200 * 24 * 3600 * 1000) } })
+    await saveApplication(firstOffer._id, "Premiere")
+    await saveApplication(secondOffer._id, "Seconde")
+    await saveApplication(secondOffer._id, "Enattente", { to_company_message_id: null })
+    await saveApplication(outdatedOffer._id, "Perimee")
+    await saveApplication(otherCompanyOffer._id, "Ailleurs")
+
+    const response = await exportEstablishment(`${cfa.user._id}_${siret}`, (await logUser(httpClient, "cfa-export-entreprise")).bearerToken)
+
+    expect(response.statusCode).toBe(200)
+    expect(response.headers["content-type"]).toBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    const { columns, rows } = await readExport(response.rawPayload)
+    expect(columns.slice(0, 3)).toEqual(["Entreprise", "SIRET", "Offre"])
+    expect(rows.map((row) => [row.SIRET, row.Offre, row.Nom])).toEqual(
+      expect.arrayContaining([
+        [siret, "Maçon", "PREMIERE"],
+        [siret, "Paysagiste", "SECONDE"],
+      ])
+    )
+    expect(rows).toHaveLength(2)
+  })
+
+  it("refuse l'export à un autre CFA", async () => {
+    const cfa = await saveCfa("cfa-export-proprietaire")
+    await saveCfa("cfa-export-voisin")
+    const offer = await saveOffer({ managedBy: cfa.user._id, siret: cfa.entreprise.siret, cfaSiret: cfa.cfa.siret })
+    await saveApplication(offer._id, "Confidentiel")
+
+    const response = await exportEstablishment(`${cfa.user._id}_${cfa.entreprise.siret}`, (await logUser(httpClient, "cfa-export-voisin")).bearerToken)
+
+    expect(response.statusCode).toBe(403)
+    expect(response.body).not.toContain("CONFIDENTIEL")
+  })
+
+  it("exige une session", async () => {
+    const cfa = await saveCfa("cfa-export-anonyme")
+    const offer = await saveOffer({ managedBy: cfa.user._id, siret: cfa.entreprise.siret, cfaSiret: cfa.cfa.siret })
+    await saveApplication(offer._id, "Anonyme")
+
+    const response = await exportEstablishment(`${cfa.user._id}_${cfa.entreprise.siret}`)
+
+    expect(response.statusCode).toBe(403)
+    expect(response.body).not.toContain("ANONYME")
   })
 })
 

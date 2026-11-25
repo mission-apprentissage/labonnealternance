@@ -210,6 +210,21 @@ export const zApplicationRoutes = {
         },
       },
     },
+    "/application/establishment/:establishment_id/export": {
+      path: "/application/establishment/:establishment_id/export",
+      method: "get",
+      params: z.strictObject({ establishment_id: z.string() }),
+      response: {
+        "200": z.any().describe("Fichier Excel (xlsx) des candidatures de toutes les offres de l'entreprise"),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "application:manage",
+        resources: {
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
+    },
     "/application/job/:jobId/export": {
       path: "/application/job/:jobId/export",
       method: "get",

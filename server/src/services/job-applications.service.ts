@@ -9,6 +9,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobs-partners.mode
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { getApplicationsConsultation, getOfferClosure } from "shared/utils/applications-consultation"
 import { getApplicationsExportFileName } from "shared/utils/applications-export"
+import { getWorkplaceDisplayName } from "shared/utils/company-display-name"
 import { decodeSanitizedText } from "shared/utils/string-utils"
 import writeExcelFile from "write-excel-file/node"
 import type { z } from "zod"
@@ -23,6 +24,7 @@ import {
   getApplicationPartnerName,
   getUserManagingOffer,
 } from "@/services/application.service"
+import { establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import { SENT_TO_COMPANY_FILTER } from "@/services/sent-to-company.filter"
 
 type IJobApplicationsResponse = z.output<(typeof zRoutes)["get"]["/application/job/:jobId"]["response"]["200"]>
@@ -52,10 +54,10 @@ const getConsultableJob = async (jobId: ObjectId, userAccess: ComputedUserAccess
 // $unwind écarte les candidatures dont le candidat a été anonymisé : il n'y a plus rien à afficher.
 type IApplicationWithApplicant = IApplication & { applicant: Pick<IApplicant, "firstname" | "lastname" | "email" | "phone"> }
 
-const getApplicationsWithApplicant = (jobId: ObjectId, applicantFields: Partial<Record<keyof IApplicant, 1>>, applicationId?: ObjectId) =>
+const getApplicationsWithApplicant = (jobId: ObjectId | ObjectId[], applicantFields: Partial<Record<keyof IApplicant, 1>>, applicationId?: ObjectId) =>
   getDbCollection("applications")
     .aggregate<IApplicationWithApplicant>([
-      { $match: { job_id: jobId, ...SENT_TO_COMPANY_FILTER, ...(applicationId ? { _id: applicationId } : {}) } },
+      { $match: { job_id: Array.isArray(jobId) ? { $in: jobId } : jobId, ...SENT_TO_COMPANY_FILTER, ...(applicationId ? { _id: applicationId } : {}) } },
       { $lookup: { from: "applicants", localField: "applicant_id", foreignField: "_id", pipeline: [{ $project: applicantFields }], as: "applicant" } },
       { $unwind: "$applicant" },
       { $sort: { created_at: -1 } },
@@ -130,32 +132,96 @@ const getAnswers = (application: IApplicationWithApplicant) =>
 // Colonnes de texte long : plus larges, et le texte y passe à la ligne.
 const WIDE_COLUMNS = new Set(["feedback", "message", "formation", "rythm"])
 
-/**
- * Récapitulatif des candidatures d'une offre, au format Excel (#5769). Seul le nom de la pièce jointe figure dans le
- * fichier, jamais son contenu. Chaque cellule est un texte : le tableur n'interprète ni une saisie du candidat qui
- * commencerait par = + - @ comme une formule, ni un téléphone comme un nombre (zéro initial perdu).
- */
-export const exportJobApplicationsForRecruiter = async (jobId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<{ fileName: string; content: Buffer }> => {
-  const job = await getConsultableJob(jobId, userAccess)
-  const applications = await getApplicationsWithApplicant(jobId, { firstname: 1, lastname: 1, email: 1, phone: 1 })
+// Colonnes de l'offre en tête de ligne ; l'entreprise n'y figure que quand le fichier regroupe ses offres (export du CFA).
+type IOfferField = { label: string; value: (job: IJobsPartnersOfferPrivate) => string }
+const COMPANY_FIELDS: IOfferField[] = [
+  { label: "Entreprise", value: (job) => getWorkplaceDisplayName(job) || "" },
+  { label: "SIRET", value: (job) => job.workplace_siret ?? "" },
+]
+const OFFER_TITLE_FIELD: IOfferField = { label: "Offre", value: (job) => job.offer_title }
 
+/**
+ * Récapitulatif de candidatures au format Excel (#5769). Seul le nom de la pièce jointe figure dans le fichier, jamais
+ * son contenu. Chaque cellule est un texte : le tableur n'interprète ni une saisie du candidat qui commencerait par
+ * = + - @ comme une formule, ni un téléphone comme un nombre (zéro initial perdu).
+ */
+const buildApplicationsWorkbook = async (entries: { job: IJobsPartnersOfferPrivate; application: IApplicationWithApplicant }[], { withCompany }: { withCompany: boolean }) => {
+  const offerFields = [...(withCompany ? COMPANY_FIELDS : []), OFFER_TITLE_FIELD]
   // Une colonne par question posée, dans l'ordre où elles apparaissent.
-  const questions = [...new Set(applications.flatMap((application) => [...getAnswers(application).keys()]))]
-  const columns = [...APPLICATION_FIELDS.map(({ key, label }) => ({ label, wide: WIDE_COLUMNS.has(key) })), ...questions.map((label) => ({ label, wide: true }))]
+  const questions = [...new Set(entries.flatMap(({ application }) => [...getAnswers(application).keys()]))]
+  const columns = [
+    ...offerFields.map(({ label }) => ({ label, wide: false })),
+    ...APPLICATION_FIELDS.map(({ key, label }) => ({ label, wide: WIDE_COLUMNS.has(key) })),
+    ...questions.map((label) => ({ label, wide: true })),
+  ]
   const textCell = (value: string) => ({ type: String, value, wrap: true })
 
   const header = columns.map(({ label }) => ({ type: String, value: label, fontWeight: "bold" as const, wrap: true }))
-  const rows = applications.map((application) => {
+  const rows = entries.map(({ job, application }) => {
     const answers = getAnswers(application)
-    return [...APPLICATION_FIELDS.map(({ value }) => textCell(value(application))), ...questions.map((question) => textCell(answers.get(question) ?? ""))]
+    return [
+      ...offerFields.map(({ value }) => textCell(value(job))),
+      ...APPLICATION_FIELDS.map(({ value }) => textCell(value(application))),
+      ...questions.map((question) => textCell(answers.get(question) ?? "")),
+    ]
   })
 
-  const content = await writeExcelFile([header, ...rows], {
+  return writeExcelFile([header, ...rows], {
     sheet: "Candidatures",
     stickyRowsCount: 1,
     columns: columns.map(({ wide }) => ({ width: wide ? 50 : 22 })),
   }).toBuffer()
+}
+
+/** Récapitulatif des candidatures d'une offre (cf. buildApplicationsWorkbook). */
+export const exportJobApplicationsForRecruiter = async (jobId: ObjectId, userAccess: ComputedUserAccess | undefined): Promise<{ fileName: string; content: Buffer }> => {
+  const job = await getConsultableJob(jobId, userAccess)
+  const applications = await getApplicationsWithApplicant(jobId, { firstname: 1, lastname: 1, email: 1, phone: 1 })
+  const content = await buildApplicationsWorkbook(
+    applications.map((application) => ({ job, application })),
+    { withCompany: false }
+  )
   return { fileName: getApplicationsExportFileName(job.offer_title), content }
+}
+
+/**
+ * Récapitulatif des candidatures de toutes les offres d'une entreprise, pour le CFA qui la gère (#5769), avec
+ * l'entreprise et l'offre en tête de ligne. Seules les offres dont l'utilisateur voit les candidatures, et dont le délai
+ * de consultation court encore, y figurent (cf. getConsultableJob).
+ */
+export const exportEstablishmentApplicationsForRecruiter = async (
+  establishmentId: string,
+  userAccess: ComputedUserAccess | undefined
+): Promise<{ fileName: string; content: Buffer }> => {
+  let establishment: { userId: ObjectId; siret: string }
+  try {
+    establishment = establishmentIdToUserIdAndSiret(establishmentId)
+  } catch {
+    throw notFound("Entreprise introuvable")
+  }
+  const jobs = await getDbCollection("jobs_partners")
+    .find({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: establishment.siret, managed_by: establishment.userId })
+    .sort({ created_at: -1 })
+    .toArray()
+  const accessibleJobs = (await Promise.all(jobs.map(async (job) => ((await canAccessJobAsEntrepriseOrCfa(userAccess, job)) ? job : null)))).filter((job) => job !== null)
+  if (!accessibleJobs.length) {
+    throw forbidden("Accès réservé au recruteur de l'entreprise ou au CFA qui la gère")
+  }
+
+  const consultableJobs = accessibleJobs.filter(isConsultable)
+  const applications = consultableJobs.length
+    ? await getApplicationsWithApplicant(
+        consultableJobs.map((job) => job._id),
+        { firstname: 1, lastname: 1, email: 1, phone: 1 }
+      )
+    : []
+  // Regroupées par offre, dans l'ordre des offres (les plus récentes d'abord), puis par date de candidature.
+  const entries = consultableJobs.flatMap((job) =>
+    applications.filter((application) => application.job_id?.toString() === job._id.toString()).map((application) => ({ job, application }))
+  )
+  const content = await buildApplicationsWorkbook(entries, { withCompany: true })
+  const companyName = getWorkplaceDisplayName(accessibleJobs[0]) || establishment.siret
+  return { fileName: getApplicationsExportFileName(companyName), content }
 }
 
 type IJobApplicationDetailResponse = z.output<(typeof zRoutes)["get"]["/application/job/:jobId/application/:applicationId"]["response"]["200"]>

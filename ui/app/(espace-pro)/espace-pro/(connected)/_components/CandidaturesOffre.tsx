@@ -213,7 +213,8 @@ const CandidaturesOffreContent = ({
         <Typography component="h2" sx={{ "&&": { fontSize: "1rem", lineHeight: "1.5rem" }, fontWeight: 400, m: 0 }}>
           Offre : <strong>{job.offer_title}</strong>
         </Typography>
-        {isAvailable && (
+        {/* Le CFA exporte les candidatures de toute l'entreprise, depuis la liste de ses offres (cf. ListeOffres). */}
+        {isAvailable && userType !== "cfa" && (
           <DownloadApplicationsLink
             jobId={job._id}
             offerTitle={job.offer_title}
@@ -221,6 +222,7 @@ const CandidaturesOffreContent = ({
               pushMatomoEvent({
                 event: MATOMO_EVENTS.APPLICATIONS_EXPORT_DOWNLOADED,
                 user_type: userType,
+                applications_export_scope: "offer",
                 offer_state: offerState,
                 applications_count: applications.length,
               })

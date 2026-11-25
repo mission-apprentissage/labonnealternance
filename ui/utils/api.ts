@@ -153,6 +153,10 @@ export const getJobApplicationAttachmentUrl = (jobId: string, applicationId: str
 export const downloadJobApplicationAttachment = async (jobId: string, applicationId: string) =>
   apiGetBlob("/application/job/:jobId/application/:applicationId/attachment", { params: { jobId, applicationId } })
 export const getJobApplicationsExportUrl = (jobId: string) => generateUrl("/application/job/:jobId/export", { params: { jobId } })
+export const getEstablishmentApplicationsExportUrl = (establishment_id: string) =>
+  generateUrl("/application/establishment/:establishment_id/export", { params: { establishment_id } })
+export const downloadEstablishmentApplications = async (establishment_id: string) =>
+  apiGetBlob("/application/establishment/:establishment_id/export", { params: { establishment_id } })
 export const downloadJobApplications = async (jobId: string) => apiGetBlob("/application/job/:jobId/export", { params: { jobId } })
 
 export const getModerationSummaries = async (ids: string[]) => apiGet("/moderation/jobs/summary", { querystring: { ids } })

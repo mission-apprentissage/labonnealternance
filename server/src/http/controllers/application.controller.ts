@@ -13,6 +13,7 @@ import {
   sendRecruiterIntention,
 } from "@/services/application.service"
 import {
+  exportEstablishmentApplicationsForRecruiter,
   exportJobApplicationsForRecruiter,
   getJobApplicationAttachmentForRecruiter,
   getJobApplicationDetailForRecruiter,
@@ -180,6 +181,25 @@ export default function (server: Server) {
           "content-disposition": buildAttachmentDisposition(fileName),
           "cache-control": "no-store",
           "x-content-type-options": "nosniff",
+        })
+        .send(content)
+    }
+  )
+
+  server.get(
+    "/application/establishment/:establishment_id/export",
+    {
+      schema: zRoutes.get["/application/establishment/:establishment_id/export"],
+      onRequest: server.auth(zRoutes.get["/application/establishment/:establishment_id/export"]),
+    },
+    async (req, res) => {
+      const { fileName, content } = await exportEstablishmentApplicationsForRecruiter(req.params.establishment_id, req.userAccess)
+      return res
+        .status(200)
+        .headers({
+          "content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "content-disposition": buildAttachmentDisposition(fileName),
+          "cache-control": "no-store",
         })
         .send(content)
     }
