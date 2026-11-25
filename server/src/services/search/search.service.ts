@@ -579,7 +579,7 @@ function buildFacetCompound(filters: ISearchFilters, corpus: SearchCorpus, exclu
   return { ...(gate ? { must: [gate] } : {}), filter }
 }
 
-type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: number }[] }> }
+type FacetMetaRow = { count?: { total?: number }; facet?: Record<string, { buckets: { _id: string; count: number }[] }> }
 
 // Compteurs des chips booléennes (« Employeur handi-accueillant », « Recrutement urgent »,
 // « Candidature simplifiée ») : champs boolean/token indexés non facettables (les facettes
@@ -699,7 +699,7 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
           )
         ),
 
-        ...facetGroups.map((group) =>
+        ...facetGroups.map((group, i) =>
           getDbCollection(corpus.collection)
             .aggregate<FacetMetaRow>(
               [
@@ -710,6 +710,8 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
                       operator: { compound: group.compound },
                       facets: Object.fromEntries(group.keys.map((key) => [key, FACET_FIELD_DEFS[key]])),
                     },
+                    // cf. totalBeyondLastPage
+                    ...(i === 0 ? { count: { type: "total" } } : {}),
                   },
                 },
               ],
@@ -722,6 +724,15 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
   )
 
   return { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys }
+}
+
+/**
+ * Total d'une page sans ligne. $$SEARCH_META n'est lisible que sur une ligne de la page : passé la
+ * dernière, il vient du premier groupe de facettes, seul à garder tous les filtres de la recherche
+ * (cf. buildFacetGroups). En page 0, une page sans ligne est une recherche sans résultat.
+ */
+function totalBeyondLastPage(page: number, metaArrays: FacetMetaRow[][]): number {
+  return page > 0 ? (metaArrays[0]?.[0]?.count?.total ?? 0) : 0
 }
 
 export async function searchItems(params: ISearchFilters): Promise<{
@@ -751,7 +762,7 @@ export async function searchItems(params: ISearchFilters): Promise<{
   }
   const { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys } = aggregations
 
-  const nbHits = rows[0]?._meta?.count?.total ?? 0
+  const nbHits = rows[0]?._meta?.count?.total ?? totalBeyondLastPage(page, metaArrays)
   const nbPages = Math.ceil(nbHits / hitsPerPage)
 
   // Pas de distance affichée pour une recherche par emprise : elle serait mesurée depuis le

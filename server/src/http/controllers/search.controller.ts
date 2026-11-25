@@ -4,7 +4,7 @@ import { isPrivateIp } from "@/common/utils/private-network"
 
 import type { Server } from "@/http/server"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
-import { logSearchQuery } from "@/services/search/search-query-log.service"
+import { logSearchPageBeyondLast, logSearchQuery } from "@/services/search/search-query-log.service"
 import { getSearchChannel, requireSearchToken } from "@/services/search/search-token.service"
 
 // Plafonds hors réseau interne (anti-aspiration) : le front pagine par 20 et ne dépasse
@@ -42,6 +42,9 @@ export default (server: Server) => {
       const shouldLog = !isInternal && req.query.q?.trim() && req.query.page === 0
       try {
         const { degraded, ...searchResult } = await searchItems(query)
+        if (searchResult.hits.length === 0 && searchResult.nbHits > 0) {
+          logSearchPageBeyondLast({ channel, page: req.query.page, nbHits: searchResult.nbHits })
+        }
         const result = fromPrivateNetwork ? searchResult : { ...searchResult, nbPages: Math.min(searchResult.nbPages, PUBLIC_MAX_PAGES) }
         if (shouldLog) {
           void logSearchQuery(req.query, { status: degraded ? "degraded" : "ok", nbHits: result.nbHits }, channel)

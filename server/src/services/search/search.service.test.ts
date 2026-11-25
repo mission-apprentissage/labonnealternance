@@ -91,6 +91,28 @@ describe.runIf(RUN_RELEVANCE)("searchItems — repli sans fuzzy ni synonymes sur
     getDbCollectionSpy.mockRestore()
   })
 
+  it("garde le total de la recherche sur une page située après la dernière", async () => {
+    // biome-ignore lint/suspicious/noEmptyBlockStatements: test
+    const sentrySpy = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
+    const getDbCollectionSpy = mockFirstAggregateCallToFail(
+      "MongoServerError: Executor error during aggregate command on namespace: labonnealternance.search_jobs :: caused by :: maxClauseCount is set to 1024"
+    )
+
+    try {
+      const result = await searchItems({ q: "développeur", radius: 30, page: 1, hitsPerPage: 10 })
+
+      expect({ hits: result.hits.length, nbHits: result.nbHits, nbPages: result.nbPages, degraded: result.degraded }).toEqual({
+        hits: 0,
+        nbHits: CORPUS.length,
+        nbPages: 1,
+        degraded: true,
+      })
+    } finally {
+      sentrySpy.mockRestore()
+      getDbCollectionSpy.mockRestore()
+    }
+  })
+
   it("propage sans repli une erreur qui n'est pas liée à maxClauseCount", async () => {
     const getDbCollectionSpy = mockFirstAggregateCallToFail("connection reset")
 
