@@ -11,6 +11,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
 import { formatNumber, seoCardSx, seoH2Sx, seoHrSx, seoSectionSx, seoStatBoxSx, seoThreeColGridSx } from "@/app/(editorial)/alternance/_components/hub-styles"
+import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
 import { buildOffresItemList } from "@/app/(editorial)/alternance/_components/offres-item-list"
 import { secteurData } from "@/app/(editorial)/alternance/_components/secteur_data"
 import { SalaireSection } from "@/app/(editorial)/alternance/diplome/[slug]/_components/SalaireSection"
@@ -200,8 +201,18 @@ async function SecteurContent({ params }: { params: Promise<{ secteur: string }>
                 </Box>
               ))}
             </Box>
+            {/* Les entreprises n'ont pas d'identifiant à lier : le bouton mène aux offres du secteur, comme sur la page métier. */}
+            {data.job_count ? (
+              <Box sx={{ mt: fr.spacing("6v"), textAlign: "center" }}>
+                <JobsCtaTracked href={offresSearchUrl} searchOrigin="page_secteur" searchJobName={data.secteur} size="large">
+                  Voir les offres de ces entreprises
+                </JobsCtaTracked>
+              </Box>
+            ) : null}
           </Box>
         )}
+
+        <VillesSecteurSection secteur={data.secteur} villes={villes} q_recherche={data.q_recherche} utmParams={UTM_PARAMS} />
 
         <FormationsSecteurSection secteur={data.secteur} formations_niveaux={data.formations_niveaux} formations={data.formations} formationsSearchUrl={formationsSearchUrl} />
 
@@ -213,8 +224,6 @@ async function SecteurContent({ params }: { params: Promise<{ secteur: string }>
             </>
           }
         />
-
-        <VillesSecteurSection secteur={data.secteur} villes={villes} q_recherche={data.q_recherche} utmParams={UTM_PARAMS} />
 
         {/* FAQ */}
         {faqItems.length > 0 && (

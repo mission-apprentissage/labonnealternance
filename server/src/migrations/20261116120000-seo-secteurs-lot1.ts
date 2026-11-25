@@ -59,7 +59,7 @@ export const secteursData: ISecteurData[] = [
     chiffres_cles: [
       {
         valeur: "46",
-        libelle: "fiches métiers ROME couvertes par cette page",
+        libelle: "métiers différents dans ce secteur",
         source_libelle: "Référentiel ROME 4.0, France Travail",
         source_url: "https://www.data.gouv.fr/datasets/repertoire-operationnel-des-metiers-et-des-emplois-rome",
         annee: 2026,
@@ -80,7 +80,7 @@ export const secteursData: ISecteurData[] = [
       },
       {
         valeur: "65 %",
-        libelle: "des apprentis sortis d'un BTS en emploi salarié 6 mois après",
+        libelle: "des apprentis sortis d'un BTS en 2024 en emploi salarié 6 mois après, toutes spécialités confondues",
         source_libelle: "DEPP et Dares, InserJeunes, Note d'information n° 25.69",
         source_url: "https://www.education.gouv.fr/sites/default/files/document/Education_nationale_DEPP_NI%20IJ%20apprentis%2025-69.pdf-476813.pdf",
         annee: 2025,

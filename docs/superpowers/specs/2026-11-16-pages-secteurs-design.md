@@ -87,10 +87,10 @@ Ordre validé avec Hugo. La page modèle complète se trouve dans `_temp/secteur
 | 3 | « {Secteur}, un secteur qui recrute ? » : projets de recrutement BMO et part des recrutements difficiles, avec source et date, le nombre d'offres sur LBA et 2-3 phrases d'interprétation | BMO et texte saisis à la main, compteur LBA calculé |
 | 4 | Offres d'alternance : 6 cartes et un bouton « Voir les {n} offres » | calculé |
 | 5 | Candidatures spontanées : texte, nombre d'entreprises à contacter et un bouton | texte modèle, compteur calculé |
-| 6 | Entreprises qui recrutent : top 6 à 9 | calculé |
-| 7 | Quelle formation ? Diplômes par niveau, du CAP au bac+5, avec un lien vers nos pages diplôme quand elles existent, plus le nombre de formations par niveau | diplômes saisis à la main, compteurs calculés |
-| 8 | Combien gagne un apprenti ? On réutilise `SalaireSection` | voir § 7, point non tranché |
-| 9 | Où trouver une alternance ? Top 10 des villes avec leur compteur, et un lien vers la page ville quand elle existe | calculé |
+| 6 | Entreprises qui recrutent : top 6 à 9, puis un bouton vers les offres du secteur | calculé |
+| 7 | Où trouver une alternance ? Top 10 des villes avec leur compteur, et un lien vers la page ville quand elle existe | calculé |
+| 8 | Quelle formation ? Diplômes par niveau, du CAP au bac+5, avec un lien vers nos pages diplôme quand elles existent, plus le nombre de formations par niveau | diplômes saisis à la main, compteurs calculés |
+| 9 | Combien gagne un apprenti ? On réutilise `SalaireSection` | voir § 7, point non tranché |
 | 10 | Questions fréquentes : 4 à 6 questions, balisées en `FAQPage` | saisie à la main |
 | 11 | Autres secteurs : liens vers les 9 autres pages | dérivé de la collection |
 
