@@ -192,8 +192,9 @@ const CandidaturesOffreContent = ({
         <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700 }}>
           Candidatures
         </Typography>
-        {/* Pourvue, annulée ou expirée, l'offre n'est plus en ligne ni à clôturer (écran 15 de la maquette). */}
-        {consultation.status === "offer_open" && (
+        {/* L'offre reste visible en ligne, avec la mention « n'est plus disponible », tant que ses candidatures sont
+            consultables ; une offre pourvue, annulée ou expirée n'est plus à clôturer (écran 15 de la maquette). */}
+        {isAvailable && (
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: fr.spacing("4v"), flexWrap: "wrap" }}>
             <Button
               priority="secondary"
@@ -203,7 +204,7 @@ const CandidaturesOffreContent = ({
             >
               Voir l'offre en ligne
             </Button>
-            <Button onClick={closureModal.onOpen}>Clôturer le recrutement</Button>
+            {consultation.status === "offer_open" && <Button onClick={closureModal.onOpen}>Clôturer le recrutement</Button>}
           </Box>
         )}
       </Box>
