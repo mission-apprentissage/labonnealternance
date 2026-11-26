@@ -93,6 +93,12 @@ const linkListContent: LinkCategory[] = [
       },
       {
         linkProps: {
+          href: PAGES.static.laLettreDeLAlternance.getPath(),
+        },
+        text: "La lettre de l'alternance",
+      },
+      {
+        linkProps: {
           href: PAGES.static.blog.getPath(),
         },
         text: "Blog",

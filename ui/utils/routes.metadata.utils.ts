@@ -34,6 +34,10 @@ export const METADATA = {
       description:
         "La bonne alternance, service public numérique de la DGEFP : nos engagements, la mesure de notre impact et nos partenaires pour faciliter l'accès à l'alternance.",
     }),
+    laLettreDeLAlternance: () => ({
+      title: "La lettre de l'alternance - La bonne alternance",
+      description: "Abonnez-vous à La lettre de l'alternance sur LinkedIn et retrouvez les dernières éditions de l'infolettre de La bonne alternance.",
+    }),
     cgu: () => ({
       title: "Conditions générales d'utilisation - La bonne alternance",
       description: "Consultez les conditions générales d’utilisation de La bonne alternance pour comprendre nos règles et engagements.",
@@ -312,6 +316,9 @@ export const METADATA = {
     }),
     backAdminFeedbackForms: () => ({
       title: "Formulaires de feedback - La bonne alternance",
+    }),
+    backAdminNewsletters: () => ({
+      title: "Infolettres - La bonne alternance",
     }),
     backAdminFeedbackFormCreation: () => ({
       title: "Créer un formulaire de feedback - La bonne alternance",
