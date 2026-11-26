@@ -22,6 +22,7 @@ import { ACTIVE_HIT_PARAM, buildSearchUrl } from "../_utils/search.params.utils"
 import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
 import { claimFallbackDisplay, createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeChangedEvent } from "../_utils/search.tracking.utils"
 import { parseSearchPageParamsWithLegacy } from "../_utils/search-legacy-utils"
+import { searchResultsErrorDisplay } from "../_utils/search-results-error"
 import { searchResultsStatus } from "../_utils/search-results-status"
 import { SearchBar } from "./SearchBar"
 import { clearedFilters, SearchFilters } from "./SearchFilters"
@@ -118,7 +119,13 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const isRefreshing = result.isFetching && !result.isFetchingNextPage
   const stillWidening = isAutoRadiusWidening(params, nbHits)
   const emploisFallbackCount = useEmploisFallbackCount(params, result, stillWidening)
-  const resultsStatus = searchResultsStatus({ hasData: Boolean(result.data), waiting: isRefreshing || stillWidening, nbHits, emploisFallback: emploisFallbackCount })
+  const resultsStatus = searchResultsStatus({
+    errorDisplay: searchResultsErrorDisplay(result),
+    hasData: Boolean(result.data),
+    waiting: isRefreshing || stillWidening,
+    nbHits,
+    emploisFallback: emploisFallbackCount,
+  })
 
   // Affichage de la proposition : une fois par recherche, pour mesurer son taux de clic.
   const fallbackTrackedSearchesRef = useRef(createSearchKeyTracker())

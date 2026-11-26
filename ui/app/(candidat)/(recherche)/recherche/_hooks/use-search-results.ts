@@ -2,8 +2,8 @@ import { infiniteQueryOptions, keepPreviousData, useInfiniteQuery } from "@tanst
 
 import { apiGet } from "@/utils/api.utils"
 import { readOpcoFilterCookie } from "@/utils/opco-search-filter.utils"
-
 import type { ISearchPageParams } from "../_utils/search.params.utils"
+import { shouldRetrySearch } from "../_utils/search-results-error"
 
 export function paramsToQuerystring(params: ISearchPageParams) {
   const qs: Record<string, unknown> = {
@@ -52,6 +52,7 @@ export const searchResultsQueryOptions = (baseQs: Record<string, unknown>) =>
       return undefined
     },
     staleTime: 1000 * 60 * 5,
+    retry: shouldRetrySearch,
     throwOnError: false,
     // Conserve les données précédentes (résultats + facettes) pendant le rechargement
     // déclenché par un changement de filtre → évite le flicker des filtres et de la liste.

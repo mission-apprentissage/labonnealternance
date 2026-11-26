@@ -11,6 +11,7 @@ import type { EmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
 import type { useSearchResults } from "../_hooks/use-search-results"
 import { useSearchViewNotifier } from "../_hooks/use-search-view-notifier"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
+import { RATE_LIMITED_MESSAGE, searchResultsErrorDisplay } from "../_utils/search-results-error"
 import { EmploisModeFallback } from "./EmploisModeFallback"
 import { SearchHitCard } from "./SearchHitCard"
 
@@ -40,7 +41,8 @@ function LoadingSkeletons() {
 }
 
 export function SearchResultsList({ result, params, scrollToHitId, emploisFallback }: SearchResultsListProps) {
-  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = result
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = result
+  const errorDisplay = searchResultsErrorDisplay(result)
 
   const cardRefs = useRef(new Map<string, HTMLElement>())
   const hitsListRef = useRef<HTMLUListElement>(null)
@@ -97,10 +99,22 @@ export function SearchResultsList({ result, params, scrollToHitId, emploisFallba
 
   if (isLoading) return <LoadingSkeletons />
 
-  if (isError) {
+  if (errorDisplay === "generic") {
     return (
       <Box sx={{ mt: fr.spacing("4v") }}>
         <Alert as="h2" severity="error" title="Erreur" description="Une erreur est survenue lors du chargement des résultats. Veuillez réessayer." />
+      </Box>
+    )
+  }
+
+  // Sans rôle : l'annonce passe par le compteur de SearchPageClient (cf. searchResultsStatus).
+  if (errorDisplay === "rate_limited") {
+    return (
+      <Box sx={{ mt: fr.spacing("4v") }}>
+        <Alert as="h2" severity="warning" role={undefined} title="Recherche momentanément indisponible" description={RATE_LIMITED_MESSAGE} />
+        <Button priority="secondary" iconId="fr-icon-refresh-line" iconPosition="left" onClick={() => refetch()} style={{ marginTop: fr.spacing("4v") }}>
+          Relancer la recherche
+        </Button>
       </Box>
     )
   }
@@ -113,10 +127,10 @@ export function SearchResultsList({ result, params, scrollToHitId, emploisFallba
     !hasNextPage && data.pages.length > 1 && allHits.length < (data.pages.at(-1)?.nbHits ?? 0)
       ? `Les ${allHits.length} premiers résultats sont affichés. Affinez votre recherche (mots-clés, lieu, filtres) pour voir les autres.`
       : ""
-  // Une seule page : rien à annoncer, le total passe par le compteur de SearchPageClient.
+  // Une seule page ou un 429 : rien à annoncer ici, le compteur de SearchPageClient s'en charge.
   const loadMoreStatus = isFetchingNextPage
     ? "Chargement de résultats supplémentaires"
-    : data.pages.length > 1
+    : data.pages.length > 1 && errorDisplay === "none"
       ? `${pluralize(allHits.length, "résultat affiché", "résultats affichés")}`
       : ""
 
@@ -163,6 +177,12 @@ export function SearchResultsList({ result, params, scrollToHitId, emploisFallba
           </li>
         ))}
       </Box>
+
+      {errorDisplay === "rate_limited_after_results" && (
+        <Box sx={{ mt: fr.spacing("4v") }}>
+          <Alert severity="warning" small role={undefined} description={RATE_LIMITED_MESSAGE} />
+        </Box>
+      )}
 
       {/* RGAA : chargement à la demande (CTA), pas de scroll infini — le chargement doit
           rester déclenchable au clavier et ne pas se produire sans action de l'utilisateur. */}

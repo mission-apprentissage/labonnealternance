@@ -1,12 +1,12 @@
 import { InfiniteQueryObserver, QueryClient, QueryObserver } from "@tanstack/react-query"
 import { describe, expect, it, vi } from "vitest"
-import { apiGet } from "@/utils/api.utils"
-
+import { ApiError, apiGet } from "@/utils/api.utils"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
+import { searchResultsErrorDisplay } from "../_utils/search-results-error"
 import { emploisFallbackQueryOptions } from "./use-emplois-fallback-count"
 import { paramsToQuerystring, searchKeyOf, searchResultsQueryOptions } from "./use-search-results"
 
-vi.mock("@/utils/api.utils", () => ({ apiGet: vi.fn() }))
+vi.mock("@/utils/api.utils", async (importOriginal) => ({ ...(await importOriginal<typeof import("@/utils/api.utils")>()), apiGet: vi.fn() }))
 
 describe("paramsToQuerystring", () => {
   it("transmet l'OPCO à /v1/search", () => {
@@ -77,6 +77,90 @@ describe("retour sur une recherche déjà chargée (A → B → A)", () => {
       observer.setOptions(emploisFallbackQueryOptions(qsA))
       expect(observer.getCurrentResult()).toMatchObject({ isPending: false, isFetching: false })
       expect(apiGet).toHaveBeenCalledTimes(2)
+    } finally {
+      unsubscribe()
+    }
+  })
+})
+
+describe("erreurs de /v1/search", () => {
+  const qs = { mode: "emplois", q: "boulanger", radius: 30, hitsPerPage: 20 }
+  const apiError = (status: number) => ApiError.build("/v1/search", new Headers(), {}, new Response("", { status }))
+  // Défaut de React Query dans le navigateur (3 relances, 0 sous Node), sans délai : ne s'appliquent
+  // que si les options de la recherche ne les fixent pas.
+  const client = () => new QueryClient({ defaultOptions: { queries: { retry: 3, retryDelay: 0 } } })
+
+  const settle = async (observer: InfiniteQueryObserver<any, any, any, any, any>) => {
+    await vi.waitFor(() => expect(observer.getCurrentResult()).toMatchObject({ isFetching: false, isPending: false }))
+    return observer.getCurrentResult()
+  }
+
+  it("ne relance pas une réponse 429", async () => {
+    vi.mocked(apiGet)
+      .mockReset()
+      .mockRejectedValue(await apiError(429))
+    const observer = new InfiniteQueryObserver(client(), searchResultsQueryOptions(qs))
+    const unsubscribe = observer.subscribe(vi.fn())
+    try {
+      expect((await settle(observer)).isError).toBe(true)
+      expect(apiGet).toHaveBeenCalledTimes(1)
+    } finally {
+      unsubscribe()
+    }
+  })
+
+  it("relance trois fois une réponse 500", async () => {
+    vi.mocked(apiGet)
+      .mockReset()
+      .mockRejectedValue(await apiError(500))
+    const observer = new InfiniteQueryObserver(client(), searchResultsQueryOptions(qs))
+    const unsubscribe = observer.subscribe(vi.fn())
+    try {
+      expect((await settle(observer)).isError).toBe(true)
+      expect(apiGet).toHaveBeenCalledTimes(4)
+    } finally {
+      unsubscribe()
+    }
+  })
+
+  it("garde les pages chargées quand « Voir plus » reçoit un 429", async () => {
+    vi.mocked(apiGet)
+      .mockReset()
+      .mockResolvedValueOnce({ hits: [{ _id: "a" }], nbHits: 40, nbPages: 2 })
+      .mockRejectedValueOnce(await apiError(429))
+    const observer = new InfiniteQueryObserver(client(), searchResultsQueryOptions(qs))
+    const unsubscribe = observer.subscribe(vi.fn())
+    try {
+      await settle(observer)
+      await observer.fetchNextPage()
+      const result = await settle(observer)
+      expect(result.data?.pages).toHaveLength(1)
+      expect(searchResultsErrorDisplay(result)).toBe("rate_limited_after_results")
+      expect(apiGet).toHaveBeenCalledTimes(2)
+    } finally {
+      unsubscribe()
+    }
+  })
+
+  // Rechargement des pages périmées, au retour d'une fiche : React Query redemande chaque page depuis la première.
+  it("garde les pages chargées quand leur rechargement reçoit un 429", async () => {
+    vi.mocked(apiGet)
+      .mockReset()
+      .mockResolvedValueOnce({ hits: [{ _id: "a" }], nbHits: 40, nbPages: 2 })
+      .mockResolvedValueOnce({ hits: [{ _id: "b" }], nbHits: 40, nbPages: 2 })
+      .mockResolvedValueOnce({ hits: [{ _id: "a" }], nbHits: 40, nbPages: 2 })
+      .mockRejectedValueOnce(await apiError(429))
+    const observer = new InfiniteQueryObserver(client(), searchResultsQueryOptions(qs))
+    const unsubscribe = observer.subscribe(vi.fn())
+    try {
+      await settle(observer)
+      await observer.fetchNextPage()
+      await settle(observer)
+      await observer.refetch()
+      const result = await settle(observer)
+      expect(result.data?.pages).toHaveLength(2)
+      expect(searchResultsErrorDisplay(result)).toBe("rate_limited_after_results")
+      expect(apiGet).toHaveBeenCalledTimes(4)
     } finally {
       unsubscribe()
     }
