@@ -2,7 +2,16 @@ import { describe, expect, it } from "vitest"
 
 import type { EmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
 import type { ISearchPageParams } from "./search.params.utils"
-import { activeFilterNames, createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeChangedEvent, searchTypeOf } from "./search.tracking.utils"
+import {
+  activeFilterNames,
+  claimFallbackDisplay,
+  createSearchKeyTracker,
+  diffFilterChanges,
+  diffSortChange,
+  isSearchDisplaySettled,
+  searchTypeChangedEvent,
+  searchTypeOf,
+} from "./search.tracking.utils"
 
 const base: ISearchPageParams = { mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 }
 
@@ -136,8 +145,7 @@ function replayResultsDisplayed(renders: DisplayRender[], tracker = createSearch
 function replayFallbackDisplayed(renders: Array<{ searchKey: string; count: EmploisFallbackCount }>, tracker = createSearchKeyTracker()) {
   const emitted: string[] = []
   for (const { searchKey, count } of renders) {
-    if (count.status !== "done" || count.count === 0) continue
-    if (tracker.claim(searchKey)) emitted.push(searchKey)
+    if (claimFallbackDisplay(tracker, searchKey, count)) emitted.push(searchKey)
   }
   return emitted
 }
@@ -153,7 +161,7 @@ describe("search_results_displayed : une fois par recherche (#6052)", () => {
     expect(replayResultsDisplayed([{ searchKey: "A" }, { searchKey: "B" }, { searchKey: "A" }, { searchKey: "C" }])).toEqual(["A", "B", "C"])
   })
 
-  it("n'émet pas de nouveau au rejeu des effets d'une instance réaffichée (<Activity>, retour arrière)", () => {
+  it("garde ses recherches suivies tant que l'instance de la page est conservée", () => {
     const tracker = createSearchKeyTracker()
     replayResultsDisplayed([{ searchKey: "A" }, { searchKey: "B" }], tracker)
     // Fiche détail puis retour navigateur : l'instance masquée est réaffichée avec ses refs, ses

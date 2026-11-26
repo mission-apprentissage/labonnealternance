@@ -2,8 +2,9 @@ import { InfiniteQueryObserver, QueryClient, QueryObserver } from "@tanstack/rea
 import { describe, expect, it, vi } from "vitest"
 import { apiGet } from "@/utils/api.utils"
 
+import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { emploisFallbackQueryOptions } from "./use-emplois-fallback-count"
-import { paramsToQuerystring, searchResultsQueryOptions } from "./use-search-results"
+import { paramsToQuerystring, searchKeyOf, searchResultsQueryOptions } from "./use-search-results"
 
 vi.mock("@/utils/api.utils", () => ({ apiGet: vi.fn() }))
 
@@ -14,6 +15,28 @@ describe("paramsToQuerystring", () => {
 
   it("n'envoie pas de paramètre opco sans filtre", () => {
     expect(paramsToQuerystring({ mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 })).not.toHaveProperty("opco")
+  })
+})
+
+describe("searchKeyOf", () => {
+  const base: ISearchPageParams = { mode: "emplois", q: "boulanger", radius: 30, page: 0, hitsPerPage: 20, latitude: 47.2, longitude: -1.55 }
+  const cacheKey = (p: ISearchPageParams) => JSON.stringify(searchResultsQueryOptions(paramsToQuerystring(p)).queryKey)
+
+  // Une recherche que le cache sert sans appel serveur ne doit pas être suivie deux fois, et une
+  // recherche qui part au serveur doit l'être : les deux clés découpent de la même façon.
+  it.each<[string, ISearchPageParams, ISearchPageParams]>([
+    ["autre page", base, { ...base, page: 2 }],
+    ["autre libellé de lieu, mêmes coordonnées", base, { ...base, lieu_label: "Nantes 44000" }],
+    ["origine sans mot-clé", { ...base, q: undefined }, { ...base, q: undefined, q_source: "suggestion" }],
+    ["origine de q différente", base, { ...base, q_source: "suggestion" }],
+    ["autre mode", base, { ...base, mode: "formations" }],
+    ["filtre ajouté", base, { ...base, urgent: true }],
+  ])("suit le découpage du cache : %s", (_label, a, b) => {
+    expect(searchKeyOf(a) === searchKeyOf(b)).toBe(cacheKey(a) === cacheKey(b))
+  })
+
+  it("distingue une même recherche relancée avec une autre origine de q, qui repart au serveur", () => {
+    expect(searchKeyOf({ ...base, q_source: "suggestion" })).not.toBe(searchKeyOf({ ...base, q_source: "free_text" }))
   })
 })
 

@@ -16,12 +16,12 @@ import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-u
 import type { AutoRadiusChain } from "../_hooks/use-auto-radius"
 import { autoRadiusTracking, extendAutoRadiusChain, useAutoRadius } from "../_hooks/use-auto-radius"
 import { useEmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
-import { useSearchResults } from "../_hooks/use-search-results"
+import { searchKeyOf, useSearchResults } from "../_hooks/use-search-results"
 import { emploisFallbackParams } from "../_utils/mode-fallback.utils"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { ACTIVE_HIT_PARAM, buildSearchUrl } from "../_utils/search.params.utils"
 import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
-import { createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeChangedEvent } from "../_utils/search.tracking.utils"
+import { claimFallbackDisplay, createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeChangedEvent } from "../_utils/search.tracking.utils"
 import { parseSearchPageParamsWithLegacy } from "../_utils/search-legacy-utils"
 import { searchResultsStatus } from "../_utils/search-results-status"
 import { SearchBar } from "./SearchBar"
@@ -38,12 +38,6 @@ interface SearchPageClientProps {
 }
 
 type MobilePanel = null | "search" | "filters" | "tri"
-
-// Identifie une recherche distincte pour la télémétrie : pagination et origine de q exclues.
-const searchKeyOf = (p: ISearchPageParams) => {
-  const { page: _page, hitsPerPage: _hitsPerPage, q_source: _qSource, ...trackedParams } = p
-  return JSON.stringify(trackedParams)
-}
 
 export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const rawSearchParams = useSearchParams()
@@ -130,8 +124,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // Affichage de la proposition : une fois par recherche, pour mesurer son taux de clic.
   const fallbackTrackedSearchesRef = useRef(createSearchKeyTracker())
   useEffect(() => {
-    if (emploisFallbackCount.status !== "done" || emploisFallbackCount.count === 0) return
-    if (!fallbackTrackedSearchesRef.current.claim(searchKey)) return
+    if (!claimFallbackDisplay(fallbackTrackedSearchesRef.current, searchKey, emploisFallbackCount)) return
     pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_MODE_FALLBACK_DISPLAYED, results_count: emploisFallbackCount.count, search_engine: SEARCH_ENGINES.BETA })
   })
 

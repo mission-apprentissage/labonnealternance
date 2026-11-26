@@ -1,5 +1,6 @@
 import { MATOMO_EVENTS, SEARCH_ENGINES } from "@/utils/matomo-utils"
 
+import type { EmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
 import type { ISearchPageParams, SearchMode } from "./search.params.utils"
 
 /**
@@ -125,7 +126,8 @@ export function isSearchDisplaySettled<R extends { data?: unknown; isPlaceholder
 /**
  * Garde d'un événement d'affichage : `claim` vaut true si la recherche n'a pas encore été suivie.
  * Portée : l'instance de la page (ref), pour ne pas réémettre une recherche que le cache de React
- * Query sert sans appel serveur (#6052) ; un rechargement repart de zéro, comme ce cache.
+ * Query sert sans appel serveur (#6052) ; un rechargement repart de zéro, comme ce cache. Passé le
+ * staleTime, un retour relance l'appel sans réémettre : léger sous-comptage accepté.
  */
 export function createSearchKeyTracker() {
   const trackedKeys = new Set<string>()
@@ -136,6 +138,15 @@ export function createSearchKeyTracker() {
       return true
     },
   }
+}
+
+/** Garde de search_mode_fallback_displayed : proposition affichée (au moins un résultat) et pas encore suivie. */
+export function claimFallbackDisplay(
+  tracker: ReturnType<typeof createSearchKeyTracker>,
+  searchKey: string,
+  count: EmploisFallbackCount
+): count is { status: "done"; count: number } {
+  return count.status === "done" && count.count > 0 && tracker.claim(searchKey)
 }
 
 export type SearchTypeChangeTrigger = "manual" | "empty_state"

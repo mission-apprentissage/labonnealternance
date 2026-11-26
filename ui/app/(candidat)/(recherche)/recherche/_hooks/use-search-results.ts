@@ -35,6 +35,12 @@ export function paramsToQuerystring(params: ISearchPageParams) {
   return qs
 }
 
+/**
+ * Identifie une recherche distincte pour la télémétrie (#6052) : même découpage que le cache de
+ * résultats, page exclue. Le repli OPCO sur cookie (cf. useSearchResults) n'y entre pas.
+ */
+export const searchKeyOf = (params: ISearchPageParams) => JSON.stringify(paramsToQuerystring(params))
+
 // page exclu du queryKey — chaque page est chargée via pageParam par useInfiniteQuery.
 export const searchResultsQueryOptions = (baseQs: Record<string, unknown>) =>
   infiniteQueryOptions({
