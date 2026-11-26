@@ -14,8 +14,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 import { NewsletterCard } from "./NewsletterCard"
 
-// Page d'abonnement à l'infolettre sur LinkedIn : à faire confirmer par la communication avant la mise en production (#5776).
-const LINKEDIN_SUBSCRIBE_URL = "https://www.linkedin.com/company/la-bonne-alternance/"
+const LINKEDIN_SUBSCRIBE_URL = "https://www.linkedin.com/newsletters/la-lettre-de-l-alternance-7516167190597955584/"
 
 export const metadata: Metadata = {
   title: METADATA.static.laLettreDeLAlternance().title,

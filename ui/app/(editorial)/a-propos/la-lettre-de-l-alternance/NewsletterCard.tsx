@@ -1,9 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import Image from "next/image"
+
+import visuelEdition from "@/public/images/la-lettre-de-l-alternance/visuel-edition.jpg"
 
 /**
- * Carte d'une édition, qui mène à sa lecture sur LinkedIn. Le visuel est décoratif (aria-hidden) :
- * le titre et la date, présents en texte dans la carte, en portent l'information (RGAA 1.2).
+ * Carte d'une édition, qui mène à sa lecture sur LinkedIn. Le visuel, commun à toutes les éditions,
+ * est décoratif (alt vide) : le titre et la date sont en texte dans la carte (RGAA 1.2).
  */
 export function NewsletterCard({ title, date, href }: { title: string; date: string; href: string }) {
   return (
@@ -23,25 +25,9 @@ export function NewsletterCard({ title, date, href }: { title: string; date: str
         </div>
       </div>
       <div className={fr.cx("fr-card__header")}>
-        <Box
-          aria-hidden="true"
-          sx={{
-            aspectRatio: "16 / 9",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            p: fr.spacing("6v"),
-            backgroundColor: fr.colors.decisions.background.actionHigh.blueFrance.default,
-            color: fr.colors.decisions.text.inverted.grey.default,
-          }}
-        >
-          <Typography component="span" sx={{ fontSize: "0.875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            La lettre de l'alternance
-          </Typography>
-          <Typography component="span" sx={{ fontSize: "1.5rem", fontWeight: 700, lineHeight: 1.25 }}>
-            {date}
-          </Typography>
-        </Box>
+        <div className={fr.cx("fr-card__img")}>
+          <Image src={visuelEdition} alt="" sizes="(min-width: 992px) 33vw, (min-width: 576px) 50vw, 100vw" className={fr.cx("fr-responsive-img")} />
+        </div>
       </div>
     </div>
   )
