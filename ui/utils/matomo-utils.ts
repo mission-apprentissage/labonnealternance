@@ -1,4 +1,5 @@
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { publicConfig } from "@/config.public"
 
 export const MATOMO_EVENTS = {
   SALARY_SIMULATION_COMPLETED: "salary_simulation_completed",
@@ -83,9 +84,16 @@ type MatomoEvent = {
   [key: string]: unknown
 }
 
+// Ni conteneur Matomo ni envoi en local et en preview (cf. config.public) : la console montre ce que la recette et la
+// production enverraient.
+const isMatomoEventLogged = () => publicConfig.env === "local" || publicConfig.env === "preview"
+
 export const pushMatomoEvent = (event: MatomoEvent) => {
   if (typeof window === "undefined") return
 
   window._mtm = window._mtm || []
   window._mtm.push(event)
+  if (isMatomoEventLogged()) {
+    console.info(`[matomo] ${event.event}`, event)
+  }
 }
