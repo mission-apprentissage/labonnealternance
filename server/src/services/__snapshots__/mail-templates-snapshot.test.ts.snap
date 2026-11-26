@@ -1,0 +1,453 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`rendu des templates d'e-mails (#5796) > mail-bienvenue.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-spacer : mj-spacer cannot be used inside mj-wrapper, only inside: mj-attributes, mj-column, mj-hero",
+  "mj-spacer : mj-spacer cannot be used inside mj-wrapper, only inside: mj-attributes, mj-column, mj-hero",
+  "mj-spacer : mj-spacer cannot be used inside mj-wrapper, only inside: mj-attributes, mj-column, mj-hero",
+  "mj-section : Attribute name is illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-bienvenue-entreprise-sans-offre.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-candidat-confirmation-rdv.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-candidat-entretien.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-candidat-hardbounce.mjml.ejs 2`] = `
+[
+  "mj-divider : Attribute max-width is illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-candidat-offre-emploi.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-candidat-refus.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-candidat-suggestions-naf.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-candidature.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-candidature-spontanee.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-delegation.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-demande-de-contact.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-notification-hardbounce-cfa.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-optout-activated.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-column : mj-column cannot be used inside mj-column, only inside: mj-attributes, mj-group, mj-section",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-optout-invitation.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-column : mj-column cannot be used inside mj-column, only inside: mj-attributes, mj-group, mj-section",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-optout-start.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-column : mj-column cannot be used inside mj-column, only inside: mj-attributes, mj-group, mj-section",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-optout-unsubscription.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute font-family is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-premium-activated.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-column : mj-column cannot be used inside mj-column, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : Attribute name is illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-premium-activated-reminder.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : Attribute name is illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-premium-invite.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : Attribute name is illegal",
+  "mj-section : Attribute name is illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-premium-invite-followup.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : Attribute name is illegal",
+  "mj-section : Attribute name is illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-premium-refused.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-column, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : Attribute name is illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-cfa-premium-start.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : Attribute name is illegal",
+  "mj-section : Attribute name is illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-compte-desactive.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-confirmation-email.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-text : Attributes border, border-radius are illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-connexion.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-desinscription-algo.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-echec-envoi-candidature.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-expiration-offres.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-spacer : Attribute width is illegal",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-mer-confirmation.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-mer-invitation.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-nouvelle-offre.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-nouvelle-offre-depot-simplifie.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-offre-expiree-auto.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-offre-refusee.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-offre-seuil-candidatures.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-rdva-optout-unsubscription-question.mjml.ejs 2`] = `[]`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-relance-opco.mjml.ejs 2`] = `
+[
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;
+
+exports[`rendu des templates d'e-mails (#5796) > mail-reponse-cfa.mjml.ejs 2`] = `
+[
+  "mj-body : Attribute name is illegal",
+  "mj-column : mj-column cannot be used inside mj-body, only inside: mj-attributes, mj-group, mj-section",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+  "mj-section : mj-section cannot be used inside mj-column, only inside: mj-attributes, mj-body, mj-wrapper",
+]
+`;

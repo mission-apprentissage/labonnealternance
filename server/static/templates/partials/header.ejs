@@ -1,0 +1,16 @@
+<%#
+  En-tête Marianne + La bonne alternance, suivi de l'espacement avant le contenu.
+  Paramètres : data (data.images), utm optionnel (query string sans « ? ») ajouté au lien du logo.
+%>
+<mj-section border-radius="0px" css-class="section">
+  <mj-group>
+    <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+      <mj-image align="left" alt="" css-class="image" src="<%= data.images.logoRf %>" width="89px"></mj-image>
+    </mj-column>
+    <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+      <mj-image align="left" alt="Lien vers le site de La bonne alternance" css-class="image" href="https://labonnealternance.apprentissage.beta.gouv.fr<%= locals.utm ? `?${utm}` : "" %>" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px"></mj-image>
+    </mj-column>
+    <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
+  </mj-group>
+</mj-section>
+<mj-spacer height="24px"></mj-spacer>

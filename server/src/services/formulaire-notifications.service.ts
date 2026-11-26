@@ -52,7 +52,6 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobsPartner
         "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
       qrUrl: `${config.publicUrl}/espace-pro/offre/impression/${offre._id}?print_source=cfa-sharing`,
       createAccountButton: `${config.publicUrl}/organisme-de-formation?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_creer-compte`,
-      policyUrl: `${config.publicUrl}/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_politique-confidentialite`,
       publicEmail: config.publicEmail,
     },
   })
