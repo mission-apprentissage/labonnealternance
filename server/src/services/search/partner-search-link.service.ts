@@ -3,7 +3,7 @@ import type { IPartnerSearchLinkPartner } from "shared/routes/_private/partner-s
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { loadRomeLabelByCode } from "./search-items.service"
+import { getCachedRomeLabelByCode, resetRomeLabelByCodeCache } from "./search-items.service"
 import type { Bbox } from "./search-items-admin-codes"
 import { contains, toBbox } from "./search-items-admin-codes"
 
@@ -92,23 +92,9 @@ type IRncpResolution = { q: string | null; outcome: Exclude<IPartnerSearchLinkOu
 
 export const rncpResolutionCache = new BoundedTtlCache<IRncpResolution>(MAX_CACHED_RNCP, CACHE_TTL_MS)
 
-let romeLabelsCache: { value: Promise<Map<string, string>>; expiresAt: number } | null = null
-
-const getRomeLabelByCode = (): Promise<Map<string, string>> => {
-  if (!romeLabelsCache || romeLabelsCache.expiresAt <= Date.now()) {
-    const value = loadRomeLabelByCode()
-    romeLabelsCache = { value, expiresAt: Date.now() + CACHE_TTL_MS }
-    // Un échec de chargement ne doit pas rester en cache 24 h.
-    value.catch(() => {
-      if (romeLabelsCache?.value === value) romeLabelsCache = null
-    })
-  }
-  return romeLabelsCache.value
-}
-
 export const resetPartnerSearchLinkCaches = () => {
   rncpResolutionCache.clear()
-  romeLabelsCache = null
+  resetRomeLabelByCodeCache()
 }
 
 /** Valeurs triées par fréquence décroissante, à égalité par ordre de première apparition. */
@@ -130,7 +116,7 @@ async function resolveRncp(rncp: string): Promise<IRncpResolution> {
 
   // Libellé ROME d'abord, comme getFormationSearchLabel (training-links.service) : c'est le signal
   // le plus boosté du moteur, un intitulé long de formation finit souvent à 0 résultat.
-  const romeLabelByCode = await getRomeLabelByCode()
+  const romeLabelByCode = await getCachedRomeLabelByCode()
   const romeCodes = byFrequency(formations.flatMap((formation) => formation.rome_codes ?? []))
   const romeLabel = romeCodes.map((code) => romeLabelByCode.get(code)).find(Boolean)
   if (romeLabel) return { q: romeLabel, outcome: "resolved" }

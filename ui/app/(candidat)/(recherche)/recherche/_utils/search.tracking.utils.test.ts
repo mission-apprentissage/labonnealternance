@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import type { EmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
 import type { ISearchPageParams } from "./search.params.utils"
-import { activeFilterNames, createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeOf } from "./search.tracking.utils"
+import { activeFilterNames, createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeChangedEvent, searchTypeOf } from "./search.tracking.utils"
 
 const base: ISearchPageParams = { mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 }
 
@@ -207,5 +207,20 @@ describe("search_mode_fallback_displayed : une fois par recherche (#6052)", () =
       { searchKey: "C", count: done(4) },
     ])
     expect(emitted).toEqual(["B", "C"])
+  })
+})
+
+describe("searchTypeChangedEvent", () => {
+  // Fusion « dernière valeur par clé » du data layer de MTM.
+  const mergeDataLayer = (pushes: Record<string, unknown>[]) => Object.assign({}, ...pushes)
+
+  it("porte toujours trigger, y compris pour une bascule manuelle", () => {
+    expect(searchTypeChangedEvent("formations", "manual")).toEqual({ event: "search_type_changed", search_type: "trainings_only", trigger: "manual", search_engine: "beta-v1" })
+    expect(searchTypeChangedEvent("emplois", "empty_state")).toMatchObject({ search_type: "jobs_only", trigger: "empty_state" })
+  })
+
+  it("une bascule manuelle après un clic sur la proposition n'hérite pas de empty_state", () => {
+    const state = mergeDataLayer([searchTypeChangedEvent("emplois", "empty_state"), searchTypeChangedEvent("formations", "manual")])
+    expect(state.trigger).toBe("manual")
   })
 })

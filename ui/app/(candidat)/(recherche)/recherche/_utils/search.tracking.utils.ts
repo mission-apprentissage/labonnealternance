@@ -1,3 +1,5 @@
+import { MATOMO_EVENTS, SEARCH_ENGINES } from "@/utils/matomo-utils"
+
 import type { ISearchPageParams, SearchMode } from "./search.params.utils"
 
 /**
@@ -134,4 +136,14 @@ export function createSearchKeyTracker() {
       return true
     },
   }
+}
+
+export type SearchTypeChangeTrigger = "manual" | "empty_state"
+
+/**
+ * Payload de search_type_changed. `trigger` part à chaque envoi : MTM garde la dernière valeur
+ * poussée pour chaque clé, une bascule manuelle sans `trigger` hériterait de `empty_state` (#6053).
+ */
+export function searchTypeChangedEvent(mode: SearchMode, trigger: SearchTypeChangeTrigger) {
+  return { event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf(mode), trigger, search_engine: SEARCH_ENGINES.BETA }
 }

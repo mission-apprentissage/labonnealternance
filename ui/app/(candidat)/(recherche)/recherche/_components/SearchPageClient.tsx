@@ -21,7 +21,7 @@ import { emploisFallbackParams } from "../_utils/mode-fallback.utils"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { ACTIVE_HIT_PARAM, buildSearchUrl } from "../_utils/search.params.utils"
 import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
-import { createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeOf } from "../_utils/search.tracking.utils"
+import { createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeChangedEvent } from "../_utils/search.tracking.utils"
 import { parseSearchPageParamsWithLegacy } from "../_utils/search-legacy-utils"
 import { searchResultsStatus } from "../_utils/search-results-status"
 import { SearchBar } from "./SearchBar"
@@ -251,14 +251,14 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // formations. Le clear implicite n'émet PAS de search_filter_removed (c'est un changement
   // de mode, pas des retraits unitaires).
   function handleModeChange(mode: SearchMode) {
-    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf(mode), search_engine: SEARCH_ENGINES.BETA })
+    pushMatomoEvent(searchTypeChangedEvent(mode, "manual"))
     const cleared = clearedFilters(params)
     const sortValidInMode = mode === "formations" ? params.sort === "proximity" : true
     navigateSilent({ ...cleared, mode, sort: sortValidInMode ? params.sort : undefined })
   }
 
   function handleEmploisFallbackSwitch() {
-    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf("emplois"), trigger: "empty_state", search_engine: SEARCH_ENGINES.BETA })
+    pushMatomoEvent(searchTypeChangedEvent("emplois", "empty_state"))
     navigateSilent(emploisFallbackParams(params))
     // Le bouton disparaît avec l'état vide : le focus passe sur la région des résultats visible
     // (arbre desktop ou mobile), restée montée (RGAA 12.8).
