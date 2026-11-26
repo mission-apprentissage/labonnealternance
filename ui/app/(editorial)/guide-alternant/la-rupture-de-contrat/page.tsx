@@ -116,14 +116,17 @@ const LaRuptureDeContratPage = () => {
       </Section>
       <Section title="Tableau récapitulatif : rupture du contrat d'apprentissage">
         <TableArticle
+          caption="Récapitulatif de la rupture du contrat d'apprentissage selon la situation"
+          captionHidden
+          rowHeader
           headers={["Situation", "Qui peut rompre", "Préavis", "Indemnités"]}
           data={[
-            [<Typography fontWeight="bold">Pendant les 45 jours</Typography>, "Employeur ou apprenti", "Aucun", "Aucune"],
-            [<Typography fontWeight="bold">Accord commun</Typography>, "Les deux parties", "Selon accord", "Selon accord"],
-            [<Typography fontWeight="bold">« Démission » apprenti</Typography>, "Apprenti", "7 jours min.", "Aucune"],
-            [<Typography fontWeight="bold">Faute grave</Typography>, "Employeur", "Aucun", "Aucune"],
-            [<Typography fontWeight="bold">Obtention diplôme</Typography>, "Apprenti", "1 mois", "Aucune"],
-            [<Typography fontWeight="bold">Liquidation judiciaire</Typography>, "Liquidateur", "Aucun", "Oui (versées par le liquidateur)"],
+            ["Pendant les 45 jours", "Employeur ou apprenti", "Aucun", "Aucune"],
+            ["Accord commun", "Les deux parties", "Selon accord", "Selon accord"],
+            ["« Démission » apprenti", "Apprenti", "7 jours min.", "Aucune"],
+            ["Faute grave", "Employeur", "Aucun", "Aucune"],
+            ["Obtention diplôme", "Apprenti", "1 mois", "Aucune"],
+            ["Liquidation judiciaire", "Liquidateur", "Aucun", "Oui (versées par le liquidateur)"],
           ]}
         />
       </Section>
