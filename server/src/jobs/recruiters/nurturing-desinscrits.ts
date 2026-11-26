@@ -11,10 +11,8 @@ const TIMEZONE = "Europe/Paris"
 // Relance 9 mois après la désinscription : l'entreprise a encore 3 mois devant elle avant le renouvellement
 // du contrat de ses apprentis, et avant de re-planifier son recrutement.
 const NURTURING_MONTHS = 9
-// Les déclenchements tombant en août (mois creux) sont reportés au 1er septembre
+// Rien n'est envoyé en août (mois creux) : les échéances sont rattrapées dès septembre par la fenêtre cumulative
 const AUGUST = 7
-const SEPTEMBER = 8
-const AUGUST_CATCH_UP_DAYS = 31
 
 type NurturingRow = {
   email: string
@@ -35,11 +33,9 @@ export const nurturingDesinscrits = async () => {
     return
   }
 
-  let windowStart = today.subtract(NURTURING_MONTHS, "month")
-  const windowEnd = windowStart.add(1, "day")
-  if (today.month() === SEPTEMBER && today.date() === 1) {
-    windowStart = windowStart.subtract(AUGUST_CATCH_UP_DAYS, "day")
-  }
+  // Fenêtre cumulative : toute désinscription échue et non relancée. Elle rattrape les fins de mois (dayjs ramène le 31 mai
+  // au 28 février), le décalage horaire, août et les runs ratés, sans date de début à maintenir.
+  const windowEnd = today.subtract(NURTURING_MONTHS, "month").add(1, "day")
 
   const now = new Date()
 
@@ -48,7 +44,7 @@ export const nurturingDesinscrits = async () => {
       unsubscribe_reason: UNSUBSCRIBE_REASONS.DEJA_TROUVE,
       email: { $nin: [null, ""] },
       relance_nurturing_date: null,
-      unsubscribe_date: { $gte: windowStart.toDate(), $lt: windowEnd.toDate() },
+      unsubscribe_date: { $lt: windowEnd.toDate() },
     })
     .sort({ unsubscribe_date: 1 })
     .toArray()
@@ -67,6 +63,15 @@ export const nurturingDesinscrits = async () => {
         .toArray()
     ).map(({ email }) => email.toLowerCase())
   )
+
+  // Une adresse blacklistée ne sera jamais relancée : on la marque et on efface son e-mail pour qu'elle ne redevienne pas candidate
+  const blacklistedEmails = candidates.map((company) => company.email!).filter((email) => blacklisted.has(email.toLowerCase()))
+  if (blacklistedEmails.length > 0) {
+    await getDbCollection("unsubscribedrecruteurslba").updateMany(
+      { unsubscribe_reason: UNSUBSCRIBE_REASONS.DEJA_TROUVE, email: { $in: blacklistedEmails } },
+      { $set: { email: null, relance_nurturing_date: now } }
+    )
+  }
 
   // Une adresse rattachée à plusieurs établissements désinscrits ne reçoit qu'un seul mail
   const rowsByEmail = new Map<string, NurturingRow>()

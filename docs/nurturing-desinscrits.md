@@ -14,13 +14,13 @@ Les désinscriptions antérieures à ce dispositif n'ont pas d'e-mail et ne sont
 
 Code : [nurturing-desinscrits.ts](../server/src/jobs/recruiters/nurturing-desinscrits.ts), cron `5 8 * * *`, production uniquement ([jobs.ts](../server/src/jobs/jobs.ts)).
 
-Chaque jour, le job cible les désinscriptions « déjà trouvé » survenues **il y a exactement 9 mois** (jour calendaire, `Europe/Paris`) :
+Chaque jour, le job cible les désinscriptions « déjà trouvé » **échues** : survenues il y a 9 mois ou plus (jour calendaire, `Europe/Paris`). La fenêtre est cumulative, sans date de début : fins de mois (dayjs ramène le 31 mai au 28 février), décalage horaire, août et runs ratés sont rattrapés au run suivant. À l'activation de la variable, toutes les désinscriptions échues partent le même jour.
 
-1. **Règle d'août** : le job ne fait rien en août, et le 1ᵉʳ septembre sa fenêtre s'élargit de 31 jours pour rattraper les cohortes d'août (même règle que le [nurturing des entreprises dormantes](./nurturing-entreprises.md)).
+1. **Règle d'août** : le job ne fait rien en août ; les échéances sont rattrapées en septembre (même règle que le [nurturing des entreprises dormantes](./nurturing-entreprises.md)).
 2. Sélection : motif `DEJA_TROUVE`, `email` renseigné, `relance_nurturing_date` vide.
-3. Exclusion des adresses de la collection `emailblacklists`.
+3. **Adresses blacklistées** (collection `emailblacklists`, correspondance exacte comme `isEmailBlacklisted`) : jamais relancées ; la ligne est marquée et son e-mail effacé pour ne pas redevenir candidate.
 4. **Un mail par adresse** : les établissements qui partagent une adresse sont regroupés.
-5. **Marquage avant l'envoi** (`relance_nurturing_date = now`, sur tous les établissements de l'adresse, y compris ceux dont l'échéance tombe un autre jour) : en cas de crash, on préfère rater une relance qu'en envoyer deux.
+5. **Marquage avant l'envoi** (`relance_nurturing_date = now`, sur tous les établissements de l'adresse, y compris ceux dont l'échéance n'est pas atteinte) : en cas de crash, on préfère rater une relance qu'en envoyer deux.
 6. Envoi vers la liste Brevo, puis **effacement de l'e-mail** (`email = null`). Si Brevo échoue, l'e-mail est conservé pour permettre une relance manuelle depuis un export, et une alerte Slack est envoyée.
 
 Attributs poussés : `EMAIL`, `RAISON_SOCIALE`, `DATE_DESINSCRIPTION`. Pas de `PRENOM` : les entreprises algo n'ont pas de contact nominatif.
