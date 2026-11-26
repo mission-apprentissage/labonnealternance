@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Image from "next/image"
 
-import visuelEdition from "@/public/images/la-lettre-de-l-alternance/visuel-edition.jpg"
+import visuelEdition from "@/public/images/la-lettre-de-l-alternance/visuel-edition.webp"
 
 /**
  * Carte d'une édition, qui mène à sa lecture sur LinkedIn. Le visuel, commun à toutes les éditions,
