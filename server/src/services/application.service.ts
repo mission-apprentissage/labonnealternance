@@ -45,8 +45,10 @@ import { getApplicationCvS3Key } from "./application-cv.service"
 import type { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
 import { buildEstablishmentId } from "./etablissement.service"
+import { changeJobsPartnersStatus } from "./job-partner-status.service"
 import { buildLbaUrl } from "./jobs/job-opportunity/job-opportunity.service"
 import mailer from "./mailer.service"
+import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
 import { saveApplicationTrafficSourceIfAny } from "./traffic-source.service"
 import { validateUserWithAccountEmail } from "./user-with-account.service"
 
@@ -1551,6 +1553,11 @@ const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate
     // no specific response other than http 200 by Taleez, using a placeholder value to mark the application as sent to Taleez
     await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_company_message_id: "Taleez" } })
   } catch (err) {
+    if (axios.isAxiosError(err) && err.response?.status === 410) {
+      await cancelJobClosedByPartner(partnerJob._id)
+      // Pas de capture ici : processApplicationGroup capture l'erreur relancée.
+      throw new PartnerJobClosedError(`Offre fermée chez Taleez (410) : candidature non transmise, offre annulée sur LBA. jobId=${partnerJob._id}`, { cause: err })
+    }
     captureException(err, {
       extra: {
         message: "Erreur lors de l'envoi de la candidature au partenaire Taleez",
@@ -1559,5 +1566,26 @@ const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate
       },
     })
     throw err
+  }
+}
+
+/** Type d'erreur distinct pour que Sentry regroupe les offres fermées chez le partenaire à part des autres échecs d'envoi. */
+export class PartnerJobClosedError extends Error {
+  override name = "PartnerJobClosedError"
+}
+
+export const PARTNER_CLOSED_JOB_REASON = "fermée par le partenaire"
+
+/**
+ * Une offre fermée chez Taleez sans être annulée via notre API reste Active : chaque candidature suivante
+ * échouerait (#6042). offer_expiration garde sa date, comme pour les autres clôtures (cf. closeOffreWithMotif).
+ */
+const cancelJobClosedByPartner = async (jobId: ObjectId) => {
+  const { modifiedCount } = await changeJobsPartnersStatus(
+    { _id: jobId, offer_status: JOB_STATUS_ENGLISH.ACTIVE },
+    { status: JOB_STATUS_ENGLISH.ANNULEE, reason: PARTNER_CLOSED_JOB_REASON, grantedBy: "send-application-to-taleez" }
+  )
+  if (modifiedCount) {
+    syncJobPartnersToSearchItemsInBackground([jobId])
   }
 }
