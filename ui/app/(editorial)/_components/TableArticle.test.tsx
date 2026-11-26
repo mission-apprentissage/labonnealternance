@@ -9,12 +9,16 @@ const data = [
 ]
 
 const tbodyOf = (html: string) => html.match(/<tbody>.*<\/tbody>/)?.[0] ?? ""
+const tableClassesOf = (html: string) => html.match(/class="([^"]*\bfr-table\b[^"]*)"/)?.[1].split(" ") ?? []
 
 describe("TableArticle", () => {
   it("rend un caption et des en-têtes de colonne (RGAA 5.4, 5.6)", () => {
-    const html = renderToStaticMarkup(<TableArticle caption="Rémunération de l'apprenti" headers={headers} data={data} />)
+    const html = renderToStaticMarkup(<TableArticle caption="Rémunération" headers={headers} data={data} />)
 
-    expect(html).toMatch(/^<div class="fr-table fr-table--layout-fixed"[^>]*><table><caption>Rémunération de l&#x27;apprenti<\/caption>/)
+    expect(tableClassesOf(html)).toEqual(expect.arrayContaining(["fr-table", "fr-table--layout-fixed"]))
+    expect(tableClassesOf(html)).not.toContain("fr-table--no-caption")
+    // Le caption doit être le premier enfant du table (HTML) pour titrer le tableau.
+    expect(html).toMatch(/<table[^>]*><caption>Rémunération<\/caption>/)
     expect(html.match(/<th scope="col">/g)).toHaveLength(3)
   })
 
@@ -35,7 +39,7 @@ describe("TableArticle", () => {
   it("masque visuellement le caption avec captionHidden en le gardant dans le tableau", () => {
     const html = renderToStaticMarkup(<TableArticle caption="Titre" captionHidden headers={headers} data={data} />)
 
-    expect(html).toContain('class="fr-table fr-table--layout-fixed fr-table--no-caption"')
-    expect(html).toContain("<caption>Titre</caption>")
+    expect(tableClassesOf(html)).toContain("fr-table--no-caption")
+    expect(html).toMatch(/<table[^>]*><caption>Titre<\/caption>/)
   })
 })
