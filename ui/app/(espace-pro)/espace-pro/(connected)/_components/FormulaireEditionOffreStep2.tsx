@@ -6,10 +6,12 @@ import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { Formik, useField, useFormikContext } from "formik"
+import { useEffect, useState } from "react"
 import { type IJob, ZJobFields } from "shared"
 import type { IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 import type z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
+import { LiveStatus } from "@/app/_components/LiveStatus"
 import { submitOrFocusFirstInvalidField } from "@/app/_components/submit-with-focus-on-error"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
@@ -183,6 +185,8 @@ const InfoText = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
+const PENDING_CFA_CHECK_MESSAGE = "Vérification des centres de formation à proximité en cours"
+
 const Buttons = ({
   offre,
   onCancel,
@@ -201,31 +205,50 @@ const Buttons = ({
   const onSubmitClick = () => submitOrFocusFirstInvalidField(formik)
 
   const willContinue = isFtEligible || hasCfa
+  const submitLabel = offre?._id ? "Mettre à jour l'offre" : "Créer l'offre"
+  const readyLabel = willContinue ? "Continuer" : submitLabel
+
+  // l'étape s'ouvre déjà en attente : le message n'est posé qu'après le premier rendu pour que la zone soit montée vide (cf. LiveStatus)
+  // la fin n'est annoncée qu'après une attente effective, jamais pour un compte CFA ou éligible France Travail
+  const [cfaCheckStatus, setCfaCheckStatus] = useState("")
+  useEffect(() => {
+    setCfaCheckStatus((previous) => {
+      if (isPendingCfaCheck) return PENDING_CFA_CHECK_MESSAGE
+      return previous ? `Vérification terminée, bouton « ${readyLabel} » disponible` : ""
+    })
+  }, [isPendingCfaCheck, readyLabel])
 
   return (
-    <Box
-      sx={{ display: "flex", justifyContent: "flex-end", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v"), mt: fr.spacing("6v") }}
-    >
-      <Box sx={{ mr: fr.spacing("4v") }}>
-        <Button aria-label="Retour vers l'étape 1 du formulaire de dépôt d'offre" className="fr-btn--secondary" onClick={() => onCancel(values)}>
-          Retour
-        </Button>
+    <>
+      {/* hors du conteneur aria-busy, qui retiendrait l'annonce jusqu'à la fin de l'attente */}
+      <LiveStatus message={cfaCheckStatus} />
+      <Box
+        sx={{ display: "flex", justifyContent: "flex-end", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v"), mt: fr.spacing("6v") }}
+      >
+        <Box sx={{ mr: fr.spacing("4v") }}>
+          <Button aria-label="Retour vers l'étape 1 du formulaire de dépôt d'offre" className="fr-btn--secondary" onClick={() => onCancel(values)}>
+            Retour
+          </Button>
+        </Box>
+        {/* aria-busy limité au bouton d'action : « Retour » reste utilisable pendant l'attente */}
+        <Box aria-busy={isPendingCfaCheck || undefined}>
+          {isPendingCfaCheck ? (
+            // le libellé du bouton dépend de la présence de CFA à proximité : tant que cette recherche n'est pas terminée,
+            // on affiche un spinner plutôt qu'un libellé provisoire qui changerait juste après
+            <Button disabled aria-label={PENDING_CFA_CHECK_MESSAGE} data-testid="continuer-creer-offre">
+              <CircularProgress size={16} color="inherit" />
+            </Button>
+          ) : willContinue ? (
+            <Button disabled={isSubmitting} aria-label="Continuer vers l'étape suivante du formulaire de dépôt d'offre" onClick={onSubmitClick} data-testid="continuer-creer-offre">
+              Continuer
+            </Button>
+          ) : (
+            <Button disabled={isSubmitting} onClick={onSubmitClick} data-testid="creer-offre">
+              {submitLabel}
+            </Button>
+          )}
+        </Box>
       </Box>
-      {isPendingCfaCheck ? (
-        // le libellé du bouton dépend de la présence de CFA à proximité : tant que cette recherche n'est pas terminée,
-        // on affiche un spinner plutôt qu'un libellé provisoire qui changerait juste après
-        <Button disabled aria-label="Vérification des centres de formation à proximité en cours" data-testid="continuer-creer-offre">
-          <CircularProgress size={16} color="inherit" />
-        </Button>
-      ) : willContinue ? (
-        <Button disabled={isSubmitting} aria-label="Continuer vers l'étape suivante du formulaire de dépôt d'offre" onClick={onSubmitClick} data-testid="continuer-creer-offre">
-          Continuer
-        </Button>
-      ) : (
-        <Button disabled={isSubmitting} onClick={onSubmitClick} data-testid="creer-offre">
-          {offre?._id ? "Mettre à jour l'offre" : "Créer l'offre"}
-        </Button>
-      )}
-    </Box>
+    </>
   )
 }
