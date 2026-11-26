@@ -35,7 +35,8 @@ export const nurturingDesinscrits = async () => {
 
   // Fenêtre cumulative : toute désinscription échue et non relancée. Elle rattrape les fins de mois (dayjs ramène le 31 mai
   // au 28 février), le décalage horaire, août et les runs ratés, sans date de début à maintenir.
-  const windowEnd = today.subtract(NURTURING_MONTHS, "month").add(1, "day")
+  // Reconstruite depuis la date calendaire : subtract() conserve l'offset d'origine (été/hiver), d'où une heure de décalage.
+  const windowEnd = dayjs.tz(today.subtract(NURTURING_MONTHS, "month").add(1, "day").format("YYYY-MM-DD"), TIMEZONE)
 
   const now = new Date()
 
