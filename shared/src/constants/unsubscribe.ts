@@ -1,5 +1,5 @@
-// Les valeurs sont les libellés affichés dans le formulaire ET stockés dans `unsubscribedrecruteurslba.unsubscribe_reason` :
-// les documents existants portent ces textes, ne pas les modifier sans migration.
+// Les valeurs sont les libellés affichés dans le formulaire et stockés dans `unsubscribedrecruteurslba.unsubscribe_reason` depuis #2198.
+// Avant, le formulaire stockait des clés (RECRUTEMENT_CLOS, OPPOSITION…). Ne pas modifier un libellé sans migration.
 export const UNSUBSCRIBE_REASONS = {
   DEJA_TROUVE: "Nous avons déjà trouvé nos alternants pour l’année en cours",
   CANDIDATURES_HORS_SUJET: "Les candidatures ne correspondent pas aux activités de mon entreprise",
