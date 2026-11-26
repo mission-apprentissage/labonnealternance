@@ -34,6 +34,7 @@ export const RENDERED_BLOCK_TYPES = new Set([
   "table",
   "table_row",
   "divider",
+  "video",
 ])
 
 // Blocs dont les enfants sont rendus : seuls ceux-là justifient un appel à l'API pour les lire.
@@ -42,8 +43,13 @@ export const CONTAINER_BLOCK_TYPES = new Set(["bulleted_list_item", "numbered_li
 // Le sommaire du site remplace celui de Notion.
 const IGNORED_BLOCK_TYPES = new Set(["table_of_contents"])
 
+export type NotionFileValue = { type?: string; file?: { url: string; expiry_time: string }; caption?: NotionRichText[] }
+
 export const getBlockValue = (block: NotionBlock) =>
-  (block[block.type] ?? {}) as { rich_text?: NotionRichText[]; color?: string; cells?: NotionRichText[][]; has_column_header?: boolean }
+  (block[block.type] ?? {}) as { rich_text?: NotionRichText[]; color?: string; cells?: NotionRichText[][]; has_column_header?: boolean } & NotionFileValue
+
+// Seul un fichier déposé dans Notion est servi par LBA (cf. fetchOpcoGuideVideoUrl) : un lien externe sortirait la vidéo de l'espace OPCO.
+export const isPlayableVideo = (block: NotionBlock) => block.type === "video" && getBlockValue(block).type === "file"
 
 export const toPlainText = (richText: NotionRichText[] = []) => richText.map(({ plain_text }) => plain_text).join("")
 
@@ -51,7 +57,8 @@ const HEADING_NUMBER = /^\s*(\d+)\s*\./
 
 const collectUnsupportedTypes = (blocks: NotionBlock[], found: Set<string>) => {
   for (const block of blocks) {
-    if (!RENDERED_BLOCK_TYPES.has(block.type) && !IGNORED_BLOCK_TYPES.has(block.type)) found.add(block.type)
+    if (block.type === "video" && !isPlayableVideo(block)) found.add(`video:${getBlockValue(block).type ?? "inconnu"}`)
+    else if (!RENDERED_BLOCK_TYPES.has(block.type) && !IGNORED_BLOCK_TYPES.has(block.type)) found.add(block.type)
     if (block.children) collectUnsupportedTypes(block.children, found)
   }
 }
@@ -93,6 +100,16 @@ export function structureOpcoGuide(blocks: NotionBlock[]): OpcoGuideStructure {
   collectUnsupportedTypes([...intro, ...sections.flatMap((section) => section.blocks)], unsupported)
   return { status: "ok", guide: { intro, sections }, unsupportedTypes: [...unsupported].sort() }
 }
+
+const collectVideoIds = (blocks: NotionBlock[], ids: string[]): string[] => {
+  for (const block of blocks) {
+    if (isPlayableVideo(block)) ids.push(block.id)
+    if (block.children) collectVideoIds(block.children, ids)
+  }
+  return ids
+}
+
+export const getOpcoGuideVideoIds = (guide: OpcoGuide) => collectVideoIds([...guide.intro, ...guide.sections.flatMap((section) => section.blocks)], [])
 
 const LBA_MAIL_DOMAINS = ["labonnealternance.apprentissage.beta.gouv.fr", "beta.gouv.fr"]
 const NOTION_HOSTS = /(^|\.)notion\.(so|site|com)$/

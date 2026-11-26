@@ -44,6 +44,7 @@ export const MATOMO_EVENTS = {
   OPCO_GUIDE_DISPLAYED: "opco_guide_displayed",
   OPCO_GUIDE_CTA_CLICKED: "opco_guide_cta_clicked",
   OPCO_GUIDE_LINK_CLICKED: "opco_guide_link_clicked",
+  OPCO_GUIDE_VIDEO_PLAYED: "opco_guide_video_played",
 } as const
 
 export type MatomoEventName = (typeof MATOMO_EVENTS)[keyof typeof MATOMO_EVENTS]

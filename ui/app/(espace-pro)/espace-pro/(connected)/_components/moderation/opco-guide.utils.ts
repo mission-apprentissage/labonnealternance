@@ -16,6 +16,8 @@ export type OpcoGuideSectionId = (typeof OPCO_GUIDE_SECTIONS)[number]["id"]
 
 export const getOpcoGuideHref = (sectionId?: OpcoGuideSectionId) => `${MODERATION_PAGES.opcoGuide.getPath()}${sectionId ? `#${sectionId}` : ""}`
 
+export const getOpcoGuideVideoPath = (blockId: string) => `${MODERATION_PAGES.opcoGuide.getPath()}/video/${blockId}`
+
 export type OpcoGuideEntryPoint = "entreprises" | "offres_moderation"
 
 // Seule une ancre connue part vers Matomo : le hash de l'URL est libre.

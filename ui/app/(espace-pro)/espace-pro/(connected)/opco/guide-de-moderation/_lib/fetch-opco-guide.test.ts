@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { block, sectionHeadings, text } from "./notion-guide.fixtures"
+import { block, sectionHeadings, text, videoFile } from "./notion-guide.fixtures"
 
 vi.mock("server-only", () => ({}))
 const sentry = vi.hoisted(() => ({ captureException: vi.fn(), captureMessage: vi.fn() }))
@@ -151,5 +151,67 @@ describe("fetchOpcoGuide", () => {
     expect(await fetchOpcoGuide()).toEqual({ status: "unavailable" })
     expect(fetchMock).toHaveBeenCalledTimes(1)
     expect(String(sentry.captureException.mock.calls[0][0])).toContain("HTTP 404")
+  })
+})
+
+describe("fetchOpcoGuideVideoUrl", () => {
+  const inOneHour = () => new Date(Date.now() + 60 * 60 * 1_000).toISOString()
+  const setup = () => {
+    const video = videoFile()
+    const [firstHeading, ...rest] = sectionHeadings(7)
+    let served = 0
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url.includes(`/blocks/${video.id}?`) || url.endsWith(`/blocks/${video.id}`)) {
+        served++
+        return json({ ...video, video: { type: "file", file: { url: `https://stockage.fictif/frais-${served}.mp4`, expiry_time: inOneHour() } } })
+      }
+      return page([firstHeading, video, ...rest])
+    })
+    const blockCalls = () => fetchMock.mock.calls.filter(([url]) => url.endsWith(`/blocks/${video.id}`)).length
+    return { video, blockCalls }
+  }
+
+  it("relit le lien du fichier auprès de Notion, puis le garde jusqu'à l'approche de son expiration", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] })
+    const { video, blockCalls } = setup()
+    const { fetchOpcoGuideVideoUrl } = await loadModule()
+
+    expect(await fetchOpcoGuideVideoUrl(video.id)).toBe("https://stockage.fictif/frais-1.mp4")
+    expect(await fetchOpcoGuideVideoUrl(video.id)).toBe("https://stockage.fictif/frais-1.mp4")
+    expect(blockCalls()).toBe(1)
+
+    vi.setSystemTime(Date.now() + 55 * 60 * 1_000)
+    expect(await fetchOpcoGuideVideoUrl(video.id)).toBe("https://stockage.fictif/frais-2.mp4")
+  })
+
+  it("relit le lien après un oubli explicite", async () => {
+    const { video, blockCalls } = setup()
+    const { fetchOpcoGuideVideoUrl, forgetOpcoGuideVideoUrl } = await loadModule()
+
+    await fetchOpcoGuideVideoUrl(video.id)
+    forgetOpcoGuideVideoUrl(video.id)
+
+    expect(await fetchOpcoGuideVideoUrl(video.id)).toBe("https://stockage.fictif/frais-2.mp4")
+    expect(blockCalls()).toBe(2)
+  })
+
+  it.each([
+    ["un bloc hors du guide", "bloc-inconnu"],
+    ["une chaîne vide", ""],
+  ])("ne lit pas %s", async (_, blockId) => {
+    setup()
+    const { fetchOpcoGuideVideoUrl } = await loadModule()
+
+    expect(await fetchOpcoGuideVideoUrl(blockId)).toBeNull()
+    expect(fetchMock.mock.calls.some(([url]) => !url.includes("/children"))).toBe(false)
+  })
+
+  it("ne sert rien quand le guide est indisponible", async () => {
+    const { video } = setup()
+    vi.stubEnv("LBA_NOTION_API_TOKEN", "")
+    const { fetchOpcoGuideVideoUrl } = await loadModule()
+
+    expect(await fetchOpcoGuideVideoUrl(video.id)).toBeNull()
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

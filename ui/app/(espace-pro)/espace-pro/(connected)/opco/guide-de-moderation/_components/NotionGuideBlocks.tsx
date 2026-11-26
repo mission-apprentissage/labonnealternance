@@ -4,8 +4,10 @@ import CallOut, { type CallOutProps } from "@codegouvfr/react-dsfr/CallOut"
 import Table from "@codegouvfr/react-dsfr/Table"
 import { Box, Typography } from "@mui/material"
 import type { ReactNode } from "react"
+import { getOpcoGuideVideoPath } from "@/app/(espace-pro)/espace-pro/(connected)/_components/moderation/opco-guide.utils"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { getBlockValue, getRenderableHref, type NotionBlock, type NotionRichText, toPlainText } from "../_lib/notion-guide"
+import { getBlockValue, getRenderableHref, isPlayableVideo, type NotionBlock, type NotionRichText, toPlainText } from "../_lib/notion-guide"
+import { OpcoGuideVideo } from "../OpcoGuideTracking"
 
 const CALLOUT_COLORS: Record<string, CallOutProps.ColorVariant> = {
   orange_background: "orange-terre-battue",
@@ -105,6 +107,8 @@ function Block({ block, lead }: { block: NotionBlock; lead: boolean }) {
     }
     case "divider":
       return <hr />
+    case "video":
+      return isPlayableVideo(block) ? <OpcoGuideVideo src={getOpcoGuideVideoPath(block.id)} caption={<RichText value={value.caption} />} /> : null
     default:
       // Bloc non rendu : signalé à Sentry au chargement (cf. structureOpcoGuide).
       return null

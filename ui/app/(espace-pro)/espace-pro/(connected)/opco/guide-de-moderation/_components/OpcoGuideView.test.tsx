@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
 import { OPCO_GUIDE_SECTIONS } from "@/app/(espace-pro)/espace-pro/(connected)/_components/moderation/opco-guide.utils"
 import { structureOpcoGuide } from "../_lib/notion-guide"
-import { block, heading2, paragraph, text } from "../_lib/notion-guide.fixtures"
+import { block, heading2, paragraph, text, videoFile } from "../_lib/notion-guide.fixtures"
 import { OpcoGuideView } from "./OpcoGuideView"
 
 vi.mock("server-only", () => ({}))
@@ -15,6 +15,8 @@ vi.mock("../OpcoGuideTracking", async (importOriginal) => ({
   },
 }))
 
+const video = videoFile()
+
 const fixtureGuide = () => {
   const sections = OPCO_GUIDE_SECTIONS.flatMap((_, index) => [heading2(`${index + 1}. Titre Notion ${index + 1}`), paragraph(text(`Texte fictif ${index + 1}`))])
   sections.splice(
@@ -23,7 +25,8 @@ const fixtureGuide = () => {
     paragraph(text("Masque "), text("emxxx@xxx.fr", { href: "mailto:emxxx@xxx.fr" }), text(" et "), text("page interne", { href: "https://www.notion.so/page-123" })),
     block("table", { has_column_header: true }, [block("table_row", { cells: [[text("Colonne fictive")]] }), block("table_row", { cells: [[text("Cellule fictive")]] })]),
     block("toggle", { rich_text: [text("Question fictive")] }, [paragraph(text("Réponse fictive"))]),
-    block("video")
+    block("video", { type: "external", external: { url: "https://video.fictive/externe" } }),
+    video
   )
   const result = structureOpcoGuide([paragraph(text("Chapeau fictif")), ...sections])
   if (result.status !== "ok") throw new Error(result.reason)
@@ -55,6 +58,18 @@ describe("OpcoGuideView, contenu Notion disponible", () => {
     expect(html).toContain("emxxx@xxx.fr")
     expect(html).not.toContain("mailto:emxxx")
     expect(html).not.toContain("notion.so")
+  })
+
+  it("lit la vidéo déposée par la route LBA, jamais par le lien Notion ou un lien externe", () => {
+    const route = `/espace-pro/opco/guide-de-moderation/video/${video.id}`
+    expect(html.match(/<video[\s>]/g)).toHaveLength(1)
+    expect(html).toMatch(new RegExp(`<video[^>]* src="${route}"`))
+    const link = html.match(/<a ([^>]*)>Ouvrir la vidéo dans un nouvel onglet<span class="fr-sr-only"> - nouvelle fenêtre<\/span>/)?.[1]
+    expect(link).toContain(`href="${route}"`)
+    expect(link).toContain('target="_blank"')
+    expect(html).toContain("Légende fictive")
+    expect(html).not.toContain("stockage.fictif")
+    expect(html).not.toContain("video.fictive")
   })
 
   it("compte l'affichage du guide", () => {

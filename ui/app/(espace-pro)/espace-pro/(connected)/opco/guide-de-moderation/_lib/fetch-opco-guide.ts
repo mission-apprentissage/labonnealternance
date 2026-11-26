@@ -1,7 +1,7 @@
 import "server-only"
 
 import { captureException, captureMessage } from "@sentry/nextjs"
-import { CONTAINER_BLOCK_TYPES, type NotionBlock, type OpcoGuide, structureOpcoGuide } from "./notion-guide"
+import { CONTAINER_BLOCK_TYPES, getBlockValue, getOpcoGuideVideoIds, isPlayableVideo, type NotionBlock, type OpcoGuide, structureOpcoGuide } from "./notion-guide"
 
 // Page « Guide de modération » de l'espace Notion « Contenus web ». Elle est privée : seule l'intégration
 // dont le jeton est dans LBA_NOTION_API_TOKEN peut la lire. Ne jamais la publier sur le web.
@@ -20,6 +20,8 @@ const RETRY_DELAYS_MS = [500, 1_500]
 const REQUEST_TIMEOUT_MS = 10_000
 // L'API Notion limite à environ 3 requêtes par seconde en moyenne, avec des pointes tolérées ; un 429 est réessayé.
 const MAX_CONCURRENT_REQUESTS = 3
+// Les liens de fichier Notion expirent au bout d'une heure : renouvelés avant, pour ne pas couper une lecture en cours.
+const VIDEO_URL_MARGIN_MS = 10 * 60 * 1_000
 
 export type OpcoGuideResult = { status: "ok"; guide: OpcoGuide } | { status: "unavailable" }
 
@@ -57,7 +59,9 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const isRetryable = (error: unknown) => !(error instanceof NotionApiError) || error.status === 429 || error.status >= 500
 
-async function notionGet(path: string, token: string): Promise<{ results: NotionBlock[]; has_more: boolean; next_cursor: string | null }> {
+type NotionPage = { results: NotionBlock[]; has_more: boolean; next_cursor: string | null }
+
+async function notionGet<T = NotionPage>(path: string, token: string): Promise<T> {
   for (let attempt = 0; ; attempt++) {
     try {
       const response = await fetch(`${NOTION_API_URL}${path}`, {
@@ -80,7 +84,7 @@ async function listChildren(blockId: string, token: string, limit: Limit): Promi
   do {
     const query = new URLSearchParams({ page_size: "100" })
     if (cursor) query.set("start_cursor", cursor)
-    const page = await limit(() => notionGet(`/blocks/${blockId}/children?${query}`, token))
+    const page = await limit(() => notionGet<NotionPage>(`/blocks/${blockId}/children?${query}`, token))
     blocks.push(...page.results)
     cursor = page.has_more ? page.next_cursor : null
   } while (cursor)
@@ -160,3 +164,42 @@ export async function fetchOpcoGuide(): Promise<OpcoGuideResult> {
     return { status: "unavailable" }
   }
 }
+
+const videoUrls = new Map<string, { url: string; expiresAt: number }>()
+const videoUrlsInFlight = new Map<string, Promise<string | null>>()
+
+async function loadVideoUrl(blockId: string, token: string): Promise<string | null> {
+  const block = await notionGet<NotionBlock>(`/blocks/${blockId}`, token)
+  const file = getBlockValue(block).file
+  if (!isPlayableVideo(block) || !file?.url) return null
+  videoUrls.set(blockId, { url: file.url, expiresAt: Date.parse(file.expiry_time) })
+  return file.url
+}
+
+/**
+ * Lien temporaire du fichier d'une vidéo du guide, ou null si ce bloc n'est pas une vidéo du guide :
+ * le jeton lit aussi d'autres blocs, la route vidéo ne doit servir que ceux-là.
+ */
+export async function fetchOpcoGuideVideoUrl(blockId: string): Promise<string | null> {
+  const token = process.env.LBA_NOTION_API_TOKEN
+  const guide = await fetchOpcoGuide()
+  if (!token || guide.status !== "ok" || !getOpcoGuideVideoIds(guide.guide).includes(blockId)) return null
+
+  const known = videoUrls.get(blockId)
+  if (known && known.expiresAt - VIDEO_URL_MARGIN_MS > Date.now()) return known.url
+
+  let pending = videoUrlsInFlight.get(blockId)
+  if (!pending) {
+    pending = loadVideoUrl(blockId, token).finally(() => videoUrlsInFlight.delete(blockId))
+    videoUrlsInFlight.set(blockId, pending)
+  }
+  try {
+    return await pending
+  } catch (error) {
+    captureException(error, { level: "warning", extra: { context: "vidéo du guide de modération OPCO" } })
+    return null
+  }
+}
+
+// Lien refusé par le stockage Notion avant son expiration annoncée : le suivant sera relu.
+export const forgetOpcoGuideVideoUrl = (blockId: string) => videoUrls.delete(blockId)

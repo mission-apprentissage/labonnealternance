@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { OPCO_GUIDE_SECTIONS } from "@/app/(espace-pro)/espace-pro/(connected)/_components/moderation/opco-guide.utils"
-import { getRenderableHref, structureOpcoGuide } from "./notion-guide"
-import { block, heading2, paragraph, sectionHeadings, text } from "./notion-guide.fixtures"
+import { getOpcoGuideVideoIds, getRenderableHref, structureOpcoGuide } from "./notion-guide"
+import { block, heading2, paragraph, sectionHeadings, text, videoFile } from "./notion-guide.fixtures"
 
 const SECTION_COUNT = OPCO_GUIDE_SECTIONS.length
 
@@ -37,11 +37,37 @@ describe("structureOpcoGuide", () => {
   })
 
   it("signale les blocs non rendus, y compris imbriqués", () => {
-    const toggle = block("toggle", { rich_text: [text("Question fictive")] }, [block("video")])
+    const toggle = block("toggle", { rich_text: [text("Question fictive")] }, [block("child_database")])
     const [firstHeading, ...rest] = sectionHeadings(SECTION_COUNT)
     const result = structureOpcoGuide([firstHeading, block("image"), toggle, ...rest])
 
-    expect(result.status === "ok" && result.unsupportedTypes).toEqual(["image", "video"])
+    expect(result.status === "ok" && result.unsupportedTypes).toEqual(["child_database", "image"])
+  })
+
+  it("rend une vidéo déposée dans Notion, signale un lien vidéo externe", () => {
+    const [firstHeading, ...rest] = sectionHeadings(SECTION_COUNT)
+    const result = structureOpcoGuide([firstHeading, videoFile(), block("video", { type: "external", external: { url: "https://video.fictive/x" } }), ...rest])
+
+    expect(result.status === "ok" && result.unsupportedTypes).toEqual(["video:external"])
+  })
+})
+
+describe("getOpcoGuideVideoIds", () => {
+  it("liste les vidéos déposées, y compris imbriquées, mais pas les liens externes ni les autres fichiers", () => {
+    const top = videoFile()
+    const nested = videoFile()
+    const [firstHeading, ...rest] = sectionHeadings(SECTION_COUNT)
+    const result = structureOpcoGuide([
+      firstHeading,
+      top,
+      block("toggle", { rich_text: [text("Question fictive")] }, [nested]),
+      block("video", { type: "external", external: { url: "https://video.fictive/x" } }),
+      block("file", { type: "file", file: { url: "https://stockage.fictif/doc.pdf", expiry_time: "2099-01-01T00:00:00.000Z" } }),
+      ...rest,
+    ])
+    if (result.status !== "ok") throw new Error(result.reason)
+
+    expect(getOpcoGuideVideoIds(result.guide)).toEqual([top.id, nested.id])
   })
 })
 
