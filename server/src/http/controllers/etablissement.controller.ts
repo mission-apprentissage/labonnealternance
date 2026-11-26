@@ -3,7 +3,6 @@ import type { FastifyRequest } from "fastify"
 import * as _ from "lodash-es"
 import { ObjectId } from "mongodb"
 import { zRoutes } from "shared"
-import { referrers } from "shared/constants/referers"
 
 import dayjs from "shared/helpers/dayjs"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
@@ -14,6 +13,7 @@ import type { Server } from "@/http/server"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligible-trainings-for-appointment.service"
 import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
+import { clearForcedActivationsAndRecompute, recomputeReferrers } from "@/services/referrers-diffusion.service"
 
 // Placé avant server.auth : un jeton n'ouvre qu'un établissement, un id inconnu répondrait sinon 403 au lieu de 404.
 const assertEtablissementExists = async (req: FastifyRequest) => {
@@ -141,11 +141,7 @@ export default (server: Server) => {
         )
       )
 
-      const eligibleTrainingsForAppointmentsIdsToUpdate = eligibleTrainingsForAppointmentsAffelnetFound.map((doc) => doc._id)
-      await getDbCollection("eligible_trainings_for_appointments").updateMany(
-        { _id: { $in: eligibleTrainingsForAppointmentsIdsToUpdate } },
-        { $push: { referrers: referrers.AFFELNET.name } }
-      )
+      await recomputeReferrers({ _id: { $in: eligibleTrainingsForAppointmentsAffelnetFound.map((doc) => doc._id) } })
 
       return res.send(etablissement!)
     }
@@ -239,11 +235,7 @@ export default (server: Server) => {
         )
       )
 
-      const eligibleTrainingsForAppointmentsIdsToUpdate = eligibleTrainingsForAppointmentsParcoursupFound.map((doc) => doc._id)
-      await getDbCollection("eligible_trainings_for_appointments").updateMany(
-        { _id: { $in: eligibleTrainingsForAppointmentsIdsToUpdate } },
-        { $push: { referrers: referrers.PARCOURSUP.name } }
-      )
+      await recomputeReferrers({ _id: { $in: eligibleTrainingsForAppointmentsParcoursupFound.map((doc) => doc._id) } })
 
       return res.send(etablissement!)
     }
@@ -307,6 +299,8 @@ export default (server: Server) => {
         { returnDocument: "after" }
       )
 
+      await clearForcedActivationsAndRecompute({ etablissement_formateur_siret: etablissement!.formateur_siret }, ["AFFELNET"])
+
       return res.send(etablissement!)
     }
   )
@@ -369,6 +363,8 @@ export default (server: Server) => {
         { returnDocument: "after" }
       )
 
+      await clearForcedActivationsAndRecompute({ etablissement_formateur_siret: etablissement!.formateur_siret }, ["PARCOURSUP"])
+
       return res.send(etablissement!)
     }
   )
@@ -411,28 +407,6 @@ export default (server: Server) => {
         return res.send(etablissement)
       }
 
-      // If opt-out is already running but user unsubscribe, remove optout for all formations
-      if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
-        await getDbCollection("eligible_trainings_for_appointments").updateMany(
-          {
-            etablissement_formateur_siret: etablissement.formateur_siret,
-          },
-          [
-            {
-              $set: {
-                referrers: {
-                  $filter: {
-                    input: "$referrers",
-                    as: "referrer",
-                    cond: { $in: ["$$referrer", [referrers.PARCOURSUP.name, referrers.AFFELNET.name]] },
-                  },
-                },
-              },
-            },
-          ]
-        )
-      }
-
       etablissement = await getDbCollection("etablissements").findOneAndUpdate(
         { _id: new ObjectId(req.params.id.toString()) },
         {
@@ -440,6 +414,8 @@ export default (server: Server) => {
         },
         { returnDocument: "after" }
       )
+
+      await clearForcedActivationsAndRecompute({ etablissement_formateur_siret: etablissement!.formateur_siret }, ["LBA", "JEUNE_1_SOLUTION", "ONISEP"])
 
       if (!etablissement!.gestionnaire_email) {
         throw badRequest("Gestionnaire email not found")

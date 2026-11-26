@@ -1,9 +1,14 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
-import { describe, expect, it } from "vitest"
+import { generateEligibleTrainingEstablishmentFixture, generateEligibleTrainingFixture } from "shared/fixtures/appointment.fixture"
+import { describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
-import { createRdvaOptOutUnsubscribePageLink } from "@/services/app-links.service"
+import { createRdvaOptOutUnsubscribePageLink, createRdvaPremiumParcoursupPageLink } from "@/services/app-links.service"
+
+vi.mock("@/services/mailer.service", () => ({
+  default: { sendEmail: vi.fn().mockResolvedValue({ messageId: "test-message-id", accepted: [] }) },
+}))
 
 useMongo()
 const httpClient = useServer()
@@ -45,5 +50,76 @@ describe("GET /etablissements/:id", () => {
 
     expect.soft((await call(id.toString())).statusCode).toBe(401)
     expect.soft((await call(id.toString(), tokenFor(autre))).statusCode).toBe(403)
+  })
+})
+
+describe("refus de l'établissement et forçages de l'admin RDVA", () => {
+  const SIRET = "77572845400205"
+  const tokenFrom = (link: string) => new URL(link).searchParams.get("token")
+
+  const givenTraining = async (data: Parameters<typeof generateEligibleTrainingFixture>[0]) => {
+    const etfa = generateEligibleTrainingFixture({ parcoursup_visible: true, affelnet_visible: false, ...data })
+    await getDbCollection("eligible_trainings_for_appointments").insertOne(etfa)
+    return etfa._id
+  }
+  const findTraining = (_id: ObjectId) => getDbCollection("eligible_trainings_for_appointments").findOne({ _id })
+
+  it("le désabonnement de l'opt-out efface les forçages « activée » sur LBA, 1 jeune 1 solution et ONISEP", async () => {
+    const etablissement = generateEligibleTrainingEstablishmentFixture({ premium_activation_date: new Date("2026-01-01") })
+    await getDbCollection("etablissements").insertOne(etablissement)
+    const id = await givenTraining({
+      referrers: ["LBA", "JEUNE_1_SOLUTION", "PARCOURSUP"],
+      referrers_forced_on: ["LBA", "PARCOURSUP"],
+      referrers_forced_off: ["JEUNE_1_SOLUTION"],
+    })
+    const token = tokenFrom(createRdvaOptOutUnsubscribePageLink("cfa@example.fr", SIRET, etablissement._id.toString()))
+
+    const response = await httpClient().inject({
+      method: "POST",
+      url: `/api/etablissements/${etablissement._id}/opt-out/unsubscribe`,
+      headers: { authorization: `Bearer ${token}` },
+      body: {},
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(await findTraining(id)).toMatchObject({
+      referrers: ["PARCOURSUP"],
+      referrers_forced_on: ["PARCOURSUP"],
+      referrers_forced_off: ["JEUNE_1_SOLUTION"],
+    })
+  })
+
+  it("le refus du premium Parcoursup efface le forçage « activée » sur Parcoursup", async () => {
+    const etablissement = generateEligibleTrainingEstablishmentFixture({ premium_activation_date: null })
+    await getDbCollection("etablissements").insertOne(etablissement)
+    const id = await givenTraining({ referrers: ["LBA", "JEUNE_1_SOLUTION", "PARCOURSUP"], referrers_forced_on: ["PARCOURSUP"] })
+    const token = tokenFrom(createRdvaPremiumParcoursupPageLink("cfa@example.fr", SIRET, etablissement._id.toString()))
+
+    const response = await httpClient().inject({
+      method: "POST",
+      url: `/api/etablissements/${etablissement._id}/premium/refuse`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(await findTraining(id)).toMatchObject({ referrers: ["LBA", "JEUNE_1_SOLUTION"], referrers_forced_on: [] })
+  })
+
+  it("l'acceptation du premium Parcoursup respecte un forçage « désactivée »", async () => {
+    const etablissement = generateEligibleTrainingEstablishmentFixture({ premium_activation_date: null })
+    await getDbCollection("etablissements").insertOne(etablissement)
+    const forcedOff = await givenTraining({ cle_ministere_educatif: "cle-off", referrers: ["LBA", "JEUNE_1_SOLUTION"], referrers_forced_off: ["PARCOURSUP"] })
+    const plain = await givenTraining({ cle_ministere_educatif: "cle-plain", referrers: ["LBA", "JEUNE_1_SOLUTION"] })
+    const token = tokenFrom(createRdvaPremiumParcoursupPageLink("cfa@example.fr", SIRET, etablissement._id.toString()))
+
+    const response = await httpClient().inject({
+      method: "POST",
+      url: `/api/etablissements/${etablissement._id}/premium/accept`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect.soft((await findTraining(forcedOff))?.referrers).toEqual(["LBA", "JEUNE_1_SOLUTION"])
+    expect.soft((await findTraining(plain))?.referrers).toEqual(["LBA", "JEUNE_1_SOLUTION", "PARCOURSUP"])
   })
 })

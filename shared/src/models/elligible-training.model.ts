@@ -1,4 +1,5 @@
 import type { Jsonify } from "type-fest"
+import { referrers } from "../constants/referers.js"
 import { extensions } from "../helpers/zod-helpers/zod-primitives.js"
 import { z } from "../helpers/zod-with-open-api.js"
 
@@ -7,6 +8,9 @@ import { zObjectId } from "./common.js"
 import { ZEtablissement } from "./etablissement.model.js"
 
 const collectionName = "eligible_trainings_for_appointments" as const
+
+export const ZReferrerName = z.enum(Object.keys(referrers) as [keyof typeof referrers, ...(keyof typeof referrers)[]])
+export type IReferrerName = z.output<typeof ZReferrerName>
 
 export const ZEligibleTrainingsForAppointmentSchema = z.strictObject({
   _id: zObjectId,
@@ -17,6 +21,9 @@ export const ZEligibleTrainingsForAppointmentSchema = z.strictObject({
   lieu_formation_email: z.string().nullable(),
   is_lieu_formation_email_customized: z.boolean().nullish(),
   referrers: z.array(z.string()).default([]),
+  // Forçages manuels de l'admin RDVA : la diffusion effective vaut (automatique ∪ forced_on) ∖ forced_off, cf. applyReferrerOverrides
+  referrers_forced_on: z.array(ZReferrerName).nullish(),
+  referrers_forced_off: z.array(ZReferrerName).nullish(),
   rco_formation_id: z.string().nullable(),
   is_catalogue_published: z.boolean(),
   last_catalogue_sync_date: z.date().default(() => new Date()),
@@ -40,7 +47,14 @@ export const ZEligibleTrainingsForAppointmentSchema = z.strictObject({
 export type IEligibleTrainingsForAppointment = z.output<typeof ZEligibleTrainingsForAppointmentSchema>
 export type IEligibleTrainingsForAppointmentJson = Jsonify<z.input<typeof ZEligibleTrainingsForAppointmentSchema>>
 
-export const ZETFAParameters = z.object({ parameters: z.array(ZEligibleTrainingsForAppointmentSchema) })
+// Vue admin : diffusion automatique (opt-out, premium) et plateformes éligibles, calculées à la lecture
+export const ZETFAAdminParameter = ZEligibleTrainingsForAppointmentSchema.extend({
+  referrers_auto: z.array(ZReferrerName),
+  referrers_eligible: z.array(ZReferrerName),
+})
+export type IETFAAdminParameterJson = Jsonify<z.input<typeof ZETFAAdminParameter>>
+
+export const ZETFAParameters = z.object({ parameters: z.array(ZETFAAdminParameter) })
 export type IETFAParametersJson = Jsonify<z.output<typeof ZETFAParameters>>
 
 export default {
