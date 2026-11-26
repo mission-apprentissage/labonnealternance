@@ -119,8 +119,9 @@ Catégories en usage (à réutiliser avant d'en créer une) :
    valeur de `x` poussée par l'événement A s'il manque dans le push de B. Valeur inconnue :
    `"non_renseigné"`, explicitement.
 4. Dédoublonner les effets : un événement par fait métier, pas par rendu. Une ref sur la clé métier
-   (cf. `lastTrackedItemIdRef` dans `JobDetailRendererClient.tsx`, `lastTrackedSearchKeyRef` dans
-   `SearchPageClient.tsx`).
+   (cf. `lastTrackedItemIdRef` dans `JobDetailRendererClient.tsx`). Quand l'usager peut revenir sur une clé
+   déjà suivie sans nouvel appel serveur, retenir toutes les clés, pas la dernière (cf. `createSearchKeyTracker`
+   dans `search.tracking.utils.ts`, #6052).
 5. Une dimension calculée (statut, tranche, libellé) sort dans une fonction pure testée, à côté du composant
    (cf. `diffFilterChanges` dans `search.tracking.utils.ts` et son test).
 6. Retirer une constante de `MATOMO_EVENTS` dès que plus rien ne la pousse, et nettoyer le conteneur en même temps

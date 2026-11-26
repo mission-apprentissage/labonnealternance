@@ -1,7 +1,17 @@
 import { describe, expect, it } from "vitest"
 
+import type { EmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
 import type { ISearchPageParams } from "./search.params.utils"
-import { activeFilterNames, diffFilterChanges, diffSortChange, searchTypeChangedEvent, searchTypeOf } from "./search.tracking.utils"
+import {
+  activeFilterNames,
+  claimFallbackDisplay,
+  createSearchKeyTracker,
+  diffFilterChanges,
+  diffSortChange,
+  isSearchDisplaySettled,
+  searchTypeChangedEvent,
+  searchTypeOf,
+} from "./search.tracking.utils"
 
 const base: ISearchPageParams = { mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 }
 
@@ -114,6 +124,97 @@ describe("searchTypeOf", () => {
     expect(searchTypeOf("emplois")).toBe("jobs_only")
     expect(searchTypeOf("formations")).toBe("trainings_only")
     expect(searchTypeOf("emplois_formation")).toBe("jobs_and_trainings")
+  })
+})
+
+/** Un rendu de SearchPageClient, vu par les effets d'affichage (searchKey, état de useSearchResults). */
+type DisplayRender = { searchKey: string; hasData?: boolean; isPlaceholderData?: boolean; stillWidening?: boolean }
+
+/** Rejoue la garde de l'effet search_results_displayed sur une suite de rendus d'une même instance. */
+function replayResultsDisplayed(renders: DisplayRender[], tracker = createSearchKeyTracker()) {
+  const emitted: string[] = []
+  for (const r of renders) {
+    const result = { data: r.hasData === false ? undefined : { pages: [] }, isPlaceholderData: r.isPlaceholderData ?? false }
+    if (!isSearchDisplaySettled(result, r.stillWidening ?? false)) continue
+    if (tracker.claim(r.searchKey)) emitted.push(r.searchKey)
+  }
+  return emitted
+}
+
+/** Rejoue la garde de l'effet search_mode_fallback_displayed. */
+function replayFallbackDisplayed(renders: Array<{ searchKey: string; count: EmploisFallbackCount }>, tracker = createSearchKeyTracker()) {
+  const emitted: string[] = []
+  for (const { searchKey, count } of renders) {
+    if (claimFallbackDisplay(tracker, searchKey, count)) emitted.push(searchKey)
+  }
+  return emitted
+}
+
+describe("search_results_displayed : une fois par recherche (#6052)", () => {
+  // Retour sur A servi par le cache de React Query : données fraîches d'emblée, sans placeholder.
+  it("n'émet pas de nouveau une recherche déjà suivie (A → B → A)", () => {
+    const emitted = replayResultsDisplayed([{ searchKey: "A" }, { searchKey: "B", isPlaceholderData: true }, { searchKey: "B" }, { searchKey: "A" }])
+    expect(emitted).toEqual(["A", "B"])
+  })
+
+  it("émet une nouvelle recherche après un retour", () => {
+    expect(replayResultsDisplayed([{ searchKey: "A" }, { searchKey: "B" }, { searchKey: "A" }, { searchKey: "C" }])).toEqual(["A", "B", "C"])
+  })
+
+  it("garde ses recherches suivies tant que l'instance de la page est conservée", () => {
+    const tracker = createSearchKeyTracker()
+    replayResultsDisplayed([{ searchKey: "A" }, { searchKey: "B" }], tracker)
+    // Fiche détail puis retour navigateur : l'instance masquée est réaffichée avec ses refs, ses
+    // effets sont rejoués sur B, puis l'usager retire son filtre et revient sur A.
+    expect(replayResultsDisplayed([{ searchKey: "B" }], tracker)).toEqual([])
+    expect(replayResultsDisplayed([{ searchKey: "A" }], tracker)).toEqual([])
+  })
+
+  it("émet de nouveau après un rechargement de la page (nouvelle instance)", () => {
+    replayResultsDisplayed([{ searchKey: "A" }])
+    expect(replayResultsDisplayed([{ searchKey: "A" }])).toEqual(["A"])
+  })
+
+  it("attend les données de la recherche courante", () => {
+    expect(replayResultsDisplayed([{ searchKey: "A", hasData: false }, { searchKey: "A", isPlaceholderData: true }, { searchKey: "A" }])).toEqual(["A"])
+  })
+
+  it("n'émet ni ne retient un palier d'élargissement du rayon (#5634), y compris au retour", () => {
+    const emitted = replayResultsDisplayed([
+      { searchKey: "A@20", stillWidening: true },
+      { searchKey: "A@40", stillWidening: true },
+      { searchKey: "A@60" },
+      { searchKey: "B" },
+      // Filtre retiré : les paliers de A sont rejoués depuis le cache jusqu'au dernier.
+      { searchKey: "A@20", stillWidening: true },
+      { searchKey: "A@40", stillWidening: true },
+      { searchKey: "A@60" },
+    ])
+    expect(emitted).toEqual(["A@60", "B"])
+  })
+})
+
+describe("search_mode_fallback_displayed : une fois par recherche (#6052)", () => {
+  const done = (count: number): EmploisFallbackCount => ({ status: "done", count })
+
+  it("n'émet pas de nouveau une proposition déjà suivie (A → B → A)", () => {
+    const emitted = replayFallbackDisplayed([
+      { searchKey: "A", count: done(5) },
+      { searchKey: "B", count: done(3) },
+      { searchKey: "A", count: done(5) },
+    ])
+    expect(emitted).toEqual(["A", "B"])
+  })
+
+  it("ne retient la recherche qu'à l'affichage de la proposition", () => {
+    const emitted = replayFallbackDisplayed([
+      { searchKey: "A", count: { status: "pending" } },
+      { searchKey: "A", count: done(0) },
+      { searchKey: "B", count: done(2) },
+      { searchKey: "C", count: { status: "idle" } },
+      { searchKey: "C", count: done(4) },
+    ])
+    expect(emitted).toEqual(["B", "C"])
   })
 })
 
