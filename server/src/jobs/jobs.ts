@@ -69,6 +69,7 @@ import { syncEtablissementDates } from "./rdv/sync-etablissement-dates"
 import { syncEtablissementsAndFormations } from "./rdv/sync-etablissements-and-formations"
 import { createApiUser } from "./recruiters/create-api-user"
 import { deactivateClosedSiretAccounts } from "./recruiters/deactivate-closed-siret-accounts"
+import { deactivateUnreferencedCfaAccounts } from "./recruiters/deactivate-unreferenced-cfa-accounts"
 import { disableApiUser } from "./recruiters/disable-api-user"
 import { nurturingEntreprises } from "./recruiters/nurturing-entreprises"
 import { OPCO_REMINDER_JOB_NAME, opcoReminderJob } from "./recruiters/opco-reminder-job"
@@ -473,6 +474,12 @@ export async function setupJobProcessor() {
             handler: config.env === "production" ? async () => deactivateClosedSiretAccounts({ maxDurationMinutes: 10 }) : async () => Promise.resolve(0),
             maxRuntimeInMinutes: 20,
           },
+          // 15 janvier et 15 juin (#3316). Production seule : en recette, les SIRET de test absents du Référentiel
+          // désactiveraient les comptes CFA de recette.
+          "Désactivation des CFA absents du Référentiel": {
+            cron_string: "0 6 15 1,6 *",
+            handler: config.env === "production" ? async () => deactivateUnreferencedCfaAccounts() : async () => Promise.resolve(0),
+          },
           "update-handi-engagement": {
             cron_string: "45 4 * * SAT",
             handler: async () => updateHandiEngagement(),
@@ -497,6 +504,9 @@ export async function setupJobProcessor() {
       },
       "closed-siret:deactivate": {
         handler: async (job) => deactivateClosedSiretAccounts(job.payload as any),
+      },
+      "cfa-referentiel:deactivate": {
+        handler: async (job) => deactivateUnreferencedCfaAccounts(job.payload as any),
       },
       "update-handi-engagement:force": {
         // Déclenchement manuel uniquement, cf. UpdateHandiEngagementOptions.force.

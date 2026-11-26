@@ -19,6 +19,7 @@ import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/get-last
 import { isTrainingOrganizationNafCode, normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
 import { getEtablissementFromGouvSafe } from "@/common/apis/api-entreprise/api-entreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/france-competences/france-competences-client"
+import { REFERENTIEL_ORGANISMES_API_URL } from "@/common/apis/referentiel-organismes/referentiel-organismes.client"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/async-utils"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
@@ -82,7 +83,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IEtabliss
 }
 const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
   try {
-    const { data } = await getHttpClient().get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
+    const { data } = await getHttpClient().get<IReferentiel>(`${REFERENTIEL_ORGANISMES_API_URL}/organismes/${encodeURIComponent(siret)}`)
     return data
   } catch (error: any) {
     if (error?.response?.status === 404) {

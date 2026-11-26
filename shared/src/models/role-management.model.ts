@@ -38,6 +38,9 @@ export const DEACTIVATION_REASON_MAX_LENGTH = 500
 /** Motif saisi par un admin ou un OPCO. Les bornes ne vont pas sur `ZRoleManagementEvent.reason`, que l'activation écrit à `""`. */
 export const ZDeactivationReason = z.string().trim().min(DEACTIVATION_REASON_MIN_LENGTH).max(DEACTIVATION_REASON_MAX_LENGTH)
 
+/** Motif de désactivation d'un CFA, proposé aux admins et posé par le job de vérification du Référentiel (#3316). */
+export const CFA_NOT_REFERENCED_REASON = "Non référencé dans le catalogue du Réseau des Carif-Oref"
+
 export const ZAccessEntityType = extensions.buildEnum(AccessEntityType)
 
 /** Valeur de `opco_at_creation` pour un rôle CFA : un CFA n'a pas d'OPCO, à ne pas confondre avec une entreprise à l'OPCO inconnu. */

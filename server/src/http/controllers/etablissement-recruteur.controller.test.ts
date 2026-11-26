@@ -50,7 +50,7 @@ describe("POST /etablissement/creation", () => {
       .get(new RegExp("/sirene/etablissements/diffusibles/"))
       .reply(200, apiEntrepriseEtablissementFixture.dinum)
 
-    const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+")).reply(200, apiReferentielCatalogueFixture)
+    const mockCfa = nock("https://referentiel.apprentissage.onisep.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+")).reply(200, apiReferentielCatalogueFixture)
 
     const mockGeocoding = nock("https://data.geopf.fr:443/geocodage")
       .persist()
