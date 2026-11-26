@@ -154,6 +154,7 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <Paragraph>Deux maîtres d'apprentissage maximum peuvent être désignés.</Paragraph>
         <TableArticle
           caption="Rubrique 3 du Cerfa apprentissage : règles de saisie du maître d'apprentissage"
+          captionHidden
           rowHeader
           headers={["Champs", "Règles"]}
           data={[
