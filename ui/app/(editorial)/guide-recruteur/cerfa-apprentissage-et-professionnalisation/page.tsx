@@ -85,6 +85,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
           Rubrique 1 : L'employeur
         </Paragraph>
         <TableArticle
+          caption="Rubrique 1 du Cerfa apprentissage : l'employeur"
+          captionHidden
+          rowHeader
           headers={["Champ", "Explications", "Erreurs fréquentes"]}
           data={[
             ["N° SIRET", "14 chiffres de l'établissement d'exécution", "Confondre SIREN (9 chiffres) et SIRET"],
@@ -116,6 +119,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
           Rubrique 2 : L'apprenti(e)
         </Paragraph>
         <TableArticle
+          caption="Rubrique 2 du Cerfa apprentissage : l'apprenti(e)"
+          captionHidden
+          rowHeader
           headers={["Champ", "Explications", "Erreurs fréquentes"]}
           data={[
             ["Nom de naissance", "Majuscules", "Nom de naissance, pas d'usage"],
@@ -147,6 +153,8 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         </Paragraph>
         <Paragraph>Deux maîtres d'apprentissage maximum peuvent être désignés.</Paragraph>
         <TableArticle
+          caption="Rubrique 3 du Cerfa apprentissage : règles de saisie du maître d'apprentissage"
+          rowHeader
           headers={["Champs", "Règles"]}
           data={[
             ["Nom et prénom", "Obligatoire pour le MA n°1"],
@@ -173,6 +181,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
           Rubrique 4 : Le contrat
         </Paragraph>
         <TableArticle
+          caption="Rubrique 4 du Cerfa apprentissage : le contrat"
+          captionHidden
+          rowHeader
           headers={["Champ", "Options", "Commentaires"]}
           data={[
             ["Type de contrat", "11 = 1er contrat, 21 = Renouvellement, 31 = Suite de contrat", "Suite de contrat = nouveau contrat après un précédent rompu"],
@@ -203,6 +214,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
           La formation :
         </Paragraph>
         <TableArticle
+          caption="Rubrique 5 du Cerfa apprentissage : la formation"
+          captionHidden
+          rowHeader
           headers={["Champ", "Format", "Attention"]}
           data={[
             ["Code diplôme", "8 caractères", "Vérifier sur le RNCP"],
@@ -216,6 +230,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
           L’organisme de formation :
         </Paragraph>
         <TableArticle
+          caption="Rubrique 5 du Cerfa apprentissage : l'organisme de formation"
+          captionHidden
+          rowHeader
           headers={["Champ", "Format"]}
           data={[
             ["Dénomination", "Nom officiel du CFA"],
@@ -243,6 +260,8 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         </Paragraph>
         <Paragraph>Le Cerfa de professionnalisation partage une structure similaire mais comporte des spécificités :</Paragraph>
         <TableArticle
+          caption="Différences entre le Cerfa apprentissage et le Cerfa professionnalisation"
+          rowHeader
           headers={["Élément", "Cerfa apprentissage", "Cerfa professionnalisation"]}
           data={[
             ["Tuteur/MA", "Maître d'apprentissage", "Tuteur"],
@@ -302,6 +321,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
           Erreurs les plus fréquentes
         </Paragraph>
         <TableArticle
+          caption="Erreurs les plus fréquentes sur le Cerfa : conséquences et solutions"
+          captionHidden
+          rowHeader
           headers={["Erreur", "Conséquence", "Solution"]}
           data={[
             [
@@ -359,6 +381,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
           Modes de transmission
         </Paragraph>
         <TableArticle
+          caption="Modes de transmission du Cerfa à l'OPCO"
+          captionHidden
+          rowHeader
           headers={["Canal", "Délai de traitement", "Recommandé"]}
           data={[
             ["Portail en ligne OPCO", "Le plus rapide", "Oui"],

@@ -231,6 +231,7 @@ const RecruterUnAlternantPage = () => {
         </Paragraph>
         <TableArticle
           caption="Rémunération mensuelle brute minimale d'un apprenti selon l'âge et l'année de formation (en % du SMIC)"
+          rowHeader
           headers={["Âge de l'apprenti", "1re année", "2e année", "3e année"]}
           data={[
             ["Moins de 18 ans", "27 % — 504 €", "39 % — 728 €", "55 % — 1 027 €"],

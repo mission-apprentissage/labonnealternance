@@ -116,6 +116,9 @@ const LaRuptureDeContratPage = () => {
       </Section>
       <Section title="Tableau récapitulatif : rupture du contrat d'apprentissage">
         <TableArticle
+          caption="Récapitulatif de la rupture du contrat d'apprentissage selon la situation"
+          captionHidden
+          rowHeader
           headers={["Situation", "Qui peut rompre", "Préavis", "Indemnités"]}
           data={[
             [<Typography fontWeight="bold">Pendant les 45 jours</Typography>, "Employeur ou apprenti", "Aucun", "Aucune"],

@@ -159,6 +159,8 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
           minimum perçu par l’apprenti correspond à un pourcentage du Smic ou du salaire minimum conventionnel.
         </Paragraph>
         <TableArticle
+          caption="Rémunération minimale de l’apprenti selon l’année d’exécution du contrat et l’âge (en % du Smic*)"
+          rowHeader
           headers={["Année d’exécution du contrat", "Apprenti de moins de 18 ans", "Apprenti de 18 ans à 20 ans", "Apprenti de 21 ans à 25 ans", "Apprenti de 26 ans et plus"]}
           data={[
             ["1ère année", "27%", "43%", "53%", "100%"],
