@@ -78,6 +78,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
       <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("4v") }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center", flexWrap: "wrap" }}>
           <Typography
+            component="h1"
             sx={{
               fontSize: "2rem",
               fontWeight: 700,
@@ -96,6 +97,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
     <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("4v") }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center", flexWrap: "wrap" }}>
         <Typography
+          component="h1"
           sx={{
             fontSize: "2rem",
             fontWeight: 700,

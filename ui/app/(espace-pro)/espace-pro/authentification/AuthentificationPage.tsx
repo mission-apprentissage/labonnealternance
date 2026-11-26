@@ -120,7 +120,10 @@ export default function Authentification() {
           margin: "auto",
         }}
       >
-        <Typography variant="h5" sx={{ mb: fr.spacing("6v") }}>
+        <Typography variant="h1" component="h1" sx={{ mb: fr.spacing("6v"), color: fr.colors.decisions.text.default.info.default }}>
+          Connexion à votre espace
+        </Typography>
+        <Typography variant="h5" component="h2" sx={{ mb: fr.spacing("6v") }}>
           Vous avez déjà un compte ?
         </Typography>
         <Typography sx={{ mb: fr.spacing("3v") }}>Indiquez le mail avec lequel vous avez créé votre compte et vous recevrez un lien pour vous connecter.</Typography>
@@ -164,7 +167,7 @@ export default function Authentification() {
 
         <Divider aria-hidden="true" />
 
-        <Typography variant="h5" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
+        <Typography variant="h5" component="h2" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
           Vous n'avez pas de compte ?
         </Typography>
         <Button linkProps={{ href: PAGES.static.espaceProCreationEntreprise.getPath() }} priority="secondary" style={{ width: "100%" }}>

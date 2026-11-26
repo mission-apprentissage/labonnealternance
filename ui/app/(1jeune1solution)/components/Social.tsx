@@ -21,7 +21,9 @@ export default function Social({ utmParams }: { utmParams: string }) {
         }}
       >
         <Box sx={{ flex: 1, px: { xs: fr.spacing("3v"), md: fr.spacing("6v") }, py: fr.spacing("4v") }}>
-          <Typography sx={{ mb: fr.spacing("6v"), fontSize: "32px", fontWeight: 800, lineHeight: "40px" }}>À chacun sa solution.</Typography>
+          <Typography component="h2" sx={{ mb: fr.spacing("6v"), fontSize: "32px", fontWeight: 800, lineHeight: "40px", color: "inherit" }}>
+            À chacun sa solution.
+          </Typography>
           <Typography sx={{ mb: fr.spacing("6v"), fontSize: "24px", fontWeight: 700, lineHeight: "32px" }}>
             Vous avez entre 15 et 30 ans ? Découvrez toutes les solutions pour votre avenir !
           </Typography>
@@ -57,7 +59,7 @@ export default function Social({ utmParams }: { utmParams: string }) {
         }}
       >
         <Box sx={{ flex: 1, p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v"), background: "#000091" }}>
-          <Typography sx={{ fontSize: "24px", fontWeight: 800, color: "#FFFFFF", lineHeight: "30px" }}>
+          <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 800, color: "#FFFFFF", lineHeight: "30px" }}>
             Retrouvez 1jeune1solution sur
             <br />
             Instagram et Tiktok&nbsp;:
@@ -114,7 +116,7 @@ export default function Social({ utmParams }: { utmParams: string }) {
         </Box>
         <Box sx={{ flex: 1, display: "flex", flexDirection: { xs: "column", lg: "row" }, background: "#EEDBF5", maxHeight: { xs: "unset", sm: "280px" } }}>
           <Box sx={{ flex: 1, p: fr.spacing("6v"), alignItems: "top", display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
-            <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#000091", lineHeight: "30px" }}>
+            <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, color: "#000091", lineHeight: "30px" }}>
               Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités&nbsp;:
             </Typography>
             <Box sx={{ "& > a:hover": { background: "#EEDBF5" }, "& > a": { whiteSpace: { xs: "wrap", sm: "nowrap" } } }}>

@@ -46,19 +46,21 @@ export default async function Metiers() {
             alternance :
           </Typography>
           <Stack
+            component="ul"
+            className="fr-raw-list"
             spacing={fr.spacing("2v")}
             sx={{
               alignItems: "flex-start",
               mt: fr.spacing("4v"),
             }}
           >
-            <Typography>Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation</Typography>
-            <Typography>Liste d'entreprises qui recrutent en alternance</Typography>
-            <Typography>Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master</Typography>
+            <Typography component="li">Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation</Typography>
+            <Typography component="li">Liste d'entreprises qui recrutent en alternance</Typography>
+            <Typography component="li">Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master</Typography>
 
             {jobs.map((job, index) => {
               return (
-                <Typography key={index} sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
+                <Typography component="li" key={index} sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
                   <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
                   <Link className={fr.cx("fr-link", "fr-text--bold")} href={`/metiers/${job.slug}`}>
                     {job.name}

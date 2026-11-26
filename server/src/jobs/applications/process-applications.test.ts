@@ -1,15 +1,19 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { AxiosError, type AxiosResponse } from "axios"
 import { ObjectId } from "bson"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { applicationTestFile, generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/job-partners.fixture"
-import { ApplicationScanStatus } from "shared/models/index"
+import { ApplicationScanStatus, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { s3Delete } from "@/common/utils/aws-utils"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { sentryCaptureException } from "@/common/utils/sentry-utils"
+import { PARTNER_CLOSED_JOB_REASON, PartnerJobClosedError } from "@/services/application.service"
 import { isInfected } from "@/services/clamav.service"
 import mailer from "@/services/mailer.service"
+import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/search-items.service"
 import { processApplications } from "./process-applications"
 
 vi.mock("@/services/clamav.service", () => ({
@@ -28,6 +32,15 @@ vi.mock("@/services/mailer.service", () => ({
     sendEmail: vi.fn().mockResolvedValue({ messageId: "test-message-id", accepted: ["test@example.com"] }),
     renderEmail: vi.fn().mockResolvedValue("<html>Test Email</html>"),
   },
+}))
+
+vi.mock("@/common/utils/sentry-utils", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/common/utils/sentry-utils")>()),
+  sentryCaptureException: vi.fn(),
+}))
+
+vi.mock("@/services/search/search-items.service", () => ({
+  syncJobPartnersToSearchItemsInBackground: vi.fn(),
 }))
 
 vi.mock("@/common/utils/slack-utils", () => ({
@@ -128,6 +141,87 @@ describe("process-applications", () => {
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(1)
     expect(mailerSendEmailSpy.mock.calls[0][0]).toMatchObject({ to: applicant.email })
+  })
+
+  describe("Taleez API error", () => {
+    const offerExpiration = new Date("2027-01-08T23:00:00.000Z")
+
+    const setupTaleezApplication = async () => {
+      const jobId = new ObjectId()
+      const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
+      await getDbCollection("applicants").insertOne(applicant)
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          _id: jobId,
+          partner_label: "Taleez",
+          partner_job_id: "taleez_job_123",
+          apply_email: null,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          offer_status_history: [],
+          offer_expiration: offerExpiration,
+        })
+      )
+      const application = generateApplicationFixture({
+        applicant_id: applicant._id,
+        job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+        job_id: jobId,
+        to_company_message_id: null,
+        to_applicant_message_id: null,
+        scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
+      })
+      await getDbCollection("applications").insertOne(application)
+      return { jobId, applicationId: application._id }
+    }
+
+    const mockTaleezResponseStatus = async (status: number) => {
+      const axios = await import("axios")
+      const response = { status, statusText: "", data: {}, headers: {}, config: {} } as AxiosResponse
+      vi.mocked(axios.default.post).mockRejectedValueOnce(new AxiosError(`Request failed with status code ${status}`, "ERR_BAD_RESPONSE", undefined, undefined, response))
+    }
+
+    beforeEach(() => {
+      vi.mocked(syncJobPartnersToSearchItemsInBackground).mockClear()
+      vi.mocked(sentryCaptureException).mockClear()
+    })
+
+    it("should cancel the offer and keep its expiration date when Taleez answers 410", async () => {
+      const { jobId, applicationId } = await setupTaleezApplication()
+      await mockTaleezResponseStatus(410)
+
+      await processApplications()
+
+      const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+      expect(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+      expect(job?.offer_expiration).toEqual(offerExpiration)
+      expect(job?.offer_status_history).toEqual([
+        { date: expect.any(Date), status: JOB_STATUS_ENGLISH.ANNULEE, reason: PARTNER_CLOSED_JOB_REASON, granted_by: "send-application-to-taleez" },
+      ])
+      expect(syncJobPartnersToSearchItemsInBackground).toHaveBeenCalledWith([jobId])
+      expect(sentryCaptureException).toHaveBeenCalledOnce()
+      expect(vi.mocked(sentryCaptureException).mock.calls[0][0]).toBeInstanceOf(PartnerJobClosedError)
+
+      const application = await getDbCollection("applications").findOne({ _id: applicationId })
+      expect(application?.scan_status).toBe(ApplicationScanStatus.UNKNOWN_ERROR)
+      expect(application?.to_company_message_id).toBeNull()
+      expect(mailerSendEmailSpy).not.toHaveBeenCalled()
+    })
+
+    it("should keep the offer active when Taleez answers another error", async () => {
+      const { jobId, applicationId } = await setupTaleezApplication()
+      await mockTaleezResponseStatus(500)
+
+      await processApplications()
+
+      const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+      expect(job?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+      expect(job?.offer_status_history).toEqual([])
+      expect(syncJobPartnersToSearchItemsInBackground).not.toHaveBeenCalled()
+      expect(sentryCaptureException).toHaveBeenCalledOnce()
+      expect(vi.mocked(sentryCaptureException).mock.calls[0][0]).toBeInstanceOf(AxiosError)
+
+      const application = await getDbCollection("applications").findOne({ _id: applicationId })
+      expect(application?.scan_status).toBe(ApplicationScanStatus.UNKNOWN_ERROR)
+    })
   })
 
   it("should process other partner_label application and save correct data to DB", async () => {

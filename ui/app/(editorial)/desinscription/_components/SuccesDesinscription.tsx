@@ -6,6 +6,16 @@ import { FocusedTitle } from "@/app/_components/FocusedTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { baseUrl } from "@/config/config"
 
+// DepotSimplifieStyling (page.tsx) impose aux li des marges de 80 px et 40 px et une police de 12 px en mobile.
+const bulletListSx = {
+  display: "flex",
+  gap: fr.spacing("1v"),
+  flexDirection: "column",
+  pl: fr.spacing("4v"),
+  listStyleType: "disc",
+  "& li": { mx: "0 !important", mb: "0 !important", fontSize: "inherit !important", lineHeight: "inherit !important" },
+} as const
+
 const SuccesDesinscription = () => (
   <div>
     <Box sx={{ border: "1px solid #000091", p: fr.spacing("8v"), mb: fr.spacing("6v") }}>
@@ -27,7 +37,9 @@ const SuccesDesinscription = () => (
     </Box>
     <Stack direction={{ xs: "column", md: "row" }} spacing={fr.spacing("4v")}>
       <Box>
-        <Typography sx={{ fontWeight: 700, pb: fr.spacing("6v") }}>En complément, permettez-nous de vous expliquer notre fonctionnement.</Typography>
+        <Typography component="h2" sx={{ fontWeight: 700, pb: fr.spacing("6v") }}>
+          En complément, permettez-nous de vous expliquer notre fonctionnement.
+        </Typography>
         <Typography sx={{ pb: fr.spacing("6v") }}>
           La bonne alternance est un service public, porté par différents ministères (Emploi, Education Nationale, Transition numérique). Notre rôle est de faciliter les entrées en
           alternance
@@ -35,12 +47,12 @@ const SuccesDesinscription = () => (
         <Typography>Pour cela, nous exposons différents types d'entreprises :</Typography>
 
         <Stack spacing={fr.spacing("4v")} sx={{ mt: fr.spacing("6v") }}>
-          <Box sx={{ display: "flex", gap: fr.spacing("4v"), flexDirection: "column" }}>
-            <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>
+          <Box component="ul" className="fr-raw-list" sx={bulletListSx}>
+            <Typography component="li">
               Celles ayant diffusé une offre d'emploi sur notre <DsfrLink href={`${baseUrl}/acces-recruteur`}>formulaire de dépôt simplifié</DsfrLink>
             </Typography>
 
-            <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>
+            <Typography component="li">
               Celles ayant diffusé une offre d'emploi sur <DsfrLink href="https://www.francetravail.fr">France Travail</DsfrLink> ou ses{" "}
               <DsfrLink href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html">
                 sites partenaires
@@ -48,13 +60,15 @@ const SuccesDesinscription = () => (
               </DsfrLink>
             </Typography>
 
-            <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>
+            <Typography component="li">
               Celles n'ayant pas diffusé d'offres, mais ayant été identifiées comme "à fort potentiel d'embauche en alternance" grâce à l'analyse de diverses données publiques.
             </Typography>
           </Box>
         </Stack>
 
-        <Typography sx={{ py: fr.spacing("6v"), fontWeight: 700 }}>Votre établissement se situait dans la troisième catégorie.</Typography>
+        <Typography component="h2" sx={{ py: fr.spacing("6v"), fontWeight: 700 }}>
+          Votre établissement se situait dans la troisième catégorie.
+        </Typography>
         <Typography>
           Pour cette raison, il était affiché sur La bonne alternance et vous receviez des candidatures spontanées en conséquence. L'email ainsi que le numéro de téléphone
           référencés sur votre entreprise sont issus de votre espace recruteur France Travail.
@@ -70,17 +84,19 @@ const SuccesDesinscription = () => (
       <Box sx={{ p: fr.spacing("6v"), backgroundColor: "#f5f5fe" }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: fr.spacing("6v") }}>
           <Image src="/images/icons/tete.svg" alt="" width={50} height={50} />
-          <Typography sx={{ fontWeight: 700, pl: fr.spacing("4v") }}>Le saviez-vous ?</Typography>
+          <Typography component="h2" sx={{ fontWeight: 700, pl: fr.spacing("4v") }}>
+            Le saviez-vous ?
+          </Typography>
         </Box>
 
         <Typography sx={{ fontWeight: 700, mb: fr.spacing("6v") }}>Recruter un alternant présente de multiples avantages :</Typography>
 
         <Stack spacing={fr.spacing("4v")} sx={{ mt: fr.spacing("6v") }}>
-          <Box sx={{ display: "flex", gap: fr.spacing("4v"), flexDirection: "column" }}>
-            <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>Anticiper et former des salariés aux besoins de votre entreprise</Typography>
-            <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>Répondre aux problématiques de recrutement en formant un vivier de candidats employables</Typography>
-            <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>Disposer d'un regard nouveau et sensibilisé aux enjeux de demain</Typography>
-            <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>
+          <Box component="ul" className="fr-raw-list" sx={bulletListSx}>
+            <Typography component="li">Anticiper et former des salariés aux besoins de votre entreprise</Typography>
+            <Typography component="li">Répondre aux problématiques de recrutement en formant un vivier de candidats employables</Typography>
+            <Typography component="li">Disposer d'un regard nouveau et sensibilisé aux enjeux de demain</Typography>
+            <Typography component="li">
               <DsfrLink href="https://travail-emploi.gouv.fr/aides-couts-salaire-le-simulateur-en-ligne-pour-les-employeurs-apprentis">
                 Profiter d'un financement gouvernemental
               </DsfrLink>

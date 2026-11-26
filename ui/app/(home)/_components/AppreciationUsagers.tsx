@@ -19,7 +19,7 @@ const TESTIMONIES: Record<"recruteur" | "cfa", [Testimony, Testimony, Testimony]
       name: "Philippe",
       role: "Gérant de commerce",
       quote:
-        "“La bonne alternance est un outil qui me facilite mes recrutements en alternance, moi qui n’ai pas le temps de rédiger des fiches de poste... Je reçois ensuite les candidatures directement dans ma boîte mail.“",
+        "“La bonne alternance est un outil qui me facilite mes recrutements en alternance, moi qui n’ai pas le temps de rédiger des fiches de poste... Je reçois ensuite les candidatures directement dans ma boîte mail.”",
     },
     {
       avatar: "/images/home_pics/avatars/recruteur_02.png",
@@ -64,7 +64,7 @@ type Props = {
 
 export const AppreciationUsagers = ({ realm }: Props) => {
   const [expanded, setExpanded] = useState(false)
-  const firstTestimonyRef = useRef<HTMLDivElement>(null)
+  const firstTestimonyRef = useRef<HTMLLIElement>(null)
 
   const toggle = () => {
     setExpanded((v) => !v)
@@ -87,6 +87,8 @@ export const AppreciationUsagers = ({ realm }: Props) => {
       </SectionTitle>
       <Box>
         <Box
+          component="ul"
+          className="fr-raw-list"
           sx={{
             display: "flex",
             flexDirection: { xs: "column", lg: "row" },
@@ -95,6 +97,7 @@ export const AppreciationUsagers = ({ realm }: Props) => {
         >
           {testimonies.map((testimony, index) => (
             <Box
+              component="li"
               key={index}
               ref={index === 0 ? firstTestimonyRef : undefined}
               sx={{
@@ -109,17 +112,21 @@ export const AppreciationUsagers = ({ realm }: Props) => {
               }}
             >
               <Image src={testimony.avatar} alt="" width={98} height={98} />
-              <Typography sx={{ textAlign: "center", fontSize: "14px", fontWeight: 700, lineHeight: "24px", mt: fr.spacing("6v"), mb: fr.spacing("2v") }}>
-                {testimony.name},
-                <br />
-                {testimony.role.split("\n").map((line, i) => (
-                  <span key={i}>
-                    {i > 0 && <br />}
-                    {line}
-                  </span>
-                ))}
-              </Typography>
-              <Typography sx={{ textAlign: "center" }}>{testimony.quote}</Typography>
+              <Box component="figure" sx={{ m: 0 }}>
+                <Typography component="figcaption" sx={{ textAlign: "center", fontSize: "14px", fontWeight: 700, lineHeight: "24px", mt: fr.spacing("6v"), mb: fr.spacing("2v") }}>
+                  {testimony.name},
+                  <br />
+                  {testimony.role.split("\n").map((line, i) => (
+                    <span key={i}>
+                      {i > 0 && <br />}
+                      {line}
+                    </span>
+                  ))}
+                </Typography>
+                <Typography component="blockquote" sx={{ textAlign: "center" }}>
+                  {testimony.quote}
+                </Typography>
+              </Box>
             </Box>
           ))}
         </Box>

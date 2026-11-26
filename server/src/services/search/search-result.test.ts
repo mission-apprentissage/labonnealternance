@@ -1,11 +1,12 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
+import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateSearchItemFixture } from "shared/fixtures/search-items.fixture"
 import { beforeAll, describe, expect, it } from "vitest"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodb-utils"
 import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
-import { getSearchCorpusCollection } from "@/services/search/search-items.service"
+import { getSearchCorpusCollection, resetRomeLabelByCodeCache } from "@/services/search/search-items.service"
 
 /**
  * Tests de pertinence du moteur de recherche MongoDB Search ($search).
@@ -539,7 +540,122 @@ const CORPUS = [
     organization_name: "AGENCE WAM",
     is_algo_company: true,
   }),
+  // — sigles de diplôme → métiers en mode emplois (#5638) : l'offre qui cite le sigle, celles
+  //   du métier visé qui ne le citent pas, et les pièges (intitulé englobant, corpus formations).
+  generateSearchItemFixture({
+    url_id: "offre-aepe-sigle",
+    title: "Apprenti CAP AEPE",
+    description: "Accueil des enfants en crèche.",
+    keywords: null,
+    rome_labels: ["Educateur / Educatrice de jeunes enfants"],
+    organization_name: "Crèche Les Lutins",
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-garde-enfant",
+    title: "Garde d'enfants à domicile",
+    description: "Sorties d'école et accompagnement aux devoirs.",
+    keywords: null,
+    rome_labels: ["Garde d'enfant"],
+    organization_name: "Family Services",
+  }),
+  generateSearchItemFixture({
+    url_id: "formation-garde-enfant",
+    type: "formation",
+    type_filter_label: "Formations",
+    title: "Titre professionnel assistant de vie aux familles",
+    description: "Formation aux métiers de l'aide à domicile.",
+    keywords: null,
+    rome_labels: ["Garde d'enfant"],
+    organization_name: "CFA Services à la personne",
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-comptable-general",
+    title: "Comptable général",
+    description: "Tenue de la comptabilité générale.",
+    keywords: null,
+    rome_labels: ["Comptable"],
+    organization_name: "Groupe Industriel",
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-expert-comptable",
+    title: "Collaborateur en cabinet",
+    description: "Missions d'audit et de révision.",
+    keywords: null,
+    rome_labels: ["Expert-comptable / Experte-comptable"],
+    organization_name: "Cabinet Audit Conseil",
+  }),
+  // Intitulés cibles de cg voisins dans le tableau : `phrase` « Secrétaire comptable » les matche à cheval.
+  generateSearchItemFixture({
+    url_id: "recruteur-secretaire-comptable",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "GESTION PLUS",
+    description: "",
+    keywords: null,
+    rome_labels: ["Secrétaire", "Comptable"],
+    organization_name: "GESTION PLUS",
+    is_algo_company: true,
+  }),
+  // Sur un sigle, un nom d'entreprise ne vaut pas une mention du diplôme : nom qui contient « CG »,
+  // nom qui commence par « sio » (préfixe d'autocomplete).
+  generateSearchItemFixture({
+    url_id: "recruteur-cg-nom",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "CG PAYSAGE",
+    description: "",
+    keywords: null,
+    rome_labels: ["Jardinier paysagiste / Jardinière paysagiste"],
+    organization_name: "CG PAYSAGE",
+    is_algo_company: true,
+  }),
+  generateSearchItemFixture({
+    url_id: "recruteur-sioule",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "SIOULE LOISIRS",
+    description: "",
+    keywords: null,
+    rome_labels: ["Animateur / Animatrice de loisirs"],
+    organization_name: "SIOULE LOISIRS",
+    is_algo_company: true,
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-metier-ndrc-cfa",
+    type_filter_label: "Offres d'emploi postées par des écoles",
+    title: "Prospection clientèle avec formation incluse",
+    description: "Contrat d'apprentissage associé à une formation au CFA.",
+    keywords: null,
+    rome_labels: ["Attaché commercial / Attachée commerciale"],
+    organization_name: "CFA du Commerce",
+    is_formation_included: true,
+  }),
+  // Une offre par sigle restant, qui ne cite pas le sigle et porte un intitulé ROME visé.
+  ...(
+    [
+      ["offre-metier-ndrc", "Prospection terrain B2B", "Attaché commercial / Attachée commerciale"],
+      ["offre-metier-mco", "Implantation des linéaires", "Merchandiser"],
+      ["offre-metier-gpme", "Gestion administrative polyvalente", "Assistant / Assistante de gestion administrative"],
+      ["offre-metier-sio", "Exploitation du parc informatique", "Technicien / Technicienne d'exploitation informatique"],
+      ["offre-metier-electrotechnique", "Mise en service de lignes de production", "Technicien / Technicienne d'installation d'équipements industriels"],
+    ] as const
+  ).map(([url_id, title, romeLabel]) =>
+    generateSearchItemFixture({ url_id, title, description: "Poste en alternance.", keywords: null, rome_labels: [romeLabel], organization_name: "Entreprise Exemple" })
+  ),
 ]
+
+// Référentiel ROME minimal : la correspondance sigle → métiers résout ses codes ici (cf. search-diploma-jobs.ts).
+const ROME_REFERENTIEL = [
+  ["K1303", "Garde d'enfant"],
+  ["M1203", "Comptable"],
+  ["M1211", "Expert-comptable / Experte-comptable"],
+  ["M1608", "Secrétaire comptable"],
+  ["D1410", "Attaché commercial / Attachée commerciale"],
+  ["D1506", "Merchandiser"],
+  ["M1621", "Assistant / Assistante de gestion administrative"],
+  ["M1810", "Technicien / Technicienne d'exploitation informatique"],
+  ["I1324", "Technicien / Technicienne d'installation d'équipements industriels"],
+].map(([code_rome, intitule]) => generateReferentielRome({ rome: { code_rome, intitule, code_ogr: code_rome } }))
 
 // Groupes de synonymes minimaux pour reproduire les cas "acronymes" de la recette.
 // NB : l'analyzer de la collection de synonymes est lucene.standard (pas de folding
@@ -581,6 +697,8 @@ async function seedCorpus() {
   for (const doc of CORPUS) await getDbCollection(getSearchCorpusCollection(doc)).insertOne(doc)
   await getDbCollection("search_synonyms").insertMany(SYNONYMS)
   await getDbCollection("search_suggestions").insertMany(USER_SUGGESTIONS)
+  await getDbCollection("referentielromes").insertMany(ROME_REFERENTIEL)
+  resetRomeLabelByCodeCache()
 }
 
 // L'indexation mongot est asynchrone : on attend que le corpus complet soit visible
@@ -732,7 +850,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     })
 
     it("tri par proximité : les documents remontent du plus proche au plus lointain", async () => {
-      const result = await search({ ...PARIS, radius: 1_000, sort: "proximity" })
+      const result = await search({ ...PARIS, radius: 1_000, sort: "proximity", hitsPerPage: CORPUS.length })
 
       const resultIds = ids(result)
       // Marseille (~660 km) en dernier, Versailles (~17 km) juste avant — tous
@@ -1063,7 +1181,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     it("mode=emplois_formation : uniquement les offres CFA/GEIQ", async () => {
       const result = await search({ mode: "emplois_formation" })
 
-      expect(ids(result)).toEqual(["offre-travaux-cfa"])
+      expect(ids(result).sort()).toEqual(["offre-metier-ndrc-cfa", "offre-travaux-cfa"])
     })
 
     it("is_algo_company=true : uniquement les entreprises à contacter (candidatures spontanées)", async () => {
@@ -1131,6 +1249,86 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   // 3. SUGGESTIONS APPRISES — fusion de `search_suggestions` (recherches
   // utilisateurs validées par analyzeSearchQueries) dans l'autocomplétion.
   // ──────────────────────────────────────────────────────────────────────────
+  describe("sigles de diplôme → métiers visés, mode emplois (#5638)", () => {
+    it.each([
+      ["ndrc", "offre-metier-ndrc"],
+      ["BTS MCO", "offre-metier-mco"],
+      ["bts gpme", "offre-metier-gpme"],
+      ["aepe", "offre-garde-enfant"],
+      ["BTS SIO", "offre-metier-sio"],
+      ["cg", "offre-comptable-general"],
+      ["électrotechnique", "offre-metier-electrotechnique"],
+    ])("'%s' trouve %s, une offre du métier visé qui ne cite pas le sigle", async (q, urlId) => {
+      const result = await search({ q, mode: "emplois" })
+
+      expect(ids(result)).toContain(urlId)
+    })
+
+    it("'cap aepe' trouve aussi les offres du métier visé, derrière l'offre qui cite le sigle", async () => {
+      const result = await search({ q: "cap aepe", mode: "emplois" })
+
+      expect(ids(result)).toContain("offre-garde-enfant")
+      expect(rankOf(result, "offre-aepe-sigle")).toBe(0)
+    })
+
+    it("sens unique : 'garde d'enfant' ne remonte pas l'offre qui ne cite que le sigle", async () => {
+      const result = await search({ q: "garde d'enfant", mode: "emplois" })
+
+      expect(ids(result)).toContain("offre-garde-enfant")
+      expect(ids(result)).not.toContain("offre-aepe-sigle")
+    })
+
+    it("mode formations inchangé : 'aepe' ne remonte pas une formation du métier visé", async () => {
+      const result = await search({ q: "aepe", mode: "formations" })
+
+      expect(ids(result)).not.toContain("formation-garde-enfant")
+    })
+
+    it("'cg' ouvre le métier « Comptable » sans les intitulés qui le contiennent (« Expert-comptable »)", async () => {
+      const result = await search({ q: "bts cg", mode: "emplois" })
+
+      expect(ids(result)).toContain("offre-comptable-general")
+      expect(ids(result)).not.toContain("offre-expert-comptable")
+    })
+
+    it("'cg' : le recruteur dont seul le nom contient le sigle passe après le métier visé", async () => {
+      const result = await search({ q: "cg", mode: "emplois" })
+
+      expect(rankOf(result, "recruteur-cg-nom")).toBeGreaterThan(rankOf(result, "offre-comptable-general"))
+      expect(rankOf(result, "offre-comptable-general")).toBeGreaterThanOrEqual(0)
+    })
+
+    it("'sio' : un nom qui commence par le sigle n'entre pas (pas d'autocomplete sur un sigle)", async () => {
+      expect(ids(await search({ q: "sio", mode: "emplois" }))).not.toContain("recruteur-sioule")
+      expect(ids(await search({ q: "siou", mode: "emplois" }))).toContain("recruteur-sioule")
+    })
+
+    it("mode emplois avec formation incluse : 'ndrc' trouve l'offre CFA du métier visé", async () => {
+      const result = await search({ q: "ndrc", mode: "emplois_formation" })
+
+      expect(ids(result)).toContain("offre-metier-ndrc-cfa")
+    })
+
+    it("hors sigle, le nom d'entreprise couvre toujours : 'cg paysage' trouve le recruteur en tête", async () => {
+      const result = await search({ q: "cg paysage", mode: "emplois" })
+
+      expect(rankOf(result, "recruteur-cg-nom")).toBe(0)
+    })
+
+    // Perte acceptée : mongot ne sépare pas les éléments d'un tableau (cf. buildDiplomaJobsClause).
+    it.fails("'cg' garde une entreprise qui porte « Secrétaire » et « Comptable » côte à côte [perte connue]", async () => {
+      const result = await search({ q: "cg", mode: "emplois" })
+
+      expect(ids(result)).toContain("recruteur-secretaire-comptable")
+    })
+
+    it("un sigle accompagné d'un autre terme reste une recherche par couverture : 'aepe crèche' n'ouvre pas les gardes d'enfant", async () => {
+      const result = await search({ q: "aepe crèche", mode: "emplois" })
+
+      expect(ids(result)).not.toContain("offre-garde-enfant")
+    })
+  })
+
   describe("suggestions apprises des recherches utilisateurs", () => {
     it("sert les suggestions actives en complément du contenu indexé", async () => {
       const { suggestions } = await suggestSearchTerms({ q: "boulanger", limit: 8 })

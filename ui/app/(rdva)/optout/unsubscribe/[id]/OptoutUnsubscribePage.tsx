@@ -118,14 +118,14 @@ export default function OptOutUnsubscribe({ id, token, etablissement }: { id: st
 
   return (
     <Container>
-      <Typography variant="h3" sx={{ my: fr.spacing("6v") }}>
+      <Typography variant="h3" component="h1" sx={{ my: fr.spacing("6v") }}>
         Désinscription au service “RDV Apprentissage”
       </Typography>
       {hasBeenUnsubscribed && (
         <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), my: fr.spacing("6v") }}>
           <SuccessCircle width={33} fillHexaColor="#000091" />
           {/* Déjà désinscrit au chargement : pas de déplacement du focus. */}
-          <FocusedTitle component="h3" autoFocus={hasJustUnsubscribed} sx={{ fontWeight: 700 }}>
+          <FocusedTitle component="h2" autoFocus={hasJustUnsubscribed} sx={{ fontWeight: 700 }}>
             Votre désinscription au service “RDV Apprentissage” a bien été prise en compte
           </FocusedTitle>
         </Box>
@@ -133,7 +133,7 @@ export default function OptOutUnsubscribe({ id, token, etablissement }: { id: st
       {isQuestionSent && (
         <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), my: fr.spacing("6v") }}>
           <SuccessCircle width={33} fillHexaColor="#000091" />
-          <FocusedTitle component="h3" sx={{ fontWeight: 700 }}>
+          <FocusedTitle component="h2" sx={{ fontWeight: 700 }}>
             L'équipe “RDV Apprentissage” reviendra vers vous très prochainement pour répondre à vos questions.
           </FocusedTitle>
         </Box>

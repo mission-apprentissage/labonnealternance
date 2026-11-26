@@ -36,7 +36,7 @@ export const LbaJobCfaDetail = ({ job, title, jobSearchedByUser }: { job: ILbaIt
       <JobPostingSchema title={title} description={validCustomDescription || romeDescription || null} id={job?.job?.id} job={job} />
 
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" component="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Contrat
         </Typography>
         <ContratBlock job={job} showMandataireInfo />
@@ -53,7 +53,7 @@ export const LbaJobCfaDetail = ({ job, title, jobSearchedByUser }: { job: ILbaIt
       />
 
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" component="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           L&apos;école en charge du recrutement
         </Typography>
         <Typography sx={{ my: fr.spacing("4v") }}>
@@ -76,7 +76,7 @@ export const LbaJobCfaDetail = ({ job, title, jobSearchedByUser }: { job: ILbaIt
       </Box>
 
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" component="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Description
         </Typography>
         <JobDescription job={job} />

@@ -217,13 +217,15 @@ export function buildSearchPageCanonical(params: ISearchPageParams): string {
   return `/recherche?${query.toString()}`
 }
 
+export const DEFAULT_RECHERCHE_H1 = "Rechercher une formation ou un emploi en alternance"
+
 /**
- * Texte du H1 SEO de la page de résultats : « Alternance {métier}{ à {lieu}} ».
- * Retourne `null` sans métier saisi (`q`) — la page n'a alors pas de H1 dynamique à afficher.
+ * Texte du H1 de la page de résultats : « Alternance {métier}{ à {lieu}} », ou
+ * `DEFAULT_RECHERCHE_H1` sans métier saisi (`q`), la page devant toujours avoir un H1 (RGAA 9.1).
  */
-export function buildRechercheH1(params: Pick<ISearchPageParams, "q" | "lieu_label">): string | null {
+export function buildRechercheH1(params: Pick<ISearchPageParams, "q" | "lieu_label">): string {
   const q = params.q?.trim() || null
-  if (!q) return null
+  if (!q) return DEFAULT_RECHERCHE_H1
 
   const lieu = params.lieu_label?.trim() || null
   return `Alternance ${q}${lieu ? ` à ${lieu}` : ""}`

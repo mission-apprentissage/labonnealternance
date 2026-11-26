@@ -23,7 +23,7 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
         p={fr.spacing("3v")}
         py={fr.spacing("1v")}
       >
-        <Typography color={fr.colors.decisions.text.title.grey.default} fontWeight={700}>
+        <Typography component="h3" color={fr.colors.decisions.text.title.grey.default} fontWeight={700}>
           {annee}
         </Typography>
       </Grid>

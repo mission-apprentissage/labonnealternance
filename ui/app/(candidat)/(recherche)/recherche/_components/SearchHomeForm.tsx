@@ -13,7 +13,7 @@ import { readOpcoFilterCookie } from "@/utils/opco-search-filter.utils"
 
 import type { QSource, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, DEFAULT_SEARCH_MODE } from "../_utils/search.params.utils"
-import { searchTypeOf } from "../_utils/search.tracking.utils"
+import { searchTypeChangedEvent } from "../_utils/search.tracking.utils"
 import { SearchBar } from "./SearchBar"
 import { SearchMobilePanel } from "./SearchMobilePanel"
 import { SEARCH_MODE_OPTIONS, SearchTypeRechercheSelect } from "./SearchTypeRechercheSelect"
@@ -157,7 +157,7 @@ export function SearchHomeForm({ id, showTitle = true }: { id: string; showTitle
 
   // Même événement que le sélecteur de la page de résultats.
   const handleModeChange = (newMode: SearchMode) => {
-    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf(newMode), search_engine: SEARCH_ENGINES.BETA })
+    pushMatomoEvent(searchTypeChangedEvent(newMode, "manual"))
     setMode(newMode)
   }
 

@@ -24,7 +24,7 @@ const RESSOURCES = [
 
 function RessourceCard({ ressource }: { ressource: (typeof RESSOURCES)[number] }) {
   return (
-    <Link href={`${ressource.href}?${UTM_PARAMS}`} style={{ textDecoration: "none", flex: 1, backgroundImage: "none" }}>
+    <Link href={`${ressource.href}?${UTM_PARAMS}`} style={{ display: "block", textDecoration: "none", backgroundImage: "none" }}>
       <Box
         sx={{
           display: "flex",
@@ -73,9 +73,11 @@ export function PreparationSection({ titre }: { titre: string }) {
         <SectionTitle title="Comment se préparer à une alternance" highlightedText={`${titre} ?`} />
         <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{"Découvrez nos ressources pour vous préparer au mieux à l'alternance :"}</Typography>
 
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v") }}>
+        <Box component="ul" className="fr-raw-list" sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v") }}>
           {RESSOURCES.map((ressource) => (
-            <RessourceCard key={ressource.title} ressource={ressource} />
+            <Box component="li" key={ressource.title} sx={{ flex: 1 }}>
+              <RessourceCard ressource={ressource} />
+            </Box>
           ))}
         </Box>
       </DefaultContainer>

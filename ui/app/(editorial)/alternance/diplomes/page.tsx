@@ -160,6 +160,8 @@ export default function AlternanceDiplomes() {
 
           {/* KPI cards */}
           <Box
+            component="ul"
+            className="fr-raw-list"
             sx={{
               display: "grid",
               gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" },
@@ -169,6 +171,7 @@ export default function AlternanceDiplomes() {
           >
             {kpiCards.map((stat) => (
               <Box
+                component="li"
                 key={stat.label}
                 sx={{
                   textAlign: "center",
@@ -265,6 +268,8 @@ export default function AlternanceDiplomes() {
             description="Cliquez sur un diplôme pour accéder au programme, à la durée, au rythme et aux débouchés professionnels."
           />
           <Box
+            component="ul"
+            className="fr-raw-list"
             sx={{
               display: "grid",
               gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "repeat(3, 1fr)" },
@@ -272,15 +277,17 @@ export default function AlternanceDiplomes() {
             }}
           >
             {diplomeData.map((d) => (
-              <Link key={d.slug} href={PAGES.dynamic.seoDiplome(d.slug).getPath()} style={cardLinkStyle}>
-                <Box sx={listicleCardSx}>
-                  <Box>
-                    <Typography sx={cardTitleSx}>{d.titre}</Typography>
-                    <Typography sx={cardSubtitleSx}>{formatLong(d.intituleLongFormation)}</Typography>
+              <li key={d.slug}>
+                <Link href={PAGES.dynamic.seoDiplome(d.slug).getPath()} style={cardLinkStyle}>
+                  <Box sx={listicleCardSx}>
+                    <Box>
+                      <Typography sx={cardTitleSx}>{d.titre}</Typography>
+                      <Typography sx={cardSubtitleSx}>{formatLong(d.intituleLongFormation)}</Typography>
+                    </Box>
+                    <ArrowRightLine sx={cardArrowSx} />
                   </Box>
-                  <ArrowRightLine sx={cardArrowSx} />
-                </Box>
-              </Link>
+                </Link>
+              </li>
             ))}
           </Box>
         </Box>
@@ -315,6 +322,8 @@ export default function AlternanceDiplomes() {
               Par métier
             </Typography>
             <Box
+              component="ul"
+              className="fr-raw-list"
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "repeat(3, 1fr)" },
@@ -323,12 +332,14 @@ export default function AlternanceDiplomes() {
               }}
             >
               {metiersHighlight.map((m) => (
-                <Link key={m.slug} href={PAGES.dynamic.seoMetier(m.slug).getPath()} style={cardLinkStyle}>
-                  <Box sx={listicleCardSx}>
-                    <Typography sx={cardTitleSx}>{m.metier}</Typography>
-                    <ArrowRightLine sx={cardArrowSx} />
-                  </Box>
-                </Link>
+                <li key={m.slug}>
+                  <Link href={PAGES.dynamic.seoMetier(m.slug).getPath()} style={cardLinkStyle}>
+                    <Box sx={listicleCardSx}>
+                      <Typography sx={cardTitleSx}>{m.metier}</Typography>
+                      <ArrowRightLine sx={cardArrowSx} />
+                    </Box>
+                  </Link>
+                </li>
               ))}
             </Box>
             <Link href={PAGES.static.alternanceMetiers.getPath()} className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right")}>
@@ -351,6 +362,8 @@ export default function AlternanceDiplomes() {
               Par ville
             </Typography>
             <Box
+              component="ul"
+              className="fr-raw-list"
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "repeat(3, 1fr)" },
@@ -359,12 +372,14 @@ export default function AlternanceDiplomes() {
               }}
             >
               {villesHighlight.map((v) => (
-                <Link key={v.slug} href={PAGES.dynamic.seoVille(v.slug).getPath()} style={cardLinkStyle}>
-                  <Box sx={listicleCardSx}>
-                    <Typography sx={cardTitleSx}>{v.ville}</Typography>
-                    <ArrowRightLine sx={cardArrowSx} />
-                  </Box>
-                </Link>
+                <li key={v.slug}>
+                  <Link href={PAGES.dynamic.seoVille(v.slug).getPath()} style={cardLinkStyle}>
+                    <Box sx={listicleCardSx}>
+                      <Typography sx={cardTitleSx}>{v.ville}</Typography>
+                      <ArrowRightLine sx={cardArrowSx} />
+                    </Box>
+                  </Link>
+                </li>
               ))}
             </Box>
             <Link href={PAGES.static.alternanceVilles.getPath()} className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right")}>
@@ -391,8 +406,8 @@ export default function AlternanceDiplomes() {
             title="Ressources pour réussir votre formation en alternance"
             description="Guides pratiques, outils et points d'entrée complémentaires pour bien démarrer votre parcours."
           />
-          <Grid container spacing={fr.spacing("4v")} sx={{ mt: fr.spacing("2v"), "& .fr-card__end": { display: "none" } }}>
-            <Grid size={{ md: 3, xs: 12 }}>
+          <Grid container component="ul" className="fr-raw-list" spacing={fr.spacing("4v")} sx={{ mt: fr.spacing("2v"), "& .fr-card__end": { display: "none" } }}>
+            <Grid component="li" size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem
                 title="Guide complet de l'alternant"
                 description="Toutes les clés pour choisir son diplôme, intégrer une formation en alternance et obtenir sa certification dans les meilleures conditions."
@@ -400,7 +415,7 @@ export default function AlternanceDiplomes() {
                 path={PAGES.static.guideAlternant.getPath()}
               />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid component="li" size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem
                 title="Calculer son salaire"
                 description="Estimez votre rémunération nette mensuelle selon votre âge et votre année de formation, quel que soit le diplôme préparé."
@@ -408,7 +423,7 @@ export default function AlternanceDiplomes() {
                 path={PAGES.static.salaireAlternant.getPath()}
               />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid component="li" size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem
                 title="Rechercher une offre"
                 description="Trouvez les offres et les formations en alternance pour le diplôme que vous souhaitez préparer."
@@ -416,7 +431,7 @@ export default function AlternanceDiplomes() {
                 path={PAGES.dynamic.recherche({}).getPath()}
               />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            <Grid component="li" size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem
                 title="Foire aux questions"
                 description="Toutes les réponses sur les diplômes, les programmes, les durées de formation et les débouchés professionnels."

@@ -21,7 +21,7 @@ function PathRecorder() {
   return null
 }
 
-/** Mesure terrain INP et CLS avec attribution, sur un échantillon de visites ; lecture dans Loki (`log_web_vital`). */
+/** Mesure terrain des web-vitals avec attribution, sur un échantillon de visites (cf. docs/developpement/web-vitals.md). */
 export function WebVitalsReporter() {
   useEffect(() => {
     if (isWidget() || Math.random() >= SAMPLE_RATE) return

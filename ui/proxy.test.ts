@@ -1,12 +1,15 @@
+import { captureException } from "@sentry/nextjs"
 import { NextRequest } from "next/server"
 import { SESSION_RETRY_PARAM } from "shared/constants/session"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { proxy } from "./proxy"
+import { resolveFicheLookup } from "./utils/fiche-introuvable.utils"
 
 // apiPost (flux magic link) lit les headers de la requête Next via next/headers, indisponible hors
 // scope requête dans vitest : on fournit des headers vides, sans incidence sur les autres tests.
 vi.mock("next/headers", () => ({ headers: async () => new Headers() }))
+vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }))
 
 const BASE_URL = "http://localhost:3000"
 const SOME_JWT = "some.jwt.token"
@@ -304,4 +307,166 @@ describe("proxy - filtre OPCO de session", () => {
     expect(response.status).toBe(307)
     expect(response.cookies.get("lba_opco")?.value).toBe("AKTO")
   })
+})
+
+describe("proxy - guide de modération OPCO (#6006)", () => {
+  const GUIDE_PATH = "/espace-pro/opco/guide-de-moderation"
+  const sessionAs = (type: string) =>
+    fetchMock.mockImplementation(async (url: string) => new Response(url.endsWith("/auth/session") ? JSON.stringify({ _id: "u1", type }) : JSON.stringify({}), { status: 200 }))
+
+  it("redirige un visiteur non connecté vers la connexion", async () => {
+    const response = await proxy(new NextRequest(new URL(GUIDE_PATH, BASE_URL)))
+
+    expect(response.status).toBe(307)
+    expect(new URL(response.headers.get("location")!).pathname).toBe("/espace-pro/authentification")
+  })
+
+  it("sert le guide à un utilisateur OPCO", async () => {
+    sessionAs("OPCO")
+
+    const response = await proxy(requestWithSessionCookie(GUIDE_PATH))
+
+    expect(response.headers.get("location")).toBeNull()
+    expect(response.headers.get("x-middleware-request-x-session")).toContain('"type":"OPCO"')
+  })
+
+  it.each(["ENTREPRISE", "CFA", "ADMIN"])("refuse le guide à un utilisateur %s", async (type) => {
+    sessionAs(type)
+
+    const response = await proxy(requestWithSessionCookie(GUIDE_PATH))
+
+    expect(response.status).toBe(307)
+    expect(new URL(response.headers.get("location")!).pathname).toBe("/espace-pro/authentification")
+  })
+})
+
+describe("proxy - fiche introuvable (vrai 404 avant le streaming)", () => {
+  const INTERNAL_API = "http://server:5000/api"
+  const SIRET = "12345678900011"
+  const FICHE = `/emploi/recruteurs_lba/${SIRET}/boulangerie`
+  const OBJECT_ID = "6a003cc09a6be614e49184f3"
+  // Forme réelle d'une cle_ministere_educatif : le `#` arrive encodé dans l'URL de la fiche.
+  const CLE_FORMATION = "121115P01313885594860007738855948600077-38053#L01"
+
+  beforeEach(() => {
+    vi.stubEnv("LBA_INTERNAL_API_URL", INTERNAL_API)
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    vi.mocked(captureException).mockClear()
+  })
+
+  const rewriteTarget = (response: Response): string | null => {
+    const rewrite = response.headers.get("x-middleware-rewrite")
+    return rewrite ? new URL(rewrite).pathname : null
+  }
+
+  it("laisse passer une fiche qui existe, sans signalement", async () => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 200 }))
+
+    const response = await proxy(new NextRequest(new URL(FICHE, BASE_URL)))
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock.mock.calls[0][0]).toBe(`${INTERNAL_API}/_private/jobs/recruteurs_lba/${SIRET}`)
+    expect(rewriteTarget(response)).toBeNull()
+    expect(captureException).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ["une panne de l'API (500)", () => Promise.resolve(new Response(null, { status: 500 }))],
+    ["une limite de débit (429)", () => Promise.resolve(new Response(null, { status: 429 }))],
+    ["une erreur réseau ou un timeout", () => Promise.reject(new DOMException("timeout", "TimeoutError"))],
+  ])("laisse passer et signale à Sentry %s", async (_, reply) => {
+    fetchMock.mockImplementation(reply)
+
+    const response = await proxy(new NextRequest(new URL(FICHE, BASE_URL)))
+
+    expect(rewriteTarget(response)).toBeNull()
+    expect(captureException).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(captureException).mock.calls[0][1]).toMatchObject({ fingerprint: ["fiche-introuvable-lookup"] })
+  })
+
+  it.each([
+    ["navigation client", { rsc: "1" }],
+    ["préchargement", { "next-router-prefetch": "1" }],
+    ["préchargement par segment", { "next-router-segment-prefetch": "/_tree" }],
+  ])("n'interroge pas l'API sur une %s", async (_, headers) => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 404 }))
+
+    const response = await proxy(new NextRequest(new URL(FICHE, BASE_URL), { headers }))
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(rewriteTarget(response)).toBeNull()
+  })
+
+  it.each([
+    ["une fiche sans slug", `/emploi/recruteurs_lba/${SIRET}`],
+    ["une sous-page de la fiche", `${FICHE}/autre`],
+    ["un identifiant mal encodé", "/formation/%/x"],
+    ["une page voisine", "/emploi-recruteurs_lba/1/x"],
+  ])("n'interroge pas l'API pour %s", async (_, path) => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 404 }))
+
+    const response = await proxy(new NextRequest(new URL(path, BASE_URL)))
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(rewriteTarget(response)).toBeNull()
+  })
+
+  it("réécrit vers la 404 racine quand l'API confirme le 404, sans signalement", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 404 }))
+
+    const response = await proxy(new NextRequest(new URL(FICHE, BASE_URL)))
+
+    expect(rewriteTarget(response)).toBe("/_fiche-introuvable")
+    expect(captureException).not.toHaveBeenCalled()
+  })
+
+  it("vérifie une fiche formation à l'identifiant réel et la réécrit si elle est introuvable", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 404 }))
+
+    const response = await proxy(new NextRequest(new URL(`/formation/${encodeURIComponent(CLE_FORMATION)}/bts-mco`, BASE_URL)))
+
+    expect(fetchMock.mock.calls[0][0]).toBe(`${INTERNAL_API}/_private/formations/121115P01313885594860007738855948600077-38053%23L01`)
+    expect(rewriteTarget(response)).toBe("/_fiche-introuvable")
+  })
+
+  it.each([
+    ["un séparateur encodé", "/formation/a%2Fb/x", `${INTERNAL_API}/_private/formations/a%2Fb`],
+    ["un point-point doublement encodé", "/formation/%252E%252E/x", `${INTERNAL_API}/_private/formations/%252E%252E`],
+  ])("garde %s dans un seul segment de l'API", async (_, path, expectedUrl) => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 200 }))
+
+    await proxy(new NextRequest(new URL(path, BASE_URL)))
+
+    expect(fetchMock.mock.calls[0][0]).toBe(expectedUrl)
+  })
+
+  it("vérifie une offre à l'ObjectId valide", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 404 }))
+
+    const response = await proxy(new NextRequest(new URL(`/emploi/offres_emploi_partenaires/${OBJECT_ID}/x`, BASE_URL)))
+
+    expect(fetchMock.mock.calls[0][0]).toBe(`${INTERNAL_API}/_private/jobs/offres_emploi_partenaires/${OBJECT_ID}`)
+    expect(rewriteTarget(response)).toBe("/_fiche-introuvable")
+  })
+
+  it.each([
+    ["un type d'offre inconnu", `/emploi/inconnu/${SIRET}/x`],
+    ["une offre LBA dont l'id n'est pas un ObjectId", "/emploi/offres_emploi_lba/x/y"],
+    ["une offre partenaire à l'ObjectId tronqué", `/emploi/offres_emploi_partenaires/${OBJECT_ID.slice(1)}/y`],
+  ])("réécrit %s sans appeler l'API", async (_, path) => {
+    const response = await proxy(new NextRequest(new URL(path, BASE_URL)))
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(rewriteTarget(response)).toBe("/_fiche-introuvable")
+  })
+
+  it.each(["/formation/%2E%2E/x", "/formation/./x", "/emploi/recruteurs_lba/../x"])(
+    "ne vérifie pas un identifiant qui désigne un répertoire (%s), même hors normalisation d'URL",
+    (pathname) => {
+      expect(resolveFicheLookup(pathname)).toBeNull()
+    }
+  )
 })

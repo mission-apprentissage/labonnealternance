@@ -25,7 +25,9 @@ function AucunCFAProche({ title }: { title?: string }) {
       <Box sx={{ minWidth: { xs: "100%", md: "50%" } }}>
         <Box sx={{ p: fr.spacing("6v") }}>
           <Image fetchPriority="high" src="/images/aucunCfa.svg" alt="" unoptimized width={287} height={169} style={{ width: "100%", maxWidth: "287px" }} />
-          <Typography sx={{ fontSize: "24px", mt: fr.spacing("5v") }}>Aucun CFA à proximité</Typography>
+          <Typography component="h1" sx={{ fontSize: "24px", fontWeight: 400, mt: fr.spacing("5v") }}>
+            Aucun CFA à proximité
+          </Typography>
           <Typography sx={{ mt: fr.spacing("6v") }}>
             Votre offre :{" "}
             <Typography component="span" sx={{ fontWeight: 700 }}>

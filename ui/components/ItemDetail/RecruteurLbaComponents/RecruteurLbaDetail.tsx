@@ -22,7 +22,7 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
   return (
     <Box sx={{ mx: { xs: 0, md: "auto" } }}>
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("6v") }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" component="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment fonctionnent les candidatures spontanées La bonne alternance ?
         </Typography>
         <Stack
@@ -61,7 +61,7 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
       />
 
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("6v") }}>
-        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" component="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment candidater ?
         </Typography>
 
@@ -106,7 +106,9 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
           <Typography sx={{ mb: fr.spacing("6v") }}>
             Une fois votre candidature envoyée, notez-vous un rappel pour pouvoir relancer l'entreprise dans 10 jours si vous n'avez pas de réponse d'ici là.
           </Typography>
-          <Typography sx={{ fontWeight: 700 }}>Vous ne recevez pas de réponse ?</Typography>
+          <Typography component="h4" sx={{ fontWeight: 700, color: "inherit" }}>
+            Vous ne recevez pas de réponse ?
+          </Typography>
           <Typography>Voici un exemple de relance par téléphone :</Typography>
           <Typography component="blockquote" sx={{ m: 0, mb: fr.spacing("6v"), fontStyle: "italic", color: "#6A6A6A" }}>
             "Bonjour,
@@ -115,7 +117,9 @@ const RecruteurLbaDetail = ({ recruteurLba, jobSearchedByUser }: { recruteurLba:
             de réponse, je me permets de vous relancer car je suis vraiment très intéressé·e par votre entreprise. Je serai heureux·se de vous expliquer plus en détail ma
             motivation lors d'un rendez-vous. Pourriez-vous me dire à qui je dois m'adresser pour savoir où en est ma candidature et quand puis-je espérer recevoir une réponse ?"
           </Typography>
-          <Typography sx={{ fontWeight: 700 }}>Vous avez une proposition d'entretien ?</Typography>
+          <Typography component="h4" sx={{ fontWeight: 700, color: "inherit" }}>
+            Vous avez une proposition d'entretien ?
+          </Typography>
           <Typography>Préparez-vous avec ce quizz interactif :</Typography>
           <List sx={{ pl: fr.spacing("6v"), listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
             <ListItem>

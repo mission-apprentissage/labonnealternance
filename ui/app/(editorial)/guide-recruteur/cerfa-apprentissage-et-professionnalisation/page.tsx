@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { InfoSection } from "@/app/(editorial)/_components/InfoSection"
@@ -66,7 +66,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         </InfoSection>
       </Section>
       <Section title="Le Cerfa : contrat d'apprentissage">
-        <Paragraph fontWeight={"bold"}>Structure du formulaire</Paragraph>
+        <Paragraph component="h3" fontWeight={"bold"}>
+          Structure du formulaire
+        </Paragraph>
         <Paragraph>Le Cerfa comporte 6 rubriques principales :</Paragraph>
         <ParagraphList
           listItems={[
@@ -98,7 +100,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
           <DsfrLink href="https://www.formulaires.service-public.gouv.fr/gf/getNotice.do?cerfaNotice=51649&cerfaFormulaire=10103">la notice du cerfa apprentissage</DsfrLink> (page
           2)
         </Paragraph>
-        <Paragraph fontWeight={"bold"}>Employeurs spécifiques (codes) :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          Employeurs spécifiques (codes) :
+        </Paragraph>
         <ParagraphList
           listItems={[
             "1 : Entreprise de travail temporaire",
@@ -153,7 +157,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
             ["Nombre d'années d'expérience", "Minimum requis selon diplôme du maître d'apprentissage"],
           ]}
         />
-        <Paragraph fontWeight={"bold"}>Conditions du maître d'apprentissage :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          Conditions du maître d'apprentissage :
+        </Paragraph>
         <ParagraphList
           listItems={[
             "être majeur ;",
@@ -178,7 +184,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
             ["Rémunération", "% du SMIC ou SMC", "Vérifier les grilles en vigueur"],
           ]}
         />
-        <Paragraph fontWeight={"bold"}>Types de dérogation courants :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          Types de dérogation courants :
+        </Paragraph>
         <ParagraphList
           listItems={[
             "11 : Âge > 29 ans – travailleur handicapé ;",
@@ -191,7 +199,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Rubrique 5 : La formation et l’organisme de formation
         </Paragraph>
-        <Paragraph fontWeight={"bold"}>La formation :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          La formation :
+        </Paragraph>
         <TableArticle
           headers={["Champ", "Format", "Attention"]}
           data={[
@@ -202,7 +212,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
             ["Durée de la formation", "Heures/an", "Minimum 25% du temps de travail"],
           ]}
         />
-        <Paragraph fontWeight={"bold"}>L’organisme de formation :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          L’organisme de formation :
+        </Paragraph>
         <TableArticle
           headers={["Champ", "Format"]}
           data={[
@@ -212,12 +224,16 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
             ["Adresse", "Adresse du CFA responsable"],
           ]}
         />
-        <Paragraph fontWeight={"bold"}>Le visa du CFA :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          Le visa du CFA :
+        </Paragraph>
         <Paragraph>Cette rubrique est complétée et signée par le CFA avant transmission à l'OPCO. Le CFA atteste de la cohérence du contrat avec la formation.</Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Rubrique 6 : Cadre réservé à l'organisme en charge du dépôt du candidat
         </Paragraph>
-        <Paragraph fontWeight={"bold"}>Signatures obligatoires :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          Signatures obligatoires :
+        </Paragraph>
         <ParagraphList listItems={["L'employeur (ou son représentant avec délégation) ;", "L'apprenti(e) ;", "Le représentant légal si l'apprenti est mineur"]} />
         <Paragraph fontWeight={"bold"}>Chaque signataire doit dater et signer. Une signature électronique est valable.</Paragraph>
       </Section>
@@ -238,12 +254,16 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Les rubriques spécifiques
         </Paragraph>
-        <Paragraph fontWeight={"bold"}>Rubrique "Tuteur" :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          Rubrique "Tuteur" :
+        </Paragraph>
         <Paragraph>
           Le tuteur doit justifier d'au moins 2 ans d'expérience professionnelle dans la qualification visée. Il peut encadrer au maximum 3 salariés en contrat de
           professionnalisation ou d'apprentissage.
         </Paragraph>
-        <Paragraph fontWeight={"bold"}>Rubrique "Qualification visée" :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          Rubrique "Qualification visée" :
+        </Paragraph>
         <Paragraph>Contrairement à l'apprentissage (toujours un diplôme), le contrat pro peut viser :</Paragraph>
         <ParagraphList
           listItems={[
@@ -252,7 +272,9 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
             "une qualification reconnue par la convention collective de branche",
           ]}
         />
-        <Paragraph fontWeight={"bold"}>Rubrique "Organisme de formation" :</Paragraph>
+        <Paragraph component="h4" fontWeight={"bold"}>
+          Rubrique "Organisme de formation" :
+        </Paragraph>
         <Paragraph>L'organisme doit être titulaire de la certification Qualiopi pour les actions de formation par alternance.</Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Documents à joindre au Cerfa
@@ -300,30 +322,32 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Points de contrôle avant envoi
         </Paragraph>
-        <Paragraph>
-          <span aria-hidden="true">✅</span> Le SIRET est actif et correspond à l'établissement d'exécution
-        </Paragraph>
-        <Paragraph>
-          <span aria-hidden="true">✅</span> Les dates de début/fin de contrat sont cohérentes
-        </Paragraph>
-        <Paragraph>
-          <span aria-hidden="true">✅</span> La date de début de formation est dans la fenêtre autorisée
-        </Paragraph>
-        <Paragraph>
-          <span aria-hidden="true">✅</span> La rémunération respecte les minima légaux
-        </Paragraph>
-        <Paragraph>
-          <span aria-hidden="true">✅</span> Le maître d'apprentissage remplit les conditions
-        </Paragraph>
-        <Paragraph>
-          <span aria-hidden="true">✅</span> Le Cerfa est signé par toutes les parties
-        </Paragraph>
-        <Paragraph>
-          <span aria-hidden="true">✅</span> Le CFA a visé le contrat (apprentissage uniquement)
-        </Paragraph>
-        <Paragraph>
-          <span aria-hidden="true">✅</span> Le programme de formation est joint (professionnalisation uniquement)
-        </Paragraph>
+        <Box component="ul" className="fr-raw-list" display="flex" flexDirection="column" gap={fr.spacing("4v")}>
+          <Paragraph component="li">
+            <span aria-hidden="true">✅</span> Le SIRET est actif et correspond à l'établissement d'exécution
+          </Paragraph>
+          <Paragraph component="li">
+            <span aria-hidden="true">✅</span> Les dates de début/fin de contrat sont cohérentes
+          </Paragraph>
+          <Paragraph component="li">
+            <span aria-hidden="true">✅</span> La date de début de formation est dans la fenêtre autorisée
+          </Paragraph>
+          <Paragraph component="li">
+            <span aria-hidden="true">✅</span> La rémunération respecte les minima légaux
+          </Paragraph>
+          <Paragraph component="li">
+            <span aria-hidden="true">✅</span> Le maître d'apprentissage remplit les conditions
+          </Paragraph>
+          <Paragraph component="li">
+            <span aria-hidden="true">✅</span> Le Cerfa est signé par toutes les parties
+          </Paragraph>
+          <Paragraph component="li">
+            <span aria-hidden="true">✅</span> Le CFA a visé le contrat (apprentissage uniquement)
+          </Paragraph>
+          <Paragraph component="li">
+            <span aria-hidden="true">✅</span> Le programme de formation est joint (professionnalisation uniquement)
+          </Paragraph>
+        </Box>
       </Section>
       <Section title="Transmission à l'OPCO">
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -463,55 +487,77 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         </Paragraph>
       </Section>
       <Section title="Ressources et contacts">
-        <Paragraph fontWeight={"bold"}>Télécharger les formulaires</Paragraph>
+        <Paragraph component="h3" fontWeight={"bold"}>
+          Télécharger les formulaires
+        </Paragraph>
         <ParagraphList
           listItems={[
             <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R1319">Cerfa - Contrat d'apprentissage</DsfrLink>,
             <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R10338">Cerfa - Contrat de professionnalisation</DsfrLink>,
           ]}
         />
-        <Paragraph>
-          <Typography fontWeight={"bold"} component={"span"}>
-            Identifier votre OPCO <span aria-hidden="true">👉</span>
-          </Typography>{" "}
-          <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr">quel-est-mon-opco.francecompetences.fr</DsfrLink>
-        </Paragraph>
-        <Paragraph>Saisissez votre SIRET ou le code IDCC de votre convention collective pour trouver l'OPCO compétent.</Paragraph>
-        <Paragraph>
-          <Typography fontWeight={"bold"} component={"span"}>
-            Vérifier un numéro SIRET <span aria-hidden="true">👉</span>
-          </Typography>{" "}
-          <DsfrLink href="https://www.sirene.fr">sirene.fr</DsfrLink> - Annuaire officiel des entreprises
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight={"bold"} component={"span"}>
-            Codes diplômes et RNCP <span aria-hidden="true">👉</span>
-          </Typography>{" "}
-          <DsfrLink href="https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1">France Compétences - RNCP</DsfrLink>
-        </Paragraph>
+        <ParagraphList
+          listItems={[
+            <>
+              <Typography fontWeight={"bold"} component={"span"}>
+                Identifier votre OPCO <span aria-hidden="true">👉</span>
+              </Typography>{" "}
+              <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr">quel-est-mon-opco.francecompetences.fr</DsfrLink>
+              <Typography>Saisissez votre SIRET ou le code IDCC de votre convention collective pour trouver l'OPCO compétent.</Typography>
+            </>,
+            <>
+              <Typography fontWeight={"bold"} component={"span"}>
+                Vérifier un numéro SIRET <span aria-hidden="true">👉</span>
+              </Typography>{" "}
+              <DsfrLink href="https://www.sirene.fr">sirene.fr</DsfrLink> - Annuaire officiel des entreprises
+            </>,
+            <>
+              <Typography fontWeight={"bold"} component={"span"}>
+                Codes diplômes et RNCP <span aria-hidden="true">👉</span>
+              </Typography>{" "}
+              <DsfrLink href="https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1">
+                France Compétences - RNCP
+              </DsfrLink>
+            </>,
+          ]}
+        />
       </Section>
       <Section title="FAQ technique">
-        <Paragraph>
-          <Typography fontWeight={"bold"}>Le contrat peut-il être antidaté ?</Typography>
-          Non. La date de début du contrat doit correspondre au premier jour réel de travail. L'antidatage peut entraîner un refus d'enregistrement.
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight={"bold"}>Peut-on modifier un Cerfa déjà transmis à l'OPCO ?</Typography>
-          Oui, tant que le contrat n'est pas définitivement enregistré. Contactez rapidement votre OPCO pour signaler l'erreur et transmettre un nouveau Cerfa corrigé.
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight={"bold"}>Le Cerfa doit-il être transmis en original ?</Typography>
-          Non, une copie numérique (scan ou photo lisible) suffit. La signature électronique est acceptée.
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight={"bold"}>Que faire si l'apprenti n'a pas encore son numéro de sécurité sociale ?</Typography>
-          Transmettre le contrat avec la mention "en cours d'immatriculation". L'OPCO pourra demander le NIR ultérieurement pour finaliser le dossier.
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight={"bold"}>Comment corriger une erreur de rémunération après enregistrement ?</Typography>
-          Établir un avenant au contrat avec la rémunération corrigée. Si la rémunération était inférieure au minimum légal, régulariser les salaires en appliquant la grille légale
-          depuis le début du contrat.
-        </Paragraph>
+        <Box>
+          <Paragraph component="h3" fontWeight={"bold"}>
+            Le contrat peut-il être antidaté ?
+          </Paragraph>
+          <Paragraph>Non. La date de début du contrat doit correspondre au premier jour réel de travail. L'antidatage peut entraîner un refus d'enregistrement.</Paragraph>
+        </Box>
+        <Box>
+          <Paragraph component="h3" fontWeight={"bold"}>
+            Peut-on modifier un Cerfa déjà transmis à l'OPCO ?
+          </Paragraph>
+          <Paragraph>
+            Oui, tant que le contrat n'est pas définitivement enregistré. Contactez rapidement votre OPCO pour signaler l'erreur et transmettre un nouveau Cerfa corrigé.
+          </Paragraph>
+        </Box>
+        <Box>
+          <Paragraph component="h3" fontWeight={"bold"}>
+            Le Cerfa doit-il être transmis en original ?
+          </Paragraph>
+          <Paragraph>Non, une copie numérique (scan ou photo lisible) suffit. La signature électronique est acceptée.</Paragraph>
+        </Box>
+        <Box>
+          <Paragraph component="h3" fontWeight={"bold"}>
+            Que faire si l'apprenti n'a pas encore son numéro de sécurité sociale ?
+          </Paragraph>
+          <Paragraph>Transmettre le contrat avec la mention "en cours d'immatriculation". L'OPCO pourra demander le NIR ultérieurement pour finaliser le dossier.</Paragraph>
+        </Box>
+        <Box>
+          <Paragraph component="h3" fontWeight={"bold"}>
+            Comment corriger une erreur de rémunération après enregistrement ?
+          </Paragraph>
+          <Paragraph>
+            Établir un avenant au contrat avec la rémunération corrigée. Si la rémunération était inférieure au minimum légal, régulariser les salaires en appliquant la grille
+            légale depuis le début du contrat.
+          </Paragraph>
+        </Box>
         <Paragraph variant="caption">Sources : Ministère du Travail, Code du travail, notices Cerfa.</Paragraph>
       </Section>
     </LayoutArticle>

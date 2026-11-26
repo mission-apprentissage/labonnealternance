@@ -38,7 +38,7 @@ export const RomeDetailReadOnly = ({
 }) => {
   return (
     <Box>
-      <Typography component="h4" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: 700, mb: fr.spacing("6v") }}>
+      <Typography component="h2" sx={{ fontSize: "24px !important", lineHeight: "32px !important", fontWeight: 700, mb: fr.spacing("6v") }}>
         Description
       </Typography>
       <Typography sx={{ fontSize: "12px", mb: fr.spacing("6v") }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
@@ -61,7 +61,9 @@ export const RomeDetailReadOnly = ({
         <Accordion id="competences" label="Compétences qui seront acquises durant l’alternance">
           {competences.savoir_faire.map(({ libelle, items = [] }) => (
             <CompetencesGroupDiv key={libelle}>
-              <Typography className="competences-group-title">{libelle}</Typography>
+              <Typography component="h4" className="competences-group-title">
+                {libelle}
+              </Typography>
               <CompetencesList>
                 {items.map(({ libelle }) => (
                   <li key={libelle}>{libelle}</li>
@@ -75,7 +77,9 @@ export const RomeDetailReadOnly = ({
         <Accordion id="techniques" label="Domaines et techniques de travail">
           {competences.savoirs.map(({ libelle, items = [] }) => (
             <CompetencesGroupDiv key={libelle}>
-              <Typography className="competences-group-title">{libelle}</Typography>
+              <Typography component="h4" className="competences-group-title">
+                {libelle}
+              </Typography>
               <CompetencesList>
                 {items.map(({ libelle }) => (
                   <li key={libelle}>{libelle}</li>

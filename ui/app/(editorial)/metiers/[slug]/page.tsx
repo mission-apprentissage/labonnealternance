@@ -74,31 +74,33 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
             Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La bonne alternance :
           </Typography>
           <Stack
+            component="ul"
+            className="fr-raw-list"
             spacing={fr.spacing("2v")}
             sx={{
               alignItems: "flex-start",
             }}
           >
-            <Typography>
+            <Typography component="li">
               Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en{" "}
               <Box component="span" sx={{ fontStyle: "italic" }}>
                 {relatedMetier.name}
               </Box>
             </Typography>
-            <Typography>
+            <Typography component="li">
               Liste d'entreprises qui recrutent en alternance en{" "}
               <Box component="span" sx={{ fontStyle: "italic" }}>
                 {relatedMetier.name}
               </Box>
             </Typography>
-            <Typography>
+            <Typography component="li">
               Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en{" "}
               <Box component="span" sx={{ fontStyle: "italic" }}>
                 {relatedMetier.name}
               </Box>
             </Typography>
 
-            <Typography sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
+            <Typography component="li" sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
               <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
 
               <Link
@@ -112,7 +114,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
 
             {towns.map((currentTown, index) => {
               return (
-                <Typography key={index} sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
+                <Typography component="li" key={index} sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
                   <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
                   <Link
                     className={fr.cx("fr-link", "fr-text--bold")}

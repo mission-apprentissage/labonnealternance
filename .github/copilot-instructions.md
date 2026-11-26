@@ -32,7 +32,7 @@ Flag these in review as well.
 - **job-processor crons**: do not set `concurrency: { mode: "exclusive" }` on a frequent cron — one slot out of two is lost (measured in production, see `server/src/jobs/jobs.ts`).
 - **`sanitizeTextField(null)` returns `""`**, which silently disables any `??` downstream. Use `||`, or `sanitizeNullableTextField` (`format-text-fields-jobs-partners.ts`) to keep `null`.
 - **mongot / `$search`**: `exists` also matches fields set to `null` — use a `range` clause instead. Query limits (`maxClauseCount`) and the transient-cancellation retry are documented in `server/src/services/search/`; design docs in `docs/mongodb/`.
-- **`react-notion-x` is patched** (`.yarn/patches/`, RGAA 8.9: text blocks rendered as `<p>`) and pinned to 7.10.0 by `resolutions`: bumping `ui/package.json` does not change the installed version. To upgrade, run `yarn patch react-notion-x@npm:<version>`, port the change, `yarn patch-commit -s <folder>`, update the `resolutions` key, then run `notion-renderer-patch.test.ts`. Flag in review any upgrade that skips these steps.
+- **`react-notion-x` is patched** (`.yarn/patches/`, RGAA 8.9: text blocks rendered as `<p>`; RGAA 9.3: consecutive list items in a single list, sub-lists inside their `li`) and pinned to 7.10.0 by `resolutions`: bumping `ui/package.json` does not change the installed version. `yarn patch` extracts the unpatched package: apply the existing patch there first (`git apply`). Then port the change, `yarn patch-commit -s <folder>`, drop the `react-notion-x@^7.10.0` key it adds to `resolutions` (or update the existing key when upgrading), `yarn install`, then run `notion-renderer-patch.test.ts`. Flag in review any upgrade that skips these steps.
 
 ## Autonomous Agent Files — Do Not Touch
 

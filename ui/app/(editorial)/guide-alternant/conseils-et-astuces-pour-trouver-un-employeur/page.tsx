@@ -38,21 +38,17 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
       metadata={metadata}
     >
       <Section title="Où trouver des entreprises qui recrutent ?">
-        <Paragraph>
-          <Typography fontWeight={"bold"}>Rendez-vous sur les salons :</Typography>
+        <Paragraph component="h3" bold>
+          Rendez-vous sur les salons :
         </Paragraph>
-        <Paragraph>
-          <Typography>Tout au long de l'année, il existe des salons de recrutement (physiques ou virtuels) spécialisés pour l'alternance : renseignez-vous !</Typography>
-          <Typography>
-            <DsfrLink href="https://www.letudiant.fr/etudes/salons.html">Voir les salons l’Étudiant</DsfrLink>
-          </Typography>
-          <Typography>
-            <DsfrLink href="https://www.studyrama.com/salons">Voir les salons Studyrama</DsfrLink>
-          </Typography>
-          <Typography>
-            <DsfrLink href="https://jeunesdavenirs.fr/nos-evenements/">Voir les salons Jeunes d’Avenirs</DsfrLink>
-          </Typography>
-        </Paragraph>
+        <Paragraph>Tout au long de l'année, il existe des salons de recrutement (physiques ou virtuels) spécialisés pour l'alternance : renseignez-vous !</Paragraph>
+        <ParagraphList
+          listItems={[
+            <DsfrLink href="https://www.letudiant.fr/etudes/salons.html">Voir les salons l’Étudiant</DsfrLink>,
+            <DsfrLink href="https://www.studyrama.com/salons">Voir les salons Studyrama</DsfrLink>,
+            <DsfrLink href="https://jeunesdavenirs.fr/nos-evenements/">Voir les salons Jeunes d’Avenirs</DsfrLink>,
+          ]}
+        />
         <Paragraph>
           France Travail recense de nombreux évènements (conférences, salons, <span lang="en">job dating</span>, conférences en ligne…) pour vous aider dans vos recherches de
           contrat.{" "}
@@ -61,16 +57,14 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
             <span className="fr-sr-only">{" - Consulter les évènements France Travail"}</span>
           </DsfrLink>
         </Paragraph>
-        <Paragraph>
-          <Typography fontWeight={"bold"}>
-            Plus d’un employeur sur deux recrute sans déposer d'offre d'emploi : optimisez vos chances en adressant aussi des candidatures spontanées ! La bonne alternance
-            identifie pour vous des entreprises susceptibles de recruter, auprès desquelles vous pouvez adresser des candidatures spontanées.
-          </Typography>
+        <Paragraph bold>
+          Plus d’un employeur sur deux recrute sans déposer d'offre d'emploi : optimisez vos chances en adressant aussi des candidatures spontanées ! La bonne alternance identifie
+          pour vous des entreprises susceptibles de recruter, auprès desquelles vous pouvez adresser des candidatures spontanées.
         </Paragraph>
       </Section>
       <Section title="Pour préparer vos candidatures">
-        <Paragraph>
-          <Typography fontWeight={"bold"}>Pour construire votre CV :</Typography>
+        <Paragraph component="h3" bold>
+          Pour construire votre CV :
         </Paragraph>
         <ParagraphList
           listItems={[
@@ -84,16 +78,22 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
           ]}
         />
         <Paragraph>
-          <Typography fontWeight={"bold"}>Motivation, Dynamisme et Présentation soignée : </Typography>3 qualités recherchées par les employeurs de jeunes candidats. Mettez-les en
-          avant dans votre candidature !
+          <Typography component="span" display="block" fontWeight={"bold"}>
+            Motivation, Dynamisme et Présentation soignée :
+          </Typography>
+          3 qualités recherchées par les employeurs de jeunes candidats. Mettez-les en avant dans votre candidature !
         </Paragraph>
         <Paragraph>
           Les recruteurs font attention à de petits détails ! Professionnalisez vos candidatures{" "}
           <Typography component={"span"} fontWeight={"bold"}>
             en utilisant une adresse email adaptée aux contacts professionnels
           </Typography>{" "}
-          (par exemple : nom.prenom@email.fr et en personnalisant votre messagerie vocale sur votre téléphone (par exemple : “Bonjour, vous êtes bien sur la messagerie vocale de
-          [prénom+nom]. Je ne suis pas disponible pour le moment, laissez-moi un message et je vous rappellerai dès que possible. Merci !”)
+          (par exemple : nom.prenom@email.fr et en personnalisant votre messagerie vocale sur votre téléphone (par exemple :{" "}
+          <q>
+            Bonjour, vous êtes bien sur la messagerie vocale de [prénom+nom]. Je ne suis pas disponible pour le moment, laissez-moi un message et je vous rappellerai dès que
+            possible. Merci !
+          </q>
+          )
         </Paragraph>
         <Paragraph>
           Les employeurs qui embauchent des alternants reçoivent des aides,{" "}

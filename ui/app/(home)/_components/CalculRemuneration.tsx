@@ -5,6 +5,7 @@ export const CalculRemuneration = () => {
   return (
     <Card
       title={"Je calcule ma rémunération"}
+      titleAs="h2"
       desc={"Répondez à quelques questions pour connaître votre future rémunération en alternance"}
       background
       border

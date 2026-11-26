@@ -45,6 +45,7 @@ export const ZUserRecruteurWritable = z.strictObject({
   address: extensions.withoutUrls().nullish().describe("Adresse de l'établissement"),
   geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
   phone: extensions.phone().describe("Téléphone de l'établissement"),
+  phone_hidden: z.boolean().optional().describe("Numéro de téléphone masqué sur les offres La bonne alternance du compte (absent : affiché)"),
   email: z.email().describe("L'email de l'utilisateur"),
   scope: z.string().nullish().describe("Scope accessible par l'utilisateur"),
   is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),

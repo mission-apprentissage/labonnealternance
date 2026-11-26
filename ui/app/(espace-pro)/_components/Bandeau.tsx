@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Alert } from "@codegouvfr/react-dsfr/Alert"
+import { Alert, type AlertProps } from "@codegouvfr/react-dsfr/Alert"
 import { Box, Link } from "@mui/material"
 
 export type BandeauProps = {
@@ -7,9 +7,13 @@ export type BandeauProps = {
   description: React.ReactNode
   lien?: string
   type: "success" | "error"
+  titleAs?: AlertProps["as"] | "p"
 }
 
-export const Bandeau = ({ header, description, lien = null, type }: BandeauProps) => {
+// Taille DSFR du titre d'alerte, que DepotSimplifieStyling écraserait sur un h2
+export const alertTitleSx = { fontSize: "1.125rem", lineHeight: "1.5rem" }
+
+export const Bandeau = ({ header, description, lien = null, type, titleAs = "h2" }: BandeauProps) => {
   const descriptionContent = (
     <>
       {description}
@@ -35,9 +39,18 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
     <Box
       sx={{
         mb: fr.spacing("2v"),
+        // Couleur des titres DSFR, qu'un titre rendu en <p> n'hérite pas
+        "& .fr-alert__title": { ...alertTitleSx, color: fr.colors.decisions.text.title.grey.default },
       }}
     >
-      <Alert severity={type === "success" ? "success" : "error"} role={type === "success" ? "status" : "alert"} title={header} description={descriptionContent} />
+      {/* Le typage d'Alert n'accepte que des hx, mais le composant rend la balise passée telle quelle. */}
+      <Alert
+        as={titleAs as AlertProps["as"]}
+        severity={type === "success" ? "success" : "error"}
+        role={type === "success" ? "status" : "alert"}
+        title={header}
+        description={descriptionContent}
+      />
     </Box>
   )
 }

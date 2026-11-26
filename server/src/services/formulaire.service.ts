@@ -30,6 +30,7 @@ import type { IModerationTrigger, IOfferModerationStatus } from "shared/models/j
 import { MODERATION_CLASSIFICATION_STATUS, MODERATION_TRIGGER } from "shared/models/jobs-partners-moderation.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { getOfferApplyPhone } from "shared/models/user-with-account.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { isRecruiterWrittenDescription } from "shared/utils/job-description.utils"
 import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
@@ -1551,7 +1552,7 @@ async function jobCreateToJobsPartner({
     workplace_address_zipcode: entreprise.address_detail?.code_postal ?? null,
     workplace_address_city: addressV3?.libelle_commune ?? null,
 
-    apply_phone: user.phone ?? null,
+    apply_phone: getOfferApplyPhone(user),
     apply_email: user.email,
 
     workplace_opco: entreprise.opco ?? null,
@@ -1585,7 +1586,7 @@ async function jobCreateToJobsPartner({
 
     cfa_siret: cfa?.siret ?? null,
     cfa_legal_name: cfa?.raison_sociale ?? null,
-    cfa_apply_phone: cfa ? (user.phone ?? null) : null,
+    cfa_apply_phone: cfa ? getOfferApplyPhone(user) : null,
     cfa_apply_email: cfa ? user.email : null,
     cfa_address_label: cfa?.address ?? null,
 

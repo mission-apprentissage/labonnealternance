@@ -12,7 +12,7 @@ function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
     <Link
       title={`En savoir plus sur la formation ${card.formationTitle}`}
       href={`/formation/${encodeURIComponent(card.formationClefMinistereEducatif)}/${encodeURIComponent(card.formationTitle)}?${UTM_PARAMS}`}
-      style={{ textDecoration: "none", backgroundImage: "none", minWidth: 0 }}
+      style={{ display: "block", height: "100%", textDecoration: "none", backgroundImage: "none" }}
     >
       <Box
         sx={{
@@ -62,6 +62,8 @@ export function EcolesSection({ titre, formations, searchHref }: { titre: string
       <SectionTitle title="Quelques écoles qui proposent le diplôme" highlightedText={`${titre} :`} />
 
       <Box
+        component="ul"
+        className="fr-raw-list"
         sx={{
           display: "grid",
           gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" },
@@ -70,7 +72,9 @@ export function EcolesSection({ titre, formations, searchHref }: { titre: string
         }}
       >
         {formations.map((card, index) => (
-          <FormationCard key={`${card.formationTitle}-${index}`} card={card} />
+          <Box component="li" key={`${card.formationTitle}-${index}`} sx={{ minWidth: 0 }}>
+            <FormationCard card={card} />
+          </Box>
         ))}
       </Box>
 
