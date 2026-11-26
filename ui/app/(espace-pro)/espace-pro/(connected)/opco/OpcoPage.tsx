@@ -11,8 +11,10 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { AccountConformityBadge, accountConformityRank } from "@/app/(espace-pro)/espace-pro/(connected)/_components/moderation/ModerationBadges"
+import { getOpcoGuideHref, trackOpcoGuideLinkClicked } from "@/app/(espace-pro)/espace-pro/(connected)/_components/moderation/opco-guide.utils"
 import { useDisclosure } from "@/app/hooks/use-disclosure"
 import { useToast } from "@/app/hooks/useToast"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { CustomTabs } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
@@ -180,11 +182,16 @@ function AdministrationOpco() {
 
       <Breadcrumb pages={[PAGES.static.backOpcoHome]} />
 
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("6v") }}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("2v") }}>
         <Typography component="h1" sx={{ fontSize: "2rem", fontWeight: 700 }}>
           Entreprises
         </Typography>
       </Box>
+      <Typography sx={{ mb: fr.spacing("6v") }}>
+        <DsfrLink href={getOpcoGuideHref("guide-comptes")} onClick={() => trackOpcoGuideLinkClicked("entreprises")}>
+          Comment vérifier un compte ?
+        </DsfrLink>
+      </Typography>
 
       <CustomTabs
         currentTab={currentTab}

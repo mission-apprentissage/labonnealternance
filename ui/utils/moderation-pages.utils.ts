@@ -6,6 +6,7 @@ export const MODERATION_PAGES = {
   adminQueue: { getPath: () => "/espace-pro/administration/offres-a-moderer", title: "Offres à modérer" } satisfies IPage,
   adminSearch: { getPath: () => "/espace-pro/administration/rechercher-une-offre", title: "Rechercher une offre" } satisfies IPage,
   opcoQueue: { getPath: () => "/espace-pro/opco/offres-a-moderer", title: "Offres en modération" } satisfies IPage,
+  opcoGuide: { getPath: () => "/espace-pro/opco/guide-de-moderation", title: "Guide de modération" } satisfies IPage,
   offre: ({ job_id, userType, offer_title }: { job_id: string; userType: "ADMIN" | "OPCO"; offer_title?: string }): IPage => ({
     getPath: () => `${userType === "OPCO" ? "/espace-pro/opco" : "/espace-pro/administration"}/offres-a-moderer/${job_id}`,
     title: offer_title ?? "Modération de l'offre",
