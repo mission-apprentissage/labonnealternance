@@ -117,7 +117,7 @@ describe("unsubscribe recruteur LBA", () => {
 
     expect(response.statusCode).toBe(200)
     const application = await getDbCollection("applications").findOne({ company_siret: siret })
-    expect(application?.company_email).not.toBe(email)
+    expect(application?.company_email).toBe("faux_email@faux-domaine-compagnie.com")
   })
 
   it("laisse les candidatures intactes pour un autre motif", async () => {
@@ -125,8 +125,9 @@ describe("unsubscribe recruteur LBA", () => {
     await insertCompanies([siret])
     await getDbCollection("applications").insertOne(generateApplicationFixture({ company_siret: siret, company_email: email }))
 
-    await httpClient().inject({ method: "POST", path: "/api/unsubscribe", body: { email, reason: UNSUBSCRIBE_REASONS.DEJA_TROUVE } })
+    const response = await httpClient().inject({ method: "POST", path: "/api/unsubscribe", body: { email, reason: UNSUBSCRIBE_REASONS.DEJA_TROUVE } })
 
+    expect(response.statusCode).toBe(200)
     const application = await getDbCollection("applications").findOne({ company_siret: siret })
     expect(application?.company_email).toBe(email)
   })
