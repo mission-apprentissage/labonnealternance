@@ -9,7 +9,7 @@ import { captureException } from "@sentry/nextjs"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { Formik, useFormikContext } from "formik"
-import { useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import type { IJob, IReferentielRomeForJob } from "shared"
 import type { OFFER_DESCRIPTION_MODE } from "shared/models/job.model"
 import { JOB_DESCRIPTION_MAX_LENGTH, JOB_EMPLOYER_DESCRIPTION_MAX_LENGTH, JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
@@ -348,36 +348,48 @@ export const FormulaireEditionOffreStep1 = ({
     setSelectedCompetences(null)
   }
 
-  const onSelectedCompetencesChange = (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => {
-    if (!romeQuery.data) {
-      throw new Error("inattendu : pas de données ROME")
-    }
-    const { competences } = romeQuery.data as IReferentielRomeForJob
-    const isSelected = (groupKey: string, competence: string): boolean => selectedCompetences[groupKey].has(competence)
+  // callback et Sets stables : RomeDetailWithQuery est mémoïsé (cf. RomeDetailWithQuery)
+  const onSelectedCompetencesChange = useCallback(
+    (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => {
+      if (!romeQuery.data) {
+        throw new Error("inattendu : pas de données ROME")
+      }
+      const { competences } = romeQuery.data as IReferentielRomeForJob
+      const isSelected = (groupKey: string, competence: string): boolean => selectedCompetences[groupKey].has(competence)
 
-    const savedCompetences: IReferentielRomeForJob["competences"] = {
-      savoir_etre_professionnel: competences.savoir_etre_professionnel.filter((x) => isSelected("savoir_etre_professionnel", x.libelle)),
-      savoir_faire: competences.savoir_faire.flatMap((competencesGroup) => {
-        const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoir_faire", libelle))
-        if (!selectedItems.length) {
-          return []
-        }
-        return [{ ...competencesGroup, items: selectedItems }]
-      }),
-      savoirs: competences.savoirs.flatMap((competencesGroup) => {
-        const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoirs", libelle))
-        if (!selectedItems.length) {
-          return []
-        }
-        return [{ ...competencesGroup, items: selectedItems }]
-      }),
-    }
-    setSelectedCompetences(savedCompetences)
-  }
-
-  if (!establishment_id) return <></>
+      const savedCompetences: IReferentielRomeForJob["competences"] = {
+        savoir_etre_professionnel: competences.savoir_etre_professionnel.filter((x) => isSelected("savoir_etre_professionnel", x.libelle)),
+        savoir_faire: competences.savoir_faire.flatMap((competencesGroup) => {
+          const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoir_faire", libelle))
+          if (!selectedItems.length) {
+            return []
+          }
+          return [{ ...competencesGroup, items: selectedItems }]
+        }),
+        savoirs: competences.savoirs.flatMap((competencesGroup) => {
+          const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoirs", libelle))
+          if (!selectedItems.length) {
+            return []
+          }
+          return [{ ...competencesGroup, items: selectedItems }]
+        }),
+      }
+      setSelectedCompetences(savedCompetences)
+    },
+    [romeQuery.data]
+  )
 
   const finalSelectedCompetences = selectedCompetences ?? romeQuery?.data?.competences
+  const selectedCompetenceSets = useMemo<Record<RomeCompetenceKey, Set<string>>>(
+    () => ({
+      savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+      savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
+      savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+    }),
+    [finalSelectedCompetences]
+  )
+
+  if (!establishment_id) return <></>
 
   const localOnSubmit = (values) => {
     const isPreciseDate = values.job_start_type === JOB_START_TYPE.PRECISE_DATE
@@ -606,11 +618,7 @@ export const FormulaireEditionOffreStep1 = ({
                   {romeAndAppellation && descriptionMode === "structured" && (
                     <Box sx={{ mt: fr.spacing("4v") }}>
                       <RomeDetailWithQuery
-                        selectedCompetences={{
-                          savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                          savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
-                          savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                        }}
+                        selectedCompetences={selectedCompetenceSets}
                         title={values.offer_title_custom || romeAndAppellation.appellation}
                         rome={romeAndAppellation.rome}
                         onChange={onSelectedCompetencesChange}

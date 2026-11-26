@@ -150,6 +150,7 @@ export const zRecruiterRoutes = {
             origin: ZUserOriginInput,
             ...ZUserRecruteurWritable.pick({
               phone: true,
+              phone_hidden: true,
               email: true,
               establishment_siret: true,
               opco: true,
@@ -168,6 +169,7 @@ export const zRecruiterRoutes = {
             origin: ZUserOriginInput,
             ...ZUserRecruteurWritable.pick({
               phone: true,
+              phone_hidden: true,
               email: true,
               establishment_siret: true,
             }).shape,

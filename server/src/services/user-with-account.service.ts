@@ -19,7 +19,7 @@ export const findOrCreateUserWithAccount = async (
   is_email_checked: boolean,
   grantedBy: string
 ): Promise<{ user: IUserWithAccount; created: boolean }> => {
-  const { first_name, last_name, last_action_date, origin, phone } = userProps
+  const { first_name, last_name, last_action_date, origin, phone, phone_hidden } = userProps
   const formatedEmail = userProps.email.toLocaleLowerCase()
 
   const existingUser = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
@@ -50,6 +50,7 @@ export const findOrCreateUserWithAccount = async (
       first_name,
       last_name,
       phone: phone ?? "",
+      ...(phone_hidden ? { phone_hidden } : {}),
       last_action_date,
       origin,
       status,

@@ -1,5 +1,12 @@
-import type { IWebVitalReport } from "shared/routes/_private/web-vitals.routes"
-import type { CLSMetricWithAttribution, INPMetricWithAttribution } from "web-vitals/attribution"
+import type { IWebVitalMetric, IWebVitalsBatch } from "shared/routes/_private/web-vitals.routes"
+import type {
+  CLSMetricWithAttribution,
+  FCPMetricWithAttribution,
+  INPMetricWithAttribution,
+  LCPMetricWithAttribution,
+  MetricWithAttribution,
+  TTFBMetricWithAttribution,
+} from "web-vitals/attribution"
 
 const EMPLOI_TYPES = new Set(["offres_emploi_lba", "offres_emploi_partenaires", "recruteurs_lba"])
 const ALTERNANCE_SECTIONS = new Set(["ville", "metier", "diplome"])
@@ -24,9 +31,9 @@ export const toRouteTemplate = (pathname: string): string => {
   return `/${first}/*`
 }
 
-export type IWebVitalContext = {
+export type IWebVitalPage = {
+  pageId: string
   landingRoute: string
-  route: string
   version: string
   viewportWidth: number
   cpuCores?: number
@@ -35,60 +42,107 @@ export type IWebVitalContext = {
 }
 
 const MAX_LABEL = 300
+// borne de l'API : une valeur au-delà ferait refuser tout le lot
+const MAX_MS = 600_000
 
 const label = (value: string | undefined | null): string | null => (value ? value.slice(0, MAX_LABEL) : null)
 
-const ms = (value: number): number => Math.max(0, Math.round(value))
+const ms = (value: number): number => Math.min(MAX_MS, Math.max(0, Math.round(value)))
 
 const optionalMs = (value: number | undefined): number | null => (value === undefined ? null : ms(value))
 
-// la query d'un script tiers peut porter un identifiant de visite
-const scriptUrl = (url: string | undefined): string | null => (url ? label(url.split(/[?#]/)[0]) : null)
+const shift = (value: number): number => Math.round(value * 10_000) / 10_000
+
+// la query d'une ressource peut porter un identifiant (visite, image passée par /_next/image?url=…)
+const urlWithoutQuery = (url: string | undefined): string | null => {
+  if (!url) return null
+  if (url.startsWith("data:")) return "data:"
+  return label(url.split(/[?#]/)[0])
+}
 
 // invoker vaut l'URL du script (classic/module-script) ou porte un [src="…"] (event-listener) : on n'en retire que la
 // query des URL, le `#` d'un `BUTTON#id.onclick` désigne l'élément
 const scriptInvoker = (invoker: string | undefined): string | null => label(invoker?.replace(/(https?:\/\/[^?#"\s\]]*)[?#][^"\s\]]*/g, "$1"))
 
-const commonFields = (context: IWebVitalContext) => ({
-  landing_route: context.landingRoute,
-  route: context.route,
-  version: context.version.slice(0, 50),
-  viewport_width: Math.max(0, Math.round(context.viewportWidth)),
-  cpu_cores: context.cpuCores ?? null,
-  device_memory: context.deviceMemory ?? null,
-  effective_type: context.effectiveType?.slice(0, 10) ?? null,
+const metricFields = ({ value, rating, navigationType }: MetricWithAttribution, route: string) => ({
+  value: ms(value),
+  rating,
+  route,
+  navigation_type: navigationType,
 })
 
-export const buildInpReport = ({ value, rating, navigationType, attribution }: INPMetricWithAttribution, context: IWebVitalContext): IWebVitalReport => {
+export const buildInpMetric = (metric: INPMetricWithAttribution, route: string): IWebVitalMetric => {
+  const { attribution } = metric
   const { longestScript } = attribution
   return {
     metric: "INP",
-    value: ms(value),
-    rating,
-    navigation_type: navigationType,
+    ...metricFields(metric, route),
     load_state: attribution.loadState,
     target: label(attribution.interactionTarget),
-    ...commonFields(context),
     interaction_type: attribution.interactionType ?? null,
     input_delay: ms(attribution.inputDelay),
     processing_duration: ms(attribution.processingDuration),
     presentation_delay: ms(attribution.presentationDelay),
     total_script_duration: optionalMs(attribution.totalScriptDuration),
     total_style_and_layout_duration: optionalMs(attribution.totalStyleAndLayoutDuration),
-    longest_script_url: scriptUrl(longestScript?.entry.sourceURL),
+    longest_script_url: urlWithoutQuery(longestScript?.entry.sourceURL),
     longest_script_invoker: scriptInvoker(longestScript?.entry.invoker),
     longest_script_subpart: longestScript?.subpart ?? null,
     longest_script_duration: optionalMs(longestScript?.intersectingDuration),
   }
 }
 
-export const buildClsReport = ({ value, rating, navigationType, attribution }: CLSMetricWithAttribution, context: IWebVitalContext): IWebVitalReport => ({
+export const buildClsMetric = (metric: CLSMetricWithAttribution, route: string): IWebVitalMetric => ({
   metric: "CLS",
-  value: Math.round(value * 10_000) / 10_000,
-  rating,
-  navigation_type: navigationType,
-  load_state: attribution.loadState ?? null,
-  target: label(attribution.largestShiftTarget),
-  ...commonFields(context),
-  largest_shift_value: attribution.largestShiftValue === undefined ? null : Math.round(attribution.largestShiftValue * 10_000) / 10_000,
+  ...metricFields(metric, route),
+  value: shift(metric.value),
+  load_state: metric.attribution.loadState ?? null,
+  target: label(metric.attribution.largestShiftTarget),
+  largest_shift_value: metric.attribution.largestShiftValue === undefined ? null : shift(metric.attribution.largestShiftValue),
+})
+
+export const buildLcpMetric = (metric: LCPMetricWithAttribution, route: string): IWebVitalMetric => {
+  const { attribution } = metric
+  return {
+    metric: "LCP",
+    ...metricFields(metric, route),
+    target: label(attribution.target),
+    url: urlWithoutQuery(attribution.url),
+    time_to_first_byte: ms(attribution.timeToFirstByte),
+    resource_load_delay: ms(attribution.resourceLoadDelay),
+    resource_load_duration: ms(attribution.resourceLoadDuration),
+    element_render_delay: ms(attribution.elementRenderDelay),
+  }
+}
+
+export const buildTtfbMetric = (metric: TTFBMetricWithAttribution, route: string): IWebVitalMetric => {
+  const { attribution } = metric
+  return {
+    metric: "TTFB",
+    ...metricFields(metric, route),
+    waiting_duration: ms(attribution.waitingDuration),
+    cache_duration: ms(attribution.cacheDuration),
+    dns_duration: ms(attribution.dnsDuration),
+    connection_duration: ms(attribution.connectionDuration),
+    request_duration: ms(attribution.requestDuration),
+  }
+}
+
+export const buildFcpMetric = (metric: FCPMetricWithAttribution, route: string): IWebVitalMetric => ({
+  metric: "FCP",
+  ...metricFields(metric, route),
+  load_state: metric.attribution.loadState,
+  time_to_first_byte: ms(metric.attribution.timeToFirstByte),
+  first_byte_to_fcp: ms(metric.attribution.firstByteToFCP),
+})
+
+export const buildBatch = (page: IWebVitalPage, metrics: IWebVitalMetric[]): IWebVitalsBatch => ({
+  page_id: page.pageId,
+  landing_route: page.landingRoute,
+  version: page.version.slice(0, 50),
+  viewport_width: Math.max(0, Math.round(page.viewportWidth)),
+  cpu_cores: page.cpuCores ?? null,
+  device_memory: page.deviceMemory ?? null,
+  effective_type: page.effectiveType?.slice(0, 10) ?? null,
+  metrics,
 })

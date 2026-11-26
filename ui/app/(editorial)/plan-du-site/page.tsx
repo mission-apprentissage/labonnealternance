@@ -117,6 +117,9 @@ export default function PlanDuSite() {
                           <DsfrLink href={PAGES.static.aPropos.getPath()}>À propos</DsfrLink>
                         </Box>
                         <Box component="li">
+                          <DsfrLink href={PAGES.static.laLettreDeLAlternance.getPath()}>La lettre de l'alternance</DsfrLink>
+                        </Box>
+                        <Box component="li">
                           <DsfrLink href={PAGES.static.blog.getPath()} external>
                             Blog
                           </DsfrLink>

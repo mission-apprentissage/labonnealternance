@@ -2,11 +2,15 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ISearchItem } from "shared/models/index"
 import { JOB_START_TYPE } from "shared/models/job.model"
 import { parseAdminArea } from "shared/utils/admin-area"
+import { logger } from "@/common/logger"
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 import { buildAdminAreaClause } from "@/services/geo-administrative/admin-area"
 import { promoteSmartApplyHits } from "@/services/search/promote-smart-apply"
+import { type CompoundSpellingVariants, compoundSpellingVariants, withCompoundSpellingVariants } from "@/services/search/search-compound-words"
+import { buildDiplomaJobsClause, isDiplomaSigle } from "@/services/search/search-diploma-jobs"
+import { getCachedRomeLabelByCode } from "@/services/search/search-items.service"
 import { retryOnTransientSearchCancellation } from "@/services/search/search-transient-retry"
 
 const HIGHLIGHT_MAX_PASSAGES = 5
@@ -316,6 +320,8 @@ type SearchCorpus = (typeof SEARCH_CORPORA)[SearchMode]
 const LEVEL_AGNOSTIC_VALUES = ["", "Indifférent"]
 const buildLevelFilter = (level: string[]) => ({ in: { path: "level", value: [...level, ...LEVEL_AGNOSTIC_VALUES] } })
 
+const IS_RECRUITER = { equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } }
+
 // Un doc « couvre » un terme s'il le matche sur au moins un champ pondéré. Deux différences
 // entre mono-terme et multi-termes :
 // - autocomplete (edgeGram) en mono-terme seulement : en multi-termes, il couvre par préfixe
@@ -323,9 +329,15 @@ const buildLevelFilter = (level: string[]) => ({ in: { path: "level", value: [..
 // - keywords (Mistral) : en mono-terme, couverture réservée aux recruteurs, sinon un keyword
 //   générique (« commercial ») suffit à faire entrer une offre hors sujet. En multi-termes,
 //   msmFor exige déjà les autres termes ailleurs, keywords couvre donc pour tous.
-function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQuery: boolean): object {
+// Sigle de diplôme (`isSigle`) : ni nom d'entreprise ni autocomplete, cf. buildTextGate.
+// Les variantes de graphie (« médicosocial » ↔ « médico-social ») suivent les mêmes règles de chemin
+// que le terme (cf. search-compound-words.ts).
+type TermCoverageOptions = { variants?: CompoundSpellingVariants; isSigle?: boolean }
+
+function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQuery: boolean, { variants, isSigle = false }: TermCoverageOptions = {}): object {
   const fuzzy = simplifyQuery ? undefined : fuzzyFor(term)
-  const text = (path: string, boost: number) => ({ text: { query: term, path, ...(fuzzy ? { fuzzy } : {}), score: { boost: { value: boost } } } })
+  const text = (path: string, boost: number) =>
+    withCompoundSpellingVariants({ text: { query: term, path, ...(fuzzy ? { fuzzy } : {}), score: { boost: { value: boost } } } }, path, boost, variants)
   return {
     compound: {
       should: [
@@ -334,9 +346,9 @@ function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQu
         // organization_name sans fuzzy : sur des noms propres, 1 édition donne des faux positifs
         // massifs (« vigile » → VIRGILE, VIGIER). description absente volontairement : bonus de
         // score seulement (buildTextBonusClauses), elle ne fait pas entrer un doc.
-        { text: { query: term, path: "organization_name", score: { boost: { value: 6 } } } },
-        isSingleTerm ? { compound: { must: [text("keywords", 5)], filter: [{ equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } }] } } : text("keywords", 5),
-        ...(isSingleTerm
+        ...(isSigle ? [] : [{ text: { query: term, path: "organization_name", score: { boost: { value: 6 } } } }]),
+        isSingleTerm ? { compound: { must: [text("keywords", 5)], filter: [IS_RECRUITER] } } : text("keywords", 5),
+        ...(isSingleTerm && !isSigle
           ? [
               { autocomplete: { query: term, path: "title", score: { boost: { value: 3 } } } },
               { autocomplete: { query: term, path: "rome_labels", score: { boost: { value: 3 } } } },
@@ -346,6 +358,37 @@ function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQu
       minimumShouldMatch: 1,
     },
   }
+}
+
+type TextGateOptions = { simplifyQuery: boolean; diplomaJobs: object | null }
+
+/**
+ * Sigle de diplôme connu (clé de DIPLOMA_JOB_ROME_CODES) quand la requête se réduit à lui, mots
+ * de diplôme et mots vides retirés (« BTS MCO » → « mco »). Modes d'offres seulement : en mode
+ * formations, le sigle trouve déjà le diplôme.
+ */
+export function diplomaSigleOf(q: string | undefined, mode: SearchMode): string | null {
+  if (mode === "formations" || !q) return null
+  const terms = tokenizeQuery(q)
+  if (terms.length !== 1) return null
+  const sigle = normalizeTerm(terms[0])
+  return isDiplomaSigle(sigle) ? sigle : null
+}
+
+// Référentiel illisible : la recherche continue sans les métiers du sigle, plutôt qu'un 500.
+export async function resolveDiplomaJobsClause(q: string | undefined, mode: SearchMode): Promise<object | null> {
+  const sigle = diplomaSigleOf(q, mode)
+  if (!sigle) return null
+  let romeLabelByCode: Map<string, string>
+  try {
+    romeLabelByCode = await getCachedRomeLabelByCode()
+  } catch (err) {
+    sentryCaptureException(err, { level: "warning", extra: { q, fallback: "search-without-diploma-jobs" } })
+    return null
+  }
+  const { clause, unresolvedCodes } = buildDiplomaJobsClause(sigle, romeLabelByCode)
+  if (unresolvedCodes.length) logger.warn({ sigle, unresolvedCodes }, "Codes ROME absents du référentiel : métiers du sigle ignorés")
+  return clause
 }
 
 /**
@@ -367,16 +410,34 @@ function buildTermCoverageClause(term: string, isSingleTerm: boolean, simplifyQu
  * couverture par terme, elle, passe sans problème même avec le fuzzy actif. La clause reste
  * peu utile sur ces requêtes de toute façon : `phrase`/`slop:0` exige une correspondance quasi
  * exacte, peu probable sur un texte libre long.
+ *
+ * `diplomaJobs` : troisième voie d'entrée, les métiers visés par un sigle de diplôme (cf. resolveDiplomaJobsClause).
+ * Sur un sigle, un nom d'entreprise ou un préfixe ne vaut pas une mention du diplôme (« CG PAYSAGE »,
+ * « SIOULE » pour « sio ») : pas de couverture par organization_name ni par autocomplete, et un
+ * recruteur, dont le titre est le nom, ne marque que 0,5, sous les métiers visés (1).
  */
-function buildTextGate(q: string | undefined, simplifyQuery: boolean, corpus: SearchCorpus): object | null {
+function buildTextGate(q: string | undefined, { simplifyQuery, diplomaJobs }: TextGateOptions, corpus: SearchCorpus): object | null {
   if (!q?.trim()) return null
   const contentTerms = tokenizeQuery(q)
   const terms = !contentTerms.length && corpus.diplomaTerms === "qualifier" ? tokenizeQuery(q, { diplomaWords: true }) : contentTerms
-  const coverage = terms.length
-    ? [{ compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1, simplifyQuery)), minimumShouldMatch: msmFor(terms.length) } }]
-    : []
+  const isSigle = diplomaJobs !== null
+  const variants = compoundSpellingVariants(q)
+  const termCoverage = terms.length
+    ? {
+        compound: {
+          should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1, simplifyQuery, { variants: variants.get(term), isSigle })),
+          minimumShouldMatch: msmFor(terms.length),
+        },
+      }
+    : null
   const synonyms = simplifyQuery ? [] : [{ phrase: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", slop: 0, score: { boost: { value: 6 } } } }]
-  const should = [...coverage, ...synonyms]
+  const textEntry = [...(termCoverage ? [termCoverage] : []), ...synonyms]
+  // La clause synonymes matche aussi la requête brute dans le titre : elle passe sous le même plafond.
+  const recruiterCapped = (clauses: object[]) => {
+    const entry = { compound: { should: clauses, minimumShouldMatch: 1 } }
+    return [{ compound: { must: [entry], mustNot: [IS_RECRUITER] } }, { compound: { must: [entry], filter: [IS_RECRUITER], score: { constant: { value: 0.5 } } } }]
+  }
+  const should = [...(isSigle && textEntry.length ? recruiterCapped(textEntry) : textEntry), ...(diplomaJobs ? [diplomaJobs] : [])]
   // simplifyQuery peut vider les deux voies d'entrée à la fois (q composé uniquement de
   // stopwords, sans la clause synonymes — qui opère sur le q brut, pas sur `terms` — pour
   // compenser) : un compound `should: []` est un comportement $search non défini côté mongot.
@@ -386,17 +447,20 @@ function buildTextGate(q: string | undefined, simplifyQuery: boolean, corpus: Se
 
 // Bonus de score (bloc `should`, n'élargit pas le result set). phrase sur title/rome_labels
 // favorise les termes adjacents (« Product Manager ») ; phrase sur organization_name fait
-// passer le match employeur devant les mentions en description.
-function buildTextBonusClauses(q: string | undefined, corpus: SearchCorpus): object[] {
+// passer le match employeur devant les mentions en description. Sur un sigle de diplôme, ni
+// bonus employeur ni bonus pour les recruteurs (cf. buildTextGate).
+function buildTextBonusClauses(q: string | undefined, corpus: SearchCorpus, isSigle: boolean): object[] {
   if (!q?.trim()) return []
   const diplomaTerms = corpus.diplomaTerms === "qualifier" ? tokenizeQuery(q, { diplomaWords: true }) : []
-  return [
-    { phrase: { query: q, path: ["title", "rome_labels"], slop: 2, score: { boost: { value: 10 } } } },
-    { phrase: { query: q, path: "organization_name", slop: 1, score: { boost: { value: 8 } } } },
+  const titleBonus = { phrase: { query: q, path: ["title", "rome_labels"], slop: 2, score: { boost: { value: 10 } } } }
+  const organizationBonus = { phrase: { query: q, path: "organization_name", slop: 1, score: { boost: { value: 8 } } } }
+  const contentBonus = [
     { text: { query: q, path: "keywords", score: { boost: { value: 3 } } } },
     { text: { query: q, path: "description", score: { boost: { value: 1 } } } },
     ...(diplomaTerms.length ? [{ text: { query: diplomaTerms.join(" "), path: "title", score: { boost: { value: 7 } } } }] : []),
   ]
+  if (isSigle) return [{ compound: { should: [titleBonus, ...contentBonus], mustNot: [IS_RECRUITER], minimumShouldMatch: 1 } }]
+  return [titleBonus, organizationBonus, ...contentBonus]
 }
 
 /**
@@ -425,7 +489,7 @@ function buildOpcoClauses({ opco }: ISearchFilters, corpus: SearchCorpus): objec
   return [{ equals: { path: "opco", value: opco } }]
 }
 
-function buildCompoundOperator(filters: ISearchFilters, corpus: SearchCorpus, simplifyQuery: boolean) {
+function buildCompoundOperator(filters: ISearchFilters, corpus: SearchCorpus, gateOptions: TextGateOptions) {
   const {
     q,
     type_filter_label,
@@ -445,7 +509,7 @@ function buildCompoundOperator(filters: ISearchFilters, corpus: SearchCorpus, si
   const hasGeo = latitude !== undefined && longitude !== undefined
   const proximity = sort === "proximity" && hasGeo
 
-  const gate = buildTextGate(q, simplifyQuery, corpus)
+  const gate = buildTextGate(q, gateOptions, corpus)
 
   const filter: object[] = []
 
@@ -494,7 +558,7 @@ function buildCompoundOperator(filters: ISearchFilters, corpus: SearchCorpus, si
   // Porte de pertinence en `must` (gate le result set — vaut pour TOUS les tris, y compris
   // date : un doc trop peu couvrant n'apparaît plus, quel que soit l'ordre) ; bonus phrase
   // en `should` pur (score uniquement, n'élargit pas les résultats).
-  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q, corpus) } : {}), filter }
+  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q, corpus, gateOptions.diplomaJobs !== null) } : {}), filter }
 }
 
 // Les candidatures spontanées (is_algo_company) passent en fin de liste sur les tris par date :
@@ -546,10 +610,10 @@ function isDimensionActive(filters: ISearchFilters, key: FacetDimension): boolea
 // Faceting DISJONCTIF : compound = texte + géo + type + tous les filtres de dimension
 // SAUF `exclude`. Ainsi une facette ne masque pas ses propres options en multi-sélection,
 // mais reflète bien les restrictions imposées par les AUTRES filtres (filtres synchronisés).
-function buildFacetCompound(filters: ISearchFilters, corpus: SearchCorpus, exclude: FacetDimension | null, simplifyQuery: boolean) {
+function buildFacetCompound(filters: ISearchFilters, corpus: SearchCorpus, exclude: FacetDimension | null, gateOptions: TextGateOptions) {
   const { q, type_filter_label, contract_type, level, activity_sector, organization_name, is_disabled_elligible, start_type, start_date, smart_apply, is_algo_company } = filters
   // Même porte de pertinence que la recherche → les counts de facettes reflètent le même result set.
-  const gate = buildTextGate(q, simplifyQuery, corpus)
+  const gate = buildTextGate(q, gateOptions, corpus)
   const filter: object[] = []
 
   if (exclude !== "type_filter_label" && type_filter_label?.length) filter.push({ in: { path: "type_filter_label", value: type_filter_label } })
@@ -586,14 +650,14 @@ type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: nu
 // mongot ne supportent que string/number/date) → un count dédié par chip via $searchMeta.
 // Disjonctif comme les facettes : le filtre de la chip est exclu de son propre compound
 // pour que le compteur reste stable quand l'utilisateur active le filtre.
-function buildChipCountCompounds(filters: ISearchFilters, corpus: SearchCorpus, simplifyQuery: boolean) {
-  const handi = buildFacetCompound({ ...filters, is_disabled_elligible: undefined }, corpus, null, simplifyQuery)
+function buildChipCountCompounds(filters: ISearchFilters, corpus: SearchCorpus, gateOptions: TextGateOptions) {
+  const handi = buildFacetCompound({ ...filters, is_disabled_elligible: undefined }, corpus, null, gateOptions)
   handi.filter.push({ equals: { path: "is_disabled_elligible", value: true } })
 
-  const urgent = buildFacetCompound({ ...filters, start_type: undefined }, corpus, null, simplifyQuery)
+  const urgent = buildFacetCompound({ ...filters, start_type: undefined }, corpus, null, gateOptions)
   urgent.filter.push({ equals: { path: "start_type", value: JOB_START_TYPE.DES_QUE_POSSIBLE } })
 
-  const smartApply = buildFacetCompound({ ...filters, smart_apply: undefined }, corpus, null, simplifyQuery)
+  const smartApply = buildFacetCompound({ ...filters, smart_apply: undefined }, corpus, null, gateOptions)
   smartApply.filter.push({ equals: { path: "smart_apply", value: true } })
 
   return { is_disabled_elligible: handi, urgent, smart_apply: smartApply }
@@ -604,12 +668,12 @@ function buildChipCountCompounds(filters: ISearchFilters, corpus: SearchCorpus, 
 //   compteurs informatifs — sub_type alimente le détail par type d'offre de l'événement
 //   Matomo search_results_displayed), calculé avec tous les filtres actifs ;
 // - 1 groupe par dimension sélectionnée, calculé en excluant cette dimension.
-function buildFacetGroups(filters: ISearchFilters, corpus: SearchCorpus, simplifyQuery: boolean): { keys: string[]; compound: object }[] {
+function buildFacetGroups(filters: ISearchFilters, corpus: SearchCorpus, gateOptions: TextGateOptions): { keys: string[]; compound: object }[] {
   const activeDims = FACET_DIMENSIONS.filter((k) => isDimensionActive(filters, k))
   const inactiveDims = FACET_DIMENSIONS.filter((k) => !activeDims.includes(k))
 
-  const groups: { keys: string[]; compound: object }[] = [{ keys: [...inactiveDims, "type", "sub_type"], compound: buildFacetCompound(filters, corpus, null, simplifyQuery) }]
-  for (const dim of activeDims) groups.push({ keys: [dim], compound: buildFacetCompound(filters, corpus, dim, simplifyQuery) })
+  const groups: { keys: string[]; compound: object }[] = [{ keys: [...inactiveDims, "type", "sub_type"], compound: buildFacetCompound(filters, corpus, null, gateOptions) }]
+  for (const dim of activeDims) groups.push({ keys: [dim], compound: buildFacetCompound(filters, corpus, dim, gateOptions) })
   return groups
 }
 
@@ -640,15 +704,17 @@ export const resolveSearchMode = ({ mode, type }: Pick<ISearchFilters, "mode" | 
 
 async function runSearchAggregations(params: ISearchFilters, simplifyQuery: boolean) {
   const { page, hitsPerPage } = params
-  const corpus = SEARCH_CORPORA[resolveSearchMode(params)]
-  const compound = buildCompoundOperator(params, corpus, simplifyQuery)
-  const facetGroups = buildFacetGroups(params, corpus, simplifyQuery)
-  const chipCountCompounds = buildChipCountCompounds(params, corpus, simplifyQuery)
+  const mode = resolveSearchMode(params)
+  const corpus = SEARCH_CORPORA[mode]
+  const gateOptions: TextGateOptions = { simplifyQuery, diplomaJobs: await resolveDiplomaJobsClause(params.q, mode) }
+  const compound = buildCompoundOperator(params, corpus, gateOptions)
+  const facetGroups = buildFacetGroups(params, corpus, gateOptions)
+  const chipCountCompounds = buildChipCountCompounds(params, corpus, gateOptions)
   const chipCountKeys = Object.keys(chipCountCompounds) as (keyof typeof chipCountCompounds)[]
 
   // Retry unique si mongot annule une des requêtes (transitoire — cf. search-transient-retry.ts) ;
   // relancer l'ensemble est sans risque, ce ne sont que des lectures.
-  const [rows, chipCountArrays, ...metaArrays] = await retryOnTransientSearchCancellation(
+  const [rows, totalArray, chipCountArrays, ...metaArrays] = await retryOnTransientSearchCancellation(
     () =>
       Promise.all([
         getDbCollection(corpus.collection)
@@ -679,6 +745,14 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
             SEARCH_AGGREGATE_OPTIONS
           )
           .toArray(),
+
+        // $$SEARCH_META n'est lisible que sur une ligne de la page : passé la dernière, le total vient
+        // de ce comptage sur le même compound. Pas en page 0, où une page sans ligne vaut 0 résultat.
+        page > 0
+          ? getDbCollection(corpus.collection)
+              .aggregate<{ count?: { total?: number } }>([{ $searchMeta: { index: corpus.index, compound, count: { type: "total" } } }], SEARCH_AGGREGATE_OPTIONS)
+              .toArray()
+          : [],
 
         Promise.all(
           chipCountKeys.map((key) =>
@@ -721,7 +795,7 @@ async function runSearchAggregations(params: ISearchFilters, simplifyQuery: bool
     { q: params.q }
   )
 
-  return { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys }
+  return { rows, total: totalArray[0]?.count?.total ?? 0, chipCountArrays, metaArrays, facetGroups, chipCountKeys }
 }
 
 export async function searchItems(params: ISearchFilters): Promise<{
@@ -749,9 +823,9 @@ export async function searchItems(params: ISearchFilters): Promise<{
     aggregations = await runSearchAggregations(params, true)
     degraded = true
   }
-  const { rows, chipCountArrays, metaArrays, facetGroups, chipCountKeys } = aggregations
+  const { rows, total, chipCountArrays, metaArrays, facetGroups, chipCountKeys } = aggregations
 
-  const nbHits = rows[0]?._meta?.count?.total ?? 0
+  const nbHits = rows[0]?._meta?.count?.total ?? total
   const nbPages = Math.ceil(nbHits / hitsPerPage)
 
   // Pas de distance affichée pour une recherche par emprise : elle serait mesurée depuis le

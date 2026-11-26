@@ -15,12 +15,12 @@ import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomo-u
 import type { AutoRadiusChain } from "../_hooks/use-auto-radius"
 import { autoRadiusTracking, extendAutoRadiusChain, useAutoRadius } from "../_hooks/use-auto-radius"
 import { useEmploisFallbackCount } from "../_hooks/use-emplois-fallback-count"
-import { useSearchResults } from "../_hooks/use-search-results"
+import { searchKeyOf, useSearchResults } from "../_hooks/use-search-results"
 import { emploisFallbackParams } from "../_utils/mode-fallback.utils"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { ACTIVE_HIT_PARAM, buildSearchUrl } from "../_utils/search.params.utils"
 import type { FilterChange, SortChange } from "../_utils/search.tracking.utils"
-import { diffFilterChanges, diffSortChange, searchTypeOf } from "../_utils/search.tracking.utils"
+import { claimFallbackDisplay, createSearchKeyTracker, diffFilterChanges, diffSortChange, isSearchDisplaySettled, searchTypeChangedEvent } from "../_utils/search.tracking.utils"
 import { parseSearchPageParamsWithLegacy } from "../_utils/search-legacy-utils"
 import { searchResultsStatus } from "../_utils/search-results-status"
 import { SearchBar } from "./SearchBar"
@@ -37,12 +37,6 @@ interface SearchPageClientProps {
 }
 
 type MobilePanel = null | "search" | "filters" | "tri"
-
-// Identifie une recherche distincte pour la télémétrie : pagination et origine de q exclues.
-const searchKeyOf = (p: ISearchPageParams) => {
-  const { page: _page, hitsPerPage: _hitsPerPage, q_source: _qSource, ...trackedParams } = p
-  return JSON.stringify(trackedParams)
-}
 
 export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const rawSearchParams = useSearchParams()
@@ -127,11 +121,9 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const resultsStatus = searchResultsStatus({ hasData: Boolean(result.data), waiting: isRefreshing || stillWidening, nbHits, emploisFallback: emploisFallbackCount })
 
   // Affichage de la proposition : une fois par recherche, pour mesurer son taux de clic.
-  const lastFallbackTrackedKeyRef = useRef<string | null>(null)
+  const fallbackTrackedSearchesRef = useRef(createSearchKeyTracker())
   useEffect(() => {
-    if (emploisFallbackCount.status !== "done" || emploisFallbackCount.count === 0) return
-    if (lastFallbackTrackedKeyRef.current === searchKey) return
-    lastFallbackTrackedKeyRef.current = searchKey
+    if (!claimFallbackDisplay(fallbackTrackedSearchesRef.current, searchKey, emploisFallbackCount)) return
     pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_MODE_FALLBACK_DISPLAYED, results_count: emploisFallbackCount.count, search_engine: SEARCH_ENGINES.BETA })
   })
 
@@ -147,15 +139,11 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // pas à chaque page chargée via « Voir plus » ni à chaque palier d'élargissement du rayon
   // (#5634) — même événement que le legacy, enrichi de search_engine. Les compteurs par type
   // viennent de la facette `type` du result set.
-  const lastTrackedSearchKeyRef = useRef<string | null>(null)
+  const trackedSearchesRef = useRef(createSearchKeyTracker())
   useEffect(() => {
-    if (!result.data) return
-    // keepPreviousData : pendant le refetch, result.data appartient à la recherche PRÉCÉDENTE
-    // → attendre les données fraîches (sinon compteurs faux sur les événements ci-dessous).
-    if (result.isPlaceholderData) return
-    // Palier intermédiaire : rien n'est encore affiché à l'usager, les événements attendent le
-    // dernier palier (cf. handleAutoRadiusStep, qui y reporte les changements en attente).
-    if (stillWidening) return
+    // Palier intermédiaire : les événements attendent le dernier palier (cf. handleAutoRadiusStep,
+    // qui y reporte les changements en attente).
+    if (!isSearchDisplaySettled(result, stillWidening)) return
 
     // Flush des search_filter_applied/removed de la recherche affichée (compteurs post-application).
     if (pendingFilterChangesRef.current?.searchKey === searchKey) {
@@ -184,8 +172,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       pendingSortChangeRef.current = null
     }
 
-    if (lastTrackedSearchKeyRef.current === searchKey) return
-    lastTrackedSearchKeyRef.current = searchKey
+    if (!trackedSearchesRef.current.claim(searchKey)) return
     pushMatomoEvent({
       event: MATOMO_EVENTS.SEARCH_RESULTS_DISPLAYED,
       total_results: result.data.pages.at(-1)?.nbHits ?? 0,
@@ -256,14 +243,14 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   // formations. Le clear implicite n'émet PAS de search_filter_removed (c'est un changement
   // de mode, pas des retraits unitaires).
   function handleModeChange(mode: SearchMode) {
-    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf(mode), search_engine: SEARCH_ENGINES.BETA })
+    pushMatomoEvent(searchTypeChangedEvent(mode, "manual"))
     const cleared = clearedFilters(params)
     const sortValidInMode = mode === "formations" ? params.sort === "proximity" : true
     navigateSilent({ ...cleared, mode, sort: sortValidInMode ? params.sort : undefined })
   }
 
   function handleEmploisFallbackSwitch() {
-    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf("emplois"), trigger: "empty_state", search_engine: SEARCH_ENGINES.BETA })
+    pushMatomoEvent(searchTypeChangedEvent("emplois", "empty_state"))
     navigateSilent(emploisFallbackParams(params))
     // Le bouton disparaît avec l'état vide : le focus passe sur la région des résultats visible
     // (arbre desktop ou mobile), restée montée (RGAA 12.8).

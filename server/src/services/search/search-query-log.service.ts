@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb"
 import type { ISearchSiteChannel } from "shared/constants/search-token"
 import { isAutoRadiusWidening } from "shared/utils/auto-radius"
 
+import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
 import { sentryCaptureException } from "@/common/utils/sentry-utils"
 
@@ -62,6 +63,14 @@ const roundCoord = (value: number) => Math.round(value * 10) / 10
 type SearchOutcome = { status: "ok" | "degraded"; nbHits: number } | { status: "error"; nbHits: null }
 
 export type SearchChannel = ISearchSiteChannel | "api"
+
+/**
+ * Trace applicative (Loki) d'une page demandée après la dernière : les appelants qui paginent sans
+ * lire nbPages. Hors search_queries, qui ne journalise que la page 0.
+ */
+export function logSearchPageBeyondLast(trace: { channel: SearchChannel; page: number; nbHits: number }): void {
+  logger.info(trace, "search page beyond last")
+}
 
 export async function logSearchQuery(query: SearchQuerystring, outcome: SearchOutcome, channel: SearchChannel): Promise<void> {
   try {

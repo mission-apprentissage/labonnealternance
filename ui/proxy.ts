@@ -6,6 +6,7 @@ import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, SESSION_RETRY_PARAM } from
 
 import { publicConfig } from "./config.public"
 import { apiPost } from "./utils/api.utils"
+import { isFicheIntrouvable } from "./utils/fiche-introuvable.utils"
 import { applyOpcoFilterFromUrl } from "./utils/opco-search-filter.utils"
 import { PAGES } from "./utils/routes.utils"
 
@@ -148,7 +149,15 @@ export async function proxy(request: NextRequest) {
   return response
 }
 
+// Ne correspond à aucune route (un dossier app/_* est privé) : Next y rend app/not-found.tsx en 404. Une route
+// qui appellerait notFound() dans le segment de la fiche serait prérendue, et servie avec cette même 404 racine.
+const FICHE_INTROUVABLE_PATH = "/_fiche-introuvable"
+
 async function routeRequest(request: NextRequest): Promise<NextResponse> {
+  if (await isFicheIntrouvable(request)) {
+    return NextResponse.rewrite(new URL(FICHE_INTROUVABLE_PATH, request.url))
+  }
+
   const { pathname, search } = request.nextUrl
   const query = new URLSearchParams(search)
 

@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import styled from "@emotion/styled"
 import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material"
-import { useId, useState } from "react"
+import { memo, useId, useState } from "react"
 import type { IReferentielRomeForJobJson } from "shared"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
@@ -37,35 +37,38 @@ const CompetenceSelectionDiv = styled.div`
   }
 `
 
-export const RomeDetail = ({
-  title,
-  romeReferentiel: { definition, competences, acces_metier },
-  onChange,
-  selectedCompetences,
-}: {
+type RomeDetailContentProps = {
   romeReferentiel: IReferentielRomeForJobJson
   selectedCompetences: Record<RomeCompetenceKey, Set<string>>
-  title: string
   onChange: (groupKey: RomeCompetenceKey, competence: string, newlyChecked: boolean) => void
-}) => {
+}
+
+export const RomeDetail = ({ title, romeReferentiel, onChange, selectedCompetences }: RomeDetailContentProps & { title: string }) => (
+  <BorderedBox>
+    <Typography
+      component="h4"
+      sx={{
+        fontSize: ["16px", "16px", "16px", "24px"],
+        lineHeight: ["24px", "24px", "24px", "32px"],
+        fontWeight: 700,
+        mb: fr.spacing("8v"),
+      }}
+    >
+      {title}
+    </Typography>
+    <RomeDetailContent romeReferentiel={romeReferentiel} onChange={onChange} selectedCompetences={selectedCompetences} />
+  </BorderedBox>
+)
+
+// mémoïsé sans le titre, qui suit l'intitulé saisi lettre à lettre (#6008)
+const RomeDetailContent = memo(function RomeDetailContent({ romeReferentiel: { definition, competences, acces_metier }, onChange, selectedCompetences }: RomeDetailContentProps) {
   const isSelected = (accordionKey: RomeCompetenceKey) => {
     const competences = selectedCompetences[accordionKey]
     return (competence: string) => competences.has(competence)
   }
 
   return (
-    <BorderedBox>
-      <Typography
-        component="h4"
-        sx={{
-          fontSize: ["16px", "16px", "16px", "24px"],
-          lineHeight: ["24px", "24px", "24px", "32px"],
-          fontWeight: 700,
-          mb: fr.spacing("8v"),
-        }}
-      >
-        {title}
-      </Typography>
+    <>
       <Box component="p" sx={{ backgroundColor: "#F5F5FE", padding: fr.spacing("3v"), color: "#000091", mt: fr.spacing("3v"), mb: fr.spacing("6v") }}>
         Voici la description de l’offre qui sera consultable par les candidats.
         <br />
@@ -128,9 +131,9 @@ export const RomeDetail = ({
         <Typography>{acces_metier}</Typography>
       </Accordion>
       <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px" }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
-    </BorderedBox>
+    </>
   )
-}
+})
 
 /**
  * Une catégorie de compétences en fieldset (RGAA 11.5). Une rubrique sans catégorie prend pour légende,
