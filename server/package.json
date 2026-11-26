@@ -86,6 +86,7 @@
     "stream-json": "^1.9.1",
     "string-similarity": "^4.0.4",
     "type-fest": "^5.2.0",
+    "write-excel-file": "^4.1.1",
     "xml2js": "^0.6.2",
     "zod": "^4.4.3",
     "zod-mongodb-schema": "^3.0.2"
@@ -101,6 +102,7 @@
     "@types/ssh2": "^1.15.5",
     "@types/string-similarity": "^4.0.2",
     "nock": "14.0.10",
+    "read-excel-file": "9.3.15",
     "tsup": "^8.5.0",
     "typescript": "^7.0.2",
     "zod-fixture": "^2.5.2"

@@ -6,6 +6,7 @@ import { JOB_STATUS } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
+import { getApplicationsConsultation } from "shared/utils/applications-consultation"
 import { buildSearchUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/search.params.utils"
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
@@ -17,6 +18,7 @@ import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
 
 export const OffresTabsMenu = ({
   row,
+  applicationsPath,
   openSuppression,
   buildOfferEditionUrl,
   onOffreProlongationClick,
@@ -25,6 +27,8 @@ export const OffresTabsMenu = ({
   awaitsModerationDecision = false,
 }: {
   row: any
+  /** Page des candidatures de l'offre, quand l'utilisateur peut les consulter et qu'il y en a. */
+  applicationsPath?: string
   openSuppression: (row: any) => any
   buildOfferEditionUrl: (offerId: string) => string
   onOffreProlongationClick: (offerId: string) => void
@@ -66,6 +70,39 @@ export const OffresTabsMenu = ({
   // Une offre qui attend une décision se tranche depuis la modération, qui la trace, plutôt qu'en la supprimant (#5499).
   const canDelete = !(isModerator && (isInReview || awaitsModerationDecision))
 
+  const viewApplicationsAction: PopoverMenuAction | null = applicationsPath
+    ? {
+        label: "Voir les candidatures",
+        hint: `${offerTitle}`,
+        link: applicationsPath,
+        type: "link",
+        onClick: () =>
+          pushMatomoEvent({
+            event: MATOMO_EVENTS.APPLICATIONS_ENTRY_CLICKED,
+            applications_entry_point: "offer_menu",
+            user_type: user.type === AUTHTYPE.CFA ? "cfa" : "entreprise",
+          }),
+        icon: <DsfrIcon name="fr-icon-user-line" size={16} />,
+      }
+    : null
+  const viewOnlineAction: PopoverMenuAction = {
+    label: "Voir l'offre en ligne",
+    hint: `${offerTitle}`,
+    link: directLink,
+    type: "externalLink",
+    onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_VIEW_ONLINE_CLICKED }),
+    icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
+  }
+
+  if (isDisabled) {
+    // Offre pourvue ou annulée : le recruteur et le CFA gardent l'accès à l'offre et à ses candidatures tant que
+    // celles-ci restent consultables (#5769, cf. getApplicationsConsultation) ; rien d'autre ne s'y fait.
+    const canFollowApplications = user.type === AUTHTYPE.ENTREPRISE || user.type === AUTHTYPE.CFA
+    const applicationsConsultable = getApplicationsConsultation({ expiration: row.job_expiration_date, closure: row.job_closure ?? null }).status !== "unavailable"
+    if (!canFollowApplications || !applicationsConsultable) return null
+    return <PopoverMenu actions={[viewOnlineAction, viewApplicationsAction]} title={`Actions sur l'offre ${offerTitle}`} />
+  }
+
   const actions: PopoverMenuAction[] = [
     isModerator && isModerable
       ? {
@@ -76,6 +113,7 @@ export const OffresTabsMenu = ({
           icon: <DsfrIcon name="fr-icon-scales-3-line" size={16} />,
         }
       : null,
+    viewApplicationsAction,
     {
       label: "Éditer l'offre",
       hint: `${offerTitle}`,
@@ -98,16 +136,7 @@ export const OffresTabsMenu = ({
           type: "button",
           icon: <DsfrIcon name="fr-icon-refresh-line" size={16} />,
         },
-    isInReview
-      ? null
-      : {
-          label: "Voir l'offre en ligne",
-          hint: `${offerTitle}`,
-          link: directLink,
-          type: "externalLink",
-          onClick: () => pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_VIEW_ONLINE_CLICKED }),
-          icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
-        },
+    isInReview ? null : viewOnlineAction,
     row.job_status !== JOB_STATUS.EN_ATTENTE && !isInReview
       ? {
           label: "Imprimer l'offre",
@@ -164,5 +193,5 @@ export const OffresTabsMenu = ({
       : null,
   ]
 
-  return !isDisabled && <PopoverMenu actions={actions} title={`Actions sur l'offre ${offerTitle}`} resetFlagsOnClose={[setCopied]} />
+  return <PopoverMenu actions={actions} title={`Actions sur l'offre ${offerTitle}`} resetFlagsOnClose={[setCopied]} />
 }

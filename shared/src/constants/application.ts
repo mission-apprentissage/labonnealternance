@@ -3,6 +3,17 @@ export enum ApplicationIntention {
   REFUS = "refus",
 }
 
+/**
+ * Valeur de company_recruitment_intention d'une candidature que le recruteur déclare traitée hors LBA (#5769).
+ * Hors ApplicationIntention, qui pilote les réponses envoyées par mail : aucun message ne part vers le candidat.
+ */
+export const APPLICATION_TREATED_ELSEWHERE = "traitee_par_un_autre_moyen"
+
+/** Délai avant l'envoi d'une réponse programmée du recruteur (cf. processScheduledRecruiterIntentions). */
+export const SCHEDULED_REPLY_DELAY_MINUTES = 30
+/** Intervalle du cron « Emission des intentions des recruteurs », qui envoie les réponses programmées. */
+export const SCHEDULED_REPLY_CRON_INTERVAL_MINUTES = 10
+
 export const ApplicationIntentionDefaultText: Record<ApplicationIntention, string> = {
   [ApplicationIntention.ENTRETIEN]:
     "Bonjour, \r\n\r\nNous avons bien reçu votre candidature et vous en remercions. \r\n\r\nVotre candidature a retenu notre attention. \r\n\r\nNous examinons l'ensemble des candidatures reçues, et reviendrons vers vous prochainement. \r\n\r\nSans réponse de notre part d’ici 30 jours, veuillez considérer que votre candidature n’a pas été retenue.\r\n\r\nCordialement,",

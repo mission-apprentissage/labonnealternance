@@ -2,6 +2,7 @@ import { captureException } from "@sentry/nextjs"
 import { unstable_rethrow } from "next/navigation"
 import type {
   IBody,
+  ICfaManagedRecruiterJson,
   IJobCreate,
   ILbaItemLbaCompanyJson,
   ILbaItemLbaJobJson,
@@ -9,7 +10,6 @@ import type {
   INewDelegations,
   INewSuperUser,
   IQuery,
-  IRecruiterJson,
   IResponse,
   IRoutes,
 } from "shared"
@@ -20,7 +20,7 @@ import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import type { ILbaCompanySearchField } from "shared/routes/update-lba-company.routes"
 import type { Jsonify } from "type-fest"
-import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
+import { ApiError, apiDelete, apiGet, apiGetBlob, apiPatch, apiPost, apiPut, generateUrl } from "./api.utils"
 
 const errorHandler = (error: any): undefined => {
   if (error) {
@@ -141,6 +141,28 @@ export const setJobPartnerClassification = async (id: string, classification: "p
  */
 export const getModerationQueue = async (querystring: IQuery<IRoutes["get"]["/moderation/jobs"]>) => apiGet("/moderation/jobs", { querystring: removeUndefinedFields(querystring) })
 
+export const getJobApplications = async (jobId: string) => apiGet("/application/job/:jobId", { params: { jobId } })
+export const getJobApplicationDetail = async (jobId: string, applicationId: string) =>
+  apiGet("/application/job/:jobId/application/:applicationId", { params: { jobId, applicationId } })
+export const getJobApplicationReplyToken = async (jobId: string, applicationId: string, intention: ApplicationIntention) =>
+  apiGet("/application/job/:jobId/application/:applicationId/reply-token", { params: { jobId, applicationId }, querystring: { intention } })
+export const markJobApplicationTreatedElsewhere = async (jobId: string, applicationId: string) =>
+  apiPost("/application/job/:jobId/application/:applicationId/treated-elsewhere", { params: { jobId, applicationId } })
+export const cancelJobApplicationTreatedElsewhere = async (jobId: string, applicationId: string) =>
+  apiPost("/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel", { params: { jobId, applicationId } })
+export const cancelJobApplicationScheduledReply = async (jobId: string, applicationId: string) =>
+  apiPost("/application/job/:jobId/application/:applicationId/reply/cancel", { params: { jobId, applicationId } })
+export const getJobApplicationAttachmentUrl = (jobId: string, applicationId: string) =>
+  generateUrl("/application/job/:jobId/application/:applicationId/attachment", { params: { jobId, applicationId } })
+export const downloadJobApplicationAttachment = async (jobId: string, applicationId: string) =>
+  apiGetBlob("/application/job/:jobId/application/:applicationId/attachment", { params: { jobId, applicationId } })
+export const getJobApplicationsExportUrl = (jobId: string) => generateUrl("/application/job/:jobId/export", { params: { jobId } })
+export const getEstablishmentApplicationsExportUrl = (establishment_id: string) =>
+  generateUrl("/application/establishment/:establishment_id/export", { params: { establishment_id } })
+export const downloadEstablishmentApplications = async (establishment_id: string) =>
+  apiGetBlob("/application/establishment/:establishment_id/export", { params: { establishment_id } })
+export const downloadJobApplications = async (jobId: string) => apiGetBlob("/application/job/:jobId/export", { params: { jobId } })
+
 export const getModerationSummaries = async (ids: string[]) => apiGet("/moderation/jobs/summary", { querystring: { ids } })
 
 export const searchModerationOffers = async (querystring: IQuery<IRoutes["get"]["/moderation/jobs/search"]>) =>
@@ -199,7 +221,7 @@ export const sendValidationLink = async (userId: string, token: string) =>
 /**
  * Etablissement API
  */
-export const getEntreprisesManagedByCfa = async (cfaId: string): Promise<IRecruiterJson[]> => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
+export const getEntreprisesManagedByCfa = async (cfaId: string): Promise<ICfaManagedRecruiterJson[]> => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
 export const getCfaInformation = async (siret: string) => {
   try {
     const data = await apiGet("/etablissement/cfa/:siret", { params: { siret } })

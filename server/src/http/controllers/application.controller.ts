@@ -2,16 +2,27 @@ import { captureException } from "@sentry/node"
 import { ObjectId } from "mongodb"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/error-codes"
-import { assertUnreachable, CompanyFeebackSendStatus, zRoutes } from "shared/index"
-import { getDbCollection } from "@/common/utils/mongodb-utils"
+import { assertUnreachable, zRoutes } from "shared/index"
 import config from "@/config"
 import type { Server } from "@/http/server"
 import {
   buildApplicationFromHelloworkAndSaveToDb,
+  cancelScheduledRecruiterIntention,
   getApplicationDataForIntentionAndScheduleMessage,
   getCompanyEmailFromToken,
   sendRecruiterIntention,
 } from "@/services/application.service"
+import {
+  cancelJobApplicationScheduledReply,
+  cancelJobApplicationTreatedElsewhere,
+  exportEstablishmentApplicationsForRecruiter,
+  exportJobApplicationsForRecruiter,
+  getJobApplicationAttachmentForRecruiter,
+  getJobApplicationDetailForRecruiter,
+  getJobApplicationReplyTokenForRecruiter,
+  getJobApplicationsForRecruiter,
+  markJobApplicationTreatedElsewhere,
+} from "@/services/job-applications.service"
 
 const rateLimitConfig = {
   rateLimit: {
@@ -19,6 +30,16 @@ const rateLimitConfig = {
     timeWindow: "5s",
   },
 } as const
+
+// RFC 6266 : filename en ASCII pour les clients anciens, filename* pour garder les accents du nom saisi par le candidat.
+const buildAttachmentDisposition = (fileName: string) => {
+  const asciiName = fileName
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\x20-\x7e]|["\\]/g, "_")
+  const encodedName = encodeURIComponent(fileName).replace(/['()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`)
+  return `attachment; filename="${asciiName}"; filename*=UTF-8''${encodedName}`
+}
 
 export default function (server: Server) {
   server.post(
@@ -91,9 +112,143 @@ export default function (server: Server) {
     async (req, res) => {
       const { id } = req.params
 
-      await getDbCollection("applications").updateOne({ _id: new ObjectId(id) }, { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED } })
+      await cancelScheduledRecruiterIntention(new ObjectId(id))
 
       return res.status(200).send({})
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId",
+    {
+      schema: zRoutes.get["/application/job/:jobId"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId"]),
+    },
+    async (req, res) => {
+      return res.status(200).send(await getJobApplicationsForRecruiter(req.params.jobId, req.userAccess))
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId/application/:applicationId",
+    {
+      schema: zRoutes.get["/application/job/:jobId/application/:applicationId"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId/application/:applicationId"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      return res.status(200).send(await getJobApplicationDetailForRecruiter(jobId, applicationId, req.userAccess))
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId/application/:applicationId/reply-token",
+    {
+      schema: zRoutes.get["/application/job/:jobId/application/:applicationId/reply-token"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId/application/:applicationId/reply-token"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      const result = await getJobApplicationReplyTokenForRecruiter(jobId, applicationId, req.query.intention, req.userAccess)
+      return res.status(200).header("cache-control", "no-store").send(result)
+    }
+  )
+
+  server.post(
+    "/application/job/:jobId/application/:applicationId/treated-elsewhere",
+    {
+      schema: zRoutes.post["/application/job/:jobId/application/:applicationId/treated-elsewhere"],
+      onRequest: server.auth(zRoutes.post["/application/job/:jobId/application/:applicationId/treated-elsewhere"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      await markJobApplicationTreatedElsewhere(jobId, applicationId, req.userAccess)
+      return res.status(200).send({})
+    }
+  )
+
+  server.post(
+    "/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel",
+    {
+      schema: zRoutes.post["/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel"],
+      onRequest: server.auth(zRoutes.post["/application/job/:jobId/application/:applicationId/treated-elsewhere/cancel"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      await cancelJobApplicationTreatedElsewhere(jobId, applicationId, req.userAccess)
+      return res.status(200).send({})
+    }
+  )
+
+  server.post(
+    "/application/job/:jobId/application/:applicationId/reply/cancel",
+    {
+      schema: zRoutes.post["/application/job/:jobId/application/:applicationId/reply/cancel"],
+      onRequest: server.auth(zRoutes.post["/application/job/:jobId/application/:applicationId/reply/cancel"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      await cancelJobApplicationScheduledReply(jobId, applicationId, req.userAccess)
+      return res.status(200).send({})
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId/application/:applicationId/attachment",
+    {
+      schema: zRoutes.get["/application/job/:jobId/application/:applicationId/attachment"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId/application/:applicationId/attachment"]),
+    },
+    async (req, res) => {
+      const { jobId, applicationId } = req.params
+      const { fileName, contentType, content } = await getJobApplicationAttachmentForRecruiter(jobId, applicationId, req.userAccess)
+      return res
+        .status(200)
+        .headers({
+          "content-type": contentType,
+          "content-disposition": buildAttachmentDisposition(fileName),
+          "cache-control": "no-store",
+          "x-content-type-options": "nosniff",
+        })
+        .send(content)
+    }
+  )
+
+  server.get(
+    "/application/establishment/:establishment_id/export",
+    {
+      schema: zRoutes.get["/application/establishment/:establishment_id/export"],
+      onRequest: server.auth(zRoutes.get["/application/establishment/:establishment_id/export"]),
+    },
+    async (req, res) => {
+      const { fileName, content } = await exportEstablishmentApplicationsForRecruiter(req.params.establishment_id, req.userAccess)
+      return res
+        .status(200)
+        .headers({
+          "content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "content-disposition": buildAttachmentDisposition(fileName),
+          "cache-control": "no-store",
+        })
+        .send(content)
+    }
+  )
+
+  server.get(
+    "/application/job/:jobId/export",
+    {
+      schema: zRoutes.get["/application/job/:jobId/export"],
+      onRequest: server.auth(zRoutes.get["/application/job/:jobId/export"]),
+    },
+    async (req, res) => {
+      const { fileName, content } = await exportJobApplicationsForRecruiter(req.params.jobId, req.userAccess)
+      return res
+        .status(200)
+        .headers({
+          "content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "content-disposition": buildAttachmentDisposition(fileName),
+          "cache-control": "no-store",
+        })
+        .send(content)
     }
   )
 

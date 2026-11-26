@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, ClickAwayListener, Grow, MenuItem, MenuList, Paper, Popper } from "@mui/material"
+import Link from "next/link"
 import type React from "react"
 import type { Dispatch, ReactNode } from "react"
 import { useEffect, useRef, useState } from "react"
@@ -135,7 +136,8 @@ export const PopoverMenu = ({
                       return (
                         <MenuItem
                           key={idx}
-                          component="a"
+                          // Lien interne en navigation client : pas de rechargement, qui couperait l'envoi des événements de mesure.
+                          component={action.type === "link" ? Link : "a"}
                           href={action.link}
                           onClick={(event) => {
                             action.onClick?.(event)

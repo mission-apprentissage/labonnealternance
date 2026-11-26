@@ -1,8 +1,10 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
+import { sumBy } from "lodash-es"
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type {
+  ICfaManagedRecruiter,
   IDelegation,
   IJob,
   IJobCreate,
@@ -30,6 +32,7 @@ import type { IModerationTrigger, IOfferModerationStatus } from "shared/models/j
 import { MODERATION_CLASSIFICATION_STATUS, MODERATION_TRIGGER } from "shared/models/jobs-partners-moderation.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
 import type { IUserWithAccount } from "shared/models/user-with-account.model"
+import { getApplicationsConsultation, getOfferClosure } from "shared/utils/applications-consultation"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { isRecruiterWrittenDescription } from "shared/utils/job-description.utils"
 import { normalizeNafCode, normalizeNafLabel } from "shared/utils/naf-utils"
@@ -67,6 +70,7 @@ import { getEntrepriseEngagementFranceTravail } from "./referentiel-engagement-e
 import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./role-management.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { syncJobPartnersToSearchItemsInBackground } from "./search/search-items.service"
+import { SENT_TO_COMPANY_FILTER } from "./sent-to-company.filter"
 import { saveJobTrafficSourceIfAny } from "./traffic-source.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./user-with-account.service"
 
@@ -459,12 +463,15 @@ const romeDetailJoin = [
   { $unwind: { path: "$rome_detail", preserveNullAndEmptyArrays: true } },
 ]
 
+// Seules les candidatures transmises au recruteur comptent (cf. SENT_TO_COMPANY_FILTER) ; l'une d'elles est en
+// attente tant que le recruteur n'a exprimé aucune intention (#5769).
 const applicationCountJoin = [
   {
     $lookup: {
       from: "applications",
       localField: "_id",
       foreignField: "job_id",
+      pipeline: [{ $match: SENT_TO_COMPANY_FILTER }, { $project: { _id: 0, company_recruitment_intention: 1 } }],
       as: "applications",
     },
   },
@@ -472,6 +479,11 @@ const applicationCountJoin = [
     $addFields: {
       application_count: {
         $size: "$applications",
+      },
+      pending_application_count: {
+        $size: {
+          $filter: { input: "$applications", cond: { $eq: [{ $ifNull: ["$$this.company_recruitment_intention", null] }, null] } },
+        },
       },
     },
   },
@@ -540,7 +552,7 @@ export const getCfaReferenceRole = async (cfaId: ObjectId) =>
     .filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
     .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0] ?? null
 
-export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId, isAdmin: boolean = false): Promise<IRecruiter[]> => {
+export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId, isAdmin: boolean = false): Promise<ICfaManagedRecruiter[]> => {
   const [ownRole, entreprisesManagedByCfa, cfa] = await Promise.all([
     getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }),
     getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfaId }).toArray(),
@@ -585,13 +597,14 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
         },
       },
       ...romeDetailJoin,
+      ...applicationCountJoin,
     ])
-    .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]
+    .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number; pending_application_count?: number })[]
 
   const entreprisesBySiret = new Map(entreprises.map((e) => [e.siret, e]))
   const cfaEntreprisesByEntrepriseId = new Map(entreprisesManagedByCfa.map((e) => [e.entreprise_id.toString(), e]))
 
-  const jobsBySiret = new Map<string, (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]>()
+  const jobsBySiret = new Map<string, (typeof allJobsWithRomeDetail)[number][]>()
   for (const job of allJobsWithRomeDetail) {
     if (job.workplace_siret) {
       const jobList = jobsBySiret.get(job.workplace_siret) ?? []
@@ -600,7 +613,7 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
     }
   }
 
-  const recruiters: IRecruiter[] = []
+  const recruiters: ICfaManagedRecruiter[] = []
   for (const siret of sirets) {
     const entreprise = entreprisesBySiret.get(siret)
     if (!entreprise) {
@@ -615,9 +628,24 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
     recruiter.jobs.forEach((job) => {
       // @ts-expect-error
       delete job.candidatures
+      // @ts-expect-error
+      delete job.candidatures_en_attente
+      // @ts-expect-error
+      delete job.job_closure
     })
     const { email, first_name, last_name, phone } = entrepriseManagedByCfa
-    recruiters.push({ ...recruiter, email, first_name, last_name, phone })
+    // « En attente » suit la règle du tableau des offres (cf. CandidaturesCell) : offres dont les candidatures sont encore consultables.
+    const isConsultable = (job: IJobsPartnersOfferPrivate) =>
+      getApplicationsConsultation({ expiration: job.offer_expiration, closure: getOfferClosure(job) }).status !== "unavailable"
+    recruiters.push({
+      ...recruiter,
+      email,
+      first_name,
+      last_name,
+      phone,
+      applications_count: sumBy(jobs, (job) => job.application_count ?? 0),
+      pending_applications_count: sumBy(jobs.filter(isConsultable), (job) => job.pending_application_count ?? 0),
+    })
   }
   return recruiters
 }
@@ -676,7 +704,7 @@ const getRecruiterFromJobsPartnerFilter = async ({
       ...romeDetailJoin,
       ...(addApplicationCounts ? applicationCountJoin : []),
     ])
-    .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number })[]
+    .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number; pending_application_count?: number })[]
 
   const [roles, entreprise, user] = await Promise.all([
     getDbCollection("rolemanagements")
@@ -708,6 +736,10 @@ const getRecruiterFromJobsPartnerFilter = async ({
     recruiter.jobs.forEach((job) => {
       // @ts-expect-error
       delete job.candidatures
+      // @ts-expect-error
+      delete job.candidatures_en_attente
+      // @ts-expect-error
+      delete job.job_closure
     })
   }
   return recruiter
@@ -1631,7 +1663,7 @@ const jobPartnerStatusToIJobStatus: Record<JOB_STATUS_ENGLISH, JOB_STATUS> = {
 }
 
 export function jobPartnersToRecruiter(
-  jobPartners: (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome | null; application_count?: number })[],
+  jobPartners: (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome | null; application_count?: number; pending_application_count?: number })[],
   role: IRoleManagement,
   user: IUserWithAccount,
   entreprise: IEntreprise,
@@ -1686,6 +1718,8 @@ export function jobPartnersToRecruiter(
       mer_sent: jobPartner.mer_sent,
       offer_title_custom: customTitle,
       candidatures: jobPartner.application_count ?? 0,
+      candidatures_en_attente: jobPartner.pending_application_count ?? 0,
+      job_closure: getOfferClosure(jobPartner),
       to_applicant_questions: jobPartner.to_applicant_questions,
       ft_support: jobPartner.ft_support ?? false,
     }

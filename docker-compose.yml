@@ -6,6 +6,12 @@ services:
     restart: unless-stopped
     hostname: mongodb
     mem_limit: 5g
+    # WiredTiger garde un fichier ouvert par collection et par index : la limite Docker par défaut (1024) est
+    # dépassée en local et en CI, où chaque fichier de test crée sa base, et Mongo s'arrête sur « Too many open files ».
+    ulimits:
+      nofile:
+        soft: 64000
+        hard: 64000
     ports:
       - "127.0.0.1:27017:27017"
     volumes:

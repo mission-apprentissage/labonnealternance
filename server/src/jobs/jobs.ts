@@ -1,5 +1,6 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
+import { SCHEDULED_REPLY_CRON_INTERVAL_MINUTES } from "shared/constants/application"
 
 import { getLoggerWithContext, logger } from "@/common/logger"
 import { getDatabase } from "@/common/utils/mongodb-utils"
@@ -424,7 +425,7 @@ export async function setupJobProcessor() {
             tag: "main",
           },
           "Emission des intentions des recruteurs": {
-            cron_string: "*/10 * * * *",
+            cron_string: `*/${SCHEDULED_REPLY_CRON_INTERVAL_MINUTES} * * * *`,
             handler: processRecruiterIntentions,
             tag: "main",
           },

@@ -111,3 +111,13 @@ export const getS3FileLastUpdate = async (bucket: Bucket, key: string): Promise<
     throw newError
   }
 }
+
+/** Taille en octets d'un fichier S3, sans le télécharger ; null s'il est absent ou illisible. */
+export const getS3FileSize = async (bucket: Bucket, key: string): Promise<number | null> => {
+  try {
+    const headResponse = await s3Client.send(new HeadObjectCommand({ Bucket: getBucketName(bucket), Key: key }))
+    return headResponse.ContentLength ?? null
+  } catch {
+    return null
+  }
+}

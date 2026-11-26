@@ -9,12 +9,26 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import type { IJobJson } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
+import { getApplicationsConsultation, type IOfferClosure } from "shared/utils/applications-consultation"
+import { getApplicationsExportFileName } from "shared/utils/applications-export"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { DownloadLink } from "@/app/(espace-pro)/espace-pro/(connected)/_components/DownloadLink"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Plus } from "@/theme/components/icons"
-import { getFormulaire } from "@/utils/api"
+import { downloadEstablishmentApplications, getEstablishmentApplicationsExportUrl, getFormulaire } from "@/utils/api"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomo-utils"
 import { PAGES } from "@/utils/routes.utils"
 import { OffresTabs } from "./OffresTabs"
+
+const ESTABLISHMENT_EXPORT_MESSAGES = {
+  loading: "Préparation du récapitulatif des candidatures de l'entreprise en cours.",
+  done: "Récapitulatif des candidatures de l'entreprise téléchargé.",
+  error: "Le téléchargement du récapitulatif a échoué. Veuillez réessayer.",
+} as const
+
+// Le récapitulatif de l'entreprise ne reprend que les offres dont les candidatures sont encore consultables.
+const hasConsultableApplications = (jobs: (IJobJson & { candidatures: number; job_closure?: IOfferClosure | null })[]) =>
+  jobs.some((job) => job.candidatures > 0 && getApplicationsConsultation({ expiration: job.job_expiration_date, closure: job.job_closure ?? null }).status !== "unavailable")
 
 export default function ListeOffres({ hideModify = false, showStats = false, establishment_id }: { hideModify?: boolean; showStats?: boolean; establishment_id: string }) {
   const router = useRouter()
@@ -105,6 +119,28 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
         </Typography>
         {ActionButtons}
       </Box>
+      {user.type === AUTHTYPE.CFA && hasConsultableApplications(jobs) && (
+        <Box sx={{ mt: fr.spacing("4v") }}>
+          <DownloadLink
+            href={getEstablishmentApplicationsExportUrl(establishment_id)}
+            fileName={getApplicationsExportFileName(entrepriseTitle)}
+            download={() => downloadEstablishmentApplications(establishment_id)}
+            messages={ESTABLISHMENT_EXPORT_MESSAGES}
+            align="flex-end"
+            onDownloaded={() =>
+              pushMatomoEvent({
+                event: MATOMO_EVENTS.APPLICATIONS_EXPORT_DOWNLOADED,
+                user_type: "cfa",
+                applications_export_scope: "establishment",
+                offer_state: "non_renseigné",
+                applications_count: jobs.reduce((total, job) => total + Math.max(job.candidatures ?? 0, 0), 0),
+              })
+            }
+          >
+            Télécharger le récapitulatif des candidatures de l'entreprise<span className="fr-sr-only"> au format Excel</span>
+          </DownloadLink>
+        </Box>
+      )}
       <OffresTabs caption="Offres de recrutement en alternance" showStats={showStats} recruiter={data} buildOfferEditionUrl={getOffreEditionUrl} />
     </Box>
   )

@@ -5,11 +5,9 @@ import { Box, Typography } from "@mui/material"
 import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
 import { useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
-import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
-import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
-import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import { LiveStatus } from "@/app/_components/LiveStatus"
+import { ColumnHeaderContent, getColumnAriaSort } from "@/app/(espace-pro)/_components/ColumnHeaderContent"
 import { getFlatTableCellBordersSx, getFlatTableResetSx } from "@/app/(espace-pro)/_components/table-styles"
 import ExportButtonNew from "@/components/espace_pro/ExportButton/ExportButtonNew"
 import { PaginationReactQuery } from "@/components/espace_pro/PaginationReactQuery"
@@ -179,70 +177,48 @@ function TableWithPagination({
                   {caption}
                 </Box>
                 <Box component="thead">
-                  {headerGroups.map((headerGroup, k) => (
-                    <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
-                      {headerGroup.headers.map((column, i) => {
-                        const sortProps = column.getSortByToggleProps()
-                        // Séparer onClick des autres props pour le placer sur le bouton
-                        const { onClick: sortOnClick, ...headerSortProps } = sortProps
-
-                        return (
-                          <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(headerSortProps)} title={null}>
-                            {column.canSort ? (
-                              <Box
-                                component="button"
-                                type="button"
-                                onClick={sortOnClick}
-                                aria-label={`Trier par ${column.srOnly || column.Header}${column.isSorted ? (column.isSortedDesc ? ", trié par ordre décroissant" : ", trié par ordre croissant") : ""}`}
-                                sx={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  w: "full",
-                                  alignItems: "flex-start",
-                                  background: "none",
-                                  border: "none",
-                                  padding: 0,
-                                  cursor: "pointer",
-                                  font: "inherit",
-                                  color: "inherit",
-                                  "&:focus-visible": {
-                                    outline: "2px solid #0a76f6",
-                                    outlineOffset: "2px",
-                                  },
-                                }}
-                              >
-                                <Typography component="span" className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
-                                  {column.srOnly ? column.srOnly : column.render("Header")}
-                                </Typography>
-                                <Box component="span" sx={{ pl: fr.spacing("2v") }}>
-                                  {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : <ArrowUpDownLine />}
-                                </Box>
-                              </Box>
-                            ) : (
-                              <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
-                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
-                                  {column.srOnly ? column.srOnly : column.render("Header")}
-                                </Typography>
-                              </Box>
-                            )}
-                          </Box>
-                        )
-                      })}
-                    </Box>
-                  ))}
-                </Box>
-                <Box as="tbody" {...getTableBodyProps()}>
-                  {page.map((row, i) => {
-                    prepareRow(row)
+                  {headerGroups.map((headerGroup) => {
+                    const { key: headerGroupKey, ...headerGroupProps } = headerGroup.getHeaderGroupProps()
                     return (
-                      <Box key={i} as="tr" {...row.getRowProps()}>
-                        {row.cells.map((cell, j) => {
+                      <Box key={headerGroupKey} as="tr" {...headerGroupProps}>
+                        {headerGroup.headers.map((column) => {
+                          // Le tri se déclenche sur le bouton de l'en-tête (cf. ColumnHeaderContent), pas sur la cellule.
+                          const { onClick: _onSortClick, ...headerSortProps } = column.getSortByToggleProps()
+                          const { key: headerKey, ...headerProps } = column.getHeaderProps(headerSortProps)
+
                           return (
                             <Box
-                              key={j}
+                              key={headerKey}
+                              as="th"
+                              scope="col"
+                              id={column.id}
+                              {...headerProps}
+                              title={null}
+                              aria-sort={getColumnAriaSort(column)}
+                              sx={{ display: "flex !important", alignItems: "center" }}
+                            >
+                              <ColumnHeaderContent column={column} />
+                            </Box>
+                          )
+                        })}
+                      </Box>
+                    )
+                  })}
+                </Box>
+                <Box as="tbody" {...getTableBodyProps()}>
+                  {page.map((row) => {
+                    prepareRow(row)
+                    const { key: rowKey, ...rowProps } = row.getRowProps()
+                    return (
+                      <Box key={rowKey} as="tr" {...rowProps}>
+                        {row.cells.map((cell) => {
+                          const { key: cellKey, ...cellProps } = cell.getCellProps()
+                          return (
+                            <Box
+                              key={cellKey}
                               headers={cell.column.id}
                               component="td"
-                              {...cell.getCellProps()}
+                              {...cellProps}
                               {...(cell.column.id === "action" ? { padding: "4px !important" } : {})}
                               display={"flex"}
                               alignContent={"center"}

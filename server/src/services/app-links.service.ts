@@ -337,7 +337,7 @@ export function createRdvaShortRecapToken(email: string, appointmentId: string) 
   return token
 }
 
-export function generateApplicationReplyToken(tokenUser: UserForAccessToken, applicationId: string, intention: ApplicationIntention) {
+export function generateApplicationReplyToken(tokenUser: UserForAccessToken, applicationId: string, intention: ApplicationIntention, expiresIn = "30d") {
   return generateAccessToken(
     tokenUser,
     [
@@ -364,7 +364,7 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
       }),
     ],
     {
-      expiresIn: "30d",
+      expiresIn,
     }
   )
 }
