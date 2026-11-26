@@ -328,7 +328,7 @@ async function MetierContent({ params }: { params: Promise<{ metier: string }> }
           <Box component="ul" className="fr-raw-list" sx={threeColGridSx}>
             {(data.formations as { title: string; description: string; duree: string; niveau: string; count: number; competences: string[] }[]).map((formation) => (
               <Box component="li" key={formation.title} sx={{ ...cardSx, textAlign: "center" }}>
-                <Typography component="h4" sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                <Typography component="h4" sx={{ fontSize: "1.75rem", lineHeight: "2.25rem", fontWeight: "bold", color: "#4B9F6C" }}>
                   {formation.title}
                 </Typography>
                 <Typography sx={{ my: fr.spacing("6v"), fontSize: "1.125rem", color: "#666" }}>{formation.description}</Typography>

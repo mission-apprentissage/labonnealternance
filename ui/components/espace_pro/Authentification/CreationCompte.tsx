@@ -195,7 +195,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "Labon
             mb: fr.spacing("8v"),
           }}
         >
-          <Typography component="h1" sx={{ fontSize: "32px", fontWeight: 700 }}>
+          <Typography component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: 700 }}>
             Vous recrutez des alternants ?
           </Typography>
           {bandeau && (
