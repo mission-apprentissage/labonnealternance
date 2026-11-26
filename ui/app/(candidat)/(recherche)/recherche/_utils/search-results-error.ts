@@ -11,9 +11,17 @@ const isRateLimited = (error: unknown) => error instanceof ApiError && error.con
  */
 export const shouldRetrySearch = (failureCount: number, error: unknown) => !isRateLimited(error) && failureCount < 3
 
-export type SearchResultsErrorDisplay = "none" | "generic" | "rate_limited" | "rate_limited_after_results"
+export type SearchResultsErrorDisplay = "none" | "generic" | "rate_limited" | "rate_limited_retrying" | "rate_limited_after_results"
 
-export function searchResultsErrorDisplay(result: { isError: boolean; isFetching: boolean; error: unknown; data?: { pages: { hits?: unknown[] }[] } }): SearchResultsErrorDisplay {
+/**
+ * `retrying` : relance demandée depuis le bloc du 429 et pas encore terminée. Sans données, la
+ * requête relancée repasse en pending et perd son erreur : seul le clic permet de garder le bloc.
+ */
+export function searchResultsErrorDisplay(
+  result: { isError: boolean; isFetching: boolean; error: unknown; data?: { pages: { hits?: unknown[] }[] } },
+  { retrying = false }: { retrying?: boolean } = {}
+): SearchResultsErrorDisplay {
+  if (retrying && result.isFetching) return "rate_limited_retrying"
   if (!result.isError) return "none"
   if (!isRateLimited(result.error)) return "generic"
   // Une requête en erreur le reste pendant sa relance : le message disparaît le temps du

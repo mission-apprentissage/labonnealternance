@@ -30,6 +30,28 @@ interface SearchResultsListProps {
   emploisFallback?: { count: EmploisFallbackCount; onSwitch: () => void }
 }
 
+/** Bloc du 429 sans résultat affiché. Même bouton pendant la relance, en aria-disabled, pour garder le focus (RGAA 12.8). */
+export function RateLimitedNotice({ retrying, onRetry }: { retrying: boolean; onRetry: () => void }) {
+  // Sans rôle : l'annonce passe par le compteur de SearchPageClient (cf. searchResultsStatus).
+  return (
+    <Box sx={{ mt: fr.spacing("4v") }}>
+      <Alert as="h2" severity="warning" role={undefined} title="Recherche momentanément indisponible" description={RATE_LIMITED_MESSAGE} />
+      <Button
+        priority="secondary"
+        iconId="fr-icon-refresh-line"
+        iconPosition="left"
+        nativeButtonProps={{ "aria-disabled": retrying }}
+        onClick={() => {
+          if (!retrying) onRetry()
+        }}
+        style={{ marginTop: fr.spacing("4v") }}
+      >
+        {retrying ? "Chargement…" : "Relancer la recherche"}
+      </Button>
+    </Box>
+  )
+}
+
 function LoadingSkeletons() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}>
@@ -41,8 +63,15 @@ function LoadingSkeletons() {
 }
 
 export function SearchResultsList({ result, params, scrollToHitId, emploisFallback }: SearchResultsListProps) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = result
-  const errorDisplay = searchResultsErrorDisplay(result)
+  const { data, isLoading, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = result
+  // Relance depuis le bloc du 429 : « requested » jusqu'au départ de la requête, puis « fetching »
+  // jusqu'à sa fin, pour ne pas lâcher le bloc sur un rendu intermédiaire.
+  const [rateLimitRetry, setRateLimitRetry] = useState<"idle" | "requested" | "fetching">("idle")
+  useEffect(() => {
+    if (rateLimitRetry === "requested" && isFetching) setRateLimitRetry("fetching")
+    if (rateLimitRetry === "fetching" && !isFetching) setRateLimitRetry("idle")
+  }, [rateLimitRetry, isFetching])
+  const errorDisplay = searchResultsErrorDisplay(result, { retrying: rateLimitRetry !== "idle" })
 
   const cardRefs = useRef(new Map<string, HTMLElement>())
   const hitsListRef = useRef<HTMLUListElement>(null)
@@ -97,24 +126,24 @@ export function SearchResultsList({ result, params, scrollToHitId, emploisFallba
     return () => clearTimeout(timer)
   }, [highlightedHitId])
 
+  if (errorDisplay === "rate_limited" || errorDisplay === "rate_limited_retrying") {
+    return (
+      <RateLimitedNotice
+        retrying={errorDisplay === "rate_limited_retrying"}
+        onRetry={() => {
+          setRateLimitRetry("requested")
+          refetch()
+        }}
+      />
+    )
+  }
+
   if (isLoading) return <LoadingSkeletons />
 
   if (errorDisplay === "generic") {
     return (
       <Box sx={{ mt: fr.spacing("4v") }}>
         <Alert as="h2" severity="error" title="Erreur" description="Une erreur est survenue lors du chargement des résultats. Veuillez réessayer." />
-      </Box>
-    )
-  }
-
-  // Sans rôle : l'annonce passe par le compteur de SearchPageClient (cf. searchResultsStatus).
-  if (errorDisplay === "rate_limited") {
-    return (
-      <Box sx={{ mt: fr.spacing("4v") }}>
-        <Alert as="h2" severity="warning" role={undefined} title="Recherche momentanément indisponible" description={RATE_LIMITED_MESSAGE} />
-        <Button priority="secondary" iconId="fr-icon-refresh-line" iconPosition="left" onClick={() => refetch()} style={{ marginTop: fr.spacing("4v") }}>
-          Relancer la recherche
-        </Button>
       </Box>
     )
   }

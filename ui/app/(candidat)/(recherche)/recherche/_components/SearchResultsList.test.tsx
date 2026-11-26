@@ -4,7 +4,7 @@ import { notifyJobSearchViewV3 } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
 import { useSearchViewNotifier } from "../_hooks/use-search-view-notifier"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
-import { SearchResultsList } from "./SearchResultsList"
+import { RateLimitedNotice, SearchResultsList } from "./SearchResultsList"
 
 vi.mock("./SearchHitCard", () => ({ SearchHitCard: () => <article /> }))
 vi.mock("@/utils/api", () => ({ notifyJobSearchViewV3: vi.fn() }))
@@ -176,5 +176,21 @@ describe("SearchResultsList, erreurs de chargement", () => {
     expect(html).not.toContain(RETRY)
     expect(html).not.toContain("<article>")
     expect(html).toContain('role="alert"')
+  })
+})
+
+describe("RateLimitedNotice", () => {
+  it("propose la relance", () => {
+    const html = renderToStaticMarkup(<RateLimitedNotice retrying={false} onRetry={vi.fn()} />)
+    expect(html).toContain("Relancer la recherche")
+    expect(html).not.toContain('aria-disabled="true"')
+  })
+
+  // Même bouton pendant la relance, désactivé par aria-disabled, pour garder le focus (RGAA 12.8).
+  it("garde le bouton pendant la relance, désactivé sans perdre le focus", () => {
+    const html = renderToStaticMarkup(<RateLimitedNotice retrying onRetry={vi.fn()} />)
+    expect(html).toContain("Chargement…")
+    expect(html).toContain('aria-disabled="true"')
+    expect(html).not.toContain(" disabled")
   })
 })

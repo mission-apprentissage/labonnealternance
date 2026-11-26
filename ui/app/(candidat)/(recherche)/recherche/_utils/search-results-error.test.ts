@@ -70,6 +70,18 @@ describe("searchResultsErrorDisplay", () => {
     expect(searchResultsErrorDisplay({ isError: true, isFetching: false, error: await nginx429(), data: empty })).toBe("rate_limited")
   })
 
+  // Sans données, la requête relancée repasse en pending et perd son erreur : seul le clic sur
+  // « Relancer la recherche » dit qu'on relance un 429.
+  it("garde le bloc du 429 pendant la relance demandée, avec ou sans réponse précédente", async () => {
+    expect(searchResultsErrorDisplay({ isError: false, isFetching: true, error: null, data: undefined }, { retrying: true })).toBe("rate_limited_retrying")
+    expect(searchResultsErrorDisplay({ isError: true, isFetching: true, error: await nginx429(), data: empty }, { retrying: true })).toBe("rate_limited_retrying")
+  })
+
+  it("rend la main au résultat de la relance une fois la requête terminée", async () => {
+    expect(searchResultsErrorDisplay({ isError: false, isFetching: false, error: null, data: withHits }, { retrying: false })).toBe("none")
+    expect(searchResultsErrorDisplay({ isError: true, isFetching: false, error: await server500(), data: undefined }, { retrying: false })).toBe("generic")
+  })
+
   it("retire le message pendant une relance, la requête restant en erreur jusqu'au succès", async () => {
     expect(searchResultsErrorDisplay({ isError: true, isFetching: true, error: await nginx429(), data: withHits })).toBe("none")
   })

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { searchResultsStatus } from "./search-results-status"
+import { isResultsStatusWaiting, searchResultsStatus } from "./search-results-status"
 
 const idle = { status: "idle" } as const
 
@@ -40,5 +40,16 @@ describe("searchResultsStatus", () => {
 
   it("laisse l'erreur générique à son alerte", () => {
     expect(searchResultsStatus({ errorDisplay: "generic", hasData: false, waiting: false, nbHits: 0, emploisFallback: idle })).toBe("")
+  })
+})
+
+describe("isResultsStatusWaiting", () => {
+  it.each([
+    ["nouvelle recherche ou rechargement", true, { isFetching: true, isFetchingNextPage: false, isError: false }],
+    ["« Voir plus », que la liste annonce elle-même", false, { isFetching: true, isFetchingNextPage: true, isError: false }],
+    ["« Voir plus » relancé après une erreur, pour retirer le message", true, { isFetching: true, isFetchingNextPage: true, isError: true }],
+    ["aucune requête en cours", false, { isFetching: false, isFetchingNextPage: false, isError: true }],
+  ])("%s → compteur vidé : %s", (_label, expected, result) => {
+    expect(isResultsStatusWaiting(result)).toBe(expected)
   })
 })
