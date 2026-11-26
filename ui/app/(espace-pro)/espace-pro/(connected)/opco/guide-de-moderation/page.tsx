@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { connection } from "next/server"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { getSession } from "@/utils/get-session"
 import { MODERATION_PAGES } from "@/utils/moderation-pages.utils"
@@ -14,6 +15,10 @@ export const metadata: Metadata = {
 // Le proxy réserve déjà /espace-pro/opco aux OPCO ; le contrôle est refait ici avant de lire le contenu.
 export default async function GuideModerationOpcoPage() {
   const { user } = await getSession()
-  const result = user?.type === AUTHTYPE.OPCO ? await fetchOpcoGuide() : { status: "unavailable" as const }
+  if (user?.type !== AUTHTYPE.OPCO) return <OpcoGuideView guide={null} />
+  // getSession (« use cache: private ») n'arrête pas le prérendu : sans connection(), la lecture Notion y échoue
+  // (Date.now() et fetch interdits) et son échec bloque les requêtes suivantes pendant le délai de reprise.
+  await connection()
+  const result = await fetchOpcoGuide()
   return <OpcoGuideView guide={result.status === "ok" ? result.guide : null} />
 }
