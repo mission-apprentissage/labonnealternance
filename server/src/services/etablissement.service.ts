@@ -468,6 +468,7 @@ export const entrepriseOnboardingWorkflow = {
       first_name,
       last_name,
       phone,
+      phone_hidden,
       siret,
       origin,
       opco,
@@ -479,6 +480,7 @@ export const entrepriseOnboardingWorkflow = {
       last_name: string
       first_name: string
       phone?: string
+      phone_hidden?: boolean
       email: string
       origin?: string | null
       opco: OPCOS_LABEL
@@ -514,7 +516,7 @@ export const entrepriseOnboardingWorkflow = {
     let validated = false
     // handiEngagement déclaré ici, appliqué au passage à GRANTED (cf. applyPendingHandiEngagementIfGranted)
     const { user: managingUser } = await createOrganizationUser({
-      userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail, last_action_date: new Date() },
+      userFields: { first_name, last_name, phone: phone ?? "", phone_hidden, origin, email: formatedEmail, last_action_date: new Date() },
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
       handiEngagement,

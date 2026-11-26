@@ -11,7 +11,7 @@ import { Warning } from "@/theme/components/icons"
 
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
-  const { hideAsterisk: _hideAsterisk, requiredMention: _requiredMention, mention, ...inputProps } = props
+  const { hideAsterisk: _hideAsterisk, requiredMention: _requiredMention, mention, beforeMention, ...inputProps } = props
   const hasError = Boolean(meta.error && meta.touched && (props.required !== false || field.value))
   const required = props.required ?? true
   // Association explicite label ↔ input et input ↔ message d'erreur (RGAA) : FormLabel/Input sont ici
@@ -89,6 +89,8 @@ const CustomInput = (props) => {
               {meta.error?.includes("déjà associé") && <DsfrLink href="/espace-pro/authentification">Connexion</DsfrLink>}
             </Box>
           ))}
+        {/* Champ lié affiché entre la saisie et la mention, cf. ContactInfoFields (phone_hidden) */}
+        {beforeMention}
         {mention && (
           <Box className={fr.cx("fr-messages-group")} sx={{ mt: fr.spacing("3v") }}>
             <Box component="p" id={mentionId} className={fr.cx("fr-message", "fr-message--info")} sx={{ m: 0 }}>

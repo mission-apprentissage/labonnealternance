@@ -35,6 +35,7 @@ export const ZUserWithAccount = z.strictObject({
   last_name: z.string(),
   email: z.email(),
   phone: extensions.phone(),
+  phone_hidden: z.boolean().optional().describe("Numéro de téléphone masqué sur les offres La bonne alternance du compte (absent : affiché)"),
   last_action_date: z.date(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -49,6 +50,13 @@ export const ZUserWithAccountFields = ZUserWithAccount.pick({
   phone: true,
 })
 export type IUserWithAccountFields = z.output<typeof ZUserWithAccountFields>
+
+/** Téléphone diffusé sur les offres La bonne alternance du compte : `null` quand le titulaire l'a masqué. */
+export const getOfferApplyPhone = (user: Pick<IUserWithAccount, "phone" | "phone_hidden">): string | null => (user.phone_hidden ? null : (user.phone ?? null))
+
+// Réservé aux comptes entreprise et CFA : un compte admin ou OPCO ne publie pas d'offre.
+export const ZUserWithAccountContactFields = ZUserWithAccountFields.extend({ phone_hidden: ZUserWithAccount.shape.phone_hidden })
+export type IUserWithAccountContactFields = z.output<typeof ZUserWithAccountContactFields>
 
 export const ZNewSuperUser = z.union([
   ZUserWithAccountFields.extend({

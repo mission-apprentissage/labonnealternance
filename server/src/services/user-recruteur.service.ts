@@ -11,8 +11,8 @@ import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobs-partners.model"
 import type { IRoleManagement, IRoleManagementEvent } from "shared/models/role-management.model"
 import { AccessEntityType, AccessStatus } from "shared/models/role-management.model"
-import type { IUserWithAccount, IUserWithAccountFields } from "shared/models/user-with-account.model"
-import { UserEventType } from "shared/models/user-with-account.model"
+import type { IUserWithAccount, IUserWithAccountContactFields, IUserWithAccountFields } from "shared/models/user-with-account.model"
+import { getOfferApplyPhone, UserEventType } from "shared/models/user-with-account.model"
 import { getLastStatusEvent } from "shared/utils/get-last-status-event"
 import { getStaticFilePath } from "@/common/utils/get-static-file-path"
 import { getDbCollection } from "@/common/utils/mongodb-utils"
@@ -62,7 +62,7 @@ const userRecruteurStatusToRoleStatus = (roleStatus: ETAT_UTILISATEUR): AccessSt
 export const getUserRecruteurById = async (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
 
 export const userAndRoleAndOrganizationToUserRecruteur = (user: IUserWithAccount, role: IRoleManagement, organisme: ICFA | IEntreprise | null): IUserRecruteur => {
-  const { email, first_name, last_name, phone, last_action_date, _id } = user
+  const { email, first_name, last_name, phone, phone_hidden, last_action_date, _id } = user
   const organismeType = organisme ? ("status" in organisme ? ENTREPRISE : CFA) : null
   const oldStatus: IUserStatusValidation[] = [
     ...role.status.map(({ date, reason, status, validation_type, granted_by }) => {
@@ -122,6 +122,7 @@ export const userAndRoleAndOrganizationToUserRecruteur = (user: IUserWithAccount
     first_name,
     last_name,
     phone,
+    phone_hidden,
     opco: entrepriseFields.opco || OPCOS_LABEL.UNKNOWN_OPCO,
     last_connection: last_action_date,
     status: oldStatus,
@@ -163,8 +164,16 @@ export const createOrganizationUser = async ({
   const { user, created } = await findOrCreateUserWithAccount(userFields, is_email_checked, grantedBy ?? "")
 
   if (!created) {
-    const { first_name, last_name, phone, origin, last_action_date } = userFields
-    const setFields = { first_name, last_name, phone: phone ?? user.phone, origin, last_action_date, updatedAt: new Date() }
+    const { first_name, last_name, phone, phone_hidden, origin, last_action_date } = userFields
+    const setFields = {
+      first_name,
+      last_name,
+      phone: phone ?? user.phone,
+      ...(phone_hidden !== undefined ? { phone_hidden } : {}),
+      origin,
+      last_action_date,
+      updatedAt: new Date(),
+    }
     const reactivationEvent = isUserDisabled(user)
       ? [{ date: new Date(), status: UserEventType.ACTIF, validation_type: VALIDATION_UTILISATEUR.AUTO, granted_by: grantedBy || user._id.toString(), reason: "re-inscription" }]
       : []
@@ -245,7 +254,7 @@ export const createAdminUser = async (userProps: IUserWithAccountFields, { grant
   return user
 }
 
-export const updateUserWithAccountFields = async (userId: ObjectId, fields: Partial<IUserWithAccountFields>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
+export const updateUserWithAccountFields = async (userId: ObjectId, fields: Partial<IUserWithAccountContactFields>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
   const { email } = fields
   const newEmail = email?.toLocaleLowerCase()
 
@@ -275,18 +284,23 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
   if (!newUser) {
     throw badRequest("user not found")
   }
+  const applyPhone = getOfferApplyPhone(newUser)
   await getDbCollection("jobs_partners").updateMany(
     {
       partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       managed_by: newUser._id,
     },
-    {
-      $set: {
-        apply_email: newUser.email,
-        apply_phone: newUser.phone,
-        updated_at: new Date(),
+    [
+      {
+        $set: {
+          apply_email: newUser.email,
+          apply_phone: { $literal: applyPhone },
+          // cf. jobCreateToJobsPartner : une offre déléguée porte aussi le téléphone du CFA gestionnaire
+          cfa_apply_phone: { $cond: [{ $eq: ["$is_delegated", true] }, { $literal: applyPhone }, "$cfa_apply_phone"] },
+          updated_at: new Date(),
+        },
       },
-    }
+    ]
   )
   return newUser
 }

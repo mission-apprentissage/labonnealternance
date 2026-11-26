@@ -257,7 +257,7 @@ export default (server: Server) => {
           return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
-          const { email, establishment_siret, first_name, last_name, phone } = req.body
+          const { email, establishment_siret, first_name, last_name, phone, phone_hidden } = req.body
           const origin = req.body.origin ?? "Labonnealternance"
           const formatedEmail = email.toLocaleLowerCase()
           const accessError = await verifyRecruiterEmailInUse({ email: formatedEmail, siret: establishment_siret, entityType: AccessEntityType.CFA })
@@ -283,6 +283,7 @@ export default (server: Server) => {
               first_name,
               last_name,
               phone,
+              phone_hidden,
               email: formatedEmail,
               origin,
               last_action_date: new Date(),

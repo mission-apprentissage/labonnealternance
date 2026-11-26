@@ -1,5 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Typography } from "@mui/material"
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
+import { Box, Typography } from "@mui/material"
+import { useField } from "formik"
 import type { ReactNode } from "react"
 import CustomInput from "@/app/_components/CustomInput"
 import { EMAIL_FORMAT_HINT, PHONE_FORMAT_HINT } from "@/utils/validation-messages"
@@ -23,9 +25,17 @@ const emailDomainMention = (benefit: string) => (
  * - `default` : saisie par un opérateur (admin, OPCO), formats attendus seuls.
  */
 const VARIANTS = {
-  default: { phoneLabel: "Téléphone", phoneHint: PHONE_FORMAT_HINT, phoneMention: undefined, emailHint: EMAIL_FORMAT_HINT, emailMention: undefined },
+  default: {
+    phoneLabel: "Téléphone",
+    phoneHint: PHONE_FORMAT_HINT,
+    phoneMention: undefined,
+    phoneHiddenLabel: "Masquer le numéro de téléphone sur les offres",
+    emailHint: EMAIL_FORMAT_HINT,
+    emailMention: undefined,
+  },
   recruteur: {
     phoneLabel: "Numéro de téléphone",
+    phoneHiddenLabel: "Masquer mon numéro de téléphone sur mes offres",
     phoneHint: PHONE_FIXE_HINT,
     phoneMention: PHONE_VERIFICATION_MENTION,
     emailHint: "Privilégiez votre adresse e-mail professionnelle, par exemple marie.dupond@mon-entreprise.fr",
@@ -33,6 +43,7 @@ const VARIANTS = {
   },
   cfa: {
     phoneLabel: "Numéro de téléphone",
+    phoneHiddenLabel: "Masquer mon numéro de téléphone sur les offres",
     phoneHint: PHONE_FIXE_HINT,
     phoneMention: PHONE_VERIFICATION_MENTION,
     emailHint: "Privilégiez votre adresse e-mail professionnelle, par exemple marie.dupond@mon-entreprise.fr",
@@ -40,6 +51,8 @@ const VARIANTS = {
   },
   partenaire: {
     phoneLabel: "Numéro de téléphone",
+    // Les coordonnées d'une entreprise partenaire n'apparaissent pas sur ses offres : pas d'option de masquage.
+    phoneHiddenLabel: undefined,
     phoneHint: PHONE_FIXE_HINT,
     phoneMention: undefined,
     emailHint: "Privilégiez l'adresse e-mail professionnelle, par exemple marie.dupond@mon-entreprise.fr",
@@ -50,7 +63,10 @@ const VARIANTS = {
       </>
     ),
   },
-} satisfies Record<string, { phoneLabel: string; phoneHint: ReactNode; phoneMention: ReactNode; emailHint: ReactNode; emailMention: ReactNode }>
+} satisfies Record<
+  string,
+  { phoneLabel: string; phoneHint: ReactNode; phoneMention: ReactNode; phoneHiddenLabel: string | undefined; emailHint: ReactNode; emailMention: ReactNode }
+>
 
 export type ContactInfoFieldsVariant = keyof typeof VARIANTS
 
@@ -64,6 +80,7 @@ export type ContactInfoFieldsVariant = keyof typeof VARIANTS
  *
  * `thirdParty` quand l'opérateur saisit les coordonnées d'un tiers (RGAA 11.13) : autoComplete="off".
  * `emailHint` remplace l'aide du variant ; un e-mail désactivé n'affiche pas de mention.
+ * `phoneHiddenOption` ajoute la case `phone_hidden` (#5886) sous le téléphone, avec son aide éventuelle.
  */
 export const ContactInfoFields = ({
   variant = "default",
@@ -71,15 +88,19 @@ export const ContactInfoFields = ({
   emailHint,
   thirdParty = false,
   showRequiredMention = true,
+  phoneHiddenOption,
 }: {
   variant?: ContactInfoFieldsVariant
   emailDisabled?: boolean
   emailHint?: ReactNode
   thirdParty?: boolean
   showRequiredMention?: boolean
+  phoneHiddenOption?: { hint?: string }
 }) => {
   const autoComplete = (token: string) => (thirdParty ? "off" : token)
   const texts = VARIANTS[variant]
+  const phoneHiddenLabel = phoneHiddenOption ? texts.phoneHiddenLabel : undefined
+  const phoneMention = phoneHiddenLabel && texts.phoneMention ? <>Même masqué, votre numéro reste obligatoire. {texts.phoneMention}</> : texts.phoneMention
 
   return (
     <>
@@ -87,7 +108,16 @@ export const ContactInfoFields = ({
       {/* autoComplete (RGAA 11.13) et format attendu annoncé avant la saisie (RGAA 11.10) */}
       <CustomInput hideAsterisk name="last_name" label="Nom" type="text" autoComplete={autoComplete("family-name")} />
       <CustomInput hideAsterisk name="first_name" label="Prénom" type="text" autoComplete={autoComplete("given-name")} />
-      <CustomInput hideAsterisk name="phone" label={texts.phoneLabel} type="tel" autoComplete={autoComplete("tel-national")} info={texts.phoneHint} mention={texts.phoneMention} />
+      <CustomInput
+        hideAsterisk
+        name="phone"
+        label={texts.phoneLabel}
+        type="tel"
+        autoComplete={autoComplete("tel-national")}
+        info={texts.phoneHint}
+        mention={phoneMention}
+        beforeMention={phoneHiddenLabel && <PhoneHiddenCheckbox label={phoneHiddenLabel} hint={phoneHiddenOption?.hint} />}
+      />
       <CustomInput
         hideAsterisk
         disabled={emailDisabled}
@@ -99,6 +129,23 @@ export const ContactInfoFields = ({
         mention={emailDisabled ? undefined : texts.emailMention}
       />
     </>
+  )
+}
+
+const PhoneHiddenCheckbox = ({ label, hint }: { label: string; hint?: string }) => {
+  const [field, , helpers] = useField<boolean | undefined>("phone_hidden")
+  return (
+    <Box sx={{ mt: fr.spacing("4v"), "& .fr-fieldset": { mb: 0 }, "& .fr-fieldset__element": { mb: 0 } }}>
+      <Checkbox
+        options={[
+          {
+            label,
+            hintText: hint,
+            nativeInputProps: { name: "phone_hidden", checked: Boolean(field.value), onChange: (event) => helpers.setValue(event.target.checked) },
+          },
+        ]}
+      />
+    </Box>
   )
 }
 
